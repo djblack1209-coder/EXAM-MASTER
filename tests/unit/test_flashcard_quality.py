@@ -136,6 +136,44 @@ class FlashcardQualityTest(unittest.TestCase):
         self.assertEqual(report["summary"]["blockerCount"], 0)
         self.assertEqual(report["files"][0]["status"], "passed")
 
+    def test_report_blocks_draft_publication_status_even_when_cards_are_structured(self):
+        from scripts.baidu.flashcard_quality import build_quality_report
+
+        with tempfile.TemporaryDirectory() as tmp:
+            flashcard_dir = Path(tmp)
+            path = write_bank(
+                flashcard_dir,
+                "english1-2025-draft.json",
+                [
+                    {
+                        "id": "english1-2025-021",
+                        "type": "single_choice",
+                        "question": "Question 21",
+                        "options": [
+                            {"label": "A", "text": "A"},
+                            {"label": "B", "text": "B"},
+                            {"label": "C", "text": "C"},
+                            {"label": "D", "text": "D"},
+                        ],
+                        "answer": "C",
+                        "sourceEvidenceId": "src_ev_english_2025_021",
+                        "answerEvidenceStatus": "matched",
+                        "questionTextHash": "sha256:q21",
+                        "answerTextHash": "sha256:a21",
+                    }
+                ],
+            )
+            payload = json.loads(path.read_text(encoding="utf-8"))
+            payload["publicationStatus"] = "draft"
+            path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
+            report = build_quality_report(flashcard_dir)
+
+        self.assertFalse(report["releaseReadiness"]["canPromoteToPublic"])
+        self.assertEqual(report["summary"]["publicationBlockerCount"], 1)
+        self.assertEqual(report["files"][0]["status"], "blocked")
+        self.assertIn("publicationStatus=draft", report["files"][0]["publicationBlockers"])
+
     def test_report_skips_supporting_evidence_files(self):
         from scripts.baidu.flashcard_quality import build_quality_report
 

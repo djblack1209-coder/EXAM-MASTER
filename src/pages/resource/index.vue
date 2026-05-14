@@ -277,8 +277,7 @@ const subjectList = [
   { key: 'all', label: '全部' },
   { key: 'politics', label: '政治' },
   { key: 'english', label: '英语' },
-  { key: 'math', label: '数学' },
-  { key: 'major', label: '专业课' }
+  { key: 'math', label: '数学' }
 ];
 
 // 分类颜色映射

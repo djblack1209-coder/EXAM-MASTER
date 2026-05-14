@@ -8,7 +8,6 @@
  * 4. 进度里程碑动画
  */
 
-import { logger } from '@/utils/logger.js';
 import { playCorrectSound, playWrongSound, playComboSound } from './utils/quiz-sound.js';
 
 // canvas-confetti removed for MVP (reduces bundle ~50KB)
@@ -17,7 +16,6 @@ async function getConfetti() {
   return null;
 }
 
-// ✅ [体感革命] 真正的confetti爆炸 — 答对时调用
 async function fireConfetti(intensity = 'normal') {
   const confetti = await getConfetti();
   if (!confetti) return;
@@ -140,7 +138,6 @@ class QuizAnimationManager {
       type: 'correct',
       timestamp: Date.now(),
       combo: this.comboCount,
-      // ✅ [体感革命] XP奖励数据（基础10 + combo加成）
       xpEarned: 10 + Math.min(this.comboCount * 2, 20),
       ...this._generateCorrectEffects(options)
     };
@@ -161,22 +158,15 @@ class QuizAnimationManager {
       }
     }
 
-    // 震动反馈
-    if (this.settings.vibration) {
-      this._vibrate('light');
-    }
-
-    // ✅ [体感革命] 音效 + 真实confetti
+    // 音频反馈
     if (this.settings.sound) {
       playCorrectSound();
-      // 连击时播放升调和弦
-      if (this.comboCount >= 3) {
+      if (this.comboCount >= 5 && this.comboCount % 5 === 0) {
         const level = Math.min(Math.floor(this.comboCount / 5), 4);
         setTimeout(() => playComboSound(level), 150);
       }
     }
 
-    // ✅ [体感革命] 真实confetti爆炸
     if (this.settings.showParticles) {
       if (animationData.milestone) {
         fireConfetti('milestone');
@@ -208,11 +198,6 @@ class QuizAnimationManager {
       lostCombo,
       ...this._generateWrongEffects(options)
     };
-
-    // 震动反馈
-    if (this.settings.vibration) {
-      this._vibrate('medium');
-    }
 
     // 音效反馈
     if (this.settings.sound) {
@@ -429,17 +414,8 @@ class QuizAnimationManager {
     return '#' + (0x1000000 + R * 0x10000 + G * 0x100 + B).toString(16).slice(1);
   }
 
-  /**
-   * 震动反馈
-   */
-  _vibrate(type = 'light') {
-    try {
-      if (typeof uni !== 'undefined' && typeof uni.vibrateShort === 'function') {
-        uni.vibrateShort({ type });
-      }
-    } catch (e) {
-      logger.warn('[QuizAnimation] 震动反馈失败:', e);
-    }
+  _vibrate(_type = 'light') {
+    return undefined;
   }
 }
 

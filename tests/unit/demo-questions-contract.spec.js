@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { DEMO_QUESTIONS } from '../../src/config/home-data.js';
+import { DEMO_QUESTIONS } from '../../src/config/demo-questions.js';
 
 describe('示例题库答题契约', () => {
   it('答案使用 do-quiz 可识别的 A-D 选项标签', () => {

@@ -21,6 +21,13 @@ function localBank() {
   return storageService.get('v30_bank', []) || [];
 }
 
+const PRODUCTION_CATEGORY_ALLOWLIST = new Set(['政治', '英语', '数学']);
+
+function filterCategoriesByAllowlist(categories) {
+  if (!Array.isArray(categories)) return [];
+  return categories.filter((c) => PRODUCTION_CATEGORY_ALLOWLIST.has(String(c.category || '').trim()));
+}
+
 export const useReviewStore = defineStore('review', {
   state: () => ({
     reviewQueue: [],
@@ -61,7 +68,7 @@ export const useReviewStore = defineStore('review', {
         if (isOk(res) && res.data) {
           this.questionBankStats = {
             total: Number(res.data.total || 0),
-            categories: Array.isArray(res.data.categories) ? res.data.categories : []
+            categories: filterCategoriesByAllowlist(Array.isArray(res.data.categories) ? res.data.categories : [])
           };
           return { success: true, data: this.questionBankStats, source: 'remote' };
         }

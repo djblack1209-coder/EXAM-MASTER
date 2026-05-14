@@ -1,0 +1,12 @@
+name = "exam-master-origin-proxy"
+main = "worker.js"
+compatibility_date = "2026-05-04"
+workers_dev = false
+
+routes = [
+  { pattern = "api.245334.xyz/*", zone_name = "245334.xyz" }
+]
+
+[vars]
+ORIGIN_BASE_URL = "https://nf98ia8qnt.sealosbja.site"
+ORIGIN_HOST = "nf98ia8qnt.sealosbja.site"

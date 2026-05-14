@@ -4,20 +4,21 @@ import { describe, expect, it } from 'vitest';
 
 const practiceSource = readFileSync(resolve(process.cwd(), 'src/pages/practice/index.vue'), 'utf8');
 
-describe('practice public release guard', () => {
-  it('shows a deliberate release-pending state when no verified public bank is published', () => {
-    expect(practiceSource).toContain('hasPublishedBanks');
-    expect(practiceSource).toContain('PUBLIC RELEASE GUARD');
-    expect(practiceSource).toContain('官方真题题库暂未公开');
-    expect(practiceSource).toContain('题源证据、答案 hash、解析校验全部通过后');
+describe('practice page user-facing content', () => {
+  it('keeps the practice entry focused on user actions instead of backend release details', () => {
+    expect(practiceSource).toContain('查看真题目录');
     expect(practiceSource).toContain('bankAvailabilityText');
+    expect(practiceSource).not.toContain('题库发布校验');
+    expect(practiceSource).not.toContain('官方真题题库暂未公开');
+    expect(practiceSource).not.toContain('答案 hash');
+    expect(practiceSource).not.toContain('hasPublishedBanks');
   });
 
-  it('keeps the knowledge map available from empty tracks instead of exposing a dead end', () => {
-    expect(practiceSource).toContain('selectedTrackStats');
-    expect(practiceSource).toContain('empty-track-stats');
-    expect(practiceSource).toContain('查看知识地图');
-    expect(practiceSource).toContain('@tap="selectMode(\'knowledge_graph\')"');
-    expect(practiceSource).toContain('待入库年份');
+  it('routes empty tracks to the year-based paper directory while graph mode is down', () => {
+    expect(practiceSource).toContain('查看真题目录');
+    expect(practiceSource).toContain('该方向暂无可练题库');
+    expect(practiceSource).toContain('按年份整理为整卷练习');
+    expect(practiceSource).not.toContain('knowledge_graph');
+    expect(practiceSource).not.toContain('知识地图');
   });
 });

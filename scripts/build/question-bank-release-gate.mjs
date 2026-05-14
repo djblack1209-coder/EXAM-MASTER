@@ -88,15 +88,26 @@ function answerHash(card) {
   return firstNonEmpty(card.answerTextHash, card.answer_text_hash, card.sourceEvidence?.answerTextHash) || '';
 }
 
+function isEvidenceOnlyType(type) {
+  return ['analysis', 'flashcard', 'translation', 'essay', 'short_answer'].includes(type);
+}
+
+function hasPassageMaterial(card) {
+  return Boolean(firstNonEmpty(card.passage, card.context, card.material, card.article));
+}
+
 function cardId(card, index) {
   return firstNonEmpty(card.id, card.questionId, card.question_id, card.number) || `card-${index + 1}`;
 }
 
-function auditCardEvidence(card, index) {
+function auditCardEvidence(card, index, bank = {}) {
   const missingFields = [];
 
   if (!String(card.question || card.stem || '').trim()) missingFields.push('question');
   if (!String(card.answer || '').trim()) missingFields.push('answer');
+  if (bank?.subjectKey === 'english' && !isEvidenceOnlyType(card.type) && !hasPassageMaterial(card)) {
+    missingFields.push('passage');
+  }
   if (!sourceEvidenceId(card)) missingFields.push('sourceEvidenceId');
   if (answerEvidenceStatus(card) !== 'matched') missingFields.push('answerEvidenceStatus=matched');
   if (!questionHash(card)) missingFields.push('questionTextHash');
@@ -140,7 +151,7 @@ function auditPublishedBanks({ banks, bankDir }) {
       }
 
       cards.forEach((card, index) => {
-        const cardReport = auditCardEvidence(card, index);
+        const cardReport = auditCardEvidence(card, index, bank);
         if (cardReport.missingFields.length) {
           bankReport.blockedCards.push(cardReport);
           if (cardReport.missingFields.some((field) => ['question', 'answer', 'cards'].includes(field))) {

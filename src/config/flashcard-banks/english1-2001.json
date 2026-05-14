@@ -1,0 +1,1976 @@
+{
+  "source": "src_5774b8fc2a1529ce29db2bfe-2001年考研英语真题英一二通用.pdf",
+  "subject": "english1",
+  "year": "2001",
+  "processed_at": "2026-04-30 17:31:55",
+  "total_cards": 44,
+  "cards": [
+    {
+      "number": 1,
+      "type": "single_choice",
+      "question": "The government is to ban payments to witnesses by newspapers seeking to buy up people involved in prominent cases ______ the trial of Rosemary West.",
+      "options": [
+        {
+          "label": "A",
+          "text": "as to"
+        },
+        {
+          "label": "B",
+          "text": "in particular"
+        },
+        {
+          "label": "C",
+          "text": "intensifying"
+        },
+        {
+          "label": "D",
+          "text": "fastening"
+        }
+      ],
+      "answer": "B",
+      "explanation": "",
+      "id": "english1-2001-001",
+      "subject": "english1",
+      "year": "2001",
+      "source": "src_5774b8fc2a1529ce29db2bfe-2001年考研英语真题英一二通用.pdf",
+      "tags": ["english1", "2001真题"],
+      "sourceEvidenceId": "src_5774b8fc2a1529ce29db2bfe",
+      "questionTextHash": "sha256:bfa19c8fc43dfbb95c0277766029e01be48ad80b251c7f99a50a3a58e911ee4b",
+      "sourceEvidence": {
+        "evidenceId": "src_5774b8fc2a1529ce29db2bfe",
+        "sourceId": "src_5774b8fc2a1529ce29db2bfe",
+        "sourceType": "official_paper",
+        "contentHash": "226db7a20ja6081d6f36f37bc3d8601d",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语二考研历年真题/2001年考研英语真题（英一二通用） .pdf",
+        "questionTextHash": "sha256:bfa19c8fc43dfbb95c0277766029e01be48ad80b251c7f99a50a3a58e911ee4b",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerTextHash": "sha256:df7e70e5021544f4834bbee64a9e3789febc4be81470df629cad6ddb03320a5c",
+      "answerEvidenceStatus": "matched"
+    },
+    {
+      "number": 2,
+      "type": "single_choice",
+      "question": "2 of legal controls over the press, Lord Irvine, the Lord Chancellor, will",
+      "options": [
+        {
+          "label": "A",
+          "text": "tightening"
+        },
+        {
+          "label": "B",
+          "text": "focusing"
+        },
+        {
+          "label": "C",
+          "text": "fastening"
+        },
+        {
+          "label": "D",
+          "text": "improper"
+        }
+      ],
+      "answer": "A",
+      "explanation": "",
+      "id": "english1-2001-002",
+      "subject": "english1",
+      "year": "2001",
+      "source": "src_5774b8fc2a1529ce29db2bfe-2001年考研英语真题英一二通用.pdf",
+      "tags": ["english1", "2001真题"],
+      "sourceEvidenceId": "src_5774b8fc2a1529ce29db2bfe",
+      "questionTextHash": "sha256:2b9808449bca7fb98b4b9fd770c9c328ca567366383def7f05acc22e626e4d50",
+      "sourceEvidence": {
+        "evidenceId": "src_5774b8fc2a1529ce29db2bfe",
+        "sourceId": "src_5774b8fc2a1529ce29db2bfe",
+        "sourceType": "official_paper",
+        "contentHash": "226db7a20ja6081d6f36f37bc3d8601d",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语二考研历年真题/2001年考研英语真题（英一二通用） .pdf",
+        "questionTextHash": "sha256:2b9808449bca7fb98b4b9fd770c9c328ca567366383def7f05acc22e626e4d50",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerTextHash": "sha256:559aead08264d5795d3909718cdd05abd49572e84fe55590eef31a88a08fdffd",
+      "answerEvidenceStatus": "matched"
+    },
+    {
+      "number": 3,
+      "type": "single_choice",
+      "question": "introduce a ______ bill that will propose making payments to witnesses",
+      "options": [
+        {
+          "label": "A",
+          "text": "sketch"
+        },
+        {
+          "label": "B",
+          "text": "rough"
+        },
+        {
+          "label": "C",
+          "text": "preliminary"
+        },
+        {
+          "label": "D",
+          "text": "draft"
+        }
+      ],
+      "answer": "D",
+      "explanation": "",
+      "id": "english1-2001-003",
+      "subject": "english1",
+      "year": "2001",
+      "source": "src_5774b8fc2a1529ce29db2bfe-2001年考研英语真题英一二通用.pdf",
+      "tags": ["english1", "2001真题"],
+      "sourceEvidenceId": "src_5774b8fc2a1529ce29db2bfe",
+      "questionTextHash": "sha256:ef71e12a8051f6dbad22973d3b1b934941e2c4823990f838eb25f34a83900798",
+      "sourceEvidence": {
+        "evidenceId": "src_5774b8fc2a1529ce29db2bfe",
+        "sourceId": "src_5774b8fc2a1529ce29db2bfe",
+        "sourceType": "official_paper",
+        "contentHash": "226db7a20ja6081d6f36f37bc3d8601d",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语二考研历年真题/2001年考研英语真题（英一二通用） .pdf",
+        "questionTextHash": "sha256:ef71e12a8051f6dbad22973d3b1b934941e2c4823990f838eb25f34a83900798",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerTextHash": "sha256:3f39d5c348e5b79d06e842c114e6cc571583bbf44e4b0ebfda1a01ec05745d43",
+      "answerEvidenceStatus": "matched"
+    },
+    {
+      "number": 4,
+      "type": "single_choice",
+      "question": "that will propose making payments to witnesses ______",
+      "options": [
+        {
+          "label": "A",
+          "text": "illogical"
+        },
+        {
+          "label": "B",
+          "text": "illegal"
+        },
+        {
+          "label": "C",
+          "text": "improbable"
+        },
+        {
+          "label": "D",
+          "text": "improper"
+        }
+      ],
+      "answer": "B",
+      "explanation": "",
+      "id": "english1-2001-004",
+      "subject": "english1",
+      "year": "2001",
+      "source": "src_5774b8fc2a1529ce29db2bfe-2001年考研英语真题英一二通用.pdf",
+      "tags": ["english1", "2001真题"],
+      "sourceEvidenceId": "src_5774b8fc2a1529ce29db2bfe",
+      "questionTextHash": "sha256:8481e02fcdda41751b6c44c4d16a6fe6a46278dbdf86d0ebd5a0db08a043c467",
+      "sourceEvidence": {
+        "evidenceId": "src_5774b8fc2a1529ce29db2bfe",
+        "sourceId": "src_5774b8fc2a1529ce29db2bfe",
+        "sourceType": "official_paper",
+        "contentHash": "226db7a20ja6081d6f36f37bc3d8601d",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语二考研历年真题/2001年考研英语真题（英一二通用） .pdf",
+        "questionTextHash": "sha256:8481e02fcdda41751b6c44c4d16a6fe6a46278dbdf86d0ebd5a0db08a043c467",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerTextHash": "sha256:df7e70e5021544f4834bbee64a9e3789febc4be81470df629cad6ddb03320a5c",
+      "answerEvidenceStatus": "matched"
+    },
+    {
+      "number": 5,
+      "type": "single_choice",
+      "question": "and will strictly control the amount of ______ that can be given to a case",
+      "options": [
+        {
+          "label": "A",
+          "text": "publicity"
+        },
+        {
+          "label": "B",
+          "text": "penalty"
+        },
+        {
+          "label": "C",
+          "text": "popularity"
+        },
+        {
+          "label": "D",
+          "text": "peculiarity"
+        }
+      ],
+      "answer": "A",
+      "explanation": "",
+      "id": "english1-2001-005",
+      "subject": "english1",
+      "year": "2001",
+      "source": "src_5774b8fc2a1529ce29db2bfe-2001年考研英语真题英一二通用.pdf",
+      "tags": ["english1", "2001真题"],
+      "sourceEvidenceId": "src_5774b8fc2a1529ce29db2bfe",
+      "questionTextHash": "sha256:e57eb850c1fd562074ab28bd5e79d23bd46de8cd65103cb1a2bcdd9c477150d2",
+      "sourceEvidence": {
+        "evidenceId": "src_5774b8fc2a1529ce29db2bfe",
+        "sourceId": "src_5774b8fc2a1529ce29db2bfe",
+        "sourceType": "official_paper",
+        "contentHash": "226db7a20ja6081d6f36f37bc3d8601d",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语二考研历年真题/2001年考研英语真题（英一二通用） .pdf",
+        "questionTextHash": "sha256:e57eb850c1fd562074ab28bd5e79d23bd46de8cd65103cb1a2bcdd9c477150d2",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerTextHash": "sha256:559aead08264d5795d3909718cdd05abd49572e84fe55590eef31a88a08fdffd",
+      "answerEvidenceStatus": "matched"
+    },
+    {
+      "number": 6,
+      "type": "single_choice",
+      "question": "that can be given to a case ______ a trial begins.",
+      "options": [
+        {
+          "label": "A",
+          "text": "since"
+        },
+        {
+          "label": "B",
+          "text": "before"
+        },
+        {
+          "label": "C",
+          "text": "as"
+        },
+        {
+          "label": "D",
+          "text": "if"
+        }
+      ],
+      "answer": "B",
+      "explanation": "",
+      "id": "english1-2001-006",
+      "subject": "english1",
+      "year": "2001",
+      "source": "src_5774b8fc2a1529ce29db2bfe-2001年考研英语真题英一二通用.pdf",
+      "tags": ["english1", "2001真题"],
+      "sourceEvidenceId": "src_5774b8fc2a1529ce29db2bfe",
+      "questionTextHash": "sha256:bddc2836666d0127259c40371f81a646b5574b9b88ef84a0b2b5c3aa0621f0af",
+      "sourceEvidence": {
+        "evidenceId": "src_5774b8fc2a1529ce29db2bfe",
+        "sourceId": "src_5774b8fc2a1529ce29db2bfe",
+        "sourceType": "official_paper",
+        "contentHash": "226db7a20ja6081d6f36f37bc3d8601d",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语二考研历年真题/2001年考研英语真题（英一二通用） .pdf",
+        "questionTextHash": "sha256:bddc2836666d0127259c40371f81a646b5574b9b88ef84a0b2b5c3aa0621f0af",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerTextHash": "sha256:df7e70e5021544f4834bbee64a9e3789febc4be81470df629cad6ddb03320a5c",
+      "answerEvidenceStatus": "matched"
+    },
+    {
+      "number": 7,
+      "type": "single_choice",
+      "question": "In a letter to Gerald Kaufman, chairman of the House of Commons media select committee, Lord Irvine said he ______",
+      "options": [
+        {
+          "label": "A",
+          "text": "sided"
+        },
+        {
+          "label": "B",
+          "text": "agreed"
+        },
+        {
+          "label": "C",
+          "text": "offer"
+        },
+        {
+          "label": "D",
+          "text": "indicate"
+        }
+      ],
+      "answer": "B",
+      "explanation": "",
+      "id": "english1-2001-007",
+      "subject": "english1",
+      "year": "2001",
+      "source": "src_5774b8fc2a1529ce29db2bfe-2001年考研英语真题英一二通用.pdf",
+      "tags": ["english1", "2001真题"],
+      "sourceEvidenceId": "src_5774b8fc2a1529ce29db2bfe",
+      "questionTextHash": "sha256:808c11040144abd8b0823f3ea0c9b96445525c2334660033621687d83b29feb3",
+      "sourceEvidence": {
+        "evidenceId": "src_5774b8fc2a1529ce29db2bfe",
+        "sourceId": "src_5774b8fc2a1529ce29db2bfe",
+        "sourceType": "official_paper",
+        "contentHash": "226db7a20ja6081d6f36f37bc3d8601d",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语二考研历年真题/2001年考研英语真题（英一二通用） .pdf",
+        "questionTextHash": "sha256:808c11040144abd8b0823f3ea0c9b96445525c2334660033621687d83b29feb3",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerTextHash": "sha256:df7e70e5021544f4834bbee64a9e3789febc4be81470df629cad6ddb03320a5c",
+      "answerEvidenceStatus": "matched"
+    },
+    {
+      "number": 8,
+      "type": "single_choice",
+      "question": "which said that self regulation did not ______ control.",
+      "options": [
+        {
+          "label": "A",
+          "text": "present"
+        },
+        {
+          "label": "B",
+          "text": "manifest"
+        },
+        {
+          "label": "C",
+          "text": "printing"
+        },
+        {
+          "label": "D",
+          "text": "exposure"
+        }
+      ],
+      "answer": "A",
+      "explanation": "",
+      "id": "english1-2001-008",
+      "subject": "english1",
+      "year": "2001",
+      "source": "src_5774b8fc2a1529ce29db2bfe-2001年考研英语真题英一二通用.pdf",
+      "tags": ["english1", "2001真题"],
+      "sourceEvidenceId": "src_5774b8fc2a1529ce29db2bfe",
+      "questionTextHash": "sha256:6d1831dd73ac437b4b3b5e17c0ad9680b817ad7cc5a427ba3c8b25fcce177387",
+      "sourceEvidence": {
+        "evidenceId": "src_5774b8fc2a1529ce29db2bfe",
+        "sourceId": "src_5774b8fc2a1529ce29db2bfe",
+        "sourceType": "official_paper",
+        "contentHash": "226db7a20ja6081d6f36f37bc3d8601d",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语二考研历年真题/2001年考研英语真题（英一二通用） .pdf",
+        "questionTextHash": "sha256:6d1831dd73ac437b4b3b5e17c0ad9680b817ad7cc5a427ba3c8b25fcce177387",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerTextHash": "sha256:559aead08264d5795d3909718cdd05abd49572e84fe55590eef31a88a08fdffd",
+      "answerEvidenceStatus": "matched"
+    },
+    {
+      "number": 9,
+      "type": "single_choice",
+      "question": "Arrival of the letter came two days after Lord Irvine caused a ______ of media protest",
+      "options": [
+        {
+          "label": "A",
+          "text": "storm"
+        },
+        {
+          "label": "B",
+          "text": "rage"
+        },
+        {
+          "label": "C",
+          "text": "demonstration"
+        },
+        {
+          "label": "D",
+          "text": "flare"
+        }
+      ],
+      "answer": "A",
+      "explanation": "",
+      "id": "english1-2001-009",
+      "subject": "english1",
+      "year": "2001",
+      "source": "src_5774b8fc2a1529ce29db2bfe-2001年考研英语真题英一二通用.pdf",
+      "tags": ["english1", "2001真题"],
+      "sourceEvidenceId": "src_5774b8fc2a1529ce29db2bfe",
+      "questionTextHash": "sha256:a30d3510471ed598aedb1480ef743bb1b59c41c33958c326e3d5a1d595f50841",
+      "sourceEvidence": {
+        "evidenceId": "src_5774b8fc2a1529ce29db2bfe",
+        "sourceId": "src_5774b8fc2a1529ce29db2bfe",
+        "sourceType": "official_paper",
+        "contentHash": "226db7a20ja6081d6f36f37bc3d8601d",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语二考研历年真题/2001年考研英语真题（英一二通用） .pdf",
+        "questionTextHash": "sha256:a30d3510471ed598aedb1480ef743bb1b59c41c33958c326e3d5a1d595f50841",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerTextHash": "sha256:559aead08264d5795d3909718cdd05abd49572e84fe55590eef31a88a08fdffd",
+      "answerEvidenceStatus": "matched"
+    },
+    {
+      "number": 10,
+      "type": "single_choice",
+      "question": "when he said the ______ of privacy controls contained in European legislation would be left to judges",
+      "options": [
+        {
+          "label": "A",
+          "text": "translation"
+        },
+        {
+          "label": "B",
+          "text": "interpretation"
+        },
+        {
+          "label": "C",
+          "text": "exhibition"
+        },
+        {
+          "label": "D",
+          "text": "rather than"
+        }
+      ],
+      "answer": "B",
+      "explanation": "",
+      "id": "english1-2001-010",
+      "subject": "english1",
+      "year": "2001",
+      "source": "src_5774b8fc2a1529ce29db2bfe-2001年考研英语真题英一二通用.pdf",
+      "tags": ["english1", "2001真题"],
+      "sourceEvidenceId": "src_5774b8fc2a1529ce29db2bfe",
+      "questionTextHash": "sha256:3c2ea7a21ec826b8c408bb0bf5cca596748d768510128fd6e80d544d4f871709",
+      "sourceEvidence": {
+        "evidenceId": "src_5774b8fc2a1529ce29db2bfe",
+        "sourceId": "src_5774b8fc2a1529ce29db2bfe",
+        "sourceType": "official_paper",
+        "contentHash": "226db7a20ja6081d6f36f37bc3d8601d",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语二考研历年真题/2001年考研英语真题（英一二通用） .pdf",
+        "questionTextHash": "sha256:3c2ea7a21ec826b8c408bb0bf5cca596748d768510128fd6e80d544d4f871709",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerTextHash": "sha256:df7e70e5021544f4834bbee64a9e3789febc4be81470df629cad6ddb03320a5c",
+      "answerEvidenceStatus": "matched"
+    },
+    {
+      "number": 11,
+      "type": "single_choice",
+      "question": "rather than ______ to Parliament.",
+      "options": [
+        {
+          "label": "A",
+          "text": "better than"
+        },
+        {
+          "label": "B",
+          "text": "other than"
+        },
+        {
+          "label": "C",
+          "text": "sooner than"
+        },
+        {
+          "label": "D",
+          "text": "rather than"
+        }
+      ],
+      "answer": "B",
+      "explanation": "",
+      "id": "english1-2001-011",
+      "subject": "english1",
+      "year": "2001",
+      "source": "src_5774b8fc2a1529ce29db2bfe-2001年考研英语真题英一二通用.pdf",
+      "tags": ["english1", "2001真题"],
+      "sourceEvidenceId": "src_5774b8fc2a1529ce29db2bfe",
+      "questionTextHash": "sha256:beffbc645a6e27cc301674b931b301da61e2ec46d09adf96962afd9051c01cf3",
+      "sourceEvidence": {
+        "evidenceId": "src_5774b8fc2a1529ce29db2bfe",
+        "sourceId": "src_5774b8fc2a1529ce29db2bfe",
+        "sourceType": "official_paper",
+        "contentHash": "226db7a20ja6081d6f36f37bc3d8601d",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语二考研历年真题/2001年考研英语真题（英一二通用） .pdf",
+        "questionTextHash": "sha256:beffbc645a6e27cc301674b931b301da61e2ec46d09adf96962afd9051c01cf3",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerTextHash": "sha256:df7e70e5021544f4834bbee64a9e3789febc4be81470df629cad6ddb03320a5c",
+      "answerEvidenceStatus": "matched"
+    },
+    {
+      "number": 12,
+      "type": "single_choice",
+      "question": "The Lord Chancellor said introduction of the Human Rights Bill, which ______ the European",
+      "options": [
+        {
+          "label": "A",
+          "text": "changes"
+        },
+        {
+          "label": "B",
+          "text": "makes"
+        },
+        {
+          "label": "C",
+          "text": "sets"
+        },
+        {
+          "label": "D",
+          "text": "turns"
+        }
+      ],
+      "answer": "A",
+      "explanation": "",
+      "id": "english1-2001-012",
+      "subject": "english1",
+      "year": "2001",
+      "source": "src_5774b8fc2a1529ce29db2bfe-2001年考研英语真题英一二通用.pdf",
+      "tags": ["english1", "2001真题"],
+      "sourceEvidenceId": "src_5774b8fc2a1529ce29db2bfe",
+      "questionTextHash": "sha256:89be88eb17e2bdadeceac3fde8bfa0f604db1758cd3460ba25173a90bcb6a81f",
+      "sourceEvidence": {
+        "evidenceId": "src_5774b8fc2a1529ce29db2bfe",
+        "sourceId": "src_5774b8fc2a1529ce29db2bfe",
+        "sourceType": "official_paper",
+        "contentHash": "226db7a20ja6081d6f36f37bc3d8601d",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语二考研历年真题/2001年考研英语真题（英一二通用） .pdf",
+        "questionTextHash": "sha256:89be88eb17e2bdadeceac3fde8bfa0f604db1758cd3460ba25173a90bcb6a81f",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerTextHash": "sha256:559aead08264d5795d3909718cdd05abd49572e84fe55590eef31a88a08fdffd",
+      "answerEvidenceStatus": "matched"
+    },
+    {
+      "number": 13,
+      "type": "single_choice",
+      "question": "Convention on Human Rights Legally in Britain, laid down that everybody was ______ and that public figures could go to court to protect themselves and their families.",
+      "options": [
+        {
+          "label": "A",
+          "text": "binding"
+        },
+        {
+          "label": "B",
+          "text": "convincing"
+        },
+        {
+          "label": "C",
+          "text": "restraining"
+        },
+        {
+          "label": "D",
+          "text": "sustaining"
+        }
+      ],
+      "answer": "A",
+      "explanation": "",
+      "id": "english1-2001-013",
+      "subject": "english1",
+      "year": "2001",
+      "source": "src_5774b8fc2a1529ce29db2bfe-2001年考研英语真题英一二通用.pdf",
+      "tags": ["english1", "2001真题"],
+      "sourceEvidenceId": "src_5774b8fc2a1529ce29db2bfe",
+      "questionTextHash": "sha256:46f87645ba2d1748cf8889048c7a2902741bf20e97ad7d7728ce948a59130cdc",
+      "sourceEvidence": {
+        "evidenceId": "src_5774b8fc2a1529ce29db2bfe",
+        "sourceId": "src_5774b8fc2a1529ce29db2bfe",
+        "sourceType": "official_paper",
+        "contentHash": "226db7a20ja6081d6f36f37bc3d8601d",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语二考研历年真题/2001年考研英语真题（英一二通用） .pdf",
+        "questionTextHash": "sha256:46f87645ba2d1748cf8889048c7a2902741bf20e97ad7d7728ce948a59130cdc",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerTextHash": "sha256:559aead08264d5795d3909718cdd05abd49572e84fe55590eef31a88a08fdffd",
+      "answerEvidenceStatus": "matched"
+    },
+    {
+      "number": 14,
+      "type": "single_choice",
+      "question": "“Press freedoms will be in safe hands ______ our British judges，” he said.",
+      "options": [
+        {
+          "label": "A",
+          "text": "with"
+        },
+        {
+          "label": "B",
+          "text": "to"
+        },
+        {
+          "label": "C",
+          "text": "from"
+        },
+        {
+          "label": "D",
+          "text": "by"
+        }
+      ],
+      "answer": "A",
+      "explanation": "",
+      "id": "english1-2001-014",
+      "subject": "english1",
+      "year": "2001",
+      "source": "src_5774b8fc2a1529ce29db2bfe-2001年考研英语真题英一二通用.pdf",
+      "tags": ["english1", "2001真题"],
+      "sourceEvidenceId": "src_5774b8fc2a1529ce29db2bfe",
+      "questionTextHash": "sha256:697d191bb4a275ef78e0cb12819b4fce9466596f42272bb0e1e4e709cb4abcbf",
+      "sourceEvidence": {
+        "evidenceId": "src_5774b8fc2a1529ce29db2bfe",
+        "sourceId": "src_5774b8fc2a1529ce29db2bfe",
+        "sourceType": "official_paper",
+        "contentHash": "226db7a20ja6081d6f36f37bc3d8601d",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语二考研历年真题/2001年考研英语真题（英一二通用） .pdf",
+        "questionTextHash": "sha256:697d191bb4a275ef78e0cb12819b4fce9466596f42272bb0e1e4e709cb4abcbf",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerTextHash": "sha256:559aead08264d5795d3909718cdd05abd49572e84fe55590eef31a88a08fdffd",
+      "answerEvidenceStatus": "matched"
+    },
+    {
+      "number": 15,
+      "type": "single_choice",
+      "question": "Witness payments became an ______ after West was sentenced to 10 life sentences in 1995.",
+      "options": [
+        {
+          "label": "A",
+          "text": "impact"
+        },
+        {
+          "label": "B",
+          "text": "issue"
+        },
+        {
+          "label": "C",
+          "text": "inference"
+        },
+        {
+          "label": "D",
+          "text": "incident"
+        }
+      ],
+      "answer": "A",
+      "explanation": "",
+      "id": "english1-2001-015",
+      "subject": "english1",
+      "year": "2001",
+      "source": "src_5774b8fc2a1529ce29db2bfe-2001年考研英语真题英一二通用.pdf",
+      "tags": ["english1", "2001真题"],
+      "sourceEvidenceId": "src_5774b8fc2a1529ce29db2bfe",
+      "questionTextHash": "sha256:9a67630af556d4ee0569d0efcbc249743ef96532838e607e1b9ac07470e34902",
+      "sourceEvidence": {
+        "evidenceId": "src_5774b8fc2a1529ce29db2bfe",
+        "sourceId": "src_5774b8fc2a1529ce29db2bfe",
+        "sourceType": "official_paper",
+        "contentHash": "226db7a20ja6081d6f36f37bc3d8601d",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语二考研历年真题/2001年考研英语真题（英一二通用） .pdf",
+        "questionTextHash": "sha256:9a67630af556d4ee0569d0efcbc249743ef96532838e607e1b9ac07470e34902",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerTextHash": "sha256:559aead08264d5795d3909718cdd05abd49572e84fe55590eef31a88a08fdffd",
+      "answerEvidenceStatus": "matched"
+    },
+    {
+      "number": 16,
+      "type": "single_choice",
+      "question": "Up to 19 witnesses were ______ to have received payments for telling their stories to newspapers.",
+      "options": [
+        {
+          "label": "A",
+          "text": "stated"
+        },
+        {
+          "label": "B",
+          "text": "said"
+        },
+        {
+          "label": "C",
+          "text": "told"
+        },
+        {
+          "label": "D",
+          "text": "remarked"
+        }
+      ],
+      "answer": "D",
+      "explanation": "",
+      "id": "english1-2001-016",
+      "subject": "english1",
+      "year": "2001",
+      "source": "src_5774b8fc2a1529ce29db2bfe-2001年考研英语真题英一二通用.pdf",
+      "tags": ["english1", "2001真题"],
+      "sourceEvidenceId": "src_5774b8fc2a1529ce29db2bfe",
+      "questionTextHash": "sha256:ef0b1d6e8c5bc02781808a52d844bb33c3bb2b29b14800f29e183056caef3346",
+      "sourceEvidence": {
+        "evidenceId": "src_5774b8fc2a1529ce29db2bfe",
+        "sourceId": "src_5774b8fc2a1529ce29db2bfe",
+        "sourceType": "official_paper",
+        "contentHash": "226db7a20ja6081d6f36f37bc3d8601d",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语二考研历年真题/2001年考研英语真题（英一二通用） .pdf",
+        "questionTextHash": "sha256:ef0b1d6e8c5bc02781808a52d844bb33c3bb2b29b14800f29e183056caef3346",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerTextHash": "sha256:3f39d5c348e5b79d06e842c114e6cc571583bbf44e4b0ebfda1a01ec05745d43",
+      "answerEvidenceStatus": "matched"
+    },
+    {
+      "number": 17,
+      "type": "single_choice",
+      "question": "Concerns were raised ______ might be encouraged to exaggerate their stories in court to",
+      "options": [
+        {
+          "label": "A",
+          "text": "what"
+        },
+        {
+          "label": "B",
+          "text": "that"
+        },
+        {
+          "label": "C",
+          "text": "which"
+        },
+        {
+          "label": "D",
+          "text": "when"
+        }
+      ],
+      "answer": "B",
+      "explanation": "",
+      "id": "english1-2001-017",
+      "subject": "english1",
+      "year": "2001",
+      "source": "src_5774b8fc2a1529ce29db2bfe-2001年考研英语真题英一二通用.pdf",
+      "tags": ["english1", "2001真题"],
+      "sourceEvidenceId": "src_5774b8fc2a1529ce29db2bfe",
+      "questionTextHash": "sha256:6baf7dec1a688aabcb5076c629d7861efa8e607c446adcea4ccfc5783ab60b24",
+      "sourceEvidence": {
+        "evidenceId": "src_5774b8fc2a1529ce29db2bfe",
+        "sourceId": "src_5774b8fc2a1529ce29db2bfe",
+        "sourceType": "official_paper",
+        "contentHash": "226db7a20ja6081d6f36f37bc3d8601d",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语二考研历年真题/2001年考研英语真题（英一二通用） .pdf",
+        "questionTextHash": "sha256:6baf7dec1a688aabcb5076c629d7861efa8e607c446adcea4ccfc5783ab60b24",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerTextHash": "sha256:df7e70e5021544f4834bbee64a9e3789febc4be81470df629cad6ddb03320a5c",
+      "answerEvidenceStatus": "matched"
+    },
+    {
+      "number": 18,
+      "type": "single_choice",
+      "question": "get ______ verdicts.",
+      "options": [
+        {
+          "label": "A",
+          "text": "assure"
+        },
+        {
+          "label": "B",
+          "text": "ensure"
+        },
+        {
+          "label": "C",
+          "text": "guarantee"
+        },
+        {
+          "label": "D",
+          "text": "confide"
+        }
+      ],
+      "answer": "B",
+      "explanation": "",
+      "id": "english1-2001-018",
+      "subject": "english1",
+      "year": "2001",
+      "source": "src_5774b8fc2a1529ce29db2bfe-2001年考研英语真题英一二通用.pdf",
+      "tags": ["english1", "2001真题"],
+      "sourceEvidenceId": "src_5774b8fc2a1529ce29db2bfe",
+      "questionTextHash": "sha256:5a64d62f5ca58c055efd19c0a4295c4809ced7eabcb9844e1d9607bf4268f37b",
+      "sourceEvidence": {
+        "evidenceId": "src_5774b8fc2a1529ce29db2bfe",
+        "sourceId": "src_5774b8fc2a1529ce29db2bfe",
+        "sourceType": "official_paper",
+        "contentHash": "226db7a20ja6081d6f36f37bc3d8601d",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语二考研历年真题/2001年考研英语真题（英一二通用） .pdf",
+        "questionTextHash": "sha256:5a64d62f5ca58c055efd19c0a4295c4809ced7eabcb9844e1d9607bf4268f37b",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerTextHash": "sha256:df7e70e5021544f4834bbee64a9e3789febc4be81470df629cad6ddb03320a5c",
+      "answerEvidenceStatus": "matched"
+    },
+    {
+      "number": 21,
+      "type": "single_choice",
+      "question": "The growth of specialisation in the 19th century might be more clearly seen in sciences such as",
+      "options": [
+        {
+          "label": "A",
+          "text": "sociology and chemistry"
+        },
+        {
+          "label": "B",
+          "text": "physics and psychology"
+        },
+        {
+          "label": "C",
+          "text": "sociology and psychology"
+        },
+        {
+          "label": "D",
+          "text": "physics and chemistry"
+        }
+      ],
+      "answer": "A",
+      "explanation": "",
+      "id": "english1-2001-021",
+      "subject": "english1",
+      "year": "2001",
+      "source": "src_5774b8fc2a1529ce29db2bfe-2001年考研英语真题英一二通用.pdf",
+      "tags": ["english1", "2001真题"],
+      "sourceEvidenceId": "src_5774b8fc2a1529ce29db2bfe",
+      "questionTextHash": "sha256:62d37175c91368018d2e56e0c643d2ff5370e6068b4d7599d6dbe9c1db2e70c3",
+      "sourceEvidence": {
+        "evidenceId": "src_5774b8fc2a1529ce29db2bfe",
+        "sourceId": "src_5774b8fc2a1529ce29db2bfe",
+        "sourceType": "official_paper",
+        "contentHash": "226db7a20ja6081d6f36f37bc3d8601d",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语二考研历年真题/2001年考研英语真题（英一二通用） .pdf",
+        "questionTextHash": "sha256:62d37175c91368018d2e56e0c643d2ff5370e6068b4d7599d6dbe9c1db2e70c3",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerEvidenceStatus": "matched",
+      "answerEvidenceSourceId": "src_2113b58b7372cae094b1427e",
+      "answerTextHash": "sha256:559aead08264d5795d3909718cdd05abd49572e84fe55590eef31a88a08fdffd",
+      "answerEvidence": {
+        "status": "candidate_matched",
+        "sourceId": "src_2113b58b7372cae094b1427e",
+        "sourceCardId": "english-2001-021",
+        "sourceFilePath": "data/flashcards/english-2001.json",
+        "answerTextHash": "sha256:559aead08264d5795d3909718cdd05abd49572e84fe55590eef31a88a08fdffd",
+        "method": "year_number_companion_cleaned_json",
+        "verifiedAt": "",
+        "verifiedBy": "",
+        "note": "Candidate answer repaired from a cleaned companion answer file; not publishable until verified."
+      }
+    },
+    {
+      "number": 22,
+      "type": "single_choice",
+      "question": "We can infer from the passage that",
+      "options": [
+        {
+          "label": "A",
+          "text": "there is little distinction between specialisation and professionalisation"
+        },
+        {
+          "label": "B",
+          "text": "amateurs can compete with professionals in some areas of science"
+        },
+        {
+          "label": "C",
+          "text": "professionals tend to welcome amateurs into the scientific community"
+        },
+        {
+          "label": "D",
+          "text": "amateurs have national academic societies but no local ones"
+        }
+      ],
+      "answer": "C",
+      "explanation": "",
+      "id": "english1-2001-022",
+      "subject": "english1",
+      "year": "2001",
+      "source": "src_5774b8fc2a1529ce29db2bfe-2001年考研英语真题英一二通用.pdf",
+      "tags": ["english1", "2001真题"],
+      "sourceEvidenceId": "src_5774b8fc2a1529ce29db2bfe",
+      "questionTextHash": "sha256:7fc8e50b7ab8bb025c2d9c37aa38e3763c1c54d85e8a4b7c71ea796157360f0d",
+      "sourceEvidence": {
+        "evidenceId": "src_5774b8fc2a1529ce29db2bfe",
+        "sourceId": "src_5774b8fc2a1529ce29db2bfe",
+        "sourceType": "official_paper",
+        "contentHash": "226db7a20ja6081d6f36f37bc3d8601d",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语二考研历年真题/2001年考研英语真题（英一二通用） .pdf",
+        "questionTextHash": "sha256:7fc8e50b7ab8bb025c2d9c37aa38e3763c1c54d85e8a4b7c71ea796157360f0d",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerEvidenceStatus": "matched",
+      "answerEvidenceSourceId": "src_2113b58b7372cae094b1427e",
+      "answerTextHash": "sha256:6b23c0d5f35d1b11f9b683f0b0a617355deb11277d91ae091d399c655b87940d",
+      "answerEvidence": {
+        "status": "candidate_matched",
+        "sourceId": "src_2113b58b7372cae094b1427e",
+        "sourceCardId": "english-2001-022",
+        "sourceFilePath": "data/flashcards/english-2001.json",
+        "answerTextHash": "sha256:6b23c0d5f35d1b11f9b683f0b0a617355deb11277d91ae091d399c655b87940d",
+        "method": "year_number_companion_cleaned_json",
+        "verifiedAt": "",
+        "verifiedBy": "",
+        "note": "Candidate answer repaired from a cleaned companion answer file; not publishable until verified."
+      }
+    },
+    {
+      "number": 23,
+      "type": "single_choice",
+      "question": "The author writes of the development of geology to demonstrate",
+      "options": [
+        {
+          "label": "A",
+          "text": "the process of specialisation and professionalisation"
+        },
+        {
+          "label": "B",
+          "text": "the hardship of amateurs in scientific study"
+        },
+        {
+          "label": "C",
+          "text": "the change of policies in scientific publications"
+        },
+        {
+          "label": "D",
+          "text": "the discrimination of professionals against amateurs"
+        }
+      ],
+      "answer": "B",
+      "explanation": "",
+      "id": "english1-2001-023",
+      "subject": "english1",
+      "year": "2001",
+      "source": "src_5774b8fc2a1529ce29db2bfe-2001年考研英语真题英一二通用.pdf",
+      "tags": ["english1", "2001真题"],
+      "sourceEvidenceId": "src_5774b8fc2a1529ce29db2bfe",
+      "questionTextHash": "sha256:9d79ce8b76b658014d90bfc7bbeefcb6c559e3629d4d1d8bf29b8ac454733182",
+      "sourceEvidence": {
+        "evidenceId": "src_5774b8fc2a1529ce29db2bfe",
+        "sourceId": "src_5774b8fc2a1529ce29db2bfe",
+        "sourceType": "official_paper",
+        "contentHash": "226db7a20ja6081d6f36f37bc3d8601d",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语二考研历年真题/2001年考研英语真题（英一二通用） .pdf",
+        "questionTextHash": "sha256:9d79ce8b76b658014d90bfc7bbeefcb6c559e3629d4d1d8bf29b8ac454733182",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerEvidenceStatus": "matched",
+      "answerEvidenceSourceId": "src_2113b58b7372cae094b1427e",
+      "answerTextHash": "sha256:df7e70e5021544f4834bbee64a9e3789febc4be81470df629cad6ddb03320a5c",
+      "answerEvidence": {
+        "status": "candidate_matched",
+        "sourceId": "src_2113b58b7372cae094b1427e",
+        "sourceCardId": "english-2001-023",
+        "sourceFilePath": "data/flashcards/english-2001.json",
+        "answerTextHash": "sha256:df7e70e5021544f4834bbee64a9e3789febc4be81470df629cad6ddb03320a5c",
+        "method": "year_number_companion_cleaned_json",
+        "verifiedAt": "",
+        "verifiedBy": "",
+        "note": "Candidate answer repaired from a cleaned companion answer file; not publishable until verified."
+      }
+    },
+    {
+      "number": 24,
+      "type": "single_choice",
+      "question": "The direct reason for specialisation is",
+      "options": [
+        {
+          "label": "A",
+          "text": "the development in communication"
+        },
+        {
+          "label": "B",
+          "text": "the growth of professionalisation"
+        },
+        {
+          "label": "C",
+          "text": "the expansion of scientific knowledge"
+        },
+        {
+          "label": "D",
+          "text": "the splitting up of academic societies"
+        }
+      ],
+      "answer": "A",
+      "explanation": "",
+      "id": "english1-2001-024",
+      "subject": "english1",
+      "year": "2001",
+      "source": "src_5774b8fc2a1529ce29db2bfe-2001年考研英语真题英一二通用.pdf",
+      "tags": ["english1", "2001真题"],
+      "sourceEvidenceId": "src_5774b8fc2a1529ce29db2bfe",
+      "questionTextHash": "sha256:0db817bbfb7f80ec9f2b3aac1312d72023484492e879856ab091d31a674215ba",
+      "sourceEvidence": {
+        "evidenceId": "src_5774b8fc2a1529ce29db2bfe",
+        "sourceId": "src_5774b8fc2a1529ce29db2bfe",
+        "sourceType": "official_paper",
+        "contentHash": "226db7a20ja6081d6f36f37bc3d8601d",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语二考研历年真题/2001年考研英语真题（英一二通用） .pdf",
+        "questionTextHash": "sha256:0db817bbfb7f80ec9f2b3aac1312d72023484492e879856ab091d31a674215ba",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerEvidenceStatus": "matched",
+      "answerEvidenceSourceId": "src_2113b58b7372cae094b1427e",
+      "answerTextHash": "sha256:559aead08264d5795d3909718cdd05abd49572e84fe55590eef31a88a08fdffd",
+      "answerEvidence": {
+        "status": "candidate_matched",
+        "sourceId": "src_2113b58b7372cae094b1427e",
+        "sourceCardId": "english-2001-024",
+        "sourceFilePath": "data/flashcards/english-2001.json",
+        "answerTextHash": "sha256:559aead08264d5795d3909718cdd05abd49572e84fe55590eef31a88a08fdffd",
+        "method": "year_number_companion_cleaned_json",
+        "verifiedAt": "",
+        "verifiedBy": "",
+        "note": "Candidate answer repaired from a cleaned companion answer file; not publishable until verified."
+      }
+    },
+    {
+      "number": 25,
+      "type": "single_choice",
+      "question": "Digital divide is something",
+      "options": [
+        {
+          "label": "A",
+          "text": "getting worse because of the Internet"
+        },
+        {
+          "label": "B",
+          "text": "the rich countries are responsible for"
+        },
+        {
+          "label": "C",
+          "text": "the world must guard against"
+        },
+        {
+          "label": "D",
+          "text": "considered positive today"
+        }
+      ],
+      "answer": "C",
+      "explanation": "",
+      "id": "english1-2001-025",
+      "subject": "english1",
+      "year": "2001",
+      "source": "src_5774b8fc2a1529ce29db2bfe-2001年考研英语真题英一二通用.pdf",
+      "tags": ["english1", "2001真题"],
+      "sourceEvidenceId": "src_5774b8fc2a1529ce29db2bfe",
+      "questionTextHash": "sha256:3e702ca3487985b0f33f8d20c3ed0405d31b6059b8e12a763d57a2b6ddd567a8",
+      "sourceEvidence": {
+        "evidenceId": "src_5774b8fc2a1529ce29db2bfe",
+        "sourceId": "src_5774b8fc2a1529ce29db2bfe",
+        "sourceType": "official_paper",
+        "contentHash": "226db7a20ja6081d6f36f37bc3d8601d",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语二考研历年真题/2001年考研英语真题（英一二通用） .pdf",
+        "questionTextHash": "sha256:3e702ca3487985b0f33f8d20c3ed0405d31b6059b8e12a763d57a2b6ddd567a8",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerEvidenceStatus": "matched",
+      "answerEvidenceSourceId": "src_2113b58b7372cae094b1427e",
+      "answerTextHash": "sha256:6b23c0d5f35d1b11f9b683f0b0a617355deb11277d91ae091d399c655b87940d",
+      "answerEvidence": {
+        "status": "candidate_matched",
+        "sourceId": "src_2113b58b7372cae094b1427e",
+        "sourceCardId": "english-2001-025",
+        "sourceFilePath": "data/flashcards/english-2001.json",
+        "answerTextHash": "sha256:6b23c0d5f35d1b11f9b683f0b0a617355deb11277d91ae091d399c655b87940d",
+        "method": "year_number_companion_cleaned_json",
+        "verifiedAt": "",
+        "verifiedBy": "",
+        "note": "Candidate answer repaired from a cleaned companion answer file; not publishable until verified."
+      }
+    },
+    {
+      "number": 26,
+      "type": "single_choice",
+      "question": "Governments attach importance to the Internet because it",
+      "options": [
+        {
+          "label": "A",
+          "text": "offers economic potentials"
+        },
+        {
+          "label": "B",
+          "text": "can bring foreign funds"
+        },
+        {
+          "label": "C",
+          "text": "can soon wipe out world poverty"
+        },
+        {
+          "label": "D",
+          "text": "connects people all over the world"
+        }
+      ],
+      "answer": "A",
+      "explanation": "",
+      "id": "english1-2001-026",
+      "subject": "english1",
+      "year": "2001",
+      "source": "src_5774b8fc2a1529ce29db2bfe-2001年考研英语真题英一二通用.pdf",
+      "tags": ["english1", "2001真题"],
+      "sourceEvidenceId": "src_5774b8fc2a1529ce29db2bfe",
+      "questionTextHash": "sha256:d90e625338c86270cfec6df7294267a75f12ec522bfd3d3ecea0e5dc61e6da7d",
+      "sourceEvidence": {
+        "evidenceId": "src_5774b8fc2a1529ce29db2bfe",
+        "sourceId": "src_5774b8fc2a1529ce29db2bfe",
+        "sourceType": "official_paper",
+        "contentHash": "226db7a20ja6081d6f36f37bc3d8601d",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语二考研历年真题/2001年考研英语真题（英一二通用） .pdf",
+        "questionTextHash": "sha256:d90e625338c86270cfec6df7294267a75f12ec522bfd3d3ecea0e5dc61e6da7d",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerEvidenceStatus": "matched",
+      "answerEvidenceSourceId": "src_2113b58b7372cae094b1427e",
+      "answerTextHash": "sha256:559aead08264d5795d3909718cdd05abd49572e84fe55590eef31a88a08fdffd",
+      "answerEvidence": {
+        "status": "candidate_matched",
+        "sourceId": "src_2113b58b7372cae094b1427e",
+        "sourceCardId": "english-2001-026",
+        "sourceFilePath": "data/flashcards/english-2001.json",
+        "answerTextHash": "sha256:559aead08264d5795d3909718cdd05abd49572e84fe55590eef31a88a08fdffd",
+        "method": "year_number_companion_cleaned_json",
+        "verifiedAt": "",
+        "verifiedBy": "",
+        "note": "Candidate answer repaired from a cleaned companion answer file; not publishable until verified."
+      }
+    },
+    {
+      "number": 27,
+      "type": "single_choice",
+      "question": "The writer mentioned the case of the United States to justify the policy of",
+      "options": [
+        {
+          "label": "A",
+          "text": "providing financial support overseas"
+        },
+        {
+          "label": "B",
+          "text": "preventing foreign capital’s control"
+        },
+        {
+          "label": "C",
+          "text": "building industrial infrastructure"
+        },
+        {
+          "label": "D",
+          "text": "accepting foreign investment"
+        }
+      ],
+      "answer": "D",
+      "explanation": "",
+      "id": "english1-2001-027",
+      "subject": "english1",
+      "year": "2001",
+      "source": "src_5774b8fc2a1529ce29db2bfe-2001年考研英语真题英一二通用.pdf",
+      "tags": ["english1", "2001真题"],
+      "sourceEvidenceId": "src_5774b8fc2a1529ce29db2bfe",
+      "questionTextHash": "sha256:66ad1711341297aa0ef7e970f1e94d4d2866b3e6ff11fe45803daf6c7b42db53",
+      "sourceEvidence": {
+        "evidenceId": "src_5774b8fc2a1529ce29db2bfe",
+        "sourceId": "src_5774b8fc2a1529ce29db2bfe",
+        "sourceType": "official_paper",
+        "contentHash": "226db7a20ja6081d6f36f37bc3d8601d",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语二考研历年真题/2001年考研英语真题（英一二通用） .pdf",
+        "questionTextHash": "sha256:66ad1711341297aa0ef7e970f1e94d4d2866b3e6ff11fe45803daf6c7b42db53",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerEvidenceStatus": "matched",
+      "answerEvidenceSourceId": "src_2113b58b7372cae094b1427e",
+      "answerTextHash": "sha256:3f39d5c348e5b79d06e842c114e6cc571583bbf44e4b0ebfda1a01ec05745d43",
+      "answerEvidence": {
+        "status": "candidate_matched",
+        "sourceId": "src_2113b58b7372cae094b1427e",
+        "sourceCardId": "english-2001-027",
+        "sourceFilePath": "data/flashcards/english-2001.json",
+        "answerTextHash": "sha256:3f39d5c348e5b79d06e842c114e6cc571583bbf44e4b0ebfda1a01ec05745d43",
+        "method": "year_number_companion_cleaned_json",
+        "verifiedAt": "",
+        "verifiedBy": "",
+        "note": "Candidate answer repaired from a cleaned companion answer file; not publishable until verified."
+      }
+    },
+    {
+      "number": 28,
+      "type": "single_choice",
+      "question": "It seems that now a country's economy depends much on",
+      "options": [
+        {
+          "label": "A",
+          "text": "how well-developed it is electronically"
+        },
+        {
+          "label": "B",
+          "text": "whether it is prejudiced against immigrants"
+        },
+        {
+          "label": "C",
+          "text": "whether it adopts America's industrial pattern"
+        },
+        {
+          "label": "D",
+          "text": "how much control it has over foreign corporations"
+        }
+      ],
+      "answer": "B",
+      "explanation": "",
+      "id": "english1-2001-028",
+      "subject": "english1",
+      "year": "2001",
+      "source": "src_5774b8fc2a1529ce29db2bfe-2001年考研英语真题英一二通用.pdf",
+      "tags": ["english1", "2001真题"],
+      "sourceEvidenceId": "src_5774b8fc2a1529ce29db2bfe",
+      "questionTextHash": "sha256:09b9176c78907e20b7eac574bf6ca1e75b6856f051a6ee352e4e729cf70edaf8",
+      "sourceEvidence": {
+        "evidenceId": "src_5774b8fc2a1529ce29db2bfe",
+        "sourceId": "src_5774b8fc2a1529ce29db2bfe",
+        "sourceType": "official_paper",
+        "contentHash": "226db7a20ja6081d6f36f37bc3d8601d",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语二考研历年真题/2001年考研英语真题（英一二通用） .pdf",
+        "questionTextHash": "sha256:09b9176c78907e20b7eac574bf6ca1e75b6856f051a6ee352e4e729cf70edaf8",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerEvidenceStatus": "matched",
+      "answerEvidenceSourceId": "src_2113b58b7372cae094b1427e",
+      "answerTextHash": "sha256:df7e70e5021544f4834bbee64a9e3789febc4be81470df629cad6ddb03320a5c",
+      "answerEvidence": {
+        "status": "candidate_matched",
+        "sourceId": "src_2113b58b7372cae094b1427e",
+        "sourceCardId": "english-2001-028",
+        "sourceFilePath": "data/flashcards/english-2001.json",
+        "answerTextHash": "sha256:df7e70e5021544f4834bbee64a9e3789febc4be81470df629cad6ddb03320a5c",
+        "method": "year_number_companion_cleaned_json",
+        "verifiedAt": "",
+        "verifiedBy": "",
+        "note": "Candidate answer repaired from a cleaned companion answer file; not publishable until verified."
+      }
+    },
+    {
+      "number": 29,
+      "type": "single_choice",
+      "question": "What is the passage mainly about?",
+      "options": [
+        {
+          "label": "A",
+          "text": "needs of the readers all over the world"
+        },
+        {
+          "label": "B",
+          "text": "causes of the public disappointment about newspapers"
+        },
+        {
+          "label": "C",
+          "text": "origins of the declining newspaper industry"
+        },
+        {
+          "label": "D",
+          "text": "aims of a journalism credibility project"
+        }
+      ],
+      "answer": "D",
+      "explanation": "",
+      "id": "english1-2001-029",
+      "subject": "english1",
+      "year": "2001",
+      "source": "src_5774b8fc2a1529ce29db2bfe-2001年考研英语真题英一二通用.pdf",
+      "tags": ["english1", "2001真题"],
+      "sourceEvidenceId": "src_5774b8fc2a1529ce29db2bfe",
+      "questionTextHash": "sha256:80c1ab3f28108040bbbb675ee65217a9d4b5b992d828f28dfac367deddc6ec9b",
+      "sourceEvidence": {
+        "evidenceId": "src_5774b8fc2a1529ce29db2bfe",
+        "sourceId": "src_5774b8fc2a1529ce29db2bfe",
+        "sourceType": "official_paper",
+        "contentHash": "226db7a20ja6081d6f36f37bc3d8601d",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语二考研历年真题/2001年考研英语真题（英一二通用） .pdf",
+        "questionTextHash": "sha256:80c1ab3f28108040bbbb675ee65217a9d4b5b992d828f28dfac367deddc6ec9b",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerEvidenceStatus": "matched",
+      "answerEvidenceSourceId": "src_2113b58b7372cae094b1427e",
+      "answerTextHash": "sha256:3f39d5c348e5b79d06e842c114e6cc571583bbf44e4b0ebfda1a01ec05745d43",
+      "answerEvidence": {
+        "status": "candidate_matched",
+        "sourceId": "src_2113b58b7372cae094b1427e",
+        "sourceCardId": "english-2001-029",
+        "sourceFilePath": "data/flashcards/english-2001.json",
+        "answerTextHash": "sha256:3f39d5c348e5b79d06e842c114e6cc571583bbf44e4b0ebfda1a01ec05745d43",
+        "method": "year_number_companion_cleaned_json",
+        "verifiedAt": "",
+        "verifiedBy": "",
+        "note": "Candidate answer repaired from a cleaned companion answer file; not publishable until verified."
+      }
+    },
+    {
+      "number": 30,
+      "type": "single_choice",
+      "question": "The results of the journalism credibility project turned out to be",
+      "options": [
+        {
+          "label": "A",
+          "text": "quite trustworthy"
+        },
+        {
+          "label": "B",
+          "text": "somewhat contradictory"
+        },
+        {
+          "label": "C",
+          "text": "very illuminating"
+        },
+        {
+          "label": "D",
+          "text": "rather superficial"
+        }
+      ],
+      "answer": "B",
+      "explanation": "",
+      "id": "english1-2001-030",
+      "subject": "english1",
+      "year": "2001",
+      "source": "src_5774b8fc2a1529ce29db2bfe-2001年考研英语真题英一二通用.pdf",
+      "tags": ["english1", "2001真题"],
+      "sourceEvidenceId": "src_5774b8fc2a1529ce29db2bfe",
+      "questionTextHash": "sha256:79f37451050cf6026649a1b30ca07cd5a5177ce705422273f8a04115f016d9dc",
+      "sourceEvidence": {
+        "evidenceId": "src_5774b8fc2a1529ce29db2bfe",
+        "sourceId": "src_5774b8fc2a1529ce29db2bfe",
+        "sourceType": "official_paper",
+        "contentHash": "226db7a20ja6081d6f36f37bc3d8601d",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语二考研历年真题/2001年考研英语真题（英一二通用） .pdf",
+        "questionTextHash": "sha256:79f37451050cf6026649a1b30ca07cd5a5177ce705422273f8a04115f016d9dc",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerEvidenceStatus": "matched",
+      "answerEvidenceSourceId": "src_2113b58b7372cae094b1427e",
+      "answerTextHash": "sha256:df7e70e5021544f4834bbee64a9e3789febc4be81470df629cad6ddb03320a5c",
+      "answerEvidence": {
+        "status": "candidate_matched",
+        "sourceId": "src_2113b58b7372cae094b1427e",
+        "sourceCardId": "english-2001-030",
+        "sourceFilePath": "data/flashcards/english-2001.json",
+        "answerTextHash": "sha256:df7e70e5021544f4834bbee64a9e3789febc4be81470df629cad6ddb03320a5c",
+        "method": "year_number_companion_cleaned_json",
+        "verifiedAt": "",
+        "verifiedBy": "",
+        "note": "Candidate answer repaired from a cleaned companion answer file; not publishable until verified."
+      }
+    },
+    {
+      "number": 31,
+      "type": "single_choice",
+      "question": "The basic problem of journalists as pointed out by the writer lies in their",
+      "options": [
+        {
+          "label": "A",
+          "text": "working attitude"
+        },
+        {
+          "label": "B",
+          "text": "conventional lifestyle"
+        },
+        {
+          "label": "C",
+          "text": "world outlook"
+        },
+        {
+          "label": "D",
+          "text": "educational background"
+        }
+      ],
+      "answer": "A",
+      "explanation": "",
+      "id": "english1-2001-031",
+      "subject": "english1",
+      "year": "2001",
+      "source": "src_5774b8fc2a1529ce29db2bfe-2001年考研英语真题英一二通用.pdf",
+      "tags": ["english1", "2001真题"],
+      "sourceEvidenceId": "src_5774b8fc2a1529ce29db2bfe",
+      "questionTextHash": "sha256:fef310fe9f03a6ffc4d60a3c6fdd61a849e76aa2d175e70e7ef11651705eda8a",
+      "sourceEvidence": {
+        "evidenceId": "src_5774b8fc2a1529ce29db2bfe",
+        "sourceId": "src_5774b8fc2a1529ce29db2bfe",
+        "sourceType": "official_paper",
+        "contentHash": "226db7a20ja6081d6f36f37bc3d8601d",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语二考研历年真题/2001年考研英语真题（英一二通用） .pdf",
+        "questionTextHash": "sha256:fef310fe9f03a6ffc4d60a3c6fdd61a849e76aa2d175e70e7ef11651705eda8a",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerEvidenceStatus": "matched",
+      "answerEvidenceSourceId": "src_2113b58b7372cae094b1427e",
+      "answerTextHash": "sha256:559aead08264d5795d3909718cdd05abd49572e84fe55590eef31a88a08fdffd",
+      "answerEvidence": {
+        "status": "candidate_matched",
+        "sourceId": "src_2113b58b7372cae094b1427e",
+        "sourceCardId": "english-2001-031",
+        "sourceFilePath": "data/flashcards/english-2001.json",
+        "answerTextHash": "sha256:559aead08264d5795d3909718cdd05abd49572e84fe55590eef31a88a08fdffd",
+        "method": "year_number_companion_cleaned_json",
+        "verifiedAt": "",
+        "verifiedBy": "",
+        "note": "Candidate answer repaired from a cleaned companion answer file; not publishable until verified."
+      }
+    },
+    {
+      "number": 32,
+      "type": "single_choice",
+      "question": "Despite its efforts, the newspaper industry still cannot satisfy the readers owing to its",
+      "options": [
+        {
+          "label": "A",
+          "text": "failure to realize its real problem"
+        },
+        {
+          "label": "B",
+          "text": "tendency to hire annoying reporters"
+        },
+        {
+          "label": "C",
+          "text": "likeness to do inaccurate reporting"
+        },
+        {
+          "label": "D",
+          "text": "prejudice in matters of race and gender"
+        }
+      ],
+      "answer": "A",
+      "explanation": "",
+      "id": "english1-2001-032",
+      "subject": "english1",
+      "year": "2001",
+      "source": "src_5774b8fc2a1529ce29db2bfe-2001年考研英语真题英一二通用.pdf",
+      "tags": ["english1", "2001真题"],
+      "sourceEvidenceId": "src_5774b8fc2a1529ce29db2bfe",
+      "questionTextHash": "sha256:7bf523ce585be5a26c6d656b4eec19f926f384295dd2e70c1b3206669bc653a4",
+      "sourceEvidence": {
+        "evidenceId": "src_5774b8fc2a1529ce29db2bfe",
+        "sourceId": "src_5774b8fc2a1529ce29db2bfe",
+        "sourceType": "official_paper",
+        "contentHash": "226db7a20ja6081d6f36f37bc3d8601d",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语二考研历年真题/2001年考研英语真题（英一二通用） .pdf",
+        "questionTextHash": "sha256:7bf523ce585be5a26c6d656b4eec19f926f384295dd2e70c1b3206669bc653a4",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerTextHash": "sha256:559aead08264d5795d3909718cdd05abd49572e84fe55590eef31a88a08fdffd",
+      "answerEvidenceStatus": "matched"
+    },
+    {
+      "number": 33,
+      "type": "single_choice",
+      "question": "What is the typical trend of businesses today?",
+      "options": [
+        {
+          "label": "A",
+          "text": "to take in more foreign funds"
+        },
+        {
+          "label": "B",
+          "text": "to invest more abroad"
+        },
+        {
+          "label": "C",
+          "text": "to combine and become bigger"
+        },
+        {
+          "label": "D",
+          "text": "to trade with more countries"
+        }
+      ],
+      "answer": "C",
+      "explanation": "",
+      "id": "english1-2001-033",
+      "subject": "english1",
+      "year": "2001",
+      "source": "src_5774b8fc2a1529ce29db2bfe-2001年考研英语真题英一二通用.pdf",
+      "tags": ["english1", "2001真题"],
+      "sourceEvidenceId": "src_5774b8fc2a1529ce29db2bfe",
+      "questionTextHash": "sha256:d6413d5fde48eded8f26afa9293d9e50e02ea56bd371914940c4ea0c82425f02",
+      "sourceEvidence": {
+        "evidenceId": "src_5774b8fc2a1529ce29db2bfe",
+        "sourceId": "src_5774b8fc2a1529ce29db2bfe",
+        "sourceType": "official_paper",
+        "contentHash": "226db7a20ja6081d6f36f37bc3d8601d",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语二考研历年真题/2001年考研英语真题（英一二通用） .pdf",
+        "questionTextHash": "sha256:d6413d5fde48eded8f26afa9293d9e50e02ea56bd371914940c4ea0c82425f02",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerTextHash": "sha256:6b23c0d5f35d1b11f9b683f0b0a617355deb11277d91ae091d399c655b87940d",
+      "answerEvidenceStatus": "matched"
+    },
+    {
+      "number": 34,
+      "type": "single_choice",
+      "question": "According to the author, one of the driving forces behind M&A wave is",
+      "options": [
+        {
+          "label": "A",
+          "text": "the greater customer demands"
+        },
+        {
+          "label": "B",
+          "text": "a surplus supply for the market"
+        },
+        {
+          "label": "C",
+          "text": "a growing productivity"
+        },
+        {
+          "label": "D",
+          "text": "the increase of the world's wealth"
+        }
+      ],
+      "answer": "A",
+      "explanation": "",
+      "id": "english1-2001-034",
+      "subject": "english1",
+      "year": "2001",
+      "source": "src_5774b8fc2a1529ce29db2bfe-2001年考研英语真题英一二通用.pdf",
+      "tags": ["english1", "2001真题"],
+      "sourceEvidenceId": "src_5774b8fc2a1529ce29db2bfe",
+      "questionTextHash": "sha256:6be19fb04b5542edc45b2c4074800db41cf286fe2a6f9e06e376ea67e0d237bc",
+      "sourceEvidence": {
+        "evidenceId": "src_5774b8fc2a1529ce29db2bfe",
+        "sourceId": "src_5774b8fc2a1529ce29db2bfe",
+        "sourceType": "official_paper",
+        "contentHash": "226db7a20ja6081d6f36f37bc3d8601d",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语二考研历年真题/2001年考研英语真题（英一二通用） .pdf",
+        "questionTextHash": "sha256:6be19fb04b5542edc45b2c4074800db41cf286fe2a6f9e06e376ea67e0d237bc",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerTextHash": "sha256:559aead08264d5795d3909718cdd05abd49572e84fe55590eef31a88a08fdffd",
+      "answerEvidenceStatus": "matched"
+    },
+    {
+      "number": 35,
+      "type": "single_choice",
+      "question": "From paragraph 4 we can infer that",
+      "options": [
+        {
+          "label": "A",
+          "text": "the increasing concentration is certain to hurt consumers"
+        },
+        {
+          "label": "B",
+          "text": "WorldCom serves as a good example of both benefits and costs"
+        },
+        {
+          "label": "C",
+          "text": "the costs of the globalization process are enormous"
+        },
+        {
+          "label": "D",
+          "text": "the Standard Oil trust might have threatened competition"
+        }
+      ],
+      "answer": "D",
+      "explanation": "",
+      "id": "english1-2001-035",
+      "subject": "english1",
+      "year": "2001",
+      "source": "src_5774b8fc2a1529ce29db2bfe-2001年考研英语真题英一二通用.pdf",
+      "tags": ["english1", "2001真题"],
+      "sourceEvidenceId": "src_5774b8fc2a1529ce29db2bfe",
+      "questionTextHash": "sha256:2168d78035ab3bc06c52df0cb20653df13d545b2fec5d1ca78542d8f6b4315d7",
+      "sourceEvidence": {
+        "evidenceId": "src_5774b8fc2a1529ce29db2bfe",
+        "sourceId": "src_5774b8fc2a1529ce29db2bfe",
+        "sourceType": "official_paper",
+        "contentHash": "226db7a20ja6081d6f36f37bc3d8601d",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语二考研历年真题/2001年考研英语真题（英一二通用） .pdf",
+        "questionTextHash": "sha256:2168d78035ab3bc06c52df0cb20653df13d545b2fec5d1ca78542d8f6b4315d7",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerTextHash": "sha256:3f39d5c348e5b79d06e842c114e6cc571583bbf44e4b0ebfda1a01ec05745d43",
+      "answerEvidenceStatus": "matched"
+    },
+    {
+      "number": 36,
+      "type": "single_choice",
+      "question": "Toward the new business wave, the writer's attitude can be said to be",
+      "options": [
+        {
+          "label": "A",
+          "text": "optimistic"
+        },
+        {
+          "label": "B",
+          "text": "objective"
+        },
+        {
+          "label": "C",
+          "text": "pessimistic"
+        },
+        {
+          "label": "D",
+          "text": "biased"
+        }
+      ],
+      "answer": "B",
+      "explanation": "",
+      "id": "english1-2001-036",
+      "subject": "english1",
+      "year": "2001",
+      "source": "src_5774b8fc2a1529ce29db2bfe-2001年考研英语真题英一二通用.pdf",
+      "tags": ["english1", "2001真题"],
+      "sourceEvidenceId": "src_5774b8fc2a1529ce29db2bfe",
+      "questionTextHash": "sha256:1ae9b19a5b3d7fe079687b7e3678efedf43366255c909f9ff15bd1bba4fb5213",
+      "sourceEvidence": {
+        "evidenceId": "src_5774b8fc2a1529ce29db2bfe",
+        "sourceId": "src_5774b8fc2a1529ce29db2bfe",
+        "sourceType": "official_paper",
+        "contentHash": "226db7a20ja6081d6f36f37bc3d8601d",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语二考研历年真题/2001年考研英语真题（英一二通用） .pdf",
+        "questionTextHash": "sha256:1ae9b19a5b3d7fe079687b7e3678efedf43366255c909f9ff15bd1bba4fb5213",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerTextHash": "sha256:df7e70e5021544f4834bbee64a9e3789febc4be81470df629cad6ddb03320a5c",
+      "answerEvidenceStatus": "matched"
+    },
+    {
+      "number": 37,
+      "type": "single_choice",
+      "question": "Which of the following is true according to paragraph 1？",
+      "options": [
+        {
+          "label": "A",
+          "text": "Full-time employment is a new international trend."
+        },
+        {
+          "label": "B",
+          "text": "The writer was compelled by circumstances to leave her job."
+        },
+        {
+          "label": "C",
+          "text": "“A lateral move” means stepping out of full-time employment."
+        },
+        {
+          "label": "D",
+          "text": "The writer was only too eager to spend more time with her family."
+        }
+      ],
+      "answer": "B",
+      "explanation": "",
+      "id": "english1-2001-037",
+      "subject": "english1",
+      "year": "2001",
+      "source": "src_5774b8fc2a1529ce29db2bfe-2001年考研英语真题英一二通用.pdf",
+      "tags": ["english1", "2001真题"],
+      "sourceEvidenceId": "src_5774b8fc2a1529ce29db2bfe",
+      "questionTextHash": "sha256:ef530ea734a967200d85e38f53276912b055e2a77b349c8a8ffc0ac2d7a35e43",
+      "sourceEvidence": {
+        "evidenceId": "src_5774b8fc2a1529ce29db2bfe",
+        "sourceId": "src_5774b8fc2a1529ce29db2bfe",
+        "sourceType": "official_paper",
+        "contentHash": "226db7a20ja6081d6f36f37bc3d8601d",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语二考研历年真题/2001年考研英语真题（英一二通用） .pdf",
+        "questionTextHash": "sha256:ef530ea734a967200d85e38f53276912b055e2a77b349c8a8ffc0ac2d7a35e43",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerTextHash": "sha256:df7e70e5021544f4834bbee64a9e3789febc4be81470df629cad6ddb03320a5c",
+      "answerEvidenceStatus": "matched"
+    },
+    {
+      "number": 38,
+      "type": "single_choice",
+      "question": "The writer's experiment shows that downshifting",
+      "options": [
+        {
+          "label": "A",
+          "text": "enables her to realize her dream"
+        },
+        {
+          "label": "B",
+          "text": "helps her mold a new philosophy of life"
+        },
+        {
+          "label": "C",
+          "text": "prompts her to abandon her high social status"
+        },
+        {
+          "label": "D",
+          "text": "leads her to accept the doctrine of She magazine"
+        }
+      ],
+      "answer": "B",
+      "explanation": "",
+      "id": "english1-2001-038",
+      "subject": "english1",
+      "year": "2001",
+      "source": "src_5774b8fc2a1529ce29db2bfe-2001年考研英语真题英一二通用.pdf",
+      "tags": ["english1", "2001真题"],
+      "sourceEvidenceId": "src_5774b8fc2a1529ce29db2bfe",
+      "questionTextHash": "sha256:210bfa9c6df580f5fe1b4fc3a78ab8d34789d6363104a494a9cb737841eaf6ab",
+      "sourceEvidence": {
+        "evidenceId": "src_5774b8fc2a1529ce29db2bfe",
+        "sourceId": "src_5774b8fc2a1529ce29db2bfe",
+        "sourceType": "official_paper",
+        "contentHash": "226db7a20ja6081d6f36f37bc3d8601d",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语二考研历年真题/2001年考研英语真题（英一二通用） .pdf",
+        "questionTextHash": "sha256:210bfa9c6df580f5fe1b4fc3a78ab8d34789d6363104a494a9cb737841eaf6ab",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerTextHash": "sha256:df7e70e5021544f4834bbee64a9e3789febc4be81470df629cad6ddb03320a5c",
+      "answerEvidenceStatus": "matched"
+    },
+    {
+      "number": 39,
+      "type": "single_choice",
+      "question": "“Juggling one's life\" probably means living a life characterized by",
+      "options": [
+        {
+          "label": "A",
+          "text": "non-materialistic lifestyle"
+        },
+        {
+          "label": "B",
+          "text": "a bit of everything"
+        },
+        {
+          "label": "C",
+          "text": "extreme stress"
+        },
+        {
+          "label": "D",
+          "text": "anti-consumerism"
+        }
+      ],
+      "answer": "C",
+      "explanation": "",
+      "id": "english1-2001-039",
+      "subject": "english1",
+      "year": "2001",
+      "source": "src_5774b8fc2a1529ce29db2bfe-2001年考研英语真题英一二通用.pdf",
+      "tags": ["english1", "2001真题"],
+      "sourceEvidenceId": "src_5774b8fc2a1529ce29db2bfe",
+      "questionTextHash": "sha256:8ff3a7c33a79ca34c506fee7e2d9c19515a2ce85fe574c8070452d4481b5cb0d",
+      "sourceEvidence": {
+        "evidenceId": "src_5774b8fc2a1529ce29db2bfe",
+        "sourceId": "src_5774b8fc2a1529ce29db2bfe",
+        "sourceType": "official_paper",
+        "contentHash": "226db7a20ja6081d6f36f37bc3d8601d",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语二考研历年真题/2001年考研英语真题（英一二通用） .pdf",
+        "questionTextHash": "sha256:8ff3a7c33a79ca34c506fee7e2d9c19515a2ce85fe574c8070452d4481b5cb0d",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerTextHash": "sha256:6b23c0d5f35d1b11f9b683f0b0a617355deb11277d91ae091d399c655b87940d",
+      "answerEvidenceStatus": "matched"
+    },
+    {
+      "number": 40,
+      "type": "single_choice",
+      "question": "According to the passage, downshifting emerged in the U.S. as a result of",
+      "options": [
+        {
+          "label": "A",
+          "text": "the quick pace of modern life"
+        },
+        {
+          "label": "B",
+          "text": "man's adventurous spirit"
+        },
+        {
+          "label": "C",
+          "text": "man's search for mythical experiences"
+        },
+        {
+          "label": "D",
+          "text": "the economic situation"
+        }
+      ],
+      "answer": "D",
+      "explanation": "",
+      "id": "english1-2001-040",
+      "subject": "english1",
+      "year": "2001",
+      "source": "src_5774b8fc2a1529ce29db2bfe-2001年考研英语真题英一二通用.pdf",
+      "tags": ["english1", "2001真题"],
+      "sourceEvidenceId": "src_5774b8fc2a1529ce29db2bfe",
+      "questionTextHash": "sha256:762017fd050bbc0f1dc1ab327bcd042540266f555e229e042eaa441ea23cfdf0",
+      "sourceEvidence": {
+        "evidenceId": "src_5774b8fc2a1529ce29db2bfe",
+        "sourceId": "src_5774b8fc2a1529ce29db2bfe",
+        "sourceType": "official_paper",
+        "contentHash": "226db7a20ja6081d6f36f37bc3d8601d",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语二考研历年真题/2001年考研英语真题（英一二通用） .pdf",
+        "questionTextHash": "sha256:762017fd050bbc0f1dc1ab327bcd042540266f555e229e042eaa441ea23cfdf0",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerTextHash": "sha256:3f39d5c348e5b79d06e842c114e6cc571583bbf44e4b0ebfda1a01ec05745d43",
+      "answerEvidenceStatus": "matched"
+    },
+    {
+      "number": 41,
+      "type": "analysis",
+      "question": "There will be television chat shows hosted by robots, and cars with pollution monitors that will disable them when they offend.",
+      "options": [],
+      "answer": "届时将有机器人主持的电视谈话节目，汽车上装有污染监测器，一旦违规就会被禁用。",
+      "explanation": "",
+      "id": "english1-2001-041",
+      "subject": "english1",
+      "year": "2001",
+      "source": "src_5774b8fc2a1529ce29db2bfe-2001年考研英语真题英一二通用.pdf",
+      "tags": ["english1", "2001真题"],
+      "sourceEvidenceId": "src_5774b8fc2a1529ce29db2bfe",
+      "questionTextHash": "sha256:4a9d33ccad4949f1048b1d21e6561752659446466ae8d6c8e24e7f0d38a10f43",
+      "sourceEvidence": {
+        "evidenceId": "src_5774b8fc2a1529ce29db2bfe",
+        "sourceId": "src_5774b8fc2a1529ce29db2bfe",
+        "sourceType": "official_paper",
+        "contentHash": "226db7a20ja6081d6f36f37bc3d8601d",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语二考研历年真题/2001年考研英语真题（英一二通用） .pdf",
+        "questionTextHash": "sha256:4a9d33ccad4949f1048b1d21e6561752659446466ae8d6c8e24e7f0d38a10f43",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerTextHash": "sha256:6c7c1b53fd1681f6c744546432d1a5e076f92499fa3c61af7123fb6be168ae0b",
+      "answerEvidenceStatus": "matched"
+    },
+    {
+      "number": 42,
+      "type": "analysis",
+      "question": "Children will play with dolls equipped with personality chips，computers with in-built personalities will be regarded as workmates rather than tools, relaxation will be in front of smell-television, and digital age will have arrived.",
+      "options": [],
+      "answer": "孩子们将玩带有性格芯片的娃娃，具有内置个性的计算机将被视为同事而非工具，人们将在气味电视前放松，数字时代将会到来。",
+      "explanation": "",
+      "id": "english1-2001-042",
+      "subject": "english1",
+      "year": "2001",
+      "source": "src_5774b8fc2a1529ce29db2bfe-2001年考研英语真题英一二通用.pdf",
+      "tags": ["english1", "2001真题"],
+      "sourceEvidenceId": "src_5774b8fc2a1529ce29db2bfe",
+      "questionTextHash": "sha256:a7fa9cad74a65c9bae1874a84bf106d767163555919844ceb71cbf826c1820a3",
+      "sourceEvidence": {
+        "evidenceId": "src_5774b8fc2a1529ce29db2bfe",
+        "sourceId": "src_5774b8fc2a1529ce29db2bfe",
+        "sourceType": "official_paper",
+        "contentHash": "226db7a20ja6081d6f36f37bc3d8601d",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语二考研历年真题/2001年考研英语真题（英一二通用） .pdf",
+        "questionTextHash": "sha256:a7fa9cad74a65c9bae1874a84bf106d767163555919844ceb71cbf826c1820a3",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerTextHash": "sha256:3162485a4c3747bb283d65104c80fb14472b036c4cd2f0c74a807b903e8a5711",
+      "answerEvidenceStatus": "matched"
+    },
+    {
+      "number": 43,
+      "type": "analysis",
+      "question": "Pearson has pieced together the work of hundreds of researchers around the world to produce a unique millennium technology calendar that gives the latest dates when we can expect hundreds of key breakthroughs and discoveries to take place.",
+      "options": [],
+      "answer": "皮尔森汇集了世界各地数百名研究者的工作成果，制作了一份独特的千年技术日历，其中标明了我们能期待数百项关键突破和发现发生的最新日期。",
+      "explanation": "",
+      "id": "english1-2001-043",
+      "subject": "english1",
+      "year": "2001",
+      "source": "src_5774b8fc2a1529ce29db2bfe-2001年考研英语真题英一二通用.pdf",
+      "tags": ["english1", "2001真题"],
+      "sourceEvidenceId": "src_5774b8fc2a1529ce29db2bfe",
+      "questionTextHash": "sha256:7dcdda8def32c4d1e1068845603190dd0e4413e45ab7103ace0f8fb7bad66621",
+      "sourceEvidence": {
+        "evidenceId": "src_5774b8fc2a1529ce29db2bfe",
+        "sourceId": "src_5774b8fc2a1529ce29db2bfe",
+        "sourceType": "official_paper",
+        "contentHash": "226db7a20ja6081d6f36f37bc3d8601d",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语二考研历年真题/2001年考研英语真题（英一二通用） .pdf",
+        "questionTextHash": "sha256:7dcdda8def32c4d1e1068845603190dd0e4413e45ab7103ace0f8fb7bad66621",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerTextHash": "sha256:3b967794477deea52ba91ad4a81720c2eda3117da79da236355fdded6060c04e",
+      "answerEvidenceStatus": "matched"
+    },
+    {
+      "number": 44,
+      "type": "analysis",
+      "question": "But that,Pearson points out,is only the start of man-machine integration： “It will be the beginning of the long process of integration that will ultimately lead to a fully electronic human before the end of the next century. ”",
+      "options": [],
+      "answer": "但皮尔森指出，那仅仅是人机结合的开始：“这将是一个漫长整合过程的开端，最终将在下个世纪末之前实现完全电子化的人类。”",
+      "explanation": "",
+      "id": "english1-2001-044",
+      "subject": "english1",
+      "year": "2001",
+      "source": "src_5774b8fc2a1529ce29db2bfe-2001年考研英语真题英一二通用.pdf",
+      "tags": ["english1", "2001真题"],
+      "sourceEvidenceId": "src_5774b8fc2a1529ce29db2bfe",
+      "questionTextHash": "sha256:8faf61eace024dce7b5b66833cf44d2ce1a82b5da7fe46d2cab6f09ec872f675",
+      "sourceEvidence": {
+        "evidenceId": "src_5774b8fc2a1529ce29db2bfe",
+        "sourceId": "src_5774b8fc2a1529ce29db2bfe",
+        "sourceType": "official_paper",
+        "contentHash": "226db7a20ja6081d6f36f37bc3d8601d",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语二考研历年真题/2001年考研英语真题（英一二通用） .pdf",
+        "questionTextHash": "sha256:8faf61eace024dce7b5b66833cf44d2ce1a82b5da7fe46d2cab6f09ec872f675",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerTextHash": "sha256:99d4669a4c13af573a12704562bf502e0add8ada86bfa789406621fe91a2a141",
+      "answerEvidenceStatus": "matched"
+    },
+    {
+      "number": 45,
+      "type": "analysis",
+      "question": "And home appliances will also become so smart that controlling and operating them will result in the breakout of a new psychological disorder—kitchen rage.",
+      "options": [],
+      "answer": "家用电器也将变得非常智能，以至于控制和操作它们将导致一种新的心理疾病——厨房愤怒症——的爆发。",
+      "explanation": "",
+      "id": "english1-2001-045",
+      "subject": "english1",
+      "year": "2001",
+      "source": "src_5774b8fc2a1529ce29db2bfe-2001年考研英语真题英一二通用.pdf",
+      "tags": ["english1", "2001真题"],
+      "sourceEvidenceId": "src_5774b8fc2a1529ce29db2bfe",
+      "questionTextHash": "sha256:3cb88e88b776662fcc2fc1d58965e5f8c4eef09204e210296c7ce94cb13bc8b1",
+      "sourceEvidence": {
+        "evidenceId": "src_5774b8fc2a1529ce29db2bfe",
+        "sourceId": "src_5774b8fc2a1529ce29db2bfe",
+        "sourceType": "official_paper",
+        "contentHash": "226db7a20ja6081d6f36f37bc3d8601d",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语二考研历年真题/2001年考研英语真题（英一二通用） .pdf",
+        "questionTextHash": "sha256:3cb88e88b776662fcc2fc1d58965e5f8c4eef09204e210296c7ce94cb13bc8b1",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerTextHash": "sha256:57865a449100953c982698281c8ea693a30e12a7d4cb10d756745a4dc1abcef1",
+      "answerEvidenceStatus": "matched"
+    },
+    {
+      "number": 46,
+      "type": "analysis",
+      "question": "Among all the worthy feelings of mankind, love is probably the noblest, but everyone has his/ her own understanding of it. Write an essay to the newspaper to 1） show your understanding of the symbolic meaning of the picture below， 2）give a specific example, and 3） give your suggestion as to the best way to show love.",
+      "options": [],
+      "answer": "There has been a discussion recently on the issue in a newspaper.",
+      "explanation": "",
+      "id": "english1-2001-046",
+      "subject": "english1",
+      "year": "2001",
+      "source": "src_5774b8fc2a1529ce29db2bfe-2001年考研英语真题英一二通用.pdf",
+      "tags": ["english1", "2001真题"],
+      "sourceEvidenceId": "src_5774b8fc2a1529ce29db2bfe",
+      "questionTextHash": "sha256:8a19d38fcc3fa5ddf8d0240c6f51dcdbb2b700559d07370aa122a710a0fbd93b",
+      "sourceEvidence": {
+        "evidenceId": "src_5774b8fc2a1529ce29db2bfe",
+        "sourceId": "src_5774b8fc2a1529ce29db2bfe",
+        "sourceType": "official_paper",
+        "contentHash": "226db7a20ja6081d6f36f37bc3d8601d",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语二考研历年真题/2001年考研英语真题（英一二通用） .pdf",
+        "questionTextHash": "sha256:8a19d38fcc3fa5ddf8d0240c6f51dcdbb2b700559d07370aa122a710a0fbd93b",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerTextHash": "sha256:c810094cb6fb745be9c16560f29bf3386b03e61d85a32fa1f3865372d2fc2926",
+      "answerEvidenceStatus": "matched"
+    }
+  ],
+  "answerEvidenceRepairedAt": "2026-05-01T00:44:35Z"
+}

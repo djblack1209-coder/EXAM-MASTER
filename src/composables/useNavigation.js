@@ -8,7 +8,6 @@ import { safeNavigateTo } from '@/utils/safe-navigate';
 import { vibrateLight } from '@/utils/helpers/haptic.js';
 import { logger } from '@/utils/logger.js';
 import { requireLogin } from '@/utils/auth/loginGuard.js';
-import { startGuestDemoPractice } from '@/utils/practice/demo-bank.js';
 
 export function useNavigation() {
   const isNavigating = ref(false);
@@ -97,7 +96,7 @@ export function useNavigation() {
   }
 
   function handleQuickStart() {
-    startGuestDemoPractice({ destination: 'practice' });
+    safeNavigateTo('/pages/practice-sub/question-bank');
   }
 
   function handleTutorial() {

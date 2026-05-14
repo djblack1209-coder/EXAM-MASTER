@@ -134,6 +134,17 @@
               </view>
             </view>
           </view>
+          <view v-if="currentQuestionPassage" class="q-passage-card">
+            <view class="q-passage-head">
+              <text class="q-passage-kicker">{{ currentQuestion.section || '阅读材料' }}</text>
+              <text v-if="currentQuestion.paperName || currentQuestion.year" class="q-passage-meta">
+                {{ currentQuestion.paperName || `${currentQuestion.year}年真题` }}
+              </text>
+            </view>
+            <scroll-view scroll-y class="q-passage-scroll">
+              <RichText class="q-passage-content" :content="currentQuestionPassage" />
+            </scroll-view>
+          </view>
           <RichText class="q-content" :content="currentQuestion.question" />
           <!-- combo ≥5 火焰特效：题目右上角缩放+淡出 -->
           <image
@@ -249,7 +260,7 @@
         </view>
       </view>
 
-      <!-- ✅ [体感革命] XP飞入动画 -->
+      <!-- XP 飞入动画 -->
       <view v-if="showXpToast" class="xp-flyout" @animationend="showXpToast = false">
         <!-- XP金币特效 -->
         <image class="xp-coins-icon" src="./static/effects/xp-coins.png" mode="aspectFit" alt="" />
@@ -319,28 +330,6 @@
         <text class="status-title">
           {{ resultStatus === 'correct' ? '回答正确' : '再想想' }}
         </text>
-      </view>
-
-      <view
-        v-if="lastKnowledgeFeedback"
-        class="knowledge-feedback-card"
-        hover-class="knowledge-feedback-hover"
-        @tap.stop="goKnowledgeLink"
-      >
-        <view class="knowledge-feedback-main">
-          <text class="knowledge-feedback-kicker">知识定位</text>
-          <text class="knowledge-feedback-title">{{ lastKnowledgeFeedback.label }}</text>
-          <text class="knowledge-feedback-desc">{{ lastKnowledgeFeedback.summary }}</text>
-          <text v-if="lastKnowledgeFeedback.chainText" class="knowledge-feedback-chain">
-            {{ lastKnowledgeFeedback.chainText }}
-          </text>
-        </view>
-        <view class="knowledge-feedback-side">
-          <view class="knowledge-state-dot" :style="{ background: lastKnowledgeFeedback.color }" />
-          <text class="knowledge-speed">{{ lastKnowledgeFeedback.speedScore }}</text>
-          <text class="knowledge-speed-label">速度分</text>
-          <text class="knowledge-link-label">查看链路</text>
-        </view>
       </view>
 
       <scroll-view v-if="resultStatus === 'wrong'" scroll-y class="ai-analysis-scroll">
@@ -519,8 +508,13 @@ import {
 } from './swipe-gesture.js';
 // ✅ 导入答题动画模块
 import { playCorrectAnimation, playWrongAnimation, getComboDisplay, resetAnimation } from './quiz-animation.js';
-// ✅ [体感革命] 完成fanfare音效
-import { playCompleteFanfare } from './utils/quiz-sound.js';
+import {
+  destroySoundResources,
+  playAchievementSound,
+  playClickSound,
+  playCompleteFanfare,
+  playFlipSound
+} from './utils/quiz-sound.js';
 // ✅ [上瘾引擎] XP/等级系统
 import { useXPSystem } from './composables/useXPSystem.js';
 // ✅ Phase 3-4: 卡片堆叠切换
@@ -555,8 +549,6 @@ import { useTypewriter } from './composables/useTypewriter.js';
 import { logger } from '@/utils/logger.js';
 
 import { useReviewStore } from '@/stores/modules/review.js';
-import { useLearningTrajectoryStore } from '@/stores/modules/learning-trajectory-store.js';
-import { getKnowledgeNodeTrail, KNOWLEDGE_NODES } from '@/config/knowledge-graph.js';
 import { safeNavigateTo, safeNavigateBack } from '@/utils/safe-navigate';
 import {
   calculateSpeedScore as calculateQuizSpeedScore,
@@ -586,7 +578,6 @@ import {
   hasQuizSelectableOptions,
   isCorrectQuizOption,
   isQuizFlashcardMode,
-  buildQuizKnowledgeFeedback,
   normalizeQuizQuestion,
   upsertQuizAnswerRecord
 } from '@/services/quiz-session-contract.js';
@@ -599,7 +590,9 @@ import {
 } from '@/services/fsrs-service.js';
 import { triggerOptimization } from './services/fsrs-optimizer-client.js';
 
-const KNOWLEDGE_NODE_BY_ID = new Map(KNOWLEDGE_NODES.map((item) => [item.id, item]));
+function normalizePracticeQuestion(q, index, options = {}) {
+  return normalizeQuizQuestion(q, index, options);
+}
 
 export default {
   components: {
@@ -619,9 +612,8 @@ export default {
     const engine = useQuizEngine({ smartPicker: true, adaptiveMode: true });
     const xpSystem = useXPSystem();
     const reviewStore = useReviewStore();
-    const learningTrajectoryStore = useLearningTrajectoryStore();
     return {
-      _engine: engine,
+      quizEngine: engine,
       engineGetOptionLabel: engine.getOptionLabel,
       engineIsCorrectOption: engine.isCorrectOption,
       // ✅ [上瘾引擎] XP系统
@@ -629,8 +621,7 @@ export default {
       xpCurrentLevel: xpSystem.currentLevel,
       xpLevelProgress: xpSystem.levelProgress,
       // ✅ reviewStore — 替代页面直接调用 lafService
-      reviewStore,
-      learningTrajectoryStore
+      reviewStore
     };
   },
   data() {
@@ -654,7 +645,6 @@ export default {
       showResult: false,
       resultStatus: '', // 'correct' or 'wrong'
       aiComment: '',
-      lastKnowledgeFeedback: null,
       personalHint: '', // 基于个人历史的AI微反馈
       showBreakReminder: false, // 休息提醒显示状态
       breakReminderShown: false, // 是否已提醒过（每次练习只提醒一次）
@@ -693,9 +683,9 @@ export default {
       showComboEffect: false, // 是否显示连击特效
       correctAnimationClass: '', // 正确答案动画类
       wrongAnimationClass: '', // 错误答案动画类
-      screenShake: false, // ✅ [体感革命] 屏幕微震
-      xpEarned: 0, // ✅ [体感革命] 本次获得的XP
-      showXpToast: false, // ✅ [体感革命] 是否显示XP飞入动画
+      screenShake: false,
+      xpEarned: 0,
+      showXpToast: false,
       xpBoostActive: false, // ✅ [上瘾引擎] 2x XP boost激活
       xpBoostRemaining: 0, // ✅ [上瘾引擎] boost剩余题数
       // ✅ P0-2: 粒子特效状态
@@ -747,6 +737,15 @@ export default {
         defaultQuestion: '题目加载中...',
         resolveEloRating: (question) => getQuestionEloRating(question, this.eloState.questionRatings)
       });
+    },
+    currentQuestionPassage() {
+      return (
+        this.currentQuestion?.passage ||
+        this.currentQuestion?.context ||
+        this.currentQuestion?.material ||
+        this.currentQuestion?.article ||
+        ''
+      );
     },
     // 是否为闪卡模式（分析题或经典闪卡，无选项可选）
     isFlashcardMode() {
@@ -883,6 +882,7 @@ export default {
 
     // ✅ 重置答题动画状态
     resetAnimation();
+    destroySoundResources();
   },
 
   // ✅ P0-3: 页面隐藏时也保存进度（应对小程序被杀死的情况）
@@ -955,7 +955,6 @@ export default {
         this.hasAnswered = false;
         this.userChoice = null;
         this.showResult = false;
-        this.lastKnowledgeFeedback = null;
 
         logger.log('[do-quiz] ✅ 进度已恢复:', {
           currentIndex: this.currentIndex,
@@ -1030,19 +1029,19 @@ export default {
         const singleQ = storageService.get('temp_practice_question', null);
         if (singleQ) {
           this.questions = [
-            {
-              id: singleQ.id || 'single_q',
-              question: singleQ.question,
-              options:
-                Array.isArray(singleQ.options) && singleQ.options.length >= 4
-                  ? singleQ.options
-                  : ['A. 选项A', 'B. 选项B', 'C. 选项C', 'D. 选项D'],
-              answer: (singleQ.answer || 'A').toString().toUpperCase().charAt(0),
-              desc: singleQ.desc || '暂无解析',
-              category: singleQ.category || '未分类',
-              type: '单选',
-              difficulty: 2
-            }
+            normalizePracticeQuestion(
+              {
+                ...singleQ,
+                id: singleQ.id || 'single_q',
+                question: singleQ.question,
+                desc: singleQ.desc || '暂无解析',
+                category: singleQ.category || '未分类',
+                type: singleQ.type || '单选',
+                difficulty: singleQ.difficulty || 2
+              },
+              0,
+              { fillMissingChoiceOptions: true }
+            )
           ];
           storageService.remove('temp_practice_question');
           this.startTimer();
@@ -1054,19 +1053,22 @@ export default {
       if (this.mode === 'temp_bank') {
         const tempQuestions = storageService.get('temp_practice_questions', []);
         if (tempQuestions.length > 0) {
-          this.questions = tempQuestions.map((q, index) => ({
-            id: q.id || `temp_${index}`,
-            question: q.question || '',
-            options: Array.isArray(q.options) && q.options.length >= 2 ? q.options : [],
-            answer: (q.answer || 'A').toString().toUpperCase().charAt(0),
-            desc: q.desc || '暂无解析',
-            category: q.category || '拍照搜题',
-            type: '单选',
-            difficulty: q.difficulty || 2,
-            source: q.source || 'temp',
-            knowledgeNodeIds: q.knowledgeNodeIds || q.knowledge_points || [],
-            knowledge_points: q.knowledge_points || q.knowledgeNodeIds || []
-          }));
+          this.questions = tempQuestions.map((q, index) =>
+            normalizePracticeQuestion(
+              {
+                ...q,
+                id: q.id || `temp_${index}`,
+                question: q.question || '',
+                desc: q.desc || '暂无解析',
+                category: q.category || '拍照搜题',
+                type: q.type || '单选',
+                difficulty: q.difficulty || 2,
+                source: q.source || 'temp'
+              },
+              index,
+              { fillMissingChoiceOptions: true }
+            )
+          );
           storageService.remove('temp_practice_questions');
           this.startTimer();
           return;
@@ -1081,23 +1083,22 @@ export default {
           const reviewQuestions = reviewIds
             .map((id) => bank.find((q) => (q.id || q._id) === id))
             .filter(Boolean)
-            .map((q, index) => ({
-              id: q.id || q._id || `review_${index}`,
-              question: q.question || q.title || `题目 ${index + 1}`,
-              options:
-                Array.isArray(q.options) && q.options.length >= 4
-                  ? q.options
-                  : ['A. 选项A', 'B. 选项B', 'C. 选项C', 'D. 选项D'],
-              answer: (q.answer || 'A').toString().toUpperCase().charAt(0),
-              desc: q.desc || q.description || q.explanation || q.analysis || '暂无解析',
-              category: q.category || '未分类',
-              type: q.type || '单选',
-              difficulty: q.difficulty || 2,
-              source: q.source || '',
-              year: q.year || '',
-              knowledgeNodeIds: q.knowledgeNodeIds || q.knowledge_points || [],
-              knowledge_points: q.knowledge_points || q.knowledgeNodeIds || []
-            }));
+            .map((q, index) =>
+              normalizePracticeQuestion(
+                {
+                  ...q,
+                  id: q.id || q._id || `review_${index}`,
+                  question: q.question || q.title || `题目 ${index + 1}`,
+                  desc: q.desc || q.description || q.explanation || q.analysis || '暂无解析',
+                  category: q.category || '未分类',
+                  type: q.type || '单选',
+                  difficulty: q.difficulty || 2,
+                  source: q.source || '',
+                  year: q.year || ''
+                },
+                index
+              )
+            );
           if (reviewQuestions.length > 0) {
             this.questions = reviewQuestions;
             uni.removeStorageSync('smart_review_ids');
@@ -1120,23 +1121,22 @@ export default {
 
       // 验证并标准化题目数据
       let questions = bank
-        .map((q, index) => ({
-          id: q.id || `q_${index}`,
-          question: q.question || q.title || `题目 ${index + 1}`,
-          options:
-            Array.isArray(q.options) && q.options.length >= 4
-              ? q.options
-              : ['A. 选项A', 'B. 选项B', 'C. 选项C', 'D. 选项D'],
-          answer: (q.answer || 'A').toString().toUpperCase().charAt(0),
-          desc: q.desc || q.description || q.explanation || q.analysis || '暂无解析',
-          category: q.category || '未分类',
-          type: q.type || '单选',
-          difficulty: q.difficulty || 2,
-          source: q.source || '',
-          year: q.year || '',
-          knowledgeNodeIds: q.knowledgeNodeIds || q.knowledge_points || [],
-          knowledge_points: q.knowledge_points || q.knowledgeNodeIds || []
-        }))
+        .map((q, index) =>
+          normalizePracticeQuestion(
+            {
+              ...q,
+              id: q.id || `q_${index}`,
+              question: q.question || q.title || `题目 ${index + 1}`,
+              desc: q.desc || q.description || q.explanation || q.analysis || '暂无解析',
+              category: q.category || '未分类',
+              type: q.type || '单选',
+              difficulty: q.difficulty || 2,
+              source: q.source || '',
+              year: q.year || ''
+            },
+            index
+          )
+        )
         .filter((q) => q.question && !/^题目 \d+$/.test(q.question)); // 过滤无效占位题目
 
       // ✅ 使用智能组题算法优化题目序列（懒加载）
@@ -1213,6 +1213,7 @@ export default {
     async selectOption(idx) {
       if (this.isAnalyzing || this.showResult || this.hasAnswered) return;
 
+      playClickSound();
       this.userChoice = idx;
       this.hasAnswered = true;
 
@@ -1250,7 +1251,6 @@ export default {
           elo
         })
       );
-      this.recordKnowledgeAttempt(isCorrect, timeSpent, { speedScore, elo });
 
       // ✅ 记录答题数据到各个分析模块
       this.recordAnswerToAnalytics(isCorrect, timeSpent).catch((_err) => {
@@ -1263,15 +1263,6 @@ export default {
       if (isCorrect) {
         // ✅ 播放正确答案动画
         this.playCorrectEffect();
-
-        // 正确时：震动反馈
-        try {
-          if (typeof uni.vibrateShort === 'function') {
-            uni.vibrateShort();
-          }
-        } catch (e) {
-          logger.warn('Vibrate feedback failed on correct answer', e);
-        }
 
         // ✅ 延迟解锁防重复点击（300ms后允许再次点击）
         this._safeTimeout(() => {
@@ -1439,14 +1430,7 @@ export default {
         })
       );
 
-      // 震动反馈
-      try {
-        if (typeof uni.vibrateShort === 'function') {
-          uni.vibrateShort();
-        }
-      } catch (_e) {
-        // silent
-      }
+      playFlipSound();
     },
     // 经典闪卡：自评后进入下一题
     rateFlashcardAndNext(rating) {
@@ -1475,7 +1459,6 @@ export default {
 
       // 更新学习统计
       this.updateStudyStats();
-      this.recordKnowledgeAttempt(rating >= 3, timeSpent, { rating });
 
       // 游戏化反馈：评分 ≥ 3 视为"记得"，给予正面反馈
       if (rating >= 3) {
@@ -1511,6 +1494,7 @@ export default {
       }
 
       if (this.currentIndex < this.questions.length - 1) {
+        playClickSound();
         // ✅ 检查点 5.3: 检查是否需要插入复习题
         if (this.isAdaptiveMode) {
           const recommendation = getNextRecommendedQuestion(this.currentIndex, this.questions);
@@ -1529,7 +1513,6 @@ export default {
         this.userChoice = null;
         this.showResult = false;
         this.aiComment = '';
-        this.lastKnowledgeFeedback = null;
         // 重置闪卡翻转状态
         this.flashcardFlipped = false;
         this.flashcardFsrsPreview = null;
@@ -1539,15 +1522,6 @@ export default {
 
         // ✅ P0-3: 进入下一题时保存进度
         this.saveCurrentProgress();
-
-        // 震动反馈
-        try {
-          if (typeof uni.vibrateShort === 'function') {
-            uni.vibrateShort();
-          }
-        } catch (e) {
-          logger.warn('Vibrate feedback failed on next question', e);
-        }
 
         // ✅ 延迟解锁防重复点击（300ms后允许再次点击）
         this._safeTimeout(() => {
@@ -1576,7 +1550,6 @@ export default {
             this.showXpToast = false;
           }, 2000);
         }
-        // ✅ [体感革命] 完成fanfare + confetti
         playCompleteFanfare();
         // canvas-confetti removed for MVP (reduces bundle ~50KB)
         this.autoDiagnose();
@@ -1901,7 +1874,6 @@ export default {
       this.userChoice = null;
       this.showResult = false;
       this.aiComment = '';
-      this.lastKnowledgeFeedback = null;
       this.answerStartTime = Date.now();
       this.correctAnimationClass = '';
       this.wrongAnimationClass = '';
@@ -1924,14 +1896,7 @@ export default {
       const result = await favoriteStore.toggleFavorite(this.currentQuestion);
       this.isCurrentFavorited = result.isFavorited;
 
-      // 震动反馈
-      try {
-        if (typeof uni.vibrateShort === 'function') {
-          uni.vibrateShort({ type: 'light' });
-        }
-      } catch {
-        /* ignore */
-      }
+      playClickSound();
 
       logger.log('[do-quiz] ✅ 收藏状态切换:', result);
     },
@@ -1991,6 +1956,7 @@ export default {
         // ✅ [上瘾引擎] 升级提示
         if (xpResult.levelUp && xpResult.newLevel) {
           this._safeTimeout(() => {
+            playAchievementSound();
             toast.info(`升级！${xpResult.newLevel.title}`, 2500);
             this.showLevelUp = true;
             this._safeTimeout(() => {
@@ -2025,13 +1991,13 @@ export default {
       }
     },
 
-    // ✅ [体感革命] 播放错误答案动画 — 屏幕微震+红色脉冲
+    // 播放错误答案动画
     playWrongEffect() {
       const animData = playWrongAnimation();
       if (animData) {
         this.wrongAnimationClass = 'quiz-wrong-animation';
 
-        // ✅ [体感革命] 屏幕微震效果
+        // 屏幕微震效果
         this.screenShake = true;
         this._safeTimeout(() => {
           this.screenShake = false;
@@ -2112,39 +2078,6 @@ export default {
         }
       }
     },
-    recordKnowledgeAttempt(isCorrect, timeSpent, extra = {}) {
-      try {
-        if (!this.learningTrajectoryStore || !this.currentQuestion) return;
-        const activity = this.learningTrajectoryStore.recordQuestionAttempt(this.currentQuestion, {
-          isCorrect,
-          timeSpent,
-          sessionId: this.sessionId,
-          mode: this.practiceMode || this.mode || 'practice',
-          ...extra
-        });
-        this.lastKnowledgeFeedback = this.buildKnowledgeFeedback(activity, isCorrect, timeSpent);
-      } catch (err) {
-        logger.warn('[do-quiz] 知识神经状态记录失败:', err);
-      }
-    },
-
-    buildKnowledgeFeedback(activity, isCorrect, timeSpent) {
-      const nodeId = activity?.nodeIds?.[0] || '';
-      const node = KNOWLEDGE_NODE_BY_ID.get(nodeId);
-      const trail = nodeId ? getKnowledgeNodeTrail(nodeId) : [];
-      const visual = nodeId
-        ? this.learningTrajectoryStore.getNodeVisualState(nodeId)
-        : { state: 'unknown', color: '#DDE8DD', mastery: 0 };
-      return buildQuizKnowledgeFeedback({
-        activity,
-        question: this.currentQuestion,
-        node,
-        trail,
-        visual,
-        speedScore: this.calculateSpeedScore(isCorrect, timeSpent)
-      });
-    },
-
     calculateSpeedScore(isCorrect, timeSpent) {
       return calculateQuizSpeedScore({
         isCorrect,
@@ -2179,23 +2112,6 @@ export default {
       }
       saveEloState(storageService, this.eloState);
       return result;
-    },
-
-    goKnowledgeLink() {
-      if (!this.lastKnowledgeFeedback?.nodeId) {
-        toast.info('本题暂未定位到具体知识链路');
-        return;
-      }
-      storageService.save('practice_focus_knowledge_node', {
-        nodeId: this.lastKnowledgeFeedback.nodeId,
-        label: this.lastKnowledgeFeedback.label,
-        tracks: this.lastKnowledgeFeedback.tracks || [],
-        trail: this.lastKnowledgeFeedback.trail || [],
-        fromQuestionId: this.currentQuestion?.id || '',
-        savedAt: Date.now()
-      });
-      this.showResult = false;
-      safeNavigateTo('/pages/practice/index');
     },
 
     // ==================== 离线缓存相关方法 ====================
@@ -2648,6 +2564,46 @@ export default {
   display: block;
 }
 
+.q-passage-card {
+  margin-bottom: 24rpx;
+  padding: 24rpx;
+  border: 2rpx solid rgba(20, 32, 23, 0.08);
+  border-radius: 22rpx;
+  background: rgba(246, 248, 242, 0.92);
+}
+
+.q-passage-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16rpx;
+  margin-bottom: 14rpx;
+}
+
+.q-passage-kicker {
+  color: rgba(20, 32, 23, 0.58);
+  font-size: 21rpx;
+  font-weight: 900;
+}
+
+.q-passage-meta {
+  flex-shrink: 0;
+  color: rgba(20, 32, 23, 0.46);
+  font-size: 20rpx;
+  font-weight: 700;
+}
+
+.q-passage-scroll {
+  max-height: 420rpx;
+}
+
+.q-passage-content {
+  display: block;
+  color: rgba(20, 32, 23, 0.86);
+  font-size: 27rpx;
+  line-height: 1.68;
+}
+
 /* 选项列表 */
 .options-list {
   margin-top: 20rpx;
@@ -2712,77 +2668,6 @@ export default {
   font-size: 32rpx;
   color: var(--primary);
   flex-shrink: 0;
-}
-
-.knowledge-feedback-card {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: 20rpx;
-  padding: 24rpx 28rpx;
-  border-radius: 24rpx;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.96), rgba(244, 250, 239, 0.92));
-  box-shadow: 0 12rpx 32rpx rgba(20, 32, 23, 0.08);
-}
-
-.knowledge-feedback-main {
-  flex: 1;
-  min-width: 0;
-}
-
-.knowledge-feedback-kicker {
-  display: block;
-  color: rgba(20, 32, 23, 0.42);
-  font-size: 19rpx;
-  font-weight: 900;
-  letter-spacing: 1.4rpx;
-}
-
-.knowledge-feedback-title {
-  display: block;
-  margin-top: 8rpx;
-  color: #142017;
-  font-size: 30rpx;
-  font-weight: 850;
-  line-height: 1.25;
-}
-
-.knowledge-feedback-desc {
-  display: block;
-  margin-top: 8rpx;
-  color: rgba(20, 32, 23, 0.58);
-  font-size: 23rpx;
-  line-height: 1.42;
-}
-
-.knowledge-feedback-side {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  min-width: 104rpx;
-  margin-left: 18rpx;
-}
-
-.knowledge-state-dot {
-  width: 22rpx;
-  height: 22rpx;
-  border-radius: 50%;
-  box-shadow: 0 6rpx 14rpx rgba(20, 32, 23, 0.12);
-}
-
-.knowledge-speed {
-  margin-top: 10rpx;
-  color: #142017;
-  font-size: 36rpx;
-  font-weight: 900;
-  line-height: 1;
-}
-
-.knowledge-speed-label {
-  margin-top: 4rpx;
-  color: rgba(20, 32, 23, 0.48);
-  font-size: 20rpx;
-  font-weight: 700;
 }
 
 /* 智能反馈图层动画 */
@@ -3220,7 +3105,7 @@ export default {
   border-radius: 20rpx;
 }
 
-/* ==================== [体感革命] 屏幕微震 ==================== */
+/* ==================== 屏幕微震 ==================== */
 .screen-shake {
   animation: screenShake 0.4s ease-out;
 }
@@ -3253,7 +3138,7 @@ export default {
   }
 }
 
-/* ==================== [体感革命] XP飞入动画 ==================== */
+/* ==================== XP飞入动画 ==================== */
 .xp-flyout {
   position: fixed;
   top: 35%;

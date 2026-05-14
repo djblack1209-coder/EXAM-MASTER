@@ -7,15 +7,7 @@
  * 用法: node scripts/build/inject-mp-weixin-privacy.mjs
  * 或在 package.json 的 build:mp-weixin 后自动执行
  */
-import {
-  copyFileSync,
-  existsSync,
-  readFileSync,
-  readdirSync,
-  rmSync,
-  statSync,
-  writeFileSync
-} from 'fs';
+import { copyFileSync, existsSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from 'fs';
 import { dirname, extname, relative, resolve, sep } from 'path';
 import { fileURLToPath } from 'url';
 
@@ -23,17 +15,16 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const distRoot = resolve(__dirname, '../../dist/build/mp-weixin');
 const appJsonPath = resolve(distRoot, 'app.json');
 const wechatMediaBudgetBytes = 200 * 1024;
-const mediaExtensions = new Set([
-  '.png',
-  '.jpg',
-  '.jpeg',
-  '.gif',
-  '.webp',
-  '.svg',
-  '.mp3',
-  '.wav',
-  '.aac',
-  '.m4a'
+const mediaExtensions = new Set(['.png', '.jpg', '.jpeg', '.gif', '.webp', '.svg', '.mp3', '.wav', '.aac', '.m4a']);
+const runtimeLocalKeepFiles = new Set([
+  'static/images/default-avatar.png',
+  'static/images/logo.png',
+  'static/tabbar/home.png',
+  'static/tabbar/home-active.png',
+  'static/tabbar/practice.png',
+  'static/tabbar/practice-active.png',
+  'static/tabbar/profile.png',
+  'static/tabbar/profile-active.png'
 ]);
 
 function toPosixPath(filePath) {
@@ -71,13 +62,15 @@ function detectCdnEnabled() {
 }
 
 function buildLocalReferenceText() {
-  return walkFiles(distRoot)
-    .filter((filePath) => !isMediaFile(filePath))
-    // static-assets.js contains the CDN/local registry. It is not a local package reference
-    // when CDN is enabled, so keeping it in the scan would block pruning unused copies.
-    .filter((filePath) => toPosixPath(relative(distRoot, filePath)) !== 'config/static-assets.js')
-    .map((filePath) => readFileSync(filePath, 'utf-8'))
-    .join('\n');
+  return (
+    walkFiles(distRoot)
+      .filter((filePath) => !isMediaFile(filePath))
+      // static-assets.js contains the CDN/local registry. It is not a local package reference
+      // when CDN is enabled, so keeping it in the scan would block pruning unused copies.
+      .filter((filePath) => toPosixPath(relative(distRoot, filePath)) !== 'config/static-assets.js')
+      .map((filePath) => readFileSync(filePath, 'utf-8'))
+      .join('\n')
+  );
 }
 
 function hasLocalReference(referenceText, relativePath) {
@@ -96,9 +89,10 @@ function pruneUnusedMediaForWechatQuality() {
       continue;
     }
 
-    // Without CDN, config/static-assets.js may resolve /static/* paths at runtime.
-    // Keep those local copies in that mode even if they are not literal references.
-    if (!cdnEnabled && relativePath.startsWith('static/')) {
+    // Without CDN, keep only the small runtime assets that static-assets.js may
+    // resolve dynamically. Do not keep the whole static/ registry; most large
+    // assets are optional and should fall back to icon-only UI in mini programs.
+    if (!cdnEnabled && runtimeLocalKeepFiles.has(relativePath)) {
       continue;
     }
 
@@ -189,17 +183,14 @@ try {
       './utils/helpers/haptic.js',
       './utils/learning/adaptive-learning-engine.js',
       './utils/modal.js',
-      './utils/practice/demo-bank.js',
       './utils/quiz-elo.js',
-      './utils/security/sanitize.js',
+      './utils/security/sanitize.js'
     ];
     // 过滤掉不存在的文件
-    const validFiles = mainPkgSharedFiles.filter(f =>
-      existsSync(resolve(distRoot, f.replace('./', '')))
-    );
+    const validFiles = mainPkgSharedFiles.filter((f) => existsSync(resolve(distRoot, f.replace('./', ''))));
     if (validFiles.length > 0) {
       let appJs = readFileSync(appJsPath, 'utf-8');
-      const refs = validFiles.map(f => `require("${f}")`).join(';');
+      const refs = validFiles.map((f) => `require("${f}")`).join(';');
       // 无条件 require — 预加载主包公共模块，运行时实际执行
       appJs += `\n;${refs};`;
       writeFileSync(appJsPath, appJs, 'utf-8');

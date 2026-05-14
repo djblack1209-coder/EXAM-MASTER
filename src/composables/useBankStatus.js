@@ -44,7 +44,7 @@ export function useBankStatus() {
         if (bankFromUni.length > 0) {
           bank = bankFromUni;
         } else {
-          logger.warn('[刷题中心] 题库数据为空，尝试从备份恢复...');
+          logger.log('[刷题中心] 题库数据为空，尝试从备份恢复...');
           bank = _tryRestoreFromBackup() || [];
         }
       }
@@ -98,7 +98,7 @@ export function useBankStatus() {
       }
     }
 
-    logger.warn('[刷题中心] 所有备份都不可用');
+    logger.log('[刷题中心] 所有备份都不可用');
     return null;
   }
 

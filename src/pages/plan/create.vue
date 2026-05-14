@@ -143,8 +143,8 @@
               <text class="pill-btn" :class="{ active: plan.category === '政治' }" @tap="plan.category = '政治'">
                 政治
               </text>
-              <text class="pill-btn" :class="{ active: plan.category === '专业课' }" @tap="plan.category = '专业课'">
-                专业课
+              <text class="pill-btn" :class="{ active: plan.category === '数学' }" @tap="plan.category = '数学'">
+                数学
               </text>
               <text class="pill-btn" :class="{ active: plan.category === '综合' }" @tap="plan.category = '综合'">
                 综合

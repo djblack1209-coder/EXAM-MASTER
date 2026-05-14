@@ -9,6 +9,7 @@ import {
   hasQuizSelectableOptions,
   isCorrectQuizOption,
   isQuizFlashcardMode,
+  normalizeQuizAnswer,
   normalizeQuizQuestion,
   summarizeQuizProgress,
   upsertQuizAnswerRecord
@@ -46,6 +47,33 @@ describe('quiz session contract', () => {
     expect(question.options).toEqual([]);
   });
 
+  it('normalizes paper metadata and reading passage context for paper questions', () => {
+    const question = normalizeQuizQuestion(
+      {
+        id: 'english1-2025-text1-21',
+        question: 'What is the main idea of Text 1?',
+        passage: 'Text 1 full reading passage.',
+        answer: 'B',
+        paperId: 'english1-2025',
+        paperName: '2025考研英语一真题',
+        section: '阅读理解 Text 1',
+        groupId: 'text1'
+      },
+      0
+    );
+
+    expect(question).toMatchObject({
+      passage: 'Text 1 full reading passage.',
+      context: 'Text 1 full reading passage.',
+      material: 'Text 1 full reading passage.',
+      paperId: 'english1-2025',
+      paperName: '2025考研英语一真题',
+      section: '阅读理解 Text 1',
+      groupId: 'text1'
+    });
+  });
+
+
   it('normalizes choice questions and checks answers by stable option labels', () => {
     const question = normalizeQuizQuestion(
       {
@@ -64,6 +92,44 @@ describe('quiz session contract', () => {
     expect(getQuizOptionLabel({ options: ['B. Beta'] }, 0)).toBe('B');
     expect(isCorrectQuizOption(question, 2)).toBe(true);
     expect(isCorrectQuizOption(question, 1)).toBe(false);
+  });
+
+  it('preserves multi-choice answer labels while normalizing single-choice answers', () => {
+    expect(
+      normalizeQuizAnswer({
+        type: 'multi_choice',
+        answer: 'C A C',
+        options: ['A. Alpha', 'B. Beta', 'C. Gamma', 'D. Delta']
+      })
+    ).toBe('AC');
+    expect(
+      normalizeQuizQuestion(
+        {
+          id: 'multi_001',
+          question: 'Select all correct options',
+          type: 'multi_choice',
+          answer: 'AC',
+          options: ['A. Alpha', 'B. Beta', 'C. Gamma', 'D. Delta']
+        },
+        0
+      ).answer
+    ).toBe('AC');
+    expect(normalizeQuizAnswer({ type: 'single_choice', answer: 'C. Gamma' })).toBe('C');
+
+    const question = normalizeQuizQuestion(
+      {
+        id: 'multi_002',
+        question: 'Select all correct options',
+        type: 'multi_choice',
+        answer: 'CA',
+        options: ['A. Alpha', 'B. Beta', 'C. Gamma', 'D. Delta']
+      },
+      0
+    );
+    expect(question.answer).toBe('AC');
+    expect(isCorrectQuizOption(question, 0)).toBe(true);
+    expect(isCorrectQuizOption(question, 1)).toBe(false);
+    expect(isCorrectQuizOption(question, 2)).toBe(true);
   });
 
   it('builds and upserts answer records by question and index', () => {
@@ -186,6 +252,21 @@ describe('quiz session contract', () => {
     expect(getQuizQuestionTypeLabel(analysis)).toBe('分析题');
     expect(isQuizFlashcardMode(analysis)).toBe(true);
     expect(hasQuizSelectableOptions(analysis)).toBe(false);
+    const translation = normalizeQuizQuestion(
+      {
+        id: 'english1-2025-046',
+        question: 'Translate sentence 46 into Chinese.',
+        answer: '参考译文',
+        type: 'translation',
+        options: ['A. 不应显示']
+      },
+      2,
+      { fillMissingChoiceOptions: true }
+    );
+
+    expect(getQuizQuestionTypeLabel(translation)).toBe('翻译题');
+    expect(isQuizFlashcardMode(translation)).toBe(true);
+    expect(hasQuizSelectableOptions(translation)).toBe(false);
     expect(getQuizQuestionTypeLabel(choice)).toBe('多选题');
     expect(isQuizFlashcardMode(choice)).toBe(false);
     expect(hasQuizSelectableOptions(choice)).toBe(true);
@@ -231,7 +312,7 @@ describe('quiz session contract', () => {
         { id: 'english-reading-main-idea', label: '主旨题', type: 'knowledge', tracks: ['english'] }
       ],
       chainText: '英语 / 阅读理解 / 主旨题',
-      summary: '薄弱点，当前掌握 42%，已同步到首页图谱'
+      summary: '薄弱点，当前掌握 42%，已记录到复习计划'
     });
   });
 
@@ -252,7 +333,7 @@ describe('quiz session contract', () => {
       tracks: [],
       trail: [],
       chainText: '',
-      summary: '待点亮，当前掌握 0%，已同步到首页图谱'
+      summary: '待点亮，当前掌握 0%，已记录到复习计划'
     });
   });
 });

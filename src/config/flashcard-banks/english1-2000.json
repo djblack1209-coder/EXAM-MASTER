@@ -1,0 +1,1595 @@
+{
+  "source": "src_30316a7e74dd1d2afad4d268-2000年考研英语真题英一二通用.pdf",
+  "subject": "english",
+  "year": "2000",
+  "processed_at": "2026-04-30 17:13:49",
+  "total_cards": 36,
+  "cards": [
+    {
+      "number": 1,
+      "type": "single_choice",
+      "question": "If a farmer wishes to succeed, he must try to keep a wide gap between his consumption and his",
+      "options": [
+        {
+          "label": "A",
+          "text": "production"
+        },
+        {
+          "label": "B",
+          "text": "income"
+        },
+        {
+          "label": "C",
+          "text": "expenditure"
+        },
+        {
+          "label": "D",
+          "text": "savings"
+        }
+      ],
+      "answer": "A",
+      "explanation": "",
+      "id": "english-2000-001",
+      "subject": "english",
+      "year": "2000",
+      "source": "src_30316a7e74dd1d2afad4d268-2000年考研英语真题英一二通用.pdf",
+      "tags": ["english", "2000真题"],
+      "sourceEvidenceId": "src_30316a7e74dd1d2afad4d268",
+      "questionTextHash": "sha256:6884e62596bae2621fcca99d043ef329bc5f8b90c1f2ceacf3b32e637c941a6e",
+      "sourceEvidence": {
+        "evidenceId": "src_30316a7e74dd1d2afad4d268",
+        "sourceId": "src_30316a7e74dd1d2afad4d268",
+        "sourceType": "official_paper",
+        "contentHash": "740067bbfre2170ad221274061cb3002",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语一考研历年真题/2000年考研英语真题（英一二通用） .pdf",
+        "questionTextHash": "sha256:6884e62596bae2621fcca99d043ef329bc5f8b90c1f2ceacf3b32e637c941a6e",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerTextHash": "sha256:559aead08264d5795d3909718cdd05abd49572e84fe55590eef31a88a08fdffd",
+      "answerEvidenceStatus": "matched"
+    },
+    {
+      "number": 2,
+      "type": "single_choice",
+      "question": "He can continue to support himself and his family",
+      "options": [
+        {
+          "label": "A",
+          "text": "only if"
+        },
+        {
+          "label": "B",
+          "text": "unless"
+        },
+        {
+          "label": "C",
+          "text": "because"
+        },
+        {
+          "label": "D",
+          "text": "although"
+        }
+      ],
+      "answer": "A",
+      "explanation": "",
+      "id": "english-2000-002",
+      "subject": "english",
+      "year": "2000",
+      "source": "src_30316a7e74dd1d2afad4d268-2000年考研英语真题英一二通用.pdf",
+      "tags": ["english", "2000真题"],
+      "sourceEvidenceId": "src_30316a7e74dd1d2afad4d268",
+      "questionTextHash": "sha256:7c0e5fe3ce3c38707aba7613e6cea2a91d424cca9179c15e5ed8f50c38960430",
+      "sourceEvidence": {
+        "evidenceId": "src_30316a7e74dd1d2afad4d268",
+        "sourceId": "src_30316a7e74dd1d2afad4d268",
+        "sourceType": "official_paper",
+        "contentHash": "740067bbfre2170ad221274061cb3002",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语一考研历年真题/2000年考研英语真题（英一二通用） .pdf",
+        "questionTextHash": "sha256:7c0e5fe3ce3c38707aba7613e6cea2a91d424cca9179c15e5ed8f50c38960430",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerTextHash": "sha256:559aead08264d5795d3909718cdd05abd49572e84fe55590eef31a88a08fdffd",
+      "answerEvidenceStatus": "matched"
+    },
+    {
+      "number": 3,
+      "type": "single_choice",
+      "question": "He must use this surplus in three ways: as seed for sowing, as an insurance",
+      "options": [
+        {
+          "label": "A",
+          "text": "against"
+        },
+        {
+          "label": "B",
+          "text": "for"
+        },
+        {
+          "label": "C",
+          "text": "of"
+        },
+        {
+          "label": "D",
+          "text": "from"
+        }
+      ],
+      "answer": "A",
+      "explanation": "",
+      "id": "english-2000-003",
+      "subject": "english",
+      "year": "2000",
+      "source": "src_30316a7e74dd1d2afad4d268-2000年考研英语真题英一二通用.pdf",
+      "tags": ["english", "2000真题"],
+      "sourceEvidenceId": "src_30316a7e74dd1d2afad4d268",
+      "questionTextHash": "sha256:ab5807e4e35d4e5b13e60e094e39e95804fee242f1a0dd835219e4e361711a02",
+      "sourceEvidence": {
+        "evidenceId": "src_30316a7e74dd1d2afad4d268",
+        "sourceId": "src_30316a7e74dd1d2afad4d268",
+        "sourceType": "official_paper",
+        "contentHash": "740067bbfre2170ad221274061cb3002",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语一考研历年真题/2000年考研英语真题（英一二通用） .pdf",
+        "questionTextHash": "sha256:ab5807e4e35d4e5b13e60e094e39e95804fee242f1a0dd835219e4e361711a02",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerTextHash": "sha256:559aead08264d5795d3909718cdd05abd49572e84fe55590eef31a88a08fdffd",
+      "answerEvidenceStatus": "matched"
+    },
+    {
+      "number": 4,
+      "type": "single_choice",
+      "question": "He must use this surplus in three ways: ... and as a commodity which he must sell in order to",
+      "options": [
+        {
+          "label": "A",
+          "text": "replace"
+        },
+        {
+          "label": "B",
+          "text": "supplement"
+        },
+        {
+          "label": "C",
+          "text": "purchase"
+        },
+        {
+          "label": "D",
+          "text": "dispose"
+        }
+      ],
+      "answer": "C",
+      "explanation": "",
+      "id": "english-2000-004",
+      "subject": "english",
+      "year": "2000",
+      "source": "src_30316a7e74dd1d2afad4d268-2000年考研英语真题英一二通用.pdf",
+      "tags": ["english", "2000真题"],
+      "sourceEvidenceId": "src_30316a7e74dd1d2afad4d268",
+      "questionTextHash": "sha256:fb991aac11e5608c37ed12eb86f2a9defc7abd7df72a4d4649dfbfe989dd5d2a",
+      "sourceEvidence": {
+        "evidenceId": "src_30316a7e74dd1d2afad4d268",
+        "sourceId": "src_30316a7e74dd1d2afad4d268",
+        "sourceType": "official_paper",
+        "contentHash": "740067bbfre2170ad221274061cb3002",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语一考研历年真题/2000年考研英语真题（英一二通用） .pdf",
+        "questionTextHash": "sha256:fb991aac11e5608c37ed12eb86f2a9defc7abd7df72a4d4649dfbfe989dd5d2a",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerTextHash": "sha256:6b23c0d5f35d1b11f9b683f0b0a617355deb11277d91ae091d399c655b87940d",
+      "answerEvidenceStatus": "matched"
+    },
+    {
+      "number": 5,
+      "type": "single_choice",
+      "question": "He must use this surplus in three ways: ... and as a commodity which he must sell in order to ... and obtain chemical fertilizers to",
+      "options": [
+        {
+          "label": "A",
+          "text": "enhance"
+        },
+        {
+          "label": "B",
+          "text": "mix"
+        },
+        {
+          "label": "C",
+          "text": "feed"
+        },
+        {
+          "label": "D",
+          "text": "raise"
+        }
+      ],
+      "answer": "A",
+      "explanation": "",
+      "id": "english-2000-005",
+      "subject": "english",
+      "year": "2000",
+      "source": "src_30316a7e74dd1d2afad4d268-2000年考研英语真题英一二通用.pdf",
+      "tags": ["english", "2000真题"],
+      "sourceEvidenceId": "src_30316a7e74dd1d2afad4d268",
+      "questionTextHash": "sha256:456940f497b0389bb5b310dcc690ee31156a85855f570bc5db9f092e0340283f",
+      "sourceEvidence": {
+        "evidenceId": "src_30316a7e74dd1d2afad4d268",
+        "sourceId": "src_30316a7e74dd1d2afad4d268",
+        "sourceType": "official_paper",
+        "contentHash": "740067bbfre2170ad221274061cb3002",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语一考研历年真题/2000年考研英语真题（英一二通用） .pdf",
+        "questionTextHash": "sha256:456940f497b0389bb5b310dcc690ee31156a85855f570bc5db9f092e0340283f",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerTextHash": "sha256:559aead08264d5795d3909718cdd05abd49572e84fe55590eef31a88a08fdffd",
+      "answerEvidenceStatus": "matched"
+    },
+    {
+      "number": 6,
+      "type": "single_choice",
+      "question": "He may also need money to construct irrigation",
+      "options": [
+        {
+          "label": "A",
+          "text": "vessels"
+        },
+        {
+          "label": "B",
+          "text": "routes"
+        },
+        {
+          "label": "C",
+          "text": "paths"
+        },
+        {
+          "label": "D",
+          "text": "channels"
+        }
+      ],
+      "answer": "D",
+      "explanation": "",
+      "id": "english-2000-006",
+      "subject": "english",
+      "year": "2000",
+      "source": "src_30316a7e74dd1d2afad4d268-2000年考研英语真题英一二通用.pdf",
+      "tags": ["english", "2000真题"],
+      "sourceEvidenceId": "src_30316a7e74dd1d2afad4d268",
+      "questionTextHash": "sha256:c73a9a93939a431c1496926d793fb775c1d09409d83c84e28ca0136a110a80d9",
+      "sourceEvidence": {
+        "evidenceId": "src_30316a7e74dd1d2afad4d268",
+        "sourceId": "src_30316a7e74dd1d2afad4d268",
+        "sourceType": "official_paper",
+        "contentHash": "740067bbfre2170ad221274061cb3002",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语一考研历年真题/2000年考研英语真题（英一二通用） .pdf",
+        "questionTextHash": "sha256:c73a9a93939a431c1496926d793fb775c1d09409d83c84e28ca0136a110a80d9",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerTextHash": "sha256:3f39d5c348e5b79d06e842c114e6cc571583bbf44e4b0ebfda1a01ec05745d43",
+      "answerEvidenceStatus": "matched"
+    },
+    {
+      "number": 7,
+      "type": "single_choice",
+      "question": "If no surplus is available, a farmer cannot be",
+      "options": [
+        {
+          "label": "A",
+          "text": "self-confident"
+        },
+        {
+          "label": "B",
+          "text": "self-sufficient"
+        },
+        {
+          "label": "C",
+          "text": "self-restrained"
+        },
+        {
+          "label": "D",
+          "text": "self-satisfied"
+        }
+      ],
+      "answer": "B",
+      "explanation": "",
+      "id": "english-2000-007",
+      "subject": "english",
+      "year": "2000",
+      "source": "src_30316a7e74dd1d2afad4d268-2000年考研英语真题英一二通用.pdf",
+      "tags": ["english", "2000真题"],
+      "sourceEvidenceId": "src_30316a7e74dd1d2afad4d268",
+      "questionTextHash": "sha256:3f6c9ccfbb15ea6b21462ebf428be19a7a2a2092ec7b55eadbfdbf82cc2c00c0",
+      "sourceEvidence": {
+        "evidenceId": "src_30316a7e74dd1d2afad4d268",
+        "sourceId": "src_30316a7e74dd1d2afad4d268",
+        "sourceType": "official_paper",
+        "contentHash": "740067bbfre2170ad221274061cb3002",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语一考研历年真题/2000年考研英语真题（英一二通用） .pdf",
+        "questionTextHash": "sha256:3f6c9ccfbb15ea6b21462ebf428be19a7a2a2092ec7b55eadbfdbf82cc2c00c0",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerTextHash": "sha256:df7e70e5021544f4834bbee64a9e3789febc4be81470df629cad6ddb03320a5c",
+      "answerEvidenceStatus": "matched"
+    },
+    {
+      "number": 8,
+      "type": "single_choice",
+      "question": "He must either sell some of his property or",
+      "options": [
+        {
+          "label": "A",
+          "text": "search"
+        },
+        {
+          "label": "B",
+          "text": "seek"
+        },
+        {
+          "label": "C",
+          "text": "offer"
+        },
+        {
+          "label": "D",
+          "text": "save"
+        }
+      ],
+      "answer": "B",
+      "explanation": "",
+      "id": "english-2000-008",
+      "subject": "english",
+      "year": "2000",
+      "source": "src_30316a7e74dd1d2afad4d268-2000年考研英语真题英一二通用.pdf",
+      "tags": ["english", "2000真题"],
+      "sourceEvidenceId": "src_30316a7e74dd1d2afad4d268",
+      "questionTextHash": "sha256:eeb020172da44db3628a52edad0f1782685056faf3e36fb363f47002016725a6",
+      "sourceEvidence": {
+        "evidenceId": "src_30316a7e74dd1d2afad4d268",
+        "sourceId": "src_30316a7e74dd1d2afad4d268",
+        "sourceType": "official_paper",
+        "contentHash": "740067bbfre2170ad221274061cb3002",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语一考研历年真题/2000年考研英语真题（英一二通用） .pdf",
+        "questionTextHash": "sha256:eeb020172da44db3628a52edad0f1782685056faf3e36fb363f47002016725a6",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerTextHash": "sha256:df7e70e5021544f4834bbee64a9e3789febc4be81470df629cad6ddb03320a5c",
+      "answerEvidenceStatus": "matched"
+    },
+    {
+      "number": 9,
+      "type": "single_choice",
+      "question": "Naturally he will try to borrow money at a low",
+      "options": [
+        {
+          "label": "A",
+          "text": "proportion"
+        },
+        {
+          "label": "B",
+          "text": "percentage"
+        },
+        {
+          "label": "C",
+          "text": "rate"
+        },
+        {
+          "label": "D",
+          "text": "ratio"
+        }
+      ],
+      "answer": "C",
+      "explanation": "",
+      "id": "english-2000-009",
+      "subject": "english",
+      "year": "2000",
+      "source": "src_30316a7e74dd1d2afad4d268-2000年考研英语真题英一二通用.pdf",
+      "tags": ["english", "2000真题"],
+      "sourceEvidenceId": "src_30316a7e74dd1d2afad4d268",
+      "questionTextHash": "sha256:fd05cbe5b8afd7f15f2293d4275d7e40b8de008038eb9e21ab0f190d521700f4",
+      "sourceEvidence": {
+        "evidenceId": "src_30316a7e74dd1d2afad4d268",
+        "sourceId": "src_30316a7e74dd1d2afad4d268",
+        "sourceType": "official_paper",
+        "contentHash": "740067bbfre2170ad221274061cb3002",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语一考研历年真题/2000年考研英语真题（英一二通用） .pdf",
+        "questionTextHash": "sha256:fd05cbe5b8afd7f15f2293d4275d7e40b8de008038eb9e21ab0f190d521700f4",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerTextHash": "sha256:6b23c0d5f35d1b11f9b683f0b0a617355deb11277d91ae091d399c655b87940d",
+      "answerEvidenceStatus": "matched"
+    },
+    {
+      "number": 10,
+      "type": "single_choice",
+      "question": "Loans of this kind are not",
+      "options": [
+        {
+          "label": "A",
+          "text": "genuinely"
+        },
+        {
+          "label": "B",
+          "text": "obviously"
+        },
+        {
+          "label": "C",
+          "text": "presumably"
+        },
+        {
+          "label": "D",
+          "text": "frequently"
+        }
+      ],
+      "answer": "A",
+      "explanation": "",
+      "id": "english-2000-010",
+      "subject": "english",
+      "year": "2000",
+      "source": "src_30316a7e74dd1d2afad4d268-2000年考研英语真题英一二通用.pdf",
+      "tags": ["english", "2000真题"],
+      "sourceEvidenceId": "src_30316a7e74dd1d2afad4d268",
+      "questionTextHash": "sha256:4ee6fcac9ec4fd6c8fd771c1c2a542668ce21717959a04241b223c094f9ba212",
+      "sourceEvidence": {
+        "evidenceId": "src_30316a7e74dd1d2afad4d268",
+        "sourceId": "src_30316a7e74dd1d2afad4d268",
+        "sourceType": "official_paper",
+        "contentHash": "740067bbfre2170ad221274061cb3002",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语一考研历年真题/2000年考研英语真题（英一二通用） .pdf",
+        "questionTextHash": "sha256:4ee6fcac9ec4fd6c8fd771c1c2a542668ce21717959a04241b223c094f9ba212",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerTextHash": "sha256:559aead08264d5795d3909718cdd05abd49572e84fe55590eef31a88a08fdffd",
+      "answerEvidenceStatus": "matched"
+    },
+    {
+      "number": 11,
+      "type": "single_choice",
+      "question": "The U. S. achieved its predominance after World War II because",
+      "options": [
+        {
+          "label": "A",
+          "text": "it had made painstaking efforts towards this goal"
+        },
+        {
+          "label": "B",
+          "text": "its domestic market was eight times larger than before"
+        },
+        {
+          "label": "C",
+          "text": "the war had destroyed the economies of most potential competitors"
+        },
+        {
+          "label": "D",
+          "text": "the unparalleled size of its workforce had given an impetus to its economy"
+        }
+      ],
+      "answer": "A",
+      "explanation": "",
+      "id": "english-2000-011",
+      "subject": "english",
+      "year": "2000",
+      "source": "src_30316a7e74dd1d2afad4d268-2000年考研英语真题英一二通用.pdf",
+      "tags": ["english", "2000真题"],
+      "sourceEvidenceId": "src_30316a7e74dd1d2afad4d268",
+      "questionTextHash": "sha256:f14dcec8f9353f1f14efbb9863f3bfda7ab73e81ceae0225ae944768d9b2325b",
+      "sourceEvidence": {
+        "evidenceId": "src_30316a7e74dd1d2afad4d268",
+        "sourceId": "src_30316a7e74dd1d2afad4d268",
+        "sourceType": "official_paper",
+        "contentHash": "740067bbfre2170ad221274061cb3002",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语一考研历年真题/2000年考研英语真题（英一二通用） .pdf",
+        "questionTextHash": "sha256:f14dcec8f9353f1f14efbb9863f3bfda7ab73e81ceae0225ae944768d9b2325b",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerEvidenceStatus": "matched",
+      "answerEvidenceSourceId": "src_5fa7ab8f2474bff6b6619587",
+      "answerTextHash": "sha256:559aead08264d5795d3909718cdd05abd49572e84fe55590eef31a88a08fdffd",
+      "answerEvidence": {
+        "status": "candidate_matched",
+        "sourceId": "src_5fa7ab8f2474bff6b6619587",
+        "sourceCardId": "english-support-b6619587-2000-011",
+        "sourceFilePath": "data/flashcards/english-support-b6619587-2000.json",
+        "answerTextHash": "sha256:559aead08264d5795d3909718cdd05abd49572e84fe55590eef31a88a08fdffd",
+        "method": "year_number_companion_cleaned_json",
+        "verifiedAt": "",
+        "verifiedBy": "",
+        "note": "Candidate answer repaired from a cleaned companion answer file; not publishable until verified."
+      }
+    },
+    {
+      "number": 12,
+      "type": "single_choice",
+      "question": "The loss of U. S. predominance in the world economy in the 1980s is manifested in the fact that",
+      "options": [
+        {
+          "label": "A",
+          "text": "the American TV industry had withdrawn to its domestic market"
+        },
+        {
+          "label": "B",
+          "text": "semiconductor industry had been taken over by foreign enterprises"
+        },
+        {
+          "label": "C",
+          "text": "machine-tool industry had collapsed after suicidal actions"
+        },
+        {
+          "label": "D",
+          "text": "auto industry had lost part of its domestic market"
+        }
+      ],
+      "answer": "B",
+      "explanation": "",
+      "id": "english-2000-012",
+      "subject": "english",
+      "year": "2000",
+      "source": "src_30316a7e74dd1d2afad4d268-2000年考研英语真题英一二通用.pdf",
+      "tags": ["english", "2000真题"],
+      "sourceEvidenceId": "src_30316a7e74dd1d2afad4d268",
+      "questionTextHash": "sha256:09dc0cb976123450c4339e1d669b3a31ab00d2806a1064991259877b4807b29f",
+      "sourceEvidence": {
+        "evidenceId": "src_30316a7e74dd1d2afad4d268",
+        "sourceId": "src_30316a7e74dd1d2afad4d268",
+        "sourceType": "official_paper",
+        "contentHash": "740067bbfre2170ad221274061cb3002",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语一考研历年真题/2000年考研英语真题（英一二通用） .pdf",
+        "questionTextHash": "sha256:09dc0cb976123450c4339e1d669b3a31ab00d2806a1064991259877b4807b29f",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerEvidenceStatus": "matched",
+      "answerEvidenceSourceId": "src_5fa7ab8f2474bff6b6619587",
+      "answerTextHash": "sha256:df7e70e5021544f4834bbee64a9e3789febc4be81470df629cad6ddb03320a5c",
+      "answerEvidence": {
+        "status": "candidate_matched",
+        "sourceId": "src_5fa7ab8f2474bff6b6619587",
+        "sourceCardId": "english-support-b6619587-2000-012",
+        "sourceFilePath": "data/flashcards/english-support-b6619587-2000.json",
+        "answerTextHash": "sha256:df7e70e5021544f4834bbee64a9e3789febc4be81470df629cad6ddb03320a5c",
+        "method": "year_number_companion_cleaned_json",
+        "verifiedAt": "",
+        "verifiedBy": "",
+        "note": "Candidate answer repaired from a cleaned companion answer file; not publishable until verified."
+      }
+    },
+    {
+      "number": 13,
+      "type": "single_choice",
+      "question": "What can be inferred from the passage?",
+      "options": [
+        {
+          "label": "A",
+          "text": "It is human nature to shift between self-doubt and blind pride."
+        },
+        {
+          "label": "B",
+          "text": "Intense competition may contribute to economic progress."
+        },
+        {
+          "label": "C",
+          "text": "The revival of the economy depends on international cooperation."
+        },
+        {
+          "label": "D",
+          "text": "A long history of success may pave the way for further development."
+        }
+      ],
+      "answer": "C",
+      "explanation": "",
+      "id": "english-2000-013",
+      "subject": "english",
+      "year": "2000",
+      "source": "src_30316a7e74dd1d2afad4d268-2000年考研英语真题英一二通用.pdf",
+      "tags": ["english", "2000真题"],
+      "sourceEvidenceId": "src_30316a7e74dd1d2afad4d268",
+      "questionTextHash": "sha256:0c47b281dc33fb26ab77b57f6ebeb032a296143761b3adeb031b1cc5bfdb5689",
+      "sourceEvidence": {
+        "evidenceId": "src_30316a7e74dd1d2afad4d268",
+        "sourceId": "src_30316a7e74dd1d2afad4d268",
+        "sourceType": "official_paper",
+        "contentHash": "740067bbfre2170ad221274061cb3002",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语一考研历年真题/2000年考研英语真题（英一二通用） .pdf",
+        "questionTextHash": "sha256:0c47b281dc33fb26ab77b57f6ebeb032a296143761b3adeb031b1cc5bfdb5689",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerEvidenceStatus": "matched",
+      "answerEvidenceSourceId": "src_5fa7ab8f2474bff6b6619587",
+      "answerTextHash": "sha256:6b23c0d5f35d1b11f9b683f0b0a617355deb11277d91ae091d399c655b87940d",
+      "answerEvidence": {
+        "status": "candidate_matched",
+        "sourceId": "src_5fa7ab8f2474bff6b6619587",
+        "sourceCardId": "english-support-b6619587-2000-013",
+        "sourceFilePath": "data/flashcards/english-support-b6619587-2000.json",
+        "answerTextHash": "sha256:6b23c0d5f35d1b11f9b683f0b0a617355deb11277d91ae091d399c655b87940d",
+        "method": "year_number_companion_cleaned_json",
+        "verifiedAt": "",
+        "verifiedBy": "",
+        "note": "Candidate answer repaired from a cleaned companion answer file; not publishable until verified."
+      }
+    },
+    {
+      "number": 14,
+      "type": "single_choice",
+      "question": "The author seems to believe the revival of the U. S. economy in the 1990s can be attributed to the",
+      "options": [
+        {
+          "label": "A",
+          "text": "turning of the business cycle"
+        },
+        {
+          "label": "B",
+          "text": "restructuring of industry"
+        },
+        {
+          "label": "C",
+          "text": "improved business management"
+        },
+        {
+          "label": "D",
+          "text": "success in education"
+        }
+      ],
+      "answer": "B",
+      "explanation": "",
+      "id": "english-2000-014",
+      "subject": "english",
+      "year": "2000",
+      "source": "src_30316a7e74dd1d2afad4d268-2000年考研英语真题英一二通用.pdf",
+      "tags": ["english", "2000真题"],
+      "sourceEvidenceId": "src_30316a7e74dd1d2afad4d268",
+      "questionTextHash": "sha256:545c9141a347e38a1210d31209756c0e6085780a605b8652650c85f6d7add88f",
+      "sourceEvidence": {
+        "evidenceId": "src_30316a7e74dd1d2afad4d268",
+        "sourceId": "src_30316a7e74dd1d2afad4d268",
+        "sourceType": "official_paper",
+        "contentHash": "740067bbfre2170ad221274061cb3002",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语一考研历年真题/2000年考研英语真题（英一二通用） .pdf",
+        "questionTextHash": "sha256:545c9141a347e38a1210d31209756c0e6085780a605b8652650c85f6d7add88f",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerEvidenceStatus": "matched",
+      "answerEvidenceSourceId": "src_5fa7ab8f2474bff6b6619587",
+      "answerTextHash": "sha256:df7e70e5021544f4834bbee64a9e3789febc4be81470df629cad6ddb03320a5c",
+      "answerEvidence": {
+        "status": "candidate_matched",
+        "sourceId": "src_5fa7ab8f2474bff6b6619587",
+        "sourceCardId": "english-support-b6619587-2000-014",
+        "sourceFilePath": "data/flashcards/english-support-b6619587-2000.json",
+        "answerTextHash": "sha256:df7e70e5021544f4834bbee64a9e3789febc4be81470df629cad6ddb03320a5c",
+        "method": "year_number_companion_cleaned_json",
+        "verifiedAt": "",
+        "verifiedBy": "",
+        "note": "Candidate answer repaired from a cleaned companion answer file; not publishable until verified."
+      }
+    },
+    {
+      "number": 15,
+      "type": "single_choice",
+      "question": "What used to be the danger in being a man according to the first paragraph?",
+      "options": [
+        {
+          "label": "A",
+          "text": "A lack of mates."
+        },
+        {
+          "label": "B",
+          "text": "A fierce competition."
+        },
+        {
+          "label": "C",
+          "text": "A lower survival rate."
+        },
+        {
+          "label": "D",
+          "text": "A defective gene."
+        }
+      ],
+      "answer": "D",
+      "explanation": "",
+      "id": "english-2000-015",
+      "subject": "english",
+      "year": "2000",
+      "source": "src_30316a7e74dd1d2afad4d268-2000年考研英语真题英一二通用.pdf",
+      "tags": ["english", "2000真题"],
+      "sourceEvidenceId": "src_30316a7e74dd1d2afad4d268",
+      "questionTextHash": "sha256:9dc40dac81958dd17013bea6a936b3b57b30c9458db2f86404ea02ea1487e319",
+      "sourceEvidence": {
+        "evidenceId": "src_30316a7e74dd1d2afad4d268",
+        "sourceId": "src_30316a7e74dd1d2afad4d268",
+        "sourceType": "official_paper",
+        "contentHash": "740067bbfre2170ad221274061cb3002",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语一考研历年真题/2000年考研英语真题（英一二通用） .pdf",
+        "questionTextHash": "sha256:9dc40dac81958dd17013bea6a936b3b57b30c9458db2f86404ea02ea1487e319",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerEvidenceStatus": "matched",
+      "answerEvidenceSourceId": "src_5fa7ab8f2474bff6b6619587",
+      "answerTextHash": "sha256:3f39d5c348e5b79d06e842c114e6cc571583bbf44e4b0ebfda1a01ec05745d43",
+      "answerEvidence": {
+        "status": "candidate_matched",
+        "sourceId": "src_5fa7ab8f2474bff6b6619587",
+        "sourceCardId": "english-support-b6619587-2000-015",
+        "sourceFilePath": "data/flashcards/english-support-b6619587-2000.json",
+        "answerTextHash": "sha256:3f39d5c348e5b79d06e842c114e6cc571583bbf44e4b0ebfda1a01ec05745d43",
+        "method": "year_number_companion_cleaned_json",
+        "verifiedAt": "",
+        "verifiedBy": "",
+        "note": "Candidate answer repaired from a cleaned companion answer file; not publishable until verified."
+      }
+    },
+    {
+      "number": 16,
+      "type": "single_choice",
+      "question": "What does the example of India illustrate?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Wealthy people tend to have fewer children than poor people."
+        },
+        {
+          "label": "B",
+          "text": "Natural selection hardly works among the rich and the poor."
+        },
+        {
+          "label": "C",
+          "text": "The middle class population is 80% smaller than that of the tribes."
+        },
+        {
+          "label": "D",
+          "text": "India is one of the countries with a very high birth rate."
+        }
+      ],
+      "answer": "A",
+      "explanation": "",
+      "id": "english-2000-016",
+      "subject": "english",
+      "year": "2000",
+      "source": "src_30316a7e74dd1d2afad4d268-2000年考研英语真题英一二通用.pdf",
+      "tags": ["english", "2000真题"],
+      "sourceEvidenceId": "src_30316a7e74dd1d2afad4d268",
+      "questionTextHash": "sha256:27cfc59ac1e7f9ba50c45100f91ea8f37a4b1ddc3a7e291843422d7c6fd807f4",
+      "sourceEvidence": {
+        "evidenceId": "src_30316a7e74dd1d2afad4d268",
+        "sourceId": "src_30316a7e74dd1d2afad4d268",
+        "sourceType": "official_paper",
+        "contentHash": "740067bbfre2170ad221274061cb3002",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语一考研历年真题/2000年考研英语真题（英一二通用） .pdf",
+        "questionTextHash": "sha256:27cfc59ac1e7f9ba50c45100f91ea8f37a4b1ddc3a7e291843422d7c6fd807f4",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerTextHash": "sha256:559aead08264d5795d3909718cdd05abd49572e84fe55590eef31a88a08fdffd",
+      "answerEvidenceStatus": "matched"
+    },
+    {
+      "number": 17,
+      "type": "single_choice",
+      "question": "The author argues that our bodies have stopped evolving because",
+      "options": [
+        {
+          "label": "A",
+          "text": "life has been improved by technological advance"
+        },
+        {
+          "label": "B",
+          "text": "the number of female babies has been declining"
+        },
+        {
+          "label": "C",
+          "text": "our species has reached the highest stage of evolution"
+        },
+        {
+          "label": "D",
+          "text": "the difference between wealth and poverty is disappearing"
+        }
+      ],
+      "answer": "A",
+      "explanation": "",
+      "id": "english-2000-017",
+      "subject": "english",
+      "year": "2000",
+      "source": "src_30316a7e74dd1d2afad4d268-2000年考研英语真题英一二通用.pdf",
+      "tags": ["english", "2000真题"],
+      "sourceEvidenceId": "src_30316a7e74dd1d2afad4d268",
+      "questionTextHash": "sha256:3c20d7823380911f30ec540fef5c8f2a24f78a62d4ac9cf4cec617b5621b6c7d",
+      "sourceEvidence": {
+        "evidenceId": "src_30316a7e74dd1d2afad4d268",
+        "sourceId": "src_30316a7e74dd1d2afad4d268",
+        "sourceType": "official_paper",
+        "contentHash": "740067bbfre2170ad221274061cb3002",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语一考研历年真题/2000年考研英语真题（英一二通用） .pdf",
+        "questionTextHash": "sha256:3c20d7823380911f30ec540fef5c8f2a24f78a62d4ac9cf4cec617b5621b6c7d",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerTextHash": "sha256:559aead08264d5795d3909718cdd05abd49572e84fe55590eef31a88a08fdffd",
+      "answerEvidenceStatus": "matched"
+    },
+    {
+      "number": 18,
+      "type": "single_choice",
+      "question": "Which of the following would be the best title for the passage?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Sex Ratio Changes in Human Evolution"
+        },
+        {
+          "label": "B",
+          "text": "Ways of Continuing Man's Evolution"
+        },
+        {
+          "label": "C",
+          "text": "The Evolutionary Future of Nature"
+        },
+        {
+          "label": "D",
+          "text": "Human Evolution Going Nowhere"
+        }
+      ],
+      "answer": "D",
+      "explanation": "",
+      "id": "english-2000-018",
+      "subject": "english",
+      "year": "2000",
+      "source": "src_30316a7e74dd1d2afad4d268-2000年考研英语真题英一二通用.pdf",
+      "tags": ["english", "2000真题"],
+      "sourceEvidenceId": "src_30316a7e74dd1d2afad4d268",
+      "questionTextHash": "sha256:961c01d5c48ba706cc34bf44163ad8289394b08096f26e5ce5eded18cbedd553",
+      "sourceEvidence": {
+        "evidenceId": "src_30316a7e74dd1d2afad4d268",
+        "sourceId": "src_30316a7e74dd1d2afad4d268",
+        "sourceType": "official_paper",
+        "contentHash": "740067bbfre2170ad221274061cb3002",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语一考研历年真题/2000年考研英语真题（英一二通用） .pdf",
+        "questionTextHash": "sha256:961c01d5c48ba706cc34bf44163ad8289394b08096f26e5ce5eded18cbedd553",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerTextHash": "sha256:3f39d5c348e5b79d06e842c114e6cc571583bbf44e4b0ebfda1a01ec05745d43",
+      "answerEvidenceStatus": "matched"
+    },
+    {
+      "number": 19,
+      "type": "single_choice",
+      "question": "This passage is mainly",
+      "options": [
+        {
+          "label": "A",
+          "text": "a survey of new approaches to art"
+        },
+        {
+          "label": "B",
+          "text": "a review of Futurist poetry"
+        },
+        {
+          "label": "C",
+          "text": "about merits of the Futurist movement"
+        },
+        {
+          "label": "D",
+          "text": "about laws and requirements of literature"
+        }
+      ],
+      "answer": "B",
+      "explanation": "",
+      "id": "english-2000-019",
+      "subject": "english",
+      "year": "2000",
+      "source": "src_30316a7e74dd1d2afad4d268-2000年考研英语真题英一二通用.pdf",
+      "tags": ["english", "2000真题"],
+      "sourceEvidenceId": "src_30316a7e74dd1d2afad4d268",
+      "questionTextHash": "sha256:0a0ff5e0305f68e321f59a3153598a00035a511d344efa0e4c923576580ca816",
+      "sourceEvidence": {
+        "evidenceId": "src_30316a7e74dd1d2afad4d268",
+        "sourceId": "src_30316a7e74dd1d2afad4d268",
+        "sourceType": "official_paper",
+        "contentHash": "740067bbfre2170ad221274061cb3002",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语一考研历年真题/2000年考研英语真题（英一二通用） .pdf",
+        "questionTextHash": "sha256:0a0ff5e0305f68e321f59a3153598a00035a511d344efa0e4c923576580ca816",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerTextHash": "sha256:df7e70e5021544f4834bbee64a9e3789febc4be81470df629cad6ddb03320a5c",
+      "answerEvidenceStatus": "matched"
+    },
+    {
+      "number": 20,
+      "type": "single_choice",
+      "question": "When a novel literary idea appears, people should try to",
+      "options": [
+        {
+          "label": "A",
+          "text": "determine its purposes"
+        },
+        {
+          "label": "B",
+          "text": "ignore its flaws"
+        },
+        {
+          "label": "C",
+          "text": "follow the new fashions"
+        },
+        {
+          "label": "D",
+          "text": "accept the principles"
+        }
+      ],
+      "answer": "A",
+      "explanation": "",
+      "id": "english-2000-020",
+      "subject": "english",
+      "year": "2000",
+      "source": "src_30316a7e74dd1d2afad4d268-2000年考研英语真题英一二通用.pdf",
+      "tags": ["english", "2000真题"],
+      "sourceEvidenceId": "src_30316a7e74dd1d2afad4d268",
+      "questionTextHash": "sha256:eb611170b687d1dec0c6fef587ec7dcf6f964bed0196123149ee38cfea7ee200",
+      "sourceEvidence": {
+        "evidenceId": "src_30316a7e74dd1d2afad4d268",
+        "sourceId": "src_30316a7e74dd1d2afad4d268",
+        "sourceType": "official_paper",
+        "contentHash": "740067bbfre2170ad221274061cb3002",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语一考研历年真题/2000年考研英语真题（英一二通用） .pdf",
+        "questionTextHash": "sha256:eb611170b687d1dec0c6fef587ec7dcf6f964bed0196123149ee38cfea7ee200",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerTextHash": "sha256:559aead08264d5795d3909718cdd05abd49572e84fe55590eef31a88a08fdffd",
+      "answerEvidenceStatus": "matched"
+    },
+    {
+      "number": 21,
+      "type": "single_choice",
+      "question": "Futurists claim that we must",
+      "options": [
+        {
+          "label": "A",
+          "text": "increase the production of literature"
+        },
+        {
+          "label": "B",
+          "text": "use poetry to relieve modern stress"
+        },
+        {
+          "label": "C",
+          "text": "develop new modes of expression"
+        },
+        {
+          "label": "D",
+          "text": "avoid using adjectives and verbs"
+        }
+      ],
+      "answer": "C",
+      "explanation": "",
+      "id": "english-2000-021",
+      "subject": "english",
+      "year": "2000",
+      "source": "src_30316a7e74dd1d2afad4d268-2000年考研英语真题英一二通用.pdf",
+      "tags": ["english", "2000真题"],
+      "sourceEvidenceId": "src_30316a7e74dd1d2afad4d268",
+      "questionTextHash": "sha256:818fe907caf37e19ffb23deaa1e02a65263c6ba5648f65cc2177521e68627217",
+      "sourceEvidence": {
+        "evidenceId": "src_30316a7e74dd1d2afad4d268",
+        "sourceId": "src_30316a7e74dd1d2afad4d268",
+        "sourceType": "official_paper",
+        "contentHash": "740067bbfre2170ad221274061cb3002",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语一考研历年真题/2000年考研英语真题（英一二通用） .pdf",
+        "questionTextHash": "sha256:818fe907caf37e19ffb23deaa1e02a65263c6ba5648f65cc2177521e68627217",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerTextHash": "sha256:6b23c0d5f35d1b11f9b683f0b0a617355deb11277d91ae091d399c655b87940d",
+      "answerEvidenceStatus": "matched"
+    },
+    {
+      "number": 22,
+      "type": "single_choice",
+      "question": "The author believes that Futurist poetry is",
+      "options": [
+        {
+          "label": "A",
+          "text": "based on reasonable principles"
+        },
+        {
+          "label": "B",
+          "text": "new and acceptable to ordinary people"
+        },
+        {
+          "label": "C",
+          "text": "indicative of a basic change in human nature"
+        },
+        {
+          "label": "D",
+          "text": "more of a transient phenomenon than literature"
+        }
+      ],
+      "answer": "D",
+      "explanation": "",
+      "id": "english-2000-022",
+      "subject": "english",
+      "year": "2000",
+      "source": "src_30316a7e74dd1d2afad4d268-2000年考研英语真题英一二通用.pdf",
+      "tags": ["english", "2000真题"],
+      "sourceEvidenceId": "src_30316a7e74dd1d2afad4d268",
+      "questionTextHash": "sha256:a2f61cd4171ad4c288848b0c6fec150c22e9fc5fa0a50c9a1771c5a0b61a751c",
+      "sourceEvidence": {
+        "evidenceId": "src_30316a7e74dd1d2afad4d268",
+        "sourceId": "src_30316a7e74dd1d2afad4d268",
+        "sourceType": "official_paper",
+        "contentHash": "740067bbfre2170ad221274061cb3002",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语一考研历年真题/2000年考研英语真题（英一二通用） .pdf",
+        "questionTextHash": "sha256:a2f61cd4171ad4c288848b0c6fec150c22e9fc5fa0a50c9a1771c5a0b61a751c",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerTextHash": "sha256:3f39d5c348e5b79d06e842c114e6cc571583bbf44e4b0ebfda1a01ec05745d43",
+      "answerEvidenceStatus": "matched"
+    },
+    {
+      "number": 23,
+      "type": "single_choice",
+      "question": "In the Westerners' eyes, the postwar Japan was",
+      "options": [
+        {
+          "label": "A",
+          "text": "under aimless development"
+        },
+        {
+          "label": "B",
+          "text": "a positive example"
+        },
+        {
+          "label": "C",
+          "text": "a rival to the West"
+        },
+        {
+          "label": "D",
+          "text": "on the decline"
+        }
+      ],
+      "answer": "C",
+      "explanation": "",
+      "id": "english-2000-023",
+      "subject": "english",
+      "year": "2000",
+      "source": "src_30316a7e74dd1d2afad4d268-2000年考研英语真题英一二通用.pdf",
+      "tags": ["english", "2000真题"],
+      "sourceEvidenceId": "src_30316a7e74dd1d2afad4d268",
+      "questionTextHash": "sha256:ebea8f7fc3a0d1604fc42e93882ec4d5ea9d5042e652ad8ad9f562f49625e9c3",
+      "sourceEvidence": {
+        "evidenceId": "src_30316a7e74dd1d2afad4d268",
+        "sourceId": "src_30316a7e74dd1d2afad4d268",
+        "sourceType": "official_paper",
+        "contentHash": "740067bbfre2170ad221274061cb3002",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语一考研历年真题/2000年考研英语真题（英一二通用） .pdf",
+        "questionTextHash": "sha256:ebea8f7fc3a0d1604fc42e93882ec4d5ea9d5042e652ad8ad9f562f49625e9c3",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerEvidenceStatus": "matched",
+      "answerEvidenceSourceId": "src_5fa7ab8f2474bff6b6619587",
+      "answerTextHash": "sha256:6b23c0d5f35d1b11f9b683f0b0a617355deb11277d91ae091d399c655b87940d",
+      "answerEvidence": {
+        "status": "candidate_matched",
+        "sourceId": "src_5fa7ab8f2474bff6b6619587",
+        "sourceCardId": "english-support-b6619587-2000-023",
+        "sourceFilePath": "data/flashcards/english-support-b6619587-2000.json",
+        "answerTextHash": "sha256:6b23c0d5f35d1b11f9b683f0b0a617355deb11277d91ae091d399c655b87940d",
+        "method": "year_number_companion_cleaned_json",
+        "verifiedAt": "",
+        "verifiedBy": "",
+        "note": "Candidate answer repaired from a cleaned companion answer file; not publishable until verified."
+      }
+    },
+    {
+      "number": 24,
+      "type": "single_choice",
+      "question": "According to the author, what may chiefly be responsible for the moral decline of Japanese society?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Women's participation in social activities is limited."
+        },
+        {
+          "label": "B",
+          "text": "More workers are dissatisfied with their jobs."
+        },
+        {
+          "label": "C",
+          "text": "Excessive emphasis has been placed on the basics."
+        },
+        {
+          "label": "D",
+          "text": "The life-style has been influenced by Western values."
+        }
+      ],
+      "answer": "A",
+      "explanation": "",
+      "id": "english-2000-024",
+      "subject": "english",
+      "year": "2000",
+      "source": "src_30316a7e74dd1d2afad4d268-2000年考研英语真题英一二通用.pdf",
+      "tags": ["english", "2000真题"],
+      "sourceEvidenceId": "src_30316a7e74dd1d2afad4d268",
+      "questionTextHash": "sha256:4bf58ec754b320348af1befbd304486f84cc368ae9294ea3200bb40d58c52509",
+      "sourceEvidence": {
+        "evidenceId": "src_30316a7e74dd1d2afad4d268",
+        "sourceId": "src_30316a7e74dd1d2afad4d268",
+        "sourceType": "official_paper",
+        "contentHash": "740067bbfre2170ad221274061cb3002",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语一考研历年真题/2000年考研英语真题（英一二通用） .pdf",
+        "questionTextHash": "sha256:4bf58ec754b320348af1befbd304486f84cc368ae9294ea3200bb40d58c52509",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerEvidenceStatus": "matched",
+      "answerEvidenceSourceId": "src_5fa7ab8f2474bff6b6619587",
+      "answerTextHash": "sha256:559aead08264d5795d3909718cdd05abd49572e84fe55590eef31a88a08fdffd",
+      "answerEvidence": {
+        "status": "candidate_matched",
+        "sourceId": "src_5fa7ab8f2474bff6b6619587",
+        "sourceCardId": "english-support-b6619587-2000-024",
+        "sourceFilePath": "data/flashcards/english-support-b6619587-2000.json",
+        "answerTextHash": "sha256:559aead08264d5795d3909718cdd05abd49572e84fe55590eef31a88a08fdffd",
+        "method": "year_number_companion_cleaned_json",
+        "verifiedAt": "",
+        "verifiedBy": "",
+        "note": "Candidate answer repaired from a cleaned companion answer file; not publishable until verified."
+      }
+    },
+    {
+      "number": 25,
+      "type": "single_choice",
+      "question": "Which of the following is true according to the author?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Japanese education is praised for helping the young climb the social ladder."
+        },
+        {
+          "label": "B",
+          "text": "Japanese education is characterized by mechanical learning as well as creativity."
+        },
+        {
+          "label": "C",
+          "text": "More stress should be placed on the cultivation of creativity."
+        },
+        {
+          "label": "D",
+          "text": "Dropping out leads to frustration against test taking."
+        }
+      ],
+      "answer": "D",
+      "explanation": "",
+      "id": "english-2000-025",
+      "subject": "english",
+      "year": "2000",
+      "source": "src_30316a7e74dd1d2afad4d268-2000年考研英语真题英一二通用.pdf",
+      "tags": ["english", "2000真题"],
+      "sourceEvidenceId": "src_30316a7e74dd1d2afad4d268",
+      "questionTextHash": "sha256:ea27e6c7fd63d4fafbe0f60ce5175ce7e5bb5de8adba8608ce734e277ed210d7",
+      "sourceEvidence": {
+        "evidenceId": "src_30316a7e74dd1d2afad4d268",
+        "sourceId": "src_30316a7e74dd1d2afad4d268",
+        "sourceType": "official_paper",
+        "contentHash": "740067bbfre2170ad221274061cb3002",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语一考研历年真题/2000年考研英语真题（英一二通用） .pdf",
+        "questionTextHash": "sha256:ea27e6c7fd63d4fafbe0f60ce5175ce7e5bb5de8adba8608ce734e277ed210d7",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerEvidenceStatus": "matched",
+      "answerEvidenceSourceId": "src_5fa7ab8f2474bff6b6619587",
+      "answerTextHash": "sha256:3f39d5c348e5b79d06e842c114e6cc571583bbf44e4b0ebfda1a01ec05745d43",
+      "answerEvidence": {
+        "status": "candidate_matched",
+        "sourceId": "src_5fa7ab8f2474bff6b6619587",
+        "sourceCardId": "english-support-b6619587-2000-025",
+        "sourceFilePath": "data/flashcards/english-support-b6619587-2000.json",
+        "answerTextHash": "sha256:3f39d5c348e5b79d06e842c114e6cc571583bbf44e4b0ebfda1a01ec05745d43",
+        "method": "year_number_companion_cleaned_json",
+        "verifiedAt": "",
+        "verifiedBy": "",
+        "note": "Candidate answer repaired from a cleaned companion answer file; not publishable until verified."
+      }
+    },
+    {
+      "number": 26,
+      "type": "single_choice",
+      "question": "The change in Japanese life-style is revealed in the fact that",
+      "options": [
+        {
+          "label": "A",
+          "text": "the young are less tolerant of discomforts in life"
+        },
+        {
+          "label": "B",
+          "text": "the divorce rate in Japan exceeds that in the U.S."
+        },
+        {
+          "label": "C",
+          "text": "the Japanese endure more than ever before"
+        },
+        {
+          "label": "D",
+          "text": "the Japanese appreciate their present life"
+        }
+      ],
+      "answer": "B",
+      "explanation": "",
+      "id": "english-2000-026",
+      "subject": "english",
+      "year": "2000",
+      "source": "src_30316a7e74dd1d2afad4d268-2000年考研英语真题英一二通用.pdf",
+      "tags": ["english", "2000真题"],
+      "sourceEvidenceId": "src_30316a7e74dd1d2afad4d268",
+      "questionTextHash": "sha256:cb44bae7091fde3b5a906c13f4556b9c5b94a808bd66de351325ad4dd8db9704",
+      "sourceEvidence": {
+        "evidenceId": "src_30316a7e74dd1d2afad4d268",
+        "sourceId": "src_30316a7e74dd1d2afad4d268",
+        "sourceType": "official_paper",
+        "contentHash": "740067bbfre2170ad221274061cb3002",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语一考研历年真题/2000年考研英语真题（英一二通用） .pdf",
+        "questionTextHash": "sha256:cb44bae7091fde3b5a906c13f4556b9c5b94a808bd66de351325ad4dd8db9704",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerEvidenceStatus": "matched",
+      "answerEvidenceSourceId": "src_5fa7ab8f2474bff6b6619587",
+      "answerTextHash": "sha256:df7e70e5021544f4834bbee64a9e3789febc4be81470df629cad6ddb03320a5c",
+      "answerEvidence": {
+        "status": "candidate_matched",
+        "sourceId": "src_5fa7ab8f2474bff6b6619587",
+        "sourceCardId": "english-support-b6619587-2000-026",
+        "sourceFilePath": "data/flashcards/english-support-b6619587-2000.json",
+        "answerTextHash": "sha256:df7e70e5021544f4834bbee64a9e3789febc4be81470df629cad6ddb03320a5c",
+        "method": "year_number_companion_cleaned_json",
+        "verifiedAt": "",
+        "verifiedBy": "",
+        "note": "Candidate answer repaired from a cleaned companion answer file; not publishable until verified."
+      }
+    },
+    {
+      "number": 27,
+      "type": "analysis",
+      "question": "Text 5 If ambition is to be well regarded, the rewards of ambition—wealth, distinction, control over one's destiny—must be deemed worthy of the sacrifices made on ambition's behalf. If the tradition of ambition is to have vitality, it must be widely shared; and it especially must be highly regarded by people who are themselves admired, the educated not least among them. In an odd way, however, it is the educated who have claimed to have given up on ambition as an ideal. What is odd is that they have perhaps most benefited from ambition—if not always their own then that of their parents and grandparents. There is a heavy note of hypocrisy in this, a case of closing the barn door after the horses have escaped—with the educated themselves riding on them. Certainly people do not seem less interested in success and its signs now than formerly. Summer homes, European travel, BMWs—the locations, place names and name brands may change, but such items do not seem less in demand today than a decade or two years ago. What has happened is that people cannot confess fully to their dreams, as easily and openly as once they could, lest they be thought pushing, acquisitive and vulgar. Instead, we are treated to fine hypocritical spectacles, which now more than ever seem in ample supply: the critic of American materialism with a Southampton summer home; the publisher of radical books who takes his meals in three-star restaurants; the journalist advocating participatory democracy in all phases of life, whose own children are enrolled in private schools. For such people and many more perhaps not so exceptional, the proper formulation is, “Succeed at all costs but avoid appearing ambitious.” The attacks on ambition are many and come from various angles; its public defenders are few and unimpressive, where they are not extremely unattractive. As a result, the support for ambition as a healthy impulse, a quality to be admired and fixed in the mind of the young, is probably lower than it has ever been in the United States. This does not mean that ambition is at an end, that people no longer feel its stirrings and promptings, but only that, no longer openly honored, it is less openly professed. Consequences follow from this, of course, some of which are that ambition is driven underground, or made sly. Such, then, is the way things stand: on the left angry critics, on the right stupid supporters, and in the middle, as usual, the majority of earnest people trying to get on in life.",
+      "options": [],
+      "answer": "C",
+      "explanation": "",
+      "id": "english-2000-027",
+      "subject": "english",
+      "year": "2000",
+      "source": "src_30316a7e74dd1d2afad4d268-2000年考研英语真题英一二通用.pdf",
+      "tags": ["english", "2000真题"],
+      "sourceEvidenceId": "src_30316a7e74dd1d2afad4d268",
+      "questionTextHash": "sha256:7693242ce9122c78de94b466db0f1de60a0b31d7ad01d4377cbd0088c2fdef26",
+      "sourceEvidence": {
+        "evidenceId": "src_30316a7e74dd1d2afad4d268",
+        "sourceId": "src_30316a7e74dd1d2afad4d268",
+        "sourceType": "official_paper",
+        "contentHash": "740067bbfre2170ad221274061cb3002",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语一考研历年真题/2000年考研英语真题（英一二通用） .pdf",
+        "questionTextHash": "sha256:7693242ce9122c78de94b466db0f1de60a0b31d7ad01d4377cbd0088c2fdef26",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerEvidenceStatus": "matched",
+      "answerEvidenceSourceId": "src_5fa7ab8f2474bff6b6619587",
+      "answerTextHash": "sha256:6b23c0d5f35d1b11f9b683f0b0a617355deb11277d91ae091d399c655b87940d",
+      "answerEvidence": {
+        "status": "candidate_matched",
+        "sourceId": "src_5fa7ab8f2474bff6b6619587",
+        "sourceCardId": "english-support-b6619587-2000-027",
+        "sourceFilePath": "data/flashcards/english-support-b6619587-2000.json",
+        "answerTextHash": "sha256:6b23c0d5f35d1b11f9b683f0b0a617355deb11277d91ae091d399c655b87940d",
+        "method": "year_number_companion_cleaned_json",
+        "verifiedAt": "",
+        "verifiedBy": "",
+        "note": "Candidate answer repaired from a cleaned companion answer file; not publishable until verified."
+      }
+    },
+    {
+      "number": 28,
+      "type": "single_choice",
+      "question": "The last sentence of the first paragraph most probably implies that",
+      "options": [
+        {
+          "label": "A",
+          "text": "it is customary of the educated to discard ambition in words"
+        },
+        {
+          "label": "B",
+          "text": "too late to check ambition once it has been let out"
+        },
+        {
+          "label": "C",
+          "text": "dishonest to deny ambition after the fulfillment of the goal"
+        },
+        {
+          "label": "D",
+          "text": "impractical for the educated to enjoy benefits from ambition"
+        }
+      ],
+      "answer": "C",
+      "explanation": "",
+      "id": "english-2000-028",
+      "subject": "english",
+      "year": "2000",
+      "source": "src_30316a7e74dd1d2afad4d268-2000年考研英语真题英一二通用.pdf",
+      "tags": ["english", "2000真题"],
+      "sourceEvidenceId": "src_30316a7e74dd1d2afad4d268",
+      "questionTextHash": "sha256:81ab81b18bddf9785eecfd0f396b39be476da4f5bc30c53985d9d0a7f7927294",
+      "sourceEvidence": {
+        "evidenceId": "src_30316a7e74dd1d2afad4d268",
+        "sourceId": "src_30316a7e74dd1d2afad4d268",
+        "sourceType": "official_paper",
+        "contentHash": "740067bbfre2170ad221274061cb3002",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语一考研历年真题/2000年考研英语真题（英一二通用） .pdf",
+        "questionTextHash": "sha256:81ab81b18bddf9785eecfd0f396b39be476da4f5bc30c53985d9d0a7f7927294",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerTextHash": "sha256:6b23c0d5f35d1b11f9b683f0b0a617355deb11277d91ae091d399c655b87940d",
+      "answerEvidenceStatus": "matched"
+    },
+    {
+      "number": 29,
+      "type": "single_choice",
+      "question": "Some people do not openly admit they have ambition because",
+      "options": [
+        {
+          "label": "A",
+          "text": "they think of it as immoral"
+        },
+        {
+          "label": "B",
+          "text": "their pursuits are not fame or wealth"
+        },
+        {
+          "label": "C",
+          "text": "ambition is not closely related to material benefits"
+        },
+        {
+          "label": "D",
+          "text": "they do not want to appear greedy and contemptible"
+        }
+      ],
+      "answer": "D",
+      "explanation": "",
+      "id": "english-2000-029",
+      "subject": "english",
+      "year": "2000",
+      "source": "src_30316a7e74dd1d2afad4d268-2000年考研英语真题英一二通用.pdf",
+      "tags": ["english", "2000真题"],
+      "sourceEvidenceId": "src_30316a7e74dd1d2afad4d268",
+      "questionTextHash": "sha256:871c2a94416a694b6d969f79137b6fac7eb97f49101301517a5510444757d755",
+      "sourceEvidence": {
+        "evidenceId": "src_30316a7e74dd1d2afad4d268",
+        "sourceId": "src_30316a7e74dd1d2afad4d268",
+        "sourceType": "official_paper",
+        "contentHash": "740067bbfre2170ad221274061cb3002",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语一考研历年真题/2000年考研英语真题（英一二通用） .pdf",
+        "questionTextHash": "sha256:871c2a94416a694b6d969f79137b6fac7eb97f49101301517a5510444757d755",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerTextHash": "sha256:3f39d5c348e5b79d06e842c114e6cc571583bbf44e4b0ebfda1a01ec05745d43",
+      "answerEvidenceStatus": "matched"
+    },
+    {
+      "number": 30,
+      "type": "single_choice",
+      "question": "From the last paragraph the conclusion can be drawn that ambition should be maintained",
+      "options": [
+        {
+          "label": "A",
+          "text": "secretly and vigorously"
+        },
+        {
+          "label": "B",
+          "text": "openly and enthusiastically"
+        },
+        {
+          "label": "C",
+          "text": "easily and momentarily"
+        },
+        {
+          "label": "D",
+          "text": "verbally and spiritually"
+        }
+      ],
+      "answer": "B",
+      "explanation": "",
+      "id": "english-2000-030",
+      "subject": "english",
+      "year": "2000",
+      "source": "src_30316a7e74dd1d2afad4d268-2000年考研英语真题英一二通用.pdf",
+      "tags": ["english", "2000真题"],
+      "sourceEvidenceId": "src_30316a7e74dd1d2afad4d268",
+      "questionTextHash": "sha256:5805432622b0fb5af3ec5a40806724e65bf133bbc1bb25c89fee1dad910baf4a",
+      "sourceEvidence": {
+        "evidenceId": "src_30316a7e74dd1d2afad4d268",
+        "sourceId": "src_30316a7e74dd1d2afad4d268",
+        "sourceType": "official_paper",
+        "contentHash": "740067bbfre2170ad221274061cb3002",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语一考研历年真题/2000年考研英语真题（英一二通用） .pdf",
+        "questionTextHash": "sha256:5805432622b0fb5af3ec5a40806724e65bf133bbc1bb25c89fee1dad910baf4a",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerTextHash": "sha256:df7e70e5021544f4834bbee64a9e3789febc4be81470df629cad6ddb03320a5c",
+      "answerEvidenceStatus": "matched"
+    },
+    {
+      "number": 31,
+      "type": "analysis",
+      "question": "Governments throughout the world act on the assumption that the welfare of their people depends largely on the economic strength and wealth of the community.",
+      "options": [],
+      "answer": "政府认为，一个国家的经济实力和财富直接关系到其人民的福祉",
+      "explanation": "",
+      "id": "english-2000-031",
+      "subject": "english",
+      "year": "2000",
+      "source": "src_30316a7e74dd1d2afad4d268-2000年考研英语真题英一二通用.pdf",
+      "tags": ["english", "2000真题"],
+      "sourceEvidenceId": "src_30316a7e74dd1d2afad4d268",
+      "questionTextHash": "sha256:3146070436755542b5461a274b76d24947c82a6e832b10117a90c3ca121c4571",
+      "sourceEvidence": {
+        "evidenceId": "src_30316a7e74dd1d2afad4d268",
+        "sourceId": "src_30316a7e74dd1d2afad4d268",
+        "sourceType": "official_paper",
+        "contentHash": "740067bbfre2170ad221274061cb3002",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语一考研历年真题/2000年考研英语真题（英一二通用） .pdf",
+        "questionTextHash": "sha256:3146070436755542b5461a274b76d24947c82a6e832b10117a90c3ca121c4571",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerTextHash": "sha256:4fe2e7d7f39c00d05e7824d14b1f80c15e21412f4471ff6f1207e3c651670474",
+      "answerEvidenceStatus": "matched"
+    },
+    {
+      "number": 32,
+      "type": "analysis",
+      "question": "Furthermore, it is obvious that the strength of a country's economy is directly bound up with the efficiency of its agriculture and industry, and that this in turn rests upon the efforts of scientists and technologists of all kinds.",
+      "options": [],
+      "answer": "一个国家的经济实力与其农业和工业的效率密切相关，而这又依赖于各类科学家和技术人员的努力",
+      "explanation": "",
+      "id": "english-2000-032",
+      "subject": "english",
+      "year": "2000",
+      "source": "src_30316a7e74dd1d2afad4d268-2000年考研英语真题英一二通用.pdf",
+      "tags": ["english", "2000真题"],
+      "sourceEvidenceId": "src_30316a7e74dd1d2afad4d268",
+      "questionTextHash": "sha256:5c743f2ab3ca365d2f3944fc77ff6d1cfea582fbebb4bf61df0f4e9ee52b88b6",
+      "sourceEvidence": {
+        "evidenceId": "src_30316a7e74dd1d2afad4d268",
+        "sourceId": "src_30316a7e74dd1d2afad4d268",
+        "sourceType": "official_paper",
+        "contentHash": "740067bbfre2170ad221274061cb3002",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语一考研历年真题/2000年考研英语真题（英一二通用） .pdf",
+        "questionTextHash": "sha256:5c743f2ab3ca365d2f3944fc77ff6d1cfea582fbebb4bf61df0f4e9ee52b88b6",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerTextHash": "sha256:472ac4295a129142e604d46e430958513d161a4c095c53d64a8ae57b496d3e74",
+      "answerEvidenceStatus": "matched"
+    },
+    {
+      "number": 33,
+      "type": "analysis",
+      "question": "Owing to the remarkable development in mass-communications, people everywhere are feeling new wants and are being exposed to new customs and ideas, while governments are often forced to introduce still further innovations for the reasons given above.",
+      "options": [],
+      "answer": "由于大众传播技术的迅速发展，人们对新事物的渴望和接触新思想的机会增加，政府也常常被迫引入新的创新",
+      "explanation": "",
+      "id": "english-2000-033",
+      "subject": "english",
+      "year": "2000",
+      "source": "src_30316a7e74dd1d2afad4d268-2000年考研英语真题英一二通用.pdf",
+      "tags": ["english", "2000真题"],
+      "sourceEvidenceId": "src_30316a7e74dd1d2afad4d268",
+      "questionTextHash": "sha256:e6512a6b1d95314ec4e74fe9a36b46fce8c447028b99d1292a111a43d6f9c806",
+      "sourceEvidence": {
+        "evidenceId": "src_30316a7e74dd1d2afad4d268",
+        "sourceId": "src_30316a7e74dd1d2afad4d268",
+        "sourceType": "official_paper",
+        "contentHash": "740067bbfre2170ad221274061cb3002",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语一考研历年真题/2000年考研英语真题（英一二通用） .pdf",
+        "questionTextHash": "sha256:e6512a6b1d95314ec4e74fe9a36b46fce8c447028b99d1292a111a43d6f9c806",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerTextHash": "sha256:136706cd613dcca56be1807640ea19d1cef41b59f6855f31d8ab820d11de9d27",
+      "answerEvidenceStatus": "matched"
+    },
+    {
+      "number": 34,
+      "type": "analysis",
+      "question": "For example, in the early industrialized countries of Europe the process of industrialization—with all the far-reaching changes in social patterns that followed—was spread over nearly a century, whereas nowadays a developing nation may undergo the same process in a decade or so.",
+      "options": [],
+      "answer": "例如，早期工业化的欧洲国家经历了近一个世纪的工业化过程，而现在一个发展中国家可能只需要十年左右的时间",
+      "explanation": "",
+      "id": "english-2000-034",
+      "subject": "english",
+      "year": "2000",
+      "source": "src_30316a7e74dd1d2afad4d268-2000年考研英语真题英一二通用.pdf",
+      "tags": ["english", "2000真题"],
+      "sourceEvidenceId": "src_30316a7e74dd1d2afad4d268",
+      "questionTextHash": "sha256:6292634d198101e4fd0d47ee8c50327465731e99bf906e518c1f3d1be210af1f",
+      "sourceEvidence": {
+        "evidenceId": "src_30316a7e74dd1d2afad4d268",
+        "sourceId": "src_30316a7e74dd1d2afad4d268",
+        "sourceType": "official_paper",
+        "contentHash": "740067bbfre2170ad221274061cb3002",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语一考研历年真题/2000年考研英语真题（英一二通用） .pdf",
+        "questionTextHash": "sha256:6292634d198101e4fd0d47ee8c50327465731e99bf906e518c1f3d1be210af1f",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerTextHash": "sha256:b17421e91030c288adc8c5b4b160485c0dd9a648f820ced6bd2fa882df2492c3",
+      "answerEvidenceStatus": "matched"
+    },
+    {
+      "number": 35,
+      "type": "analysis",
+      "question": "Additional social stresses may also occur because of the population explosion or problems arising from mass migration movements—themselves made relatively easy nowadays by modern means of transport",
+      "options": [],
+      "answer": "此外，人口爆炸和大规模移民运动也可能导致额外的社会压力，而现代交通手段使得这些问题变得更加容易发生",
+      "explanation": "",
+      "id": "english-2000-035",
+      "subject": "english",
+      "year": "2000",
+      "source": "src_30316a7e74dd1d2afad4d268-2000年考研英语真题英一二通用.pdf",
+      "tags": ["english", "2000真题"],
+      "sourceEvidenceId": "src_30316a7e74dd1d2afad4d268",
+      "questionTextHash": "sha256:b4513aaa0dc1b31d38ce8de3a16f290033bdb8f7dc68a6cf1f39a8e6000ce6b3",
+      "sourceEvidence": {
+        "evidenceId": "src_30316a7e74dd1d2afad4d268",
+        "sourceId": "src_30316a7e74dd1d2afad4d268",
+        "sourceType": "official_paper",
+        "contentHash": "740067bbfre2170ad221274061cb3002",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语一考研历年真题/2000年考研英语真题（英一二通用） .pdf",
+        "questionTextHash": "sha256:b4513aaa0dc1b31d38ce8de3a16f290033bdb8f7dc68a6cf1f39a8e6000ce6b3",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerTextHash": "sha256:d1db13160a1ce6fe666219dfda675cc944704cdc05d425e8e7bfea040a2e71e5",
+      "answerEvidenceStatus": "matched"
+    },
+    {
+      "number": 36,
+      "type": "analysis",
+      "question": "Study the following two pictures carefully and write an essay of at least 150 words. Your essay must be written neatly on ANSWER SHEET 2. Your essay should meet the requirements below： 1） Describe the pictures,2） Deduce the purpose of the drawer of the pictures, 3） Suggest counter-measures.",
+      "options": [],
+      "answer": "A Brief History of World Commercial Vishing",
+      "explanation": "",
+      "id": "english-2000-036",
+      "subject": "english",
+      "year": "2000",
+      "source": "src_30316a7e74dd1d2afad4d268-2000年考研英语真题英一二通用.pdf",
+      "tags": ["english", "2000真题"],
+      "sourceEvidenceId": "src_30316a7e74dd1d2afad4d268",
+      "questionTextHash": "sha256:633015232c3df2c52e604a0a699661645f909c20a95f8da2b13a082d43b9769e",
+      "sourceEvidence": {
+        "evidenceId": "src_30316a7e74dd1d2afad4d268",
+        "sourceId": "src_30316a7e74dd1d2afad4d268",
+        "sourceType": "official_paper",
+        "contentHash": "740067bbfre2170ad221274061cb3002",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语一考研历年真题/2000年考研英语真题（英一二通用） .pdf",
+        "questionTextHash": "sha256:633015232c3df2c52e604a0a699661645f909c20a95f8da2b13a082d43b9769e",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerTextHash": "sha256:2623797290e45c64ca3c43e9a8020155d67b78c8d6fb6e4c787dcd45fb6ee05d",
+      "answerEvidenceStatus": "matched"
+    }
+  ],
+  "answerEvidenceRepairedAt": "2026-05-01T00:00:07Z"
+}

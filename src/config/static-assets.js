@@ -20,12 +20,45 @@ import { logger } from '@/utils/logger.js';
  * CDN 基础地址（末尾不含斜杠）
  * 例如：https://nf98ia8qnt.sealosbja.site/static
  */
-const CDN_BASE = config?.cdn?.url ? config.cdn.url.replace(/\/+$/, '') : '';
+const configuredCdnBase = config?.cdn?.url ? config.cdn.url.replace(/\/+$/, '') : '';
+const isH5Runtime = typeof window !== 'undefined' && typeof document !== 'undefined';
+
+function isSafeCdnBase(url) {
+  if (!url) return false;
+  try {
+    const parsed = new URL(url);
+    if (parsed.protocol !== 'https:') return false;
+    if (/^\d{1,3}(?:\.\d{1,3}){3}$/.test(parsed.hostname)) return false;
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+const CDN_BASE = isSafeCdnBase(configuredCdnBase) && !isH5Runtime ? configuredCdnBase : '';
 
 /**
  * 是否启用 CDN（配置了 CDN 地址则启用）
  */
 const useCdn = !!CDN_BASE;
+
+/**
+ * 小程序包内真实存在的本地兜底资源。
+ *
+ * H5 构建会把 cdn-assets/ 复制到 /static，因此 H5 可直接回退到 /static。
+ * 小程序没有这一步，不能把注册表里的大图都当成本地可用资源，否则会产生
+ * 404 或被构建脚本为了保守保留进包导致体积超标。
+ */
+const MINI_PROGRAM_LOCAL_ASSETS = new Set([
+  'images/default-avatar.png',
+  'images/logo.png',
+  'tabbar/home.png',
+  'tabbar/home-active.png',
+  'tabbar/practice.png',
+  'tabbar/practice-active.png',
+  'tabbar/profile.png',
+  'tabbar/profile-active.png'
+]);
 
 /**
  * 静态资源注册表
@@ -149,6 +182,10 @@ export function getAssetUrl(category, name) {
   // 配置了 CDN 则使用 CDN 地址，否则使用本地路径
   if (useCdn) {
     return `${CDN_BASE}/${relativePath}`;
+  }
+
+  if (!isH5Runtime && !MINI_PROGRAM_LOCAL_ASSETS.has(relativePath)) {
+    return '';
   }
 
   return `/static/${relativePath}`;

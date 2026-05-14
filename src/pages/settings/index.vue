@@ -127,7 +127,7 @@
             <view class="target-modal-handle" />
             <view class="modal-header target-modal-header">
               <view>
-                <text class="target-modal-eyebrow"> Target Schools </text>
+                <text class="target-modal-eyebrow"> 目标院校 </text>
                 <text class="modal-title"> 目标院校管理 </text>
               </view>
               <text
@@ -194,41 +194,9 @@
       </view>
     </view>
 
-    <!-- F002: 好友入口（已提取为独立组件） -->
-    <FriendsEntryCard />
-
-    <!-- 邀请好友入口卡片 -->
-    <view class="section">
-      <view class="invite-entry-card apple-group-card" @tap="openInviteModal">
-        <view class="invite-entry-left">
-          <image class="feature-cartoon-icon" src="./static/icons/share-arrow.png" mode="aspectFit" alt="邀请好友" />
-          <view class="invite-entry-info">
-            <text class="setting-title ds-text-sm ds-font-medium">邀请好友一起备考</text>
-            <text class="setting-desc ds-text-xs">邀请好友可获得 VIP 体验天数奖励</text>
-          </view>
-        </view>
-        <view v-if="inviteClaimableCount > 0" class="invite-entry-badge">
-          <text class="invite-badge-text">{{ inviteClaimableCount }}个奖励可领</text>
-        </view>
-        <BaseIcon v-else name="arrow-right" :size="28" />
-      </view>
-    </view>
-
-    <!-- F002: 智能导师列表（已提取为独立组件） -->
-    <AITutorList :target-schools="targetSchools" @start-chat="startAIChat" />
-
     <!-- 设置选项 - 优化样式 -->
     <view class="section">
       <view class="settings-list apple-group-card">
-        <!-- 语音伴学 -->
-        <view class="setting-item ds-flex ds-flex-between">
-          <view class="setting-info">
-            <text class="setting-title ds-text-sm ds-font-medium"> 智能语音伴学 </text>
-            <text class="setting-desc ds-text-xs"> 导师回答后自动朗读 </text>
-          </view>
-          <em3d-switch id="e2e-settings-voice-switch" :model-value="isVoiceEnabled" @change="toggleVoice3d" />
-        </view>
-
         <!-- 深色模式（自动切换 Wise/Bitget 主题） -->
         <view class="setting-item ds-flex ds-flex-between">
           <view class="setting-info">
@@ -294,7 +262,7 @@
       </view>
       <!-- 正常状态：显示注销按钮 -->
       <view v-else id="e2e-settings-delete-account" class="delete-account-btn ds-touchable" @tap="handleDeleteAccount">
-        <text class="delete-account-eyebrow"> Account </text>
+        <text class="delete-account-eyebrow"> 账号安全 </text>
         <text class="delete-account-desc"> 注销后将进入冷静期，期间可撤销，逾期后账号与学习数据将永久删除。 </text>
         <text class="delete-account-text"> 注销账号 </text>
       </view>
@@ -304,23 +272,6 @@
     <view class="footer-safe" />
 
     <!-- F005: 移除非 tabBar 页面的自定义导航栏 -->
-
-    <!-- 邀请好友弹窗 -->
-    <InviteModal
-      v-if="showInviteModal"
-      :invite-code="inviteCode"
-      @close="handleCloseInviteModal"
-      @open-poster="handleOpenPoster"
-    />
-
-    <!-- 海报生成弹窗 -->
-    <PosterModal v-if="showPosterModal" :visible="showPosterModal" @close="handleClosePosterModal" />
-
-    <!-- F002: 主题选择器弹窗（已提取为独立组件） -->
-    <ThemeSelectorModal :visible="showThemeSelector" @close="showThemeSelector = false" />
-
-    <!-- F002: 智能对话弹窗（已提取为独立组件） -->
-    <AIChatModal :visible="showChat" :tutor="currentTutor" :voice-enabled="isVoiceEnabled" @close="showChat = false" />
   </view>
 </template>
 
@@ -333,13 +284,7 @@ import { safeNavigateBack } from '@/utils/safe-navigate';
 // UniApp 特有钩子
 import { onShow } from '@dcloudio/uni-app';
 // F005: CustomTabbar removed — settings is not a tabBar page
-import AIChatModal from './AIChatModal.vue';
-import AITutorList from './AITutorList.vue';
-import ThemeSelectorModal from './ThemeSelectorModal.vue';
-import FriendsEntryCard from './FriendsEntryCard.vue';
 import LogoutButton from './LogoutButton.vue';
-import InviteModal from './InviteModal.vue';
-import PosterModal from './PosterModal.vue';
 import { isNightTime } from './theme.js';
 import { storageService } from '@/services/storageService.js';
 import { useProfileStore } from '@/stores/modules/profile';
@@ -379,17 +324,9 @@ const cacheSize = ref('0KB');
 const isDark = ref(false);
 const statusBarHeight = ref(44);
 const capsuleSafeRight = ref(20);
-const isVoiceEnabled = ref(true); // 语音开关
 const isPageLoading = ref(true); // F018: 页面加载状态
 // F002-S5: isLoggingOut moved to LogoutButton component
 const showTargetSchoolsModal = ref(false); // 目标院校管理弹窗
-const showInviteModal = ref(false); // 邀请好友弹窗
-const showPosterModal = ref(false); // 海报生成弹窗
-const showThemeSelector = ref(false); // 主题选择器弹窗
-
-// 邀请系统（invite store 已移除，使用默认值）
-const inviteCode = computed(() => 'EXAM8888');
-const inviteClaimableCount = computed(() => 0);
 // C5: 注销状态
 const deletionStatus = ref({ status: 'active', remainingDays: null });
 // D017: 考试日期
@@ -410,12 +347,6 @@ const examDateDisplay = computed(() => {
 let _themeStore = null;
 // [H11-FIX] 定时器追踪
 const _timers = [];
-// F002: 对话逻辑已提取到 AIChatModal 组件，仅保留控制状态
-const showChat = ref(false);
-const currentTutor = ref({});
-
-// F002: onlineFriends, watcher, and tutor init moved to AITutorList.vue
-
 onMounted(() => {
   statusBarHeight.value = getStatusBarHeight();
   capsuleSafeRight.value = getCapsuleSafeRight();
@@ -474,16 +405,6 @@ onUnmounted(() => {
   _timers.length = 0;
 });
 
-// F002: initAudio, initRecorder, handleTouchStart, handleTouchEnd, processVoice,
-// toggleInputMode, emoji logic, escapeHtml, renderMarkdown, startAIChat, closeChat,
-// sendToAI, scrollChatToBottom, playTTS — all moved to AIChatModal.vue
-
-// F002: startAIChat now just opens the modal
-const startAIChat = (tutor) => {
-  currentTutor.value = tutor;
-  showChat.value = true;
-};
-
 const handleGoBack = () => {
   safeNavigateBack();
 };
@@ -495,7 +416,6 @@ const loadData = () => {
     targetSchools.value = storageService.get('target_schools', []);
     const stats = storageService.get('study_stats', {});
     studyDays.value = Object.keys(stats).length || 1;
-    isVoiceEnabled.value = storageService.get('voice_enabled', true) !== false;
     // D017: 加载考试日期
     examDate.value = storageService.get('exam_date', '');
 
@@ -592,19 +512,6 @@ const onExamDateChange = (e) => {
   // 同时写入 uni storage（兼容 sprint-mode.vue 的 uni.getStorageSync 读取）
   uni.setStorageSync('exam_date', dateStr);
   toast.success('考试日期已设置');
-};
-
-const _toggleVoice = (e) => {
-  isVoiceEnabled.value = e.detail.value;
-  storageService.save('voice_enabled', isVoiceEnabled.value);
-  toast.info(isVoiceEnabled.value ? '已开启语音伴学' : '已关闭语音伴学');
-};
-
-// Em3dSwitch 版本（直接接收布尔值）
-const toggleVoice3d = (val) => {
-  isVoiceEnabled.value = val;
-  storageService.save('voice_enabled', val);
-  toast.info(val ? '已开启语音伴学' : '已关闭语音伴学');
 };
 
 const _toggleDark = (e) => {
@@ -748,11 +655,11 @@ const handleTargetSchoolClick = () => {
 // 处理添加目标院校
 const handleAddTargetSchool = () => {
   showTargetSchoolsModal.value = false;
-  // 小程序版已下线择校页，回到刷题入口
+  // 小程序版已下线择校页，先引导到当前可用的刷题入口。
   uni.switchTab({
     url: '/pages/practice/index',
     success: () => {
-      logger.log('[Settings] ✅ 已跳转到择校页面');
+      logger.log('[Settings] 已跳转到刷题页面');
     },
     fail: (err) => {
       logger.error('[Settings] ❌ 跳转择校页面失败:', err);
@@ -1010,39 +917,6 @@ const onAvatarError = (e) => {
     // 不修改 userInfo，让用户重新选择
   }
 };
-
-// 打开邀请弹窗（从后端获取真实邀请码）
-const openInviteModal = async () => {
-  showInviteModal.value = true;
-  // 异步拉取邀请信息（不阻塞弹窗打开）
-  inviteStore.fetchInviteInfo().catch((err) => {
-    logger.warn('[Settings] 拉取邀请信息失败:', err);
-  });
-};
-
-// 关闭邀请弹窗
-const handleCloseInviteModal = () => {
-  showInviteModal.value = false;
-};
-
-// 打开海报生成弹窗
-const handleOpenPoster = () => {
-  showInviteModal.value = false; // 先关闭邀请弹窗
-  _timers.push(
-    setTimeout(() => {
-      showPosterModal.value = true; // 然后打开海报弹窗
-    }, 300)
-  ); // 延迟300ms，让关闭动画完成
-};
-
-// 关闭海报弹窗
-const handleClosePosterModal = () => {
-  showPosterModal.value = false;
-};
-
-// F002: navigateToFriends moved to FriendsEntryCard.vue
-
-// F002: selectTheme moved to ThemeSelectorModal.vue
 </script>
 
 <style lang="scss" scoped>

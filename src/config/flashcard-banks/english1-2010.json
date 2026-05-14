@@ -1,0 +1,1703 @@
+{
+  "source": "src_d9fc435e144b822b366d6539-2010年考研英语一真题.pdf",
+  "subject": "english1",
+  "year": "2010",
+  "processed_at": "2026-04-30 19:00:00",
+  "total_cards": 37,
+  "cards": [
+    {
+      "number": 1,
+      "type": "single_choice",
+      "question": "In 1924 America's National Research Council sent two engineers to supervise a series of experiments at a telephone-parts factory called the Hawthorne Plant near workers’ Chicago. It hoped they would learn how shop-floor lighting — productivity.",
+      "options": [
+        {
+          "label": "A",
+          "text": "affected"
+        },
+        {
+          "label": "B",
+          "text": "up"
+        },
+        {
+          "label": "C",
+          "text": "act"
+        },
+        {
+          "label": "D",
+          "text": "off"
+        }
+      ],
+      "answer": "A",
+      "explanation": "",
+      "id": "english1-2010-001",
+      "subject": "english1",
+      "year": "2010",
+      "source": "src_d9fc435e144b822b366d6539-2010年考研英语一真题.pdf",
+      "tags": ["english1", "2010真题"],
+      "sourceEvidenceId": "src_d9fc435e144b822b366d6539",
+      "questionTextHash": "sha256:7a17fc2f139622cfb4ee660edabcd6db3260763707e828798ae83bdb45d7a23b",
+      "sourceEvidence": {
+        "evidenceId": "src_d9fc435e144b822b366d6539",
+        "sourceId": "src_d9fc435e144b822b366d6539",
+        "sourceType": "official_paper",
+        "contentHash": "b02b97656ra7f68c71fbbc07859f8432",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语一考研历年真题/2010年考研英语一真题 .pdf",
+        "questionTextHash": "sha256:7a17fc2f139622cfb4ee660edabcd6db3260763707e828798ae83bdb45d7a23b",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerTextHash": "sha256:559aead08264d5795d3909718cdd05abd49572e84fe55590eef31a88a08fdffd",
+      "answerEvidenceStatus": "matched"
+    },
+    {
+      "number": 2,
+      "type": "single_choice",
+      "question": "Instead, the studies ended 2 - giving their name to the \"lawthorne effect，” the extremely influential idea that the very 3 of being experimented upon changed subjects'behavior.",
+      "options": [
+        {
+          "label": "A",
+          "text": "at"
+        },
+        {
+          "label": "B",
+          "text": "up"
+        },
+        {
+          "label": "C",
+          "text": "act"
+        },
+        {
+          "label": "D",
+          "text": "with"
+        }
+      ],
+      "answer": "B",
+      "explanation": "",
+      "id": "english1-2010-002",
+      "subject": "english1",
+      "year": "2010",
+      "source": "src_d9fc435e144b822b366d6539-2010年考研英语一真题.pdf",
+      "tags": ["english1", "2010真题"],
+      "sourceEvidenceId": "src_d9fc435e144b822b366d6539",
+      "questionTextHash": "sha256:c2467a9e30bff3094394d6990e4f1ac3f5765a88d306dcdac4482dd1a7ca8a7b",
+      "sourceEvidence": {
+        "evidenceId": "src_d9fc435e144b822b366d6539",
+        "sourceId": "src_d9fc435e144b822b366d6539",
+        "sourceType": "official_paper",
+        "contentHash": "b02b97656ra7f68c71fbbc07859f8432",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语一考研历年真题/2010年考研英语一真题 .pdf",
+        "questionTextHash": "sha256:c2467a9e30bff3094394d6990e4f1ac3f5765a88d306dcdac4482dd1a7ca8a7b",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerTextHash": "sha256:df7e70e5021544f4834bbee64a9e3789febc4be81470df629cad6ddb03320a5c",
+      "answerEvidenceStatus": "matched"
+    },
+    {
+      "number": 3,
+      "type": "single_choice",
+      "question": "The idea arose because of the 4 According to 5 of the experiments, their hourly output rose when lighting was increased, but also when it was dimmed.",
+      "options": [
+        {
+          "label": "A",
+          "text": "truth"
+        },
+        {
+          "label": "B",
+          "text": "sight"
+        },
+        {
+          "label": "C",
+          "text": "proof"
+        },
+        {
+          "label": "D",
+          "text": "accounts"
+        }
+      ],
+      "answer": "A",
+      "explanation": "",
+      "id": "english1-2010-003",
+      "subject": "english1",
+      "year": "2010",
+      "source": "src_d9fc435e144b822b366d6539-2010年考研英语一真题.pdf",
+      "tags": ["english1", "2010真题"],
+      "sourceEvidenceId": "src_d9fc435e144b822b366d6539",
+      "questionTextHash": "sha256:9dbf61775fcd479651b6ab3a84b76d85710191d14f607cef548e438071823ce8",
+      "sourceEvidence": {
+        "evidenceId": "src_d9fc435e144b822b366d6539",
+        "sourceId": "src_d9fc435e144b822b366d6539",
+        "sourceType": "official_paper",
+        "contentHash": "b02b97656ra7f68c71fbbc07859f8432",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语一考研历年真题/2010年考研英语一真题 .pdf",
+        "questionTextHash": "sha256:9dbf61775fcd479651b6ab3a84b76d85710191d14f607cef548e438071823ce8",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerTextHash": "sha256:559aead08264d5795d3909718cdd05abd49572e84fe55590eef31a88a08fdffd",
+      "answerEvidenceStatus": "matched"
+    },
+    {
+      "number": 4,
+      "type": "single_choice",
+      "question": "It did not 6 what was done in the experiment; 7 something was changed, productivity rose.",
+      "options": [
+        {
+          "label": "A",
+          "text": "conclude"
+        },
+        {
+          "label": "B",
+          "text": "matter"
+        },
+        {
+          "label": "C",
+          "text": "indicate"
+        },
+        {
+          "label": "D",
+          "text": "work"
+        }
+      ],
+      "answer": "B",
+      "explanation": "",
+      "id": "english1-2010-004",
+      "subject": "english1",
+      "year": "2010",
+      "source": "src_d9fc435e144b822b366d6539-2010年考研英语一真题.pdf",
+      "tags": ["english1", "2010真题"],
+      "sourceEvidenceId": "src_d9fc435e144b822b366d6539",
+      "questionTextHash": "sha256:5d19a4ad4ae7b70986702f0ef33d9e88dc298f042a893e1e76b5679abbc9b470",
+      "sourceEvidence": {
+        "evidenceId": "src_d9fc435e144b822b366d6539",
+        "sourceId": "src_d9fc435e144b822b366d6539",
+        "sourceType": "official_paper",
+        "contentHash": "b02b97656ra7f68c71fbbc07859f8432",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语一考研历年真题/2010年考研英语一真题 .pdf",
+        "questionTextHash": "sha256:5d19a4ad4ae7b70986702f0ef33d9e88dc298f042a893e1e76b5679abbc9b470",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerTextHash": "sha256:df7e70e5021544f4834bbee64a9e3789febc4be81470df629cad6ddb03320a5c",
+      "answerEvidenceStatus": "matched"
+    },
+    {
+      "number": 5,
+      "type": "single_choice",
+      "question": "A（n）8 that to alter workers’ they were being experimented upon seemed to be9 behavior _ 10 itself.",
+      "options": [
+        {
+          "label": "A",
+          "text": "awareness"
+        },
+        {
+          "label": "B",
+          "text": "expectation"
+        },
+        {
+          "label": "C",
+          "text": "sentiment"
+        },
+        {
+          "label": "D",
+          "text": "illusion"
+        }
+      ],
+      "answer": "A",
+      "explanation": "",
+      "id": "english1-2010-005",
+      "subject": "english1",
+      "year": "2010",
+      "source": "src_d9fc435e144b822b366d6539-2010年考研英语一真题.pdf",
+      "tags": ["english1", "2010真题"],
+      "sourceEvidenceId": "src_d9fc435e144b822b366d6539",
+      "questionTextHash": "sha256:13da82b75d5c0f888e4e2b2659c78d8f94a6b2e63b9cd8fd2ac2c9499d366f45",
+      "sourceEvidence": {
+        "evidenceId": "src_d9fc435e144b822b366d6539",
+        "sourceId": "src_d9fc435e144b822b366d6539",
+        "sourceType": "official_paper",
+        "contentHash": "b02b97656ra7f68c71fbbc07859f8432",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语一考研历年真题/2010年考研英语一真题 .pdf",
+        "questionTextHash": "sha256:13da82b75d5c0f888e4e2b2659c78d8f94a6b2e63b9cd8fd2ac2c9499d366f45",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerTextHash": "sha256:559aead08264d5795d3909718cdd05abd49572e84fe55590eef31a88a08fdffd",
+      "answerEvidenceStatus": "matched"
+    },
+    {
+      "number": 6,
+      "type": "single_choice",
+      "question": "After several decades, the same data were 11 to econometric analysis.",
+      "options": [
+        {
+          "label": "A",
+          "text": "compared"
+        },
+        {
+          "label": "B",
+          "text": "subjected"
+        },
+        {
+          "label": "C",
+          "text": "conveyed"
+        },
+        {
+          "label": "D",
+          "text": "shown"
+        }
+      ],
+      "answer": "A",
+      "explanation": "",
+      "id": "english1-2010-006",
+      "subject": "english1",
+      "year": "2010",
+      "source": "src_d9fc435e144b822b366d6539-2010年考研英语一真题.pdf",
+      "tags": ["english1", "2010真题"],
+      "sourceEvidenceId": "src_d9fc435e144b822b366d6539",
+      "questionTextHash": "sha256:aebb0fbfaf0c882b269a6aa514e0365e4dae495be72fa0cc84e7863cd1bc098f",
+      "sourceEvidence": {
+        "evidenceId": "src_d9fc435e144b822b366d6539",
+        "sourceId": "src_d9fc435e144b822b366d6539",
+        "sourceType": "official_paper",
+        "contentHash": "b02b97656ra7f68c71fbbc07859f8432",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语一考研历年真题/2010年考研英语一真题 .pdf",
+        "questionTextHash": "sha256:aebb0fbfaf0c882b269a6aa514e0365e4dae495be72fa0cc84e7863cd1bc098f",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerTextHash": "sha256:559aead08264d5795d3909718cdd05abd49572e84fe55590eef31a88a08fdffd",
+      "answerEvidenceStatus": "matched"
+    },
+    {
+      "number": 7,
+      "type": "single_choice",
+      "question": "The 12 the descriptions on Hawthorne experiments had another surprise in store.",
+      "options": [
+        {
+          "label": "A",
+          "text": "Contrary to"
+        },
+        {
+          "label": "B",
+          "text": "Parallel with"
+        },
+        {
+          "label": "C",
+          "text": "Peculiar to"
+        },
+        {
+          "label": "D",
+          "text": "implication"
+        }
+      ],
+      "answer": "A",
+      "explanation": "",
+      "id": "english1-2010-007",
+      "subject": "english1",
+      "year": "2010",
+      "source": "src_d9fc435e144b822b366d6539-2010年考研英语一真题.pdf",
+      "tags": ["english1", "2010真题"],
+      "sourceEvidenceId": "src_d9fc435e144b822b366d6539",
+      "questionTextHash": "sha256:2d97dc95fa8beb92c7875f8113485de2004a607814908d5cca3e059c3e4f68a8",
+      "sourceEvidence": {
+        "evidenceId": "src_d9fc435e144b822b366d6539",
+        "sourceId": "src_d9fc435e144b822b366d6539",
+        "sourceType": "official_paper",
+        "contentHash": "b02b97656ra7f68c71fbbc07859f8432",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语一考研历年真题/2010年考研英语一真题 .pdf",
+        "questionTextHash": "sha256:2d97dc95fa8beb92c7875f8113485de2004a607814908d5cca3e059c3e4f68a8",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerTextHash": "sha256:559aead08264d5795d3909718cdd05abd49572e84fe55590eef31a88a08fdffd",
+      "answerEvidenceStatus": "matched"
+    },
+    {
+      "number": 8,
+      "type": "single_choice",
+      "question": "| 13 record,no systematic was found that levels of productivity were related to changes in lighting.",
+      "options": [
+        {
+          "label": "A",
+          "text": "evidence"
+        },
+        {
+          "label": "B",
+          "text": "source"
+        },
+        {
+          "label": "C",
+          "text": "guidance"
+        },
+        {
+          "label": "D",
+          "text": "implication"
+        }
+      ],
+      "answer": "A",
+      "explanation": "",
+      "id": "english1-2010-008",
+      "subject": "english1",
+      "year": "2010",
+      "source": "src_d9fc435e144b822b366d6539-2010年考研英语一真题.pdf",
+      "tags": ["english1", "2010真题"],
+      "sourceEvidenceId": "src_d9fc435e144b822b366d6539",
+      "questionTextHash": "sha256:b21394e3b01b900c65536bea49477975a9fc0444d931d555a040f4f6759894ab",
+      "sourceEvidence": {
+        "evidenceId": "src_d9fc435e144b822b366d6539",
+        "sourceId": "src_d9fc435e144b822b366d6539",
+        "sourceType": "official_paper",
+        "contentHash": "b02b97656ra7f68c71fbbc07859f8432",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语一考研历年真题/2010年考研英语一真题 .pdf",
+        "questionTextHash": "sha256:b21394e3b01b900c65536bea49477975a9fc0444d931d555a040f4f6759894ab",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerTextHash": "sha256:559aead08264d5795d3909718cdd05abd49572e84fe55590eef31a88a08fdffd",
+      "answerEvidenceStatus": "matched"
+    },
+    {
+      "number": 9,
+      "type": "single_choice",
+      "question": "It turns out that the peculiar way of conducting the experiments may have led to 14 interpretations of what happened.",
+      "options": [
+        {
+          "label": "A",
+          "text": "disputable"
+        },
+        {
+          "label": "B",
+          "text": "enlightening"
+        },
+        {
+          "label": "C",
+          "text": "reliable"
+        },
+        {
+          "label": "D",
+          "text": "misleading"
+        }
+      ],
+      "answer": "D",
+      "explanation": "",
+      "id": "english1-2010-009",
+      "subject": "english1",
+      "year": "2010",
+      "source": "src_d9fc435e144b822b366d6539-2010年考研英语一真题.pdf",
+      "tags": ["english1", "2010真题"],
+      "sourceEvidenceId": "src_d9fc435e144b822b366d6539",
+      "questionTextHash": "sha256:e8716c9f6aff2747400a0088d36290fc0aa0b79f4e9806d1afb2b9fc2a8e70ed",
+      "sourceEvidence": {
+        "evidenceId": "src_d9fc435e144b822b366d6539",
+        "sourceId": "src_d9fc435e144b822b366d6539",
+        "sourceType": "official_paper",
+        "contentHash": "b02b97656ra7f68c71fbbc07859f8432",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语一考研历年真题/2010年考研英语一真题 .pdf",
+        "questionTextHash": "sha256:e8716c9f6aff2747400a0088d36290fc0aa0b79f4e9806d1afb2b9fc2a8e70ed",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerTextHash": "sha256:3f39d5c348e5b79d06e842c114e6cc571583bbf44e4b0ebfda1a01ec05745d43",
+      "answerEvidenceStatus": "matched"
+    },
+    {
+      "number": 10,
+      "type": "single_choice",
+      "question": "15_， lighting was always 16 rose changed on a Sunday.",
+      "options": [
+        {
+          "label": "A",
+          "text": "In contrast"
+        },
+        {
+          "label": "B",
+          "text": "For example"
+        },
+        {
+          "label": "C",
+          "text": "In consequence"
+        },
+        {
+          "label": "D",
+          "text": "As usual"
+        }
+      ],
+      "answer": "D",
+      "explanation": "",
+      "id": "english1-2010-010",
+      "subject": "english1",
+      "year": "2010",
+      "source": "src_d9fc435e144b822b366d6539-2010年考研英语一真题.pdf",
+      "tags": ["english1", "2010真题"],
+      "sourceEvidenceId": "src_d9fc435e144b822b366d6539",
+      "questionTextHash": "sha256:da5a7ebd50384c4d3e6dd9e0863ba9830472816cd446bd92c63d3fdadde15961",
+      "sourceEvidence": {
+        "evidenceId": "src_d9fc435e144b822b366d6539",
+        "sourceId": "src_d9fc435e144b822b366d6539",
+        "sourceType": "official_paper",
+        "contentHash": "b02b97656ra7f68c71fbbc07859f8432",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语一考研历年真题/2010年考研英语一真题 .pdf",
+        "questionTextHash": "sha256:da5a7ebd50384c4d3e6dd9e0863ba9830472816cd446bd92c63d3fdadde15961",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerTextHash": "sha256:3f39d5c348e5b79d06e842c114e6cc571583bbf44e4b0ebfda1a01ec05745d43",
+      "answerEvidenceStatus": "matched"
+    },
+    {
+      "number": 11,
+      "type": "single_choice",
+      "question": "When work started again on Monday, output _ compared with the previous Saturday and 17 to rise for the next couple of _， a comparison with data for weeks when there was no experimentation days.",
+      "options": [
+        {
+          "label": "A",
+          "text": "duly"
+        },
+        {
+          "label": "B",
+          "text": "ceased"
+        },
+        {
+          "label": "C",
+          "text": "continued"
+        },
+        {
+          "label": "D",
+          "text": "failed"
+        }
+      ],
+      "answer": "A",
+      "explanation": "",
+      "id": "english1-2010-011",
+      "subject": "english1",
+      "year": "2010",
+      "source": "src_d9fc435e144b822b366d6539-2010年考研英语一真题.pdf",
+      "tags": ["english1", "2010真题"],
+      "sourceEvidenceId": "src_d9fc435e144b822b366d6539",
+      "questionTextHash": "sha256:164a665520d3d9c3b3344780dd546edfdff50875516d4ff7ec38238ee1ff73dd",
+      "sourceEvidence": {
+        "evidenceId": "src_d9fc435e144b822b366d6539",
+        "sourceId": "src_d9fc435e144b822b366d6539",
+        "sourceType": "official_paper",
+        "contentHash": "b02b97656ra7f68c71fbbc07859f8432",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语一考研历年真题/2010年考研英语一真题 .pdf",
+        "questionTextHash": "sha256:164a665520d3d9c3b3344780dd546edfdff50875516d4ff7ec38238ee1ff73dd",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerTextHash": "sha256:559aead08264d5795d3909718cdd05abd49572e84fe55590eef31a88a08fdffd",
+      "answerEvidenceStatus": "matched"
+    },
+    {
+      "number": 12,
+      "type": "single_choice",
+      "question": "19 showed that output always went up on Mondays.",
+      "options": [
+        {
+          "label": "A",
+          "text": "Therefore"
+        },
+        {
+          "label": "B",
+          "text": "Meanwhile"
+        },
+        {
+          "label": "C",
+          "text": "However"
+        },
+        {
+          "label": "D",
+          "text": "tended"
+        }
+      ],
+      "answer": "A",
+      "explanation": "",
+      "id": "english1-2010-012",
+      "subject": "english1",
+      "year": "2010",
+      "source": "src_d9fc435e144b822b366d6539-2010年考研英语一真题.pdf",
+      "tags": ["english1", "2010真题"],
+      "sourceEvidenceId": "src_d9fc435e144b822b366d6539",
+      "questionTextHash": "sha256:f674b076112d93c5ad97bbcca564fc822d5e4983cd17424b8291de03a9283620",
+      "sourceEvidence": {
+        "evidenceId": "src_d9fc435e144b822b366d6539",
+        "sourceId": "src_d9fc435e144b822b366d6539",
+        "sourceType": "official_paper",
+        "contentHash": "b02b97656ra7f68c71fbbc07859f8432",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语一考研历年真题/2010年考研英语一真题 .pdf",
+        "questionTextHash": "sha256:f674b076112d93c5ad97bbcca564fc822d5e4983cd17424b8291de03a9283620",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerTextHash": "sha256:559aead08264d5795d3909718cdd05abd49572e84fe55590eef31a88a08fdffd",
+      "answerEvidenceStatus": "matched"
+    },
+    {
+      "number": 13,
+      "type": "single_choice",
+      "question": "Workers to be diligent for a plateau and then the first few days of the week in any case, before 20 slackening off.",
+      "options": [
+        {
+          "label": "A",
+          "text": "breaking"
+        },
+        {
+          "label": "B",
+          "text": "climbing"
+        },
+        {
+          "label": "C",
+          "text": "surpassing"
+        },
+        {
+          "label": "D",
+          "text": "hitting"
+        }
+      ],
+      "answer": "A",
+      "explanation": "",
+      "id": "english1-2010-013",
+      "subject": "english1",
+      "year": "2010",
+      "source": "src_d9fc435e144b822b366d6539-2010年考研英语一真题.pdf",
+      "tags": ["english1", "2010真题"],
+      "sourceEvidenceId": "src_d9fc435e144b822b366d6539",
+      "questionTextHash": "sha256:c80a64248cf9a5f714bf3d29b0a4cb80f9701282cc5d87cbeeb64deade99b04e",
+      "sourceEvidence": {
+        "evidenceId": "src_d9fc435e144b822b366d6539",
+        "sourceId": "src_d9fc435e144b822b366d6539",
+        "sourceType": "official_paper",
+        "contentHash": "b02b97656ra7f68c71fbbc07859f8432",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语一考研历年真题/2010年考研英语一真题 .pdf",
+        "questionTextHash": "sha256:c80a64248cf9a5f714bf3d29b0a4cb80f9701282cc5d87cbeeb64deade99b04e",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerTextHash": "sha256:559aead08264d5795d3909718cdd05abd49572e84fe55590eef31a88a08fdffd",
+      "answerEvidenceStatus": "matched"
+    },
+    {
+      "number": 14,
+      "type": "analysis",
+      "question": "Of all the changes that have taken place in English-language newspapers during the past quarter-century, perhaps the most far-reaching has been the inexorable decline in the scope and seriousness of their arts coverage.",
+      "options": [],
+      "answer": "The decline in arts coverage in English-language newspapers has been a significant change over the past quarter-century. This decline has resulted in a lack of high-quality arts criticism, making it difficult for readers to find in-depth reviews and analysis of artistic events.",
+      "explanation": "",
+      "id": "english1-2010-014",
+      "subject": "english1",
+      "year": "2010",
+      "source": "src_d9fc435e144b822b366d6539-2010年考研英语一真题.pdf",
+      "tags": ["english1", "2010真题"],
+      "sourceEvidenceId": "src_d9fc435e144b822b366d6539",
+      "questionTextHash": "sha256:a2e410d9bc71327250cdbd21e7e0d7a4b595d28c8efef9980865b298eab7788c",
+      "sourceEvidence": {
+        "evidenceId": "src_d9fc435e144b822b366d6539",
+        "sourceId": "src_d9fc435e144b822b366d6539",
+        "sourceType": "official_paper",
+        "contentHash": "b02b97656ra7f68c71fbbc07859f8432",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语一考研历年真题/2010年考研英语一真题 .pdf",
+        "questionTextHash": "sha256:a2e410d9bc71327250cdbd21e7e0d7a4b595d28c8efef9980865b298eab7788c",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerTextHash": "sha256:fa993dfd512670b50d2bfe7313cac55975c758bc8aa2326a843238fc90cce096",
+      "answerEvidenceStatus": "matched"
+    },
+    {
+      "number": 21,
+      "type": "single_choice",
+      "question": "It is indicated in Paragraphs 1 and 2 that",
+      "options": [
+        {
+          "label": "A",
+          "text": "arts criticism has disappeared from big-city newspapers"
+        },
+        {
+          "label": "B",
+          "text": "English-language newspapers used to carry more arts reviews"
+        },
+        {
+          "label": "C",
+          "text": "high-quality newspapers retain a large body of readers"
+        },
+        {
+          "label": "D",
+          "text": "young readers doubt the suitability of criticism on dailies"
+        }
+      ],
+      "answer": "B",
+      "explanation": "",
+      "id": "english1-2010-021",
+      "subject": "english1",
+      "year": "2010",
+      "source": "src_d9fc435e144b822b366d6539-2010年考研英语一真题.pdf",
+      "tags": ["english1", "2010真题"],
+      "sourceEvidenceId": "src_d9fc435e144b822b366d6539",
+      "questionTextHash": "sha256:2cadb352c2add3f09287d5f28f0ad3b96e71c3450d9c56d53a324be2be20163a",
+      "sourceEvidence": {
+        "evidenceId": "src_d9fc435e144b822b366d6539",
+        "sourceId": "src_d9fc435e144b822b366d6539",
+        "sourceType": "official_paper",
+        "contentHash": "b02b97656ra7f68c71fbbc07859f8432",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语一考研历年真题/2010年考研英语一真题 .pdf",
+        "questionTextHash": "sha256:2cadb352c2add3f09287d5f28f0ad3b96e71c3450d9c56d53a324be2be20163a",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerEvidenceStatus": "matched",
+      "answerEvidenceSourceId": "src_bff66c7d8434bb36d89117d9",
+      "answerTextHash": "sha256:df7e70e5021544f4834bbee64a9e3789febc4be81470df629cad6ddb03320a5c",
+      "answerEvidence": {
+        "status": "candidate_matched",
+        "sourceId": "src_bff66c7d8434bb36d89117d9",
+        "sourceCardId": "answer-key-2010-21",
+        "sourceFilePath": "data/raw-inbox/src_bff66c7d8434bb36d89117d9-2010年真题及答案速查.pdf",
+        "answerTextHash": "sha256:df7e70e5021544f4834bbee64a9e3789febc4be81470df629cad6ddb03320a5c",
+        "method": "companion_answer_key_text",
+        "verifiedAt": "",
+        "verifiedBy": "",
+        "note": "Candidate answer repaired from a cleaned companion answer file; not publishable until verified."
+      }
+    },
+    {
+      "number": 22,
+      "type": "single_choice",
+      "question": "Newspaper reviews in England before World War II were characterized by",
+      "options": [
+        {
+          "label": "A",
+          "text": "free themes"
+        },
+        {
+          "label": "B",
+          "text": "casual style"
+        },
+        {
+          "label": "C",
+          "text": "elaborate layout"
+        },
+        {
+          "label": "D",
+          "text": "radical viewpoints"
+        }
+      ],
+      "answer": "A",
+      "explanation": "",
+      "id": "english1-2010-022",
+      "subject": "english1",
+      "year": "2010",
+      "source": "src_d9fc435e144b822b366d6539-2010年考研英语一真题.pdf",
+      "tags": ["english1", "2010真题"],
+      "sourceEvidenceId": "src_d9fc435e144b822b366d6539",
+      "questionTextHash": "sha256:bec519a453345c201cdad0a4afb6c0cff416706068159b70026a8662a44bd637",
+      "sourceEvidence": {
+        "evidenceId": "src_d9fc435e144b822b366d6539",
+        "sourceId": "src_d9fc435e144b822b366d6539",
+        "sourceType": "official_paper",
+        "contentHash": "b02b97656ra7f68c71fbbc07859f8432",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语一考研历年真题/2010年考研英语一真题 .pdf",
+        "questionTextHash": "sha256:bec519a453345c201cdad0a4afb6c0cff416706068159b70026a8662a44bd637",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerEvidenceStatus": "matched",
+      "answerEvidenceSourceId": "src_bff66c7d8434bb36d89117d9",
+      "answerTextHash": "sha256:559aead08264d5795d3909718cdd05abd49572e84fe55590eef31a88a08fdffd",
+      "answerEvidence": {
+        "status": "candidate_matched",
+        "sourceId": "src_bff66c7d8434bb36d89117d9",
+        "sourceCardId": "answer-key-2010-22",
+        "sourceFilePath": "data/raw-inbox/src_bff66c7d8434bb36d89117d9-2010年真题及答案速查.pdf",
+        "answerTextHash": "sha256:559aead08264d5795d3909718cdd05abd49572e84fe55590eef31a88a08fdffd",
+        "method": "companion_answer_key_text",
+        "verifiedAt": "",
+        "verifiedBy": "",
+        "note": "Candidate answer repaired from a cleaned companion answer file; not publishable until verified."
+      }
+    },
+    {
+      "number": 23,
+      "type": "single_choice",
+      "question": "Which of the following would Shaw and Newman most probably agree on?",
+      "options": [
+        {
+          "label": "A",
+          "text": "It is writers’ duty to fulfill journalistic goals"
+        },
+        {
+          "label": "B",
+          "text": "It is contemptible for writers to be journalists"
+        },
+        {
+          "label": "C",
+          "text": "Writers are likely to be tempted into journalism"
+        },
+        {
+          "label": "D",
+          "text": "Not all writers are capable of journalistic writing"
+        }
+      ],
+      "answer": "D",
+      "explanation": "",
+      "id": "english1-2010-023",
+      "subject": "english1",
+      "year": "2010",
+      "source": "src_d9fc435e144b822b366d6539-2010年考研英语一真题.pdf",
+      "tags": ["english1", "2010真题"],
+      "sourceEvidenceId": "src_d9fc435e144b822b366d6539",
+      "questionTextHash": "sha256:d3c471e8685629864aaea81bcd9d449052604f65a4095254a2cd643452155a31",
+      "sourceEvidence": {
+        "evidenceId": "src_d9fc435e144b822b366d6539",
+        "sourceId": "src_d9fc435e144b822b366d6539",
+        "sourceType": "official_paper",
+        "contentHash": "b02b97656ra7f68c71fbbc07859f8432",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语一考研历年真题/2010年考研英语一真题 .pdf",
+        "questionTextHash": "sha256:d3c471e8685629864aaea81bcd9d449052604f65a4095254a2cd643452155a31",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerEvidenceStatus": "matched",
+      "answerEvidenceSourceId": "src_bff66c7d8434bb36d89117d9",
+      "answerTextHash": "sha256:3f39d5c348e5b79d06e842c114e6cc571583bbf44e4b0ebfda1a01ec05745d43",
+      "answerEvidence": {
+        "status": "candidate_matched",
+        "sourceId": "src_bff66c7d8434bb36d89117d9",
+        "sourceCardId": "answer-key-2010-23",
+        "sourceFilePath": "data/raw-inbox/src_bff66c7d8434bb36d89117d9-2010年真题及答案速查.pdf",
+        "answerTextHash": "sha256:3f39d5c348e5b79d06e842c114e6cc571583bbf44e4b0ebfda1a01ec05745d43",
+        "method": "companion_answer_key_text",
+        "verifiedAt": "",
+        "verifiedBy": "",
+        "note": "Candidate answer repaired from a cleaned companion answer file; not publishable until verified."
+      }
+    },
+    {
+      "number": 24,
+      "type": "single_choice",
+      "question": "What can be learned about Cardus according to the last two paragraphs?",
+      "options": [
+        {
+          "label": "A",
+          "text": "His music criticism may not appeal to readers today"
+        },
+        {
+          "label": "B",
+          "text": "His reputation as a music critic has long been in dispute"
+        },
+        {
+          "label": "C",
+          "text": "His style caters largely to modern specialists"
+        },
+        {
+          "label": "D",
+          "text": "His writings fail to follow the amateur tradition"
+        }
+      ],
+      "answer": "A",
+      "explanation": "",
+      "id": "english1-2010-024",
+      "subject": "english1",
+      "year": "2010",
+      "source": "src_d9fc435e144b822b366d6539-2010年考研英语一真题.pdf",
+      "tags": ["english1", "2010真题"],
+      "sourceEvidenceId": "src_d9fc435e144b822b366d6539",
+      "questionTextHash": "sha256:19e02cb5b994b9b94b24fa858af3ffde1fecbfd57a73a2688256dec090b671c9",
+      "sourceEvidence": {
+        "evidenceId": "src_d9fc435e144b822b366d6539",
+        "sourceId": "src_d9fc435e144b822b366d6539",
+        "sourceType": "official_paper",
+        "contentHash": "b02b97656ra7f68c71fbbc07859f8432",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语一考研历年真题/2010年考研英语一真题 .pdf",
+        "questionTextHash": "sha256:19e02cb5b994b9b94b24fa858af3ffde1fecbfd57a73a2688256dec090b671c9",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerEvidenceStatus": "matched",
+      "answerEvidenceSourceId": "src_bff66c7d8434bb36d89117d9",
+      "answerTextHash": "sha256:559aead08264d5795d3909718cdd05abd49572e84fe55590eef31a88a08fdffd",
+      "answerEvidence": {
+        "status": "candidate_matched",
+        "sourceId": "src_bff66c7d8434bb36d89117d9",
+        "sourceCardId": "answer-key-2010-24",
+        "sourceFilePath": "data/raw-inbox/src_bff66c7d8434bb36d89117d9-2010年真题及答案速查.pdf",
+        "answerTextHash": "sha256:559aead08264d5795d3909718cdd05abd49572e84fe55590eef31a88a08fdffd",
+        "method": "companion_answer_key_text",
+        "verifiedAt": "",
+        "verifiedBy": "",
+        "note": "Candidate answer repaired from a cleaned companion answer file; not publishable until verified."
+      }
+    },
+    {
+      "number": 25,
+      "type": "single_choice",
+      "question": "What would be the best title for the text?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Newspapers of the Good Old Days"
+        },
+        {
+          "label": "B",
+          "text": "The Lost Horizon in Newspapers"
+        },
+        {
+          "label": "C",
+          "text": "Mournful Decline of Journalism"
+        },
+        {
+          "label": "D",
+          "text": "Prominent Critics in Memory"
+        }
+      ],
+      "answer": "B",
+      "explanation": "",
+      "id": "english1-2010-025",
+      "subject": "english1",
+      "year": "2010",
+      "source": "src_d9fc435e144b822b366d6539-2010年考研英语一真题.pdf",
+      "tags": ["english1", "2010真题"],
+      "sourceEvidenceId": "src_d9fc435e144b822b366d6539",
+      "questionTextHash": "sha256:6c64fa2610b68e6cc5e9b297591d4e40c718d72efc0ef8932a64e09701c8d59e",
+      "sourceEvidence": {
+        "evidenceId": "src_d9fc435e144b822b366d6539",
+        "sourceId": "src_d9fc435e144b822b366d6539",
+        "sourceType": "official_paper",
+        "contentHash": "b02b97656ra7f68c71fbbc07859f8432",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语一考研历年真题/2010年考研英语一真题 .pdf",
+        "questionTextHash": "sha256:6c64fa2610b68e6cc5e9b297591d4e40c718d72efc0ef8932a64e09701c8d59e",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerEvidenceStatus": "matched",
+      "answerEvidenceSourceId": "src_bff66c7d8434bb36d89117d9",
+      "answerTextHash": "sha256:df7e70e5021544f4834bbee64a9e3789febc4be81470df629cad6ddb03320a5c",
+      "answerEvidence": {
+        "status": "candidate_matched",
+        "sourceId": "src_bff66c7d8434bb36d89117d9",
+        "sourceCardId": "answer-key-2010-25",
+        "sourceFilePath": "data/raw-inbox/src_bff66c7d8434bb36d89117d9-2010年真题及答案速查.pdf",
+        "answerTextHash": "sha256:df7e70e5021544f4834bbee64a9e3789febc4be81470df629cad6ddb03320a5c",
+        "method": "companion_answer_key_text",
+        "verifiedAt": "",
+        "verifiedBy": "",
+        "note": "Candidate answer repaired from a cleaned companion answer file; not publishable until verified."
+      }
+    },
+    {
+      "number": 26,
+      "type": "single_choice",
+      "question": "Business-method patents have recently aroused concern because of",
+      "options": [
+        {
+          "label": "A",
+          "text": "their limited value to businesses"
+        },
+        {
+          "label": "B",
+          "text": "their connection with asset allocation"
+        },
+        {
+          "label": "C",
+          "text": "the possible restriction on their granting"
+        },
+        {
+          "label": "D",
+          "text": "the controversy over their authorization"
+        }
+      ],
+      "answer": "D",
+      "explanation": "",
+      "id": "english1-2010-026",
+      "subject": "english1",
+      "year": "2010",
+      "source": "src_d9fc435e144b822b366d6539-2010年考研英语一真题.pdf",
+      "tags": ["english1", "2010真题"],
+      "sourceEvidenceId": "src_d9fc435e144b822b366d6539",
+      "questionTextHash": "sha256:1f54e5bfd31288e67aa79bc80e09cedca271869fcc926d261b69bf2913862273",
+      "sourceEvidence": {
+        "evidenceId": "src_d9fc435e144b822b366d6539",
+        "sourceId": "src_d9fc435e144b822b366d6539",
+        "sourceType": "official_paper",
+        "contentHash": "b02b97656ra7f68c71fbbc07859f8432",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语一考研历年真题/2010年考研英语一真题 .pdf",
+        "questionTextHash": "sha256:1f54e5bfd31288e67aa79bc80e09cedca271869fcc926d261b69bf2913862273",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerTextHash": "sha256:3f39d5c348e5b79d06e842c114e6cc571583bbf44e4b0ebfda1a01ec05745d43",
+      "answerEvidenceStatus": "matched"
+    },
+    {
+      "number": 27,
+      "type": "single_choice",
+      "question": "Which of the following is true of the Bilski case?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Its ruling complies with the court decisions"
+        },
+        {
+          "label": "B",
+          "text": "It involves a very big business transaction"
+        },
+        {
+          "label": "C",
+          "text": "It has been dismissed by the Federal Circuit"
+        },
+        {
+          "label": "D",
+          "text": "It may change the legal practices in the U.S"
+        }
+      ],
+      "answer": "D",
+      "explanation": "",
+      "id": "english1-2010-027",
+      "subject": "english1",
+      "year": "2010",
+      "source": "src_d9fc435e144b822b366d6539-2010年考研英语一真题.pdf",
+      "tags": ["english1", "2010真题"],
+      "sourceEvidenceId": "src_d9fc435e144b822b366d6539",
+      "questionTextHash": "sha256:54ad19fd2018dd63c22737cf33f45b4f31cc2057101e081a173c643bc0afe933",
+      "sourceEvidence": {
+        "evidenceId": "src_d9fc435e144b822b366d6539",
+        "sourceId": "src_d9fc435e144b822b366d6539",
+        "sourceType": "official_paper",
+        "contentHash": "b02b97656ra7f68c71fbbc07859f8432",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语一考研历年真题/2010年考研英语一真题 .pdf",
+        "questionTextHash": "sha256:54ad19fd2018dd63c22737cf33f45b4f31cc2057101e081a173c643bc0afe933",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerTextHash": "sha256:3f39d5c348e5b79d06e842c114e6cc571583bbf44e4b0ebfda1a01ec05745d43",
+      "answerEvidenceStatus": "matched"
+    },
+    {
+      "number": 28,
+      "type": "single_choice",
+      "question": "The word \"about-face\" (Line 1, Para. 3) most probably means",
+      "options": [
+        {
+          "label": "A",
+          "text": "loss of goodwill"
+        },
+        {
+          "label": "B",
+          "text": "increase of hostility"
+        },
+        {
+          "label": "C",
+          "text": "change of attitude"
+        },
+        {
+          "label": "D",
+          "text": "enhancement of dignity"
+        }
+      ],
+      "answer": "C",
+      "explanation": "",
+      "id": "english1-2010-028",
+      "subject": "english1",
+      "year": "2010",
+      "source": "src_d9fc435e144b822b366d6539-2010年考研英语一真题.pdf",
+      "tags": ["english1", "2010真题"],
+      "sourceEvidenceId": "src_d9fc435e144b822b366d6539",
+      "questionTextHash": "sha256:a537c40271c6ce5a1755420cce9a2a3f9b4d16cf1b11fb8d93de03add18ed7c8",
+      "sourceEvidence": {
+        "evidenceId": "src_d9fc435e144b822b366d6539",
+        "sourceId": "src_d9fc435e144b822b366d6539",
+        "sourceType": "official_paper",
+        "contentHash": "b02b97656ra7f68c71fbbc07859f8432",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语一考研历年真题/2010年考研英语一真题 .pdf",
+        "questionTextHash": "sha256:a537c40271c6ce5a1755420cce9a2a3f9b4d16cf1b11fb8d93de03add18ed7c8",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerTextHash": "sha256:6b23c0d5f35d1b11f9b683f0b0a617355deb11277d91ae091d399c655b87940d",
+      "answerEvidenceStatus": "matched"
+    },
+    {
+      "number": 29,
+      "type": "single_choice",
+      "question": "We learn from the last two paragraphs that business-method patents",
+      "options": [
+        {
+          "label": "A",
+          "text": "are immune to legal challenges"
+        },
+        {
+          "label": "B",
+          "text": "are often unnecessarily issued"
+        },
+        {
+          "label": "C",
+          "text": "lower the esteem for patent holders"
+        },
+        {
+          "label": "D",
+          "text": "increase the incidence of risks"
+        }
+      ],
+      "answer": "D",
+      "explanation": "",
+      "id": "english1-2010-029",
+      "subject": "english1",
+      "year": "2010",
+      "source": "src_d9fc435e144b822b366d6539-2010年考研英语一真题.pdf",
+      "tags": ["english1", "2010真题"],
+      "sourceEvidenceId": "src_d9fc435e144b822b366d6539",
+      "questionTextHash": "sha256:a08cce625f315953f32e40d948d035a2888e81c4cf06fa481834ff40c0463b29",
+      "sourceEvidence": {
+        "evidenceId": "src_d9fc435e144b822b366d6539",
+        "sourceId": "src_d9fc435e144b822b366d6539",
+        "sourceType": "official_paper",
+        "contentHash": "b02b97656ra7f68c71fbbc07859f8432",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语一考研历年真题/2010年考研英语一真题 .pdf",
+        "questionTextHash": "sha256:a08cce625f315953f32e40d948d035a2888e81c4cf06fa481834ff40c0463b29",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerTextHash": "sha256:3f39d5c348e5b79d06e842c114e6cc571583bbf44e4b0ebfda1a01ec05745d43",
+      "answerEvidenceStatus": "matched"
+    },
+    {
+      "number": 30,
+      "type": "single_choice",
+      "question": "Which of the following would be the subject of the text?",
+      "options": [
+        {
+          "label": "A",
+          "text": "A looming threat to business-method patents"
+        },
+        {
+          "label": "B",
+          "text": "Protection for business-method patent holders"
+        },
+        {
+          "label": "C",
+          "text": "A legal case regarding business-method patents"
+        },
+        {
+          "label": "D",
+          "text": "A prevailing trend against business-method patents"
+        }
+      ],
+      "answer": "C",
+      "explanation": "",
+      "id": "english1-2010-030",
+      "subject": "english1",
+      "year": "2010",
+      "source": "src_d9fc435e144b822b366d6539-2010年考研英语一真题.pdf",
+      "tags": ["english1", "2010真题"],
+      "sourceEvidenceId": "src_d9fc435e144b822b366d6539",
+      "questionTextHash": "sha256:aa70aa180fb4c8c8128624cdafa1949fcd7d93754e4440e09bf0b4bacad6c2c7",
+      "sourceEvidence": {
+        "evidenceId": "src_d9fc435e144b822b366d6539",
+        "sourceId": "src_d9fc435e144b822b366d6539",
+        "sourceType": "official_paper",
+        "contentHash": "b02b97656ra7f68c71fbbc07859f8432",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语一考研历年真题/2010年考研英语一真题 .pdf",
+        "questionTextHash": "sha256:aa70aa180fb4c8c8128624cdafa1949fcd7d93754e4440e09bf0b4bacad6c2c7",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerTextHash": "sha256:6b23c0d5f35d1b11f9b683f0b0a617355deb11277d91ae091d399c655b87940d",
+      "answerEvidenceStatus": "matched"
+    },
+    {
+      "number": 31,
+      "type": "single_choice",
+      "question": "By citing the book The Tipping Point, the author intends to",
+      "options": [
+        {
+          "label": "A",
+          "text": "analyze the consequences of social epidemics"
+        },
+        {
+          "label": "B",
+          "text": "discuss influentials’ function in spreading ideas"
+        },
+        {
+          "label": "C",
+          "text": "exemplify people's intuitive response to social epidemics"
+        },
+        {
+          "label": "D",
+          "text": "describe the essential characteristics of influentials"
+        }
+      ],
+      "answer": "B",
+      "explanation": "",
+      "id": "english1-2010-031",
+      "subject": "english1",
+      "year": "2010",
+      "source": "src_d9fc435e144b822b366d6539-2010年考研英语一真题.pdf",
+      "tags": ["english1", "2010真题"],
+      "sourceEvidenceId": "src_d9fc435e144b822b366d6539",
+      "questionTextHash": "sha256:82999141d6780c0e1eb0bf2b9e4db8b632740f0ed8d73d7f3e1725cd84974a26",
+      "sourceEvidence": {
+        "evidenceId": "src_d9fc435e144b822b366d6539",
+        "sourceId": "src_d9fc435e144b822b366d6539",
+        "sourceType": "official_paper",
+        "contentHash": "b02b97656ra7f68c71fbbc07859f8432",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语一考研历年真题/2010年考研英语一真题 .pdf",
+        "questionTextHash": "sha256:82999141d6780c0e1eb0bf2b9e4db8b632740f0ed8d73d7f3e1725cd84974a26",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerTextHash": "sha256:df7e70e5021544f4834bbee64a9e3789febc4be81470df629cad6ddb03320a5c",
+      "answerEvidenceStatus": "matched"
+    },
+    {
+      "number": 32,
+      "type": "single_choice",
+      "question": "The author suggests that the “two-step-flow theory”",
+      "options": [
+        {
+          "label": "A",
+          "text": "serves as a solution to marketing problems"
+        },
+        {
+          "label": "B",
+          "text": "has helped explain certain prevalent trends"
+        },
+        {
+          "label": "C",
+          "text": "has won support from influentials"
+        },
+        {
+          "label": "D",
+          "text": "requires solid evidence for its validity"
+        }
+      ],
+      "answer": "B",
+      "explanation": "",
+      "id": "english1-2010-032",
+      "subject": "english1",
+      "year": "2010",
+      "source": "src_d9fc435e144b822b366d6539-2010年考研英语一真题.pdf",
+      "tags": ["english1", "2010真题"],
+      "sourceEvidenceId": "src_d9fc435e144b822b366d6539",
+      "questionTextHash": "sha256:63ee2ee419406e50f050a4dc7a54f07fdbeb8bb0080b0d3b736cc9e0f248b068",
+      "sourceEvidence": {
+        "evidenceId": "src_d9fc435e144b822b366d6539",
+        "sourceId": "src_d9fc435e144b822b366d6539",
+        "sourceType": "official_paper",
+        "contentHash": "b02b97656ra7f68c71fbbc07859f8432",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语一考研历年真题/2010年考研英语一真题 .pdf",
+        "questionTextHash": "sha256:63ee2ee419406e50f050a4dc7a54f07fdbeb8bb0080b0d3b736cc9e0f248b068",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerTextHash": "sha256:df7e70e5021544f4834bbee64a9e3789febc4be81470df629cad6ddb03320a5c",
+      "answerEvidenceStatus": "matched"
+    },
+    {
+      "number": 33,
+      "type": "single_choice",
+      "question": "What the researchers have observed recently shows that",
+      "options": [
+        {
+          "label": "A",
+          "text": "the power of influence goes with social interactions"
+        },
+        {
+          "label": "B",
+          "text": "interpersonal links can be enhanced through the media"
+        },
+        {
+          "label": "C",
+          "text": "influentials have more channels to reach the public"
+        },
+        {
+          "label": "D",
+          "text": "most celebrities enjoy wide media attention"
+        }
+      ],
+      "answer": "A",
+      "explanation": "",
+      "id": "english1-2010-033",
+      "subject": "english1",
+      "year": "2010",
+      "source": "src_d9fc435e144b822b366d6539-2010年考研英语一真题.pdf",
+      "tags": ["english1", "2010真题"],
+      "sourceEvidenceId": "src_d9fc435e144b822b366d6539",
+      "questionTextHash": "sha256:64035bf683a69ec9d57c56599c3d4437b0eaab65cc00f5530f9a8de53b1fe850",
+      "sourceEvidence": {
+        "evidenceId": "src_d9fc435e144b822b366d6539",
+        "sourceId": "src_d9fc435e144b822b366d6539",
+        "sourceType": "official_paper",
+        "contentHash": "b02b97656ra7f68c71fbbc07859f8432",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语一考研历年真题/2010年考研英语一真题 .pdf",
+        "questionTextHash": "sha256:64035bf683a69ec9d57c56599c3d4437b0eaab65cc00f5530f9a8de53b1fe850",
+        "status": "verified",
+        "method": "cleaned_question_text_hash",
+        "answerTextHash": "sha256:559aead08264d5795d3909718cdd05abd49572e84fe55590eef31a88a08fdffd"
+      },
+      "answerTextHash": "sha256:559aead08264d5795d3909718cdd05abd49572e84fe55590eef31a88a08fdffd",
+      "answerEvidenceStatus": "matched"
+    },
+    {
+      "number": 34,
+      "type": "single_choice",
+      "question": "The underlined phrase *these people* in Paragraph 4 refers to the ones who",
+      "options": [
+        {
+          "label": "A",
+          "text": "stay outside the network of social influence"
+        },
+        {
+          "label": "B",
+          "text": "have little contact with the source of influence"
+        },
+        {
+          "label": "C",
+          "text": "are influenced and then influence others"
+        },
+        {
+          "label": "D",
+          "text": "are influenced by the initial influential"
+        }
+      ],
+      "answer": "C",
+      "explanation": "",
+      "id": "english1-2010-034",
+      "subject": "english1",
+      "year": "2010",
+      "source": "src_d9fc435e144b822b366d6539-2010年考研英语一真题.pdf",
+      "tags": ["english1", "2010真题"],
+      "sourceEvidenceId": "src_d9fc435e144b822b366d6539",
+      "questionTextHash": "sha256:a80db1fe5f05c0cb6e3a5b8aa81f2ab3d3922cdaa822eb4f923bde9513b05151",
+      "sourceEvidence": {
+        "evidenceId": "src_d9fc435e144b822b366d6539",
+        "sourceId": "src_d9fc435e144b822b366d6539",
+        "sourceType": "official_paper",
+        "contentHash": "b02b97656ra7f68c71fbbc07859f8432",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语一考研历年真题/2010年考研英语一真题 .pdf",
+        "questionTextHash": "sha256:a80db1fe5f05c0cb6e3a5b8aa81f2ab3d3922cdaa822eb4f923bde9513b05151",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerTextHash": "sha256:6b23c0d5f35d1b11f9b683f0b0a617355deb11277d91ae091d399c655b87940d",
+      "answerEvidenceStatus": "matched"
+    },
+    {
+      "number": 35,
+      "type": "single_choice",
+      "question": "What is the essential element in the dynamics of social influence?",
+      "options": [
+        {
+          "label": "A",
+          "text": "The eagerness to be accepted"
+        },
+        {
+          "label": "B",
+          "text": "The impulse to influence others"
+        },
+        {
+          "label": "C",
+          "text": "The readiness to be influenced"
+        },
+        {
+          "label": "D",
+          "text": "The inclination to rely on others"
+        }
+      ],
+      "answer": "C",
+      "explanation": "",
+      "id": "english1-2010-035",
+      "subject": "english1",
+      "year": "2010",
+      "source": "src_d9fc435e144b822b366d6539-2010年考研英语一真题.pdf",
+      "tags": ["english1", "2010真题"],
+      "sourceEvidenceId": "src_d9fc435e144b822b366d6539",
+      "questionTextHash": "sha256:7a0893dc5bf177ff9cd3f3e83a8b3764162cd7f397023ef9cca169dcefbceb7a",
+      "sourceEvidence": {
+        "evidenceId": "src_d9fc435e144b822b366d6539",
+        "sourceId": "src_d9fc435e144b822b366d6539",
+        "sourceType": "official_paper",
+        "contentHash": "b02b97656ra7f68c71fbbc07859f8432",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语一考研历年真题/2010年考研英语一真题 .pdf",
+        "questionTextHash": "sha256:7a0893dc5bf177ff9cd3f3e83a8b3764162cd7f397023ef9cca169dcefbceb7a",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerTextHash": "sha256:6b23c0d5f35d1b11f9b683f0b0a617355deb11277d91ae091d399c655b87940d",
+      "answerEvidenceStatus": "matched"
+    },
+    {
+      "number": 36,
+      "type": "single_choice",
+      "question": "Bankers complained that they were forced to",
+      "options": [
+        {
+          "label": "A",
+          "text": "follow unfavorable asset evaluation rules"
+        },
+        {
+          "label": "B",
+          "text": "collect payments from third parties"
+        },
+        {
+          "label": "C",
+          "text": "cooperate with the price managers"
+        },
+        {
+          "label": "D",
+          "text": "reevaluate some of their assets"
+        }
+      ],
+      "answer": "A",
+      "explanation": "",
+      "id": "english1-2010-036",
+      "subject": "english1",
+      "year": "2010",
+      "source": "src_d9fc435e144b822b366d6539-2010年考研英语一真题.pdf",
+      "tags": ["english1", "2010真题"],
+      "sourceEvidenceId": "src_d9fc435e144b822b366d6539",
+      "questionTextHash": "sha256:7b2c5948dbbb53cd97db583fd534c465330845f717aacfd59bcc6033202a5d86",
+      "sourceEvidence": {
+        "evidenceId": "src_d9fc435e144b822b366d6539",
+        "sourceId": "src_d9fc435e144b822b366d6539",
+        "sourceType": "official_paper",
+        "contentHash": "b02b97656ra7f68c71fbbc07859f8432",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语一考研历年真题/2010年考研英语一真题 .pdf",
+        "questionTextHash": "sha256:7b2c5948dbbb53cd97db583fd534c465330845f717aacfd59bcc6033202a5d86",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerEvidenceStatus": "matched",
+      "answerEvidenceSourceId": "src_bff66c7d8434bb36d89117d9",
+      "answerTextHash": "sha256:559aead08264d5795d3909718cdd05abd49572e84fe55590eef31a88a08fdffd",
+      "answerEvidence": {
+        "status": "candidate_matched",
+        "sourceId": "src_bff66c7d8434bb36d89117d9",
+        "sourceCardId": "answer-key-2010-36",
+        "sourceFilePath": "data/raw-inbox/src_bff66c7d8434bb36d89117d9-2010年真题及答案速查.pdf",
+        "answerTextHash": "sha256:559aead08264d5795d3909718cdd05abd49572e84fe55590eef31a88a08fdffd",
+        "method": "companion_answer_key_text",
+        "verifiedAt": "",
+        "verifiedBy": "",
+        "note": "Candidate answer repaired from a cleaned companion answer file; not publishable until verified."
+      }
+    },
+    {
+      "number": 37,
+      "type": "single_choice",
+      "question": "According to the author, the rule changes of the FASB may result in",
+      "options": [
+        {
+          "label": "A",
+          "text": "the diminishing role of management"
+        },
+        {
+          "label": "B",
+          "text": "the revival of the banking system"
+        },
+        {
+          "label": "C",
+          "text": "the banks' long-term asset losses"
+        },
+        {
+          "label": "D",
+          "text": "the weakening of its independence"
+        }
+      ],
+      "answer": "D",
+      "explanation": "",
+      "id": "english1-2010-037",
+      "subject": "english1",
+      "year": "2010",
+      "source": "src_d9fc435e144b822b366d6539-2010年考研英语一真题.pdf",
+      "tags": ["english1", "2010真题"],
+      "sourceEvidenceId": "src_d9fc435e144b822b366d6539",
+      "questionTextHash": "sha256:2357da1e7e51f2e897394468fa115f35f1071122bdc9ffa3fe20ae7f62326d84",
+      "sourceEvidence": {
+        "evidenceId": "src_d9fc435e144b822b366d6539",
+        "sourceId": "src_d9fc435e144b822b366d6539",
+        "sourceType": "official_paper",
+        "contentHash": "b02b97656ra7f68c71fbbc07859f8432",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语一考研历年真题/2010年考研英语一真题 .pdf",
+        "questionTextHash": "sha256:2357da1e7e51f2e897394468fa115f35f1071122bdc9ffa3fe20ae7f62326d84",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerEvidenceStatus": "matched",
+      "answerEvidenceSourceId": "src_bff66c7d8434bb36d89117d9",
+      "answerTextHash": "sha256:3f39d5c348e5b79d06e842c114e6cc571583bbf44e4b0ebfda1a01ec05745d43",
+      "answerEvidence": {
+        "status": "candidate_matched",
+        "sourceId": "src_bff66c7d8434bb36d89117d9",
+        "sourceCardId": "answer-key-2010-37",
+        "sourceFilePath": "data/raw-inbox/src_bff66c7d8434bb36d89117d9-2010年真题及答案速查.pdf",
+        "answerTextHash": "sha256:3f39d5c348e5b79d06e842c114e6cc571583bbf44e4b0ebfda1a01ec05745d43",
+        "method": "companion_answer_key_text",
+        "verifiedAt": "",
+        "verifiedBy": "",
+        "note": "Candidate answer repaired from a cleaned companion answer file; not publishable until verified."
+      }
+    },
+    {
+      "number": 38,
+      "type": "single_choice",
+      "question": "According to Paragraph 4, McCreevy objects to the IASB's attempt to",
+      "options": [
+        {
+          "label": "A",
+          "text": "keep away from political influences"
+        },
+        {
+          "label": "B",
+          "text": "evade the pressure from their peers"
+        },
+        {
+          "label": "C",
+          "text": "act on their own in rule-setting"
+        },
+        {
+          "label": "D",
+          "text": "take gradual measures in reform"
+        }
+      ],
+      "answer": "C",
+      "explanation": "",
+      "id": "english1-2010-038",
+      "subject": "english1",
+      "year": "2010",
+      "source": "src_d9fc435e144b822b366d6539-2010年考研英语一真题.pdf",
+      "tags": ["english1", "2010真题"],
+      "sourceEvidenceId": "src_d9fc435e144b822b366d6539",
+      "questionTextHash": "sha256:98f58fa5f819f1b3f2b9b4a6bac4d123789138c95b76ce9cf726be65e2387ead",
+      "sourceEvidence": {
+        "evidenceId": "src_d9fc435e144b822b366d6539",
+        "sourceId": "src_d9fc435e144b822b366d6539",
+        "sourceType": "official_paper",
+        "contentHash": "b02b97656ra7f68c71fbbc07859f8432",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语一考研历年真题/2010年考研英语一真题 .pdf",
+        "questionTextHash": "sha256:98f58fa5f819f1b3f2b9b4a6bac4d123789138c95b76ce9cf726be65e2387ead",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerEvidenceStatus": "matched",
+      "answerEvidenceSourceId": "src_bff66c7d8434bb36d89117d9",
+      "answerTextHash": "sha256:6b23c0d5f35d1b11f9b683f0b0a617355deb11277d91ae091d399c655b87940d",
+      "answerEvidence": {
+        "status": "candidate_matched",
+        "sourceId": "src_bff66c7d8434bb36d89117d9",
+        "sourceCardId": "answer-key-2010-38",
+        "sourceFilePath": "data/raw-inbox/src_bff66c7d8434bb36d89117d9-2010年真题及答案速查.pdf",
+        "answerTextHash": "sha256:6b23c0d5f35d1b11f9b683f0b0a617355deb11277d91ae091d399c655b87940d",
+        "method": "companion_answer_key_text",
+        "verifiedAt": "",
+        "verifiedBy": "",
+        "note": "Candidate answer repaired from a cleaned companion answer file; not publishable until verified."
+      }
+    },
+    {
+      "number": 39,
+      "type": "single_choice",
+      "question": "The author thinks the banks were *on the wrong planet’ in that they",
+      "options": [
+        {
+          "label": "A",
+          "text": "misinterpreted market price indicators"
+        },
+        {
+          "label": "B",
+          "text": "exaggerated the real value of their assets"
+        },
+        {
+          "label": "C",
+          "text": "neglected the likely existence of bad debts"
+        },
+        {
+          "label": "D",
+          "text": "denied booking losses in their sale of assets"
+        }
+      ],
+      "answer": "B",
+      "explanation": "",
+      "id": "english1-2010-039",
+      "subject": "english1",
+      "year": "2010",
+      "source": "src_d9fc435e144b822b366d6539-2010年考研英语一真题.pdf",
+      "tags": ["english1", "2010真题"],
+      "sourceEvidenceId": "src_d9fc435e144b822b366d6539",
+      "questionTextHash": "sha256:962fad3680ba303c42f097e04db35e87b7ce71d94ed176b1f2e43e2b8c924cc3",
+      "sourceEvidence": {
+        "evidenceId": "src_d9fc435e144b822b366d6539",
+        "sourceId": "src_d9fc435e144b822b366d6539",
+        "sourceType": "official_paper",
+        "contentHash": "b02b97656ra7f68c71fbbc07859f8432",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语一考研历年真题/2010年考研英语一真题 .pdf",
+        "questionTextHash": "sha256:962fad3680ba303c42f097e04db35e87b7ce71d94ed176b1f2e43e2b8c924cc3",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerEvidenceStatus": "matched",
+      "answerEvidenceSourceId": "src_bff66c7d8434bb36d89117d9",
+      "answerTextHash": "sha256:df7e70e5021544f4834bbee64a9e3789febc4be81470df629cad6ddb03320a5c",
+      "answerEvidence": {
+        "status": "candidate_matched",
+        "sourceId": "src_bff66c7d8434bb36d89117d9",
+        "sourceCardId": "answer-key-2010-39",
+        "sourceFilePath": "data/raw-inbox/src_bff66c7d8434bb36d89117d9-2010年真题及答案速查.pdf",
+        "answerTextHash": "sha256:df7e70e5021544f4834bbee64a9e3789febc4be81470df629cad6ddb03320a5c",
+        "method": "companion_answer_key_text",
+        "verifiedAt": "",
+        "verifiedBy": "",
+        "note": "Candidate answer repaired from a cleaned companion answer file; not publishable until verified."
+      }
+    },
+    {
+      "number": 40,
+      "type": "single_choice",
+      "question": "The author's attitude towards standard-setters is one of",
+      "options": [
+        {
+          "label": "A",
+          "text": "satisfaction"
+        },
+        {
+          "label": "B",
+          "text": "skepticism"
+        },
+        {
+          "label": "C",
+          "text": "objectiveness"
+        },
+        {
+          "label": "D",
+          "text": "sympathy"
+        }
+      ],
+      "answer": "D",
+      "explanation": "",
+      "id": "english1-2010-040",
+      "subject": "english1",
+      "year": "2010",
+      "source": "src_d9fc435e144b822b366d6539-2010年考研英语一真题.pdf",
+      "tags": ["english1", "2010真题"],
+      "sourceEvidenceId": "src_d9fc435e144b822b366d6539",
+      "questionTextHash": "sha256:0aa35fcf6bd345366e6e737c14980d12379922db6dc451a0a7895074b3da4455",
+      "sourceEvidence": {
+        "evidenceId": "src_d9fc435e144b822b366d6539",
+        "sourceId": "src_d9fc435e144b822b366d6539",
+        "sourceType": "official_paper",
+        "contentHash": "b02b97656ra7f68c71fbbc07859f8432",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语一考研历年真题/2010年考研英语一真题 .pdf",
+        "questionTextHash": "sha256:0aa35fcf6bd345366e6e737c14980d12379922db6dc451a0a7895074b3da4455",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerEvidenceStatus": "matched",
+      "answerEvidenceSourceId": "src_bff66c7d8434bb36d89117d9",
+      "answerTextHash": "sha256:3f39d5c348e5b79d06e842c114e6cc571583bbf44e4b0ebfda1a01ec05745d43",
+      "answerEvidence": {
+        "status": "candidate_matched",
+        "sourceId": "src_bff66c7d8434bb36d89117d9",
+        "sourceCardId": "answer-key-2010-40",
+        "sourceFilePath": "data/raw-inbox/src_bff66c7d8434bb36d89117d9-2010年真题及答案速查.pdf",
+        "answerTextHash": "sha256:3f39d5c348e5b79d06e842c114e6cc571583bbf44e4b0ebfda1a01ec05745d43",
+        "method": "companion_answer_key_text",
+        "verifiedAt": "",
+        "verifiedBy": "",
+        "note": "Candidate answer repaired from a cleaned companion answer file; not publishable until verified."
+      }
+    },
+    {
+      "number": 41,
+      "type": "analysis",
+      "question": "For questions 41-45, choose the most suitable paragraphs from the list A-G and fill them into the numbered boxes to form a coherent text.",
+      "options": [],
+      "answer": "BFDGA",
+      "explanation": "完整的答案解析文本",
+      "id": "english1-2010-041",
+      "subject": "english1",
+      "year": "2010",
+      "source": "src_d9fc435e144b822b366d6539-2010年考研英语一真题.pdf",
+      "tags": ["english1", "2010真题"],
+      "sourceEvidenceId": "src_d9fc435e144b822b366d6539",
+      "questionTextHash": "sha256:7d168dee64c446e15a56b706a1e2f06f83fe0c649f60323ed04f70a4ba71cd57",
+      "sourceEvidence": {
+        "evidenceId": "src_d9fc435e144b822b366d6539",
+        "sourceId": "src_d9fc435e144b822b366d6539",
+        "sourceType": "official_paper",
+        "contentHash": "b02b97656ra7f68c71fbbc07859f8432",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语一考研历年真题/2010年考研英语一真题 .pdf",
+        "questionTextHash": "sha256:7d168dee64c446e15a56b706a1e2f06f83fe0c649f60323ed04f70a4ba71cd57",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerEvidenceStatus": "matched",
+      "answerEvidenceSourceId": "src_bff66c7d8434bb36d89117d9",
+      "answerTextHash": "sha256:e4d2428e8349e5604f4982681c99d78598f112102e09c307eb9195342a1ebbe4",
+      "answerEvidence": {
+        "status": "candidate_matched",
+        "sourceId": "src_bff66c7d8434bb36d89117d9",
+        "sourceCardId": "answer-key-2010-41",
+        "sourceFilePath": "data/raw-inbox/src_bff66c7d8434bb36d89117d9-2010年真题及答案速查.pdf",
+        "answerTextHash": "sha256:e4d2428e8349e5604f4982681c99d78598f112102e09c307eb9195342a1ebbe4",
+        "method": "companion_answer_key_text",
+        "verifiedAt": "",
+        "verifiedBy": "",
+        "note": "Candidate answer repaired from a cleaned companion answer file; not publishable until verified."
+      }
+    },
+    {
+      "number": 51,
+      "type": "analysis",
+      "question": "Write a notice to recruit volunteers for an international conference on globalization.",
+      "options": [],
+      "answer": "无参考答案",
+      "explanation": "无解析",
+      "id": "english1-2010-051",
+      "subject": "english1",
+      "year": "2010",
+      "source": "src_d9fc435e144b822b366d6539-2010年考研英语一真题.pdf",
+      "tags": ["english1", "2010真题"],
+      "sourceEvidenceId": "src_d9fc435e144b822b366d6539",
+      "questionTextHash": "sha256:de8dec6aac2c92fd27215c7032b3a7dc07e69040b7dc7d5fe96188bbe335a4d3",
+      "sourceEvidence": {
+        "evidenceId": "src_d9fc435e144b822b366d6539",
+        "sourceId": "src_d9fc435e144b822b366d6539",
+        "sourceType": "official_paper",
+        "contentHash": "b02b97656ra7f68c71fbbc07859f8432",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语一考研历年真题/2010年考研英语一真题 .pdf",
+        "questionTextHash": "sha256:de8dec6aac2c92fd27215c7032b3a7dc07e69040b7dc7d5fe96188bbe335a4d3",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerTextHash": "sha256:cccacb4307a0f4a4464c610b5fbf6f0589ca2181b162a3157a7004e9fc85715a",
+      "answerEvidenceStatus": "matched"
+    },
+    {
+      "number": 52,
+      "type": "analysis",
+      "question": "Write an essay of 160-200 words based on the following drawing.",
+      "options": [],
+      "answer": "无参考答案",
+      "explanation": "无解析",
+      "id": "english1-2010-052",
+      "subject": "english1",
+      "year": "2010",
+      "source": "src_d9fc435e144b822b366d6539-2010年考研英语一真题.pdf",
+      "tags": ["english1", "2010真题"],
+      "sourceEvidenceId": "src_d9fc435e144b822b366d6539",
+      "questionTextHash": "sha256:a1b4794e66a58786ed2f3a601504282a2ac4b6c0cf9a42f78736f9efbc62b37b",
+      "sourceEvidence": {
+        "evidenceId": "src_d9fc435e144b822b366d6539",
+        "sourceId": "src_d9fc435e144b822b366d6539",
+        "sourceType": "official_paper",
+        "contentHash": "b02b97656ra7f68c71fbbc07859f8432",
+        "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语一考研历年真题/2010年考研英语一真题 .pdf",
+        "questionTextHash": "sha256:a1b4794e66a58786ed2f3a601504282a2ac4b6c0cf9a42f78736f9efbc62b37b",
+        "status": "verified",
+        "method": "cleaned_question_text_hash"
+      },
+      "answerTextHash": "sha256:cccacb4307a0f4a4464c610b5fbf6f0589ca2181b162a3157a7004e9fc85715a",
+      "answerEvidenceStatus": "matched"
+    }
+  ],
+  "answerEvidenceRepairedAt": "2026-05-01T01:16:21Z"
+}

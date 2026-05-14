@@ -1,148 +1,115 @@
 <template>
   <view :class="['qb-page', { 'dark-mode': isDark }]">
-    <!-- 自定义导航栏 -->
     <view class="navbar">
       <view class="navbar-inner" :style="{ paddingTop: statusBarHeight + 'px' }">
         <view class="nav-back" @tap="goBack">
           <BaseIcon name="arrow-left" :size="32" />
         </view>
-        <text class="nav-title">考研题库</text>
+        <text class="nav-title">历年真题</text>
         <view class="nav-right" />
       </view>
     </view>
 
-    <scroll-view
-      class="scroll-body"
-      scroll-y
-      :style="{ paddingTop: statusBarHeight + 44 + 'px' }"
-      @scrolltolower="loadMore"
-    >
-      <view class="intake-panel">
-        <view class="intake-copy">
-          <text class="intake-kicker">RESOURCE INTAKE</text>
-          <text class="intake-title">资料导入与题库发布台</text>
-          <text class="intake-desc">上传解析、清洗进度和公开发布状态统一收口，页面只消费可审计结果。</text>
-        </view>
-        <view class="intake-metrics">
-          <view class="intake-metric">
-            <text class="metric-value">{{ intakeSnapshot.imports.total }}</text>
-            <text class="metric-label">导入记录</text>
+    <scroll-view class="scroll-body" scroll-y :style="{ paddingTop: statusBarHeight + 44 + 'px' }">
+      <view class="paper-hero">
+        <text class="hero-kicker">PAST PAPERS</text>
+        <text class="hero-title">按年份整卷训练</text>
+        <text class="hero-desc">先选科目和年份，再进入完整试卷。英语卷会按篇章保留原文材料，缺原文的卷不会开放选择题训练。</text>
+        <view class="hero-metrics">
+          <view class="hero-metric">
+            <text class="metric-value">{{ readyCount }}</text>
+            <text class="metric-label">可练试卷</text>
           </view>
-          <view class="intake-metric">
-            <text class="metric-value">{{ intakeSnapshot.bank.totalQuestions }}</text>
+          <view class="hero-metric">
+            <text class="metric-value">{{ pendingCount }}</text>
+            <text class="metric-label">即将开放</text>
+          </view>
+          <view class="hero-metric">
+            <text class="metric-value">{{ totalQuestions }}</text>
             <text class="metric-label">本地题量</text>
           </view>
-          <view class="intake-metric">
-            <text class="metric-value">{{ releaseCoverageText }}</text>
-            <text class="metric-label">发布覆盖</text>
-          </view>
-        </view>
-        <view class="intake-status-row">
-          <view class="intake-status-pill" :class="'status-' + intakeSnapshot.generation.status">
-            <text>{{ intakeSnapshot.generation.label }}</text>
-          </view>
-          <text class="intake-status-copy">{{ latestImportText }}</text>
         </view>
       </view>
 
-      <!-- 题库总览 -->
-      <view class="stats-header">
-        <text class="stats-total">共 {{ totalCount }} 题</text>
-        <text class="stats-sub">按科目分类浏览，点击开始练习</text>
-      </view>
-
-      <!-- 分类卡片 -->
-      <view v-if="!loading && categories.length > 0" class="category-list">
+      <view class="subject-tabs">
         <view
-          v-for="cat in categories"
-          :key="cat.category"
-          class="cat-card"
-          :class="{ active: selectedCategory === cat.category }"
-          @tap="selectCategory(cat.category)"
+          v-for="subject in navigationTree"
+          :key="subject.id"
+          class="subject-tab"
+          :class="{ active: selectedSubject?.id === subject.id }"
+          @tap="selectSubject(subject.id)"
         >
-          <view class="cat-icon">
-            <BaseIcon :name="categoryIcon(cat.category)" :size="36" />
-          </view>
-          <view class="cat-info">
-            <text class="cat-name">{{ cat.category }}</text>
-            <text class="cat-count">{{ cat.total }} 题</text>
-          </view>
-          <view class="cat-diff">
-            <view class="diff-bar easy" :style="{ flex: cat.difficulty.easy || 0 }" />
-            <view class="diff-bar medium" :style="{ flex: cat.difficulty.medium || 0 }" />
-            <view class="diff-bar hard" :style="{ flex: cat.difficulty.hard || 0 }" />
-          </view>
+          <text>{{ subject.label }}</text>
         </view>
       </view>
 
-      <!-- 题库为空 -->
-      <view v-if="!loading && categories.length === 0" class="empty-state">
-        <BaseIcon name="book" :size="56" />
-        <text class="empty-text">暂无题库数据</text>
-        <text class="empty-sub">资料入口已统一到题库发布台，清洗通过后才进入训练流</text>
-      </view>
-
-      <!-- 筛选栏 -->
-      <view v-if="selectedCategory" class="filter-bar">
-        <view class="filter-row">
-          <view
-            v-for="d in difficultyOptions"
-            :key="d.value"
-            class="filter-chip"
-            :class="{ selected: selectedDifficulty === d.value }"
-            @tap="
-              selectedDifficulty = d.value;
-              currentPage = 1;
-              loadQuestions();
-            "
-          >
-            <text>{{ d.label }}</text>
-          </view>
-        </view>
-        <view class="filter-actions">
-          <view class="action-btn primary" @tap="startPractice">
-            <text>随机练习 {{ selectedCategory }}</text>
-          </view>
+      <view class="track-row">
+        <view
+          v-for="track in selectedSubject?.tracks || []"
+          :key="track.id"
+          class="track-pill"
+          :class="{ active: selectedTrack?.id === track.id }"
+          @tap="selectTrack(track.id)"
+        >
+          <text class="track-code">{{ track.code }}</text>
+          <text>{{ track.label }}</text>
         </view>
       </view>
 
-      <!-- 题目列表 -->
-      <view v-if="selectedCategory && questionList.length > 0" class="question-list">
-        <view v-for="(q, idx) in questionList" :key="q._id" class="q-item">
-          <view class="q-header">
-            <text class="q-index">#{{ (currentPage - 1) * pageSize + idx + 1 }}</text>
-            <view class="q-tags">
-              <text class="q-diff" :class="q.difficulty">{{ diffLabel(q.difficulty) }}</text>
-              <text v-if="q.source" class="q-source">{{ q.source }}</text>
-              <text v-if="q.year" class="q-year">{{ q.year }}年</text>
+      <view class="section-head">
+        <view>
+          <text class="section-title">{{ selectedTrack?.label || '公共课' }}</text>
+          <text class="section-hint">按年份选择整套试卷</text>
+        </view>
+        <text class="section-meta">{{ selectedTrackReadyCount }} 套可练</text>
+      </view>
+
+      <view v-if="selectedReadyBanks.length > 0" class="paper-list">
+        <view v-for="paper in selectedReadyBanks" :key="paper.id" class="paper-card">
+          <view class="paper-main">
+            <text class="paper-year">{{ paper.year }}</text>
+            <view class="paper-copy">
+              <text class="paper-name">{{ paper.name }}</text>
+              <text class="paper-desc">{{ paper.description }}</text>
+              <view class="paper-section-row">
+                <text v-for="section in paper.sections || []" :key="section" class="paper-section">{{ section }}</text>
+              </view>
             </view>
           </view>
-          <text class="q-content">{{ q.question || q.content }}</text>
-          <view class="q-options">
-            <text v-for="(opt, oi) in q.options || []" :key="oi" class="q-opt">
-              {{ String.fromCharCode(65 + oi) }}. {{ opt }}
-            </text>
+          <view class="paper-actions">
+            <view
+              v-if="!isBankLoaded(paper.id)"
+              class="paper-btn primary"
+              hover-class="btn-hover"
+              @tap="loadAndStartPaper(paper)"
+            >
+              <text>{{ loadingBankId === paper.id ? '加载中' : '整卷练习' }}</text>
+            </view>
+            <view v-else class="paper-btn secondary" hover-class="btn-hover" @tap="startLoadedPaper(paper)">
+              <text>继续练习</text>
+            </view>
           </view>
         </view>
       </view>
 
-      <!-- 空状态 -->
-      <view v-if="selectedCategory && !loading && questionList.length === 0" class="empty-state">
-        <!-- 搜索无结果插图 -->
-        <image
-          class="empty-illustration"
-          :src="getAssetUrl('illustrations', 'empty-search')"
-          mode="aspectFit"
-          lazy-load
-          alt="搜索无结果"
-        />
-        <text class="empty-text">该分类暂无题目</text>
-        <text class="empty-sub">可通过"资料导入"或管理后台添加题目</text>
+      <view v-else class="empty-state">
+        <BaseIcon name="book" :size="56" />
+        <text class="empty-text">该方向暂无可练整卷</text>
+        <text class="empty-sub">资料和答案说明完善后，会按年份开放整卷练习。</text>
       </view>
 
-      <!-- 加载状态 -->
-      <view v-if="loading" class="loading-state">
-        <text>加载中...</text>
+      <view v-if="selectedPendingBanks.length > 0" class="pending-panel">
+        <view class="pending-head">
+          <text class="pending-title">即将开放</text>
+          <text class="pending-sub">开放后可整卷练习</text>
+        </view>
+        <view v-for="paper in selectedPendingBanks" :key="paper.id" class="pending-item">
+          <view class="pending-copy">
+            <text class="pending-name">{{ paper.name }}</text>
+            <text class="pending-reason">{{ paper.disabledReason || qualityLabel(paper.quality) }}</text>
+          </view>
+          <text class="pending-year">{{ paper.year }}</text>
+        </view>
       </view>
 
       <view class="bottom-spacer" />
@@ -153,17 +120,13 @@
 <script setup>
 import { computed, ref, onMounted, onBeforeUnmount } from 'vue';
 import { safeNavigateBack } from '@/utils/safe-navigate';
-import { useReviewStore } from '@/stores/modules/review.js';
-import { useResourceStore } from '@/stores/modules/resource.js';
-import { formatIntakeStatusLabel } from '@/services/resource-intake-contract.js';
+import { getPracticeNavigationTree, loadBank } from '@/config/bank-registry.js';
+import { importFlashcardsToBank, getBankStats } from '@/utils/flashcard-adapter.js';
 import { getStatusBarHeight } from '@/utils/core/system.js';
 import storageService from '@/services/storageService.js';
 import { toast } from '@/utils/toast.js';
 import { logger } from '@/utils/logger.js';
-// 静态资源 CDN 映射（大图已迁出主包）
-import { getAssetUrl } from '@/config/static-assets.js';
 
-// 暗色模式
 const isDark = ref(storageService.get('theme_mode', 'light') === 'dark');
 const _themeHandler = (mode) => {
   isDark.value = mode === 'dark';
@@ -173,159 +136,124 @@ onBeforeUnmount(() => {
   uni.$off('themeUpdate', _themeHandler);
 });
 
-const reviewStore = useReviewStore();
-const resourceStore = useResourceStore();
-
 const statusBarHeight = ref(getStatusBarHeight());
-const loading = ref(false);
-const totalCount = ref(0);
-const categories = ref([]);
-const selectedCategory = ref('');
-const selectedDifficulty = ref('');
-const questionList = ref([]);
-const currentPage = ref(1);
-const pageSize = 20;
-const hasMore = ref(false);
-const intakeSnapshot = computed(() => resourceStore.intakeSnapshot);
-const releaseCoverageText = computed(() => `${Math.round(intakeSnapshot.value.release.coverageRate * 100)}%`);
-const latestImportText = computed(() => {
-  const active = intakeSnapshot.value.generation.activeRecord;
-  if (!active) return '暂无导入任务';
-  return `${active.name} · ${formatIntakeStatusLabel(active.status)}`;
+const loadingBankId = ref('');
+const selectedSubjectKey = ref('');
+const selectedTrackId = ref('');
+const loadedBankIds = ref(new Set(storageService.get('loaded_flashcard_banks', []) || []));
+const navigationTree = computed(() => getPracticeNavigationTree(storageService.get('exam_profile', null) || {}));
+const allTracks = computed(() => navigationTree.value.flatMap((subject) => subject.tracks || []));
+const readyCount = computed(() => allTracks.value.reduce((sum, track) => sum + (track.banks?.length || 0), 0));
+const pendingCount = computed(() => allTracks.value.reduce((sum, track) => sum + (track.pendingBanks?.length || 0), 0));
+const bankStats = computed(() =>
+  getBankStats({
+    get: (key) => storageService.get(key, [])
+  })
+);
+const totalQuestions = computed(() => bankStats.value.total || 0);
+
+const selectedSubject = computed(() => {
+  const fallbackSubject = navigationTree.value[0] || null;
+  return navigationTree.value.find((subject) => subject.id === selectedSubjectKey.value) || fallbackSubject;
 });
-
-const difficultyOptions = [
-  { label: '全部', value: '' },
-  { label: '简单', value: 'easy' },
-  { label: '中等', value: 'medium' },
-  { label: '困难', value: 'hard' }
-];
-
-// 分类图标映射（BaseIcon SVG 名称）
-const CATEGORY_ICONS = {
-  政治: 'shield',
-  英语: 'globe',
-  数学: 'formula',
-  专业课: 'notebook',
-  综合: 'books'
-};
-
-function categoryIcon(cat) {
-  return CATEGORY_ICONS[cat] || 'book';
-}
-
-function diffLabel(d) {
-  return { easy: '简单', medium: '中等', hard: '困难' }[d] || '中等';
-}
+const selectedTrack = computed(() => {
+  const tracks = selectedSubject.value?.tracks || [];
+  return tracks.find((track) => track.id === selectedTrackId.value) || tracks[0] || null;
+});
+const selectedReadyBanks = computed(() => selectedTrack.value?.banks || []);
+const selectedPendingBanks = computed(() => selectedTrack.value?.pendingBanks || []);
+const selectedTrackReadyCount = computed(() => selectedReadyBanks.value.length);
 
 function goBack() {
   safeNavigateBack();
 }
 
-async function loadStats() {
-  loading.value = true;
-  try {
-    const res = await reviewStore.fetchQuestionBankStats();
-    if (res?.success && res.data) {
-      categories.value = res.data.categories || [];
-      totalCount.value = res.data.total || 0;
-    }
-  } catch (_e) {
-    logger.error('[QuestionBank] 题库统计数据加载失败', _e);
-    toast.error('题库加载失败，请检查网络');
+function ensureSelection() {
+  const tree = navigationTree.value;
+  if (!tree.length) return;
+  const preferredSubject = tree.find((subject) => subject.tracks?.some((track) => track.banks?.length)) || tree[0];
+  if (!selectedSubjectKey.value || !tree.some((subject) => subject.id === selectedSubjectKey.value)) {
+    selectedSubjectKey.value = preferredSubject.id;
   }
-  loading.value = false;
+  const subject = tree.find((item) => item.id === selectedSubjectKey.value) || preferredSubject;
+  const preferredTrack = subject.tracks?.find((track) => track.banks?.length) || subject.tracks?.[0];
+  if (!selectedTrackId.value || !subject.tracks?.some((track) => track.id === selectedTrackId.value)) {
+    selectedTrackId.value = preferredTrack?.id || '';
+  }
 }
 
-function selectCategory(cat) {
-  if (selectedCategory.value === cat) {
-    selectedCategory.value = '';
-    questionList.value = [];
+function selectSubject(subjectId) {
+  selectedSubjectKey.value = subjectId;
+  const subject = navigationTree.value.find((item) => item.id === subjectId);
+  const track = subject?.tracks?.find((item) => item.banks?.length) || subject?.tracks?.[0];
+  selectedTrackId.value = track?.id || '';
+}
+
+function selectTrack(trackId) {
+  selectedTrackId.value = trackId;
+}
+
+function isBankLoaded(bankId) {
+  return loadedBankIds.value.has(bankId);
+}
+
+function qualityLabel(quality) {
+  if (quality === 'needs_passage') return '篇章材料完善中';
+  if (quality === 'needs_cleaning') return '题目与答案说明完善中';
+  if (quality === 'source_missing') return '资料完善中';
+  return '即将开放';
+}
+
+async function loadPaper(paper) {
+  loadingBankId.value = paper.id;
+  try {
+    const data = await loadBank(paper.id);
+    const adapter = {
+      get: (key) => storageService.get(key, []),
+      set: (key, value) => storageService.save(key, value)
+    };
+    const result = importFlashcardsToBank(data, adapter, {
+      paperId: paper.id,
+      paperName: paper.name,
+      subject: paper.subject
+    });
+    const loaded = storageService.get('loaded_flashcard_banks', []) || [];
+    if (!loaded.includes(paper.id)) {
+      loaded.push(paper.id);
+      storageService.save('loaded_flashcard_banks', loaded);
+    }
+    loadedBankIds.value = new Set(loaded);
+    toast.success(`已加载 ${result.imported} 题`);
+    return result;
+  } catch (error) {
+    logger.error('[QuestionBank] load paper failed:', error);
+    toast.error('试卷加载失败');
+    throw error;
+  } finally {
+    loadingBankId.value = '';
+  }
+}
+
+async function loadAndStartPaper(paper) {
+  await loadPaper(paper);
+  startLoadedPaper(paper);
+}
+
+function startLoadedPaper(paper) {
+  const bank = storageService.get('v30_bank', []);
+  const ids = bank
+    .filter((q) => q.paperId === paper.id || (q.source === paper.source && q.year === paper.year))
+    .map((q) => q.id);
+  if (ids.length > 0) {
+    uni.setStorageSync('smart_review_ids', ids);
+    uni.navigateTo({ url: '/pages/practice-sub/do-quiz?mode=smart_review' });
     return;
   }
-  selectedCategory.value = cat;
-  selectedDifficulty.value = '';
-  currentPage.value = 1;
-  loadQuestions();
-}
-
-async function loadQuestions() {
-  loading.value = true;
-  try {
-    const params = {
-      category: selectedCategory.value,
-      page: currentPage.value,
-      pageSize
-    };
-    if (selectedDifficulty.value) params.difficulty = selectedDifficulty.value;
-
-    const res = await reviewStore.browseQuestions(params);
-    if (res?.success && res.data) {
-      const newList = res.data.list || [];
-      if (currentPage.value === 1) {
-        questionList.value = newList;
-      } else {
-        // 限制最大 DOM 节点数，防止列表无限增长导致内存告警
-        const MAX_DOM_ITEMS = 200;
-        const combined = [...questionList.value, ...newList];
-        questionList.value = combined.length > MAX_DOM_ITEMS ? combined.slice(-MAX_DOM_ITEMS) : combined;
-      }
-      hasMore.value = res.data.hasMore || false;
-    }
-  } catch (_e) {
-    logger.error('[QuestionBank] 题目列表加载失败', _e);
-    toast.error('题目加载失败，请检查网络');
-  }
-  loading.value = false;
-}
-
-function loadMore() {
-  if (!hasMore.value || loading.value) return;
-  currentPage.value++;
-  loadQuestions();
-}
-
-async function startPractice() {
-  loading.value = true;
-  try {
-    const params = { category: selectedCategory.value, count: 10 };
-    if (selectedDifficulty.value) params.difficulty = selectedDifficulty.value;
-
-    const res = await reviewStore.fetchQuestionBankRandom(params);
-    if (res?.success && res.data && res.data.length > 0) {
-      // 将题目格式化为 v30_bank 兼容格式并存入临时练习
-      const formatted = res.data.map((q, i) => ({
-        id: q._id || `qb_${i}`,
-        question: q.question || q.content || '',
-        options: q.options || [],
-        answer: q.answer || 'A',
-        desc: q.analysis || '',
-        category: q.category || selectedCategory.value,
-        type: q.type || '单选',
-        difficulty: q.difficulty || 'medium',
-        source: q.source || '题库',
-        _fromBank: true
-      }));
-
-      // 存入临时练习题目
-      storageService.save('v30_temp_practice', formatted);
-
-      uni.navigateTo({
-        url: '/pages/practice-sub/do-quiz?source=question-bank&mode=normal'
-      });
-    } else {
-      toast.info('该分类暂无题目');
-    }
-  } catch (_e) {
-    logger.error('[QuestionBank] 随机练习题加载失败', _e);
-    toast.info('加载失败，请重试');
-  }
-  loading.value = false;
+  uni.navigateTo({ url: '/pages/practice-sub/do-quiz' });
 }
 
 onMounted(() => {
-  resourceStore.refreshIntakeSnapshot();
-  loadStats();
+  ensureSelection();
 });
 </script>
 
@@ -352,87 +280,66 @@ onMounted(() => {
 }
 .nav-back {
   width: 40px;
-  font-size: 20px;
   color: var(--text-primary);
 }
 .nav-title {
   flex: 1;
   text-align: center;
   font-size: 34rpx;
-  font-weight: 800;
+  font-weight: 850;
   color: var(--text-primary);
 }
 .nav-right {
   width: 40px;
 }
-
 .scroll-body {
   min-height: 100vh;
 }
-.intake-panel {
-  position: relative;
+.paper-hero {
   margin: 24rpx;
   padding: 34rpx 32rpx;
-  border-radius: 34rpx;
-  background: linear-gradient(135deg, rgba(20, 71, 45, 0.96), rgba(13, 45, 63, 0.92));
-  box-shadow: 0 22rpx 46rpx rgba(12, 42, 30, 0.2);
-  overflow: hidden;
+  border-radius: 30rpx;
+  background: #142017;
+  box-shadow: 0 18rpx 38rpx rgba(20, 32, 23, 0.16);
 }
-.intake-panel::after {
-  content: '';
-  position: absolute;
-  right: -80rpx;
-  top: -92rpx;
-  width: 300rpx;
-  height: 300rpx;
-  border-radius: 999rpx;
-  background: radial-gradient(circle, rgba(143, 232, 191, 0.24), rgba(143, 232, 191, 0));
-}
-.intake-copy,
-.intake-metrics,
-.intake-status-row {
-  position: relative;
-  z-index: 1;
-}
-.intake-kicker {
+.hero-kicker {
   display: block;
-  color: rgba(255, 255, 255, 0.48);
+  color: rgba(255, 255, 255, 0.52);
   font-size: 18rpx;
   font-weight: 900;
   letter-spacing: 2rpx;
 }
-.intake-title {
+.hero-title {
   display: block;
   margin-top: 12rpx;
-  color: #ffffff;
+  color: #fff;
   font-size: 42rpx;
   font-weight: 900;
   line-height: 1.15;
 }
-.intake-desc {
+.hero-desc {
   display: block;
   margin-top: 14rpx;
-  color: rgba(255, 255, 255, 0.66);
+  color: rgba(255, 255, 255, 0.68);
   font-size: 25rpx;
   line-height: 1.5;
 }
-.intake-metrics {
+.hero-metrics {
   display: flex;
   margin-top: 28rpx;
 }
-.intake-metric {
+.hero-metric {
   flex: 1;
   padding: 18rpx 14rpx;
-  border-radius: 22rpx;
+  border-radius: 20rpx;
   background: rgba(255, 255, 255, 0.1);
-  box-shadow: inset 0 1rpx 0 rgba(255, 255, 255, 0.14);
 }
-.intake-metric + .intake-metric {
+.hero-metric + .hero-metric {
   margin-left: 12rpx;
 }
 .metric-value {
   display: block;
-  color: #ffffff;
+  color: #fff;
   font-size: 34rpx;
   font-weight: 900;
   line-height: 1;
@@ -440,350 +347,214 @@ onMounted(() => {
 .metric-label {
   display: block;
   margin-top: 8rpx;
-  color: rgba(255, 255, 255, 0.56);
+  color: rgba(255, 255, 255, 0.58);
   font-size: 21rpx;
-  font-weight: 700;
+  font-weight: 750;
 }
-.intake-status-row {
+.subject-tabs,
+.track-row {
   display: flex;
-  align-items: center;
-  margin-top: 22rpx;
-}
-.intake-status-pill {
-  flex-shrink: 0;
-  padding: 8rpx 18rpx;
-  border-radius: 999rpx;
-  background: rgba(158, 232, 112, 0.18);
-  color: #d8ffc5;
-  font-size: 22rpx;
-  font-weight: 800;
-}
-.intake-status-pill.status-failed {
-  background: rgba(255, 97, 97, 0.18);
-  color: #ffd2d2;
-}
-.intake-status-pill.status-paused,
-.intake-status-pill.status-ready {
-  background: rgba(103, 196, 255, 0.17);
-  color: #c8efff;
-}
-.intake-status-copy {
-  min-width: 0;
-  margin-left: 14rpx;
-  color: rgba(255, 255, 255, 0.68);
-  font-size: 23rpx;
-  line-height: 1.4;
-}
-.stats-header {
-  padding: 24rpx 32rpx 16rpx;
-}
-.stats-total {
-  font-size: 36rpx;
-  font-weight: 800;
-  color: var(--text-primary);
-}
-.stats-sub {
-  display: block;
-  font-size: 24rpx;
-  color: var(--text-secondary);
-  margin-top: 8rpx;
-}
-
-.category-list {
   padding: 0 24rpx;
+  margin-top: 18rpx;
 }
-.cat-card {
-  display: flex;
-  align-items: center;
-  /* gap: 20rpx; -- replaced for Android WebView compat */
-  background: var(--bg-card);
-  border: 2rpx solid rgba(0, 0, 0, 0.04);
-  border-radius: 24rpx;
-  padding: 28rpx 24rpx;
-  margin-bottom: 16rpx;
-  transition: all 0.25s ease;
-  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
-}
-.cat-card > view + view {
-  margin-left: 20rpx;
-}
-.cat-card.active {
-  background: var(--info);
-  border-color: transparent;
-  box-shadow: 0 8rpx 0 #0e8ac0;
-}
-.cat-card.active:active {
-  transform: translateY(4rpx);
-  box-shadow: 0 4rpx 0 #0e8ac0;
-}
-.cat-card.active .cat-name,
-.cat-card.active .cat-count {
-  color: var(--text-inverse);
-}
-.cat-card.active .cat-icon {
-  background: rgba(255, 255, 255, 0.2);
-  color: var(--text-inverse);
-}
-.cat-card.active .cat-name,
-.cat-card.active .cat-count {
-  color: var(--text-inverse, #fff);
-}
-.cat-card.active .cat-icon {
-  background: rgba(255, 255, 255, 0.2);
-  color: var(--text-inverse, #fff);
-}
-.cat-icon {
-  width: 80rpx;
-  height: 80rpx;
-  border-radius: 20rpx;
-  background: rgba(28, 176, 246, 0.12);
+.subject-tab,
+.track-pill {
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
-  color: var(--info);
-  transition: all 0.25s ease;
-}
-.cat-info {
-  flex: 1;
-}
-.cat-name {
-  font-size: 30rpx;
-  font-weight: 800;
-  color: var(--text-primary);
-}
-.cat-count {
-  display: block;
-  font-size: 22rpx;
-  color: var(--text-secondary);
-  margin-top: 4rpx;
-}
-.cat-diff {
-  display: flex;
-  width: 80rpx;
-  height: 8rpx;
-  border-radius: 4rpx;
-  overflow: hidden;
-  /* gap: 2rpx; -- replaced for Android WebView compat */
-}
-.cat-diff > view + view {
-  margin-left: 2rpx;
-}
-.diff-bar {
-  height: 100%;
-  border-radius: 4rpx;
-  min-width: 2rpx;
-}
-.diff-bar.easy {
-  background: var(--success);
-}
-.diff-bar.medium {
-  background: var(--warning, #fbbf24);
-}
-.diff-bar.hard {
-  background: var(--danger, #f87171);
-}
-
-.filter-bar {
-  padding: 16rpx 24rpx;
-}
-.filter-row {
-  display: flex;
-  /* gap: 16rpx; -- replaced for Android WebView compat */
-  margin-bottom: 16rpx;
-  flex-wrap: wrap;
-}
-.filter-row > view {
-  margin-right: 16rpx;
-  margin-bottom: 8rpx;
-}
-.filter-chip {
-  padding: 12rpx 32rpx;
-  border-radius: 32rpx;
-  font-size: 24rpx;
+  min-height: 58rpx;
+  padding: 0 24rpx;
+  border-radius: 999rpx;
   background: var(--bg-card);
   color: var(--text-secondary);
-  border: 2rpx solid rgba(0, 0, 0, 0.04);
-  transition: all 0.2s ease;
+  font-size: 24rpx;
+  font-weight: 800;
+  border: 2rpx solid rgba(0, 0, 0, 0.05);
 }
-.filter-chip.selected {
-  background: var(--info);
-  color: var(--text-inverse);
-  border-color: var(--info);
-  box-shadow: 0 4rpx 16rpx rgba(28, 176, 246, 0.25);
+.subject-tab + .subject-tab,
+.track-pill + .track-pill {
+  margin-left: 12rpx;
 }
-.filter-actions {
+.subject-tab.active,
+.track-pill.active {
+  background: #9fe870;
+  color: #142017;
+  border-color: #9fe870;
+}
+.track-code {
+  margin-right: 8rpx;
+  font-weight: 900;
+}
+.section-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: 30rpx 32rpx 16rpx;
+}
+.section-title {
+  display: block;
+  color: var(--text-primary);
+  font-size: 34rpx;
+  font-weight: 900;
+}
+.section-hint,
+.section-meta {
+  display: block;
+  color: var(--text-secondary);
+  font-size: 23rpx;
   margin-top: 8rpx;
 }
-.action-btn {
-  text-align: center;
-  padding: 22rpx;
-  border-radius: 20rpx;
-  font-size: 28rpx;
-  font-weight: 600;
-  transition: all 0.2s ease;
-}
-.action-btn.primary {
-  background: var(--info);
-  color: var(--text-inverse);
-  box-shadow: 0 8rpx 0 #0e8ac0;
-}
-.action-btn.primary:active {
-  transform: translateY(4rpx);
-  box-shadow: 0 4rpx 0 #0e8ac0;
-}
-
-.question-list {
+.paper-list {
   padding: 0 24rpx;
 }
-.q-item {
-  background: var(--bg-card);
-  border: 2rpx solid rgba(0, 0, 0, 0.04);
+.paper-card {
+  padding: 28rpx 24rpx;
+  margin-bottom: 18rpx;
   border-radius: 24rpx;
-  padding: 24rpx;
-  margin-bottom: 16rpx;
+  background: var(--bg-card);
+  border: 2rpx solid rgba(0, 0, 0, 0.05);
   box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
 }
-.q-header {
+.paper-main {
   display: flex;
-  justify-content: space-between;
+}
+.paper-year {
+  flex-shrink: 0;
+  width: 104rpx;
+  color: #142017;
+  font-size: 36rpx;
+  font-weight: 950;
+  line-height: 1;
+}
+.paper-copy {
+  flex: 1;
+  min-width: 0;
+}
+.paper-name {
+  display: block;
+  color: var(--text-primary);
+  font-size: 30rpx;
+  font-weight: 850;
+}
+.paper-desc {
+  display: block;
+  margin-top: 8rpx;
+  color: var(--text-secondary);
+  font-size: 23rpx;
+  line-height: 1.45;
+}
+.paper-section-row {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 16rpx;
+}
+.paper-section {
+  margin-right: 8rpx;
+  margin-bottom: 8rpx;
+  padding: 6rpx 12rpx;
+  border-radius: 999rpx;
+  background: rgba(20, 32, 23, 0.06);
+  color: rgba(20, 32, 23, 0.68);
+  font-size: 20rpx;
+  font-weight: 750;
+}
+.paper-actions {
+  margin-top: 22rpx;
+}
+.paper-btn {
+  display: flex;
   align-items: center;
+  justify-content: center;
+  min-height: 72rpx;
+  border-radius: 18rpx;
+  font-size: 25rpx;
+  font-weight: 900;
+}
+.paper-btn.primary {
+  background: #142017;
+  color: #fff;
+}
+.paper-btn.secondary {
+  background: #9fe870;
+  color: #142017;
+}
+.pending-panel {
+  margin: 30rpx 24rpx 0;
+  padding: 26rpx 24rpx;
+  border-radius: 24rpx;
+  background: rgba(20, 32, 23, 0.045);
+}
+.pending-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
   margin-bottom: 12rpx;
 }
-.q-index {
-  font-size: 22rpx;
-  color: var(--text-secondary);
-  font-weight: 600;
-}
-.q-tags {
-  display: flex;
-  /* gap: 8rpx; -- replaced for Android WebView compat */
-}
-.q-tags > text + text {
-  margin-left: 8rpx;
-}
-.q-diff {
-  font-size: 20rpx;
-  padding: 4rpx 12rpx;
-  border-radius: 12rpx;
-  font-weight: 500;
-}
-.q-diff.easy {
-  background: var(--em3d-primary-light);
-  color: var(--success);
-}
-.q-diff.medium {
-  background: rgba(255, 200, 0, 0.15);
-  color: var(--warning, #d97706);
-}
-.q-diff.hard {
-  background: var(--em3d-danger-light);
-  color: var(--danger, #dc2626);
-}
-.q-source,
-.q-year {
-  font-size: 20rpx;
-  color: var(--text-secondary);
-  background: var(--bg-secondary);
-  padding: 4rpx 12rpx;
-  border-radius: 12rpx;
-}
-.q-content {
-  font-size: 28rpx;
+.pending-title {
   color: var(--text-primary);
-  line-height: 1.6;
-  margin-bottom: 16rpx;
+  font-size: 28rpx;
+  font-weight: 900;
 }
-.q-options {
-  display: flex;
-  flex-direction: column;
-  /* gap: 8rpx; -- replaced for Android WebView compat */
-}
-.q-options > text + text {
-  margin-top: 8rpx;
-}
-.q-opt {
-  font-size: 26rpx;
+.pending-sub {
   color: var(--text-secondary);
-  line-height: 1.5;
-  padding: 8rpx 0;
+  font-size: 21rpx;
 }
-
-.empty-state {
-  text-align: center;
-  padding: 80rpx 0;
+.pending-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18rpx 0;
+  border-top: 1rpx solid rgba(0, 0, 0, 0.06);
 }
-/* 空状态插图 */
-.empty-illustration {
-  width: 320rpx;
-  height: 260rpx;
-  margin: 0 auto 24rpx;
+.pending-copy {
+  flex: 1;
+  min-width: 0;
+  padding-right: 18rpx;
+}
+.pending-name {
   display: block;
+  color: var(--text-primary);
+  font-size: 25rpx;
+  font-weight: 820;
+}
+.pending-reason {
+  display: block;
+  margin-top: 6rpx;
+  color: var(--text-secondary);
+  font-size: 22rpx;
+  line-height: 1.35;
+}
+.pending-year {
+  color: #142017;
+  font-size: 26rpx;
+  font-weight: 900;
+}
+.empty-state {
+  margin: 34rpx 24rpx;
+  padding: 56rpx 32rpx;
+  border-radius: 24rpx;
+  background: var(--bg-card);
+  text-align: center;
+  color: var(--text-secondary);
 }
 .empty-text {
+  display: block;
+  margin-top: 18rpx;
+  color: var(--text-primary);
   font-size: 30rpx;
-  color: var(--text-secondary);
+  font-weight: 850;
 }
 .empty-sub {
   display: block;
-  font-size: 24rpx;
-  color: var(--text-tertiary);
-  margin-top: 12rpx;
-}
-.loading-state {
-  text-align: center;
-  padding: 40rpx;
+  margin-top: 10rpx;
   color: var(--text-secondary);
-  font-size: 26rpx;
+  font-size: 24rpx;
+  line-height: 1.45;
 }
 .bottom-spacer {
   height: 120rpx;
 }
-
-/* 暗色模式 */
 .dark-mode {
-  background: linear-gradient(
-    180deg,
-    var(--page-gradient-top, #0b0b0f) 0%,
-    var(--page-gradient-mid, #0b0b0f) 52%,
-    var(--page-gradient-bottom, #0b0b0f) 100%
-  );
-  color: var(--text-primary, #f5f5f7);
-}
-.dark-mode .navbar {
-  background: rgba(0, 0, 0, 0.6);
-}
-.dark-mode .nav-title,
-.dark-mode .nav-back {
-  color: var(--text-primary, #f5f5f7);
-}
-.dark-mode .cat-card {
-  background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(255, 255, 255, 0.08);
-  box-shadow: none;
-}
-.dark-mode .cat-icon {
-  background: rgba(255, 255, 255, 0.06);
-}
-.dark-mode .cat-card.active {
-  background: linear-gradient(135deg, var(--primary, #4a90e2), var(--primary-light, #6ba3eb));
-}
-.dark-mode .filter-chip {
-  background: rgba(255, 255, 255, 0.06);
-  color: var(--text-secondary, #8e8e93);
-  border-color: rgba(255, 255, 255, 0.08);
-}
-.dark-mode .filter-chip.selected {
-  background: var(--primary, #4a90e2);
-  color: var(--text-inverse);
-  border-color: var(--primary, #4a90e2);
-}
-.dark-mode .q-item {
-  background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(255, 255, 255, 0.08);
-  box-shadow: none;
-}
-.dark-mode .action-btn.primary {
-  background: linear-gradient(135deg, var(--primary, #4a90e2), var(--primary-light, #6ba3eb));
+  background: #1a1c23;
 }
 </style>

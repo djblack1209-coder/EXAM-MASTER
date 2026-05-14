@@ -1,0 +1,17 @@
+{
+  "id": "math3-2025",
+  "source": "math3-2025-pending-source",
+  "paperId": "math3-2025",
+  "paperName": "2025考研数学三真题",
+  "subject": "数学",
+  "track": "math3",
+  "year": "2025",
+  "quality": "needs_cleaning",
+  "publicationStatus": "blocked",
+  "publicationBlockers": [
+    "source not fully cleaned and reviewed"
+  ],
+  "processed_at": "2026-05-14T00:00:00Z",
+  "total_cards": 0,
+  "cards": []
+}

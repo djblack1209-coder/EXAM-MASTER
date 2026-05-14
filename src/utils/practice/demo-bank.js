@@ -1,19 +1,23 @@
-import { DEMO_QUESTIONS } from '@/config/home-data.js';
 import { storageService } from '@/services/storageService.js';
 import { clearQuizProgress } from '@/composables/useQuizAutoSave.js';
 import { safeNavigateTo } from '@/utils/safe-navigate';
 import { logger } from '@/utils/logger.js';
 import { toast } from '@/utils/toast.js';
+import config from '@/config/index.js';
 
-const PRACTICE_TAB_URL = '/pages/practice/index';
 const QUIZ_URL = '/pages/practice-sub/do-quiz';
+const PRACTICE_TAB_URL = '/pages/practice/index';
 
-function cloneDemoQuestions() {
-  return DEMO_QUESTIONS.map((question) => ({
+function cloneDemoQuestions(questions) {
+  return questions.map((question) => ({
     ...question,
     source: 'guest_demo',
     sourceType: 'guest_demo'
   }));
+}
+
+export function isGuestDemoEnabled() {
+  return Boolean(__ENABLE_GUEST_DEMO__ && (config.debug.enableMock || config.audit.isAuditMode || config.isDev));
 }
 
 function switchToPracticeTab() {
@@ -25,8 +29,17 @@ function switchToPracticeTab() {
   });
 }
 
-export function loadDemoQuestionBank() {
-  const questions = cloneDemoQuestions();
+export async function loadDemoQuestionBank() {
+  if (!isGuestDemoEnabled()) {
+    throw new Error('Guest demo practice is disabled in production');
+  }
+
+  if (!__ENABLE_GUEST_DEMO__) {
+    throw new Error('Guest demo practice is not included in this build');
+  }
+
+  const { DEMO_QUESTIONS } = await import('@/config/demo-questions.js');
+  const questions = cloneDemoQuestions(DEMO_QUESTIONS);
 
   storageService.save('v30_bank', questions);
   storageService.save('v30_bank_source', {
@@ -43,11 +56,18 @@ export function loadDemoQuestionBank() {
   };
 }
 
-export function startGuestDemoPractice(options = {}) {
+export async function startGuestDemoPractice(options = {}) {
+  if (!isGuestDemoEnabled()) {
+    toast.info('请先登录或导入正式题库后开始练习');
+    return {
+      questionCount: 0
+    };
+  }
+
   const destination = options.destination === 'practice' ? 'practice' : 'quiz';
 
   try {
-    const result = loadDemoQuestionBank();
+    const result = await loadDemoQuestionBank();
     toast.success('示例题库已加载');
 
     if (destination === 'practice') {
@@ -67,6 +87,7 @@ export function startGuestDemoPractice(options = {}) {
 }
 
 export default {
+  isGuestDemoEnabled,
   loadDemoQuestionBank,
   startGuestDemoPractice
 };

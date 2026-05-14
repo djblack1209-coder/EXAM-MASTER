@@ -220,6 +220,7 @@ export default defineConfig(({ command, mode }) => {
   const isStaging = mode === 'staging';
   const isDevelopment = mode === 'development';
   const isAppPlus = platform === 'app' || platform === 'app-plus';
+  const enableGuestDemo = !isProduction || env.VITE_ENABLE_MOCK === 'true' || env.VITE_AUDIT_MODE === 'true';
 
   const isNvueCompiler = process.env.UNI_COMPILER === 'nvue';
   const appInputDir = process.env.UNI_INPUT_DIR
@@ -343,7 +344,8 @@ export default defineConfig(({ command, mode }) => {
       'process.env.SENTRY_DSN': JSON.stringify(env.VITE_SENTRY_DSN || ''),
       __APP_VERSION__: JSON.stringify(env.npm_package_version || '1.0.0'),
       __BUILD_TIME__: JSON.stringify(new Date().toISOString()),
-      __BUILD_MODE__: JSON.stringify(mode)
+      __BUILD_MODE__: JSON.stringify(mode),
+      __ENABLE_GUEST_DEMO__: JSON.stringify(enableGuestDemo)
     },
 
     // 路径别名

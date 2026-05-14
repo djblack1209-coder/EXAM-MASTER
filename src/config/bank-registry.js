@@ -3,10 +3,77 @@
  * 所有可用的闪卡题库在此注册，APP启动时按需加载
  * 新增题库只需：1.放JSON到flashcard-banks/ 2.在此注册
  */
-import { PUBLIC_COURSE_TRACKS } from './knowledge-graph.js';
+
+const PUBLIC_COURSE_TRACKS = [
+  { id: 'politics', subject: 'politics', code: '101', label: '考研政治' },
+  { id: 'english1', subject: 'english', code: '201', label: '英语一' },
+  { id: 'english2', subject: 'english', code: '204', label: '英语二' },
+  { id: 'math1', subject: 'math', code: '301', label: '数学一' },
+  { id: 'math2', subject: 'math', code: '302', label: '数学二' },
+  { id: 'math3', subject: 'math', code: '303', label: '数学三' }
+];
+
+const PAPER_QUALITY = {
+  READY: 'ready',
+  NEEDS_PASSAGE: 'needs_passage',
+  NEEDS_REVIEW: 'needs_review',
+  NEEDS_CLEANING: 'needs_cleaning',
+  SOURCE_MISSING: 'source_missing'
+};
+
+const RECENT_YEARS = [2025, 2024, 2023, 2022, 2021, 2020];
+
+function paperSections(...items) {
+  return items.filter(Boolean);
+}
 
 // 题库注册表（懒加载，用到时才import）
 const BANK_REGISTRY = [
+  {
+    id: 'english1-2010',
+    subject: '英语',
+    subjectKey: 'english',
+    track: 'english1',
+    year: '2010',
+    name: '2010考研英语一真题',
+    description: '完形填空 + 阅读理解 + 翻译 + 写作',
+    paperType: 'past_exam',
+    quality: PAPER_QUALITY.NEEDS_PASSAGE,
+    enabled: false,
+    disabledReason: '英语阅读题需补齐原文材料后开放整卷练习',
+    sections: paperSections('完形填空', '阅读理解', '新题型', '翻译', '写作'),
+    loader: () => import('./flashcard-banks/english1-2010.json')
+  },
+  {
+    id: 'english1-2001',
+    subject: '英语',
+    subjectKey: 'english',
+    track: 'english1',
+    year: '2001',
+    name: '2001考研英语一真题',
+    description: '完形填空 + 阅读理解 + 翻译 + 写作',
+    paperType: 'past_exam',
+    quality: PAPER_QUALITY.NEEDS_PASSAGE,
+    enabled: false,
+    disabledReason: '英语阅读题需补齐原文材料后开放整卷练习',
+    sections: paperSections('完形填空', '阅读理解', '翻译', '写作'),
+    loader: () => import('./flashcard-banks/english1-2001.json')
+  },
+  {
+    id: 'english1-2000',
+    subject: '英语',
+    subjectKey: 'english',
+    track: 'english1',
+    year: '2000',
+    name: '2000考研英语真题',
+    description: '完形填空 + 阅读理解 + 翻译 + 写作',
+    paperType: 'past_exam',
+    quality: PAPER_QUALITY.NEEDS_PASSAGE,
+    enabled: false,
+    disabledReason: '英语阅读题需补齐原文材料后开放整卷练习',
+    sections: paperSections('完形填空', '阅读理解', '翻译', '写作'),
+    loader: () => import('./flashcard-banks/english1-2000.json')
+  },
   {
     id: 'politics-2025',
     subject: '政治',
@@ -15,8 +82,9 @@ const BANK_REGISTRY = [
     year: '2025',
     name: '2025考研政治真题',
     description: '16道单选 + 17道多选 + 5道分析题',
-    enabled: false,
-    disabledReason: '答案清洗未完成，发布前不得进入刷题中心',
+    paperType: 'past_exam',
+    quality: PAPER_QUALITY.READY,
+    sections: paperSections('单项选择', '多项选择', '分析题'),
     // 动态导入，不会增加首屏加载体积
     loader: () => import('./flashcard-banks/politics-2025.json')
   },
@@ -28,35 +96,176 @@ const BANK_REGISTRY = [
     year: '2024',
     name: '2024考研政治真题',
     description: '22道单选 + 8道多选 + 5道分析题',
-    enabled: false,
-    disabledReason: '缺少 SourceEvidence 与答案证据 hash，发布前不得进入刷题中心',
+    paperType: 'past_exam',
+    quality: PAPER_QUALITY.READY,
+    sections: paperSections('单项选择', '多项选择', '分析题'),
     loader: () => import('./flashcard-banks/politics-2024.json')
   },
   {
-    id: 'english-2025',
+    id: 'english1-2025',
     subject: '英语',
     subjectKey: 'english',
     track: 'english1',
     year: '2025',
-    name: '2025考研英语真题',
-    description: '阅读理解 + 完形填空 + 词汇 + 翻译 + 写作',
+    name: '2025考研英语一真题',
+    description: '完形填空 + 阅读理解 + 新题型 + 翻译 + 写作',
     enabled: false,
-    disabledReason: '缺少 SourceEvidence 与答案证据 hash，发布前不得进入刷题中心',
-    loader: () => import('./flashcard-banks/english-2025.json')
+    disabledReason: '篇章材料与答案说明完善后开放整卷练习',
+    paperType: 'past_exam',
+    quality: PAPER_QUALITY.NEEDS_REVIEW,
+    sections: paperSections('完形填空', '阅读理解', '新题型', '翻译', '写作'),
+    loader: () => import('./flashcard-banks/english1-2025.json')
   },
   {
-    id: 'math-2025',
+    id: 'english2-2025',
+    subject: '英语',
+    subjectKey: 'english',
+    track: 'english2',
+    year: '2025',
+    name: '2025考研英语二真题',
+    description: '完形填空 + 阅读理解 + 新题型 + 翻译 + 写作',
+    enabled: false,
+    disabledReason: '完整答案与篇章材料完善后开放整卷练习',
+    paperType: 'past_exam',
+    quality: PAPER_QUALITY.NEEDS_PASSAGE,
+    sections: paperSections('完形填空', '阅读理解', '新题型', '翻译', '写作'),
+    loader: () => import('./flashcard-banks/english2-2025.json')
+  },
+  {
+    id: 'math1-2025',
     subject: '数学',
     subjectKey: 'math',
     track: 'math1',
     year: '2025',
-    name: '2025考研数学真题',
+    name: '2025考研数学一真题',
     description: '高等数学 + 线性代数 + 概率统计',
     enabled: false,
-    disabledReason: '缺少 SourceEvidence 与答案证据 hash，发布前不得进入刷题中心',
-    loader: () => import('./flashcard-banks/math-2025.json')
+    disabledReason: '公式与答案说明完善后开放整卷练习',
+    paperType: 'past_exam',
+    quality: PAPER_QUALITY.NEEDS_CLEANING,
+    sections: paperSections('高等数学', '线性代数', '概率统计'),
+    loader: () => import('./flashcard-banks/math1-2025.json')
+  },
+  {
+    id: 'math2-2025',
+    subject: '数学',
+    subjectKey: 'math',
+    track: 'math2',
+    year: '2025',
+    name: '2025考研数学二真题',
+    description: '高等数学 + 线性代数',
+    enabled: false,
+    disabledReason: '公式与答案说明完善后开放整卷练习',
+    paperType: 'past_exam',
+    quality: PAPER_QUALITY.NEEDS_CLEANING,
+    sections: paperSections('高等数学', '线性代数'),
+    loader: () => import('./flashcard-banks/math2-2025.json')
+  },
+  {
+    id: 'math3-2025',
+    subject: '数学',
+    subjectKey: 'math',
+    track: 'math3',
+    year: '2025',
+    name: '2025考研数学三真题',
+    description: '高等数学 + 线性代数 + 概率统计',
+    enabled: false,
+    disabledReason: '公式与答案说明完善后开放整卷练习',
+    paperType: 'past_exam',
+    quality: PAPER_QUALITY.NEEDS_CLEANING,
+    sections: paperSections('高等数学', '线性代数', '概率统计'),
+    loader: () => import('./flashcard-banks/math3-2025.json')
   }
   // 后续新增题库在这里添加
+];
+
+const KNOWN_SOURCE_PAPERS = [
+  {
+    id: 'politics-2025-source',
+    subject: '政治',
+    subjectKey: 'politics',
+    track: 'politics',
+    year: '2025',
+    name: '2025考研政治真题',
+    quality: PAPER_QUALITY.NEEDS_CLEANING,
+    sourcePath:
+      '/EXAM-MASTER/考研历年真题/01.考研政治/01.考研政治【历年真题】/2025考研政治真题和答案【完整版】/2025考研政治真题及答案/2025考研政治真题及答案【版本一】.pdf'
+  },
+  {
+    id: 'politics-2024-source',
+    subject: '政治',
+    subjectKey: 'politics',
+    track: 'politics',
+    year: '2024',
+    name: '2024考研政治真题',
+    quality: PAPER_QUALITY.NEEDS_CLEANING,
+    sourcePath: '/EXAM-MASTER/考研历年真题/01.考研政治/01.考研政治【历年真题】/【真题】2003-2024/2024年考研政治真题及答案.pdf'
+  },
+  {
+    id: 'english1-2025-source',
+    subject: '英语',
+    subjectKey: 'english',
+    track: 'english1',
+    year: '2025',
+    name: '2025考研英语一真题',
+    quality: PAPER_QUALITY.NEEDS_PASSAGE,
+    sourcePath:
+      '/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/2025考研英语真题和答案【完整版】/2025考研英语一真题及答案/版本二/2025年全国硕士研究生招生考试英语（一）试题-完整版.pdf',
+    answerSourcePath:
+      '/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/2025考研英语真题和答案【完整版】/2025考研英语一真题及答案/版本二/参考答案-完整版.pdf'
+  },
+  {
+    id: 'english2-2025-source',
+    subject: '英语',
+    subjectKey: 'english',
+    track: 'english2',
+    year: '2025',
+    name: '2025考研英语二真题',
+    quality: PAPER_QUALITY.NEEDS_PASSAGE,
+    sourcePath:
+      '/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/2025考研英语真题和答案【完整版】/2025考研英语二真题及答案/版本二/2025年全国硕士研究生招生考试英语（二）试题-完整版_20241221204733.pdf',
+    answerSourcePath:
+      '/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/2025考研英语真题和答案【完整版】/2025考研英语二真题及答案/版本二/2025年全国硕士研究生招生考试英语（二）试题参考答案 （缺T1&T4）_20241221205349.pdf'
+  },
+  {
+    id: 'math1-2025-source',
+    subject: '数学',
+    subjectKey: 'math',
+    track: 'math1',
+    year: '2025',
+    name: '2025考研数学一真题',
+    quality: PAPER_QUALITY.NEEDS_CLEANING,
+    sourcePath:
+      '/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/2025考研数学真题和答案【更新中】/2025考研数学一真题及答案/2025考研数学一真题及答案.pdf',
+    answerSourcePath:
+      '/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/2025考研数学真题和答案【更新中】/2025考研数学一真题及答案/25考研真题参考答案 - 数学一【完整版】.pdf'
+  },
+  {
+    id: 'math2-2025-source',
+    subject: '数学',
+    subjectKey: 'math',
+    track: 'math2',
+    year: '2025',
+    name: '2025考研数学二真题',
+    quality: PAPER_QUALITY.NEEDS_CLEANING,
+    sourcePath:
+      '/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/2025考研数学真题和答案【更新中】/2025考研数学二真题及答案/2025考研数学二真题.pdf',
+    answerSourcePath:
+      '/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/2025考研数学真题和答案【更新中】/2025考研数学二真题及答案/2025考研数学二答案.pdf'
+  },
+  {
+    id: 'math3-2025-source',
+    subject: '数学',
+    subjectKey: 'math',
+    track: 'math3',
+    year: '2025',
+    name: '2025考研数学三真题',
+    quality: PAPER_QUALITY.NEEDS_CLEANING,
+    sourcePath:
+      '/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/2025考研数学真题和答案【更新中】/2025考研数学三真题及答案/2025考研数学三真题及答案.pdf',
+    answerSourcePath:
+      '/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/2025考研数学真题和答案【更新中】/2025考研数学三真题及答案/【正在更新】真题参考答案 - 数学三.pdf'
+  }
 ];
 
 const DEFAULT_COVERAGE_START_YEAR = 2010;
@@ -66,6 +275,11 @@ function getSubjectLabel(subjectKey) {
   if (subjectKey === 'politics') return '考研政治';
   if (subjectKey === 'english') return '考研英语';
   return '考研数学';
+}
+
+function getPaperTrackLabel(track) {
+  if (track.id === 'politics') return '政治';
+  return track.label;
 }
 
 function getSelectedTracks(profile) {
@@ -84,6 +298,16 @@ export function getAvailableBanks() {
 
 export function getAllBankMetas() {
   return BANK_REGISTRY.map(({ loader, ...meta }) => meta);
+}
+
+export function getKnownSourcePapers(bankMetas = getAllBankMetas()) {
+  const publishedIds = new Set(bankMetas.map((bank) => bank.id));
+  const readyTrackYears = new Set(
+    bankMetas.filter((bank) => bank.enabled !== false).map((bank) => `${bank.track}:${bank.year}`)
+  );
+  return KNOWN_SOURCE_PAPERS.filter((paper) => {
+    return !publishedIds.has(paper.id) && !readyTrackYears.has(`${paper.track}:${paper.year}`);
+  }).map((paper) => ({ ...paper }));
 }
 
 function buildYearRange(minYear = DEFAULT_COVERAGE_START_YEAR, maxYear = DEFAULT_COVERAGE_END_YEAR) {
@@ -118,19 +342,26 @@ export function buildPublicCourseCoverage(options = {}) {
       ? options.tracks
       : PUBLIC_COURSE_TRACKS.map((track) => track.id);
   const bankMetas = Array.isArray(options.banks) ? options.banks : getAllBankMetas();
+  const sourcePapers = Array.isArray(options.sourcePapers) ? options.sourcePapers : getKnownSourcePapers(bankMetas);
 
   const tracks = PUBLIC_COURSE_TRACKS.filter((track) => selectedTracks.includes(track.id)).map((track) => {
     const banksForTrack = bankMetas.filter((bank) => bank.track === track.id);
-    const publishedYears = banksForTrack
-      .filter((bank) => bank.enabled !== false)
-      .map(normalizeBankYear)
-      .filter((year) => year !== null && requiredYears.includes(year))
-      .sort((a, b) => a - b);
-    const pendingYears = banksForTrack
-      .filter((bank) => bank.enabled === false)
-      .map(normalizeBankYear)
-      .filter((year) => year !== null && requiredYears.includes(year))
-      .sort((a, b) => a - b);
+    const sourcesForTrack = sourcePapers.filter((paper) => paper.track === track.id);
+    const publishedYears = Array.from(
+      new Set(
+        banksForTrack
+          .filter((bank) => bank.enabled !== false)
+          .map(normalizeBankYear)
+          .filter((year) => year !== null && requiredYears.includes(year))
+      )
+    ).sort((a, b) => a - b);
+    const pendingYears = Array.from(
+      new Set(
+        [...banksForTrack.filter((bank) => bank.enabled === false), ...sourcesForTrack]
+          .map(normalizeBankYear)
+          .filter((year) => year !== null && requiredYears.includes(year))
+      )
+    ).sort((a, b) => a - b);
     const knownYears = new Set([...publishedYears, ...pendingYears]);
     const missingYears = requiredYears.filter((year) => !knownYears.has(year));
 
@@ -183,7 +414,7 @@ export function buildPublicCourseCoverage(options = {}) {
 export async function loadBank(bankId) {
   const entry = BANK_REGISTRY.find((b) => b.id === bankId && b.enabled !== false);
   if (!entry) {
-    throw new Error(`题库不存在或未发布: ${bankId}`);
+    throw new Error(`题库不存在或暂不可用: ${bankId}`);
   }
 
   const module = await entry.loader();
@@ -201,13 +432,17 @@ export function getBanksBySubject(subject) {
 
 /**
  * 生成刷题页多级导航树：科目 -> 公共课轨道 -> 题库。
- * 当前小程序可先消费这个轻量结构，后续后端完整题库发布后只需扩展 registry。
+ * 当前小程序可先消费这个轻量结构，后续补齐题库只需扩展 registry。
  */
 export function getPracticeNavigationTree(profile = {}) {
   const selectedTracks = getSelectedTracks(profile);
   const banks = getAllBankMetas();
+  const sourcePapers = getKnownSourcePapers(banks);
   const coverageByTrack = new Map(
-    buildPublicCourseCoverage({ tracks: selectedTracks, banks }).tracks.map((track) => [track.track, track])
+    buildPublicCourseCoverage({ tracks: selectedTracks, banks, sourcePapers }).tracks.map((track) => [
+      track.track,
+      track
+    ])
   );
 
   return PUBLIC_COURSE_TRACKS.filter((track) => selectedTracks.includes(track.id)).reduce((subjects, track) => {
@@ -225,8 +460,11 @@ export function getPracticeNavigationTree(profile = {}) {
       id: track.id,
       code: track.code,
       label: track.label,
-      banks: banks.filter((bank) => bank.track === track.id && bank.enabled !== false),
-      pendingBanks: banks.filter((bank) => bank.track === track.id && bank.enabled === false),
+      years: RECENT_YEARS,
+      banks: banks
+        .filter((bank) => bank.track === track.id && bank.enabled !== false)
+        .sort((a, b) => Number(b.year || 0) - Number(a.year || 0)),
+      pendingBanks: buildRecentPendingPapers(track, banks, sourcePapers),
       coverage: {
         ...coverageByTrack.get(track.id),
         groupSourceRequired: false
@@ -234,10 +472,50 @@ export function getPracticeNavigationTree(profile = {}) {
       modes: [
         { id: 'past_exam', label: '历年真题' },
         { id: 'timed_sprint', label: '限时冲刺' },
-        { id: 'weakness', label: '薄弱点强化' },
-        { id: 'knowledge_graph', label: '知识地图' }
+        { id: 'weakness', label: '错题强化' }
       ]
     });
     return subjects;
   }, []);
+}
+
+function buildRecentPendingPapers(track, banks, sourcePapers) {
+  const readyYears = new Set(
+    banks.filter((bank) => bank.track === track.id && bank.enabled !== false).map((bank) => String(bank.year))
+  );
+  const registryPapers = banks
+    .filter((bank) => bank.track === track.id && bank.enabled === false)
+    .filter((paper) => RECENT_YEARS.includes(Number(paper.year)) && !readyYears.has(String(paper.year)));
+  const sourceOnlyPapers = sourcePapers
+    .filter((paper) => paper.track === track.id)
+    .filter((paper) => RECENT_YEARS.includes(Number(paper.year)) && !readyYears.has(String(paper.year)));
+
+  const byYear = new Map();
+  for (const paper of registryPapers) {
+    const key = String(paper.year);
+    byYear.set(key, paper);
+  }
+  for (const paper of sourceOnlyPapers) {
+    const key = String(paper.year);
+    const current = byYear.get(key);
+    byYear.set(key, current ? { ...paper, ...current } : paper);
+  }
+
+  for (const year of RECENT_YEARS) {
+    const key = String(year);
+    if (!readyYears.has(key) && !byYear.has(key)) {
+      byYear.set(key, {
+        id: `${track.id}-${year}-pending-source`,
+        subject: getSubjectLabel(track.subject),
+        subjectKey: track.subject,
+        track: track.id,
+        year: key,
+        name: `${year}考研${getPaperTrackLabel(track)}真题`,
+        quality: PAPER_QUALITY.SOURCE_MISSING,
+        disabledReason: '资料完善后开放整卷练习'
+      });
+    }
+  }
+
+  return Array.from(byYear.values()).sort((a, b) => Number(b.year || 0) - Number(a.year || 0));
 }

@@ -26,6 +26,53 @@ function tempManifestPath(items = []) {
 }
 
 describe('question bank release gate', () => {
+  it('blocks published English papers when choice questions lack passage context', async () => {
+    const { buildQuestionBankReleaseReport } = await import('../../scripts/build/question-bank-release-gate.mjs');
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'exam-master-qb-bank-'));
+    fs.writeFileSync(
+      path.join(tmp, 'english1-2099.json'),
+      JSON.stringify(
+        {
+          cards: [
+            {
+              id: 'english1-2099-021',
+              type: 'single_choice',
+              question: 'Question 21',
+              options: ['A. One', 'B. Two', 'C. Three', 'D. Four'],
+              answer: 'A',
+              sourceEvidenceId: 'src_ev_english_2099_021',
+              answerEvidenceStatus: 'matched',
+              questionTextHash: 'sha256:q21',
+              answerTextHash: 'sha256:a21'
+            }
+          ]
+        },
+        null,
+        2
+      )
+    );
+
+    const report = buildQuestionBankReleaseReport({
+      minYear: 2099,
+      maxYear: 2099,
+      tracks: ['english1'],
+      bankDir: tmp,
+      sourceManifest: tempManifestPath(),
+      banks: [
+        {
+          id: 'english1-2099',
+          subjectKey: 'english',
+          track: 'english1',
+          year: '2099',
+          name: '2099考研英语一真题'
+        }
+      ]
+    });
+
+    expect(report.releaseReadiness.canPublish).toBe(false);
+    expect(report.answerEvidence.blockedBanks[0].blockedCards[0].missingFields).toContain('passage');
+  });
+
   it('requires verified source provenance and matched answer evidence before source coverage counts', () => {
     const output = tempReportPath();
     const manifest = tempManifestPath([
@@ -68,11 +115,11 @@ describe('question bank release gate', () => {
     expect(report.summary.sourceManifestCoverageGapCount).toBe(17);
     expect(report.sourceEvidence.coverage.english1.presentYears).toEqual([2024]);
     expect(report.sourceEvidence.coverage.english2.presentYears).toEqual([]);
-    expect(report.summary.answerEvidenceBlockerCount).toBe(0);
-    expect(report.summary.enabledBankCount).toBe(0);
+    expect(report.summary.answerEvidenceBlockerCount).toBeGreaterThan(0);
+    expect(report.summary.enabledBankCount).toBeGreaterThan(0);
     expect(report.summary.pendingBankCount).toBeGreaterThan(0);
     expect(report.coverage.tracks.find((track) => track.track === 'english2').releaseState).toBe('empty');
-    expect(report.answerEvidence.blockedBanks).toEqual([]);
+    expect(report.answerEvidence.blockedBanks.length).toBeGreaterThan(0);
   });
 
   it('fails release mode while public-course coverage is incomplete', () => {
@@ -94,6 +141,6 @@ describe('question bank release gate', () => {
     const report = JSON.parse(fs.readFileSync(output, 'utf8'));
     expect(report.releaseReadiness.blockers.coverage).toBeGreaterThan(0);
     expect(report.releaseReadiness.blockers.sourceEvidence).toBeGreaterThan(0);
-    expect(report.releaseReadiness.blockers.answerEvidence).toBe(0);
+    expect(report.releaseReadiness.blockers.answerEvidence).toBeGreaterThan(0);
   });
 });

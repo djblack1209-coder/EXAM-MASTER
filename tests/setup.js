@@ -75,7 +75,7 @@ globalScope.uni = {
   // 存储相关
   getStorageSync: vi.fn((key) => {
     const storage = global.__mockStorage || {};
-    return storage[key] || '';
+    return Object.prototype.hasOwnProperty.call(storage, key) ? storage[key] : '';
   }),
   setStorageSync: vi.fn((key, value) => {
     global.__mockStorage = global.__mockStorage || {};
@@ -101,7 +101,8 @@ globalScope.uni = {
   // 异步存储
   getStorage: vi.fn(({ key, success, fail }) => {
     try {
-      const value = global.__mockStorage?.[key] || '';
+      const storage = global.__mockStorage || {};
+      const value = Object.prototype.hasOwnProperty.call(storage, key) ? storage[key] : '';
       success?.({ data: value });
     } catch (e) {
       fail?.(e);

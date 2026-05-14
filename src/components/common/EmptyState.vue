@@ -74,7 +74,7 @@
         </view>
         <view class="guide-btn__content">
           <text class="guide-btn__title"> 快速开始 </text>
-          <text class="guide-btn__desc"> 体验示例题库 </text>
+          <text class="guide-btn__desc"> 导入正式题库 </text>
         </view>
         <BaseIcon name="arrow-right" :size="24" class="guide-btn__arrow" />
       </view>
@@ -99,12 +99,10 @@
 </template>
 
 <script setup>
-import { ref, computed, onBeforeUnmount } from 'vue';
+import { computed } from 'vue';
 import { modal } from '@/utils/modal.js';
-import { toast } from '@/utils/toast.js';
 import { logger } from '@/utils/logger.js';
 import { safeNavigateTo } from '@/utils/safe-navigate';
-import storageService from '@/services/storageService.js';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 import { getAssetUrl } from '@/config/static-assets.js';
 
@@ -225,18 +223,6 @@ const effectiveIllustration = computed(() => {
   return defaults[props.type] || '';
 });
 
-// ==================== 响应式状态 ====================
-/** 导航定时器ID */
-const navTimerId = ref(null);
-
-// ==================== 生命周期 ====================
-onBeforeUnmount(() => {
-  if (navTimerId.value) {
-    clearTimeout(navTimerId.value);
-    navTimerId.value = null;
-  }
-});
-
 // ==================== 方法 ====================
 
 // 震动反馈
@@ -267,7 +253,7 @@ function handleUpload() {
 function handleQuickStart() {
   vibrate();
   emit('quickStart');
-  loadDemoQuestions();
+  safeNavigateTo('/pages/practice-sub/question-bank');
 }
 
 // 查看教程
@@ -287,56 +273,6 @@ function handleTutorial() {
       }
     }
   });
-}
-
-// 加载示例题库
-async function loadDemoQuestions() {
-  toast.loading('加载示例题库...');
-
-  try {
-    const demoQuestions = [
-      {
-        id: 'demo_1',
-        question: '马克思主义哲学的直接理论来源是？',
-        options: ['A. 德国古典哲学', 'B. 英国古典政治经济学', 'C. 法国空想社会主义', 'D. 古希腊哲学'],
-        answer: 'A',
-        analysis: '马克思主义哲学的直接理论来源是德国古典哲学，特别是黑格尔的辩证法和费尔巴哈的唯物主义。',
-        category: '政治'
-      },
-      {
-        id: 'demo_2',
-        question: '下列选项中，属于唯物辩证法基本规律的是？',
-        options: ['A. 质量互变规律', 'B. 因果规律', 'C. 形式逻辑规律', 'D. 价值规律'],
-        answer: 'A',
-        analysis: '唯物辩证法的三大基本规律是：对立统一规律、质量互变规律、否定之否定规律。',
-        category: '政治'
-      },
-      {
-        id: 'demo_3',
-        question: '实践是检验真理的唯一标准，这是因为？',
-        options: ['A. 实践具有直接现实性', 'B. 实践是认识的来源', 'C. 实践是认识的目的', 'D. 实践是认识发展的动力'],
-        answer: 'A',
-        analysis: '实践是检验真理的唯一标准，因为实践具有直接现实性的特点，能够把主观认识与客观实际联系起来。',
-        category: '政治'
-      }
-    ];
-
-    storageService.save('v30_bank', demoQuestions);
-    toast.hide();
-
-    toast.success('示例题库已加载');
-
-    navTimerId.value = setTimeout(() => {
-      uni.switchTab({
-        url: '/pages/practice/index',
-        fail: () => uni.reLaunch({ url: '/pages/practice/index' })
-      });
-    }, 1500);
-  } catch (e) {
-    toast.hide();
-    logger.error('[EmptyState] 加载示例题库失败:', e);
-    toast.info('加载失败');
-  }
 }
 </script>
 

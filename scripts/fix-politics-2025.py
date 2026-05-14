@@ -8,8 +8,8 @@ import json
 import re
 import copy
 
-INPUT_FILE = "data/flashcards/政治-2025.json"
-OUTPUT_FILE = "data/flashcards/政治-2025.json"
+INPUT_FILE = "src/config/flashcard-banks/politics-2025.json"
+OUTPUT_FILE = "src/config/flashcard-banks/politics-2025.json"
 
 # 正确答案表
 ANSWERS = {

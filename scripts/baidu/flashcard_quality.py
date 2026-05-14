@@ -21,6 +21,7 @@ DEFAULT_FLASHCARD_DIR = PROJECT_ROOT / "data" / "flashcards"
 DEFAULT_OUTPUT = PROJECT_ROOT / "data" / "flashcard-quality-report.json"
 VALID_TYPES = {"single_choice", "multi_choice", "analysis", "short_answer", "essay", "translation", "cloze"}
 CHOICE_TYPES = {"single_choice", "multi_choice"}
+PUBLICATION_BLOCKED_QUALITY = {"draft", "needs_review", "needs_passage", "needs_cleaning", "source_missing"}
 ANSWER_PLACEHOLDERS = {
     "完整的参考答案全文",
     "完整的答案解析文本",
@@ -146,6 +147,23 @@ def load_cards(payload: Any) -> list[dict[str, Any]]:
     return []
 
 
+def publication_status(payload: Any) -> tuple[str, list[str]]:
+    if not isinstance(payload, dict):
+        return "", []
+
+    status = first_non_empty(payload.get("publicationStatus"), payload.get("status"))
+    quality = first_non_empty(payload.get("quality"), payload.get("paperQuality"))
+    blockers = payload.get("publicationBlockers")
+    blocker_list = [str(item) for item in blockers] if isinstance(blockers, list) else []
+
+    if status in {"draft", "pending_review", "blocked"}:
+        blocker_list.append(f"publicationStatus={status}")
+    if quality in PUBLICATION_BLOCKED_QUALITY:
+        blocker_list.append(f"quality={quality}")
+
+    return status, blocker_list
+
+
 def supporting_evidence_reason(path: Path, payload: Any) -> str:
     if isinstance(payload, dict) and payload.get("supportingEvidenceOnly") is True:
         return "supportingEvidenceOnly"
@@ -159,6 +177,7 @@ def audit_flashcard_file(path: Path, payload: Any | None = None) -> dict[str, An
     cards = load_cards(payload)
     seen_ids: set[str] = set()
     blocked_cards = []
+    status, publication_blockers = publication_status(payload)
 
     for index, card in enumerate(cards):
         card_report = audit_card(card, index, seen_ids)
@@ -182,7 +201,9 @@ def audit_flashcard_file(path: Path, payload: Any | None = None) -> dict[str, An
 
     return {
         "filePath": str(path.relative_to(PROJECT_ROOT) if path.is_relative_to(PROJECT_ROOT) else path),
-        "status": "blocked" if blocked_cards else "passed",
+        "status": "blocked" if blocked_cards or publication_blockers else "passed",
+        "publicationStatus": status,
+        "publicationBlockers": publication_blockers,
         "cardCount": len(cards),
         "missingAnswerCount": missing_answer_count,
         "sourceEvidenceBlockerCount": source_evidence_blocker_count,
@@ -214,6 +235,7 @@ def build_quality_report(flashcard_dir: Path = DEFAULT_FLASHCARD_DIR) -> dict[st
     source_evidence_blocker_count = sum(item["sourceEvidenceBlockerCount"] for item in file_reports)
     grading_blocker_count = sum(item["gradingBlockerCount"] for item in file_reports)
     blocker_count = sum(len(item["blockedCards"]) for item in file_reports)
+    publication_blocker_count = sum(len(item.get("publicationBlockers", [])) for item in file_reports)
 
     return {
         "version": 1,
@@ -228,16 +250,18 @@ def build_quality_report(flashcard_dir: Path = DEFAULT_FLASHCARD_DIR) -> dict[st
             "missingAnswerCount": missing_answer_count,
             "sourceEvidenceBlockerCount": source_evidence_blocker_count,
             "gradingBlockerCount": grading_blocker_count,
+            "publicationBlockerCount": publication_blocker_count,
             "blockerCount": blocker_count,
         },
         "skippedFiles": skipped_files,
         "files": file_reports,
         "releaseReadiness": {
-            "canPromoteToPublic": blocker_count == 0,
+            "canPromoteToPublic": blocker_count == 0 and publication_blocker_count == 0,
             "blockers": {
                 "missingAnswers": missing_answer_count,
                 "sourceEvidence": source_evidence_blocker_count,
                 "grading": grading_blocker_count,
+                "publication": publication_blocker_count,
             },
         },
     }

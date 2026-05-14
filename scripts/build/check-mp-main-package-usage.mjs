@@ -4,18 +4,7 @@ import path from 'node:path';
 const projectRoot = process.cwd();
 const buildRoot = path.join(projectRoot, 'dist', 'build', 'mp-weixin');
 const appJsonPath = path.join(buildRoot, 'app.json');
-const mediaExtensions = new Set([
-  '.png',
-  '.jpg',
-  '.jpeg',
-  '.gif',
-  '.webp',
-  '.svg',
-  '.mp3',
-  '.wav',
-  '.aac',
-  '.m4a'
-]);
+const mediaExtensions = new Set(['.png', '.jpg', '.jpeg', '.gif', '.webp', '.svg', '.mp3', '.wav', '.aac', '.m4a']);
 const wechatMediaBudgetBytes = 200 * 1024;
 
 function getMainPageFiles() {
@@ -24,9 +13,12 @@ function getMainPageFiles() {
   }
 
   const appJson = JSON.parse(fs.readFileSync(appJsonPath, 'utf8'));
-  return ['app.js', ...(appJson.pages || [])
-    .map((pagePath) => `${pagePath}.js`)
-    .filter((relativePath) => fs.existsSync(path.join(buildRoot, relativePath)))];
+  return [
+    'app.js',
+    ...(appJson.pages || [])
+      .map((pagePath) => `${pagePath}.js`)
+      .filter((relativePath) => fs.existsSync(path.join(buildRoot, relativePath)))
+  ];
 }
 
 const requiredModules = [
@@ -40,7 +32,6 @@ const requiredModules = [
   'utils/helpers/haptic.js',
   'utils/learning/adaptive-learning-engine.js',
   'utils/modal.js',
-  'utils/practice/demo-bank.js',
   'utils/quiz-elo.js',
   'utils/security/sanitize.js'
 ].filter((modulePath) => fs.existsSync(path.join(buildRoot, modulePath)));
@@ -83,11 +74,15 @@ function assertWechatMediaBudget() {
     .filter((item) => item.size > wechatMediaBudgetBytes);
 
   if (oversizedFiles.length > 0) {
-    throw new Error(`[main-usage-check] 发现超过 200K 的图片/音频资源: ${oversizedFiles.map((item) => `${item.relativePath} (${item.size} bytes)`).join(', ')}`);
+    throw new Error(
+      `[main-usage-check] 发现超过 200K 的图片/音频资源: ${oversizedFiles.map((item) => `${item.relativePath} (${item.size} bytes)`).join(', ')}`
+    );
   }
 
   if (totalBytes > wechatMediaBudgetBytes) {
-    throw new Error(`[main-usage-check] 图片/音频资源总量 ${totalBytes} bytes，超过微信代码质量阈值 ${wechatMediaBudgetBytes} bytes`);
+    throw new Error(
+      `[main-usage-check] 图片/音频资源总量 ${totalBytes} bytes，超过微信代码质量阈值 ${wechatMediaBudgetBytes} bytes`
+    );
   }
 
   console.log(`[main-usage-check] 图片/音频资源预算通过: ${mediaFiles.length} files / ${totalBytes} bytes`);

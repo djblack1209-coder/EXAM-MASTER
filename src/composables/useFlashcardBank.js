@@ -40,7 +40,12 @@ export function useFlashcardBank() {
         get: (key) => storageService.get(key, []),
         set: (key, value) => storageService.save(key, value)
       };
-      const result = importFlashcardsToBank(data, adapter);
+      const bankMeta = availableBanks.value.find((bank) => bank.id === bankId) || {};
+      const result = importFlashcardsToBank(data, adapter, {
+        paperId: bankId,
+        paperName: bankMeta?.name || '',
+        subject: bankMeta?.subject || ''
+      });
 
       // 记录已加载的题库
       const loaded = storageService.get('loaded_flashcard_banks', []) || [];

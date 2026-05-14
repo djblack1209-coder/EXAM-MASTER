@@ -442,7 +442,7 @@ class FileHandler {
     uni.showModal({
       title: '文件权限未开启',
       content:
-        '当前小程序未完成文件选择相关隐私声明，暂时无法读取本地文件。\n\n请先同意隐私指引并重启小程序；若仍失败，请在小程序后台隐私设置中勾选“选择文件（chooseMessageFile）”后重新发布。',
+        '当前小程序未完成文件选择相关隐私声明，暂时无法读取本地文件。\n\n请先同意隐私指引并重启小程序；若仍失败，请在小程序后台隐私设置中勾选“选择文件（chooseMessageFile）”后重新打开。',
       showCancel: false,
       confirmText: '我知道了'
     });

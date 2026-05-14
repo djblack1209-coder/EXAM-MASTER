@@ -28,7 +28,7 @@
           </view>
           <view class="profile-pulse">
             <text class="pulse-title">下一阶段核心能力</text>
-            <text class="pulse-desc">错题资产、复习间隔、知识图谱会在这里收拢成个人备考画像。</text>
+            <text class="pulse-desc">错题资产、复习间隔和整卷进度会在这里收拢成个人备考画像。</text>
           </view>
         </view>
       </view>
@@ -78,8 +78,8 @@
       <!-- APP引流横幅 -->
       <view class="section">
         <view class="card app-banner">
-          <text class="banner-title">知识神经图谱即将接入</text>
-          <text class="banner-desc">把每一次答题映射到知识点、薄弱链路和下一轮复习任务。</text>
+          <text class="banner-title">按年份完成公共课真题</text>
+          <text class="banner-desc">先把英语、政治和数学的整卷训练、错题复习、间隔复习跑顺。</text>
         </view>
       </view>
 
