@@ -9,6 +9,7 @@ import { checkRateLimitDistributed, createLogger } from './_shared/api-response'
 import { requireAdminAccess } from './_shared/admin-auth';
 // ✅ B8: 输入清洗工具（共享模块）
 import { escapeRegex } from './_shared/sanitize';
+import { filterCategoryStats, filterQuestionList, getCategoryAllowlistQuery } from './_shared/env-guard';
 
 const db = cloud.database();
 const _ = db.command;
@@ -139,9 +140,12 @@ export default async function (ctx) {
 async function getQuestions(data, requestId, isAuthed) {
   const { category, sub_category, difficulty, type, tags, page = 1, pageSize = 20, keyword } = data || {};
 
+  const allowlistQuery = getCategoryAllowlistQuery();
+
   const query: Record<string, any> = {
     is_active: true,
-    review_status: 'approved'
+    review_status: 'approved',
+    ...(allowlistQuery || {})
   };
 
   if (category && typeof category === 'string') query.category = category;
@@ -186,9 +190,12 @@ async function getQuestions(data, requestId, isAuthed) {
 async function getRandomQuestions(data, requestId, isAuthed) {
   const { category, difficulty, count = 10 } = data || {};
 
+  const allowlistQuery = getCategoryAllowlistQuery();
+
   const query: Record<string, any> = {
     is_active: true,
-    review_status: 'approved'
+    review_status: 'approved',
+    ...(allowlistQuery || {})
   };
 
   if (category && typeof category === 'string') query.category = category;
@@ -270,7 +277,12 @@ async function getCategoryStats(requestId) {
       const diff = item._id.difficulty;
 
       if (!categories[cat]) {
-        categories[cat] = { category: cat, total: 0, sub_categories: {}, difficulty: { easy: 0, medium: 0, hard: 0 } };
+        categories[cat] = {
+          category: cat,
+          total: 0,
+          sub_categories: {},
+          difficulty: { easy: 0, medium: 0, hard: 0 }
+        };
       }
       categories[cat].total += item.count;
       categories[cat].difficulty[diff] = (categories[cat].difficulty[diff] || 0) + item.count;
@@ -283,11 +295,13 @@ async function getCategoryStats(requestId) {
       }
     }
 
-    // 转为数组
-    const stats = Object.values(categories).map((c: any) => ({
-      ...c,
-      sub_categories: Object.entries(c.sub_categories).map(([name, count]) => ({ name, count }))
-    }));
+    // 转为数组，并通过环境守卫过滤非发布分类
+    const stats = filterCategoryStats(
+      Object.values(categories).map((c: any) => ({
+        ...c,
+        sub_categories: Object.entries(c.sub_categories).map(([name, count]) => ({ name, count }))
+      }))
+    );
 
     // 总数
     const total = stats.reduce((sum, c: any) => sum + c.total, 0);

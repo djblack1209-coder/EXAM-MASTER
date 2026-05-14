@@ -28,7 +28,7 @@
         <text class="brand-exam">EXAM</text>
         <text class="brand-master">-MASTER</text>
       </view>
-      <text class="app-slogan">真题训练、错题复习、知识图谱，一条路径完成</text>
+      <text class="app-slogan">真题训练、错题复习、间隔复习，一条路径完成</text>
       <view class="login-proof-row">
         <text class="proof-chip">公共课题库</text>
         <text class="proof-chip">限时刷题</text>
@@ -94,21 +94,6 @@
       </view>
       <!-- #endif -->
       <!-- #endif -->
-
-      <view
-        v-if="isE2EMode"
-        id="e2e-login-mock-btn"
-        class="login-btn e2e-btn"
-        hover-class="btn-hover"
-        :class="{ 'btn-disabled': isLoading }"
-        @tap="handleE2EMockLogin"
-      >
-        <view class="btn-icon e2e-icon">
-          <text>E2E</text>
-        </view>
-        <text class="btn-text"> 测试一键登录 </text>
-        <BaseIcon name="arrow-right" :size="24" class="btn-arrow" />
-      </view>
 
       <!-- #ifndef MP-WEIXIN -->
       <view
@@ -256,17 +241,6 @@
         <text class="btn-text"> 邮箱登录/注册 </text>
         <BaseIcon name="arrow-right" :size="24" class="btn-arrow" />
       </view>
-
-      <view id="e2e-login-demo-btn" class="login-demo-entry" hover-class="btn-hover" @tap="handleGuestDemoPractice">
-        <view class="demo-icon">
-          <BaseIcon name="book-open" :size="34" />
-        </view>
-        <view class="demo-copy">
-          <text class="demo-title">先体验示例题</text>
-          <text class="demo-subtitle">无需登录，3 道题感受限时刷题与即时反馈</text>
-        </view>
-        <BaseIcon name="arrow-right" :size="24" class="btn-arrow" />
-      </view>
     </view>
 
     <!-- 用户协议 -->
@@ -310,7 +284,6 @@ import { getStatusBarHeight, getCapsuleSafeRight } from '@/utils/core/system.js'
 import { getRetryCooldownSeconds, normalizeEmailAddress, resolveEmailAuthErrorMessage } from './email-auth-utils.js';
 // 静态资源 CDN 映射（大图已迁出主包）
 import { getAssetUrl } from '@/config/static-assets.js';
-import { startGuestDemoPractice } from '@/utils/practice/demo-bank.js';
 
 // 主题状态
 const isDark = ref(false);
@@ -324,7 +297,6 @@ const emailSubmitting = ref(false);
 let lastEmailSubmitAt = 0;
 const EMAIL_SUBMIT_COOLDOWN_MS = 2500;
 const agreedToTerms = ref(false);
-const isE2EMode = ref(false);
 // E007: 检测微信 OAuth provider 是否可用（APP-PLUS）
 const hasWechatProvider = ref(false);
 // E007: 检测是否在微信内置浏览器中（H5）
@@ -454,55 +426,6 @@ const toggleAgreement = () => {
 // 返回上一页
 const handleBack = () => {
   safeNavigateBack();
-};
-
-const isNonReleaseEnv = () => {
-  try {
-    if (typeof uni === 'undefined' || typeof uni.getAccountInfoSync !== 'function') {
-      return false;
-    }
-    const info = uni.getAccountInfoSync();
-    const envVersion = info?.miniProgram?.envVersion;
-    return envVersion !== 'release';
-  } catch {
-    return false;
-  }
-};
-
-const detectE2EMode = () => {
-  try {
-    const pages = getCurrentPages();
-    const currentPage = pages[pages.length - 1];
-    const query = currentPage?.$page?.options || currentPage?.options || {};
-    const e2eFlag = String(query.e2e || '').toLowerCase();
-    isE2EMode.value = (e2eFlag === '1' || e2eFlag === 'true') && isNonReleaseEnv();
-  } catch {
-    isE2EMode.value = false;
-  }
-};
-
-const handleE2EMockLogin = () => {
-  if (!isE2EMode.value || isLoading.value) return;
-
-  isLoading.value = true;
-  saveLoginInfo({
-    token: `e2e-token-${Date.now()}`,
-    userId: 'e2e_user',
-    userInfo: {
-      nickname: 'E2E Tester',
-      avatar_url: ''
-    }
-  });
-
-  toast.success('测试登录成功');
-  setTimeout(() => {
-    isLoading.value = false;
-    navigateAfterLogin();
-  }, 300);
-};
-
-const handleGuestDemoPractice = () => {
-  startGuestDemoPractice({ destination: 'quiz' });
 };
 
 // 微信登录
@@ -1115,8 +1038,6 @@ const openTerms = () => {
 onMounted(() => {
   statusBarHeight.value = getStatusBarHeight();
   capsuleSafeRight.value = getCapsuleSafeRight();
-
-  detectE2EMode();
 
   // 获取主题状态
   const savedTheme = storageService.get('theme_mode', 'light');

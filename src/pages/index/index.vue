@@ -24,7 +24,7 @@
       <view class="section hero-section">
         <view class="hero-panel">
           <view class="hero-topline">
-            <text class="hero-kicker">PUBLIC COURSE ENGINE</text>
+            <text class="hero-kicker">公共课训练台</text>
             <text class="hero-state">{{ masteryStateText }}</text>
           </view>
           <text class="hero-title">{{ greeting }}，进入今天的备考主线</text>
@@ -45,13 +45,13 @@
 
           <view class="today-focus-panel">
             <view class="today-focus-copy">
-              <text class="today-focus-kicker">TODAY FOCUS</text>
+              <text class="today-focus-kicker">今日重点</text>
               <text class="today-focus-title">{{ focusPanelTitle }}</text>
               <text class="today-focus-desc">{{ todayMomentumText }}</text>
             </view>
             <view class="mastery-orb">
               <text class="mastery-orb-value">{{ todayProgressPercent }}%</text>
-              <text class="mastery-orb-label">today</text>
+              <text class="mastery-orb-label">今日</text>
             </view>
           </view>
 
@@ -62,34 +62,28 @@
             </view>
           </view>
 
-          <view class="knowledge-stage">
-            <view class="knowledge-stage-head">
+          <view class="paper-stage">
+            <view class="paper-stage-head">
               <view>
-                <text class="knowledge-kicker">KNOWLEDGE MAP</text>
-                <text class="knowledge-title">公共课知识神经图谱</text>
+                <text class="paper-kicker">真题资产</text>
+                <text class="paper-title">近年真题整卷进度</text>
               </view>
-              <view class="knowledge-score">
-                <text class="knowledge-score-value">{{ knowledgeSummary.mastery }}%</text>
-                <text class="knowledge-score-label">掌握</text>
-              </view>
-            </view>
-
-            <view class="knowledge-map">
-              <view v-for="line in knowledgeLines" :key="line.id" class="knowledge-line" :style="line.style" />
-              <view
-                v-for="node in knowledgePreviewNodes"
-                :key="node.id"
-                class="knowledge-node"
-                :class="[`state-${node.state}`, { hot: node.hot }]"
-                :style="node.style"
-              >
-                <text class="knowledge-node-label">{{ node.shortLabel }}</text>
+              <view class="paper-score">
+                <text class="paper-score-value">{{ totalQuestions }}</text>
+                <text class="paper-score-label">已练题</text>
               </view>
             </view>
 
-            <view class="knowledge-foot">
-              <text>{{ knowledgeMapCaption }}</text>
-              <text>{{ knowledgeSummary.strong }} 强 / {{ knowledgeSummary.weak }} 弱</text>
+            <view class="paper-lane">
+              <view v-for="paper in paperProgressCards" :key="paper.label" class="paper-pill" :class="paper.state">
+                <text class="paper-pill-label">{{ paper.label }}</text>
+                <text class="paper-pill-value">{{ paper.value }}</text>
+              </view>
+            </view>
+
+            <view class="paper-foot">
+              <text>{{ paperStageCaption }}</text>
+              <text>{{ loadedPaperCount }} 套已加载</text>
             </view>
           </view>
 
@@ -114,7 +108,7 @@
               <text class="onboarding-entry-desc">选择英语/数学版本、每日目标和训练节奏</text>
             </view>
             <view class="onboarding-entry-mark">
-              <text>SET</text>
+              <text>设置</text>
             </view>
           </view>
 
@@ -146,36 +140,14 @@
       <!-- 统计网格 -->
       <view class="section stats-row">
         <view class="stat-card">
-          <text class="stat-kicker">TOTAL</text>
+          <text class="stat-kicker">累计</text>
           <text class="stat-value">{{ totalQuestions }}</text>
           <text class="stat-label">累计做题</text>
         </view>
         <view class="stat-card">
-          <text class="stat-kicker">ACCURACY</text>
+          <text class="stat-kicker">正确率</text>
           <text class="stat-value">{{ accuracy }}%</text>
           <text class="stat-label">正确率</text>
-        </view>
-      </view>
-
-      <view class="section">
-        <view class="pipeline-panel">
-          <view class="pipeline-head">
-            <view>
-              <text class="pipeline-kicker">RESOURCE PIPELINE</text>
-              <text class="pipeline-title">资料到训练的发布链路</text>
-            </view>
-            <text class="pipeline-status">{{ evidenceStatusText }}</text>
-          </view>
-          <view class="pipeline-list">
-            <view v-for="step in resourcePipeline" :key="step.id" class="pipeline-step" :class="`state-${step.state}`">
-              <view class="pipeline-dot" />
-              <view class="pipeline-copy">
-                <text class="pipeline-step-title">{{ step.title }}</text>
-                <text class="pipeline-step-desc">{{ step.desc }}</text>
-              </view>
-              <text class="pipeline-step-state">{{ step.stateLabel }}</text>
-            </view>
-          </view>
         </view>
       </view>
 
@@ -212,42 +184,12 @@ import CustomTabbar from '@/components/layout/custom-tabbar/custom-tabbar.vue';
 import PrivacyPopup from '@/components/common/privacy-popup.vue';
 import { useStudyStore } from '@/stores/modules/study';
 import { useUserStore } from '@/stores/modules/user';
-import { useLearningTrajectoryStore } from '@/stores/modules/learning-trajectory-store.js';
 import { storageService } from '@/services/storageService.js';
 import { logger } from '@/utils/logger.js';
-
-const KNOWLEDGE_NODE_LAYOUT = [
-  { x: 10, y: 48, size: 74 },
-  { x: 28, y: 24, size: 58 },
-  { x: 48, y: 52, size: 88 },
-  { x: 70, y: 28, size: 64 },
-  { x: 82, y: 62, size: 52 },
-  { x: 22, y: 72, size: 46 },
-  { x: 58, y: 78, size: 42 },
-  { x: 39, y: 10, size: 38 },
-  { x: 76, y: 8, size: 36 }
-];
-
-const KNOWLEDGE_LINE_LAYOUT = [
-  { id: 'l1', left: '18%', top: '44%', width: '180rpx', rotate: '-24deg' },
-  { id: 'l2', left: '35%', top: '40%', width: '150rpx', rotate: '20deg' },
-  { id: 'l3', left: '55%', top: '43%', width: '154rpx', rotate: '-24deg' },
-  { id: 'l4', left: '60%', top: '64%', width: '150rpx', rotate: '23deg' },
-  { id: 'l5', left: '20%', top: '62%', width: '162rpx', rotate: '17deg' },
-  { id: 'l6', left: '42%', top: '25%', width: '128rpx', rotate: '-22deg' }
-];
-
-function compactKnowledgeLabel(label = '') {
-  return String(label).replace(/\s+/g, '').slice(0, 4);
-}
+import { getPracticeNavigationTree } from '@/config/bank-registry.js';
 
 export default {
   components: { CustomTabbar, PrivacyPopup },
-
-  setup() {
-    const learningTrajectoryStore = useLearningTrajectoryStore();
-    return { learningTrajectoryStore };
-  },
 
   data() {
     return {
@@ -261,20 +203,16 @@ export default {
       todayCount: 0,
       streakDays: 0,
       totalQuestions: 0,
+      loadedPaperCount: 0,
       accuracy: 0,
       recentActivities: [],
       activeDashboardTab: 'today',
       dashboardTabs: [
-        { id: 'today', label: 'Today' },
-        { id: 'bank', label: 'Bank' },
-        { id: 'review', label: 'Review' }
+        { id: 'today', label: '今日' },
+        { id: 'bank', label: '题库' },
+        { id: 'review', label: '复习' }
       ],
-      resourcePipeline: [
-        { id: 'intake', title: '资料导入', desc: '上传 / 网盘 / 管理端统一入口', state: 'done', stateLabel: 'ready' },
-        { id: 'cleaning', title: '清洗与解析', desc: 'PDF 切题、答案候选、解析校验', state: 'active', stateLabel: 'running' },
-        { id: 'evidence', title: '证据门禁', desc: '只发布来源和答案可审计的题库', state: 'review', stateLabel: 'gated' },
-        { id: 'training', title: '训练同步', desc: '刷题、错题、复习间隔回流知识图谱', state: 'done', stateLabel: 'linked' }
-      ]
+      paperProgressCards: []
     };
   },
 
@@ -298,9 +236,9 @@ export default {
     },
 
     navStatusText() {
-      if (this.todayProgressPercent >= 100) return 'TODAY CLEAR';
-      if (this.totalQuestions > 0) return 'TRAINING READY';
-      return 'PUBLIC BETA';
+      if (this.todayProgressPercent >= 100) return '今日完成';
+      if (this.totalQuestions > 0) return '训练可用';
+      return '待导入题库';
     },
 
     remainingToday() {
@@ -308,20 +246,20 @@ export default {
     },
 
     masteryStateText() {
-      if (this.isNewUser) return 'READY';
-      if (this.todayProgressPercent >= 100) return 'COMPLETE';
-      if (this.todayProgressPercent >= 60) return 'IN FLOW';
-      return 'WARM UP';
+      if (this.isNewUser) return '准备开始';
+      if (this.todayProgressPercent >= 100) return '已完成';
+      if (this.todayProgressPercent >= 60) return '推进中';
+      return '待启动';
     },
 
     todayMomentumText() {
-      if (this.isNewUser) return '先加载示例题库，2 分钟进入第一轮训练';
+      if (this.isNewUser) return '先导入正式题库，完成第一轮训练';
       if (this.todayProgressPercent >= 100) return '今天目标已达成，可以进入错题巩固';
       return `再完成 ${this.remainingToday} 题，形成今天的记忆闭环`;
     },
 
     focusPanelTitle() {
-      if (this.activeDashboardTab === 'bank') return '先确认可训练题库与发布状态';
+      if (this.activeDashboardTab === 'bank') return '先确认可训练真题年份';
       if (this.activeDashboardTab === 'review') return '先处理错题与间隔复习队列';
       if (this.isNewUser) return '从第一组公共课真题开始';
       return '继续推进今日训练窗口';
@@ -335,60 +273,9 @@ export default {
       ];
     },
 
-    evidenceStatusText() {
-      if (this.totalQuestions > 0) return 'local ready';
-      return 'source gated';
-    },
-
-    knowledgeSummary() {
-      return (
-        this.learningTrajectoryStore?.masterySummary || {
-          attempted: 0,
-          strong: 0,
-          weak: 0,
-          mastery: 0
-        }
-      );
-    },
-
-    knowledgeMapCaption() {
-      if (!this.knowledgeSummary.attempted) return '完成第一组题后，薄弱知识点会自动变色。';
-      return `已定位 ${this.knowledgeSummary.attempted} 个知识节点`;
-    },
-
-    knowledgePreviewNodes() {
-      const source = this.learningTrajectoryStore?.knowledgeNodesWithState || [];
-      const preferred = source.filter((item) => ['track', 'module', 'topic'].includes(item.type)).slice(0, 9);
-      return preferred.map((item, index) => {
-        const layout = KNOWLEDGE_NODE_LAYOUT[index % KNOWLEDGE_NODE_LAYOUT.length];
-        const state = item.visual?.state || 'unknown';
-        const color = item.visual?.color || '#DDE8DD';
-        return {
-          id: item.id,
-          state,
-          hot: state === 'strong' || state === 'weak',
-          shortLabel: compactKnowledgeLabel(item.label),
-          style: {
-            left: `${layout.x}%`,
-            top: `${layout.y}%`,
-            width: `${layout.size}rpx`,
-            height: `${layout.size}rpx`,
-            background: color
-          }
-        };
-      });
-    },
-
-    knowledgeLines() {
-      return KNOWLEDGE_LINE_LAYOUT.map((item) => ({
-        id: item.id,
-        style: {
-          left: item.left,
-          top: item.top,
-          width: item.width,
-          transform: `rotate(${item.rotate})`
-        }
-      }));
+    paperStageCaption() {
+      if (this.loadedPaperCount > 0) return '继续按年份完成整卷训练。';
+      return '先选择一套可练真题，建立第一条训练记录。';
     }
   },
 
@@ -432,15 +319,14 @@ export default {
         const userStore = useUserStore();
         studyStore.restoreProgress();
         userStore.restoreUserInfo();
-        this.learningTrajectoryStore?.restoreTrajectory?.();
-        const examProfile = storageService.get('exam_profile', null);
-        if (examProfile) this.learningTrajectoryStore?.setExamProfile?.(examProfile);
-
         const progress = studyStore.studyProgress;
         this.totalQuestions = progress.completedQuestions || 0;
         this.accuracy = studyStore.accuracy || 0;
         this.streakDays = progress.studyDays || 0;
         this.dailyGoal = storageService.get('daily_goal', 25);
+        const loadedPapers = storageService.get('loaded_flashcard_banks', []) || [];
+        this.loadedPaperCount = loadedPapers.length;
+        this.paperProgressCards = this.buildPaperProgressCards(loadedPapers);
 
         // 今日做题数：从 questionHistory 中统计今天的记录
         const today = new Date().toDateString();
@@ -489,6 +375,34 @@ export default {
           time: this.formatRelativeTime(data.lastTime),
           progress: data.total > 0 ? Math.round((data.correct / data.total) * 100) + '%' : '0%'
         }));
+    },
+
+    buildPaperProgressCards(loadedPapers = []) {
+      const tracks = [
+        { id: 'english1', label: '英语一', keys: ['english1', 'english-'] },
+        { id: 'english2', label: '英语二', keys: ['english2'] },
+        { id: 'politics', label: '政治', keys: ['politics'] },
+        { id: 'math1', label: '数学一', keys: ['math1', 'math-'] },
+        { id: 'math2', label: '数学二', keys: ['math2'] },
+        { id: 'math3', label: '数学三', keys: ['math3'] }
+      ];
+      const loadedText = loadedPapers.join(' ').toLowerCase();
+      const profile = storageService.get('exam_profile', null) || {};
+      const readyTrackIds = new Set(
+        getPracticeNavigationTree(profile)
+          .flatMap((subject) => subject.tracks || [])
+          .filter((track) => track.banks?.length > 0)
+          .map((track) => track.id)
+      );
+      return tracks.map((track) => {
+        const isLoaded = track.keys.some((key) => loadedText.includes(key));
+        const state = isLoaded ? 'ready' : readyTrackIds.has(track.id) ? 'available' : 'pending';
+        return {
+          label: track.label,
+          value: state === 'ready' ? '已加载' : state === 'available' ? '可练' : '即将开放',
+          state
+        };
+      });
     },
 
     formatRelativeTime(ts) {
@@ -648,7 +562,7 @@ $spacing-section: 24rpx;
 .dashboard-tabs,
 .today-focus-panel,
 .focus-chip-row,
-.knowledge-stage,
+.paper-stage,
 .hero-metric-strip,
 .onboarding-entry,
 .hero-action-row,
@@ -841,7 +755,7 @@ $spacing-section: 24rpx;
   font-weight: 650;
 }
 
-.knowledge-stage {
+.paper-stage {
   margin-top: 28rpx;
   padding: 24rpx;
   border-radius: 30rpx;
@@ -851,13 +765,13 @@ $spacing-section: 24rpx;
     0 18rpx 44rpx rgba(0, 0, 0, 0.08);
 }
 
-.knowledge-stage-head {
+.paper-stage-head {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
 }
 
-.knowledge-kicker {
+.paper-kicker {
   display: block;
   color: rgba(255, 255, 255, 0.42);
   font-size: 17rpx;
@@ -865,7 +779,7 @@ $spacing-section: 24rpx;
   letter-spacing: 2rpx;
 }
 
-.knowledge-title {
+.paper-title {
   display: block;
   margin-top: 6rpx;
   color: rgba(255, 255, 255, 0.9);
@@ -873,7 +787,7 @@ $spacing-section: 24rpx;
   font-weight: 850;
 }
 
-.knowledge-score {
+.paper-score {
   min-width: 104rpx;
   padding: 10rpx 14rpx;
   border-radius: 22rpx;
@@ -881,7 +795,7 @@ $spacing-section: 24rpx;
   text-align: center;
 }
 
-.knowledge-score-value {
+.paper-score-value {
   display: block;
   color: $primary;
   font-size: 30rpx;
@@ -889,67 +803,54 @@ $spacing-section: 24rpx;
   line-height: 1;
 }
 
-.knowledge-score-label {
+.paper-score-label {
   display: block;
   margin-top: 4rpx;
   color: rgba(255, 255, 255, 0.55);
   font-size: 18rpx;
 }
 
-.knowledge-map {
-  position: relative;
-  height: 230rpx;
-  margin-top: 14rpx;
-  overflow: hidden;
-}
-
-.knowledge-line {
-  position: absolute;
-  height: 2rpx;
-  border-radius: 999rpx;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-  transform-origin: left center;
-}
-
-.knowledge-node {
-  position: absolute;
+.paper-lane {
   display: flex;
-  align-items: center;
+  flex-wrap: wrap;
+  margin-top: 18rpx;
+  gap: 12rpx;
+}
+
+.paper-pill {
+  display: flex;
+  flex-direction: column;
   justify-content: center;
-  border-radius: 999rpx;
-  box-shadow:
-    0 10rpx 26rpx rgba(0, 0, 0, 0.18),
-    inset 0 1rpx 0 rgba(255, 255, 255, 0.44);
-  transform: translate3d(-50%, -50%, 0);
+  min-width: 138rpx;
+  min-height: 76rpx;
+  padding: 12rpx 16rpx;
+  border-radius: 20rpx;
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: inset 0 1rpx 0 rgba(255, 255, 255, 0.1);
 }
 
-.knowledge-node.hot {
-  box-shadow:
-    0 14rpx 34rpx rgba(159, 232, 112, 0.18),
-    inset 0 1rpx 0 rgba(255, 255, 255, 0.52);
+.paper-pill.ready {
+  background: rgba(159, 232, 112, 0.16);
 }
 
-.knowledge-node.state-unknown {
-  opacity: 0.72;
+.paper-pill.available {
+  background: rgba(117, 221, 255, 0.14);
 }
 
-.knowledge-node.state-weak {
-  box-shadow:
-    0 14rpx 34rpx rgba(255, 90, 95, 0.28),
-    inset 0 1rpx 0 rgba(255, 255, 255, 0.38);
+.paper-pill-label {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 22rpx;
+  font-weight: 850;
 }
 
-.knowledge-node-label {
-  max-width: 76rpx;
-  overflow: hidden;
-  color: rgba(18, 37, 18, 0.88);
-  font-size: 17rpx;
-  font-weight: 900;
-  line-height: 1.05;
-  text-align: center;
+.paper-pill-value {
+  margin-top: 5rpx;
+  color: rgba(255, 255, 255, 0.54);
+  font-size: 18rpx;
+  font-weight: 700;
 }
 
-.knowledge-foot {
+.paper-foot {
   display: flex;
   justify-content: space-between;
   padding-top: 8rpx;
@@ -1058,8 +959,7 @@ $spacing-section: 24rpx;
 /* ==================== 今日进度卡片 ==================== */
 .progress-card {
   background:
-    linear-gradient(135deg, rgba(255, 255, 255, 0.86) 0%, rgba(234, 251, 226, 0.78) 100%),
-    rgba(255, 255, 255, 0.72);
+    linear-gradient(135deg, rgba(255, 255, 255, 0.86) 0%, rgba(234, 251, 226, 0.78) 100%), rgba(255, 255, 255, 0.72);
 }
 
 .card-header {
@@ -1144,112 +1044,6 @@ $spacing-section: 24rpx;
   font-size: 18rpx;
   font-weight: 900;
   letter-spacing: 1.4rpx;
-}
-
-.pipeline-panel {
-  @include em-mobile-glass-surface(32rpx, 30rpx);
-}
-
-.pipeline-head {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-}
-
-.pipeline-kicker {
-  display: block;
-  color: rgba(22, 51, 0, 0.42);
-  font-size: 18rpx;
-  font-weight: 900;
-  letter-spacing: 1.8rpx;
-}
-
-.pipeline-title {
-  display: block;
-  margin-top: 8rpx;
-  color: $primary-dark;
-  font-size: 31rpx;
-  font-weight: 900;
-  line-height: 1.18;
-}
-
-.pipeline-status {
-  flex-shrink: 0;
-  padding: 8rpx 14rpx;
-  border-radius: 999rpx;
-  background: rgba(117, 221, 255, 0.22);
-  color: #0c5064;
-  font-size: 18rpx;
-  font-weight: 900;
-  letter-spacing: 0.8rpx;
-}
-
-.pipeline-list {
-  margin-top: 22rpx;
-}
-
-.pipeline-step {
-  display: flex;
-  align-items: center;
-  min-height: 76rpx;
-}
-
-.pipeline-step + .pipeline-step {
-  margin-top: 14rpx;
-}
-
-.pipeline-dot {
-  flex-shrink: 0;
-  width: 18rpx;
-  height: 18rpx;
-  margin-right: 18rpx;
-  border-radius: 999rpx;
-  background: rgba(22, 51, 0, 0.24);
-  box-shadow: 0 0 0 8rpx rgba(22, 51, 0, 0.06);
-}
-
-.pipeline-step.state-done .pipeline-dot {
-  background: $action-green;
-  box-shadow: 0 0 0 8rpx rgba(24, 169, 87, 0.11);
-}
-
-.pipeline-step.state-active .pipeline-dot {
-  background: $primary;
-  box-shadow: 0 0 0 8rpx rgba(159, 232, 112, 0.16);
-}
-
-.pipeline-step.state-review .pipeline-dot {
-  background: #75ddff;
-  box-shadow: 0 0 0 8rpx rgba(117, 221, 255, 0.16);
-}
-
-.pipeline-copy {
-  flex: 1;
-  min-width: 0;
-}
-
-.pipeline-step-title {
-  display: block;
-  color: $text-main;
-  font-size: 25rpx;
-  font-weight: 850;
-}
-
-.pipeline-step-desc {
-  display: block;
-  margin-top: 4rpx;
-  color: rgba(22, 51, 0, 0.56);
-  font-size: 21rpx;
-  line-height: 1.35;
-}
-
-.pipeline-step-state {
-  flex-shrink: 0;
-  margin-left: 14rpx;
-  color: rgba(22, 51, 0, 0.48);
-  font-size: 18rpx;
-  font-weight: 900;
-  letter-spacing: 0.8rpx;
 }
 
 .stat-label {

@@ -60,6 +60,12 @@ function normalizeDifficulty(difficulty) {
   return 'medium';
 }
 
+const PRODUCTION_CATEGORY_ALLOWLIST = new Set(['政治', '英语', '数学']);
+
+function isCategoryProductionSafe(category) {
+  return PRODUCTION_CATEGORY_ALLOWLIST.has(String(category || '').trim());
+}
+
 function normalizeQuestion(question, index = 0) {
   const id = question?._id || question?.id || `local_q_${index}`;
   return {
@@ -133,6 +139,7 @@ export function buildQuestionBankStats(bank = []) {
 
   normalized.forEach((question) => {
     const category = question.category || '未分类';
+    if (!isCategoryProductionSafe(category)) return;
     if (!categories.has(category)) {
       categories.set(category, {
         category,

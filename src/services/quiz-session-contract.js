@@ -4,7 +4,10 @@ const QUESTION_TYPE_LABELS = {
   single_choice: '单选题',
   multi_choice: '多选题',
   analysis: '分析题',
-  flashcard: '闪卡'
+  flashcard: '闪卡',
+  translation: '翻译题',
+  essay: '写作题',
+  short_answer: '简答题'
 };
 const KNOWLEDGE_STATE_LABELS = {
   unknown: '待点亮',
@@ -28,15 +31,31 @@ function normalizeDifficulty(difficulty) {
 }
 
 function isEvidenceOnlyType(type) {
-  return type === 'analysis' || type === 'flashcard';
+  return ['analysis', 'flashcard', 'translation', 'essay', 'short_answer'].includes(type);
 }
 
-function normalizeAnswer(question, type) {
+function isMultiChoiceType(type) {
+  return type === 'multi_choice' || type === 'multiple_choice' || type === '多选';
+}
+
+export function normalizeQuizAnswer(question, type = question?.type) {
   const rawAnswer = question?.answer;
   if (isEvidenceOnlyType(type)) {
     return rawAnswer || '暂无答案';
   }
-  return (rawAnswer || 'A').toString().trim().toUpperCase().charAt(0);
+
+  const raw = (rawAnswer || 'A').toString().trim().toUpperCase();
+  const optionCount = Array.isArray(question?.options) ? Math.max(question.options.length, 4) : 4;
+  const allowedLabels = OPTION_LABELS.slice(0, optionCount).join('');
+  const compact = raw.replace(/[\s,，、;；/|]+/g, '');
+
+  if (isMultiChoiceType(type) && new RegExp(`^[${allowedLabels}]+$`).test(compact)) {
+    const uniqueLabels = Array.from(new Set(compact.split('')));
+    return OPTION_LABELS.filter((label) => uniqueLabels.includes(label)).join('');
+  }
+
+  const firstLabel = raw.match(new RegExp(`[${allowedLabels}]`))?.[0];
+  return firstLabel || 'A';
 }
 
 export function normalizeQuizQuestion(question, index = 0, options = {}) {
@@ -63,8 +82,15 @@ export function normalizeQuizQuestion(question, index = 0, options = {}) {
     ...question,
     id: question.id || question._id || `q_${index}`,
     question: question.question || question.title || options.defaultQuestion || `题目 ${index + 1}`,
+    passage: question.passage || question.context || question.material || question.article || '',
+    context: question.context || question.passage || question.material || question.article || '',
+    material: question.material || question.passage || question.context || question.article || '',
+    paperId: question.paperId || question.paper_id || '',
+    paperName: question.paperName || question.paper_name || '',
+    section: question.section || question.part || '',
+    groupId: question.groupId || question.group_id || question.passageId || '',
     options: normalizedOptions,
-    answer: normalizeAnswer(question, type),
+    answer: normalizeQuizAnswer(question, type),
     desc: question.desc || question.description || question.explanation || question.analysis || '暂无解析',
     category: question.category || question.subject || '未分类',
     type,
@@ -87,6 +113,9 @@ export function isCorrectQuizOption(question, index) {
   if (!question) return false;
   const correctAnswer = (question.answer || 'A').toString().trim().toUpperCase();
   const optionLabel = getQuizOptionLabel(question, index);
+  if (/^[A-Z]{2,}$/.test(correctAnswer)) {
+    return correctAnswer.includes(optionLabel);
+  }
   if (OPTION_LABELS.slice(0, 4).includes(correctAnswer)) {
     return optionLabel === correctAnswer;
   }
@@ -234,6 +263,6 @@ export function buildQuizKnowledgeFeedback({
     tracks: node?.tracks || [],
     trail: normalizedTrail,
     chainText: normalizedTrail.length > 1 ? normalizedTrail.map((item) => item.label).join(' / ') : '',
-    summary: `${stateText}，当前掌握 ${masteryText}，已同步到首页图谱`
+    summary: `${stateText}，当前掌握 ${masteryText}，已记录到复习计划`
   };
 }

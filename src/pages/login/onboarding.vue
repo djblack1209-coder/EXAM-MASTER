@@ -14,9 +14,9 @@
 
     <view class="panel">
       <view v-if="step === 0" class="step">
-        <text class="eyebrow">START PATH</text>
+        <text class="eyebrow">备考路径</text>
         <text class="title">先确定你的备考路径</text>
-        <text class="desc">小程序会根据路径分配公共课题库、每日目标和知识图谱节点。</text>
+        <text class="desc">小程序会根据路径分配公共课题库、每日目标和复习节奏。</text>
 
         <view class="exam-card selected">
           <view class="exam-card-main">
@@ -28,9 +28,9 @@
       </view>
 
       <view v-else-if="step === 1" class="step">
-        <text class="eyebrow">PUBLIC COURSES</text>
+        <text class="eyebrow">公共课选择</text>
         <text class="title">选择你要训练的公共课</text>
-        <text class="desc">后续题库、错题复习和知识图谱都按这里的轨道归档。</text>
+        <text class="desc">后续题库、错题复习和整卷进度都按这里的轨道归档。</text>
 
         <view v-for="group in trackGroups" :key="group.subject" class="track-group">
           <text class="track-title">{{ group.label }}</text>
@@ -69,20 +69,14 @@
       </view>
 
       <view v-else class="step">
-        <text class="eyebrow">KNOWLEDGE MAP</text>
-        <text class="title">知识图谱会从第一题开始点亮</text>
-        <text class="desc">答对、答错、用时都会沉淀到对应知识节点，用来安排下一轮复习。</text>
+        <text class="eyebrow">整卷训练</text>
+        <text class="title">先把公共课真题按年份跑顺</text>
+        <text class="desc">系统会按英语一/二、政治、数学一/二/三记录整卷进度，并把错题送入下一轮复习。</text>
 
-        <view class="map-preview">
-          <view v-for="line in previewLines" :key="line.id" class="map-line" :style="line.style" />
-          <view
-            v-for="node in previewNodes"
-            :key="node.id"
-            class="map-node"
-            :class="node.tone"
-            :style="{ left: node.x + '%', top: node.y + '%' }"
-          >
-            <text>{{ node.label }}</text>
+        <view class="paper-preview">
+          <view v-for="paper in previewPapers" :key="paper.label" class="paper-row" :class="paper.state">
+            <text class="paper-label">{{ paper.label }}</text>
+            <text class="paper-state">{{ paper.stateText }}</text>
           </view>
         </view>
 
@@ -108,12 +102,10 @@
 <script setup>
 import { computed, ref } from 'vue';
 import { storageService } from '@/services/storageService.js';
-import { useLearningTrajectoryStore } from '@/stores/modules/learning-trajectory-store.js';
 
 const step = ref(0);
 const dailyGoal = ref(25);
 const selectedTracks = ref(['politics', 'english1', 'math1']);
-const learningTrajectoryStore = useLearningTrajectoryStore();
 
 const trackGroups = [
   {
@@ -147,18 +139,11 @@ const goalOptions = [
   { count: 60, label: '冲刺', time: '约 45 分钟' }
 ];
 
-const previewNodes = [
-  { id: 'p', label: '政治', x: 14, y: 42, tone: 'primed' },
-  { id: 'e', label: '英语', x: 42, y: 20, tone: 'unknown' },
-  { id: 'm', label: '数学', x: 72, y: 45, tone: 'strong' },
-  { id: 'r', label: '阅读', x: 36, y: 68, tone: 'watch' },
-  { id: 'c', label: '高数', x: 62, y: 78, tone: 'unknown' }
-];
-
-const previewLines = [
-  { id: 'a', style: { left: '22%', top: '42%', width: '170rpx', transform: 'rotate(-22deg)' } },
-  { id: 'b', style: { left: '48%', top: '32%', width: '160rpx', transform: 'rotate(18deg)' } },
-  { id: 'c', style: { left: '41%', top: '58%', width: '190rpx', transform: 'rotate(18deg)' } }
+const previewPapers = [
+  { label: '政治 2025', state: 'ready', stateText: '可练' },
+  { label: '政治 2024', state: 'ready', stateText: '可练' },
+  { label: '英语一/二 2025', state: 'pending', stateText: '补篇章' },
+  { label: '数学一/二/三 2025', state: 'pending', stateText: '完善中' }
 ];
 
 const progressPercent = computed(() => ((step.value + 1) / 4) * 100);
@@ -211,7 +196,6 @@ function saveOnboardingData(completed = true) {
   storageService.save('exam_type', 'kaoyan');
   storageService.save('exam_profile', profile);
   storageService.save('daily_goal', dailyGoal.value);
-  learningTrajectoryStore.setExamProfile(profile);
 }
 
 function completeOnboarding() {
@@ -457,55 +441,40 @@ $line: rgba(20, 32, 23, 0.08);
   font-size: 23rpx;
 }
 
-.map-preview {
-  position: relative;
-  height: 360rpx;
+.paper-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 14rpx;
   margin-top: 40rpx;
-  overflow: hidden;
   border-radius: 30rpx;
   background: linear-gradient(145deg, #102415, #17261d);
+  padding: 24rpx;
 }
 
-.map-line {
-  position: absolute;
-  height: 2rpx;
-  border-radius: 999rpx;
-  background: rgba(255, 255, 255, 0.16);
-  transform-origin: left center;
-}
-
-.map-node {
-  position: absolute;
+.paper-row {
   display: flex;
   align-items: center;
-  justify-content: center;
-  width: 92rpx;
-  height: 92rpx;
-  border-radius: 999rpx;
-  transform: translate3d(-50%, -50%, 0);
-  box-shadow: 0 14rpx 34rpx rgba(0, 0, 0, 0.22);
+  justify-content: space-between;
+  min-height: 68rpx;
+  border-radius: 18rpx;
+  padding: 0 22rpx;
+  background: rgba(255, 255, 255, 0.08);
 }
 
-.map-node text {
-  color: #102415;
+.paper-row.ready {
+  background: rgba(159, 232, 112, 0.16);
+}
+
+.paper-label {
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 25rpx;
+  font-weight: 850;
+}
+
+.paper-state {
+  color: rgba(255, 255, 255, 0.58);
   font-size: 22rpx;
-  font-weight: 900;
-}
-
-.map-node.unknown {
-  background: #dde8dd;
-}
-
-.map-node.primed {
-  background: #ffffff;
-}
-
-.map-node.strong {
-  background: $primary;
-}
-
-.map-node.watch {
-  background: #ffd166;
+  font-weight: 800;
 }
 
 .summary-card {
