@@ -18,15 +18,15 @@
           <view class="practice-signal-row">
             <view class="practice-signal">
               <text class="signal-value">{{ loadedBankCount }}</text>
-              <text class="signal-label">已加载</text>
+              <text class="signal-label">已载入</text>
             </view>
             <view class="practice-signal">
               <text class="signal-value">{{ totalQuestions }}</text>
-              <text class="signal-label">可训练题</text>
+              <text class="signal-label">题目</text>
             </view>
             <view class="practice-signal">
               <text class="signal-value">{{ trackCount }}</text>
-              <text class="signal-label">公共课轨道</text>
+              <text class="signal-label">轨道</text>
             </view>
           </view>
 
@@ -36,10 +36,10 @@
               hover-class="btn-hover"
               @tap="hasBank ? goDoQuiz() : chooseImportSource()"
             >
-              <text>{{ hasBank ? '进入限时训练' : '导入资料解析' }}</text>
+              <text>{{ hasBank ? '继续训练' : '历年真题' }}</text>
             </view>
             <view class="practice-command secondary" hover-class="btn-hover" @tap="chooseImportSource">
-              <text>资料导入</text>
+              <text>真题库</text>
             </view>
           </view>
         </view>
@@ -48,8 +48,8 @@
       <view class="section">
         <view class="section-head navigator-head">
           <view>
-            <text class="section-title">公共课导航</text>
-            <text class="section-hint">科目 / 版本 / 训练模式</text>
+            <text class="section-title">题库</text>
+            <text class="section-hint">科目、年份与训练方式</text>
           </view>
           <text class="section-meta">{{ bankAvailabilityText }}</text>
         </view>
@@ -105,9 +105,11 @@
         <view v-if="selectedBanks.length > 0" class="bank-list">
           <view v-for="bank in selectedBanks" :key="bank.id" class="card bank-card">
             <view class="bank-info">
-              <text class="bank-track">{{ bank.year }} PAST EXAM</text>
+              <text class="bank-track">{{ bank.year }} 真题</text>
               <text class="bank-name">{{ bank.name }}</text>
+              <text v-if="bank.releaseLabel" class="bank-release-label">{{ bank.releaseLabel }}</text>
               <text class="bank-desc">{{ bank.description }}</text>
+              <text v-if="bank.caution" class="bank-caution">{{ bank.caution }}</text>
             </view>
             <view
               v-if="!isBankLoaded(bank.id)"
@@ -134,6 +136,44 @@
 
       <!-- 已加载统计 + 操作按钮 -->
       <view class="section">
+        <view class="training-plan-card">
+          <view class="training-plan-head">
+            <view>
+              <text class="training-kicker">公共课训练</text>
+              <text class="training-title">{{ todayTraining.trackLabel }} · {{ todayTraining.focus }}</text>
+            </view>
+            <text class="training-minutes">{{ todayTraining.minutes }}min</text>
+          </view>
+          <view class="training-status-row">
+            <text class="training-status" :class="`status-${todayTraining.status}`">
+              {{ trainingStatusLabel(todayTraining.status) }}
+            </text>
+            <text class="training-meta">{{ trainingCoverageText }}</text>
+          </view>
+          <view class="training-week-row">
+            <view
+              v-for="task in weeklyTrainingTasks"
+              :key="task.day"
+              class="training-day"
+              :class="[{ active: task.day === todayTraining.day }, `status-${task.status}`]"
+            >
+              <text class="training-day-label">{{ task.label }}</text>
+              <text class="training-day-track">{{ task.trackLabel }}</text>
+            </view>
+          </view>
+        </view>
+
+        <view class="professional-entry" hover-class="btn-hover" @tap="goProfessionalIndex">
+          <view class="professional-copy">
+            <text class="professional-kicker">专业课</text>
+            <text class="professional-title">资料索引</text>
+            <text class="professional-desc">按院校、方向和科目代码查找资料，整理完成后再开放题卡。</text>
+          </view>
+          <view class="professional-action">
+            <BaseIcon name="file-text" :size="30" />
+          </view>
+        </view>
+
         <view v-if="hasBank" class="card status-card">
           <text class="status-text">已加载 {{ totalQuestions }} 题</text>
           <view class="progress-mini">
@@ -166,16 +206,18 @@
 
 <script>
 import CustomTabbar from '@/components/layout/custom-tabbar/custom-tabbar.vue';
+import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 import { useFlashcardBank } from '@/composables/useFlashcardBank.js';
 import { useBankStatus } from '@/composables/useBankStatus.js';
 import { useDynamicMixin } from '@/composables/useDynamicMixin.js';
 import { getPracticeNavigationTree } from '@/config/bank-registry.js';
+import { buildPublicCourseTrainingPlan } from '@/config/public-course-training-plan.js';
 import { storageService } from '@/services/storageService.js';
 import { safeNavigateTo } from '@/utils/safe-navigate';
 import { logger } from '@/utils/logger.js';
 
 export default {
-  components: { CustomTabbar },
+  components: { CustomTabbar, BaseIcon },
 
   setup() {
     const dynamicMixinHelper = useDynamicMixin();
@@ -230,15 +272,15 @@ export default {
     },
 
     practiceHeroKicker() {
-      return '训练控制台';
+      return 'Exam Master';
     },
 
     practiceHeroTitle() {
-      return '真题训练中枢';
+      return '今日刷题';
     },
 
     practiceHeroSubtitle() {
-      return '按科目和年份加载整套真题，错题和复习间隔会自动记录。';
+      return '选择一套真题，直接进入训练。英语卷优先显示完整文章，再做选择。';
     },
 
     bankAvailabilityText() {
@@ -287,6 +329,23 @@ export default {
 
     emptyTrackDesc() {
       return '该方向的真题会按年份整理为整卷练习，材料和答案说明完善后开放。';
+    },
+
+    publicCoursePlan() {
+      return buildPublicCourseTrainingPlan();
+    },
+
+    todayTraining() {
+      return this.publicCoursePlan.today || {};
+    },
+
+    weeklyTrainingTasks() {
+      return this.publicCoursePlan.weeklyTasks || [];
+    },
+
+    trainingCoverageText() {
+      const summary = this.publicCoursePlan.summary || {};
+      return `${summary.publishedSlots || 0}/${summary.requiredSlots || 0} 槽位已开放`;
     }
   },
 
@@ -432,17 +491,28 @@ export default {
     goSmartReview() {
       // 智能复习：跳转到 do-quiz 的复习模式
       safeNavigateTo('/pages/practice-sub/do-quiz?mode=smart_review');
+    },
+
+    goProfessionalIndex() {
+      safeNavigateTo('/pages/practice-sub/professional-index');
+    },
+
+    trainingStatusLabel(status) {
+      if (status === 'ready') return '今日可练';
+      if (status === 'pending') return '整理中';
+      if (status === 'review') return '复盘';
+      return '待补齐';
     }
   }
 };
 </script>
 
 <style lang="scss" scoped>
-$primary: #9fe870;
-$primary-light: #eafbe2;
-$primary-deep: #142017;
-$action-green: #18a957;
-$bg: #f5f7f1;
+$primary: #1f7a4d;
+$primary-light: #e8f4ee;
+$primary-deep: #1d1d1f;
+$action-green: #1d9a52;
+$bg: #f5f5f7;
 $card-bg: #ffffff;
 $text-main: #1a1d26;
 $text-sub: #5f6672;
@@ -455,6 +525,8 @@ $spacing-section: 24rpx;
 
 .page {
   @include em-mobile-canvas;
+  background: $bg;
+  color: $text-main;
 }
 
 /* 导航栏 */
@@ -465,6 +537,8 @@ $spacing-section: 24rpx;
   right: 0;
   z-index: 100;
   @include em-mobile-topbar;
+  background: rgba(245, 245, 247, 0.86);
+  box-shadow: 0 1rpx 0 rgba(0, 0, 0, 0.06);
 }
 .nav-content {
   height: 44px;
@@ -492,28 +566,35 @@ $spacing-section: 24rpx;
 }
 
 .practice-hero {
-  @include em-mobile-deep-panel(38rpx, 36rpx);
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
+  padding: 38rpx 36rpx;
+  border-radius: 34rpx;
+  background: $card-bg;
+  border: 1rpx solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 18rpx 48rpx rgba(15, 23, 42, 0.08);
 }
 
 .practice-hero::after {
   content: '';
   position: absolute;
-  right: -72rpx;
-  top: -88rpx;
-  width: 300rpx;
-  height: 300rpx;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(117, 221, 255, 0.2) 0%, rgba(117, 221, 255, 0) 68%);
+  right: 30rpx;
+  top: 28rpx;
+  width: 108rpx;
+  height: 108rpx;
+  border-radius: 30rpx;
+  background: linear-gradient(145deg, rgba(31, 122, 77, 0.16), rgba(52, 199, 89, 0.12));
 }
 
 .practice-kicker {
   position: relative;
   z-index: 1;
   display: block;
-  color: rgba(255, 255, 255, 0.48);
+  color: #8e8e93;
   font-size: 18rpx;
   font-weight: 900;
-  letter-spacing: 2.2rpx;
+  letter-spacing: 0;
 }
 
 .practice-title {
@@ -521,10 +602,10 @@ $spacing-section: 24rpx;
   z-index: 1;
   display: block;
   margin-top: 14rpx;
-  color: rgba(255, 255, 255, 0.94);
-  font-size: 52rpx;
-  font-weight: 900;
-  line-height: 1.08;
+  color: $text-main;
+  font-size: 48rpx;
+  font-weight: 760;
+  line-height: 1.12;
 }
 
 .practice-subtitle {
@@ -533,7 +614,7 @@ $spacing-section: 24rpx;
   display: block;
   max-width: 590rpx;
   margin-top: 18rpx;
-  color: rgba(255, 255, 255, 0.66);
+  color: $text-sub;
   font-size: 26rpx;
   line-height: 1.55;
 }
@@ -549,8 +630,8 @@ $spacing-section: 24rpx;
   flex: 1;
   padding: 18rpx 14rpx;
   border-radius: 22rpx;
-  background: rgba(255, 255, 255, 0.09);
-  box-shadow: inset 0 1rpx 0 rgba(255, 255, 255, 0.12);
+  background: #f6f7f9;
+  border: 1rpx solid rgba(0, 0, 0, 0.04);
 }
 
 .practice-signal + .practice-signal {
@@ -560,16 +641,16 @@ $spacing-section: 24rpx;
 .signal-value {
   @include em-mobile-number;
   display: block;
-  color: #ffffff;
+  color: $text-main;
   font-size: 34rpx;
-  font-weight: 900;
+  font-weight: 760;
   line-height: 1;
 }
 
 .signal-label {
   display: block;
   margin-top: 8rpx;
-  color: rgba(255, 255, 255, 0.56);
+  color: $text-weak;
   font-size: 21rpx;
   font-weight: 600;
 }
@@ -595,14 +676,16 @@ $spacing-section: 24rpx;
 }
 
 .practice-command.primary {
-  @include em-mobile-primary-action;
+  background: #1d1d1f;
+  color: #ffffff;
+  box-shadow: 0 12rpx 28rpx rgba(17, 24, 39, 0.16);
 }
 
 .practice-command.secondary {
   margin-left: 14rpx;
-  background: rgba(255, 255, 255, 0.12);
-  color: rgba(255, 255, 255, 0.86);
-  box-shadow: inset 0 1rpx 0 rgba(255, 255, 255, 0.12);
+  background: #f2f3f5;
+  color: $text-main;
+  box-shadow: none;
 }
 
 .section-head {
@@ -644,8 +727,8 @@ $spacing-section: 24rpx;
   display: flex;
   padding: 8rpx;
   border-radius: 28rpx;
-  background: rgba(255, 255, 255, 0.38);
-  box-shadow: inset 0 1rpx 0 rgba(255, 255, 255, 0.54);
+  background: #e9eaee;
+  box-shadow: none;
 }
 
 .subject-tab {
@@ -661,9 +744,9 @@ $spacing-section: 24rpx;
 }
 
 .subject-tab.active {
-  background: rgba(255, 255, 255, 0.9);
-  color: $primary-deep;
-  box-shadow: 0 10rpx 24rpx rgba(20, 32, 23, 0.08);
+  background: #ffffff;
+  color: $text-main;
+  box-shadow: 0 8rpx 18rpx rgba(15, 23, 42, 0.08);
 }
 
 .track-rail {
@@ -674,20 +757,24 @@ $spacing-section: 24rpx;
 }
 
 .track-pill {
-  @include em-mobile-glass-surface(26rpx, 18rpx 20rpx);
   display: inline-flex;
   align-items: center;
   min-width: 212rpx;
   margin-right: 14rpx;
+  padding: 18rpx 20rpx;
+  border-radius: 24rpx;
+  background: #ffffff;
+  border: 1rpx solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 8rpx 22rpx rgba(15, 23, 42, 0.06);
 }
 
 .track-pill.active {
-  background: $primary-deep;
-  box-shadow: 0 14rpx 32rpx rgba(20, 32, 23, 0.16);
+  background: #1d1d1f;
+  box-shadow: 0 14rpx 32rpx rgba(17, 24, 39, 0.16);
 }
 
 .track-code {
-  color: rgba(20, 32, 23, 0.42);
+  color: $text-weak;
   font-size: 21rpx;
   font-weight: 900;
 }
@@ -703,8 +790,8 @@ $spacing-section: 24rpx;
   margin-left: 12rpx;
   padding: 4rpx 10rpx;
   border-radius: 999rpx;
-  background: rgba(159, 232, 112, 0.2);
-  color: $primary-deep;
+  background: rgba(31, 122, 77, 0.1);
+  color: $primary;
   font-size: 20rpx;
   font-weight: 900;
 }
@@ -715,8 +802,8 @@ $spacing-section: 24rpx;
 }
 
 .track-pill.active .track-count {
-  background: $primary;
-  color: $primary-deep;
+  background: rgba(255, 255, 255, 0.16);
+  color: #ffffff;
 }
 
 .mode-row {
@@ -737,12 +824,202 @@ $spacing-section: 24rpx;
 }
 
 .mode-chip.active {
-  background: rgba(159, 232, 112, 0.3);
-  color: $primary-deep;
+  background: rgba(31, 122, 77, 0.12);
+  color: $primary;
+}
+
+.professional-entry {
+  @include em-mobile-pressable;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+  padding: 30rpx 28rpx;
+  margin-bottom: 24rpx;
+  border-radius: 28rpx;
+  background: #ffffff;
+  border: 1rpx solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 10rpx 28rpx rgba(15, 23, 42, 0.06);
+}
+
+.training-plan-card {
+  box-sizing: border-box;
+  padding: 30rpx 28rpx;
+  margin-bottom: 24rpx;
+  border-radius: 28rpx;
+  background: #ffffff;
+  border: 1rpx solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 10rpx 28rpx rgba(15, 23, 42, 0.06);
+}
+
+.training-plan-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18rpx;
+}
+
+.training-kicker {
+  display: block;
+  color: $text-weak;
+  font-size: 20rpx;
+  font-weight: 900;
+}
+
+.training-title {
+  display: block;
+  margin-top: 8rpx;
+  color: $text-main;
+  font-size: 30rpx;
+  font-weight: 850;
+  line-height: 1.34;
+}
+
+.training-minutes {
+  flex-shrink: 0;
+  padding: 8rpx 14rpx;
+  border-radius: 999rpx;
+  background: rgba(31, 122, 77, 0.1);
+  color: $primary;
+  font-size: 22rpx;
+  font-weight: 900;
+}
+
+.training-status-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16rpx;
+  margin-top: 18rpx;
+}
+
+.training-status,
+.training-meta {
+  font-size: 22rpx;
+  font-weight: 760;
+}
+
+.training-status {
+  padding: 6rpx 12rpx;
+  border-radius: 999rpx;
+  background: #f2f3f5;
+  color: $text-sub;
+}
+
+.training-status.status-ready {
+  background: rgba(31, 122, 77, 0.1);
+  color: $primary;
+}
+
+.training-status.status-pending {
+  background: rgba(255, 149, 0, 0.12);
+  color: #9a5b00;
+}
+
+.training-status.status-review {
+  background: rgba(0, 113, 227, 0.1);
+  color: #0068d6;
+}
+
+.training-meta {
+  color: $text-weak;
+}
+
+.training-week-row {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 8rpx;
+  margin-top: 18rpx;
+}
+
+.training-day {
+  min-height: 78rpx;
+  padding: 8rpx 4rpx;
+  border-radius: 18rpx;
+  background: #f6f7f9;
+  text-align: center;
+  border: 1rpx solid transparent;
+}
+
+.training-day.active {
+  border-color: rgba(31, 122, 77, 0.26);
+  background: rgba(31, 122, 77, 0.08);
+}
+
+.training-day.status-pending {
+  background: rgba(255, 149, 0, 0.08);
+}
+
+.training-day.status-missing {
+  opacity: 0.62;
+}
+
+.training-day-label,
+.training-day-track {
+  display: block;
+  white-space: nowrap;
+}
+
+.training-day-label {
+  color: $text-weak;
+  font-size: 18rpx;
+  font-weight: 800;
+}
+
+.training-day-track {
+  margin-top: 5rpx;
+  color: $text-main;
+  font-size: 19rpx;
+  font-weight: 850;
+}
+
+.professional-copy {
+  flex: 1;
+  min-width: 0;
+  padding-right: 20rpx;
+}
+
+.professional-kicker {
+  display: block;
+  color: $text-weak;
+  font-size: 20rpx;
+  font-weight: 900;
+}
+
+.professional-title {
+  display: block;
+  margin-top: 8rpx;
+  color: $text-main;
+  font-size: 32rpx;
+  font-weight: 850;
+}
+
+.professional-desc {
+  display: block;
+  margin-top: 8rpx;
+  color: $text-sub;
+  font-size: 24rpx;
+  line-height: 1.45;
+}
+
+.professional-action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 68rpx;
+  height: 68rpx;
+  border-radius: 22rpx;
+  background: #f2f3f5;
+  color: $text-main;
 }
 
 .card {
-  @include em-mobile-glass-surface($radius-lg, $spacing-card);
+  box-sizing: border-box;
+  padding: $spacing-card;
+  border-radius: $radius-lg;
+  background: $card-bg;
+  border: 1rpx solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 10rpx 28rpx rgba(15, 23, 42, 0.06);
 }
 
 /* 题库列表 */
@@ -775,11 +1052,23 @@ $spacing-section: 24rpx;
   color: $text-main;
 }
 
+.bank-release-label {
+  display: inline-flex;
+  align-self: flex-start;
+  margin-top: 10rpx;
+  padding: 5rpx 12rpx;
+  border-radius: 999rpx;
+  background: rgba(31, 122, 77, 0.1);
+  color: #1f7a4d;
+  font-size: 20rpx;
+  font-weight: 850;
+}
+
 .bank-track {
-  color: rgba(22, 51, 0, 0.38);
+  color: $text-weak;
   font-size: 18rpx;
   font-weight: 900;
-  letter-spacing: 1.4rpx;
+  letter-spacing: 0;
   margin-bottom: 8rpx;
 }
 
@@ -787,6 +1076,14 @@ $spacing-section: 24rpx;
   font-size: 24rpx;
   color: $text-sub;
   margin-top: 6rpx;
+}
+
+.bank-caution {
+  display: block;
+  margin-top: 8rpx;
+  color: $text-weak;
+  font-size: 22rpx;
+  line-height: 1.45;
 }
 
 .bank-btn {
@@ -797,7 +1094,7 @@ $spacing-section: 24rpx;
 }
 
 .load-btn {
-  background: $primary-deep;
+  background: #1d1d1f;
 }
 
 .bank-btn-text {
@@ -817,7 +1114,12 @@ $spacing-section: 24rpx;
 }
 
 .empty-track-card {
-  @include em-mobile-glass-surface($radius-lg, 32rpx);
+  box-sizing: border-box;
+  padding: 32rpx;
+  border-radius: $radius-lg;
+  background: $card-bg;
+  border: 1rpx solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 10rpx 28rpx rgba(15, 23, 42, 0.06);
 }
 
 .empty-track-title {
@@ -836,20 +1138,20 @@ $spacing-section: 24rpx;
 }
 
 .empty-track-action {
-  @include em-mobile-primary-action;
   @include em-mobile-pressable;
   display: flex;
   align-items: center;
   justify-content: center;
   min-height: 72rpx;
   margin-top: 22rpx;
-  border-radius: 20rpx;
+  border-radius: 18rpx;
+  background: #1d1d1f;
   font-size: 25rpx;
   font-weight: 850;
 }
 
 .empty-track-action text {
-  color: $primary-deep;
+  color: #ffffff;
 }
 
 /* 状态卡片 */
@@ -874,14 +1176,14 @@ $spacing-section: 24rpx;
 .progress-bar-sm {
   flex: 1;
   height: 12rpx;
-  background: rgba($primary, 0.12);
+  background: rgba(31, 122, 77, 0.1);
   border-radius: 99rpx;
   overflow: hidden;
 }
 
 .progress-fill-sm {
   height: 100%;
-  background: $action-green;
+  background: $primary;
   border-radius: 99rpx;
   transition: width 0.3s ease;
 }
@@ -905,22 +1207,24 @@ $spacing-section: 24rpx;
 }
 
 .primary-btn {
-  @include em-mobile-primary-action;
+  background: #1d1d1f;
+  box-shadow: 0 12rpx 28rpx rgba(17, 24, 39, 0.16);
 }
 
 .secondary-btn {
-  background: rgba(255, 255, 255, 0.56);
-  box-shadow: inset 0 1rpx 0 rgba(255, 255, 255, 0.68);
+  background: #ffffff;
+  border: 1rpx solid rgba(0, 0, 0, 0.06);
+  box-shadow: none;
 }
 
 .action-btn-text {
   font-size: 32rpx;
   font-weight: 600;
-  color: $primary-deep;
+  color: #ffffff;
 }
 
 .secondary-text {
-  color: $primary-deep;
+  color: $text-main;
 }
 
 .btn-hover {

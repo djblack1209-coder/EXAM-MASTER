@@ -134,7 +134,40 @@ function createUniCompat() {
 }
 
 const globalRef = typeof globalThis !== 'undefined' ? globalThis : {};
-const uni = globalRef['uni'] || createUniCompat();
+const uniCompat = createUniCompat();
+
+function getRuntimeUni() {
+  const runtimeUni = globalRef['uni'];
+  if (runtimeUni && typeof runtimeUni.getStorageSync === 'function') {
+    return runtimeUni;
+  }
+
+  const runtimeWx = globalRef['wx'];
+  if (runtimeWx && typeof runtimeWx.getStorageSync === 'function') {
+    return runtimeWx;
+  }
+
+  if (typeof wx !== 'undefined' && wx && typeof wx.getStorageSync === 'function') {
+    return wx;
+  }
+
+  return uniCompat;
+}
+
+const uni = new Proxy(
+  {},
+  {
+    get(_target, prop) {
+      const runtimeUni = getRuntimeUni();
+      const value = runtimeUni[prop];
+      return typeof value === 'function' ? value.bind(runtimeUni) : value;
+    },
+    set(_target, prop, value) {
+      getRuntimeUni()[prop] = value;
+      return true;
+    }
+  }
+);
 
 // ✅ B021: 敏感数据加密存储
 // 需要加密存储的键名列表
@@ -196,7 +229,9 @@ const GLOBAL_KEYS = new Set([
   'daily_quote_cache',
   'daily_quote_date',
   'cached_schools',
-  'cached_schools_time'
+  'cached_schools_time',
+  // 页面跳转瞬态参数：写入页与读取页必须共享同一个键，不能按用户前缀隔离
+  'smart_review_ids'
 ]);
 
 const UNSCOPED_KEY_PREFIXES = ['_enc_', 'school_detail_', 'recovery_daily_reset_', 'recovery_monthly_reset_'];

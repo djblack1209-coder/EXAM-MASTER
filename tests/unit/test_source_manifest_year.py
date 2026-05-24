@@ -119,6 +119,34 @@ class SourceManifestYearTest(unittest.TestCase):
         self.assertEqual(item["year"], 1995)
         self.assertEqual(item["track"], "politics")
 
+    def test_manifest_merge_revives_missing_file_when_seen_again(self):
+        old_now = "2026-04-29T00:00:00Z"
+        now = "2026-04-30T00:00:00Z"
+        raw = {
+            "fs_id": 7,
+            "path": "/EXAM-MASTER/考研历年真题/06.计算408/01.考研计算408【历年真题】/2024计算机408真题+解析/2024年408计算机专业基础综合真题+答案.pdf",
+            "server_filename": "2024年408计算机专业基础综合真题+答案.pdf",
+            "size": 200_000,
+            "server_mtime": 1,
+        }
+        rediscovered = normalize_record(
+            raw,
+            provider="baidu_pan",
+            source_channel="netdisk_full_path",
+            now=now,
+        )
+        stale = dict(rediscovered)
+        stale["status"] = "missing"
+        stale["missingSince"] = old_now
+
+        merged, summary = merge_manifest({"version": 1, "items": [stale]}, [rediscovered], now)
+        item = merged["items"][0]
+
+        self.assertEqual(summary["unchanged"], 1)
+        self.assertEqual(summary["missing"], 0)
+        self.assertEqual(item["status"], "discovered")
+        self.assertNotIn("missingSince", item)
+
 
 if __name__ == "__main__":
     unittest.main()

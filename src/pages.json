@@ -61,6 +61,14 @@
             "navigationStyle": "custom",
             "navigationBarBackgroundColor": "#F5F7FA"
           }
+        },
+        {
+          "path": "professional-index",
+          "style": {
+            "navigationBarTitleText": "专业课索引",
+            "navigationStyle": "custom",
+            "navigationBarBackgroundColor": "#F5F7FA"
+          }
         }
       ]
     },

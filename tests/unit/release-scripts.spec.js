@@ -45,6 +45,13 @@ describe('release scripts', () => {
     expect(packageJson.scripts['release:gate']).toContain('npm run baidu:flashcards:quality:release');
   });
 
+  it('generates a release blocker backlog in report and blocking gate modes', () => {
+    expect(packageJson.scripts['audit:release:backlog']).toContain('scripts/build/release-blocker-backlog.mjs');
+    expect(packageJson.scripts['audit:release:backlog:release']).toContain('--fail-on-blockers');
+    expect(packageJson.scripts['release:gate:report']).toContain('npm run audit:release:backlog');
+    expect(packageJson.scripts['release:gate']).toContain('npm run audit:release:backlog:release');
+  });
+
   it('exposes a smoke jwt helper for authenticated cloud smoke', () => {
     expect(packageJson.scripts['smoke:jwt']).toContain('scripts/build/create-smoke-jwt.mjs');
   });

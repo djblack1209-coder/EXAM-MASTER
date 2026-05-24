@@ -11,25 +11,43 @@ import { normalizeQuizAnswer } from '@/services/quiz-session-contract.js';
  * @param {Object} card - 闪卡数据 {id, question, options: [{label, text}], answer, explanation, ...}
  * @returns {Object} - v30_bank格式 {id, question, options: ['A. xxx'], answer, desc, ...}
  */
+function normalizeOptionText(option) {
+  const text =
+    typeof option === 'string'
+      ? option
+      : [option?.label, option?.text || option?.value || option?.content].filter(Boolean).join('. ');
+  return String(text)
+    .trim()
+    .replace(/^[A-Z]\s*[.。:：、)\）-]\s*/i, '')
+    .trim();
+}
+
 export function adaptCard(card, defaults = {}) {
   const paperMeta = {
     ...(defaults.paper || defaults.paperMeta || {}),
     ...(card.paper || card.paperMeta || {})
   };
   const passage = card.passage || card.context || card.material || card.article || '';
+  const passageSegments = Array.isArray(card.passageSegments) ? card.passageSegments : undefined;
 
   return {
     id: card.id,
+    number: card.number || card.questionNumber || card.question_no || defaults.number || '',
     question: card.question || '',
     passage,
+    ...(passageSegments ? { passageSegments } : {}),
+    targetSegment: card.targetSegment || card.segment || card.translationSegment || '',
+    targetSegmentNumber: card.targetSegmentNumber || card.segmentNumber || '',
     context: card.context || passage,
     material: card.material || passage,
     paperId: card.paperId || paperMeta.id || defaults.paperId || '',
     paperName: card.paperName || paperMeta.name || defaults.paperName || '',
     section: card.section || card.part || '',
     groupId: card.groupId || card.passageId || '',
-    // 关键转换：{label, text}[] → 'A. xxx' 字符串数组
-    options: (card.options || []).map((opt) => (typeof opt === 'string' ? opt : `${opt.label}. ${opt.text}`)),
+    fixedSequence: card.fixedSequence || card.fixed_sequence || [],
+    fixedParagraphs: card.fixedParagraphs || card.fixed_paragraphs || [],
+    // 题号字母由答题页独立渲染，正文只保留选项文本，避免出现 “A A. ...”
+    options: (card.options || []).map(normalizeOptionText),
     // 闪卡/分析题保留完整答案，多选题保留多字母答案，单选题规范为 A-D
     answer: normalizeQuizAnswer(card, card.type),
     desc: card.explanation || card.desc || '暂无解析',
@@ -60,12 +78,12 @@ export function adaptFlashcards(cards, defaults = {}) {
  * 从闪卡JSON文件数据导入到本地题库
  * @param {Object} flashcardData - 闪卡JSON完整数据 {source, subject, cards: [...]}
  * @param {Object} storageService - uni存储服务
- * @returns {Object} - {imported: 导入数量, skipped: 跳过数量, total: 题库总量}
+ * @returns {Object} - {imported: 新增数量, updated: 更新数量, skipped: 跳过数量, total: 题库总量}
  */
 export function importFlashcardsToBank(flashcardData, storageService, options = {}) {
   // 读取现有题库
   const existingBank = storageService.get('v30_bank') || [];
-  const existingIds = new Set(existingBank.map((q) => q.id));
+  const existingIndexById = new Map(existingBank.map((q, index) => [q.id, index]));
 
   // 转换格式
   const adapted = adaptFlashcards(flashcardData.cards || [], {
@@ -78,14 +96,23 @@ export function importFlashcardsToBank(flashcardData, storageService, options = 
 
   // 去重导入
   let imported = 0;
+  let updated = 0;
   let skipped = 0;
 
   for (const card of adapted) {
-    if (existingIds.has(card.id)) {
-      skipped++;
+    const existingIndex = existingIndexById.get(card.id);
+    if (existingIndex !== undefined) {
+      const current = existingBank[existingIndex];
+      const next = { ...current, ...card };
+      if (JSON.stringify(current) === JSON.stringify(next)) {
+        skipped++;
+      } else {
+        existingBank[existingIndex] = next;
+        updated++;
+      }
     } else {
       existingBank.push(card);
-      existingIds.add(card.id);
+      existingIndexById.set(card.id, existingBank.length - 1);
       imported++;
     }
   }
@@ -95,6 +122,7 @@ export function importFlashcardsToBank(flashcardData, storageService, options = 
 
   return {
     imported,
+    updated,
     skipped,
     total: existingBank.length,
     subject: flashcardData.subject || '未知',

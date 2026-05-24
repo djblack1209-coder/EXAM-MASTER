@@ -25,6 +25,11 @@
     <view class="splash-footer">
       <text class="copyright">Exam-Master Team</text>
     </view>
+
+    <view v-if="showManualEntry" class="manual-entry" hover-class="btn-hover" @tap="openHomeTab">
+      <text class="manual-entry-title">进入首页</text>
+      <text class="manual-entry-sub">启动较慢时可直接进入</text>
+    </view>
   </view>
 </template>
 
@@ -33,6 +38,7 @@ import { onMounted, onBeforeUnmount, ref } from 'vue';
 import { logger } from '@/utils/logger.js';
 import { initTheme, onThemeUpdate, offThemeUpdate } from '@/composables/useTheme';
 import { storageService } from '@/services/storageService.js';
+import { getCurrentRoute, openHomeTab as navigateHomeTab } from '@/utils/home-navigation.js';
 
 // 主题（暂留接口，极简白净版暂不区分深色）
 const isDark = ref(initTheme());
@@ -41,6 +47,8 @@ const themeHandler = (mode) => {
 };
 
 const splashTimer = ref(null);
+const manualEntryTimer = ref(null);
+const showManualEntry = ref(false);
 
 // 视觉快照模式检测
 function isVisualSnapshot() {
@@ -76,44 +84,13 @@ function openOnboarding() {
 }
 
 function openHomeTab() {
-  let navigated = false;
-
-  const doNavigate = () => {
-    if (navigated) return;
-    navigated = true;
-    uni.switchTab({
-      url: '/pages/index/index',
-      fail: (err1) => {
-        logger.warn('[Splash] switchTab failed, try reLaunch', err1);
-        uni.reLaunch({
-          url: '/pages/index/index',
-          fail: (err2) => {
-            logger.warn('[Splash] reLaunch failed, try redirectTo', err2);
-            uni.redirectTo({
-              url: '/pages/index/index',
-              fail: (err3) => {
-                logger.error('[Splash] all navigation failed', err3);
-              }
-            });
-          }
-        });
-      }
-    });
-  };
-
-  doNavigate();
-
-  // 兜底：3 秒后仍在 splash 则强制跳转
-  setTimeout(() => {
-    if (!navigated) return;
-    const pages = typeof getCurrentPages === 'function' ? getCurrentPages() : [];
-    const current = pages.length > 0 ? pages[pages.length - 1] : null;
-    const route = current ? current.route || current.__route__ || '' : '';
-    if (route.includes('splash')) {
-      logger.warn('[Splash] still on splash after 3s, force reLaunch');
-      uni.reLaunch({ url: '/pages/index/index' });
+  showManualEntry.value = false;
+  navigateHomeTab({
+    onFail: (error) => {
+      logger.error('[Splash] home navigation failed', error);
+      showManualEntry.value = true;
     }
-  }, 3000);
+  });
 }
 
 onMounted(() => {
@@ -126,6 +103,11 @@ onMounted(() => {
     logger.log('[Splash] navigating after splash');
     navigateAfterSplash();
   }, 1800);
+  manualEntryTimer.value = setTimeout(() => {
+    if (getCurrentRoute().includes('splash')) {
+      showManualEntry.value = true;
+    }
+  }, 4200);
 });
 
 // 页面销毁时清除定时器
@@ -134,6 +116,10 @@ onBeforeUnmount(() => {
   if (splashTimer.value) {
     clearTimeout(splashTimer.value);
     splashTimer.value = null;
+  }
+  if (manualEntryTimer.value) {
+    clearTimeout(manualEntryTimer.value);
+    manualEntryTimer.value = null;
   }
 });
 </script>
@@ -234,7 +220,7 @@ onBeforeUnmount(() => {
   /* 阴影随主题自动切换：亮色柔影 / 暗色品牌辉光 */
   box-shadow: var(--icon-highlight);
   /* 入场动画 */
-  opacity: 0;
+  opacity: 1;
   animation:
     logoEnter 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s forwards,
     breathGlow 3s ease-in-out 1.2s infinite;
@@ -253,7 +239,7 @@ onBeforeUnmount(() => {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
   -webkit-font-smoothing: antialiased;
   /* 入场动画 */
-  opacity: 0;
+  opacity: 1;
   animation: fadeUp 0.5s ease-out 0.45s forwards;
 }
 
@@ -274,7 +260,7 @@ onBeforeUnmount(() => {
   letter-spacing: 2px;
   font-weight: 400;
   /* 入场动画 */
-  opacity: 0;
+  opacity: 1;
   animation: fadeUp 0.5s ease-out 0.65s forwards;
 }
 
@@ -287,7 +273,7 @@ onBeforeUnmount(() => {
   display: flex;
   justify-content: center;
   /* P4: 与上方元素统一运动语言 */
-  opacity: 0;
+  opacity: 1;
   animation: fadeUp 0.5s ease-out 0.85s forwards;
 }
 
@@ -303,7 +289,7 @@ onBeforeUnmount(() => {
   bottom: 100px;
   display: flex;
   /* gap: 8px; -- replaced for Android WebView compat */
-  opacity: 0;
+  opacity: 1;
   animation: fadeIn 0.4s ease-out 1s forwards;
 }
 .loading-dots > view + view {
@@ -324,5 +310,32 @@ onBeforeUnmount(() => {
 
 .dot-3 {
   animation-delay: 0.4s;
+}
+
+.manual-entry {
+  position: absolute;
+  right: 28px;
+  bottom: 144px;
+  left: 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 58px;
+  border-radius: 18px;
+  background: #10391f;
+  box-shadow: 0 12px 28px rgba(16, 57, 31, 0.18);
+}
+
+.manual-entry-title {
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.manual-entry-sub {
+  margin-top: 4px;
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 11px;
 }
 </style>

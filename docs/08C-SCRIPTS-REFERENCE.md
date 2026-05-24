@@ -1,6 +1,6 @@
 # Scripts Reference
 
-Last updated: 2026-05-02
+Last updated: 2026-05-23
 
 ## Core quality gates
 
@@ -39,15 +39,18 @@ Notes:
 - `npm run audit:deep-scan`: deep project scan report.
 - `npm run audit:ui-quality`: UI quality gate report.
 - `npm run audit:mp-main-usage`: mini-program main-package usage audit.
-- `npm run deps:audit`: npm dependency audit (full tree, non-blocking).
-- `npm run deps:audit:prod`: npm dependency audit for production dependencies only (non-blocking).
-- `npm run audit:question-bank:report`: writes `data/question-bank-release-audit.json` with public-course coverage gaps and published-card answer-evidence blockers.
-- `npm run audit:question-bank:release`: same audit in release mode; exits non-zero while coverage or answer-evidence blockers remain.
+- `npm run deps:audit`: npm dependency audit (full tree, non-blocking). If the npm registry is unreachable, treat the result as not verified rather than as zero vulnerabilities.
+- `npm run deps:audit:prod`: npm dependency audit for production dependencies only (non-blocking). If the npm registry is unreachable, treat the result as not verified rather than as zero vulnerabilities.
+- `npm run audit:question-bank:report`: writes `data/question-bank-release-audit.json` with public-course missing/pending coverage gaps, publishable source-manifest coverage, per-slot source candidate diagnostics, and published-card answer-evidence blockers. Public-course coverage counts only formal release banks; `usageScope=self_study_draft` remains practice-visible but is reported as pending, not published, and `pendingCoverageBlockerCount` keeps those slots release-blocking until they are verified.
+- `npm run audit:question-bank:release`: same audit in release mode; exits non-zero while missing coverage, pending coverage, publishable source evidence, or answer-evidence blockers remain.
 - `npm run audit:release:external:report`: writes `data/release-external-audit.json` for production env, auth smoke credentials, Baidu sync inputs, WeChat device evidence, and ops evidence. Long-running release evidence defaults to `data/release-evidence/` and stays outside the core docs set.
 - `npm run audit:release:external`: same external audit in release mode; exits non-zero while external blockers remain.
+- `npm run audit:release:backlog`: merges the question-bank, flashcard-quality, external, WeChat DevTools, professional-index, and optional local source-audit reports into `data/release-blocker-backlog.json` plus `data/reports/release-blocker-backlog.md`; public-course missing/pending slots record whether they first need publishable official source evidence and why existing raw candidates are still blocked. The machine-readable report now includes `publicCourseSlotBacklog`, which aggregates coverage and source-evidence blockers by track-year before producing `nextBalancedPublicCourseSlots`, so operators can treat one public-course slot as one unit of work. Slot rows carry `sourceCandidateSamples` from Source Manifest and, when `data/raw-inbox/public-course-2025/source-audit.json` exists or `--local-source-audit <path>` is passed, `localSourceAuditSummary`/`localSourceAuditSamples` for local PDF path, SHA-256, text-layer state, OCR need, and blockers; the Markdown table lists multiple local samples when both paper and answer files are available, so operators do not need to open JSON just to find the companion answer SHA. Local source-audit rows are diagnostic only: they identify the next local file to verify, but they do not count as publishable official source evidence and cannot change release readiness. The next action now distinguishes readable local paper/answer files that need human verification and Source Manifest registration from local files that still require OCR or blocker repair. Candidate samples are ranked toward official papers, unblocked sources, verified/published status, matched answer evidence, and fewer blocker reasons, while local source-audit samples are ranked toward paper/paper+answer files with usable text layers and fewer blockers. The next-slot recommendation keeps pending public-course slots ahead of untouched missing slots, then round-robins across tracks inside each priority bucket so the queue does not collapse onto one subject when several tracks are equally actionable. The summary separates pending coverage blockers, raw `blockerItemCount`, and deduplicated `publicCourseBlockedSlotCount` because coverage and source-evidence rows can describe the same track-year slot. Non-course blockers use a separate operator table with workstream, target file, count, and next action.
+- `npm run audit:release:backlog:release`: same backlog audit in blocking mode; exits non-zero while any publish blocker remains.
 - `npm run audit:wechat:artifacts`: verifies the generated `dist/build/mp-weixin` artifact has required app files and no server-only secret names.
+- `npm run smoke:wechat:devtools`: drives the built `dist/build/mp-weixin` artifact through local WeChat DevTools with `miniprogram-automator`; this is DevTools evidence only and does not replace real-device evidence.
 - `npm run test:cloud:smoke:release`: cloud smoke in release mode; skipped checks fail the command, so auth coverage cannot be accidentally treated as passing.
-- `npm run release:gate:report`: non-blocking release report chain; rebuilds H5/mp-weixin, then runs prod audit, question-bank audit, flashcard-quality audit, external audit, and WeChat artifact audit.
+- `npm run release:gate:report`: non-blocking release report chain; rebuilds H5/mp-weixin, then runs prod audit, question-bank audit, flashcard-quality audit, external audit, release backlog, and WeChat artifact audit.
 - `npm run release:gate`: blocking public-release chain; rebuilds H5/mp-weixin and fails while question-bank, flashcard-quality, external, artifact, or cloud-smoke release blockers remain.
 
 ## Question-bank resource pipeline
@@ -70,6 +73,9 @@ Notes:
 - `npm run baidu:sync`: scans the Baidu app directory, writes `data/source-manifest.json`, and downloads eligible app-directory documents into `data/raw-inbox/`.
 - `npm run baidu:sync:netdisk:dry`: scans the three public-course full netdisk directories in dry-run mode without writing runtime files.
 - `npm run baidu:sync:netdisk:queue`: scans the three public-course full netdisk directories, refreshes manifest quality, refreshes candidate coverage, and writes `data/cleaning-queue.json`.
+- `npm run baidu:group-file:index:self-test`: validates the read-only group-file index parser and transfer-approval queue builder.
+- `npm run baidu:group-file:index:dry`: reads `data/group-file-export.json` and prints the group-file index plan without writing outputs; exits with an operator-friendly blocker if the export is missing.
+- `npm run baidu:group-file:index`: reads `data/group-file-export.json`, writes `data/group-file-index.json`, `data/group-transfer-queue.json`, and `data/group-file-source-export.json`; it does not transfer, download, or upload files.
 - `npm run baidu:group:registry:check`: validates local `data/link-registry.json` before a scheduled sync.
 - `npm run baidu:group:sync:dry`: reads local `data/link-registry.json`, resolves registered Baidu share links, filters eligible documents, and prints the transfer plan without writing state.
 - `npm run baidu:group:sync`: transfers eligible files from registered share links into `/apps/考研大师/raw-pdf/<subject>/<year>/`, writes `data/group-export-latest.json`, and merges it through `incremental_sync.py`.
@@ -85,6 +91,12 @@ Share-link group sync:
 - Runtime files `data/transferred-links.json`, `data/group-export-latest.json`, and `data/group-sync-report.json` are git-ignored. The first prevents duplicate transfers; the second is the latest handoff into Source Manifest; the third records per-link success, skip, and error counts.
 - GitHub Actions workflow `.github/workflows/baidu-group-sync.yml` runs the full `/EXAM-MASTER` daily scan whenever `BAIDU_ACCESS_TOKEN` is configured; share-link sync is additionally enabled when `BAIDU_LINK_REGISTRY_JSON` is configured. Missing optional share-link config skips only the share-link job.
 - Transfer batches retry Baidu rate-limit responses (`errno=12`) before marking the batch failed. A bad or expired link is isolated to that link's report row and does not stop later links.
+
+Read-only group-file index:
+
+- Required input: `data/group-file-export.json`, exported from Baidu group files as JSON or a Computer Use/accessibility text snapshot. The script cannot invent the group file list when the desktop UI or official export is unavailable.
+- Output `data/group-file-index.json` is a metadata index. Output `data/group-transfer-queue.json` is an approval-required queue; no item in that queue should be transferred without action-time confirmation.
+- Output `data/group-file-source-export.json` is a Source Manifest handoff shape with `sourceChannel=group_file_index`; `incremental_sync.py`, `cleaning_queue.py`, and the external release gate recognize this channel, but queue items still route through approval-required transfer/direct-download handling before extraction or publication.
 
 AI cost controls:
 

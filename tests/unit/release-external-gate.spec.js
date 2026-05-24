@@ -76,7 +76,7 @@ describe('release external gate', () => {
   it('reports missing production external blockers without requiring secrets in git', () => {
     const dir = tempDir();
     const output = path.join(dir, 'external.json');
-    const result = runGate(['--output', output, '--no-env-files']);
+    const result = runGate(['--output', output, '--mp-dir', path.join(dir, 'missing-mp-weixin'), '--no-env-files']);
 
     expect(result.status, result.stderr || result.stdout).toBe(0);
 
@@ -222,6 +222,39 @@ describe('release external gate', () => {
 
     const report = JSON.parse(fs.readFileSync(output, 'utf8'));
     expect(report.sections.baiduSync.status).toBe('passed');
+    expect(report.sections.baiduSync.registrySource).toBe('source_manifest');
+    expect(report.sections.baiduSync.sourceManifestValidSourceCount).toBe(1);
+  });
+
+  it('accepts a group-file index source manifest as Baidu source evidence', () => {
+    const dir = tempDir();
+    const output = path.join(dir, 'external.json');
+    const sourceManifest = path.join(dir, 'source-manifest.json');
+    fs.writeFileSync(
+      sourceManifest,
+      JSON.stringify({
+        version: 1,
+        items: [
+          {
+            provider: 'baidu_pan',
+            sourceChannel: 'group_file_index',
+            remotePath: '/2027考研课程/公共课/2020数学一真题.pdf',
+            fileName: '2020数学一真题.pdf',
+            eligible: true,
+            status: 'discovered'
+          }
+        ]
+      })
+    );
+
+    const result = runGate(['--output', output, '--source-manifest', sourceManifest, '--no-env-files'], {
+      BAIDU_ACCESS_TOKEN: 'token'
+    });
+
+    expect(result.status, result.stderr || result.stdout).toBe(0);
+
+    const report = JSON.parse(fs.readFileSync(output, 'utf8'));
+    expect(report.sections.baiduSync.blockers.map((item) => item.code)).not.toContain('empty_baidu_link_registry');
     expect(report.sections.baiduSync.registrySource).toBe('source_manifest');
     expect(report.sections.baiduSync.sourceManifestValidSourceCount).toBe(1);
   });

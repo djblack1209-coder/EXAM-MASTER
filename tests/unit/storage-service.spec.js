@@ -56,6 +56,89 @@ describe('storageService', () => {
       storageService.save('arr_key', arr);
       expect(uni.setStorageSync).toHaveBeenCalled();
     });
+
+    it('smart_review_ids 使用全局瞬态键，跨页面跳转时不加用户前缀', () => {
+      global.__mockStorage.EXAM_USER_ID = 'user_001';
+
+      const ids = ['politics-2025-001'];
+      expect(storageService.save('smart_review_ids', ids)).toBe(true);
+
+      expect(global.__mockStorage.smart_review_ids).toEqual(ids);
+      expect(global.__mockStorage.u_user_001_smart_review_ids).toBeUndefined();
+      expect(storageService.get('smart_review_ids', [])).toEqual(ids);
+    });
+
+    it('模块加载后注入 uni 时仍写入当前运行时存储', async () => {
+      const originalUni = global.uni;
+      const originalWx = global.wx;
+      const runtimeStorage = {};
+      try {
+        vi.resetModules();
+        delete global.uni;
+        delete global.wx;
+        const { storageService: lateStorageService } = await import('@/services/storageService.js');
+        global.uni = {
+          getStorageSync: vi.fn((key) =>
+            Object.prototype.hasOwnProperty.call(runtimeStorage, key) ? runtimeStorage[key] : ''
+          ),
+          setStorageSync: vi.fn((key, value) => {
+            runtimeStorage[key] = value;
+          }),
+          removeStorageSync: vi.fn((key) => {
+            delete runtimeStorage[key];
+          }),
+          getStorageInfoSync: vi.fn(() => ({
+            keys: Object.keys(runtimeStorage),
+            currentSize: Object.keys(runtimeStorage).length,
+            limitSize: 10240
+          })),
+          showToast: vi.fn()
+        };
+
+        expect(lateStorageService.save('late_key', 'late_value')).toBe(true);
+        expect(global.uni.setStorageSync).toHaveBeenCalledWith('late_key', 'late_value');
+        expect(lateStorageService.get('late_key')).toBe('late_value');
+      } finally {
+        global.uni = originalUni;
+        global.wx = originalWx;
+      }
+    });
+
+    it('微信小程序端未挂载 global uni 时回退到 wx 持久存储', async () => {
+      const originalUni = global.uni;
+      const originalWx = global.wx;
+      const runtimeStorage = {};
+      try {
+        vi.resetModules();
+        delete global.uni;
+        global.wx = {
+          getStorageSync: vi.fn((key) =>
+            Object.prototype.hasOwnProperty.call(runtimeStorage, key) ? runtimeStorage[key] : ''
+          ),
+          setStorageSync: vi.fn((key, value) => {
+            runtimeStorage[key] = value;
+          }),
+          removeStorageSync: vi.fn((key) => {
+            delete runtimeStorage[key];
+          }),
+          getStorageInfoSync: vi.fn(() => ({
+            keys: Object.keys(runtimeStorage),
+            currentSize: Object.keys(runtimeStorage).length,
+            limitSize: 10240
+          })),
+          showToast: vi.fn()
+        };
+
+        const { storageService: wxStorageService } = await import('@/services/storageService.js');
+
+        expect(wxStorageService.save('wx_key', 'wx_value')).toBe(true);
+        expect(global.wx.setStorageSync).toHaveBeenCalledWith('wx_key', 'wx_value');
+        expect(wxStorageService.get('wx_key')).toBe('wx_value');
+      } finally {
+        global.uni = originalUni;
+        global.wx = originalWx;
+      }
+    });
   });
 
   describe('saveDebounced', () => {
