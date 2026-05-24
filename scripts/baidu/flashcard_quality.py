@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -22,6 +23,7 @@ DEFAULT_OUTPUT = PROJECT_ROOT / "data" / "flashcard-quality-report.json"
 VALID_TYPES = {"single_choice", "multi_choice", "analysis", "short_answer", "essay", "translation", "cloze"}
 CHOICE_TYPES = {"single_choice", "multi_choice"}
 PUBLICATION_BLOCKED_QUALITY = {"draft", "needs_review", "needs_passage", "needs_cleaning", "source_missing"}
+ENGLISH_SUBJECT_HINTS = {"english", "英语"}
 ANSWER_PLACEHOLDERS = {
     "完整的参考答案全文",
     "完整的答案解析文本",
@@ -106,7 +108,28 @@ def option_labels(card: dict[str, Any]) -> list[str]:
     return labels
 
 
-def audit_card(card: dict[str, Any], index: int, seen_ids: set[str]) -> dict[str, Any]:
+def expected_option_labels(card: dict[str, Any]) -> list[str]:
+    options = card.get("options")
+    if not isinstance(options, list) or not options:
+        return []
+    option_count = len(options)
+    if option_count < 4 or option_count > 7:
+        return []
+    return [chr(ord("A") + index) for index in range(option_count)]
+
+
+def has_passage_material(card: dict[str, Any]) -> bool:
+    return bool(first_non_empty(card.get("passage"), card.get("context"), card.get("material"), card.get("article")))
+
+
+def is_english_payload(payload: Any, path: Path) -> bool:
+    values: list[Any] = [path.stem]
+    if isinstance(payload, dict):
+        values.extend([payload.get("subject"), payload.get("subjectKey"), payload.get("track"), payload.get("paperId")])
+    return any(str(value or "").strip().lower() in ENGLISH_SUBJECT_HINTS or "english" in str(value or "").lower() for value in values)
+
+
+def audit_card(card: dict[str, Any], index: int, seen_ids: set[str], *, requires_passage: bool = False) -> dict[str, Any]:
     missing_fields: list[str] = []
     current_id = card_id(card, index)
     card_type = str(card.get("type") or "").strip()
@@ -121,8 +144,12 @@ def audit_card(card: dict[str, Any], index: int, seen_ids: set[str]) -> dict[str
         missing_fields.append("question")
     if not has_usable_answer(card):
         missing_fields.append("answer")
-    if card_type in CHOICE_TYPES and sorted(option_labels(card)) != ["A", "B", "C", "D"]:
-        missing_fields.append("options=A-D")
+    if card_type in CHOICE_TYPES:
+        expected_labels = expected_option_labels(card)
+        if not expected_labels or sorted(option_labels(card)) != expected_labels:
+            missing_fields.append("options=A-D-or-A-G")
+    if requires_passage and card_type not in {"analysis", "essay", "translation", "short_answer"} and not has_passage_material(card):
+        missing_fields.append("passage")
     if not source_evidence_id(card):
         missing_fields.append("sourceEvidenceId")
     if answer_evidence_status(card) != "matched":
@@ -172,15 +199,37 @@ def supporting_evidence_reason(path: Path, payload: Any) -> str:
     return ""
 
 
+def infer_year(path: Path, payload: Any) -> int | None:
+    values = []
+    if isinstance(payload, dict):
+        values.extend([payload.get("year"), payload.get("paperYear")])
+    values.append(path.stem)
+    for value in values:
+        match = re.search(r"(19|20)\d{2}", str(value or ""))
+        if match:
+            return int(match.group(0))
+    return None
+
+
+def release_scope_skip_reason(path: Path, payload: Any, *, min_year: int, max_year: int) -> str:
+    year = infer_year(path, payload)
+    if year is None:
+        return ""
+    if year < min_year or year > max_year:
+        return f"outsideReleaseYear:{year}"
+    return ""
+
+
 def audit_flashcard_file(path: Path, payload: Any | None = None) -> dict[str, Any]:
     payload = read_json(path) if payload is None else payload
     cards = load_cards(payload)
     seen_ids: set[str] = set()
     blocked_cards = []
     status, publication_blockers = publication_status(payload)
+    requires_passage = is_english_payload(payload, path)
 
     for index, card in enumerate(cards):
-        card_report = audit_card(card, index, seen_ids)
+        card_report = audit_card(card, index, seen_ids, requires_passage=requires_passage)
         if card_report["missingFields"]:
             blocked_cards.append(card_report)
 
@@ -196,7 +245,11 @@ def audit_flashcard_file(path: Path, payload: Any | None = None) -> dict[str, An
     grading_blocker_count = sum(
         1
         for blocked in blocked_cards
-        if any(field in {"question", "answer", "options=A-D", "type", "uniqueId"} for field in blocked["missingFields"])
+        if any(
+                field in {"question", "answer", "options=A-D", "options=A-D-or-A-G", "type", "uniqueId"}
+                or field == "passage"
+                for field in blocked["missingFields"]
+            )
     )
 
     return {
@@ -212,7 +265,12 @@ def audit_flashcard_file(path: Path, payload: Any | None = None) -> dict[str, An
     }
 
 
-def build_quality_report(flashcard_dir: Path = DEFAULT_FLASHCARD_DIR) -> dict[str, Any]:
+def build_quality_report(
+    flashcard_dir: Path = DEFAULT_FLASHCARD_DIR,
+    *,
+    min_year: int = 2005,
+    max_year: int = 2026,
+) -> dict[str, Any]:
     files = []
     if flashcard_dir.exists():
         files = sorted(path for path in flashcard_dir.glob("*.json") if path.is_file())
@@ -222,6 +280,15 @@ def build_quality_report(flashcard_dir: Path = DEFAULT_FLASHCARD_DIR) -> dict[st
     for path in files:
         payload = read_json(path)
         skip_reason = supporting_evidence_reason(path, payload)
+        if skip_reason:
+            skipped_files.append(
+                {
+                    "filePath": str(path.relative_to(PROJECT_ROOT) if path.is_relative_to(PROJECT_ROOT) else path),
+                    "reason": skip_reason,
+                }
+            )
+            continue
+        skip_reason = release_scope_skip_reason(path, payload, min_year=min_year, max_year=max_year)
         if skip_reason:
             skipped_files.append(
                 {
@@ -240,6 +307,10 @@ def build_quality_report(flashcard_dir: Path = DEFAULT_FLASHCARD_DIR) -> dict[st
     return {
         "version": 1,
         "generatedAt": utc_now(),
+        "scope": {
+            "minYear": min_year,
+            "maxYear": max_year,
+        },
         "flashcardDir": str(
             flashcard_dir.relative_to(PROJECT_ROOT) if flashcard_dir.is_relative_to(PROJECT_ROOT) else flashcard_dir
         ),
@@ -274,6 +345,8 @@ def print_help() -> None:
 
 Options:
   --flashcard-dir <path>   Directory containing AI-cleaned flashcard JSON files
+  --min-year <year>        First release-scope year to audit
+  --max-year <year>        Last release-scope year to audit
   --output <path>          JSON report path
   --fail-on-blockers       Exit 2 when any cleaned card cannot be promoted
 """
@@ -283,11 +356,16 @@ Options:
 def run(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Audit cleaned flashcard JSON files before public promotion.")
     parser.add_argument("--flashcard-dir", type=Path, default=DEFAULT_FLASHCARD_DIR)
+    parser.add_argument("--min-year", type=int, default=2005)
+    parser.add_argument("--max-year", type=int, default=2026)
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
     parser.add_argument("--fail-on-blockers", action="store_true")
     args = parser.parse_args(argv)
 
-    report = build_quality_report(args.flashcard_dir)
+    if args.min_year > args.max_year:
+        raise SystemExit("--min-year must be <= --max-year")
+
+    report = build_quality_report(args.flashcard_dir, min_year=args.min_year, max_year=args.max_year)
     write_json(args.output, report)
     print(
         "[flashcard-quality] "

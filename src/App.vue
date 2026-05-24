@@ -77,6 +77,7 @@ export default {
         '/pages/practice/index',
         '/pages/practice-sub/do-quiz',
         '/pages/practice-sub/question-bank',
+        '/pages/practice-sub/professional-index',
         '/pages/profile/index'
       ];
 

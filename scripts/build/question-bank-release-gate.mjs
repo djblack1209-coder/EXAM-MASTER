@@ -12,7 +12,7 @@ const DEFAULT_TRACKS = ['politics', 'english1', 'english2', 'math1', 'math2', 'm
 
 function parseArgs(argv) {
   const options = {
-    minYear: 2010,
+    minYear: 2005,
     maxYear: 2026,
     output: DEFAULT_OUTPUT,
     bankDir: DEFAULT_BANK_DIR,
@@ -126,13 +126,17 @@ function loadPublishedBank(bank, bankDir) {
   return { filePath, cards };
 }
 
+function isReleaseBank(bank) {
+  return bank?.enabled !== false && bank?.usageScope !== 'self_study_draft';
+}
+
 function auditPublishedBanks({ banks, bankDir }) {
   const blockedBanks = [];
   let cardCount = 0;
   let answerEvidenceBlockerCount = 0;
   let gradingBlockerCount = 0;
 
-  for (const bank of banks.filter((item) => item.enabled !== false)) {
+  for (const bank of banks.filter(isReleaseBank)) {
     const bankReport = {
       bankId: bank.id,
       name: bank.name,
@@ -155,6 +159,9 @@ function auditPublishedBanks({ banks, bankDir }) {
         if (cardReport.missingFields.length) {
           bankReport.blockedCards.push(cardReport);
           if (cardReport.missingFields.some((field) => ['question', 'answer', 'cards'].includes(field))) {
+            gradingBlockerCount += 1;
+          }
+          if (cardReport.missingFields.includes('passage')) {
             gradingBlockerCount += 1;
           }
           if (
@@ -201,6 +208,117 @@ function isPublishableManifestSource(item) {
   return true;
 }
 
+function manifestSourceBlockReasons(item) {
+  const reasons = [];
+  if (!item?.eligible) reasons.push('eligible=false');
+  if (!['verified', 'published'].includes(item?.status)) reasons.push(`status=${item?.status || 'missing'}`);
+  if (item?.sourceType !== 'official_paper') reasons.push(`sourceType=${item?.sourceType || 'missing'}`);
+
+  const blockingRiskFlags = new Set(['answer_missing', 'brand_leak', 'copyright_review_required', 'ad_or_promo']);
+  const riskFlags = Array.isArray(item?.riskFlags) ? item.riskFlags : [];
+  const blockedFlags = riskFlags.filter((flag) => blockingRiskFlags.has(flag));
+  if (blockedFlags.length) reasons.push(`riskFlags=${blockedFlags.join(',')}`);
+  if (item?.legalReview?.publishBlocked) reasons.push('legalReview.publishBlocked=true');
+  if (item?.answerEvidenceStatus !== 'matched') {
+    reasons.push(`answerEvidenceStatus=${item?.answerEvidenceStatus || 'missing'}`);
+  }
+  if (!firstNonEmpty(item?.contentHash, item?.sha256, item?.fileSha256, item?.sourceHash)) {
+    reasons.push('sourceHash=missing');
+  }
+  if (!firstNonEmpty(item?.remotePath, item?.sourceUrl, item?.provenanceUrl)) {
+    reasons.push('sourceLocation=missing');
+  }
+
+  return reasons;
+}
+
+function sourceCandidateSample(item, blockReasons) {
+  return {
+    sourceId: item.sourceId || item.id || '',
+    status: item.status || '',
+    sourceType: item.sourceType || '',
+    answerEvidenceStatus: item.answerEvidenceStatus || '',
+    riskFlags: Array.isArray(item.riskFlags) ? item.riskFlags : [],
+    publishBlocked: item.legalReview?.publishBlocked === true,
+    blockReasons,
+    remotePath: item.remotePath || '',
+    sourceUrl: item.sourceUrl || ''
+  };
+}
+
+function sourceCandidateSampleRank(sample) {
+  const statusRank = {
+    published: 0,
+    verified: 1,
+    discovered: 2
+  };
+
+  return [
+    sample.sourceType === 'official_paper' ? 0 : 1,
+    sample.publishBlocked ? 1 : 0,
+    statusRank[sample.status] ?? 9,
+    sample.answerEvidenceStatus === 'matched' ? 0 : 1,
+    sample.blockReasons.length,
+    sample.remotePath || sample.sourceUrl ? 0 : 1,
+    sample.sourceId
+  ];
+}
+
+function compareSourceCandidateSamples(a, b) {
+  const aRank = sourceCandidateSampleRank(a);
+  const bRank = sourceCandidateSampleRank(b);
+  for (let index = 0; index < aRank.length; index += 1) {
+    if (aRank[index] === bRank[index]) continue;
+    if (typeof aRank[index] === 'number' && typeof bRank[index] === 'number') {
+      return aRank[index] - bRank[index];
+    }
+    return String(aRank[index]).localeCompare(String(bRank[index]));
+  }
+  return 0;
+}
+
+function keepBestSourceCandidateSamples(samples, sample, limit = 3) {
+  samples.push(sample);
+  samples.sort(compareSourceCandidateSamples);
+  if (samples.length > limit) samples.length = limit;
+}
+
+function candidateSlotMatches(item, track, requiredYears) {
+  const itemTrack = item?.track || item?.subject;
+  const year = Number(item?.year);
+  return itemTrack === track && Number.isInteger(year) && requiredYears.includes(year);
+}
+
+function buildCandidateDiagnostics(items, tracks, requiredYears) {
+  const diagnostics = Object.fromEntries(tracks.map((track) => [track, {}]));
+
+  for (const item of items) {
+    for (const track of tracks) {
+      if (!candidateSlotMatches(item, track, requiredYears)) continue;
+
+      const year = Number(item.year);
+      const trackDiagnostics = diagnostics[track];
+      const slot = (trackDiagnostics[year] ||= {
+        candidateCount: 0,
+        officialPaperCandidateCount: 0,
+        publishBlockedCandidateCount: 0,
+        blockReasons: {},
+        sampleCandidates: []
+      });
+      const reasons = manifestSourceBlockReasons(item);
+      slot.candidateCount += 1;
+      if (item.sourceType === 'official_paper') slot.officialPaperCandidateCount += 1;
+      if (item.legalReview?.publishBlocked) slot.publishBlockedCandidateCount += 1;
+      for (const reason of reasons) {
+        slot.blockReasons[reason] = (slot.blockReasons[reason] || 0) + 1;
+      }
+      keepBestSourceCandidateSamples(slot.sampleCandidates, sourceCandidateSample(item, reasons));
+    }
+  }
+
+  return diagnostics;
+}
+
 function loadSourceManifestEvidence({ sourceManifest, tracks, minYear, maxYear }) {
   const requiredYears = Array.from({ length: maxYear - minYear + 1 }, (_, index) => minYear + index);
 
@@ -212,6 +330,7 @@ function loadSourceManifestEvidence({ sourceManifest, tracks, minYear, maxYear }
       eligibleSources: 0,
       publishableOfficialPapers: 0,
       coverageGapCount: tracks.length * requiredYears.length,
+      candidateDiagnostics: Object.fromEntries(tracks.map((track) => [track, {}])),
       coverage: Object.fromEntries(
         tracks.map((track) => [track, { presentYears: [], missingYears: requiredYears, coverageRate: 0 }])
       )
@@ -222,6 +341,7 @@ function loadSourceManifestEvidence({ sourceManifest, tracks, minYear, maxYear }
   const items = Array.isArray(manifest.items) ? manifest.items : [];
   const publishable = items.filter(isPublishableManifestSource);
   const coverage = {};
+  const candidateDiagnostics = buildCandidateDiagnostics(items, tracks, requiredYears);
 
   for (const track of tracks) {
     const presentYears = [
@@ -237,6 +357,18 @@ function loadSourceManifestEvidence({ sourceManifest, tracks, minYear, maxYear }
     coverage[track] = {
       presentYears,
       missingYears,
+      missingYearDiagnostics: Object.fromEntries(
+        missingYears.map((year) => [
+          year,
+          candidateDiagnostics[track]?.[year] || {
+            candidateCount: 0,
+            officialPaperCandidateCount: 0,
+            publishBlockedCandidateCount: 0,
+            blockReasons: {},
+            sampleCandidates: []
+          }
+        ])
+      ),
       coverageRate: requiredYears.length ? Number((presentYears.length / requiredYears.length).toFixed(4)) : 1
     };
   }
@@ -249,14 +381,16 @@ function loadSourceManifestEvidence({ sourceManifest, tracks, minYear, maxYear }
     eligibleSources: items.filter((item) => item?.eligible).length,
     publishableOfficialPapers: publishable.length,
     coverageGapCount: Object.values(coverage).reduce((sum, row) => sum + row.missingYears.length, 0),
+    candidateDiagnostics,
     coverage
   };
 }
 
 export function buildQuestionBankReleaseReport(options = {}) {
   const banks = Array.isArray(options.banks) ? options.banks : getAllBankMetas();
+  const releaseBanks = banks.filter(isReleaseBank);
   const tracks = options.tracks || DEFAULT_TRACKS;
-  const minYear = options.minYear ?? 2010;
+  const minYear = options.minYear ?? 2005;
   const maxYear = options.maxYear ?? 2026;
   const coverage = buildPublicCourseCoverage({
     banks,
@@ -265,7 +399,7 @@ export function buildQuestionBankReleaseReport(options = {}) {
     maxYear
   });
   const evidence = auditPublishedBanks({
-    banks,
+    banks: releaseBanks,
     bankDir: options.bankDir || DEFAULT_BANK_DIR
   });
   const sourceEvidence = loadSourceManifestEvidence({
@@ -275,8 +409,10 @@ export function buildQuestionBankReleaseReport(options = {}) {
     maxYear
   });
   const coverageGapCount = coverage.summary.missingSlots;
+  const pendingCoverageBlockerCount = coverage.summary.pendingSlots;
   const canPublish =
     coverageGapCount === 0 &&
+    pendingCoverageBlockerCount === 0 &&
     sourceEvidence.coverageGapCount === 0 &&
     evidence.answerEvidenceBlockerCount === 0 &&
     evidence.gradingBlockerCount === 0;
@@ -290,12 +426,15 @@ export function buildQuestionBankReleaseReport(options = {}) {
       maxYear
     },
     summary: {
-      enabledBankCount: banks.filter((item) => item.enabled !== false).length,
+      enabledBankCount: releaseBanks.length,
+      selfStudyDraftBankCount: banks.filter((item) => item.enabled !== false && item.usageScope === 'self_study_draft')
+        .length,
       pendingBankCount: banks.filter((item) => item.enabled === false).length,
       cardCount: evidence.cardCount,
       requiredSlots: coverage.summary.requiredSlots,
       publishedSlots: coverage.summary.publishedSlots,
       pendingSlots: coverage.summary.pendingSlots,
+      pendingCoverageBlockerCount,
       coverageGapCount,
       sourceManifestStatus: sourceEvidence.status,
       sourceManifestTotalSources: sourceEvidence.totalSources,
@@ -313,6 +452,7 @@ export function buildQuestionBankReleaseReport(options = {}) {
       canPublish,
       blockers: {
         coverage: coverageGapCount,
+        pendingCoverage: pendingCoverageBlockerCount,
         sourceEvidence: sourceEvidence.coverageGapCount,
         answerEvidence: evidence.answerEvidenceBlockerCount,
         grading: evidence.gradingBlockerCount
@@ -350,6 +490,7 @@ export function run(argv = process.argv.slice(2)) {
   console.log(
     `[question-bank-release-gate] canPublish=${report.releaseReadiness.canPublish} ` +
       `coverageGaps=${summary.coverageGapCount} ` +
+      `pendingCoverageBlockers=${summary.pendingCoverageBlockerCount} ` +
       `sourceEvidenceGaps=${summary.sourceManifestCoverageGapCount} ` +
       `answerEvidenceBlockers=${summary.answerEvidenceBlockerCount} ` +
       `gradingBlockers=${summary.gradingBlockerCount} ` +

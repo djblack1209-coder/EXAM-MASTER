@@ -27,6 +27,28 @@ import {
 const db = cloud.database();
 const _ = db.command;
 
+function emptyOverview() {
+  return {
+    totalQuestions: 0,
+    correctQuestions: 0,
+    accuracy: 0,
+    totalStudyDays: 0,
+    totalStudyMinutes: 0,
+    streakDays: 0,
+    lastStudyDate: null,
+    totalMistakes: 0,
+    masteredMistakes: 0,
+    mistakeMasteryRate: 0,
+    today: {
+      questions: 0,
+      correct: 0,
+      studyMinutes: 0,
+      accuracy: 0
+    },
+    achievementCount: 0
+  };
+}
+
 export default async function (ctx) {
   const startTime = Date.now();
   const requestId = generateRequestId('stats');
@@ -92,7 +114,7 @@ async function handleGetOverview(userId: string, _data: Record<string, unknown>,
   ]);
 
   const user = userRes.data;
-  if (!user) return badRequest('用户不存在');
+  if (!user) return success(emptyOverview(), '获取成功');
 
   const totalQuestions = user.total_questions || 0;
   const correctQuestions = user.correct_questions || 0;

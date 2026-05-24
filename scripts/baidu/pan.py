@@ -103,7 +103,7 @@ class BaiduPan:
         self.session = requests.Session() if requests else None
         self.allow_full_path = allow_full_path
 
-    def _get(self, url: str, params: dict, timeout: int = 15, *, max_retries: int = 3, sleep_fn=time.sleep) -> dict:
+    def _get(self, url: str, params: dict, timeout: int = 15, *, max_retries: int = 6, sleep_fn=time.sleep) -> dict:
         """通用 GET 请求"""
         if self.session is None:
             raise RuntimeError("requests is required for Baidu Pan API calls")
@@ -115,10 +115,12 @@ class BaiduPan:
                 return data
 
             errmsg = data.get("errmsg", f"errno={data.get('errno')}")
-            if "frequency" not in str(errmsg).lower() or attempt >= max_retries:
+            errmsg_lower = str(errmsg).lower()
+            is_frequency_limit = any(marker in errmsg_lower for marker in ("frequency", "freq", "too many"))
+            if not is_frequency_limit or attempt >= max_retries:
                 raise Exception(f"API 错误：{errmsg}")
 
-            sleep_fn(min(30, 2 ** attempt))
+            sleep_fn(min(60, 5 * (2 ** attempt)))
 
         raise Exception("API 错误：request failed after retries")
 

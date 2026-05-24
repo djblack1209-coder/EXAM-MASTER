@@ -214,6 +214,10 @@ data/verified-source-export.json
 data/transferred-links.json
 data/group-export-latest.json
 data/group-sync-report.json
+data/group-file-export.json
+data/group-file-index.json
+data/group-transfer-queue.json
+data/group-file-source-export.json
 data/smoke-token.env
 
 # AI 批量生成图片中间产物

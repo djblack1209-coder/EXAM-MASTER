@@ -24,7 +24,7 @@ DEFAULT_MANIFEST = PROJECT_ROOT / "data" / "source-manifest.json"
 DEFAULT_OUTPUT = PROJECT_ROOT / "data" / "cleaning-queue.json"
 DEFAULT_RAW_INBOX = PROJECT_ROOT / "data" / "raw-inbox"
 
-SUPPORTED_SOURCE_CHANNELS = {"app_dir", "netdisk_full_path", "group_service"}
+SUPPORTED_SOURCE_CHANNELS = {"app_dir", "netdisk_full_path", "group_service", "group_file_index"}
 DIRECT_DOWNLOAD_CHANNELS = {"app_dir", "netdisk_full_path"}
 SUPPORTED_EXTENSIONS = {".pdf", ".doc", ".docx", ".txt", ".md", ".json", ".html", ".htm"}
 PROCESSABLE_STATUS = {"discovered", "missing"}
@@ -113,7 +113,7 @@ def task_action(item: dict[str, Any]) -> str:
     source_channel = item.get("sourceChannel")
     if source_channel in DIRECT_DOWNLOAD_CHANNELS and item.get("fsId") and item.get("remotePath"):
         return "download_and_extract"
-    if source_channel == "group_service":
+    if source_channel in {"group_service", "group_file_index"}:
         return "transfer_or_direct_download"
     return "manual_ingest"
 

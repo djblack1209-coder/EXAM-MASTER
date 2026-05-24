@@ -119,10 +119,12 @@ class AnswerEvidenceRepairTest(unittest.TestCase):
             )
             repaired = json.loads(target.read_text(encoding="utf-8"))
             companion_payload = json.loads(companion.read_text(encoding="utf-8"))
+            queue_payload = json.loads(queue.read_text(encoding="utf-8"))
             card = repaired["cards"][0]
 
         self.assertEqual(report["summary"]["repairedAnswers"], 1)
         self.assertEqual(report["summary"]["remainingMissingAnswers"], 0)
+        self.assertTrue(report["summary"]["queueUpdated"])
         self.assertEqual(card["answer"], "A")
         self.assertEqual(card["explanation"], "Answer evidence text")
         self.assertEqual(card["answerEvidenceStatus"], "candidate_matched")
@@ -133,6 +135,10 @@ class AnswerEvidenceRepairTest(unittest.TestCase):
         self.assertTrue(card["answerTextHash"].startswith("sha256:"))
         self.assertTrue(companion_payload["supportingEvidenceOnly"])
         self.assertEqual(companion_payload["supportingEvidenceUsedBy"], str(target))
+        target_task = next(task for task in queue_payload["tasks"] if task["sourceId"] == "src_question")
+        self.assertEqual(target_task["missingAnswerCount"], 0)
+        self.assertEqual(target_task["answerEvidenceStatus"], "candidate_repaired")
+        self.assertEqual(target_task["answerEvidenceRepairedAt"], "2026-04-30T00:00:00Z")
 
     def test_conflicting_companion_answers_are_reported_and_skipped(self):
         from scripts.baidu.answer_evidence_repair import repair_bank
@@ -160,6 +166,44 @@ class AnswerEvidenceRepairTest(unittest.TestCase):
         self.assertEqual(report["summary"]["conflictCount"], 1)
         self.assertEqual(report["summary"]["repairedAnswers"], 0)
         self.assertEqual(card["answer"], "")
+
+    def test_original_answer_key_wins_over_conflicting_cleaned_json_candidate(self):
+        from scripts.baidu.answer_evidence_repair import repair_bank
+
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_dir = Path(tmp)
+            target = tmp_dir / "target.json"
+            companion = tmp_dir / "companion.json"
+            answer_key_text = tmp_dir / "answer-key.txt"
+            queue = tmp_dir / "cleaning-queue.json"
+            answer_key_text.write_text("2005年考研英语（一）真题答案速查表\n45 B\n41 ~45 ECGFB\n", encoding="utf-8")
+            write_json(
+                target,
+                bank_payload(
+                    "target.pdf",
+                    "english1",
+                    2005,
+                    [{"id": "q45", "number": 45, "type": "single_choice", "question": "Q45", "answer": ""}],
+                ),
+            )
+            write_json(companion, bank_payload("answers.pdf", "english", 2005, [{"number": 45, "answer": "F"}]))
+            write_json(
+                queue,
+                {
+                    "tasks": [
+                        {"sourceId": "src_answer_key", "outputPath": str(companion), "localPath": str(answer_key_text)}
+                    ]
+                },
+            )
+
+            report = repair_bank(target, [companion], queue_path=queue, write=True, now="2026-04-30T00:00:00Z")
+            card = json.loads(target.read_text(encoding="utf-8"))["cards"][0]
+
+        self.assertEqual(report["summary"]["conflictCount"], 0)
+        self.assertEqual(report["summary"]["repairedAnswers"], 1)
+        self.assertEqual(card["answer"], "B")
+        self.assertEqual(card["answerEvidence"]["conflictResolution"], "preferred_original_answer_key")
+        self.assertEqual(len(card["answerEvidence"]["conflictCandidates"]), 2)
 
     def test_repair_fills_missing_answers_from_companion_answer_key_text(self):
         from scripts.baidu.answer_evidence_repair import repair_bank
@@ -215,10 +259,116 @@ class AnswerEvidenceRepairTest(unittest.TestCase):
             repaired_cards = json.loads(target.read_text(encoding="utf-8"))["cards"]
 
         self.assertEqual(report["summary"]["repairedAnswers"], 4)
-        self.assertEqual(report["summary"]["answerKeyTextCandidates"], 11)
+        self.assertEqual(report["summary"]["answerKeyTextCandidates"], 15)
         self.assertEqual([card["answer"] for card in repaired_cards], ["B", "A", "A", "BFDGA"])
         self.assertTrue(all(card["answerEvidenceStatus"] == "candidate_matched" for card in repaired_cards))
         self.assertEqual(repaired_cards[0]["answerEvidence"]["method"], "companion_answer_key_text")
+
+    def test_repair_reads_answer_key_text_from_companion_source_in_raw_inbox(self):
+        from scripts.baidu import answer_evidence_repair
+        from scripts.baidu.answer_evidence_repair import repair_bank
+
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_dir = Path(tmp)
+            target = tmp_dir / "target.json"
+            companion = tmp_dir / "companion.json"
+            raw_inbox = tmp_dir / "raw-inbox"
+            raw_inbox.mkdir()
+            answer_key_text = raw_inbox / "src_answer-2005答案速查.txt"
+            answer_key_text.write_text(
+                "2005年考研英语（一）真题答案速查表\n"
+                "21-25 CBACB 41 ~45 ECGFB\n",
+                encoding="utf-8",
+            )
+            write_json(
+                target,
+                bank_payload(
+                    "target.pdf",
+                    "english1",
+                    2005,
+                    [
+                        {"id": "q21", "number": 21, "type": "single_choice", "question": "Q21", "answer": ""},
+                        {
+                            "id": "q41",
+                            "number": 41,
+                            "type": "analysis",
+                            "question": "For questions 41-45, choose the suitable paragraphs.",
+                            "answer": "",
+                        },
+                    ],
+                ),
+            )
+            write_json(companion, bank_payload("src_answer-2005答案速查.txt", "english-support", 2005, []))
+
+            original_raw_inbox = answer_evidence_repair.DEFAULT_RAW_INBOX
+            try:
+                answer_evidence_repair.DEFAULT_RAW_INBOX = raw_inbox
+                report = repair_bank(target, [companion], write=True, now="2026-04-30T00:00:00Z")
+            finally:
+                answer_evidence_repair.DEFAULT_RAW_INBOX = original_raw_inbox
+            repaired_cards = json.loads(target.read_text(encoding="utf-8"))["cards"]
+
+        self.assertEqual(report["summary"]["repairedAnswers"], 2)
+        self.assertEqual(report["summary"]["answerKeyTextCandidates"], 10)
+        self.assertEqual(report["summary"]["answerKeyGroupCandidates"], 2)
+        self.assertEqual([card["answer"] for card in repaired_cards], ["C", "ECGFB"])
+        self.assertEqual(repaired_cards[1]["answerEvidence"]["method"], "companion_answer_key_range_text")
+
+    def test_repair_fills_subjective_answers_from_numbered_answer_key_text(self):
+        from scripts.baidu.answer_evidence_repair import repair_bank
+
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_dir = Path(tmp)
+            target = tmp_dir / "target.json"
+            companion = tmp_dir / "companion.json"
+            answer_key_text = tmp_dir / "answer-key.txt"
+            queue = tmp_dir / "cleaning-queue.json"
+            answer_key_text.write_text(
+                "2007年考研英语（一）真题答案速查表\n"
+                "1 ~5 BDACC   41 ~45 FDBCE\n"
+                "46. 传统上,这些院校一直把法律学习视为律师的专利，而不是受教育者知识储备的必要组成\n"
+                "    部分。\n"
+                "47. 另一方面，法律将这些概念和日常实际相结合,正如新闻记者每天报道和评论新闻时的做\n"
+                "    法一样。\n"
+                "英语（一）试题.14.（共14页）\n",
+                encoding="utf-8",
+            )
+            write_json(
+                target,
+                bank_payload(
+                    "target.pdf",
+                    "english1",
+                    2007,
+                    [
+                        {"id": "q46", "number": 46, "type": "analysis", "question": "Q46", "answer": ""},
+                        {"id": "q47", "number": 47, "type": "analysis", "question": "Q47", "answer": ""},
+                    ],
+                ),
+            )
+            write_json(companion, bank_payload("answers.pdf", "english", 2007, []))
+            write_json(
+                queue,
+                {
+                    "tasks": [
+                        {"sourceId": "src_answer_key", "outputPath": str(companion), "localPath": str(answer_key_text)}
+                    ]
+                },
+            )
+
+            report = repair_bank(target, [companion], queue_path=queue, write=True, now="2026-04-30T00:00:00Z")
+            repaired_cards = json.loads(target.read_text(encoding="utf-8"))["cards"]
+
+        self.assertEqual(report["summary"]["repairedAnswers"], 2)
+        self.assertEqual(report["summary"]["numberedAnswerTextCandidates"], 2)
+        self.assertEqual(
+            repaired_cards[0]["answer"],
+            "传统上,这些院校一直把法律学习视为律师的专利，而不是受教育者知识储备的必要组成部分。",
+        )
+        self.assertEqual(
+            repaired_cards[1]["answer"],
+            "另一方面，法律将这些概念和日常实际相结合,正如新闻记者每天报道和评论新闻时的做法一样。",
+        )
+        self.assertEqual(repaired_cards[0]["answerEvidence"]["method"], "companion_numbered_answer_text")
 
     def test_cli_writes_report_and_requires_write_flag_to_mutate(self):
         with tempfile.TemporaryDirectory() as tmp:

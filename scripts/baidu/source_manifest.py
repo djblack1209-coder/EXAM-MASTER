@@ -404,6 +404,13 @@ def merge_manifest(existing: dict[str, Any], discovered: list[dict[str, Any]], n
     seen_ids: set[str] = set()
     summary = {"new": 0, "changed": 0, "unchanged": 0, "missing": 0, "eligible": 0, "rejected": 0}
 
+    def refreshed_status(old_status: str | None, new_status: str) -> str:
+        if old_status in {"verified", "published"}:
+            return old_status
+        if old_status == "missing":
+            return new_status
+        return old_status or new_status
+
     for item in discovered:
         source_id = item["sourceId"]
         seen_ids.add(source_id)
@@ -418,7 +425,8 @@ def merge_manifest(existing: dict[str, Any], discovered: list[dict[str, Any]], n
                 preserved_status = old.get("status", "discovered")
                 item["firstSeenAt"] = old.get("firstSeenAt", item["firstSeenAt"])
                 item["processing"] = preserved_processing
-                item["status"] = "discovered" if preserved_status in {"verified", "published"} else preserved_status
+                item["status"] = refreshed_status(preserved_status, item["status"])
+                item.pop("missingSince", None)
                 by_id[source_id] = item
                 summary["changed"] += 1
             else:
@@ -426,11 +434,12 @@ def merge_manifest(existing: dict[str, Any], discovered: list[dict[str, Any]], n
                 preserved_processing = old.get("processing", item["processing"])
                 preserved_status = old.get("status", item["status"])
                 old.update(item)
+                old.pop("missingSince", None)
                 old.update({
                     "firstSeenAt": preserved_first_seen,
                     "lastSeenAt": now,
                     "processing": preserved_processing,
-                    "status": preserved_status,
+                    "status": refreshed_status(preserved_status, item["status"]),
                 })
                 summary["unchanged"] += 1
 

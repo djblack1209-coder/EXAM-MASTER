@@ -102,6 +102,13 @@ def sample_item(item: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def display_path(path: Path) -> str:
+    try:
+        return str(path.resolve().relative_to(PROJECT_ROOT))
+    except ValueError:
+        return str(path)
+
+
 def analyze_candidate_coverage(
     manifest: dict[str, Any],
     *,
@@ -179,7 +186,7 @@ def main() -> None:
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
     parser.add_argument("--source-channel", default="netdisk_full_path")
     parser.add_argument("--tracks", default=",".join(PUBLIC_TRACKS))
-    parser.add_argument("--min-year", type=int, default=2010)
+    parser.add_argument("--min-year", type=int, default=2005)
     parser.add_argument("--max-year", type=int, default=2026)
     args = parser.parse_args()
 
@@ -194,7 +201,7 @@ def main() -> None:
     print(
         "[candidate-coverage] "
         + " ".join(f"{track}={count}" for track, count in covered.items())
-        + f" report={args.output.relative_to(PROJECT_ROOT)}"
+        + f" report={display_path(args.output)}"
     )
 
 

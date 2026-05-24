@@ -57,8 +57,9 @@ export function useFlashcardBank() {
       // 响应式更新已加载集合
       _loadedSet.value = new Set(loaded);
 
+      const changed = result.imported + (result.updated || 0);
       uni.showToast({
-        title: `导入 ${result.imported} 题`,
+        title: changed > 0 ? `同步 ${changed} 题` : '题库已是最新',
         icon: 'success'
       });
 

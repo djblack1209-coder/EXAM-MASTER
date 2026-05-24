@@ -25,8 +25,15 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_QUEUE = PROJECT_ROOT / "data" / "cleaning-queue.json"
 DEFAULT_SOURCE_MANIFEST = PROJECT_ROOT / "data" / "source-manifest.json"
 DEFAULT_OUTPUT = PROJECT_ROOT / "data" / "answer-evidence-repair-report.json"
+DEFAULT_RAW_INBOX = PROJECT_ROOT / "data" / "raw-inbox"
 CHOICE_TYPES = {"single_choice", "multi_choice"}
-CHOICE_OPTION_LABELS = {"A", "B", "C", "D"}
+CHOICE_OPTION_LABELS = set("ABCDEFG")
+ANSWER_CANDIDATE_METHOD_PRIORITY = {
+    "companion_answer_key_text": 30,
+    "companion_answer_key_range_text": 30,
+    "companion_numbered_answer_text": 30,
+    "year_number_companion_cleaned_json": 10,
+}
 ANSWER_PLACEHOLDERS = {
     "完整的参考答案全文",
     "完整的答案解析文本",
@@ -117,13 +124,21 @@ def answer_key(year: str, number: str) -> str:
     return f"{year}:{number}"
 
 
+def answer_range_key(year: str, number: str) -> str:
+    return f"{year}:{number}:range"
+
+
 def normalize_answer(answer: Any, card_type: str = "") -> str:
     text = normalize_text(answer)
     if not text:
         return ""
-    if card_type in CHOICE_TYPES:
-        compact = re.sub(r"[^A-Da-d]", "", text).upper()
-        return compact if re.fullmatch(r"[A-D]{1,4}", compact or "") else ""
+    normalized_type = str(card_type or "").strip()
+    if normalized_type == "single_choice":
+        compact = re.sub(r"[^A-Ga-g]", "", text).upper()
+        return compact if re.fullmatch(r"[A-G]", compact or "") else ""
+    if normalized_type in CHOICE_TYPES:
+        compact = re.sub(r"[^A-Ga-g]", "", text).upper()
+        return compact if re.fullmatch(r"[A-G]{1,7}", compact or "") else ""
     return text
 
 
@@ -169,11 +184,61 @@ def load_queue_output_task_map(queue_path: Path | None) -> dict[str, dict[str, A
     return mapping
 
 
+def resolved_path_key(path: Path | str) -> str:
+    try:
+        return str(Path(path).expanduser().resolve())
+    except OSError:
+        return str(path)
+
+
+def update_queue_repair_status(
+    queue_path: Path | None,
+    target_path: Path,
+    *,
+    missing_answer_count: int,
+    now: str,
+) -> bool:
+    if not queue_path or not queue_path.exists():
+        return False
+
+    payload = read_json(queue_path, {})
+    tasks = payload.get("tasks") if isinstance(payload, dict) else []
+    if not isinstance(tasks, list):
+        return False
+
+    target_key = resolved_path_key(target_path)
+    changed = False
+    for task in tasks:
+        if not isinstance(task, dict):
+            continue
+        output_path = first_non_empty(task.get("outputPath"))
+        if not output_path or resolved_path_key(output_path) != target_key:
+            continue
+        task["missingAnswerCount"] = missing_answer_count
+        task["answerEvidenceStatus"] = "candidate_repaired" if missing_answer_count == 0 else "missing_answers"
+        task["answerEvidenceRepairedAt"] = now
+        task["updatedAt"] = now
+        changed = True
+
+    if changed:
+        payload["lastAnswerEvidenceRepairAt"] = now
+        write_json(queue_path, payload)
+    return changed
+
+
 def source_id_for_path(path: Path, output_source_map: dict[str, str]) -> str:
     try:
         return output_source_map.get(str(path.expanduser().resolve()), "")
     except OSError:
         return output_source_map.get(str(path), "")
+
+
+def source_id_from_payload(payload: Any) -> str:
+    if not isinstance(payload, dict):
+        return ""
+    source = first_non_empty(payload.get("source"), payload.get("sourcePath"), payload.get("fileName"))
+    match = re.search(r"(src_[A-Za-z0-9]+)", source)
+    return match.group(1) if match else ""
 
 
 def queue_task_for_path(path: Path, output_task_map: dict[str, dict[str, Any]]) -> dict[str, Any]:
@@ -285,19 +350,47 @@ def extract_pdf_text(path: Path) -> str:
     return "\n".join(text_parts)
 
 
-def read_companion_source_text(task: dict[str, Any]) -> str:
-    source_path = first_non_empty(task.get("localPath"), task.get("expectedLocalPath"))
-    if not source_path:
-        return ""
-    path = Path(source_path)
-    if not path.exists() or not path.is_file():
-        return ""
+def resolve_companion_source_path(task: dict[str, Any], companion_path: Path, payload: Any) -> Path | None:
+    candidates = [
+        first_non_empty(task.get("localPath")),
+        first_non_empty(task.get("expectedLocalPath")),
+    ]
+    if isinstance(payload, dict):
+        source_name = first_non_empty(payload.get("source"), payload.get("sourcePath"), payload.get("fileName"))
+        if source_name:
+            source_path = Path(source_name)
+            candidates.extend(
+                [
+                    str(source_path),
+                    str(companion_path.parent / source_path.name),
+                    str(DEFAULT_RAW_INBOX / source_path.name),
+                ]
+            )
+
+    for candidate in candidates:
+        if not candidate:
+            continue
+        path = Path(candidate).expanduser()
+        if path.exists() and path.is_file():
+            return path
+
+    return None
+
+
+def read_source_text(path: Path) -> str:
     if path.suffix.lower() == ".pdf":
         return extract_pdf_text(path)
     try:
         return path.read_text(encoding="utf-8", errors="ignore")
     except OSError:
         return ""
+
+
+def read_companion_source_text(task: dict[str, Any], companion_path: Path, payload: Any) -> tuple[str, Path | None]:
+    path = resolve_companion_source_path(task, companion_path, payload)
+    if not path:
+        return "", None
+    return read_source_text(path), path
 
 
 def parse_answer_key_ranges(text: str) -> dict[str, str]:
@@ -311,12 +404,84 @@ def parse_answer_key_ranges(text: str) -> dict[str, str]:
         expected_count = end - start + 1
         if len(answers) < expected_count:
             continue
-        if any(answer not in CHOICE_OPTION_LABELS for answer in answers):
-            candidates[str(start)] = "".join(answers[:expected_count])
-            continue
         for offset, answer in enumerate(answers[:expected_count]):
             candidates[str(start + offset)] = answer
     return candidates
+
+
+def parse_answer_key_range_groups(text: str) -> dict[str, str]:
+    groups: dict[str, str] = {}
+    for match in re.finditer(r"(?<!\d)(\d{1,3})\s*[-~～]\s*(\d{1,3})\s*([A-Ga-g](?:\s*[A-Ga-g]){0,20})", text):
+        start = int(match.group(1))
+        end = int(match.group(2))
+        if end < start or end - start > 20:
+            continue
+        answers = re.findall(r"[A-Ga-g]", match.group(3).upper())
+        expected_count = end - start + 1
+        if len(answers) < expected_count:
+            continue
+        groups[str(start)] = "".join(answers[:expected_count])
+    return groups
+
+
+def compact_numbered_answer_text(text: str) -> str:
+    text = re.sub(r"\f", "\n", text or "")
+    text = re.sub(r"\r\n?", "\n", text)
+    text = re.sub(r"\n\s*(?=[\u4e00-\u9fff，。；、：“”‘’（）《》])", "", text)
+    text = re.sub(r"(?<=[\u4e00-\u9fff，。；、：“”‘’（）《》])\s*\n", "", text)
+    return normalize_text(text)
+
+
+def parse_numbered_answer_text(text: str, *, min_number: int = 46, max_number: int = 80) -> dict[str, str]:
+    answers: dict[str, str] = {}
+    if not text:
+        return answers
+
+    sections = re.split(r"答案速查表", text)
+    if len(sections) <= 1:
+        return answers
+
+    stop_pattern = (
+        r"(?=^\s*\d{1,3}\s*[.．]\s*)"
+        r"|(?=^\s*英语[（(]?\s*[一二]\s*[）)]?\s*试题)"
+        r"|(?=^\s*资料不管用不用)"
+        r"|(?=\f)"
+        r"|\Z"
+    )
+    entry_pattern = re.compile(
+        rf"(?ms)^\s*(\d{{1,3}})\s*[.．]\s*(.+?)({stop_pattern})",
+    )
+
+    for section in sections[1:]:
+        for match in entry_pattern.finditer(section):
+            number = int(match.group(1))
+            if number < min_number or number > max_number:
+                continue
+            answer = compact_numbered_answer_text(match.group(2))
+            if answer:
+                answers[str(number)] = answer
+    return answers
+
+
+def candidate_priority(item: dict[str, Any]) -> int:
+    return ANSWER_CANDIDATE_METHOD_PRIORITY.get(str(item.get("method") or ""), 0)
+
+
+def resolve_answer_candidate_bucket(items: list[dict[str, Any]]) -> tuple[dict[str, Any] | None, list[dict[str, Any]]]:
+    answers = {item["answer"] for item in items}
+    if len(answers) == 1:
+        return items[0], []
+
+    ranked = sorted(items, key=candidate_priority, reverse=True)
+    top_priority = candidate_priority(ranked[0])
+    top_answers = {item["answer"] for item in ranked if candidate_priority(item) == top_priority}
+    if top_priority > 0 and len(top_answers) == 1:
+        chosen = dict(ranked[0])
+        chosen["conflictCandidates"] = items
+        chosen["conflictResolution"] = "preferred_original_answer_key" if top_priority >= 30 else "preferred_candidate_priority"
+        return chosen, []
+
+    return None, items
 
 
 def collect_answer_candidates(
@@ -326,10 +491,15 @@ def collect_answer_candidates(
     output_task_map: dict[str, dict[str, Any]] | None = None,
 ) -> tuple[dict[str, dict[str, Any]], dict[str, list[dict[str, Any]]], dict[str, int]]:
     buckets: dict[str, list[dict[str, Any]]] = {}
-    stats = {"structuredCandidates": 0, "answerKeyTextCandidates": 0}
+    stats = {
+        "structuredCandidates": 0,
+        "answerKeyTextCandidates": 0,
+        "answerKeyGroupCandidates": 0,
+        "numberedAnswerTextCandidates": 0,
+    }
     for companion_path in companion_paths:
         payload = read_json(companion_path, {})
-        source_id = source_id_for_path(companion_path, output_source_map)
+        source_id = source_id_for_path(companion_path, output_source_map) or source_id_from_payload(payload)
         task = queue_task_for_path(companion_path, output_task_map or {})
         for index, card in enumerate(load_cards(payload)):
             year = card_year(card, payload)
@@ -354,7 +524,7 @@ def collect_answer_candidates(
 
         year = first_non_empty(payload.get("year") if isinstance(payload, dict) else "", task.get("year"))
         if year:
-            answer_key_text = read_companion_source_text(task)
+            answer_key_text, answer_key_path = read_companion_source_text(task, companion_path, payload)
             for number, answer in parse_answer_key_ranges(answer_key_text).items():
                 key = answer_key(year, number)
                 buckets.setdefault(key, []).append(
@@ -362,21 +532,47 @@ def collect_answer_candidates(
                         "answer": answer,
                         "explanation": "",
                         "cardId": f"answer-key-{year}-{number}",
-                        "filePath": relative_path(Path(first_non_empty(task.get("localPath"), companion_path))),
+                        "filePath": relative_path(answer_key_path or companion_path),
                         "sourceId": source_id,
                         "method": "companion_answer_key_text",
                     }
                 )
                 stats["answerKeyTextCandidates"] += 1
+            for number, answer in parse_answer_key_range_groups(answer_key_text).items():
+                key = answer_range_key(year, number)
+                buckets.setdefault(key, []).append(
+                    {
+                        "answer": answer,
+                        "explanation": "",
+                        "cardId": f"answer-key-range-{year}-{number}",
+                        "filePath": relative_path(answer_key_path or companion_path),
+                        "sourceId": source_id,
+                        "method": "companion_answer_key_range_text",
+                    }
+                )
+                stats["answerKeyGroupCandidates"] += 1
+            for number, answer in parse_numbered_answer_text(answer_key_text).items():
+                key = answer_key(year, number)
+                buckets.setdefault(key, []).append(
+                    {
+                        "answer": answer,
+                        "explanation": "",
+                        "cardId": f"numbered-answer-{year}-{number}",
+                        "filePath": relative_path(answer_key_path or companion_path),
+                        "sourceId": source_id,
+                        "method": "companion_numbered_answer_text",
+                    }
+                )
+                stats["numberedAnswerTextCandidates"] += 1
 
     candidates: dict[str, dict[str, Any]] = {}
     conflicts: dict[str, list[dict[str, Any]]] = {}
     for key, items in buckets.items():
-        answers = {item["answer"] for item in items}
-        if len(answers) == 1:
-            candidates[key] = items[0]
+        candidate, conflict = resolve_answer_candidate_bucket(items)
+        if candidate:
+            candidates[key] = candidate
         else:
-            conflicts[key] = items
+            conflicts[key] = conflict
     return candidates, conflicts, stats
 
 
@@ -436,7 +632,26 @@ def repair_bank(
             )
             continue
 
-        candidate = answer_candidates.get(key)
+        card_type = str(card.get("type") or "")
+        range_key = answer_range_key(year, number) if year and number else ""
+        if key in answer_conflicts or (card_type not in CHOICE_TYPES and range_key in answer_conflicts):
+            conflict_key = key if key in answer_conflicts else range_key
+            conflict_candidates = answer_conflicts[conflict_key]
+            details.append(
+                {
+                    "cardId": current_id,
+                    "status": "skipped_conflict",
+                    "key": conflict_key,
+                    "candidates": conflict_candidates,
+                }
+            )
+            continue
+
+        candidate = None
+        if card_type not in CHOICE_TYPES and range_key:
+            candidate = answer_candidates.get(range_key)
+        if not candidate:
+            candidate = answer_candidates.get(key)
         if not candidate:
             skipped_no_candidate += 1
             details.append({"cardId": current_id, "status": "skipped_no_candidate", "key": key})
@@ -459,6 +674,9 @@ def repair_bank(
             "verifiedBy": "",
             "note": "Candidate answer repaired from a cleaned companion answer file; not publishable until verified.",
         }
+        if candidate.get("conflictCandidates"):
+            card["answerEvidence"]["conflictCandidates"] = candidate.get("conflictCandidates")
+            card["answerEvidence"]["conflictResolution"] = candidate.get("conflictResolution", "")
         repaired_answers += 1
         answer_evidence_count += 1
         details.append(
@@ -487,9 +705,12 @@ def repair_bank(
             "conflictCount": len(answer_conflicts),
             "structuredCandidates": candidate_stats["structuredCandidates"],
             "answerKeyTextCandidates": candidate_stats["answerKeyTextCandidates"],
+            "answerKeyGroupCandidates": candidate_stats["answerKeyGroupCandidates"],
+            "numberedAnswerTextCandidates": candidate_stats["numberedAnswerTextCandidates"],
             "questionEvidenceMaterialized": question_evidence_count,
             "answerEvidenceMaterialized": answer_evidence_count,
             "supportingCompanionsMarked": 0,
+            "queueUpdated": False,
         },
         "releaseReadiness": {
             "canPromoteToPublic": False,
@@ -503,6 +724,12 @@ def repair_bank(
             payload["total_cards"] = len(cards)
             payload["answerEvidenceRepairedAt"] = now
         write_json(target_path, payload)
+        report["summary"]["queueUpdated"] = update_queue_repair_status(
+            queue_path,
+            target_path,
+            missing_answer_count=remaining_missing,
+            now=now,
+        )
         if mark_companions_supporting:
             marked = 0
             for companion_path in companion_paths:

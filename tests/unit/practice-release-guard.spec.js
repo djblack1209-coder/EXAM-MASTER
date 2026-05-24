@@ -8,6 +8,8 @@ describe('practice page user-facing content', () => {
   it('keeps the practice entry focused on user actions instead of backend release details', () => {
     expect(practiceSource).toContain('查看真题目录');
     expect(practiceSource).toContain('bankAvailabilityText');
+    expect(practiceSource).toContain('公共课训练');
+    expect(practiceSource).toContain('trainingCoverageText');
     expect(practiceSource).not.toContain('题库发布校验');
     expect(practiceSource).not.toContain('官方真题题库暂未公开');
     expect(practiceSource).not.toContain('答案 hash');

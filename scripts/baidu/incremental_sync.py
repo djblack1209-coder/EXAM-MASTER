@@ -15,11 +15,13 @@ OAuth tokens are read by scripts/baidu/pan.py from the local environment.
 from __future__ import annotations
 
 import argparse
+import importlib.util
 import json
 import os
+import subprocess
 import sys
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -39,11 +41,76 @@ from source_manifest import (  # noqa: E402
 DEFAULT_DOWNLOAD_DIR = PROJECT_ROOT / "data" / "raw-inbox"
 DEFAULT_REPORT = PROJECT_ROOT / "data" / "source-manifest-report.json"
 DOWNLOADABLE_SOURCE_CHANNELS = {"app_dir", "netdisk_full_path"}
+SUPPORTED_GROUP_SOURCE_CHANNELS = {"group_service", "group_file_index"}
+BAIDU_REQUIRED_MODULES = ("requests", "dotenv")
+
+
+def module_available(name: str) -> bool:
+    return importlib.util.find_spec(name) is not None
+
+
+def python_has_baidu_deps(executable: Path) -> bool:
+    if not executable.exists():
+        return False
+    check = "import requests, dotenv"
+    result = subprocess.run(
+        [str(executable), "-c", check],
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+        check=False,
+    )
+    return result.returncode == 0
+
+
+def ensure_baidu_runtime(
+    argv: list[str],
+    *,
+    current_executable: str | None = None,
+    modules_available: Callable[[str], bool] | None = None,
+    python_deps_available: Callable[[Path], bool] | None = None,
+    execv: Callable[[str, list[str]], None] | None = None,
+) -> None:
+    current_executable = current_executable or sys.executable
+    modules_available = modules_available or module_available
+    python_deps_available = python_deps_available or python_has_baidu_deps
+    execv = execv or os.execv
+
+    if all(modules_available(module) for module in BAIDU_REQUIRED_MODULES):
+        return
+
+    candidates = [
+        PROJECT_ROOT / ".venv-baidu" / "bin" / "python",
+        Path("/usr/bin/python3"),
+    ]
+    for candidate in candidates:
+        candidate_path = str(candidate)
+        if os.path.abspath(current_executable) == os.path.abspath(candidate_path):
+            continue
+        if python_deps_available(candidate):
+            execv(candidate_path, [candidate_path, str(Path(__file__).resolve()), *argv])
+            return
+
+    raise SystemExit(
+        "requests and python-dotenv are required for Baidu Pan sync. Install dependencies with "
+        "`python3 -m venv .venv-baidu && .venv-baidu/bin/pip install -r requirements-baidu.txt` "
+        "or run this script with a Python that already has those modules."
+    )
 
 
 def read_json(path: Path) -> Any:
     with path.open("r", encoding="utf-8") as f:
         return json.load(f)
+
+
+def source_channel_for_group_payload(payload: Any) -> str:
+    """Preserve the collector identity for group-file handoffs."""
+
+    source = ""
+    if isinstance(payload, dict):
+        source = str(payload.get("source") or payload.get("sourceChannel") or "").strip()
+    if source in SUPPORTED_GROUP_SOURCE_CHANNELS:
+        return source
+    return "group_service"
 
 
 def scan_app_directory(scan_dir: str, *, recursive: bool) -> list[dict[str, Any]]:
@@ -92,13 +159,14 @@ def merge_sources(
     group_payload = read_json(group_export_path)
     group_items = group_payload.get("items") if isinstance(group_payload, dict) else group_payload
     report["inputs"]["groupFiles"] = len(group_items or [])
+    group_source_channel = source_channel_for_group_payload(group_payload)
 
     temp_path = PROJECT_ROOT / "data" / ".source-manifest-app-stage.json"
     write_json(temp_path, app_manifest)
     group_manifest, group_summary = build_manifest_from_payload(
         group_payload,
         provider="baidu_pan",
-        source_channel="group_service",
+        source_channel=group_source_channel,
         existing_path=temp_path,
     )
     try:
@@ -106,7 +174,7 @@ def merge_sources(
     except FileNotFoundError:
         pass
 
-    report["summaries"]["group_service"] = group_summary
+    report["summaries"][group_source_channel] = group_summary
     return group_manifest, report
 
 
@@ -163,6 +231,8 @@ def download_candidates(candidates: list[dict[str, Any]], download_dir: Path, *,
 
 
 def main() -> None:
+    ensure_baidu_runtime(sys.argv[1:])
+
     parser = argparse.ArgumentParser(description="Incrementally scan Baidu Pan resources into Source Manifest.")
     parser.add_argument(
         "--scan-dir",

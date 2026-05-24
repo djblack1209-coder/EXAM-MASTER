@@ -312,7 +312,7 @@ def main() -> None:
     parser.add_argument("--manifest", type=Path, default=DEFAULT_MANIFEST)
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
     parser.add_argument("--tracks", default=",".join(PUBLIC_TRACKS))
-    parser.add_argument("--min-year", type=int, default=2010)
+    parser.add_argument("--min-year", type=int, default=2005)
     parser.add_argument("--max-year", type=int, default=2026)
     parser.add_argument("--fail-on-missing", action="store_true")
     parser.add_argument("--dry-run", action="store_true")

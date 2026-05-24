@@ -152,4 +152,24 @@ describe('[安全审计] user-profile 鉴权响应语义', () => {
     expect('data' in result ? result.data?._id : undefined).toBe('user_profile_1');
     expect(result.requestId).toMatch(/^UP-/);
   });
+
+  it('已认证但用户档案缺失时应返回默认资料，避免新用户首屏阻塞', async () => {
+    mocked.scenario.userDoc = null;
+
+    const result = await userProfileHandler({
+      body: { action: 'get', userId: 'user_profile_1' },
+      headers: { authorization: 'Bearer valid_token' }
+    });
+
+    expect(result.code).toBe(0);
+    expect(result.success).toBe(true);
+    expect(result.data).toMatchObject({
+      _id: 'user_profile_1',
+      nickname: '考研用户',
+      avatar_url: '',
+      target_school: '',
+      target_major: ''
+    });
+    expect(result.data.practice_config).toBeDefined();
+  });
 });

@@ -54,6 +54,18 @@ class FakeClient:
         self.chat = FakeChat(response or FakeResponse())
 
 
+class CountingClient(FakeClient):
+    def __init__(self, response=None):
+        self.response = response or FakeResponse()
+        super().__init__(self.response)
+        self.calls = 0
+        self.chat.completions = self
+
+    def create(self, **kwargs):
+        self.calls += 1
+        return self.response
+
+
 class Pdf2FlashcardV2Test(unittest.TestCase):
     def tearDown(self):
         os.environ.pop("AI_PROVIDER_DISABLED_LIST", None)
@@ -111,6 +123,47 @@ class Pdf2FlashcardV2Test(unittest.TestCase):
         self.assertEqual(len(cards), 1)
         self.assertEqual(cards[0]["number"], 1)
 
+    def test_ai_parse_text_skips_stably_unsupported_backend_after_first_batch(self):
+        module = load_pdf2flashcard_module()
+        with tempfile.TemporaryDirectory() as tmp:
+            module.LLM_CACHE_PATH = Path(tmp) / "cache.json"
+            module.LLM_USAGE_PATH = Path(tmp) / "usage.json"
+            bad_client = CountingClient(FakeResponse())
+            good_response = FakeResponse(
+                choices=[
+                    {
+                        "message": {
+                            "content": '[{"number": 1, "type": "single_choice", "question": "Q", "options": [], "answer": "A"}]'
+                        },
+                        "finish_reason": "stop",
+                    }
+                ],
+                msg=None,
+                status=None,
+                model="fallback-model",
+            )
+            good_client = CountingClient(good_response)
+            module.split_text_into_batches = lambda _text: ["batch one", "batch two"]
+            module.create_llm_backends = lambda: [
+                {
+                    "name": "bad",
+                    "base_url": "https://bad.example/v1",
+                    "model": "bad-model",
+                    "client": bad_client,
+                },
+                {
+                    "name": "fallback",
+                    "base_url": "https://fallback.example/v1",
+                    "model": "fallback-model",
+                    "client": good_client,
+                },
+            ]
+
+            module.ai_parse_text("ignored", "english", "2000")
+
+        self.assertEqual(bad_client.calls, 3)
+        self.assertEqual(good_client.calls, 2)
+
     def test_provider_disabled_merges_global_and_local_disable_lists(self):
         module = load_pdf2flashcard_module()
         os.environ["AI_PROVIDER_DISABLED_LIST"] = "iflow"
@@ -119,7 +172,7 @@ class Pdf2FlashcardV2Test(unittest.TestCase):
         self.assertTrue(module.provider_disabled("iflow", "IFLOW_API_KEY"))
         self.assertTrue(module.provider_disabled("llm_primary", "LLM_API_KEY"))
 
-    def test_process_pdf_does_not_overwrite_existing_output_when_all_cards_are_duplicates(self):
+    def test_process_pdf_keeps_current_paper_cards_when_question_seen_in_other_year(self):
         module = load_pdf2flashcard_module()
         with tempfile.TemporaryDirectory() as tmp:
             output_dir = Path(tmp) / "flashcards"
@@ -130,10 +183,10 @@ class Pdf2FlashcardV2Test(unittest.TestCase):
                 '{"total_cards": 1, "cards": [{"id": "existing", "answer": "A"}]}\n',
                 encoding="utf-8",
             )
-            duplicate_card = {
+            repeated_across_years = {
                 "number": 1,
                 "type": "single_choice",
-                "question": "Duplicate question",
+                "question": "Question text that appeared in another paper",
                 "options": [],
                 "answer": "A",
                 "explanation": "",
@@ -141,16 +194,42 @@ class Pdf2FlashcardV2Test(unittest.TestCase):
 
             module.OUTPUT_DIR = output_dir
             module.HASH_DB_PATH = hash_db
-            module.ocr_pdf = lambda _path: "1. Duplicate question"
+            module.ocr_pdf = lambda _path: "1. Question text that appeared in another paper"
             module.sanitize_text = lambda text: text
-            module.ai_parse_text = lambda _text, _subject, _year: [dict(duplicate_card)]
-            hash_db.write_text(f'["{module.card_hash(duplicate_card)}"]', encoding="utf-8")
+            module.ai_parse_text = lambda _text, _subject, _year: [dict(repeated_across_years)]
+            hash_db.write_text(f'["{module.card_hash(repeated_across_years)}"]', encoding="utf-8")
 
             result = module.process_pdf("/tmp/source.pdf", "english1", "2001")
 
             self.assertEqual(result["total_cards"], 1)
-            self.assertEqual(result["cards"][0]["id"], "existing")
-            self.assertEqual(existing_output.read_text(encoding="utf-8").count("existing"), 1)
+            self.assertEqual(result["cards"][0]["id"], "english1-2001-001")
+            self.assertNotEqual(result["cards"][0]["id"], "existing")
+
+    def test_process_pdf_dedupes_repeated_batch_output_within_current_paper(self):
+        module = load_pdf2flashcard_module()
+        with tempfile.TemporaryDirectory() as tmp:
+            output_dir = Path(tmp) / "flashcards"
+            output_dir.mkdir()
+
+            duplicate_card = {
+                "number": 1,
+                "type": "single_choice",
+                "question": "Duplicate question emitted by overlapping batches",
+                "options": [],
+                "answer": "A",
+                "explanation": "",
+            }
+
+            module.OUTPUT_DIR = output_dir
+            module.HASH_DB_PATH = Path(tmp) / "hashes.json"
+            module.ocr_pdf = lambda _path: "1. Duplicate question emitted by overlapping batches"
+            module.sanitize_text = lambda text: text
+            module.ai_parse_text = lambda _text, _subject, _year: [dict(duplicate_card), dict(duplicate_card)]
+
+            result = module.process_pdf("/tmp/source.pdf", "english1", "2001")
+
+            self.assertEqual(result["total_cards"], 1)
+            self.assertEqual(len(result["cards"]), 1)
 
 
 if __name__ == "__main__":

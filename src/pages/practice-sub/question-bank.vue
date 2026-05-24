@@ -5,28 +5,28 @@
         <view class="nav-back" @tap="goBack">
           <BaseIcon name="arrow-left" :size="32" />
         </view>
-        <text class="nav-title">历年真题</text>
+        <text class="nav-title">真题库</text>
         <view class="nav-right" />
       </view>
     </view>
 
     <scroll-view class="scroll-body" scroll-y :style="{ paddingTop: statusBarHeight + 44 + 'px' }">
       <view class="paper-hero">
-        <text class="hero-kicker">PAST PAPERS</text>
-        <text class="hero-title">按年份整卷训练</text>
-        <text class="hero-desc">先选科目和年份，再进入完整试卷。英语卷会按篇章保留原文材料，缺原文的卷不会开放选择题训练。</text>
+        <text class="hero-kicker">Exam Master</text>
+        <text class="hero-title">按年份刷真题</text>
+        <text class="hero-desc">选择科目和年份后进入整卷训练。英语卷先读完整文章，再做对应题目。</text>
         <view class="hero-metrics">
           <view class="hero-metric">
             <text class="metric-value">{{ readyCount }}</text>
-            <text class="metric-label">可练试卷</text>
+            <text class="metric-label">可练</text>
           </view>
           <view class="hero-metric">
             <text class="metric-value">{{ pendingCount }}</text>
-            <text class="metric-label">即将开放</text>
+            <text class="metric-label">整理中</text>
           </view>
           <view class="hero-metric">
             <text class="metric-value">{{ totalQuestions }}</text>
-            <text class="metric-label">本地题量</text>
+            <text class="metric-label">已载入</text>
           </view>
         </view>
       </view>
@@ -59,7 +59,7 @@
       <view class="section-head">
         <view>
           <text class="section-title">{{ selectedTrack?.label || '公共课' }}</text>
-          <text class="section-hint">按年份选择整套试卷</text>
+          <text class="section-hint">整套试卷训练</text>
         </view>
         <text class="section-meta">{{ selectedTrackReadyCount }} 套可练</text>
       </view>
@@ -67,10 +67,12 @@
       <view v-if="selectedReadyBanks.length > 0" class="paper-list">
         <view v-for="paper in selectedReadyBanks" :key="paper.id" class="paper-card">
           <view class="paper-main">
-            <text class="paper-year">{{ paper.year }}</text>
+              <text class="paper-year">{{ paper.year }}</text>
             <view class="paper-copy">
               <text class="paper-name">{{ paper.name }}</text>
+              <text v-if="paper.releaseLabel" class="paper-release-label">{{ paper.releaseLabel }}</text>
               <text class="paper-desc">{{ paper.description }}</text>
+              <text v-if="paper.caution" class="paper-caution">{{ paper.caution }}</text>
               <view class="paper-section-row">
                 <text v-for="section in paper.sections || []" :key="section" class="paper-section">{{ section }}</text>
               </view>
@@ -83,10 +85,10 @@
               hover-class="btn-hover"
               @tap="loadAndStartPaper(paper)"
             >
-              <text>{{ loadingBankId === paper.id ? '加载中' : '整卷练习' }}</text>
+              <text>{{ loadingBankId === paper.id ? '加载中' : '开始' }}</text>
             </view>
-            <view v-else class="paper-btn secondary" hover-class="btn-hover" @tap="startLoadedPaper(paper)">
-              <text>继续练习</text>
+            <view v-else class="paper-btn secondary" hover-class="btn-hover" @tap="refreshAndStartPaper(paper)">
+              <text>继续</text>
             </view>
           </view>
         </view>
@@ -100,8 +102,8 @@
 
       <view v-if="selectedPendingBanks.length > 0" class="pending-panel">
         <view class="pending-head">
-          <text class="pending-title">即将开放</text>
-          <text class="pending-sub">开放后可整卷练习</text>
+          <text class="pending-title">整理中</text>
+          <text class="pending-sub">验证通过后开放</text>
         </view>
         <view v-for="paper in selectedPendingBanks" :key="paper.id" class="pending-item">
           <view class="pending-copy">
@@ -223,7 +225,8 @@ async function loadPaper(paper) {
       storageService.save('loaded_flashcard_banks', loaded);
     }
     loadedBankIds.value = new Set(loaded);
-    toast.success(`已加载 ${result.imported} 题`);
+    const changed = result.imported + (result.updated || 0);
+    toast.success(changed > 0 ? `已同步 ${changed} 题` : '题库已是最新');
     return result;
   } catch (error) {
     logger.error('[QuestionBank] load paper failed:', error);
@@ -239,17 +242,22 @@ async function loadAndStartPaper(paper) {
   startLoadedPaper(paper);
 }
 
+async function refreshAndStartPaper(paper) {
+  await loadPaper(paper);
+  startLoadedPaper(paper);
+}
+
 function startLoadedPaper(paper) {
   const bank = storageService.get('v30_bank', []);
   const ids = bank
     .filter((q) => q.paperId === paper.id || (q.source === paper.source && q.year === paper.year))
     .map((q) => q.id);
   if (ids.length > 0) {
-    uni.setStorageSync('smart_review_ids', ids);
-    uni.navigateTo({ url: '/pages/practice-sub/do-quiz?mode=smart_review' });
+    storageService.save('smart_review_ids', ids);
+    uni.navigateTo({ url: `/pages/practice-sub/do-quiz?mode=smart_review&paperId=${encodeURIComponent(paper.id)}` });
     return;
   }
-  uni.navigateTo({ url: '/pages/practice-sub/do-quiz' });
+  uni.navigateTo({ url: `/pages/practice-sub/do-quiz?paperId=${encodeURIComponent(paper.id)}` });
 }
 
 onMounted(() => {
@@ -260,7 +268,8 @@ onMounted(() => {
 <style scoped>
 .qb-page {
   min-height: 100vh;
-  background: var(--background);
+  background: #f5f5f7;
+  color: #1d1d1f;
 }
 .navbar {
   position: fixed;
@@ -268,9 +277,9 @@ onMounted(() => {
   left: 0;
   right: 0;
   z-index: 100;
-  background: var(--bg-card);
-  border-bottom: 2rpx solid rgba(0, 0, 0, 0.04);
-  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
+  background: rgba(245, 245, 247, 0.9);
+  border-bottom: 1rpx solid rgba(0, 0, 0, 0.06);
+  box-shadow: none;
 }
 .navbar-inner {
   display: flex;
@@ -285,9 +294,9 @@ onMounted(() => {
 .nav-title {
   flex: 1;
   text-align: center;
-  font-size: 34rpx;
-  font-weight: 850;
-  color: var(--text-primary);
+  font-size: 32rpx;
+  font-weight: 760;
+  color: #1d1d1f;
 }
 .nav-right {
   width: 40px;
@@ -299,28 +308,29 @@ onMounted(() => {
   margin: 24rpx;
   padding: 34rpx 32rpx;
   border-radius: 30rpx;
-  background: #142017;
-  box-shadow: 0 18rpx 38rpx rgba(20, 32, 23, 0.16);
+  background: #ffffff;
+  border: 1rpx solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 18rpx 48rpx rgba(15, 23, 42, 0.08);
 }
 .hero-kicker {
   display: block;
-  color: rgba(255, 255, 255, 0.52);
+  color: #8e8e93;
   font-size: 18rpx;
   font-weight: 900;
-  letter-spacing: 2rpx;
+  letter-spacing: 0;
 }
 .hero-title {
   display: block;
   margin-top: 12rpx;
-  color: #fff;
+  color: #1d1d1f;
   font-size: 42rpx;
-  font-weight: 900;
+  font-weight: 760;
   line-height: 1.15;
 }
 .hero-desc {
   display: block;
   margin-top: 14rpx;
-  color: rgba(255, 255, 255, 0.68);
+  color: #5f6672;
   font-size: 25rpx;
   line-height: 1.5;
 }
@@ -332,22 +342,23 @@ onMounted(() => {
   flex: 1;
   padding: 18rpx 14rpx;
   border-radius: 20rpx;
-  background: rgba(255, 255, 255, 0.1);
+  background: #f6f7f9;
+  border: 1rpx solid rgba(0, 0, 0, 0.04);
 }
 .hero-metric + .hero-metric {
   margin-left: 12rpx;
 }
 .metric-value {
   display: block;
-  color: #fff;
+  color: #1d1d1f;
   font-size: 34rpx;
-  font-weight: 900;
+  font-weight: 760;
   line-height: 1;
 }
 .metric-label {
   display: block;
   margin-top: 8rpx;
-  color: rgba(255, 255, 255, 0.58);
+  color: #8e8e93;
   font-size: 21rpx;
   font-weight: 750;
 }
@@ -365,11 +376,11 @@ onMounted(() => {
   min-height: 58rpx;
   padding: 0 24rpx;
   border-radius: 999rpx;
-  background: var(--bg-card);
-  color: var(--text-secondary);
+  background: #ffffff;
+  color: #5f6672;
   font-size: 24rpx;
   font-weight: 800;
-  border: 2rpx solid rgba(0, 0, 0, 0.05);
+  border: 1rpx solid rgba(0, 0, 0, 0.06);
 }
 .subject-tab + .subject-tab,
 .track-pill + .track-pill {
@@ -377,9 +388,9 @@ onMounted(() => {
 }
 .subject-tab.active,
 .track-pill.active {
-  background: #9fe870;
-  color: #142017;
-  border-color: #9fe870;
+  background: #1d1d1f;
+  color: #ffffff;
+  border-color: #1d1d1f;
 }
 .track-code {
   margin-right: 8rpx;
@@ -393,14 +404,14 @@ onMounted(() => {
 }
 .section-title {
   display: block;
-  color: var(--text-primary);
+  color: #1d1d1f;
   font-size: 34rpx;
-  font-weight: 900;
+  font-weight: 760;
 }
 .section-hint,
 .section-meta {
   display: block;
-  color: var(--text-secondary);
+  color: #8e8e93;
   font-size: 23rpx;
   margin-top: 8rpx;
 }
@@ -411,9 +422,9 @@ onMounted(() => {
   padding: 28rpx 24rpx;
   margin-bottom: 18rpx;
   border-radius: 24rpx;
-  background: var(--bg-card);
-  border: 2rpx solid rgba(0, 0, 0, 0.05);
-  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
+  background: #ffffff;
+  border: 1rpx solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 10rpx 28rpx rgba(15, 23, 42, 0.06);
 }
 .paper-main {
   display: flex;
@@ -421,9 +432,9 @@ onMounted(() => {
 .paper-year {
   flex-shrink: 0;
   width: 104rpx;
-  color: #142017;
+  color: #1d1d1f;
   font-size: 36rpx;
-  font-weight: 950;
+  font-weight: 760;
   line-height: 1;
 }
 .paper-copy {
@@ -432,15 +443,33 @@ onMounted(() => {
 }
 .paper-name {
   display: block;
-  color: var(--text-primary);
+  color: #1d1d1f;
   font-size: 30rpx;
+  font-weight: 760;
+}
+.paper-release-label {
+  display: inline-flex;
+  align-self: flex-start;
+  margin-top: 10rpx;
+  padding: 5rpx 12rpx;
+  border-radius: 999rpx;
+  background: rgba(31, 122, 77, 0.1);
+  color: #1f7a4d;
+  font-size: 20rpx;
   font-weight: 850;
 }
 .paper-desc {
   display: block;
   margin-top: 8rpx;
-  color: var(--text-secondary);
+  color: #5f6672;
   font-size: 23rpx;
+  line-height: 1.45;
+}
+.paper-caution {
+  display: block;
+  margin-top: 8rpx;
+  color: #8e8e93;
+  font-size: 22rpx;
   line-height: 1.45;
 }
 .paper-section-row {
@@ -453,8 +482,8 @@ onMounted(() => {
   margin-bottom: 8rpx;
   padding: 6rpx 12rpx;
   border-radius: 999rpx;
-  background: rgba(20, 32, 23, 0.06);
-  color: rgba(20, 32, 23, 0.68);
+  background: #f2f3f5;
+  color: #5f6672;
   font-size: 20rpx;
   font-weight: 750;
 }
@@ -466,23 +495,24 @@ onMounted(() => {
   align-items: center;
   justify-content: center;
   min-height: 72rpx;
-  border-radius: 18rpx;
+  border-radius: 16rpx;
   font-size: 25rpx;
   font-weight: 900;
 }
 .paper-btn.primary {
-  background: #142017;
+  background: #1d1d1f;
   color: #fff;
 }
 .paper-btn.secondary {
-  background: #9fe870;
-  color: #142017;
+  background: #e8f4ee;
+  color: #1f7a4d;
 }
 .pending-panel {
   margin: 30rpx 24rpx 0;
   padding: 26rpx 24rpx;
   border-radius: 24rpx;
-  background: rgba(20, 32, 23, 0.045);
+  background: #ffffff;
+  border: 1rpx solid rgba(0, 0, 0, 0.06);
 }
 .pending-head {
   display: flex;
@@ -491,12 +521,12 @@ onMounted(() => {
   margin-bottom: 12rpx;
 }
 .pending-title {
-  color: var(--text-primary);
+  color: #1d1d1f;
   font-size: 28rpx;
   font-weight: 900;
 }
 .pending-sub {
-  color: var(--text-secondary);
+  color: #8e8e93;
   font-size: 21rpx;
 }
 .pending-item {
@@ -513,19 +543,19 @@ onMounted(() => {
 }
 .pending-name {
   display: block;
-  color: var(--text-primary);
+  color: #1d1d1f;
   font-size: 25rpx;
   font-weight: 820;
 }
 .pending-reason {
   display: block;
   margin-top: 6rpx;
-  color: var(--text-secondary);
+  color: #8e8e93;
   font-size: 22rpx;
   line-height: 1.35;
 }
 .pending-year {
-  color: #142017;
+  color: #1d1d1f;
   font-size: 26rpx;
   font-weight: 900;
 }
@@ -533,21 +563,21 @@ onMounted(() => {
   margin: 34rpx 24rpx;
   padding: 56rpx 32rpx;
   border-radius: 24rpx;
-  background: var(--bg-card);
+  background: #ffffff;
   text-align: center;
-  color: var(--text-secondary);
+  color: #8e8e93;
 }
 .empty-text {
   display: block;
   margin-top: 18rpx;
-  color: var(--text-primary);
+  color: #1d1d1f;
   font-size: 30rpx;
   font-weight: 850;
 }
 .empty-sub {
   display: block;
   margin-top: 10rpx;
-  color: var(--text-secondary);
+  color: #8e8e93;
   font-size: 24rpx;
   line-height: 1.45;
 }

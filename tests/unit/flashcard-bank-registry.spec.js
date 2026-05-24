@@ -10,10 +10,20 @@ describe('published flashcard bank registry', () => {
   it('publishes at least one usable bank for the real practice flow', async () => {
     const banks = getAvailableBanks();
 
-    expect(banks.map((bank) => bank.id)).toEqual(expect.arrayContaining(['politics-2025', 'politics-2024']));
-    expect(banks.map((bank) => bank.id)).not.toEqual(
-      expect.arrayContaining(['english-2025', 'math-2025', 'english1-2025', 'english1-2010'])
+    expect(banks.map((bank) => bank.id)).toEqual(
+      expect.arrayContaining([
+        'politics-2025',
+        'politics-2024',
+        'english1-2025',
+        'english1-2005',
+        'english1-2008',
+        'english1-2009',
+        'english1-2010',
+        'english1-2011',
+        'english1-2012'
+      ])
     );
+    expect(banks.map((bank) => bank.id)).not.toEqual(expect.arrayContaining(['english-2025', 'math-2025']));
     const bank = await loadBank('politics-2025');
     expect(bank.cards.length).toBeGreaterThan(0);
     expect(bank.cards[0]).toEqual(
@@ -23,7 +33,25 @@ describe('published flashcard bank registry', () => {
       })
     );
     await expect(loadBank('english-2025')).rejects.toThrow('题库不存在或暂不可用');
-    await expect(loadBank('english1-2025')).rejects.toThrow('题库不存在或暂不可用');
+    const englishDraft = await loadBank('english1-2025');
+    expect(englishDraft.cards.length).toBeGreaterThan(0);
+    const english2005 = await loadBank('english1-2005');
+    expect(english2005.cards.length).toBeGreaterThan(0);
+    expect(english2005.cards.find((card) => card.number === 21).passage).toEqual(expect.any(String));
+    const english2006 = await loadBank('english1-2006');
+    expect(english2006.cards.length).toBeGreaterThan(0);
+    expect(english2006.cards.find((card) => card.number === 41).options).toHaveLength(7);
+    expect(english2006.cards.find((card) => card.number === 41).passage).toEqual(expect.any(String));
+    const english2010 = await loadBank('english1-2010');
+    expect(english2010.cards).toHaveLength(52);
+    expect(english2010.cards.find((card) => card.number === 46).targetSegment).toEqual(expect.any(String));
+    const english2011 = await loadBank('english1-2011');
+    expect(english2011.cards).toHaveLength(52);
+    expect(english2011.cards.find((card) => card.number === 41).options).toHaveLength(7);
+    expect(english2011.cards.find((card) => card.number === 46).targetSegment).toEqual(expect.any(String));
+    const english2012 = await loadBank('english1-2012');
+    expect(english2012.cards).toHaveLength(52);
+    expect(english2012.cards.find((card) => card.number === 21).answer).toBe('D');
     await expect(loadBank('math-2025')).rejects.toThrow('题库不存在或暂不可用');
   });
 
@@ -34,14 +62,23 @@ describe('published flashcard bank registry', () => {
 
     expect(politics.tracks[0].banks.some((bank) => bank.id === 'politics-2025')).toBe(true);
     expect(politics.tracks[0].banks.some((bank) => bank.id === 'politics-2024')).toBe(true);
+    expect(politics.tracks[0].banks.find((bank) => bank.id === 'politics-2025').usageScope).toBe('self_study_draft');
+    expect(politics.tracks[0].banks.find((bank) => bank.id === 'politics-2024').releaseLabel).toBe('自用草稿');
     expect(politics.tracks[0].pendingBanks.some((bank) => bank.year === '2025')).toBe(false);
     expect(politics.tracks[0].pendingBanks.some((bank) => bank.year === '2024')).toBe(false);
-    expect(politics.tracks[0].coverage.publishedYears).toEqual([2024, 2025]);
+    expect(politics.tracks[0].coverage.publishedYears).toEqual([]);
+    expect(politics.tracks[0].coverage.pendingYears).toEqual([2024, 2025]);
     expect(politics.tracks[0].pendingBanks.map((bank) => Number(bank.year))).toEqual([2023, 2022, 2021, 2020]);
-    expect(politics.tracks[0].coverage.pendingYears).toEqual([]);
     expect(politics.tracks[0].coverage.groupSourceRequired).toBe(false);
-    expect(english.tracks[0].banks).toEqual([]);
-    expect(english.tracks[0].pendingBanks.some((bank) => bank.id === 'english1-2025')).toBe(true);
+    expect(english.tracks[0].banks.some((bank) => bank.id === 'english1-2025')).toBe(true);
+    expect(english.tracks[0].banks.find((bank) => bank.id === 'english1-2025').usageScope).toBe('self_study_draft');
+    expect(english.tracks[0].banks.some((bank) => bank.id === 'english1-2005')).toBe(true);
+    expect(english.tracks[0].banks.find((bank) => bank.id === 'english1-2005').releaseLabel).toBe('正式题库');
+    expect(english.tracks[0].banks.some((bank) => bank.id === 'english1-2006')).toBe(true);
+    expect(english.tracks[0].banks.some((bank) => bank.id === 'english1-2010')).toBe(true);
+    expect(english.tracks[0].banks.some((bank) => bank.id === 'english1-2011')).toBe(true);
+    expect(english.tracks[0].banks.some((bank) => bank.id === 'english1-2012')).toBe(true);
+    expect(english.tracks[0].pendingBanks.some((bank) => bank.id === 'english1-2025')).toBe(false);
     expect(english.tracks[0].pendingBanks.some((bank) => bank.id === 'english1-2025-source')).toBe(false);
     expect(english.tracks[0].pendingBanks.some((bank) => bank.id === 'english-2025')).toBe(false);
     const math = getPracticeNavigationTree({ tracks: ['math1', 'math2', 'math3'] }).find((item) => item.id === 'math');
@@ -63,16 +100,29 @@ describe('published flashcard bank registry', () => {
     expect(coverage.summary.groupSourceRequired).toBe(false);
 
     const politics = coverage.tracks.find((item) => item.track === 'politics');
-    expect(politics.publishedYears).toEqual([2024, 2025]);
-    expect(politics.pendingYears).toEqual([]);
+    expect(politics.publishedYears).toEqual([]);
+    expect(politics.pendingYears).toEqual([2024, 2025]);
     expect(politics.missingYears).toEqual([2026]);
-    expect(politics.coverageRate).toBe(0.6667);
-    expect(politics.releaseState).toBe('partial');
+    expect(politics.coverageRate).toBe(0);
+    expect(politics.releaseState).toBe('empty');
 
     const english2 = coverage.tracks.find((item) => item.track === 'english2');
     expect(english2.publishedYears).toEqual([]);
     expect(english2.pendingYears).toEqual([2025]);
     expect(english2.missingYears).toEqual([2024, 2026]);
     expect(english2.releaseState).toBe('empty');
+
+    const english1 = coverage.tracks.find((item) => item.track === 'english1');
+    expect(english1.publishedYears).toEqual([]);
+    expect(english1.pendingYears).toEqual([2025]);
+  });
+
+  it('uses the production coverage scope requested for current exam prep by default', () => {
+    const coverage = buildPublicCourseCoverage({ tracks: ['english1'] });
+    const english1 = coverage.tracks.find((item) => item.track === 'english1');
+
+    expect(english1.requiredYears[0]).toBe(2005);
+    expect(english1.requiredYears.at(-1)).toBe(2026);
+    expect(coverage.summary.requiredSlots).toBe(22);
   });
 });

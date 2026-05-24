@@ -1,4 +1,4 @@
-const FALLBACK_CHOICE_OPTIONS = ['A. 选项A', 'B. 选项B', 'C. 选项C', 'D. 选项D'];
+const FALLBACK_CHOICE_OPTIONS = ['选项A', '选项B', '选项C', '选项D'];
 const OPTION_LABELS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
 const QUESTION_TYPE_LABELS = {
   single_choice: '单选题',
@@ -23,6 +23,41 @@ function asArray(value) {
   return [value];
 }
 
+function splitPassageSegments(value) {
+  const text = String(value || '').trim();
+  if (!text) return [];
+
+  const paragraphs = text
+    .split(/\n{2,}/)
+    .map((item) => item.trim())
+    .filter(Boolean);
+  const source = paragraphs.length > 1 ? paragraphs : [text];
+
+  return source.flatMap((paragraph) => {
+    if (paragraph.length <= 420) return [paragraph];
+    const sentences = paragraph
+      .replace(/([.!?。！？])\s+/g, '$1\n')
+      .split(/\n+/)
+      .map((item) => item.trim())
+      .filter(Boolean);
+    if (sentences.length <= 1) return [paragraph];
+
+    const chunks = [];
+    let current = '';
+    for (const sentence of sentences) {
+      const next = current ? `${current} ${sentence}` : sentence;
+      if (next.length > 360 && current) {
+        chunks.push(current);
+        current = sentence;
+      } else {
+        current = next;
+      }
+    }
+    if (current) chunks.push(current);
+    return chunks;
+  });
+}
+
 function normalizeDifficulty(difficulty) {
   if (difficulty === 'easy' || difficulty === 1 || difficulty === '1') return 1;
   if (difficulty === 'hard' || difficulty === 3 || difficulty === '3') return 3;
@@ -36,6 +71,17 @@ function isEvidenceOnlyType(type) {
 
 function isMultiChoiceType(type) {
   return type === 'multi_choice' || type === 'multiple_choice' || type === '多选';
+}
+
+function stripOptionLabel(option) {
+  const text =
+    typeof option === 'string'
+      ? option
+      : [option?.label, option?.text || option?.value || option?.content].filter(Boolean).join('. ');
+  return String(text || '')
+    .trim()
+    .replace(/^[A-Z]\s*[.。:：、)\）-]\s*/i, '')
+    .trim();
 }
 
 export function normalizeQuizAnswer(question, type = question?.type) {
@@ -67,13 +113,17 @@ export function normalizeQuizQuestion(question, index = 0, options = {}) {
   const normalizedOptions =
     shouldFillOptions && rawOptions.length < Number(options.minOptions || 4)
       ? [...FALLBACK_CHOICE_OPTIONS]
-      : rawOptions;
+      : rawOptions.map(stripOptionLabel);
   const knowledgeNodeIds = asArray(question.knowledgeNodeIds).length
     ? asArray(question.knowledgeNodeIds)
     : asArray(question.knowledge_points);
   const knowledgePoints = asArray(question.knowledge_points).length
     ? asArray(question.knowledge_points)
     : knowledgeNodeIds;
+  const passage = question.passage || question.context || question.material || question.article || '';
+  const passageSegments = Array.isArray(question.passageSegments)
+    ? question.passageSegments
+    : splitPassageSegments(passage);
   const eloRating =
     question.eloRating ??
     (typeof options.resolveEloRating === 'function' ? options.resolveEloRating(question) : question.eloRating);
@@ -82,13 +132,18 @@ export function normalizeQuizQuestion(question, index = 0, options = {}) {
     ...question,
     id: question.id || question._id || `q_${index}`,
     question: question.question || question.title || options.defaultQuestion || `题目 ${index + 1}`,
-    passage: question.passage || question.context || question.material || question.article || '',
-    context: question.context || question.passage || question.material || question.article || '',
-    material: question.material || question.passage || question.context || question.article || '',
+    passage,
+    passageSegments,
+    context: question.context || passage,
+    material: question.material || passage,
     paperId: question.paperId || question.paper_id || '',
     paperName: question.paperName || question.paper_name || '',
     section: question.section || question.part || '',
     groupId: question.groupId || question.group_id || question.passageId || '',
+    fixedSequence: Array.isArray(question.fixedSequence) ? question.fixedSequence : asArray(question.fixed_sequence),
+    fixedParagraphs: Array.isArray(question.fixedParagraphs)
+      ? question.fixedParagraphs
+      : asArray(question.fixed_paragraphs),
     options: normalizedOptions,
     answer: normalizeQuizAnswer(question, type),
     desc: question.desc || question.description || question.explanation || question.analysis || '暂无解析',

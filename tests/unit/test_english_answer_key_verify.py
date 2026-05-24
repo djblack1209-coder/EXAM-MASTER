@@ -1,0 +1,193 @@
+from pathlib import Path
+import json
+import sys
+import tempfile
+import unittest
+
+
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(PROJECT_ROOT))
+
+
+def write_json(path: Path, payload: dict) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
+
+class EnglishAnswerKeyVerifyTest(unittest.TestCase):
+    def test_verifier_promotes_exact_answer_key_matches_but_leaves_writing_unverified(self):
+        from scripts.baidu.english_answer_key_verify import verify_bank
+
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_dir = Path(tmp)
+            target = tmp_dir / "english1-2010.json"
+            answer_key = tmp_dir / "src_answer-2010年真题及答案速查.txt"
+            manifest = tmp_dir / "source-manifest.json"
+            answer_key.write_text(
+                "2010年考研英语（一）真题答案速查表\n"
+                "1 - 5 ABCBC  6 ~ 10 BDACD  41 ~45 BFDGA\n"
+                "46. 科学家急忙赶来挽救这种局面。\n",
+                encoding="utf-8",
+            )
+            write_json(
+                target,
+                {
+                    "year": "2010",
+                    "cards": [
+                        {
+                            "id": "english1-2010-001",
+                            "number": 1,
+                            "type": "single_choice",
+                            "question": "Q1",
+                            "answer": "A",
+                            "sourceEvidenceId": "src_question",
+                        },
+                        {
+                            "id": "english1-2010-041",
+                            "number": 41,
+                            "type": "single_choice",
+                            "question": "Q41",
+                            "answer": "B",
+                            "sourceEvidenceId": "src_question",
+                        },
+                        {
+                            "id": "english1-2010-046",
+                            "number": 46,
+                            "type": "analysis",
+                            "question": "Translate 46",
+                            "answer": "",
+                            "sourceEvidenceId": "src_question",
+                        },
+                        {
+                            "id": "english1-2010-051",
+                            "number": 51,
+                            "type": "analysis",
+                            "question": "Writing Part A",
+                            "answer": "No official answer",
+                            "sourceEvidenceId": "src_question",
+                        },
+                    ],
+                },
+            )
+            write_json(
+                manifest,
+                {
+                    "items": [
+                        {
+                            "sourceId": "src_answer",
+                            "status": "discovered",
+                            "answerEvidenceStatus": "",
+                            "processing": {"verified": False},
+                        }
+                    ]
+                },
+            )
+
+            report = verify_bank(
+                target,
+                answer_key,
+                write=True,
+                update_manifest=True,
+                manifest_path=manifest,
+                now="2026-05-23T00:00:00Z",
+            )
+            payload = json.loads(target.read_text(encoding="utf-8"))
+            updated_manifest = json.loads(manifest.read_text(encoding="utf-8"))
+
+        self.assertEqual(report["summary"]["matchedCards"], 3)
+        self.assertEqual(report["summary"]["writingUnverifiedCount"], 1)
+        self.assertEqual(report["summary"]["manifestUpdates"], 1)
+        matched = {card["number"]: card for card in payload["cards"]}
+        self.assertEqual(matched[1]["answerEvidenceStatus"], "matched")
+        self.assertEqual(matched[41]["answerEvidenceStatus"], "matched")
+        self.assertEqual(matched[46]["type"], "translation")
+        self.assertEqual(matched[46]["answer"], "科学家急忙赶来挽救这种局面。")
+        self.assertNotEqual(matched[51].get("answerEvidenceStatus"), "matched")
+        manifest_item = updated_manifest["items"][0]
+        self.assertEqual(manifest_item["status"], "verified")
+        self.assertEqual(manifest_item["answerEvidenceStatus"], "matched")
+        self.assertTrue(manifest_item["processing"]["verified"])
+
+    def test_verifier_records_mismatch_and_repairs_from_source_key(self):
+        from scripts.baidu.english_answer_key_verify import verify_bank
+
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_dir = Path(tmp)
+            target = tmp_dir / "english1-2010.json"
+            answer_key = tmp_dir / "src_answer-2010年真题及答案速查.txt"
+            answer_key.write_text("2010年考研英语（一）真题答案速查表\n1 - 5 ABCBC\n", encoding="utf-8")
+            write_json(
+                target,
+                {
+                    "year": "2010",
+                    "cards": [
+                        {
+                            "id": "english1-2010-002",
+                            "number": 2,
+                            "type": "single_choice",
+                            "question": "Q2",
+                            "answer": "D",
+                            "sourceEvidenceId": "src_question",
+                        }
+                    ],
+                },
+            )
+
+            report = verify_bank(target, answer_key, write=True, now="2026-05-23T00:00:00Z")
+            payload = json.loads(target.read_text(encoding="utf-8"))
+
+        self.assertEqual(report["summary"]["mismatchCount"], 1)
+        self.assertEqual(report["mismatches"][0]["cardAnswer"], "D")
+        self.assertEqual(report["mismatches"][0]["answerKey"], "B")
+        self.assertEqual(payload["cards"][0]["answer"], "B")
+        self.assertEqual(payload["cards"][0]["answerEvidenceStatus"], "matched")
+
+    def test_verifier_uses_dominant_question_source_for_cards_missing_source_id(self):
+        from scripts.baidu.english_answer_key_verify import verify_bank
+
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_dir = Path(tmp)
+            target = tmp_dir / "english1-2010.json"
+            answer_key = tmp_dir / "src_answer-2010年真题及答案速查.txt"
+            answer_key.write_text("2010年考研英语（一）真题答案速查表\n1 - 5 ABCBC\n", encoding="utf-8")
+            write_json(
+                target,
+                {
+                    "year": "2010",
+                    "cards": [
+                        {
+                            "id": "english1-2010-001",
+                            "number": 1,
+                            "type": "single_choice",
+                            "question": "Q1",
+                            "answer": "A",
+                            "sourceEvidenceId": "src_question",
+                        },
+                        {
+                            "id": "english1-2010-002",
+                            "number": 2,
+                            "type": "single_choice",
+                            "question": "Q2",
+                            "answer": "B",
+                            "sourceEvidenceId": "src_question",
+                        },
+                        {
+                            "id": "english1-2010-003",
+                            "number": 3,
+                            "type": "single_choice",
+                            "question": "Q3",
+                            "answer": "C",
+                        },
+                    ],
+                },
+            )
+
+            verify_bank(target, answer_key, write=True, now="2026-05-23T00:00:00Z")
+            payload = json.loads(target.read_text(encoding="utf-8"))
+
+        self.assertEqual(payload["cards"][2]["sourceEvidenceId"], "src_question")
+        self.assertEqual(payload["cards"][2]["sourceEvidence"]["sourceId"], "src_question")
+
+
+if __name__ == "__main__":
+    unittest.main()

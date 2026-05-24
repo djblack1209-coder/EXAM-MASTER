@@ -14,6 +14,8 @@ v2 升级点：
 仅限macOS（OCR使用苹果原生引擎）
 """
 
+from __future__ import annotations
+
 import fitz  # pymupdf
 try:
     from ocrmac import ocrmac
@@ -347,6 +349,43 @@ def card_hash(card: dict) -> str:
     return hashlib.md5(q.encode("utf-8")).hexdigest()
 
 
+def scoped_card_hash(card: dict, subject: str, year: str) -> str:
+    """Record a paper-scoped hash for audit without suppressing other papers."""
+    raw_hash = card_hash(card)
+    return hashlib.md5(f"{subject}:{year}:{raw_hash}".encode("utf-8")).hexdigest()
+
+
+def card_dedupe_key(card: dict) -> str:
+    number = str(card.get("number") or "").strip()
+    if number:
+        return f"number:{number}"
+    return f"question:{card_hash(card)}"
+
+
+def dedupe_cards_for_current_paper(cards: list[dict]) -> tuple[list[dict], int]:
+    """Deduplicate repeated batch output within one paper only.
+
+    The same or similar question text can legitimately appear in different
+    years. Cross-paper hash suppression makes a full historical bank incomplete.
+    """
+    seen: set[str] = set()
+    unique_cards: list[dict] = []
+    for card in cards:
+        key = card_dedupe_key(card)
+        if key in seen:
+            continue
+        seen.add(key)
+        unique_cards.append(card)
+    return unique_cards, len(cards) - len(unique_cards)
+
+
+def record_processed_hashes(cards: list[dict], subject: str, year: str) -> None:
+    hashes = load_hash_db()
+    for card in cards:
+        hashes.add(scoped_card_hash(card, subject, year))
+    save_hash_db(hashes)
+
+
 def load_existing_output(out_file: Path) -> dict | None:
     if not out_file.exists():
         return None
@@ -656,6 +695,22 @@ def extract_llm_content(response) -> str:
     return content.strip()
 
 
+def is_stable_backend_error(error: Exception) -> bool:
+    message = str(error).lower()
+    stable_markers = (
+        "model not support",
+        "model_not_found",
+        "model not found",
+        "unsupported model",
+        "invalid model",
+        "does not exist",
+        "permission denied",
+        "unauthorized",
+        "invalid api key",
+    )
+    return any(marker in message for marker in stable_markers)
+
+
 def ai_parse_batch(client: OpenAI, text: str, subject: str, year: str,
                    max_retries: int = 3, model: str | None = None,
                    base_url: str | None = None, provider_name: str = "llm") -> list:
@@ -734,12 +789,16 @@ def ai_parse_text(text: str, subject: str, year: str) -> list:
 
     all_cards = []
     seen_numbers = set()
+    disabled_backend_ids: set[tuple[str, str, str]] = set()
 
     for i, batch in enumerate(batches):
         print(f"    批次 {i+1}/{len(batches)} ({len(batch)}字符)...", end="", flush=True)
         cards = []
         errors = []
         for backend in backends:
+            backend_id = (backend["name"], backend["base_url"], backend["model"])
+            if backend_id in disabled_backend_ids:
+                continue
             try:
                 print(f" [{backend['name']}]", end="", flush=True)
                 cards = ai_parse_batch(
@@ -754,6 +813,9 @@ def ai_parse_text(text: str, subject: str, year: str) -> list:
                 break
             except Exception as exc:
                 errors.append(f"{backend['name']}: {exc}")
+                if is_stable_backend_error(exc):
+                    disabled_backend_ids.add(backend_id)
+                    print(" disabled", end="", flush=True)
                 print(" fallback", end="", flush=True)
 
         if errors and not cards:
@@ -818,25 +880,16 @@ def process_pdf(pdf_path: str, subject: str, year: str, source: str = "") -> dic
         card.setdefault("explanation", "")
         card = anonymize_card(card)
 
-    # 5. 去重
-    existing_hashes = load_hash_db()
-    new_cards = []
-    dup_count = 0
-    for c in cards:
-        h = card_hash(c)
-        if h not in existing_hashes:
-            existing_hashes.add(h)
-            new_cards.append(c)
-        else:
-            dup_count += 1
-    save_hash_db(existing_hashes)
-    print(f"  去重: {dup_count}张重复, {len(new_cards)}张新增")
+    # 5. 卷内去重。不要跨年份/跨试卷过滤，否则会吞掉历史真题。
+    paper_cards, dup_count = dedupe_cards_for_current_paper(cards)
+    record_processed_hashes(paper_cards, subject, year)
+    print(f"  卷内去重: {dup_count}张重复, {len(paper_cards)}张保留")
 
     # 6. 输出
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     out_file = OUTPUT_DIR / f"{subject}-{year}.json"
     existing_output = load_existing_output(out_file)
-    if cards and not new_cards and existing_output:
+    if cards and not paper_cards and existing_output:
         print(f"  跳过输出: 解析结果均为重复题，保留已有 {out_file}")
         return existing_output
 
@@ -845,8 +898,8 @@ def process_pdf(pdf_path: str, subject: str, year: str, source: str = "") -> dic
         "subject": subject,
         "year": year,
         "processed_at": time.strftime("%Y-%m-%d %H:%M:%S"),
-        "total_cards": len(new_cards),
-        "cards": new_cards,
+        "total_cards": len(paper_cards),
+        "cards": paper_cards,
     }
 
     with open(out_file, "w", encoding="utf-8") as f:
@@ -856,14 +909,14 @@ def process_pdf(pdf_path: str, subject: str, year: str, source: str = "") -> dic
 
     # 7. 质量报告
     print(f"\n  质量检查:")
-    empty_answers = [c["id"] for c in new_cards if not c.get("answer")]
-    choice_cards = [c for c in new_cards if c["type"] in ("single_choice", "multi_choice")]
+    empty_answers = [c["id"] for c in paper_cards if not c.get("answer")]
+    choice_cards = [c for c in paper_cards if c["type"] in ("single_choice", "multi_choice")]
     wrong_opts = [c["id"] for c in choice_cards if len(c.get("options", [])) != 4]
 
     if empty_answers:
         print(f"    警告: {len(empty_answers)}张卡片缺少答案: {empty_answers[:5]}")
     else:
-        print(f"    OK: 所有{len(new_cards)}张卡片都有答案")
+        print(f"    OK: 所有{len(paper_cards)}张卡片都有答案")
 
     if wrong_opts:
         print(f"    警告: {len(wrong_opts)}张选择题选项数不为4: {wrong_opts[:5]}")
@@ -871,7 +924,7 @@ def process_pdf(pdf_path: str, subject: str, year: str, source: str = "") -> dic
         print(f"    OK: 所有{len(choice_cards)}张选择题均有4个选项")
 
     type_counts = {}
-    for c in new_cards:
+    for c in paper_cards:
         t = c.get("type", "unknown")
         type_counts[t] = type_counts.get(t, 0) + 1
     print(f"    题型分布: {type_counts}")

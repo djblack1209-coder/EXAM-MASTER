@@ -94,6 +94,22 @@ class BaiduCleaningQueueTest(unittest.TestCase):
                     "priority": 100,
                     "riskFlags": [],
                 },
+                {
+                    "sourceId": "src_group_file_index",
+                    "fingerprint": "fp_group_file_index",
+                    "eligible": True,
+                    "status": "discovered",
+                    "sourceChannel": "group_file_index",
+                    "remotePath": "/2027考研课程/公共课/2021数学二真题.pdf",
+                    "fileName": "2021数学二真题.pdf",
+                    "extension": ".pdf",
+                    "sourceType": "official_paper",
+                    "track": "math2",
+                    "subject": "math",
+                    "year": 2021,
+                    "priority": 100,
+                    "riskFlags": [],
+                },
             ]
         }
 
@@ -102,7 +118,9 @@ class BaiduCleaningQueueTest(unittest.TestCase):
 
         self.assertEqual(actions["src_brand"], "manual_review")
         self.assertEqual(actions["src_group"], "transfer_or_direct_download")
+        self.assertEqual(actions["src_group_file_index"], "transfer_or_direct_download")
         self.assertEqual(queue["summary"]["manualReviewTasks"], 1)
+        self.assertEqual(queue["summary"]["transferTasks"], 2)
 
 
 if __name__ == "__main__":

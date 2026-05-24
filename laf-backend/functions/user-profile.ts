@@ -190,9 +190,10 @@ async function handleGetProfile(body: UpdateProfileRequest, _requestId: string) 
 
   if (!user.data) {
     return {
-      code: 404,
-      success: false,
-      message: '用户不存在'
+      code: 0,
+      success: true,
+      message: '获取成功',
+      data: createDefaultUserProfile(userId)
     };
   }
 
@@ -207,6 +208,17 @@ async function handleGetProfile(body: UpdateProfileRequest, _requestId: string) 
       target_major: user.data.target_major,
       practice_config: user.data.practice_config || getDefaultPracticeConfig()
     }
+  };
+}
+
+function createDefaultUserProfile(userId: string) {
+  return {
+    _id: userId,
+    nickname: '考研用户',
+    avatar_url: '',
+    target_school: '',
+    target_major: '',
+    practice_config: getDefaultPracticeConfig()
   };
 }
 

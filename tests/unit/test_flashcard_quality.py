@@ -7,6 +7,7 @@ import unittest
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(PROJECT_ROOT))
 SCRIPT = PROJECT_ROOT / "scripts" / "baidu" / "flashcard_quality.py"
 
 
@@ -126,6 +127,7 @@ class FlashcardQualityTest(unittest.TestCase):
                         "answerEvidenceStatus": "matched",
                         "questionTextHash": "sha256:q1",
                         "answerTextHash": "sha256:a1",
+                        "passage": "Full source passage.",
                     }
                 ],
             )
@@ -135,6 +137,77 @@ class FlashcardQualityTest(unittest.TestCase):
         self.assertTrue(report["releaseReadiness"]["canPromoteToPublic"])
         self.assertEqual(report["summary"]["blockerCount"], 0)
         self.assertEqual(report["files"][0]["status"], "passed")
+
+    def test_report_allows_english_gap_fill_questions_with_a_to_g_options(self):
+        from scripts.baidu.flashcard_quality import build_quality_report
+
+        with tempfile.TemporaryDirectory() as tmp:
+            flashcard_dir = Path(tmp)
+            write_bank(
+                flashcard_dir,
+                "english-2024.json",
+                [
+                    {
+                        "id": "english-2024-041",
+                        "type": "single_choice",
+                        "question": "Choose the most suitable paragraph.",
+                        "options": [
+                            {"label": "A", "text": "Option A"},
+                            {"label": "B", "text": "Option B"},
+                            {"label": "C", "text": "Option C"},
+                            {"label": "D", "text": "Option D"},
+                            {"label": "E", "text": "Option E"},
+                            {"label": "F", "text": "Option F"},
+                            {"label": "G", "text": "Option G"},
+                        ],
+                        "answer": "E",
+                        "sourceEvidenceId": "src_ev_english_2024_041",
+                        "answerEvidenceStatus": "matched",
+                        "questionTextHash": "sha256:q41",
+                        "answerTextHash": "sha256:a41",
+                        "passage": "Full source passage.",
+                    }
+                ],
+            )
+
+            report = build_quality_report(flashcard_dir)
+
+        self.assertTrue(report["releaseReadiness"]["canPromoteToPublic"])
+        self.assertEqual(report["summary"]["blockerCount"], 0)
+
+    def test_report_counts_invalid_choice_options_as_grading_blocker(self):
+        from scripts.baidu.flashcard_quality import build_quality_report
+
+        with tempfile.TemporaryDirectory() as tmp:
+            flashcard_dir = Path(tmp)
+            write_bank(
+                flashcard_dir,
+                "english-2024.json",
+                [
+                    {
+                        "id": "english-2024-001",
+                        "type": "single_choice",
+                        "question": "Question 1",
+                        "options": [
+                            {"label": "A", "text": "A"},
+                            {"label": "B", "text": "B"},
+                            {"label": "C", "text": "C"},
+                        ],
+                        "answer": "A",
+                        "sourceEvidenceId": "src_ev_english_2024_001",
+                        "answerEvidenceStatus": "matched",
+                        "questionTextHash": "sha256:q1",
+                        "answerTextHash": "sha256:a1",
+                        "passage": "Full source passage.",
+                    }
+                ],
+            )
+
+            report = build_quality_report(flashcard_dir)
+
+        self.assertFalse(report["releaseReadiness"]["canPromoteToPublic"])
+        self.assertEqual(report["summary"]["gradingBlockerCount"], 1)
+        self.assertIn("options=A-D-or-A-G", report["files"][0]["blockedCards"][0]["missingFields"])
 
     def test_report_blocks_draft_publication_status_even_when_cards_are_structured(self):
         from scripts.baidu.flashcard_quality import build_quality_report
@@ -198,6 +271,7 @@ class FlashcardQualityTest(unittest.TestCase):
                         "answerEvidenceStatus": "matched",
                         "questionTextHash": "sha256:q1",
                         "answerTextHash": "sha256:a1",
+                        "passage": "Full source passage.",
                     }
                 ],
             )
@@ -225,6 +299,74 @@ class FlashcardQualityTest(unittest.TestCase):
         self.assertEqual(report["summary"]["skippedFileCount"], 1)
         self.assertEqual(report["summary"]["missingAnswerCount"], 0)
         self.assertEqual(report["skippedFiles"][0]["reason"], "supportingEvidenceOnly")
+
+    def test_report_skips_files_outside_release_year_scope_by_default(self):
+        from scripts.baidu.flashcard_quality import build_quality_report
+
+        with tempfile.TemporaryDirectory() as tmp:
+            flashcard_dir = Path(tmp)
+            write_bank(
+                flashcard_dir,
+                "english1-2001.json",
+                [
+                    {
+                        "id": "english1-2001-001",
+                        "type": "single_choice",
+                        "question": "Question 1",
+                        "options": [
+                            {"label": "A", "text": "A"},
+                            {"label": "B", "text": "B"},
+                            {"label": "C", "text": "C"},
+                            {"label": "D", "text": "D"},
+                        ],
+                        "answer": "A",
+                    }
+                ],
+            )
+            payload_path = flashcard_dir / "english1-2001.json"
+            payload = json.loads(payload_path.read_text(encoding="utf-8"))
+            payload["year"] = "2001"
+            payload_path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
+            report = build_quality_report(flashcard_dir)
+
+        self.assertEqual(report["summary"]["fileCount"], 0)
+        self.assertEqual(report["summary"]["skippedFileCount"], 1)
+        self.assertEqual(report["skippedFiles"][0]["reason"], "outsideReleaseYear:2001")
+
+    def test_report_blocks_english_choice_cards_without_passage_material(self):
+        from scripts.baidu.flashcard_quality import build_quality_report
+
+        with tempfile.TemporaryDirectory() as tmp:
+            flashcard_dir = Path(tmp)
+            write_bank(
+                flashcard_dir,
+                "english1-2024.json",
+                [
+                    {
+                        "id": "english1-2024-021",
+                        "type": "single_choice",
+                        "question": "Question 21",
+                        "options": [
+                            {"label": "A", "text": "A"},
+                            {"label": "B", "text": "B"},
+                            {"label": "C", "text": "C"},
+                            {"label": "D", "text": "D"},
+                        ],
+                        "answer": "A",
+                        "sourceEvidenceId": "src_ev_english_2024_021",
+                        "answerEvidenceStatus": "matched",
+                        "questionTextHash": "sha256:q21",
+                        "answerTextHash": "sha256:a21",
+                    }
+                ],
+            )
+
+            report = build_quality_report(flashcard_dir)
+
+        self.assertFalse(report["releaseReadiness"]["canPromoteToPublic"])
+        self.assertEqual(report["summary"]["gradingBlockerCount"], 1)
+        self.assertIn("passage", report["files"][0]["blockedCards"][0]["missingFields"])
 
     def test_cli_fail_on_blockers_exits_two_and_writes_report(self):
         with tempfile.TemporaryDirectory() as tmp:

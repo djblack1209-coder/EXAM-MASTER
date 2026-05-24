@@ -69,6 +69,8 @@ const mocked = vi.hoisted(() => {
         scenario.docCalls.push({ name, id });
         return {
           async get() {
+            const override = resolve(scenario.getOneData, `${name}:doc:${id}`, state, undefined);
+            if (override !== undefined) return override;
             if (name === 'users') {
               return { data: { _id: id, total_questions: 120, streak_days: 9 } };
             }
@@ -191,6 +193,36 @@ describe('[安全审计] token来源兼容与userId强制绑定', () => {
     const userDocCall = mocked.scenario.docCalls.find((item) => item.name === 'users');
     expect(userDocCall).toBeTruthy();
     expect(userDocCall.id).toBe('stats_owner');
+  });
+
+  it('user-stats overview 在用户文档缺失时返回零统计，避免新用户阻塞', async () => {
+    mocked.setJwtPayload({ userId: 'new_stats_user' });
+    mocked.scenario.getOneData['users:doc:new_stats_user'] = { data: null };
+
+    const result = await userStatsHandler({
+      body: {
+        action: 'getOverview',
+        userId: 'new_stats_user',
+        data: {}
+      },
+      headers: {
+        authorization: 'Bearer valid_token'
+      }
+    });
+
+    expect(result.code).toBe(0);
+    expect(result.success).toBe(true);
+    expect(result.data).toMatchObject({
+      totalQuestions: 0,
+      correctQuestions: 0,
+      accuracy: 0,
+      today: {
+        questions: 0,
+        correct: 0,
+        studyMinutes: 0,
+        accuracy: 0
+      }
+    });
   });
 
   it('learning-goal 仅 body.token 时应拒绝（要求 Header Token）', async () => {

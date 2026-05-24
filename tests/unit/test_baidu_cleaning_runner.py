@@ -72,6 +72,202 @@ class BaiduCleaningRunnerTest(unittest.TestCase):
         self.assertEqual([task["taskId"] for task in by_task], ["t_answer"])
         self.assertEqual([task["taskId"] for task in by_source], ["t_answer"])
 
+    def test_select_pending_tasks_can_filter_public_course_release_scope(self):
+        queue = {
+            "tasks": [
+                {
+                    "taskId": "t_1999",
+                    "action": "download_and_extract",
+                    "status": "pending",
+                    "priority": 100,
+                    "track": "english1",
+                    "year": 1999,
+                    "sourceType": "official_paper",
+                },
+                {
+                    "taskId": "t_answer_quick",
+                    "action": "download_and_extract",
+                    "status": "pending",
+                    "priority": 100,
+                    "track": "english1",
+                    "year": 2005,
+                    "sourceType": "official_paper",
+                    "safeDisplayName": "2005年真题及答案速查.pdf",
+                },
+                {
+                    "taskId": "t_2005",
+                    "action": "download_and_extract",
+                    "status": "pending",
+                    "priority": 100,
+                    "track": "english1",
+                    "year": 2005,
+                    "sourceType": "official_paper",
+                    "safeDisplayName": "2005年考研英语真题英一二通用.pdf",
+                },
+                {
+                    "taskId": "t_review_source",
+                    "action": "download_and_extract",
+                    "status": "pending",
+                    "priority": 100,
+                    "track": "english1",
+                    "year": 2005,
+                    "sourceType": "institution_candidate",
+                },
+                {
+                    "taskId": "t_math",
+                    "action": "download_and_extract",
+                    "status": "pending",
+                    "priority": 100,
+                    "track": "math1",
+                    "year": 2005,
+                    "sourceType": "official_paper",
+                },
+            ]
+        }
+
+        selected = select_pending_tasks(
+            queue,
+            limit=10,
+            track="english1",
+            min_year=2005,
+            max_year=2026,
+            source_type="official_paper",
+            paper_role="main",
+        )
+
+        self.assertEqual([task["taskId"] for task in selected], ["t_2005"])
+
+    def test_select_pending_tasks_balances_release_scope_by_year_and_track(self):
+        queue = {
+            "tasks": [
+                {
+                    "taskId": "english1_2006",
+                    "action": "download_and_extract",
+                    "status": "pending",
+                    "priority": 100,
+                    "track": "english1",
+                    "year": 2006,
+                    "sourceType": "official_paper",
+                    "safeDisplayName": "2006年考研英语一真题.pdf",
+                },
+                {
+                    "taskId": "math1_2005",
+                    "action": "download_and_extract",
+                    "status": "pending",
+                    "priority": 100,
+                    "track": "math1",
+                    "year": 2005,
+                    "sourceType": "official_paper",
+                    "safeDisplayName": "2005年数学一真题.pdf",
+                },
+                {
+                    "taskId": "politics_2005",
+                    "action": "download_and_extract",
+                    "status": "pending",
+                    "priority": 100,
+                    "track": "politics",
+                    "year": 2005,
+                    "sourceType": "official_paper",
+                    "safeDisplayName": "2005年政治真题.pdf",
+                },
+                {
+                    "taskId": "english2_2005",
+                    "action": "download_and_extract",
+                    "status": "pending",
+                    "priority": 100,
+                    "track": "english2",
+                    "year": 2005,
+                    "sourceType": "official_paper",
+                    "safeDisplayName": "2005年考研英语二真题.pdf",
+                },
+                {
+                    "taskId": "english1_2005",
+                    "action": "download_and_extract",
+                    "status": "pending",
+                    "priority": 100,
+                    "track": "english1",
+                    "year": 2005,
+                    "sourceType": "official_paper",
+                    "safeDisplayName": "2005年考研英语一真题.pdf",
+                },
+            ]
+        }
+
+        selected = select_pending_tasks(queue, limit=10, source_type="official_paper", paper_role="main")
+
+        self.assertEqual(
+            [task["taskId"] for task in selected],
+            ["politics_2005", "english1_2005", "english2_2005", "math1_2005", "english1_2006"],
+        )
+
+    def test_paper_role_main_uses_file_name_not_parent_answer_directory(self):
+        queue = {
+            "tasks": [
+                {
+                    "taskId": "math2_main",
+                    "action": "download_and_extract",
+                    "status": "pending",
+                    "priority": 100,
+                    "track": "math2",
+                    "year": 2005,
+                    "sourceType": "official_paper",
+                    "safeDisplayName": "2005考研数学二真题.pdf",
+                    "fileName": "2005考研数学二真题 .pdf",
+                    "remotePath": "/EXAM-MASTER/数学真题答案解析/2005考研数学二真题 .pdf",
+                },
+                {
+                    "taskId": "math2_answer",
+                    "action": "download_and_extract",
+                    "status": "pending",
+                    "priority": 100,
+                    "track": "math2",
+                    "year": 2005,
+                    "sourceType": "official_paper",
+                    "safeDisplayName": "2005数学二答案解析.pdf",
+                    "fileName": "2005数学二答案解析.pdf",
+                    "remotePath": "/EXAM-MASTER/数学真题答案解析/2005数学二答案解析.pdf",
+                },
+            ]
+        }
+
+        selected = select_pending_tasks(queue, limit=10, source_type="official_paper", paper_role="main")
+
+        self.assertEqual([task["taskId"] for task in selected], ["math2_main"])
+
+    def test_math_official_combined_papers_remain_main_tasks(self):
+        queue = {
+            "tasks": [
+                {
+                    "taskId": "math1_combined",
+                    "action": "download_and_extract",
+                    "status": "pending",
+                    "priority": 100,
+                    "track": "math1",
+                    "year": 2005,
+                    "sourceType": "official_paper",
+                    "safeDisplayName": "2005数一标准答案及解析.pdf",
+                    "fileName": "2005-数一标准答案及解析 .pdf",
+                    "remotePath": "/EXAM-MASTER/数学一真题答案解析/2005-数一标准答案及解析 .pdf",
+                },
+                {
+                    "taskId": "english_answer",
+                    "action": "download_and_extract",
+                    "status": "pending",
+                    "priority": 100,
+                    "track": "english1",
+                    "year": 2005,
+                    "sourceType": "official_paper",
+                    "safeDisplayName": "2005年真题及答案速查.pdf",
+                    "fileName": "2005年真题及答案速查.pdf",
+                    "remotePath": "/EXAM-MASTER/英语/2005年真题及答案速查.pdf",
+                },
+            ]
+        }
+
+        selected = select_pending_tasks(queue, limit=10, source_type="official_paper", paper_role="main")
+
+        self.assertEqual([task["taskId"] for task in selected], ["math1_combined"])
+
     def test_reexecs_with_baidu_virtualenv_when_requests_missing(self):
         with tempfile.TemporaryDirectory() as tmp:
             original_project_root = runner.PROJECT_ROOT

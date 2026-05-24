@@ -64,6 +64,7 @@ describe('quiz session contract', () => {
 
     expect(question).toMatchObject({
       passage: 'Text 1 full reading passage.',
+      passageSegments: ['Text 1 full reading passage.'],
       context: 'Text 1 full reading passage.',
       material: 'Text 1 full reading passage.',
       paperId: 'english1-2025',
@@ -71,6 +72,42 @@ describe('quiz session contract', () => {
       section: '阅读理解 Text 1',
       groupId: 'text1'
     });
+  });
+
+  it('preserves fixed sequence metadata for paragraph-ordering papers', () => {
+    const question = normalizeQuizQuestion(
+      {
+        id: 'english1-2011-041',
+        question: '段落排序第 41 空',
+        passage: 'G -> 41 -> 42 -> E -> 43 -> 44 -> 45',
+        fixedSequence: ['G', '41', '42', 'E', '43', '44', '45'],
+        fixedParagraphs: ['G', 'E'],
+        options: ['A. Paragraph A', 'B. Paragraph B'],
+        answer: 'B'
+      },
+      0
+    );
+
+    expect(question.fixedSequence).toEqual(['G', '41', '42', 'E', '43', '44', '45']);
+    expect(question.fixedParagraphs).toEqual(['G', 'E']);
+    expect(question.options).toEqual(['Paragraph A', 'Paragraph B']);
+  });
+
+  it('splits long reading passages into tappable evidence segments', () => {
+    const question = normalizeQuizQuestion(
+      {
+        id: 'english1-2025-text2-26',
+        question: 'What surprised the author?',
+        passage:
+          'Scientists often defend energy-intensive work. The author noticed a different attitude in recent debates. Some researchers suggested reducing their work rather than improving infrastructure.\n\nLUMI offers a cleaner model. It uses low-carbon power and reuses heat for the surrounding city.'
+      },
+      0
+    );
+
+    expect(question.passageSegments).toEqual([
+      'Scientists often defend energy-intensive work. The author noticed a different attitude in recent debates. Some researchers suggested reducing their work rather than improving infrastructure.',
+      'LUMI offers a cleaner model. It uses low-carbon power and reuses heat for the surrounding city.'
+    ]);
   });
 
 
@@ -87,11 +124,44 @@ describe('quiz session contract', () => {
     );
 
     expect(question.answer).toBe('C');
+    expect(question.options).toEqual(['Alpha', 'Beta', 'Gamma', 'Delta']);
     expect(question.difficulty).toBe(3);
     expect(getQuizOptionLabel(question, 0)).toBe('A');
     expect(getQuizOptionLabel({ options: ['B. Beta'] }, 0)).toBe('B');
     expect(isCorrectQuizOption(question, 2)).toBe(true);
     expect(isCorrectQuizOption(question, 1)).toBe(false);
+  });
+
+  it('strips embedded option labels because the quiz UI renders labels separately', () => {
+    const question = normalizeQuizQuestion(
+      {
+        id: 'choice_002',
+        question: 'Which one is correct?',
+        options: ['A. Alpha', 'B、Beta', 'C：Gamma', 'D) Delta'],
+        answer: 'D'
+      },
+      0
+    );
+
+    expect(question.options).toEqual(['Alpha', 'Beta', 'Gamma', 'Delta']);
+    expect(getQuizOptionLabel(question, 3)).toBe('D');
+    expect(isCorrectQuizOption(question, 3)).toBe(true);
+  });
+
+  it('normalizes object-shaped options before rendering', () => {
+    const question = normalizeQuizQuestion(
+      {
+        id: 'choice_003',
+        question: 'Which one is correct?',
+        options: [{ label: 'A', text: 'Alpha' }, { text: 'Beta' }, { value: 'Gamma' }, { content: 'Delta' }],
+        answer: 'B'
+      },
+      0
+    );
+
+    expect(question.options).toEqual(['Alpha', 'Beta', 'Gamma', 'Delta']);
+    expect(getQuizOptionLabel(question, 1)).toBe('B');
+    expect(isCorrectQuizOption(question, 1)).toBe(true);
   });
 
   it('preserves multi-choice answer labels while normalizing single-choice answers', () => {

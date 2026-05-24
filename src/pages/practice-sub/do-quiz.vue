@@ -1,5 +1,5 @@
 <template>
-  <view class="container" :class="{ 'dark-mode': isDark, 'wot-theme-dark': isDark, 'screen-shake': screenShake }">
+  <view class="container" :class="{ 'dark-mode': isDark, 'wot-theme-dark': isDark }">
     <view class="aurora-bg" />
 
     <view class="nav-header" :style="{ paddingTop: statusBarHeight + 'px', height: navBarHeight + 'px' }">
@@ -56,7 +56,7 @@
           <view class="quiz-loading-dot secondary" />
         </view>
         <text class="quiz-loading-title">正在准备题目</text>
-        <text class="quiz-loading-subtitle">同步进度、题目顺序与计时器</text>
+        <text class="quiz-loading-subtitle">加载本地题库与练习进度</text>
         <view class="quiz-loading-skeleton">
           <view class="quiz-loading-line long" />
           <view class="quiz-loading-line" />
@@ -136,24 +136,48 @@
           </view>
           <view v-if="currentQuestionPassage" class="q-passage-card">
             <view class="q-passage-head">
-              <text class="q-passage-kicker">{{ currentQuestion.section || '阅读材料' }}</text>
+              <view class="q-passage-title-block">
+                <text class="q-passage-kicker">{{ currentQuestion.section || '阅读材料' }}</text>
+                <text class="q-passage-tip">点选关键句，保存为第 {{ currentQuestionNumberText }} 题依据</text>
+              </view>
               <text v-if="currentQuestion.paperName || currentQuestion.year" class="q-passage-meta">
                 {{ currentQuestion.paperName || `${currentQuestion.year}年真题` }}
               </text>
             </view>
+            <view v-if="currentQuestionFixedSequence.length" class="q-fixed-sequence">
+              <text
+                v-for="(item, itemIndex) in currentQuestionFixedSequence"
+                :key="`${currentQuestion.id || currentIndex}-fixed-${itemIndex}`"
+                class="q-fixed-sequence-item"
+                :class="{ locked: isFixedParagraph(item) }"
+              >
+                {{ item }}
+              </text>
+            </view>
             <scroll-view scroll-y class="q-passage-scroll">
-              <RichText class="q-passage-content" :content="currentQuestionPassage" />
+              <view v-if="currentQuestionPassageSegments.length" class="q-passage-segments">
+                <view
+                  v-for="(segment, segmentIndex) in currentQuestionPassageSegments"
+                  :key="`${currentQuestion.id || currentIndex}-${segmentIndex}`"
+                  class="q-passage-segment"
+                  :class="{ active: isPassageSegmentSelected(segmentIndex) }"
+                  hover-class="item-hover"
+                  @tap="togglePassageSegment(segmentIndex)"
+                >
+                  <view class="q-segment-marker">
+                    <text>{{ segmentIndex + 1 }}</text>
+                  </view>
+                  <RichText class="q-passage-content" :content="segment" />
+                </view>
+              </view>
+              <RichText v-else class="q-passage-content" :content="currentQuestionPassage" />
             </scroll-view>
+            <view v-if="currentPassageAnnotationText" class="q-passage-annotation">
+              <text>{{ currentPassageAnnotationText }}</text>
+              <text class="q-passage-clear" @tap="clearCurrentPassageAnnotations">清除</text>
+            </view>
           </view>
           <RichText class="q-content" :content="currentQuestion.question" />
-          <!-- combo ≥5 火焰特效：题目右上角缩放+淡出 -->
-          <image
-            v-if="showComboEffect && comboDisplay && comboDisplay.count >= 5"
-            class="combo-fire-badge"
-            src="./static/effects/combo-fire.png"
-            :mode="'aspectFit'"
-            alt=""
-          />
         </view>
 
         <view v-if="hasSelectableOptions" class="options-list">
@@ -168,6 +192,8 @@
                 selected: userChoice === idx,
                 correct: hasAnswered && isCorrectOption(idx),
                 wrong: hasAnswered && userChoice === idx && !isCorrectOption(idx),
+                'option-folded': isOptionFolded(idx),
+                'option-muted-after-answer': isOptionDeemphasized(idx),
                 disabled: isAnalyzing || (hasAnswered && userChoice !== idx)
               }
             ]"
@@ -239,66 +265,6 @@
 
       <view class="footer-placeholder" />
 
-      <!-- ✅ 连击特效显示 -->
-      <view v-if="showComboEffect && comboDisplay" class="combo-effect" @animationend="showComboEffect = false">
-        <view class="combo-content" :style="{ color: comboDisplay.color }">
-          <!-- 连击火焰特效 -->
-          <image
-            v-if="comboDisplay.count >= 5"
-            class="combo-fire-icon"
-            src="./static/effects/combo-fire.png"
-            :mode="'aspectFit'"
-            alt=""
-          />
-          <text class="combo-count">
-            {{ comboDisplay.count }}
-          </text>
-          <text class="combo-label"> 连击! </text>
-          <text v-if="comboDisplay.message" class="combo-message">
-            {{ comboDisplay.message }}
-          </text>
-        </view>
-      </view>
-
-      <!-- XP 飞入动画 -->
-      <view v-if="showXpToast" class="xp-flyout" @animationend="showXpToast = false">
-        <!-- XP金币特效 -->
-        <image class="xp-coins-icon" src="./static/effects/xp-coins.png" mode="aspectFit" alt="" />
-        <text class="xp-flyout-text">+{{ xpEarned }} XP{{ xpBoostActive ? ' 2x加速' : '' }}</text>
-      </view>
-
-      <!-- ✅ [上瘾引擎] XP Boost激活指示器 -->
-      <view v-if="xpBoostActive" class="xp-boost-indicator">
-        <text class="xp-boost-text">2x XP</text>
-        <text class="xp-boost-remaining">剩余 {{ xpBoostRemaining }} 题</text>
-      </view>
-
-      <!-- ✅ 升级箭头特效 -->
-      <view v-if="showLevelUp" class="level-up-overlay" @animationend="showLevelUp = false">
-        <image class="level-up-icon" src="./static/effects/level-up-arrow.png" mode="aspectFit" alt="" />
-        <text class="level-up-text">LEVEL UP!</text>
-      </view>
-
-      <!-- ✅ P0-2: 粒子特效 -->
-      <view v-if="showParticles" class="particle-container">
-        <view
-          v-for="p in particles"
-          :key="p.id"
-          class="particle"
-          :class="p.shape"
-          :style="{
-            '--angle': p.angle + 'deg',
-            '--distance': p.distance + 'rpx',
-            '--size': p.size + 'rpx',
-            '--duration': p.duration + 's',
-            '--delay': p.delay + 's',
-            '--color': p.color
-          }"
-        />
-      </view>
-
-      <!-- ✅ XP 浮动文字（跨平台） -->
-      <XpToast />
     </scroll-view>
 
     <!-- ✅ [P0重构] AI分析已改为非阻塞，移除全屏遮罩 -->
@@ -337,7 +303,7 @@
           <view class="sparkle-icon">
             <BaseIcon name="sparkle" :size="28" />
           </view>
-          <text>智能深度诊断</text>
+          <text>解析</text>
           <!-- ✅ [P0重构] 内联AI加载指示器 -->
           <text v-if="!aiComment" class="ai-loading-hint">分析中...</text>
         </view>
@@ -351,12 +317,34 @@
             {{ currentQuestion ? currentQuestion.answer : 'A' }}
           </text>
         </view>
+        <view v-if="knowledgeCard" class="knowledge-card">
+          <view class="knowledge-card-head">
+            <text class="knowledge-label">考点</text>
+            <text class="knowledge-title">{{ knowledgeCard.title }}</text>
+          </view>
+          <view v-if="knowledgeCard.tags.length" class="knowledge-tags">
+            <text v-for="tag in knowledgeCard.tags" :key="tag" class="knowledge-tag">{{ tag }}</text>
+          </view>
+          <RichText v-if="knowledgeCard.detail" class="knowledge-detail" :content="knowledgeCard.detail" />
+        </view>
         <RichText class="analysis-body" :content="aiComment || (currentQuestion ? currentQuestion.desc : '暂无解析')" />
       </scroll-view>
 
       <view v-else class="ai-analysis-brief">
-        <text class="label"> 智能简评： </text>
-        <RichText :content="aiComment || (currentQuestion ? currentQuestion.desc : '暂无解析')" />
+        <view v-if="knowledgeCard" class="knowledge-card compact">
+          <view class="knowledge-card-head">
+            <text class="knowledge-label">考点</text>
+            <text class="knowledge-title">{{ knowledgeCard.title }}</text>
+          </view>
+          <view v-if="knowledgeCard.tags.length" class="knowledge-tags">
+            <text v-for="tag in knowledgeCard.tags" :key="tag" class="knowledge-tag">{{ tag }}</text>
+          </view>
+          <RichText v-if="knowledgeCard.detail" class="knowledge-detail" :content="knowledgeCard.detail" />
+        </view>
+        <view v-else>
+          <text class="label">解析：</text>
+          <RichText :content="aiComment || (currentQuestion ? currentQuestion.desc : '暂无解析')" />
+        </view>
       </view>
       <!-- 新增: FSRS 记忆引擎状态展示 -->
       <MemoryStatsRow v-if="memoryState" :memory-state="memoryState" />
@@ -506,17 +494,7 @@ import {
   handleTouchMove,
   handleTouchEnd
 } from './swipe-gesture.js';
-// ✅ 导入答题动画模块
-import { playCorrectAnimation, playWrongAnimation, getComboDisplay, resetAnimation } from './quiz-animation.js';
-import {
-  destroySoundResources,
-  playAchievementSound,
-  playClickSound,
-  playCompleteFanfare,
-  playFlipSound
-} from './utils/quiz-sound.js';
-// ✅ [上瘾引擎] XP/等级系统
-import { useXPSystem } from './composables/useXPSystem.js';
+import { destroySoundResources, playClickSound, playCorrectSound, playFlipSound, playWrongSound } from './utils/quiz-sound.js';
 // ✅ Phase 3-4: 卡片堆叠切换
 import { useCardStack } from './composables/useCardStack.js';
 // ✅ 导入单题计时器模块
@@ -528,6 +506,7 @@ import { generateAdaptiveSequence, getNextRecommendedQuestion } from '@/utils/le
 import { checkOfflineAvailability } from './services/offline-cache-service.js';
 // ✅ 导入题目笔记模块
 import { addQuestionNote, getNotesByQuestion, getNoteTags } from './question-note.js';
+import { vibrateLight } from '@/utils/helpers/haptic.js';
 // ✅ P1: 提取的模块
 import {
   saveToMistakes as saveMistake,
@@ -536,13 +515,6 @@ import {
 } from './quiz-mistake-handler.js';
 import { fetchAIDeepAnalysis as fetchAIAnalysis } from './quiz-ai-analysis.js';
 import { recordAnswerToAnalytics as recordAnalytics } from './quiz-analytics-recorder.js';
-// ✅ 游戏化桥接：XP / 成就 / 每日挑战 / 视觉反馈
-import {
-  onQuizSessionStart,
-  onAnswerResult,
-  onQuizSessionEnd,
-  bindGamificationEvents
-} from './quiz-gamification-bridge.js';
 // ✅ AI 打字机效果
 import { useTypewriter } from './composables/useTypewriter.js';
 // ✅ 统一日志工具（生产环境自动禁用）
@@ -564,7 +536,6 @@ import { ASSETS } from '@/config/static-assets.js';
 import MemoryStatsRow from './components/quiz-result/MemoryStatsRow.vue';
 import TutorFeedbackCard from './components/quiz-result/TutorFeedbackCard.vue';
 import QuizResult from './components/quiz-result/quiz-result.vue';
-import XpToast from './components/xp-toast/xp-toast.vue';
 import RichText from './components/RichText.vue';
 import AnswerSheet from './components/answer-sheet/answer-sheet.vue';
 import QuizProgress from './components/quiz-progress/quiz-progress.vue';
@@ -601,7 +572,6 @@ export default {
     MemoryStatsRow,
     TutorFeedbackCard,
     QuizResult,
-    XpToast,
     RichText,
     AnswerSheet,
     QuizProgress
@@ -610,16 +580,11 @@ export default {
   // ✅ [P0重构] 桥接 useQuizEngine — 核心状态和纯逻辑由 composable 管理
   setup() {
     const engine = useQuizEngine({ smartPicker: true, adaptiveMode: true });
-    const xpSystem = useXPSystem();
     const reviewStore = useReviewStore();
     return {
       quizEngine: engine,
       engineGetOptionLabel: engine.getOptionLabel,
       engineIsCorrectOption: engine.isCorrectOption,
-      // ✅ [上瘾引擎] XP系统
-      xpSystem,
-      xpCurrentLevel: xpSystem.currentLevel,
-      xpLevelProgress: xpSystem.levelProgress,
       // ✅ reviewStore — 替代页面直接调用 lafService
       reviewStore
     };
@@ -679,18 +644,8 @@ export default {
       // ✅ Phase 3-4: 卡片堆叠切换
       cardStack: null, // useCardStack() 实例
       // ✅ 答题动画状态
-      comboDisplay: null, // 连击显示数据
-      showComboEffect: false, // 是否显示连击特效
       correctAnimationClass: '', // 正确答案动画类
       wrongAnimationClass: '', // 错误答案动画类
-      screenShake: false,
-      xpEarned: 0,
-      showXpToast: false,
-      xpBoostActive: false, // ✅ [上瘾引擎] 2x XP boost激活
-      xpBoostRemaining: 0, // ✅ [上瘾引擎] boost剩余题数
-      // ✅ P0-2: 粒子特效状态
-      particles: [],
-      showParticles: false,
       // ✅ 单题计时器状态
       questionTimeLimit: 120, // 当前题目时限（秒）
       questionTimeRemaining: 120, // 剩余时间
@@ -707,8 +662,8 @@ export default {
       showNoteModal: false, // 是否显示笔记弹窗
       noteContent: '', // 笔记内容
       selectedNoteTags: [], // 选中的笔记标签
+      passageAnnotations: {},
       showAnswerSheet: false, // 答题卡显示状态
-      showLevelUp: false, // 升级特效显示状态
       mode: '', // 刷题模式：'' | 'single' | 'temp_bank' | 'smart_review'
       eloState: { userRating: 1500, questionRatings: {} },
       pendingTimers: [] // [AUDIT FIX R264] setTimeout 追踪，防止内存泄漏
@@ -747,6 +702,60 @@ export default {
         ''
       );
     },
+    currentQuestionPassageSegments() {
+      return Array.isArray(this.currentQuestion?.passageSegments) ? this.currentQuestion.passageSegments : [];
+    },
+    currentQuestionNumberText() {
+      return this.currentQuestion?.number || this.currentIndex + 1;
+    },
+    currentQuestionFixedSequence() {
+      return Array.isArray(this.currentQuestion?.fixedSequence) ? this.currentQuestion.fixedSequence : [];
+    },
+    currentQuestionFixedParagraphs() {
+      return Array.isArray(this.currentQuestion?.fixedParagraphs) ? this.currentQuestion.fixedParagraphs : [];
+    },
+    currentPassageAnnotationKey() {
+      return this.currentQuestion?.id || this.currentQuestion?.question || `question-${this.currentIndex}`;
+    },
+    currentPassageAnnotations() {
+      return this.passageAnnotations[this.currentPassageAnnotationKey] || [];
+    },
+    currentPassageAnnotationText() {
+      const selected = this.currentPassageAnnotations;
+      if (!selected.length) return '';
+      return `已标注 ${selected.length} 个片段作为第 ${this.currentQuestionNumberText} 题依据`;
+    },
+    knowledgeCard() {
+      if (!this.currentQuestion) return null;
+      const tags = [
+        this.currentQuestion.knowledge_point,
+        this.currentQuestion.knowledgePoint,
+        this.currentQuestion.section,
+        this.currentQuestion.category,
+        ...(Array.isArray(this.currentQuestion.knowledge_points) ? this.currentQuestion.knowledge_points : []),
+        ...(Array.isArray(this.currentQuestion.tags) ? this.currentQuestion.tags : [])
+      ]
+        .filter(Boolean)
+        .map((item) => String(item).trim())
+        .filter(Boolean);
+      const uniqueTags = Array.from(new Set(tags)).slice(0, 4);
+      const title = uniqueTags[0] || this.questionTypeLabel || '当前题目';
+      const explicitDetail =
+        this.currentQuestion.knowledgeSummary ||
+        this.currentQuestion.knowledge_summary ||
+        this.currentQuestion.concept ||
+        this.currentQuestion.keyPoint ||
+        this.currentQuestion.key_point ||
+        '';
+      const detail = explicitDetail || (this.resultStatus === 'correct' ? this.aiComment || this.currentQuestion.desc || '' : '');
+
+      if (!title && !detail) return null;
+      return {
+        title,
+        tags: uniqueTags.slice(1),
+        detail: detail && detail !== '暂无解析' ? detail : ''
+      };
+    },
     // 是否为闪卡模式（分析题或经典闪卡，无选项可选）
     isFlashcardMode() {
       return isQuizFlashcardMode(this.currentQuestion);
@@ -760,6 +769,19 @@ export default {
     isCorrectOption() {
       return (idx) => {
         return isCorrectQuizOption(this.currentQuestion, idx);
+      };
+    },
+    isOptionFolded() {
+      return (idx) => {
+        if (!this.hasAnswered) return false;
+        if (this.isCorrectOption(idx)) return false;
+        return this.userChoice !== idx;
+      };
+    },
+    isOptionDeemphasized() {
+      return (idx) => {
+        if (!this.hasAnswered) return false;
+        return !this.isCorrectOption(idx) && this.userChoice !== idx;
       };
     },
     // ✅ 完美全对检测（用于庆祝动画）
@@ -800,6 +822,7 @@ export default {
 
     // ✅ 初始化滑动手势
     this.initSwipeGesture();
+    this.loadPassageAnnotations();
 
     // ✅ Phase 3-4: 初始化卡片堆叠切换
     this.cardStack = useCardStack({
@@ -820,6 +843,7 @@ export default {
     const currentPage = pages[pages.length - 1];
     const query = currentPage?.$page?.options || currentPage?.options || {};
     this.mode = query.mode || '';
+    this.paperId = query.paperId || query.paper_id || '';
     if (query.mode === 'single') {
       this._singleMode = true;
     }
@@ -842,9 +866,6 @@ export default {
         mode: this.isAdaptiveMode ? 'adaptive' : 'normal'
       });
 
-      // ✅ 游戏化：会话开始（连续学习检查 + 每日挑战 + 首次练习XP）
-      onQuizSessionStart();
-      this._gamificationCleanup = bindGamificationEvents();
     }, 16);
   },
   onShow() {
@@ -868,20 +889,12 @@ export default {
     // 移除主题事件监听，避免重复绑定
     uni.$off('themeUpdate', this._themeHandler);
 
-    // ✅ 游戏化：会话结束（学习时长成就 + 全对奖励 + 清理事件）
-    onQuizSessionEnd();
-    if (this._gamificationCleanup) {
-      this._gamificationCleanup();
-    }
-
     // ✅ P0-3: 页面卸载时保存进度
     this.saveCurrentProgress(true);
 
     // ✅ FIX: 错题复习模式结束后恢复原题库
     this._restoreQuestionBankIfReview();
 
-    // ✅ 重置答题动画状态
-    resetAnimation();
     destroySoundResources();
   },
 
@@ -1077,7 +1090,7 @@ export default {
 
       // ✅ [闭环核心] mode=smart_review：从智能复习页传入的复习题目
       if (this._smartReviewMode) {
-        const reviewIds = uni.getStorageSync('smart_review_ids') || [];
+        const reviewIds = storageService.get('smart_review_ids', []) || [];
         if (reviewIds.length > 0) {
           const bank = storageService.get('v30_bank', []);
           const reviewQuestions = reviewIds
@@ -1101,7 +1114,7 @@ export default {
             );
           if (reviewQuestions.length > 0) {
             this.questions = reviewQuestions;
-            uni.removeStorageSync('smart_review_ids');
+            storageService.remove('smart_review_ids');
             this.startTimer();
             return;
           }
@@ -1120,7 +1133,12 @@ export default {
       }
 
       // 验证并标准化题目数据
-      let questions = bank
+      const activeBank = this.paperId ? bank.filter((q) => q.paperId === this.paperId) : bank;
+      if (this.paperId && activeBank.length === 0) {
+        toast.info('指定试卷加载失败，已切换全部题库');
+      }
+
+      let questions = (activeBank.length > 0 ? activeBank : bank)
         .map((q, index) =>
           normalizePracticeQuestion(
             {
@@ -1177,6 +1195,53 @@ export default {
     // 从选项文本中提取标签（如 "A. 选项内容" -> "A"）
     getOptionLabel(idx) {
       return getQuizOptionLabel(this.currentQuestion, idx);
+    },
+    loadPassageAnnotations() {
+      this.passageAnnotations = storageService.get('passage_annotations', {}) || {};
+    },
+    savePassageAnnotations() {
+      storageService.save('passage_annotations', this.passageAnnotations || {});
+    },
+    isPassageSegmentSelected(segmentIndex) {
+      return this.currentPassageAnnotations.some((item) => Number(item.segmentIndex) === Number(segmentIndex));
+    },
+    isFixedParagraph(item) {
+      return this.currentQuestionFixedParagraphs.some((fixed) => String(fixed) === String(item));
+    },
+    togglePassageSegment(segmentIndex) {
+      if (!this.currentQuestion) return;
+
+      const key = this.currentPassageAnnotationKey;
+      const current = [...(this.passageAnnotations[key] || [])];
+      const existingIndex = current.findIndex((item) => Number(item.segmentIndex) === Number(segmentIndex));
+
+      if (existingIndex >= 0) {
+        current.splice(existingIndex, 1);
+      } else {
+        current.push({
+          questionId: this.currentQuestion.id,
+          questionNumber: this.currentQuestionNumberText,
+          paperId: this.currentQuestion.paperId || '',
+          paperName: this.currentQuestion.paperName || '',
+          section: this.currentQuestion.section || '',
+          segmentIndex,
+          text: this.currentQuestionPassageSegments[segmentIndex] || '',
+          createdAt: Date.now()
+        });
+      }
+
+      this.passageAnnotations = {
+        ...this.passageAnnotations,
+        [key]: current
+      };
+      this.savePassageAnnotations();
+    },
+    clearCurrentPassageAnnotations() {
+      const key = this.currentPassageAnnotationKey;
+      const next = { ...(this.passageAnnotations || {}) };
+      delete next[key];
+      this.passageAnnotations = next;
+      this.savePassageAnnotations();
     },
     startTimer() {
       // 防重入：清除已有定时器，避免多次调用导致计时加速
@@ -1256,9 +1321,6 @@ export default {
       this.recordAnswerToAnalytics(isCorrect, timeSpent).catch((_err) => {
         /* silent analytics failure */
       });
-
-      // ✅ 游戏化：记录答题结果（XP / 成就 / 每日挑战 / 视觉反馈）
-      onAnswerResult({ isCorrect, timeSpent });
 
       if (isCorrect) {
         // ✅ 播放正确答案动画
@@ -1460,7 +1522,6 @@ export default {
       // 更新学习统计
       this.updateStudyStats();
 
-      // 游戏化反馈：评分 ≥ 3 视为"记得"，给予正面反馈
       if (rating >= 3) {
         this.playCorrectEffect();
       }
@@ -1540,18 +1601,6 @@ export default {
 
         // ✅ [闭环核心] 自动触发AI诊断（不等用户点击）
         this.showCompleteModal = true;
-        // ✅ [上瘾引擎] 完成session，全对额外奖励
-        const isPerfect = this.answeredQuestions.every((a) => a.isCorrect);
-        const sessionBonus = this.xpSystem.completeSession(isPerfect);
-        if (sessionBonus > 0) {
-          this.xpEarned = sessionBonus;
-          this.showXpToast = true;
-          this._safeTimeout(() => {
-            this.showXpToast = false;
-          }, 2000);
-        }
-        playCompleteFanfare();
-        // canvas-confetti removed for MVP (reduces bundle ~50KB)
         this.autoDiagnose();
       }
     },
@@ -1915,103 +1964,22 @@ export default {
 
     // ✅ 播放正确答案动画
     playCorrectEffect() {
-      const animData = playCorrectAnimation();
-      if (animData) {
-        this.correctAnimationClass = 'quiz-correct-animation';
-
-        // ✅ [上瘾引擎] 真实XP奖励 + 2x boost机制
-        let xpMultiplier = 1;
-        if (this.xpBoostActive && this.xpBoostRemaining > 0) {
-          xpMultiplier = 2;
-          this.xpBoostRemaining--;
-          if (this.xpBoostRemaining <= 0) this.xpBoostActive = false;
-        }
-        const xpResult = this.xpSystem.earnXP({
-          combo: animData.combo || 0,
-          difficulty: this.currentQuestion?.difficulty || 2,
-          isReview: this.mode === 'smart_review'
-        });
-        const finalXP = Math.round(xpResult.xpEarned * xpMultiplier);
-        if (xpMultiplier > 1) {
-          // 补偿boost差额
-          const bonus = xpResult.xpEarned;
-          this.xpSystem.state.value.totalXP += bonus;
-          this.xpSystem.state.value.todayXP += bonus;
-        }
-        this.xpEarned = finalXP;
-        this.showXpToast = true;
-        this._safeTimeout(() => {
-          this.showXpToast = false;
-        }, 1800);
-
-        // ✅ [上瘾引擎] 5连击触发2x XP boost（3题有效）
-        if ((animData.combo || 0) === 5 && !this.xpBoostActive) {
-          this.xpBoostActive = true;
-          this.xpBoostRemaining = 3;
-          this._safeTimeout(() => {
-            toast.info('2x XP Boost! 接下来3题双倍经验');
-          }, 500);
-        }
-
-        // ✅ [上瘾引擎] 升级提示
-        if (xpResult.levelUp && xpResult.newLevel) {
-          this._safeTimeout(() => {
-            playAchievementSound();
-            toast.info(`升级！${xpResult.newLevel.title}`, 2500);
-            this.showLevelUp = true;
-            this._safeTimeout(() => {
-              this.showLevelUp = false;
-            }, 2000);
-          }, 800);
-        }
-
-        // ✅ P0-2: 激活粒子特效（canvas-confetti已在quiz-animation.js中触发）
-        if (animData.particles && animData.particles.length > 0) {
-          this.particles = animData.particles;
-          this.showParticles = true;
-          this._safeTimeout(() => {
-            this.showParticles = false;
-            this.particles = [];
-          }, 1000);
-        }
-
-        // 更新连击显示
-        this.comboDisplay = getComboDisplay();
-        if (this.comboDisplay && this.comboDisplay.count >= 3) {
-          this.showComboEffect = true;
-          this._safeTimeout(() => {
-            this.showComboEffect = false;
-          }, 2000);
-        }
-
-        // 动画结束后清除类名
-        this._safeTimeout(() => {
-          this.correctAnimationClass = '';
-        }, 600);
-      }
+      playCorrectSound();
+      vibrateLight('light');
+      this.correctAnimationClass = 'quiz-correct-animation';
+      this._safeTimeout(() => {
+        this.correctAnimationClass = '';
+      }, 360);
     },
 
     // 播放错误答案动画
     playWrongEffect() {
-      const animData = playWrongAnimation();
-      if (animData) {
-        this.wrongAnimationClass = 'quiz-wrong-animation';
-
-        // 屏幕微震效果
-        this.screenShake = true;
-        this._safeTimeout(() => {
-          this.screenShake = false;
-        }, 500);
-
-        // 重置连击显示
-        this.comboDisplay = null;
-        this.showComboEffect = false;
-
-        // 动画结束后清除类名
-        this._safeTimeout(() => {
-          this.wrongAnimationClass = '';
-        }, 500);
-      }
+      playWrongSound();
+      vibrateLight('medium');
+      this.wrongAnimationClass = 'quiz-wrong-animation';
+      this._safeTimeout(() => {
+        this.wrongAnimationClass = '';
+      }, 360);
     },
 
     // ==================== 单题计时器相关方法 ====================
@@ -2208,21 +2176,15 @@ export default {
 .container {
   min-height: 100%;
   min-height: 100vh;
-  background: var(--background);
+  background: #f5f5f7;
   position: relative;
   overflow: hidden;
+  color: #1d1d1f;
 }
 
 /* 极光背景 */
 .aurora-bg {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 600rpx;
-  background: var(--gradient-aurora);
-  filter: blur(60px);
-  z-index: 0;
+  display: none;
 }
 
 /* 导航栏 */
@@ -2231,8 +2193,8 @@ export default {
   top: 0;
   width: 100%;
   z-index: 100;
-  background: var(--bg-card);
-  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.06);
+  background: rgba(245, 245, 247, 0.92);
+  box-shadow: 0 1rpx 0 rgba(0, 0, 0, 0.06);
 }
 .nav-content {
   height: 50px;
@@ -2252,14 +2214,20 @@ export default {
   font-weight: bold;
 }
 .progress-text {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 104rpx;
   font-size: 28rpx;
   font-weight: 700;
-  color: var(--text-primary);
+  color: #1d1d1f;
+  white-space: nowrap;
+  line-height: 1;
 }
 .timer-box {
   font-size: 24rpx;
-  color: var(--info);
-  background: rgba(28, 176, 246, 0.12);
+  color: #5f6672;
+  background: #ffffff;
   padding: 4rpx 20rpx;
   border-radius: 20rpx;
   display: flex;
@@ -2286,9 +2254,10 @@ export default {
 /* 单题计时器 */
 .question-timer-box {
   font-size: 26rpx;
-  font-weight: bold;
-  color: var(--text-primary);
-  background: var(--primary);
+  font-weight: 700;
+  color: #1d1d1f;
+  background: #ffffff;
+  border: 1rpx solid rgba(0, 0, 0, 0.06);
   padding: 6rpx 24rpx;
   border-radius: 24rpx;
   display: flex;
@@ -2308,13 +2277,15 @@ export default {
 
 /* 时间警告状态 */
 .question-timer-box.warning {
-  background: linear-gradient(135deg, var(--ds-color-warning, #ff9800), var(--warning));
+  background: #fff7e6;
+  color: #9a5b00;
   animation: timerPulse 1s ease-in-out infinite;
 }
 
 /* 时间危险状态 */
 .question-timer-box.danger {
-  background: linear-gradient(135deg, var(--ds-color-error, #f44336), var(--danger));
+  background: #fff1f0;
+  color: #b42318;
   animation: timerShake 0.5s ease-in-out infinite;
 }
 
@@ -2345,7 +2316,7 @@ export default {
 .quiz-scroll {
   height: 100%;
   height: 100vh;
-  padding: 0 30rpx;
+  padding: 0 28rpx;
   box-sizing: border-box;
   position: relative;
   z-index: 1;
@@ -2353,12 +2324,12 @@ export default {
 
 /* 玻璃卡片通用样式 */
 .glass-card {
-  background: var(--bg-card);
-  border: 2rpx solid rgba(0, 0, 0, 0.04);
+  background: #ffffff;
+  border: 1rpx solid rgba(0, 0, 0, 0.06);
   border-radius: 24rpx;
-  padding: 40rpx;
-  margin-bottom: 30rpx;
-  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
+  padding: 36rpx;
+  margin-bottom: 24rpx;
+  box-shadow: 0 10rpx 28rpx rgba(15, 23, 42, 0.06);
 }
 
 .quiz-loading-overlay {
@@ -2374,7 +2345,7 @@ export default {
   width: 70rpx;
   height: 70rpx;
   margin-bottom: 28rpx;
-  border: 2rpx solid rgba(0, 184, 107, 0.18);
+  border: 2rpx solid rgba(31, 122, 77, 0.18);
   border-radius: 50%;
 }
 
@@ -2386,7 +2357,7 @@ export default {
   height: 18rpx;
   margin-left: -9rpx;
   border-radius: 50%;
-  background: #00b86b;
+  background: #1f7a4d;
   transform-origin: 9rpx 27rpx;
   animation: quizLoadingOrbit 1.1s linear infinite;
 }
@@ -2400,14 +2371,14 @@ export default {
 
 .quiz-loading-title {
   font-size: 36rpx;
-  font-weight: 800;
-  color: var(--text-primary);
+  font-weight: 760;
+  color: #1d1d1f;
   line-height: 1.28;
 }
 
 .quiz-loading-subtitle {
   margin-top: 10rpx;
-  color: var(--text-secondary);
+  color: #5f6672;
   font-size: 26rpx;
   line-height: 1.5;
 }
@@ -2422,7 +2393,7 @@ export default {
   height: 18rpx;
   margin-top: 18rpx;
   border-radius: 999rpx;
-  background: linear-gradient(90deg, rgba(0, 184, 107, 0.1), rgba(0, 184, 107, 0.2), rgba(0, 184, 107, 0.1));
+  background: linear-gradient(90deg, rgba(31, 122, 77, 0.08), rgba(31, 122, 77, 0.18), rgba(31, 122, 77, 0.08));
   background-size: 220% 100%;
   animation: quizLoadingPulse 1.25s ease-in-out infinite;
 }
@@ -2491,19 +2462,15 @@ export default {
 }
 
 .question-card.card-answered {
-  animation: cardFlipPulse 0.5s cubic-bezier(0.32, 0.72, 0, 1);
+  animation: none;
 }
 
 .question-card.card-correct {
-  animation:
-    cardFlipPulse 0.5s cubic-bezier(0.32, 0.72, 0, 1),
-    correctGlow 0.6s ease-out;
+  animation: none;
 }
 
 .question-card.card-wrong {
-  animation:
-    cardFlipPulse 0.5s cubic-bezier(0.32, 0.72, 0, 1),
-    wrongGlow 0.6s ease-out;
+  animation: none;
 }
 
 @keyframes cardFlipPulse {
@@ -2548,8 +2515,8 @@ export default {
 /* 题目卡片 */
 .question-card .q-tag {
   display: inline-block;
-  background: rgba(28, 176, 246, 0.12);
-  color: var(--info);
+  background: #f2f3f5;
+  color: #5f6672;
   font-size: 24rpx;
   font-weight: 700;
   padding: 4rpx 16rpx;
@@ -2560,16 +2527,16 @@ export default {
   font-size: 34rpx;
   font-weight: 700;
   line-height: 1.6;
-  color: var(--text-primary);
+  color: #1d1d1f;
   display: block;
 }
 
 .q-passage-card {
-  margin-bottom: 24rpx;
+  margin-bottom: 28rpx;
   padding: 24rpx;
-  border: 2rpx solid rgba(20, 32, 23, 0.08);
+  border: 1rpx solid rgba(0, 0, 0, 0.06);
   border-radius: 22rpx;
-  background: rgba(246, 248, 242, 0.92);
+  background: #fafafa;
 }
 
 .q-passage-head {
@@ -2580,28 +2547,127 @@ export default {
   margin-bottom: 14rpx;
 }
 
+.q-passage-title-block {
+  min-width: 0;
+  flex: 1;
+}
+
 .q-passage-kicker {
-  color: rgba(20, 32, 23, 0.58);
+  display: block;
+  color: #8e8e93;
   font-size: 21rpx;
-  font-weight: 900;
+  font-weight: 760;
+}
+
+.q-passage-tip {
+  display: block;
+  margin-top: 6rpx;
+  color: #8e8e93;
+  font-size: 21rpx;
+  font-weight: 650;
+  line-height: 1.35;
 }
 
 .q-passage-meta {
   flex-shrink: 0;
-  color: rgba(20, 32, 23, 0.46);
+  color: #8e8e93;
   font-size: 20rpx;
   font-weight: 700;
 }
 
+.q-fixed-sequence {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10rpx;
+  margin-bottom: 16rpx;
+}
+
+.q-fixed-sequence-item {
+  min-width: 52rpx;
+  padding: 8rpx 12rpx;
+  border: 1rpx solid rgba(0, 0, 0, 0.08);
+  border-radius: 999rpx;
+  background: #ffffff;
+  color: #5f6672;
+  text-align: center;
+  font-size: 21rpx;
+  font-weight: 760;
+}
+
+.q-fixed-sequence-item.locked {
+  border-color: rgba(31, 122, 77, 0.22);
+  background: rgba(31, 122, 77, 0.08);
+  color: #1f7a4d;
+}
+
 .q-passage-scroll {
-  max-height: 420rpx;
+  max-height: 620rpx;
+}
+
+.q-passage-segments {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+
+.q-passage-segment {
+  display: flex;
+  align-items: flex-start;
+  gap: 14rpx;
+  padding: 16rpx 18rpx;
+  border: 1rpx solid transparent;
+  border-radius: 18rpx;
+  background: #ffffff;
+}
+
+.q-passage-segment.active {
+  border-color: rgba(31, 122, 77, 0.32);
+  background: rgba(31, 122, 77, 0.08);
+}
+
+.q-segment-marker {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 38rpx;
+  height: 38rpx;
+  border-radius: 50%;
+  background: #f2f3f5;
+  color: #5f6672;
+  font-size: 20rpx;
+  font-weight: 800;
+}
+
+.q-passage-segment.active .q-segment-marker {
+  background: #1f7a4d;
+  color: #fff;
 }
 
 .q-passage-content {
   display: block;
-  color: rgba(20, 32, 23, 0.86);
+  color: #1d1d1f;
   font-size: 27rpx;
-  line-height: 1.68;
+  line-height: 1.72;
+}
+
+.q-passage-annotation {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16rpx;
+  margin-top: 16rpx;
+  padding-top: 14rpx;
+  border-top: 1rpx solid rgba(0, 0, 0, 0.06);
+  color: #5f6672;
+  font-size: 22rpx;
+  font-weight: 700;
+}
+
+.q-passage-clear {
+  flex-shrink: 0;
+  color: #1f7a4d;
 }
 
 /* 选项列表 */
@@ -2612,8 +2678,8 @@ export default {
   display: flex;
   align-items: center;
   padding: 30rpx 40rpx;
-  background: var(--bg-card);
-  border: 2rpx solid rgba(0, 0, 0, 0.08);
+  background: #ffffff;
+  border: 1rpx solid rgba(0, 0, 0, 0.08);
   border-radius: 20rpx;
   transition: all 0.2s;
   position: relative;
@@ -2622,25 +2688,40 @@ export default {
   transform: scale(0.98);
 }
 .option-item.selected {
-  border-color: var(--info);
+  border-color: #1f7a4d;
   background: rgba(28, 176, 246, 0.08);
 }
 .option-item.correct {
-  border-color: #58cc02;
-  background: rgba(88, 204, 2, 0.08);
+  border-color: #34c759;
+  background: rgba(52, 199, 89, 0.08);
 }
 .option-item.wrong {
-  border-color: var(--danger);
-  background: rgba(255, 75, 75, 0.08);
+  border-color: #ff3b30;
+  background: rgba(255, 59, 48, 0.08);
+}
+.option-item.option-folded {
+  max-height: 64rpx;
+  padding-top: 16rpx;
+  padding-bottom: 16rpx;
+  opacity: 0.34;
+  box-shadow: none;
+}
+.option-item.option-folded .opt-text {
+  max-height: 36rpx;
+  overflow: hidden;
+  color: #8e8e93;
+}
+.option-item.option-muted-after-answer {
+  background: rgba(255, 255, 255, 0.72);
 }
 .option-item.disabled {
   opacity: 0.5;
   pointer-events: none;
 }
 .opt-index {
-  font-weight: 800;
-  color: var(--text-primary);
-  background: var(--bg-secondary);
+  font-weight: 760;
+  color: #1d1d1f;
+  background: #f2f3f5;
   font-size: 32rpx;
   flex-shrink: 0;
   width: 56rpx;
@@ -2654,8 +2735,8 @@ export default {
 .opt-text {
   flex: 1;
   font-size: 30rpx;
-  color: var(--text-primary);
-  font-weight: 600;
+  color: #1d1d1f;
+  font-weight: 500;
   line-height: 1.5;
   word-break: break-all;
 }
@@ -2742,15 +2823,16 @@ export default {
 .result-pop {
   position: fixed;
   /* 适配 iPhone 14/15 Pro 底部安全区域：使用 env() 动态计算 bottom 值 */
-  bottom: calc(150rpx + constant(safe-area-inset-bottom));
-  bottom: calc(150rpx + env(safe-area-inset-bottom));
+  bottom: calc(120rpx + constant(safe-area-inset-bottom));
+  bottom: calc(120rpx + env(safe-area-inset-bottom));
   left: 30rpx;
   right: 30rpx;
   z-index: 300;
-  padding: 40rpx;
-  background: var(--bg-card);
+  padding: 36rpx;
+  background: #ffffff;
+  border: 1rpx solid rgba(0, 0, 0, 0.06);
   border-radius: 28rpx;
-  box-shadow: 0 -8rpx 40rpx rgba(0, 0, 0, 0.1);
+  box-shadow: 0 -8rpx 40rpx rgba(15, 23, 42, 0.12);
   animation: slideUpResult 0.35s cubic-bezier(0.32, 0.72, 0, 1) forwards;
 
   /* FSRS 按钮色彩变量 — 基于全局语义色的半透明变体 */
@@ -2781,7 +2863,7 @@ export default {
   left: 0;
   right: 0;
   bottom: 0;
-  background: var(--overlay, rgba(0, 0, 0, 0.3));
+  background: rgba(0, 0, 0, 0.18);
   z-index: 299;
   animation: fadeInBackdrop 0.2s ease forwards;
 }
@@ -2795,12 +2877,12 @@ export default {
 }
 
 .result-pop.correct {
-  background: var(--success);
-  color: var(--text-primary-foreground);
+  background: #ffffff;
+  color: #1d1d1f;
 }
 .result-pop.wrong {
-  background: var(--danger);
-  color: var(--text-primary-foreground);
+  background: #ffffff;
+  color: #1d1d1f;
 }
 
 .result-header {
@@ -2828,9 +2910,9 @@ export default {
   width: auto;
   padding: 0 22rpx;
   border-radius: 999rpx;
-  background: rgba(255, 255, 255, 0.94);
-  color: #1a1d26;
-  box-shadow: 0 4rpx 0 rgba(26, 29, 38, 0.16);
+  background: #1d1d1f;
+  color: #ffffff;
+  box-shadow: none;
 }
 
 .result-icon-btn:active {
@@ -2840,9 +2922,9 @@ export default {
 
 .result-primary-action-hover,
 .result-primary-action:active {
-  transform: translateY(2rpx) scale(0.98);
+  transform: scale(0.98);
   opacity: 0.9;
-  box-shadow: 0 2rpx 0 rgba(26, 29, 38, 0.18);
+  box-shadow: none;
 }
 
 .result-primary-action.disabled {
@@ -2851,24 +2933,24 @@ export default {
 
 .result-icon {
   font-size: 60rpx;
-  font-weight: bold;
-  color: #1a1d26;
+  font-weight: 700;
+  color: #ffffff;
 }
 
 .result-primary-label {
   margin-left: 10rpx;
   font-size: 26rpx;
-  font-weight: 800;
-  color: #1a1d26;
+  font-weight: 700;
+  color: #ffffff;
 }
 
 .status-title {
   position: relative;
   z-index: 1;
   font-size: 36rpx;
-  font-weight: 800;
+  font-weight: 760;
   flex: 1;
-  text-align: center;
+  text-align: left;
 }
 
 /* 智能深度诊断区域 */
@@ -2885,8 +2967,8 @@ export default {
   @include em-flex-gap(10rpx, row);
   margin-bottom: 20rpx;
   padding: 10rpx 20rpx;
-  background: var(--overlay);
-  border-radius: 20rpx;
+  background: #f2f3f5;
+  border-radius: 18rpx;
 }
 .sparkle-icon {
   font-size: 28rpx;
@@ -2895,6 +2977,7 @@ export default {
   font-size: 24rpx;
   font-weight: 600;
   opacity: 0.9;
+  color: #5f6672;
 }
 .analysis-body {
   font-size: 28rpx;
@@ -2903,6 +2986,7 @@ export default {
   word-wrap: break-word;
   display: block;
   padding: 0 20rpx;
+  color: #1d1d1f;
 }
 /* AI个人历史微反馈 */
 .personal-hint-bar {
@@ -2995,12 +3079,72 @@ export default {
 }
 .answer-label {
   font-size: 24rpx;
-  color: var(--text-sub);
+  color: #8e8e93;
 }
 .answer-value {
   font-size: 32rpx;
-  font-weight: bold;
-  color: var(--success-light);
+  font-weight: 700;
+  color: #1f7a4d;
+}
+
+.knowledge-card {
+  margin: 0 20rpx 22rpx;
+  padding: 22rpx;
+  border: 1rpx solid rgba(31, 122, 77, 0.12);
+  border-radius: 20rpx;
+  background: rgba(31, 122, 77, 0.06);
+}
+
+.knowledge-card.compact {
+  margin: 0 0 20rpx;
+}
+
+.knowledge-card-head {
+  display: flex;
+  align-items: baseline;
+  gap: 12rpx;
+}
+
+.knowledge-label {
+  flex-shrink: 0;
+  padding: 4rpx 10rpx;
+  border-radius: 999rpx;
+  background: rgba(31, 122, 77, 0.12);
+  color: #1f7a4d;
+  font-size: 20rpx;
+  font-weight: 850;
+}
+
+.knowledge-title {
+  min-width: 0;
+  color: #1d1d1f;
+  font-size: 27rpx;
+  font-weight: 760;
+  line-height: 1.35;
+}
+
+.knowledge-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8rpx;
+  margin-top: 14rpx;
+}
+
+.knowledge-tag {
+  padding: 5rpx 10rpx;
+  border-radius: 999rpx;
+  background: #ffffff;
+  color: #5f6672;
+  font-size: 20rpx;
+  font-weight: 700;
+}
+
+.knowledge-detail {
+  display: block;
+  margin-top: 14rpx;
+  color: #3f4652;
+  font-size: 25rpx;
+  line-height: 1.64;
 }
 
 .ai-analysis-brief {
@@ -3009,10 +3153,12 @@ export default {
   font-size: 26rpx;
   margin-bottom: 30rpx;
   line-height: 1.5;
+  color: #1d1d1f;
 }
 .ai-analysis-brief .label {
-  font-weight: bold;
+  font-weight: 700;
   margin-right: 10rpx;
+  color: #5f6672;
 }
 
 .footer-placeholder {
@@ -3065,161 +3211,6 @@ export default {
   transition: all 0.3s ease;
 }
 
-/* ==================== 新增样式：连击特效 ==================== */
-.combo-effect {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 500;
-  pointer-events: none;
-  animation: comboPopIn 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-}
-
-.combo-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  color: var(--warning);
-  text-shadow: 0 4rpx 20rpx rgba(255, 150, 0, 0.3);
-}
-
-.combo-count {
-  font-size: 120rpx;
-  font-weight: 900;
-  line-height: 1;
-}
-
-.combo-label {
-  font-size: 36rpx;
-  font-weight: bold;
-  margin-top: -10rpx;
-}
-
-.combo-message {
-  font-size: 28rpx;
-  font-weight: 600;
-  margin-top: 10rpx;
-  padding: 8rpx 24rpx;
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 20rpx;
-}
-
-/* ==================== 屏幕微震 ==================== */
-.screen-shake {
-  animation: screenShake 0.4s ease-out;
-}
-
-@keyframes screenShake {
-  0%,
-  100% {
-    transform: translateX(0);
-  }
-  10% {
-    transform: translateX(-6px) rotate(-0.5deg);
-  }
-  20% {
-    transform: translateX(6px) rotate(0.5deg);
-  }
-  30% {
-    transform: translateX(-5px);
-  }
-  40% {
-    transform: translateX(5px);
-  }
-  50% {
-    transform: translateX(-3px);
-  }
-  60% {
-    transform: translateX(3px);
-  }
-  70% {
-    transform: translateX(-1px);
-  }
-}
-
-/* ==================== XP飞入动画 ==================== */
-.xp-flyout {
-  position: fixed;
-  top: 35%;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 600;
-  pointer-events: none;
-  animation: xpFlyUp 1.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-  display: flex;
-  align-items: center;
-}
-
-.xp-flyout-text {
-  font-size: 52rpx;
-  font-weight: 800;
-  color: var(--warning);
-  text-shadow:
-    0 2px 8px rgba(255, 215, 0, 0.5),
-    0 0 20px rgba(255, 215, 0, 0.3);
-  font-variant-numeric: tabular-nums;
-}
-
-@keyframes xpFlyUp {
-  0% {
-    opacity: 0;
-    transform: translateX(-50%) translateY(20px) scale(0.5);
-  }
-  20% {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0) scale(1.2);
-  }
-  40% {
-    transform: translateX(-50%) translateY(-10px) scale(1);
-  }
-  100% {
-    opacity: 0;
-    transform: translateX(-50%) translateY(-80px) scale(0.8);
-  }
-}
-
-/* ==================== [上瘾引擎] XP Boost指示器 ==================== */
-.xp-boost-indicator {
-  position: fixed;
-  top: 120px;
-  right: 16px;
-  z-index: 550;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 8rpx 16rpx;
-  background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 107, 53, 0.15));
-  border: 1rpx solid rgba(255, 215, 0, 0.4);
-  border-radius: 16rpx;
-  animation: boostPulse 1.5s ease-in-out infinite;
-}
-
-.xp-boost-text {
-  font-size: 24rpx;
-  font-weight: 800;
-  color: var(--warning);
-  text-shadow: 0 1px 4px rgba(255, 215, 0, 0.4);
-}
-
-.xp-boost-remaining {
-  font-size: 22rpx;
-  color: rgba(255, 215, 0, 0.7);
-  margin-top: 2rpx;
-}
-
-@keyframes boostPulse {
-  0%,
-  100% {
-    transform: scale(1);
-    box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.2);
-  }
-  50% {
-    transform: scale(1.05);
-    box-shadow: 0 0 12px 4px rgba(255, 215, 0, 0.15);
-  }
-}
-
 /* ==================== 新增样式：答题动画 ==================== */
 @keyframes correctPulse {
   0% {
@@ -3258,29 +3249,12 @@ export default {
   }
 }
 
-@keyframes comboPopIn {
-  0% {
-    transform: translate(-50%, -50%) scale(0) rotate(-180deg);
-    opacity: 0;
-  }
-  50% {
-    transform: translate(-50%, -50%) scale(1.3) rotate(10deg);
-  }
-  70% {
-    transform: translate(-50%, -50%) scale(0.9) rotate(-5deg);
-  }
-  100% {
-    transform: translate(-50%, -50%) scale(1) rotate(0deg);
-    opacity: 1;
-  }
-}
-
 .quiz-correct-animation {
-  animation: correctPulse 0.6s ease-out;
+  animation: none;
 }
 
 .quiz-wrong-animation {
-  animation: wrongShake 0.5s ease-out;
+  animation: none;
 }
 
 /* ==================== 新增样式：滑动提示 ==================== */
@@ -3467,38 +3441,6 @@ export default {
   transform: scale(0.98);
 }
 
-/* ✅ P0-2: 粒子特效 */
-.particle-container {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  z-index: 200;
-  pointer-events: none;
-}
-.particle {
-  position: absolute;
-  width: var(--size);
-  height: var(--size);
-  background: var(--color);
-  animation: particleBurst var(--duration) ease-out var(--delay) forwards;
-  opacity: 0;
-}
-.particle.circle {
-  border-radius: 50%;
-}
-.particle.star {
-  clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
-}
-@keyframes particleBurst {
-  0% {
-    transform: translate(0, 0) scale(1);
-    opacity: 1;
-  }
-  100% {
-    transform: translate(calc(cos(var(--angle)) * var(--distance)), calc(sin(var(--angle)) * var(--distance))) scale(0);
-    opacity: 0;
-  }
-}
 /* FSRS 智能评分按钮（答对/答错各显示2个） */
 .fsrs-rating-row {
   display: flex;
@@ -3549,26 +3491,26 @@ export default {
 
 .fsrs-again {
   background: rgba(255, 75, 75, 0.12);
-  border: 2rpx solid transparent;
-  box-shadow: 0 4rpx 0 #e04343;
+  border: 1rpx solid rgba(255, 59, 48, 0.16);
+  box-shadow: none;
 }
 
 .fsrs-hard {
   background: rgba(255, 150, 0, 0.12);
-  border: 2rpx solid transparent;
-  box-shadow: 0 4rpx 0 #d98000;
+  border: 1rpx solid rgba(255, 149, 0, 0.16);
+  box-shadow: none;
 }
 
 .fsrs-good {
   background: rgba(88, 204, 2, 0.12);
-  border: 2rpx solid transparent;
-  box-shadow: 0 4rpx 0 #46a302;
+  border: 1rpx solid rgba(52, 199, 89, 0.16);
+  box-shadow: none;
 }
 
 .fsrs-easy {
   background: rgba(28, 176, 246, 0.12);
-  border: 2rpx solid transparent;
-  box-shadow: 0 4rpx 0 var(--info-dark, #1899d6);
+  border: 1rpx solid rgba(31, 122, 77, 0.16);
+  box-shadow: none;
 }
 
 .fsrs-rating-label {
@@ -3619,17 +3561,17 @@ export default {
   align-items: center;
   justify-content: center;
   padding: 28rpx 60rpx;
-  background: linear-gradient(135deg, #00b86b, #00a65e);
-  border-radius: 24rpx;
-  box-shadow: 0 8rpx 0 #008a4c;
+  background: #1d1d1f;
+  border-radius: 22rpx;
+  box-shadow: none;
   transition:
     transform 0.15s,
     box-shadow 0.15s;
 }
 
 .flashcard-reveal-btn:active {
-  transform: translateY(4rpx);
-  box-shadow: 0 4rpx 0 #008a4c;
+  transform: scale(0.98);
+  box-shadow: none;
 }
 
 .flashcard-reveal-text {
@@ -3661,7 +3603,7 @@ export default {
 
 .flashcard-answer-card {
   padding: 30rpx;
-  border-left: 6rpx solid #00b86b;
+  border-left: 6rpx solid #1f7a4d;
 }
 
 .flashcard-answer-label {
@@ -3669,7 +3611,7 @@ export default {
   align-items: center;
   font-size: 26rpx;
   font-weight: 700;
-  color: #00b86b;
+  color: #1f7a4d;
   margin-bottom: 20rpx;
 }
 
@@ -3791,113 +3733,4 @@ export default {
   pointer-events: none;
 }
 
-/* ==================== 连击火焰特效图标 ==================== */
-.combo-fire-icon {
-  width: 64rpx;
-  height: 64rpx;
-  animation: combo-fire-pulse 0.5s ease-in-out infinite alternate;
-}
-@keyframes combo-fire-pulse {
-  from {
-    transform: scale(0.9);
-  }
-  to {
-    transform: scale(1.15);
-  }
-}
-
-/* ==================== combo ≥5 火焰徽章：题目右上角缩放+淡出 ==================== */
-.combo-fire-badge {
-  position: absolute;
-  top: -12rpx;
-  right: -12rpx;
-  width: 80rpx;
-  height: 80rpx;
-  z-index: 10;
-  pointer-events: none;
-  animation: combo-fire-burst 1.2s ease-out forwards;
-}
-@keyframes combo-fire-burst {
-  0% {
-    opacity: 0;
-    transform: scale(0.2) rotate(-15deg);
-  }
-  20% {
-    opacity: 1;
-    transform: scale(1.5) rotate(8deg);
-  }
-  40% {
-    transform: scale(1.1) rotate(-4deg);
-  }
-  60% {
-    opacity: 1;
-    transform: scale(1.25) rotate(2deg);
-  }
-  80% {
-    opacity: 0.7;
-    transform: scale(1) rotate(0deg);
-  }
-  100% {
-    opacity: 0;
-    transform: scale(0.6) translateY(-30rpx);
-  }
-}
-
-/* ==================== XP金币特效图标 ==================== */
-.xp-coins-icon {
-  width: 48rpx;
-  height: 48rpx;
-  margin-right: 8rpx;
-}
-
-/* ==================== 升级箭头特效 ==================== */
-.level-up-overlay {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  z-index: 999;
-  animation: level-up-appear 2s ease-out forwards;
-  pointer-events: none;
-}
-.level-up-icon {
-  width: 160rpx;
-  height: 160rpx;
-}
-.level-up-text {
-  font-size: 48rpx;
-  font-weight: 900;
-  color: var(--warning);
-  text-shadow: 0 4rpx 8rpx rgba(0, 0, 0, 0.3);
-  margin-top: 16rpx;
-}
-@keyframes level-up-appear {
-  0% {
-    opacity: 0;
-    transform: translate(-50%, -50%) scale(0.3);
-  }
-  30% {
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1.2);
-  }
-  70% {
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1);
-  }
-  100% {
-    opacity: 0;
-    transform: translate(-50%, -70%) scale(0.8);
-  }
-}
-
-/* ==================== 暗色模式：特效降低亮度 ==================== */
-.dark-mode .combo-effect,
-.dark-mode .xp-flyout,
-.dark-mode .level-up-overlay,
-.dark-mode .combo-fire-badge {
-  opacity: 0.85;
-}
 </style>

@@ -102,6 +102,7 @@
 <script setup>
 import { computed, ref } from 'vue';
 import { storageService } from '@/services/storageService.js';
+import { openHomeTab } from '@/utils/home-navigation.js';
 
 const step = ref(0);
 const dailyGoal = ref(25);
@@ -200,12 +201,12 @@ function saveOnboardingData(completed = true) {
 
 function completeOnboarding() {
   saveOnboardingData(true);
-  uni.switchTab({ url: '/pages/index/index' });
+  openHomeTab();
 }
 
 function skipOnboarding() {
   saveOnboardingData(true);
-  uni.switchTab({ url: '/pages/index/index' });
+  openHomeTab();
 }
 </script>
 

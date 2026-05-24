@@ -53,8 +53,6 @@ LLM_PROVIDER_KEY_ENVS = [
     *[f"SILICONFLOW_DS_KEY_{index}" for index in range(1, 11)],
 ]
 SUPPORT_EVIDENCE_NAME_PATTERNS = (
-    "答案",
-    "解析",
     "逐题",
     "逐词",
     "细解",
@@ -69,6 +67,14 @@ ANSWER_PLACEHOLDERS = {
     "完整的答案解析文本",
     "参考答案全文",
     "答案解析文本",
+}
+PUBLIC_RELEASE_TRACK_ORDER = {
+    "politics": 0,
+    "english1": 1,
+    "english2": 2,
+    "math1": 3,
+    "math2": 4,
+    "math3": 5,
 }
 
 
@@ -159,6 +165,11 @@ def select_pending_tasks(
     limit: int,
     task_id: str | None = None,
     source_id: str | None = None,
+    track: str | None = None,
+    min_year: int | None = None,
+    max_year: int | None = None,
+    source_type: str | None = None,
+    paper_role: str = "all",
 ) -> list[dict[str, Any]]:
     tasks = [
         task for task in queue.get("tasks", [])
@@ -170,15 +181,56 @@ def select_pending_tasks(
         tasks = [task for task in tasks if task.get("taskId") == task_id]
     if source_id:
         tasks = [task for task in tasks if task.get("sourceId") == source_id]
-    tasks.sort(
-        key=lambda row: (
-            -int(row.get("priority") or 0),
-            str(row.get("track") or ""),
-            str(row.get("year") or ""),
-            str(row.get("safeDisplayName") or row.get("fileName") or ""),
-        )
-    )
+    if track:
+        tasks = [task for task in tasks if str(task.get("track") or "") == track]
+    if source_type:
+        tasks = [task for task in tasks if str(task.get("sourceType") or "") == source_type]
+    if min_year is not None:
+        tasks = [task for task in tasks if safe_int(task.get("year")) >= min_year]
+    if max_year is not None:
+        tasks = [task for task in tasks if safe_int(task.get("year")) <= max_year]
+    if paper_role == "main":
+        tasks = [task for task in tasks if not is_support_evidence_task(task)]
+    elif paper_role == "support":
+        tasks = [task for task in tasks if is_support_evidence_task(task)]
+    tasks.sort(key=cleaning_task_sort_key)
     return tasks[:limit] if limit > 0 else tasks
+
+
+def is_support_evidence_task(task: dict[str, Any]) -> bool:
+    evidence_name = " ".join(
+        str(task.get(key) or "")
+        for key in ("safeDisplayName", "fileName")
+    ).lower()
+    track = str(task.get("track") or "")
+    if track.startswith("math") and "真题" in evidence_name:
+        return False
+    if track.startswith("math") and re.search(r"\d{4}\s*数[一二三]\s*标准答案及解析", evidence_name):
+        return False
+    if any(pattern in evidence_name for pattern in ("答案速查", "参考答案", "标准答案", "答案解析", "真题解析", "解析册")):
+        return True
+    return any(pattern.lower() in evidence_name for pattern in SUPPORT_EVIDENCE_NAME_PATTERNS)
+
+
+def cleaning_task_sort_key(task: dict[str, Any]) -> tuple[Any, ...]:
+    track = str(task.get("track") or "")
+    year = safe_int(task.get("year"))
+    release_year = year if 2005 <= year <= 2026 else 9999
+    track_order = PUBLIC_RELEASE_TRACK_ORDER.get(track, len(PUBLIC_RELEASE_TRACK_ORDER))
+    return (
+        -int(task.get("priority") or 0),
+        release_year,
+        track_order,
+        year,
+        str(task.get("safeDisplayName") or task.get("fileName") or ""),
+    )
+
+
+def safe_int(value: Any, fallback: int = -1) -> int:
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return fallback
 
 
 def default_downloader(tasks: list[dict[str, Any]]) -> BaiduPan:
@@ -245,12 +297,27 @@ def run_queue_once(
     now: str | None = None,
     task_id: str | None = None,
     source_id: str | None = None,
+    track: str | None = None,
+    min_year: int | None = None,
+    max_year: int | None = None,
+    source_type: str | None = None,
+    paper_role: str = "all",
     downloader: Any | None = None,
     processor: Callable[[dict[str, Any], Path], dict[str, Any]] | None = None,
 ) -> tuple[dict[str, Any], dict[str, Any]]:
     now = now or utc_now()
     updated = deepcopy(queue)
-    planned = select_pending_tasks(updated, limit=limit, task_id=task_id, source_id=source_id)
+    planned = select_pending_tasks(
+        updated,
+        limit=limit,
+        task_id=task_id,
+        source_id=source_id,
+        track=track,
+        min_year=min_year,
+        max_year=max_year,
+        source_type=source_type,
+        paper_role=paper_role,
+    )
     active_downloader = downloader or (default_downloader(planned) if planned else None)
     active_processor = processor or default_processor
     by_task_id = {task.get("taskId"): task for task in updated.get("tasks", [])}
@@ -341,6 +408,16 @@ def main() -> None:
     parser.add_argument("--limit", type=int, default=1)
     parser.add_argument("--task-id", help="Run one explicit pending download_and_extract task.")
     parser.add_argument("--source-id", help="Run pending download_and_extract tasks for one explicit sourceId.")
+    parser.add_argument("--track", help="Only run pending tasks for a public course track, e.g. english1.")
+    parser.add_argument("--min-year", type=int, help="Only run tasks with year >= this value.")
+    parser.add_argument("--max-year", type=int, help="Only run tasks with year <= this value.")
+    parser.add_argument("--source-type", help="Only run tasks with this sourceType, e.g. official_paper.")
+    parser.add_argument(
+        "--paper-role",
+        choices=["all", "main", "support"],
+        default="all",
+        help="Filter official-paper tasks by role inferred from the filename/path.",
+    )
     parser.add_argument("--env-file", action="append", type=Path, default=[])
     parser.add_argument("--no-default-env-files", action="store_true")
     parser.add_argument("--override-env", action="store_true")
@@ -359,7 +436,17 @@ def main() -> None:
     load_env_files(env_files, override=args.override_env)
 
     queue = read_json(args.queue, {"tasks": []})
-    planned = select_pending_tasks(queue, limit=args.limit, task_id=args.task_id, source_id=args.source_id)
+    planned = select_pending_tasks(
+        queue,
+        limit=args.limit,
+        task_id=args.task_id,
+        source_id=args.source_id,
+        track=args.track,
+        min_year=args.min_year,
+        max_year=args.max_year,
+        source_type=args.source_type,
+        paper_role=args.paper_role,
+    )
     print(f"[cleaning-runner] planned={len(planned)} limit={args.limit}")
     for task in planned[:20]:
         print(f"[cleaning-runner] plan {task.get('taskId')} {task.get('safeDisplayName') or task.get('fileName')}")
@@ -368,7 +455,17 @@ def main() -> None:
         return
 
     ensure_llm_configured()
-    updated, report = run_queue_once(queue, limit=args.limit, task_id=args.task_id, source_id=args.source_id)
+    updated, report = run_queue_once(
+        queue,
+        limit=args.limit,
+        task_id=args.task_id,
+        source_id=args.source_id,
+        track=args.track,
+        min_year=args.min_year,
+        max_year=args.max_year,
+        source_type=args.source_type,
+        paper_role=args.paper_role,
+    )
     write_json(args.output, updated)
     print(
         "[cleaning-runner] "

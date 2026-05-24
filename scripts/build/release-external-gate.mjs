@@ -338,7 +338,7 @@ function registryFromFile(filePath) {
 
 function validateSourceManifest(payload) {
   const items = Array.isArray(payload?.items) ? payload.items : [];
-  const validSourceChannels = new Set(['app_dir', 'sharelink', 'group_service', 'netdisk_full_path']);
+  const validSourceChannels = new Set(['app_dir', 'sharelink', 'group_service', 'group_file_index', 'netdisk_full_path']);
   const validSources = items.filter((item) => {
     if (item?.provider !== 'baidu_pan') return false;
     if (!validSourceChannels.has(String(item?.sourceChannel || ''))) return false;
@@ -377,7 +377,9 @@ function checkBaiduSync(env, options) {
   const hasRegistry = Boolean(registry);
   const hasValidRegistry = registry?.status === 'parsed' && registry.validation.ok;
   const hasValidSourceManifest = sourceManifest?.status === 'parsed' && sourceManifest.validation.ok;
-  const registrySource = hasValidRegistry
+  const registrySource = hasValidSourceManifest
+    ? 'source_manifest'
+    : hasValidRegistry
     ? registryEnv
       ? 'env'
       : 'file'

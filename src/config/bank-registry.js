@@ -15,6 +15,7 @@ const PUBLIC_COURSE_TRACKS = [
 
 const PAPER_QUALITY = {
   READY: 'ready',
+  DRAFT: 'draft',
   NEEDS_PASSAGE: 'needs_passage',
   NEEDS_REVIEW: 'needs_review',
   NEEDS_CLEANING: 'needs_cleaning',
@@ -27,23 +28,27 @@ function paperSections(...items) {
   return items.filter(Boolean);
 }
 
-// 题库注册表（懒加载，用到时才import）
-const BANK_REGISTRY = [
-  {
-    id: 'english1-2010',
+function verifiedEnglish1Bank(year) {
+  return {
+    id: `english1-${year}`,
     subject: '英语',
     subjectKey: 'english',
     track: 'english1',
-    year: '2010',
-    name: '2010考研英语一真题',
-    description: '完形填空 + 阅读理解 + 翻译 + 写作',
+    year: String(year),
+    name: `${year}考研英语一真题`,
+    description: '完形填空 + 阅读理解 + 新题型 + 翻译 + 写作',
+    releaseLabel: '正式题库',
+    caution: '1-50题已按本地答案速查源核验；写作题按官方作答要求训练，不提供唯一范文答案',
     paperType: 'past_exam',
-    quality: PAPER_QUALITY.NEEDS_PASSAGE,
-    enabled: false,
-    disabledReason: '英语阅读题需补齐原文材料后开放整卷练习',
+    quality: PAPER_QUALITY.READY,
     sections: paperSections('完形填空', '阅读理解', '新题型', '翻译', '写作'),
-    loader: () => import('./flashcard-banks/english1-2010.json')
-  },
+    loader: () => import(`./flashcard-banks/english1-${year}.json`)
+  };
+}
+
+// 题库注册表（懒加载，用到时才import）
+const BANK_REGISTRY = [
+  ...[2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012].map(verifiedEnglish1Bank),
   {
     id: 'english1-2001',
     subject: '英语',
@@ -82,8 +87,11 @@ const BANK_REGISTRY = [
     year: '2025',
     name: '2025考研政治真题',
     description: '16道单选 + 17道多选 + 5道分析题',
+    usageScope: 'self_study_draft',
+    releaseLabel: '自用草稿',
+    caution: '资料与答案核验尚未完成，适合个人练习；不计入正式发布题库',
     paperType: 'past_exam',
-    quality: PAPER_QUALITY.READY,
+    quality: PAPER_QUALITY.DRAFT,
     sections: paperSections('单项选择', '多项选择', '分析题'),
     // 动态导入，不会增加首屏加载体积
     loader: () => import('./flashcard-banks/politics-2025.json')
@@ -96,8 +104,11 @@ const BANK_REGISTRY = [
     year: '2024',
     name: '2024考研政治真题',
     description: '22道单选 + 8道多选 + 5道分析题',
+    usageScope: 'self_study_draft',
+    releaseLabel: '自用草稿',
+    caution: '资料与答案核验尚未完成，适合个人练习；不计入正式发布题库',
     paperType: 'past_exam',
-    quality: PAPER_QUALITY.READY,
+    quality: PAPER_QUALITY.DRAFT,
     sections: paperSections('单项选择', '多项选择', '分析题'),
     loader: () => import('./flashcard-banks/politics-2024.json')
   },
@@ -109,10 +120,11 @@ const BANK_REGISTRY = [
     year: '2025',
     name: '2025考研英语一真题',
     description: '完形填空 + 阅读理解 + 新题型 + 翻译 + 写作',
-    enabled: false,
-    disabledReason: '篇章材料与答案说明完善后开放整卷练习',
+    usageScope: 'self_study_draft',
+    releaseLabel: '自用草稿',
+    caution: '新题型答案存在版本差异，适合备考自练，提交前请以权威答案为准',
     paperType: 'past_exam',
-    quality: PAPER_QUALITY.NEEDS_REVIEW,
+    quality: PAPER_QUALITY.DRAFT,
     sections: paperSections('完形填空', '阅读理解', '新题型', '翻译', '写作'),
     loader: () => import('./flashcard-banks/english1-2025.json')
   },
@@ -268,7 +280,7 @@ const KNOWN_SOURCE_PAPERS = [
   }
 ];
 
-const DEFAULT_COVERAGE_START_YEAR = 2010;
+const DEFAULT_COVERAGE_START_YEAR = 2005;
 const DEFAULT_COVERAGE_END_YEAR = 2026;
 
 function getSubjectLabel(subjectKey) {
@@ -322,6 +334,10 @@ function normalizeBankYear(bank) {
   return Number.isFinite(year) ? year : null;
 }
 
+function isPublicReleaseBank(bank) {
+  return bank?.enabled !== false && bank?.usageScope !== 'self_study_draft';
+}
+
 function releaseStateFor({ publishedYears, requiredYears }) {
   if (publishedYears.length === 0) return 'empty';
   if (publishedYears.length >= requiredYears.length) return 'complete';
@@ -350,14 +366,14 @@ export function buildPublicCourseCoverage(options = {}) {
     const publishedYears = Array.from(
       new Set(
         banksForTrack
-          .filter((bank) => bank.enabled !== false)
+          .filter(isPublicReleaseBank)
           .map(normalizeBankYear)
           .filter((year) => year !== null && requiredYears.includes(year))
       )
     ).sort((a, b) => a - b);
     const pendingYears = Array.from(
       new Set(
-        [...banksForTrack.filter((bank) => bank.enabled === false), ...sourcesForTrack]
+        [...banksForTrack.filter((bank) => !isPublicReleaseBank(bank)), ...sourcesForTrack]
           .map(normalizeBankYear)
           .filter((year) => year !== null && requiredYears.includes(year))
       )

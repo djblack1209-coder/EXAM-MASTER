@@ -81,12 +81,16 @@ def verify_token(access_token: str) -> dict:
 
 def get_quota(access_token: str) -> dict:
     """获取网盘容量信息"""
-    resp = requests.get(
-        f"{PAN_API}/api/quota",
-        params={"access_token": access_token, "checkfree": 1, "checkexpire": 1},
-        timeout=10,
-    )
-    data = resp.json()
+    try:
+        resp = requests.get(
+            f"{PAN_API}/api/quota",
+            params={"access_token": access_token, "checkfree": 1, "checkexpire": 1},
+            timeout=10,
+        )
+        data = resp.json()
+    except Exception:
+        return {"ok": False}
+
     if data.get("errno", 0) != 0:
         return {"ok": False}
 
