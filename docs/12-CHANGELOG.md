@@ -1,5 +1,11 @@
 # 变更日志
 
+## 2026-05-26 — Baidu 网盘公共课来源证据自动配对
+
+- 题库发布门禁新增 `baidu_netdisk_official_paper_auto_pair_v1` 来源政策：同一公共课槽位只要在 Source Manifest 中有无风险、带路径和哈希的 Baidu 网盘 `official_paper` 试卷+答案，或“真题及答案”合并 PDF，即可计入来源证据。
+- `discovered` 官方试卷候选不再因为缺少人工 `sourceUrl`、`verifiedBy`、`evidenceNote` 被一刀切阻塞；answer-only、partial answer、答题卡、机构资料、广告资料、缺哈希和法务阻塞仍然不能满足来源覆盖。
+- 发布 backlog 不再把可读 paper/answer 本地文件推入人工注册队列，改为提示进入题卡清洗、答案匹配、证据哈希和 registry 发布状态核验。
+
 ## 2026-05-26 — 公共课题库文件目录清理
 
 - 删除未注册、无练习链路引用的泛化假题库 `english-2025.json` 和 `math-2025.json`，避免与六条公共课轨道的正式题库状态混淆。

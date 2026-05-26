@@ -269,130 +269,21 @@ describe('release blocker backlog', () => {
     expect(backlog.summary.publicCourseBlockedSlotCount).toBe(2);
     expect(backlog.summary.publicCoursePendingCoverageBlockers).toBe(1);
     expect(backlog.summary.sourceManifestHumanRegistrationQueue).toMatchObject({
-      readySlotCount: 1,
-      registryDraftCount: 2,
-      missingHumanFieldCount: 6,
-      nextSlotKey: 'english1:2025',
-      nextDraftCount: 2,
-      nextSourceRoles: ['paper', 'answer'],
-      nextMissingHumanFields: ['sourceUrl', 'verifiedBy', 'evidenceNote'],
-      nextMissingHumanFieldInstances: [
-        'paper.sourceUrl',
-        'paper.verifiedBy',
-        'paper.evidenceNote',
-        'answer.sourceUrl',
-        'answer.verifiedBy',
-        'answer.evidenceNote'
-      ]
+      readySlotCount: 0,
+      registryDraftCount: 0,
+      missingHumanFieldCount: 0,
+      nextSlotKey: '',
+      nextDraftCount: 0,
+      nextSourceRoles: [],
+      nextMissingHumanFields: [],
+      nextMissingHumanFieldInstances: []
     });
     expect(backlog.sourceManifestHumanRegistrationQueue).toMatchObject({
-      readySlotCount: 1,
-      registryDraftCount: 2,
-      missingHumanFieldCount: 6,
-      nextReadySlot: {
-        slotKey: 'english1:2025',
-        track: 'english1',
-        year: 2025,
-        draftCount: 2,
-        sourceRoles: ['paper', 'answer'],
-        requiredHumanFields: ['sourceUrl', 'verifiedBy', 'evidenceNote'],
-        missingHumanFields: ['sourceUrl', 'verifiedBy', 'evidenceNote'],
-        missingHumanFieldInstances: [
-          {
-            draftId: 'english1_2025_paper_draft',
-            sourceRole: 'paper',
-            localPath: 'data/raw-inbox/public-course-2025/english1/2025-english1-paper.pdf',
-            field: 'sourceUrl'
-          },
-          {
-            draftId: 'english1_2025_paper_draft',
-            sourceRole: 'paper',
-            localPath: 'data/raw-inbox/public-course-2025/english1/2025-english1-paper.pdf',
-            field: 'verifiedBy'
-          },
-          {
-            draftId: 'english1_2025_paper_draft',
-            sourceRole: 'paper',
-            localPath: 'data/raw-inbox/public-course-2025/english1/2025-english1-paper.pdf',
-            field: 'evidenceNote'
-          },
-          {
-            draftId: 'english1_2025_answer_draft',
-            sourceRole: 'answer',
-            localPath: 'data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf',
-            field: 'sourceUrl'
-          },
-          {
-            draftId: 'english1_2025_answer_draft',
-            sourceRole: 'answer',
-            localPath: 'data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf',
-            field: 'verifiedBy'
-          },
-          {
-            draftId: 'english1_2025_answer_draft',
-            sourceRole: 'answer',
-            localPath: 'data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf',
-            field: 'evidenceNote'
-          }
-        ],
-        missingHumanFieldCount: 6,
-        postRegistrationCommands: [
-          'npm run baidu:sources:verified',
-          'npm run baidu:sources:merge',
-          'npm run audit:release:backlog',
-          'npm run audit:question-bank:release'
-        ]
-      },
-      slots: [
-        {
-          slotKey: 'english1:2025',
-          localPaths: [
-            'data/raw-inbox/public-course-2025/english1/2025-english1-paper.pdf',
-            'data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf'
-          ],
-          expectedSha256Values: ['sha256:english1-paper', 'sha256:english1-answer'],
-          registryDrafts: [
-            {
-              id: 'english1_2025_paper_draft',
-              sourceRole: 'paper',
-              localPath: 'data/raw-inbox/public-course-2025/english1/2025-english1-paper.pdf',
-              expectedSha256: 'sha256:english1-paper',
-              missingHumanFields: ['sourceUrl', 'verifiedBy', 'evidenceNote'],
-              humanFieldStatus: 'requires_human_input',
-              draftStatus: 'requires_human_verification'
-            },
-            {
-              id: 'english1_2025_answer_draft',
-              sourceRole: 'answer',
-              localPath: 'data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf',
-              expectedSha256: 'sha256:english1-answer',
-              missingHumanFields: ['sourceUrl', 'verifiedBy', 'evidenceNote'],
-              humanFieldStatus: 'requires_human_input',
-              draftStatus: 'requires_human_verification'
-            }
-          ],
-          localFileDrafts: [
-            {
-              sourceRole: 'paper',
-              localPath: 'data/raw-inbox/public-course-2025/english1/2025-english1-paper.pdf',
-              expectedSha256: 'sha256:english1-paper'
-            },
-            {
-              sourceRole: 'answer',
-              localPath: 'data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf',
-              expectedSha256: 'sha256:english1-answer'
-            }
-          ],
-          missingHumanFieldInstances: [
-            { sourceRole: 'paper', field: 'sourceUrl' },
-            { sourceRole: 'paper', field: 'verifiedBy' },
-            { sourceRole: 'paper', field: 'evidenceNote' },
-            { sourceRole: 'answer', field: 'sourceUrl' },
-            { sourceRole: 'answer', field: 'verifiedBy' },
-            { sourceRole: 'answer', field: 'evidenceNote' }
-          ]
-        }
-      ]
+      readySlotCount: 0,
+      registryDraftCount: 0,
+      missingHumanFieldCount: 0,
+      nextReadySlot: null,
+      slots: []
     });
     expect(backlog.publicCourseSlotBacklog).toHaveLength(2);
     expect(backlog.publicCourseSlotBacklog[0]).toMatchObject({
@@ -404,118 +295,13 @@ describe('release blocker backlog', () => {
       blockers: ['pending_public_course_bank', 'missing_publishable_official_source'],
       prerequisiteBlockers: ['missing_publishable_official_source'],
       sourceEvidenceStatus: 'missing_publishable_official_source',
-      sourceCandidateSummary:
-        'source manifest 已发现 1 个候选，其中 official_paper=1；当前阻断: answerEvidenceStatus=missing(1), status=discovered(1)',
-      sourceCandidateSamples: [
-        {
-          sourceId: 'src_eng1_2025_raw',
-          status: 'discovered',
-          sourceType: 'official_paper',
-          sourceRole: 'paper',
-          answerEvidenceStatus: '',
-          riskFlags: [],
-          publishBlocked: false,
-          blockReasons: ['status=discovered', 'answerEvidenceStatus=missing'],
-          remotePath: '/raw/english1/2025.pdf',
-          sourceUrl: ''
-        }
-      ],
       localSourceAuditStatus: 'present',
       localSourceAuditSummary:
         'local source audit 已有 2 个本地文件，usableTextLayer=2，needsOcr=0，blocked=0，roles: answer=1, paper=1，companions=paper+answer可读',
-      localSourceAuditSamples: [
-        {
-          id: 'english1-2025-paper',
-          role: 'paper',
-          localPath: 'data/raw-inbox/public-course-2025/english1/2025-english1-paper.pdf',
-          sha256: 'sha256:english1-paper',
-          pageCount: 22,
-          textLayer: 'usable',
-          quality: 'needs_review',
-          blockers: []
-        },
-        {
-          id: 'english1-2025-answer',
-          role: 'answer',
-          localPath: 'data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf',
-          sha256: 'sha256:english1-answer',
-          pageCount: 8,
-          textLayer: 'usable',
-          quality: 'needs_review',
-          blockers: []
-        }
-      ],
-      localSourceAuditDiagnostics: {
-        sourceCount: 2,
-        usableTextLayerCount: 2,
-        needsOcrCount: 0,
-        blockedCount: 0,
-        roleCounts: { answer: 1, paper: 1 }
-      },
       sourceManifestRegistrationChecklist: {
-        status: 'ready_for_human_verification',
-        readyForHumanVerification: true,
-        verifiedSourceRegistryFields: [
-          'localPath',
-          'sourceUrl',
-          'track',
-          'year',
-          'sourceType=official_paper',
-          'answerEvidenceStatus=matched',
-          'expectedSha256',
-          'verifiedBy',
-          'evidenceNote'
-        ],
-        humanVerificationSteps: [
-          '核验 localPath 对应文件与 track/year/科目一致，且 paper 与 answer 是同一套试卷。',
-          '核验 answer 文件覆盖全部客观题/主观题参考答案；缺题或版本差异时不得标 matched。',
-          '核验 sourceUrl/provenanceUrl/remotePath 指向权威或已授权来源，并与 SHA-256 文件一致。',
-          '核验 legalReview.publishBlocked=false，riskFlags 不含 answer_missing/brand_leak/copyright_review_required/ad_or_promo。',
-          '登记后重新运行 Source Manifest merge、manifest/question-bank/release backlog 门禁。'
-        ],
-        postRegistrationCommands: [
-          'npm run baidu:sources:verified',
-          'npm run baidu:sources:merge',
-          'npm run audit:release:backlog',
-          'npm run audit:question-bank:release'
-        ],
-        verifiedSourceRegistryDrafts: [
-          {
-            id: 'english1_2025_paper_draft',
-            localPath: 'data/raw-inbox/public-course-2025/english1/2025-english1-paper.pdf',
-            sourceUrl: '',
-            remotePath: '',
-            expectedSha256: 'sha256:english1-paper',
-            sourceRole: 'paper',
-            subject: 'english',
-            track: 'english1',
-            year: 2025,
-            sourceType: 'official_paper',
-            answerEvidenceStatus: 'matched',
-            verifiedBy: '',
-            missingHumanFields: ['sourceUrl', 'verifiedBy', 'evidenceNote'],
-            humanFieldStatus: 'requires_human_input',
-            draftStatus: 'requires_human_verification'
-          },
-          {
-            id: 'english1_2025_answer_draft',
-            localPath: 'data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf',
-            sourceUrl: '',
-            remotePath: '',
-            expectedSha256: 'sha256:english1-answer',
-            sourceRole: 'answer',
-            subject: 'english',
-            track: 'english1',
-            year: 2025,
-            sourceType: 'official_paper',
-            answerEvidenceStatus: 'matched',
-            verifiedBy: '',
-            missingHumanFields: ['sourceUrl', 'verifiedBy', 'evidenceNote'],
-            humanFieldStatus: 'requires_human_input',
-            draftStatus: 'requires_human_verification'
-          }
-        ],
-        manifestCandidateIds: ['src_eng1_2025_raw'],
+        status: 'auto_source_evidence_candidate',
+        readyForHumanVerification: false,
+        verifiedSourceRegistryDrafts: [],
         blockers: []
       }
     });
@@ -568,73 +354,9 @@ describe('release blocker backlog', () => {
         }
       ],
       sourceManifestRegistrationChecklist: {
-        status: 'ready_for_human_verification',
-        readyForHumanVerification: true,
-        requiredManifestFields: [
-          'eligible=true',
-          'status=verified|published',
-          'sourceType=official_paper',
-          'contentHash|sha256|fileSha256|sourceHash',
-          'remotePath|sourceUrl|provenanceUrl',
-          'answerEvidenceStatus=matched',
-          'legalReview.publishBlocked=false',
-          'riskFlags excludes answer_missing,brand_leak,copyright_review_required,ad_or_promo'
-        ],
-        localFileCandidates: [
-          {
-            role: 'paper',
-            localPath: 'data/raw-inbox/public-course-2025/english1/2025-english1-paper.pdf',
-            sha256: 'sha256:english1-paper',
-            textLayer: 'usable',
-            quality: 'needs_review',
-            blockers: []
-          },
-          {
-            role: 'answer',
-            localPath: 'data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf',
-            sha256: 'sha256:english1-answer',
-            textLayer: 'usable',
-            quality: 'needs_review',
-            blockers: []
-          }
-        ],
-        verifiedSourceRegistryDrafts: [
-          {
-            id: 'english1_2025_paper_draft',
-            localPath: 'data/raw-inbox/public-course-2025/english1/2025-english1-paper.pdf',
-            sourceUrl: '',
-            remotePath: '',
-            expectedSha256: 'sha256:english1-paper',
-            sourceRole: 'paper',
-            subject: 'english',
-            track: 'english1',
-            year: 2025,
-            sourceType: 'official_paper',
-            answerEvidenceStatus: 'matched',
-            verifiedBy: '',
-            missingHumanFields: ['sourceUrl', 'verifiedBy', 'evidenceNote'],
-            humanFieldStatus: 'requires_human_input',
-            draftStatus: 'requires_human_verification'
-          },
-          {
-            id: 'english1_2025_answer_draft',
-            localPath: 'data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf',
-            sourceUrl: '',
-            remotePath: '',
-            expectedSha256: 'sha256:english1-answer',
-            sourceRole: 'answer',
-            subject: 'english',
-            track: 'english1',
-            year: 2025,
-            sourceType: 'official_paper',
-            answerEvidenceStatus: 'matched',
-            verifiedBy: '',
-            missingHumanFields: ['sourceUrl', 'verifiedBy', 'evidenceNote'],
-            humanFieldStatus: 'requires_human_input',
-            draftStatus: 'requires_human_verification'
-          }
-        ],
-        manifestCandidateIds: ['src_eng1_2025_raw'],
+        status: 'auto_source_evidence_candidate',
+        readyForHumanVerification: false,
+        verifiedSourceRegistryDrafts: [],
         blockers: []
       },
       prerequisiteBlockers: ['missing_publishable_official_source']
@@ -697,42 +419,30 @@ describe('release blocker backlog', () => {
       localSourceAuditSummary:
         'local source audit 已有 2 个本地文件，usableTextLayer=2，needsOcr=0，blocked=0，roles: answer=1, paper=1，companions=paper+answer可读',
       sourceManifestRegistrationChecklist: {
-        status: 'ready_for_human_verification',
-        readyForHumanVerification: true,
+        status: 'auto_source_evidence_candidate',
+        readyForHumanVerification: false,
+        verifiedSourceRegistryDrafts: [],
         blockers: []
       }
     });
     expect(backlog.items.find((item) => item.id === 'coverage_pending:english1:2025')?.nextAction).toContain(
-      '把 SHA-256 与来源位置登记到 source manifest'
+      '当前可直接进入题卡清洗'
     );
 
     const markdown = renderBacklogMarkdown(backlog);
     expect(markdown).toContain('Source Manifest 人工注册队列');
-    expect(markdown).toContain(
-      'readySlots=1，registryDrafts=2，missingHumanFields=6，next=english1:2025，nextDrafts=2'
-    );
-    expect(markdown).toContain(
-      '| # | Slot | Track | Year | Drafts | Roles | Required human fields | Missing human fields | Missing field instances | Local file drafts | Next action |'
-    );
-    expect(markdown).toContain('sourceUrl, verifiedBy, evidenceNote');
-    expect(markdown).not.toContain('evidenceNote, sourceUrl, verifiedBy');
-    expect(markdown).toContain('paper.sourceUrl<br>paper.verifiedBy<br>paper.evidenceNote');
-    expect(markdown).toContain('answer.sourceUrl<br>answer.verifiedBy<br>answer.evidenceNote');
-    expect(markdown).toContain(
-      'paper: data/raw-inbox/public-course-2025/english1/2025-english1-paper.pdf: sha256=sha256:english1-paper'
-    );
-    expect(markdown).toContain(
-      'answer: data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf: sha256=sha256:english1-answer'
-    );
+    expect(markdown).toContain('readySlots=0，registryDrafts=0，missingHumanFields=0，next=none，nextDrafts=0');
+    expect(markdown).toContain('_None._');
+    expect(markdown).not.toContain('paper.sourceUrl<br>paper.verifiedBy<br>paper.evidenceNote');
+    expect(markdown).not.toContain('answer.sourceUrl<br>answer.verifiedBy<br>answer.evidenceNote');
     expect(markdown).toContain('Source candidates');
     expect(markdown).toContain('Candidate sample');
     expect(markdown).toContain('Local source audit');
     expect(markdown).toContain('Local samples');
     expect(markdown).toContain('Registration checklist');
-    expect(markdown).toContain('status=ready_for_human_verification');
-    expect(markdown).toContain('registryDrafts=2');
-    expect(markdown).toContain('fill sourceUrl/verifiedBy/evidenceNote before merge');
-    expect(markdown).toContain('commands=npm run baidu:sources:verified -> npm run baidu:sources:merge');
+    expect(markdown).toContain('status=auto_source_evidence_candidate');
+    expect(markdown).not.toContain('fill sourceUrl/verifiedBy/evidenceNote before merge');
+    expect(markdown).not.toContain('commands=npm run baidu:sources:verified -> npm run baidu:sources:merge');
     expect(markdown).toContain('下一批公共课覆盖/待发布槽位');
     expect(markdown).toContain('pendingBlockers=1');
     expect(markdown).toContain('公共课阻塞槽位(去重): 2，publicCourseBlockerItems=4');
@@ -888,7 +598,7 @@ describe('release blocker backlog', () => {
     expect(english2Slot.localSourceAuditSummary).toContain('companions=answer有阻塞');
     expect(english2Slot.nextAction).toContain('已有可读试卷，但答案文件仍有 1 个阻塞');
     expect(english2Slot.sourceManifestRegistrationChecklist).toMatchObject({
-      status: 'blocked_before_registration',
+      status: 'blocked_before_auto_pair',
       readyForHumanVerification: false,
       verifiedSourceRegistryDrafts: [],
       blockers: ['local_answer_file_blocked'],
@@ -1280,14 +990,12 @@ describe('release blocker backlog', () => {
       'paper_answer',
       'answer'
     ]);
-    expect(
-      slot.sourceManifestRegistrationChecklist.verifiedSourceRegistryDrafts.map((draft) => draft.sourceRole)
-    ).toEqual(['paper', 'paper_answer', 'answer']);
-    expect(backlog.sourceManifestHumanRegistrationQueue.nextReadySlot.sourceRoles).toEqual([
-      'paper',
-      'paper_answer',
-      'answer'
-    ]);
+    expect(slot.sourceManifestRegistrationChecklist).toMatchObject({
+      status: 'auto_source_evidence_candidate',
+      readyForHumanVerification: false,
+      verifiedSourceRegistryDrafts: []
+    });
+    expect(backlog.sourceManifestHumanRegistrationQueue.nextReadySlot).toBeNull();
   });
 
   it('renders a concise markdown report for operators', () => {
