@@ -147,6 +147,42 @@ class SourceManifestYearTest(unittest.TestCase):
         self.assertEqual(item["status"], "discovered")
         self.assertNotIn("missingSince", item)
 
+    def test_manifest_blocks_human_verification_drafts_even_when_status_requests_verified(self):
+        item = normalize_record(
+            {
+                "fs_id": 8,
+                "path": "/verified-sources/2025-english1-paper.pdf",
+                "server_filename": "2025-english1-paper.pdf",
+                "size": 250_000,
+                "server_mtime": 1,
+                "sha256": "sha256:paper",
+                "sourceUrl": "",
+                "subject": "english",
+                "track": "english1",
+                "year": 2025,
+                "sourceType": "official_paper",
+                "status": "verified",
+                "answerEvidenceStatus": "matched",
+                "sourceRole": "paper",
+                "verifiedBy": "",
+                "evidenceNote": "DRAFT: human must verify this source before registration.",
+                "draftStatus": "requires_human_verification",
+                "humanFieldStatus": "requires_human_input",
+                "missingHumanFields": ["sourceUrl", "verifiedBy", "evidenceNote"],
+            },
+            provider="baidu_pan",
+            source_channel="verified_registry",
+            now="2026-05-24T00:00:00Z",
+        )
+
+        self.assertEqual(item["status"], "discovered")
+        self.assertTrue(item["eligible"])
+        self.assertIn("human_verification_required", item["riskFlags"])
+        self.assertTrue(item["legalReview"]["publishBlocked"])
+        self.assertEqual(item["missingHumanFields"], ["evidenceNote", "sourceUrl", "verifiedBy"])
+        self.assertEqual(item["draftStatus"], "requires_human_verification")
+        self.assertEqual(item["humanFieldStatus"], "requires_human_input")
+
 
 if __name__ == "__main__":
     unittest.main()
