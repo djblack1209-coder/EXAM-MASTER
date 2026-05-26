@@ -1,5 +1,12 @@
 # 变更日志
 
+## 2026-05-26 — 2025 英语一正式题库开放
+
+- 2025 考研英语一从“整理中”推进为正式题库：52 张题卡全部具备题干、答案、篇章/材料、`sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
+- `english_answer_key_verify.py` 支持解析 2025 答案 PDF 的逐题 `【答案】[B]` 格式和 46-50 翻译参考译文，自动清理 PDF 页眉页码噪声。
+- `english_writing_prompt_verify.py` 支持从原卷 PDF 抽取 51/52 写作题官方题干；写作题按“官方写作任务”匹配证据，不声明唯一范文答案。
+- 题库导航中英语一正式开放数从 8 套增至 9 套，2025 英语一不再出现在整理中列表；公共课整体仍有 117 个覆盖缺口、6 个整理中阻塞和 15 个来源缺口。
+
 ## 2026-05-26 — Baidu 网盘公共课来源证据自动配对
 
 - 题库发布门禁新增 `baidu_netdisk_official_paper_auto_pair_v1` 来源政策：同一公共课槽位只要在 Source Manifest 中有无风险、带路径和哈希的 Baidu 网盘 `official_paper` 试卷+答案，或“真题及答案”合并 PDF，即可计入来源证据。
