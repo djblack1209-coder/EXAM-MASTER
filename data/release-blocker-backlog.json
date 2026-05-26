@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-05-26T20:07:55.241Z",
+  "generatedAt": "2026-05-26T20:27:07.698Z",
   "verdict": "blocked",
   "sources": {
     "questionAudit": "data/question-bank-release-audit.json",
@@ -61,6 +61,9 @@
     },
     "sourceManifestPublishableOfficialPapers": 8,
     "sourceEvidenceGaps": 124,
+    "bankFileInventoryBlockers": 0,
+    "unregisteredBankFileCount": 0,
+    "missingBankFileCount": 0,
     "enabledBankAnswerEvidenceBlockers": 0,
     "cleanedFlashcardBlockers": 0,
     "externalBlockers": 1,

@@ -197,6 +197,8 @@ describe('question bank release gate', () => {
 
   it('keeps self-study draft banks as pending release blockers even when source evidence is complete', async () => {
     const { buildQuestionBankReleaseReport } = await import('../../scripts/build/question-bank-release-gate.mjs');
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'exam-master-qb-bank-'));
+    fs.writeFileSync(path.join(tmp, 'english1-2099.json'), JSON.stringify({ cards: [] }, null, 2));
     const manifest = tempManifestPath([
       {
         sourceId: 'src_english1_2099_verified',
@@ -216,6 +218,7 @@ describe('question bank release gate', () => {
       minYear: 2099,
       maxYear: 2099,
       tracks: ['english1'],
+      bankDir: tmp,
       sourceManifest: manifest,
       banks: [
         {
@@ -234,18 +237,71 @@ describe('question bank release gate', () => {
     expect(report.summary.pendingSlots).toBe(1);
     expect(report.summary.pendingCoverageBlockerCount).toBe(1);
     expect(report.summary.sourceManifestCoverageGapCount).toBe(0);
+    expect(report.summary.unregisteredBankFileCount).toBe(0);
+    expect(report.summary.missingBankFileCount).toBe(0);
     expect(report.releaseReadiness.blockers).toMatchObject({
       coverage: 0,
       pendingCoverage: 1,
       sourceEvidence: 0,
       answerEvidence: 0,
-      grading: 0
+      grading: 0,
+      bankFileInventory: 0
     });
     expect(report.coverage.tracks[0]).toMatchObject({
       publishedYears: [],
       pendingYears: [2099],
       missingYears: []
     });
+  });
+
+  it('blocks unregistered flashcard bank files and registered banks with missing JSON', async () => {
+    const { buildQuestionBankReleaseReport } = await import('../../scripts/build/question-bank-release-gate.mjs');
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'exam-master-qb-bank-'));
+    fs.writeFileSync(path.join(tmp, 'english1-2099.json'), JSON.stringify({ cards: [] }, null, 2));
+    fs.writeFileSync(path.join(tmp, 'english-2099.json'), JSON.stringify({ cards: [] }, null, 2));
+
+    const report = buildQuestionBankReleaseReport({
+      minYear: 2099,
+      maxYear: 2099,
+      tracks: ['english1'],
+      bankDir: tmp,
+      sourceManifest: tempManifestPath(),
+      banks: [
+        {
+          id: 'english1-2099',
+          subjectKey: 'english',
+          track: 'english1',
+          year: '2099',
+          name: '2099考研英语一真题',
+          enabled: false
+        },
+        {
+          id: 'english1-2100',
+          subjectKey: 'english',
+          track: 'english1',
+          year: '2100',
+          name: '2100考研英语一真题',
+          enabled: false
+        }
+      ]
+    });
+
+    expect(report.releaseReadiness.canPublish).toBe(false);
+    expect(report.summary.unregisteredBankFileCount).toBe(1);
+    expect(report.summary.missingBankFileCount).toBe(1);
+    expect(report.releaseReadiness.blockers.bankFileInventory).toBe(2);
+    expect(report.bankFileInventory.unregisteredBankFiles).toEqual([
+      {
+        bankId: 'english-2099',
+        filePath: expect.stringContaining('english-2099.json')
+      }
+    ]);
+    expect(report.bankFileInventory.missingBankFiles).toEqual([
+      {
+        bankId: 'english1-2100',
+        filePath: expect.stringContaining('english1-2100.json')
+      }
+    ]);
   });
 
   it('prioritizes actionable official source samples in missing-year diagnostics', () => {

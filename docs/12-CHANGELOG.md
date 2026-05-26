@@ -1,5 +1,11 @@
 # 变更日志
 
+## 2026-05-26 — 公共课题库文件目录清理
+
+- 删除未注册、无练习链路引用的泛化假题库 `english-2025.json` 和 `math-2025.json`，避免与六条公共课轨道的正式题库状态混淆。
+- 题库发布门禁新增 `bankFileInventory`：检查 `src/config/flashcard-banks/*.json` 与 `bank-registry.js` 是否一一对应，未注册 JSON 和已注册但缺文件都会成为发布阻塞。
+- 发布 backlog 新增 `bank_file_inventory` 工作流，优先提示题库文件/注册表不一致，防止维护者把目录里的草稿 JSON 误判为可发布题库。
+
 ## 2026-05-26 — 公共课题库可见状态收敛
 
 - 公共课题库入口取消“自练草稿”作为用户可点击状态，只有 `quality=ready` 且正式发布的题库可进入整卷练习。

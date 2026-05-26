@@ -901,6 +901,49 @@ function buildEnabledBankEvidenceItems(questionAudit) {
   });
 }
 
+function buildBankFileInventoryItems(questionAudit) {
+  const inventory = questionAudit?.bankFileInventory;
+  const unregistered = Array.isArray(inventory?.unregisteredBankFiles) ? inventory.unregisteredBankFiles : [];
+  const missing = Array.isArray(inventory?.missingBankFiles) ? inventory.missingBankFiles : [];
+
+  return [
+    ...unregistered.map((file) =>
+      createItem({
+        id: `bank_file_inventory:unregistered:${file.bankId || file.filePath}`,
+        workstream: 'bank_file_inventory',
+        blockerCode: 'unregistered_flashcard_bank_file',
+        bankId: file.bankId || '',
+        filePath: file.filePath || '',
+        count: 1,
+        title: `${file.filePath || file.bankId} 未在题库注册表登记`,
+        nextAction:
+          '确认该 JSON 是否属于公共课六轨道正式管线；若是，补齐 registry、来源证据和禁用/正式状态；若不是，移出 flashcard-banks，避免被误认为可发布题库。',
+        evidence: {
+          registeredBankCount: inventory?.registeredBankCount || 0,
+          bankFileCount: inventory?.bankFileCount || 0
+        }
+      })
+    ),
+    ...missing.map((file) =>
+      createItem({
+        id: `bank_file_inventory:missing:${file.bankId || file.filePath}`,
+        workstream: 'bank_file_inventory',
+        blockerCode: 'registered_flashcard_bank_file_missing',
+        bankId: file.bankId || '',
+        filePath: file.filePath || '',
+        count: 1,
+        title: `${file.bankId || file.filePath} 已注册但题库 JSON 缺失`,
+        nextAction:
+          '补回与 registry 对应的 flashcard-banks JSON，或在确认无用户链路引用后将 registry 槽位降级/移除；不得让注册表指向不存在的练习数据。',
+        evidence: {
+          registeredBankCount: inventory?.registeredBankCount || 0,
+          bankFileCount: inventory?.bankFileCount || 0
+        }
+      })
+    )
+  ];
+}
+
 function isObject(value) {
   return Boolean(value) && typeof value === 'object' && !Array.isArray(value);
 }
@@ -1101,13 +1144,14 @@ function groupByWorkstream(items) {
 function sortBacklogItems(items) {
   const workstreamOrder = {
     release_audit_inputs: 0,
-    enabled_bank_evidence: 1,
-    wechat_real_device_evidence: 2,
-    wechat_devtools_smoke: 3,
-    public_course_coverage: 4,
-    source_manifest_evidence: 5,
-    cleaned_flashcard_quality: 6,
-    external_release_evidence: 7
+    bank_file_inventory: 1,
+    enabled_bank_evidence: 2,
+    wechat_real_device_evidence: 3,
+    wechat_devtools_smoke: 4,
+    public_course_coverage: 5,
+    source_manifest_evidence: 6,
+    cleaned_flashcard_quality: 7,
+    external_release_evidence: 8
   };
   return [...items].sort((a, b) => {
     const workstreamDelta = (workstreamOrder[a.workstream] ?? 99) - (workstreamOrder[b.workstream] ?? 99);
@@ -1478,6 +1522,7 @@ export function buildReleaseBlockerBacklog({
   const localSourceAuditScopedYears = localSourceAuditYears(localSourceAudit);
   const items = sortBacklogItems([
     ...buildInputReportItems({ questionAudit, flashcardQuality, externalAudit }),
+    ...buildBankFileInventoryItems(questionAudit),
     ...buildEnabledBankEvidenceItems(questionAudit),
     ...buildExternalItems(externalAudit, wechatSmoke),
     ...buildWechatDevtoolsSmokeItems(wechatSmoke),
@@ -1525,6 +1570,9 @@ export function buildReleaseBlockerBacklog({
       ),
       sourceManifestPublishableOfficialPapers: questionAudit?.summary?.sourceManifestPublishableOfficialPapers || 0,
       sourceEvidenceGaps: questionAudit?.summary?.sourceManifestCoverageGapCount || 0,
+      bankFileInventoryBlockers: questionAudit?.releaseReadiness?.blockers?.bankFileInventory || 0,
+      unregisteredBankFileCount: questionAudit?.summary?.unregisteredBankFileCount || 0,
+      missingBankFileCount: questionAudit?.summary?.missingBankFileCount || 0,
       enabledBankAnswerEvidenceBlockers: questionAudit?.summary?.answerEvidenceBlockerCount || 0,
       cleanedFlashcardBlockers: flashcardQuality?.summary?.blockerCount || 0,
       externalBlockers: externalAudit?.summary?.blockerCount || 0,
@@ -1647,6 +1695,7 @@ export function renderBacklogMarkdown(backlog) {
   const localSourceSummary = summary.publicCourseLocalSourceSummary || {};
   const registrationQueueSummary = summary.sourceManifestHumanRegistrationQueue || {};
   const enabled = backlog.items.filter((item) => item.workstream === 'enabled_bank_evidence');
+  const bankFileInventory = backlog.items.filter((item) => item.workstream === 'bank_file_inventory');
   const inputReports = backlog.items.filter((item) => item.workstream === 'release_audit_inputs');
   const external = backlog.items.filter((item) => item.workstream === 'wechat_real_device_evidence');
   const devtoolsSmoke = backlog.items.filter((item) => item.workstream === 'wechat_devtools_smoke');
@@ -1673,6 +1722,7 @@ export function renderBacklogMarkdown(backlog) {
     `- 本地题源处理分布: pairedReadable=${localSourceSummary.pairedReadableSlots || 0}，answerBlocked=${localSourceSummary.answerBlockedSlots || 0}，paperBlocked=${localSourceSummary.paperBlockedSlots || 0}，missingAnswer=${localSourceSummary.missingAnswerSlots || 0}，missingPaper=${localSourceSummary.missingPaperSlots || 0}，needsOcr=${localSourceSummary.needsOcrSlots || 0}，blockedLocal=${localSourceSummary.blockedLocalFileSlots || 0}，unpairedReadable=${localSourceSummary.unpairedReadableSlots || 0}，missingLocalFiles=${localSourceSummary.missingLocalFileSlots || 0}，notAvailable=${localSourceSummary.notAvailableSlots || 0}`,
     `- Source Manifest 人工注册队列: readySlots=${registrationQueueSummary.readySlotCount || 0}，registryDrafts=${registrationQueueSummary.registryDraftCount || 0}，missingHumanFields=${registrationQueueSummary.missingHumanFieldCount || 0}，next=${registrationQueueSummary.nextSlotKey || 'none'}，nextDrafts=${registrationQueueSummary.nextDraftCount || 0}`,
     `- source manifest 可发布官方题源: ${summary.sourceManifestPublishableOfficialPapers}，sourceEvidenceGaps=${summary.sourceEvidenceGaps}`,
+    `- 题库文件/注册表一致性阻塞: ${summary.bankFileInventoryBlockers || 0}，unregistered=${summary.unregisteredBankFileCount || 0}，missing=${summary.missingBankFileCount || 0}`,
     `- 已开放题库证据阻塞题卡: ${summary.enabledBankAnswerEvidenceBlockers}`,
     `- 清洗题卡质量阻塞: ${summary.cleanedFlashcardBlockers}`,
     `- 外部门禁阻塞: ${summary.externalBlockers}`,
@@ -1685,6 +1735,10 @@ export function renderBacklogMarkdown(backlog) {
     '## Source Manifest 人工注册队列',
     '',
     markdownSourceManifestHumanRegistrationQueue(backlog.sourceManifestHumanRegistrationQueue),
+    '',
+    '## 题库文件/注册表一致性阻塞',
+    '',
+    markdownBlockerTable(bankFileInventory),
     '',
     '## 已开放题库证据阻塞',
     '',

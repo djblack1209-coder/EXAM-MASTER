@@ -126,6 +126,40 @@ function loadPublishedBank(bank, bankDir) {
   return { filePath, cards };
 }
 
+function auditBankFileInventory({ banks, bankDir }) {
+  const registeredIds = new Set(banks.map((bank) => bank.id).filter(Boolean));
+  const bankFiles = fs.existsSync(bankDir)
+    ? fs
+        .readdirSync(bankDir)
+        .filter((fileName) => fileName.endsWith('.json'))
+        .sort()
+    : [];
+  const bankFileIds = new Set(bankFiles.map((fileName) => path.basename(fileName, '.json')));
+  const unregisteredBankFiles = bankFiles
+    .map((fileName) => ({
+      bankId: path.basename(fileName, '.json'),
+      filePath: path.relative(PROJECT_ROOT, path.join(bankDir, fileName))
+    }))
+    .filter((file) => !registeredIds.has(file.bankId));
+  const missingBankFiles = [...registeredIds]
+    .filter((bankId) => !bankFileIds.has(bankId))
+    .sort()
+    .map((bankId) => ({
+      bankId,
+      filePath: path.relative(PROJECT_ROOT, path.join(bankDir, `${bankId}.json`))
+    }));
+
+  return {
+    registeredBankCount: registeredIds.size,
+    bankFileCount: bankFiles.length,
+    unregisteredBankFileCount: unregisteredBankFiles.length,
+    missingBankFileCount: missingBankFiles.length,
+    blockerCount: unregisteredBankFiles.length + missingBankFiles.length,
+    unregisteredBankFiles,
+    missingBankFiles
+  };
+}
+
 function isReleaseBank(bank) {
   return bank?.enabled !== false && bank?.usageScope !== 'self_study_draft';
 }
@@ -416,6 +450,10 @@ export function buildQuestionBankReleaseReport(options = {}) {
     banks: releaseBanks,
     bankDir: options.bankDir || DEFAULT_BANK_DIR
   });
+  const bankFileInventory = auditBankFileInventory({
+    banks,
+    bankDir: options.bankDir || DEFAULT_BANK_DIR
+  });
   const sourceEvidence = loadSourceManifestEvidence({
     sourceManifest: options.sourceManifest || DEFAULT_SOURCE_MANIFEST,
     tracks,
@@ -429,7 +467,8 @@ export function buildQuestionBankReleaseReport(options = {}) {
     pendingCoverageBlockerCount === 0 &&
     sourceEvidence.coverageGapCount === 0 &&
     evidence.answerEvidenceBlockerCount === 0 &&
-    evidence.gradingBlockerCount === 0;
+    evidence.gradingBlockerCount === 0 &&
+    bankFileInventory.blockerCount === 0;
 
   return {
     version: 1,
@@ -454,6 +493,10 @@ export function buildQuestionBankReleaseReport(options = {}) {
       sourceManifestTotalSources: sourceEvidence.totalSources,
       sourceManifestPublishableOfficialPapers: sourceEvidence.publishableOfficialPapers,
       sourceManifestCoverageGapCount: sourceEvidence.coverageGapCount,
+      registeredBankCount: bankFileInventory.registeredBankCount,
+      bankFileCount: bankFileInventory.bankFileCount,
+      unregisteredBankFileCount: bankFileInventory.unregisteredBankFileCount,
+      missingBankFileCount: bankFileInventory.missingBankFileCount,
       answerEvidenceBlockerCount: evidence.answerEvidenceBlockerCount,
       gradingBlockerCount: evidence.gradingBlockerCount
     },
@@ -462,6 +505,7 @@ export function buildQuestionBankReleaseReport(options = {}) {
     answerEvidence: {
       blockedBanks: evidence.blockedBanks
     },
+    bankFileInventory,
     releaseReadiness: {
       canPublish,
       blockers: {
@@ -469,7 +513,8 @@ export function buildQuestionBankReleaseReport(options = {}) {
         pendingCoverage: pendingCoverageBlockerCount,
         sourceEvidence: sourceEvidence.coverageGapCount,
         answerEvidence: evidence.answerEvidenceBlockerCount,
-        grading: evidence.gradingBlockerCount
+        grading: evidence.gradingBlockerCount,
+        bankFileInventory: bankFileInventory.blockerCount
       }
     }
   };
@@ -508,6 +553,7 @@ export function run(argv = process.argv.slice(2)) {
       `sourceEvidenceGaps=${summary.sourceManifestCoverageGapCount} ` +
       `answerEvidenceBlockers=${summary.answerEvidenceBlockerCount} ` +
       `gradingBlockers=${summary.gradingBlockerCount} ` +
+      `bankFileInventoryBlockers=${report.releaseReadiness.blockers.bankFileInventory} ` +
       `report=${path.relative(PROJECT_ROOT, options.output)}`
   );
 
