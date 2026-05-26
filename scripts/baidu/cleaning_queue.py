@@ -28,6 +28,9 @@ SUPPORTED_SOURCE_CHANNELS = {"app_dir", "netdisk_full_path", "group_service", "g
 DIRECT_DOWNLOAD_CHANNELS = {"app_dir", "netdisk_full_path"}
 SUPPORTED_EXTENSIONS = {".pdf", ".doc", ".docx", ".txt", ".md", ".json", ".html", ".htm"}
 PROCESSABLE_STATUS = {"discovered", "missing"}
+AUTOMATION_READY_ACTIONS = {"download_and_extract"}
+MANUAL_BLOCKED_ACTIONS = {"manual_review", "manual_ingest"}
+TRANSFER_BLOCKED_ACTIONS = {"transfer_or_direct_download"}
 MANUAL_REVIEW_FLAGS = {
     "answer_missing",
     "brand_leak",
@@ -161,6 +164,15 @@ def build_task(
         "safeDisplayName": item.get("safeDisplayName") or item.get("fileName"),
         "extension": item.get("extension") or Path(str(item.get("fileName", ""))).suffix.lower(),
         "sourceChannel": item.get("sourceChannel"),
+        "groupName": item.get("groupName"),
+        "examCycle": item.get("examCycle"),
+        "collectionRoot": item.get("collectionRoot"),
+        "courseCategory": item.get("courseCategory"),
+        "institutionName": item.get("institutionName"),
+        "institutionKey": item.get("institutionKey"),
+        "direction": item.get("direction"),
+        "targetDirectory": item.get("targetDirectory"),
+        "approvalRequired": item.get("approvalRequired"),
         "sourceType": item.get("sourceType"),
         "track": item.get("track"),
         "subject": item.get("subject"),
@@ -203,14 +215,22 @@ def merge_previous_task(task: dict[str, Any], previous_task: dict[str, Any] | No
 
 
 def summarize_tasks(tasks: list[dict[str, Any]], *, preserved: int, changed: int) -> dict[str, Any]:
+    pending_tasks = [task for task in tasks if task.get("status") == "pending"]
     return {
         "totalTasks": len(tasks),
-        "pendingTasks": sum(1 for task in tasks if task.get("status") == "pending"),
+        "pendingTasks": len(pending_tasks),
         "completedTasks": sum(1 for task in tasks if task.get("status") == "completed"),
         "failedTasks": sum(1 for task in tasks if task.get("status") == "failed"),
         "manualReviewTasks": sum(1 for task in tasks if task.get("action") == "manual_review"),
         "autoDownloadTasks": sum(1 for task in tasks if task.get("action") == "download_and_extract"),
         "transferTasks": sum(1 for task in tasks if task.get("action") == "transfer_or_direct_download"),
+        "automationActionablePendingTasks": sum(
+            1 for task in pending_tasks if task.get("action") in AUTOMATION_READY_ACTIONS
+        ),
+        "manualBlockedPendingTasks": sum(1 for task in pending_tasks if task.get("action") in MANUAL_BLOCKED_ACTIONS),
+        "transferBlockedPendingTasks": sum(
+            1 for task in pending_tasks if task.get("action") in TRANSFER_BLOCKED_ACTIONS
+        ),
         "preservedTasks": preserved,
         "newOrChangedTasks": len(tasks) - preserved,
         "changedSourceTasks": changed,

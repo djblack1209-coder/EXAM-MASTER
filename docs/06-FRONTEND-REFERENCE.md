@@ -19,8 +19,8 @@
 
 ## 题库与音频反馈
 
-- `src/config/bank-registry.js` 是公共课真题目录入口，负责按科目轨道、年份、可练/即将开放状态生成导航树。
-- `src/pages/practice-sub/question-bank.vue` 是用户选择整卷试卷的主入口；英语选择题必须有篇章材料，缺材料的试卷不得开放训练。
+- `src/config/bank-registry.js` 是公共课真题目录入口，负责按科目轨道、年份、正式/自练/整理中/待入库状态生成 2005-2026 六轨道槽位和导航树。
+- `src/pages/practice-sub/question-bank.vue` 是用户选择整卷试卷的主入口；页面必须展示 132 个公共课槽位的年份地图，已开放或自练槽位可进入训练，整理中和待入库槽位只展示可信状态。英语选择题必须有篇章材料，缺材料的试卷不得开放训练。
 - `src/pages/practice-sub/do-quiz.vue` 负责整卷练习、篇章材料展示、闪卡翻转、FSRS 自评和完成弹窗。
 - `src/pages/practice-sub/utils/quiz-sound.js` 是统一音频反馈服务：点击、答对、答错、连击、翻卡、完成整卷、升级成就均通过该模块触发；H5 使用 Web Audio，小程序不可用时降级为轻震动或静默。
 
@@ -239,41 +239,41 @@ Cross-cutting UI components used across multiple pages.
 
 ### Sub-Package: login (含 onboarding)
 
-| Page       | Path                                | Lines | Title    | Key Features                |
-| ---------- | ----------------------------------- | ----- | -------- | --------------------------- |
-| Onboarding | `src/pages/login/onboarding.vue`    | —     | 新手引导 | Feature tour with driver.js |
+| Page       | Path                             | Lines | Title    | Key Features                |
+| ---------- | -------------------------------- | ----- | -------- | --------------------------- |
+| Onboarding | `src/pages/login/onboarding.vue` | —     | 新手引导 | Feature tour with driver.js |
 
 ### Page-Local Components
 
 Some pages have co-located components in their directories:
 
-| Component          | Path                                                                        | Parent Page     |
-| ------------------ | --------------------------------------------------------------------------- | --------------- |
-| quiz-progress      | `src/pages/practice-sub/components/quiz-progress/quiz-progress.vue`         | do-quiz         |
-| answer-sheet       | `src/pages/practice-sub/components/answer-sheet/answer-sheet.vue`           | do-quiz         |
-| quiz-result        | `src/pages/practice-sub/components/quiz-result/quiz-result.vue`             | do-quiz         |
-| TutorFeedbackCard  | `src/pages/practice-sub/components/quiz-result/TutorFeedbackCard.vue`       | quiz-result     |
-| MemoryStatsRow     | `src/pages/practice-sub/components/quiz-result/MemoryStatsRow.vue`          | quiz-result     |
-| xp-toast           | `src/pages/practice-sub/components/xp-toast/xp-toast.vue`                   | do-quiz         |
-| base-loading       | `src/pages/practice-sub/components/base-loading/base-loading.vue`           | do-quiz         |
-| RichText           | `src/pages/practice-sub/components/RichText.vue`                            | do-quiz         |
-| EnhancedProgress   | `src/pages/practice-sub/EnhancedProgress.vue`                               | do-quiz         |
-| knowledge-graph.js | `src/pages/knowledge-graph/knowledge-graph.js`                             | knowledge-graph |
-| plan-skeleton      | `src/pages/plan/components/plan-skeleton/plan-skeleton.vue`                 | plan            |
-| mistake-skeleton   | `src/pages/mistake/components/mistake-skeleton/mistake-skeleton.vue`        | mistake         |
-| MistakeCard        | `src/pages/mistake/MistakeCard.vue`                                         | mistake         |
-| MistakeReport      | `src/pages/mistake/MistakeReport.vue`                                       | mistake         |
-| StatsCard          | `src/pages/mistake/StatsCard.vue`                                           | mistake         |
-| FSRSOptimizer      | `src/pages/study-detail/FSRSOptimizer.vue`                                  | study-detail    |
-| StudyTrendChart    | `src/pages/study-detail/StudyTrendChart.vue`                                | study-detail    |
-| AbilityRadar       | `src/pages/study-detail/AbilityRadar.vue`                                   | study-detail    |
-| ThemeSelectorModal | `src/pages/settings/ThemeSelectorModal.vue`                                 | settings        |
-| AITutorList        | `src/pages/settings/AITutorList.vue`                                        | settings        |
-| AIChatModal        | `src/pages/settings/AIChatModal.vue`                                        | settings        |
-| InviteModal        | `src/pages/settings/InviteModal.vue`                                        | settings        |
-| PosterModal        | `src/pages/settings/PosterModal.vue`                                        | settings        |
-| FriendsEntryCard   | `src/pages/settings/FriendsEntryCard.vue`                                   | settings        |
-| LogoutButton       | `src/pages/settings/LogoutButton.vue`                                       | settings        |
+| Component          | Path                                                                  | Parent Page     |
+| ------------------ | --------------------------------------------------------------------- | --------------- |
+| quiz-progress      | `src/pages/practice-sub/components/quiz-progress/quiz-progress.vue`   | do-quiz         |
+| answer-sheet       | `src/pages/practice-sub/components/answer-sheet/answer-sheet.vue`     | do-quiz         |
+| quiz-result        | `src/pages/practice-sub/components/quiz-result/quiz-result.vue`       | do-quiz         |
+| TutorFeedbackCard  | `src/pages/practice-sub/components/quiz-result/TutorFeedbackCard.vue` | quiz-result     |
+| MemoryStatsRow     | `src/pages/practice-sub/components/quiz-result/MemoryStatsRow.vue`    | quiz-result     |
+| xp-toast           | `src/pages/practice-sub/components/xp-toast/xp-toast.vue`             | do-quiz         |
+| base-loading       | `src/pages/practice-sub/components/base-loading/base-loading.vue`     | do-quiz         |
+| RichText           | `src/pages/practice-sub/components/RichText.vue`                      | do-quiz         |
+| EnhancedProgress   | `src/pages/practice-sub/EnhancedProgress.vue`                         | do-quiz         |
+| knowledge-graph.js | `src/pages/knowledge-graph/knowledge-graph.js`                        | knowledge-graph |
+| plan-skeleton      | `src/pages/plan/components/plan-skeleton/plan-skeleton.vue`           | plan            |
+| mistake-skeleton   | `src/pages/mistake/components/mistake-skeleton/mistake-skeleton.vue`  | mistake         |
+| MistakeCard        | `src/pages/mistake/MistakeCard.vue`                                   | mistake         |
+| MistakeReport      | `src/pages/mistake/MistakeReport.vue`                                 | mistake         |
+| StatsCard          | `src/pages/mistake/StatsCard.vue`                                     | mistake         |
+| FSRSOptimizer      | `src/pages/study-detail/FSRSOptimizer.vue`                            | study-detail    |
+| StudyTrendChart    | `src/pages/study-detail/StudyTrendChart.vue`                          | study-detail    |
+| AbilityRadar       | `src/pages/study-detail/AbilityRadar.vue`                             | study-detail    |
+| ThemeSelectorModal | `src/pages/settings/ThemeSelectorModal.vue`                           | settings        |
+| AITutorList        | `src/pages/settings/AITutorList.vue`                                  | settings        |
+| AIChatModal        | `src/pages/settings/AIChatModal.vue`                                  | settings        |
+| InviteModal        | `src/pages/settings/InviteModal.vue`                                  | settings        |
+| PosterModal        | `src/pages/settings/PosterModal.vue`                                  | settings        |
+| FriendsEntryCard   | `src/pages/settings/FriendsEntryCard.vue`                             | settings        |
+| LogoutButton       | `src/pages/settings/LogoutButton.vue`                                 | settings        |
 
 ### 页面统计
 
@@ -513,8 +513,8 @@ const schools = await lafService.getSchoolList(params);
 
 #### Knowledge Engine
 
-| File                | Path                               | Lines | Purpose                              |
-| ------------------- | ---------------------------------- | ----- | ------------------------------------ |
+| File                | Path                                            | Lines | Purpose                              |
+| ------------------- | ----------------------------------------------- | ----- | ------------------------------------ |
 | knowledge-engine.js | `src/pages/knowledge-graph/knowledge-engine.js` | —     | Knowledge graph x FSRS fusion engine |
 
 **Key exports:**
@@ -547,15 +547,15 @@ const schools = await lafService.getSchoolList(params);
 
 ### Utility Services
 
-| File                     | Path                                    | Purpose                                                                                             |
-| ------------------------ | --------------------------------------- | --------------------------------------------------------------------------------------------------- |
-| toast.js                 | `src/utils/toast.js`                    | **(Round 14)** 中心化 Toast：success/error/info/warning/loading/hide                                |
-| auth-storage.js          | `src/services/auth-storage.js`          | Auth token persistence (R18: 修复 `uni.getItem` → `localStorage.getItem`)                           |
-| checkin-streak.js        | `src/services/checkin-streak.js`        | Daily check-in streak calculation                                                                   |
-| streak-recovery.js       | `src/services/streak-recovery.js`       | Streak recovery (freeze, skip) logic                                                                |
+| File                     | Path                                                       | Purpose                                                                                             |
+| ------------------------ | ---------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| toast.js                 | `src/utils/toast.js`                                       | **(Round 14)** 中心化 Toast：success/error/info/warning/loading/hide                                |
+| auth-storage.js          | `src/services/auth-storage.js`                             | Auth token persistence (R18: 修复 `uni.getItem` → `localStorage.getItem`)                           |
+| checkin-streak.js        | `src/services/checkin-streak.js`                           | Daily check-in streak calculation                                                                   |
+| streak-recovery.js       | `src/services/streak-recovery.js`                          | Streak recovery (freeze, skip) logic                                                                |
 | fsrs-optimizer-client.js | `src/pages/practice-sub/services/fsrs-optimizer-client.js` | Client for cloud FSRS parameter optimization                                                        |
 | offline-cache-service.js | `src/pages/practice-sub/services/offline-cache-service.js` | Offline data caching + answer queue + sync; exports `saveOfflineAnswer`, `checkOfflineAvailability` |
-| subscribe-message.js     | `src/services/subscribe-message.js`     | WeChat subscription message API                                                                     |
+| subscribe-message.js     | `src/services/subscribe-message.js`                        | WeChat subscription message API                                                                     |
 
 ### Composables (Vue 3 Hooks)
 

@@ -107,6 +107,13 @@ class BaiduCleaningQueueTest(unittest.TestCase):
                     "track": "math2",
                     "subject": "math",
                     "year": 2021,
+                    "examCycle": 2027,
+                    "collectionRoot": "2027考研",
+                    "courseCategory": "public_course",
+                    "institutionName": "某机构A",
+                    "institutionKey": "某机构A",
+                    "targetDirectory": "/apps/考研大师/raw-pdf/2027考研/public-course/某机构A/math2/2021",
+                    "approvalRequired": True,
                     "priority": 100,
                     "riskFlags": [],
                 },
@@ -121,6 +128,77 @@ class BaiduCleaningQueueTest(unittest.TestCase):
         self.assertEqual(actions["src_group_file_index"], "transfer_or_direct_download")
         self.assertEqual(queue["summary"]["manualReviewTasks"], 1)
         self.assertEqual(queue["summary"]["transferTasks"], 2)
+        group_file_task = next(task for task in queue["tasks"] if task["sourceId"] == "src_group_file_index")
+        self.assertEqual(group_file_task["examCycle"], 2027)
+        self.assertEqual(group_file_task["courseCategory"], "public_course")
+        self.assertEqual(group_file_task["institutionKey"], "某机构A")
+        self.assertTrue(group_file_task["approvalRequired"])
+        self.assertEqual(
+            group_file_task["targetDirectory"],
+            "/apps/考研大师/raw-pdf/2027考研/public-course/某机构A/math2/2021",
+        )
+
+    def test_queue_summary_splits_actionable_and_blocked_pending_tasks(self):
+        manifest = {
+            "items": [
+                {
+                    "sourceId": "src_auto",
+                    "fingerprint": "fp_auto",
+                    "eligible": True,
+                    "status": "discovered",
+                    "sourceChannel": "netdisk_full_path",
+                    "fsId": 3001,
+                    "remotePath": "/EXAM-MASTER/考研历年真题/2018英语一.pdf",
+                    "fileName": "2018英语一.pdf",
+                    "extension": ".pdf",
+                    "sourceType": "official_paper",
+                    "track": "english1",
+                    "subject": "english",
+                    "year": 2018,
+                    "priority": 100,
+                    "riskFlags": [],
+                },
+                {
+                    "sourceId": "src_manual",
+                    "fingerprint": "fp_manual",
+                    "eligible": True,
+                    "status": "discovered",
+                    "sourceChannel": "netdisk_full_path",
+                    "fsId": 3002,
+                    "remotePath": "/EXAM-MASTER/机构讲义.pdf",
+                    "fileName": "机构讲义.pdf",
+                    "extension": ".pdf",
+                    "sourceType": "institution_candidate",
+                    "track": "politics",
+                    "subject": "politics",
+                    "year": 2026,
+                    "priority": 80,
+                    "riskFlags": ["copyright_review_required"],
+                },
+                {
+                    "sourceId": "src_transfer",
+                    "fingerprint": "fp_transfer",
+                    "eligible": True,
+                    "status": "discovered",
+                    "sourceChannel": "group_file_index",
+                    "remotePath": "/群文件/2027考研/公共课/某机构A/2021数学二真题.pdf",
+                    "fileName": "2021数学二真题.pdf",
+                    "extension": ".pdf",
+                    "sourceType": "official_paper",
+                    "track": "math2",
+                    "subject": "math",
+                    "year": 2021,
+                    "priority": 100,
+                    "riskFlags": [],
+                },
+            ]
+        }
+
+        queue = build_cleaning_queue(manifest, now="2026-04-30T00:00:00Z")
+
+        self.assertEqual(queue["summary"]["automationActionablePendingTasks"], 1)
+        self.assertEqual(queue["summary"]["manualBlockedPendingTasks"], 1)
+        self.assertEqual(queue["summary"]["transferBlockedPendingTasks"], 1)
 
 
 if __name__ == "__main__":

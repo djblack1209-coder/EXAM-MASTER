@@ -136,6 +136,8 @@ npm run test:coverage            # With coverage report
 npx vitest run tests/unit/api.spec.js  # Run single test
 ```
 
+`npm test` runs Vitest directly. Do not pass Jest-only flags such as `--runInBand`; Vitest 4 rejects unknown options. For a narrower regression, run specific files with `npx vitest run <file...>`.
+
 ---
 
 ## QA Gate
@@ -173,7 +175,7 @@ npm run audit:mp-main-usage           # MP main package size
 
 ### Unit Tests (Vitest)
 
-- **Current Status**: All passing (91 suites, 1168 tests)
+- **Current Status**: All passing in the latest local full run (97 suites, 1085 tests on 2026-05-24)
 - **Historical Issues (已修复)**:
   - `JWT_SECRET` 环境变量已通过 `.env.test` 配置。
   - `social.service.js` 已重命名为 `social.api.js`，import 路径已对齐。

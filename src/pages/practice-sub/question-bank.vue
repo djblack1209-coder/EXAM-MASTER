@@ -18,15 +18,15 @@
         <view class="hero-metrics">
           <view class="hero-metric">
             <text class="metric-value">{{ readyCount }}</text>
-            <text class="metric-label">可练</text>
+            <text class="metric-label">正式</text>
+          </view>
+          <view class="hero-metric">
+            <text class="metric-value">{{ draftCount }}</text>
+            <text class="metric-label">自练</text>
           </view>
           <view class="hero-metric">
             <text class="metric-value">{{ pendingCount }}</text>
-            <text class="metric-label">整理中</text>
-          </view>
-          <view class="hero-metric">
-            <text class="metric-value">{{ totalQuestions }}</text>
-            <text class="metric-label">已载入</text>
+            <text class="metric-label">待完善</text>
           </view>
         </view>
       </view>
@@ -59,15 +59,54 @@
       <view class="section-head">
         <view>
           <text class="section-title">{{ selectedTrack?.label || '公共课' }}</text>
-          <text class="section-hint">整套试卷训练</text>
+          <text class="section-hint">2005-2026 整卷真题地图</text>
         </view>
-        <text class="section-meta">{{ selectedTrackReadyCount }} 套可练</text>
+        <text class="section-meta">{{ selectedTrackSlotText }}</text>
+      </view>
+
+      <view v-if="selectedYearSlots.length > 0" class="year-map">
+        <view
+          v-for="slot in selectedYearSlots"
+          :key="slot.id"
+          class="year-slot"
+          :class="[`status-${slot.status}`, { active: selectedYearSlot?.id === slot.id }]"
+          @tap="selectYearSlot(slot)"
+        >
+          <text class="slot-year">{{ slot.year }}</text>
+          <text class="slot-status">{{ slot.statusLabel }}</text>
+        </view>
+      </view>
+
+      <view v-if="selectedYearSlot" class="slot-detail">
+        <view class="slot-detail-head">
+          <view class="slot-title-block">
+            <text class="slot-kicker">{{ selectedTrack?.code }} · {{ selectedYearSlot.statusLabel }}</text>
+            <text class="slot-title">{{ selectedYearSlot.name }}</text>
+          </view>
+          <view class="slot-badge" :class="`status-${selectedYearSlot.status}`">
+            <text>{{ selectedYearSlot.actionLabel }}</text>
+          </view>
+        </view>
+        <text class="slot-desc">{{ selectedYearSlot.description }}</text>
+        <text v-if="selectedYearSlot.caution" class="slot-caution">{{ selectedYearSlot.caution }}</text>
+        <text v-else class="slot-caution">{{ selectedYearSlot.disabledReason }}</text>
+        <view v-if="selectedYearSlot.sections?.length" class="paper-section-row slot-sections">
+          <text v-for="section in selectedYearSlot.sections" :key="section" class="paper-section">{{ section }}</text>
+        </view>
+        <view
+          v-if="selectedYearSlot.clickable"
+          class="paper-btn primary slot-action"
+          hover-class="btn-hover"
+          @tap="loadAndStartSlot(selectedYearSlot)"
+        >
+          <text>{{ loadingBankId === selectedYearSlot.bankId ? '加载中' : selectedYearSlot.actionLabel }}</text>
+        </view>
       </view>
 
       <view v-if="selectedReadyBanks.length > 0" class="paper-list">
         <view v-for="paper in selectedReadyBanks" :key="paper.id" class="paper-card">
           <view class="paper-main">
-              <text class="paper-year">{{ paper.year }}</text>
+            <text class="paper-year">{{ paper.year }}</text>
             <view class="paper-copy">
               <text class="paper-name">{{ paper.name }}</text>
               <text v-if="paper.releaseLabel" class="paper-release-label">{{ paper.releaseLabel }}</text>
@@ -123,7 +162,7 @@
 import { computed, ref, onMounted, onBeforeUnmount } from 'vue';
 import { safeNavigateBack } from '@/utils/safe-navigate';
 import { getPracticeNavigationTree, loadBank } from '@/config/bank-registry.js';
-import { importFlashcardsToBank, getBankStats } from '@/utils/flashcard-adapter.js';
+import { importFlashcardsToBank } from '@/utils/flashcard-adapter.js';
 import { getStatusBarHeight } from '@/utils/core/system.js';
 import storageService from '@/services/storageService.js';
 import { toast } from '@/utils/toast.js';
@@ -145,14 +184,10 @@ const selectedTrackId = ref('');
 const loadedBankIds = ref(new Set(storageService.get('loaded_flashcard_banks', []) || []));
 const navigationTree = computed(() => getPracticeNavigationTree(storageService.get('exam_profile', null) || {}));
 const allTracks = computed(() => navigationTree.value.flatMap((subject) => subject.tracks || []));
-const readyCount = computed(() => allTracks.value.reduce((sum, track) => sum + (track.banks?.length || 0), 0));
-const pendingCount = computed(() => allTracks.value.reduce((sum, track) => sum + (track.pendingBanks?.length || 0), 0));
-const bankStats = computed(() =>
-  getBankStats({
-    get: (key) => storageService.get(key, [])
-  })
-);
-const totalQuestions = computed(() => bankStats.value.total || 0);
+const readyCount = computed(() => allTracks.value.reduce((sum, track) => sum + (track.slotSummary?.ready || 0), 0));
+const draftCount = computed(() => allTracks.value.reduce((sum, track) => sum + (track.slotSummary?.draft || 0), 0));
+const totalSlotCount = computed(() => allTracks.value.reduce((sum, track) => sum + (track.slotSummary?.total || 0), 0));
+const pendingCount = computed(() => Math.max(totalSlotCount.value - readyCount.value - draftCount.value, 0));
 
 const selectedSubject = computed(() => {
   const fallbackSubject = navigationTree.value[0] || null;
@@ -164,7 +199,21 @@ const selectedTrack = computed(() => {
 });
 const selectedReadyBanks = computed(() => selectedTrack.value?.banks || []);
 const selectedPendingBanks = computed(() => selectedTrack.value?.pendingBanks || []);
-const selectedTrackReadyCount = computed(() => selectedReadyBanks.value.length);
+const selectedYearSlots = computed(() => selectedTrack.value?.yearSlots || []);
+const selectedYearSlotId = ref('');
+const selectedYearSlot = computed(() => {
+  return (
+    selectedYearSlots.value.find((slot) => slot.id === selectedYearSlotId.value) || selectedYearSlots.value[0] || null
+  );
+});
+const selectedTrackSlotText = computed(() => {
+  const summary = selectedTrack.value?.slotSummary || {};
+  const ready = Number(summary.ready || 0);
+  const draft = Number(summary.draft || 0);
+  const total = Number(summary.total || 0);
+  const pending = Math.max(total - ready - draft, 0);
+  return `正式 ${ready} · 自练 ${draft} · 待完善 ${pending}`;
+});
 
 function goBack() {
   safeNavigateBack();
@@ -182,6 +231,7 @@ function ensureSelection() {
   if (!selectedTrackId.value || !subject.tracks?.some((track) => track.id === selectedTrackId.value)) {
     selectedTrackId.value = preferredTrack?.id || '';
   }
+  ensureYearSlotSelection();
 }
 
 function selectSubject(subjectId) {
@@ -189,10 +239,31 @@ function selectSubject(subjectId) {
   const subject = navigationTree.value.find((item) => item.id === subjectId);
   const track = subject?.tracks?.find((item) => item.banks?.length) || subject?.tracks?.[0];
   selectedTrackId.value = track?.id || '';
+  ensureYearSlotSelection();
 }
 
 function selectTrack(trackId) {
   selectedTrackId.value = trackId;
+  ensureYearSlotSelection();
+}
+
+function ensureYearSlotSelection() {
+  const slots = selectedTrack.value?.yearSlots || [];
+  const firstClickable = slots.find((slot) => slot.clickable);
+  const firstKnownSlot = slots.find((slot) => slot.status !== 'missing');
+  const fallback = firstClickable || firstKnownSlot || slots[0];
+  if (!slots.some((slot) => slot.id === selectedYearSlotId.value)) {
+    selectedYearSlotId.value = fallback?.id || '';
+  }
+}
+
+function selectYearSlot(slot) {
+  selectedYearSlotId.value = slot.id;
+}
+
+async function loadAndStartSlot(slot) {
+  if (!slot?.bankId || !slot.clickable) return;
+  await loadAndStartPaper({ ...slot, id: slot.bankId });
 }
 
 function isBankLoaded(bankId) {
@@ -414,6 +485,142 @@ onMounted(() => {
   color: #8e8e93;
   font-size: 23rpx;
   margin-top: 8rpx;
+}
+.section-meta {
+  flex-shrink: 0;
+  margin-left: 16rpx;
+  text-align: right;
+}
+.year-map {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12rpx;
+  padding: 0 24rpx;
+}
+.year-slot {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 92rpx;
+  padding: 12rpx 8rpx;
+  border-radius: 18rpx;
+  background: #ffffff;
+  border: 1rpx solid rgba(0, 0, 0, 0.06);
+  text-align: center;
+}
+.year-slot.active {
+  border-color: rgba(29, 29, 31, 0.62);
+  box-shadow: 0 10rpx 24rpx rgba(15, 23, 42, 0.08);
+}
+.year-slot.status-ready {
+  background: #edf8f1;
+}
+.year-slot.status-draft {
+  background: #fff7e8;
+}
+.year-slot.status-organizing {
+  background: #eef4ff;
+}
+.year-slot.status-missing {
+  background: #f2f3f5;
+  opacity: 0.72;
+}
+.slot-year {
+  display: block;
+  color: #1d1d1f;
+  font-size: 27rpx;
+  font-weight: 900;
+  line-height: 1;
+}
+.slot-status {
+  display: block;
+  margin-top: 9rpx;
+  color: #5f6672;
+  font-size: 18rpx;
+  font-weight: 850;
+  white-space: nowrap;
+}
+.status-ready .slot-status {
+  color: #1f7a4d;
+}
+.status-draft .slot-status {
+  color: #9a5b00;
+}
+.status-organizing .slot-status {
+  color: #0068d6;
+}
+.slot-detail {
+  margin: 18rpx 24rpx 28rpx;
+  padding: 28rpx 24rpx;
+  border-radius: 24rpx;
+  background: #ffffff;
+  border: 1rpx solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 10rpx 28rpx rgba(15, 23, 42, 0.06);
+}
+.slot-detail-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+.slot-title-block {
+  flex: 1;
+  min-width: 0;
+  padding-right: 16rpx;
+}
+.slot-kicker {
+  display: block;
+  color: #8e8e93;
+  font-size: 20rpx;
+  font-weight: 900;
+}
+.slot-title {
+  display: block;
+  margin-top: 8rpx;
+  color: #1d1d1f;
+  font-size: 31rpx;
+  font-weight: 860;
+  line-height: 1.3;
+}
+.slot-badge {
+  flex-shrink: 0;
+  padding: 8rpx 14rpx;
+  border-radius: 999rpx;
+  background: #f2f3f5;
+  color: #5f6672;
+  font-size: 21rpx;
+  font-weight: 900;
+}
+.slot-badge.status-ready {
+  background: rgba(31, 122, 77, 0.12);
+  color: #1f7a4d;
+}
+.slot-badge.status-draft {
+  background: rgba(255, 149, 0, 0.14);
+  color: #9a5b00;
+}
+.slot-badge.status-organizing {
+  background: rgba(0, 113, 227, 0.12);
+  color: #0068d6;
+}
+.slot-desc {
+  display: block;
+  margin-top: 14rpx;
+  color: #5f6672;
+  font-size: 24rpx;
+  line-height: 1.45;
+}
+.slot-caution {
+  display: block;
+  margin-top: 10rpx;
+  color: #8e8e93;
+  font-size: 22rpx;
+  line-height: 1.45;
+}
+.slot-sections {
+  margin-top: 16rpx;
+}
+.slot-action {
+  margin-top: 22rpx;
 }
 .paper-list {
   padding: 0 24rpx;

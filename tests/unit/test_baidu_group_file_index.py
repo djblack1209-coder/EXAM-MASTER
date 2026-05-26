@@ -51,6 +51,45 @@ def test_group_file_index_normalizes_json_records_and_requires_approval_for_docu
     assert queue["items"][0]["status"] == "approval_required"
 
 
+def test_group_file_index_buckets_2027_exam_by_category_and_institution():
+    raw_items = [
+        {
+            "fileName": "2027英语一阅读讲义.pdf",
+            "path": "/群文件/2027考研/公共课/某机构A/英语一/2027英语一阅读讲义.pdf",
+            "size": 320_000,
+        },
+        {
+            "fileName": "2027计算机408冲刺讲义.pdf",
+            "path": "/群文件/2027考研/专业课/某机构B/计算机408/2027计算机408冲刺讲义.pdf",
+            "size": 420_000,
+        },
+    ]
+
+    index = build_index(
+        raw_items,
+        group_name="必定上岸27考研159",
+        dest_root=DEFAULT_DEST_ROOT,
+        now="2026-05-22T00:00:00Z",
+    )
+    queue = build_transfer_queue(index, dest_root=DEFAULT_DEST_ROOT)
+    by_name = {item["fileName"]: item for item in queue["items"]}
+
+    public_item = by_name["2027英语一阅读讲义.pdf"]
+    professional_item = by_name["2027计算机408冲刺讲义.pdf"]
+
+    assert index["summary"]["courseCategoryCounts"] == {"public_course": 1, "professional_course": 1}
+    assert index["summary"]["examCycleCounts"] == {"2027": 2}
+    assert public_item["examCycle"] == 2027
+    assert public_item["collectionRoot"] == "2027考研"
+    assert public_item["courseCategory"] == "public_course"
+    assert public_item["institutionKey"] == "某机构A"
+    assert public_item["targetDirectory"] == "/apps/考研大师/raw-pdf/2027考研/public-course/某机构A/english1/2027"
+    assert professional_item["courseCategory"] == "professional_course"
+    assert professional_item["institutionKey"] == "某机构B"
+    assert professional_item["direction"] == "计算机408"
+    assert professional_item["targetDirectory"] == "/apps/考研大师/raw-pdf/2027考研/professional-course/某机构B/计算机408/2027"
+
+
 def test_group_file_index_parses_accessibility_text_exports():
     records = parse_accessibility_text(
         """
@@ -103,6 +142,15 @@ def test_group_file_index_exports_source_manifest_handoff_shape():
         "server_mtime": 1710000000,
         "source": "group_file_index",
         "source_label": "必定上岸27考研159",
+        "groupName": "必定上岸27考研159",
+        "examCycle": None,
+        "collectionRoot": "",
+        "courseCategory": "public_course",
+        "institutionName": "",
+        "institutionKey": "",
+        "direction": "",
+        "targetDirectory": "/apps/考研大师/raw-pdf/math3/2022",
+        "approvalRequired": True,
         "subject": "math",
         "track": "math3",
         "year": 2022,

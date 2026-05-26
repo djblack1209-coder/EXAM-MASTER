@@ -70,6 +70,19 @@ describe('published flashcard bank registry', () => {
     expect(politics.tracks[0].coverage.pendingYears).toEqual([2024, 2025]);
     expect(politics.tracks[0].pendingBanks.map((bank) => Number(bank.year))).toEqual([2023, 2022, 2021, 2020]);
     expect(politics.tracks[0].coverage.groupSourceRequired).toBe(false);
+    expect(politics.tracks[0].yearSlots).toHaveLength(22);
+    expect(politics.tracks[0].slotSummary).toEqual({ total: 22, ready: 0, draft: 2, organizing: 0, missing: 20 });
+    expect(politics.tracks[0].yearSlots.find((slot) => slot.year === '2025')).toMatchObject({
+      bankId: 'politics-2025',
+      status: 'draft',
+      statusLabel: '自练',
+      clickable: true
+    });
+    expect(politics.tracks[0].yearSlots.find((slot) => slot.year === '2026')).toMatchObject({
+      status: 'missing',
+      statusLabel: '待入库',
+      clickable: false
+    });
     expect(english.tracks[0].banks.some((bank) => bank.id === 'english1-2025')).toBe(true);
     expect(english.tracks[0].banks.find((bank) => bank.id === 'english1-2025').usageScope).toBe('self_study_draft');
     expect(english.tracks[0].banks.some((bank) => bank.id === 'english1-2005')).toBe(true);
@@ -81,12 +94,21 @@ describe('published flashcard bank registry', () => {
     expect(english.tracks[0].pendingBanks.some((bank) => bank.id === 'english1-2025')).toBe(false);
     expect(english.tracks[0].pendingBanks.some((bank) => bank.id === 'english1-2025-source')).toBe(false);
     expect(english.tracks[0].pendingBanks.some((bank) => bank.id === 'english-2025')).toBe(false);
+    expect(english.tracks[0].yearSlots).toHaveLength(22);
+    expect(english.tracks[0].slotSummary).toEqual({ total: 22, ready: 8, draft: 1, organizing: 0, missing: 13 });
+    expect(english.tracks[0].yearSlots.find((slot) => slot.year === '2012')).toMatchObject({
+      bankId: 'english1-2012',
+      status: 'ready',
+      statusLabel: '正式',
+      clickable: true
+    });
+    expect(english.tracks[0].yearSlots.find((slot) => slot.year === '2026')).toMatchObject({
+      status: 'missing',
+      actionLabel: '待入库',
+      clickable: false
+    });
     const math = getPracticeNavigationTree({ tracks: ['math1', 'math2', 'math3'] }).find((item) => item.id === 'math');
-    expect(math.tracks.map((track) => track.pendingBanks[0]?.id)).toEqual([
-      'math1-2025',
-      'math2-2025',
-      'math3-2025'
-    ]);
+    expect(math.tracks.map((track) => track.pendingBanks[0]?.id)).toEqual(['math1-2025', 'math2-2025', 'math3-2025']);
     expect(math.tracks.flatMap((track) => track.pendingBanks.map((bank) => bank.id))).not.toContain('math-2025');
     expect(english.tracks[0].modes.map((mode) => mode.id)).toEqual(['past_exam', 'timed_sprint', 'weakness']);
     expect(english.tracks[0].modes.map((mode) => mode.id)).not.toContain('knowledge_graph');

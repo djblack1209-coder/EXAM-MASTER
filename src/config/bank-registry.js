@@ -24,6 +24,13 @@ const PAPER_QUALITY = {
 
 const RECENT_YEARS = [2025, 2024, 2023, 2022, 2021, 2020];
 
+const YEAR_SLOT_STATUS = {
+  READY: 'ready',
+  DRAFT: 'draft',
+  ORGANIZING: 'organizing',
+  MISSING: 'missing'
+};
+
 function paperSections(...items) {
   return items.filter(Boolean);
 }
@@ -211,7 +218,8 @@ const KNOWN_SOURCE_PAPERS = [
     year: '2024',
     name: '2024考研政治真题',
     quality: PAPER_QUALITY.NEEDS_CLEANING,
-    sourcePath: '/EXAM-MASTER/考研历年真题/01.考研政治/01.考研政治【历年真题】/【真题】2003-2024/2024年考研政治真题及答案.pdf'
+    sourcePath:
+      '/EXAM-MASTER/考研历年真题/01.考研政治/01.考研政治【历年真题】/【真题】2003-2024/2024年考研政治真题及答案.pdf'
   },
   {
     id: 'english1-2025-source',
@@ -344,6 +352,88 @@ function releaseStateFor({ publishedYears, requiredYears }) {
   return 'partial';
 }
 
+function yearSlotStatusFor(item) {
+  if (!item) return YEAR_SLOT_STATUS.MISSING;
+  if (item.enabled !== false && item.usageScope === 'self_study_draft') return YEAR_SLOT_STATUS.DRAFT;
+  if (item.enabled !== false) return YEAR_SLOT_STATUS.READY;
+  return YEAR_SLOT_STATUS.ORGANIZING;
+}
+
+function yearSlotStatusLabel(status) {
+  if (status === YEAR_SLOT_STATUS.READY) return '正式';
+  if (status === YEAR_SLOT_STATUS.DRAFT) return '自练';
+  if (status === YEAR_SLOT_STATUS.ORGANIZING) return '整理中';
+  return '待入库';
+}
+
+function yearSlotActionLabel(status) {
+  if (status === YEAR_SLOT_STATUS.READY) return '开始';
+  if (status === YEAR_SLOT_STATUS.DRAFT) return '自练';
+  if (status === YEAR_SLOT_STATUS.ORGANIZING) return '整理中';
+  return '待入库';
+}
+
+function buildTrackYearSlots(track, banks, sourcePapers, coverage) {
+  const banksByYear = new Map(banks.filter((bank) => bank.track === track.id).map((bank) => [String(bank.year), bank]));
+  const sourcesByYear = new Map(
+    sourcePapers.filter((paper) => paper.track === track.id).map((paper) => [String(paper.year), paper])
+  );
+  const requiredYears = Array.isArray(coverage?.requiredYears) ? coverage.requiredYears : buildYearRange();
+
+  return requiredYears
+    .slice()
+    .reverse()
+    .map((year) => {
+      const key = String(year);
+      const bank = banksByYear.get(key);
+      const source = sourcesByYear.get(key);
+      const item = bank || source || null;
+      const status = bank ? yearSlotStatusFor(bank) : source ? YEAR_SLOT_STATUS.ORGANIZING : YEAR_SLOT_STATUS.MISSING;
+      const name = item?.name || `${year}考研${getPaperTrackLabel(track)}真题`;
+      const disabledReason =
+        item?.disabledReason ||
+        (status === YEAR_SLOT_STATUS.ORGANIZING ? '资料、答案或篇章材料完善后开放整卷练习' : '资料入库后开放');
+
+      return {
+        id: item?.id || `${track.id}-${year}-slot`,
+        bankId: bank?.id || '',
+        subject: item?.subject || getSubjectLabel(track.subject),
+        subjectKey: item?.subjectKey || track.subject,
+        track: track.id,
+        trackLabel: track.label,
+        year: key,
+        name,
+        description: item?.description || '整卷真题槽位',
+        releaseLabel: item?.releaseLabel || yearSlotStatusLabel(status),
+        caution: item?.caution || '',
+        disabledReason,
+        paperType: item?.paperType || 'past_exam',
+        quality: item?.quality || PAPER_QUALITY.SOURCE_MISSING,
+        sections: item?.sections || [],
+        sourcePath: source?.sourcePath || '',
+        answerSourcePath: source?.answerSourcePath || '',
+        status,
+        statusLabel: yearSlotStatusLabel(status),
+        actionLabel: yearSlotActionLabel(status),
+        clickable: status === YEAR_SLOT_STATUS.READY || status === YEAR_SLOT_STATUS.DRAFT
+      };
+    });
+}
+
+function summarizeYearSlots(yearSlots) {
+  return yearSlots.reduce(
+    (summary, slot) => {
+      summary.total += 1;
+      if (slot.status === YEAR_SLOT_STATUS.READY) summary.ready += 1;
+      else if (slot.status === YEAR_SLOT_STATUS.DRAFT) summary.draft += 1;
+      else if (slot.status === YEAR_SLOT_STATUS.ORGANIZING) summary.organizing += 1;
+      else summary.missing += 1;
+      return summary;
+    },
+    { total: 0, ready: 0, draft: 0, organizing: 0, missing: 0 }
+  );
+}
+
 /**
  * Build the release coverage matrix for public-course past-exam banks.
  *
@@ -472,17 +562,22 @@ export function getPracticeNavigationTree(profile = {}) {
       subjects.push(subject);
     }
 
+    const coverage = coverageByTrack.get(track.id);
+    const yearSlots = buildTrackYearSlots(track, banks, sourcePapers, coverage);
+
     subject.tracks.push({
       id: track.id,
       code: track.code,
       label: track.label,
       years: RECENT_YEARS,
+      yearSlots,
+      slotSummary: summarizeYearSlots(yearSlots),
       banks: banks
         .filter((bank) => bank.track === track.id && bank.enabled !== false)
         .sort((a, b) => Number(b.year || 0) - Number(a.year || 0)),
       pendingBanks: buildRecentPendingPapers(track, banks, sourcePapers),
       coverage: {
-        ...coverageByTrack.get(track.id),
+        ...coverage,
         groupSourceRequired: false
       },
       modes: [

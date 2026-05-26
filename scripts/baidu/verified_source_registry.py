@@ -49,6 +49,13 @@ def sha256_file(path: Path) -> str:
     return f"sha256:{digest.hexdigest()}"
 
 
+def normalize_sha256(value: Any) -> str:
+    text = str(value or "").strip()
+    if not text:
+        return ""
+    return text if text.startswith("sha256:") else f"sha256:{text}"
+
+
 def get_sources(payload: Any) -> list[dict[str, Any]]:
     if isinstance(payload, list):
         return [item for item in payload if isinstance(item, dict)]
@@ -82,6 +89,29 @@ def require_text(source: dict[str, Any], field_name: str) -> str:
     return value
 
 
+def require_human_verified_fields(source: dict[str, Any]) -> tuple[str, str]:
+    draft_status = str(source.get("draftStatus") or "").strip()
+    if draft_status == "requires_human_verification":
+        raise ValueError("draftStatus requires human verification; remove draft handoff fields after verification")
+
+    human_field_status = str(source.get("humanFieldStatus") or "").strip()
+    if human_field_status == "requires_human_input":
+        raise ValueError("humanFieldStatus requires human input; fill the verified source registry draft first")
+
+    missing_human_fields = source.get("missingHumanFields")
+    if isinstance(missing_human_fields, list):
+        missing = [str(item).strip() for item in missing_human_fields if str(item).strip()]
+        if missing:
+            raise ValueError(f"missingHumanFields must be empty before export: {', '.join(missing)}")
+
+    verified_by = require_text(source, "verifiedBy")
+    evidence_note = require_text(source, "evidenceNote")
+    if evidence_note.startswith("DRAFT:"):
+        raise ValueError("evidenceNote must be replaced with a human verification note before export")
+
+    return verified_by, evidence_note
+
+
 def normalize_source(source: dict[str, Any], *, registry_path: Path, now: str) -> dict[str, Any]:
     local_path = resolve_local_path(require_text(source, "localPath"), registry_path=registry_path)
     if not local_path.exists() or not local_path.is_file():
@@ -106,7 +136,12 @@ def normalize_source(source: dict[str, Any], *, registry_path: Path, now: str) -
         raise ValueError("answerEvidenceStatus must be matched for release-ready verified sources")
 
     stat = local_path.stat()
+    computed_sha256 = sha256_file(local_path)
+    expected_sha256 = normalize_sha256(source.get("expectedSha256") or source.get("sha256"))
+    if expected_sha256 and expected_sha256 != computed_sha256:
+        raise ValueError(f"expectedSha256 mismatch for {local_path}: expected {expected_sha256}, got {computed_sha256}")
     subject = str(source.get("subject") or ("english" if track.startswith("english") else "math" if track.startswith("math") else track))
+    verified_by, evidence_note = require_human_verified_fields(source)
 
     return {
         "id": str(source.get("id") or f"{track}_{year}_{local_path.stem}"),
@@ -115,7 +150,8 @@ def normalize_source(source: dict[str, Any], *, registry_path: Path, now: str) -
         "server_filename": local_path.name,
         "size": stat.st_size,
         "server_mtime": int(stat.st_mtime),
-        "sha256": sha256_file(local_path),
+        "sha256": computed_sha256,
+        "sourceRole": str(source.get("sourceRole") or ""),
         "sourceUrl": source_url,
         "subject": subject,
         "track": track,
@@ -124,8 +160,8 @@ def normalize_source(source: dict[str, Any], *, registry_path: Path, now: str) -
         "status": str(source.get("status") or "verified"),
         "answerEvidenceStatus": answer_status,
         "verifiedAt": str(source.get("verifiedAt") or now),
-        "verifiedBy": str(source.get("verifiedBy") or "release-operator"),
-        "evidenceNote": str(source.get("evidenceNote") or ""),
+        "verifiedBy": verified_by,
+        "evidenceNote": evidence_note,
     }
 
 

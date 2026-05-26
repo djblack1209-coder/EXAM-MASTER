@@ -12,6 +12,7 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -349,8 +350,119 @@ Options:
   --max-year <year>        Last release-scope year to audit
   --output <path>          JSON report path
   --fail-on-blockers       Exit 2 when any cleaned card cannot be promoted
+  --self-test              Run built-in flashcard quality assertions
 """
     )
+
+
+def run_self_test() -> None:
+    passing_payload = {
+        "paperId": "english1-2025",
+        "subjectKey": "english",
+        "year": 2025,
+        "cards": [
+            {
+                "id": "e1-2025-1",
+                "type": "single_choice",
+                "question": "What is the best title for the passage?",
+                "passage": "A verified passage excerpt used for self-test.",
+                "options": [
+                    {"label": "A", "text": "Option A"},
+                    {"label": "B", "text": "Option B"},
+                    {"label": "C", "text": "Option C"},
+                    {"label": "D", "text": "Option D"},
+                ],
+                "answer": "A",
+                "sourceEvidenceId": "src_self_test",
+                "answerEvidenceStatus": "matched",
+                "questionTextHash": "sha256:question",
+                "answerTextHash": "sha256:answer",
+            },
+            {
+                "id": "e1-2025-translation",
+                "type": "translation",
+                "question": "Translate the underlined sentence.",
+                "answer": "A verified translation answer.",
+                "sourceEvidenceId": "src_self_test_translation",
+                "answerEvidenceStatus": "matched",
+                "questionTextHash": "sha256:translation-question",
+                "answerTextHash": "sha256:translation-answer",
+            },
+        ],
+    }
+
+    passed = audit_flashcard_file(PROJECT_ROOT / "data/flashcards/english1-2025-self-test.json", passing_payload)
+    assert passed["status"] == "passed"
+    assert passed["cardCount"] == 2
+    assert passed["blockedCards"] == []
+
+    blocked_payload = {
+        "paperId": "english1-2025",
+        "subjectKey": "english",
+        "publicationStatus": "draft",
+        "quality": "needs_passage",
+        "cards": [
+            {
+                "id": "duplicate",
+                "type": "single_choice",
+                "question": "Missing passage and usable evidence.",
+                "options": [
+                    {"label": "A", "text": "Option A"},
+                    {"label": "B", "text": "Option B"},
+                    {"label": "C", "text": "Option C"},
+                ],
+                "answer": "完整的参考答案全文",
+            },
+            {
+                "id": "duplicate",
+                "type": "single_choice",
+                "question": "Duplicate id should be blocked.",
+                "passage": "Passage is present on the duplicate card.",
+                "options": [
+                    {"label": "A", "text": "Option A"},
+                    {"label": "B", "text": "Option B"},
+                    {"label": "C", "text": "Option C"},
+                    {"label": "D", "text": "Option D"},
+                ],
+                "answer": "B",
+                "sourceEvidenceId": "src_duplicate",
+                "answerEvidenceStatus": "matched",
+                "questionTextHash": "sha256:duplicate-question",
+                "answerTextHash": "sha256:duplicate-answer",
+            },
+        ],
+    }
+    blocked = audit_flashcard_file(PROJECT_ROOT / "data/flashcards/english1-2025-blocked-self-test.json", blocked_payload)
+    assert blocked["status"] == "blocked"
+    assert blocked["missingAnswerCount"] == 1
+    assert blocked["sourceEvidenceBlockerCount"] == 1
+    assert "publicationStatus=draft" in blocked["publicationBlockers"]
+    assert "quality=needs_passage" in blocked["publicationBlockers"]
+    assert set(blocked["blockedCards"][0]["missingFields"]) == {
+        "answer",
+        "options=A-D-or-A-G",
+        "passage",
+        "sourceEvidenceId",
+        "answerEvidenceStatus=matched",
+        "questionTextHash",
+        "answerTextHash",
+    }
+    assert blocked["blockedCards"][1]["missingFields"] == ["uniqueId"]
+
+    support_payload = {"supportingEvidenceOnly": True, "cards": [{"id": "support"}]}
+    outside_scope_payload = {"paperId": "english1-2030", "year": 2030, "cards": [{"id": "future"}]}
+    with tempfile.TemporaryDirectory(prefix="exam-master-flashcard-quality-") as temp_dir:
+        flashcard_dir = Path(temp_dir)
+        write_json(flashcard_dir / "english1-2025.json", passing_payload)
+        write_json(flashcard_dir / "english1-2025-support.json", support_payload)
+        write_json(flashcard_dir / "english1-2030.json", outside_scope_payload)
+        report = build_quality_report(flashcard_dir, min_year=2005, max_year=2026)
+
+    assert report["summary"]["fileCount"] == 1
+    assert report["summary"]["skippedFileCount"] == 2
+    assert report["releaseReadiness"]["canPromoteToPublic"] is True
+    assert {item["reason"] for item in report["skippedFiles"]} == {"supportingEvidenceOnly", "outsideReleaseYear:2030"}
+    print("[flashcard-quality] self-test passed")
 
 
 def run(argv: list[str] | None = None) -> int:
@@ -360,7 +472,12 @@ def run(argv: list[str] | None = None) -> int:
     parser.add_argument("--max-year", type=int, default=2026)
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
     parser.add_argument("--fail-on-blockers", action="store_true")
+    parser.add_argument("--self-test", action="store_true")
     args = parser.parse_args(argv)
+
+    if args.self_test:
+        run_self_test()
+        return 0
 
     if args.min_year > args.max_year:
         raise SystemExit("--min-year must be <= --max-year")

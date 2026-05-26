@@ -60,6 +60,9 @@ def is_publishable_source(item: dict[str, Any]) -> bool:
         return False
     if item.get("sourceType") != "official_paper":
         return False
+    source_role = str(item.get("sourceRole") or item.get("source_role") or "").strip()
+    if source_role and source_role not in {"paper", "paper_answer"}:
+        return False
     blocking_flags = {"answer_missing", "brand_leak", "copyright_review_required", "ad_or_promo"}
     if blocking_flags.intersection(set(item.get("riskFlags", []))):
         return False
@@ -257,6 +260,22 @@ def run_self_test() -> None:
                 "priority": 100,
             },
             {
+                "sourceId": "src_answer_only",
+                "eligible": True,
+                "status": "verified",
+                "sourceType": "official_paper",
+                "sourceChannel": "verified_registry",
+                "track": "english1",
+                "year": 2025,
+                "remotePath": "/apps/考研大师/raw-pdf/2025英语一答案.pdf",
+                "contentHash": "sha256:answer-only-source",
+                "answerEvidenceStatus": "matched",
+                "sourceRole": "answer",
+                "fileName": "2025英语一答案.pdf",
+                "riskFlags": [],
+                "priority": 100,
+            },
+            {
                 "sourceId": "src_unmatched_answer",
                 "eligible": True,
                 "status": "verified",
@@ -299,6 +318,7 @@ def run_self_test() -> None:
     report = analyze_manifest(manifest, tracks=["english1"], years=[2024, 2025])
     assert report["coverage"]["english1"]["presentYears"] == [2024]
     assert report["coverage"]["english1"]["missingYears"] == [2025]
+    assert report["summary"]["publishableOfficialPapers"] == 1
     assert report["summary"]["blockingGapCount"] == 1
     assert report["processingQueue"][0]["action"] == "manual_review"
     assert report["cleaningPlan"]["coverageBacklog"][0]["track"] == "english1"

@@ -150,6 +150,51 @@ describe('question bank release gate', () => {
     expect(report.answerEvidence.blockedBanks).toEqual([]);
   });
 
+  it('does not count answer-only official sources as publishable paper coverage', async () => {
+    const { buildQuestionBankReleaseReport } = await import('../../scripts/build/question-bank-release-gate.mjs');
+    const manifest = tempManifestPath([
+      {
+        sourceId: 'src_english1_2099_answer_only',
+        eligible: true,
+        status: 'verified',
+        sourceType: 'official_paper',
+        sourceRole: 'answer',
+        track: 'english1',
+        year: 2099,
+        remotePath: '/raw/english1/2099-answer.pdf',
+        contentHash: 'sha256:english1-2099-answer-source',
+        answerEvidenceStatus: 'matched',
+        riskFlags: []
+      }
+    ]);
+
+    const report = buildQuestionBankReleaseReport({
+      minYear: 2099,
+      maxYear: 2099,
+      tracks: ['english1'],
+      sourceManifest: manifest,
+      banks: []
+    });
+
+    expect(report.summary.sourceManifestPublishableOfficialPapers).toBe(0);
+    expect(report.summary.sourceManifestCoverageGapCount).toBe(1);
+    expect(report.sourceEvidence.coverage.english1.presentYears).toEqual([]);
+    expect(report.sourceEvidence.coverage.english1.missingYearDiagnostics[2099]).toMatchObject({
+      candidateCount: 1,
+      officialPaperCandidateCount: 1,
+      blockReasons: {
+        'sourceRole=answer': 1
+      }
+    });
+    expect(report.sourceEvidence.coverage.english1.missingYearDiagnostics[2099].sampleCandidates[0]).toMatchObject({
+      sourceId: 'src_english1_2099_answer_only',
+      sourceType: 'official_paper',
+      sourceRole: 'answer',
+      answerEvidenceStatus: 'matched',
+      blockReasons: ['sourceRole=answer']
+    });
+  });
+
   it('keeps self-study draft banks as pending release blockers even when source evidence is complete', async () => {
     const { buildQuestionBankReleaseReport } = await import('../../scripts/build/question-bank-release-gate.mjs');
     const manifest = tempManifestPath([
@@ -229,6 +274,19 @@ describe('question bank release gate', () => {
         riskFlags: []
       },
       {
+        sourceId: 'src_math1_2024_answer_only_verified',
+        eligible: true,
+        status: 'verified',
+        sourceType: 'official_paper',
+        sourceRole: 'answer',
+        track: 'math1',
+        year: 2024,
+        remotePath: '/raw/math1/2024-answer-only.pdf',
+        contentHash: 'sha256:answer-only',
+        answerEvidenceStatus: 'matched',
+        riskFlags: []
+      },
+      {
         sourceId: 'src_math1_2024_official_verified_missing_answer',
         eligible: true,
         status: 'verified',
@@ -250,13 +308,19 @@ describe('question bank release gate', () => {
     expect(samples.map((sample) => sample.sourceId)).toEqual([
       'src_math1_2024_official_verified_missing_answer',
       'src_math1_2024_official_discovered',
-      'src_math1_2024_institution'
+      'src_math1_2024_answer_only_verified'
     ]);
     expect(samples[0]).toMatchObject({
       sourceType: 'official_paper',
+      sourceRole: '',
       status: 'verified',
       publishBlocked: false,
       blockReasons: ['answerEvidenceStatus=missing']
+    });
+    expect(samples[2]).toMatchObject({
+      sourceType: 'official_paper',
+      sourceRole: 'answer',
+      blockReasons: ['sourceRole=answer']
     });
   });
 

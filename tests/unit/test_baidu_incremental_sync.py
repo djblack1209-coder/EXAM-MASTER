@@ -91,13 +91,20 @@ class BaiduIncrementalSyncDownloadTest(unittest.TestCase):
 {
   "version": 1,
   "source": "group_file_index",
-  "items": [
+      "items": [
     {
       "path": "/2027考研课程/公共课/2020数学一真题.pdf",
       "server_filename": "2020数学一真题.pdf",
       "size": 220000,
       "source": "group_file_index",
       "source_label": "必定上岸27考研159",
+      "examCycle": 2027,
+      "collectionRoot": "2027考研",
+      "courseCategory": "public_course",
+      "institutionName": "某机构A",
+      "institutionKey": "某机构A",
+      "targetDirectory": "/apps/考研大师/raw-pdf/2027考研/public-course/某机构A/math1/2020",
+      "approvalRequired": true,
       "subject": "math",
       "track": "math1",
       "year": 2020,
@@ -120,6 +127,14 @@ class BaiduIncrementalSyncDownloadTest(unittest.TestCase):
         self.assertEqual(report["inputs"]["groupFiles"], 1)
         self.assertEqual(manifest["items"][0]["sourceChannel"], "group_file_index")
         self.assertEqual(manifest["items"][0]["track"], "math1")
+        self.assertEqual(manifest["items"][0]["examCycle"], 2027)
+        self.assertEqual(manifest["items"][0]["courseCategory"], "public_course")
+        self.assertEqual(manifest["items"][0]["institutionKey"], "某机构A")
+        self.assertTrue(manifest["items"][0]["approvalRequired"])
+        self.assertEqual(
+            manifest["items"][0]["targetDirectory"],
+            "/apps/考研大师/raw-pdf/2027考研/public-course/某机构A/math1/2020",
+        )
 
     def test_downloader_enables_full_path_client_when_needed(self):
         created_clients = []

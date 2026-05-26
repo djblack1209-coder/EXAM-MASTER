@@ -32,6 +32,7 @@ function parseArgs(argv) {
     localSourceAudit: DEFAULT_LOCAL_SOURCE_AUDIT,
     output: DEFAULT_OUTPUT,
     markdown: DEFAULT_MARKDOWN,
+    writeMarkdown: true,
     failOnBlockers: false
   };
 
@@ -64,6 +65,8 @@ function parseArgs(argv) {
     } else if (key === '--markdown') {
       options.markdown = path.resolve(nextValue);
       if (inlineValue === undefined) index += 1;
+    } else if (arg === '--no-markdown') {
+      options.writeMarkdown = false;
     } else if (arg === '--fail-on-blockers') {
       options.failOnBlockers = true;
     } else if (arg === '--help' || arg === '-h') {
@@ -87,6 +90,7 @@ Options:
   --local-source-audit <path>  local public-course source audit report
   --output <path>              machine-readable backlog JSON output
   --markdown <path>            human-readable backlog markdown output
+  --no-markdown                skip writing the human-readable markdown report
   --fail-on-blockers           exit 2 when release blockers remain
 `);
 }
@@ -121,6 +125,20 @@ function trackSortValue(track) {
 
 function unique(values) {
   return [...new Set(values.filter((value) => String(value ?? '').trim() !== ''))];
+}
+
+function sourceRoleSortValue(role) {
+  const roleOrder = {
+    paper: 0,
+    paper_answer: 1,
+    answer: 2
+  };
+  return roleOrder[role] ?? 99;
+}
+
+function compareSourceRoles(a, b) {
+  const roleRank = sourceRoleSortValue(a) - sourceRoleSortValue(b);
+  return roleRank || String(a || '').localeCompare(String(b || ''));
 }
 
 function buildSourceEvidenceLookup(questionAudit) {
@@ -194,6 +212,7 @@ function sourceCandidateSamples(diagnostics, limit = 3) {
     sourceId: sample.sourceId || sample.id || '',
     status: sample.status || '',
     sourceType: sample.sourceType || '',
+    sourceRole: sample.sourceRole || sample.source_role || '',
     answerEvidenceStatus: sample.answerEvidenceStatus || '',
     riskFlags: Array.isArray(sample.riskFlags) ? sample.riskFlags : [],
     publishBlocked: sample.publishBlocked === true,
@@ -205,8 +224,8 @@ function sourceCandidateSamples(diagnostics, limit = 3) {
 
 function localSourceAuditSampleRank(sample) {
   const roleRank = {
-    paper_answer: 0,
-    paper: 1,
+    paper: 0,
+    paper_answer: 1,
     answer: 2
   };
   const qualityRank = {
@@ -267,14 +286,29 @@ function buildLocalSourceAuditLookup(localSourceAudit) {
       usableTextLayerCount: 0,
       needsOcrCount: 0,
       blockedCount: 0,
+      paperLikeCount: 0,
+      answerLikeCount: 0,
+      usablePaperLikeCount: 0,
+      usableAnswerLikeCount: 0,
+      blockedPaperLikeCount: 0,
+      blockedAnswerLikeCount: 0,
       roleCounts: {},
       samples: []
     };
+    const isPaperLike = ['paper', 'paper_answer'].includes(sample.role);
+    const isAnswerLike = ['answer', 'paper_answer'].includes(sample.role);
+    const isUsable = sample.textLayer === 'usable' && !sample.blockers.length;
 
     slot.sourceCount += 1;
     if (sample.textLayer === 'usable') slot.usableTextLayerCount += 1;
     if (sample.textLayer === 'missing_or_sparse' || sample.quality === 'needs_ocr') slot.needsOcrCount += 1;
     if (sample.blockers.length) slot.blockedCount += 1;
+    if (isPaperLike) slot.paperLikeCount += 1;
+    if (isAnswerLike) slot.answerLikeCount += 1;
+    if (isPaperLike && isUsable) slot.usablePaperLikeCount += 1;
+    if (isAnswerLike && isUsable) slot.usableAnswerLikeCount += 1;
+    if (isPaperLike && sample.blockers.length) slot.blockedPaperLikeCount += 1;
+    if (isAnswerLike && sample.blockers.length) slot.blockedAnswerLikeCount += 1;
     if (sample.role) slot.roleCounts[sample.role] = (slot.roleCounts[sample.role] || 0) + 1;
     slot.samples.push(sample);
     slot.samples.sort(compareLocalSourceAuditSamples);
@@ -286,49 +320,280 @@ function buildLocalSourceAuditLookup(localSourceAudit) {
   return lookup;
 }
 
-function localSourceAuditForSlot(localSourceAuditLookup, track, year) {
+function localSourceAuditYears(localSourceAudit) {
+  const years = new Set();
+  const addYear = (value) => {
+    const year = Number(value);
+    if (Number.isInteger(year)) years.add(year);
+  };
+
+  for (const source of Array.isArray(localSourceAudit?.sources) ? localSourceAudit.sources : []) {
+    addYear(source?.year);
+  }
+
+  for (const value of [localSourceAudit?.root, localSourceAudit?.scope, localSourceAudit?.auditRoot]) {
+    const text = typeof value === 'string' ? value : '';
+    const match = text.match(/(?:public-course-|[^0-9])((?:19|20)\d{2})(?:[^0-9]|$)/);
+    if (match) addYear(match[1]);
+  }
+
+  for (const year of Array.isArray(localSourceAudit?.years) ? localSourceAudit.years : []) {
+    addYear(year);
+  }
+
+  return years;
+}
+
+function localSourceAuditForSlot(localSourceAuditLookup, track, year, auditLoaded = false) {
   return (
     localSourceAuditLookup.get(`${track}:${year}`) || {
-      status: 'not_available',
+      status: auditLoaded ? 'missing_for_slot' : 'not_available',
       sourceCount: 0,
       usableTextLayerCount: 0,
       needsOcrCount: 0,
       blockedCount: 0,
+      paperLikeCount: 0,
+      answerLikeCount: 0,
+      usablePaperLikeCount: 0,
+      usableAnswerLikeCount: 0,
+      blockedPaperLikeCount: 0,
+      blockedAnswerLikeCount: 0,
       roleCounts: {},
       samples: []
     }
   );
 }
 
+function summarizeLocalSourceCompanions(diagnostics) {
+  if (
+    !diagnostics ||
+    diagnostics.status === 'not_available' ||
+    diagnostics.status === 'missing_for_slot' ||
+    !diagnostics.sourceCount
+  )
+    return '';
+  const hasUsablePaper = diagnostics.usablePaperLikeCount > 0;
+  const hasUsableAnswer = diagnostics.usableAnswerLikeCount > 0;
+
+  if (hasUsablePaper && hasUsableAnswer) return '，companions=paper+answer可读';
+  if (diagnostics.needsOcrCount > 0 && diagnostics.usableTextLayerCount === 0) return '，companions=需OCR';
+  if (hasUsablePaper && diagnostics.blockedAnswerLikeCount > 0) return '，companions=answer有阻塞';
+  if (diagnostics.blockedPaperLikeCount > 0 && hasUsableAnswer) return '，companions=paper有阻塞';
+  if (hasUsablePaper && diagnostics.answerLikeCount === 0) return '，companions=缺answer';
+  if (diagnostics.paperLikeCount === 0 && hasUsableAnswer) return '，companions=缺paper';
+  if (diagnostics.paperLikeCount > 0 && diagnostics.answerLikeCount > 0) return '，companions=paper+answer待修复';
+  return '，companions=未成对';
+}
+
 function summarizeLocalSourceAudit(diagnostics) {
-  if (!diagnostics || diagnostics.status === 'not_available' || !diagnostics.sourceCount) return '';
+  if (!diagnostics || diagnostics.status === 'not_available') return '';
+  if (diagnostics.status === 'missing_for_slot' || !diagnostics.sourceCount) {
+    return 'local source audit 已加载，但该槽位未登记本地 paper/answer 文件。';
+  }
   const roles = Object.entries(diagnostics.roleCounts || {})
     .sort((a, b) => a[0].localeCompare(b[0]))
     .map(([role, count]) => `${role}=${count}`)
     .join(', ');
-  return `local source audit 已有 ${diagnostics.sourceCount} 个本地文件，usableTextLayer=${diagnostics.usableTextLayerCount}，needsOcr=${diagnostics.needsOcrCount}，blocked=${diagnostics.blockedCount}${roles ? `，roles: ${roles}` : ''}`;
+  return `local source audit 已有 ${diagnostics.sourceCount} 个本地文件，usableTextLayer=${diagnostics.usableTextLayerCount}，needsOcr=${diagnostics.needsOcrCount}，blocked=${diagnostics.blockedCount}${roles ? `，roles: ${roles}` : ''}${summarizeLocalSourceCompanions(diagnostics)}`;
 }
 
 function localSourceAuditSamples(diagnostics, limit = 3) {
   return Array.isArray(diagnostics?.samples) ? diagnostics.samples.slice(0, limit) : [];
 }
 
+const SOURCE_MANIFEST_REGISTRATION_FIELDS = [
+  'eligible=true',
+  'status=verified|published',
+  'sourceType=official_paper',
+  'contentHash|sha256|fileSha256|sourceHash',
+  'remotePath|sourceUrl|provenanceUrl',
+  'answerEvidenceStatus=matched',
+  'legalReview.publishBlocked=false',
+  'riskFlags excludes answer_missing,brand_leak,copyright_review_required,ad_or_promo'
+];
+
+const VERIFIED_SOURCE_REGISTRY_FIELDS = [
+  'localPath',
+  'sourceUrl',
+  'track',
+  'year',
+  'sourceType=official_paper',
+  'answerEvidenceStatus=matched',
+  'expectedSha256',
+  'verifiedBy',
+  'evidenceNote'
+];
+
+const VERIFIED_SOURCE_REGISTRY_HUMAN_FIELDS = ['sourceUrl', 'verifiedBy', 'evidenceNote'];
+
+function humanFieldSortValue(field) {
+  const index = VERIFIED_SOURCE_REGISTRY_HUMAN_FIELDS.indexOf(field);
+  return index === -1 ? 99 : index;
+}
+
+function compareVerifiedSourceRegistryHumanFields(a, b) {
+  const fieldRank = humanFieldSortValue(a) - humanFieldSortValue(b);
+  return fieldRank || String(a || '').localeCompare(String(b || ''));
+}
+
+const SOURCE_MANIFEST_HUMAN_VERIFICATION_STEPS = [
+  '核验 localPath 对应文件与 track/year/科目一致，且 paper 与 answer 是同一套试卷。',
+  '核验 answer 文件覆盖全部客观题/主观题参考答案；缺题或版本差异时不得标 matched。',
+  '核验 sourceUrl/provenanceUrl/remotePath 指向权威或已授权来源，并与 SHA-256 文件一致。',
+  '核验 legalReview.publishBlocked=false，riskFlags 不含 answer_missing/brand_leak/copyright_review_required/ad_or_promo。',
+  '登记后重新运行 Source Manifest merge、manifest/question-bank/release backlog 门禁。'
+];
+
+const SOURCE_MANIFEST_POST_REGISTRATION_COMMANDS = [
+  'npm run baidu:sources:verified',
+  'npm run baidu:sources:merge',
+  'npm run audit:release:backlog',
+  'npm run audit:question-bank:release'
+];
+
+function subjectForTrack(track) {
+  if (track === 'politics') return 'politics';
+  if (String(track || '').startsWith('english')) return 'english';
+  if (String(track || '').startsWith('math')) return 'math';
+  return '';
+}
+
+function missingVerifiedSourceRegistryHumanFields(draft) {
+  return VERIFIED_SOURCE_REGISTRY_HUMAN_FIELDS.filter((field) => {
+    const value = String(draft?.[field] || '').trim();
+    if (!value) return true;
+    return field === 'evidenceNote' && value.startsWith('DRAFT:');
+  });
+}
+
+function verifiedSourceRegistryDrafts(localSourceAudit, { track = '', year = '' } = {}) {
+  return localSourceAuditSamples(localSourceAudit)
+    .filter((sample) => {
+      const role = String(sample.role || '');
+      return (
+        ['paper', 'answer', 'paper_answer'].includes(role) &&
+        sample.textLayer === 'usable' &&
+        !sample.blockers.length &&
+        sample.localPath
+      );
+    })
+    .map((sample) => {
+      const draft = {
+        id: `${track || 'track'}_${year || 'year'}_${sample.role || 'source'}_draft`,
+        localPath: sample.localPath,
+        sourceUrl: '',
+        remotePath: '',
+        expectedSha256: sample.sha256 || '',
+        sourceRole: sample.role || '',
+        subject: subjectForTrack(track),
+        track,
+        year,
+        sourceType: 'official_paper',
+        answerEvidenceStatus: 'matched',
+        verifiedBy: '',
+        evidenceNote: `DRAFT: human must verify ${sample.role || 'source'} file SHA-256 ${sample.sha256 || 'missing'} against an authorized source before registration.`,
+        draftStatus: 'requires_human_verification'
+      };
+      const missingHumanFields = missingVerifiedSourceRegistryHumanFields(draft);
+      return {
+        ...draft,
+        missingHumanFields,
+        humanFieldStatus: missingHumanFields.length ? 'requires_human_input' : 'ready_for_merge'
+      };
+    });
+}
+
+function sourceManifestRegistrationChecklist(localSourceAudit, manifestSamples = [], slot = {}) {
+  const diagnostics = localSourceAudit || {};
+  const localFileCandidates = localSourceAuditSamples(diagnostics).map((sample) => ({
+    role: sample.role || '',
+    localPath: sample.localPath || '',
+    sha256: sample.sha256 || '',
+    textLayer: sample.textLayer || '',
+    quality: sample.quality || '',
+    blockers: Array.isArray(sample.blockers) ? sample.blockers : []
+  }));
+  const manifestCandidateIds = (Array.isArray(manifestSamples) ? manifestSamples : [])
+    .map((sample) => sample.sourceId || sample.id || '')
+    .filter(Boolean);
+  const blockers = [];
+
+  if (!localSourceAudit || diagnostics.status === 'not_available') {
+    blockers.push('local_source_audit_not_available');
+  } else if (diagnostics.status === 'missing_for_slot' || !diagnostics.sourceCount) {
+    blockers.push('local_paper_answer_files_missing');
+  } else {
+    if (diagnostics.needsOcrCount > 0 && diagnostics.usableTextLayerCount === 0) {
+      blockers.push('local_files_need_ocr');
+    }
+    if (diagnostics.usablePaperLikeCount === 0) {
+      blockers.push(diagnostics.blockedPaperLikeCount > 0 ? 'local_paper_file_blocked' : 'local_paper_file_missing');
+    }
+    if (diagnostics.usableAnswerLikeCount === 0) {
+      blockers.push(diagnostics.blockedAnswerLikeCount > 0 ? 'local_answer_file_blocked' : 'local_answer_file_missing');
+    }
+    if (diagnostics.blockedCount > 0 && !blockers.some((blocker) => blocker.includes('_blocked'))) {
+      blockers.push('local_files_have_blockers');
+    }
+  }
+
+  const readyForHumanVerification = blockers.length === 0;
+
+  return {
+    status: readyForHumanVerification ? 'ready_for_human_verification' : 'blocked_before_registration',
+    readyForHumanVerification,
+    requiredManifestFields: SOURCE_MANIFEST_REGISTRATION_FIELDS,
+    verifiedSourceRegistryFields: VERIFIED_SOURCE_REGISTRY_FIELDS,
+    humanVerificationSteps: readyForHumanVerification ? SOURCE_MANIFEST_HUMAN_VERIFICATION_STEPS : [],
+    postRegistrationCommands: readyForHumanVerification ? SOURCE_MANIFEST_POST_REGISTRATION_COMMANDS : [],
+    localFileCandidates,
+    verifiedSourceRegistryDrafts: readyForHumanVerification ? verifiedSourceRegistryDrafts(diagnostics, slot) : [],
+    manifestCandidateIds,
+    blockers,
+    note: readyForHumanVerification
+      ? 'Local paper/answer files are readable and unblocked; human verification is still required before Source Manifest can be marked verified/published.'
+      : 'Resolve listed local-source blockers before registering publishable official source evidence.'
+  };
+}
+
 function sourceEvidenceNextAction(localSourceAudit, afterEvidenceAction = '') {
   const suffix = afterEvidenceAction || '';
-  if (!localSourceAudit || localSourceAudit.status === 'not_available' || !localSourceAudit.sourceCount) {
+  if (!localSourceAudit || localSourceAudit.status === 'not_available') {
     return `在 source manifest 中绑定 verified/published official_paper，补齐 contentHash、remotePath/sourceUrl、answerEvidenceStatus=matched，并确认风险标记不阻断发布。${suffix}`;
+  }
+
+  if (localSourceAudit.status === 'missing_for_slot' || !localSourceAudit.sourceCount) {
+    return `local source audit 已加载但该槽位没有本地 paper/answer 文件；先补齐本地文件或同步权威来源，再登记 verified/published official_paper、contentHash、remotePath/sourceUrl、answerEvidenceStatus=matched。${suffix}`;
   }
 
   if (localSourceAudit.needsOcrCount > 0 && localSourceAudit.usableTextLayerCount === 0) {
     return `local source audit 已有本地文件但缺少可用文本层；先对本地 PDF 做 OCR/文本抽取，再登记 verified/published official_paper、contentHash、remotePath/sourceUrl、answerEvidenceStatus=matched。${suffix}`;
   }
 
+  if (localSourceAudit.usablePaperLikeCount > 0 && localSourceAudit.usableAnswerLikeCount === 0) {
+    if (localSourceAudit.blockedAnswerLikeCount > 0) {
+      return `local source audit 已有可读试卷，但答案文件仍有 ${localSourceAudit.blockedAnswerLikeCount} 个阻塞；先补齐或替换完整答案文件，再登记 verified/published official_paper、contentHash、remotePath/sourceUrl、answerEvidenceStatus=matched。${suffix}`;
+    }
+    return `local source audit 已有可读试卷但缺少可用答案文件；先补齐 answer/paper_answer companion，再登记 verified/published official_paper、contentHash、remotePath/sourceUrl、answerEvidenceStatus=matched。${suffix}`;
+  }
+
+  if (localSourceAudit.usablePaperLikeCount === 0 && localSourceAudit.usableAnswerLikeCount > 0) {
+    if (localSourceAudit.blockedPaperLikeCount > 0) {
+      return `local source audit 已有可读答案，但试卷文件仍有 ${localSourceAudit.blockedPaperLikeCount} 个阻塞；先修复试卷文本层或替换完整试卷，再登记 verified/published official_paper、contentHash、remotePath/sourceUrl、answerEvidenceStatus=matched。${suffix}`;
+    }
+    return `local source audit 已有可读答案但缺少可用试卷文件；先补齐 paper/paper_answer companion，再登记 verified/published official_paper、contentHash、remotePath/sourceUrl、answerEvidenceStatus=matched。${suffix}`;
+  }
+
   if (localSourceAudit.blockedCount > 0) {
     return `local source audit 已有本地文件但仍有 ${localSourceAudit.blockedCount} 个阻塞；先处理本地文件 blockers，再登记 verified/published official_paper、contentHash、remotePath/sourceUrl、answerEvidenceStatus=matched。${suffix}`;
   }
 
+  if (localSourceAudit.usablePaperLikeCount > 0 && localSourceAudit.usableAnswerLikeCount > 0) {
+    return `local source audit 已有成对可读 paper/answer 文件；先人工核验文件内容，把 SHA-256 与来源位置登记到 source manifest，并设置 answerEvidenceStatus=matched。${suffix}`;
+  }
+
   if (localSourceAudit.usableTextLayerCount > 0) {
-    return `local source audit 已有可读本地文件；先人工核验 paper/answer 文件，把 SHA-256 与来源位置登记到 source manifest，并设置 answerEvidenceStatus=matched。${suffix}`;
+    return `local source audit 已有可读本地文件但 paper/answer 未成对完整；先补齐 companion 文件，再登记 verified/published official_paper、contentHash、remotePath/sourceUrl、answerEvidenceStatus=matched。${suffix}`;
   }
 
   return `在 source manifest 中绑定 verified/published official_paper，补齐 contentHash、remotePath/sourceUrl、answerEvidenceStatus=matched，并确认风险标记不阻断发布。${suffix}`;
@@ -352,11 +617,12 @@ function formatSourceCandidateSample(samples) {
   if (!sample) return '';
   const location = sample.remotePath || sample.sourceUrl || '';
   const answerStatus = sample.answerEvidenceStatus || 'missing';
+  const sourceRole = sample.sourceRole ? `, role=${sample.sourceRole}` : '';
   const reasons =
     Array.isArray(sample.blockReasons) && sample.blockReasons.length
       ? `, blockers=${sample.blockReasons.join(';')}`
       : '';
-  return `${sample.sourceId || 'unknown'} (${sample.status || 'unknown'}/${sample.sourceType || 'unknown'}, answerEvidenceStatus=${answerStatus}${reasons})${location ? `: ${location}` : ''}`;
+  return `${sample.sourceId || 'unknown'} (${sample.status || 'unknown'}/${sample.sourceType || 'unknown'}${sourceRole}, answerEvidenceStatus=${answerStatus}${reasons})${location ? `: ${location}` : ''}`;
 }
 
 function formatLocalSourceAuditSample(sample) {
@@ -370,6 +636,24 @@ function formatLocalSourceAuditSample(sample) {
 function formatLocalSourceAuditSamples(samples) {
   if (!Array.isArray(samples) || !samples.length) return '';
   return samples.map(formatLocalSourceAuditSample).join('<br>');
+}
+
+function formatRegistrationChecklist(checklist) {
+  if (!checklist) return '';
+  const blockers =
+    Array.isArray(checklist.blockers) && checklist.blockers.length ? checklist.blockers.join(';') : 'none';
+  const steps = Array.isArray(checklist.humanVerificationSteps) ? checklist.humanVerificationSteps.slice(0, 2) : [];
+  const commands = Array.isArray(checklist.postRegistrationCommands) ? checklist.postRegistrationCommands : [];
+  const drafts = Array.isArray(checklist.verifiedSourceRegistryDrafts) ? checklist.verifiedSourceRegistryDrafts : [];
+  return [
+    `status=${checklist.status || 'unknown'}`,
+    `blockers=${blockers}`,
+    drafts.length ? `registryDrafts=${drafts.length}; fill sourceUrl/verifiedBy/evidenceNote before merge` : '',
+    steps.length ? `verify=${steps.join(';')}` : '',
+    commands.length ? `commands=${commands.join(' -> ')}` : ''
+  ]
+    .filter(Boolean)
+    .join('; ');
 }
 
 function mergeLocalSourceAuditSamples(current, next, limit = 3) {
@@ -419,7 +703,11 @@ function createItem({
   };
 }
 
-function buildCoverageItems(questionAudit, localSourceAuditLookup = new Map()) {
+function buildCoverageItems(
+  questionAudit,
+  localSourceAuditLookup = new Map(),
+  localSourceAuditScopedYears = new Set()
+) {
   const tracks = questionAudit?.coverage?.tracks;
   if (!Array.isArray(tracks)) return [];
 
@@ -430,8 +718,14 @@ function buildCoverageItems(questionAudit, localSourceAuditLookup = new Map()) {
     for (const year of track.missingYears || []) {
       const sourceEvidence = sourceEvidenceForSlot(sourceEvidenceLookup, trackId, year);
       const candidateDiagnostics = sourceCandidateDiagnostics(questionAudit, trackId, year);
-      const localSourceAudit = localSourceAuditForSlot(localSourceAuditLookup, trackId, year);
+      const localSourceAudit = localSourceAuditForSlot(
+        localSourceAuditLookup,
+        trackId,
+        year,
+        localSourceAuditScopedYears.has(Number(year))
+      );
       const missingSource = sourceEvidence.status === 'missing_publishable_official_source';
+      const candidateSamples = sourceCandidateSamples(candidateDiagnostics);
       items.push(
         createItem({
           id: `coverage_missing:${trackId}:${year}`,
@@ -451,12 +745,20 @@ function buildCoverageItems(questionAudit, localSourceAuditLookup = new Map()) {
             sourceEvidencePresentYears: sourceEvidence.presentYears || [],
             sourceEvidenceCoverageRate: sourceEvidence.coverageRate || 0,
             sourceCandidateSummary: summarizeSourceDiagnostics(candidateDiagnostics),
-            sourceCandidateSamples: sourceCandidateSamples(candidateDiagnostics),
+            sourceCandidateSamples: candidateSamples,
             sourceCandidateDiagnostics: candidateDiagnostics,
             localSourceAuditStatus: localSourceAudit.status,
             localSourceAuditSummary: summarizeLocalSourceAudit(localSourceAudit),
             localSourceAuditSamples: localSourceAuditSamples(localSourceAudit),
-            localSourceAuditDiagnostics: localSourceAudit
+            localSourceAuditDiagnostics: localSourceAudit,
+            sourceManifestRegistrationChecklist: sourceManifestRegistrationChecklist(
+              localSourceAudit,
+              candidateSamples,
+              {
+                track: trackId,
+                year
+              }
+            )
           }
         })
       );
@@ -465,8 +767,14 @@ function buildCoverageItems(questionAudit, localSourceAuditLookup = new Map()) {
     for (const year of track.pendingYears || []) {
       const sourceEvidence = sourceEvidenceForSlot(sourceEvidenceLookup, trackId, year);
       const candidateDiagnostics = sourceCandidateDiagnostics(questionAudit, trackId, year);
-      const localSourceAudit = localSourceAuditForSlot(localSourceAuditLookup, trackId, year);
+      const localSourceAudit = localSourceAuditForSlot(
+        localSourceAuditLookup,
+        trackId,
+        year,
+        localSourceAuditScopedYears.has(Number(year))
+      );
       const missingSource = sourceEvidence.status === 'missing_publishable_official_source';
+      const candidateSamples = sourceCandidateSamples(candidateDiagnostics);
       items.push(
         createItem({
           id: `coverage_pending:${trackId}:${year}`,
@@ -486,12 +794,20 @@ function buildCoverageItems(questionAudit, localSourceAuditLookup = new Map()) {
             sourceEvidencePresentYears: sourceEvidence.presentYears || [],
             sourceEvidenceCoverageRate: sourceEvidence.coverageRate || 0,
             sourceCandidateSummary: summarizeSourceDiagnostics(candidateDiagnostics),
-            sourceCandidateSamples: sourceCandidateSamples(candidateDiagnostics),
+            sourceCandidateSamples: candidateSamples,
             sourceCandidateDiagnostics: candidateDiagnostics,
             localSourceAuditStatus: localSourceAudit.status,
             localSourceAuditSummary: summarizeLocalSourceAudit(localSourceAudit),
             localSourceAuditSamples: localSourceAuditSamples(localSourceAudit),
-            localSourceAuditDiagnostics: localSourceAudit
+            localSourceAuditDiagnostics: localSourceAudit,
+            sourceManifestRegistrationChecklist: sourceManifestRegistrationChecklist(
+              localSourceAudit,
+              candidateSamples,
+              {
+                track: trackId,
+                year
+              }
+            )
           }
         })
       );
@@ -501,7 +817,11 @@ function buildCoverageItems(questionAudit, localSourceAuditLookup = new Map()) {
   return items.sort((a, b) => Number(a.year) - Number(b.year) || trackSortValue(a.track) - trackSortValue(b.track));
 }
 
-function buildSourceEvidenceItems(questionAudit, localSourceAuditLookup = new Map()) {
+function buildSourceEvidenceItems(
+  questionAudit,
+  localSourceAuditLookup = new Map(),
+  localSourceAuditScopedYears = new Set()
+) {
   const coverage = questionAudit?.sourceEvidence?.coverage;
   if (!coverage || typeof coverage !== 'object') return [];
 
@@ -511,7 +831,13 @@ function buildSourceEvidenceItems(questionAudit, localSourceAuditLookup = new Ma
     if (!row) continue;
     for (const year of row.missingYears || []) {
       const candidateDiagnostics = sourceCandidateDiagnostics(questionAudit, track, year);
-      const localSourceAudit = localSourceAuditForSlot(localSourceAuditLookup, track, year);
+      const localSourceAudit = localSourceAuditForSlot(
+        localSourceAuditLookup,
+        track,
+        year,
+        localSourceAuditScopedYears.has(Number(year))
+      );
+      const candidateSamples = sourceCandidateSamples(candidateDiagnostics);
       items.push(
         createItem({
           id: `source_evidence_missing:${track}:${year}`,
@@ -525,12 +851,20 @@ function buildSourceEvidenceItems(questionAudit, localSourceAuditLookup = new Ma
             presentYears: row.presentYears || [],
             coverageRate: row.coverageRate || 0,
             sourceCandidateSummary: summarizeSourceDiagnostics(candidateDiagnostics),
-            sourceCandidateSamples: sourceCandidateSamples(candidateDiagnostics),
+            sourceCandidateSamples: candidateSamples,
             sourceCandidateDiagnostics: candidateDiagnostics,
             localSourceAuditStatus: localSourceAudit.status,
             localSourceAuditSummary: summarizeLocalSourceAudit(localSourceAudit),
             localSourceAuditSamples: localSourceAuditSamples(localSourceAudit),
-            localSourceAuditDiagnostics: localSourceAudit
+            localSourceAuditDiagnostics: localSourceAudit,
+            sourceManifestRegistrationChecklist: sourceManifestRegistrationChecklist(
+              localSourceAudit,
+              candidateSamples,
+              {
+                track,
+                year
+              }
+            )
           }
         })
       );
@@ -565,6 +899,69 @@ function buildEnabledBankEvidenceItems(questionAudit) {
       }
     });
   });
+}
+
+function isObject(value) {
+  return Boolean(value) && typeof value === 'object' && !Array.isArray(value);
+}
+
+function buildInputReportItems({ questionAudit, flashcardQuality, externalAudit }) {
+  const reports = [
+    {
+      id: 'input_report:question_audit',
+      label: '题库发布审计报告',
+      blockerCode: 'question_bank_release_audit_missing_or_incomplete',
+      command: 'npm run audit:question-bank:report',
+      reportPath: DEFAULT_QUESTION_AUDIT,
+      ready:
+        isObject(questionAudit?.summary) &&
+        isObject(questionAudit?.releaseReadiness) &&
+        Array.isArray(questionAudit?.coverage?.tracks),
+      requiredFields: ['summary', 'releaseReadiness', 'coverage.tracks']
+    },
+    {
+      id: 'input_report:flashcard_quality',
+      label: '清洗题卡质量报告',
+      blockerCode: 'flashcard_quality_report_missing_or_incomplete',
+      command: 'npm run baidu:flashcards:quality',
+      reportPath: DEFAULT_FLASHCARD_QUALITY,
+      ready:
+        isObject(flashcardQuality?.summary) &&
+        isObject(flashcardQuality?.releaseReadiness) &&
+        Array.isArray(flashcardQuality?.files),
+      requiredFields: ['summary', 'releaseReadiness', 'files']
+    },
+    {
+      id: 'input_report:external_audit',
+      label: '外部发布审计报告',
+      blockerCode: 'external_release_audit_missing_or_incomplete',
+      command: 'npm run audit:release:external:report',
+      reportPath: DEFAULT_EXTERNAL_AUDIT,
+      ready:
+        isObject(externalAudit?.summary) &&
+        isObject(externalAudit?.releaseReadiness) &&
+        isObject(externalAudit?.sections),
+      requiredFields: ['summary', 'releaseReadiness', 'sections']
+    }
+  ];
+
+  return reports
+    .filter((report) => !report.ready)
+    .map((report) =>
+      createItem({
+        id: report.id,
+        workstream: 'release_audit_inputs',
+        blockerCode: report.blockerCode,
+        filePath: relative(report.reportPath),
+        count: 1,
+        title: `${report.label}缺失或结构不完整`,
+        nextAction: `先运行 ${report.command} 生成完整输入报告，再运行 npm run audit:release:backlog；不要把缺失输入误判为 0/0 发布状态。`,
+        evidence: {
+          requiredFields: report.requiredFields,
+          report: relative(report.reportPath)
+        }
+      })
+    );
 }
 
 function buildFlashcardQualityItems(flashcardQuality) {
@@ -703,13 +1100,14 @@ function groupByWorkstream(items) {
 
 function sortBacklogItems(items) {
   const workstreamOrder = {
-    enabled_bank_evidence: 0,
-    wechat_real_device_evidence: 1,
-    wechat_devtools_smoke: 2,
-    public_course_coverage: 3,
-    source_manifest_evidence: 4,
-    cleaned_flashcard_quality: 5,
-    external_release_evidence: 6
+    release_audit_inputs: 0,
+    enabled_bank_evidence: 1,
+    wechat_real_device_evidence: 2,
+    wechat_devtools_smoke: 3,
+    public_course_coverage: 4,
+    source_manifest_evidence: 5,
+    cleaned_flashcard_quality: 6,
+    external_release_evidence: 7
   };
   return [...items].sort((a, b) => {
     const workstreamDelta = (workstreamOrder[a.workstream] ?? 99) - (workstreamOrder[b.workstream] ?? 99);
@@ -747,6 +1145,16 @@ function publicCourseSlotStatus(item) {
   return 'source_evidence_missing';
 }
 
+function localSourceActionabilityRank(slot) {
+  const diagnostics = slot?.localSourceAuditDiagnostics || {};
+  if (diagnostics.usablePaperLikeCount > 0 && diagnostics.usableAnswerLikeCount > 0) return 0;
+  if (diagnostics.usablePaperLikeCount > 0 && diagnostics.blockedAnswerLikeCount > 0) return 1;
+  if (diagnostics.usablePaperLikeCount > 0 || diagnostics.usableAnswerLikeCount > 0) return 2;
+  if (diagnostics.needsOcrCount > 0 || diagnostics.blockedCount > 0) return 3;
+  if (slot?.localSourceAuditStatus === 'missing_for_slot') return 4;
+  return 5;
+}
+
 function publicCourseRecommendationSort(a, b) {
   const blockerRank = {
     pending_public_course_bank: 0,
@@ -760,6 +1168,9 @@ function publicCourseRecommendationSort(a, b) {
   const bRankKey = b.blockerCode || b.slotStatus;
   const blockerDelta = (blockerRank[aRankKey] ?? 99) - (blockerRank[bRankKey] ?? 99);
   if (blockerDelta) return blockerDelta;
+
+  const actionabilityDelta = localSourceActionabilityRank(a) - localSourceActionabilityRank(b);
+  if (actionabilityDelta) return actionabilityDelta;
 
   const bothPending =
     [a.blockerCode, a.slotStatus].includes('pending_public_course_bank') ||
@@ -783,7 +1194,8 @@ function publicCourseRecommendationBucket(item) {
     source_evidence_missing: 2,
     missing_publishable_official_source: 2
   };
-  return blockerRank[item?.blockerCode || item?.slotStatus] ?? 99;
+  const blockerBucket = blockerRank[item?.blockerCode || item?.slotStatus] ?? 99;
+  return blockerBucket * 10 + localSourceActionabilityRank(item);
 }
 
 function balancedPublicCourseSlotRecommendations(slots, limit = 24) {
@@ -846,6 +1258,7 @@ function buildPublicCourseSlotBacklogItems(items) {
       localSourceAuditSummary: '',
       localSourceAuditSamples: [],
       localSourceAuditDiagnostics: null,
+      sourceManifestRegistrationChecklist: null,
       prerequisiteBlockers: [],
       coverageAction: '',
       sourceEvidenceAction: '',
@@ -872,6 +1285,8 @@ function buildPublicCourseSlotBacklogItems(items) {
         item.evidence?.localSourceAuditSamples
       );
       slot.localSourceAuditDiagnostics = item.evidence?.localSourceAuditDiagnostics || slot.localSourceAuditDiagnostics;
+      slot.sourceManifestRegistrationChecklist =
+        item.evidence?.sourceManifestRegistrationChecklist || slot.sourceManifestRegistrationChecklist;
     }
 
     if (item.workstream === 'source_manifest_evidence') {
@@ -890,6 +1305,8 @@ function buildPublicCourseSlotBacklogItems(items) {
         item.evidence?.localSourceAuditSamples
       );
       slot.localSourceAuditDiagnostics = item.evidence?.localSourceAuditDiagnostics || slot.localSourceAuditDiagnostics;
+      slot.sourceManifestRegistrationChecklist =
+        item.evidence?.sourceManifestRegistrationChecklist || slot.sourceManifestRegistrationChecklist;
       slot.prerequisiteBlockers = unique([...slot.prerequisiteBlockers, item.blockerCode]);
     }
 
@@ -906,6 +1323,148 @@ function buildPublicCourseSlotBacklogItems(items) {
   return Array.from(slots.values()).sort(publicCourseRecommendationSort);
 }
 
+function localSourceReadinessStatus(slot) {
+  const diagnostics = slot?.localSourceAuditDiagnostics || {};
+  if (!slot || slot.localSourceAuditStatus === 'not_available') return 'not_available';
+  if (slot.localSourceAuditStatus === 'missing_for_slot' || !diagnostics.sourceCount) return 'missing_local_files';
+  if (diagnostics.usablePaperLikeCount > 0 && diagnostics.usableAnswerLikeCount > 0) return 'paired_readable';
+  if (diagnostics.needsOcrCount > 0 && diagnostics.usableTextLayerCount === 0) return 'needs_ocr';
+  if (diagnostics.usablePaperLikeCount > 0 && diagnostics.blockedAnswerLikeCount > 0) return 'answer_blocked';
+  if (diagnostics.blockedPaperLikeCount > 0 && diagnostics.usableAnswerLikeCount > 0) return 'paper_blocked';
+  if (diagnostics.usablePaperLikeCount > 0 && diagnostics.answerLikeCount === 0) return 'missing_answer';
+  if (diagnostics.paperLikeCount === 0 && diagnostics.usableAnswerLikeCount > 0) return 'missing_paper';
+  if (diagnostics.blockedCount > 0) return 'blocked_local_files';
+  if (diagnostics.usableTextLayerCount > 0) return 'unpaired_readable';
+  return 'unknown';
+}
+
+function summarizePublicCourseLocalSources(slots) {
+  const summary = {
+    totalBlockedSlots: slots.length,
+    pairedReadableSlots: 0,
+    answerBlockedSlots: 0,
+    paperBlockedSlots: 0,
+    missingAnswerSlots: 0,
+    missingPaperSlots: 0,
+    needsOcrSlots: 0,
+    blockedLocalFileSlots: 0,
+    unpairedReadableSlots: 0,
+    missingLocalFileSlots: 0,
+    notAvailableSlots: 0,
+    unknownSlots: 0
+  };
+
+  for (const slot of slots) {
+    const status = localSourceReadinessStatus(slot);
+    if (status === 'paired_readable') summary.pairedReadableSlots += 1;
+    else if (status === 'answer_blocked') summary.answerBlockedSlots += 1;
+    else if (status === 'paper_blocked') summary.paperBlockedSlots += 1;
+    else if (status === 'missing_answer') summary.missingAnswerSlots += 1;
+    else if (status === 'missing_paper') summary.missingPaperSlots += 1;
+    else if (status === 'needs_ocr') summary.needsOcrSlots += 1;
+    else if (status === 'blocked_local_files') summary.blockedLocalFileSlots += 1;
+    else if (status === 'unpaired_readable') summary.unpairedReadableSlots += 1;
+    else if (status === 'missing_local_files') summary.missingLocalFileSlots += 1;
+    else if (status === 'not_available') summary.notAvailableSlots += 1;
+    else summary.unknownSlots += 1;
+  }
+
+  return summary;
+}
+
+function sourceManifestHumanRegistrationQueueItem(slot) {
+  const checklist = slot?.sourceManifestRegistrationChecklist;
+  const drafts = Array.isArray(checklist?.verifiedSourceRegistryDrafts) ? checklist.verifiedSourceRegistryDrafts : [];
+  if (!checklist?.readyForHumanVerification || !drafts.length) return null;
+  const registryDrafts = drafts.map((draft) => ({
+    id: draft.id || '',
+    sourceRole: draft.sourceRole || '',
+    localPath: draft.localPath || '',
+    expectedSha256: draft.expectedSha256 || '',
+    sourceUrl: draft.sourceUrl || '',
+    remotePath: draft.remotePath || '',
+    verifiedBy: draft.verifiedBy || '',
+    evidenceNote: draft.evidenceNote || '',
+    draftStatus: draft.draftStatus || '',
+    missingHumanFields: Array.isArray(draft.missingHumanFields)
+      ? draft.missingHumanFields
+      : missingVerifiedSourceRegistryHumanFields(draft),
+    humanFieldStatus: draft.humanFieldStatus || ''
+  }));
+  const missingHumanFields = Array.from(new Set(registryDrafts.flatMap((draft) => draft.missingHumanFields))).sort(
+    compareVerifiedSourceRegistryHumanFields
+  );
+  const missingHumanFieldInstances = registryDrafts.flatMap((draft) =>
+    draft.missingHumanFields.map((field) => ({
+      draftId: draft.id,
+      sourceRole: draft.sourceRole,
+      localPath: draft.localPath,
+      field
+    }))
+  );
+
+  return {
+    slotKey: slot.slotKey,
+    track: slot.track,
+    trackLabel: slot.trackLabel,
+    year: slot.year,
+    slotStatus: slot.slotStatus,
+    blockerCode: slot.blockerCode,
+    draftCount: drafts.length,
+    sourceRoles: Array.from(new Set(drafts.map((draft) => draft.sourceRole).filter(Boolean))).sort(compareSourceRoles),
+    localPaths: drafts.map((draft) => draft.localPath).filter(Boolean),
+    expectedSha256Values: drafts.map((draft) => draft.expectedSha256).filter(Boolean),
+    registryDrafts,
+    localFileDrafts: registryDrafts.map((draft) => ({
+      sourceRole: draft.sourceRole,
+      localPath: draft.localPath,
+      expectedSha256: draft.expectedSha256
+    })),
+    requiredHumanFields: VERIFIED_SOURCE_REGISTRY_HUMAN_FIELDS,
+    missingHumanFields,
+    missingHumanFieldInstances,
+    missingHumanFieldCount: missingHumanFieldInstances.length,
+    manifestCandidateIds: Array.isArray(checklist.manifestCandidateIds) ? checklist.manifestCandidateIds : [],
+    postRegistrationCommands: Array.isArray(checklist.postRegistrationCommands)
+      ? checklist.postRegistrationCommands
+      : [],
+    nextAction:
+      '人工核验 paper/answer 文件、授权来源与 SHA-256 后，补齐 verified source registry 草稿字段并重新运行 Source Manifest merge 与发布门禁。'
+  };
+}
+
+function buildSourceManifestHumanRegistrationQueue(slots, limit = 12) {
+  const readySlots = slots.map(sourceManifestHumanRegistrationQueueItem).filter(Boolean);
+  const registryDraftCount = readySlots.reduce((total, slot) => total + slot.draftCount, 0);
+  const missingHumanFieldCount = readySlots.reduce((total, slot) => total + (slot.missingHumanFieldCount || 0), 0);
+  const missingHumanFieldInstances = readySlots.flatMap((slot) => slot.missingHumanFieldInstances || []);
+
+  return {
+    readySlotCount: readySlots.length,
+    registryDraftCount,
+    missingHumanFieldCount,
+    missingHumanFieldInstances,
+    nextReadySlot: readySlots[0] || null,
+    slots: readySlots.slice(0, limit)
+  };
+}
+
+function sourceManifestHumanRegistrationQueueSummary(queue) {
+  const nextMissingHumanFieldInstances = (queue.nextReadySlot?.missingHumanFieldInstances || []).map(
+    (item) => `${item.sourceRole || item.draftId || 'source'}.${item.field}`
+  );
+  return {
+    readySlotCount: queue.readySlotCount,
+    registryDraftCount: queue.registryDraftCount,
+    missingHumanFieldCount: queue.missingHumanFieldCount,
+    nextSlotKey: queue.nextReadySlot?.slotKey || '',
+    nextDraftCount: queue.nextReadySlot?.draftCount || 0,
+    nextSourceRoles: queue.nextReadySlot?.sourceRoles || [],
+    nextMissingHumanFields: queue.nextReadySlot?.missingHumanFields || [],
+    nextMissingHumanFieldInstances
+  };
+}
+
 export function buildReleaseBlockerBacklog({
   questionAudit = null,
   flashcardQuality = null,
@@ -916,12 +1475,14 @@ export function buildReleaseBlockerBacklog({
   generatedAt = new Date().toISOString()
 } = {}) {
   const localSourceAuditLookup = buildLocalSourceAuditLookup(localSourceAudit);
+  const localSourceAuditScopedYears = localSourceAuditYears(localSourceAudit);
   const items = sortBacklogItems([
+    ...buildInputReportItems({ questionAudit, flashcardQuality, externalAudit }),
     ...buildEnabledBankEvidenceItems(questionAudit),
     ...buildExternalItems(externalAudit, wechatSmoke),
     ...buildWechatDevtoolsSmokeItems(wechatSmoke),
-    ...buildCoverageItems(questionAudit, localSourceAuditLookup),
-    ...buildSourceEvidenceItems(questionAudit, localSourceAuditLookup),
+    ...buildCoverageItems(questionAudit, localSourceAuditLookup, localSourceAuditScopedYears),
+    ...buildSourceEvidenceItems(questionAudit, localSourceAuditLookup, localSourceAuditScopedYears),
     ...buildFlashcardQualityItems(flashcardQuality)
   ]);
   const professionalWorkstream = buildProfessionalWorkstream(professionalIndex);
@@ -931,6 +1492,8 @@ export function buildReleaseBlockerBacklog({
   const publicCourseBlockerItemCount = publicCourseBlockerItems(items).length;
   const publicCourseBlockedSlotCount = countUniquePublicCourseBlockedSlots(items);
   const publicCourseSlotBacklog = buildPublicCourseSlotBacklogItems(items);
+  const publicCourseLocalSourceSummary = summarizePublicCourseLocalSources(publicCourseSlotBacklog);
+  const sourceManifestHumanRegistrationQueue = buildSourceManifestHumanRegistrationQueue(publicCourseSlotBacklog);
 
   return {
     version: 1,
@@ -956,6 +1519,10 @@ export function buildReleaseBlockerBacklog({
       publicCourseCoverageGaps: questionAudit?.summary?.coverageGapCount || 0,
       publicCourseBlockerItemCount,
       publicCourseBlockedSlotCount,
+      publicCourseLocalSourceSummary,
+      sourceManifestHumanRegistrationQueue: sourceManifestHumanRegistrationQueueSummary(
+        sourceManifestHumanRegistrationQueue
+      ),
       sourceManifestPublishableOfficialPapers: questionAudit?.summary?.sourceManifestPublishableOfficialPapers || 0,
       sourceEvidenceGaps: questionAudit?.summary?.sourceManifestCoverageGapCount || 0,
       enabledBankAnswerEvidenceBlockers: questionAudit?.summary?.answerEvidenceBlockerCount || 0,
@@ -969,6 +1536,7 @@ export function buildReleaseBlockerBacklog({
       ...(professionalWorkstream ? { professional_course_index: professionalWorkstream } : {})
     },
     publicCourseSlotBacklog,
+    sourceManifestHumanRegistrationQueue,
     nextBalancedPublicCourseSlots: balancedPublicCourseSlotRecommendations(publicCourseSlotBacklog, 24).map(
       ({
         blockerItemIds,
@@ -984,6 +1552,7 @@ export function buildReleaseBlockerBacklog({
         localSourceAuditStatus,
         localSourceAuditSummary,
         localSourceAuditSamples,
+        sourceManifestRegistrationChecklist,
         prerequisiteBlockers,
         nextAction
       }) => ({
@@ -999,6 +1568,7 @@ export function buildReleaseBlockerBacklog({
         localSourceAuditStatus,
         localSourceAuditSummary,
         localSourceAuditSamples,
+        sourceManifestRegistrationChecklist,
         prerequisiteBlockers,
         nextAction
       })
@@ -1016,12 +1586,13 @@ function markdownCell(value) {
 function markdownPublicCourseTable(rows) {
   if (!rows.length) return '_None._';
   const header =
-    '| # | Track | Year | Gap | Source candidates | Candidate sample | Local source audit | Local samples | Next action |\n|---:|---|---:|---|---|---|---|---|---|';
+    '| # | Track | Year | Gap | Source candidates | Candidate sample | Local source audit | Local samples | Registration checklist | Next action |\n|---:|---|---:|---|---|---|---|---|---|---|';
   const body = rows
     .map((row, index) => {
       const candidateSamples = row.sourceCandidateSamples || row.evidence?.sourceCandidateSamples || [];
       const localSamples = row.localSourceAuditSamples || row.evidence?.localSourceAuditSamples || [];
-      return `| ${index + 1} | ${markdownCell(row.trackLabel || row.track || '')} | ${markdownCell(row.year || '')} | ${markdownCell(row.blockerCode || '')} | ${markdownCell(row.sourceCandidateSummary || row.evidence?.sourceCandidateSummary || '')} | ${markdownCell(formatSourceCandidateSample(candidateSamples))} | ${markdownCell(row.localSourceAuditSummary || row.evidence?.localSourceAuditSummary || '')} | ${markdownCell(formatLocalSourceAuditSamples(localSamples))} | ${markdownCell(row.nextAction || '')} |`;
+      const checklist = row.sourceManifestRegistrationChecklist || row.evidence?.sourceManifestRegistrationChecklist;
+      return `| ${index + 1} | ${markdownCell(row.trackLabel || row.track || '')} | ${markdownCell(row.year || '')} | ${markdownCell(row.blockerCode || '')} | ${markdownCell(row.sourceCandidateSummary || row.evidence?.sourceCandidateSummary || '')} | ${markdownCell(formatSourceCandidateSample(candidateSamples))} | ${markdownCell(row.localSourceAuditSummary || row.evidence?.localSourceAuditSummary || '')} | ${markdownCell(formatLocalSourceAuditSamples(localSamples))} | ${markdownCell(formatRegistrationChecklist(checklist))} | ${markdownCell(row.nextAction || '')} |`;
     })
     .join('\n');
   return `${header}\n${body}`;
@@ -1039,9 +1610,44 @@ function markdownBlockerTable(rows) {
   return `${header}\n${body}`;
 }
 
+function markdownSourceManifestHumanRegistrationQueue(queue) {
+  const slots = Array.isArray(queue?.slots) ? queue.slots : [];
+  if (!slots.length) return '_None._';
+
+  const header =
+    '| # | Slot | Track | Year | Drafts | Roles | Required human fields | Missing human fields | Missing field instances | Local file drafts | Next action |\n|---:|---|---|---:|---:|---|---|---|---|---|---|';
+  const body = slots
+    .map((slot, index) => {
+      const localFileDrafts = Array.isArray(slot.localFileDrafts) ? slot.localFileDrafts : [];
+      const missingHumanFieldInstances = Array.isArray(slot.missingHumanFieldInstances)
+        ? slot.missingHumanFieldInstances
+        : [];
+      const missingHumanFieldInstanceSummary = missingHumanFieldInstances
+        .map((item) => `${item.sourceRole || item.draftId || 'source'}.${item.field}`)
+        .join('<br>');
+      const localFileSummary = localFileDrafts
+        .map((draft) =>
+          [
+            draft.sourceRole || 'source',
+            draft.localPath || '',
+            draft.expectedSha256 ? `sha256=${draft.expectedSha256}` : ''
+          ]
+            .filter(Boolean)
+            .join(': ')
+        )
+        .join('<br>');
+      return `| ${index + 1} | ${markdownCell(slot.slotKey || '')} | ${markdownCell(slot.trackLabel || slot.track || '')} | ${markdownCell(slot.year || '')} | ${markdownCell(slot.draftCount || 0)} | ${markdownCell((slot.sourceRoles || []).join(', '))} | ${markdownCell((slot.requiredHumanFields || []).join(', '))} | ${markdownCell((slot.missingHumanFields || []).join(', '))} | ${markdownCell(missingHumanFieldInstanceSummary)} | ${markdownCell(localFileSummary)} | ${markdownCell(slot.nextAction || '')} |`;
+    })
+    .join('\n');
+  return `${header}\n${body}`;
+}
+
 export function renderBacklogMarkdown(backlog) {
   const summary = backlog.summary;
+  const localSourceSummary = summary.publicCourseLocalSourceSummary || {};
+  const registrationQueueSummary = summary.sourceManifestHumanRegistrationQueue || {};
   const enabled = backlog.items.filter((item) => item.workstream === 'enabled_bank_evidence');
+  const inputReports = backlog.items.filter((item) => item.workstream === 'release_audit_inputs');
   const external = backlog.items.filter((item) => item.workstream === 'wechat_real_device_evidence');
   const devtoolsSmoke = backlog.items.filter((item) => item.workstream === 'wechat_devtools_smoke');
   const coverage = Array.isArray(backlog.nextBalancedPublicCourseSlots)
@@ -1061,13 +1667,24 @@ export function renderBacklogMarkdown(backlog) {
     '',
     `- canPublish: ${summary.canPublish}`,
     `- blockerItemCount: ${summary.blockerItemCount}`,
+    `- 输入报告阻塞: ${inputReports.length}`,
     `- 公共课发布槽位: ${summary.publicCoursePublishedSlots}/${summary.publicCourseRequiredSlots}，pending=${summary.publicCoursePendingSlots}，pendingBlockers=${summary.publicCoursePendingCoverageBlockers}，coverageGaps=${summary.publicCourseCoverageGaps}`,
     `- 公共课阻塞槽位(去重): ${summary.publicCourseBlockedSlotCount}，publicCourseBlockerItems=${summary.publicCourseBlockerItemCount}（coverage/source evidence 可能描述同一槽位）`,
+    `- 本地题源处理分布: pairedReadable=${localSourceSummary.pairedReadableSlots || 0}，answerBlocked=${localSourceSummary.answerBlockedSlots || 0}，paperBlocked=${localSourceSummary.paperBlockedSlots || 0}，missingAnswer=${localSourceSummary.missingAnswerSlots || 0}，missingPaper=${localSourceSummary.missingPaperSlots || 0}，needsOcr=${localSourceSummary.needsOcrSlots || 0}，blockedLocal=${localSourceSummary.blockedLocalFileSlots || 0}，unpairedReadable=${localSourceSummary.unpairedReadableSlots || 0}，missingLocalFiles=${localSourceSummary.missingLocalFileSlots || 0}，notAvailable=${localSourceSummary.notAvailableSlots || 0}`,
+    `- Source Manifest 人工注册队列: readySlots=${registrationQueueSummary.readySlotCount || 0}，registryDrafts=${registrationQueueSummary.registryDraftCount || 0}，missingHumanFields=${registrationQueueSummary.missingHumanFieldCount || 0}，next=${registrationQueueSummary.nextSlotKey || 'none'}，nextDrafts=${registrationQueueSummary.nextDraftCount || 0}`,
     `- source manifest 可发布官方题源: ${summary.sourceManifestPublishableOfficialPapers}，sourceEvidenceGaps=${summary.sourceEvidenceGaps}`,
     `- 已开放题库证据阻塞题卡: ${summary.enabledBankAnswerEvidenceBlockers}`,
     `- 清洗题卡质量阻塞: ${summary.cleanedFlashcardBlockers}`,
     `- 外部门禁阻塞: ${summary.externalBlockers}`,
     `- WeChat DevTools smoke: ${summary.wechatDevtoolsSmokeStatus}`,
+    '',
+    '## 输入报告阻塞',
+    '',
+    markdownBlockerTable(inputReports),
+    '',
+    '## Source Manifest 人工注册队列',
+    '',
+    markdownSourceManifestHumanRegistrationQueue(backlog.sourceManifestHumanRegistrationQueue),
     '',
     '## 已开放题库证据阻塞',
     '',
@@ -1128,9 +1745,11 @@ export async function run(argv = process.argv.slice(2)) {
   });
 
   writeText(options.output, `${JSON.stringify(backlog, null, 2)}\n`);
-  writeText(options.markdown, `${renderBacklogMarkdown(backlog)}\n`);
+  if (options.writeMarkdown) {
+    writeText(options.markdown, `${renderBacklogMarkdown(backlog)}\n`);
+  }
   console.log(
-    `[release-backlog] verdict=${backlog.verdict} blockers=${backlog.summary.blockerItemCount} publicCourseBlockedSlots=${backlog.summary.publicCourseBlockedSlotCount} output=${relative(options.output)} markdown=${relative(options.markdown)}`
+    `[release-backlog] verdict=${backlog.verdict} blockers=${backlog.summary.blockerItemCount} publicCourseBlockedSlots=${backlog.summary.publicCourseBlockedSlotCount} output=${relative(options.output)} markdown=${options.writeMarkdown ? relative(options.markdown) : 'skipped'}`
   );
   return options.failOnBlockers && backlog.verdict !== 'passed' ? 2 : 0;
 }

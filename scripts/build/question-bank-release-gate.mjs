@@ -199,6 +199,8 @@ function isPublishableManifestSource(item) {
   if (!item?.eligible) return false;
   if (!['verified', 'published'].includes(item.status)) return false;
   if (item.sourceType !== 'official_paper') return false;
+  const sourceRole = String(item.sourceRole || item.source_role || '').trim();
+  if (sourceRole && !['paper', 'paper_answer'].includes(sourceRole)) return false;
   const blockingRiskFlags = new Set(['answer_missing', 'brand_leak', 'copyright_review_required', 'ad_or_promo']);
   if (Array.isArray(item.riskFlags) && item.riskFlags.some((flag) => blockingRiskFlags.has(flag))) return false;
   if (item.legalReview?.publishBlocked) return false;
@@ -213,6 +215,10 @@ function manifestSourceBlockReasons(item) {
   if (!item?.eligible) reasons.push('eligible=false');
   if (!['verified', 'published'].includes(item?.status)) reasons.push(`status=${item?.status || 'missing'}`);
   if (item?.sourceType !== 'official_paper') reasons.push(`sourceType=${item?.sourceType || 'missing'}`);
+  const sourceRole = String(item?.sourceRole || item?.source_role || '').trim();
+  if (sourceRole && !['paper', 'paper_answer'].includes(sourceRole)) {
+    reasons.push(`sourceRole=${sourceRole}`);
+  }
 
   const blockingRiskFlags = new Set(['answer_missing', 'brand_leak', 'copyright_review_required', 'ad_or_promo']);
   const riskFlags = Array.isArray(item?.riskFlags) ? item.riskFlags : [];
@@ -237,6 +243,7 @@ function sourceCandidateSample(item, blockReasons) {
     sourceId: item.sourceId || item.id || '',
     status: item.status || '',
     sourceType: item.sourceType || '',
+    sourceRole: item.sourceRole || item.source_role || '',
     answerEvidenceStatus: item.answerEvidenceStatus || '',
     riskFlags: Array.isArray(item.riskFlags) ? item.riskFlags : [],
     publishBlocked: item.legalReview?.publishBlocked === true,
@@ -252,9 +259,16 @@ function sourceCandidateSampleRank(sample) {
     verified: 1,
     discovered: 2
   };
+  const sourceRoleRank = {
+    paper_answer: 0,
+    paper: 0,
+    '': 0,
+    answer: 1
+  };
 
   return [
     sample.sourceType === 'official_paper' ? 0 : 1,
+    sourceRoleRank[sample.sourceRole || ''] ?? 2,
     sample.publishBlocked ? 1 : 0,
     statusRank[sample.status] ?? 9,
     sample.answerEvidenceStatus === 'matched' ? 0 : 1,

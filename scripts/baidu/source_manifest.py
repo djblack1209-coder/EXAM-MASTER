@@ -114,6 +114,8 @@ SUBJECT_LABELS = {
     "english": "英语",
     "math": "数学",
 }
+HUMAN_VERIFICATION_REQUIRED_FLAG = "human_verification_required"
+HUMAN_VERIFICATION_FIELDS = ("sourceUrl", "verifiedBy", "evidenceNote")
 
 
 def utc_now() -> str:
@@ -273,8 +275,55 @@ def build_legal_review(risk_flags: list[str], *, brand_sanitized: bool, source_t
         "brandSanitized": brand_sanitized or "brand_leak" in risk_flags,
         "copyrightReviewRequired": "copyright_review_required" in risk_flags or source_type == "institution_candidate",
         "adRejected": source_type == "ad" or "ad_or_promo" in risk_flags,
-        "publishBlocked": bool(set(risk_flags) & {"brand_leak", "copyright_review_required", "answer_missing"}),
+        "publishBlocked": bool(
+            set(risk_flags)
+            & {
+                "brand_leak",
+                "copyright_review_required",
+                "answer_missing",
+                HUMAN_VERIFICATION_REQUIRED_FLAG,
+            }
+        ),
     }
+
+
+def list_text_values(value: Any) -> list[str]:
+    if isinstance(value, list):
+        return [str(item).strip() for item in value if str(item).strip()]
+    if isinstance(value, str):
+        return [item.strip() for item in value.split(",") if item.strip()]
+    return []
+
+
+def human_field_value(raw: dict[str, Any], field: str) -> str:
+    aliases = {
+        "sourceUrl": ("sourceUrl", "source_url", "officialUrl", "url"),
+        "verifiedBy": ("verifiedBy", "verified_by"),
+        "evidenceNote": ("evidenceNote", "evidence_note"),
+    }
+    return pick_text(raw, *aliases[field])
+
+
+def missing_human_verification_fields(raw: dict[str, Any], *, requested_status: str) -> list[str]:
+    missing_fields = set(list_text_values(raw.get("missingHumanFields") or raw.get("missing_human_fields")))
+    draft_status = pick_text(raw, "draftStatus", "draft_status")
+    human_field_status = pick_text(raw, "humanFieldStatus", "human_field_status")
+    requires_human_input = (
+        draft_status == "requires_human_verification"
+        or human_field_status == "requires_human_input"
+        or bool(missing_fields)
+        or requested_status in {"verified", "published"}
+    )
+
+    if not requires_human_input:
+        return []
+
+    for field in HUMAN_VERIFICATION_FIELDS:
+        value = human_field_value(raw, field)
+        if not value or (field == "evidenceNote" and value.startswith("DRAFT:")):
+            missing_fields.add(field)
+
+    return sorted(missing_fields)
 
 
 def normalize_record(
@@ -335,8 +384,19 @@ def normalize_record(
             priority = max(priority, 90)
     safe_display_name, brand_sanitized = sanitize_display_name(file_name, subject, source_type)
     requested_status = pick_text(raw, "status", "sourceStatus")
+    draft_status = pick_text(raw, "draftStatus", "draft_status")
+    human_field_status = pick_text(raw, "humanFieldStatus", "human_field_status")
+    missing_human_fields = missing_human_verification_fields(raw, requested_status=requested_status)
+    human_verification_required = (
+        draft_status == "requires_human_verification"
+        or human_field_status == "requires_human_input"
+        or bool(missing_human_fields)
+    )
+    if human_verification_required:
+        risk_flags.append(HUMAN_VERIFICATION_REQUIRED_FLAG)
+
     status = "discovered" if eligible else "rejected"
-    if requested_status in {"verified", "published"} and eligible:
+    if requested_status in {"verified", "published"} and eligible and not human_verification_required:
         status = requested_status
     elif requested_status in {"discovered", "missing", "rejected"}:
         status = requested_status if eligible else "rejected"
@@ -345,11 +405,20 @@ def normalize_record(
     canonical_track = track if track != "unknown" else subject
     canonical_year = str(year) if year else "unknown"
 
-    return {
+    record = {
         "sourceId": f"src_{identity[:24]}",
         "fingerprint": fingerprint,
         "provider": provider,
         "sourceChannel": source_channel,
+        "groupName": pick_text(raw, "groupName", "group_name", "source_label"),
+        "examCycle": raw.get("examCycle") or raw.get("exam_cycle") or raw.get("collectionYear"),
+        "collectionRoot": pick_text(raw, "collectionRoot", "collection_root"),
+        "courseCategory": pick_text(raw, "courseCategory", "course_category"),
+        "institutionName": pick_text(raw, "institutionName", "institution_name", "institution"),
+        "institutionKey": pick_text(raw, "institutionKey", "institution_key"),
+        "direction": pick_text(raw, "direction", "major", "discipline"),
+        "targetDirectory": pick_text(raw, "targetDirectory", "target_directory"),
+        "approvalRequired": bool(raw.get("approvalRequired") or raw.get("approval_required")),
         "remoteId": remote_id,
         "fsId": raw.get("fs_id") or raw.get("fsId"),
         "remotePath": remote_path,
@@ -363,6 +432,7 @@ def normalize_record(
         "provenanceUrl": pick_text(raw, "provenanceUrl", "provenance_url"),
         "licenseStatus": pick_text(raw, "licenseStatus", "license_status"),
         "answerEvidenceStatus": pick_text(raw, "answerEvidenceStatus", "answer_evidence_status"),
+        "sourceRole": pick_text(raw, "sourceRole", "source_role"),
         "questionTextHash": pick_text(raw, "questionTextHash", "question_text_hash"),
         "answerTextHash": pick_text(raw, "answerTextHash", "answer_text_hash"),
         "rawTextSlicePath": pick_text(raw, "rawTextSlicePath", "raw_text_slice_path"),
@@ -389,6 +459,15 @@ def normalize_record(
             "published": False,
         },
     }
+
+    if draft_status:
+        record["draftStatus"] = draft_status
+    if human_field_status:
+        record["humanFieldStatus"] = human_field_status
+    if missing_human_fields or raw.get("missingHumanFields") is not None or raw.get("missing_human_fields") is not None:
+        record["missingHumanFields"] = missing_human_fields
+
+    return record
 
 
 def load_manifest(path: Path) -> dict[str, Any]:
@@ -503,8 +582,10 @@ def run_self_test() -> None:
             "sourceType": "official_paper",
             "status": "verified",
             "answerEvidenceStatus": "matched",
+            "sourceRole": "paper",
             "verifiedAt": now,
             "verifiedBy": "release-operator",
+            "evidenceNote": "Human verified against the listed official source URL and local SHA-256.",
         },
         {
             "fs_id": 5,
@@ -522,6 +603,7 @@ def run_self_test() -> None:
             "answerEvidenceStatus": "not_applicable",
             "verifiedAt": now,
             "verifiedBy": "release-operator",
+            "evidenceNote": "Human verified against the listed official syllabus source URL.",
         },
         {
             "fs_id": 6,
@@ -539,6 +621,7 @@ def run_self_test() -> None:
             "answerEvidenceStatus": "answer_missing",
             "verifiedAt": now,
             "verifiedBy": "release-operator",
+            "evidenceNote": "Human verified as question-paper-only evidence; answer evidence is absent.",
         },
     ]
     discovered = [normalize_record(item, provider="baidu_pan", source_channel="self_test", now=now) for item in raw]
@@ -552,6 +635,7 @@ def run_self_test() -> None:
     assert verified["sourceUrl"] == "https://example.edu.cn/2024-english2.pdf"
     assert verified["status"] == "verified"
     assert verified["answerEvidenceStatus"] == "matched"
+    assert verified["sourceRole"] == "paper"
     assert verified["verifiedBy"] == "release-operator"
     syllabus = next(item for item in items if item["sourceType"] == "official_syllabus")
     assert syllabus["track"] == "math1"
