@@ -15,7 +15,6 @@ const PUBLIC_COURSE_TRACKS = [
 
 const PAPER_QUALITY = {
   READY: 'ready',
-  DRAFT: 'draft',
   NEEDS_PASSAGE: 'needs_passage',
   NEEDS_REVIEW: 'needs_review',
   NEEDS_CLEANING: 'needs_cleaning',
@@ -26,7 +25,6 @@ const RECENT_YEARS = [2025, 2024, 2023, 2022, 2021, 2020];
 
 const YEAR_SLOT_STATUS = {
   READY: 'ready',
-  DRAFT: 'draft',
   ORGANIZING: 'organizing',
   MISSING: 'missing'
 };
@@ -94,11 +92,11 @@ const BANK_REGISTRY = [
     year: '2025',
     name: '2025考研政治真题',
     description: '16道单选 + 17道多选 + 5道分析题',
-    usageScope: 'self_study_draft',
-    releaseLabel: '自用草稿',
-    caution: '资料与答案核验尚未完成，适合个人练习；不计入正式发布题库',
+    enabled: false,
+    disabledReason: '试卷内容、答案和解析确认完成后开放整卷练习',
+    releaseLabel: '整理中',
     paperType: 'past_exam',
-    quality: PAPER_QUALITY.DRAFT,
+    quality: PAPER_QUALITY.NEEDS_REVIEW,
     sections: paperSections('单项选择', '多项选择', '分析题'),
     // 动态导入，不会增加首屏加载体积
     loader: () => import('./flashcard-banks/politics-2025.json')
@@ -111,11 +109,11 @@ const BANK_REGISTRY = [
     year: '2024',
     name: '2024考研政治真题',
     description: '22道单选 + 8道多选 + 5道分析题',
-    usageScope: 'self_study_draft',
-    releaseLabel: '自用草稿',
-    caution: '资料与答案核验尚未完成，适合个人练习；不计入正式发布题库',
+    enabled: false,
+    disabledReason: '试卷内容、答案和解析确认完成后开放整卷练习',
+    releaseLabel: '整理中',
     paperType: 'past_exam',
-    quality: PAPER_QUALITY.DRAFT,
+    quality: PAPER_QUALITY.NEEDS_REVIEW,
     sections: paperSections('单项选择', '多项选择', '分析题'),
     loader: () => import('./flashcard-banks/politics-2024.json')
   },
@@ -127,11 +125,11 @@ const BANK_REGISTRY = [
     year: '2025',
     name: '2025考研英语一真题',
     description: '完形填空 + 阅读理解 + 新题型 + 翻译 + 写作',
-    usageScope: 'self_study_draft',
-    releaseLabel: '自用草稿',
-    caution: '新题型答案存在版本差异，适合备考自练，提交前请以权威答案为准',
+    enabled: false,
+    disabledReason: '试卷内容、答案版本和篇章材料确认完成后开放整卷练习',
+    releaseLabel: '整理中',
     paperType: 'past_exam',
-    quality: PAPER_QUALITY.DRAFT,
+    quality: PAPER_QUALITY.NEEDS_REVIEW,
     sections: paperSections('完形填空', '阅读理解', '新题型', '翻译', '写作'),
     loader: () => import('./flashcard-banks/english1-2025.json')
   },
@@ -313,7 +311,7 @@ function getSelectedTracks(profile) {
  * 获取所有可用题库列表（不加载数据，只返回元信息）
  */
 export function getAvailableBanks() {
-  return BANK_REGISTRY.filter((bank) => bank.enabled !== false).map(({ loader, ...meta }) => meta);
+  return BANK_REGISTRY.filter(isPracticeVisibleBank).map(({ loader, ...meta }) => meta);
 }
 
 export function getAllBankMetas() {
@@ -343,7 +341,11 @@ function normalizeBankYear(bank) {
 }
 
 function isPublicReleaseBank(bank) {
-  return bank?.enabled !== false && bank?.usageScope !== 'self_study_draft';
+  return isPracticeVisibleBank(bank);
+}
+
+function isPracticeVisibleBank(bank) {
+  return bank?.enabled !== false && bank?.quality === PAPER_QUALITY.READY && bank?.usageScope !== 'self_study_draft';
 }
 
 function releaseStateFor({ publishedYears, requiredYears }) {
@@ -354,21 +356,18 @@ function releaseStateFor({ publishedYears, requiredYears }) {
 
 function yearSlotStatusFor(item) {
   if (!item) return YEAR_SLOT_STATUS.MISSING;
-  if (item.enabled !== false && item.usageScope === 'self_study_draft') return YEAR_SLOT_STATUS.DRAFT;
-  if (item.enabled !== false) return YEAR_SLOT_STATUS.READY;
+  if (isPracticeVisibleBank(item)) return YEAR_SLOT_STATUS.READY;
   return YEAR_SLOT_STATUS.ORGANIZING;
 }
 
 function yearSlotStatusLabel(status) {
   if (status === YEAR_SLOT_STATUS.READY) return '正式';
-  if (status === YEAR_SLOT_STATUS.DRAFT) return '自练';
   if (status === YEAR_SLOT_STATUS.ORGANIZING) return '整理中';
   return '待入库';
 }
 
 function yearSlotActionLabel(status) {
   if (status === YEAR_SLOT_STATUS.READY) return '开始';
-  if (status === YEAR_SLOT_STATUS.DRAFT) return '自练';
   if (status === YEAR_SLOT_STATUS.ORGANIZING) return '整理中';
   return '待入库';
 }
@@ -415,7 +414,7 @@ function buildTrackYearSlots(track, banks, sourcePapers, coverage) {
         status,
         statusLabel: yearSlotStatusLabel(status),
         actionLabel: yearSlotActionLabel(status),
-        clickable: status === YEAR_SLOT_STATUS.READY || status === YEAR_SLOT_STATUS.DRAFT
+        clickable: status === YEAR_SLOT_STATUS.READY
       };
     });
 }
@@ -425,12 +424,11 @@ function summarizeYearSlots(yearSlots) {
     (summary, slot) => {
       summary.total += 1;
       if (slot.status === YEAR_SLOT_STATUS.READY) summary.ready += 1;
-      else if (slot.status === YEAR_SLOT_STATUS.DRAFT) summary.draft += 1;
       else if (slot.status === YEAR_SLOT_STATUS.ORGANIZING) summary.organizing += 1;
       else summary.missing += 1;
       return summary;
     },
-    { total: 0, ready: 0, draft: 0, organizing: 0, missing: 0 }
+    { total: 0, ready: 0, organizing: 0, missing: 0 }
   );
 }
 
@@ -518,7 +516,7 @@ export function buildPublicCourseCoverage(options = {}) {
  * @returns {Promise<Object>} - 闪卡JSON数据
  */
 export async function loadBank(bankId) {
-  const entry = BANK_REGISTRY.find((b) => b.id === bankId && b.enabled !== false);
+  const entry = BANK_REGISTRY.find((b) => b.id === bankId && isPracticeVisibleBank(b));
   if (!entry) {
     throw new Error(`题库不存在或暂不可用: ${bankId}`);
   }
@@ -533,7 +531,9 @@ export async function loadBank(bankId) {
  * @param {string} subject - 科目名
  */
 export function getBanksBySubject(subject) {
-  return BANK_REGISTRY.filter((b) => b.subject === subject && b.enabled !== false).map(({ loader, ...meta }) => meta);
+  return BANK_REGISTRY.filter((b) => b.subject === subject && isPracticeVisibleBank(b)).map(
+    ({ loader, ...meta }) => meta
+  );
 }
 
 /**
@@ -573,7 +573,7 @@ export function getPracticeNavigationTree(profile = {}) {
       yearSlots,
       slotSummary: summarizeYearSlots(yearSlots),
       banks: banks
-        .filter((bank) => bank.track === track.id && bank.enabled !== false)
+        .filter((bank) => bank.track === track.id && isPracticeVisibleBank(bank))
         .sort((a, b) => Number(b.year || 0) - Number(a.year || 0)),
       pendingBanks: buildRecentPendingPapers(track, banks, sourcePapers),
       coverage: {

@@ -12,9 +12,6 @@ describe('published flashcard bank registry', () => {
 
     expect(banks.map((bank) => bank.id)).toEqual(
       expect.arrayContaining([
-        'politics-2025',
-        'politics-2024',
-        'english1-2025',
         'english1-2005',
         'english1-2008',
         'english1-2009',
@@ -23,8 +20,11 @@ describe('published flashcard bank registry', () => {
         'english1-2012'
       ])
     );
+    expect(banks.map((bank) => bank.id)).not.toEqual(
+      expect.arrayContaining(['politics-2025', 'politics-2024', 'english1-2025'])
+    );
     expect(banks.map((bank) => bank.id)).not.toEqual(expect.arrayContaining(['english-2025', 'math-2025']));
-    const bank = await loadBank('politics-2025');
+    const bank = await loadBank('english1-2005');
     expect(bank.cards.length).toBeGreaterThan(0);
     expect(bank.cards[0]).toEqual(
       expect.objectContaining({
@@ -33,8 +33,9 @@ describe('published flashcard bank registry', () => {
       })
     );
     await expect(loadBank('english-2025')).rejects.toThrow('题库不存在或暂不可用');
-    const englishDraft = await loadBank('english1-2025');
-    expect(englishDraft.cards.length).toBeGreaterThan(0);
+    await expect(loadBank('politics-2025')).rejects.toThrow('题库不存在或暂不可用');
+    await expect(loadBank('politics-2024')).rejects.toThrow('题库不存在或暂不可用');
+    await expect(loadBank('english1-2025')).rejects.toThrow('题库不存在或暂不可用');
     const english2005 = await loadBank('english1-2005');
     expect(english2005.cards.length).toBeGreaterThan(0);
     expect(english2005.cards.find((card) => card.number === 21).passage).toEqual(expect.any(String));
@@ -60,42 +61,40 @@ describe('published flashcard bank registry', () => {
     const politics = tree.find((item) => item.id === 'politics');
     const english = tree.find((item) => item.id === 'english');
 
-    expect(politics.tracks[0].banks.some((bank) => bank.id === 'politics-2025')).toBe(true);
-    expect(politics.tracks[0].banks.some((bank) => bank.id === 'politics-2024')).toBe(true);
-    expect(politics.tracks[0].banks.find((bank) => bank.id === 'politics-2025').usageScope).toBe('self_study_draft');
-    expect(politics.tracks[0].banks.find((bank) => bank.id === 'politics-2024').releaseLabel).toBe('自用草稿');
-    expect(politics.tracks[0].pendingBanks.some((bank) => bank.year === '2025')).toBe(false);
-    expect(politics.tracks[0].pendingBanks.some((bank) => bank.year === '2024')).toBe(false);
+    expect(politics.tracks[0].banks).toEqual([]);
+    expect(politics.tracks[0].pendingBanks.some((bank) => bank.year === '2025')).toBe(true);
+    expect(politics.tracks[0].pendingBanks.some((bank) => bank.year === '2024')).toBe(true);
     expect(politics.tracks[0].coverage.publishedYears).toEqual([]);
     expect(politics.tracks[0].coverage.pendingYears).toEqual([2024, 2025]);
-    expect(politics.tracks[0].pendingBanks.map((bank) => Number(bank.year))).toEqual([2023, 2022, 2021, 2020]);
+    expect(politics.tracks[0].pendingBanks.map((bank) => Number(bank.year))).toEqual([
+      2025, 2024, 2023, 2022, 2021, 2020
+    ]);
     expect(politics.tracks[0].coverage.groupSourceRequired).toBe(false);
     expect(politics.tracks[0].yearSlots).toHaveLength(22);
-    expect(politics.tracks[0].slotSummary).toEqual({ total: 22, ready: 0, draft: 2, organizing: 0, missing: 20 });
+    expect(politics.tracks[0].slotSummary).toEqual({ total: 22, ready: 0, organizing: 2, missing: 20 });
     expect(politics.tracks[0].yearSlots.find((slot) => slot.year === '2025')).toMatchObject({
       bankId: 'politics-2025',
-      status: 'draft',
-      statusLabel: '自练',
-      clickable: true
+      status: 'organizing',
+      statusLabel: '整理中',
+      clickable: false
     });
     expect(politics.tracks[0].yearSlots.find((slot) => slot.year === '2026')).toMatchObject({
       status: 'missing',
       statusLabel: '待入库',
       clickable: false
     });
-    expect(english.tracks[0].banks.some((bank) => bank.id === 'english1-2025')).toBe(true);
-    expect(english.tracks[0].banks.find((bank) => bank.id === 'english1-2025').usageScope).toBe('self_study_draft');
+    expect(english.tracks[0].banks.some((bank) => bank.id === 'english1-2025')).toBe(false);
     expect(english.tracks[0].banks.some((bank) => bank.id === 'english1-2005')).toBe(true);
     expect(english.tracks[0].banks.find((bank) => bank.id === 'english1-2005').releaseLabel).toBe('正式题库');
     expect(english.tracks[0].banks.some((bank) => bank.id === 'english1-2006')).toBe(true);
     expect(english.tracks[0].banks.some((bank) => bank.id === 'english1-2010')).toBe(true);
     expect(english.tracks[0].banks.some((bank) => bank.id === 'english1-2011')).toBe(true);
     expect(english.tracks[0].banks.some((bank) => bank.id === 'english1-2012')).toBe(true);
-    expect(english.tracks[0].pendingBanks.some((bank) => bank.id === 'english1-2025')).toBe(false);
+    expect(english.tracks[0].pendingBanks.some((bank) => bank.id === 'english1-2025')).toBe(true);
     expect(english.tracks[0].pendingBanks.some((bank) => bank.id === 'english1-2025-source')).toBe(false);
     expect(english.tracks[0].pendingBanks.some((bank) => bank.id === 'english-2025')).toBe(false);
     expect(english.tracks[0].yearSlots).toHaveLength(22);
-    expect(english.tracks[0].slotSummary).toEqual({ total: 22, ready: 8, draft: 1, organizing: 0, missing: 13 });
+    expect(english.tracks[0].slotSummary).toEqual({ total: 22, ready: 8, organizing: 1, missing: 13 });
     expect(english.tracks[0].yearSlots.find((slot) => slot.year === '2012')).toMatchObject({
       bankId: 'english1-2012',
       status: 'ready',

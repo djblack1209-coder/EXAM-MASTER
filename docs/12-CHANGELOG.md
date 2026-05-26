@@ -1,5 +1,12 @@
 # 变更日志
 
+## 2026-05-26 — 公共课题库可见状态收敛
+
+- 公共课题库入口取消“自练草稿”作为用户可点击状态，只有 `quality=ready` 且正式发布的题库可进入整卷练习。
+- 政治 2024/2025、英语一 2025 从可加载草稿降级为“整理中”，继续保留在年份地图和发布 backlog 中，避免用户误以为草稿题库已经可商用发布。
+- 题库页统计从“正式/自练/待完善”改为“正式/整理中/待入库”，小程序用户只看到可信开放状态。
+- 前端参考手册补充平台 UI 边界：微信小程序以 `src/pages.json` 注册路由为准，App/H5 完整产品 UI 需要单独构建和验证。
+
 ## 2026-05-14 — 小程序主链路、题库目录与音频反馈收敛
 
 - 小程序前端链路收敛为“首页查看进度或进入题库 → 选择科目与年份 → 开始刷题”，首页和刷题中心不再展示后台整理流程。
@@ -56,27 +63,33 @@
 ## 2026-04-27 — 关键流程 Bug 修复 (Phase 5)
 
 ### BUG1 [CRITICAL] useFlashcardBank.js 存储键不一致
+
 - **根因**: useFlashcardBank.js 使用内联 storageService（直接 `uni.getStorageSync('v30_bank')`），而 useBankStatus.js / do-quiz.vue 使用真实 storageService（用户隔离键 `u_${userId}_v30_bank`）。题库写入位置与读取位置不同，导致"点加载进不去刷题页面"。
 - **修复**: 重写 useFlashcardBank.js，import 真实 `storageService`，通过 adapter 传给 flashcard-adapter.js。
 
 ### BUG2 [HIGH] loadedBankIds 无响应式更新
+
 - **根因**: `loadedBankIds` 是 computed 但内部无 ref 依赖，加载后按钮状态不会从"加载"变为"已加载"。
 - **修复**: 引入 `_loadedSet = ref(new Set(...))` 作为 computed 数据源，加载成功后 `_loadedSet.value = new Set(loaded)` 触发响应式更新。
 
 ### BUG3 [MED] goSmartReview 路由参数不匹配
+
 - **根因**: practice/index.vue `goSmartReview()` 传 `mode=review`，但 do-quiz.vue 期望 `mode=smart_review`。
 - **修复**: `safeNavigateTo('/pages/practice-sub/do-quiz?mode=smart_review')`
 
 ### BUG4 [LOW] do-quiz.vue `this.mode` 未声明
+
 - **根因**: `loadQuestions()` 检查 `this.mode === 'temp_bank'` 但 `data()` 中未声明 `mode`，onLoad 也未从 query 赋值。
 - **修复**: `data()` 添加 `mode: ''`，onLoad 中 `this.mode = query.mode || ''`。
 
 ### 构建验证
+
 - 四项修复后构建成功，总体积不变（1.5MB，主包 589KB）
 
 ## 2026-04-27 — 生产提审就绪 (Phase 4)
 
 ### 审核阻塞项修复 (6项)
+
 - **B1** custom-tabbar 去掉「择校」Tab（4→3 tabs），与 pages.json 三页 MVP 规格对齐
 - **B2** 删除 school.png/school-active.png 图标 + static-assets.js 移除 school 映射
 - **B3** pages[0] 从 splash 改为 index/index —— 首屏即内容，不再空白转场（微信审核要求）
@@ -85,12 +98,14 @@
 - **B6** manifest.json name 改为「考研大师」；版本号重置为 1.0.0（首次提审）
 
 ### 体验关键修复 (4项)
+
 - **C1** globalStyle 全面切换为浅色主题（backgroundColor #F5F7FA，navigationBarTextStyle black）——消除页面切换暗色闪烁
 - **C2** do-quiz + question-bank 加入公开路由白名单——未登录用户也能刷题（微信审核禁止强制登录才能使用）
 - **C5** privacy.vue + terms.vue 导航栏/卡片样式从 em3d 暗色系切换为白底绿边框浅色主题
 - 隐私政策内容移除相机/麦克风/剪贴板相关条款（MVP 不涉及）
 
 ### 健壮性与合规 (5项)
+
 - **I2** postbuild inject-mp-weixin-privacy.mjs 不再注入 scope.camera/scope.writePhotosAlbum
 - **I3+I4** practice 页题库加载：per-bank loading 状态（不再全局锁）+ 加载失败 showToast 提示
 - **I7** 所有页面 navigationBarBackgroundColor 从 #1A1A1A 统一为 #F5F7FA；globalStyle title 中文化
@@ -98,8 +113,9 @@
 - **N3** App.vue onLaunch 调用 FSRS restoreUserParams()——冷启动恢复间隔重复参数
 
 ### 构建验证
+
 - 总体积 1.5MB（无变化），pages[0] = index/index
-- app.json: permission 为空、requiredPrivateInfos 为空、__usePrivacyCheck__ = true
+- app.json: permission 为空、requiredPrivateInfos 为空、**usePrivacyCheck** = true
 - project.config.json: projectname = 考研大师, appid = wxd634d50ad63e14ed, libVersion = 2.32.3
 - school 图标已从构建产物中移除
 

@@ -18,8 +18,8 @@ describe('question bank public-course year map', () => {
     expect(source).toContain('status-organizing');
     expect(source).toContain('status-missing');
     expect(source).toContain('selectedYearSlot.disabledReason');
-    expect(source).toContain('const draftCount');
-    expect(source).toContain('正式 ${ready} · 自练 ${draft} · 待完善 ${pending}');
+    expect(source).toContain('const organizingCount');
+    expect(source).toContain('正式 ${ready} · 整理中 ${organizing} · 待入库 ${missing}');
   });
 
   it('keeps every track on the 2005-2026 map and marks disabled known banks as organizing', () => {
@@ -33,7 +33,7 @@ describe('question bank public-course year map', () => {
     }
 
     const english2 = tracks.find((track) => track.id === 'english2');
-    expect(english2.slotSummary).toEqual({ total: 22, ready: 0, draft: 0, organizing: 1, missing: 21 });
+    expect(english2.slotSummary).toEqual({ total: 22, ready: 0, organizing: 1, missing: 21 });
     expect(english2.yearSlots.find((slot) => slot.year === '2025')).toMatchObject({
       bankId: 'english2-2025',
       status: 'organizing',
@@ -57,13 +57,13 @@ describe('question bank public-course year map', () => {
 
     expect(wrapper.text()).toContain('2025考研英语二真题');
     expect(wrapper.text()).toContain('完整答案与篇章材料完善后开放整卷练习');
-    expect(wrapper.text()).toContain('正式 0 · 自练 0 · 待完善 22');
+    expect(wrapper.text()).toContain('正式 0 · 整理中 1 · 待入库 21');
     expect(wrapper.find('.year-slot.active .slot-year').text()).toBe('2025');
 
     wrapper.unmount();
   });
 
-  it('keeps formal release counts separate from self-study drafts in the operator-facing summary', async () => {
+  it('keeps only verified formal banks clickable in the operator-facing summary', async () => {
     storageService.save('exam_profile', { tracks: ['english1'] });
 
     const wrapper = mount(QuestionBankPage, {
@@ -78,8 +78,8 @@ describe('question bank public-course year map', () => {
     expect(wrapper.text()).toContain('8');
     expect(wrapper.text()).toContain('正式');
     expect(wrapper.text()).toContain('1');
-    expect(wrapper.text()).toContain('自练');
-    expect(wrapper.text()).toContain('正式 8 · 自练 1 · 待完善 13');
+    expect(wrapper.text()).toContain('整理中');
+    expect(wrapper.text()).toContain('正式 8 · 整理中 1 · 待入库 13');
 
     wrapper.unmount();
   });

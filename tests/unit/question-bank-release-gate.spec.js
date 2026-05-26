@@ -144,7 +144,7 @@ describe('question bank release gate', () => {
     });
     expect(report.summary.answerEvidenceBlockerCount).toBe(0);
     expect(report.summary.enabledBankCount).toBeGreaterThan(0);
-    expect(report.summary.selfStudyDraftBankCount).toBeGreaterThan(0);
+    expect(report.summary.selfStudyDraftBankCount).toBe(0);
     expect(report.summary.pendingBankCount).toBeGreaterThan(0);
     expect(report.coverage.tracks.find((track) => track.track === 'english2').releaseState).toBe('empty');
     expect(report.answerEvidence.blockedBanks).toEqual([]);

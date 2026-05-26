@@ -21,12 +21,12 @@
             <text class="metric-label">正式</text>
           </view>
           <view class="hero-metric">
-            <text class="metric-value">{{ draftCount }}</text>
-            <text class="metric-label">自练</text>
+            <text class="metric-value">{{ organizingCount }}</text>
+            <text class="metric-label">整理中</text>
           </view>
           <view class="hero-metric">
-            <text class="metric-value">{{ pendingCount }}</text>
-            <text class="metric-label">待完善</text>
+            <text class="metric-value">{{ missingCount }}</text>
+            <text class="metric-label">待入库</text>
           </view>
         </view>
       </view>
@@ -185,9 +185,10 @@ const loadedBankIds = ref(new Set(storageService.get('loaded_flashcard_banks', [
 const navigationTree = computed(() => getPracticeNavigationTree(storageService.get('exam_profile', null) || {}));
 const allTracks = computed(() => navigationTree.value.flatMap((subject) => subject.tracks || []));
 const readyCount = computed(() => allTracks.value.reduce((sum, track) => sum + (track.slotSummary?.ready || 0), 0));
-const draftCount = computed(() => allTracks.value.reduce((sum, track) => sum + (track.slotSummary?.draft || 0), 0));
-const totalSlotCount = computed(() => allTracks.value.reduce((sum, track) => sum + (track.slotSummary?.total || 0), 0));
-const pendingCount = computed(() => Math.max(totalSlotCount.value - readyCount.value - draftCount.value, 0));
+const organizingCount = computed(() =>
+  allTracks.value.reduce((sum, track) => sum + (track.slotSummary?.organizing || 0), 0)
+);
+const missingCount = computed(() => allTracks.value.reduce((sum, track) => sum + (track.slotSummary?.missing || 0), 0));
 
 const selectedSubject = computed(() => {
   const fallbackSubject = navigationTree.value[0] || null;
@@ -209,10 +210,9 @@ const selectedYearSlot = computed(() => {
 const selectedTrackSlotText = computed(() => {
   const summary = selectedTrack.value?.slotSummary || {};
   const ready = Number(summary.ready || 0);
-  const draft = Number(summary.draft || 0);
-  const total = Number(summary.total || 0);
-  const pending = Math.max(total - ready - draft, 0);
-  return `正式 ${ready} · 自练 ${draft} · 待完善 ${pending}`;
+  const organizing = Number(summary.organizing || 0);
+  const missing = Number(summary.missing || 0);
+  return `正式 ${ready} · 整理中 ${organizing} · 待入库 ${missing}`;
 });
 
 function goBack() {
@@ -515,9 +515,6 @@ onMounted(() => {
 .year-slot.status-ready {
   background: #edf8f1;
 }
-.year-slot.status-draft {
-  background: #fff7e8;
-}
 .year-slot.status-organizing {
   background: #eef4ff;
 }
@@ -542,9 +539,6 @@ onMounted(() => {
 }
 .status-ready .slot-status {
   color: #1f7a4d;
-}
-.status-draft .slot-status {
-  color: #9a5b00;
 }
 .status-organizing .slot-status {
   color: #0068d6;
@@ -593,10 +587,6 @@ onMounted(() => {
 .slot-badge.status-ready {
   background: rgba(31, 122, 77, 0.12);
   color: #1f7a4d;
-}
-.slot-badge.status-draft {
-  background: rgba(255, 149, 0, 0.14);
-  color: #9a5b00;
 }
 .slot-badge.status-organizing {
   background: rgba(0, 113, 227, 0.12);
