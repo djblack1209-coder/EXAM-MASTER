@@ -73,7 +73,7 @@ describe('question bank release gate', () => {
     expect(report.answerEvidence.blockedBanks[0].blockedCards[0].missingFields).toContain('passage');
   });
 
-  it('requires verified source provenance and matched answer evidence before source coverage counts', () => {
+  it('auto-pairs Baidu Netdisk official paper and answer PDFs as source coverage', () => {
     const output = tempReportPath();
     const manifest = tempManifestPath([
       {
@@ -85,30 +85,28 @@ describe('question bank release gate', () => {
         year: 2024,
         remotePath: '/apps/考研大师/raw-pdf/english1/2024英语一真题.pdf',
         contentHash: 'sha256:verified-source-hash',
-        answerEvidenceStatus: 'matched',
         riskFlags: []
       },
       {
-        sourceId: 'src_eng2_2024_without_answer_evidence',
+        sourceId: 'src_eng1_2024_answer',
         eligible: true,
-        status: 'verified',
+        status: 'discovered',
         sourceType: 'official_paper',
-        track: 'english2',
+        track: 'english1',
         year: 2024,
-        remotePath: '/apps/考研大师/raw-pdf/english2/2024英语二真题.pdf',
-        contentHash: 'sha256:missing-answer-evidence',
+        remotePath: '/apps/考研大师/raw-pdf/english1/2024英语一参考答案.pdf',
+        contentHash: 'sha256:discovered-answer-source',
         riskFlags: []
       },
       {
-        sourceId: 'src_eng2_2024_discovered',
+        sourceId: 'src_eng2_2024_combined',
         eligible: true,
         status: 'discovered',
         sourceType: 'official_paper',
         track: 'english2',
         year: 2024,
-        remotePath: '/apps/考研大师/raw-pdf/english2/2024英语二真题-待核验.pdf',
-        contentHash: 'sha256:discovered-source',
-        answerEvidenceStatus: 'matched',
+        remotePath: '/apps/考研大师/raw-pdf/english2/2024英语二真题及答案.pdf',
+        contentHash: 'sha256:combined-source',
         riskFlags: []
       }
     ]);
@@ -122,25 +120,28 @@ describe('question bank release gate', () => {
     expect(report.summary.requiredSlots).toBe(18);
     expect(report.summary.coverageGapCount).toBeGreaterThan(0);
     expect(report.summary.sourceManifestStatus).toBe('present');
+    expect(report.summary.sourceEvidencePolicy).toBe('baidu_netdisk_official_paper_auto_pair_v1');
     expect(report.summary.sourceManifestTotalSources).toBe(3);
-    expect(report.summary.sourceManifestPublishableOfficialPapers).toBe(1);
-    expect(report.summary.sourceManifestCoverageGapCount).toBe(17);
+    expect(report.summary.sourceManifestPublishableOfficialPapers).toBe(2);
+    expect(report.summary.sourceManifestAutoPairedOfficialSourceSlots).toBe(2);
+    expect(report.summary.sourceManifestCoverageGapCount).toBe(16);
     expect(report.summary.pendingCoverageBlockerCount).toBeGreaterThan(0);
     expect(report.sourceEvidence.coverage.english1.presentYears).toEqual([2024]);
-    expect(report.sourceEvidence.coverage.english2.presentYears).toEqual([]);
-    expect(report.sourceEvidence.coverage.english2.missingYearDiagnostics[2024]).toMatchObject({
+    expect(report.sourceEvidence.coverage.english2.presentYears).toEqual([2024]);
+    expect(report.sourceEvidence.candidateDiagnostics.english1[2024]).toMatchObject({
       candidateCount: 2,
       officialPaperCandidateCount: 2,
-      blockReasons: {
-        'answerEvidenceStatus=missing': 1,
-        'status=discovered': 1
-      }
+      autoPairEligibleCandidateCount: 2,
+      paperCandidateCount: 1,
+      answerCandidateCount: 1,
+      combinedCandidateCount: 0
     });
-    expect(report.sourceEvidence.coverage.english2.missingYearDiagnostics[2024].sampleCandidates[0]).toMatchObject({
-      sourceId: 'src_eng2_2024_without_answer_evidence',
-      status: 'verified',
+    expect(report.sourceEvidence.candidateDiagnostics.english2[2024].sampleCandidates[0]).toMatchObject({
+      sourceId: 'src_eng2_2024_combined',
       sourceType: 'official_paper',
-      blockReasons: ['answerEvidenceStatus=missing']
+      inferredSourceRole: 'paper_answer',
+      autoPairEligible: true,
+      blockReasons: []
     });
     expect(report.summary.answerEvidenceBlockerCount).toBe(0);
     expect(report.summary.enabledBankCount).toBeGreaterThan(0);
@@ -182,16 +183,18 @@ describe('question bank release gate', () => {
     expect(report.sourceEvidence.coverage.english1.missingYearDiagnostics[2099]).toMatchObject({
       candidateCount: 1,
       officialPaperCandidateCount: 1,
+      autoPairEligibleCandidateCount: 1,
       blockReasons: {
-        'sourceRole=answer': 1
+        'slotPair=missing_paper': 1
       }
     });
     expect(report.sourceEvidence.coverage.english1.missingYearDiagnostics[2099].sampleCandidates[0]).toMatchObject({
       sourceId: 'src_english1_2099_answer_only',
       sourceType: 'official_paper',
       sourceRole: 'answer',
-      answerEvidenceStatus: 'matched',
-      blockReasons: ['sourceRole=answer']
+      inferredSourceRole: 'answer',
+      autoPairEligible: true,
+      blockReasons: []
     });
   });
 
@@ -207,9 +210,8 @@ describe('question bank release gate', () => {
         sourceType: 'official_paper',
         track: 'english1',
         year: 2099,
-        remotePath: '/raw/english1/2099-official.pdf',
+        remotePath: '/raw/english1/2099真题及答案.pdf',
         contentHash: 'sha256:english1-2099-source',
-        answerEvidenceStatus: 'matched',
         riskFlags: []
       }
     ]);
@@ -325,7 +327,7 @@ describe('question bank release gate', () => {
         sourceType: 'official_paper',
         track: 'math1',
         year: 2024,
-        remotePath: '/raw/math1/2024-official-discovered.pdf',
+        remotePath: '/raw/math1/2024数学一真题.pdf',
         contentHash: 'sha256:discovered',
         riskFlags: []
       },
@@ -349,7 +351,7 @@ describe('question bank release gate', () => {
         sourceType: 'official_paper',
         track: 'math1',
         year: 2024,
-        remotePath: '/raw/math1/2024-official-verified.pdf',
+        remotePath: '/raw/math1/2024数学一真题.pdf',
         contentHash: 'sha256:verified',
         riskFlags: []
       }
@@ -359,7 +361,7 @@ describe('question bank release gate', () => {
     expect(result.status, result.stderr || result.stdout).toBe(0);
 
     const report = JSON.parse(fs.readFileSync(output, 'utf8'));
-    const samples = report.sourceEvidence.coverage.math1.missingYearDiagnostics[2024].sampleCandidates;
+    const samples = report.sourceEvidence.candidateDiagnostics.math1[2024].sampleCandidates;
 
     expect(samples.map((sample) => sample.sourceId)).toEqual([
       'src_math1_2024_official_verified_missing_answer',
@@ -370,13 +372,15 @@ describe('question bank release gate', () => {
       sourceType: 'official_paper',
       sourceRole: '',
       status: 'verified',
-      publishBlocked: false,
-      blockReasons: ['answerEvidenceStatus=missing']
+      inferredSourceRole: 'paper',
+      autoPairEligible: true,
+      blockReasons: []
     });
     expect(samples[2]).toMatchObject({
       sourceType: 'official_paper',
       sourceRole: 'answer',
-      blockReasons: ['sourceRole=answer']
+      inferredSourceRole: 'answer',
+      blockReasons: []
     });
   });
 

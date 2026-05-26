@@ -213,6 +213,9 @@ function sourceCandidateSamples(diagnostics, limit = 3) {
     status: sample.status || '',
     sourceType: sample.sourceType || '',
     sourceRole: sample.sourceRole || sample.source_role || '',
+    inferredSourceRole: sample.inferredSourceRole || '',
+    roleSource: sample.roleSource || '',
+    autoPairEligible: sample.autoPairEligible === true,
     answerEvidenceStatus: sample.answerEvidenceStatus || '',
     riskFlags: Array.isArray(sample.riskFlags) ? sample.riskFlags : [],
     publishBlocked: sample.publishBlocked === true,
@@ -403,11 +406,11 @@ function localSourceAuditSamples(diagnostics, limit = 3) {
 
 const SOURCE_MANIFEST_REGISTRATION_FIELDS = [
   'eligible=true',
-  'status=verified|published',
+  'status=discovered|verified|published',
   'sourceType=official_paper',
   'contentHash|sha256|fileSha256|sourceHash',
   'remotePath|sourceUrl|provenanceUrl',
-  'answerEvidenceStatus=matched',
+  'sourceRole inferred as paper+answer or paper_answer',
   'legalReview.publishBlocked=false',
   'riskFlags excludes answer_missing,brand_leak,copyright_review_required,ad_or_promo'
 ];
@@ -445,8 +448,6 @@ const SOURCE_MANIFEST_HUMAN_VERIFICATION_STEPS = [
 ];
 
 const SOURCE_MANIFEST_POST_REGISTRATION_COMMANDS = [
-  'npm run baidu:sources:verified',
-  'npm run baidu:sources:merge',
   'npm run audit:release:backlog',
   'npm run audit:question-bank:release'
 ];
@@ -540,63 +541,63 @@ function sourceManifestRegistrationChecklist(localSourceAudit, manifestSamples =
   const readyForHumanVerification = blockers.length === 0;
 
   return {
-    status: readyForHumanVerification ? 'ready_for_human_verification' : 'blocked_before_registration',
-    readyForHumanVerification,
+    status: readyForHumanVerification ? 'auto_source_evidence_candidate' : 'blocked_before_auto_pair',
+    readyForHumanVerification: false,
     requiredManifestFields: SOURCE_MANIFEST_REGISTRATION_FIELDS,
     verifiedSourceRegistryFields: VERIFIED_SOURCE_REGISTRY_FIELDS,
-    humanVerificationSteps: readyForHumanVerification ? SOURCE_MANIFEST_HUMAN_VERIFICATION_STEPS : [],
+    humanVerificationSteps: [],
     postRegistrationCommands: readyForHumanVerification ? SOURCE_MANIFEST_POST_REGISTRATION_COMMANDS : [],
     localFileCandidates,
-    verifiedSourceRegistryDrafts: readyForHumanVerification ? verifiedSourceRegistryDrafts(diagnostics, slot) : [],
+    verifiedSourceRegistryDrafts: [],
     manifestCandidateIds,
     blockers,
     note: readyForHumanVerification
-      ? 'Local paper/answer files are readable and unblocked; human verification is still required before Source Manifest can be marked verified/published.'
-      : 'Resolve listed local-source blockers before registering publishable official source evidence.'
+      ? 'Local paper/answer files are readable and unblocked. Current release gate counts Baidu Netdisk official_paper sources by auto-pairing remotePath plus content hash; verified source registry drafts are optional audit metadata, not a release prerequisite.'
+      : 'Resolve listed local-source blockers before the slot can be treated as an auto-paired official source.'
   };
 }
 
 function sourceEvidenceNextAction(localSourceAudit, afterEvidenceAction = '') {
   const suffix = afterEvidenceAction || '';
   if (!localSourceAudit || localSourceAudit.status === 'not_available') {
-    return `在 source manifest 中绑定 verified/published official_paper，补齐 contentHash、remotePath/sourceUrl、answerEvidenceStatus=matched，并确认风险标记不阻断发布。${suffix}`;
+    return `在 Source Manifest 中补齐同槽位 official_paper 试卷+答案或真题及答案合并 PDF，要求有 remotePath、contentHash，且风险标记不阻断发布。${suffix}`;
   }
 
   if (localSourceAudit.status === 'missing_for_slot' || !localSourceAudit.sourceCount) {
-    return `local source audit 已加载但该槽位没有本地 paper/answer 文件；先补齐本地文件或同步权威来源，再登记 verified/published official_paper、contentHash、remotePath/sourceUrl、answerEvidenceStatus=matched。${suffix}`;
+    return `local source audit 已加载但该槽位没有本地 paper/answer 文件；先补齐本地文件或同步 Baidu 网盘 official_paper 试卷+答案，再刷新 Source Manifest。${suffix}`;
   }
 
   if (localSourceAudit.needsOcrCount > 0 && localSourceAudit.usableTextLayerCount === 0) {
-    return `local source audit 已有本地文件但缺少可用文本层；先对本地 PDF 做 OCR/文本抽取，再登记 verified/published official_paper、contentHash、remotePath/sourceUrl、answerEvidenceStatus=matched。${suffix}`;
+    return `local source audit 已有本地文件但缺少可用文本层；先对本地 PDF 做 OCR/文本抽取，再进入题卡清洗。${suffix}`;
   }
 
   if (localSourceAudit.usablePaperLikeCount > 0 && localSourceAudit.usableAnswerLikeCount === 0) {
     if (localSourceAudit.blockedAnswerLikeCount > 0) {
-      return `local source audit 已有可读试卷，但答案文件仍有 ${localSourceAudit.blockedAnswerLikeCount} 个阻塞；先补齐或替换完整答案文件，再登记 verified/published official_paper、contentHash、remotePath/sourceUrl、answerEvidenceStatus=matched。${suffix}`;
+      return `local source audit 已有可读试卷，但答案文件仍有 ${localSourceAudit.blockedAnswerLikeCount} 个阻塞；先补齐或替换完整答案文件，再刷新 Source Manifest 自动配对。${suffix}`;
     }
-    return `local source audit 已有可读试卷但缺少可用答案文件；先补齐 answer/paper_answer companion，再登记 verified/published official_paper、contentHash、remotePath/sourceUrl、answerEvidenceStatus=matched。${suffix}`;
+    return `local source audit 已有可读试卷但缺少可用答案文件；先补齐 answer/paper_answer companion，再刷新 Source Manifest 自动配对。${suffix}`;
   }
 
   if (localSourceAudit.usablePaperLikeCount === 0 && localSourceAudit.usableAnswerLikeCount > 0) {
     if (localSourceAudit.blockedPaperLikeCount > 0) {
-      return `local source audit 已有可读答案，但试卷文件仍有 ${localSourceAudit.blockedPaperLikeCount} 个阻塞；先修复试卷文本层或替换完整试卷，再登记 verified/published official_paper、contentHash、remotePath/sourceUrl、answerEvidenceStatus=matched。${suffix}`;
+      return `local source audit 已有可读答案，但试卷文件仍有 ${localSourceAudit.blockedPaperLikeCount} 个阻塞；先修复试卷文本层或替换完整试卷，再刷新 Source Manifest 自动配对。${suffix}`;
     }
-    return `local source audit 已有可读答案但缺少可用试卷文件；先补齐 paper/paper_answer companion，再登记 verified/published official_paper、contentHash、remotePath/sourceUrl、answerEvidenceStatus=matched。${suffix}`;
+    return `local source audit 已有可读答案但缺少可用试卷文件；先补齐 paper/paper_answer companion，再刷新 Source Manifest 自动配对。${suffix}`;
   }
 
   if (localSourceAudit.blockedCount > 0) {
-    return `local source audit 已有本地文件但仍有 ${localSourceAudit.blockedCount} 个阻塞；先处理本地文件 blockers，再登记 verified/published official_paper、contentHash、remotePath/sourceUrl、answerEvidenceStatus=matched。${suffix}`;
+    return `local source audit 已有本地文件但仍有 ${localSourceAudit.blockedCount} 个阻塞；先处理本地文件 blockers，再刷新 Source Manifest 自动配对。${suffix}`;
   }
 
   if (localSourceAudit.usablePaperLikeCount > 0 && localSourceAudit.usableAnswerLikeCount > 0) {
-    return `local source audit 已有成对可读 paper/answer 文件；先人工核验文件内容，把 SHA-256 与来源位置登记到 source manifest，并设置 answerEvidenceStatus=matched。${suffix}`;
+    return `local source audit 已有成对可读 paper/answer 文件；当前可直接进入题卡清洗、答案匹配、证据哈希和 registry 发布状态核验。${suffix}`;
   }
 
   if (localSourceAudit.usableTextLayerCount > 0) {
-    return `local source audit 已有可读本地文件但 paper/answer 未成对完整；先补齐 companion 文件，再登记 verified/published official_paper、contentHash、remotePath/sourceUrl、answerEvidenceStatus=matched。${suffix}`;
+    return `local source audit 已有可读本地文件但 paper/answer 未成对完整；先补齐 companion 文件，再刷新 Source Manifest 自动配对。${suffix}`;
   }
 
-  return `在 source manifest 中绑定 verified/published official_paper，补齐 contentHash、remotePath/sourceUrl、answerEvidenceStatus=matched，并确认风险标记不阻断发布。${suffix}`;
+  return `在 Source Manifest 中补齐同槽位 official_paper 试卷+答案或真题及答案合并 PDF，要求有 remotePath、contentHash，且风险标记不阻断发布。${suffix}`;
 }
 
 function mergeSourceCandidateSamples(current, next, limit = 3) {
@@ -617,12 +618,14 @@ function formatSourceCandidateSample(samples) {
   if (!sample) return '';
   const location = sample.remotePath || sample.sourceUrl || '';
   const answerStatus = sample.answerEvidenceStatus || 'missing';
-  const sourceRole = sample.sourceRole ? `, role=${sample.sourceRole}` : '';
+  const role = sample.inferredSourceRole || sample.sourceRole || '';
+  const sourceRole = role ? `, role=${role}` : '';
+  const autoPair = sample.autoPairEligible ? ', autoPairEligible=true' : '';
   const reasons =
     Array.isArray(sample.blockReasons) && sample.blockReasons.length
       ? `, blockers=${sample.blockReasons.join(';')}`
       : '';
-  return `${sample.sourceId || 'unknown'} (${sample.status || 'unknown'}/${sample.sourceType || 'unknown'}${sourceRole}, answerEvidenceStatus=${answerStatus}${reasons})${location ? `: ${location}` : ''}`;
+  return `${sample.sourceId || 'unknown'} (${sample.status || 'unknown'}/${sample.sourceType || 'unknown'}${sourceRole}, answerEvidenceStatus=${answerStatus}${autoPair}${reasons})${location ? `: ${location}` : ''}`;
 }
 
 function formatLocalSourceAuditSample(sample) {
@@ -648,7 +651,7 @@ function formatRegistrationChecklist(checklist) {
   return [
     `status=${checklist.status || 'unknown'}`,
     `blockers=${blockers}`,
-    drafts.length ? `registryDrafts=${drafts.length}; fill sourceUrl/verifiedBy/evidenceNote before merge` : '',
+    drafts.length ? `registryDrafts=${drafts.length}; optional verified registry metadata` : '',
     steps.length ? `verify=${steps.join(';')}` : '',
     commands.length ? `commands=${commands.join(' -> ')}` : ''
   ]

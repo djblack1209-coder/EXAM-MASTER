@@ -229,59 +229,165 @@ function auditPublishedBanks({ banks, bankDir }) {
   };
 }
 
-function isPublishableManifestSource(item) {
-  if (!item?.eligible) return false;
-  if (!['verified', 'published'].includes(item.status)) return false;
-  if (item.sourceType !== 'official_paper') return false;
-  const sourceRole = String(item.sourceRole || item.source_role || '').trim();
-  if (sourceRole && !['paper', 'paper_answer'].includes(sourceRole)) return false;
-  const blockingRiskFlags = new Set(['answer_missing', 'brand_leak', 'copyright_review_required', 'ad_or_promo']);
-  if (Array.isArray(item.riskFlags) && item.riskFlags.some((flag) => blockingRiskFlags.has(flag))) return false;
-  if (item.legalReview?.publishBlocked) return false;
-  if (item.answerEvidenceStatus !== 'matched') return false;
-  if (!firstNonEmpty(item.contentHash, item.sha256, item.fileSha256, item.sourceHash)) return false;
-  if (!firstNonEmpty(item.remotePath, item.sourceUrl, item.provenanceUrl)) return false;
-  return true;
+const SOURCE_EVIDENCE_POLICY = 'baidu_netdisk_official_paper_auto_pair_v1';
+const VALID_MANIFEST_SOURCE_STATUSES = new Set(['discovered', 'verified', 'published']);
+const VALID_SOURCE_ROLES = new Set(['paper', 'answer', 'paper_answer']);
+const BLOCKING_SOURCE_RISK_FLAGS = new Set([
+  'answer_missing',
+  'brand_leak',
+  'copyright_review_required',
+  'ad_or_promo'
+]);
+
+function sourceLocation(item) {
+  return firstNonEmpty(item?.remotePath, item?.sourceUrl, item?.provenanceUrl);
+}
+
+function sourceHash(item) {
+  return firstNonEmpty(item?.contentHash, item?.sha256, item?.fileSha256, item?.sourceHash);
+}
+
+function normalizeSourceText(value) {
+  return String(value || '')
+    .toLowerCase()
+    .replace(/\s+/g, '');
+}
+
+function sourceFileName(item) {
+  const location = sourceLocation(item);
+  return (
+    String(location || '')
+      .split(/[\\/]/)
+      .pop() || ''
+  );
+}
+
+function hasSourcePattern(text, patterns) {
+  return patterns.some((pattern) => pattern.test(text));
+}
+
+function inferManifestSourceRole(item) {
+  const explicitRole = String(item?.sourceRole || item?.source_role || '').trim();
+  if (explicitRole) {
+    return {
+      explicitRole,
+      inferredRole: VALID_SOURCE_ROLES.has(explicitRole) ? explicitRole : 'unknown',
+      roleSource: 'explicit'
+    };
+  }
+
+  const fileName = normalizeSourceText(sourceFileName(item));
+  const fullPath = normalizeSourceText(sourceLocation(item));
+
+  const partialPatterns = [/缺t?\d/i, /缺题/i, /缺少/i, /不完整/i, /未完整/i, /partial/i];
+  const answerSheetPatterns = [/答题卡/i, /answersheet/i, /answer-sheet/i];
+  const combinedPatterns = [
+    /真题(?:及|和|与|、|\+)?(?:参考)?答案/i,
+    /试题(?:及|和|与|、|\+)?(?:参考)?答案/i,
+    /真题(?:及|和|与|、|\+)?解析/i,
+    /试题(?:及|和|与|、|\+)?解析/i,
+    /真题、?标准答案/i,
+    /真题答案解析/i,
+    /真题及答案速查/i,
+    /真题及参考答案/i,
+    /真题和答案/i,
+    /真题与答案/i,
+    /真题\+答案/i,
+    /paper[-_+]?answer/i
+  ];
+  const answerPatterns = [/参考答案/i, /标准答案/i, /答案/i, /解析/i, /逐题细解/i, /answer/i];
+  const paperPatterns = [/试题/i, /试卷/i, /真题/i, /paper/i, /全国硕士研究生招生考试/i];
+  const yearOnlyPaperPattern = /^((19|20)\d{2}|[0-9]{2})\.?pdf$/i;
+
+  if (hasSourcePattern(fileName, answerSheetPatterns)) {
+    return { explicitRole, inferredRole: 'answer_sheet', roleSource: 'filename' };
+  }
+  if (hasSourcePattern(fileName, partialPatterns)) {
+    return { explicitRole, inferredRole: 'partial_answer', roleSource: 'filename' };
+  }
+  if (hasSourcePattern(fileName, combinedPatterns)) {
+    return { explicitRole, inferredRole: 'paper_answer', roleSource: 'filename' };
+  }
+  if (hasSourcePattern(fileName, answerPatterns)) {
+    return { explicitRole, inferredRole: 'answer', roleSource: 'filename' };
+  }
+  if (hasSourcePattern(fullPath, combinedPatterns)) {
+    return { explicitRole, inferredRole: 'paper_answer', roleSource: 'path' };
+  }
+  if (hasSourcePattern(fileName, paperPatterns) || yearOnlyPaperPattern.test(fileName)) {
+    return { explicitRole, inferredRole: 'paper', roleSource: 'filename' };
+  }
+
+  if (hasSourcePattern(fullPath, answerSheetPatterns)) {
+    return { explicitRole, inferredRole: 'answer_sheet', roleSource: 'path' };
+  }
+  if (hasSourcePattern(fullPath, partialPatterns)) {
+    return { explicitRole, inferredRole: 'partial_answer', roleSource: 'path' };
+  }
+  if (hasSourcePattern(fullPath, answerPatterns)) {
+    return { explicitRole, inferredRole: 'answer', roleSource: 'path' };
+  }
+  if (hasSourcePattern(fullPath, paperPatterns)) {
+    return { explicitRole, inferredRole: 'paper', roleSource: 'path' };
+  }
+
+  return { explicitRole, inferredRole: 'unknown', roleSource: '' };
 }
 
 function manifestSourceBlockReasons(item) {
   const reasons = [];
   if (!item?.eligible) reasons.push('eligible=false');
-  if (!['verified', 'published'].includes(item?.status)) reasons.push(`status=${item?.status || 'missing'}`);
+  if (!VALID_MANIFEST_SOURCE_STATUSES.has(item?.status)) reasons.push(`status=${item?.status || 'missing'}`);
   if (item?.sourceType !== 'official_paper') reasons.push(`sourceType=${item?.sourceType || 'missing'}`);
-  const sourceRole = String(item?.sourceRole || item?.source_role || '').trim();
-  if (sourceRole && !['paper', 'paper_answer'].includes(sourceRole)) {
-    reasons.push(`sourceRole=${sourceRole}`);
-  }
+  const role = inferManifestSourceRole(item);
+  if (role.explicitRole && !VALID_SOURCE_ROLES.has(role.explicitRole)) reasons.push(`sourceRole=${role.explicitRole}`);
+  if (role.inferredRole === 'answer_sheet') reasons.push('sourceRole=answer_sheet');
+  if (role.inferredRole === 'partial_answer') reasons.push('sourceRole=partial_answer');
+  if (role.inferredRole === 'unknown') reasons.push('sourceRole=unknown');
 
-  const blockingRiskFlags = new Set(['answer_missing', 'brand_leak', 'copyright_review_required', 'ad_or_promo']);
   const riskFlags = Array.isArray(item?.riskFlags) ? item.riskFlags : [];
-  const blockedFlags = riskFlags.filter((flag) => blockingRiskFlags.has(flag));
+  const blockedFlags = riskFlags.filter((flag) => BLOCKING_SOURCE_RISK_FLAGS.has(flag));
   if (blockedFlags.length) reasons.push(`riskFlags=${blockedFlags.join(',')}`);
   if (item?.legalReview?.publishBlocked) reasons.push('legalReview.publishBlocked=true');
-  if (item?.answerEvidenceStatus !== 'matched') {
-    reasons.push(`answerEvidenceStatus=${item?.answerEvidenceStatus || 'missing'}`);
-  }
-  if (!firstNonEmpty(item?.contentHash, item?.sha256, item?.fileSha256, item?.sourceHash)) {
+  if (!sourceHash(item)) {
     reasons.push('sourceHash=missing');
   }
-  if (!firstNonEmpty(item?.remotePath, item?.sourceUrl, item?.provenanceUrl)) {
+  if (!sourceLocation(item)) {
     reasons.push('sourceLocation=missing');
   }
 
   return reasons;
 }
 
-function sourceCandidateSample(item, blockReasons) {
+function manifestSourceAnalysis(item) {
+  const role = inferManifestSourceRole(item);
+  const blockReasons = manifestSourceBlockReasons(item);
+  const autoPairEligible = blockReasons.length === 0 && ['paper', 'answer', 'paper_answer'].includes(role.inferredRole);
+
+  return {
+    ...role,
+    blockReasons,
+    autoPairEligible
+  };
+}
+
+function isAutoPairableManifestSource(item) {
+  return manifestSourceAnalysis(item).autoPairEligible;
+}
+
+function sourceCandidateSample(item, analysis) {
   return {
     sourceId: item.sourceId || item.id || '',
     status: item.status || '',
     sourceType: item.sourceType || '',
     sourceRole: item.sourceRole || item.source_role || '',
+    inferredSourceRole: analysis.inferredRole || '',
+    roleSource: analysis.roleSource || '',
+    autoPairEligible: analysis.autoPairEligible === true,
     answerEvidenceStatus: item.answerEvidenceStatus || '',
     riskFlags: Array.isArray(item.riskFlags) ? item.riskFlags : [],
     publishBlocked: item.legalReview?.publishBlocked === true,
-    blockReasons,
+    blockReasons: analysis.blockReasons || [],
     remotePath: item.remotePath || '',
     sourceUrl: item.sourceUrl || ''
   };
@@ -295,17 +401,20 @@ function sourceCandidateSampleRank(sample) {
   };
   const sourceRoleRank = {
     paper_answer: 0,
-    paper: 0,
-    '': 0,
-    answer: 1
+    paper: 1,
+    answer: 2,
+    '': 3,
+    unknown: 4,
+    partial_answer: 5,
+    answer_sheet: 6
   };
 
   return [
     sample.sourceType === 'official_paper' ? 0 : 1,
-    sourceRoleRank[sample.sourceRole || ''] ?? 2,
+    sample.autoPairEligible ? 0 : 1,
+    sourceRoleRank[sample.inferredSourceRole || sample.sourceRole || ''] ?? 9,
     sample.publishBlocked ? 1 : 0,
     statusRank[sample.status] ?? 9,
-    sample.answerEvidenceStatus === 'matched' ? 0 : 1,
     sample.blockReasons.length,
     sample.remotePath || sample.sourceUrl ? 0 : 1,
     sample.sourceId
@@ -350,21 +459,69 @@ function buildCandidateDiagnostics(items, tracks, requiredYears) {
         candidateCount: 0,
         officialPaperCandidateCount: 0,
         publishBlockedCandidateCount: 0,
+        autoPairEligibleCandidateCount: 0,
+        paperCandidateCount: 0,
+        answerCandidateCount: 0,
+        combinedCandidateCount: 0,
         blockReasons: {},
         sampleCandidates: []
       });
-      const reasons = manifestSourceBlockReasons(item);
+      const analysis = manifestSourceAnalysis(item);
+      const reasons = analysis.blockReasons;
       slot.candidateCount += 1;
       if (item.sourceType === 'official_paper') slot.officialPaperCandidateCount += 1;
       if (item.legalReview?.publishBlocked) slot.publishBlockedCandidateCount += 1;
+      if (analysis.autoPairEligible) slot.autoPairEligibleCandidateCount += 1;
+      if (analysis.autoPairEligible && analysis.inferredRole === 'paper') slot.paperCandidateCount += 1;
+      if (analysis.autoPairEligible && analysis.inferredRole === 'answer') slot.answerCandidateCount += 1;
+      if (analysis.autoPairEligible && analysis.inferredRole === 'paper_answer') slot.combinedCandidateCount += 1;
       for (const reason of reasons) {
         slot.blockReasons[reason] = (slot.blockReasons[reason] || 0) + 1;
       }
-      keepBestSourceCandidateSamples(slot.sampleCandidates, sourceCandidateSample(item, reasons));
+      keepBestSourceCandidateSamples(slot.sampleCandidates, sourceCandidateSample(item, analysis));
     }
   }
 
   return diagnostics;
+}
+
+function emptyCandidateDiagnostics() {
+  return {
+    candidateCount: 0,
+    officialPaperCandidateCount: 0,
+    publishBlockedCandidateCount: 0,
+    autoPairEligibleCandidateCount: 0,
+    paperCandidateCount: 0,
+    answerCandidateCount: 0,
+    combinedCandidateCount: 0,
+    blockReasons: {},
+    sampleCandidates: []
+  };
+}
+
+function slotHasAutoPairedOfficialSource(items, track, year) {
+  const slotSources = items.filter(
+    (item) => candidateSlotMatches(item, track, [year]) && isAutoPairableManifestSource(item)
+  );
+  const roles = new Set(slotSources.map((item) => manifestSourceAnalysis(item).inferredRole));
+  return roles.has('paper_answer') || (roles.has('paper') && roles.has('answer'));
+}
+
+function addSlotPairDiagnostics(diagnostics, coverage, tracks) {
+  for (const track of tracks) {
+    const trackDiagnostics = diagnostics[track] || {};
+    const presentYears = new Set(coverage[track]?.presentYears || []);
+    for (const [yearText, slot] of Object.entries(trackDiagnostics)) {
+      if (presentYears.has(Number(yearText)) || !slot.candidateCount) continue;
+      if (slot.autoPairEligibleCandidateCount === 0) continue;
+      if (slot.combinedCandidateCount === 0 && slot.paperCandidateCount === 0) {
+        slot.blockReasons['slotPair=missing_paper'] = (slot.blockReasons['slotPair=missing_paper'] || 0) + 1;
+      }
+      if (slot.combinedCandidateCount === 0 && slot.answerCandidateCount === 0) {
+        slot.blockReasons['slotPair=missing_answer'] = (slot.blockReasons['slotPair=missing_answer'] || 0) + 1;
+      }
+    }
+  }
 }
 
 function loadSourceManifestEvidence({ sourceManifest, tracks, minYear, maxYear }) {
@@ -373,10 +530,12 @@ function loadSourceManifestEvidence({ sourceManifest, tracks, minYear, maxYear }
   if (!sourceManifest || !fs.existsSync(sourceManifest)) {
     return {
       status: 'missing',
+      sourceEvidencePolicy: SOURCE_EVIDENCE_POLICY,
       manifestPath: sourceManifest ? path.relative(PROJECT_ROOT, sourceManifest) : '',
       totalSources: 0,
       eligibleSources: 0,
       publishableOfficialPapers: 0,
+      autoPairedOfficialSourceSlots: 0,
       coverageGapCount: tracks.length * requiredYears.length,
       candidateDiagnostics: Object.fromEntries(tracks.map((track) => [track, {}])),
       coverage: Object.fromEntries(
@@ -387,18 +546,13 @@ function loadSourceManifestEvidence({ sourceManifest, tracks, minYear, maxYear }
 
   const manifest = readJson(sourceManifest);
   const items = Array.isArray(manifest.items) ? manifest.items : [];
-  const publishable = items.filter(isPublishableManifestSource);
+  const autoPairable = items.filter(isAutoPairableManifestSource);
   const coverage = {};
   const candidateDiagnostics = buildCandidateDiagnostics(items, tracks, requiredYears);
 
   for (const track of tracks) {
     const presentYears = [
-      ...new Set(
-        publishable
-          .filter((item) => item.track === track || item.subject === track)
-          .map((item) => Number(item.year))
-          .filter((year) => Number.isInteger(year) && requiredYears.includes(year))
-      )
+      ...new Set(requiredYears.filter((year) => slotHasAutoPairedOfficialSource(items, track, year)))
     ].sort((a, b) => a - b);
     const presentSet = new Set(presentYears);
     const missingYears = requiredYears.filter((year) => !presentSet.has(year));
@@ -421,13 +575,18 @@ function loadSourceManifestEvidence({ sourceManifest, tracks, minYear, maxYear }
     };
   }
 
+  addSlotPairDiagnostics(candidateDiagnostics, coverage, tracks);
+
   return {
     status: 'present',
+    sourceEvidencePolicy: SOURCE_EVIDENCE_POLICY,
     manifestPath: path.relative(PROJECT_ROOT, sourceManifest),
     updatedAt: manifest.updatedAt || '',
     totalSources: items.length,
     eligibleSources: items.filter((item) => item?.eligible).length,
-    publishableOfficialPapers: publishable.length,
+    autoPairableOfficialSources: autoPairable.length,
+    publishableOfficialPapers: Object.values(coverage).reduce((sum, row) => sum + row.presentYears.length, 0),
+    autoPairedOfficialSourceSlots: Object.values(coverage).reduce((sum, row) => sum + row.presentYears.length, 0),
     coverageGapCount: Object.values(coverage).reduce((sum, row) => sum + row.missingYears.length, 0),
     candidateDiagnostics,
     coverage
@@ -491,7 +650,9 @@ export function buildQuestionBankReleaseReport(options = {}) {
       coverageGapCount,
       sourceManifestStatus: sourceEvidence.status,
       sourceManifestTotalSources: sourceEvidence.totalSources,
+      sourceEvidencePolicy: sourceEvidence.sourceEvidencePolicy,
       sourceManifestPublishableOfficialPapers: sourceEvidence.publishableOfficialPapers,
+      sourceManifestAutoPairedOfficialSourceSlots: sourceEvidence.autoPairedOfficialSourceSlots,
       sourceManifestCoverageGapCount: sourceEvidence.coverageGapCount,
       registeredBankCount: bankFileInventory.registeredBankCount,
       bankFileCount: bankFileInventory.bankFileCount,
