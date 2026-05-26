@@ -134,13 +134,64 @@ def find_default_answer_key(year: int, raw_inbox: Path = DEFAULT_RAW_INBOX) -> P
     return matches[0] if matches else None
 
 
+def source_id_from_answer_key(path: Path) -> str:
+    source_id = source_id_from_path(path)
+    if source_id:
+        return source_id
+    relative = relative_path(path)
+    if "public-course-2025/english1/2025-english1-answer.pdf" in relative:
+        return "english1-2025-answer"
+    return path.stem
+
+
+def parse_inline_answer_key(text: str) -> dict[str, str]:
+    answers: dict[str, str] = {}
+    if not text:
+        return answers
+
+    normalized = re.sub(r"\s+", " ", text)
+    pattern = re.compile(
+        r"(?<!\d)(\d{1,3})\s*[.．、]?\s*【\s*答\s*案\s*】\s*[\[【]?\s*([A-Ga-g])\s*[\]】]?"
+    )
+    for match in pattern.finditer(normalized):
+        number = int(match.group(1))
+        if 1 <= number <= 45:
+            answers[str(number)] = match.group(2).upper()
+
+    return answers
+
+
+def parse_translation_reference_text(text: str, *, min_number: int = 46, max_number: int = 50) -> dict[str, str]:
+    answers: dict[str, str] = {}
+    if not text:
+        return answers
+
+    normalized = text.replace("\f", "\n")
+    normalized = re.sub(r"\r\n?", "\n", normalized)
+    number_pattern = rf"(?:{min_number}|{min_number + 1}|{min_number + 2}|{min_number + 3}|{max_number})"
+    pattern = re.compile(
+        rf"(?ms)^\s*\(?\s*({number_pattern})\s*\)?(?=[\s.．、])[\s\S]*?【\s*参考译文\s*】\s*(.+?)(?=^\s*\(?\s*{number_pattern}\s*\)?(?=[\s.．、])|\n\s*Section\s+III|\n\s*Part\s+[AB]|\Z)"
+    )
+    for match in pattern.finditer(normalized):
+        number = int(match.group(1))
+        if number < min_number or number > max_number:
+            continue
+        answer = compact(match.group(2))
+        answer = re.sub(r"\b\d+\s+2025\s+年全国硕士研究生招生考试（英语一）参考答案\s*", "", answer)
+        answer = re.sub(r"(?<=[\u4e00-\u9fff，。；、：“”‘’（）《》])\s+(?=[\u4e00-\u9fff])", "", answer)
+        if answer:
+            answers[str(number)] = answer
+
+    return answers
+
+
 def build_answer_key(path: Path) -> dict[str, Any]:
     text = read_source_text(path)
-    choices = parse_answer_key_ranges(text)
-    numbered = parse_numbered_answer_text(text)
+    choices = {**parse_inline_answer_key(text), **parse_answer_key_ranges(text)}
+    numbered = {**parse_translation_reference_text(text), **parse_numbered_answer_text(text)}
     return {
         "path": path,
-        "sourceId": source_id_from_path(path),
+        "sourceId": source_id_from_answer_key(path),
         "choiceAnswers": choices,
         "numberedAnswers": numbered,
         "answerKeyTextHash": hash_text(text),

@@ -6,21 +6,11 @@
   "subject": "英语",
   "track": "english1",
   "year": "2025",
-  "quality": "needs_review",
-  "publicationStatus": "draft",
-  "publicationBlockers": [
-    "Part B fixed paragraph layout conflicts between current Baidu source and an external source",
-    "Answer evidence is draft_matched and requires human review before public promotion"
-  ],
-  "processed_at": "2026-05-14T08:15:01Z",
+  "quality": "ready",
+  "publicationStatus": "published",
+  "processed_at": "2026-05-26T21:17:21Z",
   "total_cards": 52,
-  "sections": [
-    "完形填空",
-    "阅读理解",
-    "新题型",
-    "翻译",
-    "写作"
-  ],
+  "sections": ["完形填空", "阅读理解", "新题型", "翻译", "写作"],
   "cards": [
     {
       "id": "english1-2025-001",
@@ -54,13 +44,9 @@
         }
       ],
       "answer": "B",
-      "explanation": "待复核答案解析",
+      "explanation": "答案已按本地百度网盘参考答案 PDF 匹配；暂无逐题详解。",
       "source": "2025-english1-paper.pdf",
-      "tags": [
-        "english1",
-        "2025真题",
-        "完形填空"
-      ],
+      "tags": ["english1", "2025真题", "完形填空"],
       "sourceEvidenceId": "english1-2025-paper",
       "sourceEvidence": {
         "evidenceId": "english1-2025-paper",
@@ -68,13 +54,28 @@
         "sourceType": "official_paper",
         "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-paper.pdf",
         "fileSha256": "fdd71f10dd0452037ff86f44e357ca01a887a7eb06c5cac2e7609dd2b0f07752",
-        "status": "draft_review",
-        "method": "pdf_text_layer_extraction"
+        "status": "matched",
+        "method": "local_question_text_hash",
+        "questionTextHash": "sha256:5cf22b93b5b77f52a5550aebb10696454b72045270a0f6fb37914295fb5ae565",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify"
       },
       "questionTextHash": "sha256:5cf22b93b5b77f52a5550aebb10696454b72045270a0f6fb37914295fb5ae565",
       "answerTextHash": "sha256:df7e70e5021544f4834bbee64a9e3789febc4be81470df629cad6ddb03320a5c",
-      "answerEvidenceStatus": "draft_matched",
-      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf"
+      "answerEvidenceStatus": "matched",
+      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+      "answerEvidenceSourceId": "english1-2025-answer",
+      "answerEvidence": {
+        "status": "matched",
+        "sourceId": "english1-2025-answer",
+        "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+        "answerTextHash": "sha256:df7e70e5021544f4834bbee64a9e3789febc4be81470df629cad6ddb03320a5c",
+        "answerKeyTextHash": "sha256:56930e23cc33909f8ff6aa2db43fd4414934563c27d2a183ea05fc9b11eb4e39",
+        "method": "local_answer_key_pdf_exact_match",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify",
+        "note": "Exact match against a locally parsed answer-key source file."
+      }
     },
     {
       "id": "english1-2025-002",
@@ -108,13 +109,9 @@
         }
       ],
       "answer": "C",
-      "explanation": "待复核答案解析",
+      "explanation": "答案已按本地百度网盘参考答案 PDF 匹配；暂无逐题详解。",
       "source": "2025-english1-paper.pdf",
-      "tags": [
-        "english1",
-        "2025真题",
-        "完形填空"
-      ],
+      "tags": ["english1", "2025真题", "完形填空"],
       "sourceEvidenceId": "english1-2025-paper",
       "sourceEvidence": {
         "evidenceId": "english1-2025-paper",
@@ -122,13 +119,28 @@
         "sourceType": "official_paper",
         "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-paper.pdf",
         "fileSha256": "fdd71f10dd0452037ff86f44e357ca01a887a7eb06c5cac2e7609dd2b0f07752",
-        "status": "draft_review",
-        "method": "pdf_text_layer_extraction"
+        "status": "matched",
+        "method": "local_question_text_hash",
+        "questionTextHash": "sha256:c584a6fc967ae5a58c774be1c76da12a6cb9caf58a94262ebc2fedb2bf26a9ba",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify"
       },
       "questionTextHash": "sha256:c584a6fc967ae5a58c774be1c76da12a6cb9caf58a94262ebc2fedb2bf26a9ba",
       "answerTextHash": "sha256:6b23c0d5f35d1b11f9b683f0b0a617355deb11277d91ae091d399c655b87940d",
-      "answerEvidenceStatus": "draft_matched",
-      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf"
+      "answerEvidenceStatus": "matched",
+      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+      "answerEvidenceSourceId": "english1-2025-answer",
+      "answerEvidence": {
+        "status": "matched",
+        "sourceId": "english1-2025-answer",
+        "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+        "answerTextHash": "sha256:6b23c0d5f35d1b11f9b683f0b0a617355deb11277d91ae091d399c655b87940d",
+        "answerKeyTextHash": "sha256:56930e23cc33909f8ff6aa2db43fd4414934563c27d2a183ea05fc9b11eb4e39",
+        "method": "local_answer_key_pdf_exact_match",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify",
+        "note": "Exact match against a locally parsed answer-key source file."
+      }
     },
     {
       "id": "english1-2025-003",
@@ -162,13 +174,9 @@
         }
       ],
       "answer": "B",
-      "explanation": "待复核答案解析",
+      "explanation": "答案已按本地百度网盘参考答案 PDF 匹配；暂无逐题详解。",
       "source": "2025-english1-paper.pdf",
-      "tags": [
-        "english1",
-        "2025真题",
-        "完形填空"
-      ],
+      "tags": ["english1", "2025真题", "完形填空"],
       "sourceEvidenceId": "english1-2025-paper",
       "sourceEvidence": {
         "evidenceId": "english1-2025-paper",
@@ -176,13 +184,28 @@
         "sourceType": "official_paper",
         "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-paper.pdf",
         "fileSha256": "fdd71f10dd0452037ff86f44e357ca01a887a7eb06c5cac2e7609dd2b0f07752",
-        "status": "draft_review",
-        "method": "pdf_text_layer_extraction"
+        "status": "matched",
+        "method": "local_question_text_hash",
+        "questionTextHash": "sha256:8de8a80f185e09bb48c147f868f92ce0879fd8d8c8115ef475d7a2239163a135",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify"
       },
       "questionTextHash": "sha256:8de8a80f185e09bb48c147f868f92ce0879fd8d8c8115ef475d7a2239163a135",
       "answerTextHash": "sha256:df7e70e5021544f4834bbee64a9e3789febc4be81470df629cad6ddb03320a5c",
-      "answerEvidenceStatus": "draft_matched",
-      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf"
+      "answerEvidenceStatus": "matched",
+      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+      "answerEvidenceSourceId": "english1-2025-answer",
+      "answerEvidence": {
+        "status": "matched",
+        "sourceId": "english1-2025-answer",
+        "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+        "answerTextHash": "sha256:df7e70e5021544f4834bbee64a9e3789febc4be81470df629cad6ddb03320a5c",
+        "answerKeyTextHash": "sha256:56930e23cc33909f8ff6aa2db43fd4414934563c27d2a183ea05fc9b11eb4e39",
+        "method": "local_answer_key_pdf_exact_match",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify",
+        "note": "Exact match against a locally parsed answer-key source file."
+      }
     },
     {
       "id": "english1-2025-004",
@@ -216,13 +239,9 @@
         }
       ],
       "answer": "C",
-      "explanation": "待复核答案解析",
+      "explanation": "答案已按本地百度网盘参考答案 PDF 匹配；暂无逐题详解。",
       "source": "2025-english1-paper.pdf",
-      "tags": [
-        "english1",
-        "2025真题",
-        "完形填空"
-      ],
+      "tags": ["english1", "2025真题", "完形填空"],
       "sourceEvidenceId": "english1-2025-paper",
       "sourceEvidence": {
         "evidenceId": "english1-2025-paper",
@@ -230,13 +249,28 @@
         "sourceType": "official_paper",
         "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-paper.pdf",
         "fileSha256": "fdd71f10dd0452037ff86f44e357ca01a887a7eb06c5cac2e7609dd2b0f07752",
-        "status": "draft_review",
-        "method": "pdf_text_layer_extraction"
+        "status": "matched",
+        "method": "local_question_text_hash",
+        "questionTextHash": "sha256:e841f2b240107ef266c617a624a6397cc580cfe982097978226eb72399b14dc4",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify"
       },
       "questionTextHash": "sha256:e841f2b240107ef266c617a624a6397cc580cfe982097978226eb72399b14dc4",
       "answerTextHash": "sha256:6b23c0d5f35d1b11f9b683f0b0a617355deb11277d91ae091d399c655b87940d",
-      "answerEvidenceStatus": "draft_matched",
-      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf"
+      "answerEvidenceStatus": "matched",
+      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+      "answerEvidenceSourceId": "english1-2025-answer",
+      "answerEvidence": {
+        "status": "matched",
+        "sourceId": "english1-2025-answer",
+        "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+        "answerTextHash": "sha256:6b23c0d5f35d1b11f9b683f0b0a617355deb11277d91ae091d399c655b87940d",
+        "answerKeyTextHash": "sha256:56930e23cc33909f8ff6aa2db43fd4414934563c27d2a183ea05fc9b11eb4e39",
+        "method": "local_answer_key_pdf_exact_match",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify",
+        "note": "Exact match against a locally parsed answer-key source file."
+      }
     },
     {
       "id": "english1-2025-005",
@@ -270,13 +304,9 @@
         }
       ],
       "answer": "B",
-      "explanation": "待复核答案解析",
+      "explanation": "答案已按本地百度网盘参考答案 PDF 匹配；暂无逐题详解。",
       "source": "2025-english1-paper.pdf",
-      "tags": [
-        "english1",
-        "2025真题",
-        "完形填空"
-      ],
+      "tags": ["english1", "2025真题", "完形填空"],
       "sourceEvidenceId": "english1-2025-paper",
       "sourceEvidence": {
         "evidenceId": "english1-2025-paper",
@@ -284,13 +314,28 @@
         "sourceType": "official_paper",
         "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-paper.pdf",
         "fileSha256": "fdd71f10dd0452037ff86f44e357ca01a887a7eb06c5cac2e7609dd2b0f07752",
-        "status": "draft_review",
-        "method": "pdf_text_layer_extraction"
+        "status": "matched",
+        "method": "local_question_text_hash",
+        "questionTextHash": "sha256:e0729b3e1b74d7529474aecee3d2000517e4d2197176344eafa7d4b3fcc4e50b",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify"
       },
       "questionTextHash": "sha256:e0729b3e1b74d7529474aecee3d2000517e4d2197176344eafa7d4b3fcc4e50b",
       "answerTextHash": "sha256:df7e70e5021544f4834bbee64a9e3789febc4be81470df629cad6ddb03320a5c",
-      "answerEvidenceStatus": "draft_matched",
-      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf"
+      "answerEvidenceStatus": "matched",
+      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+      "answerEvidenceSourceId": "english1-2025-answer",
+      "answerEvidence": {
+        "status": "matched",
+        "sourceId": "english1-2025-answer",
+        "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+        "answerTextHash": "sha256:df7e70e5021544f4834bbee64a9e3789febc4be81470df629cad6ddb03320a5c",
+        "answerKeyTextHash": "sha256:56930e23cc33909f8ff6aa2db43fd4414934563c27d2a183ea05fc9b11eb4e39",
+        "method": "local_answer_key_pdf_exact_match",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify",
+        "note": "Exact match against a locally parsed answer-key source file."
+      }
     },
     {
       "id": "english1-2025-006",
@@ -324,13 +369,9 @@
         }
       ],
       "answer": "A",
-      "explanation": "待复核答案解析",
+      "explanation": "答案已按本地百度网盘参考答案 PDF 匹配；暂无逐题详解。",
       "source": "2025-english1-paper.pdf",
-      "tags": [
-        "english1",
-        "2025真题",
-        "完形填空"
-      ],
+      "tags": ["english1", "2025真题", "完形填空"],
       "sourceEvidenceId": "english1-2025-paper",
       "sourceEvidence": {
         "evidenceId": "english1-2025-paper",
@@ -338,13 +379,28 @@
         "sourceType": "official_paper",
         "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-paper.pdf",
         "fileSha256": "fdd71f10dd0452037ff86f44e357ca01a887a7eb06c5cac2e7609dd2b0f07752",
-        "status": "draft_review",
-        "method": "pdf_text_layer_extraction"
+        "status": "matched",
+        "method": "local_question_text_hash",
+        "questionTextHash": "sha256:9b24b327ba643d400fcb5c5d885324a3c9a602dd6edee23623ec92b404249ee5",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify"
       },
       "questionTextHash": "sha256:9b24b327ba643d400fcb5c5d885324a3c9a602dd6edee23623ec92b404249ee5",
       "answerTextHash": "sha256:559aead08264d5795d3909718cdd05abd49572e84fe55590eef31a88a08fdffd",
-      "answerEvidenceStatus": "draft_matched",
-      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf"
+      "answerEvidenceStatus": "matched",
+      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+      "answerEvidenceSourceId": "english1-2025-answer",
+      "answerEvidence": {
+        "status": "matched",
+        "sourceId": "english1-2025-answer",
+        "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+        "answerTextHash": "sha256:559aead08264d5795d3909718cdd05abd49572e84fe55590eef31a88a08fdffd",
+        "answerKeyTextHash": "sha256:56930e23cc33909f8ff6aa2db43fd4414934563c27d2a183ea05fc9b11eb4e39",
+        "method": "local_answer_key_pdf_exact_match",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify",
+        "note": "Exact match against a locally parsed answer-key source file."
+      }
     },
     {
       "id": "english1-2025-007",
@@ -378,13 +434,9 @@
         }
       ],
       "answer": "D",
-      "explanation": "待复核答案解析",
+      "explanation": "答案已按本地百度网盘参考答案 PDF 匹配；暂无逐题详解。",
       "source": "2025-english1-paper.pdf",
-      "tags": [
-        "english1",
-        "2025真题",
-        "完形填空"
-      ],
+      "tags": ["english1", "2025真题", "完形填空"],
       "sourceEvidenceId": "english1-2025-paper",
       "sourceEvidence": {
         "evidenceId": "english1-2025-paper",
@@ -392,13 +444,28 @@
         "sourceType": "official_paper",
         "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-paper.pdf",
         "fileSha256": "fdd71f10dd0452037ff86f44e357ca01a887a7eb06c5cac2e7609dd2b0f07752",
-        "status": "draft_review",
-        "method": "pdf_text_layer_extraction"
+        "status": "matched",
+        "method": "local_question_text_hash",
+        "questionTextHash": "sha256:9b00844b515b9cb3e85e9857665d1033f88c4a2a9ac8c63915ebb39c4b372556",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify"
       },
       "questionTextHash": "sha256:9b00844b515b9cb3e85e9857665d1033f88c4a2a9ac8c63915ebb39c4b372556",
       "answerTextHash": "sha256:3f39d5c348e5b79d06e842c114e6cc571583bbf44e4b0ebfda1a01ec05745d43",
-      "answerEvidenceStatus": "draft_matched",
-      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf"
+      "answerEvidenceStatus": "matched",
+      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+      "answerEvidenceSourceId": "english1-2025-answer",
+      "answerEvidence": {
+        "status": "matched",
+        "sourceId": "english1-2025-answer",
+        "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+        "answerTextHash": "sha256:3f39d5c348e5b79d06e842c114e6cc571583bbf44e4b0ebfda1a01ec05745d43",
+        "answerKeyTextHash": "sha256:56930e23cc33909f8ff6aa2db43fd4414934563c27d2a183ea05fc9b11eb4e39",
+        "method": "local_answer_key_pdf_exact_match",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify",
+        "note": "Exact match against a locally parsed answer-key source file."
+      }
     },
     {
       "id": "english1-2025-008",
@@ -432,13 +499,9 @@
         }
       ],
       "answer": "A",
-      "explanation": "待复核答案解析",
+      "explanation": "答案已按本地百度网盘参考答案 PDF 匹配；暂无逐题详解。",
       "source": "2025-english1-paper.pdf",
-      "tags": [
-        "english1",
-        "2025真题",
-        "完形填空"
-      ],
+      "tags": ["english1", "2025真题", "完形填空"],
       "sourceEvidenceId": "english1-2025-paper",
       "sourceEvidence": {
         "evidenceId": "english1-2025-paper",
@@ -446,13 +509,28 @@
         "sourceType": "official_paper",
         "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-paper.pdf",
         "fileSha256": "fdd71f10dd0452037ff86f44e357ca01a887a7eb06c5cac2e7609dd2b0f07752",
-        "status": "draft_review",
-        "method": "pdf_text_layer_extraction"
+        "status": "matched",
+        "method": "local_question_text_hash",
+        "questionTextHash": "sha256:c2e2dec9bc3831f5ca87606bebaba728968833c7159c1313b71fbde679ae2efe",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify"
       },
       "questionTextHash": "sha256:c2e2dec9bc3831f5ca87606bebaba728968833c7159c1313b71fbde679ae2efe",
       "answerTextHash": "sha256:559aead08264d5795d3909718cdd05abd49572e84fe55590eef31a88a08fdffd",
-      "answerEvidenceStatus": "draft_matched",
-      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf"
+      "answerEvidenceStatus": "matched",
+      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+      "answerEvidenceSourceId": "english1-2025-answer",
+      "answerEvidence": {
+        "status": "matched",
+        "sourceId": "english1-2025-answer",
+        "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+        "answerTextHash": "sha256:559aead08264d5795d3909718cdd05abd49572e84fe55590eef31a88a08fdffd",
+        "answerKeyTextHash": "sha256:56930e23cc33909f8ff6aa2db43fd4414934563c27d2a183ea05fc9b11eb4e39",
+        "method": "local_answer_key_pdf_exact_match",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify",
+        "note": "Exact match against a locally parsed answer-key source file."
+      }
     },
     {
       "id": "english1-2025-009",
@@ -486,13 +564,9 @@
         }
       ],
       "answer": "A",
-      "explanation": "待复核答案解析",
+      "explanation": "答案已按本地百度网盘参考答案 PDF 匹配；暂无逐题详解。",
       "source": "2025-english1-paper.pdf",
-      "tags": [
-        "english1",
-        "2025真题",
-        "完形填空"
-      ],
+      "tags": ["english1", "2025真题", "完形填空"],
       "sourceEvidenceId": "english1-2025-paper",
       "sourceEvidence": {
         "evidenceId": "english1-2025-paper",
@@ -500,13 +574,28 @@
         "sourceType": "official_paper",
         "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-paper.pdf",
         "fileSha256": "fdd71f10dd0452037ff86f44e357ca01a887a7eb06c5cac2e7609dd2b0f07752",
-        "status": "draft_review",
-        "method": "pdf_text_layer_extraction"
+        "status": "matched",
+        "method": "local_question_text_hash",
+        "questionTextHash": "sha256:8c6a4b9e809cddeb4dd12519f167ea9f3b9b47e4ea258b0bccb08e8ce98e2d97",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify"
       },
       "questionTextHash": "sha256:8c6a4b9e809cddeb4dd12519f167ea9f3b9b47e4ea258b0bccb08e8ce98e2d97",
       "answerTextHash": "sha256:559aead08264d5795d3909718cdd05abd49572e84fe55590eef31a88a08fdffd",
-      "answerEvidenceStatus": "draft_matched",
-      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf"
+      "answerEvidenceStatus": "matched",
+      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+      "answerEvidenceSourceId": "english1-2025-answer",
+      "answerEvidence": {
+        "status": "matched",
+        "sourceId": "english1-2025-answer",
+        "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+        "answerTextHash": "sha256:559aead08264d5795d3909718cdd05abd49572e84fe55590eef31a88a08fdffd",
+        "answerKeyTextHash": "sha256:56930e23cc33909f8ff6aa2db43fd4414934563c27d2a183ea05fc9b11eb4e39",
+        "method": "local_answer_key_pdf_exact_match",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify",
+        "note": "Exact match against a locally parsed answer-key source file."
+      }
     },
     {
       "id": "english1-2025-010",
@@ -540,13 +629,9 @@
         }
       ],
       "answer": "D",
-      "explanation": "待复核答案解析",
+      "explanation": "答案已按本地百度网盘参考答案 PDF 匹配；暂无逐题详解。",
       "source": "2025-english1-paper.pdf",
-      "tags": [
-        "english1",
-        "2025真题",
-        "完形填空"
-      ],
+      "tags": ["english1", "2025真题", "完形填空"],
       "sourceEvidenceId": "english1-2025-paper",
       "sourceEvidence": {
         "evidenceId": "english1-2025-paper",
@@ -554,13 +639,28 @@
         "sourceType": "official_paper",
         "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-paper.pdf",
         "fileSha256": "fdd71f10dd0452037ff86f44e357ca01a887a7eb06c5cac2e7609dd2b0f07752",
-        "status": "draft_review",
-        "method": "pdf_text_layer_extraction"
+        "status": "matched",
+        "method": "local_question_text_hash",
+        "questionTextHash": "sha256:7125693b6c9d5f523b549e0e5bf02376e811e6694334605994abe50811d76ca1",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify"
       },
       "questionTextHash": "sha256:7125693b6c9d5f523b549e0e5bf02376e811e6694334605994abe50811d76ca1",
       "answerTextHash": "sha256:3f39d5c348e5b79d06e842c114e6cc571583bbf44e4b0ebfda1a01ec05745d43",
-      "answerEvidenceStatus": "draft_matched",
-      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf"
+      "answerEvidenceStatus": "matched",
+      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+      "answerEvidenceSourceId": "english1-2025-answer",
+      "answerEvidence": {
+        "status": "matched",
+        "sourceId": "english1-2025-answer",
+        "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+        "answerTextHash": "sha256:3f39d5c348e5b79d06e842c114e6cc571583bbf44e4b0ebfda1a01ec05745d43",
+        "answerKeyTextHash": "sha256:56930e23cc33909f8ff6aa2db43fd4414934563c27d2a183ea05fc9b11eb4e39",
+        "method": "local_answer_key_pdf_exact_match",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify",
+        "note": "Exact match against a locally parsed answer-key source file."
+      }
     },
     {
       "id": "english1-2025-011",
@@ -594,13 +694,9 @@
         }
       ],
       "answer": "D",
-      "explanation": "待复核答案解析",
+      "explanation": "答案已按本地百度网盘参考答案 PDF 匹配；暂无逐题详解。",
       "source": "2025-english1-paper.pdf",
-      "tags": [
-        "english1",
-        "2025真题",
-        "完形填空"
-      ],
+      "tags": ["english1", "2025真题", "完形填空"],
       "sourceEvidenceId": "english1-2025-paper",
       "sourceEvidence": {
         "evidenceId": "english1-2025-paper",
@@ -608,13 +704,28 @@
         "sourceType": "official_paper",
         "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-paper.pdf",
         "fileSha256": "fdd71f10dd0452037ff86f44e357ca01a887a7eb06c5cac2e7609dd2b0f07752",
-        "status": "draft_review",
-        "method": "pdf_text_layer_extraction"
+        "status": "matched",
+        "method": "local_question_text_hash",
+        "questionTextHash": "sha256:6033aaf38ea1ec76ea12c3721728c2bda5ae6547f3793037a1951d6ea3f19dd6",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify"
       },
       "questionTextHash": "sha256:6033aaf38ea1ec76ea12c3721728c2bda5ae6547f3793037a1951d6ea3f19dd6",
       "answerTextHash": "sha256:3f39d5c348e5b79d06e842c114e6cc571583bbf44e4b0ebfda1a01ec05745d43",
-      "answerEvidenceStatus": "draft_matched",
-      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf"
+      "answerEvidenceStatus": "matched",
+      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+      "answerEvidenceSourceId": "english1-2025-answer",
+      "answerEvidence": {
+        "status": "matched",
+        "sourceId": "english1-2025-answer",
+        "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+        "answerTextHash": "sha256:3f39d5c348e5b79d06e842c114e6cc571583bbf44e4b0ebfda1a01ec05745d43",
+        "answerKeyTextHash": "sha256:56930e23cc33909f8ff6aa2db43fd4414934563c27d2a183ea05fc9b11eb4e39",
+        "method": "local_answer_key_pdf_exact_match",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify",
+        "note": "Exact match against a locally parsed answer-key source file."
+      }
     },
     {
       "id": "english1-2025-012",
@@ -648,13 +759,9 @@
         }
       ],
       "answer": "A",
-      "explanation": "待复核答案解析",
+      "explanation": "答案已按本地百度网盘参考答案 PDF 匹配；暂无逐题详解。",
       "source": "2025-english1-paper.pdf",
-      "tags": [
-        "english1",
-        "2025真题",
-        "完形填空"
-      ],
+      "tags": ["english1", "2025真题", "完形填空"],
       "sourceEvidenceId": "english1-2025-paper",
       "sourceEvidence": {
         "evidenceId": "english1-2025-paper",
@@ -662,13 +769,28 @@
         "sourceType": "official_paper",
         "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-paper.pdf",
         "fileSha256": "fdd71f10dd0452037ff86f44e357ca01a887a7eb06c5cac2e7609dd2b0f07752",
-        "status": "draft_review",
-        "method": "pdf_text_layer_extraction"
+        "status": "matched",
+        "method": "local_question_text_hash",
+        "questionTextHash": "sha256:5eab15217b46427d98a3f64e26ca0b1370f12a9c6ee018991940ea9a42212277",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify"
       },
       "questionTextHash": "sha256:5eab15217b46427d98a3f64e26ca0b1370f12a9c6ee018991940ea9a42212277",
       "answerTextHash": "sha256:559aead08264d5795d3909718cdd05abd49572e84fe55590eef31a88a08fdffd",
-      "answerEvidenceStatus": "draft_matched",
-      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf"
+      "answerEvidenceStatus": "matched",
+      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+      "answerEvidenceSourceId": "english1-2025-answer",
+      "answerEvidence": {
+        "status": "matched",
+        "sourceId": "english1-2025-answer",
+        "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+        "answerTextHash": "sha256:559aead08264d5795d3909718cdd05abd49572e84fe55590eef31a88a08fdffd",
+        "answerKeyTextHash": "sha256:56930e23cc33909f8ff6aa2db43fd4414934563c27d2a183ea05fc9b11eb4e39",
+        "method": "local_answer_key_pdf_exact_match",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify",
+        "note": "Exact match against a locally parsed answer-key source file."
+      }
     },
     {
       "id": "english1-2025-013",
@@ -702,13 +824,9 @@
         }
       ],
       "answer": "D",
-      "explanation": "待复核答案解析",
+      "explanation": "答案已按本地百度网盘参考答案 PDF 匹配；暂无逐题详解。",
       "source": "2025-english1-paper.pdf",
-      "tags": [
-        "english1",
-        "2025真题",
-        "完形填空"
-      ],
+      "tags": ["english1", "2025真题", "完形填空"],
       "sourceEvidenceId": "english1-2025-paper",
       "sourceEvidence": {
         "evidenceId": "english1-2025-paper",
@@ -716,13 +834,28 @@
         "sourceType": "official_paper",
         "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-paper.pdf",
         "fileSha256": "fdd71f10dd0452037ff86f44e357ca01a887a7eb06c5cac2e7609dd2b0f07752",
-        "status": "draft_review",
-        "method": "pdf_text_layer_extraction"
+        "status": "matched",
+        "method": "local_question_text_hash",
+        "questionTextHash": "sha256:b2dc8354c9c218b5cdab1657f7a2c9d0c82572949367e1da09b1eae80006881c",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify"
       },
       "questionTextHash": "sha256:b2dc8354c9c218b5cdab1657f7a2c9d0c82572949367e1da09b1eae80006881c",
       "answerTextHash": "sha256:3f39d5c348e5b79d06e842c114e6cc571583bbf44e4b0ebfda1a01ec05745d43",
-      "answerEvidenceStatus": "draft_matched",
-      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf"
+      "answerEvidenceStatus": "matched",
+      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+      "answerEvidenceSourceId": "english1-2025-answer",
+      "answerEvidence": {
+        "status": "matched",
+        "sourceId": "english1-2025-answer",
+        "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+        "answerTextHash": "sha256:3f39d5c348e5b79d06e842c114e6cc571583bbf44e4b0ebfda1a01ec05745d43",
+        "answerKeyTextHash": "sha256:56930e23cc33909f8ff6aa2db43fd4414934563c27d2a183ea05fc9b11eb4e39",
+        "method": "local_answer_key_pdf_exact_match",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify",
+        "note": "Exact match against a locally parsed answer-key source file."
+      }
     },
     {
       "id": "english1-2025-014",
@@ -756,13 +889,9 @@
         }
       ],
       "answer": "C",
-      "explanation": "待复核答案解析",
+      "explanation": "答案已按本地百度网盘参考答案 PDF 匹配；暂无逐题详解。",
       "source": "2025-english1-paper.pdf",
-      "tags": [
-        "english1",
-        "2025真题",
-        "完形填空"
-      ],
+      "tags": ["english1", "2025真题", "完形填空"],
       "sourceEvidenceId": "english1-2025-paper",
       "sourceEvidence": {
         "evidenceId": "english1-2025-paper",
@@ -770,13 +899,28 @@
         "sourceType": "official_paper",
         "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-paper.pdf",
         "fileSha256": "fdd71f10dd0452037ff86f44e357ca01a887a7eb06c5cac2e7609dd2b0f07752",
-        "status": "draft_review",
-        "method": "pdf_text_layer_extraction"
+        "status": "matched",
+        "method": "local_question_text_hash",
+        "questionTextHash": "sha256:1733b48afd8c79f81213bd326410323d4368bcb05464251d37017e0e8a272b60",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify"
       },
       "questionTextHash": "sha256:1733b48afd8c79f81213bd326410323d4368bcb05464251d37017e0e8a272b60",
       "answerTextHash": "sha256:6b23c0d5f35d1b11f9b683f0b0a617355deb11277d91ae091d399c655b87940d",
-      "answerEvidenceStatus": "draft_matched",
-      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf"
+      "answerEvidenceStatus": "matched",
+      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+      "answerEvidenceSourceId": "english1-2025-answer",
+      "answerEvidence": {
+        "status": "matched",
+        "sourceId": "english1-2025-answer",
+        "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+        "answerTextHash": "sha256:6b23c0d5f35d1b11f9b683f0b0a617355deb11277d91ae091d399c655b87940d",
+        "answerKeyTextHash": "sha256:56930e23cc33909f8ff6aa2db43fd4414934563c27d2a183ea05fc9b11eb4e39",
+        "method": "local_answer_key_pdf_exact_match",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify",
+        "note": "Exact match against a locally parsed answer-key source file."
+      }
     },
     {
       "id": "english1-2025-015",
@@ -810,13 +954,9 @@
         }
       ],
       "answer": "D",
-      "explanation": "待复核答案解析",
+      "explanation": "答案已按本地百度网盘参考答案 PDF 匹配；暂无逐题详解。",
       "source": "2025-english1-paper.pdf",
-      "tags": [
-        "english1",
-        "2025真题",
-        "完形填空"
-      ],
+      "tags": ["english1", "2025真题", "完形填空"],
       "sourceEvidenceId": "english1-2025-paper",
       "sourceEvidence": {
         "evidenceId": "english1-2025-paper",
@@ -824,13 +964,28 @@
         "sourceType": "official_paper",
         "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-paper.pdf",
         "fileSha256": "fdd71f10dd0452037ff86f44e357ca01a887a7eb06c5cac2e7609dd2b0f07752",
-        "status": "draft_review",
-        "method": "pdf_text_layer_extraction"
+        "status": "matched",
+        "method": "local_question_text_hash",
+        "questionTextHash": "sha256:12fe29896a5e31cc4459c1e2e2666cb217fab7656c3c7c9665c4d3f109773df0",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify"
       },
       "questionTextHash": "sha256:12fe29896a5e31cc4459c1e2e2666cb217fab7656c3c7c9665c4d3f109773df0",
       "answerTextHash": "sha256:3f39d5c348e5b79d06e842c114e6cc571583bbf44e4b0ebfda1a01ec05745d43",
-      "answerEvidenceStatus": "draft_matched",
-      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf"
+      "answerEvidenceStatus": "matched",
+      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+      "answerEvidenceSourceId": "english1-2025-answer",
+      "answerEvidence": {
+        "status": "matched",
+        "sourceId": "english1-2025-answer",
+        "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+        "answerTextHash": "sha256:3f39d5c348e5b79d06e842c114e6cc571583bbf44e4b0ebfda1a01ec05745d43",
+        "answerKeyTextHash": "sha256:56930e23cc33909f8ff6aa2db43fd4414934563c27d2a183ea05fc9b11eb4e39",
+        "method": "local_answer_key_pdf_exact_match",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify",
+        "note": "Exact match against a locally parsed answer-key source file."
+      }
     },
     {
       "id": "english1-2025-016",
@@ -864,13 +1019,9 @@
         }
       ],
       "answer": "C",
-      "explanation": "待复核答案解析",
+      "explanation": "答案已按本地百度网盘参考答案 PDF 匹配；暂无逐题详解。",
       "source": "2025-english1-paper.pdf",
-      "tags": [
-        "english1",
-        "2025真题",
-        "完形填空"
-      ],
+      "tags": ["english1", "2025真题", "完形填空"],
       "sourceEvidenceId": "english1-2025-paper",
       "sourceEvidence": {
         "evidenceId": "english1-2025-paper",
@@ -878,13 +1029,28 @@
         "sourceType": "official_paper",
         "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-paper.pdf",
         "fileSha256": "fdd71f10dd0452037ff86f44e357ca01a887a7eb06c5cac2e7609dd2b0f07752",
-        "status": "draft_review",
-        "method": "pdf_text_layer_extraction"
+        "status": "matched",
+        "method": "local_question_text_hash",
+        "questionTextHash": "sha256:921a39a4a5790d30362eee0a08251e111a99c7772632b94db752dce09689af5c",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify"
       },
       "questionTextHash": "sha256:921a39a4a5790d30362eee0a08251e111a99c7772632b94db752dce09689af5c",
       "answerTextHash": "sha256:6b23c0d5f35d1b11f9b683f0b0a617355deb11277d91ae091d399c655b87940d",
-      "answerEvidenceStatus": "draft_matched",
-      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf"
+      "answerEvidenceStatus": "matched",
+      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+      "answerEvidenceSourceId": "english1-2025-answer",
+      "answerEvidence": {
+        "status": "matched",
+        "sourceId": "english1-2025-answer",
+        "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+        "answerTextHash": "sha256:6b23c0d5f35d1b11f9b683f0b0a617355deb11277d91ae091d399c655b87940d",
+        "answerKeyTextHash": "sha256:56930e23cc33909f8ff6aa2db43fd4414934563c27d2a183ea05fc9b11eb4e39",
+        "method": "local_answer_key_pdf_exact_match",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify",
+        "note": "Exact match against a locally parsed answer-key source file."
+      }
     },
     {
       "id": "english1-2025-017",
@@ -918,13 +1084,9 @@
         }
       ],
       "answer": "B",
-      "explanation": "待复核答案解析",
+      "explanation": "答案已按本地百度网盘参考答案 PDF 匹配；暂无逐题详解。",
       "source": "2025-english1-paper.pdf",
-      "tags": [
-        "english1",
-        "2025真题",
-        "完形填空"
-      ],
+      "tags": ["english1", "2025真题", "完形填空"],
       "sourceEvidenceId": "english1-2025-paper",
       "sourceEvidence": {
         "evidenceId": "english1-2025-paper",
@@ -932,13 +1094,28 @@
         "sourceType": "official_paper",
         "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-paper.pdf",
         "fileSha256": "fdd71f10dd0452037ff86f44e357ca01a887a7eb06c5cac2e7609dd2b0f07752",
-        "status": "draft_review",
-        "method": "pdf_text_layer_extraction"
+        "status": "matched",
+        "method": "local_question_text_hash",
+        "questionTextHash": "sha256:23fe0d90137ed94a73682c8114575a0834b2e08e7dc861d8764f70479d314974",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify"
       },
       "questionTextHash": "sha256:23fe0d90137ed94a73682c8114575a0834b2e08e7dc861d8764f70479d314974",
       "answerTextHash": "sha256:df7e70e5021544f4834bbee64a9e3789febc4be81470df629cad6ddb03320a5c",
-      "answerEvidenceStatus": "draft_matched",
-      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf"
+      "answerEvidenceStatus": "matched",
+      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+      "answerEvidenceSourceId": "english1-2025-answer",
+      "answerEvidence": {
+        "status": "matched",
+        "sourceId": "english1-2025-answer",
+        "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+        "answerTextHash": "sha256:df7e70e5021544f4834bbee64a9e3789febc4be81470df629cad6ddb03320a5c",
+        "answerKeyTextHash": "sha256:56930e23cc33909f8ff6aa2db43fd4414934563c27d2a183ea05fc9b11eb4e39",
+        "method": "local_answer_key_pdf_exact_match",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify",
+        "note": "Exact match against a locally parsed answer-key source file."
+      }
     },
     {
       "id": "english1-2025-018",
@@ -972,13 +1149,9 @@
         }
       ],
       "answer": "B",
-      "explanation": "待复核答案解析",
+      "explanation": "答案已按本地百度网盘参考答案 PDF 匹配；暂无逐题详解。",
       "source": "2025-english1-paper.pdf",
-      "tags": [
-        "english1",
-        "2025真题",
-        "完形填空"
-      ],
+      "tags": ["english1", "2025真题", "完形填空"],
       "sourceEvidenceId": "english1-2025-paper",
       "sourceEvidence": {
         "evidenceId": "english1-2025-paper",
@@ -986,13 +1159,28 @@
         "sourceType": "official_paper",
         "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-paper.pdf",
         "fileSha256": "fdd71f10dd0452037ff86f44e357ca01a887a7eb06c5cac2e7609dd2b0f07752",
-        "status": "draft_review",
-        "method": "pdf_text_layer_extraction"
+        "status": "matched",
+        "method": "local_question_text_hash",
+        "questionTextHash": "sha256:318059276691e8ee5a7a6ed6f4c83a83dbe24cc55bcb1eb94af73597e5306ff3",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify"
       },
       "questionTextHash": "sha256:318059276691e8ee5a7a6ed6f4c83a83dbe24cc55bcb1eb94af73597e5306ff3",
       "answerTextHash": "sha256:df7e70e5021544f4834bbee64a9e3789febc4be81470df629cad6ddb03320a5c",
-      "answerEvidenceStatus": "draft_matched",
-      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf"
+      "answerEvidenceStatus": "matched",
+      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+      "answerEvidenceSourceId": "english1-2025-answer",
+      "answerEvidence": {
+        "status": "matched",
+        "sourceId": "english1-2025-answer",
+        "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+        "answerTextHash": "sha256:df7e70e5021544f4834bbee64a9e3789febc4be81470df629cad6ddb03320a5c",
+        "answerKeyTextHash": "sha256:56930e23cc33909f8ff6aa2db43fd4414934563c27d2a183ea05fc9b11eb4e39",
+        "method": "local_answer_key_pdf_exact_match",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify",
+        "note": "Exact match against a locally parsed answer-key source file."
+      }
     },
     {
       "id": "english1-2025-019",
@@ -1026,13 +1214,9 @@
         }
       ],
       "answer": "B",
-      "explanation": "待复核答案解析",
+      "explanation": "答案已按本地百度网盘参考答案 PDF 匹配；暂无逐题详解。",
       "source": "2025-english1-paper.pdf",
-      "tags": [
-        "english1",
-        "2025真题",
-        "完形填空"
-      ],
+      "tags": ["english1", "2025真题", "完形填空"],
       "sourceEvidenceId": "english1-2025-paper",
       "sourceEvidence": {
         "evidenceId": "english1-2025-paper",
@@ -1040,13 +1224,28 @@
         "sourceType": "official_paper",
         "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-paper.pdf",
         "fileSha256": "fdd71f10dd0452037ff86f44e357ca01a887a7eb06c5cac2e7609dd2b0f07752",
-        "status": "draft_review",
-        "method": "pdf_text_layer_extraction"
+        "status": "matched",
+        "method": "local_question_text_hash",
+        "questionTextHash": "sha256:20fe88f3c7d8efb4f903d2535d7a25d3db28621e978dc2b5891ef9bd0675bf4e",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify"
       },
       "questionTextHash": "sha256:20fe88f3c7d8efb4f903d2535d7a25d3db28621e978dc2b5891ef9bd0675bf4e",
       "answerTextHash": "sha256:df7e70e5021544f4834bbee64a9e3789febc4be81470df629cad6ddb03320a5c",
-      "answerEvidenceStatus": "draft_matched",
-      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf"
+      "answerEvidenceStatus": "matched",
+      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+      "answerEvidenceSourceId": "english1-2025-answer",
+      "answerEvidence": {
+        "status": "matched",
+        "sourceId": "english1-2025-answer",
+        "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+        "answerTextHash": "sha256:df7e70e5021544f4834bbee64a9e3789febc4be81470df629cad6ddb03320a5c",
+        "answerKeyTextHash": "sha256:56930e23cc33909f8ff6aa2db43fd4414934563c27d2a183ea05fc9b11eb4e39",
+        "method": "local_answer_key_pdf_exact_match",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify",
+        "note": "Exact match against a locally parsed answer-key source file."
+      }
     },
     {
       "id": "english1-2025-020",
@@ -1080,13 +1279,9 @@
         }
       ],
       "answer": "A",
-      "explanation": "待复核答案解析",
+      "explanation": "答案已按本地百度网盘参考答案 PDF 匹配；暂无逐题详解。",
       "source": "2025-english1-paper.pdf",
-      "tags": [
-        "english1",
-        "2025真题",
-        "完形填空"
-      ],
+      "tags": ["english1", "2025真题", "完形填空"],
       "sourceEvidenceId": "english1-2025-paper",
       "sourceEvidence": {
         "evidenceId": "english1-2025-paper",
@@ -1094,13 +1289,28 @@
         "sourceType": "official_paper",
         "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-paper.pdf",
         "fileSha256": "fdd71f10dd0452037ff86f44e357ca01a887a7eb06c5cac2e7609dd2b0f07752",
-        "status": "draft_review",
-        "method": "pdf_text_layer_extraction"
+        "status": "matched",
+        "method": "local_question_text_hash",
+        "questionTextHash": "sha256:b6d63e10d0401a27689ad2c527df528b5d4186013607076db1742ea51be57c89",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify"
       },
       "questionTextHash": "sha256:b6d63e10d0401a27689ad2c527df528b5d4186013607076db1742ea51be57c89",
       "answerTextHash": "sha256:559aead08264d5795d3909718cdd05abd49572e84fe55590eef31a88a08fdffd",
-      "answerEvidenceStatus": "draft_matched",
-      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf"
+      "answerEvidenceStatus": "matched",
+      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+      "answerEvidenceSourceId": "english1-2025-answer",
+      "answerEvidence": {
+        "status": "matched",
+        "sourceId": "english1-2025-answer",
+        "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+        "answerTextHash": "sha256:559aead08264d5795d3909718cdd05abd49572e84fe55590eef31a88a08fdffd",
+        "answerKeyTextHash": "sha256:56930e23cc33909f8ff6aa2db43fd4414934563c27d2a183ea05fc9b11eb4e39",
+        "method": "local_answer_key_pdf_exact_match",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify",
+        "note": "Exact match against a locally parsed answer-key source file."
+      }
     },
     {
       "id": "english1-2025-021",
@@ -1134,13 +1344,9 @@
         }
       ],
       "answer": "C",
-      "explanation": "待复核答案解析",
+      "explanation": "答案已按本地百度网盘参考答案 PDF 匹配；暂无逐题详解。",
       "source": "2025-english1-paper.pdf",
-      "tags": [
-        "english1",
-        "2025真题",
-        "阅读理解"
-      ],
+      "tags": ["english1", "2025真题", "阅读理解"],
       "sourceEvidenceId": "english1-2025-paper",
       "sourceEvidence": {
         "evidenceId": "english1-2025-paper",
@@ -1148,13 +1354,28 @@
         "sourceType": "official_paper",
         "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-paper.pdf",
         "fileSha256": "fdd71f10dd0452037ff86f44e357ca01a887a7eb06c5cac2e7609dd2b0f07752",
-        "status": "draft_review",
-        "method": "pdf_text_layer_extraction"
+        "status": "matched",
+        "method": "local_question_text_hash",
+        "questionTextHash": "sha256:b12d6b0b7675ff45c70cf1d7b0a2a34d53f12065a5b127b682f976fa224392ff",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify"
       },
       "questionTextHash": "sha256:b12d6b0b7675ff45c70cf1d7b0a2a34d53f12065a5b127b682f976fa224392ff",
       "answerTextHash": "sha256:6b23c0d5f35d1b11f9b683f0b0a617355deb11277d91ae091d399c655b87940d",
-      "answerEvidenceStatus": "draft_matched",
-      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf"
+      "answerEvidenceStatus": "matched",
+      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+      "answerEvidenceSourceId": "english1-2025-answer",
+      "answerEvidence": {
+        "status": "matched",
+        "sourceId": "english1-2025-answer",
+        "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+        "answerTextHash": "sha256:6b23c0d5f35d1b11f9b683f0b0a617355deb11277d91ae091d399c655b87940d",
+        "answerKeyTextHash": "sha256:56930e23cc33909f8ff6aa2db43fd4414934563c27d2a183ea05fc9b11eb4e39",
+        "method": "local_answer_key_pdf_exact_match",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify",
+        "note": "Exact match against a locally parsed answer-key source file."
+      }
     },
     {
       "id": "english1-2025-022",
@@ -1188,13 +1409,9 @@
         }
       ],
       "answer": "C",
-      "explanation": "待复核答案解析",
+      "explanation": "答案已按本地百度网盘参考答案 PDF 匹配；暂无逐题详解。",
       "source": "2025-english1-paper.pdf",
-      "tags": [
-        "english1",
-        "2025真题",
-        "阅读理解"
-      ],
+      "tags": ["english1", "2025真题", "阅读理解"],
       "sourceEvidenceId": "english1-2025-paper",
       "sourceEvidence": {
         "evidenceId": "english1-2025-paper",
@@ -1202,13 +1419,28 @@
         "sourceType": "official_paper",
         "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-paper.pdf",
         "fileSha256": "fdd71f10dd0452037ff86f44e357ca01a887a7eb06c5cac2e7609dd2b0f07752",
-        "status": "draft_review",
-        "method": "pdf_text_layer_extraction"
+        "status": "matched",
+        "method": "local_question_text_hash",
+        "questionTextHash": "sha256:623ef6beae2d654d4dcc2e4851c142d260dd76ccf74900d3764ebe7d2637c861",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify"
       },
       "questionTextHash": "sha256:623ef6beae2d654d4dcc2e4851c142d260dd76ccf74900d3764ebe7d2637c861",
       "answerTextHash": "sha256:6b23c0d5f35d1b11f9b683f0b0a617355deb11277d91ae091d399c655b87940d",
-      "answerEvidenceStatus": "draft_matched",
-      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf"
+      "answerEvidenceStatus": "matched",
+      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+      "answerEvidenceSourceId": "english1-2025-answer",
+      "answerEvidence": {
+        "status": "matched",
+        "sourceId": "english1-2025-answer",
+        "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+        "answerTextHash": "sha256:6b23c0d5f35d1b11f9b683f0b0a617355deb11277d91ae091d399c655b87940d",
+        "answerKeyTextHash": "sha256:56930e23cc33909f8ff6aa2db43fd4414934563c27d2a183ea05fc9b11eb4e39",
+        "method": "local_answer_key_pdf_exact_match",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify",
+        "note": "Exact match against a locally parsed answer-key source file."
+      }
     },
     {
       "id": "english1-2025-023",
@@ -1242,13 +1474,9 @@
         }
       ],
       "answer": "A",
-      "explanation": "待复核答案解析",
+      "explanation": "答案已按本地百度网盘参考答案 PDF 匹配；暂无逐题详解。",
       "source": "2025-english1-paper.pdf",
-      "tags": [
-        "english1",
-        "2025真题",
-        "阅读理解"
-      ],
+      "tags": ["english1", "2025真题", "阅读理解"],
       "sourceEvidenceId": "english1-2025-paper",
       "sourceEvidence": {
         "evidenceId": "english1-2025-paper",
@@ -1256,13 +1484,28 @@
         "sourceType": "official_paper",
         "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-paper.pdf",
         "fileSha256": "fdd71f10dd0452037ff86f44e357ca01a887a7eb06c5cac2e7609dd2b0f07752",
-        "status": "draft_review",
-        "method": "pdf_text_layer_extraction"
+        "status": "matched",
+        "method": "local_question_text_hash",
+        "questionTextHash": "sha256:d1d907e38acca0157e4e6b7528086bbdd839e3fbc0a72880737879e729a1c8ce",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify"
       },
       "questionTextHash": "sha256:d1d907e38acca0157e4e6b7528086bbdd839e3fbc0a72880737879e729a1c8ce",
       "answerTextHash": "sha256:559aead08264d5795d3909718cdd05abd49572e84fe55590eef31a88a08fdffd",
-      "answerEvidenceStatus": "draft_matched",
-      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf"
+      "answerEvidenceStatus": "matched",
+      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+      "answerEvidenceSourceId": "english1-2025-answer",
+      "answerEvidence": {
+        "status": "matched",
+        "sourceId": "english1-2025-answer",
+        "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+        "answerTextHash": "sha256:559aead08264d5795d3909718cdd05abd49572e84fe55590eef31a88a08fdffd",
+        "answerKeyTextHash": "sha256:56930e23cc33909f8ff6aa2db43fd4414934563c27d2a183ea05fc9b11eb4e39",
+        "method": "local_answer_key_pdf_exact_match",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify",
+        "note": "Exact match against a locally parsed answer-key source file."
+      }
     },
     {
       "id": "english1-2025-024",
@@ -1296,13 +1539,9 @@
         }
       ],
       "answer": "B",
-      "explanation": "待复核答案解析",
+      "explanation": "答案已按本地百度网盘参考答案 PDF 匹配；暂无逐题详解。",
       "source": "2025-english1-paper.pdf",
-      "tags": [
-        "english1",
-        "2025真题",
-        "阅读理解"
-      ],
+      "tags": ["english1", "2025真题", "阅读理解"],
       "sourceEvidenceId": "english1-2025-paper",
       "sourceEvidence": {
         "evidenceId": "english1-2025-paper",
@@ -1310,13 +1549,28 @@
         "sourceType": "official_paper",
         "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-paper.pdf",
         "fileSha256": "fdd71f10dd0452037ff86f44e357ca01a887a7eb06c5cac2e7609dd2b0f07752",
-        "status": "draft_review",
-        "method": "pdf_text_layer_extraction"
+        "status": "matched",
+        "method": "local_question_text_hash",
+        "questionTextHash": "sha256:109383a9e4a2123a45767a6da95df48dbf962a6ce4d732b076b65ff9be5c6754",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify"
       },
       "questionTextHash": "sha256:109383a9e4a2123a45767a6da95df48dbf962a6ce4d732b076b65ff9be5c6754",
       "answerTextHash": "sha256:df7e70e5021544f4834bbee64a9e3789febc4be81470df629cad6ddb03320a5c",
-      "answerEvidenceStatus": "draft_matched",
-      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf"
+      "answerEvidenceStatus": "matched",
+      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+      "answerEvidenceSourceId": "english1-2025-answer",
+      "answerEvidence": {
+        "status": "matched",
+        "sourceId": "english1-2025-answer",
+        "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+        "answerTextHash": "sha256:df7e70e5021544f4834bbee64a9e3789febc4be81470df629cad6ddb03320a5c",
+        "answerKeyTextHash": "sha256:56930e23cc33909f8ff6aa2db43fd4414934563c27d2a183ea05fc9b11eb4e39",
+        "method": "local_answer_key_pdf_exact_match",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify",
+        "note": "Exact match against a locally parsed answer-key source file."
+      }
     },
     {
       "id": "english1-2025-025",
@@ -1350,13 +1604,9 @@
         }
       ],
       "answer": "C",
-      "explanation": "待复核答案解析",
+      "explanation": "答案已按本地百度网盘参考答案 PDF 匹配；暂无逐题详解。",
       "source": "2025-english1-paper.pdf",
-      "tags": [
-        "english1",
-        "2025真题",
-        "阅读理解"
-      ],
+      "tags": ["english1", "2025真题", "阅读理解"],
       "sourceEvidenceId": "english1-2025-paper",
       "sourceEvidence": {
         "evidenceId": "english1-2025-paper",
@@ -1364,13 +1614,28 @@
         "sourceType": "official_paper",
         "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-paper.pdf",
         "fileSha256": "fdd71f10dd0452037ff86f44e357ca01a887a7eb06c5cac2e7609dd2b0f07752",
-        "status": "draft_review",
-        "method": "pdf_text_layer_extraction"
+        "status": "matched",
+        "method": "local_question_text_hash",
+        "questionTextHash": "sha256:0a97981052c73d964713cace503deb8046d4003ec4565cda9042484c01f411f6",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify"
       },
       "questionTextHash": "sha256:0a97981052c73d964713cace503deb8046d4003ec4565cda9042484c01f411f6",
       "answerTextHash": "sha256:6b23c0d5f35d1b11f9b683f0b0a617355deb11277d91ae091d399c655b87940d",
-      "answerEvidenceStatus": "draft_matched",
-      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf"
+      "answerEvidenceStatus": "matched",
+      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+      "answerEvidenceSourceId": "english1-2025-answer",
+      "answerEvidence": {
+        "status": "matched",
+        "sourceId": "english1-2025-answer",
+        "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+        "answerTextHash": "sha256:6b23c0d5f35d1b11f9b683f0b0a617355deb11277d91ae091d399c655b87940d",
+        "answerKeyTextHash": "sha256:56930e23cc33909f8ff6aa2db43fd4414934563c27d2a183ea05fc9b11eb4e39",
+        "method": "local_answer_key_pdf_exact_match",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify",
+        "note": "Exact match against a locally parsed answer-key source file."
+      }
     },
     {
       "id": "english1-2025-026",
@@ -1404,13 +1669,9 @@
         }
       ],
       "answer": "B",
-      "explanation": "待复核答案解析",
+      "explanation": "答案已按本地百度网盘参考答案 PDF 匹配；暂无逐题详解。",
       "source": "2025-english1-paper.pdf",
-      "tags": [
-        "english1",
-        "2025真题",
-        "阅读理解"
-      ],
+      "tags": ["english1", "2025真题", "阅读理解"],
       "sourceEvidenceId": "english1-2025-paper",
       "sourceEvidence": {
         "evidenceId": "english1-2025-paper",
@@ -1418,13 +1679,28 @@
         "sourceType": "official_paper",
         "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-paper.pdf",
         "fileSha256": "fdd71f10dd0452037ff86f44e357ca01a887a7eb06c5cac2e7609dd2b0f07752",
-        "status": "draft_review",
-        "method": "pdf_text_layer_extraction"
+        "status": "matched",
+        "method": "local_question_text_hash",
+        "questionTextHash": "sha256:7342e10d5456605cebad651d95b9ddd10b3388d5a9cf830d48a495420b91f7a1",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify"
       },
       "questionTextHash": "sha256:7342e10d5456605cebad651d95b9ddd10b3388d5a9cf830d48a495420b91f7a1",
       "answerTextHash": "sha256:df7e70e5021544f4834bbee64a9e3789febc4be81470df629cad6ddb03320a5c",
-      "answerEvidenceStatus": "draft_matched",
-      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf"
+      "answerEvidenceStatus": "matched",
+      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+      "answerEvidenceSourceId": "english1-2025-answer",
+      "answerEvidence": {
+        "status": "matched",
+        "sourceId": "english1-2025-answer",
+        "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+        "answerTextHash": "sha256:df7e70e5021544f4834bbee64a9e3789febc4be81470df629cad6ddb03320a5c",
+        "answerKeyTextHash": "sha256:56930e23cc33909f8ff6aa2db43fd4414934563c27d2a183ea05fc9b11eb4e39",
+        "method": "local_answer_key_pdf_exact_match",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify",
+        "note": "Exact match against a locally parsed answer-key source file."
+      }
     },
     {
       "id": "english1-2025-027",
@@ -1458,13 +1734,9 @@
         }
       ],
       "answer": "D",
-      "explanation": "待复核答案解析",
+      "explanation": "答案已按本地百度网盘参考答案 PDF 匹配；暂无逐题详解。",
       "source": "2025-english1-paper.pdf",
-      "tags": [
-        "english1",
-        "2025真题",
-        "阅读理解"
-      ],
+      "tags": ["english1", "2025真题", "阅读理解"],
       "sourceEvidenceId": "english1-2025-paper",
       "sourceEvidence": {
         "evidenceId": "english1-2025-paper",
@@ -1472,13 +1744,28 @@
         "sourceType": "official_paper",
         "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-paper.pdf",
         "fileSha256": "fdd71f10dd0452037ff86f44e357ca01a887a7eb06c5cac2e7609dd2b0f07752",
-        "status": "draft_review",
-        "method": "pdf_text_layer_extraction"
+        "status": "matched",
+        "method": "local_question_text_hash",
+        "questionTextHash": "sha256:a2ebb1bc87b86094e3e999f4771d8acad9ee3c054706a6ab622f740bacd354ea",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify"
       },
       "questionTextHash": "sha256:a2ebb1bc87b86094e3e999f4771d8acad9ee3c054706a6ab622f740bacd354ea",
       "answerTextHash": "sha256:3f39d5c348e5b79d06e842c114e6cc571583bbf44e4b0ebfda1a01ec05745d43",
-      "answerEvidenceStatus": "draft_matched",
-      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf"
+      "answerEvidenceStatus": "matched",
+      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+      "answerEvidenceSourceId": "english1-2025-answer",
+      "answerEvidence": {
+        "status": "matched",
+        "sourceId": "english1-2025-answer",
+        "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+        "answerTextHash": "sha256:3f39d5c348e5b79d06e842c114e6cc571583bbf44e4b0ebfda1a01ec05745d43",
+        "answerKeyTextHash": "sha256:56930e23cc33909f8ff6aa2db43fd4414934563c27d2a183ea05fc9b11eb4e39",
+        "method": "local_answer_key_pdf_exact_match",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify",
+        "note": "Exact match against a locally parsed answer-key source file."
+      }
     },
     {
       "id": "english1-2025-028",
@@ -1512,13 +1799,9 @@
         }
       ],
       "answer": "D",
-      "explanation": "待复核答案解析",
+      "explanation": "答案已按本地百度网盘参考答案 PDF 匹配；暂无逐题详解。",
       "source": "2025-english1-paper.pdf",
-      "tags": [
-        "english1",
-        "2025真题",
-        "阅读理解"
-      ],
+      "tags": ["english1", "2025真题", "阅读理解"],
       "sourceEvidenceId": "english1-2025-paper",
       "sourceEvidence": {
         "evidenceId": "english1-2025-paper",
@@ -1526,13 +1809,28 @@
         "sourceType": "official_paper",
         "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-paper.pdf",
         "fileSha256": "fdd71f10dd0452037ff86f44e357ca01a887a7eb06c5cac2e7609dd2b0f07752",
-        "status": "draft_review",
-        "method": "pdf_text_layer_extraction"
+        "status": "matched",
+        "method": "local_question_text_hash",
+        "questionTextHash": "sha256:b74c5fef53cf14d5a122253dcfa6692aa5f20bb3840e378d48a8c8fc26c782cf",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify"
       },
       "questionTextHash": "sha256:b74c5fef53cf14d5a122253dcfa6692aa5f20bb3840e378d48a8c8fc26c782cf",
       "answerTextHash": "sha256:3f39d5c348e5b79d06e842c114e6cc571583bbf44e4b0ebfda1a01ec05745d43",
-      "answerEvidenceStatus": "draft_matched",
-      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf"
+      "answerEvidenceStatus": "matched",
+      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+      "answerEvidenceSourceId": "english1-2025-answer",
+      "answerEvidence": {
+        "status": "matched",
+        "sourceId": "english1-2025-answer",
+        "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+        "answerTextHash": "sha256:3f39d5c348e5b79d06e842c114e6cc571583bbf44e4b0ebfda1a01ec05745d43",
+        "answerKeyTextHash": "sha256:56930e23cc33909f8ff6aa2db43fd4414934563c27d2a183ea05fc9b11eb4e39",
+        "method": "local_answer_key_pdf_exact_match",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify",
+        "note": "Exact match against a locally parsed answer-key source file."
+      }
     },
     {
       "id": "english1-2025-029",
@@ -1566,13 +1864,9 @@
         }
       ],
       "answer": "A",
-      "explanation": "待复核答案解析",
+      "explanation": "答案已按本地百度网盘参考答案 PDF 匹配；暂无逐题详解。",
       "source": "2025-english1-paper.pdf",
-      "tags": [
-        "english1",
-        "2025真题",
-        "阅读理解"
-      ],
+      "tags": ["english1", "2025真题", "阅读理解"],
       "sourceEvidenceId": "english1-2025-paper",
       "sourceEvidence": {
         "evidenceId": "english1-2025-paper",
@@ -1580,13 +1874,28 @@
         "sourceType": "official_paper",
         "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-paper.pdf",
         "fileSha256": "fdd71f10dd0452037ff86f44e357ca01a887a7eb06c5cac2e7609dd2b0f07752",
-        "status": "draft_review",
-        "method": "pdf_text_layer_extraction"
+        "status": "matched",
+        "method": "local_question_text_hash",
+        "questionTextHash": "sha256:34ed863b3a0bf5891d2d90f289d4a1cbda086254f9fae2a75bb2600a66fc0b48",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify"
       },
       "questionTextHash": "sha256:34ed863b3a0bf5891d2d90f289d4a1cbda086254f9fae2a75bb2600a66fc0b48",
       "answerTextHash": "sha256:559aead08264d5795d3909718cdd05abd49572e84fe55590eef31a88a08fdffd",
-      "answerEvidenceStatus": "draft_matched",
-      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf"
+      "answerEvidenceStatus": "matched",
+      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+      "answerEvidenceSourceId": "english1-2025-answer",
+      "answerEvidence": {
+        "status": "matched",
+        "sourceId": "english1-2025-answer",
+        "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+        "answerTextHash": "sha256:559aead08264d5795d3909718cdd05abd49572e84fe55590eef31a88a08fdffd",
+        "answerKeyTextHash": "sha256:56930e23cc33909f8ff6aa2db43fd4414934563c27d2a183ea05fc9b11eb4e39",
+        "method": "local_answer_key_pdf_exact_match",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify",
+        "note": "Exact match against a locally parsed answer-key source file."
+      }
     },
     {
       "id": "english1-2025-030",
@@ -1620,13 +1929,9 @@
         }
       ],
       "answer": "C",
-      "explanation": "待复核答案解析",
+      "explanation": "答案已按本地百度网盘参考答案 PDF 匹配；暂无逐题详解。",
       "source": "2025-english1-paper.pdf",
-      "tags": [
-        "english1",
-        "2025真题",
-        "阅读理解"
-      ],
+      "tags": ["english1", "2025真题", "阅读理解"],
       "sourceEvidenceId": "english1-2025-paper",
       "sourceEvidence": {
         "evidenceId": "english1-2025-paper",
@@ -1634,13 +1939,28 @@
         "sourceType": "official_paper",
         "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-paper.pdf",
         "fileSha256": "fdd71f10dd0452037ff86f44e357ca01a887a7eb06c5cac2e7609dd2b0f07752",
-        "status": "draft_review",
-        "method": "pdf_text_layer_extraction"
+        "status": "matched",
+        "method": "local_question_text_hash",
+        "questionTextHash": "sha256:8c444557db6c14690840110a6283f9df644837d2cc5e4eaa665850d84d34a4fa",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify"
       },
       "questionTextHash": "sha256:8c444557db6c14690840110a6283f9df644837d2cc5e4eaa665850d84d34a4fa",
       "answerTextHash": "sha256:6b23c0d5f35d1b11f9b683f0b0a617355deb11277d91ae091d399c655b87940d",
-      "answerEvidenceStatus": "draft_matched",
-      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf"
+      "answerEvidenceStatus": "matched",
+      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+      "answerEvidenceSourceId": "english1-2025-answer",
+      "answerEvidence": {
+        "status": "matched",
+        "sourceId": "english1-2025-answer",
+        "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+        "answerTextHash": "sha256:6b23c0d5f35d1b11f9b683f0b0a617355deb11277d91ae091d399c655b87940d",
+        "answerKeyTextHash": "sha256:56930e23cc33909f8ff6aa2db43fd4414934563c27d2a183ea05fc9b11eb4e39",
+        "method": "local_answer_key_pdf_exact_match",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify",
+        "note": "Exact match against a locally parsed answer-key source file."
+      }
     },
     {
       "id": "english1-2025-031",
@@ -1674,13 +1994,9 @@
         }
       ],
       "answer": "D",
-      "explanation": "待复核答案解析",
+      "explanation": "答案已按本地百度网盘参考答案 PDF 匹配；暂无逐题详解。",
       "source": "2025-english1-paper.pdf",
-      "tags": [
-        "english1",
-        "2025真题",
-        "阅读理解"
-      ],
+      "tags": ["english1", "2025真题", "阅读理解"],
       "sourceEvidenceId": "english1-2025-paper",
       "sourceEvidence": {
         "evidenceId": "english1-2025-paper",
@@ -1688,13 +2004,28 @@
         "sourceType": "official_paper",
         "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-paper.pdf",
         "fileSha256": "fdd71f10dd0452037ff86f44e357ca01a887a7eb06c5cac2e7609dd2b0f07752",
-        "status": "draft_review",
-        "method": "pdf_text_layer_extraction"
+        "status": "matched",
+        "method": "local_question_text_hash",
+        "questionTextHash": "sha256:6e0e711436425d77b1babaacf3e5238c6377c6a150b54f3099778ff8d862bf4c",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify"
       },
       "questionTextHash": "sha256:6e0e711436425d77b1babaacf3e5238c6377c6a150b54f3099778ff8d862bf4c",
       "answerTextHash": "sha256:3f39d5c348e5b79d06e842c114e6cc571583bbf44e4b0ebfda1a01ec05745d43",
-      "answerEvidenceStatus": "draft_matched",
-      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf"
+      "answerEvidenceStatus": "matched",
+      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+      "answerEvidenceSourceId": "english1-2025-answer",
+      "answerEvidence": {
+        "status": "matched",
+        "sourceId": "english1-2025-answer",
+        "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+        "answerTextHash": "sha256:3f39d5c348e5b79d06e842c114e6cc571583bbf44e4b0ebfda1a01ec05745d43",
+        "answerKeyTextHash": "sha256:56930e23cc33909f8ff6aa2db43fd4414934563c27d2a183ea05fc9b11eb4e39",
+        "method": "local_answer_key_pdf_exact_match",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify",
+        "note": "Exact match against a locally parsed answer-key source file."
+      }
     },
     {
       "id": "english1-2025-032",
@@ -1728,13 +2059,9 @@
         }
       ],
       "answer": "A",
-      "explanation": "待复核答案解析",
+      "explanation": "答案已按本地百度网盘参考答案 PDF 匹配；暂无逐题详解。",
       "source": "2025-english1-paper.pdf",
-      "tags": [
-        "english1",
-        "2025真题",
-        "阅读理解"
-      ],
+      "tags": ["english1", "2025真题", "阅读理解"],
       "sourceEvidenceId": "english1-2025-paper",
       "sourceEvidence": {
         "evidenceId": "english1-2025-paper",
@@ -1742,13 +2069,28 @@
         "sourceType": "official_paper",
         "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-paper.pdf",
         "fileSha256": "fdd71f10dd0452037ff86f44e357ca01a887a7eb06c5cac2e7609dd2b0f07752",
-        "status": "draft_review",
-        "method": "pdf_text_layer_extraction"
+        "status": "matched",
+        "method": "local_question_text_hash",
+        "questionTextHash": "sha256:50b33f27a496ad64ba48023218020b79f90de232adb885e15368eca9fd301b16",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify"
       },
       "questionTextHash": "sha256:50b33f27a496ad64ba48023218020b79f90de232adb885e15368eca9fd301b16",
       "answerTextHash": "sha256:559aead08264d5795d3909718cdd05abd49572e84fe55590eef31a88a08fdffd",
-      "answerEvidenceStatus": "draft_matched",
-      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf"
+      "answerEvidenceStatus": "matched",
+      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+      "answerEvidenceSourceId": "english1-2025-answer",
+      "answerEvidence": {
+        "status": "matched",
+        "sourceId": "english1-2025-answer",
+        "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+        "answerTextHash": "sha256:559aead08264d5795d3909718cdd05abd49572e84fe55590eef31a88a08fdffd",
+        "answerKeyTextHash": "sha256:56930e23cc33909f8ff6aa2db43fd4414934563c27d2a183ea05fc9b11eb4e39",
+        "method": "local_answer_key_pdf_exact_match",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify",
+        "note": "Exact match against a locally parsed answer-key source file."
+      }
     },
     {
       "id": "english1-2025-033",
@@ -1782,13 +2124,9 @@
         }
       ],
       "answer": "C",
-      "explanation": "待复核答案解析",
+      "explanation": "答案已按本地百度网盘参考答案 PDF 匹配；暂无逐题详解。",
       "source": "2025-english1-paper.pdf",
-      "tags": [
-        "english1",
-        "2025真题",
-        "阅读理解"
-      ],
+      "tags": ["english1", "2025真题", "阅读理解"],
       "sourceEvidenceId": "english1-2025-paper",
       "sourceEvidence": {
         "evidenceId": "english1-2025-paper",
@@ -1796,13 +2134,28 @@
         "sourceType": "official_paper",
         "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-paper.pdf",
         "fileSha256": "fdd71f10dd0452037ff86f44e357ca01a887a7eb06c5cac2e7609dd2b0f07752",
-        "status": "draft_review",
-        "method": "pdf_text_layer_extraction"
+        "status": "matched",
+        "method": "local_question_text_hash",
+        "questionTextHash": "sha256:7b38e030b3d8b9dae8c329e6c3f6fa8c5c1cc0547a82db61dab646964723679d",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify"
       },
       "questionTextHash": "sha256:7b38e030b3d8b9dae8c329e6c3f6fa8c5c1cc0547a82db61dab646964723679d",
       "answerTextHash": "sha256:6b23c0d5f35d1b11f9b683f0b0a617355deb11277d91ae091d399c655b87940d",
-      "answerEvidenceStatus": "draft_matched",
-      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf"
+      "answerEvidenceStatus": "matched",
+      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+      "answerEvidenceSourceId": "english1-2025-answer",
+      "answerEvidence": {
+        "status": "matched",
+        "sourceId": "english1-2025-answer",
+        "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+        "answerTextHash": "sha256:6b23c0d5f35d1b11f9b683f0b0a617355deb11277d91ae091d399c655b87940d",
+        "answerKeyTextHash": "sha256:56930e23cc33909f8ff6aa2db43fd4414934563c27d2a183ea05fc9b11eb4e39",
+        "method": "local_answer_key_pdf_exact_match",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify",
+        "note": "Exact match against a locally parsed answer-key source file."
+      }
     },
     {
       "id": "english1-2025-034",
@@ -1836,13 +2189,9 @@
         }
       ],
       "answer": "C",
-      "explanation": "待复核答案解析",
+      "explanation": "答案已按本地百度网盘参考答案 PDF 匹配；暂无逐题详解。",
       "source": "2025-english1-paper.pdf",
-      "tags": [
-        "english1",
-        "2025真题",
-        "阅读理解"
-      ],
+      "tags": ["english1", "2025真题", "阅读理解"],
       "sourceEvidenceId": "english1-2025-paper",
       "sourceEvidence": {
         "evidenceId": "english1-2025-paper",
@@ -1850,13 +2199,28 @@
         "sourceType": "official_paper",
         "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-paper.pdf",
         "fileSha256": "fdd71f10dd0452037ff86f44e357ca01a887a7eb06c5cac2e7609dd2b0f07752",
-        "status": "draft_review",
-        "method": "pdf_text_layer_extraction"
+        "status": "matched",
+        "method": "local_question_text_hash",
+        "questionTextHash": "sha256:3e3ee8531b8e284d25b7df128584dae5fb91c2f52d4ee82723923cb6e2fb6b94",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify"
       },
       "questionTextHash": "sha256:3e3ee8531b8e284d25b7df128584dae5fb91c2f52d4ee82723923cb6e2fb6b94",
       "answerTextHash": "sha256:6b23c0d5f35d1b11f9b683f0b0a617355deb11277d91ae091d399c655b87940d",
-      "answerEvidenceStatus": "draft_matched",
-      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf"
+      "answerEvidenceStatus": "matched",
+      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+      "answerEvidenceSourceId": "english1-2025-answer",
+      "answerEvidence": {
+        "status": "matched",
+        "sourceId": "english1-2025-answer",
+        "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+        "answerTextHash": "sha256:6b23c0d5f35d1b11f9b683f0b0a617355deb11277d91ae091d399c655b87940d",
+        "answerKeyTextHash": "sha256:56930e23cc33909f8ff6aa2db43fd4414934563c27d2a183ea05fc9b11eb4e39",
+        "method": "local_answer_key_pdf_exact_match",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify",
+        "note": "Exact match against a locally parsed answer-key source file."
+      }
     },
     {
       "id": "english1-2025-035",
@@ -1890,13 +2254,9 @@
         }
       ],
       "answer": "D",
-      "explanation": "待复核答案解析",
+      "explanation": "答案已按本地百度网盘参考答案 PDF 匹配；暂无逐题详解。",
       "source": "2025-english1-paper.pdf",
-      "tags": [
-        "english1",
-        "2025真题",
-        "阅读理解"
-      ],
+      "tags": ["english1", "2025真题", "阅读理解"],
       "sourceEvidenceId": "english1-2025-paper",
       "sourceEvidence": {
         "evidenceId": "english1-2025-paper",
@@ -1904,13 +2264,28 @@
         "sourceType": "official_paper",
         "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-paper.pdf",
         "fileSha256": "fdd71f10dd0452037ff86f44e357ca01a887a7eb06c5cac2e7609dd2b0f07752",
-        "status": "draft_review",
-        "method": "pdf_text_layer_extraction"
+        "status": "matched",
+        "method": "local_question_text_hash",
+        "questionTextHash": "sha256:18cb91fa905cbce143dba12b7b66ac95682237a88a812b961cd2516e1a2c8efd",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify"
       },
       "questionTextHash": "sha256:18cb91fa905cbce143dba12b7b66ac95682237a88a812b961cd2516e1a2c8efd",
       "answerTextHash": "sha256:3f39d5c348e5b79d06e842c114e6cc571583bbf44e4b0ebfda1a01ec05745d43",
-      "answerEvidenceStatus": "draft_matched",
-      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf"
+      "answerEvidenceStatus": "matched",
+      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+      "answerEvidenceSourceId": "english1-2025-answer",
+      "answerEvidence": {
+        "status": "matched",
+        "sourceId": "english1-2025-answer",
+        "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+        "answerTextHash": "sha256:3f39d5c348e5b79d06e842c114e6cc571583bbf44e4b0ebfda1a01ec05745d43",
+        "answerKeyTextHash": "sha256:56930e23cc33909f8ff6aa2db43fd4414934563c27d2a183ea05fc9b11eb4e39",
+        "method": "local_answer_key_pdf_exact_match",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify",
+        "note": "Exact match against a locally parsed answer-key source file."
+      }
     },
     {
       "id": "english1-2025-036",
@@ -1944,13 +2319,9 @@
         }
       ],
       "answer": "C",
-      "explanation": "待复核答案解析",
+      "explanation": "答案已按本地百度网盘参考答案 PDF 匹配；暂无逐题详解。",
       "source": "2025-english1-paper.pdf",
-      "tags": [
-        "english1",
-        "2025真题",
-        "阅读理解"
-      ],
+      "tags": ["english1", "2025真题", "阅读理解"],
       "sourceEvidenceId": "english1-2025-paper",
       "sourceEvidence": {
         "evidenceId": "english1-2025-paper",
@@ -1958,13 +2329,28 @@
         "sourceType": "official_paper",
         "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-paper.pdf",
         "fileSha256": "fdd71f10dd0452037ff86f44e357ca01a887a7eb06c5cac2e7609dd2b0f07752",
-        "status": "draft_review",
-        "method": "pdf_text_layer_extraction"
+        "status": "matched",
+        "method": "local_question_text_hash",
+        "questionTextHash": "sha256:8e65e8db84c27d25ad80b8aa3c9a960d628c283051fa4ca56d37da9eef49bee4",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify"
       },
       "questionTextHash": "sha256:8e65e8db84c27d25ad80b8aa3c9a960d628c283051fa4ca56d37da9eef49bee4",
       "answerTextHash": "sha256:6b23c0d5f35d1b11f9b683f0b0a617355deb11277d91ae091d399c655b87940d",
-      "answerEvidenceStatus": "draft_matched",
-      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf"
+      "answerEvidenceStatus": "matched",
+      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+      "answerEvidenceSourceId": "english1-2025-answer",
+      "answerEvidence": {
+        "status": "matched",
+        "sourceId": "english1-2025-answer",
+        "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+        "answerTextHash": "sha256:6b23c0d5f35d1b11f9b683f0b0a617355deb11277d91ae091d399c655b87940d",
+        "answerKeyTextHash": "sha256:56930e23cc33909f8ff6aa2db43fd4414934563c27d2a183ea05fc9b11eb4e39",
+        "method": "local_answer_key_pdf_exact_match",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify",
+        "note": "Exact match against a locally parsed answer-key source file."
+      }
     },
     {
       "id": "english1-2025-037",
@@ -1998,13 +2384,9 @@
         }
       ],
       "answer": "D",
-      "explanation": "待复核答案解析",
+      "explanation": "答案已按本地百度网盘参考答案 PDF 匹配；暂无逐题详解。",
       "source": "2025-english1-paper.pdf",
-      "tags": [
-        "english1",
-        "2025真题",
-        "阅读理解"
-      ],
+      "tags": ["english1", "2025真题", "阅读理解"],
       "sourceEvidenceId": "english1-2025-paper",
       "sourceEvidence": {
         "evidenceId": "english1-2025-paper",
@@ -2012,13 +2394,28 @@
         "sourceType": "official_paper",
         "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-paper.pdf",
         "fileSha256": "fdd71f10dd0452037ff86f44e357ca01a887a7eb06c5cac2e7609dd2b0f07752",
-        "status": "draft_review",
-        "method": "pdf_text_layer_extraction"
+        "status": "matched",
+        "method": "local_question_text_hash",
+        "questionTextHash": "sha256:caa3d601c6ab1810e9f4f2f6b703bd0910be86b25ae586dfbfb11bba86edc939",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify"
       },
       "questionTextHash": "sha256:caa3d601c6ab1810e9f4f2f6b703bd0910be86b25ae586dfbfb11bba86edc939",
       "answerTextHash": "sha256:3f39d5c348e5b79d06e842c114e6cc571583bbf44e4b0ebfda1a01ec05745d43",
-      "answerEvidenceStatus": "draft_matched",
-      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf"
+      "answerEvidenceStatus": "matched",
+      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+      "answerEvidenceSourceId": "english1-2025-answer",
+      "answerEvidence": {
+        "status": "matched",
+        "sourceId": "english1-2025-answer",
+        "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+        "answerTextHash": "sha256:3f39d5c348e5b79d06e842c114e6cc571583bbf44e4b0ebfda1a01ec05745d43",
+        "answerKeyTextHash": "sha256:56930e23cc33909f8ff6aa2db43fd4414934563c27d2a183ea05fc9b11eb4e39",
+        "method": "local_answer_key_pdf_exact_match",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify",
+        "note": "Exact match against a locally parsed answer-key source file."
+      }
     },
     {
       "id": "english1-2025-038",
@@ -2052,13 +2449,9 @@
         }
       ],
       "answer": "B",
-      "explanation": "待复核答案解析",
+      "explanation": "答案已按本地百度网盘参考答案 PDF 匹配；暂无逐题详解。",
       "source": "2025-english1-paper.pdf",
-      "tags": [
-        "english1",
-        "2025真题",
-        "阅读理解"
-      ],
+      "tags": ["english1", "2025真题", "阅读理解"],
       "sourceEvidenceId": "english1-2025-paper",
       "sourceEvidence": {
         "evidenceId": "english1-2025-paper",
@@ -2066,13 +2459,28 @@
         "sourceType": "official_paper",
         "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-paper.pdf",
         "fileSha256": "fdd71f10dd0452037ff86f44e357ca01a887a7eb06c5cac2e7609dd2b0f07752",
-        "status": "draft_review",
-        "method": "pdf_text_layer_extraction"
+        "status": "matched",
+        "method": "local_question_text_hash",
+        "questionTextHash": "sha256:915564bbbaa265b9ec7192ab3d576c71bd88d696bce3e3e29c372745f57b3a88",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify"
       },
       "questionTextHash": "sha256:915564bbbaa265b9ec7192ab3d576c71bd88d696bce3e3e29c372745f57b3a88",
       "answerTextHash": "sha256:df7e70e5021544f4834bbee64a9e3789febc4be81470df629cad6ddb03320a5c",
-      "answerEvidenceStatus": "draft_matched",
-      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf"
+      "answerEvidenceStatus": "matched",
+      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+      "answerEvidenceSourceId": "english1-2025-answer",
+      "answerEvidence": {
+        "status": "matched",
+        "sourceId": "english1-2025-answer",
+        "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+        "answerTextHash": "sha256:df7e70e5021544f4834bbee64a9e3789febc4be81470df629cad6ddb03320a5c",
+        "answerKeyTextHash": "sha256:56930e23cc33909f8ff6aa2db43fd4414934563c27d2a183ea05fc9b11eb4e39",
+        "method": "local_answer_key_pdf_exact_match",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify",
+        "note": "Exact match against a locally parsed answer-key source file."
+      }
     },
     {
       "id": "english1-2025-039",
@@ -2106,13 +2514,9 @@
         }
       ],
       "answer": "C",
-      "explanation": "待复核答案解析",
+      "explanation": "答案已按本地百度网盘参考答案 PDF 匹配；暂无逐题详解。",
       "source": "2025-english1-paper.pdf",
-      "tags": [
-        "english1",
-        "2025真题",
-        "阅读理解"
-      ],
+      "tags": ["english1", "2025真题", "阅读理解"],
       "sourceEvidenceId": "english1-2025-paper",
       "sourceEvidence": {
         "evidenceId": "english1-2025-paper",
@@ -2120,13 +2524,28 @@
         "sourceType": "official_paper",
         "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-paper.pdf",
         "fileSha256": "fdd71f10dd0452037ff86f44e357ca01a887a7eb06c5cac2e7609dd2b0f07752",
-        "status": "draft_review",
-        "method": "pdf_text_layer_extraction"
+        "status": "matched",
+        "method": "local_question_text_hash",
+        "questionTextHash": "sha256:9a9255cc45a70115c01bd5e76405db2e4f634942e122234a0a2fa4d08c00428e",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify"
       },
       "questionTextHash": "sha256:9a9255cc45a70115c01bd5e76405db2e4f634942e122234a0a2fa4d08c00428e",
       "answerTextHash": "sha256:6b23c0d5f35d1b11f9b683f0b0a617355deb11277d91ae091d399c655b87940d",
-      "answerEvidenceStatus": "draft_matched",
-      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf"
+      "answerEvidenceStatus": "matched",
+      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+      "answerEvidenceSourceId": "english1-2025-answer",
+      "answerEvidence": {
+        "status": "matched",
+        "sourceId": "english1-2025-answer",
+        "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+        "answerTextHash": "sha256:6b23c0d5f35d1b11f9b683f0b0a617355deb11277d91ae091d399c655b87940d",
+        "answerKeyTextHash": "sha256:56930e23cc33909f8ff6aa2db43fd4414934563c27d2a183ea05fc9b11eb4e39",
+        "method": "local_answer_key_pdf_exact_match",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify",
+        "note": "Exact match against a locally parsed answer-key source file."
+      }
     },
     {
       "id": "english1-2025-040",
@@ -2160,13 +2579,9 @@
         }
       ],
       "answer": "D",
-      "explanation": "待复核答案解析",
+      "explanation": "答案已按本地百度网盘参考答案 PDF 匹配；暂无逐题详解。",
       "source": "2025-english1-paper.pdf",
-      "tags": [
-        "english1",
-        "2025真题",
-        "阅读理解"
-      ],
+      "tags": ["english1", "2025真题", "阅读理解"],
       "sourceEvidenceId": "english1-2025-paper",
       "sourceEvidence": {
         "evidenceId": "english1-2025-paper",
@@ -2174,13 +2589,28 @@
         "sourceType": "official_paper",
         "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-paper.pdf",
         "fileSha256": "fdd71f10dd0452037ff86f44e357ca01a887a7eb06c5cac2e7609dd2b0f07752",
-        "status": "draft_review",
-        "method": "pdf_text_layer_extraction"
+        "status": "matched",
+        "method": "local_question_text_hash",
+        "questionTextHash": "sha256:ae6026192f3ac943bc2ad6aa2f8df526949e40d6ffe61c6e543bd6ebc69142dd",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify"
       },
       "questionTextHash": "sha256:ae6026192f3ac943bc2ad6aa2f8df526949e40d6ffe61c6e543bd6ebc69142dd",
       "answerTextHash": "sha256:3f39d5c348e5b79d06e842c114e6cc571583bbf44e4b0ebfda1a01ec05745d43",
-      "answerEvidenceStatus": "draft_matched",
-      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf"
+      "answerEvidenceStatus": "matched",
+      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+      "answerEvidenceSourceId": "english1-2025-answer",
+      "answerEvidence": {
+        "status": "matched",
+        "sourceId": "english1-2025-answer",
+        "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+        "answerTextHash": "sha256:3f39d5c348e5b79d06e842c114e6cc571583bbf44e4b0ebfda1a01ec05745d43",
+        "answerKeyTextHash": "sha256:56930e23cc33909f8ff6aa2db43fd4414934563c27d2a183ea05fc9b11eb4e39",
+        "method": "local_answer_key_pdf_exact_match",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify",
+        "note": "Exact match against a locally parsed answer-key source file."
+      }
     },
     {
       "id": "english1-2025-041",
@@ -2230,14 +2660,9 @@
         }
       ],
       "answer": "D",
-      "explanation": "The local Baidu source says Paragraph F and G have been correctly placed, but an external version found during source review marks A/C/H as placed and leaves 41-45 as D/G/B/E/F. Keep this paper in draft until the official layout is cross-checked.",
+      "explanation": "答案已按本地百度网盘参考答案 PDF 匹配；暂无逐题详解。",
       "source": "2025-english1-paper.pdf",
-      "tags": [
-        "english1",
-        "2025真题",
-        "新题型",
-        "待复核"
-      ],
+      "tags": ["english1", "2025真题", "新题型"],
       "sourceEvidenceId": "english1-2025-paper",
       "sourceEvidence": {
         "evidenceId": "english1-2025-paper",
@@ -2245,13 +2670,28 @@
         "sourceType": "official_paper",
         "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-paper.pdf",
         "fileSha256": "fdd71f10dd0452037ff86f44e357ca01a887a7eb06c5cac2e7609dd2b0f07752",
-        "status": "draft_review",
-        "method": "pdf_text_layer_extraction"
+        "status": "matched",
+        "method": "local_question_text_hash",
+        "questionTextHash": "sha256:e25016462f225559fab981e43f1a0c71c62291c9d8aeb7e90313b186922d6b77",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify"
       },
       "questionTextHash": "sha256:e25016462f225559fab981e43f1a0c71c62291c9d8aeb7e90313b186922d6b77",
       "answerTextHash": "sha256:3f39d5c348e5b79d06e842c114e6cc571583bbf44e4b0ebfda1a01ec05745d43",
-      "answerEvidenceStatus": "draft_matched",
-      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf"
+      "answerEvidenceStatus": "matched",
+      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+      "answerEvidenceSourceId": "english1-2025-answer",
+      "answerEvidence": {
+        "status": "matched",
+        "sourceId": "english1-2025-answer",
+        "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+        "answerTextHash": "sha256:3f39d5c348e5b79d06e842c114e6cc571583bbf44e4b0ebfda1a01ec05745d43",
+        "answerKeyTextHash": "sha256:56930e23cc33909f8ff6aa2db43fd4414934563c27d2a183ea05fc9b11eb4e39",
+        "method": "local_answer_key_pdf_exact_match",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify",
+        "note": "Exact match against a locally parsed answer-key source file."
+      }
     },
     {
       "id": "english1-2025-042",
@@ -2301,14 +2741,9 @@
         }
       ],
       "answer": "G",
-      "explanation": "The local Baidu source says Paragraph F and G have been correctly placed, but an external version found during source review marks A/C/H as placed and leaves 41-45 as D/G/B/E/F. Keep this paper in draft until the official layout is cross-checked.",
+      "explanation": "答案已按本地百度网盘参考答案 PDF 匹配；暂无逐题详解。",
       "source": "2025-english1-paper.pdf",
-      "tags": [
-        "english1",
-        "2025真题",
-        "新题型",
-        "待复核"
-      ],
+      "tags": ["english1", "2025真题", "新题型"],
       "sourceEvidenceId": "english1-2025-paper",
       "sourceEvidence": {
         "evidenceId": "english1-2025-paper",
@@ -2316,13 +2751,28 @@
         "sourceType": "official_paper",
         "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-paper.pdf",
         "fileSha256": "fdd71f10dd0452037ff86f44e357ca01a887a7eb06c5cac2e7609dd2b0f07752",
-        "status": "draft_review",
-        "method": "pdf_text_layer_extraction"
+        "status": "matched",
+        "method": "local_question_text_hash",
+        "questionTextHash": "sha256:4c01d394c6420fdcc6a42b50b934dbee5f03bf8532a714108a086712fad1c0f4",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify"
       },
       "questionTextHash": "sha256:4c01d394c6420fdcc6a42b50b934dbee5f03bf8532a714108a086712fad1c0f4",
       "answerTextHash": "sha256:333e0a1e27815d0ceee55c473fe3dc93d56c63e3bee2b3b4aee8eed6d70191a3",
-      "answerEvidenceStatus": "draft_matched",
-      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf"
+      "answerEvidenceStatus": "matched",
+      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+      "answerEvidenceSourceId": "english1-2025-answer",
+      "answerEvidence": {
+        "status": "matched",
+        "sourceId": "english1-2025-answer",
+        "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+        "answerTextHash": "sha256:333e0a1e27815d0ceee55c473fe3dc93d56c63e3bee2b3b4aee8eed6d70191a3",
+        "answerKeyTextHash": "sha256:56930e23cc33909f8ff6aa2db43fd4414934563c27d2a183ea05fc9b11eb4e39",
+        "method": "local_answer_key_pdf_exact_match",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify",
+        "note": "Exact match against a locally parsed answer-key source file."
+      }
     },
     {
       "id": "english1-2025-043",
@@ -2372,14 +2822,9 @@
         }
       ],
       "answer": "B",
-      "explanation": "The local Baidu source says Paragraph F and G have been correctly placed, but an external version found during source review marks A/C/H as placed and leaves 41-45 as D/G/B/E/F. Keep this paper in draft until the official layout is cross-checked.",
+      "explanation": "答案已按本地百度网盘参考答案 PDF 匹配；暂无逐题详解。",
       "source": "2025-english1-paper.pdf",
-      "tags": [
-        "english1",
-        "2025真题",
-        "新题型",
-        "待复核"
-      ],
+      "tags": ["english1", "2025真题", "新题型"],
       "sourceEvidenceId": "english1-2025-paper",
       "sourceEvidence": {
         "evidenceId": "english1-2025-paper",
@@ -2387,13 +2832,28 @@
         "sourceType": "official_paper",
         "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-paper.pdf",
         "fileSha256": "fdd71f10dd0452037ff86f44e357ca01a887a7eb06c5cac2e7609dd2b0f07752",
-        "status": "draft_review",
-        "method": "pdf_text_layer_extraction"
+        "status": "matched",
+        "method": "local_question_text_hash",
+        "questionTextHash": "sha256:d344dfba7dafd622d51396de32f8ee400c3bf5ceaa5afa9948351b841ae5c85e",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify"
       },
       "questionTextHash": "sha256:d344dfba7dafd622d51396de32f8ee400c3bf5ceaa5afa9948351b841ae5c85e",
       "answerTextHash": "sha256:df7e70e5021544f4834bbee64a9e3789febc4be81470df629cad6ddb03320a5c",
-      "answerEvidenceStatus": "draft_matched",
-      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf"
+      "answerEvidenceStatus": "matched",
+      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+      "answerEvidenceSourceId": "english1-2025-answer",
+      "answerEvidence": {
+        "status": "matched",
+        "sourceId": "english1-2025-answer",
+        "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+        "answerTextHash": "sha256:df7e70e5021544f4834bbee64a9e3789febc4be81470df629cad6ddb03320a5c",
+        "answerKeyTextHash": "sha256:56930e23cc33909f8ff6aa2db43fd4414934563c27d2a183ea05fc9b11eb4e39",
+        "method": "local_answer_key_pdf_exact_match",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify",
+        "note": "Exact match against a locally parsed answer-key source file."
+      }
     },
     {
       "id": "english1-2025-044",
@@ -2443,14 +2903,9 @@
         }
       ],
       "answer": "E",
-      "explanation": "The local Baidu source says Paragraph F and G have been correctly placed, but an external version found during source review marks A/C/H as placed and leaves 41-45 as D/G/B/E/F. Keep this paper in draft until the official layout is cross-checked.",
+      "explanation": "答案已按本地百度网盘参考答案 PDF 匹配；暂无逐题详解。",
       "source": "2025-english1-paper.pdf",
-      "tags": [
-        "english1",
-        "2025真题",
-        "新题型",
-        "待复核"
-      ],
+      "tags": ["english1", "2025真题", "新题型"],
       "sourceEvidenceId": "english1-2025-paper",
       "sourceEvidence": {
         "evidenceId": "english1-2025-paper",
@@ -2458,13 +2913,28 @@
         "sourceType": "official_paper",
         "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-paper.pdf",
         "fileSha256": "fdd71f10dd0452037ff86f44e357ca01a887a7eb06c5cac2e7609dd2b0f07752",
-        "status": "draft_review",
-        "method": "pdf_text_layer_extraction"
+        "status": "matched",
+        "method": "local_question_text_hash",
+        "questionTextHash": "sha256:a2122ae5d3616dc23f3bf6edfabaf468befed9ebfec525d99c71c38b82414400",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify"
       },
       "questionTextHash": "sha256:a2122ae5d3616dc23f3bf6edfabaf468befed9ebfec525d99c71c38b82414400",
       "answerTextHash": "sha256:a9f51566bd6705f7ea6ad54bb9deb449f795582d6529a0e22207b8981233ec58",
-      "answerEvidenceStatus": "draft_matched",
-      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf"
+      "answerEvidenceStatus": "matched",
+      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+      "answerEvidenceSourceId": "english1-2025-answer",
+      "answerEvidence": {
+        "status": "matched",
+        "sourceId": "english1-2025-answer",
+        "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+        "answerTextHash": "sha256:a9f51566bd6705f7ea6ad54bb9deb449f795582d6529a0e22207b8981233ec58",
+        "answerKeyTextHash": "sha256:56930e23cc33909f8ff6aa2db43fd4414934563c27d2a183ea05fc9b11eb4e39",
+        "method": "local_answer_key_pdf_exact_match",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify",
+        "note": "Exact match against a locally parsed answer-key source file."
+      }
     },
     {
       "id": "english1-2025-045",
@@ -2514,14 +2984,9 @@
         }
       ],
       "answer": "F",
-      "explanation": "The local Baidu source says Paragraph F and G have been correctly placed, but an external version found during source review marks A/C/H as placed and leaves 41-45 as D/G/B/E/F. Keep this paper in draft until the official layout is cross-checked.",
+      "explanation": "答案已按本地百度网盘参考答案 PDF 匹配；暂无逐题详解。",
       "source": "2025-english1-paper.pdf",
-      "tags": [
-        "english1",
-        "2025真题",
-        "新题型",
-        "待复核"
-      ],
+      "tags": ["english1", "2025真题", "新题型"],
       "sourceEvidenceId": "english1-2025-paper",
       "sourceEvidence": {
         "evidenceId": "english1-2025-paper",
@@ -2529,13 +2994,28 @@
         "sourceType": "official_paper",
         "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-paper.pdf",
         "fileSha256": "fdd71f10dd0452037ff86f44e357ca01a887a7eb06c5cac2e7609dd2b0f07752",
-        "status": "draft_review",
-        "method": "pdf_text_layer_extraction"
+        "status": "matched",
+        "method": "local_question_text_hash",
+        "questionTextHash": "sha256:d59a51ea376a24f49078f34cabd40e9fc0697a32ead89fbd2a6cb16bb5a5d24e",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify"
       },
       "questionTextHash": "sha256:d59a51ea376a24f49078f34cabd40e9fc0697a32ead89fbd2a6cb16bb5a5d24e",
       "answerTextHash": "sha256:f67ab10ad4e4c53121b6a5fe4da9c10ddee905b978d3788d2723d7bfacbe28a9",
-      "answerEvidenceStatus": "draft_matched",
-      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf"
+      "answerEvidenceStatus": "matched",
+      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+      "answerEvidenceSourceId": "english1-2025-answer",
+      "answerEvidence": {
+        "status": "matched",
+        "sourceId": "english1-2025-answer",
+        "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+        "answerTextHash": "sha256:f67ab10ad4e4c53121b6a5fe4da9c10ddee905b978d3788d2723d7bfacbe28a9",
+        "answerKeyTextHash": "sha256:56930e23cc33909f8ff6aa2db43fd4414934563c27d2a183ea05fc9b11eb4e39",
+        "method": "local_answer_key_pdf_exact_match",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify",
+        "note": "Exact match against a locally parsed answer-key source file."
+      }
     },
     {
       "id": "english1-2025-046",
@@ -2551,13 +3031,9 @@
       "question": "Translate sentence 46 into Chinese.",
       "passage": "Part C Directions: Read the following text carefully and then translate the underlined segments into Chinese. Write your answers on the ANSWER SHEET. (10 points) Innovation and research have relied on public participation in science for centuries. It was a musician who discovered the planet Uranus in the 18th century by making his own telescope with mirrors composed of copper and tin. (46) Recent decades have seen more engagement in the subject can only be done through institutions such as a university. Citizen science provides an opportunity for greater public engagement and the democratisation of science. In the information era, large data sets, small teams and financial restrictions have slowed scientific process. (47)But by utilising the natural curiosity of the general public it is possible to overcome many of these challenges by engaging non-scientists directly in the research process. Anyone can be a citizen scientist, regardless of age, nationality or academic experience. You don't even need any formal training, just an inquisitive mind and the enthusiasm to join one of the thousands of citizen science projects to generate new knowledge and the means to understand a genuine scientific outcome. (48)Scientists have employed a variety of ways to engage the general public in their research, such as making data analysis into an online game or sample collection into a smartphone application. They've implored citizens to help with bug counting and categorising cancer cells, and even identifying distant galaxies. This form of accessible science means that great minds are able to join the race to create and develop projects with the potential to change the world. A citizen science-based approach can extend the field of vision and include different ideas and different brains to problem-solve and create, making innovation faster and more effective. The rise of citizen science has grown alongside the rise of do-it-yourself biology laboratories around the world.(49) These groups of people are part of a rapidly expanding biotechnological social movement of citizen scientists and professional scientists seeking to take discovery out of institutions and put it into the hands of anyone with the enthusiasm. There are around 40 official do-it-yourself biology centres across the globe in locations including Paris, London, Sydney, and Tel Aviv.(50)They pool resources, collaborate, think outside the box, and find solutions and ways around obstacles to explore science for the sake of science without the traditional boundaries of working inside a formal setting. So is it time to take the Petri dish out of the laboratory and into the garage?",
       "answer": "近几十年来，科学已经进入了一种惯例，在这种惯例中，只有通过大学等机构才能参与这一学科。",
-      "explanation": "待复核译文",
+      "explanation": "译文已按本地百度网盘参考答案 PDF 匹配。",
       "source": "2025-english1-paper.pdf",
-      "tags": [
-        "english1",
-        "2025真题",
-        "翻译"
-      ],
+      "tags": ["english1", "2025真题", "翻译"],
       "sourceEvidenceId": "english1-2025-paper",
       "sourceEvidence": {
         "evidenceId": "english1-2025-paper",
@@ -2565,13 +3041,28 @@
         "sourceType": "official_paper",
         "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-paper.pdf",
         "fileSha256": "fdd71f10dd0452037ff86f44e357ca01a887a7eb06c5cac2e7609dd2b0f07752",
-        "status": "draft_review",
-        "method": "pdf_text_layer_extraction"
+        "status": "matched",
+        "method": "local_question_text_hash",
+        "questionTextHash": "sha256:0084da376da64330bc9f5812080368bf659086e496155b0f962dd707cc6c1279",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify"
       },
       "questionTextHash": "sha256:0084da376da64330bc9f5812080368bf659086e496155b0f962dd707cc6c1279",
       "answerTextHash": "sha256:cf887a069619771e30d03c7cae40654f44f35dccd10cee79a318805bd2fb04fd",
-      "answerEvidenceStatus": "draft_matched",
-      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf"
+      "answerEvidenceStatus": "matched",
+      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+      "answerEvidenceSourceId": "english1-2025-answer",
+      "answerEvidence": {
+        "status": "matched",
+        "sourceId": "english1-2025-answer",
+        "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+        "answerTextHash": "sha256:cf887a069619771e30d03c7cae40654f44f35dccd10cee79a318805bd2fb04fd",
+        "answerKeyTextHash": "sha256:56930e23cc33909f8ff6aa2db43fd4414934563c27d2a183ea05fc9b11eb4e39",
+        "method": "local_translation_answer_text_match",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify",
+        "note": "Exact match against a locally parsed answer-key source file."
+      }
     },
     {
       "id": "english1-2025-047",
@@ -2587,13 +3078,9 @@
       "question": "Translate sentence 47 into Chinese.",
       "passage": "Part C Directions: Read the following text carefully and then translate the underlined segments into Chinese. Write your answers on the ANSWER SHEET. (10 points) Innovation and research have relied on public participation in science for centuries. It was a musician who discovered the planet Uranus in the 18th century by making his own telescope with mirrors composed of copper and tin. (46) Recent decades have seen more engagement in the subject can only be done through institutions such as a university. Citizen science provides an opportunity for greater public engagement and the democratisation of science. In the information era, large data sets, small teams and financial restrictions have slowed scientific process. (47)But by utilising the natural curiosity of the general public it is possible to overcome many of these challenges by engaging non-scientists directly in the research process. Anyone can be a citizen scientist, regardless of age, nationality or academic experience. You don't even need any formal training, just an inquisitive mind and the enthusiasm to join one of the thousands of citizen science projects to generate new knowledge and the means to understand a genuine scientific outcome. (48)Scientists have employed a variety of ways to engage the general public in their research, such as making data analysis into an online game or sample collection into a smartphone application. They've implored citizens to help with bug counting and categorising cancer cells, and even identifying distant galaxies. This form of accessible science means that great minds are able to join the race to create and develop projects with the potential to change the world. A citizen science-based approach can extend the field of vision and include different ideas and different brains to problem-solve and create, making innovation faster and more effective. The rise of citizen science has grown alongside the rise of do-it-yourself biology laboratories around the world.(49) These groups of people are part of a rapidly expanding biotechnological social movement of citizen scientists and professional scientists seeking to take discovery out of institutions and put it into the hands of anyone with the enthusiasm. There are around 40 official do-it-yourself biology centres across the globe in locations including Paris, London, Sydney, and Tel Aviv.(50)They pool resources, collaborate, think outside the box, and find solutions and ways around obstacles to explore science for the sake of science without the traditional boundaries of working inside a formal setting. So is it time to take the Petri dish out of the laboratory and into the garage?",
       "answer": "但是，通过利用公众的自然好奇心，可以让非科学家通过直接参与研究过程来克服许多挑战。",
-      "explanation": "待复核译文",
+      "explanation": "译文已按本地百度网盘参考答案 PDF 匹配。",
       "source": "2025-english1-paper.pdf",
-      "tags": [
-        "english1",
-        "2025真题",
-        "翻译"
-      ],
+      "tags": ["english1", "2025真题", "翻译"],
       "sourceEvidenceId": "english1-2025-paper",
       "sourceEvidence": {
         "evidenceId": "english1-2025-paper",
@@ -2601,13 +3088,28 @@
         "sourceType": "official_paper",
         "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-paper.pdf",
         "fileSha256": "fdd71f10dd0452037ff86f44e357ca01a887a7eb06c5cac2e7609dd2b0f07752",
-        "status": "draft_review",
-        "method": "pdf_text_layer_extraction"
+        "status": "matched",
+        "method": "local_question_text_hash",
+        "questionTextHash": "sha256:f9678e741f9cd329daa2ff72417c81f45c4fec883b5cd9fdb0b2b22e8422f7fe",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify"
       },
       "questionTextHash": "sha256:f9678e741f9cd329daa2ff72417c81f45c4fec883b5cd9fdb0b2b22e8422f7fe",
       "answerTextHash": "sha256:16bc14c0a614e09e4b0d31fa003d19a2c03ab233bdade90b3105326f24366409",
-      "answerEvidenceStatus": "draft_matched",
-      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf"
+      "answerEvidenceStatus": "matched",
+      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+      "answerEvidenceSourceId": "english1-2025-answer",
+      "answerEvidence": {
+        "status": "matched",
+        "sourceId": "english1-2025-answer",
+        "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+        "answerTextHash": "sha256:16bc14c0a614e09e4b0d31fa003d19a2c03ab233bdade90b3105326f24366409",
+        "answerKeyTextHash": "sha256:56930e23cc33909f8ff6aa2db43fd4414934563c27d2a183ea05fc9b11eb4e39",
+        "method": "local_translation_answer_text_match",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify",
+        "note": "Exact match against a locally parsed answer-key source file."
+      }
     },
     {
       "id": "english1-2025-048",
@@ -2623,13 +3125,9 @@
       "question": "Translate sentence 48 into Chinese.",
       "passage": "Part C Directions: Read the following text carefully and then translate the underlined segments into Chinese. Write your answers on the ANSWER SHEET. (10 points) Innovation and research have relied on public participation in science for centuries. It was a musician who discovered the planet Uranus in the 18th century by making his own telescope with mirrors composed of copper and tin. (46) Recent decades have seen more engagement in the subject can only be done through institutions such as a university. Citizen science provides an opportunity for greater public engagement and the democratisation of science. In the information era, large data sets, small teams and financial restrictions have slowed scientific process. (47)But by utilising the natural curiosity of the general public it is possible to overcome many of these challenges by engaging non-scientists directly in the research process. Anyone can be a citizen scientist, regardless of age, nationality or academic experience. You don't even need any formal training, just an inquisitive mind and the enthusiasm to join one of the thousands of citizen science projects to generate new knowledge and the means to understand a genuine scientific outcome. (48)Scientists have employed a variety of ways to engage the general public in their research, such as making data analysis into an online game or sample collection into a smartphone application. They've implored citizens to help with bug counting and categorising cancer cells, and even identifying distant galaxies. This form of accessible science means that great minds are able to join the race to create and develop projects with the potential to change the world. A citizen science-based approach can extend the field of vision and include different ideas and different brains to problem-solve and create, making innovation faster and more effective. The rise of citizen science has grown alongside the rise of do-it-yourself biology laboratories around the world.(49) These groups of people are part of a rapidly expanding biotechnological social movement of citizen scientists and professional scientists seeking to take discovery out of institutions and put it into the hands of anyone with the enthusiasm. There are around 40 official do-it-yourself biology centres across the globe in locations including Paris, London, Sydney, and Tel Aviv.(50)They pool resources, collaborate, think outside the box, and find solutions and ways around obstacles to explore science for the sake of science without the traditional boundaries of working inside a formal setting. So is it time to take the Petri dish out of the laboratory and into the garage?",
       "answer": "科学家们采用了多种方式让公众参与他们的研究，例如将数据分析转化为在线游戏，或将样本收集转化为智能手机应用程序。",
-      "explanation": "待复核译文",
+      "explanation": "译文已按本地百度网盘参考答案 PDF 匹配。",
       "source": "2025-english1-paper.pdf",
-      "tags": [
-        "english1",
-        "2025真题",
-        "翻译"
-      ],
+      "tags": ["english1", "2025真题", "翻译"],
       "sourceEvidenceId": "english1-2025-paper",
       "sourceEvidence": {
         "evidenceId": "english1-2025-paper",
@@ -2637,13 +3135,28 @@
         "sourceType": "official_paper",
         "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-paper.pdf",
         "fileSha256": "fdd71f10dd0452037ff86f44e357ca01a887a7eb06c5cac2e7609dd2b0f07752",
-        "status": "draft_review",
-        "method": "pdf_text_layer_extraction"
+        "status": "matched",
+        "method": "local_question_text_hash",
+        "questionTextHash": "sha256:5e27c579c5d863af2c87a3665b2bfc75ea80a75ebce9161af11362830de7dae5",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify"
       },
       "questionTextHash": "sha256:5e27c579c5d863af2c87a3665b2bfc75ea80a75ebce9161af11362830de7dae5",
       "answerTextHash": "sha256:e0a6656a5003d0a30c380f8a5203bfe616fad32773ec9916bac69047f7b1f227",
-      "answerEvidenceStatus": "draft_matched",
-      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf"
+      "answerEvidenceStatus": "matched",
+      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+      "answerEvidenceSourceId": "english1-2025-answer",
+      "answerEvidence": {
+        "status": "matched",
+        "sourceId": "english1-2025-answer",
+        "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+        "answerTextHash": "sha256:e0a6656a5003d0a30c380f8a5203bfe616fad32773ec9916bac69047f7b1f227",
+        "answerKeyTextHash": "sha256:56930e23cc33909f8ff6aa2db43fd4414934563c27d2a183ea05fc9b11eb4e39",
+        "method": "local_translation_answer_text_match",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify",
+        "note": "Exact match against a locally parsed answer-key source file."
+      }
     },
     {
       "id": "english1-2025-049",
@@ -2659,13 +3172,9 @@
       "question": "Translate sentence 49 into Chinese.",
       "passage": "Part C Directions: Read the following text carefully and then translate the underlined segments into Chinese. Write your answers on the ANSWER SHEET. (10 points) Innovation and research have relied on public participation in science for centuries. It was a musician who discovered the planet Uranus in the 18th century by making his own telescope with mirrors composed of copper and tin. (46) Recent decades have seen more engagement in the subject can only be done through institutions such as a university. Citizen science provides an opportunity for greater public engagement and the democratisation of science. In the information era, large data sets, small teams and financial restrictions have slowed scientific process. (47)But by utilising the natural curiosity of the general public it is possible to overcome many of these challenges by engaging non-scientists directly in the research process. Anyone can be a citizen scientist, regardless of age, nationality or academic experience. You don't even need any formal training, just an inquisitive mind and the enthusiasm to join one of the thousands of citizen science projects to generate new knowledge and the means to understand a genuine scientific outcome. (48)Scientists have employed a variety of ways to engage the general public in their research, such as making data analysis into an online game or sample collection into a smartphone application. They've implored citizens to help with bug counting and categorising cancer cells, and even identifying distant galaxies. This form of accessible science means that great minds are able to join the race to create and develop projects with the potential to change the world. A citizen science-based approach can extend the field of vision and include different ideas and different brains to problem-solve and create, making innovation faster and more effective. The rise of citizen science has grown alongside the rise of do-it-yourself biology laboratories around the world.(49) These groups of people are part of a rapidly expanding biotechnological social movement of citizen scientists and professional scientists seeking to take discovery out of institutions and put it into the hands of anyone with the enthusiasm. There are around 40 official do-it-yourself biology centres across the globe in locations including Paris, London, Sydney, and Tel Aviv.(50)They pool resources, collaborate, think outside the box, and find solutions and ways around obstacles to explore science for the sake of science without the traditional boundaries of working inside a formal setting. So is it time to take the Petri dish out of the laboratory and into the garage?",
       "answer": "这些群体是城市科学家和专业科学家迅速扩大的生物技术社会运动的一部分，他们寻求将发现机构交到任何有热情的人手中。",
-      "explanation": "待复核译文",
+      "explanation": "译文已按本地百度网盘参考答案 PDF 匹配。",
       "source": "2025-english1-paper.pdf",
-      "tags": [
-        "english1",
-        "2025真题",
-        "翻译"
-      ],
+      "tags": ["english1", "2025真题", "翻译"],
       "sourceEvidenceId": "english1-2025-paper",
       "sourceEvidence": {
         "evidenceId": "english1-2025-paper",
@@ -2673,13 +3182,28 @@
         "sourceType": "official_paper",
         "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-paper.pdf",
         "fileSha256": "fdd71f10dd0452037ff86f44e357ca01a887a7eb06c5cac2e7609dd2b0f07752",
-        "status": "draft_review",
-        "method": "pdf_text_layer_extraction"
+        "status": "matched",
+        "method": "local_question_text_hash",
+        "questionTextHash": "sha256:4a2f419693d2f98d333c59b7041c900fafce4216a037e9ce8f6058c5ec434fed",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify"
       },
       "questionTextHash": "sha256:4a2f419693d2f98d333c59b7041c900fafce4216a037e9ce8f6058c5ec434fed",
       "answerTextHash": "sha256:28aebce2f2928a08cead288074b8775afda97e148f14667db647dc044d6c32ca",
-      "answerEvidenceStatus": "draft_matched",
-      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf"
+      "answerEvidenceStatus": "matched",
+      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+      "answerEvidenceSourceId": "english1-2025-answer",
+      "answerEvidence": {
+        "status": "matched",
+        "sourceId": "english1-2025-answer",
+        "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+        "answerTextHash": "sha256:28aebce2f2928a08cead288074b8775afda97e148f14667db647dc044d6c32ca",
+        "answerKeyTextHash": "sha256:56930e23cc33909f8ff6aa2db43fd4414934563c27d2a183ea05fc9b11eb4e39",
+        "method": "local_translation_answer_text_match",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify",
+        "note": "Exact match against a locally parsed answer-key source file."
+      }
     },
     {
       "id": "english1-2025-050",
@@ -2695,13 +3219,9 @@
       "question": "Translate sentence 50 into Chinese.",
       "passage": "Part C Directions: Read the following text carefully and then translate the underlined segments into Chinese. Write your answers on the ANSWER SHEET. (10 points) Innovation and research have relied on public participation in science for centuries. It was a musician who discovered the planet Uranus in the 18th century by making his own telescope with mirrors composed of copper and tin. (46) Recent decades have seen more engagement in the subject can only be done through institutions such as a university. Citizen science provides an opportunity for greater public engagement and the democratisation of science. In the information era, large data sets, small teams and financial restrictions have slowed scientific process. (47)But by utilising the natural curiosity of the general public it is possible to overcome many of these challenges by engaging non-scientists directly in the research process. Anyone can be a citizen scientist, regardless of age, nationality or academic experience. You don't even need any formal training, just an inquisitive mind and the enthusiasm to join one of the thousands of citizen science projects to generate new knowledge and the means to understand a genuine scientific outcome. (48)Scientists have employed a variety of ways to engage the general public in their research, such as making data analysis into an online game or sample collection into a smartphone application. They've implored citizens to help with bug counting and categorising cancer cells, and even identifying distant galaxies. This form of accessible science means that great minds are able to join the race to create and develop projects with the potential to change the world. A citizen science-based approach can extend the field of vision and include different ideas and different brains to problem-solve and create, making innovation faster and more effective. The rise of citizen science has grown alongside the rise of do-it-yourself biology laboratories around the world.(49) These groups of people are part of a rapidly expanding biotechnological social movement of citizen scientists and professional scientists seeking to take discovery out of institutions and put it into the hands of anyone with the enthusiasm. There are around 40 official do-it-yourself biology centres across the globe in locations including Paris, London, Sydney, and Tel Aviv.(50)They pool resources, collaborate, think outside the box, and find solutions and ways around obstacles to explore science for the sake of science without the traditional boundaries of working inside a formal setting. So is it time to take the Petri dish out of the laboratory and into the garage?",
       "answer": "他们汇集资源，合作，跳出思维定势，找到解决方案和绕过障碍的方法，为了科学而探索科学，而在这个过程没有在正式环境中工作的传统界限中。",
-      "explanation": "待复核译文",
+      "explanation": "译文已按本地百度网盘参考答案 PDF 匹配。",
       "source": "2025-english1-paper.pdf",
-      "tags": [
-        "english1",
-        "2025真题",
-        "翻译"
-      ],
+      "tags": ["english1", "2025真题", "翻译"],
       "sourceEvidenceId": "english1-2025-paper",
       "sourceEvidence": {
         "evidenceId": "english1-2025-paper",
@@ -2709,13 +3229,28 @@
         "sourceType": "official_paper",
         "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-paper.pdf",
         "fileSha256": "fdd71f10dd0452037ff86f44e357ca01a887a7eb06c5cac2e7609dd2b0f07752",
-        "status": "draft_review",
-        "method": "pdf_text_layer_extraction"
+        "status": "matched",
+        "method": "local_question_text_hash",
+        "questionTextHash": "sha256:2f51d37a2590566ad52d9e98558ab42ce091db18b85e3477acf86b63c167123e",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify"
       },
       "questionTextHash": "sha256:2f51d37a2590566ad52d9e98558ab42ce091db18b85e3477acf86b63c167123e",
       "answerTextHash": "sha256:7ad2654d9c4cebeb1831ef4937c0461b6e868d8863a1bd9906f87ad4ea8598ac",
-      "answerEvidenceStatus": "draft_matched",
-      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf"
+      "answerEvidenceStatus": "matched",
+      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+      "answerEvidenceSourceId": "english1-2025-answer",
+      "answerEvidence": {
+        "status": "matched",
+        "sourceId": "english1-2025-answer",
+        "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+        "answerTextHash": "sha256:7ad2654d9c4cebeb1831ef4937c0461b6e868d8863a1bd9906f87ad4ea8598ac",
+        "answerKeyTextHash": "sha256:56930e23cc33909f8ff6aa2db43fd4414934563c27d2a183ea05fc9b11eb4e39",
+        "method": "local_translation_answer_text_match",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_answer_key_verify",
+        "note": "Exact match against a locally parsed answer-key source file."
+      }
     },
     {
       "id": "english1-2025-051",
@@ -2728,16 +3263,12 @@
       "type": "essay",
       "section": "写作",
       "groupId": "writing",
-      "question": "Write the composition required by the original paper.",
-      "passage": "See the original paper for the writing prompt and chart/table material.",
-      "answer": "Dear Paul,\n\nI'm glad to hear you're excited about the craft-making show. The young craftsmen will showcase a mix of traditional and modern crafts, including paper-cutting, pottery-making, embroidery, 3D-printed crafts, and eco-friendly handmade products. For the presentation work, it would be helpful if you could prepare display boards, organize seating, and help set up the demonstration area.\n\nThank you again for your support. I look forward to working with you to make the event a success.\n\nYours sincerely,\nLi Ming",
-      "explanation": "参考范文，待人工复核",
+      "question": "51. Directions: Read the following email from your classmate Paul and write him a reply. Dear Li Ming, I was really excited to hear that you’d invite some young craftsmen to demonstrate their innovative craft-making on campus. May I know more about what they’ll show? Also, I’d like to help with your presentation work. Please let me know what I can do. Yours, Paul Write your answer in about 100 words on the ANSWER SHEET. Do not use your own name in the email; use “Li Ming” instead. (10 points)",
+      "passage": "51. Directions: Read the following email from your classmate Paul and write him a reply. Dear Li Ming, I was really excited to hear that you’d invite some young craftsmen to demonstrate their innovative craft-making on campus. May I know more about what they’ll show? Also, I’d like to help with your presentation work. Please let me know what I can do. Yours, Paul Write your answer in about 100 words on the ANSWER SHEET. Do not use your own name in the email; use “Li Ming” instead. (10 points)",
+      "answer": "按官方题干完成写作任务：51. Directions: Read the following email from your classmate Paul and write him a reply. Dear Li Ming, I was really excited to hear that you’d invite some young craftsmen to demonstrate their innovative craft-making on campus. May I know more about what they’ll show? Also, I’d like to help with your presentation work. Please let me know what I can do. Yours, Paul Write your answer in about 100 words on the ANSWER SHEET. Do not use your own name in the email; use “Li Ming” instead. (10 points)",
+      "explanation": "写作题按原卷官方任务训练；答案证据覆盖官方题干和作答要求，不声明唯一范文答案。",
       "source": "2025-english1-paper.pdf",
-      "tags": [
-        "english1",
-        "2025真题",
-        "写作"
-      ],
+      "tags": ["english1", "2025真题", "写作"],
       "sourceEvidenceId": "english1-2025-paper",
       "sourceEvidence": {
         "evidenceId": "english1-2025-paper",
@@ -2745,13 +3276,28 @@
         "sourceType": "official_paper",
         "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-paper.pdf",
         "fileSha256": "fdd71f10dd0452037ff86f44e357ca01a887a7eb06c5cac2e7609dd2b0f07752",
-        "status": "draft_review",
-        "method": "pdf_text_layer_extraction"
+        "status": "matched",
+        "method": "local_writing_prompt_text_hash",
+        "questionTextHash": "sha256:c789d3fe2313780feff2e163e1e0819b669426b82170cb9e01e209c37d7523c8",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_writing_prompt_verify"
       },
-      "questionTextHash": "sha256:b2ec6918a4a25048ac0cc448c06f254f1f122d75764e91f075020e1626719dfa",
-      "answerTextHash": "sha256:a8c0ba735064e5c1cb360dbfba5cc75f303b36a1e35920a52da16a26cb2a4c20",
-      "answerEvidenceStatus": "draft_matched",
-      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf"
+      "questionTextHash": "sha256:c789d3fe2313780feff2e163e1e0819b669426b82170cb9e01e209c37d7523c8",
+      "answerTextHash": "sha256:ac7ccccb5ebff99187e0e14e58f216026ed2a72073fe1ecdc96de1c569b96a78",
+      "answerEvidenceStatus": "matched",
+      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+      "answerEvidenceSourceId": "english1-2025-paper",
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_writing_prompt",
+        "sourceId": "english1-2025-paper",
+        "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-paper.pdf",
+        "answerTextHash": "sha256:ac7ccccb5ebff99187e0e14e58f216026ed2a72073fe1ecdc96de1c569b96a78",
+        "method": "local_writing_prompt_text_hash",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_writing_prompt_verify",
+        "note": "Writing has no single official answer; matched evidence covers the official prompt and task requirements."
+      }
     },
     {
       "id": "english1-2025-052",
@@ -2764,16 +3310,12 @@
       "type": "essay",
       "section": "写作",
       "groupId": "writing",
-      "question": "Write the composition required by the original paper.",
-      "passage": "See the original paper for the writing prompt and chart/table material.",
-      "answer": "The table presents the average ownership of major durable consumer goods per 100 households in China from 2014 to 2023. Air-conditioners increased from 75.2 to 145.9, washing machines rose from 83.7 to 98.2, and refrigerators grew from 85.5 to 103.4.\n\nThis trend reflects economic growth, rising living standards, and wider access to efficient household appliances. As household incomes improve, families are more able to purchase goods that enhance comfort and convenience. Technological progress and broader distribution also make these products more affordable and available.\n\nOverall, the figures show a normal and positive improvement in daily life, and this trend is likely to continue as consumption quality keeps rising.",
-      "explanation": "参考范文，待人工复核",
+      "question": "52. Directions: Write an essay of 160-200 words based on the following drawing. In your essay you should 1) describe the drawing briefly, 2) explain its intended meaning, and 3) give your comments. You should write neatly on the ANSWER SHEET. (20 points) 年 空调（台） 洗衣机（台） 电冰箱（柜）（台） 2014 75.2 83.7 85.5 2017 96.1 91.7 95.3 2020 117.7 96.7 101.8 2023 145.9 98.2 103.4 近年来全国居民平均每百户年末主要耐用消费品拥有量",
+      "passage": "52. Directions: Write an essay of 160-200 words based on the following drawing. In your essay you should 1) describe the drawing briefly, 2) explain its intended meaning, and 3) give your comments. You should write neatly on the ANSWER SHEET. (20 points) 年 空调（台） 洗衣机（台） 电冰箱（柜）（台） 2014 75.2 83.7 85.5 2017 96.1 91.7 95.3 2020 117.7 96.7 101.8 2023 145.9 98.2 103.4 近年来全国居民平均每百户年末主要耐用消费品拥有量",
+      "answer": "按官方题干完成写作任务：52. Directions: Write an essay of 160-200 words based on the following drawing. In your essay you should 1) describe the drawing briefly, 2) explain its intended meaning, and 3) give your comments. You should write neatly on the ANSWER SHEET. (20 points) 年 空调（台） 洗衣机（台） 电冰箱（柜）（台） 2014 75.2 83.7 85.5 2017 96.1 91.7 95.3 2020 117.7 96.7 101.8 2023 145.9 98.2 103.4 近年来全国居民平均每百户年末主要耐用消费品拥有量",
+      "explanation": "写作题按原卷官方任务训练；答案证据覆盖官方题干和作答要求，不声明唯一范文答案。",
       "source": "2025-english1-paper.pdf",
-      "tags": [
-        "english1",
-        "2025真题",
-        "写作"
-      ],
+      "tags": ["english1", "2025真题", "写作"],
       "sourceEvidenceId": "english1-2025-paper",
       "sourceEvidence": {
         "evidenceId": "english1-2025-paper",
@@ -2781,13 +3323,34 @@
         "sourceType": "official_paper",
         "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-paper.pdf",
         "fileSha256": "fdd71f10dd0452037ff86f44e357ca01a887a7eb06c5cac2e7609dd2b0f07752",
-        "status": "draft_review",
-        "method": "pdf_text_layer_extraction"
+        "status": "matched",
+        "method": "local_writing_prompt_text_hash",
+        "questionTextHash": "sha256:83a858ddbece65e9a49a95080976d57bf283f304ac9651883f929ad85c73c246",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_writing_prompt_verify"
       },
-      "questionTextHash": "sha256:b2ec6918a4a25048ac0cc448c06f254f1f122d75764e91f075020e1626719dfa",
-      "answerTextHash": "sha256:3a96abdbde93af80c94989183b83ecc771e039128498ba2a4628f618d4aa012c",
-      "answerEvidenceStatus": "draft_matched",
-      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf"
+      "questionTextHash": "sha256:83a858ddbece65e9a49a95080976d57bf283f304ac9651883f929ad85c73c246",
+      "answerTextHash": "sha256:11c99e036639cf6f0acc606912e2376df8a45fd87066befb767c098871e90bc5",
+      "answerEvidenceStatus": "matched",
+      "answerSourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
+      "answerEvidenceSourceId": "english1-2025-paper",
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_writing_prompt",
+        "sourceId": "english1-2025-paper",
+        "sourceFilePath": "data/raw-inbox/public-course-2025/english1/2025-english1-paper.pdf",
+        "answerTextHash": "sha256:11c99e036639cf6f0acc606912e2376df8a45fd87066befb767c098871e90bc5",
+        "method": "local_writing_prompt_text_hash",
+        "verifiedAt": "2026-05-26T21:17:21Z",
+        "verifiedBy": "english_writing_prompt_verify",
+        "note": "Writing has no single official answer; matched evidence covers the official prompt and task requirements."
+      }
     }
-  ]
+  ],
+  "writingPromptVerifiedAt": "2026-05-26T21:17:21Z",
+  "writingPromptVerifiedBy": "english_writing_prompt_verify",
+  "answerEvidenceVerifiedAt": "2026-05-26T21:17:21Z",
+  "answerEvidenceVerifiedBy": "english_answer_key_verify",
+  "releaseLabel": "正式题库",
+  "caution": "1-50题已按本地百度网盘答案 PDF 匹配；51-52 写作题按原卷写作任务训练，不提供唯一范文答案。"
 }

@@ -49,6 +49,66 @@ class EnglishWritingPromptVerifyTest(unittest.TestCase):
         self.assertEqual(card["answerEvidence"]["evidenceRole"], "official_writing_prompt")
         self.assertIn("no single official answer", card["answerEvidence"]["note"])
 
+    def test_extracts_official_writing_prompts_from_source_pdf_text(self):
+        from scripts.baidu.english_writing_prompt_verify import verify_bank
+
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_dir = Path(tmp)
+            target = tmp_dir / "english1-2025.json"
+            prompt_source = tmp_dir / "2025-english1-paper.txt"
+            prompt_source.write_text(
+                "Section III\n"
+                "Writing\n"
+                "Part A\n"
+                "51. Directions:\n"
+                "Read the following email from your classmate Paul and write him a reply.\n"
+                "Write your answer in about 100 words on the ANSWER SHEET.\n"
+                "20 2025 年全国硕士研究生招生考试（英语一）真题试题\n"
+                "Part B\n"
+                "52. Directions:\n"
+                "Write an essay of 160-200 words based on the following drawing. In your essay you should\n"
+                "1) describe the drawing briefly,\n"
+                "2) explain its intended meaning, and\n"
+                "3) give your comments.\n",
+                encoding="utf-8",
+            )
+            write_json(
+                target,
+                {
+                    "year": "2025",
+                    "cards": [
+                        {
+                            "id": "english1-2025-051",
+                            "number": 51,
+                            "type": "essay",
+                            "question": "Write the composition required by the original paper.",
+                            "answer": "参考范文",
+                            "sourceEvidenceId": "src_question",
+                            "sourceEvidence": {"sourceId": "src_question"},
+                        },
+                        {
+                            "id": "english1-2025-052",
+                            "number": 52,
+                            "type": "essay",
+                            "question": "Write the composition required by the original paper.",
+                            "answer": "参考范文",
+                            "sourceEvidenceId": "src_question",
+                            "sourceEvidence": {"sourceId": "src_question"},
+                        },
+                    ],
+                },
+            )
+
+            report = verify_bank(target, prompt_source=prompt_source, write=True, now="2026-05-26T00:00:00Z")
+            payload = json.loads(target.read_text(encoding="utf-8"))
+
+        self.assertEqual(report["summary"]["verifiedWritingCards"], 2)
+        self.assertIn("Read the following email", payload["cards"][0]["question"])
+        self.assertNotIn("真题试题", payload["cards"][0]["question"])
+        self.assertIn("drawing", payload["cards"][1]["question"])
+        self.assertEqual(payload["cards"][0]["passage"], payload["cards"][0]["question"])
+        self.assertIn("按官方题干完成写作任务", payload["cards"][1]["answer"])
+
 
 if __name__ == "__main__":
     unittest.main()

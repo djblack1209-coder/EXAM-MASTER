@@ -188,6 +188,40 @@ class EnglishAnswerKeyVerifyTest(unittest.TestCase):
         self.assertEqual(payload["cards"][2]["sourceEvidenceId"], "src_question")
         self.assertEqual(payload["cards"][2]["sourceEvidence"]["sourceId"], "src_question")
 
+    def test_verifier_parses_inline_answer_pdf_style_keys(self):
+        from scripts.baidu.english_answer_key_verify import build_answer_key
+
+        with tempfile.TemporaryDirectory() as tmp:
+            answer_key = Path(tmp) / "2025-english1-answer.txt"
+            answer_key.write_text(
+                "2025 年全国硕士研究生招生考试（英语一）参考答案\n"
+                "1.【答案】[B] prone\n"
+                "18.【答案】[B]connected\n"
+                "41. 【答案】[D] Five years ago,\n"
+                "(46) Recent decades have seen science move into a convention where engagement in the subject can only be done through institutions such as a university.\n"
+                "【参考译文】近几十年来，科学已经进入了一种惯例，在这种惯例中，\n"
+                "3 2025 年全国硕士研究生招生考试（英语一）参考答案\n"
+                "只有通过大学等机构才能参与这一学科。\n"
+                "(47) But by utilizing the natural curiosity of the general public it is possible to overcome many of these challenges.\n"
+                "【参考译文】但是，通过利用公众的自然好奇心，可以让非科学家通过直接参与研究过程来克服许多挑战。\n"
+                "Section III Writing\n",
+                encoding="utf-8",
+            )
+
+            key = build_answer_key(answer_key)
+
+        self.assertEqual(key["choiceAnswers"]["1"], "B")
+        self.assertEqual(key["choiceAnswers"]["18"], "B")
+        self.assertEqual(key["choiceAnswers"]["41"], "D")
+        self.assertEqual(
+            key["numberedAnswers"]["46"],
+            "近几十年来，科学已经进入了一种惯例，在这种惯例中，只有通过大学等机构才能参与这一学科。",
+        )
+        self.assertEqual(
+            key["numberedAnswers"]["47"],
+            "但是，通过利用公众的自然好奇心，可以让非科学家通过直接参与研究过程来克服许多挑战。",
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

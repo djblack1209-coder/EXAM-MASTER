@@ -20,9 +20,8 @@ describe('published flashcard bank registry', () => {
         'english1-2012'
       ])
     );
-    expect(banks.map((bank) => bank.id)).not.toEqual(
-      expect.arrayContaining(['politics-2025', 'politics-2024', 'english1-2025'])
-    );
+    expect(banks.map((bank) => bank.id)).toEqual(expect.arrayContaining(['english1-2025']));
+    expect(banks.map((bank) => bank.id)).not.toEqual(expect.arrayContaining(['politics-2025', 'politics-2024']));
     expect(banks.map((bank) => bank.id)).not.toEqual(expect.arrayContaining(['english-2025', 'math-2025']));
     const bank = await loadBank('english1-2005');
     expect(bank.cards.length).toBeGreaterThan(0);
@@ -35,7 +34,12 @@ describe('published flashcard bank registry', () => {
     await expect(loadBank('english-2025')).rejects.toThrow('题库不存在或暂不可用');
     await expect(loadBank('politics-2025')).rejects.toThrow('题库不存在或暂不可用');
     await expect(loadBank('politics-2024')).rejects.toThrow('题库不存在或暂不可用');
-    await expect(loadBank('english1-2025')).rejects.toThrow('题库不存在或暂不可用');
+    const english2025 = await loadBank('english1-2025');
+    expect(english2025.cards).toHaveLength(52);
+    expect(english2025.cards.every((card) => card.answerEvidenceStatus === 'matched')).toBe(true);
+    expect(english2025.cards.find((card) => card.number === 51).answerEvidence.evidenceRole).toBe(
+      'official_writing_prompt'
+    );
     const english2005 = await loadBank('english1-2005');
     expect(english2005.cards.length).toBeGreaterThan(0);
     expect(english2005.cards.find((card) => card.number === 21).passage).toEqual(expect.any(String));
@@ -83,20 +87,26 @@ describe('published flashcard bank registry', () => {
       statusLabel: '待入库',
       clickable: false
     });
-    expect(english.tracks[0].banks.some((bank) => bank.id === 'english1-2025')).toBe(false);
+    expect(english.tracks[0].banks.some((bank) => bank.id === 'english1-2025')).toBe(true);
     expect(english.tracks[0].banks.some((bank) => bank.id === 'english1-2005')).toBe(true);
     expect(english.tracks[0].banks.find((bank) => bank.id === 'english1-2005').releaseLabel).toBe('正式题库');
     expect(english.tracks[0].banks.some((bank) => bank.id === 'english1-2006')).toBe(true);
     expect(english.tracks[0].banks.some((bank) => bank.id === 'english1-2010')).toBe(true);
     expect(english.tracks[0].banks.some((bank) => bank.id === 'english1-2011')).toBe(true);
     expect(english.tracks[0].banks.some((bank) => bank.id === 'english1-2012')).toBe(true);
-    expect(english.tracks[0].pendingBanks.some((bank) => bank.id === 'english1-2025')).toBe(true);
+    expect(english.tracks[0].pendingBanks.some((bank) => bank.id === 'english1-2025')).toBe(false);
     expect(english.tracks[0].pendingBanks.some((bank) => bank.id === 'english1-2025-source')).toBe(false);
     expect(english.tracks[0].pendingBanks.some((bank) => bank.id === 'english-2025')).toBe(false);
     expect(english.tracks[0].yearSlots).toHaveLength(22);
-    expect(english.tracks[0].slotSummary).toEqual({ total: 22, ready: 8, organizing: 1, missing: 13 });
+    expect(english.tracks[0].slotSummary).toEqual({ total: 22, ready: 9, organizing: 0, missing: 13 });
     expect(english.tracks[0].yearSlots.find((slot) => slot.year === '2012')).toMatchObject({
       bankId: 'english1-2012',
+      status: 'ready',
+      statusLabel: '正式',
+      clickable: true
+    });
+    expect(english.tracks[0].yearSlots.find((slot) => slot.year === '2025')).toMatchObject({
+      bankId: 'english1-2025',
       status: 'ready',
       statusLabel: '正式',
       clickable: true
@@ -134,8 +144,8 @@ describe('published flashcard bank registry', () => {
     expect(english2.releaseState).toBe('empty');
 
     const english1 = coverage.tracks.find((item) => item.track === 'english1');
-    expect(english1.publishedYears).toEqual([]);
-    expect(english1.pendingYears).toEqual([2025]);
+    expect(english1.publishedYears).toEqual([2025]);
+    expect(english1.pendingYears).toEqual([]);
   });
 
   it('uses the production coverage scope requested for current exam prep by default', () => {

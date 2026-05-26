@@ -63,7 +63,7 @@ describe('question bank public-course year map', () => {
     wrapper.unmount();
   });
 
-  it('keeps only verified formal banks clickable in the operator-facing summary', async () => {
+  it('shows verified formal banks as clickable in the operator-facing summary', async () => {
     storageService.save('exam_profile', { tracks: ['english1'] });
 
     const wrapper = mount(QuestionBankPage, {
@@ -75,11 +75,11 @@ describe('question bank public-course year map', () => {
     });
     await nextTick();
 
-    expect(wrapper.text()).toContain('8');
+    expect(wrapper.text()).toContain('9');
     expect(wrapper.text()).toContain('正式');
-    expect(wrapper.text()).toContain('1');
+    expect(wrapper.text()).toContain('0');
     expect(wrapper.text()).toContain('整理中');
-    expect(wrapper.text()).toContain('正式 8 · 整理中 1 · 待入库 13');
+    expect(wrapper.text()).toContain('正式 9 · 整理中 0 · 待入库 13');
 
     wrapper.unmount();
   });

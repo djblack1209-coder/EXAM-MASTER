@@ -27,9 +27,9 @@ WRITING_NUMBERS = {51, 52}
 
 
 try:
-    from answer_evidence_repair import first_non_empty, hash_text  # type: ignore
+    from answer_evidence_repair import first_non_empty, hash_text, read_source_text  # type: ignore
 except ModuleNotFoundError:  # pragma: no cover
-    from scripts.baidu.answer_evidence_repair import first_non_empty, hash_text  # type: ignore
+    from scripts.baidu.answer_evidence_repair import first_non_empty, hash_text, read_source_text  # type: ignore
 
 
 def utc_now() -> str:
@@ -84,10 +84,66 @@ def prompt_answer(card: dict[str, Any]) -> str:
     return f"按官方题干完成写作任务：{question}"
 
 
-def verify_bank(target_path: Path, *, write: bool = False, sync_config: bool = False, now: str | None = None) -> dict[str, Any]:
+def extract_writing_prompts(source_text: str) -> dict[int, str]:
+    if not source_text:
+        return {}
+
+    text = source_text.replace("\f", "\n")
+    text = re.sub(r"\r\n?", "\n", text)
+    prompts: dict[int, str] = {}
+    for number, stop in ((51, r"\n\s*Part\s+B\s*\n"), (52, r"\Z")):
+        match = re.search(rf"(?ms)^\s*{number}\s*[.．]\s*Directions[:：]\s*(.+?)(?={stop})", text)
+        if not match:
+            continue
+        prompt = compact(f"{number}. Directions: {match.group(1)}")
+        prompt = re.sub(r"\b\d+\s+2025\s+年全国硕士研究生招生考试（英语一）真题试题\b", "", prompt)
+        prompt = re.sub(r"\s+\d+\s*$", "", prompt).strip()
+        if prompt:
+            prompts[number] = prompt
+    return prompts
+
+
+def resolve_writing_prompt_path(payload: Any, prompt_source: Path | None) -> Path | None:
+    if prompt_source:
+        return prompt_source
+
+    source_paths: list[str] = []
+    cards = load_cards(payload)
+    for card in cards:
+        if card_number(card) not in WRITING_NUMBERS:
+            continue
+        source_evidence = card.get("sourceEvidence") if isinstance(card.get("sourceEvidence"), dict) else {}
+        source_paths.extend(
+            [
+                first_non_empty(source_evidence.get("sourceFilePath")),
+                first_non_empty(card.get("sourceFilePath")),
+            ]
+        )
+
+    for source_path in source_paths:
+        if not source_path:
+            continue
+        candidates = [Path(source_path), PROJECT_ROOT / source_path]
+        for candidate in candidates:
+            if candidate.exists() and candidate.is_file():
+                return candidate
+
+    return None
+
+
+def verify_bank(
+    target_path: Path,
+    *,
+    prompt_source: Path | None = None,
+    write: bool = False,
+    sync_config: bool = False,
+    now: str | None = None,
+) -> dict[str, Any]:
     now = now or utc_now()
     payload = read_json(target_path, {})
     cards = load_cards(payload)
+    prompt_source_path = resolve_writing_prompt_path(payload, prompt_source)
+    writing_prompts = extract_writing_prompts(read_source_text(prompt_source_path)) if prompt_source_path else {}
     changed = False
     verified = 0
     skipped: list[dict[str, Any]] = []
@@ -96,6 +152,14 @@ def verify_bank(target_path: Path, *, write: bool = False, sync_config: bool = F
         number = card_number(card)
         if number not in WRITING_NUMBERS:
             continue
+
+        official_prompt = writing_prompts.get(number)
+        if official_prompt and card.get("question") != official_prompt:
+            card["question"] = official_prompt
+            changed = True
+        if official_prompt and card.get("passage") != official_prompt:
+            card["passage"] = official_prompt
+            changed = True
 
         answer = prompt_answer(card)
         source_id = first_non_empty(card.get("sourceEvidenceId"), card.get("sourceEvidence", {}).get("sourceId"))
@@ -144,6 +208,7 @@ def verify_bank(target_path: Path, *, write: bool = False, sync_config: bool = F
             "status": "matched",
             "evidenceRole": "official_writing_prompt",
             "sourceId": source_id,
+            "sourceFilePath": relative_path(prompt_source_path) if prompt_source_path else "",
             "answerTextHash": answer_hash,
             "method": "local_writing_prompt_text_hash",
             "verifiedAt": now,
@@ -170,6 +235,7 @@ def verify_bank(target_path: Path, *, write: bool = False, sync_config: bool = F
     return {
         "targetFile": relative_path(target_path),
         "mirroredConfigFile": relative_path(mirrored_config_path),
+        "promptSourceFile": relative_path(prompt_source_path),
         "write": write,
         "summary": {
             "cardCount": len(cards),
@@ -198,6 +264,7 @@ def parse_years(value: str) -> list[int]:
 def run(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Verify English writing prompt cards.")
     parser.add_argument("--target", type=Path, action="append", default=[])
+    parser.add_argument("--prompt-source", type=Path)
     parser.add_argument("--years", default="2005-2012")
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
     parser.add_argument("--write", action="store_true")
@@ -205,7 +272,10 @@ def run(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     targets = args.target or [DEFAULT_FLASHCARD_DIR / f"english1-{year}.json" for year in parse_years(args.years)]
-    files = [verify_bank(target, write=args.write, sync_config=args.sync_config) for target in targets]
+    files = [
+        verify_bank(target, prompt_source=args.prompt_source, write=args.write, sync_config=args.sync_config)
+        for target in targets
+    ]
     report = {
         "version": 1,
         "generatedAt": utc_now(),

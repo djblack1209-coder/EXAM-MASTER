@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-05-26T20:59:43.953Z",
+  "generatedAt": "2026-05-26T21:26:04.704Z",
   "verdict": "blocked",
   "sources": {
     "questionAudit": "data/question-bank-release-audit.json",
@@ -12,18 +12,18 @@
   },
   "summary": {
     "canPublish": false,
-    "blockerItemCount": 141,
-    "p0Count": 141,
+    "blockerItemCount": 140,
+    "p0Count": 140,
     "publicCourseRequiredSlots": 132,
-    "publicCoursePublishedSlots": 8,
-    "publicCoursePendingSlots": 7,
-    "publicCoursePendingCoverageBlockers": 7,
+    "publicCoursePublishedSlots": 9,
+    "publicCoursePendingSlots": 6,
+    "publicCoursePendingCoverageBlockers": 6,
     "publicCourseCoverageGaps": 117,
-    "publicCourseBlockerItemCount": 139,
-    "publicCourseBlockedSlotCount": 124,
+    "publicCourseBlockerItemCount": 138,
+    "publicCourseBlockedSlotCount": 123,
     "publicCourseLocalSourceSummary": {
-      "totalBlockedSlots": 124,
-      "pairedReadableSlots": 1,
+      "totalBlockedSlots": 123,
+      "pairedReadableSlots": 0,
       "answerBlockedSlots": 1,
       "paperBlockedSlots": 0,
       "missingAnswerSlots": 0,
@@ -75,8 +75,8 @@
     },
     "public_course_coverage": {
       "status": "blocked",
-      "itemCount": 124,
-      "p0Count": 124,
+      "itemCount": 123,
+      "p0Count": 123,
       "sampleItems": [
         "coverage_missing:politics:2005",
         "coverage_missing:english2:2005",
@@ -142,192 +142,6 @@
     }
   },
   "publicCourseSlotBacklog": [
-    {
-      "slotKey": "english1:2025",
-      "track": "english1",
-      "trackLabel": "英语一",
-      "year": 2025,
-      "blockerCode": "pending_public_course_bank",
-      "slotStatus": "pending",
-      "blockers": [
-        "pending_public_course_bank"
-      ],
-      "blockerItemIds": [
-        "coverage_pending:english1:2025"
-      ],
-      "sourceEvidenceStatus": "publishable_source_present",
-      "sourceCandidateSummary": "source manifest 已发现 95 个候选，其中 official_paper=5；当前阻断: legalReview.publishBlocked=true(82), riskFlags=brand_leak,copyright_review_required(65), sourceType=institution_candidate(65)",
-      "sourceCandidateSamples": [
-        {
-          "sourceId": "src_20ea20dab6f4418eaad2f8f4",
-          "status": "discovered",
-          "sourceType": "official_paper",
-          "sourceRole": "",
-          "inferredSourceRole": "paper_answer",
-          "roleSource": "filename",
-          "autoPairEligible": true,
-          "answerEvidenceStatus": "",
-          "riskFlags": [],
-          "publishBlocked": false,
-          "blockReasons": [],
-          "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/2025考研英语真题和答案【完整版】/2025考研英语一真题及答案/版本一/2025考研英语一真题及答案.pdf",
-          "sourceUrl": ""
-        },
-        {
-          "sourceId": "src_dad34e382c4eea12826190ad",
-          "status": "discovered",
-          "sourceType": "official_paper",
-          "sourceRole": "",
-          "inferredSourceRole": "paper_answer",
-          "roleSource": "path",
-          "autoPairEligible": true,
-          "answerEvidenceStatus": "",
-          "riskFlags": [],
-          "publishBlocked": false,
-          "blockReasons": [],
-          "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/03.考研真相系列/26考研真相/英一/真题册+答案速查/2025年真题及答案/考研英语一2025真题.pdf",
-          "sourceUrl": ""
-        },
-        {
-          "sourceId": "src_fa6864907ece26992cb3087c",
-          "status": "discovered",
-          "sourceType": "official_paper",
-          "sourceRole": "",
-          "inferredSourceRole": "paper_answer",
-          "roleSource": "path",
-          "autoPairEligible": true,
-          "answerEvidenceStatus": "",
-          "riskFlags": [],
-          "publishBlocked": false,
-          "blockReasons": [],
-          "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/2025考研英语真题和答案【完整版】/2025考研英语一真题及答案/版本二/2025年全国硕士研究生招生考试英语（一）试题-完整版.pdf",
-          "sourceUrl": ""
-        }
-      ],
-      "localSourceAuditStatus": "present",
-      "localSourceAuditSummary": "local source audit 已有 2 个本地文件，usableTextLayer=2，needsOcr=0，blocked=0，roles: answer=1, paper=1，companions=paper+answer可读",
-      "localSourceAuditSamples": [
-        {
-          "id": "english1-2025-paper",
-          "role": "paper",
-          "localPath": "data/raw-inbox/public-course-2025/english1/2025-english1-paper.pdf",
-          "sha256": "fdd71f10dd0452037ff86f44e357ca01a887a7eb06c5cac2e7609dd2b0f07752",
-          "pageCount": 22,
-          "textLayer": "usable",
-          "quality": "needs_review",
-          "blockers": []
-        },
-        {
-          "id": "english1-2025-answer",
-          "role": "answer",
-          "localPath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
-          "sha256": "05676469aba3368530c13ca4702256a5094a438fbb503207dd5ff9782da24a06",
-          "pageCount": 8,
-          "textLayer": "usable",
-          "quality": "needs_review",
-          "blockers": []
-        }
-      ],
-      "localSourceAuditDiagnostics": {
-        "status": "present",
-        "sourceCount": 2,
-        "usableTextLayerCount": 2,
-        "needsOcrCount": 0,
-        "blockedCount": 0,
-        "paperLikeCount": 1,
-        "answerLikeCount": 1,
-        "usablePaperLikeCount": 1,
-        "usableAnswerLikeCount": 1,
-        "blockedPaperLikeCount": 0,
-        "blockedAnswerLikeCount": 0,
-        "roleCounts": {
-          "answer": 1,
-          "paper": 1
-        },
-        "samples": [
-          {
-            "id": "english1-2025-paper",
-            "role": "paper",
-            "localPath": "data/raw-inbox/public-course-2025/english1/2025-english1-paper.pdf",
-            "sha256": "fdd71f10dd0452037ff86f44e357ca01a887a7eb06c5cac2e7609dd2b0f07752",
-            "pageCount": 22,
-            "textLayer": "usable",
-            "quality": "needs_review",
-            "blockers": []
-          },
-          {
-            "id": "english1-2025-answer",
-            "role": "answer",
-            "localPath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
-            "sha256": "05676469aba3368530c13ca4702256a5094a438fbb503207dd5ff9782da24a06",
-            "pageCount": 8,
-            "textLayer": "usable",
-            "quality": "needs_review",
-            "blockers": []
-          }
-        ]
-      },
-      "sourceManifestRegistrationChecklist": {
-        "status": "auto_source_evidence_candidate",
-        "readyForHumanVerification": false,
-        "requiredManifestFields": [
-          "eligible=true",
-          "status=discovered|verified|published",
-          "sourceType=official_paper",
-          "contentHash|sha256|fileSha256|sourceHash",
-          "remotePath|sourceUrl|provenanceUrl",
-          "sourceRole inferred as paper+answer or paper_answer",
-          "legalReview.publishBlocked=false",
-          "riskFlags excludes answer_missing,brand_leak,copyright_review_required,ad_or_promo"
-        ],
-        "verifiedSourceRegistryFields": [
-          "localPath",
-          "sourceUrl",
-          "track",
-          "year",
-          "sourceType=official_paper",
-          "answerEvidenceStatus=matched",
-          "expectedSha256",
-          "verifiedBy",
-          "evidenceNote"
-        ],
-        "humanVerificationSteps": [],
-        "postRegistrationCommands": [
-          "npm run audit:release:backlog",
-          "npm run audit:question-bank:release"
-        ],
-        "localFileCandidates": [
-          {
-            "role": "paper",
-            "localPath": "data/raw-inbox/public-course-2025/english1/2025-english1-paper.pdf",
-            "sha256": "fdd71f10dd0452037ff86f44e357ca01a887a7eb06c5cac2e7609dd2b0f07752",
-            "textLayer": "usable",
-            "quality": "needs_review",
-            "blockers": []
-          },
-          {
-            "role": "answer",
-            "localPath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
-            "sha256": "05676469aba3368530c13ca4702256a5094a438fbb503207dd5ff9782da24a06",
-            "textLayer": "usable",
-            "quality": "needs_review",
-            "blockers": []
-          }
-        ],
-        "verifiedSourceRegistryDrafts": [],
-        "manifestCandidateIds": [
-          "src_20ea20dab6f4418eaad2f8f4",
-          "src_dad34e382c4eea12826190ad",
-          "src_fa6864907ece26992cb3087c"
-        ],
-        "blockers": [],
-        "note": "Local paper/answer files are readable and unblocked. Current release gate counts Baidu Netdisk official_paper sources by auto-pairing remotePath plus content hash; verified source registry drafts are optional audit metadata, not a release prerequisite."
-      },
-      "prerequisiteBlockers": [],
-      "coverageAction": "沿用现有清洗队列推进，补齐题目结构、答案 evidence、source evidence 和注册状态；未通过前保持禁用或自用草稿。",
-      "sourceEvidenceAction": "",
-      "nextAction": "沿用现有清洗队列推进，补齐题目结构、答案 evidence、source evidence 和注册状态；未通过前保持禁用或自用草稿。"
-    },
     {
       "slotKey": "english2:2025",
       "track": "english2",
@@ -13833,145 +13647,6 @@
   },
   "nextBalancedPublicCourseSlots": [
     {
-      "id": "coverage_pending:english1:2025",
-      "track": "english1",
-      "trackLabel": "英语一",
-      "year": 2025,
-      "blockerCode": "pending_public_course_bank",
-      "slotStatus": "pending",
-      "sourceEvidenceStatus": "publishable_source_present",
-      "sourceCandidateSummary": "source manifest 已发现 95 个候选，其中 official_paper=5；当前阻断: legalReview.publishBlocked=true(82), riskFlags=brand_leak,copyright_review_required(65), sourceType=institution_candidate(65)",
-      "sourceCandidateSamples": [
-        {
-          "sourceId": "src_20ea20dab6f4418eaad2f8f4",
-          "status": "discovered",
-          "sourceType": "official_paper",
-          "sourceRole": "",
-          "inferredSourceRole": "paper_answer",
-          "roleSource": "filename",
-          "autoPairEligible": true,
-          "answerEvidenceStatus": "",
-          "riskFlags": [],
-          "publishBlocked": false,
-          "blockReasons": [],
-          "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/2025考研英语真题和答案【完整版】/2025考研英语一真题及答案/版本一/2025考研英语一真题及答案.pdf",
-          "sourceUrl": ""
-        },
-        {
-          "sourceId": "src_dad34e382c4eea12826190ad",
-          "status": "discovered",
-          "sourceType": "official_paper",
-          "sourceRole": "",
-          "inferredSourceRole": "paper_answer",
-          "roleSource": "path",
-          "autoPairEligible": true,
-          "answerEvidenceStatus": "",
-          "riskFlags": [],
-          "publishBlocked": false,
-          "blockReasons": [],
-          "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/03.考研真相系列/26考研真相/英一/真题册+答案速查/2025年真题及答案/考研英语一2025真题.pdf",
-          "sourceUrl": ""
-        },
-        {
-          "sourceId": "src_fa6864907ece26992cb3087c",
-          "status": "discovered",
-          "sourceType": "official_paper",
-          "sourceRole": "",
-          "inferredSourceRole": "paper_answer",
-          "roleSource": "path",
-          "autoPairEligible": true,
-          "answerEvidenceStatus": "",
-          "riskFlags": [],
-          "publishBlocked": false,
-          "blockReasons": [],
-          "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/2025考研英语真题和答案【完整版】/2025考研英语一真题及答案/版本二/2025年全国硕士研究生招生考试英语（一）试题-完整版.pdf",
-          "sourceUrl": ""
-        }
-      ],
-      "localSourceAuditStatus": "present",
-      "localSourceAuditSummary": "local source audit 已有 2 个本地文件，usableTextLayer=2，needsOcr=0，blocked=0，roles: answer=1, paper=1，companions=paper+answer可读",
-      "localSourceAuditSamples": [
-        {
-          "id": "english1-2025-paper",
-          "role": "paper",
-          "localPath": "data/raw-inbox/public-course-2025/english1/2025-english1-paper.pdf",
-          "sha256": "fdd71f10dd0452037ff86f44e357ca01a887a7eb06c5cac2e7609dd2b0f07752",
-          "pageCount": 22,
-          "textLayer": "usable",
-          "quality": "needs_review",
-          "blockers": []
-        },
-        {
-          "id": "english1-2025-answer",
-          "role": "answer",
-          "localPath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
-          "sha256": "05676469aba3368530c13ca4702256a5094a438fbb503207dd5ff9782da24a06",
-          "pageCount": 8,
-          "textLayer": "usable",
-          "quality": "needs_review",
-          "blockers": []
-        }
-      ],
-      "sourceManifestRegistrationChecklist": {
-        "status": "auto_source_evidence_candidate",
-        "readyForHumanVerification": false,
-        "requiredManifestFields": [
-          "eligible=true",
-          "status=discovered|verified|published",
-          "sourceType=official_paper",
-          "contentHash|sha256|fileSha256|sourceHash",
-          "remotePath|sourceUrl|provenanceUrl",
-          "sourceRole inferred as paper+answer or paper_answer",
-          "legalReview.publishBlocked=false",
-          "riskFlags excludes answer_missing,brand_leak,copyright_review_required,ad_or_promo"
-        ],
-        "verifiedSourceRegistryFields": [
-          "localPath",
-          "sourceUrl",
-          "track",
-          "year",
-          "sourceType=official_paper",
-          "answerEvidenceStatus=matched",
-          "expectedSha256",
-          "verifiedBy",
-          "evidenceNote"
-        ],
-        "humanVerificationSteps": [],
-        "postRegistrationCommands": [
-          "npm run audit:release:backlog",
-          "npm run audit:question-bank:release"
-        ],
-        "localFileCandidates": [
-          {
-            "role": "paper",
-            "localPath": "data/raw-inbox/public-course-2025/english1/2025-english1-paper.pdf",
-            "sha256": "fdd71f10dd0452037ff86f44e357ca01a887a7eb06c5cac2e7609dd2b0f07752",
-            "textLayer": "usable",
-            "quality": "needs_review",
-            "blockers": []
-          },
-          {
-            "role": "answer",
-            "localPath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
-            "sha256": "05676469aba3368530c13ca4702256a5094a438fbb503207dd5ff9782da24a06",
-            "textLayer": "usable",
-            "quality": "needs_review",
-            "blockers": []
-          }
-        ],
-        "verifiedSourceRegistryDrafts": [],
-        "manifestCandidateIds": [
-          "src_20ea20dab6f4418eaad2f8f4",
-          "src_dad34e382c4eea12826190ad",
-          "src_fa6864907ece26992cb3087c"
-        ],
-        "blockers": [],
-        "note": "Local paper/answer files are readable and unblocked. Current release gate counts Baidu Netdisk official_paper sources by auto-pairing remotePath plus content hash; verified source registry drafts are optional audit metadata, not a release prerequisite."
-      },
-      "prerequisiteBlockers": [],
-      "nextAction": "沿用现有清洗队列推进，补齐题目结构、答案 evidence、source evidence 和注册状态；未通过前保持禁用或自用草稿。"
-    },
-    {
       "id": "coverage_pending:english2:2025",
       "track": "english2",
       "trackLabel": "英语二",
@@ -16156,6 +15831,74 @@
         "verifiedSourceRegistryDrafts": [],
         "manifestCandidateIds": [
           "src_f0f8160e46a5244d4ee0b125"
+        ],
+        "blockers": [
+          "local_source_audit_not_available"
+        ],
+        "note": "Resolve listed local-source blockers before the slot can be treated as an auto-paired official source."
+      },
+      "prerequisiteBlockers": [],
+      "nextAction": "已有可发布题源证据时，完成题卡清洗、答案匹配、证据哈希，再按 registry 规范注册题库。"
+    },
+    {
+      "id": "coverage_missing:math3:2007",
+      "track": "math3",
+      "trackLabel": "数学三",
+      "year": 2007,
+      "blockerCode": "missing_public_course_bank",
+      "slotStatus": "missing",
+      "sourceEvidenceStatus": "publishable_source_present",
+      "sourceCandidateSummary": "source manifest 已发现 1 个候选，其中 official_paper=1；当前阻断: 未命中可发布条件",
+      "sourceCandidateSamples": [
+        {
+          "sourceId": "src_945621a75972b2f0b1483ec9",
+          "status": "discovered",
+          "sourceType": "official_paper",
+          "sourceRole": "",
+          "inferredSourceRole": "paper_answer",
+          "roleSource": "filename",
+          "autoPairEligible": true,
+          "answerEvidenceStatus": "",
+          "riskFlags": [],
+          "publishBlocked": false,
+          "blockReasons": [],
+          "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学三真题答案解析/2007年考研数学三真题及解析 .pdf",
+          "sourceUrl": ""
+        }
+      ],
+      "localSourceAuditStatus": "not_available",
+      "localSourceAuditSummary": "",
+      "localSourceAuditSamples": [],
+      "sourceManifestRegistrationChecklist": {
+        "status": "blocked_before_auto_pair",
+        "readyForHumanVerification": false,
+        "requiredManifestFields": [
+          "eligible=true",
+          "status=discovered|verified|published",
+          "sourceType=official_paper",
+          "contentHash|sha256|fileSha256|sourceHash",
+          "remotePath|sourceUrl|provenanceUrl",
+          "sourceRole inferred as paper+answer or paper_answer",
+          "legalReview.publishBlocked=false",
+          "riskFlags excludes answer_missing,brand_leak,copyright_review_required,ad_or_promo"
+        ],
+        "verifiedSourceRegistryFields": [
+          "localPath",
+          "sourceUrl",
+          "track",
+          "year",
+          "sourceType=official_paper",
+          "answerEvidenceStatus=matched",
+          "expectedSha256",
+          "verifiedBy",
+          "evidenceNote"
+        ],
+        "humanVerificationSteps": [],
+        "postRegistrationCommands": [],
+        "localFileCandidates": [],
+        "verifiedSourceRegistryDrafts": [],
+        "manifestCandidateIds": [
+          "src_945621a75972b2f0b1483ec9"
         ],
         "blockers": [
           "local_source_audit_not_available"
@@ -24069,11 +23812,10 @@
           2009,
           2010,
           2011,
-          2012
-        ],
-        "pendingYears": [
+          2012,
           2025
         ],
+        "pendingYears": [],
         "sourceEvidenceStatus": "publishable_source_present",
         "sourceEvidencePresentYears": [
           2005,
@@ -25257,11 +24999,10 @@
           2009,
           2010,
           2011,
-          2012
-        ],
-        "pendingYears": [
+          2012,
           2025
         ],
+        "pendingYears": [],
         "sourceEvidenceStatus": "publishable_source_present",
         "sourceEvidencePresentYears": [
           2005,
@@ -26445,11 +26186,10 @@
           2009,
           2010,
           2011,
-          2012
-        ],
-        "pendingYears": [
+          2012,
           2025
         ],
+        "pendingYears": [],
         "sourceEvidenceStatus": "publishable_source_present",
         "sourceEvidencePresentYears": [
           2005,
@@ -27633,11 +27373,10 @@
           2009,
           2010,
           2011,
-          2012
-        ],
-        "pendingYears": [
+          2012,
           2025
         ],
+        "pendingYears": [],
         "sourceEvidenceStatus": "publishable_source_present",
         "sourceEvidencePresentYears": [
           2005,
@@ -28821,11 +28560,10 @@
           2009,
           2010,
           2011,
-          2012
-        ],
-        "pendingYears": [
+          2012,
           2025
         ],
+        "pendingYears": [],
         "sourceEvidenceStatus": "publishable_source_present",
         "sourceEvidencePresentYears": [
           2005,
@@ -30009,11 +29747,10 @@
           2009,
           2010,
           2011,
-          2012
-        ],
-        "pendingYears": [
+          2012,
           2025
         ],
+        "pendingYears": [],
         "sourceEvidenceStatus": "publishable_source_present",
         "sourceEvidencePresentYears": [
           2005,
@@ -31197,11 +30934,10 @@
           2009,
           2010,
           2011,
-          2012
-        ],
-        "pendingYears": [
+          2012,
           2025
         ],
+        "pendingYears": [],
         "sourceEvidenceStatus": "publishable_source_present",
         "sourceEvidencePresentYears": [
           2005,
@@ -32386,11 +32122,10 @@
           2009,
           2010,
           2011,
-          2012
-        ],
-        "pendingYears": [
+          2012,
           2025
         ],
+        "pendingYears": [],
         "sourceEvidenceStatus": "publishable_source_present",
         "sourceEvidencePresentYears": [
           2005,
@@ -33574,11 +33309,10 @@
           2009,
           2010,
           2011,
-          2012
-        ],
-        "pendingYears": [
+          2012,
           2025
         ],
+        "pendingYears": [],
         "sourceEvidenceStatus": "publishable_source_present",
         "sourceEvidencePresentYears": [
           2005,
@@ -34762,11 +34496,10 @@
           2009,
           2010,
           2011,
-          2012
-        ],
-        "pendingYears": [
+          2012,
           2025
         ],
+        "pendingYears": [],
         "sourceEvidenceStatus": "publishable_source_present",
         "sourceEvidencePresentYears": [
           2005,
@@ -35950,11 +35683,10 @@
           2009,
           2010,
           2011,
-          2012
-        ],
-        "pendingYears": [
+          2012,
           2025
         ],
+        "pendingYears": [],
         "sourceEvidenceStatus": "publishable_source_present",
         "sourceEvidencePresentYears": [
           2005,
@@ -37339,11 +37071,10 @@
           2009,
           2010,
           2011,
-          2012
-        ],
-        "pendingYears": [
+          2012,
           2025
         ],
+        "pendingYears": [],
         "sourceEvidenceStatus": "publishable_source_present",
         "sourceEvidencePresentYears": [
           2005,
@@ -38522,322 +38253,6 @@
             "local_paper_answer_files_missing"
           ],
           "note": "Resolve listed local-source blockers before the slot can be treated as an auto-paired official source."
-        }
-      }
-    },
-    {
-      "id": "coverage_pending:english1:2025",
-      "workstream": "public_course_coverage",
-      "priority": "P0",
-      "status": "blocked",
-      "title": "英语一 2025 有候选来源但未达到发布标准",
-      "blockerCode": "pending_public_course_bank",
-      "track": "english1",
-      "trackLabel": "英语一",
-      "year": 2025,
-      "bankId": "",
-      "filePath": "",
-      "count": 0,
-      "nextAction": "沿用现有清洗队列推进，补齐题目结构、答案 evidence、source evidence 和注册状态；未通过前保持禁用或自用草稿。",
-      "evidence": {
-        "requiredYears": [
-          2005,
-          2006,
-          2007,
-          2008,
-          2009,
-          2010,
-          2011,
-          2012,
-          2013,
-          2014,
-          2015,
-          2016,
-          2017,
-          2018,
-          2019,
-          2020,
-          2021,
-          2022,
-          2023,
-          2024,
-          2025,
-          2026
-        ],
-        "publishedYears": [
-          2005,
-          2006,
-          2007,
-          2008,
-          2009,
-          2010,
-          2011,
-          2012
-        ],
-        "pendingYears": [
-          2025
-        ],
-        "sourceEvidenceStatus": "publishable_source_present",
-        "sourceEvidencePresentYears": [
-          2005,
-          2006,
-          2007,
-          2008,
-          2009,
-          2010,
-          2011,
-          2012,
-          2013,
-          2014,
-          2015,
-          2016,
-          2017,
-          2018,
-          2019,
-          2020,
-          2021,
-          2022,
-          2023,
-          2024,
-          2025
-        ],
-        "sourceEvidenceCoverageRate": 0.9545,
-        "sourceCandidateSummary": "source manifest 已发现 95 个候选，其中 official_paper=5；当前阻断: legalReview.publishBlocked=true(82), riskFlags=brand_leak,copyright_review_required(65), sourceType=institution_candidate(65)",
-        "sourceCandidateSamples": [
-          {
-            "sourceId": "src_20ea20dab6f4418eaad2f8f4",
-            "status": "discovered",
-            "sourceType": "official_paper",
-            "sourceRole": "",
-            "inferredSourceRole": "paper_answer",
-            "roleSource": "filename",
-            "autoPairEligible": true,
-            "answerEvidenceStatus": "",
-            "riskFlags": [],
-            "publishBlocked": false,
-            "blockReasons": [],
-            "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/2025考研英语真题和答案【完整版】/2025考研英语一真题及答案/版本一/2025考研英语一真题及答案.pdf",
-            "sourceUrl": ""
-          },
-          {
-            "sourceId": "src_dad34e382c4eea12826190ad",
-            "status": "discovered",
-            "sourceType": "official_paper",
-            "sourceRole": "",
-            "inferredSourceRole": "paper_answer",
-            "roleSource": "path",
-            "autoPairEligible": true,
-            "answerEvidenceStatus": "",
-            "riskFlags": [],
-            "publishBlocked": false,
-            "blockReasons": [],
-            "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/03.考研真相系列/26考研真相/英一/真题册+答案速查/2025年真题及答案/考研英语一2025真题.pdf",
-            "sourceUrl": ""
-          },
-          {
-            "sourceId": "src_fa6864907ece26992cb3087c",
-            "status": "discovered",
-            "sourceType": "official_paper",
-            "sourceRole": "",
-            "inferredSourceRole": "paper_answer",
-            "roleSource": "path",
-            "autoPairEligible": true,
-            "answerEvidenceStatus": "",
-            "riskFlags": [],
-            "publishBlocked": false,
-            "blockReasons": [],
-            "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/2025考研英语真题和答案【完整版】/2025考研英语一真题及答案/版本二/2025年全国硕士研究生招生考试英语（一）试题-完整版.pdf",
-            "sourceUrl": ""
-          }
-        ],
-        "sourceCandidateDiagnostics": {
-          "candidateCount": 95,
-          "officialPaperCandidateCount": 5,
-          "publishBlockedCandidateCount": 82,
-          "autoPairEligibleCandidateCount": 5,
-          "paperCandidateCount": 0,
-          "answerCandidateCount": 2,
-          "combinedCandidateCount": 3,
-          "blockReasons": {
-            "sourceType=institution_candidate": 65,
-            "riskFlags=brand_leak,copyright_review_required": 65,
-            "legalReview.publishBlocked=true": 82,
-            "sourceRole=answer_sheet": 1,
-            "eligible=false": 25,
-            "status=rejected": 25,
-            "sourceType=unsupported": 17,
-            "sourceHash=missing": 17,
-            "sourceType=ad": 5,
-            "riskFlags=ad_or_promo,brand_leak": 5,
-            "riskFlags=brand_leak": 12,
-            "sourceType=unsupported_media": 3
-          },
-          "sampleCandidates": [
-            {
-              "sourceId": "src_20ea20dab6f4418eaad2f8f4",
-              "status": "discovered",
-              "sourceType": "official_paper",
-              "sourceRole": "",
-              "inferredSourceRole": "paper_answer",
-              "roleSource": "filename",
-              "autoPairEligible": true,
-              "answerEvidenceStatus": "",
-              "riskFlags": [],
-              "publishBlocked": false,
-              "blockReasons": [],
-              "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/2025考研英语真题和答案【完整版】/2025考研英语一真题及答案/版本一/2025考研英语一真题及答案.pdf",
-              "sourceUrl": ""
-            },
-            {
-              "sourceId": "src_dad34e382c4eea12826190ad",
-              "status": "discovered",
-              "sourceType": "official_paper",
-              "sourceRole": "",
-              "inferredSourceRole": "paper_answer",
-              "roleSource": "path",
-              "autoPairEligible": true,
-              "answerEvidenceStatus": "",
-              "riskFlags": [],
-              "publishBlocked": false,
-              "blockReasons": [],
-              "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/03.考研真相系列/26考研真相/英一/真题册+答案速查/2025年真题及答案/考研英语一2025真题.pdf",
-              "sourceUrl": ""
-            },
-            {
-              "sourceId": "src_fa6864907ece26992cb3087c",
-              "status": "discovered",
-              "sourceType": "official_paper",
-              "sourceRole": "",
-              "inferredSourceRole": "paper_answer",
-              "roleSource": "path",
-              "autoPairEligible": true,
-              "answerEvidenceStatus": "",
-              "riskFlags": [],
-              "publishBlocked": false,
-              "blockReasons": [],
-              "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/2025考研英语真题和答案【完整版】/2025考研英语一真题及答案/版本二/2025年全国硕士研究生招生考试英语（一）试题-完整版.pdf",
-              "sourceUrl": ""
-            }
-          ]
-        },
-        "localSourceAuditStatus": "present",
-        "localSourceAuditSummary": "local source audit 已有 2 个本地文件，usableTextLayer=2，needsOcr=0，blocked=0，roles: answer=1, paper=1，companions=paper+answer可读",
-        "localSourceAuditSamples": [
-          {
-            "id": "english1-2025-paper",
-            "role": "paper",
-            "localPath": "data/raw-inbox/public-course-2025/english1/2025-english1-paper.pdf",
-            "sha256": "fdd71f10dd0452037ff86f44e357ca01a887a7eb06c5cac2e7609dd2b0f07752",
-            "pageCount": 22,
-            "textLayer": "usable",
-            "quality": "needs_review",
-            "blockers": []
-          },
-          {
-            "id": "english1-2025-answer",
-            "role": "answer",
-            "localPath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
-            "sha256": "05676469aba3368530c13ca4702256a5094a438fbb503207dd5ff9782da24a06",
-            "pageCount": 8,
-            "textLayer": "usable",
-            "quality": "needs_review",
-            "blockers": []
-          }
-        ],
-        "localSourceAuditDiagnostics": {
-          "status": "present",
-          "sourceCount": 2,
-          "usableTextLayerCount": 2,
-          "needsOcrCount": 0,
-          "blockedCount": 0,
-          "paperLikeCount": 1,
-          "answerLikeCount": 1,
-          "usablePaperLikeCount": 1,
-          "usableAnswerLikeCount": 1,
-          "blockedPaperLikeCount": 0,
-          "blockedAnswerLikeCount": 0,
-          "roleCounts": {
-            "answer": 1,
-            "paper": 1
-          },
-          "samples": [
-            {
-              "id": "english1-2025-paper",
-              "role": "paper",
-              "localPath": "data/raw-inbox/public-course-2025/english1/2025-english1-paper.pdf",
-              "sha256": "fdd71f10dd0452037ff86f44e357ca01a887a7eb06c5cac2e7609dd2b0f07752",
-              "pageCount": 22,
-              "textLayer": "usable",
-              "quality": "needs_review",
-              "blockers": []
-            },
-            {
-              "id": "english1-2025-answer",
-              "role": "answer",
-              "localPath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
-              "sha256": "05676469aba3368530c13ca4702256a5094a438fbb503207dd5ff9782da24a06",
-              "pageCount": 8,
-              "textLayer": "usable",
-              "quality": "needs_review",
-              "blockers": []
-            }
-          ]
-        },
-        "sourceManifestRegistrationChecklist": {
-          "status": "auto_source_evidence_candidate",
-          "readyForHumanVerification": false,
-          "requiredManifestFields": [
-            "eligible=true",
-            "status=discovered|verified|published",
-            "sourceType=official_paper",
-            "contentHash|sha256|fileSha256|sourceHash",
-            "remotePath|sourceUrl|provenanceUrl",
-            "sourceRole inferred as paper+answer or paper_answer",
-            "legalReview.publishBlocked=false",
-            "riskFlags excludes answer_missing,brand_leak,copyright_review_required,ad_or_promo"
-          ],
-          "verifiedSourceRegistryFields": [
-            "localPath",
-            "sourceUrl",
-            "track",
-            "year",
-            "sourceType=official_paper",
-            "answerEvidenceStatus=matched",
-            "expectedSha256",
-            "verifiedBy",
-            "evidenceNote"
-          ],
-          "humanVerificationSteps": [],
-          "postRegistrationCommands": [
-            "npm run audit:release:backlog",
-            "npm run audit:question-bank:release"
-          ],
-          "localFileCandidates": [
-            {
-              "role": "paper",
-              "localPath": "data/raw-inbox/public-course-2025/english1/2025-english1-paper.pdf",
-              "sha256": "fdd71f10dd0452037ff86f44e357ca01a887a7eb06c5cac2e7609dd2b0f07752",
-              "textLayer": "usable",
-              "quality": "needs_review",
-              "blockers": []
-            },
-            {
-              "role": "answer",
-              "localPath": "data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf",
-              "sha256": "05676469aba3368530c13ca4702256a5094a438fbb503207dd5ff9782da24a06",
-              "textLayer": "usable",
-              "quality": "needs_review",
-              "blockers": []
-            }
-          ],
-          "verifiedSourceRegistryDrafts": [],
-          "manifestCandidateIds": [
-            "src_20ea20dab6f4418eaad2f8f4",
-            "src_dad34e382c4eea12826190ad",
-            "src_fa6864907ece26992cb3087c"
-          ],
-          "blockers": [],
-          "note": "Local paper/answer files are readable and unblocked. Current release gate counts Baidu Netdisk official_paper sources by auto-pairing remotePath plus content hash; verified source registry drafts are optional audit metadata, not a release prerequisite."
         }
       }
     },
@@ -40419,11 +39834,10 @@
           2009,
           2010,
           2011,
-          2012
-        ],
-        "pendingYears": [
+          2012,
           2025
         ],
+        "pendingYears": [],
         "sourceEvidenceStatus": "missing_publishable_official_source",
         "sourceEvidencePresentYears": [
           2005,
