@@ -451,6 +451,21 @@ const BANK_REGISTRY = [
     loader: () => import('./flashcard-banks/math2-2025.json')
   },
   {
+    id: 'math3-2005',
+    subject: '数学',
+    subjectKey: 'math',
+    track: 'math3',
+    year: '2005',
+    name: '2005考研数学三真题',
+    description: '6道填空 + 8道选择 + 9道解答',
+    releaseLabel: '正式题库',
+    caution: '按本地百度网盘 2005 数学三真题及解析 PDF 页图训练；公式、证明和演算过程以原 PDF 页图为准',
+    paperType: 'past_exam',
+    quality: PAPER_QUALITY.READY,
+    sections: paperSections('填空题', '选择题', '解答题'),
+    loader: () => import('./flashcard-banks/math3-2005.json')
+  },
+  {
     id: 'math3-2025',
     subject: '数学',
     subjectKey: 'math',

@@ -63,9 +63,16 @@ describe('question bank public-course year map', () => {
     });
 
     const math3 = tracks.find((track) => track.id === 'math3');
-    expect(math3.slotSummary).toEqual({ total: 22, ready: 1, organizing: 0, missing: 21 });
+    expect(math3.slotSummary).toEqual({ total: 22, ready: 2, organizing: 0, missing: 20 });
     expect(math3.yearSlots.find((slot) => slot.year === '2025')).toMatchObject({
       bankId: 'math3-2025',
+      status: 'ready',
+      statusLabel: '正式',
+      actionLabel: '开始',
+      clickable: true
+    });
+    expect(math3.yearSlots.find((slot) => slot.year === '2005')).toMatchObject({
+      bankId: 'math3-2005',
       status: 'ready',
       statusLabel: '正式',
       actionLabel: '开始',

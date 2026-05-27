@@ -1,0 +1,1406 @@
+{
+  "id": "math3-2005",
+  "source": "math3-2005-paper-answer",
+  "paperId": "math3-2005",
+  "paperName": "2005考研数学三真题",
+  "subject": "数学",
+  "subjectKey": "math",
+  "track": "math3",
+  "year": "2005",
+  "quality": "ready",
+  "publicationStatus": "published",
+  "publicationBlockers": [],
+  "sourceEvidencePolicy": "baidu_netdisk_official_paper_pdf_page_image_v1",
+  "sourceFiles": [
+    {
+      "id": "math3-2005-paper-answer",
+      "role": "paper_answer",
+      "localPath": "data/raw-inbox/public-course-history/math3/2005/2005-math3-paper-answer.pdf",
+      "sha256": "sha256:56edfa55556113fbf74e0767ea2f777880bad1d708fb4e1926523142d353790b"
+    }
+  ],
+  "assetRoot": "question-bank/math3-2005",
+  "processed_at": "2026-05-27T08:07:04Z",
+  "total_cards": 23,
+  "cards": [
+    {
+      "id": "math3-2005-001",
+      "number": 1,
+      "paperId": "math3-2005",
+      "paperName": "2005考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2005",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2005考研数学三第1题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "2",
+      "explanation": "答案来自本地百度网盘 2005 数学三真题及解析 PDF；完整题干和公式见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2005/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2005考研数学三试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2005/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2005考研数学三答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2005",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2005-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:1322dc517a17a705e01f8e67c13d5ab06935566b50bed7ff66f85fd6b42ba4e7",
+      "answerTextHash": "sha256:b1a88861f5fbd6501463e6f846d5412a299aebc7cbf70ad9031f0671a9dd8a14",
+      "sourceEvidence": {
+        "evidenceId": "math3-2005-q01",
+        "sourceId": "src_25538bad55646b173867b577",
+        "answerSourceId": "src_25538bad55646b173867b577",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2005-paper-answer",
+        "answerEvidenceId": "math3-2005-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:b1a88861f5fbd6501463e6f846d5412a299aebc7cbf70ad9031f0671a9dd8a14"
+      }
+    },
+    {
+      "id": "math3-2005-002",
+      "number": 2,
+      "paperId": "math3-2005",
+      "paperName": "2005考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2005",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2005考研数学三第2题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "xy = 2",
+      "explanation": "答案来自本地百度网盘 2005 数学三真题及解析 PDF；完整题干和公式见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2005/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2005考研数学三试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2005/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2005考研数学三答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2005",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2005-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:99a16f70ca1b2aec1bf928c98d29aeb37fc529ab4cb979ace0fddd7e01c846f3",
+      "answerTextHash": "sha256:9b76069833966566c9561638d9357d0bc8af27b8c4f1b43c015c24acb8860ea6",
+      "sourceEvidence": {
+        "evidenceId": "math3-2005-q02",
+        "sourceId": "src_25538bad55646b173867b577",
+        "answerSourceId": "src_25538bad55646b173867b577",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2005-paper-answer",
+        "answerEvidenceId": "math3-2005-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:9b76069833966566c9561638d9357d0bc8af27b8c4f1b43c015c24acb8860ea6"
+      }
+    },
+    {
+      "id": "math3-2005-003",
+      "number": 3,
+      "paperId": "math3-2005",
+      "paperName": "2005考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2005",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2005考研数学三第3题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "2e dx + (e + 2) dy",
+      "explanation": "答案来自本地百度网盘 2005 数学三真题及解析 PDF；完整题干和公式见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2005/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2005考研数学三试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2005/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2005考研数学三答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2005",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2005-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:a320aa82ee5283423615378ed4c54c8cfb19eb8b156c076df5abbfc49ecd7da4",
+      "answerTextHash": "sha256:99ccc42aac0219d3bc6038e631eb0a4604c14ea9f7676daa2aefc3e5aa5cc4d2",
+      "sourceEvidence": {
+        "evidenceId": "math3-2005-q03",
+        "sourceId": "src_25538bad55646b173867b577",
+        "answerSourceId": "src_25538bad55646b173867b577",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2005-paper-answer",
+        "answerEvidenceId": "math3-2005-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:99ccc42aac0219d3bc6038e631eb0a4604c14ea9f7676daa2aefc3e5aa5cc4d2"
+      }
+    },
+    {
+      "id": "math3-2005-004",
+      "number": 4,
+      "paperId": "math3-2005",
+      "paperName": "2005考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2005",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2005考研数学三第4题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "a = -2",
+      "explanation": "答案来自本地百度网盘 2005 数学三真题及解析 PDF；完整题干和公式见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2005/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2005考研数学三试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2005/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2005考研数学三答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2005",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2005-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:acaaf32988f9b77c9878962781ab7e0d899cb2f58105dee68b0b5291f50f6235",
+      "answerTextHash": "sha256:bfe8d1e13186a3690d394d297d183620d0b0663532912478ab7796807c0b4781",
+      "sourceEvidence": {
+        "evidenceId": "math3-2005-q04",
+        "sourceId": "src_25538bad55646b173867b577",
+        "answerSourceId": "src_25538bad55646b173867b577",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2005-paper-answer",
+        "answerEvidenceId": "math3-2005-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:bfe8d1e13186a3690d394d297d183620d0b0663532912478ab7796807c0b4781"
+      }
+    },
+    {
+      "id": "math3-2005-005",
+      "number": 5,
+      "paperId": "math3-2005",
+      "paperName": "2005考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2005",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2005考研数学三第5题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "13/48",
+      "explanation": "答案来自本地百度网盘 2005 数学三真题及解析 PDF；完整题干和公式见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2005/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2005考研数学三试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2005/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2005考研数学三答案解析 p.5"
+        },
+        {
+          "src": "question-bank/math3-2005/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2005考研数学三答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2005",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2005-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:c387fdaa2d4f0b2f8ccc611e2c62edf01b25c40f63c3b7f861ce6428f812bd80",
+      "answerTextHash": "sha256:2b8d28130f7bf6f5c741f6e301384e7c9df0d937c646a48ae8bbd124f6397ddd",
+      "sourceEvidence": {
+        "evidenceId": "math3-2005-q05",
+        "sourceId": "src_25538bad55646b173867b577",
+        "answerSourceId": "src_25538bad55646b173867b577",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2005-paper-answer",
+        "answerEvidenceId": "math3-2005-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:2b8d28130f7bf6f5c741f6e301384e7c9df0d937c646a48ae8bbd124f6397ddd"
+      }
+    },
+    {
+      "id": "math3-2005-006",
+      "number": 6,
+      "paperId": "math3-2005",
+      "paperName": "2005考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2005",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2005考研数学三第6题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "a = 0.4，b = 0.1",
+      "explanation": "答案来自本地百度网盘 2005 数学三真题及解析 PDF；完整题干和公式见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2005/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2005考研数学三试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2005/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2005考研数学三答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2005",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2005-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:612d1650f0bad1f148aeca20c46b2b22de49915c13de5e807ec6b1d5ed656737",
+      "answerTextHash": "sha256:a8ac003e2a57f034b9ee5f540fd710448b2c4e21604b6e7578ee2642175967cb",
+      "sourceEvidence": {
+        "evidenceId": "math3-2005-q06",
+        "sourceId": "src_25538bad55646b173867b577",
+        "answerSourceId": "src_25538bad55646b173867b577",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2005-paper-answer",
+        "answerEvidenceId": "math3-2005-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:a8ac003e2a57f034b9ee5f540fd710448b2c4e21604b6e7578ee2642175967cb"
+      }
+    },
+    {
+      "id": "math3-2005-007",
+      "number": 7,
+      "paperId": "math3-2005",
+      "paperName": "2005考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2005",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2005考研数学三第7题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2005 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2005/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2005考研数学三试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2005/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2005考研数学三答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2005",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2005-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:1a817ed1636f66fc3ff3af214a0f66959ad46b6002dc819eb3f2e7187e63d575",
+      "answerTextHash": "sha256:a98420ef117b541104da2f81910d7c128ab33c9a20903e2c367aa71641bd65ee",
+      "sourceEvidence": {
+        "evidenceId": "math3-2005-q07",
+        "sourceId": "src_25538bad55646b173867b577",
+        "answerSourceId": "src_25538bad55646b173867b577",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2005-paper-answer",
+        "answerEvidenceId": "math3-2005-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:a98420ef117b541104da2f81910d7c128ab33c9a20903e2c367aa71641bd65ee"
+      }
+    },
+    {
+      "id": "math3-2005-008",
+      "number": 8,
+      "paperId": "math3-2005",
+      "paperName": "2005考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2005",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2005考研数学三第8题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2005 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2005/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2005考研数学三试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2005/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2005考研数学三答案解析 p.6"
+        },
+        {
+          "src": "question-bank/math3-2005/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2005考研数学三答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2005",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2005-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:fde15e4cd139541d79ac591635992519cac43adbe2dc460ca40636c1e412c8e9",
+      "answerTextHash": "sha256:58bf5ee2b19876347e9ceb3a5ffcb8fe99d82de204a1667aad779e38ec3ae2ec",
+      "sourceEvidence": {
+        "evidenceId": "math3-2005-q08",
+        "sourceId": "src_25538bad55646b173867b577",
+        "answerSourceId": "src_25538bad55646b173867b577",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2005-paper-answer",
+        "answerEvidenceId": "math3-2005-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:58bf5ee2b19876347e9ceb3a5ffcb8fe99d82de204a1667aad779e38ec3ae2ec"
+      }
+    },
+    {
+      "id": "math3-2005-009",
+      "number": 9,
+      "paperId": "math3-2005",
+      "paperName": "2005考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2005",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2005考研数学三第9题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2005 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2005/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2005考研数学三试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2005/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2005考研数学三答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2005",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2005-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:09630baf42eb5f7726c82cf8d963a1e4f05094e58383c2f6087ba37737f3b794",
+      "answerTextHash": "sha256:af561a8460fa8b36e9f5e23a8e2b70cda602707618904b4763c39855b872f90c",
+      "sourceEvidence": {
+        "evidenceId": "math3-2005-q09",
+        "sourceId": "src_25538bad55646b173867b577",
+        "answerSourceId": "src_25538bad55646b173867b577",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2005-paper-answer",
+        "answerEvidenceId": "math3-2005-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:af561a8460fa8b36e9f5e23a8e2b70cda602707618904b4763c39855b872f90c"
+      }
+    },
+    {
+      "id": "math3-2005-010",
+      "number": 10,
+      "paperId": "math3-2005",
+      "paperName": "2005考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2005",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2005考研数学三第10题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2005 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2005/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2005考研数学三试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2005/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2005考研数学三答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2005",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2005-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:81b472d059e586b1245548a68cda1c7419b9e08524bb5131eec542a485d5a950",
+      "answerTextHash": "sha256:48a655724228f727dcd7f827c2a466e9941da8c76ac17f8df2a224b305cd0de5",
+      "sourceEvidence": {
+        "evidenceId": "math3-2005-q10",
+        "sourceId": "src_25538bad55646b173867b577",
+        "answerSourceId": "src_25538bad55646b173867b577",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2005-paper-answer",
+        "answerEvidenceId": "math3-2005-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:48a655724228f727dcd7f827c2a466e9941da8c76ac17f8df2a224b305cd0de5"
+      }
+    },
+    {
+      "id": "math3-2005-011",
+      "number": 11,
+      "paperId": "math3-2005",
+      "paperName": "2005考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2005",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2005考研数学三第11题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2005 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2005/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2005考研数学三试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2005/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2005考研数学三答案解析 p.7"
+        },
+        {
+          "src": "question-bank/math3-2005/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2005考研数学三答案解析 p.8"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2005",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2005-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:535f980af61bafbf9053816bc51a005c985a04a7ab568f406c1a99161a70015f",
+      "answerTextHash": "sha256:fe9ea4df9bc596d30726b8bdb5b3aba5795cfaae7c00415afca773a496aafc7f",
+      "sourceEvidence": {
+        "evidenceId": "math3-2005-q11",
+        "sourceId": "src_25538bad55646b173867b577",
+        "answerSourceId": "src_25538bad55646b173867b577",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2005-paper-answer",
+        "answerEvidenceId": "math3-2005-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:fe9ea4df9bc596d30726b8bdb5b3aba5795cfaae7c00415afca773a496aafc7f"
+      }
+    },
+    {
+      "id": "math3-2005-012",
+      "number": 12,
+      "paperId": "math3-2005",
+      "paperName": "2005考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2005",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2005考研数学三第12题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2005 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2005/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2005考研数学三试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2005/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2005考研数学三答案解析 p.8"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2005",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2005-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:8cb7ed676bae6a13a9fab2793c8d296200a6446ffc1af3b9d2ddfe55e3b5e2d5",
+      "answerTextHash": "sha256:79b4dd52e0f1df0124c278028b54043cc0eccda0cd09bcdae3d4731743bb00b3",
+      "sourceEvidence": {
+        "evidenceId": "math3-2005-q12",
+        "sourceId": "src_25538bad55646b173867b577",
+        "answerSourceId": "src_25538bad55646b173867b577",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2005-paper-answer",
+        "answerEvidenceId": "math3-2005-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:79b4dd52e0f1df0124c278028b54043cc0eccda0cd09bcdae3d4731743bb00b3"
+      }
+    },
+    {
+      "id": "math3-2005-013",
+      "number": 13,
+      "paperId": "math3-2005",
+      "paperName": "2005考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2005",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2005考研数学三第13题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2005 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2005/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2005考研数学三试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2005/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2005考研数学三答案解析 p.8"
+        },
+        {
+          "src": "question-bank/math3-2005/answer-page-09.jpg",
+          "caption": "答案解析 p.9",
+          "alt": "2005考研数学三答案解析 p.9"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2005",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2005-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:3104611674578f95d231bbfda26d23ed8d9054888632f84fd57173a61447d2d1",
+      "answerTextHash": "sha256:1ccc215db1b0140765b7dabf1994f9b118f24b3be78f9f1b985843fdb4333fa9",
+      "sourceEvidence": {
+        "evidenceId": "math3-2005-q13",
+        "sourceId": "src_25538bad55646b173867b577",
+        "answerSourceId": "src_25538bad55646b173867b577",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2005-paper-answer",
+        "answerEvidenceId": "math3-2005-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:1ccc215db1b0140765b7dabf1994f9b118f24b3be78f9f1b985843fdb4333fa9"
+      }
+    },
+    {
+      "id": "math3-2005-014",
+      "number": 14,
+      "paperId": "math3-2005",
+      "paperName": "2005考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2005",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2005考研数学三第14题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2005 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2005/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2005考研数学三试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2005/answer-page-09.jpg",
+          "caption": "答案解析 p.9",
+          "alt": "2005考研数学三答案解析 p.9"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2005",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2005-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:1de4c9d2cf9cfab5958ab29aad82bd2fe540ad2bb3706df4437db21560d54b44",
+      "answerTextHash": "sha256:4a2ac167ff4d753876d921bab07de518e5ac64a172428ef0b658732800220504",
+      "sourceEvidence": {
+        "evidenceId": "math3-2005-q14",
+        "sourceId": "src_25538bad55646b173867b577",
+        "answerSourceId": "src_25538bad55646b173867b577",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2005-paper-answer",
+        "answerEvidenceId": "math3-2005-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:4a2ac167ff4d753876d921bab07de518e5ac64a172428ef0b658732800220504"
+      }
+    },
+    {
+      "id": "math3-2005-015",
+      "number": 15,
+      "paperId": "math3-2005",
+      "paperName": "2005考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2005",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2005考研数学三第15题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "3/2",
+      "explanation": "答案来自本地百度网盘 2005 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2005/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2005考研数学三试卷原页 p.2"
+        },
+        {
+          "src": "question-bank/math3-2005/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2005考研数学三试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2005/answer-page-09.jpg",
+          "caption": "答案解析 p.9",
+          "alt": "2005考研数学三答案解析 p.9"
+        },
+        {
+          "src": "question-bank/math3-2005/answer-page-10.jpg",
+          "caption": "答案解析 p.10",
+          "alt": "2005考研数学三答案解析 p.10"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2005",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2005-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:426978595f1cc1bf3315a4c97d682836487e6bfabf198c11fdd2a80a0ea1ed4d",
+      "answerTextHash": "sha256:72d81d58331f4a52328cdcb0c70ec3875481b92ca0c929abbc9ef69363efc4a8",
+      "sourceEvidence": {
+        "evidenceId": "math3-2005-q15",
+        "sourceId": "src_25538bad55646b173867b577",
+        "answerSourceId": "src_25538bad55646b173867b577",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2005-paper-answer",
+        "answerEvidenceId": "math3-2005-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:72d81d58331f4a52328cdcb0c70ec3875481b92ca0c929abbc9ef69363efc4a8"
+      }
+    },
+    {
+      "id": "math3-2005-016",
+      "number": 16,
+      "paperId": "math3-2005",
+      "paperName": "2005考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2005",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2005考研数学三第16题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "完整二阶偏导计算结果见答案原页。",
+      "explanation": "答案来自本地百度网盘 2005 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2005/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2005考研数学三试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2005/answer-page-10.jpg",
+          "caption": "答案解析 p.10",
+          "alt": "2005考研数学三答案解析 p.10"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2005",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2005-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:ef66c513fe656a3b54bf1da023fa50bf85c8f8884719a8e07f7870d963f3b61c",
+      "answerTextHash": "sha256:84814195a0bb99faa5c11e141b87af418f18667568109c1537da4c903e8ecf07",
+      "sourceEvidence": {
+        "evidenceId": "math3-2005-q16",
+        "sourceId": "src_25538bad55646b173867b577",
+        "answerSourceId": "src_25538bad55646b173867b577",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2005-paper-answer",
+        "answerEvidenceId": "math3-2005-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:84814195a0bb99faa5c11e141b87af418f18667568109c1537da4c903e8ecf07"
+      }
+    },
+    {
+      "id": "math3-2005-017",
+      "number": 17,
+      "paperId": "math3-2005",
+      "paperName": "2005考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2005",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2005考研数学三第17题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "pi/4 - 1/3",
+      "explanation": "答案来自本地百度网盘 2005 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2005/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2005考研数学三试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2005/answer-page-10.jpg",
+          "caption": "答案解析 p.10",
+          "alt": "2005考研数学三答案解析 p.10"
+        },
+        {
+          "src": "question-bank/math3-2005/answer-page-11.jpg",
+          "caption": "答案解析 p.11",
+          "alt": "2005考研数学三答案解析 p.11"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2005",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2005-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:f1c332280adcb4436a6b7318367fb6d294226ece6f8900aa3b1b1f9c3c64caec",
+      "answerTextHash": "sha256:0b496200ad44e3479e793c5920012f99f499903c718302c73eea8580146a0e43",
+      "sourceEvidence": {
+        "evidenceId": "math3-2005-q17",
+        "sourceId": "src_25538bad55646b173867b577",
+        "answerSourceId": "src_25538bad55646b173867b577",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2005-paper-answer",
+        "answerEvidenceId": "math3-2005-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:0b496200ad44e3479e793c5920012f99f499903c718302c73eea8580146a0e43"
+      }
+    },
+    {
+      "id": "math3-2005-018",
+      "number": 18,
+      "paperId": "math3-2005",
+      "paperName": "2005考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2005",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2005考研数学三第18题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "S(x) = 1/2 ln((1 + x)/(1 - x)) - x，x in (-1,1)。",
+      "explanation": "答案来自本地百度网盘 2005 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2005/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2005考研数学三试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2005/answer-page-11.jpg",
+          "caption": "答案解析 p.11",
+          "alt": "2005考研数学三答案解析 p.11"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2005",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2005-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:49e3bd4d05a5e43db0048cf49457da00ee0e8e6eba353b5f9d5d9d7497ddcd26",
+      "answerTextHash": "sha256:7949423afe9cb9cb0d6ec25b2eae89dd6f0e964290911751afec05d88477bab5",
+      "sourceEvidence": {
+        "evidenceId": "math3-2005-q18",
+        "sourceId": "src_25538bad55646b173867b577",
+        "answerSourceId": "src_25538bad55646b173867b577",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2005-paper-answer",
+        "answerEvidenceId": "math3-2005-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:7949423afe9cb9cb0d6ec25b2eae89dd6f0e964290911751afec05d88477bab5"
+      }
+    },
+    {
+      "id": "math3-2005-019",
+      "number": 19,
+      "paperId": "math3-2005",
+      "paperName": "2005考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2005",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2005考研数学三第19题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "完整不等式证明见答案原页。",
+      "explanation": "答案来自本地百度网盘 2005 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2005/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2005考研数学三试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2005/answer-page-11.jpg",
+          "caption": "答案解析 p.11",
+          "alt": "2005考研数学三答案解析 p.11"
+        },
+        {
+          "src": "question-bank/math3-2005/answer-page-12.jpg",
+          "caption": "答案解析 p.12",
+          "alt": "2005考研数学三答案解析 p.12"
+        },
+        {
+          "src": "question-bank/math3-2005/answer-page-13.jpg",
+          "caption": "答案解析 p.13",
+          "alt": "2005考研数学三答案解析 p.13"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2005",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2005-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:07b7580d27d69520e0a8ff8352400fc2d08ccbc319b99aa5c62146718da73976",
+      "answerTextHash": "sha256:9ae37cef045be7c834772de8dcc285dc2aaf4b16564c12f56f56edcf75e6d165",
+      "sourceEvidence": {
+        "evidenceId": "math3-2005-q19",
+        "sourceId": "src_25538bad55646b173867b577",
+        "answerSourceId": "src_25538bad55646b173867b577",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2005-paper-answer",
+        "answerEvidenceId": "math3-2005-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:9ae37cef045be7c834772de8dcc285dc2aaf4b16564c12f56f56edcf75e6d165"
+      }
+    },
+    {
+      "id": "math3-2005-020",
+      "number": 20,
+      "paperId": "math3-2005",
+      "paperName": "2005考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2005",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2005考研数学三第20题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "a = 2，b = 1，c = 2",
+      "explanation": "答案来自本地百度网盘 2005 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2005/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2005考研数学三试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2005/answer-page-13.jpg",
+          "caption": "答案解析 p.13",
+          "alt": "2005考研数学三答案解析 p.13"
+        },
+        {
+          "src": "question-bank/math3-2005/answer-page-14.jpg",
+          "caption": "答案解析 p.14",
+          "alt": "2005考研数学三答案解析 p.14"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2005",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2005-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:9be0247c01f2371fe68055a3531f99f69ad303ac57b613bc8756101d60d60b71",
+      "answerTextHash": "sha256:be08ac4f79080a859f1db75658956aa25916060685eea16b85608d9b68f8b9ed",
+      "sourceEvidence": {
+        "evidenceId": "math3-2005-q20",
+        "sourceId": "src_25538bad55646b173867b577",
+        "answerSourceId": "src_25538bad55646b173867b577",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2005-paper-answer",
+        "answerEvidenceId": "math3-2005-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:be08ac4f79080a859f1db75658956aa25916060685eea16b85608d9b68f8b9ed"
+      }
+    },
+    {
+      "id": "math3-2005-021",
+      "number": 21,
+      "paperId": "math3-2005",
+      "paperName": "2005考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2005",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2005考研数学三第21题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "P'DP = diag(A, B - C^T A^-1 C)，且 B - C^T A^-1 C 为正定矩阵。",
+      "explanation": "答案来自本地百度网盘 2005 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2005/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2005考研数学三试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2005/answer-page-14.jpg",
+          "caption": "答案解析 p.14",
+          "alt": "2005考研数学三答案解析 p.14"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2005",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2005-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:f21c0f98a59423a073abd18c29d5d3e4526136e639bcc52ae4f83a604d9d8f51",
+      "answerTextHash": "sha256:084e2357282ed53ed64b7062be21670101ab62c9bd0bf62ca5cf307bc61f101a",
+      "sourceEvidence": {
+        "evidenceId": "math3-2005-q21",
+        "sourceId": "src_25538bad55646b173867b577",
+        "answerSourceId": "src_25538bad55646b173867b577",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2005-paper-answer",
+        "answerEvidenceId": "math3-2005-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:084e2357282ed53ed64b7062be21670101ab62c9bd0bf62ca5cf307bc61f101a"
+      }
+    },
+    {
+      "id": "math3-2005-022",
+      "number": 22,
+      "paperId": "math3-2005",
+      "paperName": "2005考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2005",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2005考研数学三第22题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "边缘密度、Z 的密度与条件概率计算见答案原页。",
+      "explanation": "答案来自本地百度网盘 2005 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2005/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2005考研数学三试卷原页 p.3"
+        },
+        {
+          "src": "question-bank/math3-2005/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2005考研数学三试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2005/answer-page-14.jpg",
+          "caption": "答案解析 p.14",
+          "alt": "2005考研数学三答案解析 p.14"
+        },
+        {
+          "src": "question-bank/math3-2005/answer-page-15.jpg",
+          "caption": "答案解析 p.15",
+          "alt": "2005考研数学三答案解析 p.15"
+        },
+        {
+          "src": "question-bank/math3-2005/answer-page-16.jpg",
+          "caption": "答案解析 p.16",
+          "alt": "2005考研数学三答案解析 p.16"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2005",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2005-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:cc604a55ee37d54bc574768875a863e2fa9cdf55bdc2ac9eaea5489a273d0d61",
+      "answerTextHash": "sha256:01206fd4f835333bd96241d0430a3149ba64164fce1d19c2979d9943f259752e",
+      "sourceEvidence": {
+        "evidenceId": "math3-2005-q22",
+        "sourceId": "src_25538bad55646b173867b577",
+        "answerSourceId": "src_25538bad55646b173867b577",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2005-paper-answer",
+        "answerEvidenceId": "math3-2005-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:01206fd4f835333bd96241d0430a3149ba64164fce1d19c2979d9943f259752e"
+      }
+    },
+    {
+      "id": "math3-2005-023",
+      "number": 23,
+      "paperId": "math3-2005",
+      "paperName": "2005考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2005",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2005考研数学三第23题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "D(Y_i) = (n - 1) / n * sigma^2；Cov(Y_i,Y_j) = -sigma^2 / n；c = n / [2(n - 2)]。",
+      "explanation": "答案来自本地百度网盘 2005 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2005/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2005考研数学三试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2005/answer-page-16.jpg",
+          "caption": "答案解析 p.16",
+          "alt": "2005考研数学三答案解析 p.16"
+        },
+        {
+          "src": "question-bank/math3-2005/answer-page-17.jpg",
+          "caption": "答案解析 p.17",
+          "alt": "2005考研数学三答案解析 p.17"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2005",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2005-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:1157c108ebc54d40b4eccb176441b4359f065867ac8180f7c29cf55606926794",
+      "answerTextHash": "sha256:058b50c48ce7b61d44f67a4f2b5e8ff8f6fcdb94b166e7115e7aaeceab6c7f60",
+      "sourceEvidence": {
+        "evidenceId": "math3-2005-q23",
+        "sourceId": "src_25538bad55646b173867b577",
+        "answerSourceId": "src_25538bad55646b173867b577",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2005-paper-answer",
+        "answerEvidenceId": "math3-2005-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:058b50c48ce7b61d44f67a4f2b5e8ff8f6fcdb94b166e7115e7aaeceab6c7f60"
+      }
+    }
+  ]
+}
