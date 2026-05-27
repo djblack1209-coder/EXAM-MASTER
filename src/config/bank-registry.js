@@ -266,6 +266,21 @@ const BANK_REGISTRY = [
     loader: () => import('./flashcard-banks/politics-2014.json')
   },
   {
+    id: 'politics-2015',
+    subject: '政治',
+    subjectKey: 'politics',
+    track: 'politics',
+    year: '2015',
+    name: '2015考研政治真题',
+    description: '16道单选 + 17道多选 + 5道分析题',
+    releaseLabel: '正式题库',
+    caution: '按本地百度网盘 2015 政治真题 PDF 与真题及参考答案 PDF 页图训练；答案键来自答案 PDF 第17页',
+    paperType: 'past_exam',
+    quality: PAPER_QUALITY.READY,
+    sections: paperSections('单项选择', '多项选择', '分析题'),
+    loader: () => import('./flashcard-banks/politics-2015.json')
+  },
+  {
     id: 'english1-2025',
     subject: '英语',
     subjectKey: 'english',
