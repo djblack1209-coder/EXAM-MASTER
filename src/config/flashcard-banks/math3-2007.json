@@ -1,0 +1,1460 @@
+{
+  "id": "math3-2007",
+  "source": "math3-2007-paper-answer",
+  "paperId": "math3-2007",
+  "paperName": "2007考研数学三真题",
+  "subject": "数学",
+  "subjectKey": "math",
+  "track": "math3",
+  "year": "2007",
+  "quality": "ready",
+  "publicationStatus": "published",
+  "publicationBlockers": [],
+  "sourceEvidencePolicy": "baidu_netdisk_official_paper_pdf_page_image_v1",
+  "sourceFiles": [
+    {
+      "id": "math3-2007-paper-answer",
+      "role": "paper_answer",
+      "localPath": "data/raw-inbox/public-course-history/math3/2007/2007-math3-paper-answer.pdf",
+      "sha256": "sha256:4a34adf620c94a4a0b18fd96c77047dc1cb61b73a0fb8b87941ea6826eea27a7"
+    }
+  ],
+  "assetRoot": "question-bank/math3-2007",
+  "processed_at": "2026-05-27T08:25:55Z",
+  "total_cards": 24,
+  "cards": [
+    {
+      "id": "math3-2007-001",
+      "number": 1,
+      "paperId": "math3-2007",
+      "paperName": "2007考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2007",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2007考研数学三第1题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2007 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2007/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2007考研数学三试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2007/answer-page-04.jpg",
+          "caption": "答案解析 p.4",
+          "alt": "2007考研数学三答案解析 p.4"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2007",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:ff690da77d3e28c172a429bbc462ff97f997236c01606d81a0149989fe03a911",
+      "answerTextHash": "sha256:d6ef538eebe4fac36acf0af56c101c395d0de17a2c04761459cb375418380c8d",
+      "sourceEvidence": {
+        "evidenceId": "math3-2007-q01",
+        "sourceId": "src_945621a75972b2f0b1483ec9",
+        "answerSourceId": "src_945621a75972b2f0b1483ec9",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2007-paper-answer",
+        "answerEvidenceId": "math3-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:d6ef538eebe4fac36acf0af56c101c395d0de17a2c04761459cb375418380c8d"
+      }
+    },
+    {
+      "id": "math3-2007-002",
+      "number": 2,
+      "paperId": "math3-2007",
+      "paperName": "2007考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2007",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2007考研数学三第2题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2007 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2007/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2007考研数学三试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2007/answer-page-04.jpg",
+          "caption": "答案解析 p.4",
+          "alt": "2007考研数学三答案解析 p.4"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2007",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:50babab8bb034c1ba795c04d73891fdef3c5d732dd45cb66fdca23c392aee3d7",
+      "answerTextHash": "sha256:68360ef5871ed4ff9c6a3a665d3c68ab23cc14d3ac9fe78aacebce6d8d849ac3",
+      "sourceEvidence": {
+        "evidenceId": "math3-2007-q02",
+        "sourceId": "src_945621a75972b2f0b1483ec9",
+        "answerSourceId": "src_945621a75972b2f0b1483ec9",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2007-paper-answer",
+        "answerEvidenceId": "math3-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:68360ef5871ed4ff9c6a3a665d3c68ab23cc14d3ac9fe78aacebce6d8d849ac3"
+      }
+    },
+    {
+      "id": "math3-2007-003",
+      "number": 3,
+      "paperId": "math3-2007",
+      "paperName": "2007考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2007",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2007考研数学三第3题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2007 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2007/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2007考研数学三试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2007/answer-page-04.jpg",
+          "caption": "答案解析 p.4",
+          "alt": "2007考研数学三答案解析 p.4"
+        },
+        {
+          "src": "question-bank/math3-2007/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2007考研数学三答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2007",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:5a40302b0665d042ebe99e03c032caf3ebfd656b6818c0b55cdf8b89d1449bb4",
+      "answerTextHash": "sha256:99df575c7e5d50602dbd52e7a432ac1beb45288aa5748a05981603e7323b2910",
+      "sourceEvidence": {
+        "evidenceId": "math3-2007-q03",
+        "sourceId": "src_945621a75972b2f0b1483ec9",
+        "answerSourceId": "src_945621a75972b2f0b1483ec9",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2007-paper-answer",
+        "answerEvidenceId": "math3-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:99df575c7e5d50602dbd52e7a432ac1beb45288aa5748a05981603e7323b2910"
+      }
+    },
+    {
+      "id": "math3-2007-004",
+      "number": 4,
+      "paperId": "math3-2007",
+      "paperName": "2007考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2007",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2007考研数学三第4题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2007 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2007/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2007考研数学三试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2007/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2007考研数学三答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2007",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:bc115017a89d69d4f0f4c7900c3e5771c944e9307dcf733f9d411974a362faa8",
+      "answerTextHash": "sha256:a1fc181e7273154ad55820f682afb4ea6f525df2886ec51a36dedff5cdc77fe4",
+      "sourceEvidence": {
+        "evidenceId": "math3-2007-q04",
+        "sourceId": "src_945621a75972b2f0b1483ec9",
+        "answerSourceId": "src_945621a75972b2f0b1483ec9",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2007-paper-answer",
+        "answerEvidenceId": "math3-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:a1fc181e7273154ad55820f682afb4ea6f525df2886ec51a36dedff5cdc77fe4"
+      }
+    },
+    {
+      "id": "math3-2007-005",
+      "number": 5,
+      "paperId": "math3-2007",
+      "paperName": "2007考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2007",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2007考研数学三第5题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2007 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2007/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2007考研数学三试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2007/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2007考研数学三答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2007",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:038cd2e8548c5d851e84018b29a214b1692b16a1de492d0f3ea97dc69a8fd81e",
+      "answerTextHash": "sha256:28d0c2da83a91da6daa0b76dc4fb5ce9a2d98a69f7ac96655fe3d017a8584605",
+      "sourceEvidence": {
+        "evidenceId": "math3-2007-q05",
+        "sourceId": "src_945621a75972b2f0b1483ec9",
+        "answerSourceId": "src_945621a75972b2f0b1483ec9",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2007-paper-answer",
+        "answerEvidenceId": "math3-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:28d0c2da83a91da6daa0b76dc4fb5ce9a2d98a69f7ac96655fe3d017a8584605"
+      }
+    },
+    {
+      "id": "math3-2007-006",
+      "number": 6,
+      "paperId": "math3-2007",
+      "paperName": "2007考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2007",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2007考研数学三第6题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2007 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2007/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2007考研数学三试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2007/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2007考研数学三答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2007",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:ae74991d8d57398e92c51607f1c8f714cb4afb5d73daa0ad31aee2b23a35c664",
+      "answerTextHash": "sha256:28d0c2da83a91da6daa0b76dc4fb5ce9a2d98a69f7ac96655fe3d017a8584605",
+      "sourceEvidence": {
+        "evidenceId": "math3-2007-q06",
+        "sourceId": "src_945621a75972b2f0b1483ec9",
+        "answerSourceId": "src_945621a75972b2f0b1483ec9",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2007-paper-answer",
+        "answerEvidenceId": "math3-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:28d0c2da83a91da6daa0b76dc4fb5ce9a2d98a69f7ac96655fe3d017a8584605"
+      }
+    },
+    {
+      "id": "math3-2007-007",
+      "number": 7,
+      "paperId": "math3-2007",
+      "paperName": "2007考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2007",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2007考研数学三第7题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2007 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2007/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2007考研数学三试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2007/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2007考研数学三答案解析 p.5"
+        },
+        {
+          "src": "question-bank/math3-2007/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2007考研数学三答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2007",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:ea7a3d29a99f7de411bb98eea7952b7cb896b1ed017c1ff90991207ad002d02d",
+      "answerTextHash": "sha256:dcc748a1c3c46918a0e4ca66a7769ede959ff751792c28a8b389e2d6207706ae",
+      "sourceEvidence": {
+        "evidenceId": "math3-2007-q07",
+        "sourceId": "src_945621a75972b2f0b1483ec9",
+        "answerSourceId": "src_945621a75972b2f0b1483ec9",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2007-paper-answer",
+        "answerEvidenceId": "math3-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:dcc748a1c3c46918a0e4ca66a7769ede959ff751792c28a8b389e2d6207706ae"
+      }
+    },
+    {
+      "id": "math3-2007-008",
+      "number": 8,
+      "paperId": "math3-2007",
+      "paperName": "2007考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2007",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2007考研数学三第8题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2007 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2007/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2007考研数学三试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2007/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2007考研数学三答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2007",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:4dfb893519d3da8bae847bf1f1e0a3b1ab8ab7fe477d364d8705c806d1e42103",
+      "answerTextHash": "sha256:a98420ef117b541104da2f81910d7c128ab33c9a20903e2c367aa71641bd65ee",
+      "sourceEvidence": {
+        "evidenceId": "math3-2007-q08",
+        "sourceId": "src_945621a75972b2f0b1483ec9",
+        "answerSourceId": "src_945621a75972b2f0b1483ec9",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2007-paper-answer",
+        "answerEvidenceId": "math3-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:a98420ef117b541104da2f81910d7c128ab33c9a20903e2c367aa71641bd65ee"
+      }
+    },
+    {
+      "id": "math3-2007-009",
+      "number": 9,
+      "paperId": "math3-2007",
+      "paperName": "2007考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2007",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2007考研数学三第9题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2007 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2007/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2007考研数学三试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2007/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2007考研数学三答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2007",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:d6e0b1fadd44586af84c516a4ea3eed152afe8cf710d57dcc9e1ecc59067709a",
+      "answerTextHash": "sha256:4bd414bf1f3c332d5656c55ac398a2d0417431bee33b2bb3c501278c096178b5",
+      "sourceEvidence": {
+        "evidenceId": "math3-2007-q09",
+        "sourceId": "src_945621a75972b2f0b1483ec9",
+        "answerSourceId": "src_945621a75972b2f0b1483ec9",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2007-paper-answer",
+        "answerEvidenceId": "math3-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:4bd414bf1f3c332d5656c55ac398a2d0417431bee33b2bb3c501278c096178b5"
+      }
+    },
+    {
+      "id": "math3-2007-010",
+      "number": 10,
+      "paperId": "math3-2007",
+      "paperName": "2007考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2007",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2007考研数学三第10题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2007 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2007/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2007考研数学三试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2007/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2007考研数学三答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2007",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:dfd60bcbb23cf6fe2b6049619f72709da24bbe00af9cb4d08bd45eee7fed5c9a",
+      "answerTextHash": "sha256:4209b11a0436dfb93acf2c09f66665ad24b609a48058f6de76eacd161bca58d7",
+      "sourceEvidence": {
+        "evidenceId": "math3-2007-q10",
+        "sourceId": "src_945621a75972b2f0b1483ec9",
+        "answerSourceId": "src_945621a75972b2f0b1483ec9",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2007-paper-answer",
+        "answerEvidenceId": "math3-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:4209b11a0436dfb93acf2c09f66665ad24b609a48058f6de76eacd161bca58d7"
+      }
+    },
+    {
+      "id": "math3-2007-011",
+      "number": 11,
+      "paperId": "math3-2007",
+      "paperName": "2007考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2007",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2007考研数学三第11题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "0",
+      "explanation": "答案来自本地百度网盘 2007 数学三真题及解析 PDF；完整题干、公式和解析见原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2007/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2007考研数学三试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2007/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2007考研数学三答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2007",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:4179ee9b4f4436e7f46adde032d1e9fafee1e8b1c239841cba4e7461410d6e52",
+      "answerTextHash": "sha256:7b53e49a82ea781a79671949a603c24b11032f26d7c578869a848903bce2705d",
+      "sourceEvidence": {
+        "evidenceId": "math3-2007-q11",
+        "sourceId": "src_945621a75972b2f0b1483ec9",
+        "answerSourceId": "src_945621a75972b2f0b1483ec9",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2007-paper-answer",
+        "answerEvidenceId": "math3-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:7b53e49a82ea781a79671949a603c24b11032f26d7c578869a848903bce2705d"
+      }
+    },
+    {
+      "id": "math3-2007-012",
+      "number": 12,
+      "paperId": "math3-2007",
+      "paperName": "2007考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2007",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2007考研数学三第12题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "(-1)^n * 2^n * n! / 3^(n + 1)",
+      "explanation": "答案来自本地百度网盘 2007 数学三真题及解析 PDF；完整题干、公式和解析见原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2007/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2007考研数学三试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2007/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2007考研数学三答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2007",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:d2bee8bd079d8a50812167a098ca5c1966c7bafc5a068efc025461a1bbe2f678",
+      "answerTextHash": "sha256:9fcfc1c51ef98eb59fa97c471980e1a0d6f006fc147ba6f22db7adfdcc071c72",
+      "sourceEvidence": {
+        "evidenceId": "math3-2007-q12",
+        "sourceId": "src_945621a75972b2f0b1483ec9",
+        "answerSourceId": "src_945621a75972b2f0b1483ec9",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2007-paper-answer",
+        "answerEvidenceId": "math3-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:9fcfc1c51ef98eb59fa97c471980e1a0d6f006fc147ba6f22db7adfdcc071c72"
+      }
+    },
+    {
+      "id": "math3-2007-013",
+      "number": 13,
+      "paperId": "math3-2007",
+      "paperName": "2007考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2007",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2007考研数学三第13题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "完整偏导计算结果见答案原页。",
+      "explanation": "答案来自本地百度网盘 2007 数学三真题及解析 PDF；完整题干、公式和解析见原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2007/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2007考研数学三试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2007/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2007考研数学三答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2007",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:671a48bf96cb5828c7376c9d0f52254459813ee95d0c2b1c6b206c7048f1c00e",
+      "answerTextHash": "sha256:31dad7cddbf8aff2e795082bbb3028f710bdc9cd1346a0d2c4ebf9e5eda0baf8",
+      "sourceEvidence": {
+        "evidenceId": "math3-2007-q13",
+        "sourceId": "src_945621a75972b2f0b1483ec9",
+        "answerSourceId": "src_945621a75972b2f0b1483ec9",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2007-paper-answer",
+        "answerEvidenceId": "math3-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:31dad7cddbf8aff2e795082bbb3028f710bdc9cd1346a0d2c4ebf9e5eda0baf8"
+      }
+    },
+    {
+      "id": "math3-2007-014",
+      "number": 14,
+      "paperId": "math3-2007",
+      "paperName": "2007考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2007",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2007考研数学三第14题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "y = x / sqrt(ln x + 1)",
+      "explanation": "答案来自本地百度网盘 2007 数学三真题及解析 PDF；完整题干、公式和解析见原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2007/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2007考研数学三试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2007/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2007考研数学三答案解析 p.7"
+        },
+        {
+          "src": "question-bank/math3-2007/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2007考研数学三答案解析 p.8"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2007",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:e42c04c72dfa3cb78e07587c42ecbd7c931acc8439c73a83a8c63cf29af2336a",
+      "answerTextHash": "sha256:61c47140760548d9cb253e19772b0d4258240fc2f4039b39eb5026c9ad6e6735",
+      "sourceEvidence": {
+        "evidenceId": "math3-2007-q14",
+        "sourceId": "src_945621a75972b2f0b1483ec9",
+        "answerSourceId": "src_945621a75972b2f0b1483ec9",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2007-paper-answer",
+        "answerEvidenceId": "math3-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:61c47140760548d9cb253e19772b0d4258240fc2f4039b39eb5026c9ad6e6735"
+      }
+    },
+    {
+      "id": "math3-2007-015",
+      "number": 15,
+      "paperId": "math3-2007",
+      "paperName": "2007考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2007",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2007考研数学三第15题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "1",
+      "explanation": "答案来自本地百度网盘 2007 数学三真题及解析 PDF；完整题干、公式和解析见原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2007/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2007考研数学三试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2007/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2007考研数学三答案解析 p.8"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2007",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:770c1f4cbd57bbf99a5835e95e242466ea0f5931b93e1a5ba0560197bb22f398",
+      "answerTextHash": "sha256:d851271a5da33f2e61c37fc066c80aeb97dc4cf12d63147e7b7e765f7a220bdb",
+      "sourceEvidence": {
+        "evidenceId": "math3-2007-q15",
+        "sourceId": "src_945621a75972b2f0b1483ec9",
+        "answerSourceId": "src_945621a75972b2f0b1483ec9",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2007-paper-answer",
+        "answerEvidenceId": "math3-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:d851271a5da33f2e61c37fc066c80aeb97dc4cf12d63147e7b7e765f7a220bdb"
+      }
+    },
+    {
+      "id": "math3-2007-016",
+      "number": 16,
+      "paperId": "math3-2007",
+      "paperName": "2007考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2007",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2007考研数学三第16题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "3/4",
+      "explanation": "答案来自本地百度网盘 2007 数学三真题及解析 PDF；完整题干、公式和解析见原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2007/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2007考研数学三试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2007/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2007考研数学三答案解析 p.8"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2007",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:8b63aa08cd7b44d5bf58189076462b0cfc42a423fcf57104c406123cd5e78818",
+      "answerTextHash": "sha256:9e06e6b6bbffeb4631b9330565dc1c36ac69997e3a42be7cd8e7ea31ae315803",
+      "sourceEvidence": {
+        "evidenceId": "math3-2007-q16",
+        "sourceId": "src_945621a75972b2f0b1483ec9",
+        "answerSourceId": "src_945621a75972b2f0b1483ec9",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2007-paper-answer",
+        "answerEvidenceId": "math3-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:9e06e6b6bbffeb4631b9330565dc1c36ac69997e3a42be7cd8e7ea31ae315803"
+      }
+    },
+    {
+      "id": "math3-2007-017",
+      "number": 17,
+      "paperId": "math3-2007",
+      "paperName": "2007考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2007",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2007考研数学三第17题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "曲线在点 (1,1) 附近的凹凸性判别见答案原页。",
+      "explanation": "答案来自本地百度网盘 2007 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2007/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2007考研数学三试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2007/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2007考研数学三答案解析 p.8"
+        },
+        {
+          "src": "question-bank/math3-2007/answer-page-09.jpg",
+          "caption": "答案解析 p.9",
+          "alt": "2007考研数学三答案解析 p.9"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2007",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:cf7c5e8b76e8372dd044e004a8c0b5423214cdc4d96b360645db7c289809b992",
+      "answerTextHash": "sha256:974e3bb36ea018d8b07a80ead9c6b533584c860dda801b9a5e0052e54b84fd6e",
+      "sourceEvidence": {
+        "evidenceId": "math3-2007-q17",
+        "sourceId": "src_945621a75972b2f0b1483ec9",
+        "answerSourceId": "src_945621a75972b2f0b1483ec9",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2007-paper-answer",
+        "answerEvidenceId": "math3-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:974e3bb36ea018d8b07a80ead9c6b533584c860dda801b9a5e0052e54b84fd6e"
+      }
+    },
+    {
+      "id": "math3-2007-018",
+      "number": 18,
+      "paperId": "math3-2007",
+      "paperName": "2007考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2007",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2007考研数学三第18题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "完整二重积分计算见答案原页。",
+      "explanation": "答案来自本地百度网盘 2007 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2007/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2007考研数学三试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2007/answer-page-09.jpg",
+          "caption": "答案解析 p.9",
+          "alt": "2007考研数学三答案解析 p.9"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2007",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:1e7f995f5f670ca8f45675245263d6f2e10a9a379fece44e1287a5cd3117adc5",
+      "answerTextHash": "sha256:6699ab8d3b69e235b4d743aa8dfccc032885b140a2f82f72b799a3fe648a2cd9",
+      "sourceEvidence": {
+        "evidenceId": "math3-2007-q18",
+        "sourceId": "src_945621a75972b2f0b1483ec9",
+        "answerSourceId": "src_945621a75972b2f0b1483ec9",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2007-paper-answer",
+        "answerEvidenceId": "math3-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:6699ab8d3b69e235b4d743aa8dfccc032885b140a2f82f72b799a3fe648a2cd9"
+      }
+    },
+    {
+      "id": "math3-2007-019",
+      "number": 19,
+      "paperId": "math3-2007",
+      "paperName": "2007考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2007",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2007考研数学三第19题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "完整证明过程见答案原页。",
+      "explanation": "答案来自本地百度网盘 2007 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2007/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2007考研数学三试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2007/answer-page-09.jpg",
+          "caption": "答案解析 p.9",
+          "alt": "2007考研数学三答案解析 p.9"
+        },
+        {
+          "src": "question-bank/math3-2007/answer-page-10.jpg",
+          "caption": "答案解析 p.10",
+          "alt": "2007考研数学三答案解析 p.10"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2007",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:2d1530d499b79f8a46c26f220428adeef5afbf337afb9114f3c041e8c5ad31ec",
+      "answerTextHash": "sha256:f476c14eb3701577f6910a51d85be92d61f53f6608e1b0caf7ee04cc4127f6cf",
+      "sourceEvidence": {
+        "evidenceId": "math3-2007-q19",
+        "sourceId": "src_945621a75972b2f0b1483ec9",
+        "answerSourceId": "src_945621a75972b2f0b1483ec9",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2007-paper-answer",
+        "answerEvidenceId": "math3-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:f476c14eb3701577f6910a51d85be92d61f53f6608e1b0caf7ee04cc4127f6cf"
+      }
+    },
+    {
+      "id": "math3-2007-020",
+      "number": 20,
+      "paperId": "math3-2007",
+      "paperName": "2007考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2007",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2007考研数学三第20题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "幂级数展开及收敛区间见答案原页；收敛区间为 1 < x < 3。",
+      "explanation": "答案来自本地百度网盘 2007 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2007/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2007考研数学三试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2007/answer-page-10.jpg",
+          "caption": "答案解析 p.10",
+          "alt": "2007考研数学三答案解析 p.10"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2007",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:815396556f48103e5cb0ec0ce69df018f5809e9257f0b8f66eb1df5f38a156a5",
+      "answerTextHash": "sha256:63fad35ecbc7fbf9d329f84743c62950c772b9a455b6dde5f36fee55bd069f90",
+      "sourceEvidence": {
+        "evidenceId": "math3-2007-q20",
+        "sourceId": "src_945621a75972b2f0b1483ec9",
+        "answerSourceId": "src_945621a75972b2f0b1483ec9",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2007-paper-answer",
+        "answerEvidenceId": "math3-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:63fad35ecbc7fbf9d329f84743c62950c772b9a455b6dde5f36fee55bd069f90"
+      }
+    },
+    {
+      "id": "math3-2007-021",
+      "number": 21,
+      "paperId": "math3-2007",
+      "paperName": "2007考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2007",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2007考研数学三第21题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "a = 1 或 a = 2；所有公共解见答案原页。",
+      "explanation": "答案来自本地百度网盘 2007 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2007/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2007考研数学三试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2007/answer-page-10.jpg",
+          "caption": "答案解析 p.10",
+          "alt": "2007考研数学三答案解析 p.10"
+        },
+        {
+          "src": "question-bank/math3-2007/answer-page-11.jpg",
+          "caption": "答案解析 p.11",
+          "alt": "2007考研数学三答案解析 p.11"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2007",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:c4eee10c4c6ce7852d0ca927a65f11a200b821a692f8117e8500a328154e628b",
+      "answerTextHash": "sha256:93fb2577ee856096b7f2a7a26524a6fff269d88dba9ba579b5f46a74bdc7ac02",
+      "sourceEvidence": {
+        "evidenceId": "math3-2007-q21",
+        "sourceId": "src_945621a75972b2f0b1483ec9",
+        "answerSourceId": "src_945621a75972b2f0b1483ec9",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2007-paper-answer",
+        "answerEvidenceId": "math3-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:93fb2577ee856096b7f2a7a26524a6fff269d88dba9ba579b5f46a74bdc7ac02"
+      }
+    },
+    {
+      "id": "math3-2007-022",
+      "number": 22,
+      "paperId": "math3-2007",
+      "paperName": "2007考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2007",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2007考研数学三第22题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "B 的特征值为 -2, 1, 1；矩阵 B 见答案原页。",
+      "explanation": "答案来自本地百度网盘 2007 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2007/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2007考研数学三试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2007/answer-page-11.jpg",
+          "caption": "答案解析 p.11",
+          "alt": "2007考研数学三答案解析 p.11"
+        },
+        {
+          "src": "question-bank/math3-2007/answer-page-12.jpg",
+          "caption": "答案解析 p.12",
+          "alt": "2007考研数学三答案解析 p.12"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2007",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:0a6904db97c9b7b21928b6f3b3ee6e886501b37b06751aaa91d7a3d6b68c35cd",
+      "answerTextHash": "sha256:9a8642ac62a77a74e871ec0f2d308efe81e3a5b4817fec6451b2fe52ad8ae225",
+      "sourceEvidence": {
+        "evidenceId": "math3-2007-q22",
+        "sourceId": "src_945621a75972b2f0b1483ec9",
+        "answerSourceId": "src_945621a75972b2f0b1483ec9",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2007-paper-answer",
+        "answerEvidenceId": "math3-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:9a8642ac62a77a74e871ec0f2d308efe81e3a5b4817fec6451b2fe52ad8ae225"
+      }
+    },
+    {
+      "id": "math3-2007-023",
+      "number": 23,
+      "paperId": "math3-2007",
+      "paperName": "2007考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2007",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2007考研数学三第23题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "P{X > 2Y}=1/24；Z=X+Y 的概率密度见答案原页。",
+      "explanation": "答案来自本地百度网盘 2007 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2007/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2007考研数学三试卷原页 p.3"
+        },
+        {
+          "src": "question-bank/math3-2007/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2007考研数学三试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2007/answer-page-12.jpg",
+          "caption": "答案解析 p.12",
+          "alt": "2007考研数学三答案解析 p.12"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2007",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:69186f7492f71fd5be9eff18d5dfd0795b00eb2eca7f05c3569f8477d0f67ff5",
+      "answerTextHash": "sha256:0cec0cec344a21bb76d00efcd0c442778b143f9595b87528545e654542c28e1a",
+      "sourceEvidence": {
+        "evidenceId": "math3-2007-q23",
+        "sourceId": "src_945621a75972b2f0b1483ec9",
+        "answerSourceId": "src_945621a75972b2f0b1483ec9",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2007-paper-answer",
+        "answerEvidenceId": "math3-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:0cec0cec344a21bb76d00efcd0c442778b143f9595b87528545e654542c28e1a"
+      }
+    },
+    {
+      "id": "math3-2007-024",
+      "number": 24,
+      "paperId": "math3-2007",
+      "paperName": "2007考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2007",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2007考研数学三第24题（解答题）。设总体 X 的概率密度含未知参数 theta，样本均值为 Xbar；求 theta 的矩估计量，并判断 4Xbar^2 是否为 theta^2 的无偏估计量。",
+      "options": [],
+      "answer": "theta 的矩估计量见答案原页；4Xbar^2 不是 theta^2 的无偏估计量。",
+      "explanation": "答案来自本地百度网盘 2007 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2007/answer-page-12.jpg",
+          "caption": "答案解析 p.12",
+          "alt": "2007考研数学三答案解析 p.12"
+        },
+        {
+          "src": "question-bank/math3-2007/answer-page-13.jpg",
+          "caption": "答案解析 p.13",
+          "alt": "2007考研数学三答案解析 p.13"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2007",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:eb677640ed45ee8ff096cfd442114cb73d8da2f390ab27703820a40a7a1c8a26",
+      "answerTextHash": "sha256:28f2f5f841c9ecd3714d263db0105c12ff792714798c85d71845f7492f48d46c",
+      "sourceEvidence": {
+        "evidenceId": "math3-2007-q24",
+        "sourceId": "src_945621a75972b2f0b1483ec9",
+        "answerSourceId": "src_945621a75972b2f0b1483ec9",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2007-paper-answer",
+        "answerEvidenceId": "math3-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:28f2f5f841c9ecd3714d263db0105c12ff792714798c85d71845f7492f48d46c"
+      }
+    }
+  ]
+}

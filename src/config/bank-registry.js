@@ -481,6 +481,22 @@ const BANK_REGISTRY = [
     loader: () => import('./flashcard-banks/math3-2006.json')
   },
   {
+    id: 'math3-2007',
+    subject: '数学',
+    subjectKey: 'math',
+    track: 'math3',
+    year: '2007',
+    name: '2007考研数学三真题',
+    description: '10道选择 + 6道填空 + 8道解答',
+    releaseLabel: '正式题库',
+    caution:
+      '按本地百度网盘 2007 数学三真题及解析 PDF 页图训练；第24题题干来自同源解析页文本，答题前不展示含答案页图',
+    paperType: 'past_exam',
+    quality: PAPER_QUALITY.READY,
+    sections: paperSections('选择题', '填空题', '解答题'),
+    loader: () => import('./flashcard-banks/math3-2007.json')
+  },
+  {
     id: 'math3-2025',
     subject: '数学',
     subjectKey: 'math',
