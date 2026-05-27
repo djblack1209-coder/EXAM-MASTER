@@ -1,0 +1,1421 @@
+{
+  "id": "math2-2008",
+  "source": "math2-2008-paper-answer",
+  "paperId": "math2-2008",
+  "paperName": "2008考研数学二真题",
+  "subject": "数学",
+  "subjectKey": "math",
+  "track": "math2",
+  "year": "2008",
+  "quality": "ready",
+  "publicationStatus": "published",
+  "publicationBlockers": [],
+  "sourceEvidencePolicy": "baidu_netdisk_official_paper_pdf_page_image_v1",
+  "sourceFiles": [
+    {
+      "id": "math2-2008-paper-answer",
+      "role": "paper_answer",
+      "localPath": "data/raw-inbox/public-course-history/math2/2008/2008-math2-paper-answer.pdf",
+      "sha256": "sha256:65396f1ee23b0ce7d205c2705b8a793fb957e44e462ac27ca28482c07d116807"
+    }
+  ],
+  "assetRoot": "question-bank/math2-2008",
+  "processed_at": "2026-05-27T16:56:46Z",
+  "total_cards": 23,
+  "cards": [
+    {
+      "id": "math2-2008-001",
+      "number": 1,
+      "paperId": "math2-2008",
+      "paperName": "2008考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2008",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2008考研数学二第1题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2008 数学二真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2008/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2008考研数学二试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2008/answer-page-01.jpg",
+          "caption": "答案解析 p.1",
+          "alt": "2008考研数学二答案解析 p.1"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2008",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:e3e457a3e0baf0de2280c2f74ec7269314870070f413659da97f9405b9f33822",
+      "answerTextHash": "sha256:eeb8f23963a55373792abcd7f5e7bf152df8a8573bd10989d302f7962035a04f",
+      "sourceEvidence": {
+        "evidenceId": "math2-2008-q01",
+        "sourceId": "src_97dfc7091b5f348f667ecb72",
+        "answerSourceId": "src_97dfc7091b5f348f667ecb72",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2008-paper-answer",
+        "answerEvidenceId": "math2-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:eeb8f23963a55373792abcd7f5e7bf152df8a8573bd10989d302f7962035a04f"
+      }
+    },
+    {
+      "id": "math2-2008-002",
+      "number": 2,
+      "paperId": "math2-2008",
+      "paperName": "2008考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2008",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2008考研数学二第2题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2008 数学二真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2008/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2008考研数学二试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2008/answer-page-01.jpg",
+          "caption": "答案解析 p.1",
+          "alt": "2008考研数学二答案解析 p.1"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2008",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:74982c174971db15db698c701e4f63a138ad77f0f4fa36a385d03239d9a479db",
+      "answerTextHash": "sha256:01370fce298cb459b7c797138d9e825fda2e23c11e9e9249e65268241d053ce7",
+      "sourceEvidence": {
+        "evidenceId": "math2-2008-q02",
+        "sourceId": "src_97dfc7091b5f348f667ecb72",
+        "answerSourceId": "src_97dfc7091b5f348f667ecb72",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2008-paper-answer",
+        "answerEvidenceId": "math2-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:01370fce298cb459b7c797138d9e825fda2e23c11e9e9249e65268241d053ce7"
+      }
+    },
+    {
+      "id": "math2-2008-003",
+      "number": 3,
+      "paperId": "math2-2008",
+      "paperName": "2008考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2008",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2008考研数学二第3题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2008 数学二真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2008/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2008考研数学二试卷原页 p.1"
+        },
+        {
+          "src": "question-bank/math2-2008/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2008考研数学二试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2008/answer-page-02.jpg",
+          "caption": "答案解析 p.2",
+          "alt": "2008考研数学二答案解析 p.2"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2008",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:8a187469a62fb97733addab590eaf92eb456cb42dab394a16b3140a30226ecf9",
+      "answerTextHash": "sha256:7cd6122ff6ad5f4ed9210d1ae15379380ce2cd5f5ab3a3b9f0756d9b8d6dbe3f",
+      "sourceEvidence": {
+        "evidenceId": "math2-2008-q03",
+        "sourceId": "src_97dfc7091b5f348f667ecb72",
+        "answerSourceId": "src_97dfc7091b5f348f667ecb72",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2008-paper-answer",
+        "answerEvidenceId": "math2-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:7cd6122ff6ad5f4ed9210d1ae15379380ce2cd5f5ab3a3b9f0756d9b8d6dbe3f"
+      }
+    },
+    {
+      "id": "math2-2008-004",
+      "number": 4,
+      "paperId": "math2-2008",
+      "paperName": "2008考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2008",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2008考研数学二第4题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2008 数学二真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2008/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2008考研数学二试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2008/answer-page-02.jpg",
+          "caption": "答案解析 p.2",
+          "alt": "2008考研数学二答案解析 p.2"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2008",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:b8bc33895283d7c2d5a9cb0da12a837db6d668e00df0bdaddbae75f2cbddb1bc",
+      "answerTextHash": "sha256:be350ad3c0fc9a7257a73bd05aba736f028d2514441d66b0626e7a78bc85704b",
+      "sourceEvidence": {
+        "evidenceId": "math2-2008-q04",
+        "sourceId": "src_97dfc7091b5f348f667ecb72",
+        "answerSourceId": "src_97dfc7091b5f348f667ecb72",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2008-paper-answer",
+        "answerEvidenceId": "math2-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:be350ad3c0fc9a7257a73bd05aba736f028d2514441d66b0626e7a78bc85704b"
+      }
+    },
+    {
+      "id": "math2-2008-005",
+      "number": 5,
+      "paperId": "math2-2008",
+      "paperName": "2008考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2008",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2008考研数学二第5题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2008 数学二真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2008/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2008考研数学二试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2008/answer-page-02.jpg",
+          "caption": "答案解析 p.2",
+          "alt": "2008考研数学二答案解析 p.2"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2008",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:7ad43abf13369e55a2f32fed886e195d734922484b7ee9cbe8b19287fca6c347",
+      "answerTextHash": "sha256:ea6b7035bde61a0fb21a8d4196db45fb2986b73187d0a84d810bab5409f63f7d",
+      "sourceEvidence": {
+        "evidenceId": "math2-2008-q05",
+        "sourceId": "src_97dfc7091b5f348f667ecb72",
+        "answerSourceId": "src_97dfc7091b5f348f667ecb72",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2008-paper-answer",
+        "answerEvidenceId": "math2-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:ea6b7035bde61a0fb21a8d4196db45fb2986b73187d0a84d810bab5409f63f7d"
+      }
+    },
+    {
+      "id": "math2-2008-006",
+      "number": 6,
+      "paperId": "math2-2008",
+      "paperName": "2008考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2008",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2008考研数学二第6题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2008 数学二真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2008/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2008考研数学二试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2008/answer-page-03.jpg",
+          "caption": "答案解析 p.3",
+          "alt": "2008考研数学二答案解析 p.3"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2008",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:2a878fae89f0f8556e1975b1079e5fd11bfee2a351754278afc50891df2e5423",
+      "answerTextHash": "sha256:37047a4e1d0f087c0f0de2714845cbbfcf52e1f11a8dee1bd57c83d31cefed0f",
+      "sourceEvidence": {
+        "evidenceId": "math2-2008-q06",
+        "sourceId": "src_97dfc7091b5f348f667ecb72",
+        "answerSourceId": "src_97dfc7091b5f348f667ecb72",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2008-paper-answer",
+        "answerEvidenceId": "math2-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:37047a4e1d0f087c0f0de2714845cbbfcf52e1f11a8dee1bd57c83d31cefed0f"
+      }
+    },
+    {
+      "id": "math2-2008-007",
+      "number": 7,
+      "paperId": "math2-2008",
+      "paperName": "2008考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2008",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2008考研数学二第7题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2008 数学二真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2008/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2008考研数学二试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2008/answer-page-03.jpg",
+          "caption": "答案解析 p.3",
+          "alt": "2008考研数学二答案解析 p.3"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2008",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:5cc12088a6f5b4da4b2942a11561f2a2e1c9dfd5018bc37ec13eda22c5108348",
+      "answerTextHash": "sha256:68d83c90862fc09ebf9a4584ba993943e3bb37788c1dc1201cb29f44689a49dc",
+      "sourceEvidence": {
+        "evidenceId": "math2-2008-q07",
+        "sourceId": "src_97dfc7091b5f348f667ecb72",
+        "answerSourceId": "src_97dfc7091b5f348f667ecb72",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2008-paper-answer",
+        "answerEvidenceId": "math2-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:68d83c90862fc09ebf9a4584ba993943e3bb37788c1dc1201cb29f44689a49dc"
+      }
+    },
+    {
+      "id": "math2-2008-008",
+      "number": 8,
+      "paperId": "math2-2008",
+      "paperName": "2008考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2008",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2008考研数学二第8题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2008 数学二真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2008/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2008考研数学二试卷原页 p.3"
+        },
+        {
+          "src": "question-bank/math2-2008/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2008考研数学二试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2008/answer-page-03.jpg",
+          "caption": "答案解析 p.3",
+          "alt": "2008考研数学二答案解析 p.3"
+        },
+        {
+          "src": "question-bank/math2-2008/answer-page-04.jpg",
+          "caption": "答案解析 p.4",
+          "alt": "2008考研数学二答案解析 p.4"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2008",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:5a5d8cde9e1f6944dfe95c014f8c9a177f95adca00cf11e9d707a1a98bb564e3",
+      "answerTextHash": "sha256:a9bfd468c4359d21158307d84d2afed56351638ec1fed8c9719fe1553499ce9f",
+      "sourceEvidence": {
+        "evidenceId": "math2-2008-q08",
+        "sourceId": "src_97dfc7091b5f348f667ecb72",
+        "answerSourceId": "src_97dfc7091b5f348f667ecb72",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2008-paper-answer",
+        "answerEvidenceId": "math2-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:a9bfd468c4359d21158307d84d2afed56351638ec1fed8c9719fe1553499ce9f"
+      }
+    },
+    {
+      "id": "math2-2008-009",
+      "number": 9,
+      "paperId": "math2-2008",
+      "paperName": "2008考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2008",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2008考研数学二第9题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "2",
+      "explanation": "答案来自本地百度网盘 2008 数学二真题及解析 PDF；完整题干和公式见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2008/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2008考研数学二试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2008/answer-page-04.jpg",
+          "caption": "答案解析 p.4",
+          "alt": "2008考研数学二答案解析 p.4"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2008",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:ad161b51ed64a094eca6b093a1eee718396321507522f37f8db0526b36bf0cb9",
+      "answerTextHash": "sha256:a4c45c75502708f7ced2ce351c52cb59f6b6c09dd06b4ac465404b511c4e9b29",
+      "sourceEvidence": {
+        "evidenceId": "math2-2008-q09",
+        "sourceId": "src_97dfc7091b5f348f667ecb72",
+        "answerSourceId": "src_97dfc7091b5f348f667ecb72",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2008-paper-answer",
+        "answerEvidenceId": "math2-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:a4c45c75502708f7ced2ce351c52cb59f6b6c09dd06b4ac465404b511c4e9b29"
+      }
+    },
+    {
+      "id": "math2-2008-010",
+      "number": 10,
+      "paperId": "math2-2008",
+      "paperName": "2008考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2008",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2008考研数学二第10题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "y = -xe^{-x} + Cx",
+      "explanation": "答案来自本地百度网盘 2008 数学二真题及解析 PDF；完整题干和公式见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2008/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2008考研数学二试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2008/answer-page-04.jpg",
+          "caption": "答案解析 p.4",
+          "alt": "2008考研数学二答案解析 p.4"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2008",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:96c9cb4ed04e96ea1d8a6ea39dcb185db2ad1315f348c12ba9557c42cb4944ba",
+      "answerTextHash": "sha256:1e99d5caf413ef7c1b8fb4659108c0ac1f498f17c363827574c050e39fbd595a",
+      "sourceEvidence": {
+        "evidenceId": "math2-2008-q10",
+        "sourceId": "src_97dfc7091b5f348f667ecb72",
+        "answerSourceId": "src_97dfc7091b5f348f667ecb72",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2008-paper-answer",
+        "answerEvidenceId": "math2-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:1e99d5caf413ef7c1b8fb4659108c0ac1f498f17c363827574c050e39fbd595a"
+      }
+    },
+    {
+      "id": "math2-2008-011",
+      "number": 11,
+      "paperId": "math2-2008",
+      "paperName": "2008考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2008",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2008考研数学二第11题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "y = x + 1",
+      "explanation": "答案来自本地百度网盘 2008 数学二真题及解析 PDF；完整题干和公式见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2008/paper-page-05.jpg",
+          "caption": "试卷原页 p.5",
+          "alt": "2008考研数学二试卷原页 p.5"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2008/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2008考研数学二答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2008",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:ea4aac55e99ca5abf40c2c44288bdbbf308787497f9205dd4b4ffd5f7148c9e5",
+      "answerTextHash": "sha256:4ba7c4bc9e0c6c5e1d1346c33917affa9ee23262df978c92e4694b8fce8277ce",
+      "sourceEvidence": {
+        "evidenceId": "math2-2008-q11",
+        "sourceId": "src_97dfc7091b5f348f667ecb72",
+        "answerSourceId": "src_97dfc7091b5f348f667ecb72",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2008-paper-answer",
+        "answerEvidenceId": "math2-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:4ba7c4bc9e0c6c5e1d1346c33917affa9ee23262df978c92e4694b8fce8277ce"
+      }
+    },
+    {
+      "id": "math2-2008-012",
+      "number": 12,
+      "paperId": "math2-2008",
+      "paperName": "2008考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2008",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2008考研数学二第12题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "(-1,-6)",
+      "explanation": "答案来自本地百度网盘 2008 数学二真题及解析 PDF；完整题干和公式见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2008/paper-page-05.jpg",
+          "caption": "试卷原页 p.5",
+          "alt": "2008考研数学二试卷原页 p.5"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2008/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2008考研数学二答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2008",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:4a8200c49ba62f0f9e01f18677ac28dd2d12db265641fa3be4b1c26e8f86da7f",
+      "answerTextHash": "sha256:50607106164335e02c08cf058db11b5d74711a0589d5d7cd127d14399a15340b",
+      "sourceEvidence": {
+        "evidenceId": "math2-2008-q12",
+        "sourceId": "src_97dfc7091b5f348f667ecb72",
+        "answerSourceId": "src_97dfc7091b5f348f667ecb72",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2008-paper-answer",
+        "answerEvidenceId": "math2-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:50607106164335e02c08cf058db11b5d74711a0589d5d7cd127d14399a15340b"
+      }
+    },
+    {
+      "id": "math2-2008-013",
+      "number": 13,
+      "paperId": "math2-2008",
+      "paperName": "2008考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2008",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2008考研数学二第13题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "(ln y - ln x - 1) / x",
+      "explanation": "答案来自本地百度网盘 2008 数学二真题及解析 PDF；完整题干和公式见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2008/paper-page-05.jpg",
+          "caption": "试卷原页 p.5",
+          "alt": "2008考研数学二试卷原页 p.5"
+        },
+        {
+          "src": "question-bank/math2-2008/paper-page-06.jpg",
+          "caption": "试卷原页 p.6",
+          "alt": "2008考研数学二试卷原页 p.6"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2008/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2008考研数学二答案解析 p.5"
+        },
+        {
+          "src": "question-bank/math2-2008/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2008考研数学二答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2008",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:aaa79d0e3981641148c5f9b11dc6cd433f71f391bcc4fd262549d7f9c10022ef",
+      "answerTextHash": "sha256:be9cecb4bf1d4b9e4c945255a04290fb46ade0e20336fa299c883f601a991164",
+      "sourceEvidence": {
+        "evidenceId": "math2-2008-q13",
+        "sourceId": "src_97dfc7091b5f348f667ecb72",
+        "answerSourceId": "src_97dfc7091b5f348f667ecb72",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2008-paper-answer",
+        "answerEvidenceId": "math2-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:be9cecb4bf1d4b9e4c945255a04290fb46ade0e20336fa299c883f601a991164"
+      }
+    },
+    {
+      "id": "math2-2008-014",
+      "number": 14,
+      "paperId": "math2-2008",
+      "paperName": "2008考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2008",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2008考研数学二第14题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "-1",
+      "explanation": "答案来自本地百度网盘 2008 数学二真题及解析 PDF；完整题干和公式见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2008/paper-page-06.jpg",
+          "caption": "试卷原页 p.6",
+          "alt": "2008考研数学二试卷原页 p.6"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2008/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2008考研数学二答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2008",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:be0be24833962da22f01e86eacf3380799d2a4e23d937ee28767b1613d53152b",
+      "answerTextHash": "sha256:d8fe1d6b1c127b6e98bcb06479166216b0e5c4fa2fbc498a57c31e0ae154f163",
+      "sourceEvidence": {
+        "evidenceId": "math2-2008-q14",
+        "sourceId": "src_97dfc7091b5f348f667ecb72",
+        "answerSourceId": "src_97dfc7091b5f348f667ecb72",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2008-paper-answer",
+        "answerEvidenceId": "math2-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:d8fe1d6b1c127b6e98bcb06479166216b0e5c4fa2fbc498a57c31e0ae154f163"
+      }
+    },
+    {
+      "id": "math2-2008-015",
+      "number": 15,
+      "paperId": "math2-2008",
+      "paperName": "2008考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2008",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2008考研数学二第15题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "极限值为 1/6。",
+      "explanation": "答案来自本地百度网盘 2008 数学二真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2008/paper-page-06.jpg",
+          "caption": "试卷原页 p.6",
+          "alt": "2008考研数学二试卷原页 p.6"
+        },
+        {
+          "src": "question-bank/math2-2008/paper-page-07.jpg",
+          "caption": "试卷原页 p.7",
+          "alt": "2008考研数学二试卷原页 p.7"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2008/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2008考研数学二答案解析 p.6"
+        },
+        {
+          "src": "question-bank/math2-2008/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2008考研数学二答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2008",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:782ddf426c96cc8943d0336da849b5d783cc03f4f015ba5187c0e97f23992267",
+      "answerTextHash": "sha256:4440daa43f2e78ac3ba24a229883c1b066cd0463f7e63263a72623351ceca2bf",
+      "sourceEvidence": {
+        "evidenceId": "math2-2008-q15",
+        "sourceId": "src_97dfc7091b5f348f667ecb72",
+        "answerSourceId": "src_97dfc7091b5f348f667ecb72",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2008-paper-answer",
+        "answerEvidenceId": "math2-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:4440daa43f2e78ac3ba24a229883c1b066cd0463f7e63263a72623351ceca2bf"
+      }
+    },
+    {
+      "id": "math2-2008-016",
+      "number": 16,
+      "paperId": "math2-2008",
+      "paperName": "2008考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2008",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2008考研数学二第16题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "x(t)=ln(1+t^2)，y(t)=∫0^t ln(1+u^2)du；指定导数值见答案原页。",
+      "explanation": "答案来自本地百度网盘 2008 数学二真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2008/paper-page-07.jpg",
+          "caption": "试卷原页 p.7",
+          "alt": "2008考研数学二试卷原页 p.7"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2008/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2008考研数学二答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2008",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:6dd582ee93a500485a519780286e20ed7df0e845d6898790bf36a94ae798f708",
+      "answerTextHash": "sha256:08f46fd9359d6c2cd1c2099cd1cbce509258dc636a258df3c1d5a96d33893d3f",
+      "sourceEvidence": {
+        "evidenceId": "math2-2008-q16",
+        "sourceId": "src_97dfc7091b5f348f667ecb72",
+        "answerSourceId": "src_97dfc7091b5f348f667ecb72",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2008-paper-answer",
+        "answerEvidenceId": "math2-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:08f46fd9359d6c2cd1c2099cd1cbce509258dc636a258df3c1d5a96d33893d3f"
+      }
+    },
+    {
+      "id": "math2-2008-017",
+      "number": 17,
+      "paperId": "math2-2008",
+      "paperName": "2008考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2008",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2008考研数学二第17题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "定积分值为 π/4 + e/2。",
+      "explanation": "答案来自本地百度网盘 2008 数学二真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2008/paper-page-07.jpg",
+          "caption": "试卷原页 p.7",
+          "alt": "2008考研数学二试卷原页 p.7"
+        },
+        {
+          "src": "question-bank/math2-2008/paper-page-08.jpg",
+          "caption": "试卷原页 p.8",
+          "alt": "2008考研数学二试卷原页 p.8"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2008/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2008考研数学二答案解析 p.7"
+        },
+        {
+          "src": "question-bank/math2-2008/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2008考研数学二答案解析 p.8"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2008",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:89ec80e02c06ba423298f884ee13cee90976390bcd31c3025cb5192a30453749",
+      "answerTextHash": "sha256:662b992683a698e81681e30cb4f07412f2f02eeacfe5257a7dbd8b128341cb15",
+      "sourceEvidence": {
+        "evidenceId": "math2-2008-q17",
+        "sourceId": "src_97dfc7091b5f348f667ecb72",
+        "answerSourceId": "src_97dfc7091b5f348f667ecb72",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2008-paper-answer",
+        "answerEvidenceId": "math2-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:662b992683a698e81681e30cb4f07412f2f02eeacfe5257a7dbd8b128341cb15"
+      }
+    },
+    {
+      "id": "math2-2008-018",
+      "number": 18,
+      "paperId": "math2-2008",
+      "paperName": "2008考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2008",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2008考研数学二第18题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "二重积分值为 1/2 + 2 ln 2。",
+      "explanation": "答案来自本地百度网盘 2008 数学二真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2008/paper-page-08.jpg",
+          "caption": "试卷原页 p.8",
+          "alt": "2008考研数学二试卷原页 p.8"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2008/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2008考研数学二答案解析 p.8"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2008",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:30f12028f92059cbe1cec6cc3deeaeef41add1ec268931c1d86b659016837764",
+      "answerTextHash": "sha256:e8fc78b2685946a0bdf575107095439925f9c97e216100e8f38235015b0b2aea",
+      "sourceEvidence": {
+        "evidenceId": "math2-2008-q18",
+        "sourceId": "src_97dfc7091b5f348f667ecb72",
+        "answerSourceId": "src_97dfc7091b5f348f667ecb72",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2008-paper-answer",
+        "answerEvidenceId": "math2-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:e8fc78b2685946a0bdf575107095439925f9c97e216100e8f38235015b0b2aea"
+      }
+    },
+    {
+      "id": "math2-2008-019",
+      "number": 19,
+      "paperId": "math2-2008",
+      "paperName": "2008考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2008",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2008考研数学二第19题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "由旋转体侧面积与体积关系得到微分方程，f(x) 的表达式见答案原页。",
+      "explanation": "答案来自本地百度网盘 2008 数学二真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2008/paper-page-08.jpg",
+          "caption": "试卷原页 p.8",
+          "alt": "2008考研数学二试卷原页 p.8"
+        },
+        {
+          "src": "question-bank/math2-2008/paper-page-09.jpg",
+          "caption": "试卷原页 p.9",
+          "alt": "2008考研数学二试卷原页 p.9"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2008/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2008考研数学二答案解析 p.8"
+        },
+        {
+          "src": "question-bank/math2-2008/answer-page-09.jpg",
+          "caption": "答案解析 p.9",
+          "alt": "2008考研数学二答案解析 p.9"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2008",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:c559dee4e5f24dafba3c0695f361d5c2d08ed3d8d84b834e69ff6a35fc125bbb",
+      "answerTextHash": "sha256:04b97c89c60bbbbf6f9f54b8054682396a6c1aa17735fee4ba4d382df30b0c44",
+      "sourceEvidence": {
+        "evidenceId": "math2-2008-q19",
+        "sourceId": "src_97dfc7091b5f348f667ecb72",
+        "answerSourceId": "src_97dfc7091b5f348f667ecb72",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2008-paper-answer",
+        "answerEvidenceId": "math2-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:04b97c89c60bbbbf6f9f54b8054682396a6c1aa17735fee4ba4d382df30b0c44"
+      }
+    },
+    {
+      "id": "math2-2008-020",
+      "number": 20,
+      "paperId": "math2-2008",
+      "paperName": "2008考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2008",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2008考研数学二第20题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "利用积分中值定理与 Rolle/Lagrange 中值定理证明存在 ξ 使 φ''(ξ)<0。",
+      "explanation": "答案来自本地百度网盘 2008 数学二真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2008/paper-page-09.jpg",
+          "caption": "试卷原页 p.9",
+          "alt": "2008考研数学二试卷原页 p.9"
+        },
+        {
+          "src": "question-bank/math2-2008/paper-page-10.jpg",
+          "caption": "试卷原页 p.10",
+          "alt": "2008考研数学二试卷原页 p.10"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2008/answer-page-09.jpg",
+          "caption": "答案解析 p.9",
+          "alt": "2008考研数学二答案解析 p.9"
+        },
+        {
+          "src": "question-bank/math2-2008/answer-page-10.jpg",
+          "caption": "答案解析 p.10",
+          "alt": "2008考研数学二答案解析 p.10"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2008",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:ffe3f0ebb87690f3ad8d72f8f8344cac7614ccee8d6f4e3a2fd1bd6e5f166078",
+      "answerTextHash": "sha256:e2e6748b078c208ce7134add7c280c4273553a8dfeac7849536bb3e6ab83a14a",
+      "sourceEvidence": {
+        "evidenceId": "math2-2008-q20",
+        "sourceId": "src_97dfc7091b5f348f667ecb72",
+        "answerSourceId": "src_97dfc7091b5f348f667ecb72",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2008-paper-answer",
+        "answerEvidenceId": "math2-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:e2e6748b078c208ce7134add7c280c4273553a8dfeac7849536bb3e6ab83a14a"
+      }
+    },
+    {
+      "id": "math2-2008-021",
+      "number": 21,
+      "paperId": "math2-2008",
+      "paperName": "2008考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2008",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2008考研数学二第21题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "在约束条件下最大值为 72，最小值为 6。",
+      "explanation": "答案来自本地百度网盘 2008 数学二真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2008/paper-page-10.jpg",
+          "caption": "试卷原页 p.10",
+          "alt": "2008考研数学二试卷原页 p.10"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2008/answer-page-10.jpg",
+          "caption": "答案解析 p.10",
+          "alt": "2008考研数学二答案解析 p.10"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2008",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:b7f469f7c14c24c04119089e37d76379770e046d96cf12c6b52c1467e3b5eadd",
+      "answerTextHash": "sha256:498c6fe659c950d9a4f992b27c446bab24a879ad4066c12c34cdcd488dd737c8",
+      "sourceEvidence": {
+        "evidenceId": "math2-2008-q21",
+        "sourceId": "src_97dfc7091b5f348f667ecb72",
+        "answerSourceId": "src_97dfc7091b5f348f667ecb72",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2008-paper-answer",
+        "answerEvidenceId": "math2-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:498c6fe659c950d9a4f992b27c446bab24a879ad4066c12c34cdcd488dd737c8"
+      }
+    },
+    {
+      "id": "math2-2008-022",
+      "number": 22,
+      "paperId": "math2-2008",
+      "paperName": "2008考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2008",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2008考研数学二第22题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "|A|=(n+1)a^n；a≠0 时有唯一解；a=0 时有无穷多解，通解见答案原页。",
+      "explanation": "答案来自本地百度网盘 2008 数学二真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2008/paper-page-11.jpg",
+          "caption": "试卷原页 p.11",
+          "alt": "2008考研数学二试卷原页 p.11"
+        },
+        {
+          "src": "question-bank/math2-2008/paper-page-12.jpg",
+          "caption": "试卷原页 p.12",
+          "alt": "2008考研数学二试卷原页 p.12"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2008/answer-page-11.jpg",
+          "caption": "答案解析 p.11",
+          "alt": "2008考研数学二答案解析 p.11"
+        },
+        {
+          "src": "question-bank/math2-2008/answer-page-12.jpg",
+          "caption": "答案解析 p.12",
+          "alt": "2008考研数学二答案解析 p.12"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2008",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:12ea26721d553de7d23c1f1a9d9452cf06e46975b504bc65a91ca1ecf4884a85",
+      "answerTextHash": "sha256:cacd03f9dd523b5f6171a2cb71be12eb5b504688a1b90a06b3ca7bf8cf710fb2",
+      "sourceEvidence": {
+        "evidenceId": "math2-2008-q22",
+        "sourceId": "src_97dfc7091b5f348f667ecb72",
+        "answerSourceId": "src_97dfc7091b5f348f667ecb72",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2008-paper-answer",
+        "answerEvidenceId": "math2-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:cacd03f9dd523b5f6171a2cb71be12eb5b504688a1b90a06b3ca7bf8cf710fb2"
+      }
+    },
+    {
+      "id": "math2-2008-023",
+      "number": 23,
+      "paperId": "math2-2008",
+      "paperName": "2008考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2008",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2008考研数学二第23题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "α1, α2, α3 线性无关；P^{-1}AP 的矩阵结果见答案原页。",
+      "explanation": "答案来自本地百度网盘 2008 数学二真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2008/paper-page-13.jpg",
+          "caption": "试卷原页 p.13",
+          "alt": "2008考研数学二试卷原页 p.13"
+        },
+        {
+          "src": "question-bank/math2-2008/paper-page-14.jpg",
+          "caption": "试卷原页 p.14",
+          "alt": "2008考研数学二试卷原页 p.14"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2008/answer-page-13.jpg",
+          "caption": "答案解析 p.13",
+          "alt": "2008考研数学二答案解析 p.13"
+        },
+        {
+          "src": "question-bank/math2-2008/answer-page-14.jpg",
+          "caption": "答案解析 p.14",
+          "alt": "2008考研数学二答案解析 p.14"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2008",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:619e668b7d620a3fba709db306b91a8a570bf431eb12ca309d27fc50590a3bae",
+      "answerTextHash": "sha256:97489920c4a1f9d191c947ea5aa2453eda1a246c220c5220a0bc066fa40d5833",
+      "sourceEvidence": {
+        "evidenceId": "math2-2008-q23",
+        "sourceId": "src_97dfc7091b5f348f667ecb72",
+        "answerSourceId": "src_97dfc7091b5f348f667ecb72",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2008-paper-answer",
+        "answerEvidenceId": "math2-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:97489920c4a1f9d191c947ea5aa2453eda1a246c220c5220a0bc066fa40d5833"
+      }
+    }
+  ]
+}
