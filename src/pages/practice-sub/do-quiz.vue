@@ -178,6 +178,23 @@
             </view>
           </view>
           <RichText class="q-content" :content="currentQuestion.question" />
+          <view v-if="currentQuestionImages.length" class="q-image-list">
+            <view
+              v-for="(image, imageIndex) in currentQuestionImages"
+              :key="`${currentQuestion.id || currentIndex}-question-image-${imageIndex}`"
+              class="q-image-card"
+            >
+              <image
+                class="q-source-image"
+                :src="image.src"
+                :alt="image.alt || image.caption || '试卷原页'"
+                mode="widthFix"
+                lazy-load
+                show-menu-by-longpress
+              />
+              <text v-if="image.caption" class="q-image-caption">{{ image.caption }}</text>
+            </view>
+          </view>
         </view>
 
         <view v-if="hasSelectableOptions" class="options-list">
@@ -232,6 +249,23 @@
               </view>
               <scroll-view scroll-y class="flashcard-answer-scroll">
                 <RichText class="flashcard-answer-content" :content="currentQuestion.answer || '暂无答案'" />
+                <view v-if="currentAnswerImages.length" class="q-image-list answer-images">
+                  <view
+                    v-for="(image, imageIndex) in currentAnswerImages"
+                    :key="`${currentQuestion.id || currentIndex}-answer-image-${imageIndex}`"
+                    class="q-image-card"
+                  >
+                    <image
+                      class="q-source-image"
+                      :src="image.src"
+                      :alt="image.alt || image.caption || '答案原页'"
+                      mode="widthFix"
+                      lazy-load
+                      show-menu-by-longpress
+                    />
+                    <text v-if="image.caption" class="q-image-caption">{{ image.caption }}</text>
+                  </view>
+                </view>
               </scroll-view>
               <view v-if="currentQuestion.desc && currentQuestion.desc !== '暂无解析'" class="flashcard-explanation">
                 <text class="flashcard-explanation-label">解析</text>
@@ -317,6 +351,23 @@
             {{ currentQuestion ? currentQuestion.answer : 'A' }}
           </text>
         </view>
+        <view v-if="currentAnswerImages.length" class="q-image-list result-answer-images">
+          <view
+            v-for="(image, imageIndex) in currentAnswerImages"
+            :key="`${currentQuestion.id || currentIndex}-result-answer-image-${imageIndex}`"
+            class="q-image-card"
+          >
+            <image
+              class="q-source-image"
+              :src="image.src"
+              :alt="image.alt || image.caption || '答案原页'"
+              mode="widthFix"
+              lazy-load
+              show-menu-by-longpress
+            />
+            <text v-if="image.caption" class="q-image-caption">{{ image.caption }}</text>
+          </view>
+        </view>
         <view v-if="knowledgeCard" class="knowledge-card">
           <view class="knowledge-card-head">
             <text class="knowledge-label">考点</text>
@@ -344,6 +395,23 @@
         <view v-else>
           <text class="label">解析：</text>
           <RichText :content="aiComment || (currentQuestion ? currentQuestion.desc : '暂无解析')" />
+          <view v-if="currentAnswerImages.length" class="q-image-list result-answer-images">
+            <view
+              v-for="(image, imageIndex) in currentAnswerImages"
+              :key="`${currentQuestion.id || currentIndex}-brief-answer-image-${imageIndex}`"
+              class="q-image-card"
+            >
+              <image
+                class="q-source-image"
+                :src="image.src"
+                :alt="image.alt || image.caption || '答案原页'"
+                mode="widthFix"
+                lazy-load
+                show-menu-by-longpress
+              />
+              <text v-if="image.caption" class="q-image-caption">{{ image.caption }}</text>
+            </view>
+          </view>
         </view>
       </view>
       <!-- 新增: FSRS 记忆引擎状态展示 -->
@@ -704,6 +772,12 @@ export default {
     },
     currentQuestionPassageSegments() {
       return Array.isArray(this.currentQuestion?.passageSegments) ? this.currentQuestion.passageSegments : [];
+    },
+    currentQuestionImages() {
+      return Array.isArray(this.currentQuestion?.questionImages) ? this.currentQuestion.questionImages : [];
+    },
+    currentAnswerImages() {
+      return Array.isArray(this.currentQuestion?.answerImages) ? this.currentQuestion.answerImages : [];
     },
     currentQuestionNumberText() {
       return this.currentQuestion?.number || this.currentIndex + 1;
@@ -2670,6 +2744,41 @@ export default {
   color: #1f7a4d;
 }
 
+.q-image-list {
+  display: flex;
+  flex-direction: column;
+  gap: 18rpx;
+  margin-top: 24rpx;
+}
+
+.q-image-list.answer-images,
+.q-image-list.result-answer-images {
+  margin-top: 20rpx;
+}
+
+.q-image-card {
+  overflow: hidden;
+  border: 1rpx solid rgba(0, 0, 0, 0.08);
+  border-radius: 18rpx;
+  background: #ffffff;
+}
+
+.q-source-image {
+  display: block;
+  width: 100%;
+  background: #ffffff;
+}
+
+.q-image-caption {
+  display: block;
+  padding: 12rpx 16rpx;
+  border-top: 1rpx solid rgba(0, 0, 0, 0.06);
+  color: #5f6672;
+  font-size: 22rpx;
+  font-weight: 650;
+  line-height: 1.4;
+}
+
 /* 选项列表 */
 .options-list {
   margin-top: 20rpx;
@@ -3683,6 +3792,16 @@ export default {
 
 .dark-mode .flashcard-answer-label {
   color: #58cc02;
+}
+
+.dark-mode .q-image-card {
+  border-color: rgba(255, 255, 255, 0.12);
+  background: #111827;
+}
+
+.dark-mode .q-image-caption {
+  border-top-color: rgba(255, 255, 255, 0.12);
+  color: #cbd5e1;
 }
 
 /* ✅ 完成庆祝动画 */

@@ -1,5 +1,83 @@
 # 变更日志
 
+## 2026-05-26 — 2014 政治 PDF 页图题库开放
+
+- 2014 考研政治从“待入库”推进为正式题库：38 张题卡覆盖 16 道单选、17 道多选和 5 道分析题，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
+- 新增 `build_politics_2014_bank.py`，从本地百度网盘 2014 政治真题 PDF 和扫描版真题及参考答案 PDF 生成题库与 `cdn-assets/question-bank/politics-2014` 页图资源；选择题答案来自答案 PDF 第 11 页标准答案键，分析题答案要点按答案第 11-12 页关联。
+- 题库导航中政治 2014 年槽位从“待入库”变为可点击“正式”，政治正式开放数从 10 套增至 11 套。
+
+## 2026-05-26 — 2012 政治 PDF 页图题库开放
+
+- 2012 考研政治从“待入库”推进为正式题库：38 张题卡覆盖 16 道单选、17 道多选和 5 道分析题，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
+- 新增 `build_politics_2012_bank.py`，从本地百度网盘 2012 政治真题 PDF 和扫描版真题及参考答案 PDF 生成题库与 `cdn-assets/question-bank/politics-2012` 页图资源；OCR 仅用于定位答案键页，发布证据仍以 PDF 页图为准。
+- 题库导航中政治 2012 年槽位从“待入库”变为可点击“正式”，政治正式开放数从 9 套增至 10 套。
+
+## 2026-05-26 — 2011 政治 PDF 页图题库开放
+
+- 2011 考研政治从“待入库”推进为正式题库：38 张题卡覆盖 16 道单选、17 道多选和 5 道分析题，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
+- 新增 `build_politics_2011_bank.py`，从本地百度网盘 2011 政治真题 PDF 和真题及参考答案 PDF 生成题库与 `cdn-assets/question-bank/politics-2011` 页图资源；选择题答案来自答案 PDF 第 10 页，分析题答案要点按答案第 10-11 页关联。
+- 题库导航中政治 2011 年槽位从“待入库”变为可点击“正式”，政治正式开放数从 8 套增至 9 套。
+
+## 2026-05-26 — 2009 政治 PDF 页图题库开放
+
+- 2009 考研政治从“待入库”推进为正式题库：38 张题卡覆盖 16 道单选、17 道多选和 5 道分析/选做题，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
+- 新增 `build_politics_2009_bank.py`，从百度网盘下载到本地 raw-inbox 的 2009 政治真题及参考答案 PDF 生成题库与 `cdn-assets/question-bank/politics-2009` 页图资源；选择题答案来自原 PDF 内嵌答案标记，分析题答案要点按原 PDF 页图关联。
+- 题库导航中政治 2009 年槽位从“待入库”变为可点击“正式”，政治正式开放数从 6 套增至 7 套。
+
+## 2026-05-26 — 2008 政治 PDF 页图题库开放
+
+- 2008 考研政治从“待入库”推进为正式题库：38 张题卡覆盖 16 道单选、17 道多选和 5 道分析/选做题，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
+- 新增 `build_politics_2008_bank.py`，从百度网盘下载到本地 raw-inbox 的 2008 政治真题及参考答案 PDF 生成题库与 `cdn-assets/question-bank/politics-2008` 页图资源；选择题答案来自参考答案页，分析题答案要点按原 PDF 页图关联。
+- 题库导航中政治 2008 年槽位从“待入库”变为可点击“正式”，政治正式开放数从 5 套增至 6 套。
+
+## 2026-05-26 — 2007 政治 PDF 页图题库开放
+
+- 2007 考研政治从“待入库”推进为正式题库：38 张题卡覆盖 16 道单选、17 道多选和 5 道分析/选做题，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
+- 新增 `build_politics_2007_bank.py`，从百度网盘下载到本地 raw-inbox 的 2007 政治真题及参考答案 PDF 生成题库与 `cdn-assets/question-bank/politics-2007` 页图资源；该 PDF 选择题答案内嵌在题面页，分析题答案要点跨页，题库以原 PDF 页图作为证据。
+- 题库导航中政治 2007 年槽位从“待入库”变为可点击“正式”，政治正式开放数从 4 套增至 5 套。
+
+## 2026-05-26 — 2006 政治 PDF 页图题库开放
+
+- 2006 考研政治从“待入库”推进为正式题库：38 张题卡覆盖 16 道单选、17 道多选和 5 道分析/选做题，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
+- 新增 `build_politics_2006_bank.py`，从本地百度网盘 2006 政治真题及参考答案 PDF 生成题库与 `cdn-assets/question-bank/politics-2006` 页图资源；该 PDF 无可用文本层，题干和答案以原 PDF 页图为准，答案键经本地 OCR/渲染页确认。
+- 题库导航中政治 2006 年槽位从“待入库”变为可点击“正式”，政治正式开放数从 3 套增至 4 套。
+
+## 2026-05-26 — 2014 英语一 PDF 页图题库开放
+
+- 2014 考研英语一从“待入库”推进为正式题库：52 张题卡覆盖完形填空、阅读理解、新题型、翻译和写作，并补齐篇章材料、`sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
+- 新增 `build_english1_2014_bank.py`，从本地百度网盘原始扫描真题、答案速查表和逐题细解 PDF 生成题库与 `cdn-assets/question-bank/english1-2014` 页图资源。
+- 针对 2014 Text 3 的来源错配风险，题库使用原始扫描真题页图作为题面证据，并用逐题细解确认 Fundamental Physics Prize 文章与 `31-35 DBBAA`、`36-40 ACCDB`、`41-45 CFGDB` 答案键一致。
+
+## 2026-05-26 — 2005 政治 PDF 页图题库开放
+
+- 2005 考研政治从“待入库”推进为正式题库：37 张题卡覆盖 15 道单选、15 道多选、3 道辨析题和 4 道分析/选做题，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
+- 新增 `build_politics_2005_bank.py`，从本地百度网盘 2005 政治试题及参考答案 PDF 生成题库与 `cdn-assets/question-bank/politics-2005` 页图资源；该 PDF 无可用文本层，题干和答案以原 PDF 页图为准，答案键经本地 OCR/渲染页确认。
+- 题库导航中政治 2005 年槽位从“待入库”变为可点击“正式”。
+
+## 2026-05-26 — 2024/2025 政治 PDF 题库开放
+
+- 2025 考研政治从“整理中”推进为正式题库：38 张题卡覆盖 16 道单选、17 道多选、5 道分析题，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
+- 2024 考研政治从旧 35 题手工稿重建为 38 题正式题库：脚本从本地百度网盘 PDF 文本层解析题号、选项、答案和解析，过滤推广页文本后写入正式题库。
+- 新增 `build_politics_2025_bank.py` 和 `build_politics_2024_bank.py`，让政治题库发布过程可复跑、可校验；题库导航中政治 2024/2025 年槽位从“整理中”变为可点击“正式”。
+
+## 2026-05-26 — 2025 数学二 PDF 页图题库开放
+
+- 2025 考研数学二从“整理中”推进为正式题库：22 张题卡覆盖选择题、填空题和解答题，并具备题干、答案、`sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
+- 通过本地 `.venv-baidu` 百度网盘授权运行时下载数学二“正在更新”参考答案 PDF，补齐原本本地答案 PDF 只覆盖 1-16 题的问题；原始 PDF 保留在忽略的 `data/raw-inbox/`，不进入 Git。
+- 新增 `build_math2_2025_bank.py`，从本地百度网盘数学二试卷 PDF 和参考答案 PDF 生成题库与 `cdn-assets/question-bank/math2-2025` 页图资源；公式、证明与演算过程以 PDF 原页图为准。
+
+## 2026-05-26 — 2025 数学一 PDF 页图题库开放
+
+- 2025 考研数学一从“整理中”推进为正式题库：22 张题卡覆盖选择题、填空题和解答题，并具备题干、答案、`sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
+- 新增 `build_math1_2025_bank.py`，从本地百度网盘数学一试卷/答案 PDF 生成题库和 `cdn-assets/question-bank/math1-2025` 页图资源；公式、证明与演算过程以 PDF 原页图为准，避免不可靠 OCR 污染题库。
+- 刷题页和题卡适配器支持 `questionImages` / `answerImages`，数学题可直接展示试卷原页和答案原页；小程序/App 生产环境通过 `VITE_CDN_URL` 加载大图，避免主包体积膨胀。
+
+## 2026-05-26 — 2025 英语二正式题库开放
+
+- 2025 考研英语二从“整理中”推进为正式题库：48 张题卡覆盖完形填空、阅读理解、新题型、翻译和写作，并具备题干、答案、篇章/材料、`sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
+- 新增 `build_english2_2025_bank.py`，从本地百度网盘英语二试卷、参考答案、版本一图表页和逐题细解 PDF/OCR 生成题库；Text 1/Text 4 使用逐题细解补齐部分答案 PDF 缺失项。
+- 英语二写作题按官方题干和图表任务训练，不声明唯一官方范文答案；题库导航中英语二 2025 年槽位从“整理中”变为可点击“正式”。
+
 ## 2026-05-26 — 2025 英语一正式题库开放
 
 - 2025 考研英语一从“整理中”推进为正式题库：52 张题卡全部具备题干、答案、篇章/材料、`sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。

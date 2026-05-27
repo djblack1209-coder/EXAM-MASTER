@@ -117,6 +117,46 @@ describe('flashcard adapter', () => {
     expect(card.targetSegment).toBe('Sentence 46 to translate.');
   });
 
+  it('preserves PDF page images for formula-heavy math papers', () => {
+    const card = adaptCard(
+      {
+        id: 'math1-2025-017',
+        number: 17,
+        type: 'short_answer',
+        question: '2025考研数学一第17题。题干、公式和图形以试卷原页图为准。',
+        answer: '3/10 ln 2 + pi/10',
+        explanation: '完整演算过程见答案原页图。',
+        questionImages: [
+          {
+            src: 'question-bank/math1-2025/paper-page-04.jpg',
+            caption: '试卷原页 p.4'
+          }
+        ],
+        answerImages: ['question-bank/math1-2025/answer-page-10.jpg']
+      },
+      {
+        paperId: 'math1-2025',
+        paperName: '2025考研数学一真题',
+        subject: '数学',
+        year: '2025'
+      }
+    );
+
+    expect(card.type).toBe('short_answer');
+    expect(card.options).toEqual([]);
+    expect(card.questionImages).toEqual([
+      expect.objectContaining({
+        src: '/static/question-bank/math1-2025/paper-page-04.jpg',
+        caption: '试卷原页 p.4'
+      })
+    ]);
+    expect(card.answerImages).toEqual([
+      expect.objectContaining({
+        src: '/static/question-bank/math1-2025/answer-page-10.jpg'
+      })
+    ]);
+  });
+
   it('updates an already imported paper card so stale local bank data does not block practice', () => {
     const state = {
       v30_bank: [

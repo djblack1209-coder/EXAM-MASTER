@@ -1,4 +1,5 @@
 import { normalizeQuizAnswer } from '@/services/quiz-session-contract.js';
+import { getStaticAssetUrl } from '@/config/static-assets.js';
 
 /**
  * 闪卡数据适配器
@@ -22,6 +23,30 @@ function normalizeOptionText(option) {
     .trim();
 }
 
+function normalizeImageList(value) {
+  if (!Array.isArray(value)) return [];
+  return value
+    .map((item) => {
+      if (typeof item === 'string') {
+        return {
+          src: getStaticAssetUrl(item) || item,
+          alt: '',
+          caption: ''
+        };
+      }
+      const rawSrc = item?.src || item?.url || item?.path || '';
+      const src = getStaticAssetUrl(rawSrc) || String(rawSrc || '').trim();
+      if (!src) return null;
+      return {
+        ...item,
+        src,
+        alt: item?.alt || item?.caption || '',
+        caption: item?.caption || ''
+      };
+    })
+    .filter(Boolean);
+}
+
 export function adaptCard(card, defaults = {}) {
   const paperMeta = {
     ...(defaults.paper || defaults.paperMeta || {}),
@@ -40,6 +65,8 @@ export function adaptCard(card, defaults = {}) {
     targetSegmentNumber: card.targetSegmentNumber || card.segmentNumber || '',
     context: card.context || passage,
     material: card.material || passage,
+    questionImages: normalizeImageList(card.questionImages || card.question_images || card.sourcePageImages),
+    answerImages: normalizeImageList(card.answerImages || card.answer_images || card.answerPageImages),
     paperId: card.paperId || paperMeta.id || defaults.paperId || '',
     paperName: card.paperName || paperMeta.name || defaults.paperName || '',
     section: card.section || card.part || '',

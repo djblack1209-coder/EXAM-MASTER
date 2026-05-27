@@ -93,6 +93,28 @@ describe('quiz session contract', () => {
     expect(question.options).toEqual(['Paragraph A', 'Paragraph B']);
   });
 
+  it('preserves rendered PDF page image metadata for math paper cards', () => {
+    const question = normalizeQuizQuestion(
+      {
+        id: 'math1-2025-017',
+        question: '2025考研数学一第17题。题干、公式和图形以试卷原页图为准。',
+        answer: '3/10 ln 2 + pi/10',
+        type: 'short_answer',
+        questionImages: [{ src: '/static/question-bank/math1-2025/paper-page-04.jpg', caption: '试卷原页 p.4' }],
+        answerImages: [{ src: '/static/question-bank/math1-2025/answer-page-10.jpg', caption: '答案速查 p.10' }]
+      },
+      0
+    );
+
+    expect(question.questionImages).toEqual([
+      expect.objectContaining({ src: '/static/question-bank/math1-2025/paper-page-04.jpg' })
+    ]);
+    expect(question.answerImages).toEqual([
+      expect.objectContaining({ src: '/static/question-bank/math1-2025/answer-page-10.jpg' })
+    ]);
+    expect(isQuizFlashcardMode(question)).toBe(true);
+  });
+
   it('splits long reading passages into tappable evidence segments', () => {
     const question = normalizeQuizQuestion(
       {
