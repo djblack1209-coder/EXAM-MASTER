@@ -1,0 +1,1486 @@
+{
+  "id": "math2-2007",
+  "source": "math2-2007-paper-answer",
+  "paperId": "math2-2007",
+  "paperName": "2007考研数学二真题",
+  "subject": "数学",
+  "subjectKey": "math",
+  "track": "math2",
+  "year": "2007",
+  "quality": "ready",
+  "publicationStatus": "published",
+  "publicationBlockers": [],
+  "sourceEvidencePolicy": "baidu_netdisk_official_paper_pdf_page_image_v1",
+  "sourceFiles": [
+    {
+      "id": "math2-2007-paper-answer",
+      "role": "paper_answer",
+      "localPath": "data/raw-inbox/public-course-history/math2/2007/2007-math2-paper-answer.pdf",
+      "sha256": "sha256:aa74f36d977417f3fc3ba06892daa31c8cc40dc1a690fcf98ae4c79975305936"
+    }
+  ],
+  "assetRoot": "question-bank/math2-2007",
+  "processed_at": "2026-05-27T16:49:23Z",
+  "total_cards": 24,
+  "cards": [
+    {
+      "id": "math2-2007-001",
+      "number": 1,
+      "paperId": "math2-2007",
+      "paperName": "2007考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2007",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2007考研数学二第1题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2007 数学二真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2007/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2007考研数学二试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2007/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2007考研数学二答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2007",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:5e1beebdc25f36e146a2938de3cc91570f7cdf2951664c11f6811bb334f7ad0a",
+      "answerTextHash": "sha256:a1fc181e7273154ad55820f682afb4ea6f525df2886ec51a36dedff5cdc77fe4",
+      "sourceEvidence": {
+        "evidenceId": "math2-2007-q01",
+        "sourceId": "src_f0f8160e46a5244d4ee0b125",
+        "answerSourceId": "src_f0f8160e46a5244d4ee0b125",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2007-paper-answer",
+        "answerEvidenceId": "math2-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:a1fc181e7273154ad55820f682afb4ea6f525df2886ec51a36dedff5cdc77fe4"
+      }
+    },
+    {
+      "id": "math2-2007-002",
+      "number": 2,
+      "paperId": "math2-2007",
+      "paperName": "2007考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2007",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2007考研数学二第2题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2007 数学二真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2007/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2007考研数学二试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2007/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2007考研数学二答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2007",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:964b1db7fbf34a58604d3ca75037f7eb77bececc76fe65f7ebcaa89540e69a12",
+      "answerTextHash": "sha256:4209b11a0436dfb93acf2c09f66665ad24b609a48058f6de76eacd161bca58d7",
+      "sourceEvidence": {
+        "evidenceId": "math2-2007-q02",
+        "sourceId": "src_f0f8160e46a5244d4ee0b125",
+        "answerSourceId": "src_f0f8160e46a5244d4ee0b125",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2007-paper-answer",
+        "answerEvidenceId": "math2-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:4209b11a0436dfb93acf2c09f66665ad24b609a48058f6de76eacd161bca58d7"
+      }
+    },
+    {
+      "id": "math2-2007-003",
+      "number": 3,
+      "paperId": "math2-2007",
+      "paperName": "2007考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2007",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2007考研数学二第3题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2007 数学二真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2007/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2007考研数学二试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2007/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2007考研数学二答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2007",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:e4840f02af951630bd38f32843e9fc81d4bfd3c9d87c2eb157112db7189a4559",
+      "answerTextHash": "sha256:4bd414bf1f3c332d5656c55ac398a2d0417431bee33b2bb3c501278c096178b5",
+      "sourceEvidence": {
+        "evidenceId": "math2-2007-q03",
+        "sourceId": "src_f0f8160e46a5244d4ee0b125",
+        "answerSourceId": "src_f0f8160e46a5244d4ee0b125",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2007-paper-answer",
+        "answerEvidenceId": "math2-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:4bd414bf1f3c332d5656c55ac398a2d0417431bee33b2bb3c501278c096178b5"
+      }
+    },
+    {
+      "id": "math2-2007-004",
+      "number": 4,
+      "paperId": "math2-2007",
+      "paperName": "2007考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2007",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2007考研数学二第4题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2007 数学二真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2007/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2007考研数学二试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2007/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2007考研数学二答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2007",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:7d07441d45371a3b9ba6a35468ab4a3ef22066e3c7923b8c65b5b0c80508ba04",
+      "answerTextHash": "sha256:af561a8460fa8b36e9f5e23a8e2b70cda602707618904b4763c39855b872f90c",
+      "sourceEvidence": {
+        "evidenceId": "math2-2007-q04",
+        "sourceId": "src_f0f8160e46a5244d4ee0b125",
+        "answerSourceId": "src_f0f8160e46a5244d4ee0b125",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2007-paper-answer",
+        "answerEvidenceId": "math2-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:af561a8460fa8b36e9f5e23a8e2b70cda602707618904b4763c39855b872f90c"
+      }
+    },
+    {
+      "id": "math2-2007-005",
+      "number": 5,
+      "paperId": "math2-2007",
+      "paperName": "2007考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2007",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2007考研数学二第5题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2007 数学二真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2007/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2007考研数学二试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2007/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2007考研数学二答案解析 p.7"
+        },
+        {
+          "src": "question-bank/math2-2007/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2007考研数学二答案解析 p.8"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2007",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:b2213099b38665b17fe3feb8a0521e35ed19838f585a4e26536ce4273bbb3da1",
+      "answerTextHash": "sha256:6214c3f9247b605e12ff2f241955108931a4d5b8cd71c114860b5974d12c1b13",
+      "sourceEvidence": {
+        "evidenceId": "math2-2007-q05",
+        "sourceId": "src_f0f8160e46a5244d4ee0b125",
+        "answerSourceId": "src_f0f8160e46a5244d4ee0b125",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2007-paper-answer",
+        "answerEvidenceId": "math2-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:6214c3f9247b605e12ff2f241955108931a4d5b8cd71c114860b5974d12c1b13"
+      }
+    },
+    {
+      "id": "math2-2007-006",
+      "number": 6,
+      "paperId": "math2-2007",
+      "paperName": "2007考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2007",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2007考研数学二第6题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2007 数学二真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2007/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2007考研数学二试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2007/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2007考研数学二答案解析 p.8"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2007",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:d5486fb2737b53a6d1b4f9ff22ee6865723b9eb63dbadade8e3518c403d8acf2",
+      "answerTextHash": "sha256:8ccfc172b695f8d6a000c1c75ace6c4a712a2450b5b8333f7fdade7ccc2bae06",
+      "sourceEvidence": {
+        "evidenceId": "math2-2007-q06",
+        "sourceId": "src_f0f8160e46a5244d4ee0b125",
+        "answerSourceId": "src_f0f8160e46a5244d4ee0b125",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2007-paper-answer",
+        "answerEvidenceId": "math2-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:8ccfc172b695f8d6a000c1c75ace6c4a712a2450b5b8333f7fdade7ccc2bae06"
+      }
+    },
+    {
+      "id": "math2-2007-007",
+      "number": 7,
+      "paperId": "math2-2007",
+      "paperName": "2007考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2007",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2007考研数学二第7题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2007 数学二真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2007/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2007考研数学二试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2007/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2007考研数学二答案解析 p.8"
+        },
+        {
+          "src": "question-bank/math2-2007/answer-page-09.jpg",
+          "caption": "答案解析 p.9",
+          "alt": "2007考研数学二答案解析 p.9"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2007",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:f3369321e941ef3a740974339f878b8fec4b3b4a3f2ad696f058278e7502640e",
+      "answerTextHash": "sha256:ed10b92105c7de08ebfd96a08d067adfc71e948e88b3ef0e46f272f89b1eebef",
+      "sourceEvidence": {
+        "evidenceId": "math2-2007-q07",
+        "sourceId": "src_f0f8160e46a5244d4ee0b125",
+        "answerSourceId": "src_f0f8160e46a5244d4ee0b125",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2007-paper-answer",
+        "answerEvidenceId": "math2-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:ed10b92105c7de08ebfd96a08d067adfc71e948e88b3ef0e46f272f89b1eebef"
+      }
+    },
+    {
+      "id": "math2-2007-008",
+      "number": 8,
+      "paperId": "math2-2007",
+      "paperName": "2007考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2007",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2007考研数学二第8题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2007 数学二真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2007/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2007考研数学二试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2007/answer-page-09.jpg",
+          "caption": "答案解析 p.9",
+          "alt": "2007考研数学二答案解析 p.9"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2007",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:9e9651b184d0935fb2de1f58fb2e26b4954d64b97fa8d2f559ea2c034ef5402b",
+      "answerTextHash": "sha256:855f6df8c0605ae56e468abee0b0ad01258b607f6abb517949c2c19fafbc2955",
+      "sourceEvidence": {
+        "evidenceId": "math2-2007-q08",
+        "sourceId": "src_f0f8160e46a5244d4ee0b125",
+        "answerSourceId": "src_f0f8160e46a5244d4ee0b125",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2007-paper-answer",
+        "answerEvidenceId": "math2-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:855f6df8c0605ae56e468abee0b0ad01258b607f6abb517949c2c19fafbc2955"
+      }
+    },
+    {
+      "id": "math2-2007-009",
+      "number": 9,
+      "paperId": "math2-2007",
+      "paperName": "2007考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2007",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2007考研数学二第9题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2007 数学二真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2007/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2007考研数学二试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2007/answer-page-09.jpg",
+          "caption": "答案解析 p.9",
+          "alt": "2007考研数学二答案解析 p.9"
+        },
+        {
+          "src": "question-bank/math2-2007/answer-page-10.jpg",
+          "caption": "答案解析 p.10",
+          "alt": "2007考研数学二答案解析 p.10"
+        },
+        {
+          "src": "question-bank/math2-2007/answer-page-11.jpg",
+          "caption": "答案解析 p.11",
+          "alt": "2007考研数学二答案解析 p.11"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2007",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:41e13bcdb54e8ad3141d751c7a8e42b711be02ee40d1ec2b7002d3265c56c3bb",
+      "answerTextHash": "sha256:c570828a24fc9028bd3b964f0a070268800330b4db7197a4edfd2b76d3c560a7",
+      "sourceEvidence": {
+        "evidenceId": "math2-2007-q09",
+        "sourceId": "src_f0f8160e46a5244d4ee0b125",
+        "answerSourceId": "src_f0f8160e46a5244d4ee0b125",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2007-paper-answer",
+        "answerEvidenceId": "math2-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:c570828a24fc9028bd3b964f0a070268800330b4db7197a4edfd2b76d3c560a7"
+      }
+    },
+    {
+      "id": "math2-2007-010",
+      "number": 10,
+      "paperId": "math2-2007",
+      "paperName": "2007考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2007",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2007考研数学二第10题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2007 数学二真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2007/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2007考研数学二试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2007/answer-page-11.jpg",
+          "caption": "答案解析 p.11",
+          "alt": "2007考研数学二答案解析 p.11"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2007",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:8f55bfc5b0ba6478aa8f093a426170c8ce9079ba8f1e2bb3fa8491ff4ebfed69",
+      "answerTextHash": "sha256:f772936ba657524f8fd1eba26032ead29a2c490b0e07d71398b8cf5c4b609ce6",
+      "sourceEvidence": {
+        "evidenceId": "math2-2007-q10",
+        "sourceId": "src_f0f8160e46a5244d4ee0b125",
+        "answerSourceId": "src_f0f8160e46a5244d4ee0b125",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2007-paper-answer",
+        "answerEvidenceId": "math2-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:f772936ba657524f8fd1eba26032ead29a2c490b0e07d71398b8cf5c4b609ce6"
+      }
+    },
+    {
+      "id": "math2-2007-011",
+      "number": 11,
+      "paperId": "math2-2007",
+      "paperName": "2007考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2007",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2007考研数学二第11题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "-1/6",
+      "explanation": "答案来自本地百度网盘 2007 数学二真题及解析 PDF；完整题干和公式见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2007/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2007考研数学二试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2007/answer-page-12.jpg",
+          "caption": "答案解析 p.12",
+          "alt": "2007考研数学二答案解析 p.12"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2007",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:ca857a30db316c828d5a12e9e72a293f2d1413f791087bc819acf10001dd9a76",
+      "answerTextHash": "sha256:ff0a68992a5f5d06b20b92f2cc92b1456cc705b48370a35a613b2cd5667d869b",
+      "sourceEvidence": {
+        "evidenceId": "math2-2007-q11",
+        "sourceId": "src_f0f8160e46a5244d4ee0b125",
+        "answerSourceId": "src_f0f8160e46a5244d4ee0b125",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2007-paper-answer",
+        "answerEvidenceId": "math2-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:ff0a68992a5f5d06b20b92f2cc92b1456cc705b48370a35a613b2cd5667d869b"
+      }
+    },
+    {
+      "id": "math2-2007-012",
+      "number": 12,
+      "paperId": "math2-2007",
+      "paperName": "2007考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2007",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2007考研数学二第12题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "1 + sqrt(2)",
+      "explanation": "答案来自本地百度网盘 2007 数学二真题及解析 PDF；完整题干和公式见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2007/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2007考研数学二试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2007/answer-page-12.jpg",
+          "caption": "答案解析 p.12",
+          "alt": "2007考研数学二答案解析 p.12"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2007",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:5749a9886e9e747f0c0b970e0571edc04402999b3f772e32b4cd8d8ee1df682e",
+      "answerTextHash": "sha256:d4ec1390746fa64bf281aeaa990528f10c799cd15a733367a66317ce3f43ce6e",
+      "sourceEvidence": {
+        "evidenceId": "math2-2007-q12",
+        "sourceId": "src_f0f8160e46a5244d4ee0b125",
+        "answerSourceId": "src_f0f8160e46a5244d4ee0b125",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2007-paper-answer",
+        "answerEvidenceId": "math2-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:d4ec1390746fa64bf281aeaa990528f10c799cd15a733367a66317ce3f43ce6e"
+      }
+    },
+    {
+      "id": "math2-2007-013",
+      "number": 13,
+      "paperId": "math2-2007",
+      "paperName": "2007考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2007",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2007考研数学二第13题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "(-1)^n 2^n n! / 3^(n+1)",
+      "explanation": "答案来自本地百度网盘 2007 数学二真题及解析 PDF；完整题干和公式见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2007/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2007考研数学二试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2007/answer-page-12.jpg",
+          "caption": "答案解析 p.12",
+          "alt": "2007考研数学二答案解析 p.12"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2007",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:7783f92751f67124764081bb93860f16e87be7538ecbf62008cde35bf2390379",
+      "answerTextHash": "sha256:80c9debd20c6d91922d92b7022dc34b08995a6e9f94f9eae40ac8c923d92f100",
+      "sourceEvidence": {
+        "evidenceId": "math2-2007-q13",
+        "sourceId": "src_f0f8160e46a5244d4ee0b125",
+        "answerSourceId": "src_f0f8160e46a5244d4ee0b125",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2007-paper-answer",
+        "answerEvidenceId": "math2-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:80c9debd20c6d91922d92b7022dc34b08995a6e9f94f9eae40ac8c923d92f100"
+      }
+    },
+    {
+      "id": "math2-2007-014",
+      "number": 14,
+      "paperId": "math2-2007",
+      "paperName": "2007考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2007",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2007考研数学二第14题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "C1e^x + C2e^{3x} - 2e^{2x}",
+      "explanation": "答案来自本地百度网盘 2007 数学二真题及解析 PDF；完整题干和公式见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2007/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2007考研数学二试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2007/answer-page-12.jpg",
+          "caption": "答案解析 p.12",
+          "alt": "2007考研数学二答案解析 p.12"
+        },
+        {
+          "src": "question-bank/math2-2007/answer-page-13.jpg",
+          "caption": "答案解析 p.13",
+          "alt": "2007考研数学二答案解析 p.13"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2007",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:95a75d4ef74c97298f66372547de3eb72274f93e5aef4bd9dd309c692ebefb97",
+      "answerTextHash": "sha256:632ba2480a761b4188fe4b518f447d274b1da2ace86a972ce0c10549864ff999",
+      "sourceEvidence": {
+        "evidenceId": "math2-2007-q14",
+        "sourceId": "src_f0f8160e46a5244d4ee0b125",
+        "answerSourceId": "src_f0f8160e46a5244d4ee0b125",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2007-paper-answer",
+        "answerEvidenceId": "math2-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:632ba2480a761b4188fe4b518f447d274b1da2ace86a972ce0c10549864ff999"
+      }
+    },
+    {
+      "id": "math2-2007-015",
+      "number": 15,
+      "paperId": "math2-2007",
+      "paperName": "2007考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2007",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2007考研数学二第15题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "2(-y/x f'_1 + x/y f'_2)",
+      "explanation": "答案来自本地百度网盘 2007 数学二真题及解析 PDF；完整题干和公式见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2007/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2007考研数学二试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2007/answer-page-13.jpg",
+          "caption": "答案解析 p.13",
+          "alt": "2007考研数学二答案解析 p.13"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2007",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:58e4f73282b6a2c374d83acaa5b61873a592d85ae8b1169bef2c1530e70e91b3",
+      "answerTextHash": "sha256:5896378c102b606a8f71d5d0499d2878514b2f9a4c1b7ac0451fa1c8ded06f43",
+      "sourceEvidence": {
+        "evidenceId": "math2-2007-q15",
+        "sourceId": "src_f0f8160e46a5244d4ee0b125",
+        "answerSourceId": "src_f0f8160e46a5244d4ee0b125",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2007-paper-answer",
+        "answerEvidenceId": "math2-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:5896378c102b606a8f71d5d0499d2878514b2f9a4c1b7ac0451fa1c8ded06f43"
+      }
+    },
+    {
+      "id": "math2-2007-016",
+      "number": 16,
+      "paperId": "math2-2007",
+      "paperName": "2007考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2007",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2007考研数学二第16题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "1",
+      "explanation": "答案来自本地百度网盘 2007 数学二真题及解析 PDF；完整题干和公式见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2007/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2007考研数学二试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2007/answer-page-13.jpg",
+          "caption": "答案解析 p.13",
+          "alt": "2007考研数学二答案解析 p.13"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2007",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:6e7dc8f3d2c5d433f66a457a69aa59fc1d0136456c047d9ee95e6819a874d672",
+      "answerTextHash": "sha256:ffb831a1541c5f99ac9246b27d040536d842e55c0777379036f7da49dc945b05",
+      "sourceEvidence": {
+        "evidenceId": "math2-2007-q16",
+        "sourceId": "src_f0f8160e46a5244d4ee0b125",
+        "answerSourceId": "src_f0f8160e46a5244d4ee0b125",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2007-paper-answer",
+        "answerEvidenceId": "math2-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:ffb831a1541c5f99ac9246b27d040536d842e55c0777379036f7da49dc945b05"
+      }
+    },
+    {
+      "id": "math2-2007-017",
+      "number": 17,
+      "paperId": "math2-2007",
+      "paperName": "2007考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2007",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2007考研数学二第17题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "f(x)=ln|sin x + cos x|，x in [0, pi/3]。",
+      "explanation": "答案来自本地百度网盘 2007 数学二真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2007/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2007考研数学二试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2007/answer-page-14.jpg",
+          "caption": "答案解析 p.14",
+          "alt": "2007考研数学二答案解析 p.14"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2007",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:1504fb4bcdb2d7be8b59951b240bedbfb0553df36756c323b4921fbf3146d7e8",
+      "answerTextHash": "sha256:db0a915bd0c44dabd319e7246e9daaf018e953dc3e7b5d984d6d0c09adbb1dd2",
+      "sourceEvidence": {
+        "evidenceId": "math2-2007-q17",
+        "sourceId": "src_f0f8160e46a5244d4ee0b125",
+        "answerSourceId": "src_f0f8160e46a5244d4ee0b125",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2007-paper-answer",
+        "answerEvidenceId": "math2-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:db0a915bd0c44dabd319e7246e9daaf018e953dc3e7b5d984d6d0c09adbb1dd2"
+      }
+    },
+    {
+      "id": "math2-2007-018",
+      "number": 18,
+      "paperId": "math2-2007",
+      "paperName": "2007考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2007",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2007考研数学二第18题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "V(a)=pi a/(ln a)^2；a=e 时体积最小，最小值为 pi e。",
+      "explanation": "答案来自本地百度网盘 2007 数学二真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2007/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2007考研数学二试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2007/answer-page-14.jpg",
+          "caption": "答案解析 p.14",
+          "alt": "2007考研数学二答案解析 p.14"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2007",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:4c3c9333e478c41d89ce7cd066dde005f2dbf1b22297b1cdba90e25cd4b159cc",
+      "answerTextHash": "sha256:6e9b170da9f6da1de78018af14242d9593a8490aacddc609d65ad3cdff9ae791",
+      "sourceEvidence": {
+        "evidenceId": "math2-2007-q18",
+        "sourceId": "src_f0f8160e46a5244d4ee0b125",
+        "answerSourceId": "src_f0f8160e46a5244d4ee0b125",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2007-paper-answer",
+        "answerEvidenceId": "math2-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:6e9b170da9f6da1de78018af14242d9593a8490aacddc609d65ad3cdff9ae791"
+      }
+    },
+    {
+      "id": "math2-2007-019",
+      "number": 19,
+      "paperId": "math2-2007",
+      "paperName": "2007考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2007",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2007考研数学二第19题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "满足初始条件的特解为 y = 2/3 x^(3/2) + 1/3。",
+      "explanation": "答案来自本地百度网盘 2007 数学二真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2007/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2007考研数学二试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2007/answer-page-14.jpg",
+          "caption": "答案解析 p.14",
+          "alt": "2007考研数学二答案解析 p.14"
+        },
+        {
+          "src": "question-bank/math2-2007/answer-page-15.jpg",
+          "caption": "答案解析 p.15",
+          "alt": "2007考研数学二答案解析 p.15"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2007",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:2892e4d7dcdebe94abb693b3d51ed8997ba9e895b3c76cf745297fc320347dd0",
+      "answerTextHash": "sha256:2cf3223692152563bd78383f57d3d429ebed99140976f2ef1990cf98be5bc003",
+      "sourceEvidence": {
+        "evidenceId": "math2-2007-q19",
+        "sourceId": "src_f0f8160e46a5244d4ee0b125",
+        "answerSourceId": "src_f0f8160e46a5244d4ee0b125",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2007-paper-answer",
+        "answerEvidenceId": "math2-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:2cf3223692152563bd78383f57d3d429ebed99140976f2ef1990cf98be5bc003"
+      }
+    },
+    {
+      "id": "math2-2007-020",
+      "number": 20,
+      "paperId": "math2-2007",
+      "paperName": "2007考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2007",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2007考研数学二第20题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "z_x|_(0,1)=0，z_xx|_(0,1)=1。",
+      "explanation": "答案来自本地百度网盘 2007 数学二真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2007/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2007考研数学二试卷原页 p.3"
+        },
+        {
+          "src": "question-bank/math2-2007/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2007考研数学二试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2007/answer-page-15.jpg",
+          "caption": "答案解析 p.15",
+          "alt": "2007考研数学二答案解析 p.15"
+        },
+        {
+          "src": "question-bank/math2-2007/answer-page-16.jpg",
+          "caption": "答案解析 p.16",
+          "alt": "2007考研数学二答案解析 p.16"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2007",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:ef9b7cbbc81ac0a49c2a6dee659b90b70f498ba5898e860d96bc610081b3d336",
+      "answerTextHash": "sha256:d5be08a064f666d4ea3f21ec80b5a74cf9bb53b9dc2e92a8355dc393f94534b9",
+      "sourceEvidence": {
+        "evidenceId": "math2-2007-q20",
+        "sourceId": "src_f0f8160e46a5244d4ee0b125",
+        "answerSourceId": "src_f0f8160e46a5244d4ee0b125",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2007-paper-answer",
+        "answerEvidenceId": "math2-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:d5be08a064f666d4ea3f21ec80b5a74cf9bb53b9dc2e92a8355dc393f94534b9"
+      }
+    },
+    {
+      "id": "math2-2007-021",
+      "number": 21,
+      "paperId": "math2-2007",
+      "paperName": "2007考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2007",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2007考研数学二第21题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "令 phi(x)=f(x)-g(x)，由最大值条件与 Rolle 定理证明存在 xi 使 f''(xi)=g''(xi)。",
+      "explanation": "答案来自本地百度网盘 2007 数学二真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2007/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2007考研数学二试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2007/answer-page-16.jpg",
+          "caption": "答案解析 p.16",
+          "alt": "2007考研数学二答案解析 p.16"
+        },
+        {
+          "src": "question-bank/math2-2007/answer-page-17.jpg",
+          "caption": "答案解析 p.17",
+          "alt": "2007考研数学二答案解析 p.17"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2007",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:5f7313b36f722c9dad2f2ba9806df73839c21b3e34600f580a67e398bc86a983",
+      "answerTextHash": "sha256:af99fecb1a81e1bd1941c8e71fce64cdb298dbb6869ca2a8bd91eb26e2e62226",
+      "sourceEvidence": {
+        "evidenceId": "math2-2007-q21",
+        "sourceId": "src_f0f8160e46a5244d4ee0b125",
+        "answerSourceId": "src_f0f8160e46a5244d4ee0b125",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2007-paper-answer",
+        "answerEvidenceId": "math2-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:af99fecb1a81e1bd1941c8e71fce64cdb298dbb6869ca2a8bd91eb26e2e62226"
+      }
+    },
+    {
+      "id": "math2-2007-022",
+      "number": 22,
+      "paperId": "math2-2007",
+      "paperName": "2007考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2007",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2007考研数学二第22题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "二重积分值为 1/7 + 2sqrt(2) ln(3+2sqrt(2))。",
+      "explanation": "答案来自本地百度网盘 2007 数学二真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2007/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2007考研数学二试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2007/answer-page-17.jpg",
+          "caption": "答案解析 p.17",
+          "alt": "2007考研数学二答案解析 p.17"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2007",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:026e83b9cd2cd120abb101acb01870f0d6f683477bf520e7e5ab2b83b384a4da",
+      "answerTextHash": "sha256:f1eabaa59f0b9da61b979790e8eb1f86ce19952151d523f3fa186116cc5f2351",
+      "sourceEvidence": {
+        "evidenceId": "math2-2007-q22",
+        "sourceId": "src_f0f8160e46a5244d4ee0b125",
+        "answerSourceId": "src_f0f8160e46a5244d4ee0b125",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2007-paper-answer",
+        "answerEvidenceId": "math2-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:f1eabaa59f0b9da61b979790e8eb1f86ce19952151d523f3fa186116cc5f2351"
+      }
+    },
+    {
+      "id": "math2-2007-023",
+      "number": 23,
+      "paperId": "math2-2007",
+      "paperName": "2007考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2007",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2007考研数学二第23题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "a=1 时公共解为 k(1,0,-1)^T；a=2 时公共解为 (0,1,-1)^T。",
+      "explanation": "答案来自本地百度网盘 2007 数学二真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2007/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2007考研数学二试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2007/answer-page-18.jpg",
+          "caption": "答案解析 p.18",
+          "alt": "2007考研数学二答案解析 p.18"
+        },
+        {
+          "src": "question-bank/math2-2007/answer-page-19.jpg",
+          "caption": "答案解析 p.19",
+          "alt": "2007考研数学二答案解析 p.19"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2007",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:e48db1f49df4da479003d66840c3a9172059487cb78c7f4f570fdc4a0b3cd89c",
+      "answerTextHash": "sha256:099ccf758311424a042013128eafbb3e73202997ecc2b56a5e19ce82c9f42b4e",
+      "sourceEvidence": {
+        "evidenceId": "math2-2007-q23",
+        "sourceId": "src_f0f8160e46a5244d4ee0b125",
+        "answerSourceId": "src_f0f8160e46a5244d4ee0b125",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2007-paper-answer",
+        "answerEvidenceId": "math2-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:099ccf758311424a042013128eafbb3e73202997ecc2b56a5e19ce82c9f42b4e"
+      }
+    },
+    {
+      "id": "math2-2007-024",
+      "number": 24,
+      "paperId": "math2-2007",
+      "paperName": "2007考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2007",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2007考研数学二第24题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "B 的特征值为 -2,1,1；矩阵 B 的具体结果见答案原页。",
+      "explanation": "答案来自本地百度网盘 2007 数学二真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2007/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2007考研数学二试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2007/answer-page-19.jpg",
+          "caption": "答案解析 p.19",
+          "alt": "2007考研数学二答案解析 p.19"
+        },
+        {
+          "src": "question-bank/math2-2007/answer-page-20.jpg",
+          "caption": "答案解析 p.20",
+          "alt": "2007考研数学二答案解析 p.20"
+        },
+        {
+          "src": "question-bank/math2-2007/answer-page-21.jpg",
+          "caption": "答案解析 p.21",
+          "alt": "2007考研数学二答案解析 p.21"
+        },
+        {
+          "src": "question-bank/math2-2007/answer-page-22.jpg",
+          "caption": "答案解析 p.22",
+          "alt": "2007考研数学二答案解析 p.22"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2007",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:f190adab3ea89737ce1a0a3de1ca5777150997520da007c6d956832b9f809b7e",
+      "answerTextHash": "sha256:9d0c4b9cc29f07d569ad5680e643d9f7e6a82e7d7ab32c2256bb2ed0c7cdfdb1",
+      "sourceEvidence": {
+        "evidenceId": "math2-2007-q24",
+        "sourceId": "src_f0f8160e46a5244d4ee0b125",
+        "answerSourceId": "src_f0f8160e46a5244d4ee0b125",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2007-paper-answer",
+        "answerEvidenceId": "math2-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:9d0c4b9cc29f07d569ad5680e643d9f7e6a82e7d7ab32c2256bb2ed0c7cdfdb1"
+      }
+    }
+  ]
+}
