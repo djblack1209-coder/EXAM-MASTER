@@ -374,6 +374,22 @@ const BANK_REGISTRY = [
     loader: () => import('./flashcard-banks/politics-2021.json')
   },
   {
+    id: 'politics-2022',
+    subject: '政治',
+    subjectKey: 'politics',
+    track: 'politics',
+    year: '2022',
+    name: '2022考研政治真题',
+    description: '16道单选 + 17道多选 + 5道分析题',
+    releaseLabel: '正式题库',
+    caution:
+      '按本地百度网盘 2022 政治真题及答案解析 PDF 文本层训练；独立试卷扫描页含答案标记，答题前不展示以免泄题',
+    paperType: 'past_exam',
+    quality: PAPER_QUALITY.READY,
+    sections: paperSections('单项选择', '多项选择', '分析题'),
+    loader: () => import('./flashcard-banks/politics-2022.json')
+  },
+  {
     id: 'english1-2025',
     subject: '英语',
     subjectKey: 'english',
