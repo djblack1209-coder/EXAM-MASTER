@@ -1,0 +1,1371 @@
+{
+  "id": "math2-2010",
+  "source": "math2-2010-paper-answer",
+  "paperId": "math2-2010",
+  "paperName": "2010考研数学二真题",
+  "subject": "数学",
+  "subjectKey": "math",
+  "track": "math2",
+  "year": "2010",
+  "quality": "ready",
+  "publicationStatus": "published",
+  "publicationBlockers": [],
+  "sourceEvidencePolicy": "baidu_netdisk_official_paper_pdf_page_image_v1",
+  "sourceFiles": [
+    {
+      "id": "math2-2010-paper-answer",
+      "role": "paper_answer",
+      "localPath": "data/raw-inbox/public-course-history/math2/2010/2010-math2-paper-answer.pdf",
+      "sha256": "sha256:2268c62f2936a4d6f916e42f8ba7229876a0cf8fd8625a4dbbe1416146626bb5"
+    }
+  ],
+  "assetRoot": "question-bank/math2-2010",
+  "processed_at": "2026-05-27T17:12:33Z",
+  "total_cards": 23,
+  "cards": [
+    {
+      "id": "math2-2010-001",
+      "number": 1,
+      "paperId": "math2-2010",
+      "paperName": "2010考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2010",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2010考研数学二第1题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2010 数学二真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2010/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2010考研数学二试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2010/answer-page-03.jpg",
+          "caption": "答案解析 p.3",
+          "alt": "2010考研数学二答案解析 p.3"
+        },
+        {
+          "src": "question-bank/math2-2010/answer-page-04.jpg",
+          "caption": "答案解析 p.4",
+          "alt": "2010考研数学二答案解析 p.4"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2010",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2010-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:178fe8eb6a9f1f90f8761c76fcaf31ac99de39d90e47cc72ac37149f9fee1f82",
+      "answerTextHash": "sha256:7d14305f576e4de846f6261cf723b95e1d701bc279f8bd226fc3c61162388065",
+      "sourceEvidence": {
+        "evidenceId": "math2-2010-q01",
+        "sourceId": "src_f8598da0c8321ed127f2eefe",
+        "answerSourceId": "src_f8598da0c8321ed127f2eefe",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2010-paper-answer",
+        "answerEvidenceId": "math2-2010-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:7d14305f576e4de846f6261cf723b95e1d701bc279f8bd226fc3c61162388065"
+      }
+    },
+    {
+      "id": "math2-2010-002",
+      "number": 2,
+      "paperId": "math2-2010",
+      "paperName": "2010考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2010",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2010考研数学二第2题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2010 数学二真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2010/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2010考研数学二试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2010/answer-page-04.jpg",
+          "caption": "答案解析 p.4",
+          "alt": "2010考研数学二答案解析 p.4"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2010",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2010-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:4efbe0cf80ee132db3aebeed13a1ed328f276ed8838ab949ee954511328b0978",
+      "answerTextHash": "sha256:478b109366420281686011c8cff90e9a721dc2465f77c9a112abe7a2b19acac0",
+      "sourceEvidence": {
+        "evidenceId": "math2-2010-q02",
+        "sourceId": "src_f8598da0c8321ed127f2eefe",
+        "answerSourceId": "src_f8598da0c8321ed127f2eefe",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2010-paper-answer",
+        "answerEvidenceId": "math2-2010-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:478b109366420281686011c8cff90e9a721dc2465f77c9a112abe7a2b19acac0"
+      }
+    },
+    {
+      "id": "math2-2010-003",
+      "number": 3,
+      "paperId": "math2-2010",
+      "paperName": "2010考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2010",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2010考研数学二第3题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2010 数学二真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2010/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2010考研数学二试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2010/answer-page-04.jpg",
+          "caption": "答案解析 p.4",
+          "alt": "2010考研数学二答案解析 p.4"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2010",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2010-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:8df3f842771eb0673fad9af0839760356351a917e53c028654b1a83718aa654a",
+      "answerTextHash": "sha256:68360ef5871ed4ff9c6a3a665d3c68ab23cc14d3ac9fe78aacebce6d8d849ac3",
+      "sourceEvidence": {
+        "evidenceId": "math2-2010-q03",
+        "sourceId": "src_f8598da0c8321ed127f2eefe",
+        "answerSourceId": "src_f8598da0c8321ed127f2eefe",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2010-paper-answer",
+        "answerEvidenceId": "math2-2010-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:68360ef5871ed4ff9c6a3a665d3c68ab23cc14d3ac9fe78aacebce6d8d849ac3"
+      }
+    },
+    {
+      "id": "math2-2010-004",
+      "number": 4,
+      "paperId": "math2-2010",
+      "paperName": "2010考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2010",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2010考研数学二第4题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2010 数学二真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2010/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2010考研数学二试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2010/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2010考研数学二答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2010",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2010-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:5f9ed972957dce686378677b76b54897397fccafcd092069987769f8c6bd09db",
+      "answerTextHash": "sha256:28d0c2da83a91da6daa0b76dc4fb5ce9a2d98a69f7ac96655fe3d017a8584605",
+      "sourceEvidence": {
+        "evidenceId": "math2-2010-q04",
+        "sourceId": "src_f8598da0c8321ed127f2eefe",
+        "answerSourceId": "src_f8598da0c8321ed127f2eefe",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2010-paper-answer",
+        "answerEvidenceId": "math2-2010-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:28d0c2da83a91da6daa0b76dc4fb5ce9a2d98a69f7ac96655fe3d017a8584605"
+      }
+    },
+    {
+      "id": "math2-2010-005",
+      "number": 5,
+      "paperId": "math2-2010",
+      "paperName": "2010考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2010",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2010考研数学二第5题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2010 数学二真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2010/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2010考研数学二试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2010/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2010考研数学二答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2010",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2010-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:cf2841dc24f73122de3d4da103a7a36b83e6eedf8741f2fd1f0fa74d28152697",
+      "answerTextHash": "sha256:a1fc181e7273154ad55820f682afb4ea6f525df2886ec51a36dedff5cdc77fe4",
+      "sourceEvidence": {
+        "evidenceId": "math2-2010-q05",
+        "sourceId": "src_f8598da0c8321ed127f2eefe",
+        "answerSourceId": "src_f8598da0c8321ed127f2eefe",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2010-paper-answer",
+        "answerEvidenceId": "math2-2010-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:a1fc181e7273154ad55820f682afb4ea6f525df2886ec51a36dedff5cdc77fe4"
+      }
+    },
+    {
+      "id": "math2-2010-006",
+      "number": 6,
+      "paperId": "math2-2010",
+      "paperName": "2010考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2010",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2010考研数学二第6题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2010 数学二真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2010/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2010考研数学二试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2010/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2010考研数学二答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2010",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2010-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:e7921d10cef23c35465114cda61edbf0df5449e49d2348c31a32c34b0296f9bd",
+      "answerTextHash": "sha256:e4a2fe781d79b6ac0d0a57fdf6fcbe5f0bd7d1dfefea384e35b54f195a6a4c7c",
+      "sourceEvidence": {
+        "evidenceId": "math2-2010-q06",
+        "sourceId": "src_f8598da0c8321ed127f2eefe",
+        "answerSourceId": "src_f8598da0c8321ed127f2eefe",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2010-paper-answer",
+        "answerEvidenceId": "math2-2010-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:e4a2fe781d79b6ac0d0a57fdf6fcbe5f0bd7d1dfefea384e35b54f195a6a4c7c"
+      }
+    },
+    {
+      "id": "math2-2010-007",
+      "number": 7,
+      "paperId": "math2-2010",
+      "paperName": "2010考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2010",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2010考研数学二第7题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2010 数学二真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2010/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2010考研数学二试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2010/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2010考研数学二答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2010",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2010-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:2bd4578f908a4469f1993e7b3188ce59d2418d33f2563c6d56ae39e549f36262",
+      "answerTextHash": "sha256:4209b11a0436dfb93acf2c09f66665ad24b609a48058f6de76eacd161bca58d7",
+      "sourceEvidence": {
+        "evidenceId": "math2-2010-q07",
+        "sourceId": "src_f8598da0c8321ed127f2eefe",
+        "answerSourceId": "src_f8598da0c8321ed127f2eefe",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2010-paper-answer",
+        "answerEvidenceId": "math2-2010-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:4209b11a0436dfb93acf2c09f66665ad24b609a48058f6de76eacd161bca58d7"
+      }
+    },
+    {
+      "id": "math2-2010-008",
+      "number": 8,
+      "paperId": "math2-2010",
+      "paperName": "2010考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2010",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2010考研数学二第8题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2010 数学二真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2010/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2010考研数学二试卷原页 p.1"
+        },
+        {
+          "src": "question-bank/math2-2010/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2010考研数学二试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2010/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2010考研数学二答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2010",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2010-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:39f3c3384d2ad3830a1cf64c589f87b22cd64ab4feef710eb7308220562e757c",
+      "answerTextHash": "sha256:e4a2fe781d79b6ac0d0a57fdf6fcbe5f0bd7d1dfefea384e35b54f195a6a4c7c",
+      "sourceEvidence": {
+        "evidenceId": "math2-2010-q08",
+        "sourceId": "src_f8598da0c8321ed127f2eefe",
+        "answerSourceId": "src_f8598da0c8321ed127f2eefe",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2010-paper-answer",
+        "answerEvidenceId": "math2-2010-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:e4a2fe781d79b6ac0d0a57fdf6fcbe5f0bd7d1dfefea384e35b54f195a6a4c7c"
+      }
+    },
+    {
+      "id": "math2-2010-009",
+      "number": 9,
+      "paperId": "math2-2010",
+      "paperName": "2010考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2010",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2010考研数学二第9题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "y = C1e^(2x) + C2cos x + C3sin x",
+      "explanation": "答案来自本地百度网盘 2010 数学二真题及解析 PDF；完整题干和公式见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2010/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2010考研数学二试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2010/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2010考研数学二答案解析 p.6"
+        },
+        {
+          "src": "question-bank/math2-2010/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2010考研数学二答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2010",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2010-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:0c9eccc8c04881b238cee18657789ad2b1ddebb0b3879d75904d7719f65b8f8b",
+      "answerTextHash": "sha256:228c8ceef3dd208b523908970acb01059f65dfcbefe69d2ba93c7fa1d5d32d04",
+      "sourceEvidence": {
+        "evidenceId": "math2-2010-q09",
+        "sourceId": "src_f8598da0c8321ed127f2eefe",
+        "answerSourceId": "src_f8598da0c8321ed127f2eefe",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2010-paper-answer",
+        "answerEvidenceId": "math2-2010-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:228c8ceef3dd208b523908970acb01059f65dfcbefe69d2ba93c7fa1d5d32d04"
+      }
+    },
+    {
+      "id": "math2-2010-010",
+      "number": 10,
+      "paperId": "math2-2010",
+      "paperName": "2010考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2010",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2010考研数学二第10题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "y = 2x",
+      "explanation": "答案来自本地百度网盘 2010 数学二真题及解析 PDF；完整题干和公式见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2010/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2010考研数学二试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2010/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2010考研数学二答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2010",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2010-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:6cf36d5befa7465694672cd8d7dc6ca89fae77c6e86502d57ae7619c1afbef71",
+      "answerTextHash": "sha256:d466a04f71ec8d59f62795ecfcb2dd9e4b2dd8189047f34b551f101303a1d903",
+      "sourceEvidence": {
+        "evidenceId": "math2-2010-q10",
+        "sourceId": "src_f8598da0c8321ed127f2eefe",
+        "answerSourceId": "src_f8598da0c8321ed127f2eefe",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2010-paper-answer",
+        "answerEvidenceId": "math2-2010-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:d466a04f71ec8d59f62795ecfcb2dd9e4b2dd8189047f34b551f101303a1d903"
+      }
+    },
+    {
+      "id": "math2-2010-011",
+      "number": 11,
+      "paperId": "math2-2010",
+      "paperName": "2010考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2010",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2010考研数学二第11题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "-2^n(n-1)!",
+      "explanation": "答案来自本地百度网盘 2010 数学二真题及解析 PDF；完整题干和公式见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2010/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2010考研数学二试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2010/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2010考研数学二答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2010",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2010-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:cbcb22950794ca9711dfab1ce8c0ce12bd3ba006e7d7cd36a9afaad53c761aa6",
+      "answerTextHash": "sha256:00c6eeb0da9a138a19790f904b449a44ce9434776f524c62fd17e6c49a6d64e6",
+      "sourceEvidence": {
+        "evidenceId": "math2-2010-q11",
+        "sourceId": "src_f8598da0c8321ed127f2eefe",
+        "answerSourceId": "src_f8598da0c8321ed127f2eefe",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2010-paper-answer",
+        "answerEvidenceId": "math2-2010-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:00c6eeb0da9a138a19790f904b449a44ce9434776f524c62fd17e6c49a6d64e6"
+      }
+    },
+    {
+      "id": "math2-2010-012",
+      "number": 12,
+      "paperId": "math2-2010",
+      "paperName": "2010考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2010",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2010考研数学二第12题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "sqrt(2)(e^pi - 1)",
+      "explanation": "答案来自本地百度网盘 2010 数学二真题及解析 PDF；完整题干和公式见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2010/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2010考研数学二试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2010/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2010考研数学二答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2010",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2010-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:204553e3ebec13b3a96edd7cf7b39d5328a0b4e42b9d68dac502d3544ceb188f",
+      "answerTextHash": "sha256:522fae11c10f3b19ac5e60f72eeb67777c8dcf04a52e333c41ebcc1714be9bd6",
+      "sourceEvidence": {
+        "evidenceId": "math2-2010-q12",
+        "sourceId": "src_f8598da0c8321ed127f2eefe",
+        "answerSourceId": "src_f8598da0c8321ed127f2eefe",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2010-paper-answer",
+        "answerEvidenceId": "math2-2010-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:522fae11c10f3b19ac5e60f72eeb67777c8dcf04a52e333c41ebcc1714be9bd6"
+      }
+    },
+    {
+      "id": "math2-2010-013",
+      "number": 13,
+      "paperId": "math2-2010",
+      "paperName": "2010考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2010",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2010考研数学二第13题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "3 cm/s",
+      "explanation": "答案来自本地百度网盘 2010 数学二真题及解析 PDF；完整题干和公式见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2010/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2010考研数学二试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2010/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2010考研数学二答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2010",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2010-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:8afa8b90ea4c5f9590f7dedff96152a620010511b13b2ca404ed863fcd9f0317",
+      "answerTextHash": "sha256:9f5909acd5f1cc11c83dd1102a6268cd9b6b4b9adc484b8eb4f552ce98ef0181",
+      "sourceEvidence": {
+        "evidenceId": "math2-2010-q13",
+        "sourceId": "src_f8598da0c8321ed127f2eefe",
+        "answerSourceId": "src_f8598da0c8321ed127f2eefe",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2010-paper-answer",
+        "answerEvidenceId": "math2-2010-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:9f5909acd5f1cc11c83dd1102a6268cd9b6b4b9adc484b8eb4f552ce98ef0181"
+      }
+    },
+    {
+      "id": "math2-2010-014",
+      "number": 14,
+      "paperId": "math2-2010",
+      "paperName": "2010考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2010",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2010考研数学二第14题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "3",
+      "explanation": "答案来自本地百度网盘 2010 数学二真题及解析 PDF；完整题干和公式见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2010/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2010考研数学二试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2010/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2010考研数学二答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2010",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2010-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:97f2fcf0714d526bbb25ae1dc5b038c570d3ea255f54ebf46e22f20c7939945b",
+      "answerTextHash": "sha256:65bc171af875b71587e7e4188513111dc814076184d6395e841257d46bf198fb",
+      "sourceEvidence": {
+        "evidenceId": "math2-2010-q14",
+        "sourceId": "src_f8598da0c8321ed127f2eefe",
+        "answerSourceId": "src_f8598da0c8321ed127f2eefe",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2010-paper-answer",
+        "answerEvidenceId": "math2-2010-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:65bc171af875b71587e7e4188513111dc814076184d6395e841257d46bf198fb"
+      }
+    },
+    {
+      "id": "math2-2010-015",
+      "number": 15,
+      "paperId": "math2-2010",
+      "paperName": "2010考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2010",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2010考研数学二第15题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "函数的单调区间与极值见答案原页。",
+      "explanation": "答案来自本地百度网盘 2010 数学二真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2010/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2010考研数学二试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2010/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2010考研数学二答案解析 p.7"
+        },
+        {
+          "src": "question-bank/math2-2010/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2010考研数学二答案解析 p.8"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2010",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2010-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:c08227847151a2997a55051274863fb6d06640a4d05fd4757ff1a70378ceb736",
+      "answerTextHash": "sha256:0e77e4dabb6e33dd02b9cce17979bd3ba9620e179fa46d541717de7a977dc00c",
+      "sourceEvidence": {
+        "evidenceId": "math2-2010-q15",
+        "sourceId": "src_f8598da0c8321ed127f2eefe",
+        "answerSourceId": "src_f8598da0c8321ed127f2eefe",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2010-paper-answer",
+        "answerEvidenceId": "math2-2010-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:0e77e4dabb6e33dd02b9cce17979bd3ba9620e179fa46d541717de7a977dc00c"
+      }
+    },
+    {
+      "id": "math2-2010-016",
+      "number": 16,
+      "paperId": "math2-2010",
+      "paperName": "2010考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2010",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2010考研数学二第16题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "不等式证明与极限 lim u_n=0 见答案原页。",
+      "explanation": "答案来自本地百度网盘 2010 数学二真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2010/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2010考研数学二试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2010/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2010考研数学二答案解析 p.8"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2010",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2010-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:48a806ca3b71e354dd183e28b872b26ae6a23dcf392f22b9cc9c0ab024dffb8c",
+      "answerTextHash": "sha256:d889bcffb4c0aefbc6e8bcd8b11443bc2d1ea1ca0ac423cfb6654c077f508c16",
+      "sourceEvidence": {
+        "evidenceId": "math2-2010-q16",
+        "sourceId": "src_f8598da0c8321ed127f2eefe",
+        "answerSourceId": "src_f8598da0c8321ed127f2eefe",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2010-paper-answer",
+        "answerEvidenceId": "math2-2010-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:d889bcffb4c0aefbc6e8bcd8b11443bc2d1ea1ca0ac423cfb6654c077f508c16"
+      }
+    },
+    {
+      "id": "math2-2010-017",
+      "number": 17,
+      "paperId": "math2-2010",
+      "paperName": "2010考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2010",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2010考研数学二第17题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "参数方程确定的函数表达式与导数条件见答案原页。",
+      "explanation": "答案来自本地百度网盘 2010 数学二真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2010/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2010考研数学二试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2010/answer-page-09.jpg",
+          "caption": "答案解析 p.9",
+          "alt": "2010考研数学二答案解析 p.9"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2010",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2010-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:7d3d6755250471d3ce28d33601ef31ed1d8417b8a25e1d30b705e3df8206b520",
+      "answerTextHash": "sha256:a73f696d89eb7066c3d5f69ad13216d3c1418ba291c12a425fe15695ad4d2cb3",
+      "sourceEvidence": {
+        "evidenceId": "math2-2010-q17",
+        "sourceId": "src_f8598da0c8321ed127f2eefe",
+        "answerSourceId": "src_f8598da0c8321ed127f2eefe",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2010-paper-answer",
+        "answerEvidenceId": "math2-2010-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:a73f696d89eb7066c3d5f69ad13216d3c1418ba291c12a425fe15695ad4d2cb3"
+      }
+    },
+    {
+      "id": "math2-2010-018",
+      "number": 18,
+      "paperId": "math2-2010",
+      "paperName": "2010考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2010",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2010考研数学二第18题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "油的质量为 (2/3 + sqrt(3)/4)abp。",
+      "explanation": "答案来自本地百度网盘 2010 数学二真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2010/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2010考研数学二试卷原页 p.2"
+        },
+        {
+          "src": "question-bank/math2-2010/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2010考研数学二试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2010/answer-page-09.jpg",
+          "caption": "答案解析 p.9",
+          "alt": "2010考研数学二答案解析 p.9"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2010",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2010-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:b9522146b6760b86e63a7ef598e49cdc511a99f7d36b59091b469eb4f43d9b99",
+      "answerTextHash": "sha256:4d837217c30438191805cca3ea2626a6fb1a2bd410acd3f0b95f39ce208f1f46",
+      "sourceEvidence": {
+        "evidenceId": "math2-2010-q18",
+        "sourceId": "src_f8598da0c8321ed127f2eefe",
+        "answerSourceId": "src_f8598da0c8321ed127f2eefe",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2010-paper-answer",
+        "answerEvidenceId": "math2-2010-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:4d837217c30438191805cca3ea2626a6fb1a2bd410acd3f0b95f39ce208f1f46"
+      }
+    },
+    {
+      "id": "math2-2010-019",
+      "number": 19,
+      "paperId": "math2-2010",
+      "paperName": "2010考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2010",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2010考研数学二第19题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "(a,b)=(-2/5,-2) 或 (-2,-2/5)。",
+      "explanation": "答案来自本地百度网盘 2010 数学二真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2010/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2010考研数学二试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2010/answer-page-09.jpg",
+          "caption": "答案解析 p.9",
+          "alt": "2010考研数学二答案解析 p.9"
+        },
+        {
+          "src": "question-bank/math2-2010/answer-page-10.jpg",
+          "caption": "答案解析 p.10",
+          "alt": "2010考研数学二答案解析 p.10"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2010",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2010-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:ed695c5d69404881f816ea48db471797a7ae2eeba27ae4b6262492c72233006e",
+      "answerTextHash": "sha256:469a428e651562329c0c0b694da6d4841ad06746752d2174aa79ae69cb070605",
+      "sourceEvidence": {
+        "evidenceId": "math2-2010-q19",
+        "sourceId": "src_f8598da0c8321ed127f2eefe",
+        "answerSourceId": "src_f8598da0c8321ed127f2eefe",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2010-paper-answer",
+        "answerEvidenceId": "math2-2010-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:469a428e651562329c0c0b694da6d4841ad06746752d2174aa79ae69cb070605"
+      }
+    },
+    {
+      "id": "math2-2010-020",
+      "number": 20,
+      "paperId": "math2-2010",
+      "paperName": "2010考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2010",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2010考研数学二第20题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "二重积分换元计算与结果见答案原页。",
+      "explanation": "答案来自本地百度网盘 2010 数学二真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2010/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2010考研数学二试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2010/answer-page-10.jpg",
+          "caption": "答案解析 p.10",
+          "alt": "2010考研数学二答案解析 p.10"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2010",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2010-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:28f7d3ac3c5a282ed9724117dc344c05f76080830d6932bd99b4b6caa19f63eb",
+      "answerTextHash": "sha256:ba78acf4eae72a72ba5c0c5dcbc778b539a7727821e59327e9637c25821357b8",
+      "sourceEvidence": {
+        "evidenceId": "math2-2010-q20",
+        "sourceId": "src_f8598da0c8321ed127f2eefe",
+        "answerSourceId": "src_f8598da0c8321ed127f2eefe",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2010-paper-answer",
+        "answerEvidenceId": "math2-2010-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:ba78acf4eae72a72ba5c0c5dcbc778b539a7727821e59327e9637c25821357b8"
+      }
+    },
+    {
+      "id": "math2-2010-021",
+      "number": 21,
+      "paperId": "math2-2010",
+      "paperName": "2010考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2010",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2010考研数学二第21题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "存在性证明见答案原页。",
+      "explanation": "答案来自本地百度网盘 2010 数学二真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2010/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2010考研数学二试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2010/answer-page-11.jpg",
+          "caption": "答案解析 p.11",
+          "alt": "2010考研数学二答案解析 p.11"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2010",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2010-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:d056d1a37f891daeda28666e4ea477013735bfb85e8bb33fd13a651052fddeee",
+      "answerTextHash": "sha256:cebabe5e96d973c2932234af9fde110ae01ac85d9321f5ab505b234e3679b269",
+      "sourceEvidence": {
+        "evidenceId": "math2-2010-q21",
+        "sourceId": "src_f8598da0c8321ed127f2eefe",
+        "answerSourceId": "src_f8598da0c8321ed127f2eefe",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2010-paper-answer",
+        "answerEvidenceId": "math2-2010-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:cebabe5e96d973c2932234af9fde110ae01ac85d9321f5ab505b234e3679b269"
+      }
+    },
+    {
+      "id": "math2-2010-022",
+      "number": 22,
+      "paperId": "math2-2010",
+      "paperName": "2010考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2010",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2010考研数学二第22题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "lambda=-1，a=-2；方程组通解见答案原页。",
+      "explanation": "答案来自本地百度网盘 2010 数学二真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2010/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2010考研数学二试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2010/answer-page-11.jpg",
+          "caption": "答案解析 p.11",
+          "alt": "2010考研数学二答案解析 p.11"
+        },
+        {
+          "src": "question-bank/math2-2010/answer-page-12.jpg",
+          "caption": "答案解析 p.12",
+          "alt": "2010考研数学二答案解析 p.12"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2010",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2010-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:455446c1007f09545f293104c9bae088713132e31301986620ff957908d9e719",
+      "answerTextHash": "sha256:57b5a6b6760902b7c486a0df0d167b7e1d6b750d007d5772a95f1cfc5f94211c",
+      "sourceEvidence": {
+        "evidenceId": "math2-2010-q22",
+        "sourceId": "src_f8598da0c8321ed127f2eefe",
+        "answerSourceId": "src_f8598da0c8321ed127f2eefe",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2010-paper-answer",
+        "answerEvidenceId": "math2-2010-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:57b5a6b6760902b7c486a0df0d167b7e1d6b750d007d5772a95f1cfc5f94211c"
+      }
+    },
+    {
+      "id": "math2-2010-023",
+      "number": 23,
+      "paperId": "math2-2010",
+      "paperName": "2010考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2010",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2010考研数学二第23题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "a=-1；正交矩阵 Q 见答案原页。",
+      "explanation": "答案来自本地百度网盘 2010 数学二真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2010/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2010考研数学二试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2010/answer-page-13.jpg",
+          "caption": "答案解析 p.13",
+          "alt": "2010考研数学二答案解析 p.13"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2010",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2010-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:414ff3d71487b44e53393c3f79b6a8529d27592225e3dc40334a960cc6e0578d",
+      "answerTextHash": "sha256:74a86cc60f2f2269b0d991fdf4377f18a788e89dafc301599626fa585b40a35b",
+      "sourceEvidence": {
+        "evidenceId": "math2-2010-q23",
+        "sourceId": "src_f8598da0c8321ed127f2eefe",
+        "answerSourceId": "src_f8598da0c8321ed127f2eefe",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2010-paper-answer",
+        "answerEvidenceId": "math2-2010-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:74a86cc60f2f2269b0d991fdf4377f18a788e89dafc301599626fa585b40a35b"
+      }
+    }
+  ]
+}
