@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-05-27T16:16:34.857Z",
+  "generatedAt": "2026-05-27T16:41:30.849Z",
   "verdict": "blocked",
   "sources": {
     "questionAudit": "data/question-bank-release-audit.json",
@@ -12,17 +12,17 @@
   },
   "summary": {
     "canPublish": false,
-    "blockerItemCount": 109,
-    "p0Count": 109,
+    "blockerItemCount": 108,
+    "p0Count": 108,
     "publicCourseRequiredSlots": 132,
-    "publicCoursePublishedSlots": 40,
+    "publicCoursePublishedSlots": 41,
     "publicCoursePendingSlots": 0,
     "publicCoursePendingCoverageBlockers": 0,
-    "publicCourseCoverageGaps": 92,
-    "publicCourseBlockerItemCount": 107,
-    "publicCourseBlockedSlotCount": 92,
+    "publicCourseCoverageGaps": 91,
+    "publicCourseBlockerItemCount": 106,
+    "publicCourseBlockedSlotCount": 91,
     "publicCourseLocalSourceSummary": {
-      "totalBlockedSlots": 92,
+      "totalBlockedSlots": 91,
       "pairedReadableSlots": 0,
       "answerBlockedSlots": 0,
       "paperBlockedSlots": 0,
@@ -32,7 +32,7 @@
       "blockedLocalFileSlots": 0,
       "unpairedReadableSlots": 0,
       "missingLocalFileSlots": 0,
-      "notAvailableSlots": 92,
+      "notAvailableSlots": 91,
       "unknownSlots": 0
     },
     "sourceManifestHumanRegistrationQueue": {
@@ -75,14 +75,14 @@
     },
     "public_course_coverage": {
       "status": "blocked",
-      "itemCount": 92,
-      "p0Count": 92,
+      "itemCount": 91,
+      "p0Count": 91,
       "sampleItems": [
         "coverage_missing:english2:2005",
         "coverage_missing:math1:2005",
         "coverage_missing:english2:2006",
         "coverage_missing:math1:2006",
-        "coverage_missing:math2:2006"
+        "coverage_missing:english2:2007"
       ]
     },
     "source_manifest_evidence": {
@@ -601,97 +601,6 @@
       "coverageAction": "在 Source Manifest 中补齐同槽位 official_paper 试卷+答案或真题及答案合并 PDF，要求有 remotePath、contentHash，且风险标记不阻断发布。再进入题卡清洗和 registry 注册。",
       "sourceEvidenceAction": "在 Source Manifest 中补齐同槽位 official_paper 试卷+答案或真题及答案合并 PDF，要求有 remotePath、contentHash，且风险标记不阻断发布。",
       "nextAction": "在 Source Manifest 中补齐同槽位 official_paper 试卷+答案或真题及答案合并 PDF，要求有 remotePath、contentHash，且风险标记不阻断发布。"
-    },
-    {
-      "slotKey": "math2:2006",
-      "track": "math2",
-      "trackLabel": "数学二",
-      "year": 2006,
-      "blockerCode": "missing_public_course_bank",
-      "slotStatus": "missing",
-      "blockers": [
-        "missing_public_course_bank"
-      ],
-      "blockerItemIds": [
-        "coverage_missing:math2:2006"
-      ],
-      "sourceEvidenceStatus": "publishable_source_present",
-      "sourceCandidateSummary": "source manifest 已发现 1 个候选，其中 official_paper=1；当前阻断: 未命中可发布条件",
-      "sourceCandidateSamples": [
-        {
-          "sourceId": "src_f49c2de9b3f582d17eea5654",
-          "status": "discovered",
-          "sourceType": "official_paper",
-          "sourceRole": "",
-          "inferredSourceRole": "paper_answer",
-          "roleSource": "path",
-          "autoPairEligible": true,
-          "answerEvidenceStatus": "",
-          "riskFlags": [],
-          "publishBlocked": false,
-          "blockReasons": [],
-          "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学二真题答案解析/2006考研数学二真题 .pdf",
-          "sourceUrl": ""
-        }
-      ],
-      "localSourceAuditStatus": "not_available",
-      "localSourceAuditSummary": "",
-      "localSourceAuditSamples": [],
-      "localSourceAuditDiagnostics": {
-        "status": "not_available",
-        "sourceCount": 0,
-        "usableTextLayerCount": 0,
-        "needsOcrCount": 0,
-        "blockedCount": 0,
-        "paperLikeCount": 0,
-        "answerLikeCount": 0,
-        "usablePaperLikeCount": 0,
-        "usableAnswerLikeCount": 0,
-        "blockedPaperLikeCount": 0,
-        "blockedAnswerLikeCount": 0,
-        "roleCounts": {},
-        "samples": []
-      },
-      "sourceManifestRegistrationChecklist": {
-        "status": "blocked_before_auto_pair",
-        "readyForHumanVerification": false,
-        "requiredManifestFields": [
-          "eligible=true",
-          "status=discovered|verified|published",
-          "sourceType=official_paper",
-          "contentHash|sha256|fileSha256|sourceHash",
-          "remotePath|sourceUrl|provenanceUrl",
-          "sourceRole inferred as paper+answer or paper_answer",
-          "legalReview.publishBlocked=false",
-          "riskFlags excludes answer_missing,brand_leak,copyright_review_required,ad_or_promo"
-        ],
-        "verifiedSourceRegistryFields": [
-          "localPath",
-          "sourceUrl",
-          "track",
-          "year",
-          "sourceType=official_paper",
-          "answerEvidenceStatus=matched",
-          "expectedSha256",
-          "verifiedBy",
-          "evidenceNote"
-        ],
-        "humanVerificationSteps": [],
-        "postRegistrationCommands": [],
-        "localFileCandidates": [],
-        "verifiedSourceRegistryDrafts": [],
-        "manifestCandidateIds": [
-          "src_f49c2de9b3f582d17eea5654"
-        ],
-        "blockers": [
-          "local_source_audit_not_available"
-        ],
-        "note": "Resolve listed local-source blockers before the slot can be treated as an auto-paired official source."
-      },
-      "prerequisiteBlockers": [],
-      "coverageAction": "已有可发布题源证据时，完成题卡清洗、答案匹配、证据哈希，再按 registry 规范注册题库。",
-      "sourceEvidenceAction": "",
-      "nextAction": "已有可发布题源证据时，完成题卡清洗、答案匹配、证据哈希，再按 registry 规范注册题库。"
     },
     {
       "slotKey": "english2:2007",
@@ -10355,17 +10264,17 @@
       "nextAction": "在 Source Manifest 中补齐同槽位 official_paper 试卷+答案或真题及答案合并 PDF，要求有 remotePath、contentHash，且风险标记不阻断发布。"
     },
     {
-      "id": "coverage_missing:math2:2006",
+      "id": "coverage_missing:math2:2007",
       "track": "math2",
       "trackLabel": "数学二",
-      "year": 2006,
+      "year": 2007,
       "blockerCode": "missing_public_course_bank",
       "slotStatus": "missing",
       "sourceEvidenceStatus": "publishable_source_present",
       "sourceCandidateSummary": "source manifest 已发现 1 个候选，其中 official_paper=1；当前阻断: 未命中可发布条件",
       "sourceCandidateSamples": [
         {
-          "sourceId": "src_f49c2de9b3f582d17eea5654",
+          "sourceId": "src_f0f8160e46a5244d4ee0b125",
           "status": "discovered",
           "sourceType": "official_paper",
           "sourceRole": "",
@@ -10376,7 +10285,7 @@
           "riskFlags": [],
           "publishBlocked": false,
           "blockReasons": [],
-          "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学二真题答案解析/2006考研数学二真题 .pdf",
+          "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学二真题答案解析/2007考研数学二真题 .pdf",
           "sourceUrl": ""
         }
       ],
@@ -10412,7 +10321,7 @@
         "localFileCandidates": [],
         "verifiedSourceRegistryDrafts": [],
         "manifestCandidateIds": [
-          "src_f49c2de9b3f582d17eea5654"
+          "src_f0f8160e46a5244d4ee0b125"
         ],
         "blockers": [
           "local_source_audit_not_available"
@@ -10897,17 +10806,17 @@
       "nextAction": "在 Source Manifest 中补齐同槽位 official_paper 试卷+答案或真题及答案合并 PDF，要求有 remotePath、contentHash，且风险标记不阻断发布。"
     },
     {
-      "id": "coverage_missing:math2:2007",
+      "id": "coverage_missing:math2:2008",
       "track": "math2",
       "trackLabel": "数学二",
-      "year": 2007,
+      "year": 2008,
       "blockerCode": "missing_public_course_bank",
       "slotStatus": "missing",
       "sourceEvidenceStatus": "publishable_source_present",
       "sourceCandidateSummary": "source manifest 已发现 1 个候选，其中 official_paper=1；当前阻断: 未命中可发布条件",
       "sourceCandidateSamples": [
         {
-          "sourceId": "src_f0f8160e46a5244d4ee0b125",
+          "sourceId": "src_97dfc7091b5f348f667ecb72",
           "status": "discovered",
           "sourceType": "official_paper",
           "sourceRole": "",
@@ -10918,7 +10827,7 @@
           "riskFlags": [],
           "publishBlocked": false,
           "blockReasons": [],
-          "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学二真题答案解析/2007考研数学二真题 .pdf",
+          "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学二真题答案解析/2008考研数学二真题 .pdf",
           "sourceUrl": ""
         }
       ],
@@ -10954,7 +10863,7 @@
         "localFileCandidates": [],
         "verifiedSourceRegistryDrafts": [],
         "manifestCandidateIds": [
-          "src_f0f8160e46a5244d4ee0b125"
+          "src_97dfc7091b5f348f667ecb72"
         ],
         "blockers": [
           "local_source_audit_not_available"
@@ -11313,17 +11222,17 @@
       "nextAction": "在 Source Manifest 中补齐同槽位 official_paper 试卷+答案或真题及答案合并 PDF，要求有 remotePath、contentHash，且风险标记不阻断发布。"
     },
     {
-      "id": "coverage_missing:math2:2008",
+      "id": "coverage_missing:math2:2009",
       "track": "math2",
       "trackLabel": "数学二",
-      "year": 2008,
+      "year": 2009,
       "blockerCode": "missing_public_course_bank",
       "slotStatus": "missing",
       "sourceEvidenceStatus": "publishable_source_present",
       "sourceCandidateSummary": "source manifest 已发现 1 个候选，其中 official_paper=1；当前阻断: 未命中可发布条件",
       "sourceCandidateSamples": [
         {
-          "sourceId": "src_97dfc7091b5f348f667ecb72",
+          "sourceId": "src_e68710e55d77aec12d161598",
           "status": "discovered",
           "sourceType": "official_paper",
           "sourceRole": "",
@@ -11334,7 +11243,7 @@
           "riskFlags": [],
           "publishBlocked": false,
           "blockReasons": [],
-          "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学二真题答案解析/2008考研数学二真题 .pdf",
+          "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学二真题答案解析/2009考研数学二真题 .pdf",
           "sourceUrl": ""
         }
       ],
@@ -11370,7 +11279,7 @@
         "localFileCandidates": [],
         "verifiedSourceRegistryDrafts": [],
         "manifestCandidateIds": [
-          "src_97dfc7091b5f348f667ecb72"
+          "src_e68710e55d77aec12d161598"
         ],
         "blockers": [
           "local_source_audit_not_available"
@@ -11727,17 +11636,17 @@
       "nextAction": "已有可发布题源证据时，完成题卡清洗、答案匹配、证据哈希，再按 registry 规范注册题库。"
     },
     {
-      "id": "coverage_missing:math2:2009",
+      "id": "coverage_missing:math2:2010",
       "track": "math2",
       "trackLabel": "数学二",
-      "year": 2009,
+      "year": 2010,
       "blockerCode": "missing_public_course_bank",
       "slotStatus": "missing",
       "sourceEvidenceStatus": "publishable_source_present",
       "sourceCandidateSummary": "source manifest 已发现 1 个候选，其中 official_paper=1；当前阻断: 未命中可发布条件",
       "sourceCandidateSamples": [
         {
-          "sourceId": "src_e68710e55d77aec12d161598",
+          "sourceId": "src_f8598da0c8321ed127f2eefe",
           "status": "discovered",
           "sourceType": "official_paper",
           "sourceRole": "",
@@ -11748,7 +11657,7 @@
           "riskFlags": [],
           "publishBlocked": false,
           "blockReasons": [],
-          "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学二真题答案解析/2009考研数学二真题 .pdf",
+          "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学二真题答案解析/2010考研数学二真题 .pdf",
           "sourceUrl": ""
         }
       ],
@@ -11784,7 +11693,7 @@
         "localFileCandidates": [],
         "verifiedSourceRegistryDrafts": [],
         "manifestCandidateIds": [
-          "src_e68710e55d77aec12d161598"
+          "src_f8598da0c8321ed127f2eefe"
         ],
         "blockers": [
           "local_source_audit_not_available"
@@ -12964,176 +12873,6 @@
       }
     },
     {
-      "id": "coverage_missing:math2:2006",
-      "workstream": "public_course_coverage",
-      "priority": "P0",
-      "status": "blocked",
-      "title": "数学二 2006 缺少可发布题库",
-      "blockerCode": "missing_public_course_bank",
-      "track": "math2",
-      "trackLabel": "数学二",
-      "year": 2006,
-      "bankId": "",
-      "filePath": "",
-      "count": 0,
-      "nextAction": "已有可发布题源证据时，完成题卡清洗、答案匹配、证据哈希，再按 registry 规范注册题库。",
-      "evidence": {
-        "requiredYears": [
-          2005,
-          2006,
-          2007,
-          2008,
-          2009,
-          2010,
-          2011,
-          2012,
-          2013,
-          2014,
-          2015,
-          2016,
-          2017,
-          2018,
-          2019,
-          2020,
-          2021,
-          2022,
-          2023,
-          2024,
-          2025,
-          2026
-        ],
-        "publishedYears": [
-          2005,
-          2025
-        ],
-        "pendingYears": [],
-        "sourceEvidenceStatus": "publishable_source_present",
-        "sourceEvidencePresentYears": [
-          2005,
-          2006,
-          2007,
-          2008,
-          2009,
-          2010,
-          2011,
-          2012,
-          2013,
-          2014,
-          2015,
-          2016,
-          2017,
-          2018,
-          2019,
-          2020,
-          2021,
-          2022,
-          2023,
-          2024,
-          2025
-        ],
-        "sourceEvidenceCoverageRate": 0.9545,
-        "sourceCandidateSummary": "source manifest 已发现 1 个候选，其中 official_paper=1；当前阻断: 未命中可发布条件",
-        "sourceCandidateSamples": [
-          {
-            "sourceId": "src_f49c2de9b3f582d17eea5654",
-            "status": "discovered",
-            "sourceType": "official_paper",
-            "sourceRole": "",
-            "inferredSourceRole": "paper_answer",
-            "roleSource": "path",
-            "autoPairEligible": true,
-            "answerEvidenceStatus": "",
-            "riskFlags": [],
-            "publishBlocked": false,
-            "blockReasons": [],
-            "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学二真题答案解析/2006考研数学二真题 .pdf",
-            "sourceUrl": ""
-          }
-        ],
-        "sourceCandidateDiagnostics": {
-          "candidateCount": 1,
-          "officialPaperCandidateCount": 1,
-          "publishBlockedCandidateCount": 0,
-          "autoPairEligibleCandidateCount": 1,
-          "paperCandidateCount": 0,
-          "answerCandidateCount": 0,
-          "combinedCandidateCount": 1,
-          "blockReasons": {},
-          "sampleCandidates": [
-            {
-              "sourceId": "src_f49c2de9b3f582d17eea5654",
-              "status": "discovered",
-              "sourceType": "official_paper",
-              "sourceRole": "",
-              "inferredSourceRole": "paper_answer",
-              "roleSource": "path",
-              "autoPairEligible": true,
-              "answerEvidenceStatus": "",
-              "riskFlags": [],
-              "publishBlocked": false,
-              "blockReasons": [],
-              "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学二真题答案解析/2006考研数学二真题 .pdf",
-              "sourceUrl": ""
-            }
-          ]
-        },
-        "localSourceAuditStatus": "not_available",
-        "localSourceAuditSummary": "",
-        "localSourceAuditSamples": [],
-        "localSourceAuditDiagnostics": {
-          "status": "not_available",
-          "sourceCount": 0,
-          "usableTextLayerCount": 0,
-          "needsOcrCount": 0,
-          "blockedCount": 0,
-          "paperLikeCount": 0,
-          "answerLikeCount": 0,
-          "usablePaperLikeCount": 0,
-          "usableAnswerLikeCount": 0,
-          "blockedPaperLikeCount": 0,
-          "blockedAnswerLikeCount": 0,
-          "roleCounts": {},
-          "samples": []
-        },
-        "sourceManifestRegistrationChecklist": {
-          "status": "blocked_before_auto_pair",
-          "readyForHumanVerification": false,
-          "requiredManifestFields": [
-            "eligible=true",
-            "status=discovered|verified|published",
-            "sourceType=official_paper",
-            "contentHash|sha256|fileSha256|sourceHash",
-            "remotePath|sourceUrl|provenanceUrl",
-            "sourceRole inferred as paper+answer or paper_answer",
-            "legalReview.publishBlocked=false",
-            "riskFlags excludes answer_missing,brand_leak,copyright_review_required,ad_or_promo"
-          ],
-          "verifiedSourceRegistryFields": [
-            "localPath",
-            "sourceUrl",
-            "track",
-            "year",
-            "sourceType=official_paper",
-            "answerEvidenceStatus=matched",
-            "expectedSha256",
-            "verifiedBy",
-            "evidenceNote"
-          ],
-          "humanVerificationSteps": [],
-          "postRegistrationCommands": [],
-          "localFileCandidates": [],
-          "verifiedSourceRegistryDrafts": [],
-          "manifestCandidateIds": [
-            "src_f49c2de9b3f582d17eea5654"
-          ],
-          "blockers": [
-            "local_source_audit_not_available"
-          ],
-          "note": "Resolve listed local-source blockers before the slot can be treated as an auto-paired official source."
-        }
-      }
-    },
-    {
       "id": "coverage_missing:english2:2007",
       "workstream": "public_course_coverage",
       "priority": "P0",
@@ -13592,6 +13331,7 @@
         ],
         "publishedYears": [
           2005,
+          2006,
           2025
         ],
         "pendingYears": [],
@@ -14178,6 +13918,7 @@
         ],
         "publishedYears": [
           2005,
+          2006,
           2025
         ],
         "pendingYears": [],
@@ -14936,6 +14677,7 @@
         ],
         "publishedYears": [
           2005,
+          2006,
           2025
         ],
         "pendingYears": [],
@@ -15681,6 +15423,7 @@
         ],
         "publishedYears": [
           2005,
+          2006,
           2025
         ],
         "pendingYears": [],
@@ -16423,6 +16166,7 @@
         ],
         "publishedYears": [
           2005,
+          2006,
           2025
         ],
         "pendingYears": [],
@@ -17165,6 +16909,7 @@
         ],
         "publishedYears": [
           2005,
+          2006,
           2025
         ],
         "pendingYears": [],
@@ -17907,6 +17652,7 @@
         ],
         "publishedYears": [
           2005,
+          2006,
           2025
         ],
         "pendingYears": [],
@@ -18649,6 +18395,7 @@
         ],
         "publishedYears": [
           2005,
+          2006,
           2025
         ],
         "pendingYears": [],
@@ -19391,6 +19138,7 @@
         ],
         "publishedYears": [
           2005,
+          2006,
           2025
         ],
         "pendingYears": [],
@@ -20384,6 +20132,7 @@
         ],
         "publishedYears": [
           2005,
+          2006,
           2025
         ],
         "pendingYears": [],
@@ -21377,6 +21126,7 @@
         ],
         "publishedYears": [
           2005,
+          2006,
           2025
         ],
         "pendingYears": [],
@@ -22370,6 +22120,7 @@
         ],
         "publishedYears": [
           2005,
+          2006,
           2025
         ],
         "pendingYears": [],
@@ -23364,6 +23115,7 @@
         ],
         "publishedYears": [
           2005,
+          2006,
           2025
         ],
         "pendingYears": [],
@@ -24357,6 +24109,7 @@
         ],
         "publishedYears": [
           2005,
+          2006,
           2025
         ],
         "pendingYears": [],
@@ -25350,6 +25103,7 @@
         ],
         "publishedYears": [
           2005,
+          2006,
           2025
         ],
         "pendingYears": [],
@@ -26343,6 +26097,7 @@
         ],
         "publishedYears": [
           2005,
+          2006,
           2025
         ],
         "pendingYears": [],
@@ -27622,6 +27377,7 @@
         ],
         "publishedYears": [
           2005,
+          2006,
           2025
         ],
         "pendingYears": [],
@@ -28758,6 +28514,7 @@
         ],
         "publishedYears": [
           2005,
+          2006,
           2025
         ],
         "pendingYears": [],
@@ -30277,6 +30034,7 @@
         ],
         "publishedYears": [
           2005,
+          2006,
           2025
         ],
         "pendingYears": [],
