@@ -358,6 +358,22 @@ const BANK_REGISTRY = [
     loader: () => import('./flashcard-banks/politics-2020.json')
   },
   {
+    id: 'politics-2021',
+    subject: '政治',
+    subjectKey: 'politics',
+    track: 'politics',
+    year: '2021',
+    name: '2021考研政治真题',
+    description: '16道单选 + 17道多选 + 5道分析题',
+    releaseLabel: '正式题库',
+    caution:
+      '按本地百度网盘 2021 政治真题 PDF 与真题及解析 PDF 页图训练；答案来自答案 PDF 第1-14页逐题解析，并按试卷 PDF 选项顺序映射',
+    paperType: 'past_exam',
+    quality: PAPER_QUALITY.READY,
+    sections: paperSections('单项选择', '多项选择', '分析题'),
+    loader: () => import('./flashcard-banks/politics-2021.json')
+  },
+  {
     id: 'english1-2025',
     subject: '英语',
     subjectKey: 'english',

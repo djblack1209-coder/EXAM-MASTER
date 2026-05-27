@@ -1,0 +1,3045 @@
+{
+  "id": "politics-2021",
+  "source": "politics-2021-paper-answer",
+  "paperId": "politics-2021",
+  "paperName": "2021考研政治真题",
+  "subject": "政治",
+  "subjectKey": "politics",
+  "track": "politics",
+  "year": "2021",
+  "quality": "ready",
+  "publicationStatus": "published",
+  "publicationBlockers": [],
+  "sourceEvidencePolicy": "baidu_netdisk_official_paper_pdf_page_image_v1",
+  "sourceFiles": [
+    {
+      "id": "politics-2021-paper",
+      "sourceId": "src_88c0d6500b6ecf15d237f76b",
+      "role": "paper",
+      "localPath": "data/raw-inbox/public-course-history/politics/2021/2021-politics-paper.pdf",
+      "sha256": "sha256:4e5c17ba2c43f028636aff7b64b79e8fbc33c15aa7ba96e54ab03e784e843275"
+    },
+    {
+      "id": "politics-2021-paper-answer",
+      "sourceId": "src_a6fd115071cc943f911cf82e",
+      "role": "paper_answer",
+      "localPath": "data/raw-inbox/public-course-history/politics/2021/2021-politics-paper-answer.pdf",
+      "sha256": "sha256:539fe56514ff04e2777344ab4f705ec3c645f2fd037e2aaba64456f3a8196090"
+    }
+  ],
+  "sourceNotes": [
+    "The 2021 standalone paper PDF provides the release question pages and user-visible option order. The scanned paper-answer PDF contains per-question choice answers on pages 1-14 and analysis answer points on pages 14-20; OCR was used only to locate those pages while final release evidence remains rendered PDF page images. Several answer-PDF choice blocks reorder options relative to the standalone paper, so choice answers were mapped by option content back to the paper PDF letters."
+  ],
+  "assetRoot": "question-bank/politics-2021",
+  "processed_at": "2026-05-27T07:09:39Z",
+  "total_cards": 38,
+  "sections": [
+    "单项选择",
+    "多项选择",
+    "分析题"
+  ],
+  "cards": [
+    {
+      "id": "politics-2021-001",
+      "number": 1,
+      "paperId": "politics-2021",
+      "paperName": "2021考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2021",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2021考研政治第1题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2021 考研政治真题及解析 PDF 第 1-14 页逐题解析；部分解析页选项顺序与试卷 PDF 不一致，题库已按选项内容映射回试卷原页字母。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2021/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2021考研政治试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2021/answer-page-01.jpg",
+          "caption": "答案原页 p.1",
+          "alt": "2021考研政治答案原页 p.1"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2021",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2021-paper-answer",
+      "sourceEvidenceId": "politics-2021-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:771d0967297266885915bbaacfea9173ee8f727fba0d121b794e383ae23bcc4d",
+      "answerTextHash": "sha256:4ed63e010b225ac71dcb1a7de3ad2cb9a9e94cdb0bc29b90e0262baf6e6de6dc",
+      "sourceEvidence": {
+        "evidenceId": "politics-2021-q01",
+        "sourceId": "src_88c0d6500b6ecf15d237f76b",
+        "answerSourceId": "src_a6fd115071cc943f911cf82e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2021-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:771d0967297266885915bbaacfea9173ee8f727fba0d121b794e383ae23bcc4d",
+        "answerTextHash": "sha256:4ed63e010b225ac71dcb1a7de3ad2cb9a9e94cdb0bc29b90e0262baf6e6de6dc"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_a6fd115071cc943f911cf82e",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2021/2021-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:4ed63e010b225ac71dcb1a7de3ad2cb9a9e94cdb0bc29b90e0262baf6e6de6dc",
+        "method": "local_pdf_ocr_located_page_image_with_option_order_mapping",
+        "verifiedBy": "build_politics_2021_bank",
+        "note": "Matched against local Baidu Netdisk 2021 Politics paper-answer PDF and mapped to the standalone paper PDF option order when the answer PDF reordered options."
+      }
+    },
+    {
+      "id": "politics-2021-002",
+      "number": 2,
+      "paperId": "politics-2021",
+      "paperName": "2021考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2021",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2021考研政治第2题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2021 考研政治真题及解析 PDF 第 1-14 页逐题解析；部分解析页选项顺序与试卷 PDF 不一致，题库已按选项内容映射回试卷原页字母。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2021/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2021考研政治试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2021/answer-page-01.jpg",
+          "caption": "答案原页 p.1",
+          "alt": "2021考研政治答案原页 p.1"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2021",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2021-paper-answer",
+      "sourceEvidenceId": "politics-2021-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:3451f66600e70f01fe96528fe35f160e18e76686027dbc7f3ef4572ca4e05552",
+      "answerTextHash": "sha256:c2e85ec18509152e1d6bc0bc9e40d1a2669dce43b20bf8416c232527e78c1bb0",
+      "sourceEvidence": {
+        "evidenceId": "politics-2021-q02",
+        "sourceId": "src_88c0d6500b6ecf15d237f76b",
+        "answerSourceId": "src_a6fd115071cc943f911cf82e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2021-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:3451f66600e70f01fe96528fe35f160e18e76686027dbc7f3ef4572ca4e05552",
+        "answerTextHash": "sha256:c2e85ec18509152e1d6bc0bc9e40d1a2669dce43b20bf8416c232527e78c1bb0"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_a6fd115071cc943f911cf82e",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2021/2021-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:c2e85ec18509152e1d6bc0bc9e40d1a2669dce43b20bf8416c232527e78c1bb0",
+        "method": "local_pdf_ocr_located_page_image_with_option_order_mapping",
+        "verifiedBy": "build_politics_2021_bank",
+        "note": "Matched against local Baidu Netdisk 2021 Politics paper-answer PDF and mapped to the standalone paper PDF option order when the answer PDF reordered options."
+      }
+    },
+    {
+      "id": "politics-2021-003",
+      "number": 3,
+      "paperId": "politics-2021",
+      "paperName": "2021考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2021",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2021考研政治第3题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2021 考研政治真题及解析 PDF 第 1-14 页逐题解析；部分解析页选项顺序与试卷 PDF 不一致，题库已按选项内容映射回试卷原页字母。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2021/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2021考研政治试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2021/answer-page-02.jpg",
+          "caption": "答案原页 p.2",
+          "alt": "2021考研政治答案原页 p.2"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2021",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2021-paper-answer",
+      "sourceEvidenceId": "politics-2021-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:ee15ebede3b3423ad478b324b2cdae48e117a849f633db4502ecbb4fb09f12d6",
+      "answerTextHash": "sha256:676f513272f2e333598bd9369415789f5f816ae6a3759bcc8961ebfb350a34b2",
+      "sourceEvidence": {
+        "evidenceId": "politics-2021-q03",
+        "sourceId": "src_88c0d6500b6ecf15d237f76b",
+        "answerSourceId": "src_a6fd115071cc943f911cf82e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2021-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:ee15ebede3b3423ad478b324b2cdae48e117a849f633db4502ecbb4fb09f12d6",
+        "answerTextHash": "sha256:676f513272f2e333598bd9369415789f5f816ae6a3759bcc8961ebfb350a34b2"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_a6fd115071cc943f911cf82e",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2021/2021-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:676f513272f2e333598bd9369415789f5f816ae6a3759bcc8961ebfb350a34b2",
+        "method": "local_pdf_ocr_located_page_image_with_option_order_mapping",
+        "verifiedBy": "build_politics_2021_bank",
+        "note": "Matched against local Baidu Netdisk 2021 Politics paper-answer PDF and mapped to the standalone paper PDF option order when the answer PDF reordered options."
+      }
+    },
+    {
+      "id": "politics-2021-004",
+      "number": 4,
+      "paperId": "politics-2021",
+      "paperName": "2021考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2021",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2021考研政治第4题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2021 考研政治真题及解析 PDF 第 1-14 页逐题解析；部分解析页选项顺序与试卷 PDF 不一致，题库已按选项内容映射回试卷原页字母。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2021/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2021考研政治试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2021/answer-page-02.jpg",
+          "caption": "答案原页 p.2",
+          "alt": "2021考研政治答案原页 p.2"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2021",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2021-paper-answer",
+      "sourceEvidenceId": "politics-2021-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:41e81261916584e16dd65c170c999f0bcaf7ef67acc26cd23b493d9691645521",
+      "answerTextHash": "sha256:988f0b57363bc9eb4a3739d0f1cfc3a27e6ffe285a76e0aefc5e0176a5fa4506",
+      "sourceEvidence": {
+        "evidenceId": "politics-2021-q04",
+        "sourceId": "src_88c0d6500b6ecf15d237f76b",
+        "answerSourceId": "src_a6fd115071cc943f911cf82e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2021-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:41e81261916584e16dd65c170c999f0bcaf7ef67acc26cd23b493d9691645521",
+        "answerTextHash": "sha256:988f0b57363bc9eb4a3739d0f1cfc3a27e6ffe285a76e0aefc5e0176a5fa4506"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_a6fd115071cc943f911cf82e",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2021/2021-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:988f0b57363bc9eb4a3739d0f1cfc3a27e6ffe285a76e0aefc5e0176a5fa4506",
+        "method": "local_pdf_ocr_located_page_image_with_option_order_mapping",
+        "verifiedBy": "build_politics_2021_bank",
+        "note": "Matched against local Baidu Netdisk 2021 Politics paper-answer PDF and mapped to the standalone paper PDF option order when the answer PDF reordered options."
+      }
+    },
+    {
+      "id": "politics-2021-005",
+      "number": 5,
+      "paperId": "politics-2021",
+      "paperName": "2021考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2021",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2021考研政治第5题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2021 考研政治真题及解析 PDF 第 1-14 页逐题解析；部分解析页选项顺序与试卷 PDF 不一致，题库已按选项内容映射回试卷原页字母。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2021/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2021考研政治试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2021/answer-page-02.jpg",
+          "caption": "答案原页 p.2",
+          "alt": "2021考研政治答案原页 p.2"
+        },
+        {
+          "src": "question-bank/politics-2021/answer-page-03.jpg",
+          "caption": "答案原页 p.3",
+          "alt": "2021考研政治答案原页 p.3"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2021",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2021-paper-answer",
+      "sourceEvidenceId": "politics-2021-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:df7b0b160eccf6182e355f4e41218fc5dbcb4cea11ad0c6fc30a0f37d4270b91",
+      "answerTextHash": "sha256:2712ef820a6551529805a187e95fe8374497c74ea4d51fa951d850c6f3e10c8d",
+      "sourceEvidence": {
+        "evidenceId": "politics-2021-q05",
+        "sourceId": "src_88c0d6500b6ecf15d237f76b",
+        "answerSourceId": "src_a6fd115071cc943f911cf82e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2021-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:df7b0b160eccf6182e355f4e41218fc5dbcb4cea11ad0c6fc30a0f37d4270b91",
+        "answerTextHash": "sha256:2712ef820a6551529805a187e95fe8374497c74ea4d51fa951d850c6f3e10c8d"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_a6fd115071cc943f911cf82e",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2021/2021-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:2712ef820a6551529805a187e95fe8374497c74ea4d51fa951d850c6f3e10c8d",
+        "method": "local_pdf_ocr_located_page_image_with_option_order_mapping",
+        "verifiedBy": "build_politics_2021_bank",
+        "note": "Matched against local Baidu Netdisk 2021 Politics paper-answer PDF and mapped to the standalone paper PDF option order when the answer PDF reordered options."
+      }
+    },
+    {
+      "id": "politics-2021-006",
+      "number": 6,
+      "paperId": "politics-2021",
+      "paperName": "2021考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2021",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2021考研政治第6题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2021 考研政治真题及解析 PDF 第 1-14 页逐题解析；部分解析页选项顺序与试卷 PDF 不一致，题库已按选项内容映射回试卷原页字母。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2021/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2021考研政治试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2021/answer-page-03.jpg",
+          "caption": "答案原页 p.3",
+          "alt": "2021考研政治答案原页 p.3"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2021",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2021-paper-answer",
+      "sourceEvidenceId": "politics-2021-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:0d28e07f8b965895beed50905402ffaf4814495801e817436aef23f5b57195eb",
+      "answerTextHash": "sha256:04ec1392cd28549dbaddc0073958e13af49f2cfb6a360df78fd43db6aefcc6de",
+      "sourceEvidence": {
+        "evidenceId": "politics-2021-q06",
+        "sourceId": "src_88c0d6500b6ecf15d237f76b",
+        "answerSourceId": "src_a6fd115071cc943f911cf82e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2021-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:0d28e07f8b965895beed50905402ffaf4814495801e817436aef23f5b57195eb",
+        "answerTextHash": "sha256:04ec1392cd28549dbaddc0073958e13af49f2cfb6a360df78fd43db6aefcc6de"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_a6fd115071cc943f911cf82e",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2021/2021-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:04ec1392cd28549dbaddc0073958e13af49f2cfb6a360df78fd43db6aefcc6de",
+        "method": "local_pdf_ocr_located_page_image_with_option_order_mapping",
+        "verifiedBy": "build_politics_2021_bank",
+        "note": "Matched against local Baidu Netdisk 2021 Politics paper-answer PDF and mapped to the standalone paper PDF option order when the answer PDF reordered options."
+      }
+    },
+    {
+      "id": "politics-2021-007",
+      "number": 7,
+      "paperId": "politics-2021",
+      "paperName": "2021考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2021",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2021考研政治第7题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2021 考研政治真题及解析 PDF 第 1-14 页逐题解析；部分解析页选项顺序与试卷 PDF 不一致，题库已按选项内容映射回试卷原页字母。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2021/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2021考研政治试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2021/answer-page-03.jpg",
+          "caption": "答案原页 p.3",
+          "alt": "2021考研政治答案原页 p.3"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2021",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2021-paper-answer",
+      "sourceEvidenceId": "politics-2021-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:26e308749c5e188ce055b295d2a368eb67cf92d06a70ee46aa94fbcd08db3af3",
+      "answerTextHash": "sha256:04ec1392cd28549dbaddc0073958e13af49f2cfb6a360df78fd43db6aefcc6de",
+      "sourceEvidence": {
+        "evidenceId": "politics-2021-q07",
+        "sourceId": "src_88c0d6500b6ecf15d237f76b",
+        "answerSourceId": "src_a6fd115071cc943f911cf82e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2021-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:26e308749c5e188ce055b295d2a368eb67cf92d06a70ee46aa94fbcd08db3af3",
+        "answerTextHash": "sha256:04ec1392cd28549dbaddc0073958e13af49f2cfb6a360df78fd43db6aefcc6de"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_a6fd115071cc943f911cf82e",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2021/2021-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:04ec1392cd28549dbaddc0073958e13af49f2cfb6a360df78fd43db6aefcc6de",
+        "method": "local_pdf_ocr_located_page_image_with_option_order_mapping",
+        "verifiedBy": "build_politics_2021_bank",
+        "note": "Matched against local Baidu Netdisk 2021 Politics paper-answer PDF and mapped to the standalone paper PDF option order when the answer PDF reordered options."
+      }
+    },
+    {
+      "id": "politics-2021-008",
+      "number": 8,
+      "paperId": "politics-2021",
+      "paperName": "2021考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2021",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2021考研政治第8题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2021 考研政治真题及解析 PDF 第 1-14 页逐题解析；部分解析页选项顺序与试卷 PDF 不一致，题库已按选项内容映射回试卷原页字母。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2021/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2021考研政治试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2021/answer-page-03.jpg",
+          "caption": "答案原页 p.3",
+          "alt": "2021考研政治答案原页 p.3"
+        },
+        {
+          "src": "question-bank/politics-2021/answer-page-04.jpg",
+          "caption": "答案原页 p.4",
+          "alt": "2021考研政治答案原页 p.4"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2021",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2021-paper-answer",
+      "sourceEvidenceId": "politics-2021-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:2f8de6b655a6e4062427b90386236b81c39f93a0b2bd5e3b354bfd1761203887",
+      "answerTextHash": "sha256:d1f00327a9167d7c387037670d79066b8f29b8ce44f9810de1d58a061ed4890d",
+      "sourceEvidence": {
+        "evidenceId": "politics-2021-q08",
+        "sourceId": "src_88c0d6500b6ecf15d237f76b",
+        "answerSourceId": "src_a6fd115071cc943f911cf82e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2021-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:2f8de6b655a6e4062427b90386236b81c39f93a0b2bd5e3b354bfd1761203887",
+        "answerTextHash": "sha256:d1f00327a9167d7c387037670d79066b8f29b8ce44f9810de1d58a061ed4890d"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_a6fd115071cc943f911cf82e",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2021/2021-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:d1f00327a9167d7c387037670d79066b8f29b8ce44f9810de1d58a061ed4890d",
+        "method": "local_pdf_ocr_located_page_image_with_option_order_mapping",
+        "verifiedBy": "build_politics_2021_bank",
+        "note": "Matched against local Baidu Netdisk 2021 Politics paper-answer PDF and mapped to the standalone paper PDF option order when the answer PDF reordered options."
+      }
+    },
+    {
+      "id": "politics-2021-009",
+      "number": 9,
+      "paperId": "politics-2021",
+      "paperName": "2021考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2021",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2021考研政治第9题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2021 考研政治真题及解析 PDF 第 1-14 页逐题解析；部分解析页选项顺序与试卷 PDF 不一致，题库已按选项内容映射回试卷原页字母。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2021/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2021考研政治试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2021/answer-page-04.jpg",
+          "caption": "答案原页 p.4",
+          "alt": "2021考研政治答案原页 p.4"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2021",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2021-paper-answer",
+      "sourceEvidenceId": "politics-2021-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:13b7ab0d28128aa91512185ffb62f2de9eb650396ae8ffad15392b086ccd0bec",
+      "answerTextHash": "sha256:be7ce7e229c32ee84e51a8b798c26849f35867ddf614c33bfa7cb142239e5846",
+      "sourceEvidence": {
+        "evidenceId": "politics-2021-q09",
+        "sourceId": "src_88c0d6500b6ecf15d237f76b",
+        "answerSourceId": "src_a6fd115071cc943f911cf82e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2021-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:13b7ab0d28128aa91512185ffb62f2de9eb650396ae8ffad15392b086ccd0bec",
+        "answerTextHash": "sha256:be7ce7e229c32ee84e51a8b798c26849f35867ddf614c33bfa7cb142239e5846"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_a6fd115071cc943f911cf82e",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2021/2021-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:be7ce7e229c32ee84e51a8b798c26849f35867ddf614c33bfa7cb142239e5846",
+        "method": "local_pdf_ocr_located_page_image_with_option_order_mapping",
+        "verifiedBy": "build_politics_2021_bank",
+        "note": "Matched against local Baidu Netdisk 2021 Politics paper-answer PDF and mapped to the standalone paper PDF option order when the answer PDF reordered options."
+      }
+    },
+    {
+      "id": "politics-2021-010",
+      "number": 10,
+      "paperId": "politics-2021",
+      "paperName": "2021考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2021",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2021考研政治第10题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2021 考研政治真题及解析 PDF 第 1-14 页逐题解析；部分解析页选项顺序与试卷 PDF 不一致，题库已按选项内容映射回试卷原页字母。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2021/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2021考研政治试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2021/answer-page-04.jpg",
+          "caption": "答案原页 p.4",
+          "alt": "2021考研政治答案原页 p.4"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2021",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2021-paper-answer",
+      "sourceEvidenceId": "politics-2021-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:a8c59d21be17e901ed649bc40cb2f01523e509ae7689c6e8fa03e4d624ad4d5f",
+      "answerTextHash": "sha256:f36726feabe52ef14a5e320e57edccaf7bbc581ae42114d461b83545ac4c6e1f",
+      "sourceEvidence": {
+        "evidenceId": "politics-2021-q10",
+        "sourceId": "src_88c0d6500b6ecf15d237f76b",
+        "answerSourceId": "src_a6fd115071cc943f911cf82e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2021-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:a8c59d21be17e901ed649bc40cb2f01523e509ae7689c6e8fa03e4d624ad4d5f",
+        "answerTextHash": "sha256:f36726feabe52ef14a5e320e57edccaf7bbc581ae42114d461b83545ac4c6e1f"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_a6fd115071cc943f911cf82e",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2021/2021-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:f36726feabe52ef14a5e320e57edccaf7bbc581ae42114d461b83545ac4c6e1f",
+        "method": "local_pdf_ocr_located_page_image_with_option_order_mapping",
+        "verifiedBy": "build_politics_2021_bank",
+        "note": "Matched against local Baidu Netdisk 2021 Politics paper-answer PDF and mapped to the standalone paper PDF option order when the answer PDF reordered options."
+      }
+    },
+    {
+      "id": "politics-2021-011",
+      "number": 11,
+      "paperId": "politics-2021",
+      "paperName": "2021考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2021",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2021考研政治第11题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2021 考研政治真题及解析 PDF 第 1-14 页逐题解析；部分解析页选项顺序与试卷 PDF 不一致，题库已按选项内容映射回试卷原页字母。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2021/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2021考研政治试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2021/answer-page-04.jpg",
+          "caption": "答案原页 p.4",
+          "alt": "2021考研政治答案原页 p.4"
+        },
+        {
+          "src": "question-bank/politics-2021/answer-page-05.jpg",
+          "caption": "答案原页 p.5",
+          "alt": "2021考研政治答案原页 p.5"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2021",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2021-paper-answer",
+      "sourceEvidenceId": "politics-2021-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:65f389e73d7d6aefd5c193677e3641cb36075872c968a9e18900b5ab16df31a8",
+      "answerTextHash": "sha256:effc5f090b83e51a6a0f872df829faed535494c249c70d11b7109de358a4b354",
+      "sourceEvidence": {
+        "evidenceId": "politics-2021-q11",
+        "sourceId": "src_88c0d6500b6ecf15d237f76b",
+        "answerSourceId": "src_a6fd115071cc943f911cf82e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2021-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:65f389e73d7d6aefd5c193677e3641cb36075872c968a9e18900b5ab16df31a8",
+        "answerTextHash": "sha256:effc5f090b83e51a6a0f872df829faed535494c249c70d11b7109de358a4b354"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_a6fd115071cc943f911cf82e",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2021/2021-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:effc5f090b83e51a6a0f872df829faed535494c249c70d11b7109de358a4b354",
+        "method": "local_pdf_ocr_located_page_image_with_option_order_mapping",
+        "verifiedBy": "build_politics_2021_bank",
+        "note": "Matched against local Baidu Netdisk 2021 Politics paper-answer PDF and mapped to the standalone paper PDF option order when the answer PDF reordered options."
+      }
+    },
+    {
+      "id": "politics-2021-012",
+      "number": 12,
+      "paperId": "politics-2021",
+      "paperName": "2021考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2021",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2021考研政治第12题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2021 考研政治真题及解析 PDF 第 1-14 页逐题解析；部分解析页选项顺序与试卷 PDF 不一致，题库已按选项内容映射回试卷原页字母。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2021/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2021考研政治试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2021/answer-page-05.jpg",
+          "caption": "答案原页 p.5",
+          "alt": "2021考研政治答案原页 p.5"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2021",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2021-paper-answer",
+      "sourceEvidenceId": "politics-2021-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:c690353630e9e5ecef7afa4411398387d7cd972c87e0d4ea550df01f4ae8b399",
+      "answerTextHash": "sha256:088c3f851ea993310444f5d2947ebd796c98458b65bda634b422b5b6188bca7d",
+      "sourceEvidence": {
+        "evidenceId": "politics-2021-q12",
+        "sourceId": "src_88c0d6500b6ecf15d237f76b",
+        "answerSourceId": "src_a6fd115071cc943f911cf82e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2021-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:c690353630e9e5ecef7afa4411398387d7cd972c87e0d4ea550df01f4ae8b399",
+        "answerTextHash": "sha256:088c3f851ea993310444f5d2947ebd796c98458b65bda634b422b5b6188bca7d"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_a6fd115071cc943f911cf82e",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2021/2021-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:088c3f851ea993310444f5d2947ebd796c98458b65bda634b422b5b6188bca7d",
+        "method": "local_pdf_ocr_located_page_image_with_option_order_mapping",
+        "verifiedBy": "build_politics_2021_bank",
+        "note": "Matched against local Baidu Netdisk 2021 Politics paper-answer PDF and mapped to the standalone paper PDF option order when the answer PDF reordered options."
+      }
+    },
+    {
+      "id": "politics-2021-013",
+      "number": 13,
+      "paperId": "politics-2021",
+      "paperName": "2021考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2021",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2021考研政治第13题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2021 考研政治真题及解析 PDF 第 1-14 页逐题解析；部分解析页选项顺序与试卷 PDF 不一致，题库已按选项内容映射回试卷原页字母。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2021/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2021考研政治试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2021/answer-page-05.jpg",
+          "caption": "答案原页 p.5",
+          "alt": "2021考研政治答案原页 p.5"
+        },
+        {
+          "src": "question-bank/politics-2021/answer-page-06.jpg",
+          "caption": "答案原页 p.6",
+          "alt": "2021考研政治答案原页 p.6"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2021",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2021-paper-answer",
+      "sourceEvidenceId": "politics-2021-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:c607d5689ab2cf5c80ecdb4b5ce38797f57ccc598de71c2d44af4368217ee568",
+      "answerTextHash": "sha256:232eb8b8fc13408dc4ba95d0ffe2344e179420d8737dc3b6a26972a4f0e852d0",
+      "sourceEvidence": {
+        "evidenceId": "politics-2021-q13",
+        "sourceId": "src_88c0d6500b6ecf15d237f76b",
+        "answerSourceId": "src_a6fd115071cc943f911cf82e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2021-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:c607d5689ab2cf5c80ecdb4b5ce38797f57ccc598de71c2d44af4368217ee568",
+        "answerTextHash": "sha256:232eb8b8fc13408dc4ba95d0ffe2344e179420d8737dc3b6a26972a4f0e852d0"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_a6fd115071cc943f911cf82e",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2021/2021-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:232eb8b8fc13408dc4ba95d0ffe2344e179420d8737dc3b6a26972a4f0e852d0",
+        "method": "local_pdf_ocr_located_page_image_with_option_order_mapping",
+        "verifiedBy": "build_politics_2021_bank",
+        "note": "Matched against local Baidu Netdisk 2021 Politics paper-answer PDF and mapped to the standalone paper PDF option order when the answer PDF reordered options."
+      }
+    },
+    {
+      "id": "politics-2021-014",
+      "number": 14,
+      "paperId": "politics-2021",
+      "paperName": "2021考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2021",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2021考研政治第14题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2021 考研政治真题及解析 PDF 第 1-14 页逐题解析；部分解析页选项顺序与试卷 PDF 不一致，题库已按选项内容映射回试卷原页字母。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2021/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2021考研政治试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2021/answer-page-06.jpg",
+          "caption": "答案原页 p.6",
+          "alt": "2021考研政治答案原页 p.6"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2021",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2021-paper-answer",
+      "sourceEvidenceId": "politics-2021-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:f69bf95591d7ead3f65cf67d6ec3325ccd126af4cdcf5fdd8157086ce7d608d4",
+      "answerTextHash": "sha256:5d15e88ae818eedf3221aed74717f17df3d9a8cbf44ad5b24edf1d4cbca85cb5",
+      "sourceEvidence": {
+        "evidenceId": "politics-2021-q14",
+        "sourceId": "src_88c0d6500b6ecf15d237f76b",
+        "answerSourceId": "src_a6fd115071cc943f911cf82e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2021-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:f69bf95591d7ead3f65cf67d6ec3325ccd126af4cdcf5fdd8157086ce7d608d4",
+        "answerTextHash": "sha256:5d15e88ae818eedf3221aed74717f17df3d9a8cbf44ad5b24edf1d4cbca85cb5"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_a6fd115071cc943f911cf82e",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2021/2021-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:5d15e88ae818eedf3221aed74717f17df3d9a8cbf44ad5b24edf1d4cbca85cb5",
+        "method": "local_pdf_ocr_located_page_image_with_option_order_mapping",
+        "verifiedBy": "build_politics_2021_bank",
+        "note": "Matched against local Baidu Netdisk 2021 Politics paper-answer PDF and mapped to the standalone paper PDF option order when the answer PDF reordered options."
+      }
+    },
+    {
+      "id": "politics-2021-015",
+      "number": 15,
+      "paperId": "politics-2021",
+      "paperName": "2021考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2021",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2021考研政治第15题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2021 考研政治真题及解析 PDF 第 1-14 页逐题解析；部分解析页选项顺序与试卷 PDF 不一致，题库已按选项内容映射回试卷原页字母。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2021/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2021考研政治试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2021/answer-page-06.jpg",
+          "caption": "答案原页 p.6",
+          "alt": "2021考研政治答案原页 p.6"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2021",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2021-paper-answer",
+      "sourceEvidenceId": "politics-2021-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:efa55db3f005b2d47394d789c1503470788af850501e21945f513aa53d7fc853",
+      "answerTextHash": "sha256:0e4da2e64a58097964c16042bff9c43027657d262f1b63d0f25ef1110257e18a",
+      "sourceEvidence": {
+        "evidenceId": "politics-2021-q15",
+        "sourceId": "src_88c0d6500b6ecf15d237f76b",
+        "answerSourceId": "src_a6fd115071cc943f911cf82e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2021-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:efa55db3f005b2d47394d789c1503470788af850501e21945f513aa53d7fc853",
+        "answerTextHash": "sha256:0e4da2e64a58097964c16042bff9c43027657d262f1b63d0f25ef1110257e18a"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_a6fd115071cc943f911cf82e",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2021/2021-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:0e4da2e64a58097964c16042bff9c43027657d262f1b63d0f25ef1110257e18a",
+        "method": "local_pdf_ocr_located_page_image_with_option_order_mapping",
+        "verifiedBy": "build_politics_2021_bank",
+        "note": "Matched against local Baidu Netdisk 2021 Politics paper-answer PDF and mapped to the standalone paper PDF option order when the answer PDF reordered options."
+      }
+    },
+    {
+      "id": "politics-2021-016",
+      "number": 16,
+      "paperId": "politics-2021",
+      "paperName": "2021考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2021",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2021考研政治第16题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2021 考研政治真题及解析 PDF 第 1-14 页逐题解析；部分解析页选项顺序与试卷 PDF 不一致，题库已按选项内容映射回试卷原页字母。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2021/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2021考研政治试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2021/answer-page-07.jpg",
+          "caption": "答案原页 p.7",
+          "alt": "2021考研政治答案原页 p.7"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2021",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2021-paper-answer",
+      "sourceEvidenceId": "politics-2021-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:26170c9a5a49c6cb533f12cec866db77f352e892b3623cc5f9497a695942ca28",
+      "answerTextHash": "sha256:a302fa3f0616ad4df579a35b1a34c8ab3192bcac4b61fe9fbb4fd22ae2f423f3",
+      "sourceEvidence": {
+        "evidenceId": "politics-2021-q16",
+        "sourceId": "src_88c0d6500b6ecf15d237f76b",
+        "answerSourceId": "src_a6fd115071cc943f911cf82e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2021-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:26170c9a5a49c6cb533f12cec866db77f352e892b3623cc5f9497a695942ca28",
+        "answerTextHash": "sha256:a302fa3f0616ad4df579a35b1a34c8ab3192bcac4b61fe9fbb4fd22ae2f423f3"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_a6fd115071cc943f911cf82e",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2021/2021-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:a302fa3f0616ad4df579a35b1a34c8ab3192bcac4b61fe9fbb4fd22ae2f423f3",
+        "method": "local_pdf_ocr_located_page_image_with_option_order_mapping",
+        "verifiedBy": "build_politics_2021_bank",
+        "note": "Matched against local Baidu Netdisk 2021 Politics paper-answer PDF and mapped to the standalone paper PDF option order when the answer PDF reordered options."
+      }
+    },
+    {
+      "id": "politics-2021-017",
+      "number": 17,
+      "paperId": "politics-2021",
+      "paperName": "2021考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2021",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2021考研政治第17题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "AD",
+      "explanation": "答案来自本地百度网盘 2021 考研政治真题及解析 PDF 第 1-14 页逐题解析；部分解析页选项顺序与试卷 PDF 不一致，题库已按选项内容映射回试卷原页字母。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2021/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2021考研政治试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2021/answer-page-07.jpg",
+          "caption": "答案原页 p.7",
+          "alt": "2021考研政治答案原页 p.7"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2021",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2021-paper-answer",
+      "sourceEvidenceId": "politics-2021-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:bcc14859811edb7d50601b14630cf29e3815be8389fadd2cd3da35dfdec30b92",
+      "answerTextHash": "sha256:a1bb3993cb6d86fb3dc2cdda614ac696ebfec4af91202ec96c74b6b8ead2630a",
+      "sourceEvidence": {
+        "evidenceId": "politics-2021-q17",
+        "sourceId": "src_88c0d6500b6ecf15d237f76b",
+        "answerSourceId": "src_a6fd115071cc943f911cf82e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2021-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:bcc14859811edb7d50601b14630cf29e3815be8389fadd2cd3da35dfdec30b92",
+        "answerTextHash": "sha256:a1bb3993cb6d86fb3dc2cdda614ac696ebfec4af91202ec96c74b6b8ead2630a"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_a6fd115071cc943f911cf82e",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2021/2021-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:a1bb3993cb6d86fb3dc2cdda614ac696ebfec4af91202ec96c74b6b8ead2630a",
+        "method": "local_pdf_ocr_located_page_image_with_option_order_mapping",
+        "verifiedBy": "build_politics_2021_bank",
+        "note": "Matched against local Baidu Netdisk 2021 Politics paper-answer PDF and mapped to the standalone paper PDF option order when the answer PDF reordered options."
+      }
+    },
+    {
+      "id": "politics-2021-018",
+      "number": 18,
+      "paperId": "politics-2021",
+      "paperName": "2021考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2021",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2021考研政治第18题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "CD",
+      "explanation": "答案来自本地百度网盘 2021 考研政治真题及解析 PDF 第 1-14 页逐题解析；部分解析页选项顺序与试卷 PDF 不一致，题库已按选项内容映射回试卷原页字母。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2021/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2021考研政治试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2021/answer-page-07.jpg",
+          "caption": "答案原页 p.7",
+          "alt": "2021考研政治答案原页 p.7"
+        },
+        {
+          "src": "question-bank/politics-2021/answer-page-08.jpg",
+          "caption": "答案原页 p.8",
+          "alt": "2021考研政治答案原页 p.8"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2021",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2021-paper-answer",
+      "sourceEvidenceId": "politics-2021-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:ff873a422d32c86996054044ed3a2f36c889f270e57dad221d236bc89ac38f32",
+      "answerTextHash": "sha256:eb9e737084a038d2d1c597e34877aa0af8ab6367267d1cf2ef41182af16b0f15",
+      "sourceEvidence": {
+        "evidenceId": "politics-2021-q18",
+        "sourceId": "src_88c0d6500b6ecf15d237f76b",
+        "answerSourceId": "src_a6fd115071cc943f911cf82e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2021-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:ff873a422d32c86996054044ed3a2f36c889f270e57dad221d236bc89ac38f32",
+        "answerTextHash": "sha256:eb9e737084a038d2d1c597e34877aa0af8ab6367267d1cf2ef41182af16b0f15"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_a6fd115071cc943f911cf82e",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2021/2021-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:eb9e737084a038d2d1c597e34877aa0af8ab6367267d1cf2ef41182af16b0f15",
+        "method": "local_pdf_ocr_located_page_image_with_option_order_mapping",
+        "verifiedBy": "build_politics_2021_bank",
+        "note": "Matched against local Baidu Netdisk 2021 Politics paper-answer PDF and mapped to the standalone paper PDF option order when the answer PDF reordered options."
+      }
+    },
+    {
+      "id": "politics-2021-019",
+      "number": 19,
+      "paperId": "politics-2021",
+      "paperName": "2021考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2021",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2021考研政治第19题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "AB",
+      "explanation": "答案来自本地百度网盘 2021 考研政治真题及解析 PDF 第 1-14 页逐题解析；部分解析页选项顺序与试卷 PDF 不一致，题库已按选项内容映射回试卷原页字母。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2021/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2021考研政治试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2021/answer-page-08.jpg",
+          "caption": "答案原页 p.8",
+          "alt": "2021考研政治答案原页 p.8"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2021",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2021-paper-answer",
+      "sourceEvidenceId": "politics-2021-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:a8ec568bf274d90240b472a20509c260e43d7f437f7964bfcf8fbf77144b7f5d",
+      "answerTextHash": "sha256:50c23d657fc9c4c736bf11ddba7341d9aa25e6c4ce39763057cfc54f7d1eab52",
+      "sourceEvidence": {
+        "evidenceId": "politics-2021-q19",
+        "sourceId": "src_88c0d6500b6ecf15d237f76b",
+        "answerSourceId": "src_a6fd115071cc943f911cf82e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2021-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:a8ec568bf274d90240b472a20509c260e43d7f437f7964bfcf8fbf77144b7f5d",
+        "answerTextHash": "sha256:50c23d657fc9c4c736bf11ddba7341d9aa25e6c4ce39763057cfc54f7d1eab52"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_a6fd115071cc943f911cf82e",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2021/2021-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:50c23d657fc9c4c736bf11ddba7341d9aa25e6c4ce39763057cfc54f7d1eab52",
+        "method": "local_pdf_ocr_located_page_image_with_option_order_mapping",
+        "verifiedBy": "build_politics_2021_bank",
+        "note": "Matched against local Baidu Netdisk 2021 Politics paper-answer PDF and mapped to the standalone paper PDF option order when the answer PDF reordered options."
+      }
+    },
+    {
+      "id": "politics-2021-020",
+      "number": 20,
+      "paperId": "politics-2021",
+      "paperName": "2021考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2021",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2021考研政治第20题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ACD",
+      "explanation": "答案来自本地百度网盘 2021 考研政治真题及解析 PDF 第 1-14 页逐题解析；部分解析页选项顺序与试卷 PDF 不一致，题库已按选项内容映射回试卷原页字母。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2021/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2021考研政治试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2021/answer-page-08.jpg",
+          "caption": "答案原页 p.8",
+          "alt": "2021考研政治答案原页 p.8"
+        },
+        {
+          "src": "question-bank/politics-2021/answer-page-09.jpg",
+          "caption": "答案原页 p.9",
+          "alt": "2021考研政治答案原页 p.9"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2021",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2021-paper-answer",
+      "sourceEvidenceId": "politics-2021-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:f79ec541177242d2ad829fd5795d34c54964aa0893d2c5c6123d9a2c7427084a",
+      "answerTextHash": "sha256:e8b7b31de3c471a41ea084370197e06ae81170c5d31b21c9161f0b985a20d16d",
+      "sourceEvidence": {
+        "evidenceId": "politics-2021-q20",
+        "sourceId": "src_88c0d6500b6ecf15d237f76b",
+        "answerSourceId": "src_a6fd115071cc943f911cf82e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2021-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:f79ec541177242d2ad829fd5795d34c54964aa0893d2c5c6123d9a2c7427084a",
+        "answerTextHash": "sha256:e8b7b31de3c471a41ea084370197e06ae81170c5d31b21c9161f0b985a20d16d"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_a6fd115071cc943f911cf82e",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2021/2021-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:e8b7b31de3c471a41ea084370197e06ae81170c5d31b21c9161f0b985a20d16d",
+        "method": "local_pdf_ocr_located_page_image_with_option_order_mapping",
+        "verifiedBy": "build_politics_2021_bank",
+        "note": "Matched against local Baidu Netdisk 2021 Politics paper-answer PDF and mapped to the standalone paper PDF option order when the answer PDF reordered options."
+      }
+    },
+    {
+      "id": "politics-2021-021",
+      "number": 21,
+      "paperId": "politics-2021",
+      "paperName": "2021考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2021",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2021考研政治第21题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABCD",
+      "explanation": "答案来自本地百度网盘 2021 考研政治真题及解析 PDF 第 1-14 页逐题解析；部分解析页选项顺序与试卷 PDF 不一致，题库已按选项内容映射回试卷原页字母。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2021/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2021考研政治试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2021/answer-page-09.jpg",
+          "caption": "答案原页 p.9",
+          "alt": "2021考研政治答案原页 p.9"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2021",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2021-paper-answer",
+      "sourceEvidenceId": "politics-2021-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:edb86fc8193f089e926d2492d9609ea89e0fda94f3cdc191bfdb7904a2ae11fd",
+      "answerTextHash": "sha256:a29b1d6ef338f9fd22d808d71723df6d146732d65fe64253a689e66d7d281df4",
+      "sourceEvidence": {
+        "evidenceId": "politics-2021-q21",
+        "sourceId": "src_88c0d6500b6ecf15d237f76b",
+        "answerSourceId": "src_a6fd115071cc943f911cf82e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2021-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:edb86fc8193f089e926d2492d9609ea89e0fda94f3cdc191bfdb7904a2ae11fd",
+        "answerTextHash": "sha256:a29b1d6ef338f9fd22d808d71723df6d146732d65fe64253a689e66d7d281df4"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_a6fd115071cc943f911cf82e",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2021/2021-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:a29b1d6ef338f9fd22d808d71723df6d146732d65fe64253a689e66d7d281df4",
+        "method": "local_pdf_ocr_located_page_image_with_option_order_mapping",
+        "verifiedBy": "build_politics_2021_bank",
+        "note": "Matched against local Baidu Netdisk 2021 Politics paper-answer PDF and mapped to the standalone paper PDF option order when the answer PDF reordered options."
+      }
+    },
+    {
+      "id": "politics-2021-022",
+      "number": 22,
+      "paperId": "politics-2021",
+      "paperName": "2021考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2021",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2021考研政治第22题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "BCD",
+      "explanation": "答案来自本地百度网盘 2021 考研政治真题及解析 PDF 第 1-14 页逐题解析；部分解析页选项顺序与试卷 PDF 不一致，题库已按选项内容映射回试卷原页字母。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2021/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2021考研政治试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2021/answer-page-09.jpg",
+          "caption": "答案原页 p.9",
+          "alt": "2021考研政治答案原页 p.9"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2021",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2021-paper-answer",
+      "sourceEvidenceId": "politics-2021-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:38d970374aa161ac030eae28bede3a446e8b69184011eecddf5677c64f2fdd06",
+      "answerTextHash": "sha256:6dedc1c698c4548029a7879bd42f830c61ace5ef7f2da18e3abd2db4ebbdce81",
+      "sourceEvidence": {
+        "evidenceId": "politics-2021-q22",
+        "sourceId": "src_88c0d6500b6ecf15d237f76b",
+        "answerSourceId": "src_a6fd115071cc943f911cf82e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2021-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:38d970374aa161ac030eae28bede3a446e8b69184011eecddf5677c64f2fdd06",
+        "answerTextHash": "sha256:6dedc1c698c4548029a7879bd42f830c61ace5ef7f2da18e3abd2db4ebbdce81"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_a6fd115071cc943f911cf82e",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2021/2021-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:6dedc1c698c4548029a7879bd42f830c61ace5ef7f2da18e3abd2db4ebbdce81",
+        "method": "local_pdf_ocr_located_page_image_with_option_order_mapping",
+        "verifiedBy": "build_politics_2021_bank",
+        "note": "Matched against local Baidu Netdisk 2021 Politics paper-answer PDF and mapped to the standalone paper PDF option order when the answer PDF reordered options."
+      }
+    },
+    {
+      "id": "politics-2021-023",
+      "number": 23,
+      "paperId": "politics-2021",
+      "paperName": "2021考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2021",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2021考研政治第23题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABC",
+      "explanation": "答案来自本地百度网盘 2021 考研政治真题及解析 PDF 第 1-14 页逐题解析；部分解析页选项顺序与试卷 PDF 不一致，题库已按选项内容映射回试卷原页字母。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2021/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2021考研政治试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2021/answer-page-09.jpg",
+          "caption": "答案原页 p.9",
+          "alt": "2021考研政治答案原页 p.9"
+        },
+        {
+          "src": "question-bank/politics-2021/answer-page-10.jpg",
+          "caption": "答案原页 p.10",
+          "alt": "2021考研政治答案原页 p.10"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2021",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2021-paper-answer",
+      "sourceEvidenceId": "politics-2021-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:af100b131283339add08bde6966681e724506bd133400dfcb983d2c3cbd4088a",
+      "answerTextHash": "sha256:c05f9ec465e7162ca7d198e9490c42ee14d81de3ac9716439bcf30fdfa744960",
+      "sourceEvidence": {
+        "evidenceId": "politics-2021-q23",
+        "sourceId": "src_88c0d6500b6ecf15d237f76b",
+        "answerSourceId": "src_a6fd115071cc943f911cf82e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2021-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:af100b131283339add08bde6966681e724506bd133400dfcb983d2c3cbd4088a",
+        "answerTextHash": "sha256:c05f9ec465e7162ca7d198e9490c42ee14d81de3ac9716439bcf30fdfa744960"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_a6fd115071cc943f911cf82e",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2021/2021-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:c05f9ec465e7162ca7d198e9490c42ee14d81de3ac9716439bcf30fdfa744960",
+        "method": "local_pdf_ocr_located_page_image_with_option_order_mapping",
+        "verifiedBy": "build_politics_2021_bank",
+        "note": "Matched against local Baidu Netdisk 2021 Politics paper-answer PDF and mapped to the standalone paper PDF option order when the answer PDF reordered options."
+      }
+    },
+    {
+      "id": "politics-2021-024",
+      "number": 24,
+      "paperId": "politics-2021",
+      "paperName": "2021考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2021",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2021考研政治第24题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABCD",
+      "explanation": "答案来自本地百度网盘 2021 考研政治真题及解析 PDF 第 1-14 页逐题解析；部分解析页选项顺序与试卷 PDF 不一致，题库已按选项内容映射回试卷原页字母。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2021/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2021考研政治试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2021/answer-page-10.jpg",
+          "caption": "答案原页 p.10",
+          "alt": "2021考研政治答案原页 p.10"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2021",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2021-paper-answer",
+      "sourceEvidenceId": "politics-2021-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:b2e3828d9cdb2b9394a1242bf1878c2a68f0c770e7e8dd84ca9b566c8ccb72e7",
+      "answerTextHash": "sha256:1055f2190ac9fe8e637e73f71340072de23d4bc4de3a63a49793159889e2d230",
+      "sourceEvidence": {
+        "evidenceId": "politics-2021-q24",
+        "sourceId": "src_88c0d6500b6ecf15d237f76b",
+        "answerSourceId": "src_a6fd115071cc943f911cf82e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2021-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:b2e3828d9cdb2b9394a1242bf1878c2a68f0c770e7e8dd84ca9b566c8ccb72e7",
+        "answerTextHash": "sha256:1055f2190ac9fe8e637e73f71340072de23d4bc4de3a63a49793159889e2d230"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_a6fd115071cc943f911cf82e",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2021/2021-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:1055f2190ac9fe8e637e73f71340072de23d4bc4de3a63a49793159889e2d230",
+        "method": "local_pdf_ocr_located_page_image_with_option_order_mapping",
+        "verifiedBy": "build_politics_2021_bank",
+        "note": "Matched against local Baidu Netdisk 2021 Politics paper-answer PDF and mapped to the standalone paper PDF option order when the answer PDF reordered options."
+      }
+    },
+    {
+      "id": "politics-2021-025",
+      "number": 25,
+      "paperId": "politics-2021",
+      "paperName": "2021考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2021",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2021考研政治第25题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABC",
+      "explanation": "答案来自本地百度网盘 2021 考研政治真题及解析 PDF 第 1-14 页逐题解析；部分解析页选项顺序与试卷 PDF 不一致，题库已按选项内容映射回试卷原页字母。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2021/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2021考研政治试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2021/answer-page-10.jpg",
+          "caption": "答案原页 p.10",
+          "alt": "2021考研政治答案原页 p.10"
+        },
+        {
+          "src": "question-bank/politics-2021/answer-page-11.jpg",
+          "caption": "答案原页 p.11",
+          "alt": "2021考研政治答案原页 p.11"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2021",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2021-paper-answer",
+      "sourceEvidenceId": "politics-2021-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:89f51258e31d51d2bd416c3274106413f9f040ccc43b63afb8c3a6012a61a148",
+      "answerTextHash": "sha256:b852a4d82ad545fc588340b4765cf24bd66521761e173efccd8e026cacb78890",
+      "sourceEvidence": {
+        "evidenceId": "politics-2021-q25",
+        "sourceId": "src_88c0d6500b6ecf15d237f76b",
+        "answerSourceId": "src_a6fd115071cc943f911cf82e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2021-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:89f51258e31d51d2bd416c3274106413f9f040ccc43b63afb8c3a6012a61a148",
+        "answerTextHash": "sha256:b852a4d82ad545fc588340b4765cf24bd66521761e173efccd8e026cacb78890"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_a6fd115071cc943f911cf82e",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2021/2021-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:b852a4d82ad545fc588340b4765cf24bd66521761e173efccd8e026cacb78890",
+        "method": "local_pdf_ocr_located_page_image_with_option_order_mapping",
+        "verifiedBy": "build_politics_2021_bank",
+        "note": "Matched against local Baidu Netdisk 2021 Politics paper-answer PDF and mapped to the standalone paper PDF option order when the answer PDF reordered options."
+      }
+    },
+    {
+      "id": "politics-2021-026",
+      "number": 26,
+      "paperId": "politics-2021",
+      "paperName": "2021考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2021",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2021考研政治第26题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABCD",
+      "explanation": "答案来自本地百度网盘 2021 考研政治真题及解析 PDF 第 1-14 页逐题解析；部分解析页选项顺序与试卷 PDF 不一致，题库已按选项内容映射回试卷原页字母。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2021/paper-page-05.jpg",
+          "caption": "试卷原页 p.5",
+          "alt": "2021考研政治试卷原页 p.5"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2021/answer-page-11.jpg",
+          "caption": "答案原页 p.11",
+          "alt": "2021考研政治答案原页 p.11"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2021",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2021-paper-answer",
+      "sourceEvidenceId": "politics-2021-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:bab1cf6482559bbd1c69ee2f2c57b9ff69005684d26815f96f8ffc0902a741ee",
+      "answerTextHash": "sha256:0a037c01acb69063e66b472e1f84455c9221e487f40e43ab4b0505299ae6b26a",
+      "sourceEvidence": {
+        "evidenceId": "politics-2021-q26",
+        "sourceId": "src_88c0d6500b6ecf15d237f76b",
+        "answerSourceId": "src_a6fd115071cc943f911cf82e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2021-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:bab1cf6482559bbd1c69ee2f2c57b9ff69005684d26815f96f8ffc0902a741ee",
+        "answerTextHash": "sha256:0a037c01acb69063e66b472e1f84455c9221e487f40e43ab4b0505299ae6b26a"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_a6fd115071cc943f911cf82e",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2021/2021-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:0a037c01acb69063e66b472e1f84455c9221e487f40e43ab4b0505299ae6b26a",
+        "method": "local_pdf_ocr_located_page_image_with_option_order_mapping",
+        "verifiedBy": "build_politics_2021_bank",
+        "note": "Matched against local Baidu Netdisk 2021 Politics paper-answer PDF and mapped to the standalone paper PDF option order when the answer PDF reordered options."
+      }
+    },
+    {
+      "id": "politics-2021-027",
+      "number": 27,
+      "paperId": "politics-2021",
+      "paperName": "2021考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2021",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2021考研政治第27题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "AC",
+      "explanation": "答案来自本地百度网盘 2021 考研政治真题及解析 PDF 第 1-14 页逐题解析；部分解析页选项顺序与试卷 PDF 不一致，题库已按选项内容映射回试卷原页字母。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2021/paper-page-05.jpg",
+          "caption": "试卷原页 p.5",
+          "alt": "2021考研政治试卷原页 p.5"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2021/answer-page-11.jpg",
+          "caption": "答案原页 p.11",
+          "alt": "2021考研政治答案原页 p.11"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2021",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2021-paper-answer",
+      "sourceEvidenceId": "politics-2021-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:332a5ff250519c3656579eca38c8d4d553a7ab869e7ed77219286ea3c65a6f06",
+      "answerTextHash": "sha256:1dec54b81707fb2254339ab29abd4b670578c0710b4669fdd80a4c34e7d3f231",
+      "sourceEvidence": {
+        "evidenceId": "politics-2021-q27",
+        "sourceId": "src_88c0d6500b6ecf15d237f76b",
+        "answerSourceId": "src_a6fd115071cc943f911cf82e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2021-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:332a5ff250519c3656579eca38c8d4d553a7ab869e7ed77219286ea3c65a6f06",
+        "answerTextHash": "sha256:1dec54b81707fb2254339ab29abd4b670578c0710b4669fdd80a4c34e7d3f231"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_a6fd115071cc943f911cf82e",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2021/2021-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:1dec54b81707fb2254339ab29abd4b670578c0710b4669fdd80a4c34e7d3f231",
+        "method": "local_pdf_ocr_located_page_image_with_option_order_mapping",
+        "verifiedBy": "build_politics_2021_bank",
+        "note": "Matched against local Baidu Netdisk 2021 Politics paper-answer PDF and mapped to the standalone paper PDF option order when the answer PDF reordered options."
+      }
+    },
+    {
+      "id": "politics-2021-028",
+      "number": 28,
+      "paperId": "politics-2021",
+      "paperName": "2021考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2021",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2021考研政治第28题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABC",
+      "explanation": "答案来自本地百度网盘 2021 考研政治真题及解析 PDF 第 1-14 页逐题解析；部分解析页选项顺序与试卷 PDF 不一致，题库已按选项内容映射回试卷原页字母。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2021/paper-page-05.jpg",
+          "caption": "试卷原页 p.5",
+          "alt": "2021考研政治试卷原页 p.5"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2021/answer-page-11.jpg",
+          "caption": "答案原页 p.11",
+          "alt": "2021考研政治答案原页 p.11"
+        },
+        {
+          "src": "question-bank/politics-2021/answer-page-12.jpg",
+          "caption": "答案原页 p.12",
+          "alt": "2021考研政治答案原页 p.12"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2021",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2021-paper-answer",
+      "sourceEvidenceId": "politics-2021-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:8be2ecfc2601e5b3f288e41930e4703c8b5c947a01af922a3adbf714560987aa",
+      "answerTextHash": "sha256:4d75376898262fc8a1bb138b1b092fb8fae75421f94082f687e556a58ed1eeff",
+      "sourceEvidence": {
+        "evidenceId": "politics-2021-q28",
+        "sourceId": "src_88c0d6500b6ecf15d237f76b",
+        "answerSourceId": "src_a6fd115071cc943f911cf82e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2021-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:8be2ecfc2601e5b3f288e41930e4703c8b5c947a01af922a3adbf714560987aa",
+        "answerTextHash": "sha256:4d75376898262fc8a1bb138b1b092fb8fae75421f94082f687e556a58ed1eeff"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_a6fd115071cc943f911cf82e",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2021/2021-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:4d75376898262fc8a1bb138b1b092fb8fae75421f94082f687e556a58ed1eeff",
+        "method": "local_pdf_ocr_located_page_image_with_option_order_mapping",
+        "verifiedBy": "build_politics_2021_bank",
+        "note": "Matched against local Baidu Netdisk 2021 Politics paper-answer PDF and mapped to the standalone paper PDF option order when the answer PDF reordered options."
+      }
+    },
+    {
+      "id": "politics-2021-029",
+      "number": 29,
+      "paperId": "politics-2021",
+      "paperName": "2021考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2021",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2021考研政治第29题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABCD",
+      "explanation": "答案来自本地百度网盘 2021 考研政治真题及解析 PDF 第 1-14 页逐题解析；部分解析页选项顺序与试卷 PDF 不一致，题库已按选项内容映射回试卷原页字母。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2021/paper-page-05.jpg",
+          "caption": "试卷原页 p.5",
+          "alt": "2021考研政治试卷原页 p.5"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2021/answer-page-12.jpg",
+          "caption": "答案原页 p.12",
+          "alt": "2021考研政治答案原页 p.12"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2021",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2021-paper-answer",
+      "sourceEvidenceId": "politics-2021-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:f2ba27c9931daacc55f7a324c412679c22f7145a4df4c240540e85b3c21d1369",
+      "answerTextHash": "sha256:ca456842a1d91a1439e140d3f5ca281926dddb58da85d766a72ffbfa0655787d",
+      "sourceEvidence": {
+        "evidenceId": "politics-2021-q29",
+        "sourceId": "src_88c0d6500b6ecf15d237f76b",
+        "answerSourceId": "src_a6fd115071cc943f911cf82e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2021-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:f2ba27c9931daacc55f7a324c412679c22f7145a4df4c240540e85b3c21d1369",
+        "answerTextHash": "sha256:ca456842a1d91a1439e140d3f5ca281926dddb58da85d766a72ffbfa0655787d"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_a6fd115071cc943f911cf82e",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2021/2021-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:ca456842a1d91a1439e140d3f5ca281926dddb58da85d766a72ffbfa0655787d",
+        "method": "local_pdf_ocr_located_page_image_with_option_order_mapping",
+        "verifiedBy": "build_politics_2021_bank",
+        "note": "Matched against local Baidu Netdisk 2021 Politics paper-answer PDF and mapped to the standalone paper PDF option order when the answer PDF reordered options."
+      }
+    },
+    {
+      "id": "politics-2021-030",
+      "number": 30,
+      "paperId": "politics-2021",
+      "paperName": "2021考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2021",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2021考研政治第30题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABCD",
+      "explanation": "答案来自本地百度网盘 2021 考研政治真题及解析 PDF 第 1-14 页逐题解析；部分解析页选项顺序与试卷 PDF 不一致，题库已按选项内容映射回试卷原页字母。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2021/paper-page-05.jpg",
+          "caption": "试卷原页 p.5",
+          "alt": "2021考研政治试卷原页 p.5"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2021/answer-page-12.jpg",
+          "caption": "答案原页 p.12",
+          "alt": "2021考研政治答案原页 p.12"
+        },
+        {
+          "src": "question-bank/politics-2021/answer-page-13.jpg",
+          "caption": "答案原页 p.13",
+          "alt": "2021考研政治答案原页 p.13"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2021",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2021-paper-answer",
+      "sourceEvidenceId": "politics-2021-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:fbe6f412e895af3fc3a605543c5d2626386083c3cf28d1c486f6c521458b0251",
+      "answerTextHash": "sha256:48ec25090547d1d1efe2974b24e9829d2c04533d3b09264d9654cb27c7c6d8a8",
+      "sourceEvidence": {
+        "evidenceId": "politics-2021-q30",
+        "sourceId": "src_88c0d6500b6ecf15d237f76b",
+        "answerSourceId": "src_a6fd115071cc943f911cf82e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2021-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:fbe6f412e895af3fc3a605543c5d2626386083c3cf28d1c486f6c521458b0251",
+        "answerTextHash": "sha256:48ec25090547d1d1efe2974b24e9829d2c04533d3b09264d9654cb27c7c6d8a8"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_a6fd115071cc943f911cf82e",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2021/2021-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:48ec25090547d1d1efe2974b24e9829d2c04533d3b09264d9654cb27c7c6d8a8",
+        "method": "local_pdf_ocr_located_page_image_with_option_order_mapping",
+        "verifiedBy": "build_politics_2021_bank",
+        "note": "Matched against local Baidu Netdisk 2021 Politics paper-answer PDF and mapped to the standalone paper PDF option order when the answer PDF reordered options."
+      }
+    },
+    {
+      "id": "politics-2021-031",
+      "number": 31,
+      "paperId": "politics-2021",
+      "paperName": "2021考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2021",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2021考研政治第31题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABC",
+      "explanation": "答案来自本地百度网盘 2021 考研政治真题及解析 PDF 第 1-14 页逐题解析；部分解析页选项顺序与试卷 PDF 不一致，题库已按选项内容映射回试卷原页字母。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2021/paper-page-05.jpg",
+          "caption": "试卷原页 p.5",
+          "alt": "2021考研政治试卷原页 p.5"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2021/answer-page-13.jpg",
+          "caption": "答案原页 p.13",
+          "alt": "2021考研政治答案原页 p.13"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2021",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2021-paper-answer",
+      "sourceEvidenceId": "politics-2021-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:e97d61cb7be674457cfdc26a612a0fe777cecaaadd07fea6464daac9de24b352",
+      "answerTextHash": "sha256:0b48efc4b9e367bad83050141ce04b78fb182040e78af15c2979ff862826ba8b",
+      "sourceEvidence": {
+        "evidenceId": "politics-2021-q31",
+        "sourceId": "src_88c0d6500b6ecf15d237f76b",
+        "answerSourceId": "src_a6fd115071cc943f911cf82e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2021-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:e97d61cb7be674457cfdc26a612a0fe777cecaaadd07fea6464daac9de24b352",
+        "answerTextHash": "sha256:0b48efc4b9e367bad83050141ce04b78fb182040e78af15c2979ff862826ba8b"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_a6fd115071cc943f911cf82e",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2021/2021-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:0b48efc4b9e367bad83050141ce04b78fb182040e78af15c2979ff862826ba8b",
+        "method": "local_pdf_ocr_located_page_image_with_option_order_mapping",
+        "verifiedBy": "build_politics_2021_bank",
+        "note": "Matched against local Baidu Netdisk 2021 Politics paper-answer PDF and mapped to the standalone paper PDF option order when the answer PDF reordered options."
+      }
+    },
+    {
+      "id": "politics-2021-032",
+      "number": 32,
+      "paperId": "politics-2021",
+      "paperName": "2021考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2021",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2021考研政治第32题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABCD",
+      "explanation": "答案来自本地百度网盘 2021 考研政治真题及解析 PDF 第 1-14 页逐题解析；部分解析页选项顺序与试卷 PDF 不一致，题库已按选项内容映射回试卷原页字母。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2021/paper-page-06.jpg",
+          "caption": "试卷原页 p.6",
+          "alt": "2021考研政治试卷原页 p.6"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2021/answer-page-13.jpg",
+          "caption": "答案原页 p.13",
+          "alt": "2021考研政治答案原页 p.13"
+        },
+        {
+          "src": "question-bank/politics-2021/answer-page-14.jpg",
+          "caption": "答案原页 p.14",
+          "alt": "2021考研政治答案原页 p.14"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2021",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2021-paper-answer",
+      "sourceEvidenceId": "politics-2021-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:2424f2ac8a72f3a61b405b0620f32c27e9ce386a085ae63466c4588636a95a95",
+      "answerTextHash": "sha256:da8c3ca97e0d81c718be632516ced8283113f8f2c867ae0ab079756d27a5b762",
+      "sourceEvidence": {
+        "evidenceId": "politics-2021-q32",
+        "sourceId": "src_88c0d6500b6ecf15d237f76b",
+        "answerSourceId": "src_a6fd115071cc943f911cf82e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2021-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:2424f2ac8a72f3a61b405b0620f32c27e9ce386a085ae63466c4588636a95a95",
+        "answerTextHash": "sha256:da8c3ca97e0d81c718be632516ced8283113f8f2c867ae0ab079756d27a5b762"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_a6fd115071cc943f911cf82e",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2021/2021-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:da8c3ca97e0d81c718be632516ced8283113f8f2c867ae0ab079756d27a5b762",
+        "method": "local_pdf_ocr_located_page_image_with_option_order_mapping",
+        "verifiedBy": "build_politics_2021_bank",
+        "note": "Matched against local Baidu Netdisk 2021 Politics paper-answer PDF and mapped to the standalone paper PDF option order when the answer PDF reordered options."
+      }
+    },
+    {
+      "id": "politics-2021-033",
+      "number": 33,
+      "paperId": "politics-2021",
+      "paperName": "2021考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2021",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2021考研政治第33题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ACD",
+      "explanation": "答案来自本地百度网盘 2021 考研政治真题及解析 PDF 第 1-14 页逐题解析；部分解析页选项顺序与试卷 PDF 不一致，题库已按选项内容映射回试卷原页字母。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2021/paper-page-06.jpg",
+          "caption": "试卷原页 p.6",
+          "alt": "2021考研政治试卷原页 p.6"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2021/answer-page-14.jpg",
+          "caption": "答案原页 p.14",
+          "alt": "2021考研政治答案原页 p.14"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2021",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2021-paper-answer",
+      "sourceEvidenceId": "politics-2021-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:839f7144e148f2c7997387e9fe93a95fda128577f338d005eef497b5eb911597",
+      "answerTextHash": "sha256:1f312e26ad104e0697f595c1cb179e2d1b612971adbbd4e4c99f586c8b3a5655",
+      "sourceEvidence": {
+        "evidenceId": "politics-2021-q33",
+        "sourceId": "src_88c0d6500b6ecf15d237f76b",
+        "answerSourceId": "src_a6fd115071cc943f911cf82e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2021-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:839f7144e148f2c7997387e9fe93a95fda128577f338d005eef497b5eb911597",
+        "answerTextHash": "sha256:1f312e26ad104e0697f595c1cb179e2d1b612971adbbd4e4c99f586c8b3a5655"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_a6fd115071cc943f911cf82e",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2021/2021-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:1f312e26ad104e0697f595c1cb179e2d1b612971adbbd4e4c99f586c8b3a5655",
+        "method": "local_pdf_ocr_located_page_image_with_option_order_mapping",
+        "verifiedBy": "build_politics_2021_bank",
+        "note": "Matched against local Baidu Netdisk 2021 Politics paper-answer PDF and mapped to the standalone paper PDF option order when the answer PDF reordered options."
+      }
+    },
+    {
+      "id": "politics-2021-034",
+      "number": 34,
+      "paperId": "politics-2021",
+      "paperName": "2021考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2021",
+      "section": "分析题",
+      "type": "analysis",
+      "question": "2021考研政治第34题（分析题）。题干、选项和材料以试卷原页图为准。",
+      "options": [],
+      "answer": "分析题参考答案要点见答案原页 p.14-p.15。",
+      "explanation": "参考答案来自本地百度网盘 2021 考研政治真题及解析 PDF；完整答案要点见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2021/paper-page-06.jpg",
+          "caption": "试卷原页 p.6",
+          "alt": "2021考研政治试卷原页 p.6"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2021/answer-page-14.jpg",
+          "caption": "答案原页 p.14",
+          "alt": "2021考研政治答案原页 p.14"
+        },
+        {
+          "src": "question-bank/politics-2021/answer-page-15.jpg",
+          "caption": "答案原页 p.15",
+          "alt": "2021考研政治答案原页 p.15"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2021",
+        "分析题"
+      ],
+      "difficulty": 3,
+      "source": "politics-2021-paper-answer",
+      "sourceEvidenceId": "politics-2021-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:887466ca1f01084615d069249fd89f5df443530d684bf153d6dea844b1b2efe3",
+      "answerTextHash": "sha256:12f585d9327672762b1ba03d1a0d969cea58e8817ed98ff2ba83215b75d90c04",
+      "sourceEvidence": {
+        "evidenceId": "politics-2021-q34",
+        "sourceId": "src_88c0d6500b6ecf15d237f76b",
+        "answerSourceId": "src_a6fd115071cc943f911cf82e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2021-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:887466ca1f01084615d069249fd89f5df443530d684bf153d6dea844b1b2efe3",
+        "answerTextHash": "sha256:12f585d9327672762b1ba03d1a0d969cea58e8817ed98ff2ba83215b75d90c04"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_reference_answer",
+        "sourceId": "src_a6fd115071cc943f911cf82e",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2021/2021-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:12f585d9327672762b1ba03d1a0d969cea58e8817ed98ff2ba83215b75d90c04",
+        "method": "local_pdf_ocr_located_page_image_with_option_order_mapping",
+        "verifiedBy": "build_politics_2021_bank",
+        "note": "Matched against local Baidu Netdisk 2021 Politics paper-answer PDF and mapped to the standalone paper PDF option order when the answer PDF reordered options."
+      }
+    },
+    {
+      "id": "politics-2021-035",
+      "number": 35,
+      "paperId": "politics-2021",
+      "paperName": "2021考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2021",
+      "section": "分析题",
+      "type": "analysis",
+      "question": "2021考研政治第35题（分析题）。题干、选项和材料以试卷原页图为准。",
+      "options": [],
+      "answer": "分析题参考答案要点见答案原页 p.15-p.17。",
+      "explanation": "参考答案来自本地百度网盘 2021 考研政治真题及解析 PDF；完整答案要点见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2021/paper-page-07.jpg",
+          "caption": "试卷原页 p.7",
+          "alt": "2021考研政治试卷原页 p.7"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2021/answer-page-15.jpg",
+          "caption": "答案原页 p.15",
+          "alt": "2021考研政治答案原页 p.15"
+        },
+        {
+          "src": "question-bank/politics-2021/answer-page-16.jpg",
+          "caption": "答案原页 p.16",
+          "alt": "2021考研政治答案原页 p.16"
+        },
+        {
+          "src": "question-bank/politics-2021/answer-page-17.jpg",
+          "caption": "答案原页 p.17",
+          "alt": "2021考研政治答案原页 p.17"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2021",
+        "分析题"
+      ],
+      "difficulty": 3,
+      "source": "politics-2021-paper-answer",
+      "sourceEvidenceId": "politics-2021-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:e735708b76674babdec2d4a0fe8c0ada28414d13055b6e716ca43d8f74114026",
+      "answerTextHash": "sha256:c5912e403eabe21197a9a40caeb1277ae5abe455cdcd613d71807af7f78421e2",
+      "sourceEvidence": {
+        "evidenceId": "politics-2021-q35",
+        "sourceId": "src_88c0d6500b6ecf15d237f76b",
+        "answerSourceId": "src_a6fd115071cc943f911cf82e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2021-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:e735708b76674babdec2d4a0fe8c0ada28414d13055b6e716ca43d8f74114026",
+        "answerTextHash": "sha256:c5912e403eabe21197a9a40caeb1277ae5abe455cdcd613d71807af7f78421e2"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_reference_answer",
+        "sourceId": "src_a6fd115071cc943f911cf82e",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2021/2021-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:c5912e403eabe21197a9a40caeb1277ae5abe455cdcd613d71807af7f78421e2",
+        "method": "local_pdf_ocr_located_page_image_with_option_order_mapping",
+        "verifiedBy": "build_politics_2021_bank",
+        "note": "Matched against local Baidu Netdisk 2021 Politics paper-answer PDF and mapped to the standalone paper PDF option order when the answer PDF reordered options."
+      }
+    },
+    {
+      "id": "politics-2021-036",
+      "number": 36,
+      "paperId": "politics-2021",
+      "paperName": "2021考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2021",
+      "section": "分析题",
+      "type": "analysis",
+      "question": "2021考研政治第36题（分析题）。题干、选项和材料以试卷原页图为准。",
+      "options": [],
+      "answer": "分析题参考答案要点见答案原页 p.17-p.18。",
+      "explanation": "参考答案来自本地百度网盘 2021 考研政治真题及解析 PDF；完整答案要点见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2021/paper-page-08.jpg",
+          "caption": "试卷原页 p.8",
+          "alt": "2021考研政治试卷原页 p.8"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2021/answer-page-17.jpg",
+          "caption": "答案原页 p.17",
+          "alt": "2021考研政治答案原页 p.17"
+        },
+        {
+          "src": "question-bank/politics-2021/answer-page-18.jpg",
+          "caption": "答案原页 p.18",
+          "alt": "2021考研政治答案原页 p.18"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2021",
+        "分析题"
+      ],
+      "difficulty": 3,
+      "source": "politics-2021-paper-answer",
+      "sourceEvidenceId": "politics-2021-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:0e41b37a4c1c8f0ac1a5064f12ca8913801d80846e818bb62dfc349070c3403b",
+      "answerTextHash": "sha256:84739af354cbf42d7522d9ad34b602925874db684aeed893107af4accca56cad",
+      "sourceEvidence": {
+        "evidenceId": "politics-2021-q36",
+        "sourceId": "src_88c0d6500b6ecf15d237f76b",
+        "answerSourceId": "src_a6fd115071cc943f911cf82e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2021-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:0e41b37a4c1c8f0ac1a5064f12ca8913801d80846e818bb62dfc349070c3403b",
+        "answerTextHash": "sha256:84739af354cbf42d7522d9ad34b602925874db684aeed893107af4accca56cad"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_reference_answer",
+        "sourceId": "src_a6fd115071cc943f911cf82e",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2021/2021-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:84739af354cbf42d7522d9ad34b602925874db684aeed893107af4accca56cad",
+        "method": "local_pdf_ocr_located_page_image_with_option_order_mapping",
+        "verifiedBy": "build_politics_2021_bank",
+        "note": "Matched against local Baidu Netdisk 2021 Politics paper-answer PDF and mapped to the standalone paper PDF option order when the answer PDF reordered options."
+      }
+    },
+    {
+      "id": "politics-2021-037",
+      "number": 37,
+      "paperId": "politics-2021",
+      "paperName": "2021考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2021",
+      "section": "分析题",
+      "type": "analysis",
+      "question": "2021考研政治第37题（分析题）。题干、选项和材料以试卷原页图为准。",
+      "options": [],
+      "answer": "分析题参考答案要点见答案原页 p.18-p.19。",
+      "explanation": "参考答案来自本地百度网盘 2021 考研政治真题及解析 PDF；完整答案要点见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2021/paper-page-09.jpg",
+          "caption": "试卷原页 p.9",
+          "alt": "2021考研政治试卷原页 p.9"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2021/answer-page-18.jpg",
+          "caption": "答案原页 p.18",
+          "alt": "2021考研政治答案原页 p.18"
+        },
+        {
+          "src": "question-bank/politics-2021/answer-page-19.jpg",
+          "caption": "答案原页 p.19",
+          "alt": "2021考研政治答案原页 p.19"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2021",
+        "分析题"
+      ],
+      "difficulty": 3,
+      "source": "politics-2021-paper-answer",
+      "sourceEvidenceId": "politics-2021-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:dfca533369c65d95d7be7a7862d408ba44b6d230285afe9b0afd88c285b06793",
+      "answerTextHash": "sha256:c9d20e4424fcdbb5832e42eb86f00d8bd34bc883dca92b5f8d99bd6c54c7eb90",
+      "sourceEvidence": {
+        "evidenceId": "politics-2021-q37",
+        "sourceId": "src_88c0d6500b6ecf15d237f76b",
+        "answerSourceId": "src_a6fd115071cc943f911cf82e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2021-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:dfca533369c65d95d7be7a7862d408ba44b6d230285afe9b0afd88c285b06793",
+        "answerTextHash": "sha256:c9d20e4424fcdbb5832e42eb86f00d8bd34bc883dca92b5f8d99bd6c54c7eb90"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_reference_answer",
+        "sourceId": "src_a6fd115071cc943f911cf82e",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2021/2021-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:c9d20e4424fcdbb5832e42eb86f00d8bd34bc883dca92b5f8d99bd6c54c7eb90",
+        "method": "local_pdf_ocr_located_page_image_with_option_order_mapping",
+        "verifiedBy": "build_politics_2021_bank",
+        "note": "Matched against local Baidu Netdisk 2021 Politics paper-answer PDF and mapped to the standalone paper PDF option order when the answer PDF reordered options."
+      }
+    },
+    {
+      "id": "politics-2021-038",
+      "number": 38,
+      "paperId": "politics-2021",
+      "paperName": "2021考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2021",
+      "section": "分析题",
+      "type": "analysis",
+      "question": "2021考研政治第38题（分析题）。题干、选项和材料以试卷原页图为准。",
+      "options": [],
+      "answer": "分析题参考答案要点见答案原页 p.19-p.20。",
+      "explanation": "参考答案来自本地百度网盘 2021 考研政治真题及解析 PDF；完整答案要点见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2021/paper-page-10.jpg",
+          "caption": "试卷原页 p.10",
+          "alt": "2021考研政治试卷原页 p.10"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2021/answer-page-19.jpg",
+          "caption": "答案原页 p.19",
+          "alt": "2021考研政治答案原页 p.19"
+        },
+        {
+          "src": "question-bank/politics-2021/answer-page-20.jpg",
+          "caption": "答案原页 p.20",
+          "alt": "2021考研政治答案原页 p.20"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2021",
+        "分析题"
+      ],
+      "difficulty": 3,
+      "source": "politics-2021-paper-answer",
+      "sourceEvidenceId": "politics-2021-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:92ed294ca70930baa74f83a55795d2fe44bba5cf263919aa817f94349798c73f",
+      "answerTextHash": "sha256:5c0846fe8ebb839081650284f3e8fe4578fce64accda9ff6c542c5bb58a4ab06",
+      "sourceEvidence": {
+        "evidenceId": "politics-2021-q38",
+        "sourceId": "src_88c0d6500b6ecf15d237f76b",
+        "answerSourceId": "src_a6fd115071cc943f911cf82e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2021-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:92ed294ca70930baa74f83a55795d2fe44bba5cf263919aa817f94349798c73f",
+        "answerTextHash": "sha256:5c0846fe8ebb839081650284f3e8fe4578fce64accda9ff6c542c5bb58a4ab06"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_reference_answer",
+        "sourceId": "src_a6fd115071cc943f911cf82e",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2021/2021-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:5c0846fe8ebb839081650284f3e8fe4578fce64accda9ff6c542c5bb58a4ab06",
+        "method": "local_pdf_ocr_located_page_image_with_option_order_mapping",
+        "verifiedBy": "build_politics_2021_bank",
+        "note": "Matched against local Baidu Netdisk 2021 Politics paper-answer PDF and mapped to the standalone paper PDF option order when the answer PDF reordered options."
+      }
+    }
+  ]
+}
