@@ -53,7 +53,7 @@ function verifiedEnglish1Bank(year) {
 
 // 题库注册表（懒加载，用到时才import）
 const BANK_REGISTRY = [
-  ...[2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014].map(verifiedEnglish1Bank),
+  ...[2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015].map(verifiedEnglish1Bank),
   {
     id: 'english1-2001',
     subject: '英语',
