@@ -1,0 +1,2995 @@
+{
+  "id": "politics-2013",
+  "source": "politics-2013-paper-answer",
+  "paperId": "politics-2013",
+  "paperName": "2013考研政治真题",
+  "subject": "政治",
+  "subjectKey": "politics",
+  "track": "politics",
+  "year": "2013",
+  "quality": "ready",
+  "publicationStatus": "published",
+  "publicationBlockers": [],
+  "sourceEvidencePolicy": "baidu_netdisk_official_paper_pdf_page_image_v1",
+  "sourceFiles": [
+    {
+      "id": "politics-2013-paper-answer",
+      "sourceId": "src_fdc02f653f8f006045eb5242",
+      "role": "paper_answer",
+      "localPath": "data/raw-inbox/public-course-history/politics/2013/2013-politics-paper-answer.pdf",
+      "sha256": "sha256:f2813b988cb952eed197411e2b302f4c876be6aeaef128440c63fc07210db378"
+    }
+  ],
+  "sourceNotes": [
+    "The 2013 combined paper-answer PDF embeds the choice answers inline and contains analysis answer points. The standalone paper PDF has a different option order for at least question 1, so this bank keeps all release evidence on the same combined PDF."
+  ],
+  "assetRoot": "question-bank/politics-2013",
+  "processed_at": "2026-05-27T03:26:03Z",
+  "total_cards": 38,
+  "sections": [
+    "单项选择",
+    "多项选择",
+    "分析题"
+  ],
+  "cards": [
+    {
+      "id": "politics-2013-001",
+      "number": 1,
+      "paperId": "politics-2013",
+      "paperName": "2013考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2013",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2013考研政治第1题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2013 考研政治真题及参考答案 PDF 内嵌答案；题面和选项以同一 PDF 原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2013/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2013考研政治试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2013/paper-page-01.jpg",
+          "caption": "答案原页 p.1",
+          "alt": "2013考研政治答案原页 p.1"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2013",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2013-paper-answer",
+      "sourceEvidenceId": "politics-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:682c5259638616447c10b8eb22fffaf339e2a7b792034791a738f7a182051972",
+      "answerTextHash": "sha256:898dfe56ec6417a9e4a63fc7181aef05836cf09e0853e5590478456c77a1bb03",
+      "sourceEvidence": {
+        "evidenceId": "politics-2013-q01",
+        "sourceId": "src_fdc02f653f8f006045eb5242",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:682c5259638616447c10b8eb22fffaf339e2a7b792034791a738f7a182051972",
+        "answerTextHash": "sha256:898dfe56ec6417a9e4a63fc7181aef05836cf09e0853e5590478456c77a1bb03"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_fdc02f653f8f006045eb5242",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2013/2013-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:898dfe56ec6417a9e4a63fc7181aef05836cf09e0853e5590478456c77a1bb03",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2013_bank",
+        "note": "Matched against the same local Baidu Netdisk 2013 Politics paper-answer PDF; standalone paper PDF was not mixed because its option order differs."
+      }
+    },
+    {
+      "id": "politics-2013-002",
+      "number": 2,
+      "paperId": "politics-2013",
+      "paperName": "2013考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2013",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2013考研政治第2题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2013 考研政治真题及参考答案 PDF 内嵌答案；题面和选项以同一 PDF 原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2013/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2013考研政治试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2013/paper-page-01.jpg",
+          "caption": "答案原页 p.1",
+          "alt": "2013考研政治答案原页 p.1"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2013",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2013-paper-answer",
+      "sourceEvidenceId": "politics-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:4ce8950a8139a272c7ecf1314333c3c37c56cd7b46d4ed58fe0eaf4f85f30880",
+      "answerTextHash": "sha256:1e0fb90153fd754d20abf4acce9f6720b52b42a6dbf3fe2f14c1028ea903701f",
+      "sourceEvidence": {
+        "evidenceId": "politics-2013-q02",
+        "sourceId": "src_fdc02f653f8f006045eb5242",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:4ce8950a8139a272c7ecf1314333c3c37c56cd7b46d4ed58fe0eaf4f85f30880",
+        "answerTextHash": "sha256:1e0fb90153fd754d20abf4acce9f6720b52b42a6dbf3fe2f14c1028ea903701f"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_fdc02f653f8f006045eb5242",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2013/2013-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:1e0fb90153fd754d20abf4acce9f6720b52b42a6dbf3fe2f14c1028ea903701f",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2013_bank",
+        "note": "Matched against the same local Baidu Netdisk 2013 Politics paper-answer PDF; standalone paper PDF was not mixed because its option order differs."
+      }
+    },
+    {
+      "id": "politics-2013-003",
+      "number": 3,
+      "paperId": "politics-2013",
+      "paperName": "2013考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2013",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2013考研政治第3题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2013 考研政治真题及参考答案 PDF 内嵌答案；题面和选项以同一 PDF 原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2013/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2013考研政治试卷原页 p.1"
+        },
+        {
+          "src": "question-bank/politics-2013/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2013考研政治试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2013/paper-page-02.jpg",
+          "caption": "答案原页 p.2",
+          "alt": "2013考研政治答案原页 p.2"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2013",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2013-paper-answer",
+      "sourceEvidenceId": "politics-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:630911b907106eab09ec1603b519f2c5979455308c0d2a839c5adab1faa7b87c",
+      "answerTextHash": "sha256:676f513272f2e333598bd9369415789f5f816ae6a3759bcc8961ebfb350a34b2",
+      "sourceEvidence": {
+        "evidenceId": "politics-2013-q03",
+        "sourceId": "src_fdc02f653f8f006045eb5242",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:630911b907106eab09ec1603b519f2c5979455308c0d2a839c5adab1faa7b87c",
+        "answerTextHash": "sha256:676f513272f2e333598bd9369415789f5f816ae6a3759bcc8961ebfb350a34b2"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_fdc02f653f8f006045eb5242",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2013/2013-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:676f513272f2e333598bd9369415789f5f816ae6a3759bcc8961ebfb350a34b2",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2013_bank",
+        "note": "Matched against the same local Baidu Netdisk 2013 Politics paper-answer PDF; standalone paper PDF was not mixed because its option order differs."
+      }
+    },
+    {
+      "id": "politics-2013-004",
+      "number": 4,
+      "paperId": "politics-2013",
+      "paperName": "2013考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2013",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2013考研政治第4题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2013 考研政治真题及参考答案 PDF 内嵌答案；题面和选项以同一 PDF 原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2013/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2013考研政治试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2013/paper-page-02.jpg",
+          "caption": "答案原页 p.2",
+          "alt": "2013考研政治答案原页 p.2"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2013",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2013-paper-answer",
+      "sourceEvidenceId": "politics-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:0c33765ef9b661f1374f1d4040fcd03a34ec8b3fd2fc71c7f4953bdbd8fedbec",
+      "answerTextHash": "sha256:988f0b57363bc9eb4a3739d0f1cfc3a27e6ffe285a76e0aefc5e0176a5fa4506",
+      "sourceEvidence": {
+        "evidenceId": "politics-2013-q04",
+        "sourceId": "src_fdc02f653f8f006045eb5242",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:0c33765ef9b661f1374f1d4040fcd03a34ec8b3fd2fc71c7f4953bdbd8fedbec",
+        "answerTextHash": "sha256:988f0b57363bc9eb4a3739d0f1cfc3a27e6ffe285a76e0aefc5e0176a5fa4506"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_fdc02f653f8f006045eb5242",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2013/2013-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:988f0b57363bc9eb4a3739d0f1cfc3a27e6ffe285a76e0aefc5e0176a5fa4506",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2013_bank",
+        "note": "Matched against the same local Baidu Netdisk 2013 Politics paper-answer PDF; standalone paper PDF was not mixed because its option order differs."
+      }
+    },
+    {
+      "id": "politics-2013-005",
+      "number": 5,
+      "paperId": "politics-2013",
+      "paperName": "2013考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2013",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2013考研政治第5题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2013 考研政治真题及参考答案 PDF 内嵌答案；题面和选项以同一 PDF 原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2013/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2013考研政治试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2013/paper-page-02.jpg",
+          "caption": "答案原页 p.2",
+          "alt": "2013考研政治答案原页 p.2"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2013",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2013-paper-answer",
+      "sourceEvidenceId": "politics-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:9059e5b1acb3d62c7e4e926b3000ca5b7726df55eecab50ac16fb67e3cf474cc",
+      "answerTextHash": "sha256:45caa87806081b2e5522d4efd653b8ac78ade52efa328931abce94987694589d",
+      "sourceEvidence": {
+        "evidenceId": "politics-2013-q05",
+        "sourceId": "src_fdc02f653f8f006045eb5242",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:9059e5b1acb3d62c7e4e926b3000ca5b7726df55eecab50ac16fb67e3cf474cc",
+        "answerTextHash": "sha256:45caa87806081b2e5522d4efd653b8ac78ade52efa328931abce94987694589d"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_fdc02f653f8f006045eb5242",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2013/2013-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:45caa87806081b2e5522d4efd653b8ac78ade52efa328931abce94987694589d",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2013_bank",
+        "note": "Matched against the same local Baidu Netdisk 2013 Politics paper-answer PDF; standalone paper PDF was not mixed because its option order differs."
+      }
+    },
+    {
+      "id": "politics-2013-006",
+      "number": 6,
+      "paperId": "politics-2013",
+      "paperName": "2013考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2013",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2013考研政治第6题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2013 考研政治真题及参考答案 PDF 内嵌答案；题面和选项以同一 PDF 原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2013/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2013考研政治试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2013/paper-page-02.jpg",
+          "caption": "答案原页 p.2",
+          "alt": "2013考研政治答案原页 p.2"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2013",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2013-paper-answer",
+      "sourceEvidenceId": "politics-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:2e662a40b6ec9dfd9cd123dddeebeda56710d993e974e89ec28e189b32ab2cd7",
+      "answerTextHash": "sha256:676f513272f2e333598bd9369415789f5f816ae6a3759bcc8961ebfb350a34b2",
+      "sourceEvidence": {
+        "evidenceId": "politics-2013-q06",
+        "sourceId": "src_fdc02f653f8f006045eb5242",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:2e662a40b6ec9dfd9cd123dddeebeda56710d993e974e89ec28e189b32ab2cd7",
+        "answerTextHash": "sha256:676f513272f2e333598bd9369415789f5f816ae6a3759bcc8961ebfb350a34b2"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_fdc02f653f8f006045eb5242",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2013/2013-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:676f513272f2e333598bd9369415789f5f816ae6a3759bcc8961ebfb350a34b2",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2013_bank",
+        "note": "Matched against the same local Baidu Netdisk 2013 Politics paper-answer PDF; standalone paper PDF was not mixed because its option order differs."
+      }
+    },
+    {
+      "id": "politics-2013-007",
+      "number": 7,
+      "paperId": "politics-2013",
+      "paperName": "2013考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2013",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2013考研政治第7题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2013 考研政治真题及参考答案 PDF 内嵌答案；题面和选项以同一 PDF 原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2013/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2013考研政治试卷原页 p.2"
+        },
+        {
+          "src": "question-bank/politics-2013/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2013考研政治试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2013/paper-page-03.jpg",
+          "caption": "答案原页 p.3",
+          "alt": "2013考研政治答案原页 p.3"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2013",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2013-paper-answer",
+      "sourceEvidenceId": "politics-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:123f2b0ae2bda2bb61b2fd4ef0800669251d24deabf7807e0f7a48a64d3388db",
+      "answerTextHash": "sha256:d866e836985ed7768dc852c419b0a0639c82cacb8d95deefa5b819c51e3d3918",
+      "sourceEvidence": {
+        "evidenceId": "politics-2013-q07",
+        "sourceId": "src_fdc02f653f8f006045eb5242",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:123f2b0ae2bda2bb61b2fd4ef0800669251d24deabf7807e0f7a48a64d3388db",
+        "answerTextHash": "sha256:d866e836985ed7768dc852c419b0a0639c82cacb8d95deefa5b819c51e3d3918"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_fdc02f653f8f006045eb5242",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2013/2013-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:d866e836985ed7768dc852c419b0a0639c82cacb8d95deefa5b819c51e3d3918",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2013_bank",
+        "note": "Matched against the same local Baidu Netdisk 2013 Politics paper-answer PDF; standalone paper PDF was not mixed because its option order differs."
+      }
+    },
+    {
+      "id": "politics-2013-008",
+      "number": 8,
+      "paperId": "politics-2013",
+      "paperName": "2013考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2013",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2013考研政治第8题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2013 考研政治真题及参考答案 PDF 内嵌答案；题面和选项以同一 PDF 原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2013/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2013考研政治试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2013/paper-page-03.jpg",
+          "caption": "答案原页 p.3",
+          "alt": "2013考研政治答案原页 p.3"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2013",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2013-paper-answer",
+      "sourceEvidenceId": "politics-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:e26485e2bee1d403b148bd1dfe07ca4d04656821eaa3dde6e68cbda7c39e1a2f",
+      "answerTextHash": "sha256:0634ab203034f2c6374f15232206073cecbf4e9adb5bc8e37d45b9853b7f2948",
+      "sourceEvidence": {
+        "evidenceId": "politics-2013-q08",
+        "sourceId": "src_fdc02f653f8f006045eb5242",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:e26485e2bee1d403b148bd1dfe07ca4d04656821eaa3dde6e68cbda7c39e1a2f",
+        "answerTextHash": "sha256:0634ab203034f2c6374f15232206073cecbf4e9adb5bc8e37d45b9853b7f2948"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_fdc02f653f8f006045eb5242",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2013/2013-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:0634ab203034f2c6374f15232206073cecbf4e9adb5bc8e37d45b9853b7f2948",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2013_bank",
+        "note": "Matched against the same local Baidu Netdisk 2013 Politics paper-answer PDF; standalone paper PDF was not mixed because its option order differs."
+      }
+    },
+    {
+      "id": "politics-2013-009",
+      "number": 9,
+      "paperId": "politics-2013",
+      "paperName": "2013考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2013",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2013考研政治第9题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2013 考研政治真题及参考答案 PDF 内嵌答案；题面和选项以同一 PDF 原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2013/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2013考研政治试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2013/paper-page-03.jpg",
+          "caption": "答案原页 p.3",
+          "alt": "2013考研政治答案原页 p.3"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2013",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2013-paper-answer",
+      "sourceEvidenceId": "politics-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:cdea3d549526a57c4996eb421f4e931cffe2d0dfa3b44afa640fa9e1b309f533",
+      "answerTextHash": "sha256:5366ae6fcc40a373c1eeff09793d22cc71b498d1a32633f1bdb78e984a2ac883",
+      "sourceEvidence": {
+        "evidenceId": "politics-2013-q09",
+        "sourceId": "src_fdc02f653f8f006045eb5242",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:cdea3d549526a57c4996eb421f4e931cffe2d0dfa3b44afa640fa9e1b309f533",
+        "answerTextHash": "sha256:5366ae6fcc40a373c1eeff09793d22cc71b498d1a32633f1bdb78e984a2ac883"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_fdc02f653f8f006045eb5242",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2013/2013-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:5366ae6fcc40a373c1eeff09793d22cc71b498d1a32633f1bdb78e984a2ac883",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2013_bank",
+        "note": "Matched against the same local Baidu Netdisk 2013 Politics paper-answer PDF; standalone paper PDF was not mixed because its option order differs."
+      }
+    },
+    {
+      "id": "politics-2013-010",
+      "number": 10,
+      "paperId": "politics-2013",
+      "paperName": "2013考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2013",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2013考研政治第10题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2013 考研政治真题及参考答案 PDF 内嵌答案；题面和选项以同一 PDF 原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2013/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2013考研政治试卷原页 p.3"
+        },
+        {
+          "src": "question-bank/politics-2013/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2013考研政治试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2013/paper-page-04.jpg",
+          "caption": "答案原页 p.4",
+          "alt": "2013考研政治答案原页 p.4"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2013",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2013-paper-answer",
+      "sourceEvidenceId": "politics-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:2e487a30a831fca7428d487a15d824bca997d8e8f52bdc01f2da5b4ce78a86aa",
+      "answerTextHash": "sha256:f36726feabe52ef14a5e320e57edccaf7bbc581ae42114d461b83545ac4c6e1f",
+      "sourceEvidence": {
+        "evidenceId": "politics-2013-q10",
+        "sourceId": "src_fdc02f653f8f006045eb5242",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:2e487a30a831fca7428d487a15d824bca997d8e8f52bdc01f2da5b4ce78a86aa",
+        "answerTextHash": "sha256:f36726feabe52ef14a5e320e57edccaf7bbc581ae42114d461b83545ac4c6e1f"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_fdc02f653f8f006045eb5242",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2013/2013-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:f36726feabe52ef14a5e320e57edccaf7bbc581ae42114d461b83545ac4c6e1f",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2013_bank",
+        "note": "Matched against the same local Baidu Netdisk 2013 Politics paper-answer PDF; standalone paper PDF was not mixed because its option order differs."
+      }
+    },
+    {
+      "id": "politics-2013-011",
+      "number": 11,
+      "paperId": "politics-2013",
+      "paperName": "2013考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2013",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2013考研政治第11题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2013 考研政治真题及参考答案 PDF 内嵌答案；题面和选项以同一 PDF 原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2013/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2013考研政治试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2013/paper-page-04.jpg",
+          "caption": "答案原页 p.4",
+          "alt": "2013考研政治答案原页 p.4"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2013",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2013-paper-answer",
+      "sourceEvidenceId": "politics-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:4763294623c031d9e296f42f2bb07a7adb2acdffb71050ad85127b48bea99b26",
+      "answerTextHash": "sha256:280315c20ba2e035785711fe9db555cb2d7482b9c3a74a60c6bb6324c86f8949",
+      "sourceEvidence": {
+        "evidenceId": "politics-2013-q11",
+        "sourceId": "src_fdc02f653f8f006045eb5242",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:4763294623c031d9e296f42f2bb07a7adb2acdffb71050ad85127b48bea99b26",
+        "answerTextHash": "sha256:280315c20ba2e035785711fe9db555cb2d7482b9c3a74a60c6bb6324c86f8949"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_fdc02f653f8f006045eb5242",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2013/2013-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:280315c20ba2e035785711fe9db555cb2d7482b9c3a74a60c6bb6324c86f8949",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2013_bank",
+        "note": "Matched against the same local Baidu Netdisk 2013 Politics paper-answer PDF; standalone paper PDF was not mixed because its option order differs."
+      }
+    },
+    {
+      "id": "politics-2013-012",
+      "number": 12,
+      "paperId": "politics-2013",
+      "paperName": "2013考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2013",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2013考研政治第12题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2013 考研政治真题及参考答案 PDF 内嵌答案；题面和选项以同一 PDF 原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2013/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2013考研政治试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2013/paper-page-04.jpg",
+          "caption": "答案原页 p.4",
+          "alt": "2013考研政治答案原页 p.4"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2013",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2013-paper-answer",
+      "sourceEvidenceId": "politics-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:5448367f28630d8a32452a492e2a70946da8d783e049c9086dd6ffec9b8a0d52",
+      "answerTextHash": "sha256:be7ce7e229c32ee84e51a8b798c26849f35867ddf614c33bfa7cb142239e5846",
+      "sourceEvidence": {
+        "evidenceId": "politics-2013-q12",
+        "sourceId": "src_fdc02f653f8f006045eb5242",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:5448367f28630d8a32452a492e2a70946da8d783e049c9086dd6ffec9b8a0d52",
+        "answerTextHash": "sha256:be7ce7e229c32ee84e51a8b798c26849f35867ddf614c33bfa7cb142239e5846"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_fdc02f653f8f006045eb5242",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2013/2013-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:be7ce7e229c32ee84e51a8b798c26849f35867ddf614c33bfa7cb142239e5846",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2013_bank",
+        "note": "Matched against the same local Baidu Netdisk 2013 Politics paper-answer PDF; standalone paper PDF was not mixed because its option order differs."
+      }
+    },
+    {
+      "id": "politics-2013-013",
+      "number": 13,
+      "paperId": "politics-2013",
+      "paperName": "2013考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2013",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2013考研政治第13题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2013 考研政治真题及参考答案 PDF 内嵌答案；题面和选项以同一 PDF 原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2013/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2013考研政治试卷原页 p.4"
+        },
+        {
+          "src": "question-bank/politics-2013/paper-page-05.jpg",
+          "caption": "试卷原页 p.5",
+          "alt": "2013考研政治试卷原页 p.5"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2013/paper-page-05.jpg",
+          "caption": "答案原页 p.5",
+          "alt": "2013考研政治答案原页 p.5"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2013",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2013-paper-answer",
+      "sourceEvidenceId": "politics-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:71c005c01e103cc746e817572c0f2e9cef6ac65c5b010c8b02f0503303db2011",
+      "answerTextHash": "sha256:e7e010b539bdaf68c1edd4ffcefb6fb1a2f2c5cf47bdca5bc27035c7b16dcdbb",
+      "sourceEvidence": {
+        "evidenceId": "politics-2013-q13",
+        "sourceId": "src_fdc02f653f8f006045eb5242",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:71c005c01e103cc746e817572c0f2e9cef6ac65c5b010c8b02f0503303db2011",
+        "answerTextHash": "sha256:e7e010b539bdaf68c1edd4ffcefb6fb1a2f2c5cf47bdca5bc27035c7b16dcdbb"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_fdc02f653f8f006045eb5242",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2013/2013-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:e7e010b539bdaf68c1edd4ffcefb6fb1a2f2c5cf47bdca5bc27035c7b16dcdbb",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2013_bank",
+        "note": "Matched against the same local Baidu Netdisk 2013 Politics paper-answer PDF; standalone paper PDF was not mixed because its option order differs."
+      }
+    },
+    {
+      "id": "politics-2013-014",
+      "number": 14,
+      "paperId": "politics-2013",
+      "paperName": "2013考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2013",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2013考研政治第14题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2013 考研政治真题及参考答案 PDF 内嵌答案；题面和选项以同一 PDF 原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2013/paper-page-05.jpg",
+          "caption": "试卷原页 p.5",
+          "alt": "2013考研政治试卷原页 p.5"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2013/paper-page-05.jpg",
+          "caption": "答案原页 p.5",
+          "alt": "2013考研政治答案原页 p.5"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2013",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2013-paper-answer",
+      "sourceEvidenceId": "politics-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:c07f707711220e8d582569e9ceb1b75f9ce61ba2b2514025c2c13e1b32725aae",
+      "answerTextHash": "sha256:088c3f851ea993310444f5d2947ebd796c98458b65bda634b422b5b6188bca7d",
+      "sourceEvidence": {
+        "evidenceId": "politics-2013-q14",
+        "sourceId": "src_fdc02f653f8f006045eb5242",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:c07f707711220e8d582569e9ceb1b75f9ce61ba2b2514025c2c13e1b32725aae",
+        "answerTextHash": "sha256:088c3f851ea993310444f5d2947ebd796c98458b65bda634b422b5b6188bca7d"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_fdc02f653f8f006045eb5242",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2013/2013-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:088c3f851ea993310444f5d2947ebd796c98458b65bda634b422b5b6188bca7d",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2013_bank",
+        "note": "Matched against the same local Baidu Netdisk 2013 Politics paper-answer PDF; standalone paper PDF was not mixed because its option order differs."
+      }
+    },
+    {
+      "id": "politics-2013-015",
+      "number": 15,
+      "paperId": "politics-2013",
+      "paperName": "2013考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2013",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2013考研政治第15题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2013 考研政治真题及参考答案 PDF 内嵌答案；题面和选项以同一 PDF 原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2013/paper-page-05.jpg",
+          "caption": "试卷原页 p.5",
+          "alt": "2013考研政治试卷原页 p.5"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2013/paper-page-05.jpg",
+          "caption": "答案原页 p.5",
+          "alt": "2013考研政治答案原页 p.5"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2013",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2013-paper-answer",
+      "sourceEvidenceId": "politics-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:5103e91b027a5a619a1feadef28fb9ad5ce8c5afe4e837ec921298c8885d9383",
+      "answerTextHash": "sha256:088c3f851ea993310444f5d2947ebd796c98458b65bda634b422b5b6188bca7d",
+      "sourceEvidence": {
+        "evidenceId": "politics-2013-q15",
+        "sourceId": "src_fdc02f653f8f006045eb5242",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:5103e91b027a5a619a1feadef28fb9ad5ce8c5afe4e837ec921298c8885d9383",
+        "answerTextHash": "sha256:088c3f851ea993310444f5d2947ebd796c98458b65bda634b422b5b6188bca7d"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_fdc02f653f8f006045eb5242",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2013/2013-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:088c3f851ea993310444f5d2947ebd796c98458b65bda634b422b5b6188bca7d",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2013_bank",
+        "note": "Matched against the same local Baidu Netdisk 2013 Politics paper-answer PDF; standalone paper PDF was not mixed because its option order differs."
+      }
+    },
+    {
+      "id": "politics-2013-016",
+      "number": 16,
+      "paperId": "politics-2013",
+      "paperName": "2013考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2013",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2013考研政治第16题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2013 考研政治真题及参考答案 PDF 内嵌答案；题面和选项以同一 PDF 原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2013/paper-page-05.jpg",
+          "caption": "试卷原页 p.5",
+          "alt": "2013考研政治试卷原页 p.5"
+        },
+        {
+          "src": "question-bank/politics-2013/paper-page-06.jpg",
+          "caption": "试卷原页 p.6",
+          "alt": "2013考研政治试卷原页 p.6"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2013/paper-page-06.jpg",
+          "caption": "答案原页 p.6",
+          "alt": "2013考研政治答案原页 p.6"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2013",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2013-paper-answer",
+      "sourceEvidenceId": "politics-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:6e875bfe55731e85c1d46b15008856c12f3c19837185c00cc7a00cb39e371b15",
+      "answerTextHash": "sha256:370a281cae0ba93cdfa811d419348455084e9789186e7b39bc75832634c367fb",
+      "sourceEvidence": {
+        "evidenceId": "politics-2013-q16",
+        "sourceId": "src_fdc02f653f8f006045eb5242",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:6e875bfe55731e85c1d46b15008856c12f3c19837185c00cc7a00cb39e371b15",
+        "answerTextHash": "sha256:370a281cae0ba93cdfa811d419348455084e9789186e7b39bc75832634c367fb"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_fdc02f653f8f006045eb5242",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2013/2013-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:370a281cae0ba93cdfa811d419348455084e9789186e7b39bc75832634c367fb",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2013_bank",
+        "note": "Matched against the same local Baidu Netdisk 2013 Politics paper-answer PDF; standalone paper PDF was not mixed because its option order differs."
+      }
+    },
+    {
+      "id": "politics-2013-017",
+      "number": 17,
+      "paperId": "politics-2013",
+      "paperName": "2013考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2013",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2013考研政治第17题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ACD",
+      "explanation": "答案来自本地百度网盘 2013 考研政治真题及参考答案 PDF 内嵌答案；题面和选项以同一 PDF 原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2013/paper-page-06.jpg",
+          "caption": "试卷原页 p.6",
+          "alt": "2013考研政治试卷原页 p.6"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2013/paper-page-06.jpg",
+          "caption": "答案原页 p.6",
+          "alt": "2013考研政治答案原页 p.6"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2013",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2013-paper-answer",
+      "sourceEvidenceId": "politics-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:9bdb313379960da715eeca28cd9b40bcc25bba8abd2b6f349803cc861526f80f",
+      "answerTextHash": "sha256:edf204730a06bc5ff67c379fd8419dd48c5e4c518f28a3971bdae5a183c2a92b",
+      "sourceEvidence": {
+        "evidenceId": "politics-2013-q17",
+        "sourceId": "src_fdc02f653f8f006045eb5242",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:9bdb313379960da715eeca28cd9b40bcc25bba8abd2b6f349803cc861526f80f",
+        "answerTextHash": "sha256:edf204730a06bc5ff67c379fd8419dd48c5e4c518f28a3971bdae5a183c2a92b"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_fdc02f653f8f006045eb5242",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2013/2013-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:edf204730a06bc5ff67c379fd8419dd48c5e4c518f28a3971bdae5a183c2a92b",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2013_bank",
+        "note": "Matched against the same local Baidu Netdisk 2013 Politics paper-answer PDF; standalone paper PDF was not mixed because its option order differs."
+      }
+    },
+    {
+      "id": "politics-2013-018",
+      "number": 18,
+      "paperId": "politics-2013",
+      "paperName": "2013考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2013",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2013考研政治第18题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABD",
+      "explanation": "答案来自本地百度网盘 2013 考研政治真题及参考答案 PDF 内嵌答案；题面和选项以同一 PDF 原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2013/paper-page-06.jpg",
+          "caption": "试卷原页 p.6",
+          "alt": "2013考研政治试卷原页 p.6"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2013/paper-page-06.jpg",
+          "caption": "答案原页 p.6",
+          "alt": "2013考研政治答案原页 p.6"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2013",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2013-paper-answer",
+      "sourceEvidenceId": "politics-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:9c51cc4860e2a308560edc4981038f8443d82839b732a81e4651404bd67a63a6",
+      "answerTextHash": "sha256:c8f6e2f5342266470cde9b1adca362736a36ba34e7c0d3b4a478354ff84b2bae",
+      "sourceEvidence": {
+        "evidenceId": "politics-2013-q18",
+        "sourceId": "src_fdc02f653f8f006045eb5242",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:9c51cc4860e2a308560edc4981038f8443d82839b732a81e4651404bd67a63a6",
+        "answerTextHash": "sha256:c8f6e2f5342266470cde9b1adca362736a36ba34e7c0d3b4a478354ff84b2bae"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_fdc02f653f8f006045eb5242",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2013/2013-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:c8f6e2f5342266470cde9b1adca362736a36ba34e7c0d3b4a478354ff84b2bae",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2013_bank",
+        "note": "Matched against the same local Baidu Netdisk 2013 Politics paper-answer PDF; standalone paper PDF was not mixed because its option order differs."
+      }
+    },
+    {
+      "id": "politics-2013-019",
+      "number": 19,
+      "paperId": "politics-2013",
+      "paperName": "2013考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2013",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2013考研政治第19题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "CD",
+      "explanation": "答案来自本地百度网盘 2013 考研政治真题及参考答案 PDF 内嵌答案；题面和选项以同一 PDF 原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2013/paper-page-06.jpg",
+          "caption": "试卷原页 p.6",
+          "alt": "2013考研政治试卷原页 p.6"
+        },
+        {
+          "src": "question-bank/politics-2013/paper-page-07.jpg",
+          "caption": "试卷原页 p.7",
+          "alt": "2013考研政治试卷原页 p.7"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2013/paper-page-07.jpg",
+          "caption": "答案原页 p.7",
+          "alt": "2013考研政治答案原页 p.7"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2013",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2013-paper-answer",
+      "sourceEvidenceId": "politics-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:776341e2236d1044aed373b3668351542aa50e816f5551edeb81148f858bf550",
+      "answerTextHash": "sha256:5b6564228382823d93db4ac3e9508ad1a52499fc61b9619752649dd5fc622e84",
+      "sourceEvidence": {
+        "evidenceId": "politics-2013-q19",
+        "sourceId": "src_fdc02f653f8f006045eb5242",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:776341e2236d1044aed373b3668351542aa50e816f5551edeb81148f858bf550",
+        "answerTextHash": "sha256:5b6564228382823d93db4ac3e9508ad1a52499fc61b9619752649dd5fc622e84"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_fdc02f653f8f006045eb5242",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2013/2013-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:5b6564228382823d93db4ac3e9508ad1a52499fc61b9619752649dd5fc622e84",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2013_bank",
+        "note": "Matched against the same local Baidu Netdisk 2013 Politics paper-answer PDF; standalone paper PDF was not mixed because its option order differs."
+      }
+    },
+    {
+      "id": "politics-2013-020",
+      "number": 20,
+      "paperId": "politics-2013",
+      "paperName": "2013考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2013",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2013考研政治第20题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABD",
+      "explanation": "答案来自本地百度网盘 2013 考研政治真题及参考答案 PDF 内嵌答案；题面和选项以同一 PDF 原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2013/paper-page-07.jpg",
+          "caption": "试卷原页 p.7",
+          "alt": "2013考研政治试卷原页 p.7"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2013/paper-page-07.jpg",
+          "caption": "答案原页 p.7",
+          "alt": "2013考研政治答案原页 p.7"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2013",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2013-paper-answer",
+      "sourceEvidenceId": "politics-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:1dce63b25139f3489ff1345b61b3167f9b6fc581dc48a2e30bddb9215ca7f660",
+      "answerTextHash": "sha256:9b9b56a6d4974b7c8c18cdeeaad251226d96250c1fcdf06dd742dc80ee5bcd8b",
+      "sourceEvidence": {
+        "evidenceId": "politics-2013-q20",
+        "sourceId": "src_fdc02f653f8f006045eb5242",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:1dce63b25139f3489ff1345b61b3167f9b6fc581dc48a2e30bddb9215ca7f660",
+        "answerTextHash": "sha256:9b9b56a6d4974b7c8c18cdeeaad251226d96250c1fcdf06dd742dc80ee5bcd8b"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_fdc02f653f8f006045eb5242",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2013/2013-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:9b9b56a6d4974b7c8c18cdeeaad251226d96250c1fcdf06dd742dc80ee5bcd8b",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2013_bank",
+        "note": "Matched against the same local Baidu Netdisk 2013 Politics paper-answer PDF; standalone paper PDF was not mixed because its option order differs."
+      }
+    },
+    {
+      "id": "politics-2013-021",
+      "number": 21,
+      "paperId": "politics-2013",
+      "paperName": "2013考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2013",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2013考研政治第21题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ACD",
+      "explanation": "答案来自本地百度网盘 2013 考研政治真题及参考答案 PDF 内嵌答案；题面和选项以同一 PDF 原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2013/paper-page-07.jpg",
+          "caption": "试卷原页 p.7",
+          "alt": "2013考研政治试卷原页 p.7"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2013/paper-page-07.jpg",
+          "caption": "答案原页 p.7",
+          "alt": "2013考研政治答案原页 p.7"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2013",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2013-paper-answer",
+      "sourceEvidenceId": "politics-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:79f6681d7a60b98853422b4a9ea5213dfed8dc733cd519ebe758dd3431967193",
+      "answerTextHash": "sha256:21baa00148f0d5d2b5f8c6b116368fcf672cc2fad9dee650bfbd3c1bb46aeb39",
+      "sourceEvidence": {
+        "evidenceId": "politics-2013-q21",
+        "sourceId": "src_fdc02f653f8f006045eb5242",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:79f6681d7a60b98853422b4a9ea5213dfed8dc733cd519ebe758dd3431967193",
+        "answerTextHash": "sha256:21baa00148f0d5d2b5f8c6b116368fcf672cc2fad9dee650bfbd3c1bb46aeb39"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_fdc02f653f8f006045eb5242",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2013/2013-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:21baa00148f0d5d2b5f8c6b116368fcf672cc2fad9dee650bfbd3c1bb46aeb39",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2013_bank",
+        "note": "Matched against the same local Baidu Netdisk 2013 Politics paper-answer PDF; standalone paper PDF was not mixed because its option order differs."
+      }
+    },
+    {
+      "id": "politics-2013-022",
+      "number": 22,
+      "paperId": "politics-2013",
+      "paperName": "2013考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2013",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2013考研政治第22题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "BCD",
+      "explanation": "答案来自本地百度网盘 2013 考研政治真题及参考答案 PDF 内嵌答案；题面和选项以同一 PDF 原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2013/paper-page-07.jpg",
+          "caption": "试卷原页 p.7",
+          "alt": "2013考研政治试卷原页 p.7"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2013/paper-page-07.jpg",
+          "caption": "答案原页 p.7",
+          "alt": "2013考研政治答案原页 p.7"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2013",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2013-paper-answer",
+      "sourceEvidenceId": "politics-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:c212a638e9f1f2e2e3d00c795c1bf25d4ddd091aab2370e68947f9006ad7bf2a",
+      "answerTextHash": "sha256:69761a12890f3af37eabf6e5bf7a92215c7213eac7ef079df4fd919cfe7ea4fa",
+      "sourceEvidence": {
+        "evidenceId": "politics-2013-q22",
+        "sourceId": "src_fdc02f653f8f006045eb5242",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:c212a638e9f1f2e2e3d00c795c1bf25d4ddd091aab2370e68947f9006ad7bf2a",
+        "answerTextHash": "sha256:69761a12890f3af37eabf6e5bf7a92215c7213eac7ef079df4fd919cfe7ea4fa"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_fdc02f653f8f006045eb5242",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2013/2013-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:69761a12890f3af37eabf6e5bf7a92215c7213eac7ef079df4fd919cfe7ea4fa",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2013_bank",
+        "note": "Matched against the same local Baidu Netdisk 2013 Politics paper-answer PDF; standalone paper PDF was not mixed because its option order differs."
+      }
+    },
+    {
+      "id": "politics-2013-023",
+      "number": 23,
+      "paperId": "politics-2013",
+      "paperName": "2013考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2013",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2013考研政治第23题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABCD",
+      "explanation": "答案来自本地百度网盘 2013 考研政治真题及参考答案 PDF 内嵌答案；题面和选项以同一 PDF 原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2013/paper-page-07.jpg",
+          "caption": "试卷原页 p.7",
+          "alt": "2013考研政治试卷原页 p.7"
+        },
+        {
+          "src": "question-bank/politics-2013/paper-page-08.jpg",
+          "caption": "试卷原页 p.8",
+          "alt": "2013考研政治试卷原页 p.8"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2013/paper-page-08.jpg",
+          "caption": "答案原页 p.8",
+          "alt": "2013考研政治答案原页 p.8"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2013",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2013-paper-answer",
+      "sourceEvidenceId": "politics-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:bf0b6e2fdbf12b5bd1f34258806adaa0f4c6dbbc524a8a2b6eb5f5a7d1e73ce9",
+      "answerTextHash": "sha256:32b53d086c0a46f14b0a88d75fb8f2ea1ae6d80b683d04a2ba4e06911fe52aa0",
+      "sourceEvidence": {
+        "evidenceId": "politics-2013-q23",
+        "sourceId": "src_fdc02f653f8f006045eb5242",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:bf0b6e2fdbf12b5bd1f34258806adaa0f4c6dbbc524a8a2b6eb5f5a7d1e73ce9",
+        "answerTextHash": "sha256:32b53d086c0a46f14b0a88d75fb8f2ea1ae6d80b683d04a2ba4e06911fe52aa0"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_fdc02f653f8f006045eb5242",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2013/2013-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:32b53d086c0a46f14b0a88d75fb8f2ea1ae6d80b683d04a2ba4e06911fe52aa0",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2013_bank",
+        "note": "Matched against the same local Baidu Netdisk 2013 Politics paper-answer PDF; standalone paper PDF was not mixed because its option order differs."
+      }
+    },
+    {
+      "id": "politics-2013-024",
+      "number": 24,
+      "paperId": "politics-2013",
+      "paperName": "2013考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2013",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2013考研政治第24题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABCD",
+      "explanation": "答案来自本地百度网盘 2013 考研政治真题及参考答案 PDF 内嵌答案；题面和选项以同一 PDF 原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2013/paper-page-08.jpg",
+          "caption": "试卷原页 p.8",
+          "alt": "2013考研政治试卷原页 p.8"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2013/paper-page-08.jpg",
+          "caption": "答案原页 p.8",
+          "alt": "2013考研政治答案原页 p.8"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2013",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2013-paper-answer",
+      "sourceEvidenceId": "politics-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:6247b9add3c8012b004902b62eeba334f21dcf4aa98b2d04a6eab67ae9af99fc",
+      "answerTextHash": "sha256:32b53d086c0a46f14b0a88d75fb8f2ea1ae6d80b683d04a2ba4e06911fe52aa0",
+      "sourceEvidence": {
+        "evidenceId": "politics-2013-q24",
+        "sourceId": "src_fdc02f653f8f006045eb5242",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:6247b9add3c8012b004902b62eeba334f21dcf4aa98b2d04a6eab67ae9af99fc",
+        "answerTextHash": "sha256:32b53d086c0a46f14b0a88d75fb8f2ea1ae6d80b683d04a2ba4e06911fe52aa0"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_fdc02f653f8f006045eb5242",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2013/2013-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:32b53d086c0a46f14b0a88d75fb8f2ea1ae6d80b683d04a2ba4e06911fe52aa0",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2013_bank",
+        "note": "Matched against the same local Baidu Netdisk 2013 Politics paper-answer PDF; standalone paper PDF was not mixed because its option order differs."
+      }
+    },
+    {
+      "id": "politics-2013-025",
+      "number": 25,
+      "paperId": "politics-2013",
+      "paperName": "2013考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2013",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2013考研政治第25题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ACD",
+      "explanation": "答案来自本地百度网盘 2013 考研政治真题及参考答案 PDF 内嵌答案；题面和选项以同一 PDF 原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2013/paper-page-08.jpg",
+          "caption": "试卷原页 p.8",
+          "alt": "2013考研政治试卷原页 p.8"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2013/paper-page-08.jpg",
+          "caption": "答案原页 p.8",
+          "alt": "2013考研政治答案原页 p.8"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2013",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2013-paper-answer",
+      "sourceEvidenceId": "politics-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:1ad9c0f4eb2e444076b63a370213fd46ea6691c61fa79b093923f3b823a3e0a3",
+      "answerTextHash": "sha256:7192b693b876a25cbbb59c6f4cc033d6a4adf761e1e336c3a6b5d408b1629a0e",
+      "sourceEvidence": {
+        "evidenceId": "politics-2013-q25",
+        "sourceId": "src_fdc02f653f8f006045eb5242",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:1ad9c0f4eb2e444076b63a370213fd46ea6691c61fa79b093923f3b823a3e0a3",
+        "answerTextHash": "sha256:7192b693b876a25cbbb59c6f4cc033d6a4adf761e1e336c3a6b5d408b1629a0e"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_fdc02f653f8f006045eb5242",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2013/2013-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:7192b693b876a25cbbb59c6f4cc033d6a4adf761e1e336c3a6b5d408b1629a0e",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2013_bank",
+        "note": "Matched against the same local Baidu Netdisk 2013 Politics paper-answer PDF; standalone paper PDF was not mixed because its option order differs."
+      }
+    },
+    {
+      "id": "politics-2013-026",
+      "number": 26,
+      "paperId": "politics-2013",
+      "paperName": "2013考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2013",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2013考研政治第26题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABCD",
+      "explanation": "答案来自本地百度网盘 2013 考研政治真题及参考答案 PDF 内嵌答案；题面和选项以同一 PDF 原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2013/paper-page-08.jpg",
+          "caption": "试卷原页 p.8",
+          "alt": "2013考研政治试卷原页 p.8"
+        },
+        {
+          "src": "question-bank/politics-2013/paper-page-09.jpg",
+          "caption": "试卷原页 p.9",
+          "alt": "2013考研政治试卷原页 p.9"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2013/paper-page-09.jpg",
+          "caption": "答案原页 p.9",
+          "alt": "2013考研政治答案原页 p.9"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2013",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2013-paper-answer",
+      "sourceEvidenceId": "politics-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:e26ede5e422c7832a69365bc974e530aadc0589a6b629d350f81197efb0441f6",
+      "answerTextHash": "sha256:a29b1d6ef338f9fd22d808d71723df6d146732d65fe64253a689e66d7d281df4",
+      "sourceEvidence": {
+        "evidenceId": "politics-2013-q26",
+        "sourceId": "src_fdc02f653f8f006045eb5242",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:e26ede5e422c7832a69365bc974e530aadc0589a6b629d350f81197efb0441f6",
+        "answerTextHash": "sha256:a29b1d6ef338f9fd22d808d71723df6d146732d65fe64253a689e66d7d281df4"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_fdc02f653f8f006045eb5242",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2013/2013-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:a29b1d6ef338f9fd22d808d71723df6d146732d65fe64253a689e66d7d281df4",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2013_bank",
+        "note": "Matched against the same local Baidu Netdisk 2013 Politics paper-answer PDF; standalone paper PDF was not mixed because its option order differs."
+      }
+    },
+    {
+      "id": "politics-2013-027",
+      "number": 27,
+      "paperId": "politics-2013",
+      "paperName": "2013考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2013",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2013考研政治第27题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ACD",
+      "explanation": "答案来自本地百度网盘 2013 考研政治真题及参考答案 PDF 内嵌答案；题面和选项以同一 PDF 原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2013/paper-page-09.jpg",
+          "caption": "试卷原页 p.9",
+          "alt": "2013考研政治试卷原页 p.9"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2013/paper-page-09.jpg",
+          "caption": "答案原页 p.9",
+          "alt": "2013考研政治答案原页 p.9"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2013",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2013-paper-answer",
+      "sourceEvidenceId": "politics-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:4f1251baad08ad352daedd254230305c6f5b6545a8c4c1324864e5d7571316e9",
+      "answerTextHash": "sha256:f8b3fa98cb5d08f6dd5638980feb86ff16b4da3b120775b8b3ef4a7de952540d",
+      "sourceEvidence": {
+        "evidenceId": "politics-2013-q27",
+        "sourceId": "src_fdc02f653f8f006045eb5242",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:4f1251baad08ad352daedd254230305c6f5b6545a8c4c1324864e5d7571316e9",
+        "answerTextHash": "sha256:f8b3fa98cb5d08f6dd5638980feb86ff16b4da3b120775b8b3ef4a7de952540d"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_fdc02f653f8f006045eb5242",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2013/2013-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:f8b3fa98cb5d08f6dd5638980feb86ff16b4da3b120775b8b3ef4a7de952540d",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2013_bank",
+        "note": "Matched against the same local Baidu Netdisk 2013 Politics paper-answer PDF; standalone paper PDF was not mixed because its option order differs."
+      }
+    },
+    {
+      "id": "politics-2013-028",
+      "number": 28,
+      "paperId": "politics-2013",
+      "paperName": "2013考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2013",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2013考研政治第28题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABC",
+      "explanation": "答案来自本地百度网盘 2013 考研政治真题及参考答案 PDF 内嵌答案；题面和选项以同一 PDF 原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2013/paper-page-09.jpg",
+          "caption": "试卷原页 p.9",
+          "alt": "2013考研政治试卷原页 p.9"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2013/paper-page-09.jpg",
+          "caption": "答案原页 p.9",
+          "alt": "2013考研政治答案原页 p.9"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2013",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2013-paper-answer",
+      "sourceEvidenceId": "politics-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:f2f7554d6230c7598b8391df3a136cacb17c526311e000415ee31187875f6a0c",
+      "answerTextHash": "sha256:f98c28def54985b07cdc5d2533d066cad872a6f4ad8a3ce900df071a566bff19",
+      "sourceEvidence": {
+        "evidenceId": "politics-2013-q28",
+        "sourceId": "src_fdc02f653f8f006045eb5242",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:f2f7554d6230c7598b8391df3a136cacb17c526311e000415ee31187875f6a0c",
+        "answerTextHash": "sha256:f98c28def54985b07cdc5d2533d066cad872a6f4ad8a3ce900df071a566bff19"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_fdc02f653f8f006045eb5242",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2013/2013-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:f98c28def54985b07cdc5d2533d066cad872a6f4ad8a3ce900df071a566bff19",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2013_bank",
+        "note": "Matched against the same local Baidu Netdisk 2013 Politics paper-answer PDF; standalone paper PDF was not mixed because its option order differs."
+      }
+    },
+    {
+      "id": "politics-2013-029",
+      "number": 29,
+      "paperId": "politics-2013",
+      "paperName": "2013考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2013",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2013考研政治第29题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ACD",
+      "explanation": "答案来自本地百度网盘 2013 考研政治真题及参考答案 PDF 内嵌答案；题面和选项以同一 PDF 原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2013/paper-page-09.jpg",
+          "caption": "试卷原页 p.9",
+          "alt": "2013考研政治试卷原页 p.9"
+        },
+        {
+          "src": "question-bank/politics-2013/paper-page-10.jpg",
+          "caption": "试卷原页 p.10",
+          "alt": "2013考研政治试卷原页 p.10"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2013/paper-page-10.jpg",
+          "caption": "答案原页 p.10",
+          "alt": "2013考研政治答案原页 p.10"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2013",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2013-paper-answer",
+      "sourceEvidenceId": "politics-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:1a14959804367fd6c36d84a92b15d2341ec04308004ca3103c141ab37fe04383",
+      "answerTextHash": "sha256:ca9436e52109ab8dc0582f2183321c64b23eb11c5443db7128bbca32fcf17a65",
+      "sourceEvidence": {
+        "evidenceId": "politics-2013-q29",
+        "sourceId": "src_fdc02f653f8f006045eb5242",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:1a14959804367fd6c36d84a92b15d2341ec04308004ca3103c141ab37fe04383",
+        "answerTextHash": "sha256:ca9436e52109ab8dc0582f2183321c64b23eb11c5443db7128bbca32fcf17a65"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_fdc02f653f8f006045eb5242",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2013/2013-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:ca9436e52109ab8dc0582f2183321c64b23eb11c5443db7128bbca32fcf17a65",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2013_bank",
+        "note": "Matched against the same local Baidu Netdisk 2013 Politics paper-answer PDF; standalone paper PDF was not mixed because its option order differs."
+      }
+    },
+    {
+      "id": "politics-2013-030",
+      "number": 30,
+      "paperId": "politics-2013",
+      "paperName": "2013考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2013",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2013考研政治第30题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABD",
+      "explanation": "答案来自本地百度网盘 2013 考研政治真题及参考答案 PDF 内嵌答案；题面和选项以同一 PDF 原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2013/paper-page-10.jpg",
+          "caption": "试卷原页 p.10",
+          "alt": "2013考研政治试卷原页 p.10"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2013/paper-page-10.jpg",
+          "caption": "答案原页 p.10",
+          "alt": "2013考研政治答案原页 p.10"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2013",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2013-paper-answer",
+      "sourceEvidenceId": "politics-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:47f80b82c558e937678ce80432131780a179e0fb0e975f953ea2f7347f67942c",
+      "answerTextHash": "sha256:2cd2a5afe20b9e0be6c1a3c2e919272861479db98ac69f2665a6652bcef2a580",
+      "sourceEvidence": {
+        "evidenceId": "politics-2013-q30",
+        "sourceId": "src_fdc02f653f8f006045eb5242",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:47f80b82c558e937678ce80432131780a179e0fb0e975f953ea2f7347f67942c",
+        "answerTextHash": "sha256:2cd2a5afe20b9e0be6c1a3c2e919272861479db98ac69f2665a6652bcef2a580"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_fdc02f653f8f006045eb5242",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2013/2013-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:2cd2a5afe20b9e0be6c1a3c2e919272861479db98ac69f2665a6652bcef2a580",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2013_bank",
+        "note": "Matched against the same local Baidu Netdisk 2013 Politics paper-answer PDF; standalone paper PDF was not mixed because its option order differs."
+      }
+    },
+    {
+      "id": "politics-2013-031",
+      "number": 31,
+      "paperId": "politics-2013",
+      "paperName": "2013考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2013",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2013考研政治第31题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "BC",
+      "explanation": "答案来自本地百度网盘 2013 考研政治真题及参考答案 PDF 内嵌答案；题面和选项以同一 PDF 原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2013/paper-page-10.jpg",
+          "caption": "试卷原页 p.10",
+          "alt": "2013考研政治试卷原页 p.10"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2013/paper-page-10.jpg",
+          "caption": "答案原页 p.10",
+          "alt": "2013考研政治答案原页 p.10"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2013",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2013-paper-answer",
+      "sourceEvidenceId": "politics-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:ffe1e4bdc913a284eb4237aa5c975ce242b2ff0ae700d925de2f115961c31c42",
+      "answerTextHash": "sha256:2f95f350448248362eaeb1383975c549a9412a2d9a2f15aaa6378da78b17b27d",
+      "sourceEvidence": {
+        "evidenceId": "politics-2013-q31",
+        "sourceId": "src_fdc02f653f8f006045eb5242",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:ffe1e4bdc913a284eb4237aa5c975ce242b2ff0ae700d925de2f115961c31c42",
+        "answerTextHash": "sha256:2f95f350448248362eaeb1383975c549a9412a2d9a2f15aaa6378da78b17b27d"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_fdc02f653f8f006045eb5242",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2013/2013-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:2f95f350448248362eaeb1383975c549a9412a2d9a2f15aaa6378da78b17b27d",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2013_bank",
+        "note": "Matched against the same local Baidu Netdisk 2013 Politics paper-answer PDF; standalone paper PDF was not mixed because its option order differs."
+      }
+    },
+    {
+      "id": "politics-2013-032",
+      "number": 32,
+      "paperId": "politics-2013",
+      "paperName": "2013考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2013",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2013考研政治第32题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "BCD",
+      "explanation": "答案来自本地百度网盘 2013 考研政治真题及参考答案 PDF 内嵌答案；题面和选项以同一 PDF 原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2013/paper-page-10.jpg",
+          "caption": "试卷原页 p.10",
+          "alt": "2013考研政治试卷原页 p.10"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2013/paper-page-10.jpg",
+          "caption": "答案原页 p.10",
+          "alt": "2013考研政治答案原页 p.10"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2013",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2013-paper-answer",
+      "sourceEvidenceId": "politics-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:acc373dd3550a2db0dcea8500c899e87147e21fa3cda532910af1acd5f27a59b",
+      "answerTextHash": "sha256:dd7b70163589b0b8612f9b7d880e02fba09fe08a6b86808e4ac2a7142dea3cb5",
+      "sourceEvidence": {
+        "evidenceId": "politics-2013-q32",
+        "sourceId": "src_fdc02f653f8f006045eb5242",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:acc373dd3550a2db0dcea8500c899e87147e21fa3cda532910af1acd5f27a59b",
+        "answerTextHash": "sha256:dd7b70163589b0b8612f9b7d880e02fba09fe08a6b86808e4ac2a7142dea3cb5"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_fdc02f653f8f006045eb5242",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2013/2013-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:dd7b70163589b0b8612f9b7d880e02fba09fe08a6b86808e4ac2a7142dea3cb5",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2013_bank",
+        "note": "Matched against the same local Baidu Netdisk 2013 Politics paper-answer PDF; standalone paper PDF was not mixed because its option order differs."
+      }
+    },
+    {
+      "id": "politics-2013-033",
+      "number": 33,
+      "paperId": "politics-2013",
+      "paperName": "2013考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2013",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2013考研政治第33题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "CD",
+      "explanation": "答案来自本地百度网盘 2013 考研政治真题及参考答案 PDF 内嵌答案；题面和选项以同一 PDF 原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2013/paper-page-10.jpg",
+          "caption": "试卷原页 p.10",
+          "alt": "2013考研政治试卷原页 p.10"
+        },
+        {
+          "src": "question-bank/politics-2013/paper-page-11.jpg",
+          "caption": "试卷原页 p.11",
+          "alt": "2013考研政治试卷原页 p.11"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2013/paper-page-11.jpg",
+          "caption": "答案原页 p.11",
+          "alt": "2013考研政治答案原页 p.11"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2013",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2013-paper-answer",
+      "sourceEvidenceId": "politics-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:78d8d2b17214d3179938b2359c68278b1cb0cb531655776578f39ee42af938a2",
+      "answerTextHash": "sha256:bf8f3712c7162020f8a4cbda49ba49e1fc7a1d2845dfbc9115c322af79ac34ef",
+      "sourceEvidence": {
+        "evidenceId": "politics-2013-q33",
+        "sourceId": "src_fdc02f653f8f006045eb5242",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:78d8d2b17214d3179938b2359c68278b1cb0cb531655776578f39ee42af938a2",
+        "answerTextHash": "sha256:bf8f3712c7162020f8a4cbda49ba49e1fc7a1d2845dfbc9115c322af79ac34ef"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_fdc02f653f8f006045eb5242",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2013/2013-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:bf8f3712c7162020f8a4cbda49ba49e1fc7a1d2845dfbc9115c322af79ac34ef",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2013_bank",
+        "note": "Matched against the same local Baidu Netdisk 2013 Politics paper-answer PDF; standalone paper PDF was not mixed because its option order differs."
+      }
+    },
+    {
+      "id": "politics-2013-034",
+      "number": 34,
+      "paperId": "politics-2013",
+      "paperName": "2013考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2013",
+      "section": "分析题",
+      "type": "analysis",
+      "question": "2013考研政治第34题（分析题）。题干、选项和材料以试卷原页图为准。",
+      "options": [],
+      "answer": "分析题参考答案要点见答案原页 p.12。",
+      "explanation": "参考答案来自本地百度网盘 2013 考研政治真题及参考答案 PDF；完整答案要点见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2013/paper-page-11.jpg",
+          "caption": "试卷原页 p.11",
+          "alt": "2013考研政治试卷原页 p.11"
+        },
+        {
+          "src": "question-bank/politics-2013/paper-page-12.jpg",
+          "caption": "试卷原页 p.12",
+          "alt": "2013考研政治试卷原页 p.12"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2013/paper-page-12.jpg",
+          "caption": "答案原页 p.12",
+          "alt": "2013考研政治答案原页 p.12"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2013",
+        "分析题"
+      ],
+      "difficulty": 3,
+      "source": "politics-2013-paper-answer",
+      "sourceEvidenceId": "politics-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:9c7c2cd1453f4efdb7d378abcc1d6dd83ca83fded6546f83c2fd44c5f2b5fe8c",
+      "answerTextHash": "sha256:36134c97fce35c32955a6ab9c5f4bde685b6b878165063745edd7f3f16955d32",
+      "sourceEvidence": {
+        "evidenceId": "politics-2013-q34",
+        "sourceId": "src_fdc02f653f8f006045eb5242",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:9c7c2cd1453f4efdb7d378abcc1d6dd83ca83fded6546f83c2fd44c5f2b5fe8c",
+        "answerTextHash": "sha256:36134c97fce35c32955a6ab9c5f4bde685b6b878165063745edd7f3f16955d32"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_reference_answer",
+        "sourceId": "src_fdc02f653f8f006045eb5242",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2013/2013-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:36134c97fce35c32955a6ab9c5f4bde685b6b878165063745edd7f3f16955d32",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2013_bank",
+        "note": "Matched against the same local Baidu Netdisk 2013 Politics paper-answer PDF; standalone paper PDF was not mixed because its option order differs."
+      }
+    },
+    {
+      "id": "politics-2013-035",
+      "number": 35,
+      "paperId": "politics-2013",
+      "paperName": "2013考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2013",
+      "section": "分析题",
+      "type": "analysis",
+      "question": "2013考研政治第35题（分析题）。题干、选项和材料以试卷原页图为准。",
+      "options": [],
+      "answer": "分析题参考答案要点见答案原页 p.13-p.14。",
+      "explanation": "参考答案来自本地百度网盘 2013 考研政治真题及参考答案 PDF；完整答案要点见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2013/paper-page-12.jpg",
+          "caption": "试卷原页 p.12",
+          "alt": "2013考研政治试卷原页 p.12"
+        },
+        {
+          "src": "question-bank/politics-2013/paper-page-13.jpg",
+          "caption": "试卷原页 p.13",
+          "alt": "2013考研政治试卷原页 p.13"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2013/paper-page-13.jpg",
+          "caption": "答案原页 p.13",
+          "alt": "2013考研政治答案原页 p.13"
+        },
+        {
+          "src": "question-bank/politics-2013/paper-page-14.jpg",
+          "caption": "答案原页 p.14",
+          "alt": "2013考研政治答案原页 p.14"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2013",
+        "分析题"
+      ],
+      "difficulty": 3,
+      "source": "politics-2013-paper-answer",
+      "sourceEvidenceId": "politics-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:c42e632d4bfdde18ae20245877806bcffeaf4a85df1ac7652441e1f216364ffb",
+      "answerTextHash": "sha256:74407efc4267c9e413238634a0f772f18eeaf2e413a1a34a1e64a23c7c79b2c2",
+      "sourceEvidence": {
+        "evidenceId": "politics-2013-q35",
+        "sourceId": "src_fdc02f653f8f006045eb5242",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:c42e632d4bfdde18ae20245877806bcffeaf4a85df1ac7652441e1f216364ffb",
+        "answerTextHash": "sha256:74407efc4267c9e413238634a0f772f18eeaf2e413a1a34a1e64a23c7c79b2c2"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_reference_answer",
+        "sourceId": "src_fdc02f653f8f006045eb5242",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2013/2013-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:74407efc4267c9e413238634a0f772f18eeaf2e413a1a34a1e64a23c7c79b2c2",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2013_bank",
+        "note": "Matched against the same local Baidu Netdisk 2013 Politics paper-answer PDF; standalone paper PDF was not mixed because its option order differs."
+      }
+    },
+    {
+      "id": "politics-2013-036",
+      "number": 36,
+      "paperId": "politics-2013",
+      "paperName": "2013考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2013",
+      "section": "分析题",
+      "type": "analysis",
+      "question": "2013考研政治第36题（分析题）。题干、选项和材料以试卷原页图为准。",
+      "options": [],
+      "answer": "分析题参考答案要点见答案原页 p.15。",
+      "explanation": "参考答案来自本地百度网盘 2013 考研政治真题及参考答案 PDF；完整答案要点见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2013/paper-page-14.jpg",
+          "caption": "试卷原页 p.14",
+          "alt": "2013考研政治试卷原页 p.14"
+        },
+        {
+          "src": "question-bank/politics-2013/paper-page-15.jpg",
+          "caption": "试卷原页 p.15",
+          "alt": "2013考研政治试卷原页 p.15"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2013/paper-page-15.jpg",
+          "caption": "答案原页 p.15",
+          "alt": "2013考研政治答案原页 p.15"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2013",
+        "分析题"
+      ],
+      "difficulty": 3,
+      "source": "politics-2013-paper-answer",
+      "sourceEvidenceId": "politics-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:d83bb579b7b9b43e16fb175550d33d9306ed87f754d4c47753310b11d5723f0b",
+      "answerTextHash": "sha256:2db2266891c9d8864e5f6256d556e86e19db0d26c47aa54b75fe8b5591feb4c5",
+      "sourceEvidence": {
+        "evidenceId": "politics-2013-q36",
+        "sourceId": "src_fdc02f653f8f006045eb5242",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:d83bb579b7b9b43e16fb175550d33d9306ed87f754d4c47753310b11d5723f0b",
+        "answerTextHash": "sha256:2db2266891c9d8864e5f6256d556e86e19db0d26c47aa54b75fe8b5591feb4c5"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_reference_answer",
+        "sourceId": "src_fdc02f653f8f006045eb5242",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2013/2013-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:2db2266891c9d8864e5f6256d556e86e19db0d26c47aa54b75fe8b5591feb4c5",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2013_bank",
+        "note": "Matched against the same local Baidu Netdisk 2013 Politics paper-answer PDF; standalone paper PDF was not mixed because its option order differs."
+      }
+    },
+    {
+      "id": "politics-2013-037",
+      "number": 37,
+      "paperId": "politics-2013",
+      "paperName": "2013考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2013",
+      "section": "分析题",
+      "type": "analysis",
+      "question": "2013考研政治第37题（分析题）。题干、选项和材料以试卷原页图为准。",
+      "options": [],
+      "answer": "分析题参考答案要点见答案原页 p.16。",
+      "explanation": "参考答案来自本地百度网盘 2013 考研政治真题及参考答案 PDF；完整答案要点见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2013/paper-page-15.jpg",
+          "caption": "试卷原页 p.15",
+          "alt": "2013考研政治试卷原页 p.15"
+        },
+        {
+          "src": "question-bank/politics-2013/paper-page-16.jpg",
+          "caption": "试卷原页 p.16",
+          "alt": "2013考研政治试卷原页 p.16"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2013/paper-page-16.jpg",
+          "caption": "答案原页 p.16",
+          "alt": "2013考研政治答案原页 p.16"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2013",
+        "分析题"
+      ],
+      "difficulty": 3,
+      "source": "politics-2013-paper-answer",
+      "sourceEvidenceId": "politics-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:3011b05a5dda5014cfd46a5fc684c5fe887637d6fae5a5a8f55fda04ec735b99",
+      "answerTextHash": "sha256:329fde30c76c21ab2dcfd813b81c2890ad41797f494a2400f76ae07baff36ce8",
+      "sourceEvidence": {
+        "evidenceId": "politics-2013-q37",
+        "sourceId": "src_fdc02f653f8f006045eb5242",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:3011b05a5dda5014cfd46a5fc684c5fe887637d6fae5a5a8f55fda04ec735b99",
+        "answerTextHash": "sha256:329fde30c76c21ab2dcfd813b81c2890ad41797f494a2400f76ae07baff36ce8"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_reference_answer",
+        "sourceId": "src_fdc02f653f8f006045eb5242",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2013/2013-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:329fde30c76c21ab2dcfd813b81c2890ad41797f494a2400f76ae07baff36ce8",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2013_bank",
+        "note": "Matched against the same local Baidu Netdisk 2013 Politics paper-answer PDF; standalone paper PDF was not mixed because its option order differs."
+      }
+    },
+    {
+      "id": "politics-2013-038",
+      "number": 38,
+      "paperId": "politics-2013",
+      "paperName": "2013考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2013",
+      "section": "分析题",
+      "type": "analysis",
+      "question": "2013考研政治第38题（分析题）。题干、选项和材料以试卷原页图为准。",
+      "options": [],
+      "answer": "分析题参考答案要点见答案原页 p.17。",
+      "explanation": "参考答案来自本地百度网盘 2013 考研政治真题及参考答案 PDF；完整答案要点见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2013/paper-page-16.jpg",
+          "caption": "试卷原页 p.16",
+          "alt": "2013考研政治试卷原页 p.16"
+        },
+        {
+          "src": "question-bank/politics-2013/paper-page-17.jpg",
+          "caption": "试卷原页 p.17",
+          "alt": "2013考研政治试卷原页 p.17"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2013/paper-page-17.jpg",
+          "caption": "答案原页 p.17",
+          "alt": "2013考研政治答案原页 p.17"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2013",
+        "分析题"
+      ],
+      "difficulty": 3,
+      "source": "politics-2013-paper-answer",
+      "sourceEvidenceId": "politics-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:57f94a0e10806aa50051fbce7a2883155f167596ee1109281c48ebbe871e7656",
+      "answerTextHash": "sha256:d5b8f96635bf5827dc8bebc2d5ca13a2eda5f81afd8dc91a4e1d5e24d0fe970c",
+      "sourceEvidence": {
+        "evidenceId": "politics-2013-q38",
+        "sourceId": "src_fdc02f653f8f006045eb5242",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:57f94a0e10806aa50051fbce7a2883155f167596ee1109281c48ebbe871e7656",
+        "answerTextHash": "sha256:d5b8f96635bf5827dc8bebc2d5ca13a2eda5f81afd8dc91a4e1d5e24d0fe970c"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_reference_answer",
+        "sourceId": "src_fdc02f653f8f006045eb5242",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2013/2013-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:d5b8f96635bf5827dc8bebc2d5ca13a2eda5f81afd8dc91a4e1d5e24d0fe970c",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2013_bank",
+        "note": "Matched against the same local Baidu Netdisk 2013 Politics paper-answer PDF; standalone paper PDF was not mixed because its option order differs."
+      }
+    }
+  ]
+}

@@ -236,6 +236,21 @@ const BANK_REGISTRY = [
     loader: () => import('./flashcard-banks/politics-2012.json')
   },
   {
+    id: 'politics-2013',
+    subject: '政治',
+    subjectKey: 'politics',
+    track: 'politics',
+    year: '2013',
+    name: '2013考研政治真题',
+    description: '16道单选 + 17道多选 + 5道分析题',
+    releaseLabel: '正式题库',
+    caution: '按本地百度网盘 2013 政治真题及参考答案 PDF 页图训练；同源 PDF 内嵌答案作为答案键',
+    paperType: 'past_exam',
+    quality: PAPER_QUALITY.READY,
+    sections: paperSections('单项选择', '多项选择', '分析题'),
+    loader: () => import('./flashcard-banks/politics-2013.json')
+  },
+  {
     id: 'politics-2014',
     subject: '政治',
     subjectKey: 'politics',
