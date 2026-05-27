@@ -27,6 +27,7 @@ describe('published flashcard bank registry', () => {
       expect.arrayContaining([
         'politics-2025',
         'politics-2024',
+        'politics-2018',
         'politics-2017',
         'politics-2016',
         'politics-2015',
@@ -193,6 +194,19 @@ describe('published flashcard bank registry', () => {
     expect(politics2017.cards.find((card) => card.number === 38).answerImages.at(-1).src).toContain(
       'question-bank/politics-2017/answer-page-20.jpg'
     );
+    const politics2018 = await loadBank('politics-2018');
+    expect(politics2018.cards).toHaveLength(38);
+    expect(politics2018.cards.every((card) => card.answerEvidenceStatus === 'matched')).toBe(true);
+    expect(politics2018.cards.find((card) => card.number === 1).answer).toBe('C');
+    expect(politics2018.cards.find((card) => card.number === 2).answer).toBe('A');
+    expect(politics2018.cards.find((card) => card.number === 17).answer).toBe('ACD');
+    expect(politics2018.cards.find((card) => card.number === 24).answer).toBe('ABC');
+    expect(politics2018.cards.find((card) => card.number === 26).answer).toBe('AC');
+    expect(politics2018.cards.find((card) => card.number === 33).answer).toBe('BCD');
+    expect(politics2018.cards.find((card) => card.number === 38).type).toBe('analysis');
+    expect(politics2018.cards.find((card) => card.number === 38).answerImages.at(-1).src).toContain(
+      'question-bank/politics-2018/answer-page-17.jpg'
+    );
     const english2025 = await loadBank('english1-2025');
     expect(english2025.cards).toHaveLength(52);
     expect(english2025.cards.every((card) => card.answerEvidenceStatus === 'matched')).toBe(true);
@@ -271,6 +285,7 @@ describe('published flashcard bank registry', () => {
     expect(politics.tracks[0].banks.map((bank) => bank.id)).toEqual([
       'politics-2025',
       'politics-2024',
+      'politics-2018',
       'politics-2017',
       'politics-2016',
       'politics-2015',
@@ -288,13 +303,13 @@ describe('published flashcard bank registry', () => {
     expect(politics.tracks[0].pendingBanks.some((bank) => bank.year === '2025')).toBe(false);
     expect(politics.tracks[0].pendingBanks.some((bank) => bank.year === '2024')).toBe(false);
     expect(politics.tracks[0].coverage.publishedYears).toEqual([
-      2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2024, 2025
+      2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2024, 2025
     ]);
     expect(politics.tracks[0].coverage.pendingYears).toEqual([]);
     expect(politics.tracks[0].pendingBanks.map((bank) => Number(bank.year))).toEqual([2023, 2022, 2021, 2020]);
     expect(politics.tracks[0].coverage.groupSourceRequired).toBe(false);
     expect(politics.tracks[0].yearSlots).toHaveLength(22);
-    expect(politics.tracks[0].slotSummary).toEqual({ total: 22, ready: 15, organizing: 0, missing: 7 });
+    expect(politics.tracks[0].slotSummary).toEqual({ total: 22, ready: 16, organizing: 0, missing: 6 });
     expect(politics.tracks[0].yearSlots.find((slot) => slot.year === '2025')).toMatchObject({
       bankId: 'politics-2025',
       status: 'ready',
@@ -303,6 +318,12 @@ describe('published flashcard bank registry', () => {
     });
     expect(politics.tracks[0].yearSlots.find((slot) => slot.year === '2024')).toMatchObject({
       bankId: 'politics-2024',
+      status: 'ready',
+      statusLabel: '正式',
+      clickable: true
+    });
+    expect(politics.tracks[0].yearSlots.find((slot) => slot.year === '2018')).toMatchObject({
+      bankId: 'politics-2018',
       status: 'ready',
       statusLabel: '正式',
       clickable: true

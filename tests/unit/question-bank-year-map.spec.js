@@ -96,7 +96,7 @@ describe('question bank public-course year map', () => {
     const tree = getPracticeNavigationTree({ tracks: ['politics'] });
     const politics = tree[0].tracks[0];
 
-    expect(politics.slotSummary).toEqual({ total: 22, ready: 15, organizing: 0, missing: 7 });
+    expect(politics.slotSummary).toEqual({ total: 22, ready: 16, organizing: 0, missing: 6 });
     expect(politics.yearSlots.find((slot) => slot.year === '2025')).toMatchObject({
       bankId: 'politics-2025',
       status: 'ready',
@@ -105,6 +105,12 @@ describe('question bank public-course year map', () => {
     });
     expect(politics.yearSlots.find((slot) => slot.year === '2024')).toMatchObject({
       bankId: 'politics-2024',
+      status: 'ready',
+      actionLabel: '开始',
+      clickable: true
+    });
+    expect(politics.yearSlots.find((slot) => slot.year === '2018')).toMatchObject({
+      bankId: 'politics-2018',
       status: 'ready',
       actionLabel: '开始',
       clickable: true
