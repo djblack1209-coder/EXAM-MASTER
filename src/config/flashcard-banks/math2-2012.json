@@ -1,0 +1,1346 @@
+{
+  "id": "math2-2012",
+  "source": "math2-2012-paper-answer",
+  "paperId": "math2-2012",
+  "paperName": "2012考研数学二真题",
+  "subject": "数学",
+  "subjectKey": "math",
+  "track": "math2",
+  "year": "2012",
+  "quality": "ready",
+  "publicationStatus": "published",
+  "publicationBlockers": [],
+  "sourceEvidencePolicy": "baidu_netdisk_official_paper_pdf_page_image_v1",
+  "sourceFiles": [
+    {
+      "id": "math2-2012-paper-answer",
+      "role": "paper_answer",
+      "localPath": "data/raw-inbox/public-course-history/math2/2012/2012-math2-paper-answer.pdf",
+      "sha256": "sha256:7cc38823b4e93ae8215bbd7582f978d4b2072fdcf9d76a6fd9e31e5ab4268fe4"
+    }
+  ],
+  "assetRoot": "question-bank/math2-2012",
+  "processed_at": "2026-05-27T17:20:58Z",
+  "total_cards": 23,
+  "cards": [
+    {
+      "id": "math2-2012-001",
+      "number": 1,
+      "paperId": "math2-2012",
+      "paperName": "2012考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2012",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2012考研数学二第1题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2012 数学二真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2012/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2012考研数学二试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2012/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2012考研数学二答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2012",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2012-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:51aec6aeeb1920ee3a5648e6a68775fc744103808348a1f02c15f554df07955d",
+      "answerTextHash": "sha256:98d843014fcc06e8c015999ef30423714e3b0fc8d97ddf5a4680ed5e2e3f0339",
+      "sourceEvidence": {
+        "evidenceId": "math2-2012-q01",
+        "sourceId": "src_b46d642336356044214749ab",
+        "answerSourceId": "src_b46d642336356044214749ab",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2012-paper-answer",
+        "answerEvidenceId": "math2-2012-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:98d843014fcc06e8c015999ef30423714e3b0fc8d97ddf5a4680ed5e2e3f0339"
+      }
+    },
+    {
+      "id": "math2-2012-002",
+      "number": 2,
+      "paperId": "math2-2012",
+      "paperName": "2012考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2012",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2012考研数学二第2题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2012 数学二真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2012/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2012考研数学二试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2012/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2012考研数学二答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2012",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2012-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:ac264e742fd3d4850d8d73c449e9f86adbb6a41316f2a6b4facac2b555ba66fc",
+      "answerTextHash": "sha256:7e89265d7268b43fc3379f8365eab4dd2ea97698a375e1f59cea607b2aeced60",
+      "sourceEvidence": {
+        "evidenceId": "math2-2012-q02",
+        "sourceId": "src_b46d642336356044214749ab",
+        "answerSourceId": "src_b46d642336356044214749ab",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2012-paper-answer",
+        "answerEvidenceId": "math2-2012-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:7e89265d7268b43fc3379f8365eab4dd2ea97698a375e1f59cea607b2aeced60"
+      }
+    },
+    {
+      "id": "math2-2012-003",
+      "number": 3,
+      "paperId": "math2-2012",
+      "paperName": "2012考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2012",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2012考研数学二第3题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2012 数学二真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2012/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2012考研数学二试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2012/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2012考研数学二答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2012",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2012-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:3d7e19c88923f719e054a91d707757bb1c288f66bd2e7dcf2ac14d701ea28608",
+      "answerTextHash": "sha256:a1fc181e7273154ad55820f682afb4ea6f525df2886ec51a36dedff5cdc77fe4",
+      "sourceEvidence": {
+        "evidenceId": "math2-2012-q03",
+        "sourceId": "src_b46d642336356044214749ab",
+        "answerSourceId": "src_b46d642336356044214749ab",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2012-paper-answer",
+        "answerEvidenceId": "math2-2012-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:a1fc181e7273154ad55820f682afb4ea6f525df2886ec51a36dedff5cdc77fe4"
+      }
+    },
+    {
+      "id": "math2-2012-004",
+      "number": 4,
+      "paperId": "math2-2012",
+      "paperName": "2012考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2012",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2012考研数学二第4题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2012 数学二真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2012/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2012考研数学二试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2012/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2012考研数学二答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2012",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2012-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:c5efe9f67c340f1a54e0a656e42335e08dc4151a6e62d849b141f5c5601a4396",
+      "answerTextHash": "sha256:28d0c2da83a91da6daa0b76dc4fb5ce9a2d98a69f7ac96655fe3d017a8584605",
+      "sourceEvidence": {
+        "evidenceId": "math2-2012-q04",
+        "sourceId": "src_b46d642336356044214749ab",
+        "answerSourceId": "src_b46d642336356044214749ab",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2012-paper-answer",
+        "answerEvidenceId": "math2-2012-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:28d0c2da83a91da6daa0b76dc4fb5ce9a2d98a69f7ac96655fe3d017a8584605"
+      }
+    },
+    {
+      "id": "math2-2012-005",
+      "number": 5,
+      "paperId": "math2-2012",
+      "paperName": "2012考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2012",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2012考研数学二第5题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2012 数学二真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2012/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2012考研数学二试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2012/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2012考研数学二答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2012",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2012-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:c5749ef0294b4b212144683a7ff8d5fdcbecfba2a7536f5f8961d11c30646108",
+      "answerTextHash": "sha256:28d0c2da83a91da6daa0b76dc4fb5ce9a2d98a69f7ac96655fe3d017a8584605",
+      "sourceEvidence": {
+        "evidenceId": "math2-2012-q05",
+        "sourceId": "src_b46d642336356044214749ab",
+        "answerSourceId": "src_b46d642336356044214749ab",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2012-paper-answer",
+        "answerEvidenceId": "math2-2012-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:28d0c2da83a91da6daa0b76dc4fb5ce9a2d98a69f7ac96655fe3d017a8584605"
+      }
+    },
+    {
+      "id": "math2-2012-006",
+      "number": 6,
+      "paperId": "math2-2012",
+      "paperName": "2012考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2012",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2012考研数学二第6题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2012 数学二真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2012/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2012考研数学二试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2012/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2012考研数学二答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2012",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2012-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:7438df458494a2f80d8e6920b161cf26473c903bbce2396d6115a9dbe5113bb3",
+      "answerTextHash": "sha256:28d0c2da83a91da6daa0b76dc4fb5ce9a2d98a69f7ac96655fe3d017a8584605",
+      "sourceEvidence": {
+        "evidenceId": "math2-2012-q06",
+        "sourceId": "src_b46d642336356044214749ab",
+        "answerSourceId": "src_b46d642336356044214749ab",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2012-paper-answer",
+        "answerEvidenceId": "math2-2012-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:28d0c2da83a91da6daa0b76dc4fb5ce9a2d98a69f7ac96655fe3d017a8584605"
+      }
+    },
+    {
+      "id": "math2-2012-007",
+      "number": 7,
+      "paperId": "math2-2012",
+      "paperName": "2012考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2012",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2012考研数学二第7题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2012 数学二真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2012/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2012考研数学二试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2012/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2012考研数学二答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2012",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2012-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:4dca7e87354d34415a349268efe8f3b5213e99bcc8e38352a0b7f30761c34ab5",
+      "answerTextHash": "sha256:98d843014fcc06e8c015999ef30423714e3b0fc8d97ddf5a4680ed5e2e3f0339",
+      "sourceEvidence": {
+        "evidenceId": "math2-2012-q07",
+        "sourceId": "src_b46d642336356044214749ab",
+        "answerSourceId": "src_b46d642336356044214749ab",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2012-paper-answer",
+        "answerEvidenceId": "math2-2012-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:98d843014fcc06e8c015999ef30423714e3b0fc8d97ddf5a4680ed5e2e3f0339"
+      }
+    },
+    {
+      "id": "math2-2012-008",
+      "number": 8,
+      "paperId": "math2-2012",
+      "paperName": "2012考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2012",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2012考研数学二第8题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2012 数学二真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2012/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2012考研数学二试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2012/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2012考研数学二答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2012",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2012-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:82af97d2c8d67ae7df21951f73824738caad29d1e2a87246776c947b72d0ca41",
+      "answerTextHash": "sha256:a1fc181e7273154ad55820f682afb4ea6f525df2886ec51a36dedff5cdc77fe4",
+      "sourceEvidence": {
+        "evidenceId": "math2-2012-q08",
+        "sourceId": "src_b46d642336356044214749ab",
+        "answerSourceId": "src_b46d642336356044214749ab",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2012-paper-answer",
+        "answerEvidenceId": "math2-2012-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:a1fc181e7273154ad55820f682afb4ea6f525df2886ec51a36dedff5cdc77fe4"
+      }
+    },
+    {
+      "id": "math2-2012-009",
+      "number": 9,
+      "paperId": "math2-2012",
+      "paperName": "2012考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2012",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2012考研数学二第9题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "1",
+      "explanation": "答案来自本地百度网盘 2012 数学二真题及解析 PDF；完整题干和公式见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2012/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2012考研数学二试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2012/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2012考研数学二答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2012",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2012-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:91aafd7d3c8042a2578c6dd9a514b8139e3902e36fc196f62c2cd7ebd4586641",
+      "answerTextHash": "sha256:76cb563743198fc27174973ba3b2c75fc413896fb07705ba208d24fbcc80ceba",
+      "sourceEvidence": {
+        "evidenceId": "math2-2012-q09",
+        "sourceId": "src_b46d642336356044214749ab",
+        "answerSourceId": "src_b46d642336356044214749ab",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2012-paper-answer",
+        "answerEvidenceId": "math2-2012-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:76cb563743198fc27174973ba3b2c75fc413896fb07705ba208d24fbcc80ceba"
+      }
+    },
+    {
+      "id": "math2-2012-010",
+      "number": 10,
+      "paperId": "math2-2012",
+      "paperName": "2012考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2012",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2012考研数学二第10题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "pi/4",
+      "explanation": "答案来自本地百度网盘 2012 数学二真题及解析 PDF；完整题干和公式见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2012/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2012考研数学二试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2012/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2012考研数学二答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2012",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2012-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:3f49e121b0c6fab4050d362ed1105037fcaedd09c3dca5a574654ef5e569a173",
+      "answerTextHash": "sha256:0a82d9c6ead8e59030c1f371b747dc4c7592fac81f4211aa44cade8690fbe3b6",
+      "sourceEvidence": {
+        "evidenceId": "math2-2012-q10",
+        "sourceId": "src_b46d642336356044214749ab",
+        "answerSourceId": "src_b46d642336356044214749ab",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2012-paper-answer",
+        "answerEvidenceId": "math2-2012-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:0a82d9c6ead8e59030c1f371b747dc4c7592fac81f4211aa44cade8690fbe3b6"
+      }
+    },
+    {
+      "id": "math2-2012-011",
+      "number": 11,
+      "paperId": "math2-2012",
+      "paperName": "2012考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2012",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2012考研数学二第11题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "0",
+      "explanation": "答案来自本地百度网盘 2012 数学二真题及解析 PDF；完整题干和公式见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2012/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2012考研数学二试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2012/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2012考研数学二答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2012",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2012-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:0c7f295960326fba64fc7451ed5fa58a0a76eca19e93a61a07b79d422b7506bd",
+      "answerTextHash": "sha256:2277d001fbdb2259045d1aec20a80f80b93772793bb69891914ec155791ac698",
+      "sourceEvidence": {
+        "evidenceId": "math2-2012-q11",
+        "sourceId": "src_b46d642336356044214749ab",
+        "answerSourceId": "src_b46d642336356044214749ab",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2012-paper-answer",
+        "answerEvidenceId": "math2-2012-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:2277d001fbdb2259045d1aec20a80f80b93772793bb69891914ec155791ac698"
+      }
+    },
+    {
+      "id": "math2-2012-012",
+      "number": 12,
+      "paperId": "math2-2012",
+      "paperName": "2012考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2012",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2012考研数学二第12题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "y = sqrt(x)",
+      "explanation": "答案来自本地百度网盘 2012 数学二真题及解析 PDF；完整题干和公式见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2012/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2012考研数学二试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2012/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2012考研数学二答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2012",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2012-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:cdeff35f4d5940c58b1b131bff22563851c226f2a1a1a39eafac7e028064f45a",
+      "answerTextHash": "sha256:b69f47fae5bd5b941eb94b9caa17e28b3b57f192665d52a953ebaae411abb382",
+      "sourceEvidence": {
+        "evidenceId": "math2-2012-q12",
+        "sourceId": "src_b46d642336356044214749ab",
+        "answerSourceId": "src_b46d642336356044214749ab",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2012-paper-answer",
+        "answerEvidenceId": "math2-2012-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:b69f47fae5bd5b941eb94b9caa17e28b3b57f192665d52a953ebaae411abb382"
+      }
+    },
+    {
+      "id": "math2-2012-013",
+      "number": 13,
+      "paperId": "math2-2012",
+      "paperName": "2012考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2012",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2012考研数学二第13题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "(-1, 0)",
+      "explanation": "答案来自本地百度网盘 2012 数学二真题及解析 PDF；完整题干和公式见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2012/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2012考研数学二试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2012/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2012考研数学二答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2012",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2012-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:4f3ada07fe7d920060d4ccfd400c80371a97661fa005cfec44648c750f736350",
+      "answerTextHash": "sha256:d41d4b44da40267b2b3facb5770455f63fcc1c2f5b0cda30d0b13878ee0530c0",
+      "sourceEvidence": {
+        "evidenceId": "math2-2012-q13",
+        "sourceId": "src_b46d642336356044214749ab",
+        "answerSourceId": "src_b46d642336356044214749ab",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2012-paper-answer",
+        "answerEvidenceId": "math2-2012-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:d41d4b44da40267b2b3facb5770455f63fcc1c2f5b0cda30d0b13878ee0530c0"
+      }
+    },
+    {
+      "id": "math2-2012-014",
+      "number": 14,
+      "paperId": "math2-2012",
+      "paperName": "2012考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2012",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2012考研数学二第14题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "-27",
+      "explanation": "答案来自本地百度网盘 2012 数学二真题及解析 PDF；完整题干和公式见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2012/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2012考研数学二试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2012/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2012考研数学二答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2012",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2012-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:2156d3105753f34aff5eb6a84ea857327313b27678e1ed6b60fbeb1d0f1d73f4",
+      "answerTextHash": "sha256:44c6d975ebd6559d2c217f62a6c034bb46757d4b75640262fed600809bbb47f4",
+      "sourceEvidence": {
+        "evidenceId": "math2-2012-q14",
+        "sourceId": "src_b46d642336356044214749ab",
+        "answerSourceId": "src_b46d642336356044214749ab",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2012-paper-answer",
+        "answerEvidenceId": "math2-2012-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:44c6d975ebd6559d2c217f62a6c034bb46757d4b75640262fed600809bbb47f4"
+      }
+    },
+    {
+      "id": "math2-2012-015",
+      "number": 15,
+      "paperId": "math2-2012",
+      "paperName": "2012考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2012",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2012考研数学二第15题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "a=1，k=1。",
+      "explanation": "答案来自本地百度网盘 2012 数学二真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2012/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2012考研数学二试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2012/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2012考研数学二答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2012",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2012-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:e8aa6ec97dd1909f00f74296f2f259de98935a2ef2b448f1d3dc404fad931dc1",
+      "answerTextHash": "sha256:315130d517c25675a4f20e6625930f18992a7851bee6aabcec9a043a4b83a883",
+      "sourceEvidence": {
+        "evidenceId": "math2-2012-q15",
+        "sourceId": "src_b46d642336356044214749ab",
+        "answerSourceId": "src_b46d642336356044214749ab",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2012-paper-answer",
+        "answerEvidenceId": "math2-2012-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:315130d517c25675a4f20e6625930f18992a7851bee6aabcec9a043a4b83a883"
+      }
+    },
+    {
+      "id": "math2-2012-016",
+      "number": 16,
+      "paperId": "math2-2012",
+      "paperName": "2012考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2012",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2012考研数学二第16题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "极大值为 e^(-1/2)，极小值为 -e^(-1/2)。",
+      "explanation": "答案来自本地百度网盘 2012 数学二真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2012/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2012考研数学二试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2012/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2012考研数学二答案解析 p.6"
+        },
+        {
+          "src": "question-bank/math2-2012/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2012考研数学二答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2012",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2012-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:98a75f18316aae0f94666571a910d3de55aab453c69e33a6218293cc20697441",
+      "answerTextHash": "sha256:c2786f3f1565ca6486860a5bfbb68c3f9daa5c2500e5ccc623f157896a78972d",
+      "sourceEvidence": {
+        "evidenceId": "math2-2012-q16",
+        "sourceId": "src_b46d642336356044214749ab",
+        "answerSourceId": "src_b46d642336356044214749ab",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2012-paper-answer",
+        "answerEvidenceId": "math2-2012-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:c2786f3f1565ca6486860a5bfbb68c3f9daa5c2500e5ccc623f157896a78972d"
+      }
+    },
+    {
+      "id": "math2-2012-017",
+      "number": 17,
+      "paperId": "math2-2012",
+      "paperName": "2012考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2012",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2012考研数学二第17题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "区域面积为 2；旋转体体积为 (2/3)pi(e^2-1)。",
+      "explanation": "答案来自本地百度网盘 2012 数学二真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2012/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2012考研数学二试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2012/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2012考研数学二答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2012",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2012-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:7c7720c7cc4161def0cde9b62d6066aeb83af644d08b498a1b122dbcffa84b13",
+      "answerTextHash": "sha256:ddebcd8abf7beea78e6c24896bfa5d884933aa65602b9ab0dc3f6ecf50a6a2cf",
+      "sourceEvidence": {
+        "evidenceId": "math2-2012-q17",
+        "sourceId": "src_b46d642336356044214749ab",
+        "answerSourceId": "src_b46d642336356044214749ab",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2012-paper-answer",
+        "answerEvidenceId": "math2-2012-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:ddebcd8abf7beea78e6c24896bfa5d884933aa65602b9ab0dc3f6ecf50a6a2cf"
+      }
+    },
+    {
+      "id": "math2-2012-018",
+      "number": 18,
+      "paperId": "math2-2012",
+      "paperName": "2012考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2012",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2012考研数学二第18题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "二重积分值为 16/15。",
+      "explanation": "答案来自本地百度网盘 2012 数学二真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2012/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2012考研数学二试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2012/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2012考研数学二答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2012",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2012-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:587cff2b18dfd742166443845d5efee482e54a6b3e5a82b0f213b39d72e2b0d2",
+      "answerTextHash": "sha256:a93b36d6674056341de835a62d8b98ebfaa87b9f623c4410c9bc14ae785aa812",
+      "sourceEvidence": {
+        "evidenceId": "math2-2012-q18",
+        "sourceId": "src_b46d642336356044214749ab",
+        "answerSourceId": "src_b46d642336356044214749ab",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2012-paper-answer",
+        "answerEvidenceId": "math2-2012-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:a93b36d6674056341de835a62d8b98ebfaa87b9f623c4410c9bc14ae785aa812"
+      }
+    },
+    {
+      "id": "math2-2012-019",
+      "number": 19,
+      "paperId": "math2-2012",
+      "paperName": "2012考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2012",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2012考研数学二第19题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "f(x)=e^x；曲线拐点为 (0,0)。",
+      "explanation": "答案来自本地百度网盘 2012 数学二真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2012/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2012考研数学二试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2012/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2012考研数学二答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2012",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2012-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:294b967ed0891e7636b0b9f133367a4c53e0bfca6672261ef8aa73d903259982",
+      "answerTextHash": "sha256:331ef8221cee6eeaab86a66b1f2f5819fdc329576464003fe21f6c91236a23a8",
+      "sourceEvidence": {
+        "evidenceId": "math2-2012-q19",
+        "sourceId": "src_b46d642336356044214749ab",
+        "answerSourceId": "src_b46d642336356044214749ab",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2012-paper-answer",
+        "answerEvidenceId": "math2-2012-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:331ef8221cee6eeaab86a66b1f2f5819fdc329576464003fe21f6c91236a23a8"
+      }
+    },
+    {
+      "id": "math2-2012-020",
+      "number": 20,
+      "paperId": "math2-2012",
+      "paperName": "2012考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2012",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2012考研数学二第20题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "不等式证明见答案原页。",
+      "explanation": "答案来自本地百度网盘 2012 数学二真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2012/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2012考研数学二试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2012/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2012考研数学二答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2012",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2012-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:799521813c90076c0f775228462ef2d4e68ffc5fadfb975618a2d35766b5e5bb",
+      "answerTextHash": "sha256:e0546dff493c35bdfc5ea025a030a575b82925385e007a8dce76914c6ff2a2cf",
+      "sourceEvidence": {
+        "evidenceId": "math2-2012-q20",
+        "sourceId": "src_b46d642336356044214749ab",
+        "answerSourceId": "src_b46d642336356044214749ab",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2012-paper-answer",
+        "answerEvidenceId": "math2-2012-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:e0546dff493c35bdfc5ea025a030a575b82925385e007a8dce76914c6ff2a2cf"
+      }
+    },
+    {
+      "id": "math2-2012-021",
+      "number": 21,
+      "paperId": "math2-2012",
+      "paperName": "2012考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2012",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2012考研数学二第21题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "实根唯一且 lim x_n = 1/2。",
+      "explanation": "答案来自本地百度网盘 2012 数学二真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2012/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2012考研数学二试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2012/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2012考研数学二答案解析 p.7"
+        },
+        {
+          "src": "question-bank/math2-2012/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2012考研数学二答案解析 p.8"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2012",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2012-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:854e8c4582630ede5a919c5e3261f7bb33a5d79eca76d252da8b323fbf1de1f0",
+      "answerTextHash": "sha256:29aee994ac45e8cc7c5c1bb760a538a2066459a2bd1948dd58f89b94cf3cc305",
+      "sourceEvidence": {
+        "evidenceId": "math2-2012-q21",
+        "sourceId": "src_b46d642336356044214749ab",
+        "answerSourceId": "src_b46d642336356044214749ab",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2012-paper-answer",
+        "answerEvidenceId": "math2-2012-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:29aee994ac45e8cc7c5c1bb760a538a2066459a2bd1948dd58f89b94cf3cc305"
+      }
+    },
+    {
+      "id": "math2-2012-022",
+      "number": 22,
+      "paperId": "math2-2012",
+      "paperName": "2012考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2012",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2012考研数学二第22题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "|A|=1-a^4；a=-1；通解为 k(1,1,1,1)^T + (1,0,1,1)^T。",
+      "explanation": "答案来自本地百度网盘 2012 数学二真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2012/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2012考研数学二试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2012/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2012考研数学二答案解析 p.8"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2012",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2012-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:1fddc4975932b05ea669056f9beff7667653729360dd32f656f21261d0e3487d",
+      "answerTextHash": "sha256:71bd72903844956b642db42a35f178940bcfa37adc00c2d9a16bf370316482f5",
+      "sourceEvidence": {
+        "evidenceId": "math2-2012-q22",
+        "sourceId": "src_b46d642336356044214749ab",
+        "answerSourceId": "src_b46d642336356044214749ab",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2012-paper-answer",
+        "answerEvidenceId": "math2-2012-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:71bd72903844956b642db42a35f178940bcfa37adc00c2d9a16bf370316482f5"
+      }
+    },
+    {
+      "id": "math2-2012-023",
+      "number": 23,
+      "paperId": "math2-2012",
+      "paperName": "2012考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2012",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2012考研数学二第23题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "a=-1；标准形为 2y2^2 + 6y3^2，正交变换见答案原页。",
+      "explanation": "答案来自本地百度网盘 2012 数学二真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2012/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2012考研数学二试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2012/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2012考研数学二答案解析 p.8"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2012",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2012-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:9095f46c1c302c02864fd12ab16c7dcd673deb88b77298c1ce0c229f822b8416",
+      "answerTextHash": "sha256:64f476682f1884cb388e763f02051f237dd8e3de4cf8e70cab45a7143e00482e",
+      "sourceEvidence": {
+        "evidenceId": "math2-2012-q23",
+        "sourceId": "src_b46d642336356044214749ab",
+        "answerSourceId": "src_b46d642336356044214749ab",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2012-paper-answer",
+        "answerEvidenceId": "math2-2012-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:64f476682f1884cb388e763f02051f237dd8e3de4cf8e70cab45a7143e00482e"
+      }
+    }
+  ]
+}
