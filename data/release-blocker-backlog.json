@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-05-27T06:47:48.567Z",
+  "generatedAt": "2026-05-27T06:57:24.669Z",
   "verdict": "blocked",
   "sources": {
     "questionAudit": "data/question-bank-release-audit.json",
@@ -12,17 +12,17 @@
   },
   "summary": {
     "canPublish": false,
-    "blockerItemCount": 117,
-    "p0Count": 117,
+    "blockerItemCount": 116,
+    "p0Count": 116,
     "publicCourseRequiredSlots": 132,
-    "publicCoursePublishedSlots": 32,
+    "publicCoursePublishedSlots": 33,
     "publicCoursePendingSlots": 0,
     "publicCoursePendingCoverageBlockers": 0,
-    "publicCourseCoverageGaps": 100,
-    "publicCourseBlockerItemCount": 115,
-    "publicCourseBlockedSlotCount": 100,
+    "publicCourseCoverageGaps": 99,
+    "publicCourseBlockerItemCount": 114,
+    "publicCourseBlockedSlotCount": 99,
     "publicCourseLocalSourceSummary": {
-      "totalBlockedSlots": 100,
+      "totalBlockedSlots": 99,
       "pairedReadableSlots": 0,
       "answerBlockedSlots": 0,
       "paperBlockedSlots": 0,
@@ -32,7 +32,7 @@
       "blockedLocalFileSlots": 0,
       "unpairedReadableSlots": 0,
       "missingLocalFileSlots": 0,
-      "notAvailableSlots": 100,
+      "notAvailableSlots": 99,
       "unknownSlots": 0
     },
     "sourceManifestHumanRegistrationQueue": {
@@ -75,8 +75,8 @@
     },
     "public_course_coverage": {
       "status": "blocked",
-      "itemCount": 100,
-      "p0Count": 100,
+      "itemCount": 99,
+      "p0Count": 99,
       "sampleItems": [
         "coverage_missing:english2:2005",
         "coverage_missing:math1:2005",
@@ -6774,113 +6774,6 @@
       "nextAction": "已有可发布题源证据时，完成题卡清洗、答案匹配、证据哈希，再按 registry 规范注册题库。"
     },
     {
-      "slotKey": "politics:2020",
-      "track": "politics",
-      "trackLabel": "考研政治",
-      "year": 2020,
-      "blockerCode": "missing_public_course_bank",
-      "slotStatus": "missing",
-      "blockers": [
-        "missing_public_course_bank"
-      ],
-      "blockerItemIds": [
-        "coverage_missing:politics:2020"
-      ],
-      "sourceEvidenceStatus": "publishable_source_present",
-      "sourceCandidateSummary": "source manifest 已发现 2 个候选，其中 official_paper=2；当前阻断: 未命中可发布条件",
-      "sourceCandidateSamples": [
-        {
-          "sourceId": "src_c5281046ec5e3b17d92a4143",
-          "status": "discovered",
-          "sourceType": "official_paper",
-          "sourceRole": "",
-          "inferredSourceRole": "paper_answer",
-          "roleSource": "filename",
-          "autoPairEligible": true,
-          "answerEvidenceStatus": "",
-          "riskFlags": [],
-          "publishBlocked": false,
-          "blockReasons": [],
-          "remotePath": "/EXAM-MASTER/考研历年真题/01.考研政治/01.考研政治【历年真题】/【解析】1994-2024/2020年考研政治真题及参考答案 .pdf",
-          "sourceUrl": ""
-        },
-        {
-          "sourceId": "src_06315e7fedd219c2b5075ba6",
-          "status": "discovered",
-          "sourceType": "official_paper",
-          "sourceRole": "",
-          "inferredSourceRole": "paper",
-          "roleSource": "filename",
-          "autoPairEligible": true,
-          "answerEvidenceStatus": "",
-          "riskFlags": [],
-          "publishBlocked": false,
-          "blockReasons": [],
-          "remotePath": "/EXAM-MASTER/考研历年真题/01.考研政治/01.考研政治【历年真题】/【真题】2003-2024/2020考研政治真题.pdf",
-          "sourceUrl": ""
-        }
-      ],
-      "localSourceAuditStatus": "not_available",
-      "localSourceAuditSummary": "",
-      "localSourceAuditSamples": [],
-      "localSourceAuditDiagnostics": {
-        "status": "not_available",
-        "sourceCount": 0,
-        "usableTextLayerCount": 0,
-        "needsOcrCount": 0,
-        "blockedCount": 0,
-        "paperLikeCount": 0,
-        "answerLikeCount": 0,
-        "usablePaperLikeCount": 0,
-        "usableAnswerLikeCount": 0,
-        "blockedPaperLikeCount": 0,
-        "blockedAnswerLikeCount": 0,
-        "roleCounts": {},
-        "samples": []
-      },
-      "sourceManifestRegistrationChecklist": {
-        "status": "blocked_before_auto_pair",
-        "readyForHumanVerification": false,
-        "requiredManifestFields": [
-          "eligible=true",
-          "status=discovered|verified|published",
-          "sourceType=official_paper",
-          "contentHash|sha256|fileSha256|sourceHash",
-          "remotePath|sourceUrl|provenanceUrl",
-          "sourceRole inferred as paper+answer or paper_answer",
-          "legalReview.publishBlocked=false",
-          "riskFlags excludes answer_missing,brand_leak,copyright_review_required,ad_or_promo"
-        ],
-        "verifiedSourceRegistryFields": [
-          "localPath",
-          "sourceUrl",
-          "track",
-          "year",
-          "sourceType=official_paper",
-          "answerEvidenceStatus=matched",
-          "expectedSha256",
-          "verifiedBy",
-          "evidenceNote"
-        ],
-        "humanVerificationSteps": [],
-        "postRegistrationCommands": [],
-        "localFileCandidates": [],
-        "verifiedSourceRegistryDrafts": [],
-        "manifestCandidateIds": [
-          "src_c5281046ec5e3b17d92a4143",
-          "src_06315e7fedd219c2b5075ba6"
-        ],
-        "blockers": [
-          "local_source_audit_not_available"
-        ],
-        "note": "Resolve listed local-source blockers before the slot can be treated as an auto-paired official source."
-      },
-      "prerequisiteBlockers": [],
-      "coverageAction": "已有可发布题源证据时，完成题卡清洗、答案匹配、证据哈希，再按 registry 规范注册题库。",
-      "sourceEvidenceAction": "",
-      "nextAction": "已有可发布题源证据时，完成题卡清洗、答案匹配、证据哈希，再按 registry 规范注册题库。"
-    },
-    {
       "slotKey": "english1:2020",
       "track": "english1",
       "trackLabel": "英语一",
@@ -10799,17 +10692,17 @@
   },
   "nextBalancedPublicCourseSlots": [
     {
-      "id": "coverage_missing:politics:2020",
+      "id": "coverage_missing:politics:2021",
       "track": "politics",
       "trackLabel": "考研政治",
-      "year": 2020,
+      "year": 2021,
       "blockerCode": "missing_public_course_bank",
       "slotStatus": "missing",
       "sourceEvidenceStatus": "publishable_source_present",
       "sourceCandidateSummary": "source manifest 已发现 2 个候选，其中 official_paper=2；当前阻断: 未命中可发布条件",
       "sourceCandidateSamples": [
         {
-          "sourceId": "src_c5281046ec5e3b17d92a4143",
+          "sourceId": "src_a6fd115071cc943f911cf82e",
           "status": "discovered",
           "sourceType": "official_paper",
           "sourceRole": "",
@@ -10820,11 +10713,11 @@
           "riskFlags": [],
           "publishBlocked": false,
           "blockReasons": [],
-          "remotePath": "/EXAM-MASTER/考研历年真题/01.考研政治/01.考研政治【历年真题】/【解析】1994-2024/2020年考研政治真题及参考答案 .pdf",
+          "remotePath": "/EXAM-MASTER/考研历年真题/01.考研政治/01.考研政治【历年真题】/【解析】1994-2024/2021年考研政治真题及解析 .pdf",
           "sourceUrl": ""
         },
         {
-          "sourceId": "src_06315e7fedd219c2b5075ba6",
+          "sourceId": "src_88c0d6500b6ecf15d237f76b",
           "status": "discovered",
           "sourceType": "official_paper",
           "sourceRole": "",
@@ -10835,7 +10728,7 @@
           "riskFlags": [],
           "publishBlocked": false,
           "blockReasons": [],
-          "remotePath": "/EXAM-MASTER/考研历年真题/01.考研政治/01.考研政治【历年真题】/【真题】2003-2024/2020考研政治真题.pdf",
+          "remotePath": "/EXAM-MASTER/考研历年真题/01.考研政治/01.考研政治【历年真题】/【真题】2003-2024/2021考研政治真题.pdf",
           "sourceUrl": ""
         }
       ],
@@ -10871,8 +10764,8 @@
         "localFileCandidates": [],
         "verifiedSourceRegistryDrafts": [],
         "manifestCandidateIds": [
-          "src_c5281046ec5e3b17d92a4143",
-          "src_06315e7fedd219c2b5075ba6"
+          "src_a6fd115071cc943f911cf82e",
+          "src_88c0d6500b6ecf15d237f76b"
         ],
         "blockers": [
           "local_source_audit_not_available"
@@ -11299,17 +11192,17 @@
       "nextAction": "已有可发布题源证据时，完成题卡清洗、答案匹配、证据哈希，再按 registry 规范注册题库。"
     },
     {
-      "id": "coverage_missing:politics:2021",
+      "id": "coverage_missing:politics:2022",
       "track": "politics",
       "trackLabel": "考研政治",
-      "year": 2021,
+      "year": 2022,
       "blockerCode": "missing_public_course_bank",
       "slotStatus": "missing",
       "sourceEvidenceStatus": "publishable_source_present",
       "sourceCandidateSummary": "source manifest 已发现 2 个候选，其中 official_paper=2；当前阻断: 未命中可发布条件",
       "sourceCandidateSamples": [
         {
-          "sourceId": "src_a6fd115071cc943f911cf82e",
+          "sourceId": "src_c887b7ca6fd29fcba40841c8",
           "status": "discovered",
           "sourceType": "official_paper",
           "sourceRole": "",
@@ -11320,11 +11213,11 @@
           "riskFlags": [],
           "publishBlocked": false,
           "blockReasons": [],
-          "remotePath": "/EXAM-MASTER/考研历年真题/01.考研政治/01.考研政治【历年真题】/【解析】1994-2024/2021年考研政治真题及解析 .pdf",
+          "remotePath": "/EXAM-MASTER/考研历年真题/01.考研政治/01.考研政治【历年真题】/【解析】1994-2024/2022考研政治真题及答案解析 .pdf",
           "sourceUrl": ""
         },
         {
-          "sourceId": "src_88c0d6500b6ecf15d237f76b",
+          "sourceId": "src_d0653e7428e5fcd6e29e38bf",
           "status": "discovered",
           "sourceType": "official_paper",
           "sourceRole": "",
@@ -11335,7 +11228,7 @@
           "riskFlags": [],
           "publishBlocked": false,
           "blockReasons": [],
-          "remotePath": "/EXAM-MASTER/考研历年真题/01.考研政治/01.考研政治【历年真题】/【真题】2003-2024/2021考研政治真题.pdf",
+          "remotePath": "/EXAM-MASTER/考研历年真题/01.考研政治/01.考研政治【历年真题】/【真题】2003-2024/2022考研政治真题.pdf",
           "sourceUrl": ""
         }
       ],
@@ -11371,8 +11264,8 @@
         "localFileCandidates": [],
         "verifiedSourceRegistryDrafts": [],
         "manifestCandidateIds": [
-          "src_a6fd115071cc943f911cf82e",
-          "src_88c0d6500b6ecf15d237f76b"
+          "src_c887b7ca6fd29fcba40841c8",
+          "src_d0653e7428e5fcd6e29e38bf"
         ],
         "blockers": [
           "local_source_audit_not_available"
@@ -11799,17 +11692,17 @@
       "nextAction": "已有可发布题源证据时，完成题卡清洗、答案匹配、证据哈希，再按 registry 规范注册题库。"
     },
     {
-      "id": "coverage_missing:politics:2022",
+      "id": "coverage_missing:politics:2023",
       "track": "politics",
       "trackLabel": "考研政治",
-      "year": 2022,
+      "year": 2023,
       "blockerCode": "missing_public_course_bank",
       "slotStatus": "missing",
       "sourceEvidenceStatus": "publishable_source_present",
       "sourceCandidateSummary": "source manifest 已发现 2 个候选，其中 official_paper=2；当前阻断: 未命中可发布条件",
       "sourceCandidateSamples": [
         {
-          "sourceId": "src_c887b7ca6fd29fcba40841c8",
+          "sourceId": "src_6d757672897de533d4ff50b6",
           "status": "discovered",
           "sourceType": "official_paper",
           "sourceRole": "",
@@ -11820,11 +11713,11 @@
           "riskFlags": [],
           "publishBlocked": false,
           "blockReasons": [],
-          "remotePath": "/EXAM-MASTER/考研历年真题/01.考研政治/01.考研政治【历年真题】/【解析】1994-2024/2022考研政治真题及答案解析 .pdf",
+          "remotePath": "/EXAM-MASTER/考研历年真题/01.考研政治/01.考研政治【历年真题】/【解析】1994-2024/2023考研政治真题及答案解析 .pdf",
           "sourceUrl": ""
         },
         {
-          "sourceId": "src_d0653e7428e5fcd6e29e38bf",
+          "sourceId": "src_94b2105814110617930cf327",
           "status": "discovered",
           "sourceType": "official_paper",
           "sourceRole": "",
@@ -11835,7 +11728,7 @@
           "riskFlags": [],
           "publishBlocked": false,
           "blockReasons": [],
-          "remotePath": "/EXAM-MASTER/考研历年真题/01.考研政治/01.考研政治【历年真题】/【真题】2003-2024/2022考研政治真题.pdf",
+          "remotePath": "/EXAM-MASTER/考研历年真题/01.考研政治/01.考研政治【历年真题】/【真题】2003-2024/2023考研政治真题.pdf",
           "sourceUrl": ""
         }
       ],
@@ -11871,8 +11764,8 @@
         "localFileCandidates": [],
         "verifiedSourceRegistryDrafts": [],
         "manifestCandidateIds": [
-          "src_c887b7ca6fd29fcba40841c8",
-          "src_d0653e7428e5fcd6e29e38bf"
+          "src_6d757672897de533d4ff50b6",
+          "src_94b2105814110617930cf327"
         ],
         "blockers": [
           "local_source_audit_not_available"
@@ -12299,43 +12192,82 @@
       "nextAction": "已有可发布题源证据时，完成题卡清洗、答案匹配、证据哈希，再按 registry 规范注册题库。"
     },
     {
-      "id": "coverage_missing:politics:2023",
+      "id": "coverage_missing:politics:2026",
       "track": "politics",
       "trackLabel": "考研政治",
-      "year": 2023,
+      "year": 2026,
       "blockerCode": "missing_public_course_bank",
       "slotStatus": "missing",
-      "sourceEvidenceStatus": "publishable_source_present",
-      "sourceCandidateSummary": "source manifest 已发现 2 个候选，其中 official_paper=2；当前阻断: 未命中可发布条件",
+      "sourceEvidenceStatus": "missing_publishable_official_source",
+      "sourceCandidateSummary": "source manifest 已发现 7 个候选，其中 official_paper=0；当前阻断: legalReview.publishBlocked=true(7), riskFlags=brand_leak,copyright_review_required(6), sourceType=institution_candidate(6)",
       "sourceCandidateSamples": [
         {
-          "sourceId": "src_6d757672897de533d4ff50b6",
+          "sourceId": "src_2285facdab02402407b56f8d",
           "status": "discovered",
-          "sourceType": "official_paper",
-          "sourceRole": "",
-          "inferredSourceRole": "paper_answer",
-          "roleSource": "filename",
-          "autoPairEligible": true,
-          "answerEvidenceStatus": "",
-          "riskFlags": [],
-          "publishBlocked": false,
-          "blockReasons": [],
-          "remotePath": "/EXAM-MASTER/考研历年真题/01.考研政治/01.考研政治【历年真题】/【解析】1994-2024/2023考研政治真题及答案解析 .pdf",
-          "sourceUrl": ""
-        },
-        {
-          "sourceId": "src_94b2105814110617930cf327",
-          "status": "discovered",
-          "sourceType": "official_paper",
+          "sourceType": "institution_candidate",
           "sourceRole": "",
           "inferredSourceRole": "paper",
           "roleSource": "filename",
-          "autoPairEligible": true,
+          "autoPairEligible": false,
           "answerEvidenceStatus": "",
-          "riskFlags": [],
-          "publishBlocked": false,
-          "blockReasons": [],
-          "remotePath": "/EXAM-MASTER/考研历年真题/01.考研政治/01.考研政治【历年真题】/【真题】2003-2024/2023考研政治真题.pdf",
+          "riskFlags": [
+            "brand_leak",
+            "copyright_review_required",
+            "institution_candidate"
+          ],
+          "publishBlocked": true,
+          "blockReasons": [
+            "sourceType=institution_candidate",
+            "riskFlags=brand_leak,copyright_review_required",
+            "legalReview.publishBlocked=true"
+          ],
+          "remotePath": "/EXAM-MASTER/考研历年真题/01.考研政治/02.考研政治【电子讲义】/2026 徐涛电子版PDF/26徐涛《优题库》试题册.pdf",
+          "sourceUrl": ""
+        },
+        {
+          "sourceId": "src_5cb6e7bffaff2c4fd65b9e1d",
+          "status": "discovered",
+          "sourceType": "institution_candidate",
+          "sourceRole": "",
+          "inferredSourceRole": "paper",
+          "roleSource": "filename",
+          "autoPairEligible": false,
+          "answerEvidenceStatus": "",
+          "riskFlags": [
+            "brand_leak",
+            "copyright_review_required",
+            "institution_candidate"
+          ],
+          "publishBlocked": true,
+          "blockReasons": [
+            "sourceType=institution_candidate",
+            "riskFlags=brand_leak,copyright_review_required",
+            "legalReview.publishBlocked=true"
+          ],
+          "remotePath": "/EXAM-MASTER/考研历年真题/01.考研政治/02.考研政治【电子讲义】/26肖秀荣《1000题》/【正版扫描件】2026考研政治1000题-试题分册-肖秀荣1000.pdf",
+          "sourceUrl": ""
+        },
+        {
+          "sourceId": "src_a6056b6599caba70e2e1538b",
+          "status": "discovered",
+          "sourceType": "institution_candidate",
+          "sourceRole": "",
+          "inferredSourceRole": "paper",
+          "roleSource": "path",
+          "autoPairEligible": false,
+          "answerEvidenceStatus": "",
+          "riskFlags": [
+            "brand_leak",
+            "copyright_review_required",
+            "institution_candidate"
+          ],
+          "publishBlocked": true,
+          "blockReasons": [
+            "sourceType=institution_candidate",
+            "riskFlags=brand_leak,copyright_review_required",
+            "legalReview.publishBlocked=true"
+          ],
+          "remotePath": "/EXAM-MASTER/考研历年真题/01.考研政治/02.考研政治【电子讲义】/2026 徐涛电子版PDF/26徐涛《核心考案》.pdf",
           "sourceUrl": ""
         }
       ],
@@ -12371,16 +12303,19 @@
         "localFileCandidates": [],
         "verifiedSourceRegistryDrafts": [],
         "manifestCandidateIds": [
-          "src_6d757672897de533d4ff50b6",
-          "src_94b2105814110617930cf327"
+          "src_2285facdab02402407b56f8d",
+          "src_5cb6e7bffaff2c4fd65b9e1d",
+          "src_a6056b6599caba70e2e1538b"
         ],
         "blockers": [
           "local_source_audit_not_available"
         ],
         "note": "Resolve listed local-source blockers before the slot can be treated as an auto-paired official source."
       },
-      "prerequisiteBlockers": [],
-      "nextAction": "已有可发布题源证据时，完成题卡清洗、答案匹配、证据哈希，再按 registry 规范注册题库。"
+      "prerequisiteBlockers": [
+        "missing_publishable_official_source"
+      ],
+      "nextAction": "在 Source Manifest 中补齐同槽位 official_paper 试卷+答案或真题及答案合并 PDF，要求有 remotePath、contentHash，且风险标记不阻断发布。"
     },
     {
       "id": "coverage_missing:english1:2018",
@@ -25262,222 +25197,6 @@
       }
     },
     {
-      "id": "coverage_missing:politics:2020",
-      "workstream": "public_course_coverage",
-      "priority": "P0",
-      "status": "blocked",
-      "title": "考研政治 2020 缺少可发布题库",
-      "blockerCode": "missing_public_course_bank",
-      "track": "politics",
-      "trackLabel": "考研政治",
-      "year": 2020,
-      "bankId": "",
-      "filePath": "",
-      "count": 0,
-      "nextAction": "已有可发布题源证据时，完成题卡清洗、答案匹配、证据哈希，再按 registry 规范注册题库。",
-      "evidence": {
-        "requiredYears": [
-          2005,
-          2006,
-          2007,
-          2008,
-          2009,
-          2010,
-          2011,
-          2012,
-          2013,
-          2014,
-          2015,
-          2016,
-          2017,
-          2018,
-          2019,
-          2020,
-          2021,
-          2022,
-          2023,
-          2024,
-          2025,
-          2026
-        ],
-        "publishedYears": [
-          2005,
-          2006,
-          2007,
-          2008,
-          2009,
-          2010,
-          2011,
-          2012,
-          2013,
-          2014,
-          2015,
-          2016,
-          2017,
-          2018,
-          2019,
-          2024,
-          2025
-        ],
-        "pendingYears": [],
-        "sourceEvidenceStatus": "publishable_source_present",
-        "sourceEvidencePresentYears": [
-          2005,
-          2006,
-          2007,
-          2008,
-          2009,
-          2010,
-          2011,
-          2012,
-          2013,
-          2014,
-          2015,
-          2016,
-          2017,
-          2018,
-          2019,
-          2020,
-          2021,
-          2022,
-          2023,
-          2024,
-          2025
-        ],
-        "sourceEvidenceCoverageRate": 0.9545,
-        "sourceCandidateSummary": "source manifest 已发现 2 个候选，其中 official_paper=2；当前阻断: 未命中可发布条件",
-        "sourceCandidateSamples": [
-          {
-            "sourceId": "src_c5281046ec5e3b17d92a4143",
-            "status": "discovered",
-            "sourceType": "official_paper",
-            "sourceRole": "",
-            "inferredSourceRole": "paper_answer",
-            "roleSource": "filename",
-            "autoPairEligible": true,
-            "answerEvidenceStatus": "",
-            "riskFlags": [],
-            "publishBlocked": false,
-            "blockReasons": [],
-            "remotePath": "/EXAM-MASTER/考研历年真题/01.考研政治/01.考研政治【历年真题】/【解析】1994-2024/2020年考研政治真题及参考答案 .pdf",
-            "sourceUrl": ""
-          },
-          {
-            "sourceId": "src_06315e7fedd219c2b5075ba6",
-            "status": "discovered",
-            "sourceType": "official_paper",
-            "sourceRole": "",
-            "inferredSourceRole": "paper",
-            "roleSource": "filename",
-            "autoPairEligible": true,
-            "answerEvidenceStatus": "",
-            "riskFlags": [],
-            "publishBlocked": false,
-            "blockReasons": [],
-            "remotePath": "/EXAM-MASTER/考研历年真题/01.考研政治/01.考研政治【历年真题】/【真题】2003-2024/2020考研政治真题.pdf",
-            "sourceUrl": ""
-          }
-        ],
-        "sourceCandidateDiagnostics": {
-          "candidateCount": 2,
-          "officialPaperCandidateCount": 2,
-          "publishBlockedCandidateCount": 0,
-          "autoPairEligibleCandidateCount": 2,
-          "paperCandidateCount": 1,
-          "answerCandidateCount": 0,
-          "combinedCandidateCount": 1,
-          "blockReasons": {},
-          "sampleCandidates": [
-            {
-              "sourceId": "src_c5281046ec5e3b17d92a4143",
-              "status": "discovered",
-              "sourceType": "official_paper",
-              "sourceRole": "",
-              "inferredSourceRole": "paper_answer",
-              "roleSource": "filename",
-              "autoPairEligible": true,
-              "answerEvidenceStatus": "",
-              "riskFlags": [],
-              "publishBlocked": false,
-              "blockReasons": [],
-              "remotePath": "/EXAM-MASTER/考研历年真题/01.考研政治/01.考研政治【历年真题】/【解析】1994-2024/2020年考研政治真题及参考答案 .pdf",
-              "sourceUrl": ""
-            },
-            {
-              "sourceId": "src_06315e7fedd219c2b5075ba6",
-              "status": "discovered",
-              "sourceType": "official_paper",
-              "sourceRole": "",
-              "inferredSourceRole": "paper",
-              "roleSource": "filename",
-              "autoPairEligible": true,
-              "answerEvidenceStatus": "",
-              "riskFlags": [],
-              "publishBlocked": false,
-              "blockReasons": [],
-              "remotePath": "/EXAM-MASTER/考研历年真题/01.考研政治/01.考研政治【历年真题】/【真题】2003-2024/2020考研政治真题.pdf",
-              "sourceUrl": ""
-            }
-          ]
-        },
-        "localSourceAuditStatus": "not_available",
-        "localSourceAuditSummary": "",
-        "localSourceAuditSamples": [],
-        "localSourceAuditDiagnostics": {
-          "status": "not_available",
-          "sourceCount": 0,
-          "usableTextLayerCount": 0,
-          "needsOcrCount": 0,
-          "blockedCount": 0,
-          "paperLikeCount": 0,
-          "answerLikeCount": 0,
-          "usablePaperLikeCount": 0,
-          "usableAnswerLikeCount": 0,
-          "blockedPaperLikeCount": 0,
-          "blockedAnswerLikeCount": 0,
-          "roleCounts": {},
-          "samples": []
-        },
-        "sourceManifestRegistrationChecklist": {
-          "status": "blocked_before_auto_pair",
-          "readyForHumanVerification": false,
-          "requiredManifestFields": [
-            "eligible=true",
-            "status=discovered|verified|published",
-            "sourceType=official_paper",
-            "contentHash|sha256|fileSha256|sourceHash",
-            "remotePath|sourceUrl|provenanceUrl",
-            "sourceRole inferred as paper+answer or paper_answer",
-            "legalReview.publishBlocked=false",
-            "riskFlags excludes answer_missing,brand_leak,copyright_review_required,ad_or_promo"
-          ],
-          "verifiedSourceRegistryFields": [
-            "localPath",
-            "sourceUrl",
-            "track",
-            "year",
-            "sourceType=official_paper",
-            "answerEvidenceStatus=matched",
-            "expectedSha256",
-            "verifiedBy",
-            "evidenceNote"
-          ],
-          "humanVerificationSteps": [],
-          "postRegistrationCommands": [],
-          "localFileCandidates": [],
-          "verifiedSourceRegistryDrafts": [],
-          "manifestCandidateIds": [
-            "src_c5281046ec5e3b17d92a4143",
-            "src_06315e7fedd219c2b5075ba6"
-          ],
-          "blockers": [
-            "local_source_audit_not_available"
-          ],
-          "note": "Resolve listed local-source blockers before the slot can be treated as an auto-paired official source."
-        }
-      }
-    },
-    {
       "id": "coverage_missing:english1:2020",
       "workstream": "public_course_coverage",
       "priority": "P0",
@@ -26520,6 +26239,7 @@
           2017,
           2018,
           2019,
+          2020,
           2024,
           2025
         ],
@@ -27724,6 +27444,7 @@
           2017,
           2018,
           2019,
+          2020,
           2024,
           2025
         ],
@@ -28928,6 +28649,7 @@
           2017,
           2018,
           2019,
+          2020,
           2024,
           2025
         ],
@@ -31330,6 +31052,7 @@
           2017,
           2018,
           2019,
+          2020,
           2024,
           2025
         ],

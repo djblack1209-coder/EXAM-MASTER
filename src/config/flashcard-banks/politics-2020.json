@@ -1,0 +1,3015 @@
+{
+  "id": "politics-2020",
+  "source": "politics-2020-paper-answer",
+  "paperId": "politics-2020",
+  "paperName": "2020考研政治真题",
+  "subject": "政治",
+  "subjectKey": "politics",
+  "track": "politics",
+  "year": "2020",
+  "quality": "ready",
+  "publicationStatus": "published",
+  "publicationBlockers": [],
+  "sourceEvidencePolicy": "baidu_netdisk_official_paper_pdf_page_image_v1",
+  "sourceFiles": [
+    {
+      "id": "politics-2020-paper",
+      "sourceId": "src_06315e7fedd219c2b5075ba6",
+      "role": "paper",
+      "localPath": "data/raw-inbox/public-course-history/politics/2020/2020-politics-paper.pdf",
+      "sha256": "sha256:839420ae4dbdd079a8e69086363e9b2ed69ffd01a7ebd71063599fb3410f31f8"
+    },
+    {
+      "id": "politics-2020-paper-answer",
+      "sourceId": "src_c5281046ec5e3b17d92a4143",
+      "role": "paper_answer",
+      "localPath": "data/raw-inbox/public-course-history/politics/2020/2020-politics-paper-answer.pdf",
+      "sha256": "sha256:44b1a2a490706657278605de362b3da640c5d4d32541fe6fc56df0b37b596683"
+    }
+  ],
+  "sourceNotes": [
+    "The 2020 standalone paper PDF provides the release question pages and user-visible option order. The scanned paper-answer PDF contains per-question choice answers on pages 2-13 and analysis answer points on pages 13-16; OCR was used only to locate those pages while final release evidence remains rendered PDF page images."
+  ],
+  "assetRoot": "question-bank/politics-2020",
+  "processed_at": "2026-05-27T06:55:29Z",
+  "total_cards": 38,
+  "sections": [
+    "单项选择",
+    "多项选择",
+    "分析题"
+  ],
+  "cards": [
+    {
+      "id": "politics-2020-001",
+      "number": 1,
+      "paperId": "politics-2020",
+      "paperName": "2020考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2020",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2020考研政治第1题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2020 考研政治真题及参考答案 PDF 第 2-13 页逐题解析；题库以独立试卷 PDF 作为用户可见题面和选项顺序。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2020/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2020考研政治试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2020/answer-page-02.jpg",
+          "caption": "答案原页 p.2",
+          "alt": "2020考研政治答案原页 p.2"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2020",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2020-paper-answer",
+      "sourceEvidenceId": "politics-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:ce5e7595741b65dab878748f06969d0d05c767831ece63856db1c5e5492968ae",
+      "answerTextHash": "sha256:676f513272f2e333598bd9369415789f5f816ae6a3759bcc8961ebfb350a34b2",
+      "sourceEvidence": {
+        "evidenceId": "politics-2020-q01",
+        "sourceId": "src_06315e7fedd219c2b5075ba6",
+        "answerSourceId": "src_c5281046ec5e3b17d92a4143",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:ce5e7595741b65dab878748f06969d0d05c767831ece63856db1c5e5492968ae",
+        "answerTextHash": "sha256:676f513272f2e333598bd9369415789f5f816ae6a3759bcc8961ebfb350a34b2"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_c5281046ec5e3b17d92a4143",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2020/2020-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:676f513272f2e333598bd9369415789f5f816ae6a3759bcc8961ebfb350a34b2",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2020_bank",
+        "note": "Matched against local Baidu Netdisk 2020 Politics paper-answer PDF page images."
+      }
+    },
+    {
+      "id": "politics-2020-002",
+      "number": 2,
+      "paperId": "politics-2020",
+      "paperName": "2020考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2020",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2020考研政治第2题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2020 考研政治真题及参考答案 PDF 第 2-13 页逐题解析；题库以独立试卷 PDF 作为用户可见题面和选项顺序。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2020/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2020考研政治试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2020/answer-page-02.jpg",
+          "caption": "答案原页 p.2",
+          "alt": "2020考研政治答案原页 p.2"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2020",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2020-paper-answer",
+      "sourceEvidenceId": "politics-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:3473309a54b84573d0ce021352a2e20b30882154b278a9fdf50c8bb6c9585af9",
+      "answerTextHash": "sha256:45caa87806081b2e5522d4efd653b8ac78ade52efa328931abce94987694589d",
+      "sourceEvidence": {
+        "evidenceId": "politics-2020-q02",
+        "sourceId": "src_06315e7fedd219c2b5075ba6",
+        "answerSourceId": "src_c5281046ec5e3b17d92a4143",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:3473309a54b84573d0ce021352a2e20b30882154b278a9fdf50c8bb6c9585af9",
+        "answerTextHash": "sha256:45caa87806081b2e5522d4efd653b8ac78ade52efa328931abce94987694589d"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_c5281046ec5e3b17d92a4143",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2020/2020-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:45caa87806081b2e5522d4efd653b8ac78ade52efa328931abce94987694589d",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2020_bank",
+        "note": "Matched against local Baidu Netdisk 2020 Politics paper-answer PDF page images."
+      }
+    },
+    {
+      "id": "politics-2020-003",
+      "number": 3,
+      "paperId": "politics-2020",
+      "paperName": "2020考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2020",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2020考研政治第3题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2020 考研政治真题及参考答案 PDF 第 2-13 页逐题解析；题库以独立试卷 PDF 作为用户可见题面和选项顺序。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2020/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2020考研政治试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2020/answer-page-02.jpg",
+          "caption": "答案原页 p.2",
+          "alt": "2020考研政治答案原页 p.2"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2020",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2020-paper-answer",
+      "sourceEvidenceId": "politics-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:c6e73bcd681c503a0f3a012ea6602086063c48f9fb325e22936aab94562418d3",
+      "answerTextHash": "sha256:45caa87806081b2e5522d4efd653b8ac78ade52efa328931abce94987694589d",
+      "sourceEvidence": {
+        "evidenceId": "politics-2020-q03",
+        "sourceId": "src_06315e7fedd219c2b5075ba6",
+        "answerSourceId": "src_c5281046ec5e3b17d92a4143",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:c6e73bcd681c503a0f3a012ea6602086063c48f9fb325e22936aab94562418d3",
+        "answerTextHash": "sha256:45caa87806081b2e5522d4efd653b8ac78ade52efa328931abce94987694589d"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_c5281046ec5e3b17d92a4143",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2020/2020-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:45caa87806081b2e5522d4efd653b8ac78ade52efa328931abce94987694589d",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2020_bank",
+        "note": "Matched against local Baidu Netdisk 2020 Politics paper-answer PDF page images."
+      }
+    },
+    {
+      "id": "politics-2020-004",
+      "number": 4,
+      "paperId": "politics-2020",
+      "paperName": "2020考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2020",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2020考研政治第4题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2020 考研政治真题及参考答案 PDF 第 2-13 页逐题解析；题库以独立试卷 PDF 作为用户可见题面和选项顺序。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2020/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2020考研政治试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2020/answer-page-03.jpg",
+          "caption": "答案原页 p.3",
+          "alt": "2020考研政治答案原页 p.3"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2020",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2020-paper-answer",
+      "sourceEvidenceId": "politics-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:209449f9b6a38fb04b334b09be267fccfef08d90a8014f47db268c240f6c15c5",
+      "answerTextHash": "sha256:0634ab203034f2c6374f15232206073cecbf4e9adb5bc8e37d45b9853b7f2948",
+      "sourceEvidence": {
+        "evidenceId": "politics-2020-q04",
+        "sourceId": "src_06315e7fedd219c2b5075ba6",
+        "answerSourceId": "src_c5281046ec5e3b17d92a4143",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:209449f9b6a38fb04b334b09be267fccfef08d90a8014f47db268c240f6c15c5",
+        "answerTextHash": "sha256:0634ab203034f2c6374f15232206073cecbf4e9adb5bc8e37d45b9853b7f2948"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_c5281046ec5e3b17d92a4143",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2020/2020-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:0634ab203034f2c6374f15232206073cecbf4e9adb5bc8e37d45b9853b7f2948",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2020_bank",
+        "note": "Matched against local Baidu Netdisk 2020 Politics paper-answer PDF page images."
+      }
+    },
+    {
+      "id": "politics-2020-005",
+      "number": 5,
+      "paperId": "politics-2020",
+      "paperName": "2020考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2020",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2020考研政治第5题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2020 考研政治真题及参考答案 PDF 第 2-13 页逐题解析；题库以独立试卷 PDF 作为用户可见题面和选项顺序。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2020/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2020考研政治试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2020/answer-page-03.jpg",
+          "caption": "答案原页 p.3",
+          "alt": "2020考研政治答案原页 p.3"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2020",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2020-paper-answer",
+      "sourceEvidenceId": "politics-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:525d228c1dda31b7e04ddac95b9032ef0a6f29cb3ba1ddb74f526db63de23f27",
+      "answerTextHash": "sha256:04ec1392cd28549dbaddc0073958e13af49f2cfb6a360df78fd43db6aefcc6de",
+      "sourceEvidence": {
+        "evidenceId": "politics-2020-q05",
+        "sourceId": "src_06315e7fedd219c2b5075ba6",
+        "answerSourceId": "src_c5281046ec5e3b17d92a4143",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:525d228c1dda31b7e04ddac95b9032ef0a6f29cb3ba1ddb74f526db63de23f27",
+        "answerTextHash": "sha256:04ec1392cd28549dbaddc0073958e13af49f2cfb6a360df78fd43db6aefcc6de"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_c5281046ec5e3b17d92a4143",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2020/2020-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:04ec1392cd28549dbaddc0073958e13af49f2cfb6a360df78fd43db6aefcc6de",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2020_bank",
+        "note": "Matched against local Baidu Netdisk 2020 Politics paper-answer PDF page images."
+      }
+    },
+    {
+      "id": "politics-2020-006",
+      "number": 6,
+      "paperId": "politics-2020",
+      "paperName": "2020考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2020",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2020考研政治第6题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2020 考研政治真题及参考答案 PDF 第 2-13 页逐题解析；题库以独立试卷 PDF 作为用户可见题面和选项顺序。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2020/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2020考研政治试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2020/answer-page-03.jpg",
+          "caption": "答案原页 p.3",
+          "alt": "2020考研政治答案原页 p.3"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2020",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2020-paper-answer",
+      "sourceEvidenceId": "politics-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:12262c6774da8e6281ce31a058e77f980ea42e77e12a6a09af8e45446c5207f1",
+      "answerTextHash": "sha256:0634ab203034f2c6374f15232206073cecbf4e9adb5bc8e37d45b9853b7f2948",
+      "sourceEvidence": {
+        "evidenceId": "politics-2020-q06",
+        "sourceId": "src_06315e7fedd219c2b5075ba6",
+        "answerSourceId": "src_c5281046ec5e3b17d92a4143",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:12262c6774da8e6281ce31a058e77f980ea42e77e12a6a09af8e45446c5207f1",
+        "answerTextHash": "sha256:0634ab203034f2c6374f15232206073cecbf4e9adb5bc8e37d45b9853b7f2948"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_c5281046ec5e3b17d92a4143",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2020/2020-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:0634ab203034f2c6374f15232206073cecbf4e9adb5bc8e37d45b9853b7f2948",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2020_bank",
+        "note": "Matched against local Baidu Netdisk 2020 Politics paper-answer PDF page images."
+      }
+    },
+    {
+      "id": "politics-2020-007",
+      "number": 7,
+      "paperId": "politics-2020",
+      "paperName": "2020考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2020",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2020考研政治第7题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2020 考研政治真题及参考答案 PDF 第 2-13 页逐题解析；题库以独立试卷 PDF 作为用户可见题面和选项顺序。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2020/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2020考研政治试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2020/answer-page-04.jpg",
+          "caption": "答案原页 p.4",
+          "alt": "2020考研政治答案原页 p.4"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2020",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2020-paper-answer",
+      "sourceEvidenceId": "politics-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:a2269107b8107c0f58aa97176aea0069361b8d7580cd6956c7c63d37e41c5060",
+      "answerTextHash": "sha256:280315c20ba2e035785711fe9db555cb2d7482b9c3a74a60c6bb6324c86f8949",
+      "sourceEvidence": {
+        "evidenceId": "politics-2020-q07",
+        "sourceId": "src_06315e7fedd219c2b5075ba6",
+        "answerSourceId": "src_c5281046ec5e3b17d92a4143",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:a2269107b8107c0f58aa97176aea0069361b8d7580cd6956c7c63d37e41c5060",
+        "answerTextHash": "sha256:280315c20ba2e035785711fe9db555cb2d7482b9c3a74a60c6bb6324c86f8949"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_c5281046ec5e3b17d92a4143",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2020/2020-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:280315c20ba2e035785711fe9db555cb2d7482b9c3a74a60c6bb6324c86f8949",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2020_bank",
+        "note": "Matched against local Baidu Netdisk 2020 Politics paper-answer PDF page images."
+      }
+    },
+    {
+      "id": "politics-2020-008",
+      "number": 8,
+      "paperId": "politics-2020",
+      "paperName": "2020考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2020",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2020考研政治第8题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2020 考研政治真题及参考答案 PDF 第 2-13 页逐题解析；题库以独立试卷 PDF 作为用户可见题面和选项顺序。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2020/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2020考研政治试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2020/answer-page-04.jpg",
+          "caption": "答案原页 p.4",
+          "alt": "2020考研政治答案原页 p.4"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2020",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2020-paper-answer",
+      "sourceEvidenceId": "politics-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:da8023cea2efa7067c68043530afa0b46f630398cd54e572f58137659e11f776",
+      "answerTextHash": "sha256:280315c20ba2e035785711fe9db555cb2d7482b9c3a74a60c6bb6324c86f8949",
+      "sourceEvidence": {
+        "evidenceId": "politics-2020-q08",
+        "sourceId": "src_06315e7fedd219c2b5075ba6",
+        "answerSourceId": "src_c5281046ec5e3b17d92a4143",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:da8023cea2efa7067c68043530afa0b46f630398cd54e572f58137659e11f776",
+        "answerTextHash": "sha256:280315c20ba2e035785711fe9db555cb2d7482b9c3a74a60c6bb6324c86f8949"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_c5281046ec5e3b17d92a4143",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2020/2020-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:280315c20ba2e035785711fe9db555cb2d7482b9c3a74a60c6bb6324c86f8949",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2020_bank",
+        "note": "Matched against local Baidu Netdisk 2020 Politics paper-answer PDF page images."
+      }
+    },
+    {
+      "id": "politics-2020-009",
+      "number": 9,
+      "paperId": "politics-2020",
+      "paperName": "2020考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2020",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2020考研政治第9题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2020 考研政治真题及参考答案 PDF 第 2-13 页逐题解析；题库以独立试卷 PDF 作为用户可见题面和选项顺序。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2020/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2020考研政治试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2020/answer-page-04.jpg",
+          "caption": "答案原页 p.4",
+          "alt": "2020考研政治答案原页 p.4"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2020",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2020-paper-answer",
+      "sourceEvidenceId": "politics-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:9e8bccde92e4088860c39c1bd649071d3badb71cf2b5711f3a9a4ac86b78a499",
+      "answerTextHash": "sha256:f36726feabe52ef14a5e320e57edccaf7bbc581ae42114d461b83545ac4c6e1f",
+      "sourceEvidence": {
+        "evidenceId": "politics-2020-q09",
+        "sourceId": "src_06315e7fedd219c2b5075ba6",
+        "answerSourceId": "src_c5281046ec5e3b17d92a4143",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:9e8bccde92e4088860c39c1bd649071d3badb71cf2b5711f3a9a4ac86b78a499",
+        "answerTextHash": "sha256:f36726feabe52ef14a5e320e57edccaf7bbc581ae42114d461b83545ac4c6e1f"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_c5281046ec5e3b17d92a4143",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2020/2020-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:f36726feabe52ef14a5e320e57edccaf7bbc581ae42114d461b83545ac4c6e1f",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2020_bank",
+        "note": "Matched against local Baidu Netdisk 2020 Politics paper-answer PDF page images."
+      }
+    },
+    {
+      "id": "politics-2020-010",
+      "number": 10,
+      "paperId": "politics-2020",
+      "paperName": "2020考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2020",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2020考研政治第10题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2020 考研政治真题及参考答案 PDF 第 2-13 页逐题解析；题库以独立试卷 PDF 作为用户可见题面和选项顺序。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2020/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2020考研政治试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2020/answer-page-05.jpg",
+          "caption": "答案原页 p.5",
+          "alt": "2020考研政治答案原页 p.5"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2020",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2020-paper-answer",
+      "sourceEvidenceId": "politics-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:3c5cc418e76c968b28578f7320eb6aa75758464bff268754d341bf98c3bff950",
+      "answerTextHash": "sha256:f82756dd2f052ba229ab97da26f2d6c4b0710ba71f313595fed3fb927bc2c0cb",
+      "sourceEvidence": {
+        "evidenceId": "politics-2020-q10",
+        "sourceId": "src_06315e7fedd219c2b5075ba6",
+        "answerSourceId": "src_c5281046ec5e3b17d92a4143",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:3c5cc418e76c968b28578f7320eb6aa75758464bff268754d341bf98c3bff950",
+        "answerTextHash": "sha256:f82756dd2f052ba229ab97da26f2d6c4b0710ba71f313595fed3fb927bc2c0cb"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_c5281046ec5e3b17d92a4143",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2020/2020-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:f82756dd2f052ba229ab97da26f2d6c4b0710ba71f313595fed3fb927bc2c0cb",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2020_bank",
+        "note": "Matched against local Baidu Netdisk 2020 Politics paper-answer PDF page images."
+      }
+    },
+    {
+      "id": "politics-2020-011",
+      "number": 11,
+      "paperId": "politics-2020",
+      "paperName": "2020考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2020",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2020考研政治第11题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2020 考研政治真题及参考答案 PDF 第 2-13 页逐题解析；题库以独立试卷 PDF 作为用户可见题面和选项顺序。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2020/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2020考研政治试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2020/answer-page-05.jpg",
+          "caption": "答案原页 p.5",
+          "alt": "2020考研政治答案原页 p.5"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2020",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2020-paper-answer",
+      "sourceEvidenceId": "politics-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:e057ed2fe65693e62fb5b2487c02cbbaf534b4894838a8a67953d57afe5cc760",
+      "answerTextHash": "sha256:e7e010b539bdaf68c1edd4ffcefb6fb1a2f2c5cf47bdca5bc27035c7b16dcdbb",
+      "sourceEvidence": {
+        "evidenceId": "politics-2020-q11",
+        "sourceId": "src_06315e7fedd219c2b5075ba6",
+        "answerSourceId": "src_c5281046ec5e3b17d92a4143",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:e057ed2fe65693e62fb5b2487c02cbbaf534b4894838a8a67953d57afe5cc760",
+        "answerTextHash": "sha256:e7e010b539bdaf68c1edd4ffcefb6fb1a2f2c5cf47bdca5bc27035c7b16dcdbb"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_c5281046ec5e3b17d92a4143",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2020/2020-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:e7e010b539bdaf68c1edd4ffcefb6fb1a2f2c5cf47bdca5bc27035c7b16dcdbb",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2020_bank",
+        "note": "Matched against local Baidu Netdisk 2020 Politics paper-answer PDF page images."
+      }
+    },
+    {
+      "id": "politics-2020-012",
+      "number": 12,
+      "paperId": "politics-2020",
+      "paperName": "2020考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2020",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2020考研政治第12题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2020 考研政治真题及参考答案 PDF 第 2-13 页逐题解析；题库以独立试卷 PDF 作为用户可见题面和选项顺序。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2020/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2020考研政治试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2020/answer-page-05.jpg",
+          "caption": "答案原页 p.5",
+          "alt": "2020考研政治答案原页 p.5"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2020",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2020-paper-answer",
+      "sourceEvidenceId": "politics-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:b90317490203a4856bc3d384f6805fd5c6312e9b8db1b65d116199c2736b4b65",
+      "answerTextHash": "sha256:f82756dd2f052ba229ab97da26f2d6c4b0710ba71f313595fed3fb927bc2c0cb",
+      "sourceEvidence": {
+        "evidenceId": "politics-2020-q12",
+        "sourceId": "src_06315e7fedd219c2b5075ba6",
+        "answerSourceId": "src_c5281046ec5e3b17d92a4143",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:b90317490203a4856bc3d384f6805fd5c6312e9b8db1b65d116199c2736b4b65",
+        "answerTextHash": "sha256:f82756dd2f052ba229ab97da26f2d6c4b0710ba71f313595fed3fb927bc2c0cb"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_c5281046ec5e3b17d92a4143",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2020/2020-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:f82756dd2f052ba229ab97da26f2d6c4b0710ba71f313595fed3fb927bc2c0cb",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2020_bank",
+        "note": "Matched against local Baidu Netdisk 2020 Politics paper-answer PDF page images."
+      }
+    },
+    {
+      "id": "politics-2020-013",
+      "number": 13,
+      "paperId": "politics-2020",
+      "paperName": "2020考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2020",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2020考研政治第13题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2020 考研政治真题及参考答案 PDF 第 2-13 页逐题解析；题库以独立试卷 PDF 作为用户可见题面和选项顺序。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2020/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2020考研政治试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2020/answer-page-06.jpg",
+          "caption": "答案原页 p.6",
+          "alt": "2020考研政治答案原页 p.6"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2020",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2020-paper-answer",
+      "sourceEvidenceId": "politics-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:47b30597055413c952e2d6a531bdd384b03b9fec9301071d2883b6dfaf063c67",
+      "answerTextHash": "sha256:0e4da2e64a58097964c16042bff9c43027657d262f1b63d0f25ef1110257e18a",
+      "sourceEvidence": {
+        "evidenceId": "politics-2020-q13",
+        "sourceId": "src_06315e7fedd219c2b5075ba6",
+        "answerSourceId": "src_c5281046ec5e3b17d92a4143",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:47b30597055413c952e2d6a531bdd384b03b9fec9301071d2883b6dfaf063c67",
+        "answerTextHash": "sha256:0e4da2e64a58097964c16042bff9c43027657d262f1b63d0f25ef1110257e18a"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_c5281046ec5e3b17d92a4143",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2020/2020-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:0e4da2e64a58097964c16042bff9c43027657d262f1b63d0f25ef1110257e18a",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2020_bank",
+        "note": "Matched against local Baidu Netdisk 2020 Politics paper-answer PDF page images."
+      }
+    },
+    {
+      "id": "politics-2020-014",
+      "number": 14,
+      "paperId": "politics-2020",
+      "paperName": "2020考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2020",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2020考研政治第14题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2020 考研政治真题及参考答案 PDF 第 2-13 页逐题解析；题库以独立试卷 PDF 作为用户可见题面和选项顺序。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2020/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2020考研政治试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2020/answer-page-06.jpg",
+          "caption": "答案原页 p.6",
+          "alt": "2020考研政治答案原页 p.6"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2020",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2020-paper-answer",
+      "sourceEvidenceId": "politics-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:95329de283e154285de595a0a2e031bd97d679c64e5519ab3ecf33848f533d27",
+      "answerTextHash": "sha256:9a033384516517ca59ccc63fad624fc99349bee02194be492f3db0ec682beb38",
+      "sourceEvidence": {
+        "evidenceId": "politics-2020-q14",
+        "sourceId": "src_06315e7fedd219c2b5075ba6",
+        "answerSourceId": "src_c5281046ec5e3b17d92a4143",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:95329de283e154285de595a0a2e031bd97d679c64e5519ab3ecf33848f533d27",
+        "answerTextHash": "sha256:9a033384516517ca59ccc63fad624fc99349bee02194be492f3db0ec682beb38"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_c5281046ec5e3b17d92a4143",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2020/2020-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:9a033384516517ca59ccc63fad624fc99349bee02194be492f3db0ec682beb38",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2020_bank",
+        "note": "Matched against local Baidu Netdisk 2020 Politics paper-answer PDF page images."
+      }
+    },
+    {
+      "id": "politics-2020-015",
+      "number": 15,
+      "paperId": "politics-2020",
+      "paperName": "2020考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2020",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2020考研政治第15题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2020 考研政治真题及参考答案 PDF 第 2-13 页逐题解析；题库以独立试卷 PDF 作为用户可见题面和选项顺序。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2020/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2020考研政治试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2020/answer-page-06.jpg",
+          "caption": "答案原页 p.6",
+          "alt": "2020考研政治答案原页 p.6"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2020",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2020-paper-answer",
+      "sourceEvidenceId": "politics-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:e0a3c6fc6157f72bf8fb3658f701d8b290479592000fc75242a1b6583b4a6ab6",
+      "answerTextHash": "sha256:5d15e88ae818eedf3221aed74717f17df3d9a8cbf44ad5b24edf1d4cbca85cb5",
+      "sourceEvidence": {
+        "evidenceId": "politics-2020-q15",
+        "sourceId": "src_06315e7fedd219c2b5075ba6",
+        "answerSourceId": "src_c5281046ec5e3b17d92a4143",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:e0a3c6fc6157f72bf8fb3658f701d8b290479592000fc75242a1b6583b4a6ab6",
+        "answerTextHash": "sha256:5d15e88ae818eedf3221aed74717f17df3d9a8cbf44ad5b24edf1d4cbca85cb5"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_c5281046ec5e3b17d92a4143",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2020/2020-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:5d15e88ae818eedf3221aed74717f17df3d9a8cbf44ad5b24edf1d4cbca85cb5",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2020_bank",
+        "note": "Matched against local Baidu Netdisk 2020 Politics paper-answer PDF page images."
+      }
+    },
+    {
+      "id": "politics-2020-016",
+      "number": 16,
+      "paperId": "politics-2020",
+      "paperName": "2020考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2020",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2020考研政治第16题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2020 考研政治真题及参考答案 PDF 第 2-13 页逐题解析；题库以独立试卷 PDF 作为用户可见题面和选项顺序。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2020/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2020考研政治试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2020/answer-page-07.jpg",
+          "caption": "答案原页 p.7",
+          "alt": "2020考研政治答案原页 p.7"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2020",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2020-paper-answer",
+      "sourceEvidenceId": "politics-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:110227e455aca99553a32f0209069e121ae20a9753ca8e7c9b1ef75c0694a611",
+      "answerTextHash": "sha256:43be953670eade993995f0ea6b6a46a7c47c5422d967d15cf4249ba0e5fb494f",
+      "sourceEvidence": {
+        "evidenceId": "politics-2020-q16",
+        "sourceId": "src_06315e7fedd219c2b5075ba6",
+        "answerSourceId": "src_c5281046ec5e3b17d92a4143",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:110227e455aca99553a32f0209069e121ae20a9753ca8e7c9b1ef75c0694a611",
+        "answerTextHash": "sha256:43be953670eade993995f0ea6b6a46a7c47c5422d967d15cf4249ba0e5fb494f"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_c5281046ec5e3b17d92a4143",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2020/2020-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:43be953670eade993995f0ea6b6a46a7c47c5422d967d15cf4249ba0e5fb494f",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2020_bank",
+        "note": "Matched against local Baidu Netdisk 2020 Politics paper-answer PDF page images."
+      }
+    },
+    {
+      "id": "politics-2020-017",
+      "number": 17,
+      "paperId": "politics-2020",
+      "paperName": "2020考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2020",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2020考研政治第17题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "AB",
+      "explanation": "答案来自本地百度网盘 2020 考研政治真题及参考答案 PDF 第 2-13 页逐题解析；题库以独立试卷 PDF 作为用户可见题面和选项顺序。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2020/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2020考研政治试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2020/answer-page-07.jpg",
+          "caption": "答案原页 p.7",
+          "alt": "2020考研政治答案原页 p.7"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2020",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2020-paper-answer",
+      "sourceEvidenceId": "politics-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:031d041e8a974908ddbd998810bd4c9fca29f771f30ddd34670f72a6157be011",
+      "answerTextHash": "sha256:771c97c21588d4937a69d87db24e62e588fd2f565cdb76e943dd1ba0add4b3e6",
+      "sourceEvidence": {
+        "evidenceId": "politics-2020-q17",
+        "sourceId": "src_06315e7fedd219c2b5075ba6",
+        "answerSourceId": "src_c5281046ec5e3b17d92a4143",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:031d041e8a974908ddbd998810bd4c9fca29f771f30ddd34670f72a6157be011",
+        "answerTextHash": "sha256:771c97c21588d4937a69d87db24e62e588fd2f565cdb76e943dd1ba0add4b3e6"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_c5281046ec5e3b17d92a4143",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2020/2020-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:771c97c21588d4937a69d87db24e62e588fd2f565cdb76e943dd1ba0add4b3e6",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2020_bank",
+        "note": "Matched against local Baidu Netdisk 2020 Politics paper-answer PDF page images."
+      }
+    },
+    {
+      "id": "politics-2020-018",
+      "number": 18,
+      "paperId": "politics-2020",
+      "paperName": "2020考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2020",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2020考研政治第18题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "BC",
+      "explanation": "答案来自本地百度网盘 2020 考研政治真题及参考答案 PDF 第 2-13 页逐题解析；题库以独立试卷 PDF 作为用户可见题面和选项顺序。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2020/paper-page-05.jpg",
+          "caption": "试卷原页 p.5",
+          "alt": "2020考研政治试卷原页 p.5"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2020/answer-page-07.jpg",
+          "caption": "答案原页 p.7",
+          "alt": "2020考研政治答案原页 p.7"
+        },
+        {
+          "src": "question-bank/politics-2020/answer-page-08.jpg",
+          "caption": "答案原页 p.8",
+          "alt": "2020考研政治答案原页 p.8"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2020",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2020-paper-answer",
+      "sourceEvidenceId": "politics-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:b1643afaa62c6f09585cdb70b0b44d20a75bffe96916affa703051a801fd6aae",
+      "answerTextHash": "sha256:f2e9b25a120e2e3ed86d9b6cebfca30ead58444a8d2bbec05b19b95dce551960",
+      "sourceEvidence": {
+        "evidenceId": "politics-2020-q18",
+        "sourceId": "src_06315e7fedd219c2b5075ba6",
+        "answerSourceId": "src_c5281046ec5e3b17d92a4143",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:b1643afaa62c6f09585cdb70b0b44d20a75bffe96916affa703051a801fd6aae",
+        "answerTextHash": "sha256:f2e9b25a120e2e3ed86d9b6cebfca30ead58444a8d2bbec05b19b95dce551960"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_c5281046ec5e3b17d92a4143",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2020/2020-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:f2e9b25a120e2e3ed86d9b6cebfca30ead58444a8d2bbec05b19b95dce551960",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2020_bank",
+        "note": "Matched against local Baidu Netdisk 2020 Politics paper-answer PDF page images."
+      }
+    },
+    {
+      "id": "politics-2020-019",
+      "number": 19,
+      "paperId": "politics-2020",
+      "paperName": "2020考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2020",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2020考研政治第19题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "BCD",
+      "explanation": "答案来自本地百度网盘 2020 考研政治真题及参考答案 PDF 第 2-13 页逐题解析；题库以独立试卷 PDF 作为用户可见题面和选项顺序。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2020/paper-page-05.jpg",
+          "caption": "试卷原页 p.5",
+          "alt": "2020考研政治试卷原页 p.5"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2020/answer-page-08.jpg",
+          "caption": "答案原页 p.8",
+          "alt": "2020考研政治答案原页 p.8"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2020",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2020-paper-answer",
+      "sourceEvidenceId": "politics-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:8a2682660f1fa868878cdbf1841b587ffe1b900bacc6d5a38f98d379391cef92",
+      "answerTextHash": "sha256:83c8ea5655799dd2081b3dda63c482964d25bca447cc356d8abab260ffff217e",
+      "sourceEvidence": {
+        "evidenceId": "politics-2020-q19",
+        "sourceId": "src_06315e7fedd219c2b5075ba6",
+        "answerSourceId": "src_c5281046ec5e3b17d92a4143",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:8a2682660f1fa868878cdbf1841b587ffe1b900bacc6d5a38f98d379391cef92",
+        "answerTextHash": "sha256:83c8ea5655799dd2081b3dda63c482964d25bca447cc356d8abab260ffff217e"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_c5281046ec5e3b17d92a4143",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2020/2020-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:83c8ea5655799dd2081b3dda63c482964d25bca447cc356d8abab260ffff217e",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2020_bank",
+        "note": "Matched against local Baidu Netdisk 2020 Politics paper-answer PDF page images."
+      }
+    },
+    {
+      "id": "politics-2020-020",
+      "number": 20,
+      "paperId": "politics-2020",
+      "paperName": "2020考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2020",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2020考研政治第20题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ACD",
+      "explanation": "答案来自本地百度网盘 2020 考研政治真题及参考答案 PDF 第 2-13 页逐题解析；题库以独立试卷 PDF 作为用户可见题面和选项顺序。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2020/paper-page-05.jpg",
+          "caption": "试卷原页 p.5",
+          "alt": "2020考研政治试卷原页 p.5"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2020/answer-page-08.jpg",
+          "caption": "答案原页 p.8",
+          "alt": "2020考研政治答案原页 p.8"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2020",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2020-paper-answer",
+      "sourceEvidenceId": "politics-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:9189839d936ab38179604442cd7861b89eaecb969dfaa70e9da38fd2e56bf498",
+      "answerTextHash": "sha256:7192b693b876a25cbbb59c6f4cc033d6a4adf761e1e336c3a6b5d408b1629a0e",
+      "sourceEvidence": {
+        "evidenceId": "politics-2020-q20",
+        "sourceId": "src_06315e7fedd219c2b5075ba6",
+        "answerSourceId": "src_c5281046ec5e3b17d92a4143",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:9189839d936ab38179604442cd7861b89eaecb969dfaa70e9da38fd2e56bf498",
+        "answerTextHash": "sha256:7192b693b876a25cbbb59c6f4cc033d6a4adf761e1e336c3a6b5d408b1629a0e"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_c5281046ec5e3b17d92a4143",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2020/2020-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:7192b693b876a25cbbb59c6f4cc033d6a4adf761e1e336c3a6b5d408b1629a0e",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2020_bank",
+        "note": "Matched against local Baidu Netdisk 2020 Politics paper-answer PDF page images."
+      }
+    },
+    {
+      "id": "politics-2020-021",
+      "number": 21,
+      "paperId": "politics-2020",
+      "paperName": "2020考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2020",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2020考研政治第21题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABD",
+      "explanation": "答案来自本地百度网盘 2020 考研政治真题及参考答案 PDF 第 2-13 页逐题解析；题库以独立试卷 PDF 作为用户可见题面和选项顺序。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2020/paper-page-06.jpg",
+          "caption": "试卷原页 p.6",
+          "alt": "2020考研政治试卷原页 p.6"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2020/answer-page-08.jpg",
+          "caption": "答案原页 p.8",
+          "alt": "2020考研政治答案原页 p.8"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2020",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2020-paper-answer",
+      "sourceEvidenceId": "politics-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:92077b69dc72eb43adedcdbcb318d9eab1bf28e94f84f28dfab42498285fe6ee",
+      "answerTextHash": "sha256:0427b155a02ae1e6635e135aef3df5f9f60e48527a36e42bc9bde37f450912bf",
+      "sourceEvidence": {
+        "evidenceId": "politics-2020-q21",
+        "sourceId": "src_06315e7fedd219c2b5075ba6",
+        "answerSourceId": "src_c5281046ec5e3b17d92a4143",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:92077b69dc72eb43adedcdbcb318d9eab1bf28e94f84f28dfab42498285fe6ee",
+        "answerTextHash": "sha256:0427b155a02ae1e6635e135aef3df5f9f60e48527a36e42bc9bde37f450912bf"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_c5281046ec5e3b17d92a4143",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2020/2020-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:0427b155a02ae1e6635e135aef3df5f9f60e48527a36e42bc9bde37f450912bf",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2020_bank",
+        "note": "Matched against local Baidu Netdisk 2020 Politics paper-answer PDF page images."
+      }
+    },
+    {
+      "id": "politics-2020-022",
+      "number": 22,
+      "paperId": "politics-2020",
+      "paperName": "2020考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2020",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2020考研政治第22题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ACD",
+      "explanation": "答案来自本地百度网盘 2020 考研政治真题及参考答案 PDF 第 2-13 页逐题解析；题库以独立试卷 PDF 作为用户可见题面和选项顺序。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2020/paper-page-06.jpg",
+          "caption": "试卷原页 p.6",
+          "alt": "2020考研政治试卷原页 p.6"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2020/answer-page-09.jpg",
+          "caption": "答案原页 p.9",
+          "alt": "2020考研政治答案原页 p.9"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2020",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2020-paper-answer",
+      "sourceEvidenceId": "politics-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:7e262c0c31c3fef6efdd31617d28277fb6f469b0a93c10e7d032a9aa75a49689",
+      "answerTextHash": "sha256:f8b3fa98cb5d08f6dd5638980feb86ff16b4da3b120775b8b3ef4a7de952540d",
+      "sourceEvidence": {
+        "evidenceId": "politics-2020-q22",
+        "sourceId": "src_06315e7fedd219c2b5075ba6",
+        "answerSourceId": "src_c5281046ec5e3b17d92a4143",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:7e262c0c31c3fef6efdd31617d28277fb6f469b0a93c10e7d032a9aa75a49689",
+        "answerTextHash": "sha256:f8b3fa98cb5d08f6dd5638980feb86ff16b4da3b120775b8b3ef4a7de952540d"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_c5281046ec5e3b17d92a4143",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2020/2020-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:f8b3fa98cb5d08f6dd5638980feb86ff16b4da3b120775b8b3ef4a7de952540d",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2020_bank",
+        "note": "Matched against local Baidu Netdisk 2020 Politics paper-answer PDF page images."
+      }
+    },
+    {
+      "id": "politics-2020-023",
+      "number": 23,
+      "paperId": "politics-2020",
+      "paperName": "2020考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2020",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2020考研政治第23题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABC",
+      "explanation": "答案来自本地百度网盘 2020 考研政治真题及参考答案 PDF 第 2-13 页逐题解析；题库以独立试卷 PDF 作为用户可见题面和选项顺序。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2020/paper-page-06.jpg",
+          "caption": "试卷原页 p.6",
+          "alt": "2020考研政治试卷原页 p.6"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2020/answer-page-09.jpg",
+          "caption": "答案原页 p.9",
+          "alt": "2020考研政治答案原页 p.9"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2020",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2020-paper-answer",
+      "sourceEvidenceId": "politics-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:f98acc6411cce00f014dfff5c9869e75695d4a87cd0c2d143afb42d77dc4f76a",
+      "answerTextHash": "sha256:f98c28def54985b07cdc5d2533d066cad872a6f4ad8a3ce900df071a566bff19",
+      "sourceEvidence": {
+        "evidenceId": "politics-2020-q23",
+        "sourceId": "src_06315e7fedd219c2b5075ba6",
+        "answerSourceId": "src_c5281046ec5e3b17d92a4143",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:f98acc6411cce00f014dfff5c9869e75695d4a87cd0c2d143afb42d77dc4f76a",
+        "answerTextHash": "sha256:f98c28def54985b07cdc5d2533d066cad872a6f4ad8a3ce900df071a566bff19"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_c5281046ec5e3b17d92a4143",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2020/2020-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:f98c28def54985b07cdc5d2533d066cad872a6f4ad8a3ce900df071a566bff19",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2020_bank",
+        "note": "Matched against local Baidu Netdisk 2020 Politics paper-answer PDF page images."
+      }
+    },
+    {
+      "id": "politics-2020-024",
+      "number": 24,
+      "paperId": "politics-2020",
+      "paperName": "2020考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2020",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2020考研政治第24题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABCD",
+      "explanation": "答案来自本地百度网盘 2020 考研政治真题及参考答案 PDF 第 2-13 页逐题解析；题库以独立试卷 PDF 作为用户可见题面和选项顺序。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2020/paper-page-06.jpg",
+          "caption": "试卷原页 p.6",
+          "alt": "2020考研政治试卷原页 p.6"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2020/answer-page-09.jpg",
+          "caption": "答案原页 p.9",
+          "alt": "2020考研政治答案原页 p.9"
+        },
+        {
+          "src": "question-bank/politics-2020/answer-page-10.jpg",
+          "caption": "答案原页 p.10",
+          "alt": "2020考研政治答案原页 p.10"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2020",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2020-paper-answer",
+      "sourceEvidenceId": "politics-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:c89a431db59a4eaedeb7c3e7463d4b46bdb52f467a504642a0ddeecdbedacd49",
+      "answerTextHash": "sha256:154dce17e592c3de7a17d401e37deea82c631c2a8af7b116be9d9885c28ba8e5",
+      "sourceEvidence": {
+        "evidenceId": "politics-2020-q24",
+        "sourceId": "src_06315e7fedd219c2b5075ba6",
+        "answerSourceId": "src_c5281046ec5e3b17d92a4143",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:c89a431db59a4eaedeb7c3e7463d4b46bdb52f467a504642a0ddeecdbedacd49",
+        "answerTextHash": "sha256:154dce17e592c3de7a17d401e37deea82c631c2a8af7b116be9d9885c28ba8e5"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_c5281046ec5e3b17d92a4143",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2020/2020-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:154dce17e592c3de7a17d401e37deea82c631c2a8af7b116be9d9885c28ba8e5",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2020_bank",
+        "note": "Matched against local Baidu Netdisk 2020 Politics paper-answer PDF page images."
+      }
+    },
+    {
+      "id": "politics-2020-025",
+      "number": 25,
+      "paperId": "politics-2020",
+      "paperName": "2020考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2020",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2020考研政治第25题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABCD",
+      "explanation": "答案来自本地百度网盘 2020 考研政治真题及参考答案 PDF 第 2-13 页逐题解析；题库以独立试卷 PDF 作为用户可见题面和选项顺序。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2020/paper-page-07.jpg",
+          "caption": "试卷原页 p.7",
+          "alt": "2020考研政治试卷原页 p.7"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2020/answer-page-10.jpg",
+          "caption": "答案原页 p.10",
+          "alt": "2020考研政治答案原页 p.10"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2020",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2020-paper-answer",
+      "sourceEvidenceId": "politics-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:1892e92bc5a9bbfb05967b7aa11b5f10f44f22dfc2627acc60a825ba83cb4359",
+      "answerTextHash": "sha256:1055f2190ac9fe8e637e73f71340072de23d4bc4de3a63a49793159889e2d230",
+      "sourceEvidence": {
+        "evidenceId": "politics-2020-q25",
+        "sourceId": "src_06315e7fedd219c2b5075ba6",
+        "answerSourceId": "src_c5281046ec5e3b17d92a4143",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:1892e92bc5a9bbfb05967b7aa11b5f10f44f22dfc2627acc60a825ba83cb4359",
+        "answerTextHash": "sha256:1055f2190ac9fe8e637e73f71340072de23d4bc4de3a63a49793159889e2d230"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_c5281046ec5e3b17d92a4143",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2020/2020-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:1055f2190ac9fe8e637e73f71340072de23d4bc4de3a63a49793159889e2d230",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2020_bank",
+        "note": "Matched against local Baidu Netdisk 2020 Politics paper-answer PDF page images."
+      }
+    },
+    {
+      "id": "politics-2020-026",
+      "number": 26,
+      "paperId": "politics-2020",
+      "paperName": "2020考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2020",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2020考研政治第26题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ACD",
+      "explanation": "答案来自本地百度网盘 2020 考研政治真题及参考答案 PDF 第 2-13 页逐题解析；题库以独立试卷 PDF 作为用户可见题面和选项顺序。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2020/paper-page-07.jpg",
+          "caption": "试卷原页 p.7",
+          "alt": "2020考研政治试卷原页 p.7"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2020/answer-page-10.jpg",
+          "caption": "答案原页 p.10",
+          "alt": "2020考研政治答案原页 p.10"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2020",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2020-paper-answer",
+      "sourceEvidenceId": "politics-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:54a6ee2ba5519389d359bd546cca0e8da1724aefba043459a0d8d12f8d7f744e",
+      "answerTextHash": "sha256:ca9436e52109ab8dc0582f2183321c64b23eb11c5443db7128bbca32fcf17a65",
+      "sourceEvidence": {
+        "evidenceId": "politics-2020-q26",
+        "sourceId": "src_06315e7fedd219c2b5075ba6",
+        "answerSourceId": "src_c5281046ec5e3b17d92a4143",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:54a6ee2ba5519389d359bd546cca0e8da1724aefba043459a0d8d12f8d7f744e",
+        "answerTextHash": "sha256:ca9436e52109ab8dc0582f2183321c64b23eb11c5443db7128bbca32fcf17a65"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_c5281046ec5e3b17d92a4143",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2020/2020-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:ca9436e52109ab8dc0582f2183321c64b23eb11c5443db7128bbca32fcf17a65",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2020_bank",
+        "note": "Matched against local Baidu Netdisk 2020 Politics paper-answer PDF page images."
+      }
+    },
+    {
+      "id": "politics-2020-027",
+      "number": 27,
+      "paperId": "politics-2020",
+      "paperName": "2020考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2020",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2020考研政治第27题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABD",
+      "explanation": "答案来自本地百度网盘 2020 考研政治真题及参考答案 PDF 第 2-13 页逐题解析；题库以独立试卷 PDF 作为用户可见题面和选项顺序。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2020/paper-page-07.jpg",
+          "caption": "试卷原页 p.7",
+          "alt": "2020考研政治试卷原页 p.7"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2020/answer-page-11.jpg",
+          "caption": "答案原页 p.11",
+          "alt": "2020考研政治答案原页 p.11"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2020",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2020-paper-answer",
+      "sourceEvidenceId": "politics-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:d9eb38503d1b74b265fb5586187ed50ba61a1869aa6ed443fe1c14bb5425d154",
+      "answerTextHash": "sha256:dd1882bfdc43c857860b100fea6ee45a5bff395d751788d7deaf43cd8071c6eb",
+      "sourceEvidence": {
+        "evidenceId": "politics-2020-q27",
+        "sourceId": "src_06315e7fedd219c2b5075ba6",
+        "answerSourceId": "src_c5281046ec5e3b17d92a4143",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:d9eb38503d1b74b265fb5586187ed50ba61a1869aa6ed443fe1c14bb5425d154",
+        "answerTextHash": "sha256:dd1882bfdc43c857860b100fea6ee45a5bff395d751788d7deaf43cd8071c6eb"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_c5281046ec5e3b17d92a4143",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2020/2020-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:dd1882bfdc43c857860b100fea6ee45a5bff395d751788d7deaf43cd8071c6eb",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2020_bank",
+        "note": "Matched against local Baidu Netdisk 2020 Politics paper-answer PDF page images."
+      }
+    },
+    {
+      "id": "politics-2020-028",
+      "number": 28,
+      "paperId": "politics-2020",
+      "paperName": "2020考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2020",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2020考研政治第28题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABC",
+      "explanation": "答案来自本地百度网盘 2020 考研政治真题及参考答案 PDF 第 2-13 页逐题解析；题库以独立试卷 PDF 作为用户可见题面和选项顺序。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2020/paper-page-07.jpg",
+          "caption": "试卷原页 p.7",
+          "alt": "2020考研政治试卷原页 p.7"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2020/answer-page-11.jpg",
+          "caption": "答案原页 p.11",
+          "alt": "2020考研政治答案原页 p.11"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2020",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2020-paper-answer",
+      "sourceEvidenceId": "politics-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:ddb4135001c0a04b21400b1e4fef9a25075c862485ca2c51c08e7e3ef98f8712",
+      "answerTextHash": "sha256:04b9b825c447d4d716dcf16ff23f0ac629d5b62202be77763d9d7cd9ad043ee1",
+      "sourceEvidence": {
+        "evidenceId": "politics-2020-q28",
+        "sourceId": "src_06315e7fedd219c2b5075ba6",
+        "answerSourceId": "src_c5281046ec5e3b17d92a4143",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:ddb4135001c0a04b21400b1e4fef9a25075c862485ca2c51c08e7e3ef98f8712",
+        "answerTextHash": "sha256:04b9b825c447d4d716dcf16ff23f0ac629d5b62202be77763d9d7cd9ad043ee1"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_c5281046ec5e3b17d92a4143",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2020/2020-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:04b9b825c447d4d716dcf16ff23f0ac629d5b62202be77763d9d7cd9ad043ee1",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2020_bank",
+        "note": "Matched against local Baidu Netdisk 2020 Politics paper-answer PDF page images."
+      }
+    },
+    {
+      "id": "politics-2020-029",
+      "number": 29,
+      "paperId": "politics-2020",
+      "paperName": "2020考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2020",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2020考研政治第29题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "BCD",
+      "explanation": "答案来自本地百度网盘 2020 考研政治真题及参考答案 PDF 第 2-13 页逐题解析；题库以独立试卷 PDF 作为用户可见题面和选项顺序。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2020/paper-page-07.jpg",
+          "caption": "试卷原页 p.7",
+          "alt": "2020考研政治试卷原页 p.7"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2020/answer-page-11.jpg",
+          "caption": "答案原页 p.11",
+          "alt": "2020考研政治答案原页 p.11"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2020",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2020-paper-answer",
+      "sourceEvidenceId": "politics-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:01e7e16297e1323d263fbb14c6d64e88185e865945450f4251893a9c0fc99f26",
+      "answerTextHash": "sha256:b8f956a8efc5abc141b4968a666ed4c5509794b2fc4bca08648238d2648b780c",
+      "sourceEvidence": {
+        "evidenceId": "politics-2020-q29",
+        "sourceId": "src_06315e7fedd219c2b5075ba6",
+        "answerSourceId": "src_c5281046ec5e3b17d92a4143",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:01e7e16297e1323d263fbb14c6d64e88185e865945450f4251893a9c0fc99f26",
+        "answerTextHash": "sha256:b8f956a8efc5abc141b4968a666ed4c5509794b2fc4bca08648238d2648b780c"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_c5281046ec5e3b17d92a4143",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2020/2020-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:b8f956a8efc5abc141b4968a666ed4c5509794b2fc4bca08648238d2648b780c",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2020_bank",
+        "note": "Matched against local Baidu Netdisk 2020 Politics paper-answer PDF page images."
+      }
+    },
+    {
+      "id": "politics-2020-030",
+      "number": 30,
+      "paperId": "politics-2020",
+      "paperName": "2020考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2020",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2020考研政治第30题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABCD",
+      "explanation": "答案来自本地百度网盘 2020 考研政治真题及参考答案 PDF 第 2-13 页逐题解析；题库以独立试卷 PDF 作为用户可见题面和选项顺序。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2020/paper-page-08.jpg",
+          "caption": "试卷原页 p.8",
+          "alt": "2020考研政治试卷原页 p.8"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2020/answer-page-12.jpg",
+          "caption": "答案原页 p.12",
+          "alt": "2020考研政治答案原页 p.12"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2020",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2020-paper-answer",
+      "sourceEvidenceId": "politics-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:f576cb03509a8cfe819974ff13f1efd7639e8971ede8a31ef2b9ec9117f87482",
+      "answerTextHash": "sha256:ca456842a1d91a1439e140d3f5ca281926dddb58da85d766a72ffbfa0655787d",
+      "sourceEvidence": {
+        "evidenceId": "politics-2020-q30",
+        "sourceId": "src_06315e7fedd219c2b5075ba6",
+        "answerSourceId": "src_c5281046ec5e3b17d92a4143",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:f576cb03509a8cfe819974ff13f1efd7639e8971ede8a31ef2b9ec9117f87482",
+        "answerTextHash": "sha256:ca456842a1d91a1439e140d3f5ca281926dddb58da85d766a72ffbfa0655787d"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_c5281046ec5e3b17d92a4143",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2020/2020-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:ca456842a1d91a1439e140d3f5ca281926dddb58da85d766a72ffbfa0655787d",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2020_bank",
+        "note": "Matched against local Baidu Netdisk 2020 Politics paper-answer PDF page images."
+      }
+    },
+    {
+      "id": "politics-2020-031",
+      "number": 31,
+      "paperId": "politics-2020",
+      "paperName": "2020考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2020",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2020考研政治第31题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "BCD",
+      "explanation": "答案来自本地百度网盘 2020 考研政治真题及参考答案 PDF 第 2-13 页逐题解析；题库以独立试卷 PDF 作为用户可见题面和选项顺序。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2020/paper-page-08.jpg",
+          "caption": "试卷原页 p.8",
+          "alt": "2020考研政治试卷原页 p.8"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2020/answer-page-12.jpg",
+          "caption": "答案原页 p.12",
+          "alt": "2020考研政治答案原页 p.12"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2020",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2020-paper-answer",
+      "sourceEvidenceId": "politics-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:57c4d34fcfeceab8a0daf615787336496a141d18b6a61d9008fe1e8f777c09ff",
+      "answerTextHash": "sha256:119e25f6caf756f3a12e38a07ddf618ab2dc105457b510fb1df9c384137d2090",
+      "sourceEvidence": {
+        "evidenceId": "politics-2020-q31",
+        "sourceId": "src_06315e7fedd219c2b5075ba6",
+        "answerSourceId": "src_c5281046ec5e3b17d92a4143",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:57c4d34fcfeceab8a0daf615787336496a141d18b6a61d9008fe1e8f777c09ff",
+        "answerTextHash": "sha256:119e25f6caf756f3a12e38a07ddf618ab2dc105457b510fb1df9c384137d2090"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_c5281046ec5e3b17d92a4143",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2020/2020-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:119e25f6caf756f3a12e38a07ddf618ab2dc105457b510fb1df9c384137d2090",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2020_bank",
+        "note": "Matched against local Baidu Netdisk 2020 Politics paper-answer PDF page images."
+      }
+    },
+    {
+      "id": "politics-2020-032",
+      "number": 32,
+      "paperId": "politics-2020",
+      "paperName": "2020考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2020",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2020考研政治第32题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ACD",
+      "explanation": "答案来自本地百度网盘 2020 考研政治真题及参考答案 PDF 第 2-13 页逐题解析；题库以独立试卷 PDF 作为用户可见题面和选项顺序。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2020/paper-page-08.jpg",
+          "caption": "试卷原页 p.8",
+          "alt": "2020考研政治试卷原页 p.8"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2020/answer-page-12.jpg",
+          "caption": "答案原页 p.12",
+          "alt": "2020考研政治答案原页 p.12"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2020",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2020-paper-answer",
+      "sourceEvidenceId": "politics-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:c36e6b86f3d97e1b979951575f3dac3880f918320270cd0698fc2a5b5ef5c9ec",
+      "answerTextHash": "sha256:49c32c8dc0b7b7c656a5ab1cf7b31994d2d26335d3ac15c0c5ac203ca873c80f",
+      "sourceEvidence": {
+        "evidenceId": "politics-2020-q32",
+        "sourceId": "src_06315e7fedd219c2b5075ba6",
+        "answerSourceId": "src_c5281046ec5e3b17d92a4143",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:c36e6b86f3d97e1b979951575f3dac3880f918320270cd0698fc2a5b5ef5c9ec",
+        "answerTextHash": "sha256:49c32c8dc0b7b7c656a5ab1cf7b31994d2d26335d3ac15c0c5ac203ca873c80f"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_c5281046ec5e3b17d92a4143",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2020/2020-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:49c32c8dc0b7b7c656a5ab1cf7b31994d2d26335d3ac15c0c5ac203ca873c80f",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2020_bank",
+        "note": "Matched against local Baidu Netdisk 2020 Politics paper-answer PDF page images."
+      }
+    },
+    {
+      "id": "politics-2020-033",
+      "number": 33,
+      "paperId": "politics-2020",
+      "paperName": "2020考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2020",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2020考研政治第33题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABCD",
+      "explanation": "答案来自本地百度网盘 2020 考研政治真题及参考答案 PDF 第 2-13 页逐题解析；题库以独立试卷 PDF 作为用户可见题面和选项顺序。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2020/paper-page-08.jpg",
+          "caption": "试卷原页 p.8",
+          "alt": "2020考研政治试卷原页 p.8"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2020/answer-page-12.jpg",
+          "caption": "答案原页 p.12",
+          "alt": "2020考研政治答案原页 p.12"
+        },
+        {
+          "src": "question-bank/politics-2020/answer-page-13.jpg",
+          "caption": "答案原页 p.13",
+          "alt": "2020考研政治答案原页 p.13"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2020",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2020-paper-answer",
+      "sourceEvidenceId": "politics-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:99e3c6d6549094869a5b1007faff4ff27c161a0a341f4e400a27d9a54b455e16",
+      "answerTextHash": "sha256:48ec25090547d1d1efe2974b24e9829d2c04533d3b09264d9654cb27c7c6d8a8",
+      "sourceEvidence": {
+        "evidenceId": "politics-2020-q33",
+        "sourceId": "src_06315e7fedd219c2b5075ba6",
+        "answerSourceId": "src_c5281046ec5e3b17d92a4143",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:99e3c6d6549094869a5b1007faff4ff27c161a0a341f4e400a27d9a54b455e16",
+        "answerTextHash": "sha256:48ec25090547d1d1efe2974b24e9829d2c04533d3b09264d9654cb27c7c6d8a8"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_c5281046ec5e3b17d92a4143",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2020/2020-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:48ec25090547d1d1efe2974b24e9829d2c04533d3b09264d9654cb27c7c6d8a8",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2020_bank",
+        "note": "Matched against local Baidu Netdisk 2020 Politics paper-answer PDF page images."
+      }
+    },
+    {
+      "id": "politics-2020-034",
+      "number": 34,
+      "paperId": "politics-2020",
+      "paperName": "2020考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2020",
+      "section": "分析题",
+      "type": "analysis",
+      "question": "2020考研政治第34题（分析题）。题干、选项和材料以试卷原页图为准。",
+      "options": [],
+      "answer": "分析题参考答案要点见答案原页 p.13。",
+      "explanation": "参考答案来自本地百度网盘 2020 考研政治真题及参考答案 PDF；完整答案要点见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2020/paper-page-09.jpg",
+          "caption": "试卷原页 p.9",
+          "alt": "2020考研政治试卷原页 p.9"
+        },
+        {
+          "src": "question-bank/politics-2020/paper-page-10.jpg",
+          "caption": "试卷原页 p.10",
+          "alt": "2020考研政治试卷原页 p.10"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2020/answer-page-13.jpg",
+          "caption": "答案原页 p.13",
+          "alt": "2020考研政治答案原页 p.13"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2020",
+        "分析题"
+      ],
+      "difficulty": 3,
+      "source": "politics-2020-paper-answer",
+      "sourceEvidenceId": "politics-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:703b0143f4d8fe7a6156eca8c006ef33734f2f3def1c6e7b9fa442c30d7b0f93",
+      "answerTextHash": "sha256:ae183218fbcf2291799034a0c75eccc18449dbbe12a144d158bf990a2edaac08",
+      "sourceEvidence": {
+        "evidenceId": "politics-2020-q34",
+        "sourceId": "src_06315e7fedd219c2b5075ba6",
+        "answerSourceId": "src_c5281046ec5e3b17d92a4143",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:703b0143f4d8fe7a6156eca8c006ef33734f2f3def1c6e7b9fa442c30d7b0f93",
+        "answerTextHash": "sha256:ae183218fbcf2291799034a0c75eccc18449dbbe12a144d158bf990a2edaac08"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_reference_answer",
+        "sourceId": "src_c5281046ec5e3b17d92a4143",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2020/2020-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:ae183218fbcf2291799034a0c75eccc18449dbbe12a144d158bf990a2edaac08",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2020_bank",
+        "note": "Matched against local Baidu Netdisk 2020 Politics paper-answer PDF page images."
+      }
+    },
+    {
+      "id": "politics-2020-035",
+      "number": 35,
+      "paperId": "politics-2020",
+      "paperName": "2020考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2020",
+      "section": "分析题",
+      "type": "analysis",
+      "question": "2020考研政治第35题（分析题）。题干、选项和材料以试卷原页图为准。",
+      "options": [],
+      "answer": "分析题参考答案要点见答案原页 p.13-p.14。",
+      "explanation": "参考答案来自本地百度网盘 2020 考研政治真题及参考答案 PDF；完整答案要点见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2020/paper-page-10.jpg",
+          "caption": "试卷原页 p.10",
+          "alt": "2020考研政治试卷原页 p.10"
+        },
+        {
+          "src": "question-bank/politics-2020/paper-page-11.jpg",
+          "caption": "试卷原页 p.11",
+          "alt": "2020考研政治试卷原页 p.11"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2020/answer-page-13.jpg",
+          "caption": "答案原页 p.13",
+          "alt": "2020考研政治答案原页 p.13"
+        },
+        {
+          "src": "question-bank/politics-2020/answer-page-14.jpg",
+          "caption": "答案原页 p.14",
+          "alt": "2020考研政治答案原页 p.14"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2020",
+        "分析题"
+      ],
+      "difficulty": 3,
+      "source": "politics-2020-paper-answer",
+      "sourceEvidenceId": "politics-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:21bbd6b986a4681e3722a794d4dc203a3157bf5d941b12e4845bcdef1881cf1f",
+      "answerTextHash": "sha256:74407efc4267c9e413238634a0f772f18eeaf2e413a1a34a1e64a23c7c79b2c2",
+      "sourceEvidence": {
+        "evidenceId": "politics-2020-q35",
+        "sourceId": "src_06315e7fedd219c2b5075ba6",
+        "answerSourceId": "src_c5281046ec5e3b17d92a4143",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:21bbd6b986a4681e3722a794d4dc203a3157bf5d941b12e4845bcdef1881cf1f",
+        "answerTextHash": "sha256:74407efc4267c9e413238634a0f772f18eeaf2e413a1a34a1e64a23c7c79b2c2"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_reference_answer",
+        "sourceId": "src_c5281046ec5e3b17d92a4143",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2020/2020-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:74407efc4267c9e413238634a0f772f18eeaf2e413a1a34a1e64a23c7c79b2c2",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2020_bank",
+        "note": "Matched against local Baidu Netdisk 2020 Politics paper-answer PDF page images."
+      }
+    },
+    {
+      "id": "politics-2020-036",
+      "number": 36,
+      "paperId": "politics-2020",
+      "paperName": "2020考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2020",
+      "section": "分析题",
+      "type": "analysis",
+      "question": "2020考研政治第36题（分析题）。题干、选项和材料以试卷原页图为准。",
+      "options": [],
+      "answer": "分析题参考答案要点见答案原页 p.14-p.15。",
+      "explanation": "参考答案来自本地百度网盘 2020 考研政治真题及参考答案 PDF；完整答案要点见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2020/paper-page-11.jpg",
+          "caption": "试卷原页 p.11",
+          "alt": "2020考研政治试卷原页 p.11"
+        },
+        {
+          "src": "question-bank/politics-2020/paper-page-12.jpg",
+          "caption": "试卷原页 p.12",
+          "alt": "2020考研政治试卷原页 p.12"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2020/answer-page-14.jpg",
+          "caption": "答案原页 p.14",
+          "alt": "2020考研政治答案原页 p.14"
+        },
+        {
+          "src": "question-bank/politics-2020/answer-page-15.jpg",
+          "caption": "答案原页 p.15",
+          "alt": "2020考研政治答案原页 p.15"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2020",
+        "分析题"
+      ],
+      "difficulty": 3,
+      "source": "politics-2020-paper-answer",
+      "sourceEvidenceId": "politics-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:d3069c5a01c81d01da617ff655cf0e16dc854152acc8e5f96d6f239016d5df3b",
+      "answerTextHash": "sha256:12f585d9327672762b1ba03d1a0d969cea58e8817ed98ff2ba83215b75d90c04",
+      "sourceEvidence": {
+        "evidenceId": "politics-2020-q36",
+        "sourceId": "src_06315e7fedd219c2b5075ba6",
+        "answerSourceId": "src_c5281046ec5e3b17d92a4143",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:d3069c5a01c81d01da617ff655cf0e16dc854152acc8e5f96d6f239016d5df3b",
+        "answerTextHash": "sha256:12f585d9327672762b1ba03d1a0d969cea58e8817ed98ff2ba83215b75d90c04"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_reference_answer",
+        "sourceId": "src_c5281046ec5e3b17d92a4143",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2020/2020-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:12f585d9327672762b1ba03d1a0d969cea58e8817ed98ff2ba83215b75d90c04",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2020_bank",
+        "note": "Matched against local Baidu Netdisk 2020 Politics paper-answer PDF page images."
+      }
+    },
+    {
+      "id": "politics-2020-037",
+      "number": 37,
+      "paperId": "politics-2020",
+      "paperName": "2020考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2020",
+      "section": "分析题",
+      "type": "analysis",
+      "question": "2020考研政治第37题（分析题）。题干、选项和材料以试卷原页图为准。",
+      "options": [],
+      "answer": "分析题参考答案要点见答案原页 p.15-p.16。",
+      "explanation": "参考答案来自本地百度网盘 2020 考研政治真题及参考答案 PDF；完整答案要点见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2020/paper-page-12.jpg",
+          "caption": "试卷原页 p.12",
+          "alt": "2020考研政治试卷原页 p.12"
+        },
+        {
+          "src": "question-bank/politics-2020/paper-page-13.jpg",
+          "caption": "试卷原页 p.13",
+          "alt": "2020考研政治试卷原页 p.13"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2020/answer-page-15.jpg",
+          "caption": "答案原页 p.15",
+          "alt": "2020考研政治答案原页 p.15"
+        },
+        {
+          "src": "question-bank/politics-2020/answer-page-16.jpg",
+          "caption": "答案原页 p.16",
+          "alt": "2020考研政治答案原页 p.16"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2020",
+        "分析题"
+      ],
+      "difficulty": 3,
+      "source": "politics-2020-paper-answer",
+      "sourceEvidenceId": "politics-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:5168a20cc0f2f122e8ca0b4ebe751289838a486cd2fbcc589daf594b3e8ea417",
+      "answerTextHash": "sha256:89d487cea1c82a213de2f520d517182a289734b3a205bcd95e17419c9263152a",
+      "sourceEvidence": {
+        "evidenceId": "politics-2020-q37",
+        "sourceId": "src_06315e7fedd219c2b5075ba6",
+        "answerSourceId": "src_c5281046ec5e3b17d92a4143",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:5168a20cc0f2f122e8ca0b4ebe751289838a486cd2fbcc589daf594b3e8ea417",
+        "answerTextHash": "sha256:89d487cea1c82a213de2f520d517182a289734b3a205bcd95e17419c9263152a"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_reference_answer",
+        "sourceId": "src_c5281046ec5e3b17d92a4143",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2020/2020-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:89d487cea1c82a213de2f520d517182a289734b3a205bcd95e17419c9263152a",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2020_bank",
+        "note": "Matched against local Baidu Netdisk 2020 Politics paper-answer PDF page images."
+      }
+    },
+    {
+      "id": "politics-2020-038",
+      "number": 38,
+      "paperId": "politics-2020",
+      "paperName": "2020考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2020",
+      "section": "分析题",
+      "type": "analysis",
+      "question": "2020考研政治第38题（分析题）。题干、选项和材料以试卷原页图为准。",
+      "options": [],
+      "answer": "分析题参考答案要点见答案原页 p.16。",
+      "explanation": "参考答案来自本地百度网盘 2020 考研政治真题及参考答案 PDF；完整答案要点见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2020/paper-page-13.jpg",
+          "caption": "试卷原页 p.13",
+          "alt": "2020考研政治试卷原页 p.13"
+        },
+        {
+          "src": "question-bank/politics-2020/paper-page-14.jpg",
+          "caption": "试卷原页 p.14",
+          "alt": "2020考研政治试卷原页 p.14"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2020/answer-page-16.jpg",
+          "caption": "答案原页 p.16",
+          "alt": "2020考研政治答案原页 p.16"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2020",
+        "分析题"
+      ],
+      "difficulty": 3,
+      "source": "politics-2020-paper-answer",
+      "sourceEvidenceId": "politics-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:5c0a33afa9caf528d7bdbebe4995777adb88f502fafb263dbfcac1740624ffc2",
+      "answerTextHash": "sha256:329fde30c76c21ab2dcfd813b81c2890ad41797f494a2400f76ae07baff36ce8",
+      "sourceEvidence": {
+        "evidenceId": "politics-2020-q38",
+        "sourceId": "src_06315e7fedd219c2b5075ba6",
+        "answerSourceId": "src_c5281046ec5e3b17d92a4143",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:5c0a33afa9caf528d7bdbebe4995777adb88f502fafb263dbfcac1740624ffc2",
+        "answerTextHash": "sha256:329fde30c76c21ab2dcfd813b81c2890ad41797f494a2400f76ae07baff36ce8"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_reference_answer",
+        "sourceId": "src_c5281046ec5e3b17d92a4143",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2020/2020-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:329fde30c76c21ab2dcfd813b81c2890ad41797f494a2400f76ae07baff36ce8",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2020_bank",
+        "note": "Matched against local Baidu Netdisk 2020 Politics paper-answer PDF page images."
+      }
+    }
+  ]
+}
