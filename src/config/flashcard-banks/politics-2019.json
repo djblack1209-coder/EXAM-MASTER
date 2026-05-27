@@ -1,0 +1,3030 @@
+{
+  "id": "politics-2019",
+  "source": "politics-2019-paper-answer",
+  "paperId": "politics-2019",
+  "paperName": "2019考研政治真题",
+  "subject": "政治",
+  "subjectKey": "politics",
+  "track": "politics",
+  "year": "2019",
+  "quality": "ready",
+  "publicationStatus": "published",
+  "publicationBlockers": [],
+  "sourceEvidencePolicy": "baidu_netdisk_official_paper_pdf_page_image_v1",
+  "sourceFiles": [
+    {
+      "id": "politics-2019-paper",
+      "sourceId": "src_4852c9a4fadafcbe32687200",
+      "role": "paper",
+      "localPath": "data/raw-inbox/public-course-history/politics/2019/2019-politics-paper.pdf",
+      "sha256": "sha256:bc3444acb303e001ef059ab4feaba19d56ccf100ce0776c5faef8ef747f7bad1"
+    },
+    {
+      "id": "politics-2019-paper-answer",
+      "sourceId": "src_3bc5291e0e9df95b0e92c181",
+      "role": "paper_answer",
+      "localPath": "data/raw-inbox/public-course-history/politics/2019/2019-politics-paper-answer.pdf",
+      "sha256": "sha256:ec1c0e48ffb628d16473931227583a1e5204060812c289a304b68fce91be5ca5"
+    }
+  ],
+  "sourceNotes": [
+    "The 2019 standalone paper PDF provides the release question pages and user-visible option order. The scanned paper-answer PDF contains per-question choice answers on pages 1-16 and analysis answer points on pages 17-22; OCR was used only to locate those pages while final release evidence remains rendered PDF page images. Several answer-PDF choice blocks reorder options relative to the standalone paper, so choice answers were mapped by option content back to the paper PDF letters."
+  ],
+  "assetRoot": "question-bank/politics-2019",
+  "processed_at": "2026-05-27T06:44:47Z",
+  "total_cards": 38,
+  "sections": [
+    "单项选择",
+    "多项选择",
+    "分析题"
+  ],
+  "cards": [
+    {
+      "id": "politics-2019-001",
+      "number": 1,
+      "paperId": "politics-2019",
+      "paperName": "2019考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2019",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2019考研政治第1题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2019 考研政治真题及参考答案 PDF 第 1-16 页逐题解析；部分解析页选项顺序与试卷 PDF 不一致，题库已按选项内容映射回试卷原页字母。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2019/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2019考研政治试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2019/answer-page-01.jpg",
+          "caption": "答案原页 p.1",
+          "alt": "2019考研政治答案原页 p.1"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2019",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2019-paper-answer",
+      "sourceEvidenceId": "politics-2019-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:7ba964cebdfc4564d099973488118d47b2c9a4293445b18afa5ce5d296e0de2c",
+      "answerTextHash": "sha256:898dfe56ec6417a9e4a63fc7181aef05836cf09e0853e5590478456c77a1bb03",
+      "sourceEvidence": {
+        "evidenceId": "politics-2019-q01",
+        "sourceId": "src_4852c9a4fadafcbe32687200",
+        "answerSourceId": "src_3bc5291e0e9df95b0e92c181",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2019-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:7ba964cebdfc4564d099973488118d47b2c9a4293445b18afa5ce5d296e0de2c",
+        "answerTextHash": "sha256:898dfe56ec6417a9e4a63fc7181aef05836cf09e0853e5590478456c77a1bb03"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_3bc5291e0e9df95b0e92c181",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2019/2019-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:898dfe56ec6417a9e4a63fc7181aef05836cf09e0853e5590478456c77a1bb03",
+        "method": "local_pdf_ocr_located_page_image_with_option_order_mapping",
+        "verifiedBy": "build_politics_2019_bank",
+        "note": "Matched against local Baidu Netdisk 2019 Politics paper-answer PDF and mapped to the standalone paper PDF option order when the answer PDF reordered options."
+      }
+    },
+    {
+      "id": "politics-2019-002",
+      "number": 2,
+      "paperId": "politics-2019",
+      "paperName": "2019考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2019",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2019考研政治第2题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2019 考研政治真题及参考答案 PDF 第 1-16 页逐题解析；部分解析页选项顺序与试卷 PDF 不一致，题库已按选项内容映射回试卷原页字母。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2019/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2019考研政治试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2019/answer-page-01.jpg",
+          "caption": "答案原页 p.1",
+          "alt": "2019考研政治答案原页 p.1"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2019",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2019-paper-answer",
+      "sourceEvidenceId": "politics-2019-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:92389cdf4c8693dbcd93fc7a1c8eeae0e8b6a07862e803d74834c2230786d97d",
+      "answerTextHash": "sha256:4ed63e010b225ac71dcb1a7de3ad2cb9a9e94cdb0bc29b90e0262baf6e6de6dc",
+      "sourceEvidence": {
+        "evidenceId": "politics-2019-q02",
+        "sourceId": "src_4852c9a4fadafcbe32687200",
+        "answerSourceId": "src_3bc5291e0e9df95b0e92c181",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2019-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:92389cdf4c8693dbcd93fc7a1c8eeae0e8b6a07862e803d74834c2230786d97d",
+        "answerTextHash": "sha256:4ed63e010b225ac71dcb1a7de3ad2cb9a9e94cdb0bc29b90e0262baf6e6de6dc"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_3bc5291e0e9df95b0e92c181",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2019/2019-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:4ed63e010b225ac71dcb1a7de3ad2cb9a9e94cdb0bc29b90e0262baf6e6de6dc",
+        "method": "local_pdf_ocr_located_page_image_with_option_order_mapping",
+        "verifiedBy": "build_politics_2019_bank",
+        "note": "Matched against local Baidu Netdisk 2019 Politics paper-answer PDF and mapped to the standalone paper PDF option order when the answer PDF reordered options."
+      }
+    },
+    {
+      "id": "politics-2019-003",
+      "number": 3,
+      "paperId": "politics-2019",
+      "paperName": "2019考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2019",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2019考研政治第3题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2019 考研政治真题及参考答案 PDF 第 1-16 页逐题解析；部分解析页选项顺序与试卷 PDF 不一致，题库已按选项内容映射回试卷原页字母。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2019/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2019考研政治试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2019/answer-page-02.jpg",
+          "caption": "答案原页 p.2",
+          "alt": "2019考研政治答案原页 p.2"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2019",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2019-paper-answer",
+      "sourceEvidenceId": "politics-2019-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:3f73e1dd2a2fc7ec7297faf23aca15af60a08bce999a27404b551f85f42c1bd7",
+      "answerTextHash": "sha256:1b4ed64fbf07ecc3ef301dec4b6da6221886e24e888c978243015153eaa0f30a",
+      "sourceEvidence": {
+        "evidenceId": "politics-2019-q03",
+        "sourceId": "src_4852c9a4fadafcbe32687200",
+        "answerSourceId": "src_3bc5291e0e9df95b0e92c181",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2019-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:3f73e1dd2a2fc7ec7297faf23aca15af60a08bce999a27404b551f85f42c1bd7",
+        "answerTextHash": "sha256:1b4ed64fbf07ecc3ef301dec4b6da6221886e24e888c978243015153eaa0f30a"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_3bc5291e0e9df95b0e92c181",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2019/2019-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:1b4ed64fbf07ecc3ef301dec4b6da6221886e24e888c978243015153eaa0f30a",
+        "method": "local_pdf_ocr_located_page_image_with_option_order_mapping",
+        "verifiedBy": "build_politics_2019_bank",
+        "note": "Matched against local Baidu Netdisk 2019 Politics paper-answer PDF and mapped to the standalone paper PDF option order when the answer PDF reordered options."
+      }
+    },
+    {
+      "id": "politics-2019-004",
+      "number": 4,
+      "paperId": "politics-2019",
+      "paperName": "2019考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2019",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2019考研政治第4题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2019 考研政治真题及参考答案 PDF 第 1-16 页逐题解析；部分解析页选项顺序与试卷 PDF 不一致，题库已按选项内容映射回试卷原页字母。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2019/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2019考研政治试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2019/answer-page-02.jpg",
+          "caption": "答案原页 p.2",
+          "alt": "2019考研政治答案原页 p.2"
+        },
+        {
+          "src": "question-bank/politics-2019/answer-page-03.jpg",
+          "caption": "答案原页 p.3",
+          "alt": "2019考研政治答案原页 p.3"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2019",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2019-paper-answer",
+      "sourceEvidenceId": "politics-2019-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:ba68f01a3bf48ecb88c4493239f72b763222373ce02da298e470d6455890b3a4",
+      "answerTextHash": "sha256:6b17a77f653fbe5a10d6e64afa432ce5d21481993d95a2024c1c585cd21537f1",
+      "sourceEvidence": {
+        "evidenceId": "politics-2019-q04",
+        "sourceId": "src_4852c9a4fadafcbe32687200",
+        "answerSourceId": "src_3bc5291e0e9df95b0e92c181",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2019-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:ba68f01a3bf48ecb88c4493239f72b763222373ce02da298e470d6455890b3a4",
+        "answerTextHash": "sha256:6b17a77f653fbe5a10d6e64afa432ce5d21481993d95a2024c1c585cd21537f1"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_3bc5291e0e9df95b0e92c181",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2019/2019-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:6b17a77f653fbe5a10d6e64afa432ce5d21481993d95a2024c1c585cd21537f1",
+        "method": "local_pdf_ocr_located_page_image_with_option_order_mapping",
+        "verifiedBy": "build_politics_2019_bank",
+        "note": "Matched against local Baidu Netdisk 2019 Politics paper-answer PDF and mapped to the standalone paper PDF option order when the answer PDF reordered options."
+      }
+    },
+    {
+      "id": "politics-2019-005",
+      "number": 5,
+      "paperId": "politics-2019",
+      "paperName": "2019考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2019",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2019考研政治第5题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2019 考研政治真题及参考答案 PDF 第 1-16 页逐题解析；部分解析页选项顺序与试卷 PDF 不一致，题库已按选项内容映射回试卷原页字母。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2019/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2019考研政治试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2019/answer-page-03.jpg",
+          "caption": "答案原页 p.3",
+          "alt": "2019考研政治答案原页 p.3"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2019",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2019-paper-answer",
+      "sourceEvidenceId": "politics-2019-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:1cce4d5db89bf82b28d166afdaabf62cb1b083d09e4e1efde4138eb98742e859",
+      "answerTextHash": "sha256:0634ab203034f2c6374f15232206073cecbf4e9adb5bc8e37d45b9853b7f2948",
+      "sourceEvidence": {
+        "evidenceId": "politics-2019-q05",
+        "sourceId": "src_4852c9a4fadafcbe32687200",
+        "answerSourceId": "src_3bc5291e0e9df95b0e92c181",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2019-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:1cce4d5db89bf82b28d166afdaabf62cb1b083d09e4e1efde4138eb98742e859",
+        "answerTextHash": "sha256:0634ab203034f2c6374f15232206073cecbf4e9adb5bc8e37d45b9853b7f2948"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_3bc5291e0e9df95b0e92c181",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2019/2019-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:0634ab203034f2c6374f15232206073cecbf4e9adb5bc8e37d45b9853b7f2948",
+        "method": "local_pdf_ocr_located_page_image_with_option_order_mapping",
+        "verifiedBy": "build_politics_2019_bank",
+        "note": "Matched against local Baidu Netdisk 2019 Politics paper-answer PDF and mapped to the standalone paper PDF option order when the answer PDF reordered options."
+      }
+    },
+    {
+      "id": "politics-2019-006",
+      "number": 6,
+      "paperId": "politics-2019",
+      "paperName": "2019考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2019",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2019考研政治第6题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2019 考研政治真题及参考答案 PDF 第 1-16 页逐题解析；部分解析页选项顺序与试卷 PDF 不一致，题库已按选项内容映射回试卷原页字母。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2019/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2019考研政治试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2019/answer-page-03.jpg",
+          "caption": "答案原页 p.3",
+          "alt": "2019考研政治答案原页 p.3"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2019",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2019-paper-answer",
+      "sourceEvidenceId": "politics-2019-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:ecc87feafea10614b39dcb3c097a2d6610246d96babf1c1242215bb799de4ee0",
+      "answerTextHash": "sha256:04ec1392cd28549dbaddc0073958e13af49f2cfb6a360df78fd43db6aefcc6de",
+      "sourceEvidence": {
+        "evidenceId": "politics-2019-q06",
+        "sourceId": "src_4852c9a4fadafcbe32687200",
+        "answerSourceId": "src_3bc5291e0e9df95b0e92c181",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2019-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:ecc87feafea10614b39dcb3c097a2d6610246d96babf1c1242215bb799de4ee0",
+        "answerTextHash": "sha256:04ec1392cd28549dbaddc0073958e13af49f2cfb6a360df78fd43db6aefcc6de"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_3bc5291e0e9df95b0e92c181",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2019/2019-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:04ec1392cd28549dbaddc0073958e13af49f2cfb6a360df78fd43db6aefcc6de",
+        "method": "local_pdf_ocr_located_page_image_with_option_order_mapping",
+        "verifiedBy": "build_politics_2019_bank",
+        "note": "Matched against local Baidu Netdisk 2019 Politics paper-answer PDF and mapped to the standalone paper PDF option order when the answer PDF reordered options."
+      }
+    },
+    {
+      "id": "politics-2019-007",
+      "number": 7,
+      "paperId": "politics-2019",
+      "paperName": "2019考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2019",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2019考研政治第7题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2019 考研政治真题及参考答案 PDF 第 1-16 页逐题解析；部分解析页选项顺序与试卷 PDF 不一致，题库已按选项内容映射回试卷原页字母。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2019/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2019考研政治试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2019/answer-page-04.jpg",
+          "caption": "答案原页 p.4",
+          "alt": "2019考研政治答案原页 p.4"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2019",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2019-paper-answer",
+      "sourceEvidenceId": "politics-2019-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:38c5d72809b60cae20bc66401a51a9ff31f32ecc10fe8faeca9913b38b73c525",
+      "answerTextHash": "sha256:280315c20ba2e035785711fe9db555cb2d7482b9c3a74a60c6bb6324c86f8949",
+      "sourceEvidence": {
+        "evidenceId": "politics-2019-q07",
+        "sourceId": "src_4852c9a4fadafcbe32687200",
+        "answerSourceId": "src_3bc5291e0e9df95b0e92c181",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2019-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:38c5d72809b60cae20bc66401a51a9ff31f32ecc10fe8faeca9913b38b73c525",
+        "answerTextHash": "sha256:280315c20ba2e035785711fe9db555cb2d7482b9c3a74a60c6bb6324c86f8949"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_3bc5291e0e9df95b0e92c181",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2019/2019-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:280315c20ba2e035785711fe9db555cb2d7482b9c3a74a60c6bb6324c86f8949",
+        "method": "local_pdf_ocr_located_page_image_with_option_order_mapping",
+        "verifiedBy": "build_politics_2019_bank",
+        "note": "Matched against local Baidu Netdisk 2019 Politics paper-answer PDF and mapped to the standalone paper PDF option order when the answer PDF reordered options."
+      }
+    },
+    {
+      "id": "politics-2019-008",
+      "number": 8,
+      "paperId": "politics-2019",
+      "paperName": "2019考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2019",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2019考研政治第8题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2019 考研政治真题及参考答案 PDF 第 1-16 页逐题解析；部分解析页选项顺序与试卷 PDF 不一致，题库已按选项内容映射回试卷原页字母。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2019/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2019考研政治试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2019/answer-page-04.jpg",
+          "caption": "答案原页 p.4",
+          "alt": "2019考研政治答案原页 p.4"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2019",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2019-paper-answer",
+      "sourceEvidenceId": "politics-2019-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:159b21b231eae9822ea3f0fdece8fce9c7c45ee7416748e91c71044c9873206a",
+      "answerTextHash": "sha256:f36726feabe52ef14a5e320e57edccaf7bbc581ae42114d461b83545ac4c6e1f",
+      "sourceEvidence": {
+        "evidenceId": "politics-2019-q08",
+        "sourceId": "src_4852c9a4fadafcbe32687200",
+        "answerSourceId": "src_3bc5291e0e9df95b0e92c181",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2019-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:159b21b231eae9822ea3f0fdece8fce9c7c45ee7416748e91c71044c9873206a",
+        "answerTextHash": "sha256:f36726feabe52ef14a5e320e57edccaf7bbc581ae42114d461b83545ac4c6e1f"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_3bc5291e0e9df95b0e92c181",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2019/2019-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:f36726feabe52ef14a5e320e57edccaf7bbc581ae42114d461b83545ac4c6e1f",
+        "method": "local_pdf_ocr_located_page_image_with_option_order_mapping",
+        "verifiedBy": "build_politics_2019_bank",
+        "note": "Matched against local Baidu Netdisk 2019 Politics paper-answer PDF and mapped to the standalone paper PDF option order when the answer PDF reordered options."
+      }
+    },
+    {
+      "id": "politics-2019-009",
+      "number": 9,
+      "paperId": "politics-2019",
+      "paperName": "2019考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2019",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2019考研政治第9题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2019 考研政治真题及参考答案 PDF 第 1-16 页逐题解析；部分解析页选项顺序与试卷 PDF 不一致，题库已按选项内容映射回试卷原页字母。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2019/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2019考研政治试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2019/answer-page-04.jpg",
+          "caption": "答案原页 p.4",
+          "alt": "2019考研政治答案原页 p.4"
+        },
+        {
+          "src": "question-bank/politics-2019/answer-page-05.jpg",
+          "caption": "答案原页 p.5",
+          "alt": "2019考研政治答案原页 p.5"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2019",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2019-paper-answer",
+      "sourceEvidenceId": "politics-2019-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:c4a5098a1d85468b966a0017e89f2884feedff532a14cddfa530c8de819b3003",
+      "answerTextHash": "sha256:c46284c8c25bd481f18d5b60c6ac6ae0b60613e3973938a33f5df5253da76928",
+      "sourceEvidence": {
+        "evidenceId": "politics-2019-q09",
+        "sourceId": "src_4852c9a4fadafcbe32687200",
+        "answerSourceId": "src_3bc5291e0e9df95b0e92c181",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2019-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:c4a5098a1d85468b966a0017e89f2884feedff532a14cddfa530c8de819b3003",
+        "answerTextHash": "sha256:c46284c8c25bd481f18d5b60c6ac6ae0b60613e3973938a33f5df5253da76928"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_3bc5291e0e9df95b0e92c181",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2019/2019-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:c46284c8c25bd481f18d5b60c6ac6ae0b60613e3973938a33f5df5253da76928",
+        "method": "local_pdf_ocr_located_page_image_with_option_order_mapping",
+        "verifiedBy": "build_politics_2019_bank",
+        "note": "Matched against local Baidu Netdisk 2019 Politics paper-answer PDF and mapped to the standalone paper PDF option order when the answer PDF reordered options."
+      }
+    },
+    {
+      "id": "politics-2019-010",
+      "number": 10,
+      "paperId": "politics-2019",
+      "paperName": "2019考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2019",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2019考研政治第10题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2019 考研政治真题及参考答案 PDF 第 1-16 页逐题解析；部分解析页选项顺序与试卷 PDF 不一致，题库已按选项内容映射回试卷原页字母。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2019/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2019考研政治试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2019/answer-page-05.jpg",
+          "caption": "答案原页 p.5",
+          "alt": "2019考研政治答案原页 p.5"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2019",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2019-paper-answer",
+      "sourceEvidenceId": "politics-2019-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:95319d8563c509db1ac3ce1d0f1b1148e5bebfa029c4cd568576157f70345209",
+      "answerTextHash": "sha256:f82756dd2f052ba229ab97da26f2d6c4b0710ba71f313595fed3fb927bc2c0cb",
+      "sourceEvidence": {
+        "evidenceId": "politics-2019-q10",
+        "sourceId": "src_4852c9a4fadafcbe32687200",
+        "answerSourceId": "src_3bc5291e0e9df95b0e92c181",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2019-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:95319d8563c509db1ac3ce1d0f1b1148e5bebfa029c4cd568576157f70345209",
+        "answerTextHash": "sha256:f82756dd2f052ba229ab97da26f2d6c4b0710ba71f313595fed3fb927bc2c0cb"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_3bc5291e0e9df95b0e92c181",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2019/2019-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:f82756dd2f052ba229ab97da26f2d6c4b0710ba71f313595fed3fb927bc2c0cb",
+        "method": "local_pdf_ocr_located_page_image_with_option_order_mapping",
+        "verifiedBy": "build_politics_2019_bank",
+        "note": "Matched against local Baidu Netdisk 2019 Politics paper-answer PDF and mapped to the standalone paper PDF option order when the answer PDF reordered options."
+      }
+    },
+    {
+      "id": "politics-2019-011",
+      "number": 11,
+      "paperId": "politics-2019",
+      "paperName": "2019考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2019",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2019考研政治第11题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2019 考研政治真题及参考答案 PDF 第 1-16 页逐题解析；部分解析页选项顺序与试卷 PDF 不一致，题库已按选项内容映射回试卷原页字母。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2019/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2019考研政治试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2019/answer-page-05.jpg",
+          "caption": "答案原页 p.5",
+          "alt": "2019考研政治答案原页 p.5"
+        },
+        {
+          "src": "question-bank/politics-2019/answer-page-06.jpg",
+          "caption": "答案原页 p.6",
+          "alt": "2019考研政治答案原页 p.6"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2019",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2019-paper-answer",
+      "sourceEvidenceId": "politics-2019-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:bc26e188f575cd5c784a54d7a9bfc9e85fcfef8c0dd6244dea9847d76e100ff3",
+      "answerTextHash": "sha256:caf471356b16c3588b9f10082bbd79f8eaa3f4d1c4507162bd75d184ccff3d56",
+      "sourceEvidence": {
+        "evidenceId": "politics-2019-q11",
+        "sourceId": "src_4852c9a4fadafcbe32687200",
+        "answerSourceId": "src_3bc5291e0e9df95b0e92c181",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2019-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:bc26e188f575cd5c784a54d7a9bfc9e85fcfef8c0dd6244dea9847d76e100ff3",
+        "answerTextHash": "sha256:caf471356b16c3588b9f10082bbd79f8eaa3f4d1c4507162bd75d184ccff3d56"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_3bc5291e0e9df95b0e92c181",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2019/2019-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:caf471356b16c3588b9f10082bbd79f8eaa3f4d1c4507162bd75d184ccff3d56",
+        "method": "local_pdf_ocr_located_page_image_with_option_order_mapping",
+        "verifiedBy": "build_politics_2019_bank",
+        "note": "Matched against local Baidu Netdisk 2019 Politics paper-answer PDF and mapped to the standalone paper PDF option order when the answer PDF reordered options."
+      }
+    },
+    {
+      "id": "politics-2019-012",
+      "number": 12,
+      "paperId": "politics-2019",
+      "paperName": "2019考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2019",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2019考研政治第12题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2019 考研政治真题及参考答案 PDF 第 1-16 页逐题解析；部分解析页选项顺序与试卷 PDF 不一致，题库已按选项内容映射回试卷原页字母。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2019/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2019考研政治试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2019/answer-page-06.jpg",
+          "caption": "答案原页 p.6",
+          "alt": "2019考研政治答案原页 p.6"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2019",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2019-paper-answer",
+      "sourceEvidenceId": "politics-2019-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:6b9da60fc7e981ad4915c0511a5f553968239a4f8f4a4d52d0ae963fe08ce2dc",
+      "answerTextHash": "sha256:370a281cae0ba93cdfa811d419348455084e9789186e7b39bc75832634c367fb",
+      "sourceEvidence": {
+        "evidenceId": "politics-2019-q12",
+        "sourceId": "src_4852c9a4fadafcbe32687200",
+        "answerSourceId": "src_3bc5291e0e9df95b0e92c181",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2019-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:6b9da60fc7e981ad4915c0511a5f553968239a4f8f4a4d52d0ae963fe08ce2dc",
+        "answerTextHash": "sha256:370a281cae0ba93cdfa811d419348455084e9789186e7b39bc75832634c367fb"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_3bc5291e0e9df95b0e92c181",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2019/2019-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:370a281cae0ba93cdfa811d419348455084e9789186e7b39bc75832634c367fb",
+        "method": "local_pdf_ocr_located_page_image_with_option_order_mapping",
+        "verifiedBy": "build_politics_2019_bank",
+        "note": "Matched against local Baidu Netdisk 2019 Politics paper-answer PDF and mapped to the standalone paper PDF option order when the answer PDF reordered options."
+      }
+    },
+    {
+      "id": "politics-2019-013",
+      "number": 13,
+      "paperId": "politics-2019",
+      "paperName": "2019考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2019",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2019考研政治第13题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2019 考研政治真题及参考答案 PDF 第 1-16 页逐题解析；部分解析页选项顺序与试卷 PDF 不一致，题库已按选项内容映射回试卷原页字母。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2019/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2019考研政治试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2019/answer-page-06.jpg",
+          "caption": "答案原页 p.6",
+          "alt": "2019考研政治答案原页 p.6"
+        },
+        {
+          "src": "question-bank/politics-2019/answer-page-07.jpg",
+          "caption": "答案原页 p.7",
+          "alt": "2019考研政治答案原页 p.7"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2019",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2019-paper-answer",
+      "sourceEvidenceId": "politics-2019-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:17ff1b036d09cbc4d099cd81d085feaf78aa3cabbb0ae3ecf86494eba9c6e7e5",
+      "answerTextHash": "sha256:2d0be177debd706ad5f0daeda1c41461284c102ba41c47561e2675ef51e516ba",
+      "sourceEvidence": {
+        "evidenceId": "politics-2019-q13",
+        "sourceId": "src_4852c9a4fadafcbe32687200",
+        "answerSourceId": "src_3bc5291e0e9df95b0e92c181",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2019-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:17ff1b036d09cbc4d099cd81d085feaf78aa3cabbb0ae3ecf86494eba9c6e7e5",
+        "answerTextHash": "sha256:2d0be177debd706ad5f0daeda1c41461284c102ba41c47561e2675ef51e516ba"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_3bc5291e0e9df95b0e92c181",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2019/2019-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:2d0be177debd706ad5f0daeda1c41461284c102ba41c47561e2675ef51e516ba",
+        "method": "local_pdf_ocr_located_page_image_with_option_order_mapping",
+        "verifiedBy": "build_politics_2019_bank",
+        "note": "Matched against local Baidu Netdisk 2019 Politics paper-answer PDF and mapped to the standalone paper PDF option order when the answer PDF reordered options."
+      }
+    },
+    {
+      "id": "politics-2019-014",
+      "number": 14,
+      "paperId": "politics-2019",
+      "paperName": "2019考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2019",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2019考研政治第14题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2019 考研政治真题及参考答案 PDF 第 1-16 页逐题解析；部分解析页选项顺序与试卷 PDF 不一致，题库已按选项内容映射回试卷原页字母。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2019/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2019考研政治试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2019/answer-page-07.jpg",
+          "caption": "答案原页 p.7",
+          "alt": "2019考研政治答案原页 p.7"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2019",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2019-paper-answer",
+      "sourceEvidenceId": "politics-2019-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:d4fac60efab181ed7ee4fc5a42e935542e380324447fe7b1a7e7f29595e544f2",
+      "answerTextHash": "sha256:e231c60b864d1fe692aa001a90490b05ed2136a91dab3e904c1b4af403aafecd",
+      "sourceEvidence": {
+        "evidenceId": "politics-2019-q14",
+        "sourceId": "src_4852c9a4fadafcbe32687200",
+        "answerSourceId": "src_3bc5291e0e9df95b0e92c181",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2019-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:d4fac60efab181ed7ee4fc5a42e935542e380324447fe7b1a7e7f29595e544f2",
+        "answerTextHash": "sha256:e231c60b864d1fe692aa001a90490b05ed2136a91dab3e904c1b4af403aafecd"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_3bc5291e0e9df95b0e92c181",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2019/2019-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:e231c60b864d1fe692aa001a90490b05ed2136a91dab3e904c1b4af403aafecd",
+        "method": "local_pdf_ocr_located_page_image_with_option_order_mapping",
+        "verifiedBy": "build_politics_2019_bank",
+        "note": "Matched against local Baidu Netdisk 2019 Politics paper-answer PDF and mapped to the standalone paper PDF option order when the answer PDF reordered options."
+      }
+    },
+    {
+      "id": "politics-2019-015",
+      "number": 15,
+      "paperId": "politics-2019",
+      "paperName": "2019考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2019",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2019考研政治第15题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2019 考研政治真题及参考答案 PDF 第 1-16 页逐题解析；部分解析页选项顺序与试卷 PDF 不一致，题库已按选项内容映射回试卷原页字母。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2019/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2019考研政治试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2019/answer-page-07.jpg",
+          "caption": "答案原页 p.7",
+          "alt": "2019考研政治答案原页 p.7"
+        },
+        {
+          "src": "question-bank/politics-2019/answer-page-08.jpg",
+          "caption": "答案原页 p.8",
+          "alt": "2019考研政治答案原页 p.8"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2019",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2019-paper-answer",
+      "sourceEvidenceId": "politics-2019-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:f1038c92c022a6662a60ee8990042218990118557750736cd9d7e8772d391871",
+      "answerTextHash": "sha256:431a7abeb0e6362b99470cfd9a6a2607ada56988e5896f2adb8a55fa1deca937",
+      "sourceEvidence": {
+        "evidenceId": "politics-2019-q15",
+        "sourceId": "src_4852c9a4fadafcbe32687200",
+        "answerSourceId": "src_3bc5291e0e9df95b0e92c181",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2019-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:f1038c92c022a6662a60ee8990042218990118557750736cd9d7e8772d391871",
+        "answerTextHash": "sha256:431a7abeb0e6362b99470cfd9a6a2607ada56988e5896f2adb8a55fa1deca937"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_3bc5291e0e9df95b0e92c181",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2019/2019-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:431a7abeb0e6362b99470cfd9a6a2607ada56988e5896f2adb8a55fa1deca937",
+        "method": "local_pdf_ocr_located_page_image_with_option_order_mapping",
+        "verifiedBy": "build_politics_2019_bank",
+        "note": "Matched against local Baidu Netdisk 2019 Politics paper-answer PDF and mapped to the standalone paper PDF option order when the answer PDF reordered options."
+      }
+    },
+    {
+      "id": "politics-2019-016",
+      "number": 16,
+      "paperId": "politics-2019",
+      "paperName": "2019考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2019",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2019考研政治第16题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2019 考研政治真题及参考答案 PDF 第 1-16 页逐题解析；部分解析页选项顺序与试卷 PDF 不一致，题库已按选项内容映射回试卷原页字母。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2019/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2019考研政治试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2019/answer-page-08.jpg",
+          "caption": "答案原页 p.8",
+          "alt": "2019考研政治答案原页 p.8"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2019",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2019-paper-answer",
+      "sourceEvidenceId": "politics-2019-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:8934d7347f0320197db89f4ab16368775cf90e9f5794c8c843d1f427363f9649",
+      "answerTextHash": "sha256:326403fd1f6cce23d18252b0ece06cf5ecf54a396587ccae2b5782d15782a6b1",
+      "sourceEvidence": {
+        "evidenceId": "politics-2019-q16",
+        "sourceId": "src_4852c9a4fadafcbe32687200",
+        "answerSourceId": "src_3bc5291e0e9df95b0e92c181",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2019-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:8934d7347f0320197db89f4ab16368775cf90e9f5794c8c843d1f427363f9649",
+        "answerTextHash": "sha256:326403fd1f6cce23d18252b0ece06cf5ecf54a396587ccae2b5782d15782a6b1"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_3bc5291e0e9df95b0e92c181",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2019/2019-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:326403fd1f6cce23d18252b0ece06cf5ecf54a396587ccae2b5782d15782a6b1",
+        "method": "local_pdf_ocr_located_page_image_with_option_order_mapping",
+        "verifiedBy": "build_politics_2019_bank",
+        "note": "Matched against local Baidu Netdisk 2019 Politics paper-answer PDF and mapped to the standalone paper PDF option order when the answer PDF reordered options."
+      }
+    },
+    {
+      "id": "politics-2019-017",
+      "number": 17,
+      "paperId": "politics-2019",
+      "paperName": "2019考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2019",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2019考研政治第17题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "BD",
+      "explanation": "答案来自本地百度网盘 2019 考研政治真题及参考答案 PDF 第 1-16 页逐题解析；部分解析页选项顺序与试卷 PDF 不一致，题库已按选项内容映射回试卷原页字母。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2019/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2019考研政治试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2019/answer-page-08.jpg",
+          "caption": "答案原页 p.8",
+          "alt": "2019考研政治答案原页 p.8"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2019",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2019-paper-answer",
+      "sourceEvidenceId": "politics-2019-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:7e2a4959100a6a953581aa5e0bb8f9f1708cf2e23641cb363d97a80ac5aae8be",
+      "answerTextHash": "sha256:9ac541f299bdc0f7095a4164f73c20e0d1c6e58dfb01173bf986222e9b3fcd4f",
+      "sourceEvidence": {
+        "evidenceId": "politics-2019-q17",
+        "sourceId": "src_4852c9a4fadafcbe32687200",
+        "answerSourceId": "src_3bc5291e0e9df95b0e92c181",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2019-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:7e2a4959100a6a953581aa5e0bb8f9f1708cf2e23641cb363d97a80ac5aae8be",
+        "answerTextHash": "sha256:9ac541f299bdc0f7095a4164f73c20e0d1c6e58dfb01173bf986222e9b3fcd4f"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_3bc5291e0e9df95b0e92c181",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2019/2019-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:9ac541f299bdc0f7095a4164f73c20e0d1c6e58dfb01173bf986222e9b3fcd4f",
+        "method": "local_pdf_ocr_located_page_image_with_option_order_mapping",
+        "verifiedBy": "build_politics_2019_bank",
+        "note": "Matched against local Baidu Netdisk 2019 Politics paper-answer PDF and mapped to the standalone paper PDF option order when the answer PDF reordered options."
+      }
+    },
+    {
+      "id": "politics-2019-018",
+      "number": 18,
+      "paperId": "politics-2019",
+      "paperName": "2019考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2019",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2019考研政治第18题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABCD",
+      "explanation": "答案来自本地百度网盘 2019 考研政治真题及参考答案 PDF 第 1-16 页逐题解析；部分解析页选项顺序与试卷 PDF 不一致，题库已按选项内容映射回试卷原页字母。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2019/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2019考研政治试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2019/answer-page-09.jpg",
+          "caption": "答案原页 p.9",
+          "alt": "2019考研政治答案原页 p.9"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2019",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2019-paper-answer",
+      "sourceEvidenceId": "politics-2019-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:8244d007292407da168f6bf14d1d23c1992135a29f8f9d629149094d79126a30",
+      "answerTextHash": "sha256:a29b1d6ef338f9fd22d808d71723df6d146732d65fe64253a689e66d7d281df4",
+      "sourceEvidence": {
+        "evidenceId": "politics-2019-q18",
+        "sourceId": "src_4852c9a4fadafcbe32687200",
+        "answerSourceId": "src_3bc5291e0e9df95b0e92c181",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2019-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:8244d007292407da168f6bf14d1d23c1992135a29f8f9d629149094d79126a30",
+        "answerTextHash": "sha256:a29b1d6ef338f9fd22d808d71723df6d146732d65fe64253a689e66d7d281df4"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_3bc5291e0e9df95b0e92c181",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2019/2019-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:a29b1d6ef338f9fd22d808d71723df6d146732d65fe64253a689e66d7d281df4",
+        "method": "local_pdf_ocr_located_page_image_with_option_order_mapping",
+        "verifiedBy": "build_politics_2019_bank",
+        "note": "Matched against local Baidu Netdisk 2019 Politics paper-answer PDF and mapped to the standalone paper PDF option order when the answer PDF reordered options."
+      }
+    },
+    {
+      "id": "politics-2019-019",
+      "number": 19,
+      "paperId": "politics-2019",
+      "paperName": "2019考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2019",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2019考研政治第19题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABC",
+      "explanation": "答案来自本地百度网盘 2019 考研政治真题及参考答案 PDF 第 1-16 页逐题解析；部分解析页选项顺序与试卷 PDF 不一致，题库已按选项内容映射回试卷原页字母。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2019/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2019考研政治试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2019/answer-page-09.jpg",
+          "caption": "答案原页 p.9",
+          "alt": "2019考研政治答案原页 p.9"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2019",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2019-paper-answer",
+      "sourceEvidenceId": "politics-2019-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:eb9930b0be4037421057a32102a99ea740fc55a2381e714d725dc2baaaf5dbca",
+      "answerTextHash": "sha256:f98c28def54985b07cdc5d2533d066cad872a6f4ad8a3ce900df071a566bff19",
+      "sourceEvidence": {
+        "evidenceId": "politics-2019-q19",
+        "sourceId": "src_4852c9a4fadafcbe32687200",
+        "answerSourceId": "src_3bc5291e0e9df95b0e92c181",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2019-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:eb9930b0be4037421057a32102a99ea740fc55a2381e714d725dc2baaaf5dbca",
+        "answerTextHash": "sha256:f98c28def54985b07cdc5d2533d066cad872a6f4ad8a3ce900df071a566bff19"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_3bc5291e0e9df95b0e92c181",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2019/2019-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:f98c28def54985b07cdc5d2533d066cad872a6f4ad8a3ce900df071a566bff19",
+        "method": "local_pdf_ocr_located_page_image_with_option_order_mapping",
+        "verifiedBy": "build_politics_2019_bank",
+        "note": "Matched against local Baidu Netdisk 2019 Politics paper-answer PDF and mapped to the standalone paper PDF option order when the answer PDF reordered options."
+      }
+    },
+    {
+      "id": "politics-2019-020",
+      "number": 20,
+      "paperId": "politics-2019",
+      "paperName": "2019考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2019",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2019考研政治第20题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "BCD",
+      "explanation": "答案来自本地百度网盘 2019 考研政治真题及参考答案 PDF 第 1-16 页逐题解析；部分解析页选项顺序与试卷 PDF 不一致，题库已按选项内容映射回试卷原页字母。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2019/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2019考研政治试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2019/answer-page-10.jpg",
+          "caption": "答案原页 p.10",
+          "alt": "2019考研政治答案原页 p.10"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2019",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2019-paper-answer",
+      "sourceEvidenceId": "politics-2019-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:2edea762b30f10f79b94ef6b196dd6d7240361c24f17940849401b13f42c6ddc",
+      "answerTextHash": "sha256:dd7b70163589b0b8612f9b7d880e02fba09fe08a6b86808e4ac2a7142dea3cb5",
+      "sourceEvidence": {
+        "evidenceId": "politics-2019-q20",
+        "sourceId": "src_4852c9a4fadafcbe32687200",
+        "answerSourceId": "src_3bc5291e0e9df95b0e92c181",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2019-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:2edea762b30f10f79b94ef6b196dd6d7240361c24f17940849401b13f42c6ddc",
+        "answerTextHash": "sha256:dd7b70163589b0b8612f9b7d880e02fba09fe08a6b86808e4ac2a7142dea3cb5"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_3bc5291e0e9df95b0e92c181",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2019/2019-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:dd7b70163589b0b8612f9b7d880e02fba09fe08a6b86808e4ac2a7142dea3cb5",
+        "method": "local_pdf_ocr_located_page_image_with_option_order_mapping",
+        "verifiedBy": "build_politics_2019_bank",
+        "note": "Matched against local Baidu Netdisk 2019 Politics paper-answer PDF and mapped to the standalone paper PDF option order when the answer PDF reordered options."
+      }
+    },
+    {
+      "id": "politics-2019-021",
+      "number": 21,
+      "paperId": "politics-2019",
+      "paperName": "2019考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2019",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2019考研政治第21题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ACD",
+      "explanation": "答案来自本地百度网盘 2019 考研政治真题及参考答案 PDF 第 1-16 页逐题解析；部分解析页选项顺序与试卷 PDF 不一致，题库已按选项内容映射回试卷原页字母。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2019/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2019考研政治试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2019/answer-page-10.jpg",
+          "caption": "答案原页 p.10",
+          "alt": "2019考研政治答案原页 p.10"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2019",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2019-paper-answer",
+      "sourceEvidenceId": "politics-2019-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:ef8c3e35755867af6c775e4361f7a7d40bfc61291c3b69e9798ebe4fd4120f2a",
+      "answerTextHash": "sha256:ca9436e52109ab8dc0582f2183321c64b23eb11c5443db7128bbca32fcf17a65",
+      "sourceEvidence": {
+        "evidenceId": "politics-2019-q21",
+        "sourceId": "src_4852c9a4fadafcbe32687200",
+        "answerSourceId": "src_3bc5291e0e9df95b0e92c181",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2019-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:ef8c3e35755867af6c775e4361f7a7d40bfc61291c3b69e9798ebe4fd4120f2a",
+        "answerTextHash": "sha256:ca9436e52109ab8dc0582f2183321c64b23eb11c5443db7128bbca32fcf17a65"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_3bc5291e0e9df95b0e92c181",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2019/2019-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:ca9436e52109ab8dc0582f2183321c64b23eb11c5443db7128bbca32fcf17a65",
+        "method": "local_pdf_ocr_located_page_image_with_option_order_mapping",
+        "verifiedBy": "build_politics_2019_bank",
+        "note": "Matched against local Baidu Netdisk 2019 Politics paper-answer PDF and mapped to the standalone paper PDF option order when the answer PDF reordered options."
+      }
+    },
+    {
+      "id": "politics-2019-022",
+      "number": 22,
+      "paperId": "politics-2019",
+      "paperName": "2019考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2019",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2019考研政治第22题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABC",
+      "explanation": "答案来自本地百度网盘 2019 考研政治真题及参考答案 PDF 第 1-16 页逐题解析；部分解析页选项顺序与试卷 PDF 不一致，题库已按选项内容映射回试卷原页字母。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2019/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2019考研政治试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2019/answer-page-11.jpg",
+          "caption": "答案原页 p.11",
+          "alt": "2019考研政治答案原页 p.11"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2019",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2019-paper-answer",
+      "sourceEvidenceId": "politics-2019-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:2a278a7e67791506b33f6e6f2be160ae947139a2d87317e7ea97eefcd26c91af",
+      "answerTextHash": "sha256:04b9b825c447d4d716dcf16ff23f0ac629d5b62202be77763d9d7cd9ad043ee1",
+      "sourceEvidence": {
+        "evidenceId": "politics-2019-q22",
+        "sourceId": "src_4852c9a4fadafcbe32687200",
+        "answerSourceId": "src_3bc5291e0e9df95b0e92c181",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2019-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:2a278a7e67791506b33f6e6f2be160ae947139a2d87317e7ea97eefcd26c91af",
+        "answerTextHash": "sha256:04b9b825c447d4d716dcf16ff23f0ac629d5b62202be77763d9d7cd9ad043ee1"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_3bc5291e0e9df95b0e92c181",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2019/2019-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:04b9b825c447d4d716dcf16ff23f0ac629d5b62202be77763d9d7cd9ad043ee1",
+        "method": "local_pdf_ocr_located_page_image_with_option_order_mapping",
+        "verifiedBy": "build_politics_2019_bank",
+        "note": "Matched against local Baidu Netdisk 2019 Politics paper-answer PDF and mapped to the standalone paper PDF option order when the answer PDF reordered options."
+      }
+    },
+    {
+      "id": "politics-2019-023",
+      "number": 23,
+      "paperId": "politics-2019",
+      "paperName": "2019考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2019",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2019考研政治第23题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABC",
+      "explanation": "答案来自本地百度网盘 2019 考研政治真题及参考答案 PDF 第 1-16 页逐题解析；部分解析页选项顺序与试卷 PDF 不一致，题库已按选项内容映射回试卷原页字母。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2019/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2019考研政治试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2019/answer-page-11.jpg",
+          "caption": "答案原页 p.11",
+          "alt": "2019考研政治答案原页 p.11"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2019",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2019-paper-answer",
+      "sourceEvidenceId": "politics-2019-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:d799071c47bd636d59ac9752cc54587d4a832283b7e936c46f7282fa7317c987",
+      "answerTextHash": "sha256:04b9b825c447d4d716dcf16ff23f0ac629d5b62202be77763d9d7cd9ad043ee1",
+      "sourceEvidence": {
+        "evidenceId": "politics-2019-q23",
+        "sourceId": "src_4852c9a4fadafcbe32687200",
+        "answerSourceId": "src_3bc5291e0e9df95b0e92c181",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2019-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:d799071c47bd636d59ac9752cc54587d4a832283b7e936c46f7282fa7317c987",
+        "answerTextHash": "sha256:04b9b825c447d4d716dcf16ff23f0ac629d5b62202be77763d9d7cd9ad043ee1"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_3bc5291e0e9df95b0e92c181",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2019/2019-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:04b9b825c447d4d716dcf16ff23f0ac629d5b62202be77763d9d7cd9ad043ee1",
+        "method": "local_pdf_ocr_located_page_image_with_option_order_mapping",
+        "verifiedBy": "build_politics_2019_bank",
+        "note": "Matched against local Baidu Netdisk 2019 Politics paper-answer PDF and mapped to the standalone paper PDF option order when the answer PDF reordered options."
+      }
+    },
+    {
+      "id": "politics-2019-024",
+      "number": 24,
+      "paperId": "politics-2019",
+      "paperName": "2019考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2019",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2019考研政治第24题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABC",
+      "explanation": "答案来自本地百度网盘 2019 考研政治真题及参考答案 PDF 第 1-16 页逐题解析；部分解析页选项顺序与试卷 PDF 不一致，题库已按选项内容映射回试卷原页字母。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2019/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2019考研政治试卷原页 p.3"
+        },
+        {
+          "src": "question-bank/politics-2019/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2019考研政治试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2019/answer-page-12.jpg",
+          "caption": "答案原页 p.12",
+          "alt": "2019考研政治答案原页 p.12"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2019",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2019-paper-answer",
+      "sourceEvidenceId": "politics-2019-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:ce337cc6cf4c8201957be49de4ad62a94a1b62ad1427b7125173ab79ca739b99",
+      "answerTextHash": "sha256:74a9369f2b1814401101d77111b4c4e3ff06dd3114b02bfcdc7b5323e565f0cd",
+      "sourceEvidence": {
+        "evidenceId": "politics-2019-q24",
+        "sourceId": "src_4852c9a4fadafcbe32687200",
+        "answerSourceId": "src_3bc5291e0e9df95b0e92c181",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2019-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:ce337cc6cf4c8201957be49de4ad62a94a1b62ad1427b7125173ab79ca739b99",
+        "answerTextHash": "sha256:74a9369f2b1814401101d77111b4c4e3ff06dd3114b02bfcdc7b5323e565f0cd"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_3bc5291e0e9df95b0e92c181",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2019/2019-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:74a9369f2b1814401101d77111b4c4e3ff06dd3114b02bfcdc7b5323e565f0cd",
+        "method": "local_pdf_ocr_located_page_image_with_option_order_mapping",
+        "verifiedBy": "build_politics_2019_bank",
+        "note": "Matched against local Baidu Netdisk 2019 Politics paper-answer PDF and mapped to the standalone paper PDF option order when the answer PDF reordered options."
+      }
+    },
+    {
+      "id": "politics-2019-025",
+      "number": 25,
+      "paperId": "politics-2019",
+      "paperName": "2019考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2019",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2019考研政治第25题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABCD",
+      "explanation": "答案来自本地百度网盘 2019 考研政治真题及参考答案 PDF 第 1-16 页逐题解析；部分解析页选项顺序与试卷 PDF 不一致，题库已按选项内容映射回试卷原页字母。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2019/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2019考研政治试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2019/answer-page-12.jpg",
+          "caption": "答案原页 p.12",
+          "alt": "2019考研政治答案原页 p.12"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2019",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2019-paper-answer",
+      "sourceEvidenceId": "politics-2019-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:c2b3c40d90a95cc0934d27f3635cce818fd5dded3852fe8881d233cd0f25f9b6",
+      "answerTextHash": "sha256:ca456842a1d91a1439e140d3f5ca281926dddb58da85d766a72ffbfa0655787d",
+      "sourceEvidence": {
+        "evidenceId": "politics-2019-q25",
+        "sourceId": "src_4852c9a4fadafcbe32687200",
+        "answerSourceId": "src_3bc5291e0e9df95b0e92c181",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2019-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:c2b3c40d90a95cc0934d27f3635cce818fd5dded3852fe8881d233cd0f25f9b6",
+        "answerTextHash": "sha256:ca456842a1d91a1439e140d3f5ca281926dddb58da85d766a72ffbfa0655787d"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_3bc5291e0e9df95b0e92c181",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2019/2019-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:ca456842a1d91a1439e140d3f5ca281926dddb58da85d766a72ffbfa0655787d",
+        "method": "local_pdf_ocr_located_page_image_with_option_order_mapping",
+        "verifiedBy": "build_politics_2019_bank",
+        "note": "Matched against local Baidu Netdisk 2019 Politics paper-answer PDF and mapped to the standalone paper PDF option order when the answer PDF reordered options."
+      }
+    },
+    {
+      "id": "politics-2019-026",
+      "number": 26,
+      "paperId": "politics-2019",
+      "paperName": "2019考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2019",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2019考研政治第26题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABCD",
+      "explanation": "答案来自本地百度网盘 2019 考研政治真题及参考答案 PDF 第 1-16 页逐题解析；部分解析页选项顺序与试卷 PDF 不一致，题库已按选项内容映射回试卷原页字母。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2019/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2019考研政治试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2019/answer-page-13.jpg",
+          "caption": "答案原页 p.13",
+          "alt": "2019考研政治答案原页 p.13"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2019",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2019-paper-answer",
+      "sourceEvidenceId": "politics-2019-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:7e6a8f88b750d14613c4388ddb6bf58d319aa50776facda07e76dd430e32502e",
+      "answerTextHash": "sha256:43bc2e87d13ce9b5c39776f50eb7afddb8cf6d35b8c8aca79e57a093aa299505",
+      "sourceEvidence": {
+        "evidenceId": "politics-2019-q26",
+        "sourceId": "src_4852c9a4fadafcbe32687200",
+        "answerSourceId": "src_3bc5291e0e9df95b0e92c181",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2019-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:7e6a8f88b750d14613c4388ddb6bf58d319aa50776facda07e76dd430e32502e",
+        "answerTextHash": "sha256:43bc2e87d13ce9b5c39776f50eb7afddb8cf6d35b8c8aca79e57a093aa299505"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_3bc5291e0e9df95b0e92c181",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2019/2019-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:43bc2e87d13ce9b5c39776f50eb7afddb8cf6d35b8c8aca79e57a093aa299505",
+        "method": "local_pdf_ocr_located_page_image_with_option_order_mapping",
+        "verifiedBy": "build_politics_2019_bank",
+        "note": "Matched against local Baidu Netdisk 2019 Politics paper-answer PDF and mapped to the standalone paper PDF option order when the answer PDF reordered options."
+      }
+    },
+    {
+      "id": "politics-2019-027",
+      "number": 27,
+      "paperId": "politics-2019",
+      "paperName": "2019考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2019",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2019考研政治第27题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABCD",
+      "explanation": "答案来自本地百度网盘 2019 考研政治真题及参考答案 PDF 第 1-16 页逐题解析；部分解析页选项顺序与试卷 PDF 不一致，题库已按选项内容映射回试卷原页字母。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2019/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2019考研政治试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2019/answer-page-13.jpg",
+          "caption": "答案原页 p.13",
+          "alt": "2019考研政治答案原页 p.13"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2019",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2019-paper-answer",
+      "sourceEvidenceId": "politics-2019-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:e167d73f9885d731347382951e7c0799fb5c9477d8b84b23455750c365687d82",
+      "answerTextHash": "sha256:43bc2e87d13ce9b5c39776f50eb7afddb8cf6d35b8c8aca79e57a093aa299505",
+      "sourceEvidence": {
+        "evidenceId": "politics-2019-q27",
+        "sourceId": "src_4852c9a4fadafcbe32687200",
+        "answerSourceId": "src_3bc5291e0e9df95b0e92c181",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2019-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:e167d73f9885d731347382951e7c0799fb5c9477d8b84b23455750c365687d82",
+        "answerTextHash": "sha256:43bc2e87d13ce9b5c39776f50eb7afddb8cf6d35b8c8aca79e57a093aa299505"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_3bc5291e0e9df95b0e92c181",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2019/2019-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:43bc2e87d13ce9b5c39776f50eb7afddb8cf6d35b8c8aca79e57a093aa299505",
+        "method": "local_pdf_ocr_located_page_image_with_option_order_mapping",
+        "verifiedBy": "build_politics_2019_bank",
+        "note": "Matched against local Baidu Netdisk 2019 Politics paper-answer PDF and mapped to the standalone paper PDF option order when the answer PDF reordered options."
+      }
+    },
+    {
+      "id": "politics-2019-028",
+      "number": 28,
+      "paperId": "politics-2019",
+      "paperName": "2019考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2019",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2019考研政治第28题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABC",
+      "explanation": "答案来自本地百度网盘 2019 考研政治真题及参考答案 PDF 第 1-16 页逐题解析；部分解析页选项顺序与试卷 PDF 不一致，题库已按选项内容映射回试卷原页字母。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2019/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2019考研政治试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2019/answer-page-14.jpg",
+          "caption": "答案原页 p.14",
+          "alt": "2019考研政治答案原页 p.14"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2019",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2019-paper-answer",
+      "sourceEvidenceId": "politics-2019-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:30795551d16e99e6baced6e8d3eaed59547b8c4ab986622157b26d9be146bb01",
+      "answerTextHash": "sha256:c4bde94e78a3e3714c7ce52bc5461c3a3b427971f0d4e99a1b2ad576bb822933",
+      "sourceEvidence": {
+        "evidenceId": "politics-2019-q28",
+        "sourceId": "src_4852c9a4fadafcbe32687200",
+        "answerSourceId": "src_3bc5291e0e9df95b0e92c181",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2019-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:30795551d16e99e6baced6e8d3eaed59547b8c4ab986622157b26d9be146bb01",
+        "answerTextHash": "sha256:c4bde94e78a3e3714c7ce52bc5461c3a3b427971f0d4e99a1b2ad576bb822933"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_3bc5291e0e9df95b0e92c181",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2019/2019-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:c4bde94e78a3e3714c7ce52bc5461c3a3b427971f0d4e99a1b2ad576bb822933",
+        "method": "local_pdf_ocr_located_page_image_with_option_order_mapping",
+        "verifiedBy": "build_politics_2019_bank",
+        "note": "Matched against local Baidu Netdisk 2019 Politics paper-answer PDF and mapped to the standalone paper PDF option order when the answer PDF reordered options."
+      }
+    },
+    {
+      "id": "politics-2019-029",
+      "number": 29,
+      "paperId": "politics-2019",
+      "paperName": "2019考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2019",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2019考研政治第29题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "AC",
+      "explanation": "答案来自本地百度网盘 2019 考研政治真题及参考答案 PDF 第 14 页；该页答案行与解析结论存在冲突，解析文字明确指向人民公社体制亟待改革和温饱尚未解决，题库按解析结论映射回试卷原页选项。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2019/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2019考研政治试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2019/answer-page-14.jpg",
+          "caption": "答案原页 p.14",
+          "alt": "2019考研政治答案原页 p.14"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2019",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2019-paper-answer",
+      "sourceEvidenceId": "politics-2019-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:b6571351ff52e52f2c023a1b0bb4b7213705afc96d152bcb7d1fe5f4385f591a",
+      "answerTextHash": "sha256:10715a020ccc9b14b2124eb84e176062194acc55009241697c73044f72b1a03e",
+      "sourceEvidence": {
+        "evidenceId": "politics-2019-q29",
+        "sourceId": "src_4852c9a4fadafcbe32687200",
+        "answerSourceId": "src_3bc5291e0e9df95b0e92c181",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2019-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:b6571351ff52e52f2c023a1b0bb4b7213705afc96d152bcb7d1fe5f4385f591a",
+        "answerTextHash": "sha256:10715a020ccc9b14b2124eb84e176062194acc55009241697c73044f72b1a03e"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_3bc5291e0e9df95b0e92c181",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2019/2019-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:10715a020ccc9b14b2124eb84e176062194acc55009241697c73044f72b1a03e",
+        "method": "local_pdf_ocr_located_page_image_with_option_order_mapping",
+        "verifiedBy": "build_politics_2019_bank",
+        "note": "Matched to answer-page 14 in the local Baidu Netdisk 2019 Politics paper-answer PDF. The page has an internal conflict between the visible answer line and explanation conclusion; the bank follows the explanation conclusion and maps it to the standalone paper PDF option order."
+      }
+    },
+    {
+      "id": "politics-2019-030",
+      "number": 30,
+      "paperId": "politics-2019",
+      "paperName": "2019考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2019",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2019考研政治第30题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABC",
+      "explanation": "答案来自本地百度网盘 2019 考研政治真题及参考答案 PDF 第 1-16 页逐题解析；部分解析页选项顺序与试卷 PDF 不一致，题库已按选项内容映射回试卷原页字母。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2019/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2019考研政治试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2019/answer-page-14.jpg",
+          "caption": "答案原页 p.14",
+          "alt": "2019考研政治答案原页 p.14"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2019",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2019-paper-answer",
+      "sourceEvidenceId": "politics-2019-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:906de65f7cb71579e3b4a30a215d19b36e77198724678503c91da1ca2e0ded5d",
+      "answerTextHash": "sha256:c4bde94e78a3e3714c7ce52bc5461c3a3b427971f0d4e99a1b2ad576bb822933",
+      "sourceEvidence": {
+        "evidenceId": "politics-2019-q30",
+        "sourceId": "src_4852c9a4fadafcbe32687200",
+        "answerSourceId": "src_3bc5291e0e9df95b0e92c181",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2019-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:906de65f7cb71579e3b4a30a215d19b36e77198724678503c91da1ca2e0ded5d",
+        "answerTextHash": "sha256:c4bde94e78a3e3714c7ce52bc5461c3a3b427971f0d4e99a1b2ad576bb822933"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_3bc5291e0e9df95b0e92c181",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2019/2019-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:c4bde94e78a3e3714c7ce52bc5461c3a3b427971f0d4e99a1b2ad576bb822933",
+        "method": "local_pdf_ocr_located_page_image_with_option_order_mapping",
+        "verifiedBy": "build_politics_2019_bank",
+        "note": "Matched against local Baidu Netdisk 2019 Politics paper-answer PDF and mapped to the standalone paper PDF option order when the answer PDF reordered options."
+      }
+    },
+    {
+      "id": "politics-2019-031",
+      "number": 31,
+      "paperId": "politics-2019",
+      "paperName": "2019考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2019",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2019考研政治第31题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABCD",
+      "explanation": "答案来自本地百度网盘 2019 考研政治真题及参考答案 PDF 第 1-16 页逐题解析；部分解析页选项顺序与试卷 PDF 不一致，题库已按选项内容映射回试卷原页字母。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2019/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2019考研政治试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2019/answer-page-15.jpg",
+          "caption": "答案原页 p.15",
+          "alt": "2019考研政治答案原页 p.15"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2019",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2019-paper-answer",
+      "sourceEvidenceId": "politics-2019-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:7edfc0e03547a81b36261116a65fbd87b758889450512e340965680d8a78716f",
+      "answerTextHash": "sha256:ad1cfde108e1e51504ff9fa914314b216a96f3b74012c5f3cccbdb127f136a51",
+      "sourceEvidence": {
+        "evidenceId": "politics-2019-q31",
+        "sourceId": "src_4852c9a4fadafcbe32687200",
+        "answerSourceId": "src_3bc5291e0e9df95b0e92c181",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2019-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:7edfc0e03547a81b36261116a65fbd87b758889450512e340965680d8a78716f",
+        "answerTextHash": "sha256:ad1cfde108e1e51504ff9fa914314b216a96f3b74012c5f3cccbdb127f136a51"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_3bc5291e0e9df95b0e92c181",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2019/2019-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:ad1cfde108e1e51504ff9fa914314b216a96f3b74012c5f3cccbdb127f136a51",
+        "method": "local_pdf_ocr_located_page_image_with_option_order_mapping",
+        "verifiedBy": "build_politics_2019_bank",
+        "note": "Matched against local Baidu Netdisk 2019 Politics paper-answer PDF and mapped to the standalone paper PDF option order when the answer PDF reordered options."
+      }
+    },
+    {
+      "id": "politics-2019-032",
+      "number": 32,
+      "paperId": "politics-2019",
+      "paperName": "2019考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2019",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2019考研政治第32题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABCD",
+      "explanation": "答案来自本地百度网盘 2019 考研政治真题及参考答案 PDF 第 1-16 页逐题解析；部分解析页选项顺序与试卷 PDF 不一致，题库已按选项内容映射回试卷原页字母。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2019/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2019考研政治试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2019/answer-page-15.jpg",
+          "caption": "答案原页 p.15",
+          "alt": "2019考研政治答案原页 p.15"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2019",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2019-paper-answer",
+      "sourceEvidenceId": "politics-2019-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:05cab08faca26bc437f68124a8325d08f74dd60203342fded8669de50d8b66d7",
+      "answerTextHash": "sha256:ad1cfde108e1e51504ff9fa914314b216a96f3b74012c5f3cccbdb127f136a51",
+      "sourceEvidence": {
+        "evidenceId": "politics-2019-q32",
+        "sourceId": "src_4852c9a4fadafcbe32687200",
+        "answerSourceId": "src_3bc5291e0e9df95b0e92c181",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2019-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:05cab08faca26bc437f68124a8325d08f74dd60203342fded8669de50d8b66d7",
+        "answerTextHash": "sha256:ad1cfde108e1e51504ff9fa914314b216a96f3b74012c5f3cccbdb127f136a51"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_3bc5291e0e9df95b0e92c181",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2019/2019-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:ad1cfde108e1e51504ff9fa914314b216a96f3b74012c5f3cccbdb127f136a51",
+        "method": "local_pdf_ocr_located_page_image_with_option_order_mapping",
+        "verifiedBy": "build_politics_2019_bank",
+        "note": "Matched against local Baidu Netdisk 2019 Politics paper-answer PDF and mapped to the standalone paper PDF option order when the answer PDF reordered options."
+      }
+    },
+    {
+      "id": "politics-2019-033",
+      "number": 33,
+      "paperId": "politics-2019",
+      "paperName": "2019考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2019",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2019考研政治第33题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABCD",
+      "explanation": "答案来自本地百度网盘 2019 考研政治真题及参考答案 PDF 第 1-16 页逐题解析；部分解析页选项顺序与试卷 PDF 不一致，题库已按选项内容映射回试卷原页字母。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2019/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2019考研政治试卷原页 p.4"
+        },
+        {
+          "src": "question-bank/politics-2019/paper-page-05.jpg",
+          "caption": "试卷原页 p.5",
+          "alt": "2019考研政治试卷原页 p.5"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2019/answer-page-16.jpg",
+          "caption": "答案原页 p.16",
+          "alt": "2019考研政治答案原页 p.16"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2019",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2019-paper-answer",
+      "sourceEvidenceId": "politics-2019-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:29f67139efec8b8d2bd432488016d427604fd934b171adb48bab1784fbad54f5",
+      "answerTextHash": "sha256:7effcc8e9edfb1424c6cb7c9c1d50b360982e3f8db19816b184516f82aeb9fef",
+      "sourceEvidence": {
+        "evidenceId": "politics-2019-q33",
+        "sourceId": "src_4852c9a4fadafcbe32687200",
+        "answerSourceId": "src_3bc5291e0e9df95b0e92c181",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2019-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:29f67139efec8b8d2bd432488016d427604fd934b171adb48bab1784fbad54f5",
+        "answerTextHash": "sha256:7effcc8e9edfb1424c6cb7c9c1d50b360982e3f8db19816b184516f82aeb9fef"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_3bc5291e0e9df95b0e92c181",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2019/2019-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:7effcc8e9edfb1424c6cb7c9c1d50b360982e3f8db19816b184516f82aeb9fef",
+        "method": "local_pdf_ocr_located_page_image_with_option_order_mapping",
+        "verifiedBy": "build_politics_2019_bank",
+        "note": "Matched against local Baidu Netdisk 2019 Politics paper-answer PDF and mapped to the standalone paper PDF option order when the answer PDF reordered options."
+      }
+    },
+    {
+      "id": "politics-2019-034",
+      "number": 34,
+      "paperId": "politics-2019",
+      "paperName": "2019考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2019",
+      "section": "分析题",
+      "type": "analysis",
+      "question": "2019考研政治第34题（分析题）。题干、选项和材料以试卷原页图为准。",
+      "options": [],
+      "answer": "分析题参考答案要点见答案原页 p.17-p.18。",
+      "explanation": "参考答案来自本地百度网盘 2019 考研政治真题及参考答案 PDF；完整答案要点见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2019/paper-page-05.jpg",
+          "caption": "试卷原页 p.5",
+          "alt": "2019考研政治试卷原页 p.5"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2019/answer-page-17.jpg",
+          "caption": "答案原页 p.17",
+          "alt": "2019考研政治答案原页 p.17"
+        },
+        {
+          "src": "question-bank/politics-2019/answer-page-18.jpg",
+          "caption": "答案原页 p.18",
+          "alt": "2019考研政治答案原页 p.18"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2019",
+        "分析题"
+      ],
+      "difficulty": 3,
+      "source": "politics-2019-paper-answer",
+      "sourceEvidenceId": "politics-2019-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:6da7e592171ae043576795ad27bbfe58931cfa92e8aa3bc6a1aa366ac8f2203c",
+      "answerTextHash": "sha256:84739af354cbf42d7522d9ad34b602925874db684aeed893107af4accca56cad",
+      "sourceEvidence": {
+        "evidenceId": "politics-2019-q34",
+        "sourceId": "src_4852c9a4fadafcbe32687200",
+        "answerSourceId": "src_3bc5291e0e9df95b0e92c181",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2019-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:6da7e592171ae043576795ad27bbfe58931cfa92e8aa3bc6a1aa366ac8f2203c",
+        "answerTextHash": "sha256:84739af354cbf42d7522d9ad34b602925874db684aeed893107af4accca56cad"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_reference_answer",
+        "sourceId": "src_3bc5291e0e9df95b0e92c181",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2019/2019-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:84739af354cbf42d7522d9ad34b602925874db684aeed893107af4accca56cad",
+        "method": "local_pdf_ocr_located_page_image_with_option_order_mapping",
+        "verifiedBy": "build_politics_2019_bank",
+        "note": "Matched against local Baidu Netdisk 2019 Politics paper-answer PDF and mapped to the standalone paper PDF option order when the answer PDF reordered options."
+      }
+    },
+    {
+      "id": "politics-2019-035",
+      "number": 35,
+      "paperId": "politics-2019",
+      "paperName": "2019考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2019",
+      "section": "分析题",
+      "type": "analysis",
+      "question": "2019考研政治第35题（分析题）。题干、选项和材料以试卷原页图为准。",
+      "options": [],
+      "answer": "分析题参考答案要点见答案原页 p.18。",
+      "explanation": "参考答案来自本地百度网盘 2019 考研政治真题及参考答案 PDF；完整答案要点见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2019/paper-page-05.jpg",
+          "caption": "试卷原页 p.5",
+          "alt": "2019考研政治试卷原页 p.5"
+        },
+        {
+          "src": "question-bank/politics-2019/paper-page-06.jpg",
+          "caption": "试卷原页 p.6",
+          "alt": "2019考研政治试卷原页 p.6"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2019/answer-page-18.jpg",
+          "caption": "答案原页 p.18",
+          "alt": "2019考研政治答案原页 p.18"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2019",
+        "分析题"
+      ],
+      "difficulty": 3,
+      "source": "politics-2019-paper-answer",
+      "sourceEvidenceId": "politics-2019-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:e2c49c46047aaca99b4856ecdcd29b61a9adf96ee7b6b5a5a5f39af3175b4c2f",
+      "answerTextHash": "sha256:c96f22c5cef2d695ae281ddf3f1667b8aa5cb1f9362fd2244f145f4989281e7d",
+      "sourceEvidence": {
+        "evidenceId": "politics-2019-q35",
+        "sourceId": "src_4852c9a4fadafcbe32687200",
+        "answerSourceId": "src_3bc5291e0e9df95b0e92c181",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2019-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:e2c49c46047aaca99b4856ecdcd29b61a9adf96ee7b6b5a5a5f39af3175b4c2f",
+        "answerTextHash": "sha256:c96f22c5cef2d695ae281ddf3f1667b8aa5cb1f9362fd2244f145f4989281e7d"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_reference_answer",
+        "sourceId": "src_3bc5291e0e9df95b0e92c181",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2019/2019-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:c96f22c5cef2d695ae281ddf3f1667b8aa5cb1f9362fd2244f145f4989281e7d",
+        "method": "local_pdf_ocr_located_page_image_with_option_order_mapping",
+        "verifiedBy": "build_politics_2019_bank",
+        "note": "Matched against local Baidu Netdisk 2019 Politics paper-answer PDF and mapped to the standalone paper PDF option order when the answer PDF reordered options."
+      }
+    },
+    {
+      "id": "politics-2019-036",
+      "number": 36,
+      "paperId": "politics-2019",
+      "paperName": "2019考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2019",
+      "section": "分析题",
+      "type": "analysis",
+      "question": "2019考研政治第36题（分析题）。题干、选项和材料以试卷原页图为准。",
+      "options": [],
+      "answer": "分析题参考答案要点见答案原页 p.19-p.20。",
+      "explanation": "参考答案来自本地百度网盘 2019 考研政治真题及参考答案 PDF；完整答案要点见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2019/paper-page-06.jpg",
+          "caption": "试卷原页 p.6",
+          "alt": "2019考研政治试卷原页 p.6"
+        },
+        {
+          "src": "question-bank/politics-2019/paper-page-07.jpg",
+          "caption": "试卷原页 p.7",
+          "alt": "2019考研政治试卷原页 p.7"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2019/answer-page-19.jpg",
+          "caption": "答案原页 p.19",
+          "alt": "2019考研政治答案原页 p.19"
+        },
+        {
+          "src": "question-bank/politics-2019/answer-page-20.jpg",
+          "caption": "答案原页 p.20",
+          "alt": "2019考研政治答案原页 p.20"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2019",
+        "分析题"
+      ],
+      "difficulty": 3,
+      "source": "politics-2019-paper-answer",
+      "sourceEvidenceId": "politics-2019-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:3a5aeb82d9a24ae047dd782a6549463796a6bdbf39a4fab6914a19c7f9e926fc",
+      "answerTextHash": "sha256:5c0846fe8ebb839081650284f3e8fe4578fce64accda9ff6c542c5bb58a4ab06",
+      "sourceEvidence": {
+        "evidenceId": "politics-2019-q36",
+        "sourceId": "src_4852c9a4fadafcbe32687200",
+        "answerSourceId": "src_3bc5291e0e9df95b0e92c181",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2019-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:3a5aeb82d9a24ae047dd782a6549463796a6bdbf39a4fab6914a19c7f9e926fc",
+        "answerTextHash": "sha256:5c0846fe8ebb839081650284f3e8fe4578fce64accda9ff6c542c5bb58a4ab06"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_reference_answer",
+        "sourceId": "src_3bc5291e0e9df95b0e92c181",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2019/2019-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:5c0846fe8ebb839081650284f3e8fe4578fce64accda9ff6c542c5bb58a4ab06",
+        "method": "local_pdf_ocr_located_page_image_with_option_order_mapping",
+        "verifiedBy": "build_politics_2019_bank",
+        "note": "Matched against local Baidu Netdisk 2019 Politics paper-answer PDF and mapped to the standalone paper PDF option order when the answer PDF reordered options."
+      }
+    },
+    {
+      "id": "politics-2019-037",
+      "number": 37,
+      "paperId": "politics-2019",
+      "paperName": "2019考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2019",
+      "section": "分析题",
+      "type": "analysis",
+      "question": "2019考研政治第37题（分析题）。题干、选项和材料以试卷原页图为准。",
+      "options": [],
+      "answer": "分析题参考答案要点见答案原页 p.20-p.21。",
+      "explanation": "参考答案来自本地百度网盘 2019 考研政治真题及参考答案 PDF；完整答案要点见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2019/paper-page-07.jpg",
+          "caption": "试卷原页 p.7",
+          "alt": "2019考研政治试卷原页 p.7"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2019/answer-page-20.jpg",
+          "caption": "答案原页 p.20",
+          "alt": "2019考研政治答案原页 p.20"
+        },
+        {
+          "src": "question-bank/politics-2019/answer-page-21.jpg",
+          "caption": "答案原页 p.21",
+          "alt": "2019考研政治答案原页 p.21"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2019",
+        "分析题"
+      ],
+      "difficulty": 3,
+      "source": "politics-2019-paper-answer",
+      "sourceEvidenceId": "politics-2019-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:203ceadd7e80d8632339abee753516943a705ca55add9b69b0e549f77502274a",
+      "answerTextHash": "sha256:1af8bc4c711a4de465b370531f82e78ac87143a0cdcb5a838c356640f04efe55",
+      "sourceEvidence": {
+        "evidenceId": "politics-2019-q37",
+        "sourceId": "src_4852c9a4fadafcbe32687200",
+        "answerSourceId": "src_3bc5291e0e9df95b0e92c181",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2019-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:203ceadd7e80d8632339abee753516943a705ca55add9b69b0e549f77502274a",
+        "answerTextHash": "sha256:1af8bc4c711a4de465b370531f82e78ac87143a0cdcb5a838c356640f04efe55"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_reference_answer",
+        "sourceId": "src_3bc5291e0e9df95b0e92c181",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2019/2019-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:1af8bc4c711a4de465b370531f82e78ac87143a0cdcb5a838c356640f04efe55",
+        "method": "local_pdf_ocr_located_page_image_with_option_order_mapping",
+        "verifiedBy": "build_politics_2019_bank",
+        "note": "Matched against local Baidu Netdisk 2019 Politics paper-answer PDF and mapped to the standalone paper PDF option order when the answer PDF reordered options."
+      }
+    },
+    {
+      "id": "politics-2019-038",
+      "number": 38,
+      "paperId": "politics-2019",
+      "paperName": "2019考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2019",
+      "section": "分析题",
+      "type": "analysis",
+      "question": "2019考研政治第38题（分析题）。题干、选项和材料以试卷原页图为准。",
+      "options": [],
+      "answer": "分析题参考答案要点见答案原页 p.21-p.22。",
+      "explanation": "参考答案来自本地百度网盘 2019 考研政治真题及参考答案 PDF；完整答案要点见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2019/paper-page-07.jpg",
+          "caption": "试卷原页 p.7",
+          "alt": "2019考研政治试卷原页 p.7"
+        },
+        {
+          "src": "question-bank/politics-2019/paper-page-08.jpg",
+          "caption": "试卷原页 p.8",
+          "alt": "2019考研政治试卷原页 p.8"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2019/answer-page-21.jpg",
+          "caption": "答案原页 p.21",
+          "alt": "2019考研政治答案原页 p.21"
+        },
+        {
+          "src": "question-bank/politics-2019/answer-page-22.jpg",
+          "caption": "答案原页 p.22",
+          "alt": "2019考研政治答案原页 p.22"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2019",
+        "分析题"
+      ],
+      "difficulty": 3,
+      "source": "politics-2019-paper-answer",
+      "sourceEvidenceId": "politics-2019-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:ee9124d2b06f1fc3de88f0c64e36e9db791d22fca2531d2bf3172e0ca35af123",
+      "answerTextHash": "sha256:c4ebdc9fc32aac351c985c455a191348edb67b299e76a6da2b77bec7802ffbda",
+      "sourceEvidence": {
+        "evidenceId": "politics-2019-q38",
+        "sourceId": "src_4852c9a4fadafcbe32687200",
+        "answerSourceId": "src_3bc5291e0e9df95b0e92c181",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2019-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:ee9124d2b06f1fc3de88f0c64e36e9db791d22fca2531d2bf3172e0ca35af123",
+        "answerTextHash": "sha256:c4ebdc9fc32aac351c985c455a191348edb67b299e76a6da2b77bec7802ffbda"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_reference_answer",
+        "sourceId": "src_3bc5291e0e9df95b0e92c181",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2019/2019-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:c4ebdc9fc32aac351c985c455a191348edb67b299e76a6da2b77bec7802ffbda",
+        "method": "local_pdf_ocr_located_page_image_with_option_order_mapping",
+        "verifiedBy": "build_politics_2019_bank",
+        "note": "Matched against local Baidu Netdisk 2019 Politics paper-answer PDF and mapped to the standalone paper PDF option order when the answer PDF reordered options."
+      }
+    }
+  ]
+}
