@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-05-27T08:18:59.752Z",
+  "generatedAt": "2026-05-27T08:28:18.498Z",
   "verdict": "blocked",
   "sources": {
     "questionAudit": "data/question-bank-release-audit.json",
@@ -12,17 +12,17 @@
   },
   "summary": {
     "canPublish": false,
-    "blockerItemCount": 112,
-    "p0Count": 112,
+    "blockerItemCount": 111,
+    "p0Count": 111,
     "publicCourseRequiredSlots": 132,
-    "publicCoursePublishedSlots": 37,
+    "publicCoursePublishedSlots": 38,
     "publicCoursePendingSlots": 0,
     "publicCoursePendingCoverageBlockers": 0,
-    "publicCourseCoverageGaps": 95,
-    "publicCourseBlockerItemCount": 110,
-    "publicCourseBlockedSlotCount": 95,
+    "publicCourseCoverageGaps": 94,
+    "publicCourseBlockerItemCount": 109,
+    "publicCourseBlockedSlotCount": 94,
     "publicCourseLocalSourceSummary": {
-      "totalBlockedSlots": 95,
+      "totalBlockedSlots": 94,
       "pairedReadableSlots": 0,
       "answerBlockedSlots": 0,
       "paperBlockedSlots": 0,
@@ -32,7 +32,7 @@
       "blockedLocalFileSlots": 0,
       "unpairedReadableSlots": 0,
       "missingLocalFileSlots": 0,
-      "notAvailableSlots": 95,
+      "notAvailableSlots": 94,
       "unknownSlots": 0
     },
     "sourceManifestHumanRegistrationQueue": {
@@ -75,8 +75,8 @@
     },
     "public_course_coverage": {
       "status": "blocked",
-      "itemCount": 95,
-      "p0Count": 95,
+      "itemCount": 94,
+      "p0Count": 94,
       "sampleItems": [
         "coverage_missing:english2:2005",
         "coverage_missing:math1:2005",
@@ -1094,97 +1094,6 @@
         "verifiedSourceRegistryDrafts": [],
         "manifestCandidateIds": [
           "src_f0f8160e46a5244d4ee0b125"
-        ],
-        "blockers": [
-          "local_source_audit_not_available"
-        ],
-        "note": "Resolve listed local-source blockers before the slot can be treated as an auto-paired official source."
-      },
-      "prerequisiteBlockers": [],
-      "coverageAction": "已有可发布题源证据时，完成题卡清洗、答案匹配、证据哈希，再按 registry 规范注册题库。",
-      "sourceEvidenceAction": "",
-      "nextAction": "已有可发布题源证据时，完成题卡清洗、答案匹配、证据哈希，再按 registry 规范注册题库。"
-    },
-    {
-      "slotKey": "math3:2007",
-      "track": "math3",
-      "trackLabel": "数学三",
-      "year": 2007,
-      "blockerCode": "missing_public_course_bank",
-      "slotStatus": "missing",
-      "blockers": [
-        "missing_public_course_bank"
-      ],
-      "blockerItemIds": [
-        "coverage_missing:math3:2007"
-      ],
-      "sourceEvidenceStatus": "publishable_source_present",
-      "sourceCandidateSummary": "source manifest 已发现 1 个候选，其中 official_paper=1；当前阻断: 未命中可发布条件",
-      "sourceCandidateSamples": [
-        {
-          "sourceId": "src_945621a75972b2f0b1483ec9",
-          "status": "discovered",
-          "sourceType": "official_paper",
-          "sourceRole": "",
-          "inferredSourceRole": "paper_answer",
-          "roleSource": "filename",
-          "autoPairEligible": true,
-          "answerEvidenceStatus": "",
-          "riskFlags": [],
-          "publishBlocked": false,
-          "blockReasons": [],
-          "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学三真题答案解析/2007年考研数学三真题及解析 .pdf",
-          "sourceUrl": ""
-        }
-      ],
-      "localSourceAuditStatus": "not_available",
-      "localSourceAuditSummary": "",
-      "localSourceAuditSamples": [],
-      "localSourceAuditDiagnostics": {
-        "status": "not_available",
-        "sourceCount": 0,
-        "usableTextLayerCount": 0,
-        "needsOcrCount": 0,
-        "blockedCount": 0,
-        "paperLikeCount": 0,
-        "answerLikeCount": 0,
-        "usablePaperLikeCount": 0,
-        "usableAnswerLikeCount": 0,
-        "blockedPaperLikeCount": 0,
-        "blockedAnswerLikeCount": 0,
-        "roleCounts": {},
-        "samples": []
-      },
-      "sourceManifestRegistrationChecklist": {
-        "status": "blocked_before_auto_pair",
-        "readyForHumanVerification": false,
-        "requiredManifestFields": [
-          "eligible=true",
-          "status=discovered|verified|published",
-          "sourceType=official_paper",
-          "contentHash|sha256|fileSha256|sourceHash",
-          "remotePath|sourceUrl|provenanceUrl",
-          "sourceRole inferred as paper+answer or paper_answer",
-          "legalReview.publishBlocked=false",
-          "riskFlags excludes answer_missing,brand_leak,copyright_review_required,ad_or_promo"
-        ],
-        "verifiedSourceRegistryFields": [
-          "localPath",
-          "sourceUrl",
-          "track",
-          "year",
-          "sourceType=official_paper",
-          "answerEvidenceStatus=matched",
-          "expectedSha256",
-          "verifiedBy",
-          "evidenceNote"
-        ],
-        "humanVerificationSteps": [],
-        "postRegistrationCommands": [],
-        "localFileCandidates": [],
-        "verifiedSourceRegistryDrafts": [],
-        "manifestCandidateIds": [
-          "src_945621a75972b2f0b1483ec9"
         ],
         "blockers": [
           "local_source_audit_not_available"
@@ -10728,17 +10637,17 @@
       "nextAction": "已有可发布题源证据时，完成题卡清洗、答案匹配、证据哈希，再按 registry 规范注册题库。"
     },
     {
-      "id": "coverage_missing:math3:2007",
+      "id": "coverage_missing:math3:2008",
       "track": "math3",
       "trackLabel": "数学三",
-      "year": 2007,
+      "year": 2008,
       "blockerCode": "missing_public_course_bank",
       "slotStatus": "missing",
       "sourceEvidenceStatus": "publishable_source_present",
       "sourceCandidateSummary": "source manifest 已发现 1 个候选，其中 official_paper=1；当前阻断: 未命中可发布条件",
       "sourceCandidateSamples": [
         {
-          "sourceId": "src_945621a75972b2f0b1483ec9",
+          "sourceId": "src_3f3f50a172ccfeb563b82616",
           "status": "discovered",
           "sourceType": "official_paper",
           "sourceRole": "",
@@ -10749,7 +10658,7 @@
           "riskFlags": [],
           "publishBlocked": false,
           "blockReasons": [],
-          "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学三真题答案解析/2007年考研数学三真题及解析 .pdf",
+          "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学三真题答案解析/2008年考研数学三真题及解析 .pdf",
           "sourceUrl": ""
         }
       ],
@@ -10785,7 +10694,7 @@
         "localFileCandidates": [],
         "verifiedSourceRegistryDrafts": [],
         "manifestCandidateIds": [
-          "src_945621a75972b2f0b1483ec9"
+          "src_3f3f50a172ccfeb563b82616"
         ],
         "blockers": [
           "local_source_audit_not_available"
@@ -11270,17 +11179,17 @@
       "nextAction": "已有可发布题源证据时，完成题卡清洗、答案匹配、证据哈希，再按 registry 规范注册题库。"
     },
     {
-      "id": "coverage_missing:math3:2008",
+      "id": "coverage_missing:math3:2009",
       "track": "math3",
       "trackLabel": "数学三",
-      "year": 2008,
+      "year": 2009,
       "blockerCode": "missing_public_course_bank",
       "slotStatus": "missing",
       "sourceEvidenceStatus": "publishable_source_present",
       "sourceCandidateSummary": "source manifest 已发现 1 个候选，其中 official_paper=1；当前阻断: 未命中可发布条件",
       "sourceCandidateSamples": [
         {
-          "sourceId": "src_3f3f50a172ccfeb563b82616",
+          "sourceId": "src_d7e5f5b83685d62fcc2ad61a",
           "status": "discovered",
           "sourceType": "official_paper",
           "sourceRole": "",
@@ -11291,7 +11200,7 @@
           "riskFlags": [],
           "publishBlocked": false,
           "blockReasons": [],
-          "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学三真题答案解析/2008年考研数学三真题及解析 .pdf",
+          "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学三真题答案解析/2009年考研数学三真题及解析 .pdf",
           "sourceUrl": ""
         }
       ],
@@ -11327,7 +11236,7 @@
         "localFileCandidates": [],
         "verifiedSourceRegistryDrafts": [],
         "manifestCandidateIds": [
-          "src_3f3f50a172ccfeb563b82616"
+          "src_d7e5f5b83685d62fcc2ad61a"
         ],
         "blockers": [
           "local_source_audit_not_available"
@@ -11686,17 +11595,17 @@
       "nextAction": "已有可发布题源证据时，完成题卡清洗、答案匹配、证据哈希，再按 registry 规范注册题库。"
     },
     {
-      "id": "coverage_missing:math3:2009",
+      "id": "coverage_missing:math3:2010",
       "track": "math3",
       "trackLabel": "数学三",
-      "year": 2009,
+      "year": 2010,
       "blockerCode": "missing_public_course_bank",
       "slotStatus": "missing",
       "sourceEvidenceStatus": "publishable_source_present",
       "sourceCandidateSummary": "source manifest 已发现 1 个候选，其中 official_paper=1；当前阻断: 未命中可发布条件",
       "sourceCandidateSamples": [
         {
-          "sourceId": "src_d7e5f5b83685d62fcc2ad61a",
+          "sourceId": "src_048d76159fa1b8887a9d78ba",
           "status": "discovered",
           "sourceType": "official_paper",
           "sourceRole": "",
@@ -11707,7 +11616,7 @@
           "riskFlags": [],
           "publishBlocked": false,
           "blockReasons": [],
-          "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学三真题答案解析/2009年考研数学三真题及解析 .pdf",
+          "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学三真题答案解析/2010年考研数学三真题及解析 .pdf",
           "sourceUrl": ""
         }
       ],
@@ -11743,7 +11652,7 @@
         "localFileCandidates": [],
         "verifiedSourceRegistryDrafts": [],
         "manifestCandidateIds": [
-          "src_d7e5f5b83685d62fcc2ad61a"
+          "src_048d76159fa1b8887a9d78ba"
         ],
         "blockers": [
           "local_source_audit_not_available"
@@ -12100,17 +12009,17 @@
       "nextAction": "已有可发布题源证据时，完成题卡清洗、答案匹配、证据哈希，再按 registry 规范注册题库。"
     },
     {
-      "id": "coverage_missing:math3:2010",
+      "id": "coverage_missing:math3:2011",
       "track": "math3",
       "trackLabel": "数学三",
-      "year": 2010,
+      "year": 2011,
       "blockerCode": "missing_public_course_bank",
       "slotStatus": "missing",
       "sourceEvidenceStatus": "publishable_source_present",
       "sourceCandidateSummary": "source manifest 已发现 1 个候选，其中 official_paper=1；当前阻断: 未命中可发布条件",
       "sourceCandidateSamples": [
         {
-          "sourceId": "src_048d76159fa1b8887a9d78ba",
+          "sourceId": "src_dd8bca3d308120a63db33b95",
           "status": "discovered",
           "sourceType": "official_paper",
           "sourceRole": "",
@@ -12121,7 +12030,7 @@
           "riskFlags": [],
           "publishBlocked": false,
           "blockReasons": [],
-          "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学三真题答案解析/2010年考研数学三真题及解析 .pdf",
+          "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学三真题答案解析/2011年考研数学三真题及解析 .pdf",
           "sourceUrl": ""
         }
       ],
@@ -12157,7 +12066,7 @@
         "localFileCandidates": [],
         "verifiedSourceRegistryDrafts": [],
         "manifestCandidateIds": [
-          "src_048d76159fa1b8887a9d78ba"
+          "src_dd8bca3d308120a63db33b95"
         ],
         "blockers": [
           "local_source_audit_not_available"
@@ -14194,177 +14103,6 @@
       }
     },
     {
-      "id": "coverage_missing:math3:2007",
-      "workstream": "public_course_coverage",
-      "priority": "P0",
-      "status": "blocked",
-      "title": "数学三 2007 缺少可发布题库",
-      "blockerCode": "missing_public_course_bank",
-      "track": "math3",
-      "trackLabel": "数学三",
-      "year": 2007,
-      "bankId": "",
-      "filePath": "",
-      "count": 0,
-      "nextAction": "已有可发布题源证据时，完成题卡清洗、答案匹配、证据哈希，再按 registry 规范注册题库。",
-      "evidence": {
-        "requiredYears": [
-          2005,
-          2006,
-          2007,
-          2008,
-          2009,
-          2010,
-          2011,
-          2012,
-          2013,
-          2014,
-          2015,
-          2016,
-          2017,
-          2018,
-          2019,
-          2020,
-          2021,
-          2022,
-          2023,
-          2024,
-          2025,
-          2026
-        ],
-        "publishedYears": [
-          2005,
-          2006,
-          2025
-        ],
-        "pendingYears": [],
-        "sourceEvidenceStatus": "publishable_source_present",
-        "sourceEvidencePresentYears": [
-          2005,
-          2006,
-          2007,
-          2008,
-          2009,
-          2010,
-          2011,
-          2012,
-          2013,
-          2014,
-          2015,
-          2016,
-          2017,
-          2018,
-          2019,
-          2020,
-          2021,
-          2022,
-          2023,
-          2024,
-          2025
-        ],
-        "sourceEvidenceCoverageRate": 0.9545,
-        "sourceCandidateSummary": "source manifest 已发现 1 个候选，其中 official_paper=1；当前阻断: 未命中可发布条件",
-        "sourceCandidateSamples": [
-          {
-            "sourceId": "src_945621a75972b2f0b1483ec9",
-            "status": "discovered",
-            "sourceType": "official_paper",
-            "sourceRole": "",
-            "inferredSourceRole": "paper_answer",
-            "roleSource": "filename",
-            "autoPairEligible": true,
-            "answerEvidenceStatus": "",
-            "riskFlags": [],
-            "publishBlocked": false,
-            "blockReasons": [],
-            "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学三真题答案解析/2007年考研数学三真题及解析 .pdf",
-            "sourceUrl": ""
-          }
-        ],
-        "sourceCandidateDiagnostics": {
-          "candidateCount": 1,
-          "officialPaperCandidateCount": 1,
-          "publishBlockedCandidateCount": 0,
-          "autoPairEligibleCandidateCount": 1,
-          "paperCandidateCount": 0,
-          "answerCandidateCount": 0,
-          "combinedCandidateCount": 1,
-          "blockReasons": {},
-          "sampleCandidates": [
-            {
-              "sourceId": "src_945621a75972b2f0b1483ec9",
-              "status": "discovered",
-              "sourceType": "official_paper",
-              "sourceRole": "",
-              "inferredSourceRole": "paper_answer",
-              "roleSource": "filename",
-              "autoPairEligible": true,
-              "answerEvidenceStatus": "",
-              "riskFlags": [],
-              "publishBlocked": false,
-              "blockReasons": [],
-              "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学三真题答案解析/2007年考研数学三真题及解析 .pdf",
-              "sourceUrl": ""
-            }
-          ]
-        },
-        "localSourceAuditStatus": "not_available",
-        "localSourceAuditSummary": "",
-        "localSourceAuditSamples": [],
-        "localSourceAuditDiagnostics": {
-          "status": "not_available",
-          "sourceCount": 0,
-          "usableTextLayerCount": 0,
-          "needsOcrCount": 0,
-          "blockedCount": 0,
-          "paperLikeCount": 0,
-          "answerLikeCount": 0,
-          "usablePaperLikeCount": 0,
-          "usableAnswerLikeCount": 0,
-          "blockedPaperLikeCount": 0,
-          "blockedAnswerLikeCount": 0,
-          "roleCounts": {},
-          "samples": []
-        },
-        "sourceManifestRegistrationChecklist": {
-          "status": "blocked_before_auto_pair",
-          "readyForHumanVerification": false,
-          "requiredManifestFields": [
-            "eligible=true",
-            "status=discovered|verified|published",
-            "sourceType=official_paper",
-            "contentHash|sha256|fileSha256|sourceHash",
-            "remotePath|sourceUrl|provenanceUrl",
-            "sourceRole inferred as paper+answer or paper_answer",
-            "legalReview.publishBlocked=false",
-            "riskFlags excludes answer_missing,brand_leak,copyright_review_required,ad_or_promo"
-          ],
-          "verifiedSourceRegistryFields": [
-            "localPath",
-            "sourceUrl",
-            "track",
-            "year",
-            "sourceType=official_paper",
-            "answerEvidenceStatus=matched",
-            "expectedSha256",
-            "verifiedBy",
-            "evidenceNote"
-          ],
-          "humanVerificationSteps": [],
-          "postRegistrationCommands": [],
-          "localFileCandidates": [],
-          "verifiedSourceRegistryDrafts": [],
-          "manifestCandidateIds": [
-            "src_945621a75972b2f0b1483ec9"
-          ],
-          "blockers": [
-            "local_source_audit_not_available"
-          ],
-          "note": "Resolve listed local-source blockers before the slot can be treated as an auto-paired official source."
-        }
-      }
-    },
-    {
       "id": "coverage_missing:english2:2008",
       "workstream": "public_course_coverage",
       "priority": "P0",
@@ -14991,6 +14729,7 @@
         "publishedYears": [
           2005,
           2006,
+          2007,
           2025
         ],
         "pendingYears": [],
@@ -15747,6 +15486,7 @@
         "publishedYears": [
           2005,
           2006,
+          2007,
           2025
         ],
         "pendingYears": [],
@@ -16490,6 +16230,7 @@
         "publishedYears": [
           2005,
           2006,
+          2007,
           2025
         ],
         "pendingYears": [],
@@ -17230,6 +16971,7 @@
         "publishedYears": [
           2005,
           2006,
+          2007,
           2025
         ],
         "pendingYears": [],
@@ -17970,6 +17712,7 @@
         "publishedYears": [
           2005,
           2006,
+          2007,
           2025
         ],
         "pendingYears": [],
@@ -18710,6 +18453,7 @@
         "publishedYears": [
           2005,
           2006,
+          2007,
           2025
         ],
         "pendingYears": [],
@@ -19450,6 +19194,7 @@
         "publishedYears": [
           2005,
           2006,
+          2007,
           2025
         ],
         "pendingYears": [],
@@ -20440,6 +20185,7 @@
         "publishedYears": [
           2005,
           2006,
+          2007,
           2025
         ],
         "pendingYears": [],
@@ -21430,6 +21176,7 @@
         "publishedYears": [
           2005,
           2006,
+          2007,
           2025
         ],
         "pendingYears": [],
@@ -22420,6 +22167,7 @@
         "publishedYears": [
           2005,
           2006,
+          2007,
           2025
         ],
         "pendingYears": [],
@@ -23410,6 +23158,7 @@
         "publishedYears": [
           2005,
           2006,
+          2007,
           2025
         ],
         "pendingYears": [],
@@ -24401,6 +24150,7 @@
         "publishedYears": [
           2005,
           2006,
+          2007,
           2025
         ],
         "pendingYears": [],
@@ -25391,6 +25141,7 @@
         "publishedYears": [
           2005,
           2006,
+          2007,
           2025
         ],
         "pendingYears": [],
@@ -26381,6 +26132,7 @@
         "publishedYears": [
           2005,
           2006,
+          2007,
           2025
         ],
         "pendingYears": [],
@@ -27371,6 +27123,7 @@
         "publishedYears": [
           2005,
           2006,
+          2007,
           2025
         ],
         "pendingYears": [],
@@ -28714,6 +28467,7 @@
         "publishedYears": [
           2005,
           2006,
+          2007,
           2025
         ],
         "pendingYears": [],
@@ -29780,6 +29534,7 @@
         "publishedYears": [
           2005,
           2006,
+          2007,
           2025
         ],
         "pendingYears": [],
@@ -31411,6 +31166,7 @@
         "publishedYears": [
           2005,
           2006,
+          2007,
           2025
         ],
         "pendingYears": [],
