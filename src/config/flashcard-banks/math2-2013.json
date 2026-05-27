@@ -1,0 +1,1381 @@
+{
+  "id": "math2-2013",
+  "source": "math2-2013-paper-answer",
+  "paperId": "math2-2013",
+  "paperName": "2013考研数学二真题",
+  "subject": "数学",
+  "subjectKey": "math",
+  "track": "math2",
+  "year": "2013",
+  "quality": "ready",
+  "publicationStatus": "published",
+  "publicationBlockers": [],
+  "sourceEvidencePolicy": "baidu_netdisk_official_paper_pdf_page_image_v1",
+  "sourceFiles": [
+    {
+      "id": "math2-2013-paper-answer",
+      "role": "paper_answer",
+      "localPath": "data/raw-inbox/public-course-history/math2/2013/2013-math2-paper-answer.pdf",
+      "sha256": "sha256:934d1e4a816dc56f263642c736fa0be9345a3435faf9a759c281b6ebcf804e22"
+    }
+  ],
+  "assetRoot": "question-bank/math2-2013",
+  "processed_at": "2026-05-27T17:45:04Z",
+  "total_cards": 23,
+  "cards": [
+    {
+      "id": "math2-2013-001",
+      "number": 1,
+      "paperId": "math2-2013",
+      "paperName": "2013考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2013",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2013考研数学二第1题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2013 数学二真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2013/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2013考研数学二试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2013/answer-page-04.jpg",
+          "caption": "答案解析 p.4",
+          "alt": "2013考研数学二答案解析 p.4"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2013",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:43b69fedb24e0f27ee9129c2f291613296570f2c128cc0dcfd8f1dace9159cac",
+      "answerTextHash": "sha256:68360ef5871ed4ff9c6a3a665d3c68ab23cc14d3ac9fe78aacebce6d8d849ac3",
+      "sourceEvidence": {
+        "evidenceId": "math2-2013-q01",
+        "sourceId": "src_e6637ec0e4abce970144c5a1",
+        "answerSourceId": "src_e6637ec0e4abce970144c5a1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2013-paper-answer",
+        "answerEvidenceId": "math2-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:68360ef5871ed4ff9c6a3a665d3c68ab23cc14d3ac9fe78aacebce6d8d849ac3"
+      }
+    },
+    {
+      "id": "math2-2013-002",
+      "number": 2,
+      "paperId": "math2-2013",
+      "paperName": "2013考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2013",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2013考研数学二第2题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2013 数学二真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2013/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2013考研数学二试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2013/answer-page-04.jpg",
+          "caption": "答案解析 p.4",
+          "alt": "2013考研数学二答案解析 p.4"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2013",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:a22e6ccf854392c1e75e507a9d763bc5e2c58ed48c4272b072a7351c8bb27252",
+      "answerTextHash": "sha256:478b109366420281686011c8cff90e9a721dc2465f77c9a112abe7a2b19acac0",
+      "sourceEvidence": {
+        "evidenceId": "math2-2013-q02",
+        "sourceId": "src_e6637ec0e4abce970144c5a1",
+        "answerSourceId": "src_e6637ec0e4abce970144c5a1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2013-paper-answer",
+        "answerEvidenceId": "math2-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:478b109366420281686011c8cff90e9a721dc2465f77c9a112abe7a2b19acac0"
+      }
+    },
+    {
+      "id": "math2-2013-003",
+      "number": 3,
+      "paperId": "math2-2013",
+      "paperName": "2013考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2013",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2013考研数学二第3题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2013 数学二真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2013/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2013考研数学二试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2013/answer-page-04.jpg",
+          "caption": "答案解析 p.4",
+          "alt": "2013考研数学二答案解析 p.4"
+        },
+        {
+          "src": "question-bank/math2-2013/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2013考研数学二答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2013",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:1902e444b35c8c1b9d10fb8e2c1937aa8eabfce91b73137effad0d216944e66f",
+      "answerTextHash": "sha256:99df575c7e5d50602dbd52e7a432ac1beb45288aa5748a05981603e7323b2910",
+      "sourceEvidence": {
+        "evidenceId": "math2-2013-q03",
+        "sourceId": "src_e6637ec0e4abce970144c5a1",
+        "answerSourceId": "src_e6637ec0e4abce970144c5a1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2013-paper-answer",
+        "answerEvidenceId": "math2-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:99df575c7e5d50602dbd52e7a432ac1beb45288aa5748a05981603e7323b2910"
+      }
+    },
+    {
+      "id": "math2-2013-004",
+      "number": 4,
+      "paperId": "math2-2013",
+      "paperName": "2013考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2013",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2013考研数学二第4题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2013 数学二真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2013/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2013考研数学二试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2013/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2013考研数学二答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2013",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:595abc84a94a535fa62a24268c85e72d8bb41f56a24e231ea155319a9a0102d5",
+      "answerTextHash": "sha256:28d0c2da83a91da6daa0b76dc4fb5ce9a2d98a69f7ac96655fe3d017a8584605",
+      "sourceEvidence": {
+        "evidenceId": "math2-2013-q04",
+        "sourceId": "src_e6637ec0e4abce970144c5a1",
+        "answerSourceId": "src_e6637ec0e4abce970144c5a1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2013-paper-answer",
+        "answerEvidenceId": "math2-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:28d0c2da83a91da6daa0b76dc4fb5ce9a2d98a69f7ac96655fe3d017a8584605"
+      }
+    },
+    {
+      "id": "math2-2013-005",
+      "number": 5,
+      "paperId": "math2-2013",
+      "paperName": "2013考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2013",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2013考研数学二第5题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2013 数学二真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2013/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2013考研数学二试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2013/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2013考研数学二答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2013",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:95dfe9da227e707839871b833a86f5ab2bf26f4ed4f75d2423b774fed8663dc7",
+      "answerTextHash": "sha256:7e89265d7268b43fc3379f8365eab4dd2ea97698a375e1f59cea607b2aeced60",
+      "sourceEvidence": {
+        "evidenceId": "math2-2013-q05",
+        "sourceId": "src_e6637ec0e4abce970144c5a1",
+        "answerSourceId": "src_e6637ec0e4abce970144c5a1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2013-paper-answer",
+        "answerEvidenceId": "math2-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:7e89265d7268b43fc3379f8365eab4dd2ea97698a375e1f59cea607b2aeced60"
+      }
+    },
+    {
+      "id": "math2-2013-006",
+      "number": 6,
+      "paperId": "math2-2013",
+      "paperName": "2013考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2013",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2013考研数学二第6题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2013 数学二真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2013/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2013考研数学二试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2013/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2013考研数学二答案解析 p.5"
+        },
+        {
+          "src": "question-bank/math2-2013/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2013考研数学二答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2013",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:45388658b43979bbeeccc1b9520182745b3f8ef98cce4cd738022bd8db0bf71d",
+      "answerTextHash": "sha256:4de95feb6b0e82be9b628a9af73ba4a999d21fb83766ac44c3c90f9b49e1f87a",
+      "sourceEvidence": {
+        "evidenceId": "math2-2013-q06",
+        "sourceId": "src_e6637ec0e4abce970144c5a1",
+        "answerSourceId": "src_e6637ec0e4abce970144c5a1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2013-paper-answer",
+        "answerEvidenceId": "math2-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:4de95feb6b0e82be9b628a9af73ba4a999d21fb83766ac44c3c90f9b49e1f87a"
+      }
+    },
+    {
+      "id": "math2-2013-007",
+      "number": 7,
+      "paperId": "math2-2013",
+      "paperName": "2013考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2013",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2013考研数学二第7题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2013 数学二真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2013/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2013考研数学二试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2013/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2013考研数学二答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2013",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:b9f1ea83d30313d27895532a061018a1912aa646c88a393ff2703cde6669c6cf",
+      "answerTextHash": "sha256:a98420ef117b541104da2f81910d7c128ab33c9a20903e2c367aa71641bd65ee",
+      "sourceEvidence": {
+        "evidenceId": "math2-2013-q07",
+        "sourceId": "src_e6637ec0e4abce970144c5a1",
+        "answerSourceId": "src_e6637ec0e4abce970144c5a1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2013-paper-answer",
+        "answerEvidenceId": "math2-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:a98420ef117b541104da2f81910d7c128ab33c9a20903e2c367aa71641bd65ee"
+      }
+    },
+    {
+      "id": "math2-2013-008",
+      "number": 8,
+      "paperId": "math2-2013",
+      "paperName": "2013考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2013",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2013考研数学二第8题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2013 数学二真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2013/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2013考研数学二试卷原页 p.1"
+        },
+        {
+          "src": "question-bank/math2-2013/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2013考研数学二试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2013/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2013考研数学二答案解析 p.6"
+        },
+        {
+          "src": "question-bank/math2-2013/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2013考研数学二答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2013",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:bc409076212928169b490c764c0d569435f42cd3cc300d5d50d256bbcca6d4b6",
+      "answerTextHash": "sha256:fbfe29249db427d07a986aa3db6a6cd36ab44398e28be489c9e0465283a07be8",
+      "sourceEvidence": {
+        "evidenceId": "math2-2013-q08",
+        "sourceId": "src_e6637ec0e4abce970144c5a1",
+        "answerSourceId": "src_e6637ec0e4abce970144c5a1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2013-paper-answer",
+        "answerEvidenceId": "math2-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:fbfe29249db427d07a986aa3db6a6cd36ab44398e28be489c9e0465283a07be8"
+      }
+    },
+    {
+      "id": "math2-2013-009",
+      "number": 9,
+      "paperId": "math2-2013",
+      "paperName": "2013考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2013",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2013考研数学二第9题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "e^(1/2)",
+      "explanation": "答案来自本地百度网盘 2013 数学二真题及解析 PDF；完整题干和公式见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2013/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2013考研数学二试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2013/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2013考研数学二答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2013",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:7cfb91c4e345eb85f21a1d9fc6eb869656e58fb70f4cda0d9f3b3c8137c2ed57",
+      "answerTextHash": "sha256:9ce4b6f974b3dbaad5de3c8a382a4fbba4575455a5bd925f94f47b3266b571a7",
+      "sourceEvidence": {
+        "evidenceId": "math2-2013-q09",
+        "sourceId": "src_e6637ec0e4abce970144c5a1",
+        "answerSourceId": "src_e6637ec0e4abce970144c5a1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2013-paper-answer",
+        "answerEvidenceId": "math2-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:9ce4b6f974b3dbaad5de3c8a382a4fbba4575455a5bd925f94f47b3266b571a7"
+      }
+    },
+    {
+      "id": "math2-2013-010",
+      "number": 10,
+      "paperId": "math2-2013",
+      "paperName": "2013考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2013",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2013考研数学二第10题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "1 / sqrt(1 - e^(-1))",
+      "explanation": "答案来自本地百度网盘 2013 数学二真题及解析 PDF；完整题干和公式见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2013/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2013考研数学二试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2013/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2013考研数学二答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2013",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:bf28fa286b6203913b91cb3063d96b5315e851b4819c334a17985e33b31bef19",
+      "answerTextHash": "sha256:99820e2b39178a0fa953991f3aafc61effe9b0b40fcb0d1ca2417dbb3ce5acf6",
+      "sourceEvidence": {
+        "evidenceId": "math2-2013-q10",
+        "sourceId": "src_e6637ec0e4abce970144c5a1",
+        "answerSourceId": "src_e6637ec0e4abce970144c5a1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2013-paper-answer",
+        "answerEvidenceId": "math2-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:99820e2b39178a0fa953991f3aafc61effe9b0b40fcb0d1ca2417dbb3ce5acf6"
+      }
+    },
+    {
+      "id": "math2-2013-011",
+      "number": 11,
+      "paperId": "math2-2013",
+      "paperName": "2013考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2013",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2013考研数学二第11题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "pi/12",
+      "explanation": "答案来自本地百度网盘 2013 数学二真题及解析 PDF；完整题干和公式见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2013/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2013考研数学二试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2013/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2013考研数学二答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2013",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:bd382ae0b815ac7d5309515ffcd79e438604b86d08e28ee15b073733c76ed9d3",
+      "answerTextHash": "sha256:a453cc7320a44f27206f21a6d382b2eab88bfd0d5722caca1caf3e0146f04db6",
+      "sourceEvidence": {
+        "evidenceId": "math2-2013-q11",
+        "sourceId": "src_e6637ec0e4abce970144c5a1",
+        "answerSourceId": "src_e6637ec0e4abce970144c5a1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2013-paper-answer",
+        "answerEvidenceId": "math2-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:a453cc7320a44f27206f21a6d382b2eab88bfd0d5722caca1caf3e0146f04db6"
+      }
+    },
+    {
+      "id": "math2-2013-012",
+      "number": 12,
+      "paperId": "math2-2013",
+      "paperName": "2013考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2013",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2013考研数学二第12题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "y + x - pi/4 - ln(sqrt(2)) = 0",
+      "explanation": "答案来自本地百度网盘 2013 数学二真题及解析 PDF；完整题干和公式见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2013/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2013考研数学二试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2013/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2013考研数学二答案解析 p.7"
+        },
+        {
+          "src": "question-bank/math2-2013/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2013考研数学二答案解析 p.8"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2013",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:95f06a8a361ab6d69613413bebe7809b062ec604ab8acb02ba77fc3be0bfa569",
+      "answerTextHash": "sha256:eca58e0a714264695a8ad5c937a9dde70a2bf6e8b4a6d4106bbfe3b03a3c6c61",
+      "sourceEvidence": {
+        "evidenceId": "math2-2013-q12",
+        "sourceId": "src_e6637ec0e4abce970144c5a1",
+        "answerSourceId": "src_e6637ec0e4abce970144c5a1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2013-paper-answer",
+        "answerEvidenceId": "math2-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:eca58e0a714264695a8ad5c937a9dde70a2bf6e8b4a6d4106bbfe3b03a3c6c61"
+      }
+    },
+    {
+      "id": "math2-2013-013",
+      "number": 13,
+      "paperId": "math2-2013",
+      "paperName": "2013考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2013",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2013考研数学二第13题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "y = e^(3x) - e^x - x e^(2x)",
+      "explanation": "答案来自本地百度网盘 2013 数学二真题及解析 PDF；完整题干和公式见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2013/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2013考研数学二试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2013/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2013考研数学二答案解析 p.8"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2013",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:bd23c7526f85a59aaeb2c9283c0b8e208aa29764fb0e05ab73d4553d4479b2e2",
+      "answerTextHash": "sha256:58e76571dbcd3ffe90caa507a583d4e0ace114622947a2e065db2ffaaeeffacb",
+      "sourceEvidence": {
+        "evidenceId": "math2-2013-q13",
+        "sourceId": "src_e6637ec0e4abce970144c5a1",
+        "answerSourceId": "src_e6637ec0e4abce970144c5a1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2013-paper-answer",
+        "answerEvidenceId": "math2-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:58e76571dbcd3ffe90caa507a583d4e0ace114622947a2e065db2ffaaeeffacb"
+      }
+    },
+    {
+      "id": "math2-2013-014",
+      "number": 14,
+      "paperId": "math2-2013",
+      "paperName": "2013考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2013",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2013考研数学二第14题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "-1",
+      "explanation": "答案来自本地百度网盘 2013 数学二真题及解析 PDF；完整题干和公式见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2013/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2013考研数学二试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2013/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2013考研数学二答案解析 p.8"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2013",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:d4f63a65ccf7475740ff9da3570539cce5ca747860ed2fd68965b26501d59b24",
+      "answerTextHash": "sha256:4e1ea39e27996b0f898fae64e534b3c896b9523b7bf649199e0b4789c151caa0",
+      "sourceEvidence": {
+        "evidenceId": "math2-2013-q14",
+        "sourceId": "src_e6637ec0e4abce970144c5a1",
+        "answerSourceId": "src_e6637ec0e4abce970144c5a1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2013-paper-answer",
+        "answerEvidenceId": "math2-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:4e1ea39e27996b0f898fae64e534b3c896b9523b7bf649199e0b4789c151caa0"
+      }
+    },
+    {
+      "id": "math2-2013-015",
+      "number": 15,
+      "paperId": "math2-2013",
+      "paperName": "2013考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2013",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2013考研数学二第15题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "n=2，a=7。",
+      "explanation": "答案来自本地百度网盘 2013 数学二真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2013/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2013考研数学二试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2013/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2013考研数学二答案解析 p.8"
+        },
+        {
+          "src": "question-bank/math2-2013/answer-page-09.jpg",
+          "caption": "答案解析 p.9",
+          "alt": "2013考研数学二答案解析 p.9"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2013",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:189a0c147dd6bd33395dff41ba257a91355e6c11461b20c060d837aa06f46c1d",
+      "answerTextHash": "sha256:28978adfc93a215ac38de957124f5ee6896415435ed0c18233368077f65feefb",
+      "sourceEvidence": {
+        "evidenceId": "math2-2013-q15",
+        "sourceId": "src_e6637ec0e4abce970144c5a1",
+        "answerSourceId": "src_e6637ec0e4abce970144c5a1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2013-paper-answer",
+        "answerEvidenceId": "math2-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:28978adfc93a215ac38de957124f5ee6896415435ed0c18233368077f65feefb"
+      }
+    },
+    {
+      "id": "math2-2013-016",
+      "number": 16,
+      "paperId": "math2-2013",
+      "paperName": "2013考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2013",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2013考研数学二第16题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "a 的值见答案原页。",
+      "explanation": "答案来自本地百度网盘 2013 数学二真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2013/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2013考研数学二试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2013/answer-page-09.jpg",
+          "caption": "答案解析 p.9",
+          "alt": "2013考研数学二答案解析 p.9"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2013",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:6156bf879159f475da49e6089bb0103eb4837eb5c86d33b00ae715760358efba",
+      "answerTextHash": "sha256:db468daffe3955acbd15d88ec9f78f69c5f8ea8c7d692a67dd041dc46241a59e",
+      "sourceEvidence": {
+        "evidenceId": "math2-2013-q16",
+        "sourceId": "src_e6637ec0e4abce970144c5a1",
+        "answerSourceId": "src_e6637ec0e4abce970144c5a1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2013-paper-answer",
+        "answerEvidenceId": "math2-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:db468daffe3955acbd15d88ec9f78f69c5f8ea8c7d692a67dd041dc46241a59e"
+      }
+    },
+    {
+      "id": "math2-2013-017",
+      "number": 17,
+      "paperId": "math2-2013",
+      "paperName": "2013考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2013",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2013考研数学二第17题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "二重积分值为 416/3。",
+      "explanation": "答案来自本地百度网盘 2013 数学二真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2013/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2013考研数学二试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2013/answer-page-09.jpg",
+          "caption": "答案解析 p.9",
+          "alt": "2013考研数学二答案解析 p.9"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2013",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:17615847c10c8988911801aaa6f7de5bc39fa311a7161a68bdc73947a0314d9f",
+      "answerTextHash": "sha256:460faba8cb85805d772fa6b4685cf9193836137cc18944a5dab11327fda626c9",
+      "sourceEvidence": {
+        "evidenceId": "math2-2013-q17",
+        "sourceId": "src_e6637ec0e4abce970144c5a1",
+        "answerSourceId": "src_e6637ec0e4abce970144c5a1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2013-paper-answer",
+        "answerEvidenceId": "math2-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:460faba8cb85805d772fa6b4685cf9193836137cc18944a5dab11327fda626c9"
+      }
+    },
+    {
+      "id": "math2-2013-018",
+      "number": 18,
+      "paperId": "math2-2013",
+      "paperName": "2013考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2013",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2013考研数学二第18题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "证明结论见答案原页。",
+      "explanation": "答案来自本地百度网盘 2013 数学二真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2013/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2013考研数学二试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2013/answer-page-09.jpg",
+          "caption": "答案解析 p.9",
+          "alt": "2013考研数学二答案解析 p.9"
+        },
+        {
+          "src": "question-bank/math2-2013/answer-page-10.jpg",
+          "caption": "答案解析 p.10",
+          "alt": "2013考研数学二答案解析 p.10"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2013",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:150f93ad4d6f18ceff097198847a99d055e9924d948daaa9b79ee1626c1c84b1",
+      "answerTextHash": "sha256:3254046bbb2687047dc6e20b9aa6ea6f37ee781659ac1812c8e9b46aa748fa15",
+      "sourceEvidence": {
+        "evidenceId": "math2-2013-q18",
+        "sourceId": "src_e6637ec0e4abce970144c5a1",
+        "answerSourceId": "src_e6637ec0e4abce970144c5a1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2013-paper-answer",
+        "answerEvidenceId": "math2-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:3254046bbb2687047dc6e20b9aa6ea6f37ee781659ac1812c8e9b46aa748fa15"
+      }
+    },
+    {
+      "id": "math2-2013-019",
+      "number": 19,
+      "paperId": "math2-2013",
+      "paperName": "2013考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2013",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2013考研数学二第19题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "最长距离为 sqrt(2)，最短距离为 1。",
+      "explanation": "答案来自本地百度网盘 2013 数学二真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2013/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2013考研数学二试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2013/answer-page-10.jpg",
+          "caption": "答案解析 p.10",
+          "alt": "2013考研数学二答案解析 p.10"
+        },
+        {
+          "src": "question-bank/math2-2013/answer-page-11.jpg",
+          "caption": "答案解析 p.11",
+          "alt": "2013考研数学二答案解析 p.11"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2013",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:215f8f8c10c85a22ec929248c5254b45421117682490022c75dfc2d50d6e2dd1",
+      "answerTextHash": "sha256:ab9e3a93ac44d9e645e2d88e492b72b287405d215fd1af601c563292c9bc6e16",
+      "sourceEvidence": {
+        "evidenceId": "math2-2013-q19",
+        "sourceId": "src_e6637ec0e4abce970144c5a1",
+        "answerSourceId": "src_e6637ec0e4abce970144c5a1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2013-paper-answer",
+        "answerEvidenceId": "math2-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:ab9e3a93ac44d9e645e2d88e492b72b287405d215fd1af601c563292c9bc6e16"
+      }
+    },
+    {
+      "id": "math2-2013-020",
+      "number": 20,
+      "paperId": "math2-2013",
+      "paperName": "2013考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2013",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2013考研数学二第20题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "f(x) 的最小值为 1；数列极限为 1。",
+      "explanation": "答案来自本地百度网盘 2013 数学二真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2013/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2013考研数学二试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2013/answer-page-11.jpg",
+          "caption": "答案解析 p.11",
+          "alt": "2013考研数学二答案解析 p.11"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2013",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:fd8b6297ccad213062f411930ea25b3255d86f04b7d62251f807a56f4735b17e",
+      "answerTextHash": "sha256:3fb4719569186f6585aa77fd6a54efb87785b0cfd64caf622705edce365761ca",
+      "sourceEvidence": {
+        "evidenceId": "math2-2013-q20",
+        "sourceId": "src_e6637ec0e4abce970144c5a1",
+        "answerSourceId": "src_e6637ec0e4abce970144c5a1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2013-paper-answer",
+        "answerEvidenceId": "math2-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:3fb4719569186f6585aa77fd6a54efb87785b0cfd64caf622705edce365761ca"
+      }
+    },
+    {
+      "id": "math2-2013-021",
+      "number": 21,
+      "paperId": "math2-2013",
+      "paperName": "2013考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2013",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2013考研数学二第21题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "曲线弧长与形心横坐标见答案原页。",
+      "explanation": "答案来自本地百度网盘 2013 数学二真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2013/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2013考研数学二试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2013/answer-page-11.jpg",
+          "caption": "答案解析 p.11",
+          "alt": "2013考研数学二答案解析 p.11"
+        },
+        {
+          "src": "question-bank/math2-2013/answer-page-12.jpg",
+          "caption": "答案解析 p.12",
+          "alt": "2013考研数学二答案解析 p.12"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2013",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:7527361ed43df2644e42447d9ecd47940a6f7c974cefc3e215502e6f5d597852",
+      "answerTextHash": "sha256:cf3f35b04b1c5957efa84a1a5532440a27a260ff4b3b5d08e43c3a7220deb3e0",
+      "sourceEvidence": {
+        "evidenceId": "math2-2013-q21",
+        "sourceId": "src_e6637ec0e4abce970144c5a1",
+        "answerSourceId": "src_e6637ec0e4abce970144c5a1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2013-paper-answer",
+        "answerEvidenceId": "math2-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:cf3f35b04b1c5957efa84a1a5532440a27a260ff4b3b5d08e43c3a7220deb3e0"
+      }
+    },
+    {
+      "id": "math2-2013-022",
+      "number": 22,
+      "paperId": "math2-2013",
+      "paperName": "2013考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2013",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2013考研数学二第22题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "a=-1，b=0；全部矩阵 C 见答案原页。",
+      "explanation": "答案来自本地百度网盘 2013 数学二真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2013/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2013考研数学二试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2013/answer-page-12.jpg",
+          "caption": "答案解析 p.12",
+          "alt": "2013考研数学二答案解析 p.12"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2013",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:abe4d8a18aa93fce44e4c1aa6c4b93547d7f47efdd2eb80b1a51aa9726858604",
+      "answerTextHash": "sha256:8fad9de715f4ba9f6de3dd27fb79a0aa6d23f9cd267c8d23d344f44d5db7e386",
+      "sourceEvidence": {
+        "evidenceId": "math2-2013-q22",
+        "sourceId": "src_e6637ec0e4abce970144c5a1",
+        "answerSourceId": "src_e6637ec0e4abce970144c5a1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2013-paper-answer",
+        "answerEvidenceId": "math2-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:8fad9de715f4ba9f6de3dd27fb79a0aa6d23f9cd267c8d23d344f44d5db7e386"
+      }
+    },
+    {
+      "id": "math2-2013-023",
+      "number": 23,
+      "paperId": "math2-2013",
+      "paperName": "2013考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2013",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2013考研数学二第23题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "标准形为 2y1^2 + y2^2；证明见答案原页。",
+      "explanation": "答案来自本地百度网盘 2013 数学二真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2013/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2013考研数学二试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2013/answer-page-13.jpg",
+          "caption": "答案解析 p.13",
+          "alt": "2013考研数学二答案解析 p.13"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2013",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:99a9851c4b964028034b650c667457fb262ae1d80b72c3dba38f9067da70644a",
+      "answerTextHash": "sha256:6794e29ae90f095b141d9774c593c2d8d6efff58d91c111a9e24bd3645d757be",
+      "sourceEvidence": {
+        "evidenceId": "math2-2013-q23",
+        "sourceId": "src_e6637ec0e4abce970144c5a1",
+        "answerSourceId": "src_e6637ec0e4abce970144c5a1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2013-paper-answer",
+        "answerEvidenceId": "math2-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:6794e29ae90f095b141d9774c593c2d8d6efff58d91c111a9e24bd3645d757be"
+      }
+    }
+  ]
+}
