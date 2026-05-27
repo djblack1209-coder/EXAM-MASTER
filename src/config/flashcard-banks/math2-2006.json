@@ -1,0 +1,1441 @@
+{
+  "id": "math2-2006",
+  "source": "math2-2006-paper-answer",
+  "paperId": "math2-2006",
+  "paperName": "2006考研数学二真题",
+  "subject": "数学",
+  "subjectKey": "math",
+  "track": "math2",
+  "year": "2006",
+  "quality": "ready",
+  "publicationStatus": "published",
+  "publicationBlockers": [],
+  "sourceEvidencePolicy": "baidu_netdisk_official_paper_pdf_page_image_v1",
+  "sourceFiles": [
+    {
+      "id": "math2-2006-paper-answer",
+      "role": "paper_answer",
+      "localPath": "data/raw-inbox/public-course-history/math2/2006/2006-math2-paper-answer.pdf",
+      "sha256": "sha256:164b880cc7014aa0a364fc4f79321ca005e665407edabc58259ea62fbb61f466"
+    }
+  ],
+  "assetRoot": "question-bank/math2-2006",
+  "processed_at": "2026-05-27T16:39:56Z",
+  "total_cards": 23,
+  "cards": [
+    {
+      "id": "math2-2006-001",
+      "number": 1,
+      "paperId": "math2-2006",
+      "paperName": "2006考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2006",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2006考研数学二第1题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "y = 1/5",
+      "explanation": "答案来自本地百度网盘 2006 数学二真题及解析 PDF；完整题干和公式见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2006/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2006考研数学二试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2006/answer-page-01.jpg",
+          "caption": "答案解析 p.1",
+          "alt": "2006考研数学二答案解析 p.1"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2006",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:9801b23274ee19348b86b3e1516bba255eda842a84d2063752ee132b15ed8f8f",
+      "answerTextHash": "sha256:fe617bf0b250a3c0e1fc6a26ce5b5241a6e7da3ad890d990263843f347239c01",
+      "sourceEvidence": {
+        "evidenceId": "math2-2006-q01",
+        "sourceId": "src_f49c2de9b3f582d17eea5654",
+        "answerSourceId": "src_f49c2de9b3f582d17eea5654",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2006-paper-answer",
+        "answerEvidenceId": "math2-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:fe617bf0b250a3c0e1fc6a26ce5b5241a6e7da3ad890d990263843f347239c01"
+      }
+    },
+    {
+      "id": "math2-2006-002",
+      "number": 2,
+      "paperId": "math2-2006",
+      "paperName": "2006考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2006",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2006考研数学二第2题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "a = 1/3",
+      "explanation": "答案来自本地百度网盘 2006 数学二真题及解析 PDF；完整题干和公式见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2006/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2006考研数学二试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2006/answer-page-01.jpg",
+          "caption": "答案解析 p.1",
+          "alt": "2006考研数学二答案解析 p.1"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2006",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:8dd5e1027b90f1293f508d4ce93929f6fdde515f2b14101905b791e0284f3144",
+      "answerTextHash": "sha256:961893b4809b400c63fde55d13fc96a853f97c8a4c94036e33ca9cc57bbb12ac",
+      "sourceEvidence": {
+        "evidenceId": "math2-2006-q02",
+        "sourceId": "src_f49c2de9b3f582d17eea5654",
+        "answerSourceId": "src_f49c2de9b3f582d17eea5654",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2006-paper-answer",
+        "answerEvidenceId": "math2-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:961893b4809b400c63fde55d13fc96a853f97c8a4c94036e33ca9cc57bbb12ac"
+      }
+    },
+    {
+      "id": "math2-2006-003",
+      "number": 3,
+      "paperId": "math2-2006",
+      "paperName": "2006考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2006",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2006考研数学二第3题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "1/2",
+      "explanation": "答案来自本地百度网盘 2006 数学二真题及解析 PDF；完整题干和公式见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2006/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2006考研数学二试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2006/answer-page-01.jpg",
+          "caption": "答案解析 p.1",
+          "alt": "2006考研数学二答案解析 p.1"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2006",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:d870494b7f23c82405a456b357fcb1b7e56ecc358801ccb0dfdee9b538e97187",
+      "answerTextHash": "sha256:7303b125010139ec53a6b7bec4f15dc066156a258892d5c7c1d36b7cb83f6a55",
+      "sourceEvidence": {
+        "evidenceId": "math2-2006-q03",
+        "sourceId": "src_f49c2de9b3f582d17eea5654",
+        "answerSourceId": "src_f49c2de9b3f582d17eea5654",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2006-paper-answer",
+        "answerEvidenceId": "math2-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:7303b125010139ec53a6b7bec4f15dc066156a258892d5c7c1d36b7cb83f6a55"
+      }
+    },
+    {
+      "id": "math2-2006-004",
+      "number": 4,
+      "paperId": "math2-2006",
+      "paperName": "2006考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2006",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2006考研数学二第4题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "y = Cxe^{-x} (x != 0)",
+      "explanation": "答案来自本地百度网盘 2006 数学二真题及解析 PDF；完整题干和公式见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2006/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2006考研数学二试卷原页 p.1"
+        },
+        {
+          "src": "question-bank/math2-2006/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2006考研数学二试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2006/answer-page-01.jpg",
+          "caption": "答案解析 p.1",
+          "alt": "2006考研数学二答案解析 p.1"
+        },
+        {
+          "src": "question-bank/math2-2006/answer-page-02.jpg",
+          "caption": "答案解析 p.2",
+          "alt": "2006考研数学二答案解析 p.2"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2006",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:49acdc299d656ae69625188e2cb13901b0051e67d93694e7fec521ad0f9fe218",
+      "answerTextHash": "sha256:047126fc3d7187fb29a9aa90bc0a44db07373827b58b0f4bc742116b208413a9",
+      "sourceEvidence": {
+        "evidenceId": "math2-2006-q04",
+        "sourceId": "src_f49c2de9b3f582d17eea5654",
+        "answerSourceId": "src_f49c2de9b3f582d17eea5654",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2006-paper-answer",
+        "answerEvidenceId": "math2-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:047126fc3d7187fb29a9aa90bc0a44db07373827b58b0f4bc742116b208413a9"
+      }
+    },
+    {
+      "id": "math2-2006-005",
+      "number": 5,
+      "paperId": "math2-2006",
+      "paperName": "2006考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2006",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2006考研数学二第5题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "-e",
+      "explanation": "答案来自本地百度网盘 2006 数学二真题及解析 PDF；完整题干和公式见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2006/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2006考研数学二试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2006/answer-page-02.jpg",
+          "caption": "答案解析 p.2",
+          "alt": "2006考研数学二答案解析 p.2"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2006",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:d410d66663a57a894c423b5bbcd4efbaa0337576019fef4c58b3c06e63e67e44",
+      "answerTextHash": "sha256:2f8b9ab3f8cbb67afac208d0c29ed3070e49755aa7ae369b383d4d135aea0cb0",
+      "sourceEvidence": {
+        "evidenceId": "math2-2006-q05",
+        "sourceId": "src_f49c2de9b3f582d17eea5654",
+        "answerSourceId": "src_f49c2de9b3f582d17eea5654",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2006-paper-answer",
+        "answerEvidenceId": "math2-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:2f8b9ab3f8cbb67afac208d0c29ed3070e49755aa7ae369b383d4d135aea0cb0"
+      }
+    },
+    {
+      "id": "math2-2006-006",
+      "number": 6,
+      "paperId": "math2-2006",
+      "paperName": "2006考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2006",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2006考研数学二第6题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "2",
+      "explanation": "答案来自本地百度网盘 2006 数学二真题及解析 PDF；完整题干和公式见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2006/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2006考研数学二试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2006/answer-page-02.jpg",
+          "caption": "答案解析 p.2",
+          "alt": "2006考研数学二答案解析 p.2"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2006",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:284982368e8aee4ce898f879abce9d319127ccf2e2fb3e71fda0455d03cef887",
+      "answerTextHash": "sha256:360dda0a50b1e46e5d291b04b275562dfe392339ecd6ae79e6351f1cb68e0758",
+      "sourceEvidence": {
+        "evidenceId": "math2-2006-q06",
+        "sourceId": "src_f49c2de9b3f582d17eea5654",
+        "answerSourceId": "src_f49c2de9b3f582d17eea5654",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2006-paper-answer",
+        "answerEvidenceId": "math2-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:360dda0a50b1e46e5d291b04b275562dfe392339ecd6ae79e6351f1cb68e0758"
+      }
+    },
+    {
+      "id": "math2-2006-007",
+      "number": 7,
+      "paperId": "math2-2006",
+      "paperName": "2006考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2006",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2006考研数学二第7题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2006 数学二真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2006/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2006考研数学二试卷原页 p.2"
+        },
+        {
+          "src": "question-bank/math2-2006/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2006考研数学二试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2006/answer-page-03.jpg",
+          "caption": "答案解析 p.3",
+          "alt": "2006考研数学二答案解析 p.3"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2006",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:1ae807bb44df157ab44838dd9fd4d022537e5b568766124526e8975b28640f20",
+      "answerTextHash": "sha256:37047a4e1d0f087c0f0de2714845cbbfcf52e1f11a8dee1bd57c83d31cefed0f",
+      "sourceEvidence": {
+        "evidenceId": "math2-2006-q07",
+        "sourceId": "src_f49c2de9b3f582d17eea5654",
+        "answerSourceId": "src_f49c2de9b3f582d17eea5654",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2006-paper-answer",
+        "answerEvidenceId": "math2-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:37047a4e1d0f087c0f0de2714845cbbfcf52e1f11a8dee1bd57c83d31cefed0f"
+      }
+    },
+    {
+      "id": "math2-2006-008",
+      "number": 8,
+      "paperId": "math2-2006",
+      "paperName": "2006考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2006",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2006考研数学二第8题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2006 数学二真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2006/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2006考研数学二试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2006/answer-page-03.jpg",
+          "caption": "答案解析 p.3",
+          "alt": "2006考研数学二答案解析 p.3"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2006",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:a3a26786256b50ec4d294185bc2ac17a9a25aa036479af7abcff220d6b6d337a",
+      "answerTextHash": "sha256:1fcf9d558765341a30341480a7d24f877bc9966886f3ab2accbd71cffa0f1b38",
+      "sourceEvidence": {
+        "evidenceId": "math2-2006-q08",
+        "sourceId": "src_f49c2de9b3f582d17eea5654",
+        "answerSourceId": "src_f49c2de9b3f582d17eea5654",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2006-paper-answer",
+        "answerEvidenceId": "math2-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:1fcf9d558765341a30341480a7d24f877bc9966886f3ab2accbd71cffa0f1b38"
+      }
+    },
+    {
+      "id": "math2-2006-009",
+      "number": 9,
+      "paperId": "math2-2006",
+      "paperName": "2006考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2006",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2006考研数学二第9题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2006 数学二真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2006/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2006考研数学二试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2006/answer-page-03.jpg",
+          "caption": "答案解析 p.3",
+          "alt": "2006考研数学二答案解析 p.3"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2006",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:07441830f8feb4d2624d6d137cafe345485da43b4e77279beffb3ad33a130032",
+      "answerTextHash": "sha256:68d83c90862fc09ebf9a4584ba993943e3bb37788c1dc1201cb29f44689a49dc",
+      "sourceEvidence": {
+        "evidenceId": "math2-2006-q09",
+        "sourceId": "src_f49c2de9b3f582d17eea5654",
+        "answerSourceId": "src_f49c2de9b3f582d17eea5654",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2006-paper-answer",
+        "answerEvidenceId": "math2-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:68d83c90862fc09ebf9a4584ba993943e3bb37788c1dc1201cb29f44689a49dc"
+      }
+    },
+    {
+      "id": "math2-2006-010",
+      "number": 10,
+      "paperId": "math2-2006",
+      "paperName": "2006考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2006",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2006考研数学二第10题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2006 数学二真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2006/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2006考研数学二试卷原页 p.3"
+        },
+        {
+          "src": "question-bank/math2-2006/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2006考研数学二试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2006/answer-page-04.jpg",
+          "caption": "答案解析 p.4",
+          "alt": "2006考研数学二答案解析 p.4"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2006",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:01545344c2cd3f1d54c6981a8cb0944dd3606ebf4c5ca62494b19efb49e0667a",
+      "answerTextHash": "sha256:f9b62e4efbf2b7603b98d3f2ff418dcbd2c44acaa816fe2c2d633969ac0c75c5",
+      "sourceEvidence": {
+        "evidenceId": "math2-2006-q10",
+        "sourceId": "src_f49c2de9b3f582d17eea5654",
+        "answerSourceId": "src_f49c2de9b3f582d17eea5654",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2006-paper-answer",
+        "answerEvidenceId": "math2-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:f9b62e4efbf2b7603b98d3f2ff418dcbd2c44acaa816fe2c2d633969ac0c75c5"
+      }
+    },
+    {
+      "id": "math2-2006-011",
+      "number": 11,
+      "paperId": "math2-2006",
+      "paperName": "2006考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2006",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2006考研数学二第11题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2006 数学二真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2006/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2006考研数学二试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2006/answer-page-04.jpg",
+          "caption": "答案解析 p.4",
+          "alt": "2006考研数学二答案解析 p.4"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2006",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:17168d9542665771728a43bb05bcf29cb1d8893fefc31c45d51e7377f0a4b604",
+      "answerTextHash": "sha256:68360ef5871ed4ff9c6a3a665d3c68ab23cc14d3ac9fe78aacebce6d8d849ac3",
+      "sourceEvidence": {
+        "evidenceId": "math2-2006-q11",
+        "sourceId": "src_f49c2de9b3f582d17eea5654",
+        "answerSourceId": "src_f49c2de9b3f582d17eea5654",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2006-paper-answer",
+        "answerEvidenceId": "math2-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:68360ef5871ed4ff9c6a3a665d3c68ab23cc14d3ac9fe78aacebce6d8d849ac3"
+      }
+    },
+    {
+      "id": "math2-2006-012",
+      "number": 12,
+      "paperId": "math2-2006",
+      "paperName": "2006考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2006",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2006考研数学二第12题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2006 数学二真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2006/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2006考研数学二试卷原页 p.4"
+        },
+        {
+          "src": "question-bank/math2-2006/paper-page-05.jpg",
+          "caption": "试卷原页 p.5",
+          "alt": "2006考研数学二试卷原页 p.5"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2006/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2006考研数学二答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2006",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:d7ed9abaa69147c838d74a876e8109e87f2f0e08f0a0606e13d09ebc628a31f4",
+      "answerTextHash": "sha256:28d0c2da83a91da6daa0b76dc4fb5ce9a2d98a69f7ac96655fe3d017a8584605",
+      "sourceEvidence": {
+        "evidenceId": "math2-2006-q12",
+        "sourceId": "src_f49c2de9b3f582d17eea5654",
+        "answerSourceId": "src_f49c2de9b3f582d17eea5654",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2006-paper-answer",
+        "answerEvidenceId": "math2-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:28d0c2da83a91da6daa0b76dc4fb5ce9a2d98a69f7ac96655fe3d017a8584605"
+      }
+    },
+    {
+      "id": "math2-2006-013",
+      "number": 13,
+      "paperId": "math2-2006",
+      "paperName": "2006考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2006",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2006考研数学二第13题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2006 数学二真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2006/paper-page-05.jpg",
+          "caption": "试卷原页 p.5",
+          "alt": "2006考研数学二试卷原页 p.5"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2006/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2006考研数学二答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2006",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:0a2b51e5a251ac50a95cf5f305ff45e0ea5bb96a463e313399f6e397f97fc32c",
+      "answerTextHash": "sha256:7e89265d7268b43fc3379f8365eab4dd2ea97698a375e1f59cea607b2aeced60",
+      "sourceEvidence": {
+        "evidenceId": "math2-2006-q13",
+        "sourceId": "src_f49c2de9b3f582d17eea5654",
+        "answerSourceId": "src_f49c2de9b3f582d17eea5654",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2006-paper-answer",
+        "answerEvidenceId": "math2-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:7e89265d7268b43fc3379f8365eab4dd2ea97698a375e1f59cea607b2aeced60"
+      }
+    },
+    {
+      "id": "math2-2006-014",
+      "number": 14,
+      "paperId": "math2-2006",
+      "paperName": "2006考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2006",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2006考研数学二第14题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2006 数学二真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2006/paper-page-05.jpg",
+          "caption": "试卷原页 p.5",
+          "alt": "2006考研数学二试卷原页 p.5"
+        },
+        {
+          "src": "question-bank/math2-2006/paper-page-06.jpg",
+          "caption": "试卷原页 p.6",
+          "alt": "2006考研数学二试卷原页 p.6"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2006/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2006考研数学二答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2006",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:749837b794867da3680c7c977f78b3f1fe1d5bfb6c14e1f563e407598aba5443",
+      "answerTextHash": "sha256:a98420ef117b541104da2f81910d7c128ab33c9a20903e2c367aa71641bd65ee",
+      "sourceEvidence": {
+        "evidenceId": "math2-2006-q14",
+        "sourceId": "src_f49c2de9b3f582d17eea5654",
+        "answerSourceId": "src_f49c2de9b3f582d17eea5654",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2006-paper-answer",
+        "answerEvidenceId": "math2-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:a98420ef117b541104da2f81910d7c128ab33c9a20903e2c367aa71641bd65ee"
+      }
+    },
+    {
+      "id": "math2-2006-015",
+      "number": 15,
+      "paperId": "math2-2006",
+      "paperName": "2006考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2006",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2006考研数学二第15题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "A = 1/3, B = -2/3, C = 1/6.",
+      "explanation": "答案来自本地百度网盘 2006 数学二真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2006/paper-page-06.jpg",
+          "caption": "试卷原页 p.6",
+          "alt": "2006考研数学二试卷原页 p.6"
+        },
+        {
+          "src": "question-bank/math2-2006/paper-page-07.jpg",
+          "caption": "试卷原页 p.7",
+          "alt": "2006考研数学二试卷原页 p.7"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2006/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2006考研数学二答案解析 p.6"
+        },
+        {
+          "src": "question-bank/math2-2006/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2006考研数学二答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2006",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:21818868d754d30321f7b2b7a6ed58aa51a010920d8993fc696af95e2ba26dbf",
+      "answerTextHash": "sha256:0bca9a2810a9e9b9c6b4cd0f1c30dd7b941dd377f110f66c238baeb4f1f309b3",
+      "sourceEvidence": {
+        "evidenceId": "math2-2006-q15",
+        "sourceId": "src_f49c2de9b3f582d17eea5654",
+        "answerSourceId": "src_f49c2de9b3f582d17eea5654",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2006-paper-answer",
+        "answerEvidenceId": "math2-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:0bca9a2810a9e9b9c6b4cd0f1c30dd7b941dd377f110f66c238baeb4f1f309b3"
+      }
+    },
+    {
+      "id": "math2-2006-016",
+      "number": 16,
+      "paperId": "math2-2006",
+      "paperName": "2006考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2006",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2006考研数学二第16题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "-e^{-x}arcsin(e^x) + 1/2 ln |(sqrt(1 - e^{2x}) - 1) / (sqrt(1 - e^{2x}) + 1)| + C.",
+      "explanation": "答案来自本地百度网盘 2006 数学二真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2006/paper-page-07.jpg",
+          "caption": "试卷原页 p.7",
+          "alt": "2006考研数学二试卷原页 p.7"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2006/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2006考研数学二答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2006",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:cb1a795c9c600d8f41a147338a0d3c0b0ac7823952ba42ca15c2b57e51d97f17",
+      "answerTextHash": "sha256:904f3a0e26565d163a6e44f26f7cf4e831e75c546c1c22e9bf8cb746687393e8",
+      "sourceEvidence": {
+        "evidenceId": "math2-2006-q16",
+        "sourceId": "src_f49c2de9b3f582d17eea5654",
+        "answerSourceId": "src_f49c2de9b3f582d17eea5654",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2006-paper-answer",
+        "answerEvidenceId": "math2-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:904f3a0e26565d163a6e44f26f7cf4e831e75c546c1c22e9bf8cb746687393e8"
+      }
+    },
+    {
+      "id": "math2-2006-017",
+      "number": 17,
+      "paperId": "math2-2006",
+      "paperName": "2006考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2006",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2006考研数学二第17题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "二重积分值为 pi ln 2 / 2。",
+      "explanation": "答案来自本地百度网盘 2006 数学二真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2006/paper-page-07.jpg",
+          "caption": "试卷原页 p.7",
+          "alt": "2006考研数学二试卷原页 p.7"
+        },
+        {
+          "src": "question-bank/math2-2006/paper-page-08.jpg",
+          "caption": "试卷原页 p.8",
+          "alt": "2006考研数学二试卷原页 p.8"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2006/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2006考研数学二答案解析 p.7"
+        },
+        {
+          "src": "question-bank/math2-2006/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2006考研数学二答案解析 p.8"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2006",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:5d5de7621686a444f783a9454008332f24f511622ee432553f215abbbfb33ecf",
+      "answerTextHash": "sha256:8d88fd413c220ab657a5bfee448a32f58c8143b7092db0a94b73946ea5d26a49",
+      "sourceEvidence": {
+        "evidenceId": "math2-2006-q17",
+        "sourceId": "src_f49c2de9b3f582d17eea5654",
+        "answerSourceId": "src_f49c2de9b3f582d17eea5654",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2006-paper-answer",
+        "answerEvidenceId": "math2-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:8d88fd413c220ab657a5bfee448a32f58c8143b7092db0a94b73946ea5d26a49"
+      }
+    },
+    {
+      "id": "math2-2006-018",
+      "number": 18,
+      "paperId": "math2-2006",
+      "paperName": "2006考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2006",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2006考研数学二第18题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "lim x_n = 0；lim (x_{n+1}/x_n)^{1/x_n^2} = e^{-1/6}。",
+      "explanation": "答案来自本地百度网盘 2006 数学二真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2006/paper-page-08.jpg",
+          "caption": "试卷原页 p.8",
+          "alt": "2006考研数学二试卷原页 p.8"
+        },
+        {
+          "src": "question-bank/math2-2006/paper-page-09.jpg",
+          "caption": "试卷原页 p.9",
+          "alt": "2006考研数学二试卷原页 p.9"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2006/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2006考研数学二答案解析 p.8"
+        },
+        {
+          "src": "question-bank/math2-2006/answer-page-09.jpg",
+          "caption": "答案解析 p.9",
+          "alt": "2006考研数学二答案解析 p.9"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2006",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:0afd2663cd165b83f3326fe8d25b87fed74c3cf89480a5664e90bb3cfc3445e1",
+      "answerTextHash": "sha256:e054f395257de60bd8a3fd08619795ec11687092fa91aad561ade5c393745a1f",
+      "sourceEvidence": {
+        "evidenceId": "math2-2006-q18",
+        "sourceId": "src_f49c2de9b3f582d17eea5654",
+        "answerSourceId": "src_f49c2de9b3f582d17eea5654",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2006-paper-answer",
+        "answerEvidenceId": "math2-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:e054f395257de60bd8a3fd08619795ec11687092fa91aad561ade5c393745a1f"
+      }
+    },
+    {
+      "id": "math2-2006-019",
+      "number": 19,
+      "paperId": "math2-2006",
+      "paperName": "2006考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2006",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2006考研数学二第19题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "利用辅助函数证明不等式；完整证明见答案原页。",
+      "explanation": "答案来自本地百度网盘 2006 数学二真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2006/paper-page-09.jpg",
+          "caption": "试卷原页 p.9",
+          "alt": "2006考研数学二试卷原页 p.9"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2006/answer-page-09.jpg",
+          "caption": "答案解析 p.9",
+          "alt": "2006考研数学二答案解析 p.9"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2006",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:e1bc124abbc53e2757cb487777e324920145ba5a9689e2f472c11efe10a423c9",
+      "answerTextHash": "sha256:410db4ce3a39ae420ad2c05f28fdb4df4830ce80be12e5be68b7c7ce811bbb9d",
+      "sourceEvidence": {
+        "evidenceId": "math2-2006-q19",
+        "sourceId": "src_f49c2de9b3f582d17eea5654",
+        "answerSourceId": "src_f49c2de9b3f582d17eea5654",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2006-paper-answer",
+        "answerEvidenceId": "math2-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:410db4ce3a39ae420ad2c05f28fdb4df4830ce80be12e5be68b7c7ce811bbb9d"
+      }
+    },
+    {
+      "id": "math2-2006-020",
+      "number": 20,
+      "paperId": "math2-2006",
+      "paperName": "2006考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2006",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2006考研数学二第20题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "f(u) = ln u。",
+      "explanation": "答案来自本地百度网盘 2006 数学二真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2006/paper-page-09.jpg",
+          "caption": "试卷原页 p.9",
+          "alt": "2006考研数学二试卷原页 p.9"
+        },
+        {
+          "src": "question-bank/math2-2006/paper-page-10.jpg",
+          "caption": "试卷原页 p.10",
+          "alt": "2006考研数学二试卷原页 p.10"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2006/answer-page-09.jpg",
+          "caption": "答案解析 p.9",
+          "alt": "2006考研数学二答案解析 p.9"
+        },
+        {
+          "src": "question-bank/math2-2006/answer-page-10.jpg",
+          "caption": "答案解析 p.10",
+          "alt": "2006考研数学二答案解析 p.10"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2006",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:dfb96a88fed5f7ab92d251c8c69c57c94760f69a416059378554e791743853a5",
+      "answerTextHash": "sha256:07d8a58191580478ddcabe3ba4c30fbfd778fbc3b221a6d3456a1dad315728c3",
+      "sourceEvidence": {
+        "evidenceId": "math2-2006-q20",
+        "sourceId": "src_f49c2de9b3f582d17eea5654",
+        "answerSourceId": "src_f49c2de9b3f582d17eea5654",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2006-paper-answer",
+        "answerEvidenceId": "math2-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:07d8a58191580478ddcabe3ba4c30fbfd778fbc3b221a6d3456a1dad315728c3"
+      }
+    },
+    {
+      "id": "math2-2006-021",
+      "number": 21,
+      "paperId": "math2-2006",
+      "paperName": "2006考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2006",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2006考研数学二第21题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "曲线 L 凸；切点为 (2,3)，切线方程为 y = x + 1，面积 S = 7/3。",
+      "explanation": "答案来自本地百度网盘 2006 数学二真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2006/paper-page-10.jpg",
+          "caption": "试卷原页 p.10",
+          "alt": "2006考研数学二试卷原页 p.10"
+        },
+        {
+          "src": "question-bank/math2-2006/paper-page-11.jpg",
+          "caption": "试卷原页 p.11",
+          "alt": "2006考研数学二试卷原页 p.11"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2006/answer-page-10.jpg",
+          "caption": "答案解析 p.10",
+          "alt": "2006考研数学二答案解析 p.10"
+        },
+        {
+          "src": "question-bank/math2-2006/answer-page-11.jpg",
+          "caption": "答案解析 p.11",
+          "alt": "2006考研数学二答案解析 p.11"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2006",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:4d7d1849a91fcfcd17324cf312b4764baa1c62e0cf02ff665926e5bdb766c459",
+      "answerTextHash": "sha256:fd3dc2b5b00927a8779dcd31f9d00593d464c881461ff97ad4beb887e263c51a",
+      "sourceEvidence": {
+        "evidenceId": "math2-2006-q21",
+        "sourceId": "src_f49c2de9b3f582d17eea5654",
+        "answerSourceId": "src_f49c2de9b3f582d17eea5654",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2006-paper-answer",
+        "answerEvidenceId": "math2-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:fd3dc2b5b00927a8779dcd31f9d00593d464c881461ff97ad4beb887e263c51a"
+      }
+    },
+    {
+      "id": "math2-2006-022",
+      "number": 22,
+      "paperId": "math2-2006",
+      "paperName": "2006考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2006",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2006考研数学二第22题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "r(A)=2；a=2，b=-3；通解为 k1(-2,1,1,0)^T + k2(4,-5,0,1)^T + (2,-3,0,0)^T。",
+      "explanation": "答案来自本地百度网盘 2006 数学二真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2006/paper-page-11.jpg",
+          "caption": "试卷原页 p.11",
+          "alt": "2006考研数学二试卷原页 p.11"
+        },
+        {
+          "src": "question-bank/math2-2006/paper-page-12.jpg",
+          "caption": "试卷原页 p.12",
+          "alt": "2006考研数学二试卷原页 p.12"
+        },
+        {
+          "src": "question-bank/math2-2006/paper-page-13.jpg",
+          "caption": "试卷原页 p.13",
+          "alt": "2006考研数学二试卷原页 p.13"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2006/answer-page-12.jpg",
+          "caption": "答案解析 p.12",
+          "alt": "2006考研数学二答案解析 p.12"
+        },
+        {
+          "src": "question-bank/math2-2006/answer-page-13.jpg",
+          "caption": "答案解析 p.13",
+          "alt": "2006考研数学二答案解析 p.13"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2006",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:bb8e76f13ef756df475b6ae6d405a14ca118480db95bd8ea3d25aa4b06cdaa91",
+      "answerTextHash": "sha256:50e5bbceb666fa9c3fe0dba665eec479b3587f1a28f90389c5b0e3e150af8d7a",
+      "sourceEvidence": {
+        "evidenceId": "math2-2006-q22",
+        "sourceId": "src_f49c2de9b3f582d17eea5654",
+        "answerSourceId": "src_f49c2de9b3f582d17eea5654",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2006-paper-answer",
+        "answerEvidenceId": "math2-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:50e5bbceb666fa9c3fe0dba665eec479b3587f1a28f90389c5b0e3e150af8d7a"
+      }
+    },
+    {
+      "id": "math2-2006-023",
+      "number": 23,
+      "paperId": "math2-2006",
+      "paperName": "2006考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2006",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2006考研数学二第23题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "特征值为 3,0,0；Q 的列向量可取 (1/sqrt(3),1/sqrt(3),1/sqrt(3))^T、(-1/sqrt(6),2/sqrt(6),-1/sqrt(6))^T、(-1/sqrt(2),0,1/sqrt(2))^T，对角矩阵为 diag(3,0,0)。",
+      "explanation": "答案来自本地百度网盘 2006 数学二真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2006/paper-page-13.jpg",
+          "caption": "试卷原页 p.13",
+          "alt": "2006考研数学二试卷原页 p.13"
+        },
+        {
+          "src": "question-bank/math2-2006/paper-page-14.jpg",
+          "caption": "试卷原页 p.14",
+          "alt": "2006考研数学二试卷原页 p.14"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2006/answer-page-13.jpg",
+          "caption": "答案解析 p.13",
+          "alt": "2006考研数学二答案解析 p.13"
+        },
+        {
+          "src": "question-bank/math2-2006/answer-page-14.jpg",
+          "caption": "答案解析 p.14",
+          "alt": "2006考研数学二答案解析 p.14"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2006",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:0f61ec464178b1be3ede1c44d6cd7a60a358281ac6b2b749e6ce36093b056649",
+      "answerTextHash": "sha256:555a75d944bbd03068c83707365005450aa9c57be3aeb31f3fdd2652dda59d3e",
+      "sourceEvidence": {
+        "evidenceId": "math2-2006-q23",
+        "sourceId": "src_f49c2de9b3f582d17eea5654",
+        "answerSourceId": "src_f49c2de9b3f582d17eea5654",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2006-paper-answer",
+        "answerEvidenceId": "math2-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:555a75d944bbd03068c83707365005450aa9c57be3aeb31f3fdd2652dda59d3e"
+      }
+    }
+  ]
+}
