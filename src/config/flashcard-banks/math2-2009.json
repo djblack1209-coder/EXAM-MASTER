@@ -1,0 +1,1406 @@
+{
+  "id": "math2-2009",
+  "source": "math2-2009-paper-answer",
+  "paperId": "math2-2009",
+  "paperName": "2009考研数学二真题",
+  "subject": "数学",
+  "subjectKey": "math",
+  "track": "math2",
+  "year": "2009",
+  "quality": "ready",
+  "publicationStatus": "published",
+  "publicationBlockers": [],
+  "sourceEvidencePolicy": "baidu_netdisk_official_paper_pdf_page_image_v1",
+  "sourceFiles": [
+    {
+      "id": "math2-2009-paper-answer",
+      "role": "paper_answer",
+      "localPath": "data/raw-inbox/public-course-history/math2/2009/2009-math2-paper-answer.pdf",
+      "sha256": "sha256:f67ef010cb6518419fece8d47e15d993ebc0c5c2962d6d9dfbb7559ab1d8ba8a"
+    }
+  ],
+  "assetRoot": "question-bank/math2-2009",
+  "processed_at": "2026-05-27T17:07:09Z",
+  "total_cards": 23,
+  "cards": [
+    {
+      "id": "math2-2009-001",
+      "number": 1,
+      "paperId": "math2-2009",
+      "paperName": "2009考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2009",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2009考研数学二第1题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2009 数学二真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2009/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2009考研数学二试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2009/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2009考研数学二答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2009",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:adc02880b56a9bb1ddb87a66688d3f0332888a6fb87829eea2522f21bef5c85a",
+      "answerTextHash": "sha256:98d843014fcc06e8c015999ef30423714e3b0fc8d97ddf5a4680ed5e2e3f0339",
+      "sourceEvidence": {
+        "evidenceId": "math2-2009-q01",
+        "sourceId": "src_e68710e55d77aec12d161598",
+        "answerSourceId": "src_e68710e55d77aec12d161598",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2009-paper-answer",
+        "answerEvidenceId": "math2-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:98d843014fcc06e8c015999ef30423714e3b0fc8d97ddf5a4680ed5e2e3f0339"
+      }
+    },
+    {
+      "id": "math2-2009-002",
+      "number": 2,
+      "paperId": "math2-2009",
+      "paperName": "2009考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2009",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2009考研数学二第2题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2009 数学二真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2009/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2009考研数学二试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2009/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2009考研数学二答案解析 p.5"
+        },
+        {
+          "src": "question-bank/math2-2009/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2009考研数学二答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2009",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:b1aa5f002e5bfb95d87d89ef4e3aa07a840c6ef7728a5682c70c22354ee96f25",
+      "answerTextHash": "sha256:dcc748a1c3c46918a0e4ca66a7769ede959ff751792c28a8b389e2d6207706ae",
+      "sourceEvidence": {
+        "evidenceId": "math2-2009-q02",
+        "sourceId": "src_e68710e55d77aec12d161598",
+        "answerSourceId": "src_e68710e55d77aec12d161598",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2009-paper-answer",
+        "answerEvidenceId": "math2-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:dcc748a1c3c46918a0e4ca66a7769ede959ff751792c28a8b389e2d6207706ae"
+      }
+    },
+    {
+      "id": "math2-2009-003",
+      "number": 3,
+      "paperId": "math2-2009",
+      "paperName": "2009考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2009",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2009考研数学二第3题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2009 数学二真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2009/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2009考研数学二试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2009/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2009考研数学二答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2009",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:6b4cbca01360bc1c4355a598e34dbfa5c9d8ebb43415966b46f712449b172d57",
+      "answerTextHash": "sha256:e4a2fe781d79b6ac0d0a57fdf6fcbe5f0bd7d1dfefea384e35b54f195a6a4c7c",
+      "sourceEvidence": {
+        "evidenceId": "math2-2009-q03",
+        "sourceId": "src_e68710e55d77aec12d161598",
+        "answerSourceId": "src_e68710e55d77aec12d161598",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2009-paper-answer",
+        "answerEvidenceId": "math2-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:e4a2fe781d79b6ac0d0a57fdf6fcbe5f0bd7d1dfefea384e35b54f195a6a4c7c"
+      }
+    },
+    {
+      "id": "math2-2009-004",
+      "number": 4,
+      "paperId": "math2-2009",
+      "paperName": "2009考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2009",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2009考研数学二第4题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2009 数学二真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2009/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2009考研数学二试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2009/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2009考研数学二答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2009",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:aebf852853a98b510150e80723191110f0f9cf658182ffecd7da4bb1c22e505a",
+      "answerTextHash": "sha256:4bd414bf1f3c332d5656c55ac398a2d0417431bee33b2bb3c501278c096178b5",
+      "sourceEvidence": {
+        "evidenceId": "math2-2009-q04",
+        "sourceId": "src_e68710e55d77aec12d161598",
+        "answerSourceId": "src_e68710e55d77aec12d161598",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2009-paper-answer",
+        "answerEvidenceId": "math2-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:4bd414bf1f3c332d5656c55ac398a2d0417431bee33b2bb3c501278c096178b5"
+      }
+    },
+    {
+      "id": "math2-2009-005",
+      "number": 5,
+      "paperId": "math2-2009",
+      "paperName": "2009考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2009",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2009考研数学二第5题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2009 数学二真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2009/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2009考研数学二试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2009/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2009考研数学二答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2009",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:0d9a4707d24f2ba3f2a40fe52d9c72f52e4170f628507efd2561243c59b28b52",
+      "answerTextHash": "sha256:48a655724228f727dcd7f827c2a466e9941da8c76ac17f8df2a224b305cd0de5",
+      "sourceEvidence": {
+        "evidenceId": "math2-2009-q05",
+        "sourceId": "src_e68710e55d77aec12d161598",
+        "answerSourceId": "src_e68710e55d77aec12d161598",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2009-paper-answer",
+        "answerEvidenceId": "math2-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:48a655724228f727dcd7f827c2a466e9941da8c76ac17f8df2a224b305cd0de5"
+      }
+    },
+    {
+      "id": "math2-2009-006",
+      "number": 6,
+      "paperId": "math2-2009",
+      "paperName": "2009考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2009",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2009考研数学二第6题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2009 数学二真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2009/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2009考研数学二试卷原页 p.1"
+        },
+        {
+          "src": "question-bank/math2-2009/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2009考研数学二试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2009/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2009考研数学二答案解析 p.7"
+        },
+        {
+          "src": "question-bank/math2-2009/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2009考研数学二答案解析 p.8"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2009",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:81fb9eb20125f9385e8e68f42057025bc3fe38577e6acd3d8db55d827bbbea5c",
+      "answerTextHash": "sha256:6214c3f9247b605e12ff2f241955108931a4d5b8cd71c114860b5974d12c1b13",
+      "sourceEvidence": {
+        "evidenceId": "math2-2009-q06",
+        "sourceId": "src_e68710e55d77aec12d161598",
+        "answerSourceId": "src_e68710e55d77aec12d161598",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2009-paper-answer",
+        "answerEvidenceId": "math2-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:6214c3f9247b605e12ff2f241955108931a4d5b8cd71c114860b5974d12c1b13"
+      }
+    },
+    {
+      "id": "math2-2009-007",
+      "number": 7,
+      "paperId": "math2-2009",
+      "paperName": "2009考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2009",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2009考研数学二第7题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2009 数学二真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2009/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2009考研数学二试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2009/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2009考研数学二答案解析 p.8"
+        },
+        {
+          "src": "question-bank/math2-2009/answer-page-09.jpg",
+          "caption": "答案解析 p.9",
+          "alt": "2009考研数学二答案解析 p.9"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2009",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:cd20c1da29212a6db3311dc3dd571e9970c34c2a362a70657c390194153887b3",
+      "answerTextHash": "sha256:1d36232c99746bd3f839787a32e5e04ac67041510b0d5e853b80487cb576a47c",
+      "sourceEvidence": {
+        "evidenceId": "math2-2009-q07",
+        "sourceId": "src_e68710e55d77aec12d161598",
+        "answerSourceId": "src_e68710e55d77aec12d161598",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2009-paper-answer",
+        "answerEvidenceId": "math2-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:1d36232c99746bd3f839787a32e5e04ac67041510b0d5e853b80487cb576a47c"
+      }
+    },
+    {
+      "id": "math2-2009-008",
+      "number": 8,
+      "paperId": "math2-2009",
+      "paperName": "2009考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2009",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2009考研数学二第8题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2009 数学二真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2009/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2009考研数学二试卷原页 p.2"
+        },
+        {
+          "src": "question-bank/math2-2009/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2009考研数学二试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2009/answer-page-09.jpg",
+          "caption": "答案解析 p.9",
+          "alt": "2009考研数学二答案解析 p.9"
+        },
+        {
+          "src": "question-bank/math2-2009/answer-page-10.jpg",
+          "caption": "答案解析 p.10",
+          "alt": "2009考研数学二答案解析 p.10"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2009",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:8135248264b3887f2cd6b4a34cda35ed9d471ce0cf6b2d6be6b1245a2f3c634f",
+      "answerTextHash": "sha256:34434619dd9db0900cf8d723a6bd75aa80680febe6913acfe53165497d60682b",
+      "sourceEvidence": {
+        "evidenceId": "math2-2009-q08",
+        "sourceId": "src_e68710e55d77aec12d161598",
+        "answerSourceId": "src_e68710e55d77aec12d161598",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2009-paper-answer",
+        "answerEvidenceId": "math2-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:34434619dd9db0900cf8d723a6bd75aa80680febe6913acfe53165497d60682b"
+      }
+    },
+    {
+      "id": "math2-2009-009",
+      "number": 9,
+      "paperId": "math2-2009",
+      "paperName": "2009考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2009",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2009考研数学二第9题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "y = 2x",
+      "explanation": "答案来自本地百度网盘 2009 数学二真题及解析 PDF；完整题干和公式见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2009/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2009考研数学二试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2009/answer-page-10.jpg",
+          "caption": "答案解析 p.10",
+          "alt": "2009考研数学二答案解析 p.10"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2009",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:f6ca92d0a848515787862ab6aeb53331713a1f73ea77f54fb994d617bf16a09b",
+      "answerTextHash": "sha256:ae6f5bafb23d875ac9a1a3543438d98f779753e802703a4ef80da68a241b8f0a",
+      "sourceEvidence": {
+        "evidenceId": "math2-2009-q09",
+        "sourceId": "src_e68710e55d77aec12d161598",
+        "answerSourceId": "src_e68710e55d77aec12d161598",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2009-paper-answer",
+        "answerEvidenceId": "math2-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:ae6f5bafb23d875ac9a1a3543438d98f779753e802703a4ef80da68a241b8f0a"
+      }
+    },
+    {
+      "id": "math2-2009-010",
+      "number": 10,
+      "paperId": "math2-2009",
+      "paperName": "2009考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2009",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2009考研数学二第10题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "-2",
+      "explanation": "答案来自本地百度网盘 2009 数学二真题及解析 PDF；完整题干和公式见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2009/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2009考研数学二试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2009/answer-page-10.jpg",
+          "caption": "答案解析 p.10",
+          "alt": "2009考研数学二答案解析 p.10"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2009",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:91d76d2a8639f1929f9e6882550a5cd2dced96fce099426947c21a213ab0eb0f",
+      "answerTextHash": "sha256:b4fa22ea7704e52ddc594f713736cbd2d2190f18f1969cfa85f6393a2d785c10",
+      "sourceEvidence": {
+        "evidenceId": "math2-2009-q10",
+        "sourceId": "src_e68710e55d77aec12d161598",
+        "answerSourceId": "src_e68710e55d77aec12d161598",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2009-paper-answer",
+        "answerEvidenceId": "math2-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:b4fa22ea7704e52ddc594f713736cbd2d2190f18f1969cfa85f6393a2d785c10"
+      }
+    },
+    {
+      "id": "math2-2009-011",
+      "number": 11,
+      "paperId": "math2-2009",
+      "paperName": "2009考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2009",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2009考研数学二第11题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "0",
+      "explanation": "答案来自本地百度网盘 2009 数学二真题及解析 PDF；完整题干和公式见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2009/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2009考研数学二试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2009/answer-page-10.jpg",
+          "caption": "答案解析 p.10",
+          "alt": "2009考研数学二答案解析 p.10"
+        },
+        {
+          "src": "question-bank/math2-2009/answer-page-11.jpg",
+          "caption": "答案解析 p.11",
+          "alt": "2009考研数学二答案解析 p.11"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2009",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:0d423fe2b815f35739873897a3822124d0910abcecbde0a3ba33e7429a409f6c",
+      "answerTextHash": "sha256:35af9e104a9ad92f816cff99f023ad02862615fbd9b7a95c308f440911f52c2d",
+      "sourceEvidence": {
+        "evidenceId": "math2-2009-q11",
+        "sourceId": "src_e68710e55d77aec12d161598",
+        "answerSourceId": "src_e68710e55d77aec12d161598",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2009-paper-answer",
+        "answerEvidenceId": "math2-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:35af9e104a9ad92f816cff99f023ad02862615fbd9b7a95c308f440911f52c2d"
+      }
+    },
+    {
+      "id": "math2-2009-012",
+      "number": 12,
+      "paperId": "math2-2009",
+      "paperName": "2009考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2009",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2009考研数学二第12题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "-3",
+      "explanation": "答案来自本地百度网盘 2009 数学二真题及解析 PDF；完整题干和公式见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2009/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2009考研数学二试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2009/answer-page-11.jpg",
+          "caption": "答案解析 p.11",
+          "alt": "2009考研数学二答案解析 p.11"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2009",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:82cf074ca17a2246c2f39687e8641e1a590902fc22ae496f70377a7864ba8a65",
+      "answerTextHash": "sha256:c72b322a13b65e55e807e386b72f04f481d7c1e327a6ea287c6b978a4b502d78",
+      "sourceEvidence": {
+        "evidenceId": "math2-2009-q12",
+        "sourceId": "src_e68710e55d77aec12d161598",
+        "answerSourceId": "src_e68710e55d77aec12d161598",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2009-paper-answer",
+        "answerEvidenceId": "math2-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:c72b322a13b65e55e807e386b72f04f481d7c1e327a6ea287c6b978a4b502d78"
+      }
+    },
+    {
+      "id": "math2-2009-013",
+      "number": 13,
+      "paperId": "math2-2009",
+      "paperName": "2009考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2009",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2009考研数学二第13题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "e^(-2/e)",
+      "explanation": "答案来自本地百度网盘 2009 数学二真题及解析 PDF；完整题干和公式见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2009/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2009考研数学二试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2009/answer-page-11.jpg",
+          "caption": "答案解析 p.11",
+          "alt": "2009考研数学二答案解析 p.11"
+        },
+        {
+          "src": "question-bank/math2-2009/answer-page-12.jpg",
+          "caption": "答案解析 p.12",
+          "alt": "2009考研数学二答案解析 p.12"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2009",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:38b40ef7720d65a472ca9fbf405106c2261227b4a4de97d9a95717b91bf9a7a1",
+      "answerTextHash": "sha256:96c2963d7f1e7733cf4855abd93db6f1b9cbf59f96ee854d852fcca38ef62559",
+      "sourceEvidence": {
+        "evidenceId": "math2-2009-q13",
+        "sourceId": "src_e68710e55d77aec12d161598",
+        "answerSourceId": "src_e68710e55d77aec12d161598",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2009-paper-answer",
+        "answerEvidenceId": "math2-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:96c2963d7f1e7733cf4855abd93db6f1b9cbf59f96ee854d852fcca38ef62559"
+      }
+    },
+    {
+      "id": "math2-2009-014",
+      "number": 14,
+      "paperId": "math2-2009",
+      "paperName": "2009考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2009",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2009考研数学二第14题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "2",
+      "explanation": "答案来自本地百度网盘 2009 数学二真题及解析 PDF；完整题干和公式见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2009/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2009考研数学二试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2009/answer-page-12.jpg",
+          "caption": "答案解析 p.12",
+          "alt": "2009考研数学二答案解析 p.12"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2009",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:847ac9514c07b205a7ad0bdee37a137e4105c97d4554c2e8dd532a8c0461e06f",
+      "answerTextHash": "sha256:efb6646e6cab925cd51febbc67ca624b3b865791cb1556efab52658c28d32971",
+      "sourceEvidence": {
+        "evidenceId": "math2-2009-q14",
+        "sourceId": "src_e68710e55d77aec12d161598",
+        "answerSourceId": "src_e68710e55d77aec12d161598",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2009-paper-answer",
+        "answerEvidenceId": "math2-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:efb6646e6cab925cd51febbc67ca624b3b865791cb1556efab52658c28d32971"
+      }
+    },
+    {
+      "id": "math2-2009-015",
+      "number": 15,
+      "paperId": "math2-2009",
+      "paperName": "2009考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2009",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2009考研数学二第15题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "极限值为 1/4。",
+      "explanation": "答案来自本地百度网盘 2009 数学二真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2009/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2009考研数学二试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2009/answer-page-12.jpg",
+          "caption": "答案解析 p.12",
+          "alt": "2009考研数学二答案解析 p.12"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2009",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:0d36f6edc9860cbd49957a60cc0f54a3d4cc4b758560f6464a22d3a0fd267c52",
+      "answerTextHash": "sha256:427ba235f51026bf1329b7703f954215401c466ec0cbc4f4e5df1055e1089e97",
+      "sourceEvidence": {
+        "evidenceId": "math2-2009-q15",
+        "sourceId": "src_e68710e55d77aec12d161598",
+        "answerSourceId": "src_e68710e55d77aec12d161598",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2009-paper-answer",
+        "answerEvidenceId": "math2-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:427ba235f51026bf1329b7703f954215401c466ec0cbc4f4e5df1055e1089e97"
+      }
+    },
+    {
+      "id": "math2-2009-016",
+      "number": 16,
+      "paperId": "math2-2009",
+      "paperName": "2009考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2009",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2009考研数学二第16题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "不定积分的原函数表达式见答案原页。",
+      "explanation": "答案来自本地百度网盘 2009 数学二真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2009/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2009考研数学二试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2009/answer-page-12.jpg",
+          "caption": "答案解析 p.12",
+          "alt": "2009考研数学二答案解析 p.12"
+        },
+        {
+          "src": "question-bank/math2-2009/answer-page-13.jpg",
+          "caption": "答案解析 p.13",
+          "alt": "2009考研数学二答案解析 p.13"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2009",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:f70472431ef575977e2a53f987e5f3d856ce9e6fb478c44428090b82e124e366",
+      "answerTextHash": "sha256:fb38bb7cc4fb9799dcabbf16108136545032a2a95e373b70c09f7a010862d08b",
+      "sourceEvidence": {
+        "evidenceId": "math2-2009-q16",
+        "sourceId": "src_e68710e55d77aec12d161598",
+        "answerSourceId": "src_e68710e55d77aec12d161598",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2009-paper-answer",
+        "answerEvidenceId": "math2-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:fb38bb7cc4fb9799dcabbf16108136545032a2a95e373b70c09f7a010862d08b"
+      }
+    },
+    {
+      "id": "math2-2009-017",
+      "number": 17,
+      "paperId": "math2-2009",
+      "paperName": "2009考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2009",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2009考研数学二第17题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "全微分与二阶混合偏导表达式见答案原页。",
+      "explanation": "答案来自本地百度网盘 2009 数学二真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2009/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2009考研数学二试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2009/answer-page-13.jpg",
+          "caption": "答案解析 p.13",
+          "alt": "2009考研数学二答案解析 p.13"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2009",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:02dadd3820b8c0e7bcc85890703ecd4923e58bb6a55f4b714aaec42813b1fcba",
+      "answerTextHash": "sha256:6c1e1dcd13e217219d7cb130578cd55b45b3f066c4db1a925fb0bc3c9c03f30d",
+      "sourceEvidence": {
+        "evidenceId": "math2-2009-q17",
+        "sourceId": "src_e68710e55d77aec12d161598",
+        "answerSourceId": "src_e68710e55d77aec12d161598",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2009-paper-answer",
+        "answerEvidenceId": "math2-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:6c1e1dcd13e217219d7cb130578cd55b45b3f066c4db1a925fb0bc3c9c03f30d"
+      }
+    },
+    {
+      "id": "math2-2009-018",
+      "number": 18,
+      "paperId": "math2-2009",
+      "paperName": "2009考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2009",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2009考研数学二第18题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "旋转体体积为 17π/6；通解与面积条件推导见答案原页。",
+      "explanation": "答案来自本地百度网盘 2009 数学二真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2009/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2009考研数学二试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2009/answer-page-13.jpg",
+          "caption": "答案解析 p.13",
+          "alt": "2009考研数学二答案解析 p.13"
+        },
+        {
+          "src": "question-bank/math2-2009/answer-page-14.jpg",
+          "caption": "答案解析 p.14",
+          "alt": "2009考研数学二答案解析 p.14"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2009",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:9c1c2fbc4925b949158d82be6e3000a66c22d4266248e1e15bbb0884bb098dbb",
+      "answerTextHash": "sha256:3ff47b862d531bf110ad4289fb7412a5a8d259b2e3cfc0aa436b54613c693d94",
+      "sourceEvidence": {
+        "evidenceId": "math2-2009-q18",
+        "sourceId": "src_e68710e55d77aec12d161598",
+        "answerSourceId": "src_e68710e55d77aec12d161598",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2009-paper-answer",
+        "answerEvidenceId": "math2-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:3ff47b862d531bf110ad4289fb7412a5a8d259b2e3cfc0aa436b54613c693d94"
+      }
+    },
+    {
+      "id": "math2-2009-019",
+      "number": 19,
+      "paperId": "math2-2009",
+      "paperName": "2009考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2009",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2009考研数学二第19题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "二重积分值为 -8/3。",
+      "explanation": "答案来自本地百度网盘 2009 数学二真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2009/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2009考研数学二试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2009/answer-page-14.jpg",
+          "caption": "答案解析 p.14",
+          "alt": "2009考研数学二答案解析 p.14"
+        },
+        {
+          "src": "question-bank/math2-2009/answer-page-15.jpg",
+          "caption": "答案解析 p.15",
+          "alt": "2009考研数学二答案解析 p.15"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2009",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:a89de283867773d43947fa6e17f68ec7798bc89846b0c737ed8408408b806328",
+      "answerTextHash": "sha256:a3cfd3d9e96530f868ed7455d5f74dfa69f4e51158669db4e3803f49835eaf71",
+      "sourceEvidence": {
+        "evidenceId": "math2-2009-q19",
+        "sourceId": "src_e68710e55d77aec12d161598",
+        "answerSourceId": "src_e68710e55d77aec12d161598",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2009-paper-answer",
+        "answerEvidenceId": "math2-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:a3cfd3d9e96530f868ed7455d5f74dfa69f4e51158669db4e3803f49835eaf71"
+      }
+    },
+    {
+      "id": "math2-2009-020",
+      "number": 20,
+      "paperId": "math2-2009",
+      "paperName": "2009考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2009",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2009考研数学二第20题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "分段函数 y(x) 的表达式见答案原页。",
+      "explanation": "答案来自本地百度网盘 2009 数学二真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2009/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2009考研数学二试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2009/answer-page-15.jpg",
+          "caption": "答案解析 p.15",
+          "alt": "2009考研数学二答案解析 p.15"
+        },
+        {
+          "src": "question-bank/math2-2009/answer-page-16.jpg",
+          "caption": "答案解析 p.16",
+          "alt": "2009考研数学二答案解析 p.16"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2009",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:1a3deff5a887b839ce13ecfb0a350140aeedc07353dc00dea9f1f8cd9db1773f",
+      "answerTextHash": "sha256:9597132c8dbc8fbb692e8426a452dd2b84269090fb73880976d9c22909efcdf4",
+      "sourceEvidence": {
+        "evidenceId": "math2-2009-q20",
+        "sourceId": "src_e68710e55d77aec12d161598",
+        "answerSourceId": "src_e68710e55d77aec12d161598",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2009-paper-answer",
+        "answerEvidenceId": "math2-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:9597132c8dbc8fbb692e8426a452dd2b84269090fb73880976d9c22909efcdf4"
+      }
+    },
+    {
+      "id": "math2-2009-021",
+      "number": 21,
+      "paperId": "math2-2009",
+      "paperName": "2009考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2009",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2009考研数学二第21题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "拉格朗日中值定理证明及 f'(0)=A 的证明见答案原页。",
+      "explanation": "答案来自本地百度网盘 2009 数学二真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2009/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2009考研数学二试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2009/answer-page-16.jpg",
+          "caption": "答案解析 p.16",
+          "alt": "2009考研数学二答案解析 p.16"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2009",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:7448c86b8f74533da511b261462ded888e94f915549d8e0cd04c3ce0eaed4c02",
+      "answerTextHash": "sha256:8a5bebb25dbb61160e5f5c86316c6af5b193bb2b6aa9efe778e3642ccc5f09eb",
+      "sourceEvidence": {
+        "evidenceId": "math2-2009-q21",
+        "sourceId": "src_e68710e55d77aec12d161598",
+        "answerSourceId": "src_e68710e55d77aec12d161598",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2009-paper-answer",
+        "answerEvidenceId": "math2-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:8a5bebb25dbb61160e5f5c86316c6af5b193bb2b6aa9efe778e3642ccc5f09eb"
+      }
+    },
+    {
+      "id": "math2-2009-022",
+      "number": 22,
+      "paperId": "math2-2009",
+      "paperName": "2009考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2009",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2009考研数学二第22题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "两个线性方程组的解向量与线性无关证明见答案原页。",
+      "explanation": "答案来自本地百度网盘 2009 数学二真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2009/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2009考研数学二试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2009/answer-page-16.jpg",
+          "caption": "答案解析 p.16",
+          "alt": "2009考研数学二答案解析 p.16"
+        },
+        {
+          "src": "question-bank/math2-2009/answer-page-17.jpg",
+          "caption": "答案解析 p.17",
+          "alt": "2009考研数学二答案解析 p.17"
+        },
+        {
+          "src": "question-bank/math2-2009/answer-page-18.jpg",
+          "caption": "答案解析 p.18",
+          "alt": "2009考研数学二答案解析 p.18"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2009",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:cfc4686bf93756d9c0b845977035cab52a349fe5185315a250330600eff26b1d",
+      "answerTextHash": "sha256:304c8fc68437b044a4801743b974c6245774039402e5f142261e918fd4007c86",
+      "sourceEvidence": {
+        "evidenceId": "math2-2009-q22",
+        "sourceId": "src_e68710e55d77aec12d161598",
+        "answerSourceId": "src_e68710e55d77aec12d161598",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2009-paper-answer",
+        "answerEvidenceId": "math2-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:304c8fc68437b044a4801743b974c6245774039402e5f142261e918fd4007c86"
+      }
+    },
+    {
+      "id": "math2-2009-023",
+      "number": 23,
+      "paperId": "math2-2009",
+      "paperName": "2009考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2009",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2009考研数学二第23题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "二次型矩阵特征值为 a、a-2、a+1；规范形条件下 a=2。",
+      "explanation": "答案来自本地百度网盘 2009 数学二真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2009/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2009考研数学二试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2009/answer-page-18.jpg",
+          "caption": "答案解析 p.18",
+          "alt": "2009考研数学二答案解析 p.18"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2009",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:ebf244ca1f9de8e7bebbde701f9bd898c9594ebb37da3308fa2ff67329d6ecfb",
+      "answerTextHash": "sha256:c7cf86469b5eb65b66511111d4180223c24d653e7b3fed8e5a4cb520cebc8c22",
+      "sourceEvidence": {
+        "evidenceId": "math2-2009-q23",
+        "sourceId": "src_e68710e55d77aec12d161598",
+        "answerSourceId": "src_e68710e55d77aec12d161598",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2009-paper-answer",
+        "answerEvidenceId": "math2-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:c7cf86469b5eb65b66511111d4180223c24d653e7b3fed8e5a4cb520cebc8c22"
+      }
+    }
+  ]
+}

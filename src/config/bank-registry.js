@@ -511,6 +511,21 @@ const BANK_REGISTRY = [
     loader: () => import('./flashcard-banks/math2-2008.json')
   },
   {
+    id: 'math2-2009',
+    subject: '数学',
+    subjectKey: 'math',
+    track: 'math2',
+    year: '2009',
+    name: '2009考研数学二真题',
+    description: '8道选择 + 6道填空 + 9道解答题',
+    releaseLabel: '正式题库',
+    caution: '按本地百度网盘 2009 数学二真题及解析 PDF 页图训练；答案键和解答页已通过本地 OCR/渲染页确认',
+    paperType: 'past_exam',
+    quality: PAPER_QUALITY.READY,
+    sections: paperSections('选择题', '填空题', '解答题'),
+    loader: () => import('./flashcard-banks/math2-2009.json')
+  },
+  {
     id: 'math3-2005',
     subject: '数学',
     subjectKey: 'math',
