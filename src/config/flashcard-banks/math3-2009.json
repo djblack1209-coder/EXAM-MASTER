@@ -1,0 +1,1397 @@
+{
+  "id": "math3-2009",
+  "source": "math3-2009-paper-answer",
+  "paperId": "math3-2009",
+  "paperName": "2009考研数学三真题",
+  "subject": "数学",
+  "subjectKey": "math",
+  "track": "math3",
+  "year": "2009",
+  "quality": "ready",
+  "publicationStatus": "published",
+  "publicationBlockers": [],
+  "sourceEvidencePolicy": "baidu_netdisk_official_paper_pdf_page_image_v1",
+  "sourceFiles": [
+    {
+      "id": "math3-2009-paper-answer",
+      "role": "paper_answer",
+      "localPath": "data/raw-inbox/public-course-history/math3/2009/2009-math3-paper-answer.pdf",
+      "sha256": "sha256:4b92aa19a03c3191accf7a92c76bec0eedd44b7de89c8624c93a3d650e5cdffb",
+      "sourceId": "src_d7e5f5b83685d62fcc2ad61a"
+    }
+  ],
+  "assetRoot": "question-bank/math3-2009",
+  "processed_at": "2026-05-27T22:06:46Z",
+  "total_cards": 23,
+  "cards": [
+    {
+      "id": "math3-2009-001",
+      "number": 1,
+      "paperId": "math3-2009",
+      "paperName": "2009考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2009",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2009考研数学三第1题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2009 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2009/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2009考研数学三试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2009/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2009考研数学三答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2009",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:214daf4ed91b04d65123170bb9a698bbc3b451f2caea2d95cdba96921aad76c3",
+      "answerTextHash": "sha256:98d843014fcc06e8c015999ef30423714e3b0fc8d97ddf5a4680ed5e2e3f0339",
+      "sourceEvidence": {
+        "evidenceId": "math3-2009-q01",
+        "sourceId": "src_d7e5f5b83685d62fcc2ad61a",
+        "answerSourceId": "src_d7e5f5b83685d62fcc2ad61a",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2009-paper-answer",
+        "answerEvidenceId": "math3-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:98d843014fcc06e8c015999ef30423714e3b0fc8d97ddf5a4680ed5e2e3f0339"
+      }
+    },
+    {
+      "id": "math3-2009-002",
+      "number": 2,
+      "paperId": "math3-2009",
+      "paperName": "2009考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2009",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2009考研数学三第2题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2009 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2009/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2009考研数学三试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2009/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2009考研数学三答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2009",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:e3ee7f26427aced747b2356bb8d4fd74c3a9259d621e4d45d0c5ea7a6dcf8c9a",
+      "answerTextHash": "sha256:7e89265d7268b43fc3379f8365eab4dd2ea97698a375e1f59cea607b2aeced60",
+      "sourceEvidence": {
+        "evidenceId": "math3-2009-q02",
+        "sourceId": "src_d7e5f5b83685d62fcc2ad61a",
+        "answerSourceId": "src_d7e5f5b83685d62fcc2ad61a",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2009-paper-answer",
+        "answerEvidenceId": "math3-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:7e89265d7268b43fc3379f8365eab4dd2ea97698a375e1f59cea607b2aeced60"
+      }
+    },
+    {
+      "id": "math3-2009-003",
+      "number": 3,
+      "paperId": "math3-2009",
+      "paperName": "2009考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2009",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2009考研数学三第3题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2009 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2009/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2009考研数学三试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2009/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2009考研数学三答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2009",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:ef50351ff156b919b8f1a87df5b781c2fc337582b96138ac49c0b2acd067ed86",
+      "answerTextHash": "sha256:4209b11a0436dfb93acf2c09f66665ad24b609a48058f6de76eacd161bca58d7",
+      "sourceEvidence": {
+        "evidenceId": "math3-2009-q03",
+        "sourceId": "src_d7e5f5b83685d62fcc2ad61a",
+        "answerSourceId": "src_d7e5f5b83685d62fcc2ad61a",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2009-paper-answer",
+        "answerEvidenceId": "math3-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:4209b11a0436dfb93acf2c09f66665ad24b609a48058f6de76eacd161bca58d7"
+      }
+    },
+    {
+      "id": "math3-2009-004",
+      "number": 4,
+      "paperId": "math3-2009",
+      "paperName": "2009考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2009",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2009考研数学三第4题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2009 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2009/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2009考研数学三试卷原页 p.1"
+        },
+        {
+          "src": "question-bank/math3-2009/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2009考研数学三试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2009/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2009考研数学三答案解析 p.6"
+        },
+        {
+          "src": "question-bank/math3-2009/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2009考研数学三答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2009",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:01c331e3bd97232583ecd3c21b09cc2b5b48e7fef7e65f8fd021af21443373ea",
+      "answerTextHash": "sha256:c91e3595579e7b88a5c1b3824141098d686b64257a72955b90dd239665d9b745",
+      "sourceEvidence": {
+        "evidenceId": "math3-2009-q04",
+        "sourceId": "src_d7e5f5b83685d62fcc2ad61a",
+        "answerSourceId": "src_d7e5f5b83685d62fcc2ad61a",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2009-paper-answer",
+        "answerEvidenceId": "math3-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:c91e3595579e7b88a5c1b3824141098d686b64257a72955b90dd239665d9b745"
+      }
+    },
+    {
+      "id": "math3-2009-005",
+      "number": 5,
+      "paperId": "math3-2009",
+      "paperName": "2009考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2009",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2009考研数学三第5题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2009 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2009/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2009考研数学三试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2009/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2009考研数学三答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2009",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:4ecdcd97805ec3ceb380e9a7fb7de84d973d8f7e90300c1713bad54bb5824beb",
+      "answerTextHash": "sha256:48a655724228f727dcd7f827c2a466e9941da8c76ac17f8df2a224b305cd0de5",
+      "sourceEvidence": {
+        "evidenceId": "math3-2009-q05",
+        "sourceId": "src_d7e5f5b83685d62fcc2ad61a",
+        "answerSourceId": "src_d7e5f5b83685d62fcc2ad61a",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2009-paper-answer",
+        "answerEvidenceId": "math3-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:48a655724228f727dcd7f827c2a466e9941da8c76ac17f8df2a224b305cd0de5"
+      }
+    },
+    {
+      "id": "math3-2009-006",
+      "number": 6,
+      "paperId": "math3-2009",
+      "paperName": "2009考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2009",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2009考研数学三第6题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2009 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2009/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2009考研数学三试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2009/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2009考研数学三答案解析 p.8"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2009",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:090926d6604cbace5f033e95f7fdccfcfc5d48b85fc762cd2a9ce1cf8c9f449b",
+      "answerTextHash": "sha256:79b4dd52e0f1df0124c278028b54043cc0eccda0cd09bcdae3d4731743bb00b3",
+      "sourceEvidence": {
+        "evidenceId": "math3-2009-q06",
+        "sourceId": "src_d7e5f5b83685d62fcc2ad61a",
+        "answerSourceId": "src_d7e5f5b83685d62fcc2ad61a",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2009-paper-answer",
+        "answerEvidenceId": "math3-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:79b4dd52e0f1df0124c278028b54043cc0eccda0cd09bcdae3d4731743bb00b3"
+      }
+    },
+    {
+      "id": "math3-2009-007",
+      "number": 7,
+      "paperId": "math3-2009",
+      "paperName": "2009考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2009",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2009考研数学三第7题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2009 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2009/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2009考研数学三试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2009/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2009考研数学三答案解析 p.8"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2009",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:36034ba28134e6b1e93fce2617971b3ec2034715f5b76506f9f91ac882c94973",
+      "answerTextHash": "sha256:8ccfc172b695f8d6a000c1c75ace6c4a712a2450b5b8333f7fdade7ccc2bae06",
+      "sourceEvidence": {
+        "evidenceId": "math3-2009-q07",
+        "sourceId": "src_d7e5f5b83685d62fcc2ad61a",
+        "answerSourceId": "src_d7e5f5b83685d62fcc2ad61a",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2009-paper-answer",
+        "answerEvidenceId": "math3-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:8ccfc172b695f8d6a000c1c75ace6c4a712a2450b5b8333f7fdade7ccc2bae06"
+      }
+    },
+    {
+      "id": "math3-2009-008",
+      "number": 8,
+      "paperId": "math3-2009",
+      "paperName": "2009考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2009",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2009考研数学三第8题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2009 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2009/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2009考研数学三试卷原页 p.2"
+        },
+        {
+          "src": "question-bank/math3-2009/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2009考研数学三试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2009/answer-page-09.jpg",
+          "caption": "答案解析 p.9",
+          "alt": "2009考研数学三答案解析 p.9"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2009",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:bc473c04b3c0ce46748f36dd8a3e9e35e905010bd2928bca06af73744397c408",
+      "answerTextHash": "sha256:855f6df8c0605ae56e468abee0b0ad01258b607f6abb517949c2c19fafbc2955",
+      "sourceEvidence": {
+        "evidenceId": "math3-2009-q08",
+        "sourceId": "src_d7e5f5b83685d62fcc2ad61a",
+        "answerSourceId": "src_d7e5f5b83685d62fcc2ad61a",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2009-paper-answer",
+        "answerEvidenceId": "math3-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:855f6df8c0605ae56e468abee0b0ad01258b607f6abb517949c2c19fafbc2955"
+      }
+    },
+    {
+      "id": "math3-2009-009",
+      "number": 9,
+      "paperId": "math3-2009",
+      "paperName": "2009考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2009",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2009考研数学三第9题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "3e / 2",
+      "explanation": "答案来自本地百度网盘 2009 数学三真题及解析 PDF；完整题干、公式和解析见原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2009/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2009考研数学三试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2009/answer-page-09.jpg",
+          "caption": "答案解析 p.9",
+          "alt": "2009考研数学三答案解析 p.9"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2009",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:0ccd9cd2a2b056c36eb608aed4662e461327768b93d22dbc73529d51878740fd",
+      "answerTextHash": "sha256:72efe41a403b081d89e8d68628e0d145706665bd63de44809062289c65524a48",
+      "sourceEvidence": {
+        "evidenceId": "math3-2009-q09",
+        "sourceId": "src_d7e5f5b83685d62fcc2ad61a",
+        "answerSourceId": "src_d7e5f5b83685d62fcc2ad61a",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2009-paper-answer",
+        "answerEvidenceId": "math3-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:72efe41a403b081d89e8d68628e0d145706665bd63de44809062289c65524a48"
+      }
+    },
+    {
+      "id": "math3-2009-010",
+      "number": 10,
+      "paperId": "math3-2009",
+      "paperName": "2009考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2009",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2009考研数学三第10题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "2 ln 2 + 1",
+      "explanation": "答案来自本地百度网盘 2009 数学三真题及解析 PDF；完整题干、公式和解析见原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2009/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2009考研数学三试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2009/answer-page-09.jpg",
+          "caption": "答案解析 p.9",
+          "alt": "2009考研数学三答案解析 p.9"
+        },
+        {
+          "src": "question-bank/math3-2009/answer-page-10.jpg",
+          "caption": "答案解析 p.10",
+          "alt": "2009考研数学三答案解析 p.10"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2009",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:60f7351147e89b346d83ea1ce582b4fcb416c4067b1ef99003fb3e1571098a0b",
+      "answerTextHash": "sha256:d919ba341b57dd74b2876e54cc95e26547a9f962b56929397fcdadae8791b11a",
+      "sourceEvidence": {
+        "evidenceId": "math3-2009-q10",
+        "sourceId": "src_d7e5f5b83685d62fcc2ad61a",
+        "answerSourceId": "src_d7e5f5b83685d62fcc2ad61a",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2009-paper-answer",
+        "answerEvidenceId": "math3-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:d919ba341b57dd74b2876e54cc95e26547a9f962b56929397fcdadae8791b11a"
+      }
+    },
+    {
+      "id": "math3-2009-011",
+      "number": 11,
+      "paperId": "math3-2009",
+      "paperName": "2009考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2009",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2009考研数学三第11题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "1 / e",
+      "explanation": "答案来自本地百度网盘 2009 数学三真题及解析 PDF；完整题干、公式和解析见原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2009/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2009考研数学三试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2009/answer-page-10.jpg",
+          "caption": "答案解析 p.10",
+          "alt": "2009考研数学三答案解析 p.10"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2009",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:5223ac42e01ebc77cb509eaf2dbbafeddafc211c32472bbfbc30e59c8e99b71e",
+      "answerTextHash": "sha256:b39061061c7dfba730d339a904d2fe668f63b4100c73eb6db2347c34c098981e",
+      "sourceEvidence": {
+        "evidenceId": "math3-2009-q11",
+        "sourceId": "src_d7e5f5b83685d62fcc2ad61a",
+        "answerSourceId": "src_d7e5f5b83685d62fcc2ad61a",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2009-paper-answer",
+        "answerEvidenceId": "math3-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:b39061061c7dfba730d339a904d2fe668f63b4100c73eb6db2347c34c098981e"
+      }
+    },
+    {
+      "id": "math3-2009-012",
+      "number": 12,
+      "paperId": "math3-2009",
+      "paperName": "2009考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2009",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2009考研数学三第12题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "8000",
+      "explanation": "答案来自本地百度网盘 2009 数学三真题及解析 PDF；完整题干、公式和解析见原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2009/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2009考研数学三试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2009/answer-page-10.jpg",
+          "caption": "答案解析 p.10",
+          "alt": "2009考研数学三答案解析 p.10"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2009",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:899b79fc42ba04df5f3b4142b2c191773e8be2426b6d96f340f16e3e441eb483",
+      "answerTextHash": "sha256:201cc1149e8be88aa087ad21b26a5ef07e014ec986f4f06c43577c860150352c",
+      "sourceEvidence": {
+        "evidenceId": "math3-2009-q12",
+        "sourceId": "src_d7e5f5b83685d62fcc2ad61a",
+        "answerSourceId": "src_d7e5f5b83685d62fcc2ad61a",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2009-paper-answer",
+        "answerEvidenceId": "math3-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:201cc1149e8be88aa087ad21b26a5ef07e014ec986f4f06c43577c860150352c"
+      }
+    },
+    {
+      "id": "math3-2009-013",
+      "number": 13,
+      "paperId": "math3-2009",
+      "paperName": "2009考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2009",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2009考研数学三第13题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "2",
+      "explanation": "答案来自本地百度网盘 2009 数学三真题及解析 PDF；完整题干、公式和解析见原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2009/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2009考研数学三试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2009/answer-page-10.jpg",
+          "caption": "答案解析 p.10",
+          "alt": "2009考研数学三答案解析 p.10"
+        },
+        {
+          "src": "question-bank/math3-2009/answer-page-11.jpg",
+          "caption": "答案解析 p.11",
+          "alt": "2009考研数学三答案解析 p.11"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2009",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:93bb65b437c9964554c008d9880cf3d58614c29e9eec0129b7a2a51eb7d8f3fc",
+      "answerTextHash": "sha256:2ac2c3ec950fbb1e3a042520dd47b767541a865bf0807facafdfe4fd5dcdfa5f",
+      "sourceEvidence": {
+        "evidenceId": "math3-2009-q13",
+        "sourceId": "src_d7e5f5b83685d62fcc2ad61a",
+        "answerSourceId": "src_d7e5f5b83685d62fcc2ad61a",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2009-paper-answer",
+        "answerEvidenceId": "math3-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:2ac2c3ec950fbb1e3a042520dd47b767541a865bf0807facafdfe4fd5dcdfa5f"
+      }
+    },
+    {
+      "id": "math3-2009-014",
+      "number": 14,
+      "paperId": "math3-2009",
+      "paperName": "2009考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2009",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2009考研数学三第14题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "n p^2",
+      "explanation": "答案来自本地百度网盘 2009 数学三真题及解析 PDF；完整题干、公式和解析见原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2009/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2009考研数学三试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2009/answer-page-11.jpg",
+          "caption": "答案解析 p.11",
+          "alt": "2009考研数学三答案解析 p.11"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2009",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:f155e7afff16b90e79d7a1f16ed6489f2c24e624f38e2be1a4c77db91a34fff7",
+      "answerTextHash": "sha256:b725cd5c7ef69659e9197cc63a9b890eec75b56e71feafdea1843a6f47abff1b",
+      "sourceEvidence": {
+        "evidenceId": "math3-2009-q14",
+        "sourceId": "src_d7e5f5b83685d62fcc2ad61a",
+        "answerSourceId": "src_d7e5f5b83685d62fcc2ad61a",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2009-paper-answer",
+        "answerEvidenceId": "math3-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:b725cd5c7ef69659e9197cc63a9b890eec75b56e71feafdea1843a6f47abff1b"
+      }
+    },
+    {
+      "id": "math3-2009-015",
+      "number": 15,
+      "paperId": "math3-2009",
+      "paperName": "2009考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2009",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2009考研数学三第15题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "二元函数存在极小值 f(0, 1/e) = -1/e；完整极值判别见答案原页。",
+      "explanation": "答案来自本地百度网盘 2009 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2009/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2009考研数学三试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2009/answer-page-11.jpg",
+          "caption": "答案解析 p.11",
+          "alt": "2009考研数学三答案解析 p.11"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2009",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:fe559827ea3912d74064b28b70705436fe4943dfb16e94de2ed63b251fb37c1e",
+      "answerTextHash": "sha256:40cbe16baa13249f473faa6f2f089c0f412f0f170390bb4cd9a5fe863a88c7f5",
+      "sourceEvidence": {
+        "evidenceId": "math3-2009-q15",
+        "sourceId": "src_d7e5f5b83685d62fcc2ad61a",
+        "answerSourceId": "src_d7e5f5b83685d62fcc2ad61a",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2009-paper-answer",
+        "answerEvidenceId": "math3-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:40cbe16baa13249f473faa6f2f089c0f412f0f170390bb4cd9a5fe863a88c7f5"
+      }
+    },
+    {
+      "id": "math3-2009-016",
+      "number": 16,
+      "paperId": "math3-2009",
+      "paperName": "2009考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2009",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2009考研数学三第16题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "不定积分结果见答案原页。",
+      "explanation": "答案来自本地百度网盘 2009 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2009/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2009考研数学三试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2009/answer-page-11.jpg",
+          "caption": "答案解析 p.11",
+          "alt": "2009考研数学三答案解析 p.11"
+        },
+        {
+          "src": "question-bank/math3-2009/answer-page-12.jpg",
+          "caption": "答案解析 p.12",
+          "alt": "2009考研数学三答案解析 p.12"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2009",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:76fdb84137ef3b38be2c862e412095f9aafff34cfc2e818c02df9af039d0a5dd",
+      "answerTextHash": "sha256:e96ddaecbd8eb51fe93ab5da2524d6dd8f271fcf870bebb07a6a201649a6cf16",
+      "sourceEvidence": {
+        "evidenceId": "math3-2009-q16",
+        "sourceId": "src_d7e5f5b83685d62fcc2ad61a",
+        "answerSourceId": "src_d7e5f5b83685d62fcc2ad61a",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2009-paper-answer",
+        "answerEvidenceId": "math3-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:e96ddaecbd8eb51fe93ab5da2524d6dd8f271fcf870bebb07a6a201649a6cf16"
+      }
+    },
+    {
+      "id": "math3-2009-017",
+      "number": 17,
+      "paperId": "math3-2009",
+      "paperName": "2009考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2009",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2009考研数学三第17题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "二重积分值为 -8/3。",
+      "explanation": "答案来自本地百度网盘 2009 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2009/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2009考研数学三试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2009/answer-page-12.jpg",
+          "caption": "答案解析 p.12",
+          "alt": "2009考研数学三答案解析 p.12"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2009",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:f0ec46d50860dc7e2e47cd4296e787f0f66a80a3c753c7719a724f9a0d0ec718",
+      "answerTextHash": "sha256:69832edc52ae52f09a1f3101a66474d5897d472e82955f97417a53aff6e17202",
+      "sourceEvidence": {
+        "evidenceId": "math3-2009-q17",
+        "sourceId": "src_d7e5f5b83685d62fcc2ad61a",
+        "answerSourceId": "src_d7e5f5b83685d62fcc2ad61a",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2009-paper-answer",
+        "answerEvidenceId": "math3-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:69832edc52ae52f09a1f3101a66474d5897d472e82955f97417a53aff6e17202"
+      }
+    },
+    {
+      "id": "math3-2009-018",
+      "number": 18,
+      "paperId": "math3-2009",
+      "paperName": "2009考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2009",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2009考研数学三第18题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "拉格朗日中值定理证明及右导数结论见答案原页。",
+      "explanation": "答案来自本地百度网盘 2009 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2009/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2009考研数学三试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2009/answer-page-12.jpg",
+          "caption": "答案解析 p.12",
+          "alt": "2009考研数学三答案解析 p.12"
+        },
+        {
+          "src": "question-bank/math3-2009/answer-page-13.jpg",
+          "caption": "答案解析 p.13",
+          "alt": "2009考研数学三答案解析 p.13"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2009",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:9f6845151f2b201bdf7f94dcf642b5b9a5fb266c7f66d9046976eda7f93f1800",
+      "answerTextHash": "sha256:6e407fd69070cc8fdfe47f6bf5fd557915b526894b26e505e17fad37f30bca39",
+      "sourceEvidence": {
+        "evidenceId": "math3-2009-q18",
+        "sourceId": "src_d7e5f5b83685d62fcc2ad61a",
+        "answerSourceId": "src_d7e5f5b83685d62fcc2ad61a",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2009-paper-answer",
+        "answerEvidenceId": "math3-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:6e407fd69070cc8fdfe47f6bf5fd557915b526894b26e505e17fad37f30bca39"
+      }
+    },
+    {
+      "id": "math3-2009-019",
+      "number": 19,
+      "paperId": "math3-2009",
+      "paperName": "2009考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2009",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2009考研数学三第19题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "曲线方程推导和结论见答案原页。",
+      "explanation": "答案来自本地百度网盘 2009 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2009/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2009考研数学三试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2009/answer-page-13.jpg",
+          "caption": "答案解析 p.13",
+          "alt": "2009考研数学三答案解析 p.13"
+        },
+        {
+          "src": "question-bank/math3-2009/answer-page-14.jpg",
+          "caption": "答案解析 p.14",
+          "alt": "2009考研数学三答案解析 p.14"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2009",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:231c2457b0367fd7c38b5f6abb88333d8f85564698c359fd76568608d75eedf0",
+      "answerTextHash": "sha256:c1159890691e9cd865e48abcf4e7859fee88d1a5916b80940922d8cfa812669a",
+      "sourceEvidence": {
+        "evidenceId": "math3-2009-q19",
+        "sourceId": "src_d7e5f5b83685d62fcc2ad61a",
+        "answerSourceId": "src_d7e5f5b83685d62fcc2ad61a",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2009-paper-answer",
+        "answerEvidenceId": "math3-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:c1159890691e9cd865e48abcf4e7859fee88d1a5916b80940922d8cfa812669a"
+      }
+    },
+    {
+      "id": "math3-2009-020",
+      "number": 20,
+      "paperId": "math3-2009",
+      "paperName": "2009考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2009",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2009考研数学三第20题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "满足条件的全部向量及线性无关证明见答案原页。",
+      "explanation": "答案来自本地百度网盘 2009 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2009/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2009考研数学三试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2009/answer-page-14.jpg",
+          "caption": "答案解析 p.14",
+          "alt": "2009考研数学三答案解析 p.14"
+        },
+        {
+          "src": "question-bank/math3-2009/answer-page-15.jpg",
+          "caption": "答案解析 p.15",
+          "alt": "2009考研数学三答案解析 p.15"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2009",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:3816efc1ef095918a03754e5c0524ac6cc04842afe575c4cf1ece338ed03f73d",
+      "answerTextHash": "sha256:afc22b85f3b549c527eae2c93a68fbceb431a458e6c592e42608ffcc447f111b",
+      "sourceEvidence": {
+        "evidenceId": "math3-2009-q20",
+        "sourceId": "src_d7e5f5b83685d62fcc2ad61a",
+        "answerSourceId": "src_d7e5f5b83685d62fcc2ad61a",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2009-paper-answer",
+        "answerEvidenceId": "math3-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:afc22b85f3b549c527eae2c93a68fbceb431a458e6c592e42608ffcc447f111b"
+      }
+    },
+    {
+      "id": "math3-2009-021",
+      "number": 21,
+      "paperId": "math3-2009",
+      "paperName": "2009考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2009",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2009考研数学三第21题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "特征值为 a, a - 2, a + 1；规范形条件下 a = 2。",
+      "explanation": "答案来自本地百度网盘 2009 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2009/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2009考研数学三试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2009/answer-page-15.jpg",
+          "caption": "答案解析 p.15",
+          "alt": "2009考研数学三答案解析 p.15"
+        },
+        {
+          "src": "question-bank/math3-2009/answer-page-16.jpg",
+          "caption": "答案解析 p.16",
+          "alt": "2009考研数学三答案解析 p.16"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2009",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:6679196342fe2bc6b04474be4da843c4d0bddeba49c8429aeff8695cfad44c95",
+      "answerTextHash": "sha256:02a84b91b4946b8a15cfd39e85575b35cdd3c16b10ad460cf14506373b9a29bd",
+      "sourceEvidence": {
+        "evidenceId": "math3-2009-q21",
+        "sourceId": "src_d7e5f5b83685d62fcc2ad61a",
+        "answerSourceId": "src_d7e5f5b83685d62fcc2ad61a",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2009-paper-answer",
+        "answerEvidenceId": "math3-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:02a84b91b4946b8a15cfd39e85575b35cdd3c16b10ad460cf14506373b9a29bd"
+      }
+    },
+    {
+      "id": "math3-2009-022",
+      "number": 22,
+      "paperId": "math3-2009",
+      "paperName": "2009考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2009",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2009考研数学三第22题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "条件概率密度和条件概率计算见答案原页。",
+      "explanation": "答案来自本地百度网盘 2009 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2009/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2009考研数学三试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2009/answer-page-16.jpg",
+          "caption": "答案解析 p.16",
+          "alt": "2009考研数学三答案解析 p.16"
+        },
+        {
+          "src": "question-bank/math3-2009/answer-page-17.jpg",
+          "caption": "答案解析 p.17",
+          "alt": "2009考研数学三答案解析 p.17"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2009",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:f0431a425affa663d2e44603e9e8593ad0ae617e98a842d106ecd77bc23f8aa3",
+      "answerTextHash": "sha256:bf98b712d793c11c98d2911899d7ad2b8d36db4c1f67140c0982e8927129dbf1",
+      "sourceEvidence": {
+        "evidenceId": "math3-2009-q22",
+        "sourceId": "src_d7e5f5b83685d62fcc2ad61a",
+        "answerSourceId": "src_d7e5f5b83685d62fcc2ad61a",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2009-paper-answer",
+        "answerEvidenceId": "math3-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:bf98b712d793c11c98d2911899d7ad2b8d36db4c1f67140c0982e8927129dbf1"
+      }
+    },
+    {
+      "id": "math3-2009-023",
+      "number": 23,
+      "paperId": "math3-2009",
+      "paperName": "2009考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2009",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2009考研数学三第23题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "P(X = 1 | Z = 0) = 4/9；(X, Y) 概率分布表见答案原页。",
+      "explanation": "答案来自本地百度网盘 2009 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2009/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2009考研数学三试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2009/answer-page-17.jpg",
+          "caption": "答案解析 p.17",
+          "alt": "2009考研数学三答案解析 p.17"
+        },
+        {
+          "src": "question-bank/math3-2009/answer-page-18.jpg",
+          "caption": "答案解析 p.18",
+          "alt": "2009考研数学三答案解析 p.18"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2009",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:abcc5fee3290dc91bea56ab230f6d7a57d6c40256df6f690c58a0e5fa80b76ab",
+      "answerTextHash": "sha256:28f0bc145c6f08277892ccf929980f81087f15377f5769372bdb4b97912f0da6",
+      "sourceEvidence": {
+        "evidenceId": "math3-2009-q23",
+        "sourceId": "src_d7e5f5b83685d62fcc2ad61a",
+        "answerSourceId": "src_d7e5f5b83685d62fcc2ad61a",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2009-paper-answer",
+        "answerEvidenceId": "math3-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:28f0bc145c6f08277892ccf929980f81087f15377f5769372bdb4b97912f0da6"
+      }
+    }
+  ]
+}
