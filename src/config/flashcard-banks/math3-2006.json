@@ -1,0 +1,1411 @@
+{
+  "id": "math3-2006",
+  "source": "math3-2006-paper-answer",
+  "paperId": "math3-2006",
+  "paperName": "2006考研数学三真题",
+  "subject": "数学",
+  "subjectKey": "math",
+  "track": "math3",
+  "year": "2006",
+  "quality": "ready",
+  "publicationStatus": "published",
+  "publicationBlockers": [],
+  "sourceEvidencePolicy": "baidu_netdisk_official_paper_pdf_page_image_v1",
+  "sourceFiles": [
+    {
+      "id": "math3-2006-paper-answer",
+      "role": "paper_answer",
+      "localPath": "data/raw-inbox/public-course-history/math3/2006/2006-math3-paper-answer.pdf",
+      "sha256": "sha256:0ec57555f52872cd7398676c24fa374cd769e381461b9d00283a77666997570b"
+    }
+  ],
+  "assetRoot": "question-bank/math3-2006",
+  "processed_at": "2026-05-27T08:16:44Z",
+  "total_cards": 23,
+  "cards": [
+    {
+      "id": "math3-2006-001",
+      "number": 1,
+      "paperId": "math3-2006",
+      "paperName": "2006考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2006",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2006考研数学三第1题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "1",
+      "explanation": "答案来自本地百度网盘 2006 数学三真题及解析 PDF；完整题干和公式见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2006/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2006考研数学三试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2006/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2006考研数学三答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2006",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:56e7636db5073da2104fae0f5293a5a0344fee02e510d9ee5bfb59c15599be85",
+      "answerTextHash": "sha256:4f0ddced307a484d08fd3a9e124c655d902fe2d5a829b4a810ec8accf31d8d96",
+      "sourceEvidence": {
+        "evidenceId": "math3-2006-q01",
+        "sourceId": "src_cbfa1c8608ea693dcf2fdde1",
+        "answerSourceId": "src_cbfa1c8608ea693dcf2fdde1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2006-paper-answer",
+        "answerEvidenceId": "math3-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:4f0ddced307a484d08fd3a9e124c655d902fe2d5a829b4a810ec8accf31d8d96"
+      }
+    },
+    {
+      "id": "math3-2006-002",
+      "number": 2,
+      "paperId": "math3-2006",
+      "paperName": "2006考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2006",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2006考研数学三第2题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "2e^2",
+      "explanation": "答案来自本地百度网盘 2006 数学三真题及解析 PDF；完整题干和公式见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2006/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2006考研数学三试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2006/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2006考研数学三答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2006",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:d65de2fad56d4ffd51a4462ed1b1f41c7641680ab3f4d09c9d328c96a327fdd8",
+      "answerTextHash": "sha256:d7e1389e1897077723d2f44ad1fb1b9dc0dde5d59390a2eff437a3389f680342",
+      "sourceEvidence": {
+        "evidenceId": "math3-2006-q02",
+        "sourceId": "src_cbfa1c8608ea693dcf2fdde1",
+        "answerSourceId": "src_cbfa1c8608ea693dcf2fdde1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2006-paper-answer",
+        "answerEvidenceId": "math3-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:d7e1389e1897077723d2f44ad1fb1b9dc0dde5d59390a2eff437a3389f680342"
+      }
+    },
+    {
+      "id": "math3-2006-003",
+      "number": 3,
+      "paperId": "math3-2006",
+      "paperName": "2006考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2006",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2006考研数学三第3题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "4dx - 2dy",
+      "explanation": "答案来自本地百度网盘 2006 数学三真题及解析 PDF；完整题干和公式见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2006/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2006考研数学三试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2006/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2006考研数学三答案解析 p.5"
+        },
+        {
+          "src": "question-bank/math3-2006/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2006考研数学三答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2006",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:04c622a2b96eb44fb295b4083a6c0b2c4c366a83aa807b57aaf9ea502d2efc85",
+      "answerTextHash": "sha256:f995bc038bc54a7dd393aca7a48baf5b1a455ccd6f1cdaea244015a1a1aaa613",
+      "sourceEvidence": {
+        "evidenceId": "math3-2006-q03",
+        "sourceId": "src_cbfa1c8608ea693dcf2fdde1",
+        "answerSourceId": "src_cbfa1c8608ea693dcf2fdde1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2006-paper-answer",
+        "answerEvidenceId": "math3-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:f995bc038bc54a7dd393aca7a48baf5b1a455ccd6f1cdaea244015a1a1aaa613"
+      }
+    },
+    {
+      "id": "math3-2006-004",
+      "number": 4,
+      "paperId": "math3-2006",
+      "paperName": "2006考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2006",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2006考研数学三第4题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "2",
+      "explanation": "答案来自本地百度网盘 2006 数学三真题及解析 PDF；完整题干和公式见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2006/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2006考研数学三试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2006/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2006考研数学三答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2006",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:6bf235462da66728ad90d36815135ab1a93143e747d4d8edf8c4c1fd7f6a0a80",
+      "answerTextHash": "sha256:8634432e9828a0160ec5d4fcbf51ac360da074f75705682e22e0b42eeed4df0e",
+      "sourceEvidence": {
+        "evidenceId": "math3-2006-q04",
+        "sourceId": "src_cbfa1c8608ea693dcf2fdde1",
+        "answerSourceId": "src_cbfa1c8608ea693dcf2fdde1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2006-paper-answer",
+        "answerEvidenceId": "math3-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:8634432e9828a0160ec5d4fcbf51ac360da074f75705682e22e0b42eeed4df0e"
+      }
+    },
+    {
+      "id": "math3-2006-005",
+      "number": 5,
+      "paperId": "math3-2006",
+      "paperName": "2006考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2006",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2006考研数学三第5题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "1/9",
+      "explanation": "答案来自本地百度网盘 2006 数学三真题及解析 PDF；完整题干和公式见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2006/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2006考研数学三试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2006/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2006考研数学三答案解析 p.6"
+        },
+        {
+          "src": "question-bank/math3-2006/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2006考研数学三答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2006",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:73624936a3ef0736a0b7537d0f637ae56c2cbc8d79e2e1f622eb7a392966d544",
+      "answerTextHash": "sha256:b9d05724002282c7ccad54b633d613cb5814b161a92b292e4219209707edc0cb",
+      "sourceEvidence": {
+        "evidenceId": "math3-2006-q05",
+        "sourceId": "src_cbfa1c8608ea693dcf2fdde1",
+        "answerSourceId": "src_cbfa1c8608ea693dcf2fdde1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2006-paper-answer",
+        "answerEvidenceId": "math3-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:b9d05724002282c7ccad54b633d613cb5814b161a92b292e4219209707edc0cb"
+      }
+    },
+    {
+      "id": "math3-2006-006",
+      "number": 6,
+      "paperId": "math3-2006",
+      "paperName": "2006考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2006",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2006考研数学三第6题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "2",
+      "explanation": "答案来自本地百度网盘 2006 数学三真题及解析 PDF；完整题干和公式见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2006/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2006考研数学三试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2006/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2006考研数学三答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2006",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:595b48f5c8263903b3498e2508bcc888a87f8da2510f21bee89baac70ce3dda9",
+      "answerTextHash": "sha256:f1ff4b7d91f1ca82f4ffc06a71692ff549b2a5a4d43941326a6edf9b6ca242ab",
+      "sourceEvidence": {
+        "evidenceId": "math3-2006-q06",
+        "sourceId": "src_cbfa1c8608ea693dcf2fdde1",
+        "answerSourceId": "src_cbfa1c8608ea693dcf2fdde1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2006-paper-answer",
+        "answerEvidenceId": "math3-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:f1ff4b7d91f1ca82f4ffc06a71692ff549b2a5a4d43941326a6edf9b6ca242ab"
+      }
+    },
+    {
+      "id": "math3-2006-007",
+      "number": 7,
+      "paperId": "math3-2006",
+      "paperName": "2006考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2006",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2006考研数学三第7题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2006 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2006/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2006考研数学三试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2006/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2006考研数学三答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2006",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:cf5b1815eefe2e4c8fb989f8732078f61f3834ade8dfd7f24fd35ce0b1d91399",
+      "answerTextHash": "sha256:e0379f21e18a4103fb1f2a55b207f44908f3ae98f7b934d91863940d970b293e",
+      "sourceEvidence": {
+        "evidenceId": "math3-2006-q07",
+        "sourceId": "src_cbfa1c8608ea693dcf2fdde1",
+        "answerSourceId": "src_cbfa1c8608ea693dcf2fdde1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2006-paper-answer",
+        "answerEvidenceId": "math3-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:e0379f21e18a4103fb1f2a55b207f44908f3ae98f7b934d91863940d970b293e"
+      }
+    },
+    {
+      "id": "math3-2006-008",
+      "number": 8,
+      "paperId": "math3-2006",
+      "paperName": "2006考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2006",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2006考研数学三第8题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2006 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2006/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2006考研数学三试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2006/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2006考研数学三答案解析 p.7"
+        },
+        {
+          "src": "question-bank/math3-2006/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2006考研数学三答案解析 p.8"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2006",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:ccbdd759064bf6ae2fa3f2424644955b897a81d2cd94dc8bd00c4836155b3ed8",
+      "answerTextHash": "sha256:fe9ea4df9bc596d30726b8bdb5b3aba5795cfaae7c00415afca773a496aafc7f",
+      "sourceEvidence": {
+        "evidenceId": "math3-2006-q08",
+        "sourceId": "src_cbfa1c8608ea693dcf2fdde1",
+        "answerSourceId": "src_cbfa1c8608ea693dcf2fdde1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2006-paper-answer",
+        "answerEvidenceId": "math3-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:fe9ea4df9bc596d30726b8bdb5b3aba5795cfaae7c00415afca773a496aafc7f"
+      }
+    },
+    {
+      "id": "math3-2006-009",
+      "number": 9,
+      "paperId": "math3-2006",
+      "paperName": "2006考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2006",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2006考研数学三第9题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2006 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2006/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2006考研数学三试卷原页 p.1"
+        },
+        {
+          "src": "question-bank/math3-2006/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2006考研数学三试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2006/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2006考研数学三答案解析 p.8"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2006",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:c579d477590861ff0658e8cddd4ec82b05579275ebd0854c67d939f9444bba3e",
+      "answerTextHash": "sha256:8ccfc172b695f8d6a000c1c75ace6c4a712a2450b5b8333f7fdade7ccc2bae06",
+      "sourceEvidence": {
+        "evidenceId": "math3-2006-q09",
+        "sourceId": "src_cbfa1c8608ea693dcf2fdde1",
+        "answerSourceId": "src_cbfa1c8608ea693dcf2fdde1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2006-paper-answer",
+        "answerEvidenceId": "math3-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:8ccfc172b695f8d6a000c1c75ace6c4a712a2450b5b8333f7fdade7ccc2bae06"
+      }
+    },
+    {
+      "id": "math3-2006-010",
+      "number": 10,
+      "paperId": "math3-2006",
+      "paperName": "2006考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2006",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2006考研数学三第10题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2006 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2006/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2006考研数学三试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2006/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2006考研数学三答案解析 p.8"
+        },
+        {
+          "src": "question-bank/math3-2006/answer-page-09.jpg",
+          "caption": "答案解析 p.9",
+          "alt": "2006考研数学三答案解析 p.9"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2006",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:82522c8ac639fb0d1c0b359c77fa21c742df65e923ee444e843d21ccbd590a0a",
+      "answerTextHash": "sha256:1d36232c99746bd3f839787a32e5e04ac67041510b0d5e853b80487cb576a47c",
+      "sourceEvidence": {
+        "evidenceId": "math3-2006-q10",
+        "sourceId": "src_cbfa1c8608ea693dcf2fdde1",
+        "answerSourceId": "src_cbfa1c8608ea693dcf2fdde1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2006-paper-answer",
+        "answerEvidenceId": "math3-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:1d36232c99746bd3f839787a32e5e04ac67041510b0d5e853b80487cb576a47c"
+      }
+    },
+    {
+      "id": "math3-2006-011",
+      "number": 11,
+      "paperId": "math3-2006",
+      "paperName": "2006考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2006",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2006考研数学三第11题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2006 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2006/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2006考研数学三试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2006/answer-page-09.jpg",
+          "caption": "答案解析 p.9",
+          "alt": "2006考研数学三答案解析 p.9"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2006",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:7af6ccc44b02a9a5707bd1139d0e66822fb34ca41d84b5e42d0ef6ddd53e8d70",
+      "answerTextHash": "sha256:91b648e99f8276b56d930b37d62fef5912e168052a3c9691b654e1079183fca6",
+      "sourceEvidence": {
+        "evidenceId": "math3-2006-q11",
+        "sourceId": "src_cbfa1c8608ea693dcf2fdde1",
+        "answerSourceId": "src_cbfa1c8608ea693dcf2fdde1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2006-paper-answer",
+        "answerEvidenceId": "math3-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:91b648e99f8276b56d930b37d62fef5912e168052a3c9691b654e1079183fca6"
+      }
+    },
+    {
+      "id": "math3-2006-012",
+      "number": 12,
+      "paperId": "math3-2006",
+      "paperName": "2006考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2006",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2006考研数学三第12题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2006 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2006/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2006考研数学三试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2006/answer-page-09.jpg",
+          "caption": "答案解析 p.9",
+          "alt": "2006考研数学三答案解析 p.9"
+        },
+        {
+          "src": "question-bank/math3-2006/answer-page-10.jpg",
+          "caption": "答案解析 p.10",
+          "alt": "2006考研数学三答案解析 p.10"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2006",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:d0485e0c8fa9e5f03779cc13e13d12cadb2459280202c239b53ac3b1882839c2",
+      "answerTextHash": "sha256:34434619dd9db0900cf8d723a6bd75aa80680febe6913acfe53165497d60682b",
+      "sourceEvidence": {
+        "evidenceId": "math3-2006-q12",
+        "sourceId": "src_cbfa1c8608ea693dcf2fdde1",
+        "answerSourceId": "src_cbfa1c8608ea693dcf2fdde1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2006-paper-answer",
+        "answerEvidenceId": "math3-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:34434619dd9db0900cf8d723a6bd75aa80680febe6913acfe53165497d60682b"
+      }
+    },
+    {
+      "id": "math3-2006-013",
+      "number": 13,
+      "paperId": "math3-2006",
+      "paperName": "2006考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2006",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2006考研数学三第13题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2006 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2006/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2006考研数学三试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2006/answer-page-10.jpg",
+          "caption": "答案解析 p.10",
+          "alt": "2006考研数学三答案解析 p.10"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2006",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:c756dc3d64b6f104c79cc857eb3323944ed847b46e9c77ade29f0942e436410d",
+      "answerTextHash": "sha256:af7eecedcd076ef1bc5fd0018adb6f17689b5a384a5fc169e0f2cf420f16f95a",
+      "sourceEvidence": {
+        "evidenceId": "math3-2006-q13",
+        "sourceId": "src_cbfa1c8608ea693dcf2fdde1",
+        "answerSourceId": "src_cbfa1c8608ea693dcf2fdde1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2006-paper-answer",
+        "answerEvidenceId": "math3-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:af7eecedcd076ef1bc5fd0018adb6f17689b5a384a5fc169e0f2cf420f16f95a"
+      }
+    },
+    {
+      "id": "math3-2006-014",
+      "number": 14,
+      "paperId": "math3-2006",
+      "paperName": "2006考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2006",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2006考研数学三第14题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2006 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2006/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2006考研数学三试卷原页 p.2"
+        },
+        {
+          "src": "question-bank/math3-2006/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2006考研数学三试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2006/answer-page-10.jpg",
+          "caption": "答案解析 p.10",
+          "alt": "2006考研数学三答案解析 p.10"
+        },
+        {
+          "src": "question-bank/math3-2006/answer-page-11.jpg",
+          "caption": "答案解析 p.11",
+          "alt": "2006考研数学三答案解析 p.11"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2006",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:f08c35694ee1dcbfd27e1e6ec253e15f8b0e12319c24d7423fc2acba81184829",
+      "answerTextHash": "sha256:83a5cad0db83673634352dabfdefbed777cebd19eccd4040d2c16ef252591c3e",
+      "sourceEvidence": {
+        "evidenceId": "math3-2006-q14",
+        "sourceId": "src_cbfa1c8608ea693dcf2fdde1",
+        "answerSourceId": "src_cbfa1c8608ea693dcf2fdde1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2006-paper-answer",
+        "answerEvidenceId": "math3-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:83a5cad0db83673634352dabfdefbed777cebd19eccd4040d2c16ef252591c3e"
+      }
+    },
+    {
+      "id": "math3-2006-015",
+      "number": 15,
+      "paperId": "math3-2006",
+      "paperName": "2006考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2006",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2006考研数学三第15题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "完整极限计算见答案原页。",
+      "explanation": "答案来自本地百度网盘 2006 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2006/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2006考研数学三试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2006/answer-page-11.jpg",
+          "caption": "答案解析 p.11",
+          "alt": "2006考研数学三答案解析 p.11"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2006",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:672ff0f95da6da1d7fdac5bc7fec270e8afc0f5fb174e5ee8d3eba5b88657c14",
+      "answerTextHash": "sha256:80bd670e3bcd045c464a744cc9ee010601267f0aeb083f2e292e313963b034ea",
+      "sourceEvidence": {
+        "evidenceId": "math3-2006-q15",
+        "sourceId": "src_cbfa1c8608ea693dcf2fdde1",
+        "answerSourceId": "src_cbfa1c8608ea693dcf2fdde1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2006-paper-answer",
+        "answerEvidenceId": "math3-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:80bd670e3bcd045c464a744cc9ee010601267f0aeb083f2e292e313963b034ea"
+      }
+    },
+    {
+      "id": "math3-2006-016",
+      "number": 16,
+      "paperId": "math3-2006",
+      "paperName": "2006考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2006",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2006考研数学三第16题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "2/5",
+      "explanation": "答案来自本地百度网盘 2006 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2006/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2006考研数学三试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2006/answer-page-12.jpg",
+          "caption": "答案解析 p.12",
+          "alt": "2006考研数学三答案解析 p.12"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2006",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:9b1618cfa46e421fb9ce827d73e724d8386b27bce6e945abd5f4d92eeb64ce92",
+      "answerTextHash": "sha256:9a4e79dced21ba5bac2a3c79a5de447fa4e7902677987d77161aa81141fcd8dd",
+      "sourceEvidence": {
+        "evidenceId": "math3-2006-q16",
+        "sourceId": "src_cbfa1c8608ea693dcf2fdde1",
+        "answerSourceId": "src_cbfa1c8608ea693dcf2fdde1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2006-paper-answer",
+        "answerEvidenceId": "math3-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:9a4e79dced21ba5bac2a3c79a5de447fa4e7902677987d77161aa81141fcd8dd"
+      }
+    },
+    {
+      "id": "math3-2006-017",
+      "number": 17,
+      "paperId": "math3-2006",
+      "paperName": "2006考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2006",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2006考研数学三第17题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "完整不等式证明见答案原页。",
+      "explanation": "答案来自本地百度网盘 2006 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2006/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2006考研数学三试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2006/answer-page-12.jpg",
+          "caption": "答案解析 p.12",
+          "alt": "2006考研数学三答案解析 p.12"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2006",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:6c34e63220ce2386b1a3e221f39257bc522cfa888169c1f333aaf226e6132e48",
+      "answerTextHash": "sha256:d196d59627da3afcb80a7070919bd0b96925a690634632e8c607965668d92fbb",
+      "sourceEvidence": {
+        "evidenceId": "math3-2006-q17",
+        "sourceId": "src_cbfa1c8608ea693dcf2fdde1",
+        "answerSourceId": "src_cbfa1c8608ea693dcf2fdde1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2006-paper-answer",
+        "answerEvidenceId": "math3-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:d196d59627da3afcb80a7070919bd0b96925a690634632e8c607965668d92fbb"
+      }
+    },
+    {
+      "id": "math3-2006-018",
+      "number": 18,
+      "paperId": "math3-2006",
+      "paperName": "2006考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2006",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2006考研数学三第18题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "曲线 L: y = ax^2 - ax；a = 2。",
+      "explanation": "答案来自本地百度网盘 2006 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2006/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2006考研数学三试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2006/answer-page-12.jpg",
+          "caption": "答案解析 p.12",
+          "alt": "2006考研数学三答案解析 p.12"
+        },
+        {
+          "src": "question-bank/math3-2006/answer-page-13.jpg",
+          "caption": "答案解析 p.13",
+          "alt": "2006考研数学三答案解析 p.13"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2006",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:9641a320fdfc0819933a233f0e5f6f717816028bf149b2f9c24bcfbf40c60cde",
+      "answerTextHash": "sha256:ad744b0faaab8a01f4e5e1be6c19e953465e5a7319f1c75c2142c5b14835daef",
+      "sourceEvidence": {
+        "evidenceId": "math3-2006-q18",
+        "sourceId": "src_cbfa1c8608ea693dcf2fdde1",
+        "answerSourceId": "src_cbfa1c8608ea693dcf2fdde1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2006-paper-answer",
+        "answerEvidenceId": "math3-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:ad744b0faaab8a01f4e5e1be6c19e953465e5a7319f1c75c2142c5b14835daef"
+      }
+    },
+    {
+      "id": "math3-2006-019",
+      "number": 19,
+      "paperId": "math3-2006",
+      "paperName": "2006考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2006",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2006考研数学三第19题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "S(x) = 2x^2 arctan x - x ln(1 + x^2)，x in [-1,1]。",
+      "explanation": "答案来自本地百度网盘 2006 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2006/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2006考研数学三试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2006/answer-page-13.jpg",
+          "caption": "答案解析 p.13",
+          "alt": "2006考研数学三答案解析 p.13"
+        },
+        {
+          "src": "question-bank/math3-2006/answer-page-14.jpg",
+          "caption": "答案解析 p.14",
+          "alt": "2006考研数学三答案解析 p.14"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2006",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:d4b5fcb1cef477feb1d46fd0a306f3c60e8f5b0164200802b5b95bf31a2720cf",
+      "answerTextHash": "sha256:e8c003f59b135f4c82d1fc846427b266ed1372cb7975a1cebe35aff9a4b393ef",
+      "sourceEvidence": {
+        "evidenceId": "math3-2006-q19",
+        "sourceId": "src_cbfa1c8608ea693dcf2fdde1",
+        "answerSourceId": "src_cbfa1c8608ea693dcf2fdde1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2006-paper-answer",
+        "answerEvidenceId": "math3-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:e8c003f59b135f4c82d1fc846427b266ed1372cb7975a1cebe35aff9a4b393ef"
+      }
+    },
+    {
+      "id": "math3-2006-020",
+      "number": 20,
+      "paperId": "math3-2006",
+      "paperName": "2006考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2006",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2006考研数学三第20题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "a = 0 或 a = -10；极大线性无关组及线性表示见答案原页。",
+      "explanation": "答案来自本地百度网盘 2006 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2006/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2006考研数学三试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2006/answer-page-14.jpg",
+          "caption": "答案解析 p.14",
+          "alt": "2006考研数学三答案解析 p.14"
+        },
+        {
+          "src": "question-bank/math3-2006/answer-page-15.jpg",
+          "caption": "答案解析 p.15",
+          "alt": "2006考研数学三答案解析 p.15"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2006",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:1b844d477fb219bf84426ecf704aa1c09ef0190f291301b43f4523aaeaca5a4a",
+      "answerTextHash": "sha256:5b0536626836b832a619f942dc33fcc4a9031f6cbb6c26f4163dc507e9cb50d9",
+      "sourceEvidence": {
+        "evidenceId": "math3-2006-q20",
+        "sourceId": "src_cbfa1c8608ea693dcf2fdde1",
+        "answerSourceId": "src_cbfa1c8608ea693dcf2fdde1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2006-paper-answer",
+        "answerEvidenceId": "math3-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:5b0536626836b832a619f942dc33fcc4a9031f6cbb6c26f4163dc507e9cb50d9"
+      }
+    },
+    {
+      "id": "math3-2006-021",
+      "number": 21,
+      "paperId": "math3-2006",
+      "paperName": "2006考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2006",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2006考研数学三第21题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "A 的特征值为 3,0,0；正交矩阵、对角矩阵和后续计算见答案原页。",
+      "explanation": "答案来自本地百度网盘 2006 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2006/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2006考研数学三试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2006/answer-page-15.jpg",
+          "caption": "答案解析 p.15",
+          "alt": "2006考研数学三答案解析 p.15"
+        },
+        {
+          "src": "question-bank/math3-2006/answer-page-16.jpg",
+          "caption": "答案解析 p.16",
+          "alt": "2006考研数学三答案解析 p.16"
+        },
+        {
+          "src": "question-bank/math3-2006/answer-page-17.jpg",
+          "caption": "答案解析 p.17",
+          "alt": "2006考研数学三答案解析 p.17"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2006",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:88f512d1270146db48797d14c265f200a1efff4ce0b1d0110a9890325f9dac03",
+      "answerTextHash": "sha256:8a5d6c87d601b92baa9f984cdf77d83b8127523cda3b9eefb4dd7d9585991e19",
+      "sourceEvidence": {
+        "evidenceId": "math3-2006-q21",
+        "sourceId": "src_cbfa1c8608ea693dcf2fdde1",
+        "answerSourceId": "src_cbfa1c8608ea693dcf2fdde1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2006-paper-answer",
+        "answerEvidenceId": "math3-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:8a5d6c87d601b92baa9f984cdf77d83b8127523cda3b9eefb4dd7d9585991e19"
+      }
+    },
+    {
+      "id": "math3-2006-022",
+      "number": 22,
+      "paperId": "math3-2006",
+      "paperName": "2006考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2006",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2006考研数学三第22题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "Y 的概率密度、Cov(X,Y)=2/3 和分布函数取值见答案原页。",
+      "explanation": "答案来自本地百度网盘 2006 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2006/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2006考研数学三试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2006/answer-page-17.jpg",
+          "caption": "答案解析 p.17",
+          "alt": "2006考研数学三答案解析 p.17"
+        },
+        {
+          "src": "question-bank/math3-2006/answer-page-18.jpg",
+          "caption": "答案解析 p.18",
+          "alt": "2006考研数学三答案解析 p.18"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2006",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:2b601814ee9b4d2d23137c6417ea73620d0809466392ce8fdb9373d93b2b7559",
+      "answerTextHash": "sha256:bdea7ee1db138e46b40dd4839fb5260c830a003539b421eb35541a302dba84ab",
+      "sourceEvidence": {
+        "evidenceId": "math3-2006-q22",
+        "sourceId": "src_cbfa1c8608ea693dcf2fdde1",
+        "answerSourceId": "src_cbfa1c8608ea693dcf2fdde1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2006-paper-answer",
+        "answerEvidenceId": "math3-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:bdea7ee1db138e46b40dd4839fb5260c830a003539b421eb35541a302dba84ab"
+      }
+    },
+    {
+      "id": "math3-2006-023",
+      "number": 23,
+      "paperId": "math3-2006",
+      "paperName": "2006考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2006",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2006考研数学三第23题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "theta 的矩估计为 3/2 - Xbar；最大似然估计为 N/n。",
+      "explanation": "答案来自本地百度网盘 2006 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2006/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2006考研数学三试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2006/answer-page-18.jpg",
+          "caption": "答案解析 p.18",
+          "alt": "2006考研数学三答案解析 p.18"
+        },
+        {
+          "src": "question-bank/math3-2006/answer-page-19.jpg",
+          "caption": "答案解析 p.19",
+          "alt": "2006考研数学三答案解析 p.19"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2006",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:d9aeb88ec0b13974261d05f21b29c1f8c03467c89068a5d04e1c7376af183d25",
+      "answerTextHash": "sha256:cd53f33f7c4947168711e09506794a20b8d88b9f6f48183bc26ce295fa9898a5",
+      "sourceEvidence": {
+        "evidenceId": "math3-2006-q23",
+        "sourceId": "src_cbfa1c8608ea693dcf2fdde1",
+        "answerSourceId": "src_cbfa1c8608ea693dcf2fdde1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2006-paper-answer",
+        "answerEvidenceId": "math3-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:cd53f33f7c4947168711e09506794a20b8d88b9f6f48183bc26ce295fa9898a5"
+      }
+    }
+  ]
+}
