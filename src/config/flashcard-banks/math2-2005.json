@@ -1,0 +1,1416 @@
+{
+  "id": "math2-2005",
+  "source": "math2-2005-paper-answer",
+  "paperId": "math2-2005",
+  "paperName": "2005考研数学二真题",
+  "subject": "数学",
+  "subjectKey": "math",
+  "track": "math2",
+  "year": "2005",
+  "quality": "ready",
+  "publicationStatus": "published",
+  "publicationBlockers": [],
+  "sourceEvidencePolicy": "baidu_netdisk_official_paper_pdf_page_image_v1",
+  "sourceFiles": [
+    {
+      "id": "math2-2005-paper-answer",
+      "role": "paper_answer",
+      "localPath": "data/raw-inbox/public-course-history/math2/2005/2005-math2-paper-answer.pdf",
+      "sha256": "sha256:0de8ddb4ea52a181d203ffee235db61f371ddacf0b65f1aaeea6ae31c069e6d3"
+    }
+  ],
+  "assetRoot": "question-bank/math2-2005",
+  "processed_at": "2026-05-27T15:43:12Z",
+  "total_cards": 23,
+  "cards": [
+    {
+      "id": "math2-2005-001",
+      "number": 1,
+      "paperId": "math2-2005",
+      "paperName": "2005考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2005",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2005考研数学二第1题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "-pi dx",
+      "explanation": "答案来自本地百度网盘 2005 数学二真题及解析 PDF；完整题干和公式见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2005/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2005考研数学二试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2005/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2005考研数学二答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2005",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2005-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:bd3bdd73b33ab242e8a3436e144286fdd6af70380014f5bd7961af1a78e9c374",
+      "answerTextHash": "sha256:998b0867d22116ac05259285626b5d82fc5633ac3876f6616bb2a3b33fc35d52",
+      "sourceEvidence": {
+        "evidenceId": "math2-2005-q01",
+        "sourceId": "src_f888957d448607a835bec76d",
+        "answerSourceId": "src_f888957d448607a835bec76d",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2005-paper-answer",
+        "answerEvidenceId": "math2-2005-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:998b0867d22116ac05259285626b5d82fc5633ac3876f6616bb2a3b33fc35d52"
+      }
+    },
+    {
+      "id": "math2-2005-002",
+      "number": 2,
+      "paperId": "math2-2005",
+      "paperName": "2005考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2005",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2005考研数学二第2题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "y = x + 3/2",
+      "explanation": "答案来自本地百度网盘 2005 数学二真题及解析 PDF；完整题干和公式见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2005/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2005考研数学二试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2005/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2005考研数学二答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2005",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2005-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:4d3174abd5365180f44da9f7a085eff3844ccefb49fa98691c998123a604d43f",
+      "answerTextHash": "sha256:4a39769b748498f06c210ae0be9c10b8b5a2fb6eca955e28c21f3cee349a7b94",
+      "sourceEvidence": {
+        "evidenceId": "math2-2005-q02",
+        "sourceId": "src_f888957d448607a835bec76d",
+        "answerSourceId": "src_f888957d448607a835bec76d",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2005-paper-answer",
+        "answerEvidenceId": "math2-2005-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:4a39769b748498f06c210ae0be9c10b8b5a2fb6eca955e28c21f3cee349a7b94"
+      }
+    },
+    {
+      "id": "math2-2005-003",
+      "number": 3,
+      "paperId": "math2-2005",
+      "paperName": "2005考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2005",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2005考研数学二第3题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "pi/4",
+      "explanation": "答案来自本地百度网盘 2005 数学二真题及解析 PDF；完整题干和公式见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2005/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2005考研数学二试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2005/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2005考研数学二答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2005",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2005-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:1098e06d95bff7abe98102f75d484ccd956a46258e2b2510320dab5f6f934650",
+      "answerTextHash": "sha256:62f6a339fc442cd37e43993431eb681f2f6ada29a2ec9cf2787c57e5baeb0a88",
+      "sourceEvidence": {
+        "evidenceId": "math2-2005-q03",
+        "sourceId": "src_f888957d448607a835bec76d",
+        "answerSourceId": "src_f888957d448607a835bec76d",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2005-paper-answer",
+        "answerEvidenceId": "math2-2005-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:62f6a339fc442cd37e43993431eb681f2f6ada29a2ec9cf2787c57e5baeb0a88"
+      }
+    },
+    {
+      "id": "math2-2005-004",
+      "number": 4,
+      "paperId": "math2-2005",
+      "paperName": "2005考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2005",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2005考研数学二第4题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "y = 1/3 x ln x - 1/9 x",
+      "explanation": "答案来自本地百度网盘 2005 数学二真题及解析 PDF；完整题干和公式见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2005/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2005考研数学二试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2005/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2005考研数学二答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2005",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2005-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:f9d6de5952496dd71c194bcf314983ce11e49b91cba5061c1aac809ba10bd96f",
+      "answerTextHash": "sha256:14d434c6e2cc3ee0575b3ad1b6e4ae305a73da9e4657ce71ef92af792c77a785",
+      "sourceEvidence": {
+        "evidenceId": "math2-2005-q04",
+        "sourceId": "src_f888957d448607a835bec76d",
+        "answerSourceId": "src_f888957d448607a835bec76d",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2005-paper-answer",
+        "answerEvidenceId": "math2-2005-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:14d434c6e2cc3ee0575b3ad1b6e4ae305a73da9e4657ce71ef92af792c77a785"
+      }
+    },
+    {
+      "id": "math2-2005-005",
+      "number": 5,
+      "paperId": "math2-2005",
+      "paperName": "2005考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2005",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2005考研数学二第5题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "3/4",
+      "explanation": "答案来自本地百度网盘 2005 数学二真题及解析 PDF；完整题干和公式见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2005/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2005考研数学二试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2005/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2005考研数学二答案解析 p.5"
+        },
+        {
+          "src": "question-bank/math2-2005/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2005考研数学二答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2005",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2005-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:15f0ceb9e2c03930a4615731491c4b3a4edf6b9ba223458c3e832b7e1f1f6954",
+      "answerTextHash": "sha256:ac07fba9f463184416341f0fc91d613253e06e45455482348a609d5833d0b5fc",
+      "sourceEvidence": {
+        "evidenceId": "math2-2005-q05",
+        "sourceId": "src_f888957d448607a835bec76d",
+        "answerSourceId": "src_f888957d448607a835bec76d",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2005-paper-answer",
+        "answerEvidenceId": "math2-2005-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:ac07fba9f463184416341f0fc91d613253e06e45455482348a609d5833d0b5fc"
+      }
+    },
+    {
+      "id": "math2-2005-006",
+      "number": 6,
+      "paperId": "math2-2005",
+      "paperName": "2005考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2005",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2005考研数学二第6题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "2",
+      "explanation": "答案来自本地百度网盘 2005 数学二真题及解析 PDF；完整题干和公式见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2005/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2005考研数学二试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2005/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2005考研数学二答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2005",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2005-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:d61cac96365aa0acf69f33759aa8a5b9b3f9d4c8604dc38a8b911e7f2582129f",
+      "answerTextHash": "sha256:8634432e9828a0160ec5d4fcbf51ac360da074f75705682e22e0b42eeed4df0e",
+      "sourceEvidence": {
+        "evidenceId": "math2-2005-q06",
+        "sourceId": "src_f888957d448607a835bec76d",
+        "answerSourceId": "src_f888957d448607a835bec76d",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2005-paper-answer",
+        "answerEvidenceId": "math2-2005-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:8634432e9828a0160ec5d4fcbf51ac360da074f75705682e22e0b42eeed4df0e"
+      }
+    },
+    {
+      "id": "math2-2005-007",
+      "number": 7,
+      "paperId": "math2-2005",
+      "paperName": "2005考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2005",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2005考研数学二第7题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2005 数学二真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2005/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2005考研数学二试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2005/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2005考研数学二答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2005",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2005-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:8badad1c53ed820c22603e30999ddc9b243329c34763bb23c1da43ac88d038f9",
+      "answerTextHash": "sha256:4bd414bf1f3c332d5656c55ac398a2d0417431bee33b2bb3c501278c096178b5",
+      "sourceEvidence": {
+        "evidenceId": "math2-2005-q07",
+        "sourceId": "src_f888957d448607a835bec76d",
+        "answerSourceId": "src_f888957d448607a835bec76d",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2005-paper-answer",
+        "answerEvidenceId": "math2-2005-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:4bd414bf1f3c332d5656c55ac398a2d0417431bee33b2bb3c501278c096178b5"
+      }
+    },
+    {
+      "id": "math2-2005-008",
+      "number": 8,
+      "paperId": "math2-2005",
+      "paperName": "2005考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2005",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2005考研数学二第8题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2005 数学二真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2005/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2005考研数学二试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2005/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2005考研数学二答案解析 p.6"
+        },
+        {
+          "src": "question-bank/math2-2005/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2005考研数学二答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2005",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2005-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:74e8cb5b7bb735d8e890c808ec3080c7daf199594d848a933bc72bd3c162a43d",
+      "answerTextHash": "sha256:58bf5ee2b19876347e9ceb3a5ffcb8fe99d82de204a1667aad779e38ec3ae2ec",
+      "sourceEvidence": {
+        "evidenceId": "math2-2005-q08",
+        "sourceId": "src_f888957d448607a835bec76d",
+        "answerSourceId": "src_f888957d448607a835bec76d",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2005-paper-answer",
+        "answerEvidenceId": "math2-2005-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:58bf5ee2b19876347e9ceb3a5ffcb8fe99d82de204a1667aad779e38ec3ae2ec"
+      }
+    },
+    {
+      "id": "math2-2005-009",
+      "number": 9,
+      "paperId": "math2-2005",
+      "paperName": "2005考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2005",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2005考研数学二第9题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2005 数学二真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2005/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2005考研数学二试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2005/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2005考研数学二答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2005",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2005-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:68ef9507a490fc26f5b1898507f6154e300834903353a80a1e7e2f649236fb8c",
+      "answerTextHash": "sha256:48a655724228f727dcd7f827c2a466e9941da8c76ac17f8df2a224b305cd0de5",
+      "sourceEvidence": {
+        "evidenceId": "math2-2005-q09",
+        "sourceId": "src_f888957d448607a835bec76d",
+        "answerSourceId": "src_f888957d448607a835bec76d",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2005-paper-answer",
+        "answerEvidenceId": "math2-2005-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:48a655724228f727dcd7f827c2a466e9941da8c76ac17f8df2a224b305cd0de5"
+      }
+    },
+    {
+      "id": "math2-2005-010",
+      "number": 10,
+      "paperId": "math2-2005",
+      "paperName": "2005考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2005",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2005考研数学二第10题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2005 数学二真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2005/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2005考研数学二试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2005/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2005考研数学二答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2005",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2005-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:e761805fca1e9f920d887dfe8616f907406aee852934e54ad842b172b6e88827",
+      "answerTextHash": "sha256:af561a8460fa8b36e9f5e23a8e2b70cda602707618904b4763c39855b872f90c",
+      "sourceEvidence": {
+        "evidenceId": "math2-2005-q10",
+        "sourceId": "src_f888957d448607a835bec76d",
+        "answerSourceId": "src_f888957d448607a835bec76d",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2005-paper-answer",
+        "answerEvidenceId": "math2-2005-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:af561a8460fa8b36e9f5e23a8e2b70cda602707618904b4763c39855b872f90c"
+      }
+    },
+    {
+      "id": "math2-2005-011",
+      "number": 11,
+      "paperId": "math2-2005",
+      "paperName": "2005考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2005",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2005考研数学二第11题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2005 数学二真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2005/paper-page-05.jpg",
+          "caption": "试卷原页 p.5",
+          "alt": "2005考研数学二试卷原页 p.5"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2005/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2005考研数学二答案解析 p.7"
+        },
+        {
+          "src": "question-bank/math2-2005/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2005考研数学二答案解析 p.8"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2005",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2005-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:a59dbd43903ce63a9e2b32f9ba6dc850e8e51b0575daf826d66e0845d7054f4d",
+      "answerTextHash": "sha256:40af4b8f4473d090c371eb34f53fe177bc97a3beaf321b65a2a899574dfc8375",
+      "sourceEvidence": {
+        "evidenceId": "math2-2005-q11",
+        "sourceId": "src_f888957d448607a835bec76d",
+        "answerSourceId": "src_f888957d448607a835bec76d",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2005-paper-answer",
+        "answerEvidenceId": "math2-2005-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:40af4b8f4473d090c371eb34f53fe177bc97a3beaf321b65a2a899574dfc8375"
+      }
+    },
+    {
+      "id": "math2-2005-012",
+      "number": 12,
+      "paperId": "math2-2005",
+      "paperName": "2005考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2005",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2005考研数学二第12题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2005 数学二真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2005/paper-page-05.jpg",
+          "caption": "试卷原页 p.5",
+          "alt": "2005考研数学二试卷原页 p.5"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2005/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2005考研数学二答案解析 p.8"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2005",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2005-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:a7ac20babe2205f8e2ce0bd9e525a9899b462336acf3f3635a4988ff003dcf27",
+      "answerTextHash": "sha256:8ccfc172b695f8d6a000c1c75ace6c4a712a2450b5b8333f7fdade7ccc2bae06",
+      "sourceEvidence": {
+        "evidenceId": "math2-2005-q12",
+        "sourceId": "src_f888957d448607a835bec76d",
+        "answerSourceId": "src_f888957d448607a835bec76d",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2005-paper-answer",
+        "answerEvidenceId": "math2-2005-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:8ccfc172b695f8d6a000c1c75ace6c4a712a2450b5b8333f7fdade7ccc2bae06"
+      }
+    },
+    {
+      "id": "math2-2005-013",
+      "number": 13,
+      "paperId": "math2-2005",
+      "paperName": "2005考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2005",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2005考研数学二第13题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2005 数学二真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2005/paper-page-06.jpg",
+          "caption": "试卷原页 p.6",
+          "alt": "2005考研数学二试卷原页 p.6"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2005/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2005考研数学二答案解析 p.8"
+        },
+        {
+          "src": "question-bank/math2-2005/answer-page-09.jpg",
+          "caption": "答案解析 p.9",
+          "alt": "2005考研数学二答案解析 p.9"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2005",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2005-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:bf9537327b1a05e8091c7a0bab1140ab3e189bda360d6b2a0259313316d18685",
+      "answerTextHash": "sha256:1d36232c99746bd3f839787a32e5e04ac67041510b0d5e853b80487cb576a47c",
+      "sourceEvidence": {
+        "evidenceId": "math2-2005-q13",
+        "sourceId": "src_f888957d448607a835bec76d",
+        "answerSourceId": "src_f888957d448607a835bec76d",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2005-paper-answer",
+        "answerEvidenceId": "math2-2005-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:1d36232c99746bd3f839787a32e5e04ac67041510b0d5e853b80487cb576a47c"
+      }
+    },
+    {
+      "id": "math2-2005-014",
+      "number": 14,
+      "paperId": "math2-2005",
+      "paperName": "2005考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2005",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2005考研数学二第14题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2005 数学二真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2005/paper-page-06.jpg",
+          "caption": "试卷原页 p.6",
+          "alt": "2005考研数学二试卷原页 p.6"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2005/answer-page-09.jpg",
+          "caption": "答案解析 p.9",
+          "alt": "2005考研数学二答案解析 p.9"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2005",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2005-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:8d68f09708cd4d3019ca210fc303e635e60de7778b84cfd47af476987ac4b9fd",
+      "answerTextHash": "sha256:4a2ac167ff4d753876d921bab07de518e5ac64a172428ef0b658732800220504",
+      "sourceEvidence": {
+        "evidenceId": "math2-2005-q14",
+        "sourceId": "src_f888957d448607a835bec76d",
+        "answerSourceId": "src_f888957d448607a835bec76d",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2005-paper-answer",
+        "answerEvidenceId": "math2-2005-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:4a2ac167ff4d753876d921bab07de518e5ac64a172428ef0b658732800220504"
+      }
+    },
+    {
+      "id": "math2-2005-015",
+      "number": 15,
+      "paperId": "math2-2005",
+      "paperName": "2005考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2005",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2005考研数学二第15题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "1/2",
+      "explanation": "答案来自本地百度网盘 2005 数学二真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2005/paper-page-07.jpg",
+          "caption": "试卷原页 p.7",
+          "alt": "2005考研数学二试卷原页 p.7"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2005/answer-page-09.jpg",
+          "caption": "答案解析 p.9",
+          "alt": "2005考研数学二答案解析 p.9"
+        },
+        {
+          "src": "question-bank/math2-2005/answer-page-10.jpg",
+          "caption": "答案解析 p.10",
+          "alt": "2005考研数学二答案解析 p.10"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2005",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2005-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:77f8bac13374e1f45377b3dcda66c9ba7bb669d711ed1b91921c92391dc2acc2",
+      "answerTextHash": "sha256:88aed12f0442dc198d79828741cc8196ae0c46b9a433c4716f4a6b2506b6b073",
+      "sourceEvidence": {
+        "evidenceId": "math2-2005-q15",
+        "sourceId": "src_f888957d448607a835bec76d",
+        "answerSourceId": "src_f888957d448607a835bec76d",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2005-paper-answer",
+        "answerEvidenceId": "math2-2005-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:88aed12f0442dc198d79828741cc8196ae0c46b9a433c4716f4a6b2506b6b073"
+      }
+    },
+    {
+      "id": "math2-2005-016",
+      "number": 16,
+      "paperId": "math2-2005",
+      "paperName": "2005考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2005",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2005考研数学二第16题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "x = ln y - (y - 1) / (2y)",
+      "explanation": "答案来自本地百度网盘 2005 数学二真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2005/paper-page-07.jpg",
+          "caption": "试卷原页 p.7",
+          "alt": "2005考研数学二试卷原页 p.7"
+        },
+        {
+          "src": "question-bank/math2-2005/paper-page-08.jpg",
+          "caption": "试卷原页 p.8",
+          "alt": "2005考研数学二试卷原页 p.8"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2005/answer-page-10.jpg",
+          "caption": "答案解析 p.10",
+          "alt": "2005考研数学二答案解析 p.10"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2005",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2005-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:33bcccb9f8156bbb64b3440eba755f6c7e082d8ed6355acf1fc2ec2c737e83d1",
+      "answerTextHash": "sha256:15bb34b7341d10a68e05699e5c8e2fba566d8d467cc70780012b8cb7f6b6db24",
+      "sourceEvidence": {
+        "evidenceId": "math2-2005-q16",
+        "sourceId": "src_f888957d448607a835bec76d",
+        "answerSourceId": "src_f888957d448607a835bec76d",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2005-paper-answer",
+        "answerEvidenceId": "math2-2005-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:15bb34b7341d10a68e05699e5c8e2fba566d8d467cc70780012b8cb7f6b6db24"
+      }
+    },
+    {
+      "id": "math2-2005-017",
+      "number": 17,
+      "paperId": "math2-2005",
+      "paperName": "2005考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2005",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2005考研数学二第17题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "20",
+      "explanation": "答案来自本地百度网盘 2005 数学二真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2005/paper-page-08.jpg",
+          "caption": "试卷原页 p.8",
+          "alt": "2005考研数学二试卷原页 p.8"
+        },
+        {
+          "src": "question-bank/math2-2005/paper-page-09.jpg",
+          "caption": "试卷原页 p.9",
+          "alt": "2005考研数学二试卷原页 p.9"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2005/answer-page-10.jpg",
+          "caption": "答案解析 p.10",
+          "alt": "2005考研数学二答案解析 p.10"
+        },
+        {
+          "src": "question-bank/math2-2005/answer-page-11.jpg",
+          "caption": "答案解析 p.11",
+          "alt": "2005考研数学二答案解析 p.11"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2005",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2005-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:550267d1e7635b3b0499667fa7ea50463aa9278afe8cf3fc42a1a6b88f49e5ab",
+      "answerTextHash": "sha256:65201af0989349890de1e42051357c8d1430eb52486cb87e365d6834092e27d9",
+      "sourceEvidence": {
+        "evidenceId": "math2-2005-q17",
+        "sourceId": "src_f888957d448607a835bec76d",
+        "answerSourceId": "src_f888957d448607a835bec76d",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2005-paper-answer",
+        "answerEvidenceId": "math2-2005-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:65201af0989349890de1e42051357c8d1430eb52486cb87e365d6834092e27d9"
+      }
+    },
+    {
+      "id": "math2-2005-018",
+      "number": 18,
+      "paperId": "math2-2005",
+      "paperName": "2005考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2005",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2005考研数学二第18题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "y = 2x + sqrt(1 - x^2)",
+      "explanation": "答案来自本地百度网盘 2005 数学二真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2005/paper-page-09.jpg",
+          "caption": "试卷原页 p.9",
+          "alt": "2005考研数学二试卷原页 p.9"
+        },
+        {
+          "src": "question-bank/math2-2005/paper-page-10.jpg",
+          "caption": "试卷原页 p.10",
+          "alt": "2005考研数学二试卷原页 p.10"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2005/answer-page-11.jpg",
+          "caption": "答案解析 p.11",
+          "alt": "2005考研数学二答案解析 p.11"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2005",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2005-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:d897c050d37eecd2db4a1893662c1ea48fa11806c7dfe431b05d664179f6fd98",
+      "answerTextHash": "sha256:d851f2ad3ff93564b8e0197075fac51ecc6655962e5ad4ced0249259b27c841e",
+      "sourceEvidence": {
+        "evidenceId": "math2-2005-q18",
+        "sourceId": "src_f888957d448607a835bec76d",
+        "answerSourceId": "src_f888957d448607a835bec76d",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2005-paper-answer",
+        "answerEvidenceId": "math2-2005-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:d851f2ad3ff93564b8e0197075fac51ecc6655962e5ad4ced0249259b27c841e"
+      }
+    },
+    {
+      "id": "math2-2005-019",
+      "number": 19,
+      "paperId": "math2-2005",
+      "paperName": "2005考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2005",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2005考研数学二第19题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "存在 ξ 使得 f(ξ) = 1 - ξ；且存在两个不同的点 η, ξ 使得 f'(η)f'(ξ) = 1。",
+      "explanation": "答案来自本地百度网盘 2005 数学二真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2005/paper-page-10.jpg",
+          "caption": "试卷原页 p.10",
+          "alt": "2005考研数学二试卷原页 p.10"
+        },
+        {
+          "src": "question-bank/math2-2005/paper-page-11.jpg",
+          "caption": "试卷原页 p.11",
+          "alt": "2005考研数学二试卷原页 p.11"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2005/answer-page-11.jpg",
+          "caption": "答案解析 p.11",
+          "alt": "2005考研数学二答案解析 p.11"
+        },
+        {
+          "src": "question-bank/math2-2005/answer-page-12.jpg",
+          "caption": "答案解析 p.12",
+          "alt": "2005考研数学二答案解析 p.12"
+        },
+        {
+          "src": "question-bank/math2-2005/answer-page-13.jpg",
+          "caption": "答案解析 p.13",
+          "alt": "2005考研数学二答案解析 p.13"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2005",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2005-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:0d152cb352c1539c9f0018f61549e67a9f0b8ad5a62891df3aa70050d613b3f0",
+      "answerTextHash": "sha256:5863087a5e1c217d1c6e3c80d3059c5500ab0999e405362000d2098ce20542e8",
+      "sourceEvidence": {
+        "evidenceId": "math2-2005-q19",
+        "sourceId": "src_f888957d448607a835bec76d",
+        "answerSourceId": "src_f888957d448607a835bec76d",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2005-paper-answer",
+        "answerEvidenceId": "math2-2005-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:5863087a5e1c217d1c6e3c80d3059c5500ab0999e405362000d2098ce20542e8"
+      }
+    },
+    {
+      "id": "math2-2005-020",
+      "number": 20,
+      "paperId": "math2-2005",
+      "paperName": "2005考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2005",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2005考研数学二第20题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "z = x^2 - y^2 + 2；驻点 (0,0) 的函数值为 2；边界最大值 3，最小值 -2。",
+      "explanation": "答案来自本地百度网盘 2005 数学二真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2005/paper-page-11.jpg",
+          "caption": "试卷原页 p.11",
+          "alt": "2005考研数学二试卷原页 p.11"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2005/answer-page-13.jpg",
+          "caption": "答案解析 p.13",
+          "alt": "2005考研数学二答案解析 p.13"
+        },
+        {
+          "src": "question-bank/math2-2005/answer-page-14.jpg",
+          "caption": "答案解析 p.14",
+          "alt": "2005考研数学二答案解析 p.14"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2005",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2005-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:ae54dd9ff203be4a592fee0f334fb9e9508b8f54322ac2f5306b03f5b7c146b5",
+      "answerTextHash": "sha256:ab6281090eb1c2b57c788edc86ad82ac8c786120869210baaf0bc972c7899a2e",
+      "sourceEvidence": {
+        "evidenceId": "math2-2005-q20",
+        "sourceId": "src_f888957d448607a835bec76d",
+        "answerSourceId": "src_f888957d448607a835bec76d",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2005-paper-answer",
+        "answerEvidenceId": "math2-2005-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:ab6281090eb1c2b57c788edc86ad82ac8c786120869210baaf0bc972c7899a2e"
+      }
+    },
+    {
+      "id": "math2-2005-021",
+      "number": 21,
+      "paperId": "math2-2005",
+      "paperName": "2005考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2005",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2005考研数学二第21题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "积分值为 pi/4 - 1/3。",
+      "explanation": "答案来自本地百度网盘 2005 数学二真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2005/paper-page-11.jpg",
+          "caption": "试卷原页 p.11",
+          "alt": "2005考研数学二试卷原页 p.11"
+        },
+        {
+          "src": "question-bank/math2-2005/paper-page-12.jpg",
+          "caption": "试卷原页 p.12",
+          "alt": "2005考研数学二试卷原页 p.12"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2005/answer-page-14.jpg",
+          "caption": "答案解析 p.14",
+          "alt": "2005考研数学二答案解析 p.14"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2005",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2005-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:56cddf590f27f4f5d0acf8727da5459dcc7c4f58e48bbf62271a04447e9a6d1a",
+      "answerTextHash": "sha256:0a66ef5f6cabad04e6688be0da10879b8803a0f041266b9d31b91a40d936f9b4",
+      "sourceEvidence": {
+        "evidenceId": "math2-2005-q21",
+        "sourceId": "src_f888957d448607a835bec76d",
+        "answerSourceId": "src_f888957d448607a835bec76d",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2005-paper-answer",
+        "answerEvidenceId": "math2-2005-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:0a66ef5f6cabad04e6688be0da10879b8803a0f041266b9d31b91a40d936f9b4"
+      }
+    },
+    {
+      "id": "math2-2005-022",
+      "number": 22,
+      "paperId": "math2-2005",
+      "paperName": "2005考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2005",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2005考研数学二第22题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "a = 1。",
+      "explanation": "答案来自本地百度网盘 2005 数学二真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2005/paper-page-12.jpg",
+          "caption": "试卷原页 p.12",
+          "alt": "2005考研数学二试卷原页 p.12"
+        },
+        {
+          "src": "question-bank/math2-2005/paper-page-13.jpg",
+          "caption": "试卷原页 p.13",
+          "alt": "2005考研数学二试卷原页 p.13"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2005/answer-page-14.jpg",
+          "caption": "答案解析 p.14",
+          "alt": "2005考研数学二答案解析 p.14"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2005",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2005-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:1eac544eec751778f8a301a19c5d4cb2ebb4a150941428ff16f439a10d6c3cda",
+      "answerTextHash": "sha256:95a41f69081235ddc55faf4dce0dcf63a6a3906c311eecacacfea8d4e608ae5b",
+      "sourceEvidence": {
+        "evidenceId": "math2-2005-q22",
+        "sourceId": "src_f888957d448607a835bec76d",
+        "answerSourceId": "src_f888957d448607a835bec76d",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2005-paper-answer",
+        "answerEvidenceId": "math2-2005-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:95a41f69081235ddc55faf4dce0dcf63a6a3906c311eecacacfea8d4e608ae5b"
+      }
+    },
+    {
+      "id": "math2-2005-023",
+      "number": 23,
+      "paperId": "math2-2005",
+      "paperName": "2005考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2005",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2005考研数学二第23题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "若 r(A)=2，则 k=9，Ax=0 的通解为 t(1,2,3)^T；若 r(A)=1，则由 a+2b+3c=0 且 (k-9)c=0 确定，c!=0 时通解为 t1(c,0,-a)^T+t2(0,c,-b)^T，c=0 时通解为 t1(1,2,0)^T+t2(0,0,1)^T。",
+      "explanation": "答案来自本地百度网盘 2005 数学二真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2005/paper-page-13.jpg",
+          "caption": "试卷原页 p.13",
+          "alt": "2005考研数学二试卷原页 p.13"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2005/answer-page-13.jpg",
+          "caption": "答案解析 p.13",
+          "alt": "2005考研数学二答案解析 p.13"
+        },
+        {
+          "src": "question-bank/math2-2005/answer-page-14.jpg",
+          "caption": "答案解析 p.14",
+          "alt": "2005考研数学二答案解析 p.14"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2005",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2005-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:dce4df25c375eac36047e58fd9496798d4d08776246c1b2145aed147f0546e1e",
+      "answerTextHash": "sha256:d26f8950ea64bde7aa84532ef6c73dc2a86d4ce120e1a955af214c51eff3d07b",
+      "sourceEvidence": {
+        "evidenceId": "math2-2005-q23",
+        "sourceId": "src_f888957d448607a835bec76d",
+        "answerSourceId": "src_f888957d448607a835bec76d",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2005-paper-answer",
+        "answerEvidenceId": "math2-2005-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:d26f8950ea64bde7aa84532ef6c73dc2a86d4ce120e1a955af214c51eff3d07b"
+      }
+    }
+  ]
+}
