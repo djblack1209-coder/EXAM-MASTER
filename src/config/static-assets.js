@@ -192,6 +192,36 @@ export function getAssetUrl(category, name) {
 }
 
 /**
+ * Resolve a dynamic static asset path from generated question-bank data.
+ *
+ * Question-bank JSON stores stable relative paths such as
+ * `question-bank/math1-2025/paper-page-01.jpg`. H5 can load them from the
+ * copied `/static` directory, while mini-program/App production builds should
+ * use the configured CDN base to avoid packaging large PDF page images.
+ */
+export function getStaticAssetUrl(relativePath) {
+  const rawPath = String(relativePath || '').trim();
+  if (!rawPath) return '';
+  if (/^(https?:|data:|blob:)/i.test(rawPath)) return rawPath;
+
+  const normalizedPath = rawPath
+    .replace(/^\/+/, '')
+    .replace(/^static\//, '')
+    .replace(/\\/g, '/');
+  if (!normalizedPath || normalizedPath.includes('..')) return '';
+
+  if (useCdn) {
+    return `${CDN_BASE}/${normalizedPath}`;
+  }
+
+  if (isH5Runtime || MINI_PROGRAM_LOCAL_ASSETS.has(normalizedPath)) {
+    return `/static/${normalizedPath}`;
+  }
+
+  return '';
+}
+
+/**
  * 批量获取某个分类下所有资源的 URL 映射
  *
  * @param {string} category - 资源分类
@@ -233,6 +263,7 @@ export const ASSETS = {
 
 export default {
   getAssetUrl,
+  getStaticAssetUrl,
   getAssetUrls,
   ASSETS,
   /** 暴露 CDN 状态，方便调试 */

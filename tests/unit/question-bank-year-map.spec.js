@@ -22,8 +22,8 @@ describe('question bank public-course year map', () => {
     expect(source).toContain('正式 ${ready} · 整理中 ${organizing} · 待入库 ${missing}');
   });
 
-  it('keeps every track on the 2005-2026 map and marks disabled known banks as organizing', () => {
-    const tree = getPracticeNavigationTree({ tracks: ['english2', 'math1'] });
+  it('keeps every track on the 2005-2026 map and marks verified banks as clickable', () => {
+    const tree = getPracticeNavigationTree({ tracks: ['english2', 'math1', 'math2'] });
     const tracks = tree.flatMap((subject) => subject.tracks);
 
     for (const track of tracks) {
@@ -33,17 +33,37 @@ describe('question bank public-course year map', () => {
     }
 
     const english2 = tracks.find((track) => track.id === 'english2');
-    expect(english2.slotSummary).toEqual({ total: 22, ready: 0, organizing: 1, missing: 21 });
+    expect(english2.slotSummary).toEqual({ total: 22, ready: 1, organizing: 0, missing: 21 });
     expect(english2.yearSlots.find((slot) => slot.year === '2025')).toMatchObject({
       bankId: 'english2-2025',
-      status: 'organizing',
-      statusLabel: '整理中',
-      actionLabel: '整理中',
-      clickable: false
+      status: 'ready',
+      statusLabel: '正式',
+      actionLabel: '开始',
+      clickable: true
+    });
+
+    const math1 = tracks.find((track) => track.id === 'math1');
+    expect(math1.slotSummary).toEqual({ total: 22, ready: 1, organizing: 0, missing: 21 });
+    expect(math1.yearSlots.find((slot) => slot.year === '2025')).toMatchObject({
+      bankId: 'math1-2025',
+      status: 'ready',
+      statusLabel: '正式',
+      actionLabel: '开始',
+      clickable: true
+    });
+
+    const math2 = tracks.find((track) => track.id === 'math2');
+    expect(math2.slotSummary).toEqual({ total: 22, ready: 1, organizing: 0, missing: 21 });
+    expect(math2.yearSlots.find((slot) => slot.year === '2025')).toMatchObject({
+      bankId: 'math2-2025',
+      status: 'ready',
+      statusLabel: '正式',
+      actionLabel: '开始',
+      clickable: true
     });
   });
 
-  it('defaults a no-ready track to the newest known organizing slot instead of a missing slot', async () => {
+  it('defaults a track with a verified bank to its newest ready slot', async () => {
     storageService.save('exam_profile', { tracks: ['english2'] });
 
     const wrapper = mount(QuestionBankPage, {
@@ -56,11 +76,87 @@ describe('question bank public-course year map', () => {
     await nextTick();
 
     expect(wrapper.text()).toContain('2025考研英语二真题');
-    expect(wrapper.text()).toContain('完整答案与篇章材料完善后开放整卷练习');
-    expect(wrapper.text()).toContain('正式 0 · 整理中 1 · 待入库 21');
+    expect(wrapper.text()).toContain('正式 1 · 整理中 0 · 待入库 21');
     expect(wrapper.find('.year-slot.active .slot-year').text()).toBe('2025');
 
     wrapper.unmount();
+  });
+
+  it('shows the cleaned politics papers as ready and keeps missing years blocked', () => {
+    const tree = getPracticeNavigationTree({ tracks: ['politics'] });
+    const politics = tree[0].tracks[0];
+
+    expect(politics.slotSummary).toEqual({ total: 22, ready: 11, organizing: 0, missing: 11 });
+    expect(politics.yearSlots.find((slot) => slot.year === '2025')).toMatchObject({
+      bankId: 'politics-2025',
+      status: 'ready',
+      actionLabel: '开始',
+      clickable: true
+    });
+    expect(politics.yearSlots.find((slot) => slot.year === '2024')).toMatchObject({
+      bankId: 'politics-2024',
+      status: 'ready',
+      actionLabel: '开始',
+      clickable: true
+    });
+    expect(politics.yearSlots.find((slot) => slot.year === '2005')).toMatchObject({
+      bankId: 'politics-2005',
+      status: 'ready',
+      actionLabel: '开始',
+      clickable: true
+    });
+    expect(politics.yearSlots.find((slot) => slot.year === '2006')).toMatchObject({
+      bankId: 'politics-2006',
+      status: 'ready',
+      actionLabel: '开始',
+      clickable: true
+    });
+    expect(politics.yearSlots.find((slot) => slot.year === '2007')).toMatchObject({
+      bankId: 'politics-2007',
+      status: 'ready',
+      actionLabel: '开始',
+      clickable: true
+    });
+    expect(politics.yearSlots.find((slot) => slot.year === '2008')).toMatchObject({
+      bankId: 'politics-2008',
+      status: 'ready',
+      actionLabel: '开始',
+      clickable: true
+    });
+    expect(politics.yearSlots.find((slot) => slot.year === '2009')).toMatchObject({
+      bankId: 'politics-2009',
+      status: 'ready',
+      actionLabel: '开始',
+      clickable: true
+    });
+    expect(politics.yearSlots.find((slot) => slot.year === '2010')).toMatchObject({
+      bankId: 'politics-2010',
+      status: 'ready',
+      actionLabel: '开始',
+      clickable: true
+    });
+    expect(politics.yearSlots.find((slot) => slot.year === '2011')).toMatchObject({
+      bankId: 'politics-2011',
+      status: 'ready',
+      actionLabel: '开始',
+      clickable: true
+    });
+    expect(politics.yearSlots.find((slot) => slot.year === '2012')).toMatchObject({
+      bankId: 'politics-2012',
+      status: 'ready',
+      actionLabel: '开始',
+      clickable: true
+    });
+    expect(politics.yearSlots.find((slot) => slot.year === '2014')).toMatchObject({
+      bankId: 'politics-2014',
+      status: 'ready',
+      actionLabel: '开始',
+      clickable: true
+    });
+    expect(politics.yearSlots.find((slot) => slot.year === '2023')).toMatchObject({
+      status: 'missing',
+      clickable: false
+    });
   });
 
   it('shows verified formal banks as clickable in the operator-facing summary', async () => {
@@ -75,11 +171,11 @@ describe('question bank public-course year map', () => {
     });
     await nextTick();
 
-    expect(wrapper.text()).toContain('9');
+    expect(wrapper.text()).toContain('11');
     expect(wrapper.text()).toContain('正式');
     expect(wrapper.text()).toContain('0');
     expect(wrapper.text()).toContain('整理中');
-    expect(wrapper.text()).toContain('正式 9 · 整理中 0 · 待入库 13');
+    expect(wrapper.text()).toContain('正式 11 · 整理中 0 · 待入库 11');
 
     wrapper.unmount();
   });

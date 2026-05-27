@@ -1,0 +1,2980 @@
+{
+  "id": "politics-2011",
+  "source": "politics-2011-paper-answer",
+  "paperId": "politics-2011",
+  "paperName": "2011考研政治真题",
+  "subject": "政治",
+  "subjectKey": "politics",
+  "track": "politics",
+  "year": "2011",
+  "quality": "ready",
+  "publicationStatus": "published",
+  "publicationBlockers": [],
+  "sourceEvidencePolicy": "baidu_netdisk_official_paper_pdf_page_image_v1",
+  "sourceFiles": [
+    {
+      "id": "politics-2011-paper",
+      "sourceId": "src_a5631399bc38974478a913d2",
+      "role": "paper",
+      "localPath": "data/raw-inbox/public-course-history/politics/2011/2011-politics-paper.pdf",
+      "sha256": "sha256:9b0901572b09fcdca70e0d7073d5ed896e71fc3742db17faa629c751f31e5323"
+    },
+    {
+      "id": "politics-2011-paper-answer",
+      "sourceId": "src_4d6b3cc3f1aad26f0b86ed34",
+      "role": "paper_answer",
+      "localPath": "data/raw-inbox/public-course-history/politics/2011/2011-politics-paper-answer.pdf",
+      "sha256": "sha256:9a560b6c2576bcf3787dae6ca7d870f881aaa87b07696dc22a906774888a52bb"
+    }
+  ],
+  "sourceNotes": [
+    "The standalone 2011 paper PDF has a usable text layer for locating question-page ranges; answer keys and analysis points are taken from the local paper-answer PDF pages 10-11."
+  ],
+  "assetRoot": "question-bank/politics-2011",
+  "processed_at": "2026-05-27T01:46:19Z",
+  "total_cards": 38,
+  "sections": [
+    "单项选择",
+    "多项选择",
+    "分析题"
+  ],
+  "cards": [
+    {
+      "id": "politics-2011-001",
+      "number": 1,
+      "paperId": "politics-2011",
+      "paperName": "2011考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2011",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2011考研政治第1题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2011 考研政治真题及参考答案 PDF 的答案键页；题面以真题 PDF 原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2011/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2011考研政治试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2011/answer-page-10.jpg",
+          "caption": "答案原页 p.10",
+          "alt": "2011考研政治答案原页 p.10"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2011",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2011-paper-answer",
+      "sourceEvidenceId": "politics-2011-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:929683b27e47e8903834bdddf6123e222cfd27dfd13f1f6cad49b89c8d045aff",
+      "answerTextHash": "sha256:dcce08fdfe2c81e2d3bdb09d177ff339b44aca8c36ba5e7e364fab2fd1ae6b2e",
+      "sourceEvidence": {
+        "evidenceId": "politics-2011-q01",
+        "sourceId": "src_a5631399bc38974478a913d2",
+        "answerSourceId": "src_4d6b3cc3f1aad26f0b86ed34",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2011-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:929683b27e47e8903834bdddf6123e222cfd27dfd13f1f6cad49b89c8d045aff",
+        "answerTextHash": "sha256:dcce08fdfe2c81e2d3bdb09d177ff339b44aca8c36ba5e7e364fab2fd1ae6b2e"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_4d6b3cc3f1aad26f0b86ed34",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2011/2011-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:dcce08fdfe2c81e2d3bdb09d177ff339b44aca8c36ba5e7e364fab2fd1ae6b2e",
+        "method": "local_pdf_text_or_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2011_bank",
+        "note": "Matched against local Baidu Netdisk 2011 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2011-002",
+      "number": 2,
+      "paperId": "politics-2011",
+      "paperName": "2011考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2011",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2011考研政治第2题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2011 考研政治真题及参考答案 PDF 的答案键页；题面以真题 PDF 原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2011/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2011考研政治试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2011/answer-page-10.jpg",
+          "caption": "答案原页 p.10",
+          "alt": "2011考研政治答案原页 p.10"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2011",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2011-paper-answer",
+      "sourceEvidenceId": "politics-2011-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:efca71096cb53d1c39939fd4704caadffda784e05c23c29cce988232a467dfcf",
+      "answerTextHash": "sha256:0f3e0a75f6fe282fd0463ad1bc33f767da2c35d9718d277824558d549fcd9d13",
+      "sourceEvidence": {
+        "evidenceId": "politics-2011-q02",
+        "sourceId": "src_a5631399bc38974478a913d2",
+        "answerSourceId": "src_4d6b3cc3f1aad26f0b86ed34",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2011-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:efca71096cb53d1c39939fd4704caadffda784e05c23c29cce988232a467dfcf",
+        "answerTextHash": "sha256:0f3e0a75f6fe282fd0463ad1bc33f767da2c35d9718d277824558d549fcd9d13"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_4d6b3cc3f1aad26f0b86ed34",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2011/2011-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:0f3e0a75f6fe282fd0463ad1bc33f767da2c35d9718d277824558d549fcd9d13",
+        "method": "local_pdf_text_or_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2011_bank",
+        "note": "Matched against local Baidu Netdisk 2011 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2011-003",
+      "number": 3,
+      "paperId": "politics-2011",
+      "paperName": "2011考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2011",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2011考研政治第3题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2011 考研政治真题及参考答案 PDF 的答案键页；题面以真题 PDF 原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2011/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2011考研政治试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2011/answer-page-10.jpg",
+          "caption": "答案原页 p.10",
+          "alt": "2011考研政治答案原页 p.10"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2011",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2011-paper-answer",
+      "sourceEvidenceId": "politics-2011-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:d5e95f1731ea8641f05f8766bdbb744229da7cbfef26e587c403562f3549f6d9",
+      "answerTextHash": "sha256:0f3e0a75f6fe282fd0463ad1bc33f767da2c35d9718d277824558d549fcd9d13",
+      "sourceEvidence": {
+        "evidenceId": "politics-2011-q03",
+        "sourceId": "src_a5631399bc38974478a913d2",
+        "answerSourceId": "src_4d6b3cc3f1aad26f0b86ed34",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2011-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:d5e95f1731ea8641f05f8766bdbb744229da7cbfef26e587c403562f3549f6d9",
+        "answerTextHash": "sha256:0f3e0a75f6fe282fd0463ad1bc33f767da2c35d9718d277824558d549fcd9d13"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_4d6b3cc3f1aad26f0b86ed34",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2011/2011-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:0f3e0a75f6fe282fd0463ad1bc33f767da2c35d9718d277824558d549fcd9d13",
+        "method": "local_pdf_text_or_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2011_bank",
+        "note": "Matched against local Baidu Netdisk 2011 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2011-004",
+      "number": 4,
+      "paperId": "politics-2011",
+      "paperName": "2011考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2011",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2011考研政治第4题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2011 考研政治真题及参考答案 PDF 的答案键页；题面以真题 PDF 原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2011/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2011考研政治试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2011/answer-page-10.jpg",
+          "caption": "答案原页 p.10",
+          "alt": "2011考研政治答案原页 p.10"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2011",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2011-paper-answer",
+      "sourceEvidenceId": "politics-2011-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:d31a46a6bb95096774de4ed5a5b77018b97c7792c78d5ddc0952db70b69d474c",
+      "answerTextHash": "sha256:b884018ed4162ccb00ae7cb339bd158accc375857ff69d41d7a20f583054e23a",
+      "sourceEvidence": {
+        "evidenceId": "politics-2011-q04",
+        "sourceId": "src_a5631399bc38974478a913d2",
+        "answerSourceId": "src_4d6b3cc3f1aad26f0b86ed34",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2011-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:d31a46a6bb95096774de4ed5a5b77018b97c7792c78d5ddc0952db70b69d474c",
+        "answerTextHash": "sha256:b884018ed4162ccb00ae7cb339bd158accc375857ff69d41d7a20f583054e23a"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_4d6b3cc3f1aad26f0b86ed34",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2011/2011-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:b884018ed4162ccb00ae7cb339bd158accc375857ff69d41d7a20f583054e23a",
+        "method": "local_pdf_text_or_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2011_bank",
+        "note": "Matched against local Baidu Netdisk 2011 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2011-005",
+      "number": 5,
+      "paperId": "politics-2011",
+      "paperName": "2011考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2011",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2011考研政治第5题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2011 考研政治真题及参考答案 PDF 的答案键页；题面以真题 PDF 原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2011/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2011考研政治试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2011/answer-page-10.jpg",
+          "caption": "答案原页 p.10",
+          "alt": "2011考研政治答案原页 p.10"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2011",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2011-paper-answer",
+      "sourceEvidenceId": "politics-2011-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:dc0a6878e469fdbbbd902828e0151272a083acbc383fa3055ac9be9fb582f1be",
+      "answerTextHash": "sha256:65f426311f18873244e84641e4e69fb1b38b35ab4aae12f3703be1abe98952da",
+      "sourceEvidence": {
+        "evidenceId": "politics-2011-q05",
+        "sourceId": "src_a5631399bc38974478a913d2",
+        "answerSourceId": "src_4d6b3cc3f1aad26f0b86ed34",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2011-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:dc0a6878e469fdbbbd902828e0151272a083acbc383fa3055ac9be9fb582f1be",
+        "answerTextHash": "sha256:65f426311f18873244e84641e4e69fb1b38b35ab4aae12f3703be1abe98952da"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_4d6b3cc3f1aad26f0b86ed34",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2011/2011-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:65f426311f18873244e84641e4e69fb1b38b35ab4aae12f3703be1abe98952da",
+        "method": "local_pdf_text_or_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2011_bank",
+        "note": "Matched against local Baidu Netdisk 2011 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2011-006",
+      "number": 6,
+      "paperId": "politics-2011",
+      "paperName": "2011考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2011",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2011考研政治第6题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2011 考研政治真题及参考答案 PDF 的答案键页；题面以真题 PDF 原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2011/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2011考研政治试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2011/answer-page-10.jpg",
+          "caption": "答案原页 p.10",
+          "alt": "2011考研政治答案原页 p.10"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2011",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2011-paper-answer",
+      "sourceEvidenceId": "politics-2011-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:7319448b38ae6833371b77638f17b0895ebbcaf75cfed6f0b3821498f700d527",
+      "answerTextHash": "sha256:dcce08fdfe2c81e2d3bdb09d177ff339b44aca8c36ba5e7e364fab2fd1ae6b2e",
+      "sourceEvidence": {
+        "evidenceId": "politics-2011-q06",
+        "sourceId": "src_a5631399bc38974478a913d2",
+        "answerSourceId": "src_4d6b3cc3f1aad26f0b86ed34",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2011-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:7319448b38ae6833371b77638f17b0895ebbcaf75cfed6f0b3821498f700d527",
+        "answerTextHash": "sha256:dcce08fdfe2c81e2d3bdb09d177ff339b44aca8c36ba5e7e364fab2fd1ae6b2e"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_4d6b3cc3f1aad26f0b86ed34",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2011/2011-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:dcce08fdfe2c81e2d3bdb09d177ff339b44aca8c36ba5e7e364fab2fd1ae6b2e",
+        "method": "local_pdf_text_or_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2011_bank",
+        "note": "Matched against local Baidu Netdisk 2011 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2011-007",
+      "number": 7,
+      "paperId": "politics-2011",
+      "paperName": "2011考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2011",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2011考研政治第7题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2011 考研政治真题及参考答案 PDF 的答案键页；题面以真题 PDF 原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2011/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2011考研政治试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2011/answer-page-10.jpg",
+          "caption": "答案原页 p.10",
+          "alt": "2011考研政治答案原页 p.10"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2011",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2011-paper-answer",
+      "sourceEvidenceId": "politics-2011-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:996a4af4bbaf13f0ce352c0682fcc92266530345be50ee7a50f3a2b8c078d801",
+      "answerTextHash": "sha256:65f426311f18873244e84641e4e69fb1b38b35ab4aae12f3703be1abe98952da",
+      "sourceEvidence": {
+        "evidenceId": "politics-2011-q07",
+        "sourceId": "src_a5631399bc38974478a913d2",
+        "answerSourceId": "src_4d6b3cc3f1aad26f0b86ed34",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2011-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:996a4af4bbaf13f0ce352c0682fcc92266530345be50ee7a50f3a2b8c078d801",
+        "answerTextHash": "sha256:65f426311f18873244e84641e4e69fb1b38b35ab4aae12f3703be1abe98952da"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_4d6b3cc3f1aad26f0b86ed34",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2011/2011-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:65f426311f18873244e84641e4e69fb1b38b35ab4aae12f3703be1abe98952da",
+        "method": "local_pdf_text_or_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2011_bank",
+        "note": "Matched against local Baidu Netdisk 2011 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2011-008",
+      "number": 8,
+      "paperId": "politics-2011",
+      "paperName": "2011考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2011",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2011考研政治第8题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2011 考研政治真题及参考答案 PDF 的答案键页；题面以真题 PDF 原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2011/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2011考研政治试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2011/answer-page-10.jpg",
+          "caption": "答案原页 p.10",
+          "alt": "2011考研政治答案原页 p.10"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2011",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2011-paper-answer",
+      "sourceEvidenceId": "politics-2011-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:b0aff12fa0be1cb044b95619100692528570d20f04d5d0fba383443a9ae2a965",
+      "answerTextHash": "sha256:65f426311f18873244e84641e4e69fb1b38b35ab4aae12f3703be1abe98952da",
+      "sourceEvidence": {
+        "evidenceId": "politics-2011-q08",
+        "sourceId": "src_a5631399bc38974478a913d2",
+        "answerSourceId": "src_4d6b3cc3f1aad26f0b86ed34",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2011-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:b0aff12fa0be1cb044b95619100692528570d20f04d5d0fba383443a9ae2a965",
+        "answerTextHash": "sha256:65f426311f18873244e84641e4e69fb1b38b35ab4aae12f3703be1abe98952da"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_4d6b3cc3f1aad26f0b86ed34",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2011/2011-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:65f426311f18873244e84641e4e69fb1b38b35ab4aae12f3703be1abe98952da",
+        "method": "local_pdf_text_or_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2011_bank",
+        "note": "Matched against local Baidu Netdisk 2011 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2011-009",
+      "number": 9,
+      "paperId": "politics-2011",
+      "paperName": "2011考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2011",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2011考研政治第9题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2011 考研政治真题及参考答案 PDF 的答案键页；题面以真题 PDF 原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2011/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2011考研政治试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2011/answer-page-10.jpg",
+          "caption": "答案原页 p.10",
+          "alt": "2011考研政治答案原页 p.10"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2011",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2011-paper-answer",
+      "sourceEvidenceId": "politics-2011-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:37a2d439c6db3568d9a23f9e8f2948485eef7ccb42b3d861217d68c604a98b4f",
+      "answerTextHash": "sha256:b884018ed4162ccb00ae7cb339bd158accc375857ff69d41d7a20f583054e23a",
+      "sourceEvidence": {
+        "evidenceId": "politics-2011-q09",
+        "sourceId": "src_a5631399bc38974478a913d2",
+        "answerSourceId": "src_4d6b3cc3f1aad26f0b86ed34",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2011-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:37a2d439c6db3568d9a23f9e8f2948485eef7ccb42b3d861217d68c604a98b4f",
+        "answerTextHash": "sha256:b884018ed4162ccb00ae7cb339bd158accc375857ff69d41d7a20f583054e23a"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_4d6b3cc3f1aad26f0b86ed34",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2011/2011-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:b884018ed4162ccb00ae7cb339bd158accc375857ff69d41d7a20f583054e23a",
+        "method": "local_pdf_text_or_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2011_bank",
+        "note": "Matched against local Baidu Netdisk 2011 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2011-010",
+      "number": 10,
+      "paperId": "politics-2011",
+      "paperName": "2011考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2011",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2011考研政治第10题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2011 考研政治真题及参考答案 PDF 的答案键页；题面以真题 PDF 原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2011/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2011考研政治试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2011/answer-page-10.jpg",
+          "caption": "答案原页 p.10",
+          "alt": "2011考研政治答案原页 p.10"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2011",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2011-paper-answer",
+      "sourceEvidenceId": "politics-2011-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:ad1f2c94919ad6a7d26a7bee75eeb677e11ce351b83885d8248444c6135d3be1",
+      "answerTextHash": "sha256:b884018ed4162ccb00ae7cb339bd158accc375857ff69d41d7a20f583054e23a",
+      "sourceEvidence": {
+        "evidenceId": "politics-2011-q10",
+        "sourceId": "src_a5631399bc38974478a913d2",
+        "answerSourceId": "src_4d6b3cc3f1aad26f0b86ed34",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2011-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:ad1f2c94919ad6a7d26a7bee75eeb677e11ce351b83885d8248444c6135d3be1",
+        "answerTextHash": "sha256:b884018ed4162ccb00ae7cb339bd158accc375857ff69d41d7a20f583054e23a"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_4d6b3cc3f1aad26f0b86ed34",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2011/2011-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:b884018ed4162ccb00ae7cb339bd158accc375857ff69d41d7a20f583054e23a",
+        "method": "local_pdf_text_or_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2011_bank",
+        "note": "Matched against local Baidu Netdisk 2011 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2011-011",
+      "number": 11,
+      "paperId": "politics-2011",
+      "paperName": "2011考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2011",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2011考研政治第11题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2011 考研政治真题及参考答案 PDF 的答案键页；题面以真题 PDF 原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2011/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2011考研政治试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2011/answer-page-10.jpg",
+          "caption": "答案原页 p.10",
+          "alt": "2011考研政治答案原页 p.10"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2011",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2011-paper-answer",
+      "sourceEvidenceId": "politics-2011-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:163373898af316aff4861c9f6ae45e6971bd3858ce6c0e73edafff6146067bb8",
+      "answerTextHash": "sha256:b884018ed4162ccb00ae7cb339bd158accc375857ff69d41d7a20f583054e23a",
+      "sourceEvidence": {
+        "evidenceId": "politics-2011-q11",
+        "sourceId": "src_a5631399bc38974478a913d2",
+        "answerSourceId": "src_4d6b3cc3f1aad26f0b86ed34",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2011-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:163373898af316aff4861c9f6ae45e6971bd3858ce6c0e73edafff6146067bb8",
+        "answerTextHash": "sha256:b884018ed4162ccb00ae7cb339bd158accc375857ff69d41d7a20f583054e23a"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_4d6b3cc3f1aad26f0b86ed34",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2011/2011-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:b884018ed4162ccb00ae7cb339bd158accc375857ff69d41d7a20f583054e23a",
+        "method": "local_pdf_text_or_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2011_bank",
+        "note": "Matched against local Baidu Netdisk 2011 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2011-012",
+      "number": 12,
+      "paperId": "politics-2011",
+      "paperName": "2011考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2011",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2011考研政治第12题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2011 考研政治真题及参考答案 PDF 的答案键页；题面以真题 PDF 原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2011/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2011考研政治试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2011/answer-page-10.jpg",
+          "caption": "答案原页 p.10",
+          "alt": "2011考研政治答案原页 p.10"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2011",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2011-paper-answer",
+      "sourceEvidenceId": "politics-2011-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:fe64d98fa2706b80566137d7d56083f6f98fde5d5c7fd6ae976b84627c7b7c58",
+      "answerTextHash": "sha256:dcce08fdfe2c81e2d3bdb09d177ff339b44aca8c36ba5e7e364fab2fd1ae6b2e",
+      "sourceEvidence": {
+        "evidenceId": "politics-2011-q12",
+        "sourceId": "src_a5631399bc38974478a913d2",
+        "answerSourceId": "src_4d6b3cc3f1aad26f0b86ed34",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2011-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:fe64d98fa2706b80566137d7d56083f6f98fde5d5c7fd6ae976b84627c7b7c58",
+        "answerTextHash": "sha256:dcce08fdfe2c81e2d3bdb09d177ff339b44aca8c36ba5e7e364fab2fd1ae6b2e"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_4d6b3cc3f1aad26f0b86ed34",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2011/2011-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:dcce08fdfe2c81e2d3bdb09d177ff339b44aca8c36ba5e7e364fab2fd1ae6b2e",
+        "method": "local_pdf_text_or_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2011_bank",
+        "note": "Matched against local Baidu Netdisk 2011 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2011-013",
+      "number": 13,
+      "paperId": "politics-2011",
+      "paperName": "2011考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2011",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2011考研政治第13题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2011 考研政治真题及参考答案 PDF 的答案键页；题面以真题 PDF 原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2011/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2011考研政治试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2011/answer-page-10.jpg",
+          "caption": "答案原页 p.10",
+          "alt": "2011考研政治答案原页 p.10"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2011",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2011-paper-answer",
+      "sourceEvidenceId": "politics-2011-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:106f6a5d32aa3b7b46ba7658c01fd11638f66729c7a4bd8d3608e03a0690a900",
+      "answerTextHash": "sha256:dcce08fdfe2c81e2d3bdb09d177ff339b44aca8c36ba5e7e364fab2fd1ae6b2e",
+      "sourceEvidence": {
+        "evidenceId": "politics-2011-q13",
+        "sourceId": "src_a5631399bc38974478a913d2",
+        "answerSourceId": "src_4d6b3cc3f1aad26f0b86ed34",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2011-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:106f6a5d32aa3b7b46ba7658c01fd11638f66729c7a4bd8d3608e03a0690a900",
+        "answerTextHash": "sha256:dcce08fdfe2c81e2d3bdb09d177ff339b44aca8c36ba5e7e364fab2fd1ae6b2e"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_4d6b3cc3f1aad26f0b86ed34",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2011/2011-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:dcce08fdfe2c81e2d3bdb09d177ff339b44aca8c36ba5e7e364fab2fd1ae6b2e",
+        "method": "local_pdf_text_or_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2011_bank",
+        "note": "Matched against local Baidu Netdisk 2011 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2011-014",
+      "number": 14,
+      "paperId": "politics-2011",
+      "paperName": "2011考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2011",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2011考研政治第14题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2011 考研政治真题及参考答案 PDF 的答案键页；题面以真题 PDF 原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2011/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2011考研政治试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2011/answer-page-10.jpg",
+          "caption": "答案原页 p.10",
+          "alt": "2011考研政治答案原页 p.10"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2011",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2011-paper-answer",
+      "sourceEvidenceId": "politics-2011-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:38b84a111e2658ba06c65edd6c901e72b9845ddd1daa288b955b492af9f0d4cd",
+      "answerTextHash": "sha256:0f3e0a75f6fe282fd0463ad1bc33f767da2c35d9718d277824558d549fcd9d13",
+      "sourceEvidence": {
+        "evidenceId": "politics-2011-q14",
+        "sourceId": "src_a5631399bc38974478a913d2",
+        "answerSourceId": "src_4d6b3cc3f1aad26f0b86ed34",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2011-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:38b84a111e2658ba06c65edd6c901e72b9845ddd1daa288b955b492af9f0d4cd",
+        "answerTextHash": "sha256:0f3e0a75f6fe282fd0463ad1bc33f767da2c35d9718d277824558d549fcd9d13"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_4d6b3cc3f1aad26f0b86ed34",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2011/2011-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:0f3e0a75f6fe282fd0463ad1bc33f767da2c35d9718d277824558d549fcd9d13",
+        "method": "local_pdf_text_or_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2011_bank",
+        "note": "Matched against local Baidu Netdisk 2011 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2011-015",
+      "number": 15,
+      "paperId": "politics-2011",
+      "paperName": "2011考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2011",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2011考研政治第15题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2011 考研政治真题及参考答案 PDF 的答案键页；题面以真题 PDF 原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2011/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2011考研政治试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2011/answer-page-10.jpg",
+          "caption": "答案原页 p.10",
+          "alt": "2011考研政治答案原页 p.10"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2011",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2011-paper-answer",
+      "sourceEvidenceId": "politics-2011-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:20dba275aeec1d610772567fb02855e3b3b101a5c95eb1bbe98f9d0aa48c0007",
+      "answerTextHash": "sha256:0f3e0a75f6fe282fd0463ad1bc33f767da2c35d9718d277824558d549fcd9d13",
+      "sourceEvidence": {
+        "evidenceId": "politics-2011-q15",
+        "sourceId": "src_a5631399bc38974478a913d2",
+        "answerSourceId": "src_4d6b3cc3f1aad26f0b86ed34",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2011-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:20dba275aeec1d610772567fb02855e3b3b101a5c95eb1bbe98f9d0aa48c0007",
+        "answerTextHash": "sha256:0f3e0a75f6fe282fd0463ad1bc33f767da2c35d9718d277824558d549fcd9d13"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_4d6b3cc3f1aad26f0b86ed34",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2011/2011-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:0f3e0a75f6fe282fd0463ad1bc33f767da2c35d9718d277824558d549fcd9d13",
+        "method": "local_pdf_text_or_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2011_bank",
+        "note": "Matched against local Baidu Netdisk 2011 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2011-016",
+      "number": 16,
+      "paperId": "politics-2011",
+      "paperName": "2011考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2011",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2011考研政治第16题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2011 考研政治真题及参考答案 PDF 的答案键页；题面以真题 PDF 原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2011/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2011考研政治试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2011/answer-page-10.jpg",
+          "caption": "答案原页 p.10",
+          "alt": "2011考研政治答案原页 p.10"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2011",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2011-paper-answer",
+      "sourceEvidenceId": "politics-2011-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:a44bb43971440a64cd8a02c6434c94f76107fec723ea1d71986eea6cd10177c7",
+      "answerTextHash": "sha256:65f426311f18873244e84641e4e69fb1b38b35ab4aae12f3703be1abe98952da",
+      "sourceEvidence": {
+        "evidenceId": "politics-2011-q16",
+        "sourceId": "src_a5631399bc38974478a913d2",
+        "answerSourceId": "src_4d6b3cc3f1aad26f0b86ed34",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2011-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:a44bb43971440a64cd8a02c6434c94f76107fec723ea1d71986eea6cd10177c7",
+        "answerTextHash": "sha256:65f426311f18873244e84641e4e69fb1b38b35ab4aae12f3703be1abe98952da"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_4d6b3cc3f1aad26f0b86ed34",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2011/2011-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:65f426311f18873244e84641e4e69fb1b38b35ab4aae12f3703be1abe98952da",
+        "method": "local_pdf_text_or_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2011_bank",
+        "note": "Matched against local Baidu Netdisk 2011 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2011-017",
+      "number": 17,
+      "paperId": "politics-2011",
+      "paperName": "2011考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2011",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2011考研政治第17题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "AB",
+      "explanation": "答案来自本地百度网盘 2011 考研政治真题及参考答案 PDF 的答案键页；题面以真题 PDF 原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2011/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2011考研政治试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2011/answer-page-10.jpg",
+          "caption": "答案原页 p.10",
+          "alt": "2011考研政治答案原页 p.10"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2011",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2011-paper-answer",
+      "sourceEvidenceId": "politics-2011-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:a126ab17c7056c41949e262d7343a8876b2558fde3a0ceeb40f1fa9f1f466639",
+      "answerTextHash": "sha256:df98daeec90feb3bd934512d16186079297481c981451ed62e1476f7e3ac2dd7",
+      "sourceEvidence": {
+        "evidenceId": "politics-2011-q17",
+        "sourceId": "src_a5631399bc38974478a913d2",
+        "answerSourceId": "src_4d6b3cc3f1aad26f0b86ed34",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2011-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:a126ab17c7056c41949e262d7343a8876b2558fde3a0ceeb40f1fa9f1f466639",
+        "answerTextHash": "sha256:df98daeec90feb3bd934512d16186079297481c981451ed62e1476f7e3ac2dd7"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_4d6b3cc3f1aad26f0b86ed34",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2011/2011-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:df98daeec90feb3bd934512d16186079297481c981451ed62e1476f7e3ac2dd7",
+        "method": "local_pdf_text_or_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2011_bank",
+        "note": "Matched against local Baidu Netdisk 2011 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2011-018",
+      "number": 18,
+      "paperId": "politics-2011",
+      "paperName": "2011考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2011",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2011考研政治第18题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABC",
+      "explanation": "答案来自本地百度网盘 2011 考研政治真题及参考答案 PDF 的答案键页；题面以真题 PDF 原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2011/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2011考研政治试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2011/answer-page-10.jpg",
+          "caption": "答案原页 p.10",
+          "alt": "2011考研政治答案原页 p.10"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2011",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2011-paper-answer",
+      "sourceEvidenceId": "politics-2011-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:f8ad9c399f0e51b639f123c75be599567274913f0d801f6d9754128d8e2628e5",
+      "answerTextHash": "sha256:027d4b5925085faad57471b774e5b2b9df6733bbc08555dfbdbc438f6c1c08d9",
+      "sourceEvidence": {
+        "evidenceId": "politics-2011-q18",
+        "sourceId": "src_a5631399bc38974478a913d2",
+        "answerSourceId": "src_4d6b3cc3f1aad26f0b86ed34",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2011-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:f8ad9c399f0e51b639f123c75be599567274913f0d801f6d9754128d8e2628e5",
+        "answerTextHash": "sha256:027d4b5925085faad57471b774e5b2b9df6733bbc08555dfbdbc438f6c1c08d9"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_4d6b3cc3f1aad26f0b86ed34",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2011/2011-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:027d4b5925085faad57471b774e5b2b9df6733bbc08555dfbdbc438f6c1c08d9",
+        "method": "local_pdf_text_or_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2011_bank",
+        "note": "Matched against local Baidu Netdisk 2011 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2011-019",
+      "number": 19,
+      "paperId": "politics-2011",
+      "paperName": "2011考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2011",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2011考研政治第19题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "AB",
+      "explanation": "答案来自本地百度网盘 2011 考研政治真题及参考答案 PDF 的答案键页；题面以真题 PDF 原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2011/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2011考研政治试卷原页 p.2"
+        },
+        {
+          "src": "question-bank/politics-2011/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2011考研政治试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2011/answer-page-10.jpg",
+          "caption": "答案原页 p.10",
+          "alt": "2011考研政治答案原页 p.10"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2011",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2011-paper-answer",
+      "sourceEvidenceId": "politics-2011-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:af9b83de94a472abb9d601aa4528bf498e840c4656fdbbaebf82a3d12affee5f",
+      "answerTextHash": "sha256:df98daeec90feb3bd934512d16186079297481c981451ed62e1476f7e3ac2dd7",
+      "sourceEvidence": {
+        "evidenceId": "politics-2011-q19",
+        "sourceId": "src_a5631399bc38974478a913d2",
+        "answerSourceId": "src_4d6b3cc3f1aad26f0b86ed34",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2011-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:af9b83de94a472abb9d601aa4528bf498e840c4656fdbbaebf82a3d12affee5f",
+        "answerTextHash": "sha256:df98daeec90feb3bd934512d16186079297481c981451ed62e1476f7e3ac2dd7"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_4d6b3cc3f1aad26f0b86ed34",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2011/2011-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:df98daeec90feb3bd934512d16186079297481c981451ed62e1476f7e3ac2dd7",
+        "method": "local_pdf_text_or_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2011_bank",
+        "note": "Matched against local Baidu Netdisk 2011 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2011-020",
+      "number": 20,
+      "paperId": "politics-2011",
+      "paperName": "2011考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2011",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2011考研政治第20题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "CD",
+      "explanation": "答案来自本地百度网盘 2011 考研政治真题及参考答案 PDF 的答案键页；题面以真题 PDF 原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2011/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2011考研政治试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2011/answer-page-10.jpg",
+          "caption": "答案原页 p.10",
+          "alt": "2011考研政治答案原页 p.10"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2011",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2011-paper-answer",
+      "sourceEvidenceId": "politics-2011-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:b0d0dd2e91c2bb5b2e9d3a5355b0c85756127ec8c7d845f430d05520fd61044e",
+      "answerTextHash": "sha256:b52fdf6047c91add485a951ed7dfb4e8b2f89e0cc7668a2c6357f3510d0f3ed4",
+      "sourceEvidence": {
+        "evidenceId": "politics-2011-q20",
+        "sourceId": "src_a5631399bc38974478a913d2",
+        "answerSourceId": "src_4d6b3cc3f1aad26f0b86ed34",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2011-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:b0d0dd2e91c2bb5b2e9d3a5355b0c85756127ec8c7d845f430d05520fd61044e",
+        "answerTextHash": "sha256:b52fdf6047c91add485a951ed7dfb4e8b2f89e0cc7668a2c6357f3510d0f3ed4"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_4d6b3cc3f1aad26f0b86ed34",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2011/2011-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:b52fdf6047c91add485a951ed7dfb4e8b2f89e0cc7668a2c6357f3510d0f3ed4",
+        "method": "local_pdf_text_or_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2011_bank",
+        "note": "Matched against local Baidu Netdisk 2011 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2011-021",
+      "number": 21,
+      "paperId": "politics-2011",
+      "paperName": "2011考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2011",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2011考研政治第21题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "AC",
+      "explanation": "答案来自本地百度网盘 2011 考研政治真题及参考答案 PDF 的答案键页；题面以真题 PDF 原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2011/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2011考研政治试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2011/answer-page-10.jpg",
+          "caption": "答案原页 p.10",
+          "alt": "2011考研政治答案原页 p.10"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2011",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2011-paper-answer",
+      "sourceEvidenceId": "politics-2011-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:7bf8b40b19827b06a9f331a01eef0a70396f403b6bdc5f2619641bc657a6db34",
+      "answerTextHash": "sha256:2070c1d2d90d7122621b5c83ce7180926359b467c3496a5848d98ae6c3125df1",
+      "sourceEvidence": {
+        "evidenceId": "politics-2011-q21",
+        "sourceId": "src_a5631399bc38974478a913d2",
+        "answerSourceId": "src_4d6b3cc3f1aad26f0b86ed34",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2011-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:7bf8b40b19827b06a9f331a01eef0a70396f403b6bdc5f2619641bc657a6db34",
+        "answerTextHash": "sha256:2070c1d2d90d7122621b5c83ce7180926359b467c3496a5848d98ae6c3125df1"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_4d6b3cc3f1aad26f0b86ed34",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2011/2011-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:2070c1d2d90d7122621b5c83ce7180926359b467c3496a5848d98ae6c3125df1",
+        "method": "local_pdf_text_or_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2011_bank",
+        "note": "Matched against local Baidu Netdisk 2011 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2011-022",
+      "number": 22,
+      "paperId": "politics-2011",
+      "paperName": "2011考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2011",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2011考研政治第22题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABC",
+      "explanation": "答案来自本地百度网盘 2011 考研政治真题及参考答案 PDF 的答案键页；题面以真题 PDF 原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2011/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2011考研政治试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2011/answer-page-10.jpg",
+          "caption": "答案原页 p.10",
+          "alt": "2011考研政治答案原页 p.10"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2011",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2011-paper-answer",
+      "sourceEvidenceId": "politics-2011-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:2fe9cd806582c997aa03f190c0faccfe2b7a8f64e60a69ab72aef982680374b5",
+      "answerTextHash": "sha256:027d4b5925085faad57471b774e5b2b9df6733bbc08555dfbdbc438f6c1c08d9",
+      "sourceEvidence": {
+        "evidenceId": "politics-2011-q22",
+        "sourceId": "src_a5631399bc38974478a913d2",
+        "answerSourceId": "src_4d6b3cc3f1aad26f0b86ed34",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2011-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:2fe9cd806582c997aa03f190c0faccfe2b7a8f64e60a69ab72aef982680374b5",
+        "answerTextHash": "sha256:027d4b5925085faad57471b774e5b2b9df6733bbc08555dfbdbc438f6c1c08d9"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_4d6b3cc3f1aad26f0b86ed34",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2011/2011-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:027d4b5925085faad57471b774e5b2b9df6733bbc08555dfbdbc438f6c1c08d9",
+        "method": "local_pdf_text_or_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2011_bank",
+        "note": "Matched against local Baidu Netdisk 2011 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2011-023",
+      "number": 23,
+      "paperId": "politics-2011",
+      "paperName": "2011考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2011",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2011考研政治第23题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABCD",
+      "explanation": "答案来自本地百度网盘 2011 考研政治真题及参考答案 PDF 的答案键页；题面以真题 PDF 原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2011/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2011考研政治试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2011/answer-page-10.jpg",
+          "caption": "答案原页 p.10",
+          "alt": "2011考研政治答案原页 p.10"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2011",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2011-paper-answer",
+      "sourceEvidenceId": "politics-2011-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:48377060c5bd5abf61eda02dc3ac69f4e6078438c4765835c8bf83af15573e5b",
+      "answerTextHash": "sha256:1055f2190ac9fe8e637e73f71340072de23d4bc4de3a63a49793159889e2d230",
+      "sourceEvidence": {
+        "evidenceId": "politics-2011-q23",
+        "sourceId": "src_a5631399bc38974478a913d2",
+        "answerSourceId": "src_4d6b3cc3f1aad26f0b86ed34",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2011-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:48377060c5bd5abf61eda02dc3ac69f4e6078438c4765835c8bf83af15573e5b",
+        "answerTextHash": "sha256:1055f2190ac9fe8e637e73f71340072de23d4bc4de3a63a49793159889e2d230"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_4d6b3cc3f1aad26f0b86ed34",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2011/2011-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:1055f2190ac9fe8e637e73f71340072de23d4bc4de3a63a49793159889e2d230",
+        "method": "local_pdf_text_or_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2011_bank",
+        "note": "Matched against local Baidu Netdisk 2011 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2011-024",
+      "number": 24,
+      "paperId": "politics-2011",
+      "paperName": "2011考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2011",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2011考研政治第24题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ACD",
+      "explanation": "答案来自本地百度网盘 2011 考研政治真题及参考答案 PDF 的答案键页；题面以真题 PDF 原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2011/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2011考研政治试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2011/answer-page-10.jpg",
+          "caption": "答案原页 p.10",
+          "alt": "2011考研政治答案原页 p.10"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2011",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2011-paper-answer",
+      "sourceEvidenceId": "politics-2011-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:9b3877b957eb846f38c250a2706983b77f314e60121772425705cafe88177c97",
+      "answerTextHash": "sha256:ca9436e52109ab8dc0582f2183321c64b23eb11c5443db7128bbca32fcf17a65",
+      "sourceEvidence": {
+        "evidenceId": "politics-2011-q24",
+        "sourceId": "src_a5631399bc38974478a913d2",
+        "answerSourceId": "src_4d6b3cc3f1aad26f0b86ed34",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2011-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:9b3877b957eb846f38c250a2706983b77f314e60121772425705cafe88177c97",
+        "answerTextHash": "sha256:ca9436e52109ab8dc0582f2183321c64b23eb11c5443db7128bbca32fcf17a65"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_4d6b3cc3f1aad26f0b86ed34",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2011/2011-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:ca9436e52109ab8dc0582f2183321c64b23eb11c5443db7128bbca32fcf17a65",
+        "method": "local_pdf_text_or_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2011_bank",
+        "note": "Matched against local Baidu Netdisk 2011 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2011-025",
+      "number": 25,
+      "paperId": "politics-2011",
+      "paperName": "2011考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2011",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2011考研政治第25题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABCD",
+      "explanation": "答案来自本地百度网盘 2011 考研政治真题及参考答案 PDF 的答案键页；题面以真题 PDF 原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2011/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2011考研政治试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2011/answer-page-10.jpg",
+          "caption": "答案原页 p.10",
+          "alt": "2011考研政治答案原页 p.10"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2011",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2011-paper-answer",
+      "sourceEvidenceId": "politics-2011-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:882956a9ee671f470d3e218a6d3a2d1b1f9478356f46fbf277beeae59dc02a6b",
+      "answerTextHash": "sha256:1055f2190ac9fe8e637e73f71340072de23d4bc4de3a63a49793159889e2d230",
+      "sourceEvidence": {
+        "evidenceId": "politics-2011-q25",
+        "sourceId": "src_a5631399bc38974478a913d2",
+        "answerSourceId": "src_4d6b3cc3f1aad26f0b86ed34",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2011-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:882956a9ee671f470d3e218a6d3a2d1b1f9478356f46fbf277beeae59dc02a6b",
+        "answerTextHash": "sha256:1055f2190ac9fe8e637e73f71340072de23d4bc4de3a63a49793159889e2d230"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_4d6b3cc3f1aad26f0b86ed34",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2011/2011-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:1055f2190ac9fe8e637e73f71340072de23d4bc4de3a63a49793159889e2d230",
+        "method": "local_pdf_text_or_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2011_bank",
+        "note": "Matched against local Baidu Netdisk 2011 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2011-026",
+      "number": 26,
+      "paperId": "politics-2011",
+      "paperName": "2011考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2011",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2011考研政治第26题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "BCD",
+      "explanation": "答案来自本地百度网盘 2011 考研政治真题及参考答案 PDF 的答案键页；题面以真题 PDF 原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2011/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2011考研政治试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2011/answer-page-10.jpg",
+          "caption": "答案原页 p.10",
+          "alt": "2011考研政治答案原页 p.10"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2011",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2011-paper-answer",
+      "sourceEvidenceId": "politics-2011-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:8f0044bf129028711a954acb1cb245767eb7df95922a58dbca00cf91ade393e7",
+      "answerTextHash": "sha256:dd7b70163589b0b8612f9b7d880e02fba09fe08a6b86808e4ac2a7142dea3cb5",
+      "sourceEvidence": {
+        "evidenceId": "politics-2011-q26",
+        "sourceId": "src_a5631399bc38974478a913d2",
+        "answerSourceId": "src_4d6b3cc3f1aad26f0b86ed34",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2011-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:8f0044bf129028711a954acb1cb245767eb7df95922a58dbca00cf91ade393e7",
+        "answerTextHash": "sha256:dd7b70163589b0b8612f9b7d880e02fba09fe08a6b86808e4ac2a7142dea3cb5"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_4d6b3cc3f1aad26f0b86ed34",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2011/2011-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:dd7b70163589b0b8612f9b7d880e02fba09fe08a6b86808e4ac2a7142dea3cb5",
+        "method": "local_pdf_text_or_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2011_bank",
+        "note": "Matched against local Baidu Netdisk 2011 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2011-027",
+      "number": 27,
+      "paperId": "politics-2011",
+      "paperName": "2011考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2011",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2011考研政治第27题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "BD",
+      "explanation": "答案来自本地百度网盘 2011 考研政治真题及参考答案 PDF 的答案键页；题面以真题 PDF 原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2011/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2011考研政治试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2011/answer-page-10.jpg",
+          "caption": "答案原页 p.10",
+          "alt": "2011考研政治答案原页 p.10"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2011",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2011-paper-answer",
+      "sourceEvidenceId": "politics-2011-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:4d948a48511ff209b42c2e3ead3e2658bddfb4c9208520b158072c546afb08c0",
+      "answerTextHash": "sha256:350e99f9a7d7d7214175401c98d8803fdfe973138f7bbc5808815f273e705b61",
+      "sourceEvidence": {
+        "evidenceId": "politics-2011-q27",
+        "sourceId": "src_a5631399bc38974478a913d2",
+        "answerSourceId": "src_4d6b3cc3f1aad26f0b86ed34",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2011-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:4d948a48511ff209b42c2e3ead3e2658bddfb4c9208520b158072c546afb08c0",
+        "answerTextHash": "sha256:350e99f9a7d7d7214175401c98d8803fdfe973138f7bbc5808815f273e705b61"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_4d6b3cc3f1aad26f0b86ed34",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2011/2011-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:350e99f9a7d7d7214175401c98d8803fdfe973138f7bbc5808815f273e705b61",
+        "method": "local_pdf_text_or_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2011_bank",
+        "note": "Matched against local Baidu Netdisk 2011 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2011-028",
+      "number": 28,
+      "paperId": "politics-2011",
+      "paperName": "2011考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2011",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2011考研政治第28题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "AC",
+      "explanation": "答案来自本地百度网盘 2011 考研政治真题及参考答案 PDF 的答案键页；题面以真题 PDF 原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2011/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2011考研政治试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2011/answer-page-10.jpg",
+          "caption": "答案原页 p.10",
+          "alt": "2011考研政治答案原页 p.10"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2011",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2011-paper-answer",
+      "sourceEvidenceId": "politics-2011-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:a2d3685b54a8bfd6d8a9cddeb468aef69665ac6a95aa6f51e1a1b58f5fd2970b",
+      "answerTextHash": "sha256:2070c1d2d90d7122621b5c83ce7180926359b467c3496a5848d98ae6c3125df1",
+      "sourceEvidence": {
+        "evidenceId": "politics-2011-q28",
+        "sourceId": "src_a5631399bc38974478a913d2",
+        "answerSourceId": "src_4d6b3cc3f1aad26f0b86ed34",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2011-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:a2d3685b54a8bfd6d8a9cddeb468aef69665ac6a95aa6f51e1a1b58f5fd2970b",
+        "answerTextHash": "sha256:2070c1d2d90d7122621b5c83ce7180926359b467c3496a5848d98ae6c3125df1"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_4d6b3cc3f1aad26f0b86ed34",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2011/2011-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:2070c1d2d90d7122621b5c83ce7180926359b467c3496a5848d98ae6c3125df1",
+        "method": "local_pdf_text_or_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2011_bank",
+        "note": "Matched against local Baidu Netdisk 2011 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2011-029",
+      "number": 29,
+      "paperId": "politics-2011",
+      "paperName": "2011考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2011",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2011考研政治第29题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "BCD",
+      "explanation": "答案来自本地百度网盘 2011 考研政治真题及参考答案 PDF 的答案键页；题面以真题 PDF 原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2011/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2011考研政治试卷原页 p.3"
+        },
+        {
+          "src": "question-bank/politics-2011/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2011考研政治试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2011/answer-page-10.jpg",
+          "caption": "答案原页 p.10",
+          "alt": "2011考研政治答案原页 p.10"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2011",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2011-paper-answer",
+      "sourceEvidenceId": "politics-2011-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:6b829fb27d166b8404bf407436a0dba8014a46f37051a80bf8f9e05ae4d8fbd9",
+      "answerTextHash": "sha256:dd7b70163589b0b8612f9b7d880e02fba09fe08a6b86808e4ac2a7142dea3cb5",
+      "sourceEvidence": {
+        "evidenceId": "politics-2011-q29",
+        "sourceId": "src_a5631399bc38974478a913d2",
+        "answerSourceId": "src_4d6b3cc3f1aad26f0b86ed34",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2011-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:6b829fb27d166b8404bf407436a0dba8014a46f37051a80bf8f9e05ae4d8fbd9",
+        "answerTextHash": "sha256:dd7b70163589b0b8612f9b7d880e02fba09fe08a6b86808e4ac2a7142dea3cb5"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_4d6b3cc3f1aad26f0b86ed34",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2011/2011-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:dd7b70163589b0b8612f9b7d880e02fba09fe08a6b86808e4ac2a7142dea3cb5",
+        "method": "local_pdf_text_or_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2011_bank",
+        "note": "Matched against local Baidu Netdisk 2011 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2011-030",
+      "number": 30,
+      "paperId": "politics-2011",
+      "paperName": "2011考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2011",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2011考研政治第30题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ACD",
+      "explanation": "答案来自本地百度网盘 2011 考研政治真题及参考答案 PDF 的答案键页；题面以真题 PDF 原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2011/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2011考研政治试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2011/answer-page-10.jpg",
+          "caption": "答案原页 p.10",
+          "alt": "2011考研政治答案原页 p.10"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2011",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2011-paper-answer",
+      "sourceEvidenceId": "politics-2011-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:7642ace88d948dd6b012db472909b7601922801ea9dcf209a2a7c019f7581217",
+      "answerTextHash": "sha256:ca9436e52109ab8dc0582f2183321c64b23eb11c5443db7128bbca32fcf17a65",
+      "sourceEvidence": {
+        "evidenceId": "politics-2011-q30",
+        "sourceId": "src_a5631399bc38974478a913d2",
+        "answerSourceId": "src_4d6b3cc3f1aad26f0b86ed34",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2011-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:7642ace88d948dd6b012db472909b7601922801ea9dcf209a2a7c019f7581217",
+        "answerTextHash": "sha256:ca9436e52109ab8dc0582f2183321c64b23eb11c5443db7128bbca32fcf17a65"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_4d6b3cc3f1aad26f0b86ed34",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2011/2011-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:ca9436e52109ab8dc0582f2183321c64b23eb11c5443db7128bbca32fcf17a65",
+        "method": "local_pdf_text_or_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2011_bank",
+        "note": "Matched against local Baidu Netdisk 2011 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2011-031",
+      "number": 31,
+      "paperId": "politics-2011",
+      "paperName": "2011考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2011",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2011考研政治第31题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "AB",
+      "explanation": "答案来自本地百度网盘 2011 考研政治真题及参考答案 PDF 的答案键页；题面以真题 PDF 原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2011/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2011考研政治试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2011/answer-page-10.jpg",
+          "caption": "答案原页 p.10",
+          "alt": "2011考研政治答案原页 p.10"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2011",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2011-paper-answer",
+      "sourceEvidenceId": "politics-2011-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:d2abc69e9efed7972fef5d4ef7e323dbcc76162d6d9e4ec2ee58a958ca110dbb",
+      "answerTextHash": "sha256:df98daeec90feb3bd934512d16186079297481c981451ed62e1476f7e3ac2dd7",
+      "sourceEvidence": {
+        "evidenceId": "politics-2011-q31",
+        "sourceId": "src_a5631399bc38974478a913d2",
+        "answerSourceId": "src_4d6b3cc3f1aad26f0b86ed34",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2011-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:d2abc69e9efed7972fef5d4ef7e323dbcc76162d6d9e4ec2ee58a958ca110dbb",
+        "answerTextHash": "sha256:df98daeec90feb3bd934512d16186079297481c981451ed62e1476f7e3ac2dd7"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_4d6b3cc3f1aad26f0b86ed34",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2011/2011-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:df98daeec90feb3bd934512d16186079297481c981451ed62e1476f7e3ac2dd7",
+        "method": "local_pdf_text_or_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2011_bank",
+        "note": "Matched against local Baidu Netdisk 2011 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2011-032",
+      "number": 32,
+      "paperId": "politics-2011",
+      "paperName": "2011考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2011",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2011考研政治第32题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABCD",
+      "explanation": "答案来自本地百度网盘 2011 考研政治真题及参考答案 PDF 的答案键页；题面以真题 PDF 原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2011/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2011考研政治试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2011/answer-page-10.jpg",
+          "caption": "答案原页 p.10",
+          "alt": "2011考研政治答案原页 p.10"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2011",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2011-paper-answer",
+      "sourceEvidenceId": "politics-2011-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:242b239dee5f061ff46ea99217e87ca4190d9d39adbad5d739267d91490d27cb",
+      "answerTextHash": "sha256:1055f2190ac9fe8e637e73f71340072de23d4bc4de3a63a49793159889e2d230",
+      "sourceEvidence": {
+        "evidenceId": "politics-2011-q32",
+        "sourceId": "src_a5631399bc38974478a913d2",
+        "answerSourceId": "src_4d6b3cc3f1aad26f0b86ed34",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2011-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:242b239dee5f061ff46ea99217e87ca4190d9d39adbad5d739267d91490d27cb",
+        "answerTextHash": "sha256:1055f2190ac9fe8e637e73f71340072de23d4bc4de3a63a49793159889e2d230"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_4d6b3cc3f1aad26f0b86ed34",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2011/2011-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:1055f2190ac9fe8e637e73f71340072de23d4bc4de3a63a49793159889e2d230",
+        "method": "local_pdf_text_or_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2011_bank",
+        "note": "Matched against local Baidu Netdisk 2011 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2011-033",
+      "number": 33,
+      "paperId": "politics-2011",
+      "paperName": "2011考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2011",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2011考研政治第33题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABCD",
+      "explanation": "答案来自本地百度网盘 2011 考研政治真题及参考答案 PDF 的答案键页；题面以真题 PDF 原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2011/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2011考研政治试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2011/answer-page-10.jpg",
+          "caption": "答案原页 p.10",
+          "alt": "2011考研政治答案原页 p.10"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2011",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2011-paper-answer",
+      "sourceEvidenceId": "politics-2011-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:d857adc3494c469b218e36878842ede5f09b7a94783880466d126b5302274ac3",
+      "answerTextHash": "sha256:1055f2190ac9fe8e637e73f71340072de23d4bc4de3a63a49793159889e2d230",
+      "sourceEvidence": {
+        "evidenceId": "politics-2011-q33",
+        "sourceId": "src_a5631399bc38974478a913d2",
+        "answerSourceId": "src_4d6b3cc3f1aad26f0b86ed34",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2011-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:d857adc3494c469b218e36878842ede5f09b7a94783880466d126b5302274ac3",
+        "answerTextHash": "sha256:1055f2190ac9fe8e637e73f71340072de23d4bc4de3a63a49793159889e2d230"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_4d6b3cc3f1aad26f0b86ed34",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2011/2011-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:1055f2190ac9fe8e637e73f71340072de23d4bc4de3a63a49793159889e2d230",
+        "method": "local_pdf_text_or_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2011_bank",
+        "note": "Matched against local Baidu Netdisk 2011 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2011-034",
+      "number": 34,
+      "paperId": "politics-2011",
+      "paperName": "2011考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2011",
+      "section": "分析题",
+      "type": "analysis",
+      "question": "2011考研政治第34题（分析题）。题干、选项和材料以试卷原页图为准。",
+      "options": [],
+      "answer": "分析题参考答案要点见答案原页 p.10。",
+      "explanation": "参考答案来自本地百度网盘 2011 考研政治真题及参考答案 PDF；完整答案要点见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2011/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2011考研政治试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2011/answer-page-10.jpg",
+          "caption": "答案原页 p.10",
+          "alt": "2011考研政治答案原页 p.10"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2011",
+        "分析题"
+      ],
+      "difficulty": 3,
+      "source": "politics-2011-paper-answer",
+      "sourceEvidenceId": "politics-2011-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:051ac171886fef58759594ebb8eae5b6ec7bca6bee81aa60a36f1c88186631a3",
+      "answerTextHash": "sha256:0e69509a95404859b353a0e6278c3d81f485fa986dd9ee2c38b48833659eae75",
+      "sourceEvidence": {
+        "evidenceId": "politics-2011-q34",
+        "sourceId": "src_a5631399bc38974478a913d2",
+        "answerSourceId": "src_4d6b3cc3f1aad26f0b86ed34",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2011-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:051ac171886fef58759594ebb8eae5b6ec7bca6bee81aa60a36f1c88186631a3",
+        "answerTextHash": "sha256:0e69509a95404859b353a0e6278c3d81f485fa986dd9ee2c38b48833659eae75"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_reference_answer",
+        "sourceId": "src_4d6b3cc3f1aad26f0b86ed34",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2011/2011-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:0e69509a95404859b353a0e6278c3d81f485fa986dd9ee2c38b48833659eae75",
+        "method": "local_pdf_text_or_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2011_bank",
+        "note": "Matched against local Baidu Netdisk 2011 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2011-035",
+      "number": 35,
+      "paperId": "politics-2011",
+      "paperName": "2011考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2011",
+      "section": "分析题",
+      "type": "analysis",
+      "question": "2011考研政治第35题（分析题）。题干、选项和材料以试卷原页图为准。",
+      "options": [],
+      "answer": "分析题参考答案要点见答案原页 p.10。",
+      "explanation": "参考答案来自本地百度网盘 2011 考研政治真题及参考答案 PDF；完整答案要点见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2011/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2011考研政治试卷原页 p.4"
+        },
+        {
+          "src": "question-bank/politics-2011/paper-page-05.jpg",
+          "caption": "试卷原页 p.5",
+          "alt": "2011考研政治试卷原页 p.5"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2011/answer-page-10.jpg",
+          "caption": "答案原页 p.10",
+          "alt": "2011考研政治答案原页 p.10"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2011",
+        "分析题"
+      ],
+      "difficulty": 3,
+      "source": "politics-2011-paper-answer",
+      "sourceEvidenceId": "politics-2011-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:fd4aff79e540d876ec0e463a7c531f474d3ab6cf04ea0ab81968bdf9e4163395",
+      "answerTextHash": "sha256:0e69509a95404859b353a0e6278c3d81f485fa986dd9ee2c38b48833659eae75",
+      "sourceEvidence": {
+        "evidenceId": "politics-2011-q35",
+        "sourceId": "src_a5631399bc38974478a913d2",
+        "answerSourceId": "src_4d6b3cc3f1aad26f0b86ed34",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2011-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:fd4aff79e540d876ec0e463a7c531f474d3ab6cf04ea0ab81968bdf9e4163395",
+        "answerTextHash": "sha256:0e69509a95404859b353a0e6278c3d81f485fa986dd9ee2c38b48833659eae75"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_reference_answer",
+        "sourceId": "src_4d6b3cc3f1aad26f0b86ed34",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2011/2011-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:0e69509a95404859b353a0e6278c3d81f485fa986dd9ee2c38b48833659eae75",
+        "method": "local_pdf_text_or_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2011_bank",
+        "note": "Matched against local Baidu Netdisk 2011 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2011-036",
+      "number": 36,
+      "paperId": "politics-2011",
+      "paperName": "2011考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2011",
+      "section": "分析题",
+      "type": "analysis",
+      "question": "2011考研政治第36题（分析题）。题干、选项和材料以试卷原页图为准。",
+      "options": [],
+      "answer": "分析题参考答案要点见答案原页 p.10。",
+      "explanation": "参考答案来自本地百度网盘 2011 考研政治真题及参考答案 PDF；完整答案要点见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2011/paper-page-05.jpg",
+          "caption": "试卷原页 p.5",
+          "alt": "2011考研政治试卷原页 p.5"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2011/answer-page-10.jpg",
+          "caption": "答案原页 p.10",
+          "alt": "2011考研政治答案原页 p.10"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2011",
+        "分析题"
+      ],
+      "difficulty": 3,
+      "source": "politics-2011-paper-answer",
+      "sourceEvidenceId": "politics-2011-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:960bad3201cb9093241065efb265e6d0353f8d85a96c4db7bfd4f40d9d9237ee",
+      "answerTextHash": "sha256:0e69509a95404859b353a0e6278c3d81f485fa986dd9ee2c38b48833659eae75",
+      "sourceEvidence": {
+        "evidenceId": "politics-2011-q36",
+        "sourceId": "src_a5631399bc38974478a913d2",
+        "answerSourceId": "src_4d6b3cc3f1aad26f0b86ed34",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2011-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:960bad3201cb9093241065efb265e6d0353f8d85a96c4db7bfd4f40d9d9237ee",
+        "answerTextHash": "sha256:0e69509a95404859b353a0e6278c3d81f485fa986dd9ee2c38b48833659eae75"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_reference_answer",
+        "sourceId": "src_4d6b3cc3f1aad26f0b86ed34",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2011/2011-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:0e69509a95404859b353a0e6278c3d81f485fa986dd9ee2c38b48833659eae75",
+        "method": "local_pdf_text_or_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2011_bank",
+        "note": "Matched against local Baidu Netdisk 2011 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2011-037",
+      "number": 37,
+      "paperId": "politics-2011",
+      "paperName": "2011考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2011",
+      "section": "分析题",
+      "type": "analysis",
+      "question": "2011考研政治第37题（分析题）。题干、选项和材料以试卷原页图为准。",
+      "options": [],
+      "answer": "分析题参考答案要点见答案原页 p.11。",
+      "explanation": "参考答案来自本地百度网盘 2011 考研政治真题及参考答案 PDF；完整答案要点见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2011/paper-page-05.jpg",
+          "caption": "试卷原页 p.5",
+          "alt": "2011考研政治试卷原页 p.5"
+        },
+        {
+          "src": "question-bank/politics-2011/paper-page-06.jpg",
+          "caption": "试卷原页 p.6",
+          "alt": "2011考研政治试卷原页 p.6"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2011/answer-page-11.jpg",
+          "caption": "答案原页 p.11",
+          "alt": "2011考研政治答案原页 p.11"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2011",
+        "分析题"
+      ],
+      "difficulty": 3,
+      "source": "politics-2011-paper-answer",
+      "sourceEvidenceId": "politics-2011-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:1acdc9d6ecb2c5a32146ebafef0add435e2ffd6f631a7a08d97935b6a1b563f2",
+      "answerTextHash": "sha256:c1b99f862fc999f8df0c9fc82c9f58001c59d7fb27782893b9d7a7584d369915",
+      "sourceEvidence": {
+        "evidenceId": "politics-2011-q37",
+        "sourceId": "src_a5631399bc38974478a913d2",
+        "answerSourceId": "src_4d6b3cc3f1aad26f0b86ed34",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2011-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:1acdc9d6ecb2c5a32146ebafef0add435e2ffd6f631a7a08d97935b6a1b563f2",
+        "answerTextHash": "sha256:c1b99f862fc999f8df0c9fc82c9f58001c59d7fb27782893b9d7a7584d369915"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_reference_answer",
+        "sourceId": "src_4d6b3cc3f1aad26f0b86ed34",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2011/2011-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:c1b99f862fc999f8df0c9fc82c9f58001c59d7fb27782893b9d7a7584d369915",
+        "method": "local_pdf_text_or_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2011_bank",
+        "note": "Matched against local Baidu Netdisk 2011 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2011-038",
+      "number": 38,
+      "paperId": "politics-2011",
+      "paperName": "2011考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2011",
+      "section": "分析题",
+      "type": "analysis",
+      "question": "2011考研政治第38题（分析题）。题干、选项和材料以试卷原页图为准。",
+      "options": [],
+      "answer": "分析题参考答案要点见答案原页 p.11。",
+      "explanation": "参考答案来自本地百度网盘 2011 考研政治真题及参考答案 PDF；完整答案要点见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2011/paper-page-06.jpg",
+          "caption": "试卷原页 p.6",
+          "alt": "2011考研政治试卷原页 p.6"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2011/answer-page-11.jpg",
+          "caption": "答案原页 p.11",
+          "alt": "2011考研政治答案原页 p.11"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2011",
+        "分析题"
+      ],
+      "difficulty": 3,
+      "source": "politics-2011-paper-answer",
+      "sourceEvidenceId": "politics-2011-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:3f9d791068d4b89833c00190aaf3fb7711339be117962af623519db879fb84bf",
+      "answerTextHash": "sha256:c1b99f862fc999f8df0c9fc82c9f58001c59d7fb27782893b9d7a7584d369915",
+      "sourceEvidence": {
+        "evidenceId": "politics-2011-q38",
+        "sourceId": "src_a5631399bc38974478a913d2",
+        "answerSourceId": "src_4d6b3cc3f1aad26f0b86ed34",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2011-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:3f9d791068d4b89833c00190aaf3fb7711339be117962af623519db879fb84bf",
+        "answerTextHash": "sha256:c1b99f862fc999f8df0c9fc82c9f58001c59d7fb27782893b9d7a7584d369915"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_reference_answer",
+        "sourceId": "src_4d6b3cc3f1aad26f0b86ed34",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2011/2011-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:c1b99f862fc999f8df0c9fc82c9f58001c59d7fb27782893b9d7a7584d369915",
+        "method": "local_pdf_text_or_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2011_bank",
+        "note": "Matched against local Baidu Netdisk 2011 Politics paper-answer PDF."
+      }
+    }
+  ]
+}

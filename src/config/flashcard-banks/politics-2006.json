@@ -1,0 +1,2947 @@
+{
+  "id": "politics-2006",
+  "source": "politics-2006-paper-answer",
+  "paperId": "politics-2006",
+  "paperName": "2006考研政治真题",
+  "subject": "政治",
+  "subjectKey": "politics",
+  "track": "politics",
+  "year": "2006",
+  "quality": "ready",
+  "publicationStatus": "published",
+  "publicationBlockers": [],
+  "sourceEvidencePolicy": "baidu_netdisk_official_paper_pdf_page_image_v1",
+  "sourceFiles": [
+    {
+      "id": "politics-2006-paper-answer",
+      "sourceId": "src_e459e0c19a096d74af87fa7c",
+      "role": "paper_answer",
+      "localPath": "data/raw-inbox/public-course-history/politics/2006/2006-politics-paper-answer.pdf",
+      "sha256": "sha256:3f5b95b2eaef1c399428e3a08167dea6ff9fda1bfd3b63a157d0de0555ab9de3"
+    }
+  ],
+  "assetRoot": "question-bank/politics-2006",
+  "processed_at": "2026-05-27T00:47:47Z",
+  "total_cards": 38,
+  "sections": [
+    "单项选择",
+    "多项选择",
+    "分析题"
+  ],
+  "cards": [
+    {
+      "id": "politics-2006-001",
+      "number": 1,
+      "paperId": "politics-2006",
+      "paperName": "2006考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2006",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2006考研政治第1题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2006 考研政治真题及参考答案 PDF；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2006/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2006考研政治试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2006/paper-page-09.jpg",
+          "caption": "答案原页 p.9",
+          "alt": "2006考研政治答案原页 p.9"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2006",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2006-paper-answer",
+      "sourceEvidenceId": "politics-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:18485f841424d350d4e7d959edcdb0ef381a10d7510a2ea778b50d00644d643a",
+      "answerTextHash": "sha256:e2f59bc6f0261dc81db981e9a96c48a39c99c1d9cee09c0d7801fa5199a5cb50",
+      "sourceEvidence": {
+        "evidenceId": "politics-2006-q01",
+        "sourceId": "src_e459e0c19a096d74af87fa7c",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:18485f841424d350d4e7d959edcdb0ef381a10d7510a2ea778b50d00644d643a",
+        "answerTextHash": "sha256:e2f59bc6f0261dc81db981e9a96c48a39c99c1d9cee09c0d7801fa5199a5cb50"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_e459e0c19a096d74af87fa7c",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2006/2006-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:e2f59bc6f0261dc81db981e9a96c48a39c99c1d9cee09c0d7801fa5199a5cb50",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2006_bank",
+        "note": "Matched against local Baidu Netdisk 2006 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2006-002",
+      "number": 2,
+      "paperId": "politics-2006",
+      "paperName": "2006考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2006",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2006考研政治第2题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2006 考研政治真题及参考答案 PDF；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2006/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2006考研政治试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2006/paper-page-09.jpg",
+          "caption": "答案原页 p.9",
+          "alt": "2006考研政治答案原页 p.9"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2006",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2006-paper-answer",
+      "sourceEvidenceId": "politics-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:81a387b5c86911b93f6a87c8ec4f9a3e0ef648370a53593642274fc9c3a424c6",
+      "answerTextHash": "sha256:b3a58ebe27e044470c1604fbfcef9d15e169c834972509f6b657dbe8ec35c59d",
+      "sourceEvidence": {
+        "evidenceId": "politics-2006-q02",
+        "sourceId": "src_e459e0c19a096d74af87fa7c",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:81a387b5c86911b93f6a87c8ec4f9a3e0ef648370a53593642274fc9c3a424c6",
+        "answerTextHash": "sha256:b3a58ebe27e044470c1604fbfcef9d15e169c834972509f6b657dbe8ec35c59d"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_e459e0c19a096d74af87fa7c",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2006/2006-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:b3a58ebe27e044470c1604fbfcef9d15e169c834972509f6b657dbe8ec35c59d",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2006_bank",
+        "note": "Matched against local Baidu Netdisk 2006 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2006-003",
+      "number": 3,
+      "paperId": "politics-2006",
+      "paperName": "2006考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2006",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2006考研政治第3题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2006 考研政治真题及参考答案 PDF；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2006/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2006考研政治试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2006/paper-page-09.jpg",
+          "caption": "答案原页 p.9",
+          "alt": "2006考研政治答案原页 p.9"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2006",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2006-paper-answer",
+      "sourceEvidenceId": "politics-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:97c849a60e73c6dcea3d7556f243bee89c8104c8e986dfbf19161339631fec08",
+      "answerTextHash": "sha256:2a1cbdb7b7721e0c6622e5de857bcdc202c90d9cc4c35de60b1c13335b2cbfa2",
+      "sourceEvidence": {
+        "evidenceId": "politics-2006-q03",
+        "sourceId": "src_e459e0c19a096d74af87fa7c",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:97c849a60e73c6dcea3d7556f243bee89c8104c8e986dfbf19161339631fec08",
+        "answerTextHash": "sha256:2a1cbdb7b7721e0c6622e5de857bcdc202c90d9cc4c35de60b1c13335b2cbfa2"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_e459e0c19a096d74af87fa7c",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2006/2006-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:2a1cbdb7b7721e0c6622e5de857bcdc202c90d9cc4c35de60b1c13335b2cbfa2",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2006_bank",
+        "note": "Matched against local Baidu Netdisk 2006 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2006-004",
+      "number": 4,
+      "paperId": "politics-2006",
+      "paperName": "2006考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2006",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2006考研政治第4题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2006 考研政治真题及参考答案 PDF；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2006/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2006考研政治试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2006/paper-page-09.jpg",
+          "caption": "答案原页 p.9",
+          "alt": "2006考研政治答案原页 p.9"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2006",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2006-paper-answer",
+      "sourceEvidenceId": "politics-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:bbfc59be47fa5c9bd1b75af200494b9d00f2723bb36f44ade18e96f481cfa2fe",
+      "answerTextHash": "sha256:b3a58ebe27e044470c1604fbfcef9d15e169c834972509f6b657dbe8ec35c59d",
+      "sourceEvidence": {
+        "evidenceId": "politics-2006-q04",
+        "sourceId": "src_e459e0c19a096d74af87fa7c",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:bbfc59be47fa5c9bd1b75af200494b9d00f2723bb36f44ade18e96f481cfa2fe",
+        "answerTextHash": "sha256:b3a58ebe27e044470c1604fbfcef9d15e169c834972509f6b657dbe8ec35c59d"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_e459e0c19a096d74af87fa7c",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2006/2006-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:b3a58ebe27e044470c1604fbfcef9d15e169c834972509f6b657dbe8ec35c59d",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2006_bank",
+        "note": "Matched against local Baidu Netdisk 2006 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2006-005",
+      "number": 5,
+      "paperId": "politics-2006",
+      "paperName": "2006考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2006",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2006考研政治第5题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2006 考研政治真题及参考答案 PDF；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2006/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2006考研政治试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2006/paper-page-09.jpg",
+          "caption": "答案原页 p.9",
+          "alt": "2006考研政治答案原页 p.9"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2006",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2006-paper-answer",
+      "sourceEvidenceId": "politics-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:bfb2c594b944fb810fee5d7428d0ae41205da3dd7007f014543f95828e55c59e",
+      "answerTextHash": "sha256:2a1cbdb7b7721e0c6622e5de857bcdc202c90d9cc4c35de60b1c13335b2cbfa2",
+      "sourceEvidence": {
+        "evidenceId": "politics-2006-q05",
+        "sourceId": "src_e459e0c19a096d74af87fa7c",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:bfb2c594b944fb810fee5d7428d0ae41205da3dd7007f014543f95828e55c59e",
+        "answerTextHash": "sha256:2a1cbdb7b7721e0c6622e5de857bcdc202c90d9cc4c35de60b1c13335b2cbfa2"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_e459e0c19a096d74af87fa7c",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2006/2006-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:2a1cbdb7b7721e0c6622e5de857bcdc202c90d9cc4c35de60b1c13335b2cbfa2",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2006_bank",
+        "note": "Matched against local Baidu Netdisk 2006 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2006-006",
+      "number": 6,
+      "paperId": "politics-2006",
+      "paperName": "2006考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2006",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2006考研政治第6题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2006 考研政治真题及参考答案 PDF；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2006/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2006考研政治试卷原页 p.1"
+        },
+        {
+          "src": "question-bank/politics-2006/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2006考研政治试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2006/paper-page-09.jpg",
+          "caption": "答案原页 p.9",
+          "alt": "2006考研政治答案原页 p.9"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2006",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2006-paper-answer",
+      "sourceEvidenceId": "politics-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:2bd2808e5303b845fcab551470244c0fb4b37643675a3fd68e840a28b9caa601",
+      "answerTextHash": "sha256:b3a58ebe27e044470c1604fbfcef9d15e169c834972509f6b657dbe8ec35c59d",
+      "sourceEvidence": {
+        "evidenceId": "politics-2006-q06",
+        "sourceId": "src_e459e0c19a096d74af87fa7c",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:2bd2808e5303b845fcab551470244c0fb4b37643675a3fd68e840a28b9caa601",
+        "answerTextHash": "sha256:b3a58ebe27e044470c1604fbfcef9d15e169c834972509f6b657dbe8ec35c59d"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_e459e0c19a096d74af87fa7c",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2006/2006-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:b3a58ebe27e044470c1604fbfcef9d15e169c834972509f6b657dbe8ec35c59d",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2006_bank",
+        "note": "Matched against local Baidu Netdisk 2006 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2006-007",
+      "number": 7,
+      "paperId": "politics-2006",
+      "paperName": "2006考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2006",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2006考研政治第7题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2006 考研政治真题及参考答案 PDF；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2006/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2006考研政治试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2006/paper-page-09.jpg",
+          "caption": "答案原页 p.9",
+          "alt": "2006考研政治答案原页 p.9"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2006",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2006-paper-answer",
+      "sourceEvidenceId": "politics-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:0750debe2ddda9f9ab7e173c289b617d38193c29f6db564fc27ad6790074ff73",
+      "answerTextHash": "sha256:2a1cbdb7b7721e0c6622e5de857bcdc202c90d9cc4c35de60b1c13335b2cbfa2",
+      "sourceEvidence": {
+        "evidenceId": "politics-2006-q07",
+        "sourceId": "src_e459e0c19a096d74af87fa7c",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:0750debe2ddda9f9ab7e173c289b617d38193c29f6db564fc27ad6790074ff73",
+        "answerTextHash": "sha256:2a1cbdb7b7721e0c6622e5de857bcdc202c90d9cc4c35de60b1c13335b2cbfa2"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_e459e0c19a096d74af87fa7c",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2006/2006-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:2a1cbdb7b7721e0c6622e5de857bcdc202c90d9cc4c35de60b1c13335b2cbfa2",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2006_bank",
+        "note": "Matched against local Baidu Netdisk 2006 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2006-008",
+      "number": 8,
+      "paperId": "politics-2006",
+      "paperName": "2006考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2006",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2006考研政治第8题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2006 考研政治真题及参考答案 PDF；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2006/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2006考研政治试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2006/paper-page-09.jpg",
+          "caption": "答案原页 p.9",
+          "alt": "2006考研政治答案原页 p.9"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2006",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2006-paper-answer",
+      "sourceEvidenceId": "politics-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:895cd44d40345b15e285f0c4309dca95bdee64146b2dd2dc31784af65c484028",
+      "answerTextHash": "sha256:b3a58ebe27e044470c1604fbfcef9d15e169c834972509f6b657dbe8ec35c59d",
+      "sourceEvidence": {
+        "evidenceId": "politics-2006-q08",
+        "sourceId": "src_e459e0c19a096d74af87fa7c",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:895cd44d40345b15e285f0c4309dca95bdee64146b2dd2dc31784af65c484028",
+        "answerTextHash": "sha256:b3a58ebe27e044470c1604fbfcef9d15e169c834972509f6b657dbe8ec35c59d"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_e459e0c19a096d74af87fa7c",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2006/2006-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:b3a58ebe27e044470c1604fbfcef9d15e169c834972509f6b657dbe8ec35c59d",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2006_bank",
+        "note": "Matched against local Baidu Netdisk 2006 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2006-009",
+      "number": 9,
+      "paperId": "politics-2006",
+      "paperName": "2006考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2006",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2006考研政治第9题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2006 考研政治真题及参考答案 PDF；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2006/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2006考研政治试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2006/paper-page-09.jpg",
+          "caption": "答案原页 p.9",
+          "alt": "2006考研政治答案原页 p.9"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2006",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2006-paper-answer",
+      "sourceEvidenceId": "politics-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:5597a38959f575f36af3d713185f8256d03d82e6e043a663ae6b56a1180a5f30",
+      "answerTextHash": "sha256:89de2a646dfffcb5a6aa4ebf1b2abb55584545d046ffbf7bcc7cbe72c60e235a",
+      "sourceEvidence": {
+        "evidenceId": "politics-2006-q09",
+        "sourceId": "src_e459e0c19a096d74af87fa7c",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:5597a38959f575f36af3d713185f8256d03d82e6e043a663ae6b56a1180a5f30",
+        "answerTextHash": "sha256:89de2a646dfffcb5a6aa4ebf1b2abb55584545d046ffbf7bcc7cbe72c60e235a"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_e459e0c19a096d74af87fa7c",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2006/2006-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:89de2a646dfffcb5a6aa4ebf1b2abb55584545d046ffbf7bcc7cbe72c60e235a",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2006_bank",
+        "note": "Matched against local Baidu Netdisk 2006 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2006-010",
+      "number": 10,
+      "paperId": "politics-2006",
+      "paperName": "2006考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2006",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2006考研政治第10题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2006 考研政治真题及参考答案 PDF；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2006/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2006考研政治试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2006/paper-page-09.jpg",
+          "caption": "答案原页 p.9",
+          "alt": "2006考研政治答案原页 p.9"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2006",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2006-paper-answer",
+      "sourceEvidenceId": "politics-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:3181ac3a4fa131392afae30131fb03b098c5bafa592ca9a15fe2881c7dd4451a",
+      "answerTextHash": "sha256:e2f59bc6f0261dc81db981e9a96c48a39c99c1d9cee09c0d7801fa5199a5cb50",
+      "sourceEvidence": {
+        "evidenceId": "politics-2006-q10",
+        "sourceId": "src_e459e0c19a096d74af87fa7c",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:3181ac3a4fa131392afae30131fb03b098c5bafa592ca9a15fe2881c7dd4451a",
+        "answerTextHash": "sha256:e2f59bc6f0261dc81db981e9a96c48a39c99c1d9cee09c0d7801fa5199a5cb50"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_e459e0c19a096d74af87fa7c",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2006/2006-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:e2f59bc6f0261dc81db981e9a96c48a39c99c1d9cee09c0d7801fa5199a5cb50",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2006_bank",
+        "note": "Matched against local Baidu Netdisk 2006 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2006-011",
+      "number": 11,
+      "paperId": "politics-2006",
+      "paperName": "2006考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2006",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2006考研政治第11题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2006 考研政治真题及参考答案 PDF；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2006/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2006考研政治试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2006/paper-page-09.jpg",
+          "caption": "答案原页 p.9",
+          "alt": "2006考研政治答案原页 p.9"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2006",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2006-paper-answer",
+      "sourceEvidenceId": "politics-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:bdf69ebf6074956742453d77d8bf94846d9f8bcf06025582b0be8dac7577565e",
+      "answerTextHash": "sha256:e2f59bc6f0261dc81db981e9a96c48a39c99c1d9cee09c0d7801fa5199a5cb50",
+      "sourceEvidence": {
+        "evidenceId": "politics-2006-q11",
+        "sourceId": "src_e459e0c19a096d74af87fa7c",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:bdf69ebf6074956742453d77d8bf94846d9f8bcf06025582b0be8dac7577565e",
+        "answerTextHash": "sha256:e2f59bc6f0261dc81db981e9a96c48a39c99c1d9cee09c0d7801fa5199a5cb50"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_e459e0c19a096d74af87fa7c",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2006/2006-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:e2f59bc6f0261dc81db981e9a96c48a39c99c1d9cee09c0d7801fa5199a5cb50",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2006_bank",
+        "note": "Matched against local Baidu Netdisk 2006 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2006-012",
+      "number": 12,
+      "paperId": "politics-2006",
+      "paperName": "2006考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2006",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2006考研政治第12题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2006 考研政治真题及参考答案 PDF；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2006/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2006考研政治试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2006/paper-page-09.jpg",
+          "caption": "答案原页 p.9",
+          "alt": "2006考研政治答案原页 p.9"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2006",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2006-paper-answer",
+      "sourceEvidenceId": "politics-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:1df3a5df038366d3278e00a0a0e8689e74107a601bd3a0a1f404897482b6ab8c",
+      "answerTextHash": "sha256:2a1cbdb7b7721e0c6622e5de857bcdc202c90d9cc4c35de60b1c13335b2cbfa2",
+      "sourceEvidence": {
+        "evidenceId": "politics-2006-q12",
+        "sourceId": "src_e459e0c19a096d74af87fa7c",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:1df3a5df038366d3278e00a0a0e8689e74107a601bd3a0a1f404897482b6ab8c",
+        "answerTextHash": "sha256:2a1cbdb7b7721e0c6622e5de857bcdc202c90d9cc4c35de60b1c13335b2cbfa2"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_e459e0c19a096d74af87fa7c",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2006/2006-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:2a1cbdb7b7721e0c6622e5de857bcdc202c90d9cc4c35de60b1c13335b2cbfa2",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2006_bank",
+        "note": "Matched against local Baidu Netdisk 2006 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2006-013",
+      "number": 13,
+      "paperId": "politics-2006",
+      "paperName": "2006考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2006",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2006考研政治第13题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2006 考研政治真题及参考答案 PDF；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2006/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2006考研政治试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2006/paper-page-09.jpg",
+          "caption": "答案原页 p.9",
+          "alt": "2006考研政治答案原页 p.9"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2006",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2006-paper-answer",
+      "sourceEvidenceId": "politics-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:ac103e82930d719e638624630848e71fbc7c51a5955d42e85b63fe9a483a1ff3",
+      "answerTextHash": "sha256:2a1cbdb7b7721e0c6622e5de857bcdc202c90d9cc4c35de60b1c13335b2cbfa2",
+      "sourceEvidence": {
+        "evidenceId": "politics-2006-q13",
+        "sourceId": "src_e459e0c19a096d74af87fa7c",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:ac103e82930d719e638624630848e71fbc7c51a5955d42e85b63fe9a483a1ff3",
+        "answerTextHash": "sha256:2a1cbdb7b7721e0c6622e5de857bcdc202c90d9cc4c35de60b1c13335b2cbfa2"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_e459e0c19a096d74af87fa7c",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2006/2006-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:2a1cbdb7b7721e0c6622e5de857bcdc202c90d9cc4c35de60b1c13335b2cbfa2",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2006_bank",
+        "note": "Matched against local Baidu Netdisk 2006 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2006-014",
+      "number": 14,
+      "paperId": "politics-2006",
+      "paperName": "2006考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2006",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2006考研政治第14题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2006 考研政治真题及参考答案 PDF；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2006/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2006考研政治试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2006/paper-page-09.jpg",
+          "caption": "答案原页 p.9",
+          "alt": "2006考研政治答案原页 p.9"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2006",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2006-paper-answer",
+      "sourceEvidenceId": "politics-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:c0d9925adb366ee483bc66b54109c50bef811f5e89bbdac52dacb5046e28e5f8",
+      "answerTextHash": "sha256:89de2a646dfffcb5a6aa4ebf1b2abb55584545d046ffbf7bcc7cbe72c60e235a",
+      "sourceEvidence": {
+        "evidenceId": "politics-2006-q14",
+        "sourceId": "src_e459e0c19a096d74af87fa7c",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:c0d9925adb366ee483bc66b54109c50bef811f5e89bbdac52dacb5046e28e5f8",
+        "answerTextHash": "sha256:89de2a646dfffcb5a6aa4ebf1b2abb55584545d046ffbf7bcc7cbe72c60e235a"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_e459e0c19a096d74af87fa7c",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2006/2006-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:89de2a646dfffcb5a6aa4ebf1b2abb55584545d046ffbf7bcc7cbe72c60e235a",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2006_bank",
+        "note": "Matched against local Baidu Netdisk 2006 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2006-015",
+      "number": 15,
+      "paperId": "politics-2006",
+      "paperName": "2006考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2006",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2006考研政治第15题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2006 考研政治真题及参考答案 PDF；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2006/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2006考研政治试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2006/paper-page-09.jpg",
+          "caption": "答案原页 p.9",
+          "alt": "2006考研政治答案原页 p.9"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2006",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2006-paper-answer",
+      "sourceEvidenceId": "politics-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:e608d83832b04ab783f7c25cfd637358fdb7d55c6ded0f50f3637aa8875a3cac",
+      "answerTextHash": "sha256:e2f59bc6f0261dc81db981e9a96c48a39c99c1d9cee09c0d7801fa5199a5cb50",
+      "sourceEvidence": {
+        "evidenceId": "politics-2006-q15",
+        "sourceId": "src_e459e0c19a096d74af87fa7c",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:e608d83832b04ab783f7c25cfd637358fdb7d55c6ded0f50f3637aa8875a3cac",
+        "answerTextHash": "sha256:e2f59bc6f0261dc81db981e9a96c48a39c99c1d9cee09c0d7801fa5199a5cb50"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_e459e0c19a096d74af87fa7c",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2006/2006-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:e2f59bc6f0261dc81db981e9a96c48a39c99c1d9cee09c0d7801fa5199a5cb50",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2006_bank",
+        "note": "Matched against local Baidu Netdisk 2006 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2006-016",
+      "number": 16,
+      "paperId": "politics-2006",
+      "paperName": "2006考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2006",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2006考研政治第16题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2006 考研政治真题及参考答案 PDF；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2006/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2006考研政治试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2006/paper-page-09.jpg",
+          "caption": "答案原页 p.9",
+          "alt": "2006考研政治答案原页 p.9"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2006",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2006-paper-answer",
+      "sourceEvidenceId": "politics-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:856bd4a2a54ce8e63a92851daae86cf9de58c854199c5efa3e20ebf885f637be",
+      "answerTextHash": "sha256:89de2a646dfffcb5a6aa4ebf1b2abb55584545d046ffbf7bcc7cbe72c60e235a",
+      "sourceEvidence": {
+        "evidenceId": "politics-2006-q16",
+        "sourceId": "src_e459e0c19a096d74af87fa7c",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:856bd4a2a54ce8e63a92851daae86cf9de58c854199c5efa3e20ebf885f637be",
+        "answerTextHash": "sha256:89de2a646dfffcb5a6aa4ebf1b2abb55584545d046ffbf7bcc7cbe72c60e235a"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_e459e0c19a096d74af87fa7c",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2006/2006-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:89de2a646dfffcb5a6aa4ebf1b2abb55584545d046ffbf7bcc7cbe72c60e235a",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2006_bank",
+        "note": "Matched against local Baidu Netdisk 2006 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2006-017",
+      "number": 17,
+      "paperId": "politics-2006",
+      "paperName": "2006考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2006",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2006考研政治第17题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "BCD",
+      "explanation": "答案来自本地百度网盘 2006 考研政治真题及参考答案 PDF；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2006/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2006考研政治试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2006/paper-page-09.jpg",
+          "caption": "答案原页 p.9",
+          "alt": "2006考研政治答案原页 p.9"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2006",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2006-paper-answer",
+      "sourceEvidenceId": "politics-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:dbfa4d44da9556de8f12624f9cbf3ed5ec4d18d96ecdc1c8333d115949b2ea77",
+      "answerTextHash": "sha256:6dedc1c698c4548029a7879bd42f830c61ace5ef7f2da18e3abd2db4ebbdce81",
+      "sourceEvidence": {
+        "evidenceId": "politics-2006-q17",
+        "sourceId": "src_e459e0c19a096d74af87fa7c",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:dbfa4d44da9556de8f12624f9cbf3ed5ec4d18d96ecdc1c8333d115949b2ea77",
+        "answerTextHash": "sha256:6dedc1c698c4548029a7879bd42f830c61ace5ef7f2da18e3abd2db4ebbdce81"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_e459e0c19a096d74af87fa7c",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2006/2006-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:6dedc1c698c4548029a7879bd42f830c61ace5ef7f2da18e3abd2db4ebbdce81",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2006_bank",
+        "note": "Matched against local Baidu Netdisk 2006 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2006-018",
+      "number": 18,
+      "paperId": "politics-2006",
+      "paperName": "2006考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2006",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2006考研政治第18题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ACD",
+      "explanation": "答案来自本地百度网盘 2006 考研政治真题及参考答案 PDF；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2006/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2006考研政治试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2006/paper-page-09.jpg",
+          "caption": "答案原页 p.9",
+          "alt": "2006考研政治答案原页 p.9"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2006",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2006-paper-answer",
+      "sourceEvidenceId": "politics-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:4c74a93e079bfdfc8ff02dad040412f5d947d1effc64eb9caeb7cd9167164615",
+      "answerTextHash": "sha256:f8b3fa98cb5d08f6dd5638980feb86ff16b4da3b120775b8b3ef4a7de952540d",
+      "sourceEvidence": {
+        "evidenceId": "politics-2006-q18",
+        "sourceId": "src_e459e0c19a096d74af87fa7c",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:4c74a93e079bfdfc8ff02dad040412f5d947d1effc64eb9caeb7cd9167164615",
+        "answerTextHash": "sha256:f8b3fa98cb5d08f6dd5638980feb86ff16b4da3b120775b8b3ef4a7de952540d"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_e459e0c19a096d74af87fa7c",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2006/2006-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:f8b3fa98cb5d08f6dd5638980feb86ff16b4da3b120775b8b3ef4a7de952540d",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2006_bank",
+        "note": "Matched against local Baidu Netdisk 2006 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2006-019",
+      "number": 19,
+      "paperId": "politics-2006",
+      "paperName": "2006考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2006",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2006考研政治第19题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "BCD",
+      "explanation": "答案来自本地百度网盘 2006 考研政治真题及参考答案 PDF；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2006/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2006考研政治试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2006/paper-page-09.jpg",
+          "caption": "答案原页 p.9",
+          "alt": "2006考研政治答案原页 p.9"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2006",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2006-paper-answer",
+      "sourceEvidenceId": "politics-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:3d66e1698178266abfb8af34ad78ea46a4338dc2e2e6cf4d66d33b9fc1e74938",
+      "answerTextHash": "sha256:6dedc1c698c4548029a7879bd42f830c61ace5ef7f2da18e3abd2db4ebbdce81",
+      "sourceEvidence": {
+        "evidenceId": "politics-2006-q19",
+        "sourceId": "src_e459e0c19a096d74af87fa7c",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:3d66e1698178266abfb8af34ad78ea46a4338dc2e2e6cf4d66d33b9fc1e74938",
+        "answerTextHash": "sha256:6dedc1c698c4548029a7879bd42f830c61ace5ef7f2da18e3abd2db4ebbdce81"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_e459e0c19a096d74af87fa7c",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2006/2006-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:6dedc1c698c4548029a7879bd42f830c61ace5ef7f2da18e3abd2db4ebbdce81",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2006_bank",
+        "note": "Matched against local Baidu Netdisk 2006 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2006-020",
+      "number": 20,
+      "paperId": "politics-2006",
+      "paperName": "2006考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2006",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2006考研政治第20题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "BC",
+      "explanation": "答案来自本地百度网盘 2006 考研政治真题及参考答案 PDF；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2006/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2006考研政治试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2006/paper-page-09.jpg",
+          "caption": "答案原页 p.9",
+          "alt": "2006考研政治答案原页 p.9"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2006",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2006-paper-answer",
+      "sourceEvidenceId": "politics-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:7c6063aee0d5a226a5b35f0019ffa9107e2a7e1ee40847af77c6023cc4fd186a",
+      "answerTextHash": "sha256:6ae7406d41c14739df27692be5cf76a203c5dfa30c8e64376dcfe49fd90fbe88",
+      "sourceEvidence": {
+        "evidenceId": "politics-2006-q20",
+        "sourceId": "src_e459e0c19a096d74af87fa7c",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:7c6063aee0d5a226a5b35f0019ffa9107e2a7e1ee40847af77c6023cc4fd186a",
+        "answerTextHash": "sha256:6ae7406d41c14739df27692be5cf76a203c5dfa30c8e64376dcfe49fd90fbe88"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_e459e0c19a096d74af87fa7c",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2006/2006-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:6ae7406d41c14739df27692be5cf76a203c5dfa30c8e64376dcfe49fd90fbe88",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2006_bank",
+        "note": "Matched against local Baidu Netdisk 2006 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2006-021",
+      "number": 21,
+      "paperId": "politics-2006",
+      "paperName": "2006考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2006",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2006考研政治第21题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "BD",
+      "explanation": "答案来自本地百度网盘 2006 考研政治真题及参考答案 PDF；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2006/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2006考研政治试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2006/paper-page-09.jpg",
+          "caption": "答案原页 p.9",
+          "alt": "2006考研政治答案原页 p.9"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2006",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2006-paper-answer",
+      "sourceEvidenceId": "politics-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:0b01ff2ca2266c1b36c6a67dcd5a217bf29db43e4fca3923fd6998732f3e9fa7",
+      "answerTextHash": "sha256:bc5980be8b93e24783f4fd557ef64397a6c6bb0af72a24deee69f46375463701",
+      "sourceEvidence": {
+        "evidenceId": "politics-2006-q21",
+        "sourceId": "src_e459e0c19a096d74af87fa7c",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:0b01ff2ca2266c1b36c6a67dcd5a217bf29db43e4fca3923fd6998732f3e9fa7",
+        "answerTextHash": "sha256:bc5980be8b93e24783f4fd557ef64397a6c6bb0af72a24deee69f46375463701"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_e459e0c19a096d74af87fa7c",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2006/2006-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:bc5980be8b93e24783f4fd557ef64397a6c6bb0af72a24deee69f46375463701",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2006_bank",
+        "note": "Matched against local Baidu Netdisk 2006 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2006-022",
+      "number": 22,
+      "paperId": "politics-2006",
+      "paperName": "2006考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2006",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2006考研政治第22题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABC",
+      "explanation": "答案来自本地百度网盘 2006 考研政治真题及参考答案 PDF；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2006/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2006考研政治试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2006/paper-page-09.jpg",
+          "caption": "答案原页 p.9",
+          "alt": "2006考研政治答案原页 p.9"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2006",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2006-paper-answer",
+      "sourceEvidenceId": "politics-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:3d753769efe5e4b477c92559e213d4949d9a89e8efe08fb80e4b776e29450a7d",
+      "answerTextHash": "sha256:f98c28def54985b07cdc5d2533d066cad872a6f4ad8a3ce900df071a566bff19",
+      "sourceEvidence": {
+        "evidenceId": "politics-2006-q22",
+        "sourceId": "src_e459e0c19a096d74af87fa7c",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:3d753769efe5e4b477c92559e213d4949d9a89e8efe08fb80e4b776e29450a7d",
+        "answerTextHash": "sha256:f98c28def54985b07cdc5d2533d066cad872a6f4ad8a3ce900df071a566bff19"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_e459e0c19a096d74af87fa7c",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2006/2006-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:f98c28def54985b07cdc5d2533d066cad872a6f4ad8a3ce900df071a566bff19",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2006_bank",
+        "note": "Matched against local Baidu Netdisk 2006 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2006-023",
+      "number": 23,
+      "paperId": "politics-2006",
+      "paperName": "2006考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2006",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2006考研政治第23题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "AD",
+      "explanation": "答案来自本地百度网盘 2006 考研政治真题及参考答案 PDF；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2006/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2006考研政治试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2006/paper-page-09.jpg",
+          "caption": "答案原页 p.9",
+          "alt": "2006考研政治答案原页 p.9"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2006",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2006-paper-answer",
+      "sourceEvidenceId": "politics-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:1287634a39e866d00eadb2d246de5dbed4bbf0c9fa45348a01b2dade58dd6506",
+      "answerTextHash": "sha256:cbfe722195d459f01b6235b9810533b719104613e3cc3e28a86b704db0a8b38b",
+      "sourceEvidence": {
+        "evidenceId": "politics-2006-q23",
+        "sourceId": "src_e459e0c19a096d74af87fa7c",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:1287634a39e866d00eadb2d246de5dbed4bbf0c9fa45348a01b2dade58dd6506",
+        "answerTextHash": "sha256:cbfe722195d459f01b6235b9810533b719104613e3cc3e28a86b704db0a8b38b"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_e459e0c19a096d74af87fa7c",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2006/2006-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:cbfe722195d459f01b6235b9810533b719104613e3cc3e28a86b704db0a8b38b",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2006_bank",
+        "note": "Matched against local Baidu Netdisk 2006 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2006-024",
+      "number": 24,
+      "paperId": "politics-2006",
+      "paperName": "2006考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2006",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2006考研政治第24题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABCD",
+      "explanation": "答案来自本地百度网盘 2006 考研政治真题及参考答案 PDF；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2006/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2006考研政治试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2006/paper-page-09.jpg",
+          "caption": "答案原页 p.9",
+          "alt": "2006考研政治答案原页 p.9"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2006",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2006-paper-answer",
+      "sourceEvidenceId": "politics-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:36e6dc18645a9fecb01ce5d04443fe508a21181a6fcb72054fba04bfd44ecd9c",
+      "answerTextHash": "sha256:a29b1d6ef338f9fd22d808d71723df6d146732d65fe64253a689e66d7d281df4",
+      "sourceEvidence": {
+        "evidenceId": "politics-2006-q24",
+        "sourceId": "src_e459e0c19a096d74af87fa7c",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:36e6dc18645a9fecb01ce5d04443fe508a21181a6fcb72054fba04bfd44ecd9c",
+        "answerTextHash": "sha256:a29b1d6ef338f9fd22d808d71723df6d146732d65fe64253a689e66d7d281df4"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_e459e0c19a096d74af87fa7c",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2006/2006-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:a29b1d6ef338f9fd22d808d71723df6d146732d65fe64253a689e66d7d281df4",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2006_bank",
+        "note": "Matched against local Baidu Netdisk 2006 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2006-025",
+      "number": 25,
+      "paperId": "politics-2006",
+      "paperName": "2006考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2006",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2006考研政治第25题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "CD",
+      "explanation": "答案来自本地百度网盘 2006 考研政治真题及参考答案 PDF；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2006/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2006考研政治试卷原页 p.3"
+        },
+        {
+          "src": "question-bank/politics-2006/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2006考研政治试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2006/paper-page-09.jpg",
+          "caption": "答案原页 p.9",
+          "alt": "2006考研政治答案原页 p.9"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2006",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2006-paper-answer",
+      "sourceEvidenceId": "politics-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:62c189cbf9a95d583a88adfa4a564df30735f781d700a411f19ef21488807898",
+      "answerTextHash": "sha256:dad894b1742161a67a6406cb0e7b372551d1f49f0d1bc7205e7e32b94b40a398",
+      "sourceEvidence": {
+        "evidenceId": "politics-2006-q25",
+        "sourceId": "src_e459e0c19a096d74af87fa7c",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:62c189cbf9a95d583a88adfa4a564df30735f781d700a411f19ef21488807898",
+        "answerTextHash": "sha256:dad894b1742161a67a6406cb0e7b372551d1f49f0d1bc7205e7e32b94b40a398"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_e459e0c19a096d74af87fa7c",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2006/2006-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:dad894b1742161a67a6406cb0e7b372551d1f49f0d1bc7205e7e32b94b40a398",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2006_bank",
+        "note": "Matched against local Baidu Netdisk 2006 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2006-026",
+      "number": 26,
+      "paperId": "politics-2006",
+      "paperName": "2006考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2006",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2006考研政治第26题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABD",
+      "explanation": "答案来自本地百度网盘 2006 考研政治真题及参考答案 PDF；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2006/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2006考研政治试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2006/paper-page-09.jpg",
+          "caption": "答案原页 p.9",
+          "alt": "2006考研政治答案原页 p.9"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2006",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2006-paper-answer",
+      "sourceEvidenceId": "politics-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:068760bf631a85c488a1d266be036eb2a0754b7f2481c76bd504f30ee45a7f0d",
+      "answerTextHash": "sha256:03217ec5a81fe15ce21449f8545d43e13075cf28fd826dd4d4abd66b0a3a0b3a",
+      "sourceEvidence": {
+        "evidenceId": "politics-2006-q26",
+        "sourceId": "src_e459e0c19a096d74af87fa7c",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:068760bf631a85c488a1d266be036eb2a0754b7f2481c76bd504f30ee45a7f0d",
+        "answerTextHash": "sha256:03217ec5a81fe15ce21449f8545d43e13075cf28fd826dd4d4abd66b0a3a0b3a"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_e459e0c19a096d74af87fa7c",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2006/2006-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:03217ec5a81fe15ce21449f8545d43e13075cf28fd826dd4d4abd66b0a3a0b3a",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2006_bank",
+        "note": "Matched against local Baidu Netdisk 2006 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2006-027",
+      "number": 27,
+      "paperId": "politics-2006",
+      "paperName": "2006考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2006",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2006考研政治第27题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABD",
+      "explanation": "答案来自本地百度网盘 2006 考研政治真题及参考答案 PDF；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2006/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2006考研政治试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2006/paper-page-09.jpg",
+          "caption": "答案原页 p.9",
+          "alt": "2006考研政治答案原页 p.9"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2006",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2006-paper-answer",
+      "sourceEvidenceId": "politics-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:000e59f266f4a3d442cb7fdf346cd8671b05cb6b3dec1a705ebd9834f969099e",
+      "answerTextHash": "sha256:03217ec5a81fe15ce21449f8545d43e13075cf28fd826dd4d4abd66b0a3a0b3a",
+      "sourceEvidence": {
+        "evidenceId": "politics-2006-q27",
+        "sourceId": "src_e459e0c19a096d74af87fa7c",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:000e59f266f4a3d442cb7fdf346cd8671b05cb6b3dec1a705ebd9834f969099e",
+        "answerTextHash": "sha256:03217ec5a81fe15ce21449f8545d43e13075cf28fd826dd4d4abd66b0a3a0b3a"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_e459e0c19a096d74af87fa7c",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2006/2006-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:03217ec5a81fe15ce21449f8545d43e13075cf28fd826dd4d4abd66b0a3a0b3a",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2006_bank",
+        "note": "Matched against local Baidu Netdisk 2006 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2006-028",
+      "number": 28,
+      "paperId": "politics-2006",
+      "paperName": "2006考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2006",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2006考研政治第28题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "AC",
+      "explanation": "答案来自本地百度网盘 2006 考研政治真题及参考答案 PDF；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2006/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2006考研政治试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2006/paper-page-09.jpg",
+          "caption": "答案原页 p.9",
+          "alt": "2006考研政治答案原页 p.9"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2006",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2006-paper-answer",
+      "sourceEvidenceId": "politics-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:4d7f12aa4fb6ab054f3082ac97a2e42375316ec647a629aa65301790642ab313",
+      "answerTextHash": "sha256:bce6e6d5364aa2f1be9ff89d7ead2d97afcae2bba221da13a4fffa870b4532eb",
+      "sourceEvidence": {
+        "evidenceId": "politics-2006-q28",
+        "sourceId": "src_e459e0c19a096d74af87fa7c",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:4d7f12aa4fb6ab054f3082ac97a2e42375316ec647a629aa65301790642ab313",
+        "answerTextHash": "sha256:bce6e6d5364aa2f1be9ff89d7ead2d97afcae2bba221da13a4fffa870b4532eb"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_e459e0c19a096d74af87fa7c",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2006/2006-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:bce6e6d5364aa2f1be9ff89d7ead2d97afcae2bba221da13a4fffa870b4532eb",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2006_bank",
+        "note": "Matched against local Baidu Netdisk 2006 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2006-029",
+      "number": 29,
+      "paperId": "politics-2006",
+      "paperName": "2006考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2006",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2006考研政治第29题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "BC",
+      "explanation": "答案来自本地百度网盘 2006 考研政治真题及参考答案 PDF；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2006/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2006考研政治试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2006/paper-page-09.jpg",
+          "caption": "答案原页 p.9",
+          "alt": "2006考研政治答案原页 p.9"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2006",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2006-paper-answer",
+      "sourceEvidenceId": "politics-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:36777ea4961e3fddca178fb537fc6b0d7155997fb88647d470a1e0f569da3c7c",
+      "answerTextHash": "sha256:6ae7406d41c14739df27692be5cf76a203c5dfa30c8e64376dcfe49fd90fbe88",
+      "sourceEvidence": {
+        "evidenceId": "politics-2006-q29",
+        "sourceId": "src_e459e0c19a096d74af87fa7c",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:36777ea4961e3fddca178fb537fc6b0d7155997fb88647d470a1e0f569da3c7c",
+        "answerTextHash": "sha256:6ae7406d41c14739df27692be5cf76a203c5dfa30c8e64376dcfe49fd90fbe88"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_e459e0c19a096d74af87fa7c",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2006/2006-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:6ae7406d41c14739df27692be5cf76a203c5dfa30c8e64376dcfe49fd90fbe88",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2006_bank",
+        "note": "Matched against local Baidu Netdisk 2006 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2006-030",
+      "number": 30,
+      "paperId": "politics-2006",
+      "paperName": "2006考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2006",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2006考研政治第30题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ACD",
+      "explanation": "答案来自本地百度网盘 2006 考研政治真题及参考答案 PDF；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2006/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2006考研政治试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2006/paper-page-09.jpg",
+          "caption": "答案原页 p.9",
+          "alt": "2006考研政治答案原页 p.9"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2006",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2006-paper-answer",
+      "sourceEvidenceId": "politics-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:9ec5f712013b0e44c8e8c7cea2640e82fc9b1deb23584f48ea8164dae8514fbb",
+      "answerTextHash": "sha256:f8b3fa98cb5d08f6dd5638980feb86ff16b4da3b120775b8b3ef4a7de952540d",
+      "sourceEvidence": {
+        "evidenceId": "politics-2006-q30",
+        "sourceId": "src_e459e0c19a096d74af87fa7c",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:9ec5f712013b0e44c8e8c7cea2640e82fc9b1deb23584f48ea8164dae8514fbb",
+        "answerTextHash": "sha256:f8b3fa98cb5d08f6dd5638980feb86ff16b4da3b120775b8b3ef4a7de952540d"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_e459e0c19a096d74af87fa7c",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2006/2006-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:f8b3fa98cb5d08f6dd5638980feb86ff16b4da3b120775b8b3ef4a7de952540d",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2006_bank",
+        "note": "Matched against local Baidu Netdisk 2006 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2006-031",
+      "number": 31,
+      "paperId": "politics-2006",
+      "paperName": "2006考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2006",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2006考研政治第31题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABCD",
+      "explanation": "答案来自本地百度网盘 2006 考研政治真题及参考答案 PDF；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2006/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2006考研政治试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2006/paper-page-09.jpg",
+          "caption": "答案原页 p.9",
+          "alt": "2006考研政治答案原页 p.9"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2006",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2006-paper-answer",
+      "sourceEvidenceId": "politics-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:f3db04bc94729d7ce8101f263d43455424f505fca76b63d362a7233def3dfd25",
+      "answerTextHash": "sha256:a29b1d6ef338f9fd22d808d71723df6d146732d65fe64253a689e66d7d281df4",
+      "sourceEvidence": {
+        "evidenceId": "politics-2006-q31",
+        "sourceId": "src_e459e0c19a096d74af87fa7c",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:f3db04bc94729d7ce8101f263d43455424f505fca76b63d362a7233def3dfd25",
+        "answerTextHash": "sha256:a29b1d6ef338f9fd22d808d71723df6d146732d65fe64253a689e66d7d281df4"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_e459e0c19a096d74af87fa7c",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2006/2006-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:a29b1d6ef338f9fd22d808d71723df6d146732d65fe64253a689e66d7d281df4",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2006_bank",
+        "note": "Matched against local Baidu Netdisk 2006 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2006-032",
+      "number": 32,
+      "paperId": "politics-2006",
+      "paperName": "2006考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2006",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2006考研政治第32题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABCD",
+      "explanation": "答案来自本地百度网盘 2006 考研政治真题及参考答案 PDF；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2006/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2006考研政治试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2006/paper-page-09.jpg",
+          "caption": "答案原页 p.9",
+          "alt": "2006考研政治答案原页 p.9"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2006",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2006-paper-answer",
+      "sourceEvidenceId": "politics-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:2b37faa772c9ed63abe32cc0c7c185fde402394c2cf8115ec05a82efdf742638",
+      "answerTextHash": "sha256:a29b1d6ef338f9fd22d808d71723df6d146732d65fe64253a689e66d7d281df4",
+      "sourceEvidence": {
+        "evidenceId": "politics-2006-q32",
+        "sourceId": "src_e459e0c19a096d74af87fa7c",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:2b37faa772c9ed63abe32cc0c7c185fde402394c2cf8115ec05a82efdf742638",
+        "answerTextHash": "sha256:a29b1d6ef338f9fd22d808d71723df6d146732d65fe64253a689e66d7d281df4"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_e459e0c19a096d74af87fa7c",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2006/2006-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:a29b1d6ef338f9fd22d808d71723df6d146732d65fe64253a689e66d7d281df4",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2006_bank",
+        "note": "Matched against local Baidu Netdisk 2006 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2006-033",
+      "number": 33,
+      "paperId": "politics-2006",
+      "paperName": "2006考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2006",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2006考研政治第33题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ACD",
+      "explanation": "答案来自本地百度网盘 2006 考研政治真题及参考答案 PDF；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2006/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2006考研政治试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2006/paper-page-09.jpg",
+          "caption": "答案原页 p.9",
+          "alt": "2006考研政治答案原页 p.9"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2006",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2006-paper-answer",
+      "sourceEvidenceId": "politics-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:2a69dd73ce73129ebf275bd738c34d1a8d1922e60b15b1dd6fbf4889991b833d",
+      "answerTextHash": "sha256:f8b3fa98cb5d08f6dd5638980feb86ff16b4da3b120775b8b3ef4a7de952540d",
+      "sourceEvidence": {
+        "evidenceId": "politics-2006-q33",
+        "sourceId": "src_e459e0c19a096d74af87fa7c",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:2a69dd73ce73129ebf275bd738c34d1a8d1922e60b15b1dd6fbf4889991b833d",
+        "answerTextHash": "sha256:f8b3fa98cb5d08f6dd5638980feb86ff16b4da3b120775b8b3ef4a7de952540d"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_e459e0c19a096d74af87fa7c",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2006/2006-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:f8b3fa98cb5d08f6dd5638980feb86ff16b4da3b120775b8b3ef4a7de952540d",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2006_bank",
+        "note": "Matched against local Baidu Netdisk 2006 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2006-034",
+      "number": 34,
+      "paperId": "politics-2006",
+      "paperName": "2006考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2006",
+      "section": "分析题",
+      "type": "analysis",
+      "question": "2006考研政治第34题（分析题）。题干、选项和材料以试卷原页图为准。",
+      "options": [],
+      "answer": "分析题参考答案要点见答案原页 p.9。",
+      "explanation": "参考答案来自本地百度网盘 2006 考研政治真题及参考答案 PDF；完整答案要点见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2006/paper-page-05.jpg",
+          "caption": "试卷原页 p.5",
+          "alt": "2006考研政治试卷原页 p.5"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2006/paper-page-09.jpg",
+          "caption": "答案原页 p.9",
+          "alt": "2006考研政治答案原页 p.9"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2006",
+        "分析题"
+      ],
+      "difficulty": 3,
+      "source": "politics-2006-paper-answer",
+      "sourceEvidenceId": "politics-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:e663304b67a071ae692e706a2fa351464d06eb2e9b27928787c6e22bf9e8338a",
+      "answerTextHash": "sha256:b3b4ed535ff5f7ad6638e934a2206e3e166d317b103a427ff510a2416af44111",
+      "sourceEvidence": {
+        "evidenceId": "politics-2006-q34",
+        "sourceId": "src_e459e0c19a096d74af87fa7c",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:e663304b67a071ae692e706a2fa351464d06eb2e9b27928787c6e22bf9e8338a",
+        "answerTextHash": "sha256:b3b4ed535ff5f7ad6638e934a2206e3e166d317b103a427ff510a2416af44111"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_reference_answer",
+        "sourceId": "src_e459e0c19a096d74af87fa7c",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2006/2006-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:b3b4ed535ff5f7ad6638e934a2206e3e166d317b103a427ff510a2416af44111",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2006_bank",
+        "note": "Matched against local Baidu Netdisk 2006 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2006-035",
+      "number": 35,
+      "paperId": "politics-2006",
+      "paperName": "2006考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2006",
+      "section": "分析题",
+      "type": "analysis",
+      "question": "2006考研政治第35题（分析题）。题干、选项和材料以试卷原页图为准。",
+      "options": [],
+      "answer": "分析题参考答案要点见答案原页 p.10。",
+      "explanation": "参考答案来自本地百度网盘 2006 考研政治真题及参考答案 PDF；完整答案要点见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2006/paper-page-05.jpg",
+          "caption": "试卷原页 p.5",
+          "alt": "2006考研政治试卷原页 p.5"
+        },
+        {
+          "src": "question-bank/politics-2006/paper-page-06.jpg",
+          "caption": "试卷原页 p.6",
+          "alt": "2006考研政治试卷原页 p.6"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2006/paper-page-10.jpg",
+          "caption": "答案原页 p.10",
+          "alt": "2006考研政治答案原页 p.10"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2006",
+        "分析题"
+      ],
+      "difficulty": 3,
+      "source": "politics-2006-paper-answer",
+      "sourceEvidenceId": "politics-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:0cc28d7653d09d390107ea54f63630fb1fde7998a598eda76da0f6a32596680f",
+      "answerTextHash": "sha256:0e69509a95404859b353a0e6278c3d81f485fa986dd9ee2c38b48833659eae75",
+      "sourceEvidence": {
+        "evidenceId": "politics-2006-q35",
+        "sourceId": "src_e459e0c19a096d74af87fa7c",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:0cc28d7653d09d390107ea54f63630fb1fde7998a598eda76da0f6a32596680f",
+        "answerTextHash": "sha256:0e69509a95404859b353a0e6278c3d81f485fa986dd9ee2c38b48833659eae75"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_reference_answer",
+        "sourceId": "src_e459e0c19a096d74af87fa7c",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2006/2006-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:0e69509a95404859b353a0e6278c3d81f485fa986dd9ee2c38b48833659eae75",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2006_bank",
+        "note": "Matched against local Baidu Netdisk 2006 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2006-036",
+      "number": 36,
+      "paperId": "politics-2006",
+      "paperName": "2006考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2006",
+      "section": "分析题",
+      "type": "analysis",
+      "question": "2006考研政治第36题（分析题）。题干、选项和材料以试卷原页图为准。",
+      "options": [],
+      "answer": "分析题参考答案要点见答案原页 p.10。",
+      "explanation": "参考答案来自本地百度网盘 2006 考研政治真题及参考答案 PDF；完整答案要点见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2006/paper-page-06.jpg",
+          "caption": "试卷原页 p.6",
+          "alt": "2006考研政治试卷原页 p.6"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2006/paper-page-10.jpg",
+          "caption": "答案原页 p.10",
+          "alt": "2006考研政治答案原页 p.10"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2006",
+        "分析题"
+      ],
+      "difficulty": 3,
+      "source": "politics-2006-paper-answer",
+      "sourceEvidenceId": "politics-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:a990580e605bc2bad22360b7603bfa273952fa2e80f24a398b7cf86967028a8e",
+      "answerTextHash": "sha256:0e69509a95404859b353a0e6278c3d81f485fa986dd9ee2c38b48833659eae75",
+      "sourceEvidence": {
+        "evidenceId": "politics-2006-q36",
+        "sourceId": "src_e459e0c19a096d74af87fa7c",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:a990580e605bc2bad22360b7603bfa273952fa2e80f24a398b7cf86967028a8e",
+        "answerTextHash": "sha256:0e69509a95404859b353a0e6278c3d81f485fa986dd9ee2c38b48833659eae75"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_reference_answer",
+        "sourceId": "src_e459e0c19a096d74af87fa7c",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2006/2006-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:0e69509a95404859b353a0e6278c3d81f485fa986dd9ee2c38b48833659eae75",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2006_bank",
+        "note": "Matched against local Baidu Netdisk 2006 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2006-037",
+      "number": 37,
+      "paperId": "politics-2006",
+      "paperName": "2006考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2006",
+      "section": "分析题",
+      "type": "analysis",
+      "question": "2006考研政治第37题（分析题）。题干、选项和材料以试卷原页图为准。",
+      "options": [],
+      "answer": "分析题参考答案要点见答案原页 p.10-p.11。",
+      "explanation": "参考答案来自本地百度网盘 2006 考研政治真题及参考答案 PDF；完整答案要点见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2006/paper-page-06.jpg",
+          "caption": "试卷原页 p.6",
+          "alt": "2006考研政治试卷原页 p.6"
+        },
+        {
+          "src": "question-bank/politics-2006/paper-page-07.jpg",
+          "caption": "试卷原页 p.7",
+          "alt": "2006考研政治试卷原页 p.7"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2006/paper-page-10.jpg",
+          "caption": "答案原页 p.10",
+          "alt": "2006考研政治答案原页 p.10"
+        },
+        {
+          "src": "question-bank/politics-2006/paper-page-11.jpg",
+          "caption": "答案原页 p.11",
+          "alt": "2006考研政治答案原页 p.11"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2006",
+        "分析题"
+      ],
+      "difficulty": 3,
+      "source": "politics-2006-paper-answer",
+      "sourceEvidenceId": "politics-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:0d673a57b42d579d45635081df1e38f51a788f96806d58a3806461983256fcd7",
+      "answerTextHash": "sha256:644f0ce52a07af88a8475f705a00b981d4ddd16a5b286f8159617b9bc3c1c87a",
+      "sourceEvidence": {
+        "evidenceId": "politics-2006-q37",
+        "sourceId": "src_e459e0c19a096d74af87fa7c",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:0d673a57b42d579d45635081df1e38f51a788f96806d58a3806461983256fcd7",
+        "answerTextHash": "sha256:644f0ce52a07af88a8475f705a00b981d4ddd16a5b286f8159617b9bc3c1c87a"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_reference_answer",
+        "sourceId": "src_e459e0c19a096d74af87fa7c",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2006/2006-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:644f0ce52a07af88a8475f705a00b981d4ddd16a5b286f8159617b9bc3c1c87a",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2006_bank",
+        "note": "Matched against local Baidu Netdisk 2006 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2006-038",
+      "number": 38,
+      "paperId": "politics-2006",
+      "paperName": "2006考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2006",
+      "section": "分析题",
+      "type": "analysis",
+      "question": "2006考研政治第38题（分析题）。题干、选项和材料以试卷原页图为准。",
+      "options": [],
+      "answer": "选做分析题参考答案要点见答案原页 p.11-p.12。",
+      "explanation": "参考答案来自本地百度网盘 2006 考研政治真题及参考答案 PDF；完整答案要点见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2006/paper-page-07.jpg",
+          "caption": "试卷原页 p.7",
+          "alt": "2006考研政治试卷原页 p.7"
+        },
+        {
+          "src": "question-bank/politics-2006/paper-page-08.jpg",
+          "caption": "试卷原页 p.8",
+          "alt": "2006考研政治试卷原页 p.8"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2006/paper-page-11.jpg",
+          "caption": "答案原页 p.11",
+          "alt": "2006考研政治答案原页 p.11"
+        },
+        {
+          "src": "question-bank/politics-2006/paper-page-12.jpg",
+          "caption": "答案原页 p.12",
+          "alt": "2006考研政治答案原页 p.12"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2006",
+        "分析题"
+      ],
+      "difficulty": 3,
+      "source": "politics-2006-paper-answer",
+      "sourceEvidenceId": "politics-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:1428bc43acadd9673ee3e6e6dfa6b1a6480b02e77d5b83c0813e7008d36ea37c",
+      "answerTextHash": "sha256:6fcdbc37b80992a08f78319944eb073579a70cf88bf970f89c11ec08e3fb3c55",
+      "sourceEvidence": {
+        "evidenceId": "politics-2006-q38",
+        "sourceId": "src_e459e0c19a096d74af87fa7c",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:1428bc43acadd9673ee3e6e6dfa6b1a6480b02e77d5b83c0813e7008d36ea37c",
+        "answerTextHash": "sha256:6fcdbc37b80992a08f78319944eb073579a70cf88bf970f89c11ec08e3fb3c55"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_reference_answer",
+        "sourceId": "src_e459e0c19a096d74af87fa7c",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2006/2006-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:6fcdbc37b80992a08f78319944eb073579a70cf88bf970f89c11ec08e3fb3c55",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2006_bank",
+        "note": "Matched against local Baidu Netdisk 2006 Politics paper-answer PDF."
+      }
+    }
+  ]
+}

@@ -1,17 +1,1325 @@
 {
   "id": "math2-2025",
-  "source": "math2-2025-pending-source",
+  "source": "math2-2025-paper",
   "paperId": "math2-2025",
   "paperName": "2025考研数学二真题",
   "subject": "数学",
+  "subjectKey": "math",
   "track": "math2",
   "year": "2025",
-  "quality": "needs_cleaning",
-  "publicationStatus": "blocked",
-  "publicationBlockers": [
-    "source not fully cleaned and reviewed"
+  "quality": "ready",
+  "publicationStatus": "published",
+  "publicationBlockers": [],
+  "sourceEvidencePolicy": "baidu_netdisk_official_paper_pdf_page_image_v1",
+  "sourceFiles": [
+    {
+      "id": "math2-2025-paper",
+      "role": "paper",
+      "localPath": "data/raw-inbox/public-course-2025/math2/2025-math2-paper.pdf",
+      "sha256": "sha256:db52a06ae7edc148d22d62dc63c1aef49b326554cb646485a911a8a35c84272a"
+    },
+    {
+      "id": "math2-2025-answer-updating",
+      "role": "answer",
+      "localPath": "data/raw-inbox/public-course-2025/math2/2025-math2-answer-updating.pdf",
+      "sha256": "sha256:c2d03b85b90ba1e2a8e9842d77a6708b46daa424cb421124150f78553d1f9cbb"
+    }
   ],
-  "processed_at": "2026-05-14T00:00:00Z",
-  "total_cards": 0,
-  "cards": []
+  "assetRoot": "question-bank/math2-2025",
+  "processed_at": "2026-05-26T23:12:36Z",
+  "total_cards": 22,
+  "cards": [
+    {
+      "id": "math2-2025-001",
+      "number": 1,
+      "paperId": "math2-2025",
+      "paperName": "2025考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2025",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2025考研数学二第1题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘数学二参考答案 PDF；完整题干和公式见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2025/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2025考研数学二试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2025/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2025考研数学二答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2025",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2025-paper",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:65237983cb07c11759cd8712c4fa21c378b5ed41b3781f56a69e86dd2b084bde",
+      "answerTextHash": "sha256:e0379f21e18a4103fb1f2a55b207f44908f3ae98f7b934d91863940d970b293e",
+      "sourceEvidence": {
+        "evidenceId": "math2-2025-q01",
+        "sourceId": "src_0a75a8a0befda5abbef10b57",
+        "answerSourceId": "src_02af377a05fcfcde975d764f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2025-paper",
+        "answerEvidenceId": "math2-2025-answer-updating",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:e0379f21e18a4103fb1f2a55b207f44908f3ae98f7b934d91863940d970b293e"
+      }
+    },
+    {
+      "id": "math2-2025-002",
+      "number": 2,
+      "paperId": "math2-2025",
+      "paperName": "2025考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2025",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2025考研数学二第2题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘数学二参考答案 PDF；完整题干和公式见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2025/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2025考研数学二试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2025/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2025考研数学二答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2025",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2025-paper",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:c90ef56f761418e21826ae5095f6c8db2604e9712479e52cfa0232203540cb52",
+      "answerTextHash": "sha256:48a655724228f727dcd7f827c2a466e9941da8c76ac17f8df2a224b305cd0de5",
+      "sourceEvidence": {
+        "evidenceId": "math2-2025-q02",
+        "sourceId": "src_0a75a8a0befda5abbef10b57",
+        "answerSourceId": "src_02af377a05fcfcde975d764f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2025-paper",
+        "answerEvidenceId": "math2-2025-answer-updating",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:48a655724228f727dcd7f827c2a466e9941da8c76ac17f8df2a224b305cd0de5"
+      }
+    },
+    {
+      "id": "math2-2025-003",
+      "number": 3,
+      "paperId": "math2-2025",
+      "paperName": "2025考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2025",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2025考研数学二第3题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘数学二参考答案 PDF；完整题干和公式见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2025/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2025考研数学二试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2025/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2025考研数学二答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2025",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2025-paper",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:233a8e87d5921ec44c79c76473020b6caf301a8c308b784437ad85021d5ccc56",
+      "answerTextHash": "sha256:57a82881eeed7a34ffe62ec67b4dcffe86f24c0f80e15ddfe649b20cefa30efe",
+      "sourceEvidence": {
+        "evidenceId": "math2-2025-q03",
+        "sourceId": "src_0a75a8a0befda5abbef10b57",
+        "answerSourceId": "src_02af377a05fcfcde975d764f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2025-paper",
+        "answerEvidenceId": "math2-2025-answer-updating",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:57a82881eeed7a34ffe62ec67b4dcffe86f24c0f80e15ddfe649b20cefa30efe"
+      }
+    },
+    {
+      "id": "math2-2025-004",
+      "number": 4,
+      "paperId": "math2-2025",
+      "paperName": "2025考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2025",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2025考研数学二第4题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘数学二参考答案 PDF；完整题干和公式见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2025/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2025考研数学二试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2025/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2025考研数学二答案解析 p.8"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2025",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2025-paper",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:4a14f99a2caa6f151c1c9e8ed3acf8f159d19580546e634d72b7be85b284faf8",
+      "answerTextHash": "sha256:97479da34231cef66231b63ccb1b2f4ab9c0878a6968e94ab9a2ec3b7e6371d9",
+      "sourceEvidence": {
+        "evidenceId": "math2-2025-q04",
+        "sourceId": "src_0a75a8a0befda5abbef10b57",
+        "answerSourceId": "src_02af377a05fcfcde975d764f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2025-paper",
+        "answerEvidenceId": "math2-2025-answer-updating",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:97479da34231cef66231b63ccb1b2f4ab9c0878a6968e94ab9a2ec3b7e6371d9"
+      }
+    },
+    {
+      "id": "math2-2025-005",
+      "number": 5,
+      "paperId": "math2-2025",
+      "paperName": "2025考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2025",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2025考研数学二第5题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘数学二参考答案 PDF；完整题干和公式见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2025/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2025考研数学二试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2025/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2025考研数学二答案解析 p.8"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2025",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2025-paper",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:c9b4b2915f98092e4d31350e1e6c8b2f8a0fc87f868cd87f5a8ab1e99431dc30",
+      "answerTextHash": "sha256:79b4dd52e0f1df0124c278028b54043cc0eccda0cd09bcdae3d4731743bb00b3",
+      "sourceEvidence": {
+        "evidenceId": "math2-2025-q05",
+        "sourceId": "src_0a75a8a0befda5abbef10b57",
+        "answerSourceId": "src_02af377a05fcfcde975d764f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2025-paper",
+        "answerEvidenceId": "math2-2025-answer-updating",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:79b4dd52e0f1df0124c278028b54043cc0eccda0cd09bcdae3d4731743bb00b3"
+      }
+    },
+    {
+      "id": "math2-2025-006",
+      "number": 6,
+      "paperId": "math2-2025",
+      "paperName": "2025考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2025",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2025考研数学二第6题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘数学二参考答案 PDF；完整题干和公式见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2025/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2025考研数学二试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2025/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2025考研数学二答案解析 p.8"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2025",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2025-paper",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:940333c152510d92a31c4fccc56e3a471f9ea9c42b2df531a05ae8ac2c6ad786",
+      "answerTextHash": "sha256:f8bd040d50fd537c6444f6e4a9534952595ef9194270a36551f220fe4051e322",
+      "sourceEvidence": {
+        "evidenceId": "math2-2025-q06",
+        "sourceId": "src_0a75a8a0befda5abbef10b57",
+        "answerSourceId": "src_02af377a05fcfcde975d764f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2025-paper",
+        "answerEvidenceId": "math2-2025-answer-updating",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:f8bd040d50fd537c6444f6e4a9534952595ef9194270a36551f220fe4051e322"
+      }
+    },
+    {
+      "id": "math2-2025-007",
+      "number": 7,
+      "paperId": "math2-2025",
+      "paperName": "2025考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2025",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2025考研数学二第7题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘数学二参考答案 PDF；完整题干和公式见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2025/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2025考研数学二试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2025/answer-page-09.jpg",
+          "caption": "答案解析 p.9",
+          "alt": "2025考研数学二答案解析 p.9"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2025",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2025-paper",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:b373c7b224bd4a898f47a661aa9a8ec84bef8ca283f4e5a95103509249bd69d8",
+      "answerTextHash": "sha256:855f6df8c0605ae56e468abee0b0ad01258b607f6abb517949c2c19fafbc2955",
+      "sourceEvidence": {
+        "evidenceId": "math2-2025-q07",
+        "sourceId": "src_0a75a8a0befda5abbef10b57",
+        "answerSourceId": "src_02af377a05fcfcde975d764f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2025-paper",
+        "answerEvidenceId": "math2-2025-answer-updating",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:855f6df8c0605ae56e468abee0b0ad01258b607f6abb517949c2c19fafbc2955"
+      }
+    },
+    {
+      "id": "math2-2025-008",
+      "number": 8,
+      "paperId": "math2-2025",
+      "paperName": "2025考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2025",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2025考研数学二第8题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘数学二参考答案 PDF；完整题干和公式见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2025/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2025考研数学二试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2025/answer-page-09.jpg",
+          "caption": "答案解析 p.9",
+          "alt": "2025考研数学二答案解析 p.9"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2025",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2025-paper",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:b899997dcbb50d12d69878862ad96eb84529090370940886964efd0c007db45d",
+      "answerTextHash": "sha256:91b648e99f8276b56d930b37d62fef5912e168052a3c9691b654e1079183fca6",
+      "sourceEvidence": {
+        "evidenceId": "math2-2025-q08",
+        "sourceId": "src_0a75a8a0befda5abbef10b57",
+        "answerSourceId": "src_02af377a05fcfcde975d764f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2025-paper",
+        "answerEvidenceId": "math2-2025-answer-updating",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:91b648e99f8276b56d930b37d62fef5912e168052a3c9691b654e1079183fca6"
+      }
+    },
+    {
+      "id": "math2-2025-009",
+      "number": 9,
+      "paperId": "math2-2025",
+      "paperName": "2025考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2025",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2025考研数学二第9题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘数学二参考答案 PDF；完整题干和公式见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2025/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2025考研数学二试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2025/answer-page-09.jpg",
+          "caption": "答案解析 p.9",
+          "alt": "2025考研数学二答案解析 p.9"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2025",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2025-paper",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:a9cfa8705656ae00e4545750db9802f02ba4494dbbf477c2fbd95b4c9146f501",
+      "answerTextHash": "sha256:855f6df8c0605ae56e468abee0b0ad01258b607f6abb517949c2c19fafbc2955",
+      "sourceEvidence": {
+        "evidenceId": "math2-2025-q09",
+        "sourceId": "src_0a75a8a0befda5abbef10b57",
+        "answerSourceId": "src_02af377a05fcfcde975d764f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2025-paper",
+        "answerEvidenceId": "math2-2025-answer-updating",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:855f6df8c0605ae56e468abee0b0ad01258b607f6abb517949c2c19fafbc2955"
+      }
+    },
+    {
+      "id": "math2-2025-010",
+      "number": 10,
+      "paperId": "math2-2025",
+      "paperName": "2025考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2025",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2025考研数学二第10题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘数学二参考答案 PDF；完整题干和公式见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2025/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2025考研数学二试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2025/answer-page-10.jpg",
+          "caption": "答案解析 p.10",
+          "alt": "2025考研数学二答案解析 p.10"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2025",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2025-paper",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:354ba194955f4b5cdf0f3423d3fa43cddb92b56d8730cea8c8d03faa088492b7",
+      "answerTextHash": "sha256:687d5be3c81766fdb3f13978480ad930d7ddc7082310b4b6169bcb948d5228e3",
+      "sourceEvidence": {
+        "evidenceId": "math2-2025-q10",
+        "sourceId": "src_0a75a8a0befda5abbef10b57",
+        "answerSourceId": "src_02af377a05fcfcde975d764f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2025-paper",
+        "answerEvidenceId": "math2-2025-answer-updating",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:687d5be3c81766fdb3f13978480ad930d7ddc7082310b4b6169bcb948d5228e3"
+      }
+    },
+    {
+      "id": "math2-2025-011",
+      "number": 11,
+      "paperId": "math2-2025",
+      "paperName": "2025考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2025",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2025考研数学二第11题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "a = 2",
+      "explanation": "答案来自本地百度网盘数学二参考答案 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2025/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2025考研数学二试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2025/answer-page-10.jpg",
+          "caption": "答案解析 p.10",
+          "alt": "2025考研数学二答案解析 p.10"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2025",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2025-paper",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:5369e6e617dd0bec00a2f8c4e6bf1d07e0ebca9fb58e48a836c6f10b47b85cb5",
+      "answerTextHash": "sha256:7f32ac5a240c7aa6e42d4ddcc9a2bd13320f281d387ff04aaa6a8d532f7e3d10",
+      "sourceEvidence": {
+        "evidenceId": "math2-2025-q11",
+        "sourceId": "src_0a75a8a0befda5abbef10b57",
+        "answerSourceId": "src_02af377a05fcfcde975d764f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2025-paper",
+        "answerEvidenceId": "math2-2025-answer-updating",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:7f32ac5a240c7aa6e42d4ddcc9a2bd13320f281d387ff04aaa6a8d532f7e3d10"
+      }
+    },
+    {
+      "id": "math2-2025-012",
+      "number": 12,
+      "paperId": "math2-2025",
+      "paperName": "2025考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2025",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2025考研数学二第12题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "y = x",
+      "explanation": "答案来自本地百度网盘数学二参考答案 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2025/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2025考研数学二试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2025/answer-page-10.jpg",
+          "caption": "答案解析 p.10",
+          "alt": "2025考研数学二答案解析 p.10"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2025",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2025-paper",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:736d01b61505342d5ca00912cf54e70742992d5151c2263bbb988d0d294cdbee",
+      "answerTextHash": "sha256:85a22bf1123f68b5db8d6876fc4052bb7707b8f9cfa34e1ba4a83b6ef3904706",
+      "sourceEvidence": {
+        "evidenceId": "math2-2025-q12",
+        "sourceId": "src_0a75a8a0befda5abbef10b57",
+        "answerSourceId": "src_02af377a05fcfcde975d764f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2025-paper",
+        "answerEvidenceId": "math2-2025-answer-updating",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:85a22bf1123f68b5db8d6876fc4052bb7707b8f9cfa34e1ba4a83b6ef3904706"
+      }
+    },
+    {
+      "id": "math2-2025-013",
+      "number": 13,
+      "paperId": "math2-2025",
+      "paperName": "2025考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2025",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2025考研数学二第13题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "-1/4",
+      "explanation": "答案来自本地百度网盘数学二参考答案 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2025/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2025考研数学二试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2025/answer-page-10.jpg",
+          "caption": "答案解析 p.10",
+          "alt": "2025考研数学二答案解析 p.10"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2025",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2025-paper",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:743deb059f0a7f36c55f853afc4e36e094c79a26c862696f19055f4ca17edf36",
+      "answerTextHash": "sha256:bfeea336a7b125af74ad4609fb2751586f11537509ae0cfdbb1981c91bd99bf5",
+      "sourceEvidence": {
+        "evidenceId": "math2-2025-q13",
+        "sourceId": "src_0a75a8a0befda5abbef10b57",
+        "answerSourceId": "src_02af377a05fcfcde975d764f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2025-paper",
+        "answerEvidenceId": "math2-2025-answer-updating",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:bfeea336a7b125af74ad4609fb2751586f11537509ae0cfdbb1981c91bd99bf5"
+      }
+    },
+    {
+      "id": "math2-2025-014",
+      "number": 14,
+      "paperId": "math2-2025",
+      "paperName": "2025考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2025",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2025考研数学二第14题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "2e",
+      "explanation": "答案来自本地百度网盘数学二参考答案 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2025/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2025考研数学二试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2025/answer-page-11.jpg",
+          "caption": "答案解析 p.11",
+          "alt": "2025考研数学二答案解析 p.11"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2025",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2025-paper",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:7d17d0ea21ca571cbc6c037d4407e1dacb01fc05b9f3e67d0f1da81f8e1f1194",
+      "answerTextHash": "sha256:6b0adb341d615470f8a8f21baf25bd7577e85973a10c0325d78a8c37ba911fe1",
+      "sourceEvidence": {
+        "evidenceId": "math2-2025-q14",
+        "sourceId": "src_0a75a8a0befda5abbef10b57",
+        "answerSourceId": "src_02af377a05fcfcde975d764f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2025-paper",
+        "answerEvidenceId": "math2-2025-answer-updating",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:6b0adb341d615470f8a8f21baf25bd7577e85973a10c0325d78a8c37ba911fe1"
+      }
+    },
+    {
+      "id": "math2-2025-015",
+      "number": 15,
+      "paperId": "math2-2025",
+      "paperName": "2025考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2025",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2025考研数学二第15题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "2xy - 3/2 x^2 - 5/2 y^2 + 2 = 0",
+      "explanation": "答案来自本地百度网盘数学二参考答案 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2025/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2025考研数学二试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2025/answer-page-11.jpg",
+          "caption": "答案解析 p.11",
+          "alt": "2025考研数学二答案解析 p.11"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2025",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2025-paper",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:815568c2ed9bb340d66c8f94ba4f8acd59ff330a39ac5393c03bd5f293ad4d3d",
+      "answerTextHash": "sha256:a5af86c043e58272b45e21c74649b21b9751a571b4849e0d1a45a208dad8c891",
+      "sourceEvidence": {
+        "evidenceId": "math2-2025-q15",
+        "sourceId": "src_0a75a8a0befda5abbef10b57",
+        "answerSourceId": "src_02af377a05fcfcde975d764f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2025-paper",
+        "answerEvidenceId": "math2-2025-answer-updating",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:a5af86c043e58272b45e21c74649b21b9751a571b4849e0d1a45a208dad8c891"
+      }
+    },
+    {
+      "id": "math2-2025-016",
+      "number": 16,
+      "paperId": "math2-2025",
+      "paperName": "2025考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2025",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2025考研数学二第16题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "k(1,1,-1,-1)^T + (1,0,0,4)^T，k 为任意常数",
+      "explanation": "答案来自本地百度网盘数学二参考答案 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2025/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2025考研数学二试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2025/answer-page-11.jpg",
+          "caption": "答案解析 p.11",
+          "alt": "2025考研数学二答案解析 p.11"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2025",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2025-paper",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:f4aa30fe94d754c1c05147dfebbd667ccd41886ac97d2985eda9386b4a0f9a08",
+      "answerTextHash": "sha256:7b2cb1f280fb2bbe2b788e73bc44290ff575f84ee58639b42471abe1957782b8",
+      "sourceEvidence": {
+        "evidenceId": "math2-2025-q16",
+        "sourceId": "src_0a75a8a0befda5abbef10b57",
+        "answerSourceId": "src_02af377a05fcfcde975d764f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2025-paper",
+        "answerEvidenceId": "math2-2025-answer-updating",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:7b2cb1f280fb2bbe2b788e73bc44290ff575f84ee58639b42471abe1957782b8"
+      }
+    },
+    {
+      "id": "math2-2025-017",
+      "number": 17,
+      "paperId": "math2-2025",
+      "paperName": "2025考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2025",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2025考研数学二第17题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "完整解答见答案原页。",
+      "explanation": "答案来自本地百度网盘数学二参考答案 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2025/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2025考研数学二试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2025/answer-page-11.jpg",
+          "caption": "答案解析 p.11",
+          "alt": "2025考研数学二答案解析 p.11"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2025",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2025-paper",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:21b1eb19978c7256f0d723b68c8ffcc748ff2bf1334c7075d8d28183cd24c545",
+      "answerTextHash": "sha256:93dfcbf9e2bcfc87f9606445f066a14647e0178ee79d7aa17773c5a932f3e32d",
+      "sourceEvidence": {
+        "evidenceId": "math2-2025-q17",
+        "sourceId": "src_0a75a8a0befda5abbef10b57",
+        "answerSourceId": "src_02af377a05fcfcde975d764f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2025-paper",
+        "answerEvidenceId": "math2-2025-answer-updating",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:93dfcbf9e2bcfc87f9606445f066a14647e0178ee79d7aa17773c5a932f3e32d"
+      }
+    },
+    {
+      "id": "math2-2025-018",
+      "number": 18,
+      "paperId": "math2-2025",
+      "paperName": "2025考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2025",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2025考研数学二第18题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "完整证明与 f'(0) 求解见答案原页。",
+      "explanation": "答案来自本地百度网盘数学二参考答案 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2025/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2025考研数学二试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2025/answer-page-12.jpg",
+          "caption": "答案解析 p.12",
+          "alt": "2025考研数学二答案解析 p.12"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2025",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2025-paper",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:113f500289002350b5aad030e5c500e692ebaecd4919a1e9950c2cd434db5ac8",
+      "answerTextHash": "sha256:3642c063be32d15a3108e07e9bc2e819a5955474a929ce63a2203b7e96827b2b",
+      "sourceEvidence": {
+        "evidenceId": "math2-2025-q18",
+        "sourceId": "src_0a75a8a0befda5abbef10b57",
+        "answerSourceId": "src_02af377a05fcfcde975d764f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2025-paper",
+        "answerEvidenceId": "math2-2025-answer-updating",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:3642c063be32d15a3108e07e9bc2e819a5955474a929ce63a2203b7e96827b2b"
+      }
+    },
+    {
+      "id": "math2-2025-019",
+      "number": 19,
+      "paperId": "math2-2025",
+      "paperName": "2025考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2025",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2025考研数学二第19题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "完整二重积分计算见答案原页。",
+      "explanation": "答案来自本地百度网盘数学二参考答案 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2025/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2025考研数学二试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2025/answer-page-12.jpg",
+          "caption": "答案解析 p.12",
+          "alt": "2025考研数学二答案解析 p.12"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2025",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2025-paper",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:7711dcecce9be4ebb6f0a59c92e48b5c8a4c00336302adc1cb5fb002b41746d9",
+      "answerTextHash": "sha256:56e1b3d7aaaff9051f6dd0cc98914736e28c5d80bc3ab62031a07faa9730efda",
+      "sourceEvidence": {
+        "evidenceId": "math2-2025-q19",
+        "sourceId": "src_0a75a8a0befda5abbef10b57",
+        "answerSourceId": "src_02af377a05fcfcde975d764f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2025-paper",
+        "answerEvidenceId": "math2-2025-answer-updating",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:56e1b3d7aaaff9051f6dd0cc98914736e28c5d80bc3ab62031a07faa9730efda"
+      }
+    },
+    {
+      "id": "math2-2025-020",
+      "number": 20,
+      "paperId": "math2-2025",
+      "paperName": "2025考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2025",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2025考研数学二第20题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "完整单调性证明见答案原页。",
+      "explanation": "答案来自本地百度网盘数学二参考答案 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2025/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2025考研数学二试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2025/answer-page-13.jpg",
+          "caption": "答案解析 p.13",
+          "alt": "2025考研数学二答案解析 p.13"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2025",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2025-paper",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:fa82e1e394c22bc4cbda0159562a21796f0dd7fd660dea84193eba09fe945808",
+      "answerTextHash": "sha256:45e02ffa1ccec7d3ba9df031fbf125428456d2e9f756c0d797baaec0d8e8e867",
+      "sourceEvidence": {
+        "evidenceId": "math2-2025-q20",
+        "sourceId": "src_0a75a8a0befda5abbef10b57",
+        "answerSourceId": "src_02af377a05fcfcde975d764f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2025-paper",
+        "answerEvidenceId": "math2-2025-answer-updating",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:45e02ffa1ccec7d3ba9df031fbf125428456d2e9f756c0d797baaec0d8e8e867"
+      }
+    },
+    {
+      "id": "math2-2025-021",
+      "number": 21,
+      "paperId": "math2-2025",
+      "paperName": "2025考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2025",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2025考研数学二第21题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "完整矩阵秩与线性方程组求解见答案原页。",
+      "explanation": "答案来自本地百度网盘数学二参考答案 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2025/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2025考研数学二试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2025/answer-page-13.jpg",
+          "caption": "答案解析 p.13",
+          "alt": "2025考研数学二答案解析 p.13"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2025",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2025-paper",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:9c6f6c3700952eda7b85d7a829552262f4b03246fdbc871f5e1ed7f469cf07a5",
+      "answerTextHash": "sha256:4f022cfd51e62b5c803d6149a011a738746f3a395cb7ff1395cf7f6559777c79",
+      "sourceEvidence": {
+        "evidenceId": "math2-2025-q21",
+        "sourceId": "src_0a75a8a0befda5abbef10b57",
+        "answerSourceId": "src_02af377a05fcfcde975d764f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2025-paper",
+        "answerEvidenceId": "math2-2025-answer-updating",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:4f022cfd51e62b5c803d6149a011a738746f3a395cb7ff1395cf7f6559777c79"
+      }
+    },
+    {
+      "id": "math2-2025-022",
+      "number": 22,
+      "paperId": "math2-2025",
+      "paperName": "2025考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2025",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2025考研数学二第22题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "(1) a = 4, k > 0；(2) k = 3 时的正交矩阵 Q 见答案原页。",
+      "explanation": "答案来自本地百度网盘数学二参考答案 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2025/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2025考研数学二试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2025/answer-page-14.jpg",
+          "caption": "答案解析 p.14",
+          "alt": "2025考研数学二答案解析 p.14"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2025",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2025-paper",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:5a199176f012d26d94b69eaac30bb331f4060c92ad1c9b6657500e097c0313d9",
+      "answerTextHash": "sha256:323e54a7bb301690e2d5aa92516dd123ca2e0e60288e0770c75a186af280a9dd",
+      "sourceEvidence": {
+        "evidenceId": "math2-2025-q22",
+        "sourceId": "src_0a75a8a0befda5abbef10b57",
+        "answerSourceId": "src_02af377a05fcfcde975d764f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2025-paper",
+        "answerEvidenceId": "math2-2025-answer-updating",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:323e54a7bb301690e2d5aa92516dd123ca2e0e60288e0770c75a186af280a9dd"
+      }
+    }
+  ]
 }

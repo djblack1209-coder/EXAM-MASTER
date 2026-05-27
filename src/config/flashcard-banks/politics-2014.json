@@ -1,0 +1,2980 @@
+{
+  "id": "politics-2014",
+  "source": "politics-2014-paper-answer",
+  "paperId": "politics-2014",
+  "paperName": "2014考研政治真题",
+  "subject": "政治",
+  "subjectKey": "politics",
+  "track": "politics",
+  "year": "2014",
+  "quality": "ready",
+  "publicationStatus": "published",
+  "publicationBlockers": [],
+  "sourceEvidencePolicy": "baidu_netdisk_official_paper_pdf_page_image_v1",
+  "sourceFiles": [
+    {
+      "id": "politics-2014-paper",
+      "sourceId": "src_2108376f40d7611f294dcdda",
+      "role": "paper",
+      "localPath": "data/raw-inbox/public-course-history/politics/2014/2014-politics-paper.pdf",
+      "sha256": "sha256:d2e93aa02d0257cd3fcdfe1b79c65eb3d24480e3fe5b6ae65b8760a7f018bb5b"
+    },
+    {
+      "id": "politics-2014-paper-answer",
+      "sourceId": "src_67540d75956ca701ef3ebdd4",
+      "role": "paper_answer",
+      "localPath": "data/raw-inbox/public-course-history/politics/2014/2014-politics-paper-answer.pdf",
+      "sha256": "sha256:d294046610a6231c6e044b8e5baefde34a871b486e6db1198c432206fef3df48"
+    }
+  ],
+  "sourceNotes": [
+    "The standalone 2014 paper PDF has a usable text layer for locating question-page ranges. The scanned paper-answer PDF contains the full paper plus the official answer and score-reference pages; OCR was used only to locate the answer-key page, while final release evidence remains rendered PDF page images."
+  ],
+  "assetRoot": "question-bank/politics-2014",
+  "processed_at": "2026-05-27T02:43:26Z",
+  "total_cards": 38,
+  "sections": [
+    "单项选择",
+    "多项选择",
+    "分析题"
+  ],
+  "cards": [
+    {
+      "id": "politics-2014-001",
+      "number": 1,
+      "paperId": "politics-2014",
+      "paperName": "2014考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2014",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2014考研政治第1题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2014 考研政治真题及参考答案 PDF 第 11 页标准答案键；题面以试卷原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2014/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2014考研政治试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2014/answer-page-11.jpg",
+          "caption": "答案原页 p.11",
+          "alt": "2014考研政治答案原页 p.11"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2014",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2014-paper-answer",
+      "sourceEvidenceId": "politics-2014-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:84718e5b283d37b9872005f394eb0e1a96e122c1330ee91a39237555b27ac349",
+      "answerTextHash": "sha256:6192e54f5508cdafd974f1a0da4c90ff19c29553f96c3105b81ed95619036965",
+      "sourceEvidence": {
+        "evidenceId": "politics-2014-q01",
+        "sourceId": "src_2108376f40d7611f294dcdda",
+        "answerSourceId": "src_67540d75956ca701ef3ebdd4",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2014-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:84718e5b283d37b9872005f394eb0e1a96e122c1330ee91a39237555b27ac349",
+        "answerTextHash": "sha256:6192e54f5508cdafd974f1a0da4c90ff19c29553f96c3105b81ed95619036965"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_67540d75956ca701ef3ebdd4",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2014/2014-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:6192e54f5508cdafd974f1a0da4c90ff19c29553f96c3105b81ed95619036965",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2014_bank",
+        "note": "Matched against local Baidu Netdisk 2014 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2014-002",
+      "number": 2,
+      "paperId": "politics-2014",
+      "paperName": "2014考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2014",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2014考研政治第2题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2014 考研政治真题及参考答案 PDF 第 11 页标准答案键；题面以试卷原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2014/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2014考研政治试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2014/answer-page-11.jpg",
+          "caption": "答案原页 p.11",
+          "alt": "2014考研政治答案原页 p.11"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2014",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2014-paper-answer",
+      "sourceEvidenceId": "politics-2014-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:818e0ad153b40863e9ca15daeeb50c8c76013c2a86b1feab146c63cbf6a40d79",
+      "answerTextHash": "sha256:a4fda0fd4f222d8d23c42c5f3ca149b8112ff1f3253ce4b18e25abed58631909",
+      "sourceEvidence": {
+        "evidenceId": "politics-2014-q02",
+        "sourceId": "src_2108376f40d7611f294dcdda",
+        "answerSourceId": "src_67540d75956ca701ef3ebdd4",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2014-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:818e0ad153b40863e9ca15daeeb50c8c76013c2a86b1feab146c63cbf6a40d79",
+        "answerTextHash": "sha256:a4fda0fd4f222d8d23c42c5f3ca149b8112ff1f3253ce4b18e25abed58631909"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_67540d75956ca701ef3ebdd4",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2014/2014-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:a4fda0fd4f222d8d23c42c5f3ca149b8112ff1f3253ce4b18e25abed58631909",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2014_bank",
+        "note": "Matched against local Baidu Netdisk 2014 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2014-003",
+      "number": 3,
+      "paperId": "politics-2014",
+      "paperName": "2014考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2014",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2014考研政治第3题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2014 考研政治真题及参考答案 PDF 第 11 页标准答案键；题面以试卷原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2014/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2014考研政治试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2014/answer-page-11.jpg",
+          "caption": "答案原页 p.11",
+          "alt": "2014考研政治答案原页 p.11"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2014",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2014-paper-answer",
+      "sourceEvidenceId": "politics-2014-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:681dbd3cced0b4697b00b1f329ae84e656f096299b449236c896facab2a6bc01",
+      "answerTextHash": "sha256:6192e54f5508cdafd974f1a0da4c90ff19c29553f96c3105b81ed95619036965",
+      "sourceEvidence": {
+        "evidenceId": "politics-2014-q03",
+        "sourceId": "src_2108376f40d7611f294dcdda",
+        "answerSourceId": "src_67540d75956ca701ef3ebdd4",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2014-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:681dbd3cced0b4697b00b1f329ae84e656f096299b449236c896facab2a6bc01",
+        "answerTextHash": "sha256:6192e54f5508cdafd974f1a0da4c90ff19c29553f96c3105b81ed95619036965"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_67540d75956ca701ef3ebdd4",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2014/2014-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:6192e54f5508cdafd974f1a0da4c90ff19c29553f96c3105b81ed95619036965",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2014_bank",
+        "note": "Matched against local Baidu Netdisk 2014 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2014-004",
+      "number": 4,
+      "paperId": "politics-2014",
+      "paperName": "2014考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2014",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2014考研政治第4题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2014 考研政治真题及参考答案 PDF 第 11 页标准答案键；题面以试卷原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2014/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2014考研政治试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2014/answer-page-11.jpg",
+          "caption": "答案原页 p.11",
+          "alt": "2014考研政治答案原页 p.11"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2014",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2014-paper-answer",
+      "sourceEvidenceId": "politics-2014-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:d7cad766f8dcab97824a2d49f1f71a053604fdd58a01aad5ce32f6092448aca2",
+      "answerTextHash": "sha256:a4fda0fd4f222d8d23c42c5f3ca149b8112ff1f3253ce4b18e25abed58631909",
+      "sourceEvidence": {
+        "evidenceId": "politics-2014-q04",
+        "sourceId": "src_2108376f40d7611f294dcdda",
+        "answerSourceId": "src_67540d75956ca701ef3ebdd4",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2014-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:d7cad766f8dcab97824a2d49f1f71a053604fdd58a01aad5ce32f6092448aca2",
+        "answerTextHash": "sha256:a4fda0fd4f222d8d23c42c5f3ca149b8112ff1f3253ce4b18e25abed58631909"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_67540d75956ca701ef3ebdd4",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2014/2014-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:a4fda0fd4f222d8d23c42c5f3ca149b8112ff1f3253ce4b18e25abed58631909",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2014_bank",
+        "note": "Matched against local Baidu Netdisk 2014 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2014-005",
+      "number": 5,
+      "paperId": "politics-2014",
+      "paperName": "2014考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2014",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2014考研政治第5题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2014 考研政治真题及参考答案 PDF 第 11 页标准答案键；题面以试卷原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2014/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2014考研政治试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2014/answer-page-11.jpg",
+          "caption": "答案原页 p.11",
+          "alt": "2014考研政治答案原页 p.11"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2014",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2014-paper-answer",
+      "sourceEvidenceId": "politics-2014-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:29752ee6ed231a93fb3eaa87b62216c82b19c3c9a97e7c237296fe8b21886794",
+      "answerTextHash": "sha256:6192e54f5508cdafd974f1a0da4c90ff19c29553f96c3105b81ed95619036965",
+      "sourceEvidence": {
+        "evidenceId": "politics-2014-q05",
+        "sourceId": "src_2108376f40d7611f294dcdda",
+        "answerSourceId": "src_67540d75956ca701ef3ebdd4",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2014-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:29752ee6ed231a93fb3eaa87b62216c82b19c3c9a97e7c237296fe8b21886794",
+        "answerTextHash": "sha256:6192e54f5508cdafd974f1a0da4c90ff19c29553f96c3105b81ed95619036965"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_67540d75956ca701ef3ebdd4",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2014/2014-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:6192e54f5508cdafd974f1a0da4c90ff19c29553f96c3105b81ed95619036965",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2014_bank",
+        "note": "Matched against local Baidu Netdisk 2014 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2014-006",
+      "number": 6,
+      "paperId": "politics-2014",
+      "paperName": "2014考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2014",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2014考研政治第6题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2014 考研政治真题及参考答案 PDF 第 11 页标准答案键；题面以试卷原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2014/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2014考研政治试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2014/answer-page-11.jpg",
+          "caption": "答案原页 p.11",
+          "alt": "2014考研政治答案原页 p.11"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2014",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2014-paper-answer",
+      "sourceEvidenceId": "politics-2014-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:1a3d0832330c8f89ff7ee698c0cff01c976c81596c32f5692a85314188a135f8",
+      "answerTextHash": "sha256:8cc1bd3433f4253f989f45534c1708c3a34eea6c49c51cea376ca2077d21d65d",
+      "sourceEvidence": {
+        "evidenceId": "politics-2014-q06",
+        "sourceId": "src_2108376f40d7611f294dcdda",
+        "answerSourceId": "src_67540d75956ca701ef3ebdd4",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2014-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:1a3d0832330c8f89ff7ee698c0cff01c976c81596c32f5692a85314188a135f8",
+        "answerTextHash": "sha256:8cc1bd3433f4253f989f45534c1708c3a34eea6c49c51cea376ca2077d21d65d"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_67540d75956ca701ef3ebdd4",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2014/2014-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:8cc1bd3433f4253f989f45534c1708c3a34eea6c49c51cea376ca2077d21d65d",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2014_bank",
+        "note": "Matched against local Baidu Netdisk 2014 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2014-007",
+      "number": 7,
+      "paperId": "politics-2014",
+      "paperName": "2014考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2014",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2014考研政治第7题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2014 考研政治真题及参考答案 PDF 第 11 页标准答案键；题面以试卷原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2014/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2014考研政治试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2014/answer-page-11.jpg",
+          "caption": "答案原页 p.11",
+          "alt": "2014考研政治答案原页 p.11"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2014",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2014-paper-answer",
+      "sourceEvidenceId": "politics-2014-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:3ad4adeaa61f111a07b2f615e92df12fcf51aa79f1a9af34e0c71944ad0f0cd4",
+      "answerTextHash": "sha256:6192e54f5508cdafd974f1a0da4c90ff19c29553f96c3105b81ed95619036965",
+      "sourceEvidence": {
+        "evidenceId": "politics-2014-q07",
+        "sourceId": "src_2108376f40d7611f294dcdda",
+        "answerSourceId": "src_67540d75956ca701ef3ebdd4",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2014-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:3ad4adeaa61f111a07b2f615e92df12fcf51aa79f1a9af34e0c71944ad0f0cd4",
+        "answerTextHash": "sha256:6192e54f5508cdafd974f1a0da4c90ff19c29553f96c3105b81ed95619036965"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_67540d75956ca701ef3ebdd4",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2014/2014-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:6192e54f5508cdafd974f1a0da4c90ff19c29553f96c3105b81ed95619036965",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2014_bank",
+        "note": "Matched against local Baidu Netdisk 2014 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2014-008",
+      "number": 8,
+      "paperId": "politics-2014",
+      "paperName": "2014考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2014",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2014考研政治第8题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2014 考研政治真题及参考答案 PDF 第 11 页标准答案键；题面以试卷原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2014/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2014考研政治试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2014/answer-page-11.jpg",
+          "caption": "答案原页 p.11",
+          "alt": "2014考研政治答案原页 p.11"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2014",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2014-paper-answer",
+      "sourceEvidenceId": "politics-2014-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:643bc4b78bc81de8da5d37c48f3118e9d935af29c2f1ddce7cb40d232a4f214a",
+      "answerTextHash": "sha256:8cc1bd3433f4253f989f45534c1708c3a34eea6c49c51cea376ca2077d21d65d",
+      "sourceEvidence": {
+        "evidenceId": "politics-2014-q08",
+        "sourceId": "src_2108376f40d7611f294dcdda",
+        "answerSourceId": "src_67540d75956ca701ef3ebdd4",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2014-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:643bc4b78bc81de8da5d37c48f3118e9d935af29c2f1ddce7cb40d232a4f214a",
+        "answerTextHash": "sha256:8cc1bd3433f4253f989f45534c1708c3a34eea6c49c51cea376ca2077d21d65d"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_67540d75956ca701ef3ebdd4",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2014/2014-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:8cc1bd3433f4253f989f45534c1708c3a34eea6c49c51cea376ca2077d21d65d",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2014_bank",
+        "note": "Matched against local Baidu Netdisk 2014 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2014-009",
+      "number": 9,
+      "paperId": "politics-2014",
+      "paperName": "2014考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2014",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2014考研政治第9题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2014 考研政治真题及参考答案 PDF 第 11 页标准答案键；题面以试卷原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2014/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2014考研政治试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2014/answer-page-11.jpg",
+          "caption": "答案原页 p.11",
+          "alt": "2014考研政治答案原页 p.11"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2014",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2014-paper-answer",
+      "sourceEvidenceId": "politics-2014-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:a001fa094853b45ec764a4a0bb2d95ed4275c5d80ae62402ca0caa1c8c117424",
+      "answerTextHash": "sha256:16b292d5879b57f7fe71bd41d7e29bc34a794af969156b039ff97b1f092f7bd1",
+      "sourceEvidence": {
+        "evidenceId": "politics-2014-q09",
+        "sourceId": "src_2108376f40d7611f294dcdda",
+        "answerSourceId": "src_67540d75956ca701ef3ebdd4",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2014-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:a001fa094853b45ec764a4a0bb2d95ed4275c5d80ae62402ca0caa1c8c117424",
+        "answerTextHash": "sha256:16b292d5879b57f7fe71bd41d7e29bc34a794af969156b039ff97b1f092f7bd1"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_67540d75956ca701ef3ebdd4",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2014/2014-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:16b292d5879b57f7fe71bd41d7e29bc34a794af969156b039ff97b1f092f7bd1",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2014_bank",
+        "note": "Matched against local Baidu Netdisk 2014 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2014-010",
+      "number": 10,
+      "paperId": "politics-2014",
+      "paperName": "2014考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2014",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2014考研政治第10题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2014 考研政治真题及参考答案 PDF 第 11 页标准答案键；题面以试卷原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2014/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2014考研政治试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2014/answer-page-11.jpg",
+          "caption": "答案原页 p.11",
+          "alt": "2014考研政治答案原页 p.11"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2014",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2014-paper-answer",
+      "sourceEvidenceId": "politics-2014-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:143eb792ac783ae9d1900768433e82bce49ecb168c1521484f1ddb5fbec12e57",
+      "answerTextHash": "sha256:8cc1bd3433f4253f989f45534c1708c3a34eea6c49c51cea376ca2077d21d65d",
+      "sourceEvidence": {
+        "evidenceId": "politics-2014-q10",
+        "sourceId": "src_2108376f40d7611f294dcdda",
+        "answerSourceId": "src_67540d75956ca701ef3ebdd4",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2014-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:143eb792ac783ae9d1900768433e82bce49ecb168c1521484f1ddb5fbec12e57",
+        "answerTextHash": "sha256:8cc1bd3433f4253f989f45534c1708c3a34eea6c49c51cea376ca2077d21d65d"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_67540d75956ca701ef3ebdd4",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2014/2014-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:8cc1bd3433f4253f989f45534c1708c3a34eea6c49c51cea376ca2077d21d65d",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2014_bank",
+        "note": "Matched against local Baidu Netdisk 2014 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2014-011",
+      "number": 11,
+      "paperId": "politics-2014",
+      "paperName": "2014考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2014",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2014考研政治第11题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2014 考研政治真题及参考答案 PDF 第 11 页标准答案键；题面以试卷原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2014/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2014考研政治试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2014/answer-page-11.jpg",
+          "caption": "答案原页 p.11",
+          "alt": "2014考研政治答案原页 p.11"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2014",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2014-paper-answer",
+      "sourceEvidenceId": "politics-2014-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:51f4599d240fbeaaac9af9ce4db7292852c3b13af6a2ab6ca9f24ac0b43a43b1",
+      "answerTextHash": "sha256:a4fda0fd4f222d8d23c42c5f3ca149b8112ff1f3253ce4b18e25abed58631909",
+      "sourceEvidence": {
+        "evidenceId": "politics-2014-q11",
+        "sourceId": "src_2108376f40d7611f294dcdda",
+        "answerSourceId": "src_67540d75956ca701ef3ebdd4",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2014-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:51f4599d240fbeaaac9af9ce4db7292852c3b13af6a2ab6ca9f24ac0b43a43b1",
+        "answerTextHash": "sha256:a4fda0fd4f222d8d23c42c5f3ca149b8112ff1f3253ce4b18e25abed58631909"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_67540d75956ca701ef3ebdd4",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2014/2014-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:a4fda0fd4f222d8d23c42c5f3ca149b8112ff1f3253ce4b18e25abed58631909",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2014_bank",
+        "note": "Matched against local Baidu Netdisk 2014 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2014-012",
+      "number": 12,
+      "paperId": "politics-2014",
+      "paperName": "2014考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2014",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2014考研政治第12题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2014 考研政治真题及参考答案 PDF 第 11 页标准答案键；题面以试卷原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2014/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2014考研政治试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2014/answer-page-11.jpg",
+          "caption": "答案原页 p.11",
+          "alt": "2014考研政治答案原页 p.11"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2014",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2014-paper-answer",
+      "sourceEvidenceId": "politics-2014-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:3c9c756595a33d890a59c62f70200d2a9595a8d670a018e6e5b996febe6f00fb",
+      "answerTextHash": "sha256:16b292d5879b57f7fe71bd41d7e29bc34a794af969156b039ff97b1f092f7bd1",
+      "sourceEvidence": {
+        "evidenceId": "politics-2014-q12",
+        "sourceId": "src_2108376f40d7611f294dcdda",
+        "answerSourceId": "src_67540d75956ca701ef3ebdd4",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2014-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:3c9c756595a33d890a59c62f70200d2a9595a8d670a018e6e5b996febe6f00fb",
+        "answerTextHash": "sha256:16b292d5879b57f7fe71bd41d7e29bc34a794af969156b039ff97b1f092f7bd1"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_67540d75956ca701ef3ebdd4",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2014/2014-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:16b292d5879b57f7fe71bd41d7e29bc34a794af969156b039ff97b1f092f7bd1",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2014_bank",
+        "note": "Matched against local Baidu Netdisk 2014 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2014-013",
+      "number": 13,
+      "paperId": "politics-2014",
+      "paperName": "2014考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2014",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2014考研政治第13题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2014 考研政治真题及参考答案 PDF 第 11 页标准答案键；题面以试卷原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2014/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2014考研政治试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2014/answer-page-11.jpg",
+          "caption": "答案原页 p.11",
+          "alt": "2014考研政治答案原页 p.11"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2014",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2014-paper-answer",
+      "sourceEvidenceId": "politics-2014-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:8f037766e8500660d4bcd863a27803c1ccb3251778064c8903ac3aeb0a16d6b2",
+      "answerTextHash": "sha256:8cc1bd3433f4253f989f45534c1708c3a34eea6c49c51cea376ca2077d21d65d",
+      "sourceEvidence": {
+        "evidenceId": "politics-2014-q13",
+        "sourceId": "src_2108376f40d7611f294dcdda",
+        "answerSourceId": "src_67540d75956ca701ef3ebdd4",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2014-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:8f037766e8500660d4bcd863a27803c1ccb3251778064c8903ac3aeb0a16d6b2",
+        "answerTextHash": "sha256:8cc1bd3433f4253f989f45534c1708c3a34eea6c49c51cea376ca2077d21d65d"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_67540d75956ca701ef3ebdd4",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2014/2014-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:8cc1bd3433f4253f989f45534c1708c3a34eea6c49c51cea376ca2077d21d65d",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2014_bank",
+        "note": "Matched against local Baidu Netdisk 2014 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2014-014",
+      "number": 14,
+      "paperId": "politics-2014",
+      "paperName": "2014考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2014",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2014考研政治第14题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2014 考研政治真题及参考答案 PDF 第 11 页标准答案键；题面以试卷原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2014/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2014考研政治试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2014/answer-page-11.jpg",
+          "caption": "答案原页 p.11",
+          "alt": "2014考研政治答案原页 p.11"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2014",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2014-paper-answer",
+      "sourceEvidenceId": "politics-2014-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:81ccdb5661ee3f3f5c174219c228fd315691e597977e7296c2b3c1aa076af93d",
+      "answerTextHash": "sha256:16b292d5879b57f7fe71bd41d7e29bc34a794af969156b039ff97b1f092f7bd1",
+      "sourceEvidence": {
+        "evidenceId": "politics-2014-q14",
+        "sourceId": "src_2108376f40d7611f294dcdda",
+        "answerSourceId": "src_67540d75956ca701ef3ebdd4",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2014-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:81ccdb5661ee3f3f5c174219c228fd315691e597977e7296c2b3c1aa076af93d",
+        "answerTextHash": "sha256:16b292d5879b57f7fe71bd41d7e29bc34a794af969156b039ff97b1f092f7bd1"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_67540d75956ca701ef3ebdd4",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2014/2014-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:16b292d5879b57f7fe71bd41d7e29bc34a794af969156b039ff97b1f092f7bd1",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2014_bank",
+        "note": "Matched against local Baidu Netdisk 2014 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2014-015",
+      "number": 15,
+      "paperId": "politics-2014",
+      "paperName": "2014考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2014",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2014考研政治第15题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2014 考研政治真题及参考答案 PDF 第 11 页标准答案键；题面以试卷原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2014/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2014考研政治试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2014/answer-page-11.jpg",
+          "caption": "答案原页 p.11",
+          "alt": "2014考研政治答案原页 p.11"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2014",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2014-paper-answer",
+      "sourceEvidenceId": "politics-2014-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:52ee0ebcaf497cfd228922433e09d2dcc5376f409f28557b14f3cfd9f1074674",
+      "answerTextHash": "sha256:16b292d5879b57f7fe71bd41d7e29bc34a794af969156b039ff97b1f092f7bd1",
+      "sourceEvidence": {
+        "evidenceId": "politics-2014-q15",
+        "sourceId": "src_2108376f40d7611f294dcdda",
+        "answerSourceId": "src_67540d75956ca701ef3ebdd4",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2014-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:52ee0ebcaf497cfd228922433e09d2dcc5376f409f28557b14f3cfd9f1074674",
+        "answerTextHash": "sha256:16b292d5879b57f7fe71bd41d7e29bc34a794af969156b039ff97b1f092f7bd1"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_67540d75956ca701ef3ebdd4",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2014/2014-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:16b292d5879b57f7fe71bd41d7e29bc34a794af969156b039ff97b1f092f7bd1",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2014_bank",
+        "note": "Matched against local Baidu Netdisk 2014 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2014-016",
+      "number": 16,
+      "paperId": "politics-2014",
+      "paperName": "2014考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2014",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2014考研政治第16题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2014 考研政治真题及参考答案 PDF 第 11 页标准答案键；题面以试卷原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2014/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2014考研政治试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2014/answer-page-11.jpg",
+          "caption": "答案原页 p.11",
+          "alt": "2014考研政治答案原页 p.11"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2014",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2014-paper-answer",
+      "sourceEvidenceId": "politics-2014-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:e6c12cd1d13add803d0a6307824a919553811360d0cbd0e527dce75ac3d6f2c1",
+      "answerTextHash": "sha256:a4fda0fd4f222d8d23c42c5f3ca149b8112ff1f3253ce4b18e25abed58631909",
+      "sourceEvidence": {
+        "evidenceId": "politics-2014-q16",
+        "sourceId": "src_2108376f40d7611f294dcdda",
+        "answerSourceId": "src_67540d75956ca701ef3ebdd4",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2014-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:e6c12cd1d13add803d0a6307824a919553811360d0cbd0e527dce75ac3d6f2c1",
+        "answerTextHash": "sha256:a4fda0fd4f222d8d23c42c5f3ca149b8112ff1f3253ce4b18e25abed58631909"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_67540d75956ca701ef3ebdd4",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2014/2014-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:a4fda0fd4f222d8d23c42c5f3ca149b8112ff1f3253ce4b18e25abed58631909",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2014_bank",
+        "note": "Matched against local Baidu Netdisk 2014 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2014-017",
+      "number": 17,
+      "paperId": "politics-2014",
+      "paperName": "2014考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2014",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2014考研政治第17题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "BD",
+      "explanation": "答案来自本地百度网盘 2014 考研政治真题及参考答案 PDF 第 11 页标准答案键；题面以试卷原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2014/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2014考研政治试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2014/answer-page-11.jpg",
+          "caption": "答案原页 p.11",
+          "alt": "2014考研政治答案原页 p.11"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2014",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2014-paper-answer",
+      "sourceEvidenceId": "politics-2014-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:ecf3fa48647a523083e00dd1b9e80b7ccdc8d64a3f384a1ead0613e83864c4be",
+      "answerTextHash": "sha256:301e499327941c49c0836626d4a8b059121dde6c521a06f10d04f06832f00153",
+      "sourceEvidence": {
+        "evidenceId": "politics-2014-q17",
+        "sourceId": "src_2108376f40d7611f294dcdda",
+        "answerSourceId": "src_67540d75956ca701ef3ebdd4",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2014-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:ecf3fa48647a523083e00dd1b9e80b7ccdc8d64a3f384a1ead0613e83864c4be",
+        "answerTextHash": "sha256:301e499327941c49c0836626d4a8b059121dde6c521a06f10d04f06832f00153"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_67540d75956ca701ef3ebdd4",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2014/2014-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:301e499327941c49c0836626d4a8b059121dde6c521a06f10d04f06832f00153",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2014_bank",
+        "note": "Matched against local Baidu Netdisk 2014 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2014-018",
+      "number": 18,
+      "paperId": "politics-2014",
+      "paperName": "2014考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2014",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2014考研政治第18题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "AD",
+      "explanation": "答案来自本地百度网盘 2014 考研政治真题及参考答案 PDF 第 11 页标准答案键；题面以试卷原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2014/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2014考研政治试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2014/answer-page-11.jpg",
+          "caption": "答案原页 p.11",
+          "alt": "2014考研政治答案原页 p.11"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2014",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2014-paper-answer",
+      "sourceEvidenceId": "politics-2014-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:b76ab31bcda3da1c57c9a167cd33f28bfcaa7ae88fb5d3762544650a4037794f",
+      "answerTextHash": "sha256:61bfd4ddc82d5b9e79611c225ebbe0ec56d912869f91f1879e0d9b36e8b6e8db",
+      "sourceEvidence": {
+        "evidenceId": "politics-2014-q18",
+        "sourceId": "src_2108376f40d7611f294dcdda",
+        "answerSourceId": "src_67540d75956ca701ef3ebdd4",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2014-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:b76ab31bcda3da1c57c9a167cd33f28bfcaa7ae88fb5d3762544650a4037794f",
+        "answerTextHash": "sha256:61bfd4ddc82d5b9e79611c225ebbe0ec56d912869f91f1879e0d9b36e8b6e8db"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_67540d75956ca701ef3ebdd4",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2014/2014-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:61bfd4ddc82d5b9e79611c225ebbe0ec56d912869f91f1879e0d9b36e8b6e8db",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2014_bank",
+        "note": "Matched against local Baidu Netdisk 2014 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2014-019",
+      "number": 19,
+      "paperId": "politics-2014",
+      "paperName": "2014考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2014",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2014考研政治第19题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABC",
+      "explanation": "答案来自本地百度网盘 2014 考研政治真题及参考答案 PDF 第 11 页标准答案键；题面以试卷原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2014/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2014考研政治试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2014/answer-page-11.jpg",
+          "caption": "答案原页 p.11",
+          "alt": "2014考研政治答案原页 p.11"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2014",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2014-paper-answer",
+      "sourceEvidenceId": "politics-2014-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:2e75fb3196ee9d848eae59dcfb6fa922096488e3cb1d34cfaed0589719635b0c",
+      "answerTextHash": "sha256:04b9b825c447d4d716dcf16ff23f0ac629d5b62202be77763d9d7cd9ad043ee1",
+      "sourceEvidence": {
+        "evidenceId": "politics-2014-q19",
+        "sourceId": "src_2108376f40d7611f294dcdda",
+        "answerSourceId": "src_67540d75956ca701ef3ebdd4",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2014-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:2e75fb3196ee9d848eae59dcfb6fa922096488e3cb1d34cfaed0589719635b0c",
+        "answerTextHash": "sha256:04b9b825c447d4d716dcf16ff23f0ac629d5b62202be77763d9d7cd9ad043ee1"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_67540d75956ca701ef3ebdd4",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2014/2014-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:04b9b825c447d4d716dcf16ff23f0ac629d5b62202be77763d9d7cd9ad043ee1",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2014_bank",
+        "note": "Matched against local Baidu Netdisk 2014 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2014-020",
+      "number": 20,
+      "paperId": "politics-2014",
+      "paperName": "2014考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2014",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2014考研政治第20题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "BC",
+      "explanation": "答案来自本地百度网盘 2014 考研政治真题及参考答案 PDF 第 11 页标准答案键；题面以试卷原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2014/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2014考研政治试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2014/answer-page-11.jpg",
+          "caption": "答案原页 p.11",
+          "alt": "2014考研政治答案原页 p.11"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2014",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2014-paper-answer",
+      "sourceEvidenceId": "politics-2014-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:bead57c38bbb91f4e00fa034aee9198f42259f123757d35f664806105da1d2c0",
+      "answerTextHash": "sha256:09a18c543d546c4d100d582692c92f8139a9bc7590d5c4fa7120c49377c62c4d",
+      "sourceEvidence": {
+        "evidenceId": "politics-2014-q20",
+        "sourceId": "src_2108376f40d7611f294dcdda",
+        "answerSourceId": "src_67540d75956ca701ef3ebdd4",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2014-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:bead57c38bbb91f4e00fa034aee9198f42259f123757d35f664806105da1d2c0",
+        "answerTextHash": "sha256:09a18c543d546c4d100d582692c92f8139a9bc7590d5c4fa7120c49377c62c4d"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_67540d75956ca701ef3ebdd4",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2014/2014-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:09a18c543d546c4d100d582692c92f8139a9bc7590d5c4fa7120c49377c62c4d",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2014_bank",
+        "note": "Matched against local Baidu Netdisk 2014 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2014-021",
+      "number": 21,
+      "paperId": "politics-2014",
+      "paperName": "2014考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2014",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2014考研政治第21题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABD",
+      "explanation": "答案来自本地百度网盘 2014 考研政治真题及参考答案 PDF 第 11 页标准答案键；题面以试卷原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2014/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2014考研政治试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2014/answer-page-11.jpg",
+          "caption": "答案原页 p.11",
+          "alt": "2014考研政治答案原页 p.11"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2014",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2014-paper-answer",
+      "sourceEvidenceId": "politics-2014-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:11fcce3e841d6f67350f1c4f6f91289507e7e734cff4c1891c9a6bc17fb33679",
+      "answerTextHash": "sha256:dd1882bfdc43c857860b100fea6ee45a5bff395d751788d7deaf43cd8071c6eb",
+      "sourceEvidence": {
+        "evidenceId": "politics-2014-q21",
+        "sourceId": "src_2108376f40d7611f294dcdda",
+        "answerSourceId": "src_67540d75956ca701ef3ebdd4",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2014-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:11fcce3e841d6f67350f1c4f6f91289507e7e734cff4c1891c9a6bc17fb33679",
+        "answerTextHash": "sha256:dd1882bfdc43c857860b100fea6ee45a5bff395d751788d7deaf43cd8071c6eb"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_67540d75956ca701ef3ebdd4",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2014/2014-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:dd1882bfdc43c857860b100fea6ee45a5bff395d751788d7deaf43cd8071c6eb",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2014_bank",
+        "note": "Matched against local Baidu Netdisk 2014 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2014-022",
+      "number": 22,
+      "paperId": "politics-2014",
+      "paperName": "2014考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2014",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2014考研政治第22题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "BC",
+      "explanation": "答案来自本地百度网盘 2014 考研政治真题及参考答案 PDF 第 11 页标准答案键；题面以试卷原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2014/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2014考研政治试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2014/answer-page-11.jpg",
+          "caption": "答案原页 p.11",
+          "alt": "2014考研政治答案原页 p.11"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2014",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2014-paper-answer",
+      "sourceEvidenceId": "politics-2014-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:baf703389e6a41ea31aa666353fd0d1d66e56d29b8847247a5101cafcfe794c2",
+      "answerTextHash": "sha256:09a18c543d546c4d100d582692c92f8139a9bc7590d5c4fa7120c49377c62c4d",
+      "sourceEvidence": {
+        "evidenceId": "politics-2014-q22",
+        "sourceId": "src_2108376f40d7611f294dcdda",
+        "answerSourceId": "src_67540d75956ca701ef3ebdd4",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2014-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:baf703389e6a41ea31aa666353fd0d1d66e56d29b8847247a5101cafcfe794c2",
+        "answerTextHash": "sha256:09a18c543d546c4d100d582692c92f8139a9bc7590d5c4fa7120c49377c62c4d"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_67540d75956ca701ef3ebdd4",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2014/2014-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:09a18c543d546c4d100d582692c92f8139a9bc7590d5c4fa7120c49377c62c4d",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2014_bank",
+        "note": "Matched against local Baidu Netdisk 2014 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2014-023",
+      "number": 23,
+      "paperId": "politics-2014",
+      "paperName": "2014考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2014",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2014考研政治第23题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "BCD",
+      "explanation": "答案来自本地百度网盘 2014 考研政治真题及参考答案 PDF 第 11 页标准答案键；题面以试卷原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2014/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2014考研政治试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2014/answer-page-11.jpg",
+          "caption": "答案原页 p.11",
+          "alt": "2014考研政治答案原页 p.11"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2014",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2014-paper-answer",
+      "sourceEvidenceId": "politics-2014-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:5cafaf30989f51530593f497a24d057a0f9d63edd791b4848a148249d5bd65bf",
+      "answerTextHash": "sha256:b8f956a8efc5abc141b4968a666ed4c5509794b2fc4bca08648238d2648b780c",
+      "sourceEvidence": {
+        "evidenceId": "politics-2014-q23",
+        "sourceId": "src_2108376f40d7611f294dcdda",
+        "answerSourceId": "src_67540d75956ca701ef3ebdd4",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2014-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:5cafaf30989f51530593f497a24d057a0f9d63edd791b4848a148249d5bd65bf",
+        "answerTextHash": "sha256:b8f956a8efc5abc141b4968a666ed4c5509794b2fc4bca08648238d2648b780c"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_67540d75956ca701ef3ebdd4",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2014/2014-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:b8f956a8efc5abc141b4968a666ed4c5509794b2fc4bca08648238d2648b780c",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2014_bank",
+        "note": "Matched against local Baidu Netdisk 2014 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2014-024",
+      "number": 24,
+      "paperId": "politics-2014",
+      "paperName": "2014考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2014",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2014考研政治第24题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABD",
+      "explanation": "答案来自本地百度网盘 2014 考研政治真题及参考答案 PDF 第 11 页标准答案键；题面以试卷原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2014/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2014考研政治试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2014/answer-page-11.jpg",
+          "caption": "答案原页 p.11",
+          "alt": "2014考研政治答案原页 p.11"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2014",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2014-paper-answer",
+      "sourceEvidenceId": "politics-2014-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:35e17230f42e47327a6b599688d143484b63ee0b00622c641463b780138432eb",
+      "answerTextHash": "sha256:dd1882bfdc43c857860b100fea6ee45a5bff395d751788d7deaf43cd8071c6eb",
+      "sourceEvidence": {
+        "evidenceId": "politics-2014-q24",
+        "sourceId": "src_2108376f40d7611f294dcdda",
+        "answerSourceId": "src_67540d75956ca701ef3ebdd4",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2014-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:35e17230f42e47327a6b599688d143484b63ee0b00622c641463b780138432eb",
+        "answerTextHash": "sha256:dd1882bfdc43c857860b100fea6ee45a5bff395d751788d7deaf43cd8071c6eb"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_67540d75956ca701ef3ebdd4",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2014/2014-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:dd1882bfdc43c857860b100fea6ee45a5bff395d751788d7deaf43cd8071c6eb",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2014_bank",
+        "note": "Matched against local Baidu Netdisk 2014 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2014-025",
+      "number": 25,
+      "paperId": "politics-2014",
+      "paperName": "2014考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2014",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2014考研政治第25题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "BCD",
+      "explanation": "答案来自本地百度网盘 2014 考研政治真题及参考答案 PDF 第 11 页标准答案键；题面以试卷原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2014/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2014考研政治试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2014/answer-page-11.jpg",
+          "caption": "答案原页 p.11",
+          "alt": "2014考研政治答案原页 p.11"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2014",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2014-paper-answer",
+      "sourceEvidenceId": "politics-2014-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:cde8cc7fb6fd77e56a0a09330b53bc3e86d44048639746e055593cf233c41f20",
+      "answerTextHash": "sha256:b8f956a8efc5abc141b4968a666ed4c5509794b2fc4bca08648238d2648b780c",
+      "sourceEvidence": {
+        "evidenceId": "politics-2014-q25",
+        "sourceId": "src_2108376f40d7611f294dcdda",
+        "answerSourceId": "src_67540d75956ca701ef3ebdd4",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2014-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:cde8cc7fb6fd77e56a0a09330b53bc3e86d44048639746e055593cf233c41f20",
+        "answerTextHash": "sha256:b8f956a8efc5abc141b4968a666ed4c5509794b2fc4bca08648238d2648b780c"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_67540d75956ca701ef3ebdd4",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2014/2014-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:b8f956a8efc5abc141b4968a666ed4c5509794b2fc4bca08648238d2648b780c",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2014_bank",
+        "note": "Matched against local Baidu Netdisk 2014 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2014-026",
+      "number": 26,
+      "paperId": "politics-2014",
+      "paperName": "2014考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2014",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2014考研政治第26题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABCD",
+      "explanation": "答案来自本地百度网盘 2014 考研政治真题及参考答案 PDF 第 11 页标准答案键；题面以试卷原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2014/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2014考研政治试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2014/answer-page-11.jpg",
+          "caption": "答案原页 p.11",
+          "alt": "2014考研政治答案原页 p.11"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2014",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2014-paper-answer",
+      "sourceEvidenceId": "politics-2014-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:496b7d054ca43233c4e368690721aafe82f8492bb6dcc6425e7a27ce7f2ecc45",
+      "answerTextHash": "sha256:0a037c01acb69063e66b472e1f84455c9221e487f40e43ab4b0505299ae6b26a",
+      "sourceEvidence": {
+        "evidenceId": "politics-2014-q26",
+        "sourceId": "src_2108376f40d7611f294dcdda",
+        "answerSourceId": "src_67540d75956ca701ef3ebdd4",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2014-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:496b7d054ca43233c4e368690721aafe82f8492bb6dcc6425e7a27ce7f2ecc45",
+        "answerTextHash": "sha256:0a037c01acb69063e66b472e1f84455c9221e487f40e43ab4b0505299ae6b26a"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_67540d75956ca701ef3ebdd4",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2014/2014-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:0a037c01acb69063e66b472e1f84455c9221e487f40e43ab4b0505299ae6b26a",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2014_bank",
+        "note": "Matched against local Baidu Netdisk 2014 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2014-027",
+      "number": 27,
+      "paperId": "politics-2014",
+      "paperName": "2014考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2014",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2014考研政治第27题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABD",
+      "explanation": "答案来自本地百度网盘 2014 考研政治真题及参考答案 PDF 第 11 页标准答案键；题面以试卷原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2014/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2014考研政治试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2014/answer-page-11.jpg",
+          "caption": "答案原页 p.11",
+          "alt": "2014考研政治答案原页 p.11"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2014",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2014-paper-answer",
+      "sourceEvidenceId": "politics-2014-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:320cb2e1352d8282682f254eec887d4ac8b9178686fa8903cf80eab432e79ae4",
+      "answerTextHash": "sha256:dd1882bfdc43c857860b100fea6ee45a5bff395d751788d7deaf43cd8071c6eb",
+      "sourceEvidence": {
+        "evidenceId": "politics-2014-q27",
+        "sourceId": "src_2108376f40d7611f294dcdda",
+        "answerSourceId": "src_67540d75956ca701ef3ebdd4",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2014-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:320cb2e1352d8282682f254eec887d4ac8b9178686fa8903cf80eab432e79ae4",
+        "answerTextHash": "sha256:dd1882bfdc43c857860b100fea6ee45a5bff395d751788d7deaf43cd8071c6eb"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_67540d75956ca701ef3ebdd4",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2014/2014-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:dd1882bfdc43c857860b100fea6ee45a5bff395d751788d7deaf43cd8071c6eb",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2014_bank",
+        "note": "Matched against local Baidu Netdisk 2014 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2014-028",
+      "number": 28,
+      "paperId": "politics-2014",
+      "paperName": "2014考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2014",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2014考研政治第28题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABC",
+      "explanation": "答案来自本地百度网盘 2014 考研政治真题及参考答案 PDF 第 11 页标准答案键；题面以试卷原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2014/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2014考研政治试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2014/answer-page-11.jpg",
+          "caption": "答案原页 p.11",
+          "alt": "2014考研政治答案原页 p.11"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2014",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2014-paper-answer",
+      "sourceEvidenceId": "politics-2014-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:3c11943c642a4ed3acd859126f30158cfd6906e55345bb230584c5e7b635667c",
+      "answerTextHash": "sha256:04b9b825c447d4d716dcf16ff23f0ac629d5b62202be77763d9d7cd9ad043ee1",
+      "sourceEvidence": {
+        "evidenceId": "politics-2014-q28",
+        "sourceId": "src_2108376f40d7611f294dcdda",
+        "answerSourceId": "src_67540d75956ca701ef3ebdd4",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2014-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:3c11943c642a4ed3acd859126f30158cfd6906e55345bb230584c5e7b635667c",
+        "answerTextHash": "sha256:04b9b825c447d4d716dcf16ff23f0ac629d5b62202be77763d9d7cd9ad043ee1"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_67540d75956ca701ef3ebdd4",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2014/2014-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:04b9b825c447d4d716dcf16ff23f0ac629d5b62202be77763d9d7cd9ad043ee1",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2014_bank",
+        "note": "Matched against local Baidu Netdisk 2014 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2014-029",
+      "number": 29,
+      "paperId": "politics-2014",
+      "paperName": "2014考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2014",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2014考研政治第29题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "AC",
+      "explanation": "答案来自本地百度网盘 2014 考研政治真题及参考答案 PDF 第 11 页标准答案键；题面以试卷原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2014/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2014考研政治试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2014/answer-page-11.jpg",
+          "caption": "答案原页 p.11",
+          "alt": "2014考研政治答案原页 p.11"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2014",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2014-paper-answer",
+      "sourceEvidenceId": "politics-2014-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:709fd0224c43cd39d1d80dfbeaaf8cecfbe1e4c649e2352b06a5fe5e40d0139b",
+      "answerTextHash": "sha256:1dec54b81707fb2254339ab29abd4b670578c0710b4669fdd80a4c34e7d3f231",
+      "sourceEvidence": {
+        "evidenceId": "politics-2014-q29",
+        "sourceId": "src_2108376f40d7611f294dcdda",
+        "answerSourceId": "src_67540d75956ca701ef3ebdd4",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2014-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:709fd0224c43cd39d1d80dfbeaaf8cecfbe1e4c649e2352b06a5fe5e40d0139b",
+        "answerTextHash": "sha256:1dec54b81707fb2254339ab29abd4b670578c0710b4669fdd80a4c34e7d3f231"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_67540d75956ca701ef3ebdd4",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2014/2014-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:1dec54b81707fb2254339ab29abd4b670578c0710b4669fdd80a4c34e7d3f231",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2014_bank",
+        "note": "Matched against local Baidu Netdisk 2014 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2014-030",
+      "number": 30,
+      "paperId": "politics-2014",
+      "paperName": "2014考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2014",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2014考研政治第30题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "CD",
+      "explanation": "答案来自本地百度网盘 2014 考研政治真题及参考答案 PDF 第 11 页标准答案键；题面以试卷原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2014/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2014考研政治试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2014/answer-page-11.jpg",
+          "caption": "答案原页 p.11",
+          "alt": "2014考研政治答案原页 p.11"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2014",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2014-paper-answer",
+      "sourceEvidenceId": "politics-2014-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:3f27bdb58944ebd093b905f4ae71d5e7dc2a3f50c97254c7e8b45f4d58417eb8",
+      "answerTextHash": "sha256:bf8f3712c7162020f8a4cbda49ba49e1fc7a1d2845dfbc9115c322af79ac34ef",
+      "sourceEvidence": {
+        "evidenceId": "politics-2014-q30",
+        "sourceId": "src_2108376f40d7611f294dcdda",
+        "answerSourceId": "src_67540d75956ca701ef3ebdd4",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2014-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:3f27bdb58944ebd093b905f4ae71d5e7dc2a3f50c97254c7e8b45f4d58417eb8",
+        "answerTextHash": "sha256:bf8f3712c7162020f8a4cbda49ba49e1fc7a1d2845dfbc9115c322af79ac34ef"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_67540d75956ca701ef3ebdd4",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2014/2014-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:bf8f3712c7162020f8a4cbda49ba49e1fc7a1d2845dfbc9115c322af79ac34ef",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2014_bank",
+        "note": "Matched against local Baidu Netdisk 2014 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2014-031",
+      "number": 31,
+      "paperId": "politics-2014",
+      "paperName": "2014考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2014",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2014考研政治第31题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABCD",
+      "explanation": "答案来自本地百度网盘 2014 考研政治真题及参考答案 PDF 第 11 页标准答案键；题面以试卷原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2014/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2014考研政治试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2014/answer-page-11.jpg",
+          "caption": "答案原页 p.11",
+          "alt": "2014考研政治答案原页 p.11"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2014",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2014-paper-answer",
+      "sourceEvidenceId": "politics-2014-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:2af49f3f52a640607ad1c64df549c8511805ca379c3cb0f9ca900509ae642453",
+      "answerTextHash": "sha256:0a037c01acb69063e66b472e1f84455c9221e487f40e43ab4b0505299ae6b26a",
+      "sourceEvidence": {
+        "evidenceId": "politics-2014-q31",
+        "sourceId": "src_2108376f40d7611f294dcdda",
+        "answerSourceId": "src_67540d75956ca701ef3ebdd4",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2014-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:2af49f3f52a640607ad1c64df549c8511805ca379c3cb0f9ca900509ae642453",
+        "answerTextHash": "sha256:0a037c01acb69063e66b472e1f84455c9221e487f40e43ab4b0505299ae6b26a"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_67540d75956ca701ef3ebdd4",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2014/2014-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:0a037c01acb69063e66b472e1f84455c9221e487f40e43ab4b0505299ae6b26a",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2014_bank",
+        "note": "Matched against local Baidu Netdisk 2014 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2014-032",
+      "number": 32,
+      "paperId": "politics-2014",
+      "paperName": "2014考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2014",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2014考研政治第32题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABCD",
+      "explanation": "答案来自本地百度网盘 2014 考研政治真题及参考答案 PDF 第 11 页标准答案键；题面以试卷原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2014/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2014考研政治试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2014/answer-page-11.jpg",
+          "caption": "答案原页 p.11",
+          "alt": "2014考研政治答案原页 p.11"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2014",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2014-paper-answer",
+      "sourceEvidenceId": "politics-2014-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:d7468b4322fbb02bdb112bc9acf9bf3b32c6f3a2b59556ce99091861e48bd7a3",
+      "answerTextHash": "sha256:0a037c01acb69063e66b472e1f84455c9221e487f40e43ab4b0505299ae6b26a",
+      "sourceEvidence": {
+        "evidenceId": "politics-2014-q32",
+        "sourceId": "src_2108376f40d7611f294dcdda",
+        "answerSourceId": "src_67540d75956ca701ef3ebdd4",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2014-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:d7468b4322fbb02bdb112bc9acf9bf3b32c6f3a2b59556ce99091861e48bd7a3",
+        "answerTextHash": "sha256:0a037c01acb69063e66b472e1f84455c9221e487f40e43ab4b0505299ae6b26a"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_67540d75956ca701ef3ebdd4",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2014/2014-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:0a037c01acb69063e66b472e1f84455c9221e487f40e43ab4b0505299ae6b26a",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2014_bank",
+        "note": "Matched against local Baidu Netdisk 2014 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2014-033",
+      "number": 33,
+      "paperId": "politics-2014",
+      "paperName": "2014考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2014",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2014考研政治第33题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ACD",
+      "explanation": "答案来自本地百度网盘 2014 考研政治真题及参考答案 PDF 第 11 页标准答案键；题面以试卷原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2014/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2014考研政治试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2014/answer-page-11.jpg",
+          "caption": "答案原页 p.11",
+          "alt": "2014考研政治答案原页 p.11"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2014",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2014-paper-answer",
+      "sourceEvidenceId": "politics-2014-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:a621f237910b4648e058d91fe9ab9bf4f6656eda36d225858cf18b8665e6f738",
+      "answerTextHash": "sha256:c5daccaba38cf7d48f27b0bf52cf9381c4491d18bbde14a3b8696e6f23c2d61b",
+      "sourceEvidence": {
+        "evidenceId": "politics-2014-q33",
+        "sourceId": "src_2108376f40d7611f294dcdda",
+        "answerSourceId": "src_67540d75956ca701ef3ebdd4",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2014-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:a621f237910b4648e058d91fe9ab9bf4f6656eda36d225858cf18b8665e6f738",
+        "answerTextHash": "sha256:c5daccaba38cf7d48f27b0bf52cf9381c4491d18bbde14a3b8696e6f23c2d61b"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_67540d75956ca701ef3ebdd4",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2014/2014-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:c5daccaba38cf7d48f27b0bf52cf9381c4491d18bbde14a3b8696e6f23c2d61b",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2014_bank",
+        "note": "Matched against local Baidu Netdisk 2014 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2014-034",
+      "number": 34,
+      "paperId": "politics-2014",
+      "paperName": "2014考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2014",
+      "section": "分析题",
+      "type": "analysis",
+      "question": "2014考研政治第34题（分析题）。题干、选项和材料以试卷原页图为准。",
+      "options": [],
+      "answer": "分析题参考答案要点见答案原页 p.11。",
+      "explanation": "参考答案来自本地百度网盘 2014 考研政治真题及参考答案 PDF；完整答案要点见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2014/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2014考研政治试卷原页 p.4"
+        },
+        {
+          "src": "question-bank/politics-2014/paper-page-05.jpg",
+          "caption": "试卷原页 p.5",
+          "alt": "2014考研政治试卷原页 p.5"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2014/answer-page-11.jpg",
+          "caption": "答案原页 p.11",
+          "alt": "2014考研政治答案原页 p.11"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2014",
+        "分析题"
+      ],
+      "difficulty": 3,
+      "source": "politics-2014-paper-answer",
+      "sourceEvidenceId": "politics-2014-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:3a7c0a9a7c184092e787241f6e714a106f33821506c9b1bacad855e1b0e99f6e",
+      "answerTextHash": "sha256:c1b99f862fc999f8df0c9fc82c9f58001c59d7fb27782893b9d7a7584d369915",
+      "sourceEvidence": {
+        "evidenceId": "politics-2014-q34",
+        "sourceId": "src_2108376f40d7611f294dcdda",
+        "answerSourceId": "src_67540d75956ca701ef3ebdd4",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2014-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:3a7c0a9a7c184092e787241f6e714a106f33821506c9b1bacad855e1b0e99f6e",
+        "answerTextHash": "sha256:c1b99f862fc999f8df0c9fc82c9f58001c59d7fb27782893b9d7a7584d369915"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_reference_answer",
+        "sourceId": "src_67540d75956ca701ef3ebdd4",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2014/2014-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:c1b99f862fc999f8df0c9fc82c9f58001c59d7fb27782893b9d7a7584d369915",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2014_bank",
+        "note": "Matched against local Baidu Netdisk 2014 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2014-035",
+      "number": 35,
+      "paperId": "politics-2014",
+      "paperName": "2014考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2014",
+      "section": "分析题",
+      "type": "analysis",
+      "question": "2014考研政治第35题（分析题）。题干、选项和材料以试卷原页图为准。",
+      "options": [],
+      "answer": "分析题参考答案要点见答案原页 p.11。",
+      "explanation": "参考答案来自本地百度网盘 2014 考研政治真题及参考答案 PDF；完整答案要点见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2014/paper-page-05.jpg",
+          "caption": "试卷原页 p.5",
+          "alt": "2014考研政治试卷原页 p.5"
+        },
+        {
+          "src": "question-bank/politics-2014/paper-page-06.jpg",
+          "caption": "试卷原页 p.6",
+          "alt": "2014考研政治试卷原页 p.6"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2014/answer-page-11.jpg",
+          "caption": "答案原页 p.11",
+          "alt": "2014考研政治答案原页 p.11"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2014",
+        "分析题"
+      ],
+      "difficulty": 3,
+      "source": "politics-2014-paper-answer",
+      "sourceEvidenceId": "politics-2014-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:af05a34ef40a6ffcb62ddc37470abea82ce358277b069cb73411b924c7bb7f59",
+      "answerTextHash": "sha256:c1b99f862fc999f8df0c9fc82c9f58001c59d7fb27782893b9d7a7584d369915",
+      "sourceEvidence": {
+        "evidenceId": "politics-2014-q35",
+        "sourceId": "src_2108376f40d7611f294dcdda",
+        "answerSourceId": "src_67540d75956ca701ef3ebdd4",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2014-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:af05a34ef40a6ffcb62ddc37470abea82ce358277b069cb73411b924c7bb7f59",
+        "answerTextHash": "sha256:c1b99f862fc999f8df0c9fc82c9f58001c59d7fb27782893b9d7a7584d369915"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_reference_answer",
+        "sourceId": "src_67540d75956ca701ef3ebdd4",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2014/2014-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:c1b99f862fc999f8df0c9fc82c9f58001c59d7fb27782893b9d7a7584d369915",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2014_bank",
+        "note": "Matched against local Baidu Netdisk 2014 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2014-036",
+      "number": 36,
+      "paperId": "politics-2014",
+      "paperName": "2014考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2014",
+      "section": "分析题",
+      "type": "analysis",
+      "question": "2014考研政治第36题（分析题）。题干、选项和材料以试卷原页图为准。",
+      "options": [],
+      "answer": "分析题参考答案要点见答案原页 p.11-p.12。",
+      "explanation": "参考答案来自本地百度网盘 2014 考研政治真题及参考答案 PDF；完整答案要点见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2014/paper-page-06.jpg",
+          "caption": "试卷原页 p.6",
+          "alt": "2014考研政治试卷原页 p.6"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2014/answer-page-11.jpg",
+          "caption": "答案原页 p.11",
+          "alt": "2014考研政治答案原页 p.11"
+        },
+        {
+          "src": "question-bank/politics-2014/answer-page-12.jpg",
+          "caption": "答案原页 p.12",
+          "alt": "2014考研政治答案原页 p.12"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2014",
+        "分析题"
+      ],
+      "difficulty": 3,
+      "source": "politics-2014-paper-answer",
+      "sourceEvidenceId": "politics-2014-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:af131c06bd156a2fd58f897b0016cbf37e06327c8f7310802505ec88be7ba62b",
+      "answerTextHash": "sha256:b8cb97d67a2dc6fc3a6c9ee869a5a0709d20f60af4b953707cf92c40ac54698e",
+      "sourceEvidence": {
+        "evidenceId": "politics-2014-q36",
+        "sourceId": "src_2108376f40d7611f294dcdda",
+        "answerSourceId": "src_67540d75956ca701ef3ebdd4",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2014-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:af131c06bd156a2fd58f897b0016cbf37e06327c8f7310802505ec88be7ba62b",
+        "answerTextHash": "sha256:b8cb97d67a2dc6fc3a6c9ee869a5a0709d20f60af4b953707cf92c40ac54698e"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_reference_answer",
+        "sourceId": "src_67540d75956ca701ef3ebdd4",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2014/2014-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:b8cb97d67a2dc6fc3a6c9ee869a5a0709d20f60af4b953707cf92c40ac54698e",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2014_bank",
+        "note": "Matched against local Baidu Netdisk 2014 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2014-037",
+      "number": 37,
+      "paperId": "politics-2014",
+      "paperName": "2014考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2014",
+      "section": "分析题",
+      "type": "analysis",
+      "question": "2014考研政治第37题（分析题）。题干、选项和材料以试卷原页图为准。",
+      "options": [],
+      "answer": "分析题参考答案要点见答案原页 p.12。",
+      "explanation": "参考答案来自本地百度网盘 2014 考研政治真题及参考答案 PDF；完整答案要点见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2014/paper-page-06.jpg",
+          "caption": "试卷原页 p.6",
+          "alt": "2014考研政治试卷原页 p.6"
+        },
+        {
+          "src": "question-bank/politics-2014/paper-page-07.jpg",
+          "caption": "试卷原页 p.7",
+          "alt": "2014考研政治试卷原页 p.7"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2014/answer-page-12.jpg",
+          "caption": "答案原页 p.12",
+          "alt": "2014考研政治答案原页 p.12"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2014",
+        "分析题"
+      ],
+      "difficulty": 3,
+      "source": "politics-2014-paper-answer",
+      "sourceEvidenceId": "politics-2014-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:dc8365d411746a162405c2aa2809b33463e709bcb4309f1a16b8ee7c6c637cf1",
+      "answerTextHash": "sha256:36134c97fce35c32955a6ab9c5f4bde685b6b878165063745edd7f3f16955d32",
+      "sourceEvidence": {
+        "evidenceId": "politics-2014-q37",
+        "sourceId": "src_2108376f40d7611f294dcdda",
+        "answerSourceId": "src_67540d75956ca701ef3ebdd4",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2014-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:dc8365d411746a162405c2aa2809b33463e709bcb4309f1a16b8ee7c6c637cf1",
+        "answerTextHash": "sha256:36134c97fce35c32955a6ab9c5f4bde685b6b878165063745edd7f3f16955d32"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_reference_answer",
+        "sourceId": "src_67540d75956ca701ef3ebdd4",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2014/2014-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:36134c97fce35c32955a6ab9c5f4bde685b6b878165063745edd7f3f16955d32",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2014_bank",
+        "note": "Matched against local Baidu Netdisk 2014 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2014-038",
+      "number": 38,
+      "paperId": "politics-2014",
+      "paperName": "2014考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2014",
+      "section": "分析题",
+      "type": "analysis",
+      "question": "2014考研政治第38题（分析题）。题干、选项和材料以试卷原页图为准。",
+      "options": [],
+      "answer": "分析题参考答案要点见答案原页 p.12。",
+      "explanation": "参考答案来自本地百度网盘 2014 考研政治真题及参考答案 PDF；完整答案要点见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2014/paper-page-07.jpg",
+          "caption": "试卷原页 p.7",
+          "alt": "2014考研政治试卷原页 p.7"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2014/answer-page-12.jpg",
+          "caption": "答案原页 p.12",
+          "alt": "2014考研政治答案原页 p.12"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2014",
+        "分析题"
+      ],
+      "difficulty": 3,
+      "source": "politics-2014-paper-answer",
+      "sourceEvidenceId": "politics-2014-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:baeb9072b527311f8b7eee42d5cfe44317a53d8d24c207c68c140900e62f5046",
+      "answerTextHash": "sha256:36134c97fce35c32955a6ab9c5f4bde685b6b878165063745edd7f3f16955d32",
+      "sourceEvidence": {
+        "evidenceId": "politics-2014-q38",
+        "sourceId": "src_2108376f40d7611f294dcdda",
+        "answerSourceId": "src_67540d75956ca701ef3ebdd4",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2014-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:baeb9072b527311f8b7eee42d5cfe44317a53d8d24c207c68c140900e62f5046",
+        "answerTextHash": "sha256:36134c97fce35c32955a6ab9c5f4bde685b6b878165063745edd7f3f16955d32"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_reference_answer",
+        "sourceId": "src_67540d75956ca701ef3ebdd4",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2014/2014-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:36134c97fce35c32955a6ab9c5f4bde685b6b878165063745edd7f3f16955d32",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2014_bank",
+        "note": "Matched against local Baidu Netdisk 2014 Politics paper-answer PDF."
+      }
+    }
+  ]
+}

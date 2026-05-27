@@ -1,0 +1,3032 @@
+{
+  "id": "politics-2007",
+  "source": "politics-2007-paper-answer",
+  "paperId": "politics-2007",
+  "paperName": "2007考研政治真题",
+  "subject": "政治",
+  "subjectKey": "politics",
+  "track": "politics",
+  "year": "2007",
+  "quality": "ready",
+  "publicationStatus": "published",
+  "publicationBlockers": [],
+  "sourceEvidencePolicy": "baidu_netdisk_official_paper_pdf_page_image_v1",
+  "sourceFiles": [
+    {
+      "id": "politics-2007-paper-answer",
+      "sourceId": "src_95c639bb87c2501fb7690c9f",
+      "role": "paper_answer",
+      "localPath": "data/raw-inbox/public-course-history/politics/2007/2007-politics-paper-answer.pdf",
+      "sha256": "sha256:676129f0c2d524175e2981890931eb6d0e201019d9ac0b2066f74a281d1717f0"
+    }
+  ],
+  "assetRoot": "question-bank/politics-2007",
+  "processed_at": "2026-05-27T00:54:38Z",
+  "total_cards": 38,
+  "sections": [
+    "单项选择",
+    "多项选择",
+    "分析题"
+  ],
+  "cards": [
+    {
+      "id": "politics-2007-001",
+      "number": 1,
+      "paperId": "politics-2007",
+      "paperName": "2007考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2007",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2007考研政治第1题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2007 考研政治真题及参考答案 PDF 内嵌答案；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2007/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2007考研政治试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2007/paper-page-01.jpg",
+          "caption": "答案原页 p.1",
+          "alt": "2007考研政治答案原页 p.1"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2007",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2007-paper-answer",
+      "sourceEvidenceId": "politics-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:b4b7b59ff790184f3ea92d769215049c41425098d121e271bd2ec0986053826d",
+      "answerTextHash": "sha256:c2e85ec18509152e1d6bc0bc9e40d1a2669dce43b20bf8416c232527e78c1bb0",
+      "sourceEvidence": {
+        "evidenceId": "politics-2007-q01",
+        "sourceId": "src_95c639bb87c2501fb7690c9f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:b4b7b59ff790184f3ea92d769215049c41425098d121e271bd2ec0986053826d",
+        "answerTextHash": "sha256:c2e85ec18509152e1d6bc0bc9e40d1a2669dce43b20bf8416c232527e78c1bb0"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_95c639bb87c2501fb7690c9f",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2007/2007-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:c2e85ec18509152e1d6bc0bc9e40d1a2669dce43b20bf8416c232527e78c1bb0",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2007_bank",
+        "note": "Matched against local Baidu Netdisk 2007 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2007-002",
+      "number": 2,
+      "paperId": "politics-2007",
+      "paperName": "2007考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2007",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2007考研政治第2题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2007 考研政治真题及参考答案 PDF 内嵌答案；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2007/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2007考研政治试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2007/paper-page-01.jpg",
+          "caption": "答案原页 p.1",
+          "alt": "2007考研政治答案原页 p.1"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2007",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2007-paper-answer",
+      "sourceEvidenceId": "politics-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:7ad5d51856a49c2d61d7c45b8493fb82874852c69614a2275e4c122cb23b3b21",
+      "answerTextHash": "sha256:898dfe56ec6417a9e4a63fc7181aef05836cf09e0853e5590478456c77a1bb03",
+      "sourceEvidence": {
+        "evidenceId": "politics-2007-q02",
+        "sourceId": "src_95c639bb87c2501fb7690c9f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:7ad5d51856a49c2d61d7c45b8493fb82874852c69614a2275e4c122cb23b3b21",
+        "answerTextHash": "sha256:898dfe56ec6417a9e4a63fc7181aef05836cf09e0853e5590478456c77a1bb03"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_95c639bb87c2501fb7690c9f",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2007/2007-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:898dfe56ec6417a9e4a63fc7181aef05836cf09e0853e5590478456c77a1bb03",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2007_bank",
+        "note": "Matched against local Baidu Netdisk 2007 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2007-003",
+      "number": 3,
+      "paperId": "politics-2007",
+      "paperName": "2007考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2007",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2007考研政治第3题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2007 考研政治真题及参考答案 PDF 内嵌答案；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2007/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2007考研政治试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2007/paper-page-01.jpg",
+          "caption": "答案原页 p.1",
+          "alt": "2007考研政治答案原页 p.1"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2007",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2007-paper-answer",
+      "sourceEvidenceId": "politics-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:e6cc30d4de2d6194325447af38ff491b2c4a05e666c569ae24d1fcc1e2981afc",
+      "answerTextHash": "sha256:1e0fb90153fd754d20abf4acce9f6720b52b42a6dbf3fe2f14c1028ea903701f",
+      "sourceEvidence": {
+        "evidenceId": "politics-2007-q03",
+        "sourceId": "src_95c639bb87c2501fb7690c9f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:e6cc30d4de2d6194325447af38ff491b2c4a05e666c569ae24d1fcc1e2981afc",
+        "answerTextHash": "sha256:1e0fb90153fd754d20abf4acce9f6720b52b42a6dbf3fe2f14c1028ea903701f"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_95c639bb87c2501fb7690c9f",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2007/2007-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:1e0fb90153fd754d20abf4acce9f6720b52b42a6dbf3fe2f14c1028ea903701f",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2007_bank",
+        "note": "Matched against local Baidu Netdisk 2007 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2007-004",
+      "number": 4,
+      "paperId": "politics-2007",
+      "paperName": "2007考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2007",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2007考研政治第4题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2007 考研政治真题及参考答案 PDF 内嵌答案；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2007/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2007考研政治试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2007/paper-page-02.jpg",
+          "caption": "答案原页 p.2",
+          "alt": "2007考研政治答案原页 p.2"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2007",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2007-paper-answer",
+      "sourceEvidenceId": "politics-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:44ef17bb907d233664dd6daf173fa543aca6b1d9cb2c72b3a89ed00ca6b2df50",
+      "answerTextHash": "sha256:988f0b57363bc9eb4a3739d0f1cfc3a27e6ffe285a76e0aefc5e0176a5fa4506",
+      "sourceEvidence": {
+        "evidenceId": "politics-2007-q04",
+        "sourceId": "src_95c639bb87c2501fb7690c9f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:44ef17bb907d233664dd6daf173fa543aca6b1d9cb2c72b3a89ed00ca6b2df50",
+        "answerTextHash": "sha256:988f0b57363bc9eb4a3739d0f1cfc3a27e6ffe285a76e0aefc5e0176a5fa4506"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_95c639bb87c2501fb7690c9f",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2007/2007-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:988f0b57363bc9eb4a3739d0f1cfc3a27e6ffe285a76e0aefc5e0176a5fa4506",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2007_bank",
+        "note": "Matched against local Baidu Netdisk 2007 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2007-005",
+      "number": 5,
+      "paperId": "politics-2007",
+      "paperName": "2007考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2007",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2007考研政治第5题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2007 考研政治真题及参考答案 PDF 内嵌答案；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2007/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2007考研政治试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2007/paper-page-02.jpg",
+          "caption": "答案原页 p.2",
+          "alt": "2007考研政治答案原页 p.2"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2007",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2007-paper-answer",
+      "sourceEvidenceId": "politics-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:954cd2070fd8bff939048882c34c742da411f08f2ae335f48e9969ac6cb93bb7",
+      "answerTextHash": "sha256:988f0b57363bc9eb4a3739d0f1cfc3a27e6ffe285a76e0aefc5e0176a5fa4506",
+      "sourceEvidence": {
+        "evidenceId": "politics-2007-q05",
+        "sourceId": "src_95c639bb87c2501fb7690c9f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:954cd2070fd8bff939048882c34c742da411f08f2ae335f48e9969ac6cb93bb7",
+        "answerTextHash": "sha256:988f0b57363bc9eb4a3739d0f1cfc3a27e6ffe285a76e0aefc5e0176a5fa4506"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_95c639bb87c2501fb7690c9f",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2007/2007-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:988f0b57363bc9eb4a3739d0f1cfc3a27e6ffe285a76e0aefc5e0176a5fa4506",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2007_bank",
+        "note": "Matched against local Baidu Netdisk 2007 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2007-006",
+      "number": 6,
+      "paperId": "politics-2007",
+      "paperName": "2007考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2007",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2007考研政治第6题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2007 考研政治真题及参考答案 PDF 内嵌答案；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2007/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2007考研政治试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2007/paper-page-02.jpg",
+          "caption": "答案原页 p.2",
+          "alt": "2007考研政治答案原页 p.2"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2007",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2007-paper-answer",
+      "sourceEvidenceId": "politics-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:f44734e14b7b5a44c42d783d46ca8b7e0eed8a3c5cc8781b043276f42baeabdf",
+      "answerTextHash": "sha256:988f0b57363bc9eb4a3739d0f1cfc3a27e6ffe285a76e0aefc5e0176a5fa4506",
+      "sourceEvidence": {
+        "evidenceId": "politics-2007-q06",
+        "sourceId": "src_95c639bb87c2501fb7690c9f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:f44734e14b7b5a44c42d783d46ca8b7e0eed8a3c5cc8781b043276f42baeabdf",
+        "answerTextHash": "sha256:988f0b57363bc9eb4a3739d0f1cfc3a27e6ffe285a76e0aefc5e0176a5fa4506"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_95c639bb87c2501fb7690c9f",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2007/2007-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:988f0b57363bc9eb4a3739d0f1cfc3a27e6ffe285a76e0aefc5e0176a5fa4506",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2007_bank",
+        "note": "Matched against local Baidu Netdisk 2007 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2007-007",
+      "number": 7,
+      "paperId": "politics-2007",
+      "paperName": "2007考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2007",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2007考研政治第7题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2007 考研政治真题及参考答案 PDF 内嵌答案；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2007/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2007考研政治试卷原页 p.2"
+        },
+        {
+          "src": "question-bank/politics-2007/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2007考研政治试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2007/paper-page-02.jpg",
+          "caption": "答案原页 p.2",
+          "alt": "2007考研政治答案原页 p.2"
+        },
+        {
+          "src": "question-bank/politics-2007/paper-page-03.jpg",
+          "caption": "答案原页 p.3",
+          "alt": "2007考研政治答案原页 p.3"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2007",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2007-paper-answer",
+      "sourceEvidenceId": "politics-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:f24f979aea4f2853cfafef4f0e6ca8da378e9a349aa4cfc81e50dad1a8556f2d",
+      "answerTextHash": "sha256:6b17a77f653fbe5a10d6e64afa432ce5d21481993d95a2024c1c585cd21537f1",
+      "sourceEvidence": {
+        "evidenceId": "politics-2007-q07",
+        "sourceId": "src_95c639bb87c2501fb7690c9f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:f24f979aea4f2853cfafef4f0e6ca8da378e9a349aa4cfc81e50dad1a8556f2d",
+        "answerTextHash": "sha256:6b17a77f653fbe5a10d6e64afa432ce5d21481993d95a2024c1c585cd21537f1"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_95c639bb87c2501fb7690c9f",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2007/2007-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:6b17a77f653fbe5a10d6e64afa432ce5d21481993d95a2024c1c585cd21537f1",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2007_bank",
+        "note": "Matched against local Baidu Netdisk 2007 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2007-008",
+      "number": 8,
+      "paperId": "politics-2007",
+      "paperName": "2007考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2007",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2007考研政治第8题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2007 考研政治真题及参考答案 PDF 内嵌答案；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2007/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2007考研政治试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2007/paper-page-03.jpg",
+          "caption": "答案原页 p.3",
+          "alt": "2007考研政治答案原页 p.3"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2007",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2007-paper-answer",
+      "sourceEvidenceId": "politics-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:685f1920a677b37d973ce9d51c880d816409295361e82cc83127cdfa2a24018a",
+      "answerTextHash": "sha256:04ec1392cd28549dbaddc0073958e13af49f2cfb6a360df78fd43db6aefcc6de",
+      "sourceEvidence": {
+        "evidenceId": "politics-2007-q08",
+        "sourceId": "src_95c639bb87c2501fb7690c9f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:685f1920a677b37d973ce9d51c880d816409295361e82cc83127cdfa2a24018a",
+        "answerTextHash": "sha256:04ec1392cd28549dbaddc0073958e13af49f2cfb6a360df78fd43db6aefcc6de"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_95c639bb87c2501fb7690c9f",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2007/2007-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:04ec1392cd28549dbaddc0073958e13af49f2cfb6a360df78fd43db6aefcc6de",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2007_bank",
+        "note": "Matched against local Baidu Netdisk 2007 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2007-009",
+      "number": 9,
+      "paperId": "politics-2007",
+      "paperName": "2007考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2007",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2007考研政治第9题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2007 考研政治真题及参考答案 PDF 内嵌答案；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2007/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2007考研政治试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2007/paper-page-03.jpg",
+          "caption": "答案原页 p.3",
+          "alt": "2007考研政治答案原页 p.3"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2007",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2007-paper-answer",
+      "sourceEvidenceId": "politics-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:3bc6436dab9e2e6de8779c2b6bccbf71ee179ceed8b9dbb2a7214bb6fc7de6ff",
+      "answerTextHash": "sha256:0634ab203034f2c6374f15232206073cecbf4e9adb5bc8e37d45b9853b7f2948",
+      "sourceEvidence": {
+        "evidenceId": "politics-2007-q09",
+        "sourceId": "src_95c639bb87c2501fb7690c9f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:3bc6436dab9e2e6de8779c2b6bccbf71ee179ceed8b9dbb2a7214bb6fc7de6ff",
+        "answerTextHash": "sha256:0634ab203034f2c6374f15232206073cecbf4e9adb5bc8e37d45b9853b7f2948"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_95c639bb87c2501fb7690c9f",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2007/2007-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:0634ab203034f2c6374f15232206073cecbf4e9adb5bc8e37d45b9853b7f2948",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2007_bank",
+        "note": "Matched against local Baidu Netdisk 2007 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2007-010",
+      "number": 10,
+      "paperId": "politics-2007",
+      "paperName": "2007考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2007",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2007考研政治第10题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2007 考研政治真题及参考答案 PDF 内嵌答案；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2007/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2007考研政治试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2007/paper-page-03.jpg",
+          "caption": "答案原页 p.3",
+          "alt": "2007考研政治答案原页 p.3"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2007",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2007-paper-answer",
+      "sourceEvidenceId": "politics-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:70091e8e02d3034b590fb660d028e94c18edb0f8dbf2a82a92d6676afd002911",
+      "answerTextHash": "sha256:0634ab203034f2c6374f15232206073cecbf4e9adb5bc8e37d45b9853b7f2948",
+      "sourceEvidence": {
+        "evidenceId": "politics-2007-q10",
+        "sourceId": "src_95c639bb87c2501fb7690c9f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:70091e8e02d3034b590fb660d028e94c18edb0f8dbf2a82a92d6676afd002911",
+        "answerTextHash": "sha256:0634ab203034f2c6374f15232206073cecbf4e9adb5bc8e37d45b9853b7f2948"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_95c639bb87c2501fb7690c9f",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2007/2007-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:0634ab203034f2c6374f15232206073cecbf4e9adb5bc8e37d45b9853b7f2948",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2007_bank",
+        "note": "Matched against local Baidu Netdisk 2007 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2007-011",
+      "number": 11,
+      "paperId": "politics-2007",
+      "paperName": "2007考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2007",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2007考研政治第11题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2007 考研政治真题及参考答案 PDF 内嵌答案；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2007/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2007考研政治试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2007/paper-page-03.jpg",
+          "caption": "答案原页 p.3",
+          "alt": "2007考研政治答案原页 p.3"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2007",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2007-paper-answer",
+      "sourceEvidenceId": "politics-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:07b7c5d79b14d7ca135e891f374480d6adea5d040d6fbc4394be009b1301075f",
+      "answerTextHash": "sha256:5366ae6fcc40a373c1eeff09793d22cc71b498d1a32633f1bdb78e984a2ac883",
+      "sourceEvidence": {
+        "evidenceId": "politics-2007-q11",
+        "sourceId": "src_95c639bb87c2501fb7690c9f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:07b7c5d79b14d7ca135e891f374480d6adea5d040d6fbc4394be009b1301075f",
+        "answerTextHash": "sha256:5366ae6fcc40a373c1eeff09793d22cc71b498d1a32633f1bdb78e984a2ac883"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_95c639bb87c2501fb7690c9f",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2007/2007-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:5366ae6fcc40a373c1eeff09793d22cc71b498d1a32633f1bdb78e984a2ac883",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2007_bank",
+        "note": "Matched against local Baidu Netdisk 2007 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2007-012",
+      "number": 12,
+      "paperId": "politics-2007",
+      "paperName": "2007考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2007",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2007考研政治第12题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2007 考研政治真题及参考答案 PDF 内嵌答案；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2007/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2007考研政治试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2007/paper-page-04.jpg",
+          "caption": "答案原页 p.4",
+          "alt": "2007考研政治答案原页 p.4"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2007",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2007-paper-answer",
+      "sourceEvidenceId": "politics-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:33bccd54a2eaa16086fa0b905342a46b073d4ad9e403d7773ffd07d041994730",
+      "answerTextHash": "sha256:b0bb7a65fee4a880f1240497ee8e090f11ba886ae2b3ca6a99cba0bbbba9764a",
+      "sourceEvidence": {
+        "evidenceId": "politics-2007-q12",
+        "sourceId": "src_95c639bb87c2501fb7690c9f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:33bccd54a2eaa16086fa0b905342a46b073d4ad9e403d7773ffd07d041994730",
+        "answerTextHash": "sha256:b0bb7a65fee4a880f1240497ee8e090f11ba886ae2b3ca6a99cba0bbbba9764a"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_95c639bb87c2501fb7690c9f",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2007/2007-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:b0bb7a65fee4a880f1240497ee8e090f11ba886ae2b3ca6a99cba0bbbba9764a",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2007_bank",
+        "note": "Matched against local Baidu Netdisk 2007 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2007-013",
+      "number": 13,
+      "paperId": "politics-2007",
+      "paperName": "2007考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2007",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2007考研政治第13题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2007 考研政治真题及参考答案 PDF 内嵌答案；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2007/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2007考研政治试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2007/paper-page-04.jpg",
+          "caption": "答案原页 p.4",
+          "alt": "2007考研政治答案原页 p.4"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2007",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2007-paper-answer",
+      "sourceEvidenceId": "politics-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:8fe4637ec860175c01ee309a8712514a9eb6eadd64a9a2718e2af1dad8cf7e1a",
+      "answerTextHash": "sha256:be7ce7e229c32ee84e51a8b798c26849f35867ddf614c33bfa7cb142239e5846",
+      "sourceEvidence": {
+        "evidenceId": "politics-2007-q13",
+        "sourceId": "src_95c639bb87c2501fb7690c9f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:8fe4637ec860175c01ee309a8712514a9eb6eadd64a9a2718e2af1dad8cf7e1a",
+        "answerTextHash": "sha256:be7ce7e229c32ee84e51a8b798c26849f35867ddf614c33bfa7cb142239e5846"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_95c639bb87c2501fb7690c9f",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2007/2007-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:be7ce7e229c32ee84e51a8b798c26849f35867ddf614c33bfa7cb142239e5846",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2007_bank",
+        "note": "Matched against local Baidu Netdisk 2007 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2007-014",
+      "number": 14,
+      "paperId": "politics-2007",
+      "paperName": "2007考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2007",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2007考研政治第14题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2007 考研政治真题及参考答案 PDF 内嵌答案；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2007/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2007考研政治试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2007/paper-page-04.jpg",
+          "caption": "答案原页 p.4",
+          "alt": "2007考研政治答案原页 p.4"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2007",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2007-paper-answer",
+      "sourceEvidenceId": "politics-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:d5586bd7881d50b51df95c980b0bf4ad3bb4fc4ce1a12c16af67efad1f2237fe",
+      "answerTextHash": "sha256:be7ce7e229c32ee84e51a8b798c26849f35867ddf614c33bfa7cb142239e5846",
+      "sourceEvidence": {
+        "evidenceId": "politics-2007-q14",
+        "sourceId": "src_95c639bb87c2501fb7690c9f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:d5586bd7881d50b51df95c980b0bf4ad3bb4fc4ce1a12c16af67efad1f2237fe",
+        "answerTextHash": "sha256:be7ce7e229c32ee84e51a8b798c26849f35867ddf614c33bfa7cb142239e5846"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_95c639bb87c2501fb7690c9f",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2007/2007-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:be7ce7e229c32ee84e51a8b798c26849f35867ddf614c33bfa7cb142239e5846",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2007_bank",
+        "note": "Matched against local Baidu Netdisk 2007 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2007-015",
+      "number": 15,
+      "paperId": "politics-2007",
+      "paperName": "2007考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2007",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2007考研政治第15题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2007 考研政治真题及参考答案 PDF 内嵌答案；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2007/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2007考研政治试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2007/paper-page-04.jpg",
+          "caption": "答案原页 p.4",
+          "alt": "2007考研政治答案原页 p.4"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2007",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2007-paper-answer",
+      "sourceEvidenceId": "politics-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:63b40dbc90ed171d115294ddd43d2b6bb5d5f0d6cf9a13f9aaf8a4f3f16dbaf1",
+      "answerTextHash": "sha256:b0bb7a65fee4a880f1240497ee8e090f11ba886ae2b3ca6a99cba0bbbba9764a",
+      "sourceEvidence": {
+        "evidenceId": "politics-2007-q15",
+        "sourceId": "src_95c639bb87c2501fb7690c9f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:63b40dbc90ed171d115294ddd43d2b6bb5d5f0d6cf9a13f9aaf8a4f3f16dbaf1",
+        "answerTextHash": "sha256:b0bb7a65fee4a880f1240497ee8e090f11ba886ae2b3ca6a99cba0bbbba9764a"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_95c639bb87c2501fb7690c9f",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2007/2007-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:b0bb7a65fee4a880f1240497ee8e090f11ba886ae2b3ca6a99cba0bbbba9764a",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2007_bank",
+        "note": "Matched against local Baidu Netdisk 2007 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2007-016",
+      "number": 16,
+      "paperId": "politics-2007",
+      "paperName": "2007考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2007",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2007考研政治第16题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2007 考研政治真题及参考答案 PDF 内嵌答案；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2007/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2007考研政治试卷原页 p.4"
+        },
+        {
+          "src": "question-bank/politics-2007/paper-page-05.jpg",
+          "caption": "试卷原页 p.5",
+          "alt": "2007考研政治试卷原页 p.5"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2007/paper-page-04.jpg",
+          "caption": "答案原页 p.4",
+          "alt": "2007考研政治答案原页 p.4"
+        },
+        {
+          "src": "question-bank/politics-2007/paper-page-05.jpg",
+          "caption": "答案原页 p.5",
+          "alt": "2007考研政治答案原页 p.5"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2007",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2007-paper-answer",
+      "sourceEvidenceId": "politics-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:538e245d737880f20a19a26debc520d109cc10cb3532e405f850adaf2f1efe96",
+      "answerTextHash": "sha256:effc5f090b83e51a6a0f872df829faed535494c249c70d11b7109de358a4b354",
+      "sourceEvidence": {
+        "evidenceId": "politics-2007-q16",
+        "sourceId": "src_95c639bb87c2501fb7690c9f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:538e245d737880f20a19a26debc520d109cc10cb3532e405f850adaf2f1efe96",
+        "answerTextHash": "sha256:effc5f090b83e51a6a0f872df829faed535494c249c70d11b7109de358a4b354"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_95c639bb87c2501fb7690c9f",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2007/2007-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:effc5f090b83e51a6a0f872df829faed535494c249c70d11b7109de358a4b354",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2007_bank",
+        "note": "Matched against local Baidu Netdisk 2007 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2007-017",
+      "number": 17,
+      "paperId": "politics-2007",
+      "paperName": "2007考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2007",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2007考研政治第17题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "AD",
+      "explanation": "答案来自本地百度网盘 2007 考研政治真题及参考答案 PDF 内嵌答案；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2007/paper-page-05.jpg",
+          "caption": "试卷原页 p.5",
+          "alt": "2007考研政治试卷原页 p.5"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2007/paper-page-05.jpg",
+          "caption": "答案原页 p.5",
+          "alt": "2007考研政治答案原页 p.5"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2007",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2007-paper-answer",
+      "sourceEvidenceId": "politics-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:2d7443ed15dfe7fb9bc6d3eac9d266db6dc8b96dc2049f9730321eff1da319ca",
+      "answerTextHash": "sha256:5729e44999da3e559173c18a5d1c93889de0db444939239f246334be09433aa7",
+      "sourceEvidence": {
+        "evidenceId": "politics-2007-q17",
+        "sourceId": "src_95c639bb87c2501fb7690c9f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:2d7443ed15dfe7fb9bc6d3eac9d266db6dc8b96dc2049f9730321eff1da319ca",
+        "answerTextHash": "sha256:5729e44999da3e559173c18a5d1c93889de0db444939239f246334be09433aa7"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_95c639bb87c2501fb7690c9f",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2007/2007-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:5729e44999da3e559173c18a5d1c93889de0db444939239f246334be09433aa7",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2007_bank",
+        "note": "Matched against local Baidu Netdisk 2007 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2007-018",
+      "number": 18,
+      "paperId": "politics-2007",
+      "paperName": "2007考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2007",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2007考研政治第18题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABD",
+      "explanation": "答案来自本地百度网盘 2007 考研政治真题及参考答案 PDF 内嵌答案；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2007/paper-page-05.jpg",
+          "caption": "试卷原页 p.5",
+          "alt": "2007考研政治试卷原页 p.5"
+        },
+        {
+          "src": "question-bank/politics-2007/paper-page-06.jpg",
+          "caption": "试卷原页 p.6",
+          "alt": "2007考研政治试卷原页 p.6"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2007/paper-page-05.jpg",
+          "caption": "答案原页 p.5",
+          "alt": "2007考研政治答案原页 p.5"
+        },
+        {
+          "src": "question-bank/politics-2007/paper-page-06.jpg",
+          "caption": "答案原页 p.6",
+          "alt": "2007考研政治答案原页 p.6"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2007",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2007-paper-answer",
+      "sourceEvidenceId": "politics-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:2f36cea745ac797a96e8947322c388223ce1a53553f58432081c48979b4ea24e",
+      "answerTextHash": "sha256:efc69d0b658c18c45e621f58d281fd066bdeee8bb58a3059d4cf023d438b9235",
+      "sourceEvidence": {
+        "evidenceId": "politics-2007-q18",
+        "sourceId": "src_95c639bb87c2501fb7690c9f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:2f36cea745ac797a96e8947322c388223ce1a53553f58432081c48979b4ea24e",
+        "answerTextHash": "sha256:efc69d0b658c18c45e621f58d281fd066bdeee8bb58a3059d4cf023d438b9235"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_95c639bb87c2501fb7690c9f",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2007/2007-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:efc69d0b658c18c45e621f58d281fd066bdeee8bb58a3059d4cf023d438b9235",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2007_bank",
+        "note": "Matched against local Baidu Netdisk 2007 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2007-019",
+      "number": 19,
+      "paperId": "politics-2007",
+      "paperName": "2007考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2007",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2007考研政治第19题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABCD",
+      "explanation": "答案来自本地百度网盘 2007 考研政治真题及参考答案 PDF 内嵌答案；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2007/paper-page-06.jpg",
+          "caption": "试卷原页 p.6",
+          "alt": "2007考研政治试卷原页 p.6"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2007/paper-page-06.jpg",
+          "caption": "答案原页 p.6",
+          "alt": "2007考研政治答案原页 p.6"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2007",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2007-paper-answer",
+      "sourceEvidenceId": "politics-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:1308571cf7449c51676b3ef3849fe739ba42ca2cfdd97f753bfecf0f9156d3ef",
+      "answerTextHash": "sha256:7a4657b05caff1e1c607e1acb4c45bebf4336d804408acbe49dc1ba174a7edd2",
+      "sourceEvidence": {
+        "evidenceId": "politics-2007-q19",
+        "sourceId": "src_95c639bb87c2501fb7690c9f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:1308571cf7449c51676b3ef3849fe739ba42ca2cfdd97f753bfecf0f9156d3ef",
+        "answerTextHash": "sha256:7a4657b05caff1e1c607e1acb4c45bebf4336d804408acbe49dc1ba174a7edd2"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_95c639bb87c2501fb7690c9f",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2007/2007-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:7a4657b05caff1e1c607e1acb4c45bebf4336d804408acbe49dc1ba174a7edd2",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2007_bank",
+        "note": "Matched against local Baidu Netdisk 2007 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2007-020",
+      "number": 20,
+      "paperId": "politics-2007",
+      "paperName": "2007考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2007",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2007考研政治第20题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABD",
+      "explanation": "答案来自本地百度网盘 2007 考研政治真题及参考答案 PDF 内嵌答案；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2007/paper-page-06.jpg",
+          "caption": "试卷原页 p.6",
+          "alt": "2007考研政治试卷原页 p.6"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2007/paper-page-06.jpg",
+          "caption": "答案原页 p.6",
+          "alt": "2007考研政治答案原页 p.6"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2007",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2007-paper-answer",
+      "sourceEvidenceId": "politics-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:68bbd66f695d5e255561f6e7d41340744a546edd90dbe9d3ec040eb3e6464122",
+      "answerTextHash": "sha256:c8f6e2f5342266470cde9b1adca362736a36ba34e7c0d3b4a478354ff84b2bae",
+      "sourceEvidence": {
+        "evidenceId": "politics-2007-q20",
+        "sourceId": "src_95c639bb87c2501fb7690c9f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:68bbd66f695d5e255561f6e7d41340744a546edd90dbe9d3ec040eb3e6464122",
+        "answerTextHash": "sha256:c8f6e2f5342266470cde9b1adca362736a36ba34e7c0d3b4a478354ff84b2bae"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_95c639bb87c2501fb7690c9f",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2007/2007-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:c8f6e2f5342266470cde9b1adca362736a36ba34e7c0d3b4a478354ff84b2bae",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2007_bank",
+        "note": "Matched against local Baidu Netdisk 2007 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2007-021",
+      "number": 21,
+      "paperId": "politics-2007",
+      "paperName": "2007考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2007",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2007考研政治第21题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "BD",
+      "explanation": "答案来自本地百度网盘 2007 考研政治真题及参考答案 PDF 内嵌答案；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2007/paper-page-06.jpg",
+          "caption": "试卷原页 p.6",
+          "alt": "2007考研政治试卷原页 p.6"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2007/paper-page-06.jpg",
+          "caption": "答案原页 p.6",
+          "alt": "2007考研政治答案原页 p.6"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2007",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2007-paper-answer",
+      "sourceEvidenceId": "politics-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:1622a87a4d06e656cdd5664ebf2782e854d8684094bffe2c0bfbb08bc71a6b12",
+      "answerTextHash": "sha256:7a03b2a22cb289e53d8d19ee99b325d672e4c83b7d5540dd3416be8bfcac06dd",
+      "sourceEvidence": {
+        "evidenceId": "politics-2007-q21",
+        "sourceId": "src_95c639bb87c2501fb7690c9f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:1622a87a4d06e656cdd5664ebf2782e854d8684094bffe2c0bfbb08bc71a6b12",
+        "answerTextHash": "sha256:7a03b2a22cb289e53d8d19ee99b325d672e4c83b7d5540dd3416be8bfcac06dd"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_95c639bb87c2501fb7690c9f",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2007/2007-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:7a03b2a22cb289e53d8d19ee99b325d672e4c83b7d5540dd3416be8bfcac06dd",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2007_bank",
+        "note": "Matched against local Baidu Netdisk 2007 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2007-022",
+      "number": 22,
+      "paperId": "politics-2007",
+      "paperName": "2007考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2007",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2007考研政治第22题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "AD",
+      "explanation": "答案来自本地百度网盘 2007 考研政治真题及参考答案 PDF 内嵌答案；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2007/paper-page-07.jpg",
+          "caption": "试卷原页 p.7",
+          "alt": "2007考研政治试卷原页 p.7"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2007/paper-page-07.jpg",
+          "caption": "答案原页 p.7",
+          "alt": "2007考研政治答案原页 p.7"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2007",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2007-paper-answer",
+      "sourceEvidenceId": "politics-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:f841649c22adfea6328af5936780159cc6d37a8f46996802804d75b78f04620a",
+      "answerTextHash": "sha256:a1bb3993cb6d86fb3dc2cdda614ac696ebfec4af91202ec96c74b6b8ead2630a",
+      "sourceEvidence": {
+        "evidenceId": "politics-2007-q22",
+        "sourceId": "src_95c639bb87c2501fb7690c9f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:f841649c22adfea6328af5936780159cc6d37a8f46996802804d75b78f04620a",
+        "answerTextHash": "sha256:a1bb3993cb6d86fb3dc2cdda614ac696ebfec4af91202ec96c74b6b8ead2630a"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_95c639bb87c2501fb7690c9f",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2007/2007-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:a1bb3993cb6d86fb3dc2cdda614ac696ebfec4af91202ec96c74b6b8ead2630a",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2007_bank",
+        "note": "Matched against local Baidu Netdisk 2007 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2007-023",
+      "number": 23,
+      "paperId": "politics-2007",
+      "paperName": "2007考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2007",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2007考研政治第23题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ACD",
+      "explanation": "答案来自本地百度网盘 2007 考研政治真题及参考答案 PDF 内嵌答案；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2007/paper-page-07.jpg",
+          "caption": "试卷原页 p.7",
+          "alt": "2007考研政治试卷原页 p.7"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2007/paper-page-07.jpg",
+          "caption": "答案原页 p.7",
+          "alt": "2007考研政治答案原页 p.7"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2007",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2007-paper-answer",
+      "sourceEvidenceId": "politics-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:5bdbfacb18dc18216258e0f5105bf85addf703ac4e377a07232933a08581a0c8",
+      "answerTextHash": "sha256:21baa00148f0d5d2b5f8c6b116368fcf672cc2fad9dee650bfbd3c1bb46aeb39",
+      "sourceEvidence": {
+        "evidenceId": "politics-2007-q23",
+        "sourceId": "src_95c639bb87c2501fb7690c9f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:5bdbfacb18dc18216258e0f5105bf85addf703ac4e377a07232933a08581a0c8",
+        "answerTextHash": "sha256:21baa00148f0d5d2b5f8c6b116368fcf672cc2fad9dee650bfbd3c1bb46aeb39"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_95c639bb87c2501fb7690c9f",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2007/2007-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:21baa00148f0d5d2b5f8c6b116368fcf672cc2fad9dee650bfbd3c1bb46aeb39",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2007_bank",
+        "note": "Matched against local Baidu Netdisk 2007 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2007-024",
+      "number": 24,
+      "paperId": "politics-2007",
+      "paperName": "2007考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2007",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2007考研政治第24题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "AD",
+      "explanation": "答案来自本地百度网盘 2007 考研政治真题及参考答案 PDF 内嵌答案；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2007/paper-page-07.jpg",
+          "caption": "试卷原页 p.7",
+          "alt": "2007考研政治试卷原页 p.7"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2007/paper-page-07.jpg",
+          "caption": "答案原页 p.7",
+          "alt": "2007考研政治答案原页 p.7"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2007",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2007-paper-answer",
+      "sourceEvidenceId": "politics-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:fcd8111898a8b685a59ae3ef8b17977f92590c31f1ff2199b573036fe98bb09f",
+      "answerTextHash": "sha256:a1bb3993cb6d86fb3dc2cdda614ac696ebfec4af91202ec96c74b6b8ead2630a",
+      "sourceEvidence": {
+        "evidenceId": "politics-2007-q24",
+        "sourceId": "src_95c639bb87c2501fb7690c9f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:fcd8111898a8b685a59ae3ef8b17977f92590c31f1ff2199b573036fe98bb09f",
+        "answerTextHash": "sha256:a1bb3993cb6d86fb3dc2cdda614ac696ebfec4af91202ec96c74b6b8ead2630a"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_95c639bb87c2501fb7690c9f",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2007/2007-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:a1bb3993cb6d86fb3dc2cdda614ac696ebfec4af91202ec96c74b6b8ead2630a",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2007_bank",
+        "note": "Matched against local Baidu Netdisk 2007 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2007-025",
+      "number": 25,
+      "paperId": "politics-2007",
+      "paperName": "2007考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2007",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2007考研政治第25题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "AC",
+      "explanation": "答案来自本地百度网盘 2007 考研政治真题及参考答案 PDF 内嵌答案；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2007/paper-page-07.jpg",
+          "caption": "试卷原页 p.7",
+          "alt": "2007考研政治试卷原页 p.7"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2007/paper-page-07.jpg",
+          "caption": "答案原页 p.7",
+          "alt": "2007考研政治答案原页 p.7"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2007",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2007-paper-answer",
+      "sourceEvidenceId": "politics-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:26b7db0075d57b30c84873daf8b52dbb8af365d80f558ab01ddef75c59cfde98",
+      "answerTextHash": "sha256:44684123bcb60b5cc7b494d1e1ef21562876fef0c36a835c71db9f813462448b",
+      "sourceEvidence": {
+        "evidenceId": "politics-2007-q25",
+        "sourceId": "src_95c639bb87c2501fb7690c9f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:26b7db0075d57b30c84873daf8b52dbb8af365d80f558ab01ddef75c59cfde98",
+        "answerTextHash": "sha256:44684123bcb60b5cc7b494d1e1ef21562876fef0c36a835c71db9f813462448b"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_95c639bb87c2501fb7690c9f",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2007/2007-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:44684123bcb60b5cc7b494d1e1ef21562876fef0c36a835c71db9f813462448b",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2007_bank",
+        "note": "Matched against local Baidu Netdisk 2007 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2007-026",
+      "number": 26,
+      "paperId": "politics-2007",
+      "paperName": "2007考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2007",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2007考研政治第26题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "BCD",
+      "explanation": "答案来自本地百度网盘 2007 考研政治真题及参考答案 PDF 内嵌答案；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2007/paper-page-07.jpg",
+          "caption": "试卷原页 p.7",
+          "alt": "2007考研政治试卷原页 p.7"
+        },
+        {
+          "src": "question-bank/politics-2007/paper-page-08.jpg",
+          "caption": "试卷原页 p.8",
+          "alt": "2007考研政治试卷原页 p.8"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2007/paper-page-07.jpg",
+          "caption": "答案原页 p.7",
+          "alt": "2007考研政治答案原页 p.7"
+        },
+        {
+          "src": "question-bank/politics-2007/paper-page-08.jpg",
+          "caption": "答案原页 p.8",
+          "alt": "2007考研政治答案原页 p.8"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2007",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2007-paper-answer",
+      "sourceEvidenceId": "politics-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:1ece4c8821f763f503968736329dee47126d41138a2ef2c111cf21c43f192fb8",
+      "answerTextHash": "sha256:7f765a88244f08ba331489f74ed47a6a2f9fcab6f4556b5365cedd375d918b82",
+      "sourceEvidence": {
+        "evidenceId": "politics-2007-q26",
+        "sourceId": "src_95c639bb87c2501fb7690c9f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:1ece4c8821f763f503968736329dee47126d41138a2ef2c111cf21c43f192fb8",
+        "answerTextHash": "sha256:7f765a88244f08ba331489f74ed47a6a2f9fcab6f4556b5365cedd375d918b82"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_95c639bb87c2501fb7690c9f",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2007/2007-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:7f765a88244f08ba331489f74ed47a6a2f9fcab6f4556b5365cedd375d918b82",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2007_bank",
+        "note": "Matched against local Baidu Netdisk 2007 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2007-027",
+      "number": 27,
+      "paperId": "politics-2007",
+      "paperName": "2007考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2007",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2007考研政治第27题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABD",
+      "explanation": "答案来自本地百度网盘 2007 考研政治真题及参考答案 PDF 内嵌答案；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2007/paper-page-08.jpg",
+          "caption": "试卷原页 p.8",
+          "alt": "2007考研政治试卷原页 p.8"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2007/paper-page-08.jpg",
+          "caption": "答案原页 p.8",
+          "alt": "2007考研政治答案原页 p.8"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2007",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2007-paper-answer",
+      "sourceEvidenceId": "politics-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:dd83d9d827d100c4058cf745c739a3d29b749520295c5f762c68649ea2df1849",
+      "answerTextHash": "sha256:0427b155a02ae1e6635e135aef3df5f9f60e48527a36e42bc9bde37f450912bf",
+      "sourceEvidence": {
+        "evidenceId": "politics-2007-q27",
+        "sourceId": "src_95c639bb87c2501fb7690c9f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:dd83d9d827d100c4058cf745c739a3d29b749520295c5f762c68649ea2df1849",
+        "answerTextHash": "sha256:0427b155a02ae1e6635e135aef3df5f9f60e48527a36e42bc9bde37f450912bf"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_95c639bb87c2501fb7690c9f",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2007/2007-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:0427b155a02ae1e6635e135aef3df5f9f60e48527a36e42bc9bde37f450912bf",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2007_bank",
+        "note": "Matched against local Baidu Netdisk 2007 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2007-028",
+      "number": 28,
+      "paperId": "politics-2007",
+      "paperName": "2007考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2007",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2007考研政治第28题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABCD",
+      "explanation": "答案来自本地百度网盘 2007 考研政治真题及参考答案 PDF 内嵌答案；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2007/paper-page-08.jpg",
+          "caption": "试卷原页 p.8",
+          "alt": "2007考研政治试卷原页 p.8"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2007/paper-page-08.jpg",
+          "caption": "答案原页 p.8",
+          "alt": "2007考研政治答案原页 p.8"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2007",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2007-paper-answer",
+      "sourceEvidenceId": "politics-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:00d82ed02afb1234067c76d4536f3bc2b8dcca4bae3345172bbbae2fb9c20d61",
+      "answerTextHash": "sha256:32b53d086c0a46f14b0a88d75fb8f2ea1ae6d80b683d04a2ba4e06911fe52aa0",
+      "sourceEvidence": {
+        "evidenceId": "politics-2007-q28",
+        "sourceId": "src_95c639bb87c2501fb7690c9f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:00d82ed02afb1234067c76d4536f3bc2b8dcca4bae3345172bbbae2fb9c20d61",
+        "answerTextHash": "sha256:32b53d086c0a46f14b0a88d75fb8f2ea1ae6d80b683d04a2ba4e06911fe52aa0"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_95c639bb87c2501fb7690c9f",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2007/2007-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:32b53d086c0a46f14b0a88d75fb8f2ea1ae6d80b683d04a2ba4e06911fe52aa0",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2007_bank",
+        "note": "Matched against local Baidu Netdisk 2007 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2007-029",
+      "number": 29,
+      "paperId": "politics-2007",
+      "paperName": "2007考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2007",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2007考研政治第29题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ACD",
+      "explanation": "答案来自本地百度网盘 2007 考研政治真题及参考答案 PDF 内嵌答案；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2007/paper-page-08.jpg",
+          "caption": "试卷原页 p.8",
+          "alt": "2007考研政治试卷原页 p.8"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2007/paper-page-08.jpg",
+          "caption": "答案原页 p.8",
+          "alt": "2007考研政治答案原页 p.8"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2007",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2007-paper-answer",
+      "sourceEvidenceId": "politics-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:7e5cbc6127cc0581738884aba473571c9b1d4c6dfa264139c3742c55f54a687a",
+      "answerTextHash": "sha256:7192b693b876a25cbbb59c6f4cc033d6a4adf761e1e336c3a6b5d408b1629a0e",
+      "sourceEvidence": {
+        "evidenceId": "politics-2007-q29",
+        "sourceId": "src_95c639bb87c2501fb7690c9f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:7e5cbc6127cc0581738884aba473571c9b1d4c6dfa264139c3742c55f54a687a",
+        "answerTextHash": "sha256:7192b693b876a25cbbb59c6f4cc033d6a4adf761e1e336c3a6b5d408b1629a0e"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_95c639bb87c2501fb7690c9f",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2007/2007-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:7192b693b876a25cbbb59c6f4cc033d6a4adf761e1e336c3a6b5d408b1629a0e",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2007_bank",
+        "note": "Matched against local Baidu Netdisk 2007 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2007-030",
+      "number": 30,
+      "paperId": "politics-2007",
+      "paperName": "2007考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2007",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2007考研政治第30题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABC",
+      "explanation": "答案来自本地百度网盘 2007 考研政治真题及参考答案 PDF 内嵌答案；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2007/paper-page-08.jpg",
+          "caption": "试卷原页 p.8",
+          "alt": "2007考研政治试卷原页 p.8"
+        },
+        {
+          "src": "question-bank/politics-2007/paper-page-09.jpg",
+          "caption": "试卷原页 p.9",
+          "alt": "2007考研政治试卷原页 p.9"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2007/paper-page-08.jpg",
+          "caption": "答案原页 p.8",
+          "alt": "2007考研政治答案原页 p.8"
+        },
+        {
+          "src": "question-bank/politics-2007/paper-page-09.jpg",
+          "caption": "答案原页 p.9",
+          "alt": "2007考研政治答案原页 p.9"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2007",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2007-paper-answer",
+      "sourceEvidenceId": "politics-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:1346a2daf9584bff7aa666e73900e4f8de1ac07ef168acc755ff58de03856117",
+      "answerTextHash": "sha256:fa22792c1ace13363db5983b6c2b4af1a19dc71bf06de73386ca708a5319c470",
+      "sourceEvidence": {
+        "evidenceId": "politics-2007-q30",
+        "sourceId": "src_95c639bb87c2501fb7690c9f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:1346a2daf9584bff7aa666e73900e4f8de1ac07ef168acc755ff58de03856117",
+        "answerTextHash": "sha256:fa22792c1ace13363db5983b6c2b4af1a19dc71bf06de73386ca708a5319c470"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_95c639bb87c2501fb7690c9f",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2007/2007-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:fa22792c1ace13363db5983b6c2b4af1a19dc71bf06de73386ca708a5319c470",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2007_bank",
+        "note": "Matched against local Baidu Netdisk 2007 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2007-031",
+      "number": 31,
+      "paperId": "politics-2007",
+      "paperName": "2007考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2007",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2007考研政治第31题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABCD",
+      "explanation": "答案来自本地百度网盘 2007 考研政治真题及参考答案 PDF 内嵌答案；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2007/paper-page-09.jpg",
+          "caption": "试卷原页 p.9",
+          "alt": "2007考研政治试卷原页 p.9"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2007/paper-page-09.jpg",
+          "caption": "答案原页 p.9",
+          "alt": "2007考研政治答案原页 p.9"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2007",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2007-paper-answer",
+      "sourceEvidenceId": "politics-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:67591f2487c318414fa18a2697b595dad82bec17d5792f2f78de43318dbd1cbc",
+      "answerTextHash": "sha256:a29b1d6ef338f9fd22d808d71723df6d146732d65fe64253a689e66d7d281df4",
+      "sourceEvidence": {
+        "evidenceId": "politics-2007-q31",
+        "sourceId": "src_95c639bb87c2501fb7690c9f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:67591f2487c318414fa18a2697b595dad82bec17d5792f2f78de43318dbd1cbc",
+        "answerTextHash": "sha256:a29b1d6ef338f9fd22d808d71723df6d146732d65fe64253a689e66d7d281df4"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_95c639bb87c2501fb7690c9f",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2007/2007-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:a29b1d6ef338f9fd22d808d71723df6d146732d65fe64253a689e66d7d281df4",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2007_bank",
+        "note": "Matched against local Baidu Netdisk 2007 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2007-032",
+      "number": 32,
+      "paperId": "politics-2007",
+      "paperName": "2007考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2007",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2007考研政治第32题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABCD",
+      "explanation": "答案来自本地百度网盘 2007 考研政治真题及参考答案 PDF 内嵌答案；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2007/paper-page-09.jpg",
+          "caption": "试卷原页 p.9",
+          "alt": "2007考研政治试卷原页 p.9"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2007/paper-page-09.jpg",
+          "caption": "答案原页 p.9",
+          "alt": "2007考研政治答案原页 p.9"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2007",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2007-paper-answer",
+      "sourceEvidenceId": "politics-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:6b500644cb8d759ca4e6382ddb93566bacb550540cc40f6309d1034871e4a5ba",
+      "answerTextHash": "sha256:a29b1d6ef338f9fd22d808d71723df6d146732d65fe64253a689e66d7d281df4",
+      "sourceEvidence": {
+        "evidenceId": "politics-2007-q32",
+        "sourceId": "src_95c639bb87c2501fb7690c9f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:6b500644cb8d759ca4e6382ddb93566bacb550540cc40f6309d1034871e4a5ba",
+        "answerTextHash": "sha256:a29b1d6ef338f9fd22d808d71723df6d146732d65fe64253a689e66d7d281df4"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_95c639bb87c2501fb7690c9f",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2007/2007-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:a29b1d6ef338f9fd22d808d71723df6d146732d65fe64253a689e66d7d281df4",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2007_bank",
+        "note": "Matched against local Baidu Netdisk 2007 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2007-033",
+      "number": 33,
+      "paperId": "politics-2007",
+      "paperName": "2007考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2007",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2007考研政治第33题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABCD",
+      "explanation": "答案来自本地百度网盘 2007 考研政治真题及参考答案 PDF 内嵌答案；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2007/paper-page-09.jpg",
+          "caption": "试卷原页 p.9",
+          "alt": "2007考研政治试卷原页 p.9"
+        },
+        {
+          "src": "question-bank/politics-2007/paper-page-10.jpg",
+          "caption": "试卷原页 p.10",
+          "alt": "2007考研政治试卷原页 p.10"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2007/paper-page-09.jpg",
+          "caption": "答案原页 p.9",
+          "alt": "2007考研政治答案原页 p.9"
+        },
+        {
+          "src": "question-bank/politics-2007/paper-page-10.jpg",
+          "caption": "答案原页 p.10",
+          "alt": "2007考研政治答案原页 p.10"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2007",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2007-paper-answer",
+      "sourceEvidenceId": "politics-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:e823f9bb3163eb913ca0c03f67a45b6e059b188f9e973a5804f7ba4ddc1d36d7",
+      "answerTextHash": "sha256:154dce17e592c3de7a17d401e37deea82c631c2a8af7b116be9d9885c28ba8e5",
+      "sourceEvidence": {
+        "evidenceId": "politics-2007-q33",
+        "sourceId": "src_95c639bb87c2501fb7690c9f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:e823f9bb3163eb913ca0c03f67a45b6e059b188f9e973a5804f7ba4ddc1d36d7",
+        "answerTextHash": "sha256:154dce17e592c3de7a17d401e37deea82c631c2a8af7b116be9d9885c28ba8e5"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_95c639bb87c2501fb7690c9f",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2007/2007-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:154dce17e592c3de7a17d401e37deea82c631c2a8af7b116be9d9885c28ba8e5",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2007_bank",
+        "note": "Matched against local Baidu Netdisk 2007 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2007-034",
+      "number": 34,
+      "paperId": "politics-2007",
+      "paperName": "2007考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2007",
+      "section": "分析题",
+      "type": "analysis",
+      "question": "2007考研政治第34题（分析题）。题干、选项和材料以试卷原页图为准。",
+      "options": [],
+      "answer": "分析题参考答案要点见答案原页 p.11。",
+      "explanation": "参考答案来自本地百度网盘 2007 考研政治真题及参考答案 PDF；完整答案要点见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2007/paper-page-10.jpg",
+          "caption": "试卷原页 p.10",
+          "alt": "2007考研政治试卷原页 p.10"
+        },
+        {
+          "src": "question-bank/politics-2007/paper-page-11.jpg",
+          "caption": "试卷原页 p.11",
+          "alt": "2007考研政治试卷原页 p.11"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2007/paper-page-11.jpg",
+          "caption": "答案原页 p.11",
+          "alt": "2007考研政治答案原页 p.11"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2007",
+        "分析题"
+      ],
+      "difficulty": 3,
+      "source": "politics-2007-paper-answer",
+      "sourceEvidenceId": "politics-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:7cd4c3a925a83c1df234080e3628d8f0ce295e5664becedefa1cfc3f33089612",
+      "answerTextHash": "sha256:c1b99f862fc999f8df0c9fc82c9f58001c59d7fb27782893b9d7a7584d369915",
+      "sourceEvidence": {
+        "evidenceId": "politics-2007-q34",
+        "sourceId": "src_95c639bb87c2501fb7690c9f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:7cd4c3a925a83c1df234080e3628d8f0ce295e5664becedefa1cfc3f33089612",
+        "answerTextHash": "sha256:c1b99f862fc999f8df0c9fc82c9f58001c59d7fb27782893b9d7a7584d369915"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_reference_answer",
+        "sourceId": "src_95c639bb87c2501fb7690c9f",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2007/2007-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:c1b99f862fc999f8df0c9fc82c9f58001c59d7fb27782893b9d7a7584d369915",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2007_bank",
+        "note": "Matched against local Baidu Netdisk 2007 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2007-035",
+      "number": 35,
+      "paperId": "politics-2007",
+      "paperName": "2007考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2007",
+      "section": "分析题",
+      "type": "analysis",
+      "question": "2007考研政治第35题（分析题）。题干、选项和材料以试卷原页图为准。",
+      "options": [],
+      "answer": "分析题参考答案要点见答案原页 p.12。",
+      "explanation": "参考答案来自本地百度网盘 2007 考研政治真题及参考答案 PDF；完整答案要点见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2007/paper-page-11.jpg",
+          "caption": "试卷原页 p.11",
+          "alt": "2007考研政治试卷原页 p.11"
+        },
+        {
+          "src": "question-bank/politics-2007/paper-page-12.jpg",
+          "caption": "试卷原页 p.12",
+          "alt": "2007考研政治试卷原页 p.12"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2007/paper-page-12.jpg",
+          "caption": "答案原页 p.12",
+          "alt": "2007考研政治答案原页 p.12"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2007",
+        "分析题"
+      ],
+      "difficulty": 3,
+      "source": "politics-2007-paper-answer",
+      "sourceEvidenceId": "politics-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:54ecfa69c75693482aca2c5a543b020ee9517a2f0e7973fbb31817116040f464",
+      "answerTextHash": "sha256:36134c97fce35c32955a6ab9c5f4bde685b6b878165063745edd7f3f16955d32",
+      "sourceEvidence": {
+        "evidenceId": "politics-2007-q35",
+        "sourceId": "src_95c639bb87c2501fb7690c9f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:54ecfa69c75693482aca2c5a543b020ee9517a2f0e7973fbb31817116040f464",
+        "answerTextHash": "sha256:36134c97fce35c32955a6ab9c5f4bde685b6b878165063745edd7f3f16955d32"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_reference_answer",
+        "sourceId": "src_95c639bb87c2501fb7690c9f",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2007/2007-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:36134c97fce35c32955a6ab9c5f4bde685b6b878165063745edd7f3f16955d32",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2007_bank",
+        "note": "Matched against local Baidu Netdisk 2007 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2007-036",
+      "number": 36,
+      "paperId": "politics-2007",
+      "paperName": "2007考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2007",
+      "section": "分析题",
+      "type": "analysis",
+      "question": "2007考研政治第36题（分析题）。题干、选项和材料以试卷原页图为准。",
+      "options": [],
+      "answer": "分析题参考答案要点见答案原页 p.13-p.14。",
+      "explanation": "参考答案来自本地百度网盘 2007 考研政治真题及参考答案 PDF；完整答案要点见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2007/paper-page-13.jpg",
+          "caption": "试卷原页 p.13",
+          "alt": "2007考研政治试卷原页 p.13"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2007/paper-page-13.jpg",
+          "caption": "答案原页 p.13",
+          "alt": "2007考研政治答案原页 p.13"
+        },
+        {
+          "src": "question-bank/politics-2007/paper-page-14.jpg",
+          "caption": "答案原页 p.14",
+          "alt": "2007考研政治答案原页 p.14"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2007",
+        "分析题"
+      ],
+      "difficulty": 3,
+      "source": "politics-2007-paper-answer",
+      "sourceEvidenceId": "politics-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:81798256e55a448753928701914de742336d3de28bb64ce07c94e8850b366cbd",
+      "answerTextHash": "sha256:74407efc4267c9e413238634a0f772f18eeaf2e413a1a34a1e64a23c7c79b2c2",
+      "sourceEvidence": {
+        "evidenceId": "politics-2007-q36",
+        "sourceId": "src_95c639bb87c2501fb7690c9f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:81798256e55a448753928701914de742336d3de28bb64ce07c94e8850b366cbd",
+        "answerTextHash": "sha256:74407efc4267c9e413238634a0f772f18eeaf2e413a1a34a1e64a23c7c79b2c2"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_reference_answer",
+        "sourceId": "src_95c639bb87c2501fb7690c9f",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2007/2007-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:74407efc4267c9e413238634a0f772f18eeaf2e413a1a34a1e64a23c7c79b2c2",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2007_bank",
+        "note": "Matched against local Baidu Netdisk 2007 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2007-037",
+      "number": 37,
+      "paperId": "politics-2007",
+      "paperName": "2007考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2007",
+      "section": "分析题",
+      "type": "analysis",
+      "question": "2007考研政治第37题（分析题）。题干、选项和材料以试卷原页图为准。",
+      "options": [],
+      "answer": "分析题参考答案要点见答案原页 p.15-p.16。",
+      "explanation": "参考答案来自本地百度网盘 2007 考研政治真题及参考答案 PDF；完整答案要点见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2007/paper-page-14.jpg",
+          "caption": "试卷原页 p.14",
+          "alt": "2007考研政治试卷原页 p.14"
+        },
+        {
+          "src": "question-bank/politics-2007/paper-page-15.jpg",
+          "caption": "试卷原页 p.15",
+          "alt": "2007考研政治试卷原页 p.15"
+        },
+        {
+          "src": "question-bank/politics-2007/paper-page-16.jpg",
+          "caption": "试卷原页 p.16",
+          "alt": "2007考研政治试卷原页 p.16"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2007/paper-page-15.jpg",
+          "caption": "答案原页 p.15",
+          "alt": "2007考研政治答案原页 p.15"
+        },
+        {
+          "src": "question-bank/politics-2007/paper-page-16.jpg",
+          "caption": "答案原页 p.16",
+          "alt": "2007考研政治答案原页 p.16"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2007",
+        "分析题"
+      ],
+      "difficulty": 3,
+      "source": "politics-2007-paper-answer",
+      "sourceEvidenceId": "politics-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:9ccc9dc1983241858c78250a4617f2b29b4cb84b24e081c14ddb1c50d5f85d4d",
+      "answerTextHash": "sha256:89d487cea1c82a213de2f520d517182a289734b3a205bcd95e17419c9263152a",
+      "sourceEvidence": {
+        "evidenceId": "politics-2007-q37",
+        "sourceId": "src_95c639bb87c2501fb7690c9f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:9ccc9dc1983241858c78250a4617f2b29b4cb84b24e081c14ddb1c50d5f85d4d",
+        "answerTextHash": "sha256:89d487cea1c82a213de2f520d517182a289734b3a205bcd95e17419c9263152a"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_reference_answer",
+        "sourceId": "src_95c639bb87c2501fb7690c9f",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2007/2007-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:89d487cea1c82a213de2f520d517182a289734b3a205bcd95e17419c9263152a",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2007_bank",
+        "note": "Matched against local Baidu Netdisk 2007 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2007-038",
+      "number": 38,
+      "paperId": "politics-2007",
+      "paperName": "2007考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2007",
+      "section": "分析题",
+      "type": "analysis",
+      "question": "2007考研政治第38题（分析题）。题干、选项和材料以试卷原页图为准。",
+      "options": [],
+      "answer": "选做分析题参考答案要点见答案原页 p.18-p.20。",
+      "explanation": "参考答案来自本地百度网盘 2007 考研政治真题及参考答案 PDF；完整答案要点见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2007/paper-page-16.jpg",
+          "caption": "试卷原页 p.16",
+          "alt": "2007考研政治试卷原页 p.16"
+        },
+        {
+          "src": "question-bank/politics-2007/paper-page-17.jpg",
+          "caption": "试卷原页 p.17",
+          "alt": "2007考研政治试卷原页 p.17"
+        },
+        {
+          "src": "question-bank/politics-2007/paper-page-18.jpg",
+          "caption": "试卷原页 p.18",
+          "alt": "2007考研政治试卷原页 p.18"
+        },
+        {
+          "src": "question-bank/politics-2007/paper-page-19.jpg",
+          "caption": "试卷原页 p.19",
+          "alt": "2007考研政治试卷原页 p.19"
+        },
+        {
+          "src": "question-bank/politics-2007/paper-page-20.jpg",
+          "caption": "试卷原页 p.20",
+          "alt": "2007考研政治试卷原页 p.20"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2007/paper-page-18.jpg",
+          "caption": "答案原页 p.18",
+          "alt": "2007考研政治答案原页 p.18"
+        },
+        {
+          "src": "question-bank/politics-2007/paper-page-19.jpg",
+          "caption": "答案原页 p.19",
+          "alt": "2007考研政治答案原页 p.19"
+        },
+        {
+          "src": "question-bank/politics-2007/paper-page-20.jpg",
+          "caption": "答案原页 p.20",
+          "alt": "2007考研政治答案原页 p.20"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2007",
+        "分析题"
+      ],
+      "difficulty": 3,
+      "source": "politics-2007-paper-answer",
+      "sourceEvidenceId": "politics-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:c0d5d0127bb18f4ef586c260c5ba0479f07f06d6e4740bf09fcae83bcfce46be",
+      "answerTextHash": "sha256:fafb8d60531438901d25d80d050cff216c960e47d8fa83b0614cce123d88540d",
+      "sourceEvidence": {
+        "evidenceId": "politics-2007-q38",
+        "sourceId": "src_95c639bb87c2501fb7690c9f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:c0d5d0127bb18f4ef586c260c5ba0479f07f06d6e4740bf09fcae83bcfce46be",
+        "answerTextHash": "sha256:fafb8d60531438901d25d80d050cff216c960e47d8fa83b0614cce123d88540d"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_reference_answer",
+        "sourceId": "src_95c639bb87c2501fb7690c9f",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2007/2007-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:fafb8d60531438901d25d80d050cff216c960e47d8fa83b0614cce123d88540d",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2007_bank",
+        "note": "Matched against local Baidu Netdisk 2007 Politics paper-answer PDF."
+      }
+    }
+  ]
+}

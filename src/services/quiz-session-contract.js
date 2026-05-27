@@ -84,6 +84,26 @@ function stripOptionLabel(option) {
     .trim();
 }
 
+function normalizeImageList(value) {
+  if (!Array.isArray(value)) return [];
+  return value
+    .map((item) => {
+      if (typeof item === 'string') {
+        const src = item.trim();
+        return src ? { src, alt: '', caption: '' } : null;
+      }
+      const src = String(item?.src || item?.url || item?.path || '').trim();
+      if (!src) return null;
+      return {
+        ...item,
+        src,
+        alt: item?.alt || item?.caption || '',
+        caption: item?.caption || ''
+      };
+    })
+    .filter(Boolean);
+}
+
 export function normalizeQuizAnswer(question, type = question?.type) {
   const rawAnswer = question?.answer;
   if (isEvidenceOnlyType(type)) {
@@ -136,6 +156,8 @@ export function normalizeQuizQuestion(question, index = 0, options = {}) {
     passageSegments,
     context: question.context || passage,
     material: question.material || passage,
+    questionImages: normalizeImageList(question.questionImages || question.question_images || question.sourcePageImages),
+    answerImages: normalizeImageList(question.answerImages || question.answer_images || question.answerPageImages),
     paperId: question.paperId || question.paper_id || '',
     paperName: question.paperName || question.paper_name || '',
     section: question.section || question.part || '',

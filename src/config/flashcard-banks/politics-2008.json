@@ -1,0 +1,2947 @@
+{
+  "id": "politics-2008",
+  "source": "politics-2008-paper-answer",
+  "paperId": "politics-2008",
+  "paperName": "2008考研政治真题",
+  "subject": "政治",
+  "subjectKey": "politics",
+  "track": "politics",
+  "year": "2008",
+  "quality": "ready",
+  "publicationStatus": "published",
+  "publicationBlockers": [],
+  "sourceEvidencePolicy": "baidu_netdisk_official_paper_pdf_page_image_v1",
+  "sourceFiles": [
+    {
+      "id": "politics-2008-paper-answer",
+      "sourceId": "src_707a04fbc3a5a127b5267c13",
+      "role": "paper_answer",
+      "localPath": "data/raw-inbox/public-course-history/politics/2008/2008-politics-paper-answer.pdf",
+      "sha256": "sha256:5db1c46e8ea08a9a50008712e4d00756af059a8bebe7c9cd73ef70c72ec67753"
+    }
+  ],
+  "assetRoot": "question-bank/politics-2008",
+  "processed_at": "2026-05-27T01:00:30Z",
+  "total_cards": 38,
+  "sections": [
+    "单项选择",
+    "多项选择",
+    "分析题"
+  ],
+  "cards": [
+    {
+      "id": "politics-2008-001",
+      "number": 1,
+      "paperId": "politics-2008",
+      "paperName": "2008考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2008",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2008考研政治第1题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2008 考研政治真题及参考答案 PDF 的参考答案页；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2008/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2008考研政治试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2008/paper-page-13.jpg",
+          "caption": "答案原页 p.13",
+          "alt": "2008考研政治答案原页 p.13"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2008",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2008-paper-answer",
+      "sourceEvidenceId": "politics-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:ae0e6957f365dd09d8cf5a269f16dbae24064d23fc8c05d86a3517b624bb96bd",
+      "answerTextHash": "sha256:e1d8f57fe9b8bfb58d332213eccb593d21f9706f11d4b6dce1865f22524ac928",
+      "sourceEvidence": {
+        "evidenceId": "politics-2008-q01",
+        "sourceId": "src_707a04fbc3a5a127b5267c13",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:ae0e6957f365dd09d8cf5a269f16dbae24064d23fc8c05d86a3517b624bb96bd",
+        "answerTextHash": "sha256:e1d8f57fe9b8bfb58d332213eccb593d21f9706f11d4b6dce1865f22524ac928"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_707a04fbc3a5a127b5267c13",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2008/2008-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:e1d8f57fe9b8bfb58d332213eccb593d21f9706f11d4b6dce1865f22524ac928",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2008_bank",
+        "note": "Matched against local Baidu Netdisk 2008 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2008-002",
+      "number": 2,
+      "paperId": "politics-2008",
+      "paperName": "2008考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2008",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2008考研政治第2题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2008 考研政治真题及参考答案 PDF 的参考答案页；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2008/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2008考研政治试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2008/paper-page-13.jpg",
+          "caption": "答案原页 p.13",
+          "alt": "2008考研政治答案原页 p.13"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2008",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2008-paper-answer",
+      "sourceEvidenceId": "politics-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:840c69cd8886dec131cb79ced033ca41ad61ba2394349a582f6f49b1e637b12b",
+      "answerTextHash": "sha256:91692058cd03fd243ff12fe50b8f3abbc69af52e4fa2b93bd72ecb10a8223bf7",
+      "sourceEvidence": {
+        "evidenceId": "politics-2008-q02",
+        "sourceId": "src_707a04fbc3a5a127b5267c13",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:840c69cd8886dec131cb79ced033ca41ad61ba2394349a582f6f49b1e637b12b",
+        "answerTextHash": "sha256:91692058cd03fd243ff12fe50b8f3abbc69af52e4fa2b93bd72ecb10a8223bf7"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_707a04fbc3a5a127b5267c13",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2008/2008-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:91692058cd03fd243ff12fe50b8f3abbc69af52e4fa2b93bd72ecb10a8223bf7",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2008_bank",
+        "note": "Matched against local Baidu Netdisk 2008 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2008-003",
+      "number": 3,
+      "paperId": "politics-2008",
+      "paperName": "2008考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2008",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2008考研政治第3题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2008 考研政治真题及参考答案 PDF 的参考答案页；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2008/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2008考研政治试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2008/paper-page-13.jpg",
+          "caption": "答案原页 p.13",
+          "alt": "2008考研政治答案原页 p.13"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2008",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2008-paper-answer",
+      "sourceEvidenceId": "politics-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:25f82d0e2193f88e9733af368213b0d7d43a247a551495332ccf3469c210a4a5",
+      "answerTextHash": "sha256:e1d8f57fe9b8bfb58d332213eccb593d21f9706f11d4b6dce1865f22524ac928",
+      "sourceEvidence": {
+        "evidenceId": "politics-2008-q03",
+        "sourceId": "src_707a04fbc3a5a127b5267c13",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:25f82d0e2193f88e9733af368213b0d7d43a247a551495332ccf3469c210a4a5",
+        "answerTextHash": "sha256:e1d8f57fe9b8bfb58d332213eccb593d21f9706f11d4b6dce1865f22524ac928"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_707a04fbc3a5a127b5267c13",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2008/2008-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:e1d8f57fe9b8bfb58d332213eccb593d21f9706f11d4b6dce1865f22524ac928",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2008_bank",
+        "note": "Matched against local Baidu Netdisk 2008 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2008-004",
+      "number": 4,
+      "paperId": "politics-2008",
+      "paperName": "2008考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2008",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2008考研政治第4题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2008 考研政治真题及参考答案 PDF 的参考答案页；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2008/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2008考研政治试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2008/paper-page-13.jpg",
+          "caption": "答案原页 p.13",
+          "alt": "2008考研政治答案原页 p.13"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2008",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2008-paper-answer",
+      "sourceEvidenceId": "politics-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:c9e0d9ff0024a672dc05077a485861335ca79b040f9fd9a4ccd1e3689444890a",
+      "answerTextHash": "sha256:a4362f7e14e484f2c75627a4d7609817776556e0cf51dd1e69a1e10351d07d1e",
+      "sourceEvidence": {
+        "evidenceId": "politics-2008-q04",
+        "sourceId": "src_707a04fbc3a5a127b5267c13",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:c9e0d9ff0024a672dc05077a485861335ca79b040f9fd9a4ccd1e3689444890a",
+        "answerTextHash": "sha256:a4362f7e14e484f2c75627a4d7609817776556e0cf51dd1e69a1e10351d07d1e"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_707a04fbc3a5a127b5267c13",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2008/2008-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:a4362f7e14e484f2c75627a4d7609817776556e0cf51dd1e69a1e10351d07d1e",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2008_bank",
+        "note": "Matched against local Baidu Netdisk 2008 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2008-005",
+      "number": 5,
+      "paperId": "politics-2008",
+      "paperName": "2008考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2008",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2008考研政治第5题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2008 考研政治真题及参考答案 PDF 的参考答案页；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2008/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2008考研政治试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2008/paper-page-13.jpg",
+          "caption": "答案原页 p.13",
+          "alt": "2008考研政治答案原页 p.13"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2008",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2008-paper-answer",
+      "sourceEvidenceId": "politics-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:9b3f8f6c5eaf4583d51f3dde579027fbc62b6b85ed5290936b7f970d65c580ca",
+      "answerTextHash": "sha256:e1d8f57fe9b8bfb58d332213eccb593d21f9706f11d4b6dce1865f22524ac928",
+      "sourceEvidence": {
+        "evidenceId": "politics-2008-q05",
+        "sourceId": "src_707a04fbc3a5a127b5267c13",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:9b3f8f6c5eaf4583d51f3dde579027fbc62b6b85ed5290936b7f970d65c580ca",
+        "answerTextHash": "sha256:e1d8f57fe9b8bfb58d332213eccb593d21f9706f11d4b6dce1865f22524ac928"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_707a04fbc3a5a127b5267c13",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2008/2008-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:e1d8f57fe9b8bfb58d332213eccb593d21f9706f11d4b6dce1865f22524ac928",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2008_bank",
+        "note": "Matched against local Baidu Netdisk 2008 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2008-006",
+      "number": 6,
+      "paperId": "politics-2008",
+      "paperName": "2008考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2008",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2008考研政治第6题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2008 考研政治真题及参考答案 PDF 的参考答案页；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2008/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2008考研政治试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2008/paper-page-13.jpg",
+          "caption": "答案原页 p.13",
+          "alt": "2008考研政治答案原页 p.13"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2008",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2008-paper-answer",
+      "sourceEvidenceId": "politics-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:0404dbd0109cdeec567bd398ae36b17ee04cf03aad87fefa5bc32180054f869a",
+      "answerTextHash": "sha256:f026ff9837302081aadbc279b7a8ce6cabba8a53281bc5ecc828618ff034c07e",
+      "sourceEvidence": {
+        "evidenceId": "politics-2008-q06",
+        "sourceId": "src_707a04fbc3a5a127b5267c13",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:0404dbd0109cdeec567bd398ae36b17ee04cf03aad87fefa5bc32180054f869a",
+        "answerTextHash": "sha256:f026ff9837302081aadbc279b7a8ce6cabba8a53281bc5ecc828618ff034c07e"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_707a04fbc3a5a127b5267c13",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2008/2008-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:f026ff9837302081aadbc279b7a8ce6cabba8a53281bc5ecc828618ff034c07e",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2008_bank",
+        "note": "Matched against local Baidu Netdisk 2008 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2008-007",
+      "number": 7,
+      "paperId": "politics-2008",
+      "paperName": "2008考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2008",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2008考研政治第7题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2008 考研政治真题及参考答案 PDF 的参考答案页；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2008/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2008考研政治试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2008/paper-page-13.jpg",
+          "caption": "答案原页 p.13",
+          "alt": "2008考研政治答案原页 p.13"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2008",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2008-paper-answer",
+      "sourceEvidenceId": "politics-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:0d3bd86c56c2b2c3d6617cb250b292f7e71b2afb78e56a9a163880c1a58dff5b",
+      "answerTextHash": "sha256:a4362f7e14e484f2c75627a4d7609817776556e0cf51dd1e69a1e10351d07d1e",
+      "sourceEvidence": {
+        "evidenceId": "politics-2008-q07",
+        "sourceId": "src_707a04fbc3a5a127b5267c13",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:0d3bd86c56c2b2c3d6617cb250b292f7e71b2afb78e56a9a163880c1a58dff5b",
+        "answerTextHash": "sha256:a4362f7e14e484f2c75627a4d7609817776556e0cf51dd1e69a1e10351d07d1e"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_707a04fbc3a5a127b5267c13",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2008/2008-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:a4362f7e14e484f2c75627a4d7609817776556e0cf51dd1e69a1e10351d07d1e",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2008_bank",
+        "note": "Matched against local Baidu Netdisk 2008 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2008-008",
+      "number": 8,
+      "paperId": "politics-2008",
+      "paperName": "2008考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2008",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2008考研政治第8题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2008 考研政治真题及参考答案 PDF 的参考答案页；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2008/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2008考研政治试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2008/paper-page-13.jpg",
+          "caption": "答案原页 p.13",
+          "alt": "2008考研政治答案原页 p.13"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2008",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2008-paper-answer",
+      "sourceEvidenceId": "politics-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:3ade8380c3723ddcfdbb094355e433ee1bb67c6c8663478b14c4a7fb6eb53535",
+      "answerTextHash": "sha256:91692058cd03fd243ff12fe50b8f3abbc69af52e4fa2b93bd72ecb10a8223bf7",
+      "sourceEvidence": {
+        "evidenceId": "politics-2008-q08",
+        "sourceId": "src_707a04fbc3a5a127b5267c13",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:3ade8380c3723ddcfdbb094355e433ee1bb67c6c8663478b14c4a7fb6eb53535",
+        "answerTextHash": "sha256:91692058cd03fd243ff12fe50b8f3abbc69af52e4fa2b93bd72ecb10a8223bf7"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_707a04fbc3a5a127b5267c13",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2008/2008-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:91692058cd03fd243ff12fe50b8f3abbc69af52e4fa2b93bd72ecb10a8223bf7",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2008_bank",
+        "note": "Matched against local Baidu Netdisk 2008 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2008-009",
+      "number": 9,
+      "paperId": "politics-2008",
+      "paperName": "2008考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2008",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2008考研政治第9题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2008 考研政治真题及参考答案 PDF 的参考答案页；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2008/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2008考研政治试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2008/paper-page-13.jpg",
+          "caption": "答案原页 p.13",
+          "alt": "2008考研政治答案原页 p.13"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2008",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2008-paper-answer",
+      "sourceEvidenceId": "politics-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:88339a7bafd054d642da3be14ee764087cdc686fbf24feb47040e176a6c9d253",
+      "answerTextHash": "sha256:a4362f7e14e484f2c75627a4d7609817776556e0cf51dd1e69a1e10351d07d1e",
+      "sourceEvidence": {
+        "evidenceId": "politics-2008-q09",
+        "sourceId": "src_707a04fbc3a5a127b5267c13",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:88339a7bafd054d642da3be14ee764087cdc686fbf24feb47040e176a6c9d253",
+        "answerTextHash": "sha256:a4362f7e14e484f2c75627a4d7609817776556e0cf51dd1e69a1e10351d07d1e"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_707a04fbc3a5a127b5267c13",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2008/2008-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:a4362f7e14e484f2c75627a4d7609817776556e0cf51dd1e69a1e10351d07d1e",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2008_bank",
+        "note": "Matched against local Baidu Netdisk 2008 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2008-010",
+      "number": 10,
+      "paperId": "politics-2008",
+      "paperName": "2008考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2008",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2008考研政治第10题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2008 考研政治真题及参考答案 PDF 的参考答案页；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2008/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2008考研政治试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2008/paper-page-13.jpg",
+          "caption": "答案原页 p.13",
+          "alt": "2008考研政治答案原页 p.13"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2008",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2008-paper-answer",
+      "sourceEvidenceId": "politics-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:d3838d06d7e16df393ed8b2710fce545e82704b5df356cf84467d95e1739f4c4",
+      "answerTextHash": "sha256:e1d8f57fe9b8bfb58d332213eccb593d21f9706f11d4b6dce1865f22524ac928",
+      "sourceEvidence": {
+        "evidenceId": "politics-2008-q10",
+        "sourceId": "src_707a04fbc3a5a127b5267c13",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:d3838d06d7e16df393ed8b2710fce545e82704b5df356cf84467d95e1739f4c4",
+        "answerTextHash": "sha256:e1d8f57fe9b8bfb58d332213eccb593d21f9706f11d4b6dce1865f22524ac928"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_707a04fbc3a5a127b5267c13",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2008/2008-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:e1d8f57fe9b8bfb58d332213eccb593d21f9706f11d4b6dce1865f22524ac928",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2008_bank",
+        "note": "Matched against local Baidu Netdisk 2008 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2008-011",
+      "number": 11,
+      "paperId": "politics-2008",
+      "paperName": "2008考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2008",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2008考研政治第11题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2008 考研政治真题及参考答案 PDF 的参考答案页；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2008/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2008考研政治试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2008/paper-page-13.jpg",
+          "caption": "答案原页 p.13",
+          "alt": "2008考研政治答案原页 p.13"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2008",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2008-paper-answer",
+      "sourceEvidenceId": "politics-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:5a4386bd03d952b42ecff4044c582256ee90b719d03d831c75e05b687b81ef17",
+      "answerTextHash": "sha256:91692058cd03fd243ff12fe50b8f3abbc69af52e4fa2b93bd72ecb10a8223bf7",
+      "sourceEvidence": {
+        "evidenceId": "politics-2008-q11",
+        "sourceId": "src_707a04fbc3a5a127b5267c13",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:5a4386bd03d952b42ecff4044c582256ee90b719d03d831c75e05b687b81ef17",
+        "answerTextHash": "sha256:91692058cd03fd243ff12fe50b8f3abbc69af52e4fa2b93bd72ecb10a8223bf7"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_707a04fbc3a5a127b5267c13",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2008/2008-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:91692058cd03fd243ff12fe50b8f3abbc69af52e4fa2b93bd72ecb10a8223bf7",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2008_bank",
+        "note": "Matched against local Baidu Netdisk 2008 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2008-012",
+      "number": 12,
+      "paperId": "politics-2008",
+      "paperName": "2008考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2008",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2008考研政治第12题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2008 考研政治真题及参考答案 PDF 的参考答案页；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2008/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2008考研政治试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2008/paper-page-13.jpg",
+          "caption": "答案原页 p.13",
+          "alt": "2008考研政治答案原页 p.13"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2008",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2008-paper-answer",
+      "sourceEvidenceId": "politics-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:3da4c2e85f7e9fb71230707bd51d464efb4a0f230b22c9dbb476a4ad653ef696",
+      "answerTextHash": "sha256:f026ff9837302081aadbc279b7a8ce6cabba8a53281bc5ecc828618ff034c07e",
+      "sourceEvidence": {
+        "evidenceId": "politics-2008-q12",
+        "sourceId": "src_707a04fbc3a5a127b5267c13",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:3da4c2e85f7e9fb71230707bd51d464efb4a0f230b22c9dbb476a4ad653ef696",
+        "answerTextHash": "sha256:f026ff9837302081aadbc279b7a8ce6cabba8a53281bc5ecc828618ff034c07e"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_707a04fbc3a5a127b5267c13",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2008/2008-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:f026ff9837302081aadbc279b7a8ce6cabba8a53281bc5ecc828618ff034c07e",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2008_bank",
+        "note": "Matched against local Baidu Netdisk 2008 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2008-013",
+      "number": 13,
+      "paperId": "politics-2008",
+      "paperName": "2008考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2008",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2008考研政治第13题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2008 考研政治真题及参考答案 PDF 的参考答案页；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2008/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2008考研政治试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2008/paper-page-13.jpg",
+          "caption": "答案原页 p.13",
+          "alt": "2008考研政治答案原页 p.13"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2008",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2008-paper-answer",
+      "sourceEvidenceId": "politics-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:4ef8e1a4668295866839aae012cf540df90d94fec6387fdbd87df20951af7cfa",
+      "answerTextHash": "sha256:91692058cd03fd243ff12fe50b8f3abbc69af52e4fa2b93bd72ecb10a8223bf7",
+      "sourceEvidence": {
+        "evidenceId": "politics-2008-q13",
+        "sourceId": "src_707a04fbc3a5a127b5267c13",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:4ef8e1a4668295866839aae012cf540df90d94fec6387fdbd87df20951af7cfa",
+        "answerTextHash": "sha256:91692058cd03fd243ff12fe50b8f3abbc69af52e4fa2b93bd72ecb10a8223bf7"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_707a04fbc3a5a127b5267c13",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2008/2008-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:91692058cd03fd243ff12fe50b8f3abbc69af52e4fa2b93bd72ecb10a8223bf7",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2008_bank",
+        "note": "Matched against local Baidu Netdisk 2008 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2008-014",
+      "number": 14,
+      "paperId": "politics-2008",
+      "paperName": "2008考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2008",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2008考研政治第14题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2008 考研政治真题及参考答案 PDF 的参考答案页；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2008/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2008考研政治试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2008/paper-page-13.jpg",
+          "caption": "答案原页 p.13",
+          "alt": "2008考研政治答案原页 p.13"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2008",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2008-paper-answer",
+      "sourceEvidenceId": "politics-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:29e9516da3851ad1b6585660669dbec59550985e033c4a0a3d21c665b1db5f06",
+      "answerTextHash": "sha256:a4362f7e14e484f2c75627a4d7609817776556e0cf51dd1e69a1e10351d07d1e",
+      "sourceEvidence": {
+        "evidenceId": "politics-2008-q14",
+        "sourceId": "src_707a04fbc3a5a127b5267c13",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:29e9516da3851ad1b6585660669dbec59550985e033c4a0a3d21c665b1db5f06",
+        "answerTextHash": "sha256:a4362f7e14e484f2c75627a4d7609817776556e0cf51dd1e69a1e10351d07d1e"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_707a04fbc3a5a127b5267c13",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2008/2008-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:a4362f7e14e484f2c75627a4d7609817776556e0cf51dd1e69a1e10351d07d1e",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2008_bank",
+        "note": "Matched against local Baidu Netdisk 2008 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2008-015",
+      "number": 15,
+      "paperId": "politics-2008",
+      "paperName": "2008考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2008",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2008考研政治第15题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2008 考研政治真题及参考答案 PDF 的参考答案页；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2008/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2008考研政治试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2008/paper-page-13.jpg",
+          "caption": "答案原页 p.13",
+          "alt": "2008考研政治答案原页 p.13"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2008",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2008-paper-answer",
+      "sourceEvidenceId": "politics-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:5b0b8263fdf61897bd27a7c48ff2f7029a8f48aec6f6762f9cf67fcc0a37602a",
+      "answerTextHash": "sha256:a4362f7e14e484f2c75627a4d7609817776556e0cf51dd1e69a1e10351d07d1e",
+      "sourceEvidence": {
+        "evidenceId": "politics-2008-q15",
+        "sourceId": "src_707a04fbc3a5a127b5267c13",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:5b0b8263fdf61897bd27a7c48ff2f7029a8f48aec6f6762f9cf67fcc0a37602a",
+        "answerTextHash": "sha256:a4362f7e14e484f2c75627a4d7609817776556e0cf51dd1e69a1e10351d07d1e"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_707a04fbc3a5a127b5267c13",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2008/2008-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:a4362f7e14e484f2c75627a4d7609817776556e0cf51dd1e69a1e10351d07d1e",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2008_bank",
+        "note": "Matched against local Baidu Netdisk 2008 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2008-016",
+      "number": 16,
+      "paperId": "politics-2008",
+      "paperName": "2008考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2008",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2008考研政治第16题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2008 考研政治真题及参考答案 PDF 的参考答案页；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2008/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2008考研政治试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2008/paper-page-13.jpg",
+          "caption": "答案原页 p.13",
+          "alt": "2008考研政治答案原页 p.13"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2008",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2008-paper-answer",
+      "sourceEvidenceId": "politics-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:bdcfc19f2f6e683f510076813b41a1d4990abb3ee0b43d6c86a78add734ca9d1",
+      "answerTextHash": "sha256:f026ff9837302081aadbc279b7a8ce6cabba8a53281bc5ecc828618ff034c07e",
+      "sourceEvidence": {
+        "evidenceId": "politics-2008-q16",
+        "sourceId": "src_707a04fbc3a5a127b5267c13",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:bdcfc19f2f6e683f510076813b41a1d4990abb3ee0b43d6c86a78add734ca9d1",
+        "answerTextHash": "sha256:f026ff9837302081aadbc279b7a8ce6cabba8a53281bc5ecc828618ff034c07e"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_707a04fbc3a5a127b5267c13",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2008/2008-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:f026ff9837302081aadbc279b7a8ce6cabba8a53281bc5ecc828618ff034c07e",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2008_bank",
+        "note": "Matched against local Baidu Netdisk 2008 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2008-017",
+      "number": 17,
+      "paperId": "politics-2008",
+      "paperName": "2008考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2008",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2008考研政治第17题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "AB",
+      "explanation": "答案来自本地百度网盘 2008 考研政治真题及参考答案 PDF 的参考答案页；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2008/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2008考研政治试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2008/paper-page-13.jpg",
+          "caption": "答案原页 p.13",
+          "alt": "2008考研政治答案原页 p.13"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2008",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2008-paper-answer",
+      "sourceEvidenceId": "politics-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:33a2ac470f361d93e64ab8b9e506d09cbe9732d3ad20e5553214cf0294035819",
+      "answerTextHash": "sha256:1b69e3e9982a9d0330a1c1b4c1e5045be232a6f0d1c0293f81ecc675ce56e9a6",
+      "sourceEvidence": {
+        "evidenceId": "politics-2008-q17",
+        "sourceId": "src_707a04fbc3a5a127b5267c13",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:33a2ac470f361d93e64ab8b9e506d09cbe9732d3ad20e5553214cf0294035819",
+        "answerTextHash": "sha256:1b69e3e9982a9d0330a1c1b4c1e5045be232a6f0d1c0293f81ecc675ce56e9a6"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_707a04fbc3a5a127b5267c13",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2008/2008-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:1b69e3e9982a9d0330a1c1b4c1e5045be232a6f0d1c0293f81ecc675ce56e9a6",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2008_bank",
+        "note": "Matched against local Baidu Netdisk 2008 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2008-018",
+      "number": 18,
+      "paperId": "politics-2008",
+      "paperName": "2008考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2008",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2008考研政治第18题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABD",
+      "explanation": "答案来自本地百度网盘 2008 考研政治真题及参考答案 PDF 的参考答案页；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2008/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2008考研政治试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2008/paper-page-13.jpg",
+          "caption": "答案原页 p.13",
+          "alt": "2008考研政治答案原页 p.13"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2008",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2008-paper-answer",
+      "sourceEvidenceId": "politics-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:5e705f287f0722e3b54db1f6000cbd2e0589388bb9cb27f6149a9de402f97d3d",
+      "answerTextHash": "sha256:ceeb954ec7dffea3a2ccc9b69d2792381ec5f314a33bc7067f13ce7a9bed056b",
+      "sourceEvidence": {
+        "evidenceId": "politics-2008-q18",
+        "sourceId": "src_707a04fbc3a5a127b5267c13",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:5e705f287f0722e3b54db1f6000cbd2e0589388bb9cb27f6149a9de402f97d3d",
+        "answerTextHash": "sha256:ceeb954ec7dffea3a2ccc9b69d2792381ec5f314a33bc7067f13ce7a9bed056b"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_707a04fbc3a5a127b5267c13",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2008/2008-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:ceeb954ec7dffea3a2ccc9b69d2792381ec5f314a33bc7067f13ce7a9bed056b",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2008_bank",
+        "note": "Matched against local Baidu Netdisk 2008 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2008-019",
+      "number": 19,
+      "paperId": "politics-2008",
+      "paperName": "2008考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2008",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2008考研政治第19题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABC",
+      "explanation": "答案来自本地百度网盘 2008 考研政治真题及参考答案 PDF 的参考答案页；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2008/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2008考研政治试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2008/paper-page-13.jpg",
+          "caption": "答案原页 p.13",
+          "alt": "2008考研政治答案原页 p.13"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2008",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2008-paper-answer",
+      "sourceEvidenceId": "politics-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:925f2a46a914151731156b5e163929029cb6d9453d23556d9653dd73cfd677d7",
+      "answerTextHash": "sha256:0b48efc4b9e367bad83050141ce04b78fb182040e78af15c2979ff862826ba8b",
+      "sourceEvidence": {
+        "evidenceId": "politics-2008-q19",
+        "sourceId": "src_707a04fbc3a5a127b5267c13",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:925f2a46a914151731156b5e163929029cb6d9453d23556d9653dd73cfd677d7",
+        "answerTextHash": "sha256:0b48efc4b9e367bad83050141ce04b78fb182040e78af15c2979ff862826ba8b"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_707a04fbc3a5a127b5267c13",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2008/2008-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:0b48efc4b9e367bad83050141ce04b78fb182040e78af15c2979ff862826ba8b",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2008_bank",
+        "note": "Matched against local Baidu Netdisk 2008 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2008-020",
+      "number": 20,
+      "paperId": "politics-2008",
+      "paperName": "2008考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2008",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2008考研政治第20题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABCD",
+      "explanation": "答案来自本地百度网盘 2008 考研政治真题及参考答案 PDF 的参考答案页；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2008/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2008考研政治试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2008/paper-page-13.jpg",
+          "caption": "答案原页 p.13",
+          "alt": "2008考研政治答案原页 p.13"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2008",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2008-paper-answer",
+      "sourceEvidenceId": "politics-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:0b6e260212c63ae267515b0298f69d97b3cf3fa68d32e40535badb96006e22e6",
+      "answerTextHash": "sha256:43bc2e87d13ce9b5c39776f50eb7afddb8cf6d35b8c8aca79e57a093aa299505",
+      "sourceEvidence": {
+        "evidenceId": "politics-2008-q20",
+        "sourceId": "src_707a04fbc3a5a127b5267c13",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:0b6e260212c63ae267515b0298f69d97b3cf3fa68d32e40535badb96006e22e6",
+        "answerTextHash": "sha256:43bc2e87d13ce9b5c39776f50eb7afddb8cf6d35b8c8aca79e57a093aa299505"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_707a04fbc3a5a127b5267c13",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2008/2008-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:43bc2e87d13ce9b5c39776f50eb7afddb8cf6d35b8c8aca79e57a093aa299505",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2008_bank",
+        "note": "Matched against local Baidu Netdisk 2008 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2008-021",
+      "number": 21,
+      "paperId": "politics-2008",
+      "paperName": "2008考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2008",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2008考研政治第21题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "AB",
+      "explanation": "答案来自本地百度网盘 2008 考研政治真题及参考答案 PDF 的参考答案页；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2008/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2008考研政治试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2008/paper-page-13.jpg",
+          "caption": "答案原页 p.13",
+          "alt": "2008考研政治答案原页 p.13"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2008",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2008-paper-answer",
+      "sourceEvidenceId": "politics-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:37e5a751f3365ce93aa194b3fe50f6f9b8cd6906db251fbf0d71e92c5c4deaad",
+      "answerTextHash": "sha256:1b69e3e9982a9d0330a1c1b4c1e5045be232a6f0d1c0293f81ecc675ce56e9a6",
+      "sourceEvidence": {
+        "evidenceId": "politics-2008-q21",
+        "sourceId": "src_707a04fbc3a5a127b5267c13",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:37e5a751f3365ce93aa194b3fe50f6f9b8cd6906db251fbf0d71e92c5c4deaad",
+        "answerTextHash": "sha256:1b69e3e9982a9d0330a1c1b4c1e5045be232a6f0d1c0293f81ecc675ce56e9a6"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_707a04fbc3a5a127b5267c13",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2008/2008-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:1b69e3e9982a9d0330a1c1b4c1e5045be232a6f0d1c0293f81ecc675ce56e9a6",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2008_bank",
+        "note": "Matched against local Baidu Netdisk 2008 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2008-022",
+      "number": 22,
+      "paperId": "politics-2008",
+      "paperName": "2008考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2008",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2008考研政治第22题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABD",
+      "explanation": "答案来自本地百度网盘 2008 考研政治真题及参考答案 PDF 的参考答案页；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2008/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2008考研政治试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2008/paper-page-13.jpg",
+          "caption": "答案原页 p.13",
+          "alt": "2008考研政治答案原页 p.13"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2008",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2008-paper-answer",
+      "sourceEvidenceId": "politics-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:0c8b39e577bf72465ce9fa463ebfd2b622aa2cf1f1ad5802fe54d3587583c51b",
+      "answerTextHash": "sha256:ceeb954ec7dffea3a2ccc9b69d2792381ec5f314a33bc7067f13ce7a9bed056b",
+      "sourceEvidence": {
+        "evidenceId": "politics-2008-q22",
+        "sourceId": "src_707a04fbc3a5a127b5267c13",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:0c8b39e577bf72465ce9fa463ebfd2b622aa2cf1f1ad5802fe54d3587583c51b",
+        "answerTextHash": "sha256:ceeb954ec7dffea3a2ccc9b69d2792381ec5f314a33bc7067f13ce7a9bed056b"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_707a04fbc3a5a127b5267c13",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2008/2008-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:ceeb954ec7dffea3a2ccc9b69d2792381ec5f314a33bc7067f13ce7a9bed056b",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2008_bank",
+        "note": "Matched against local Baidu Netdisk 2008 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2008-023",
+      "number": 23,
+      "paperId": "politics-2008",
+      "paperName": "2008考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2008",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2008考研政治第23题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABD",
+      "explanation": "答案来自本地百度网盘 2008 考研政治真题及参考答案 PDF 的参考答案页；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2008/paper-page-05.jpg",
+          "caption": "试卷原页 p.5",
+          "alt": "2008考研政治试卷原页 p.5"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2008/paper-page-13.jpg",
+          "caption": "答案原页 p.13",
+          "alt": "2008考研政治答案原页 p.13"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2008",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2008-paper-answer",
+      "sourceEvidenceId": "politics-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:80f33773dda5f7f01b8e2e41a8775e2ac876c5ec2d3bc20d143fe78c5e6569ec",
+      "answerTextHash": "sha256:ceeb954ec7dffea3a2ccc9b69d2792381ec5f314a33bc7067f13ce7a9bed056b",
+      "sourceEvidence": {
+        "evidenceId": "politics-2008-q23",
+        "sourceId": "src_707a04fbc3a5a127b5267c13",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:80f33773dda5f7f01b8e2e41a8775e2ac876c5ec2d3bc20d143fe78c5e6569ec",
+        "answerTextHash": "sha256:ceeb954ec7dffea3a2ccc9b69d2792381ec5f314a33bc7067f13ce7a9bed056b"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_707a04fbc3a5a127b5267c13",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2008/2008-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:ceeb954ec7dffea3a2ccc9b69d2792381ec5f314a33bc7067f13ce7a9bed056b",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2008_bank",
+        "note": "Matched against local Baidu Netdisk 2008 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2008-024",
+      "number": 24,
+      "paperId": "politics-2008",
+      "paperName": "2008考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2008",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2008考研政治第24题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "BC",
+      "explanation": "答案来自本地百度网盘 2008 考研政治真题及参考答案 PDF 的参考答案页；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2008/paper-page-05.jpg",
+          "caption": "试卷原页 p.5",
+          "alt": "2008考研政治试卷原页 p.5"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2008/paper-page-13.jpg",
+          "caption": "答案原页 p.13",
+          "alt": "2008考研政治答案原页 p.13"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2008",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2008-paper-answer",
+      "sourceEvidenceId": "politics-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:78db610bb9baeb65f60eae6d733ad28aaab8651ab1665f62fdedd88a93b9846b",
+      "answerTextHash": "sha256:c657c7c101d5ca21408b8d9d5d1d2c7bb97c16a899f62d8c6c97e7a2ce99bd67",
+      "sourceEvidence": {
+        "evidenceId": "politics-2008-q24",
+        "sourceId": "src_707a04fbc3a5a127b5267c13",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:78db610bb9baeb65f60eae6d733ad28aaab8651ab1665f62fdedd88a93b9846b",
+        "answerTextHash": "sha256:c657c7c101d5ca21408b8d9d5d1d2c7bb97c16a899f62d8c6c97e7a2ce99bd67"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_707a04fbc3a5a127b5267c13",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2008/2008-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:c657c7c101d5ca21408b8d9d5d1d2c7bb97c16a899f62d8c6c97e7a2ce99bd67",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2008_bank",
+        "note": "Matched against local Baidu Netdisk 2008 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2008-025",
+      "number": 25,
+      "paperId": "politics-2008",
+      "paperName": "2008考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2008",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2008考研政治第25题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "BD",
+      "explanation": "答案来自本地百度网盘 2008 考研政治真题及参考答案 PDF 的参考答案页；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2008/paper-page-05.jpg",
+          "caption": "试卷原页 p.5",
+          "alt": "2008考研政治试卷原页 p.5"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2008/paper-page-13.jpg",
+          "caption": "答案原页 p.13",
+          "alt": "2008考研政治答案原页 p.13"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2008",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2008-paper-answer",
+      "sourceEvidenceId": "politics-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:93a8fe3092f70aaf26e4071ee653e4812203263437dfdaef63d8cf8fdff27124",
+      "answerTextHash": "sha256:e35b2cd7ee64e1107b03c22faecfc8afc62cfcd829a865437bf7308590403f72",
+      "sourceEvidence": {
+        "evidenceId": "politics-2008-q25",
+        "sourceId": "src_707a04fbc3a5a127b5267c13",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:93a8fe3092f70aaf26e4071ee653e4812203263437dfdaef63d8cf8fdff27124",
+        "answerTextHash": "sha256:e35b2cd7ee64e1107b03c22faecfc8afc62cfcd829a865437bf7308590403f72"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_707a04fbc3a5a127b5267c13",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2008/2008-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:e35b2cd7ee64e1107b03c22faecfc8afc62cfcd829a865437bf7308590403f72",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2008_bank",
+        "note": "Matched against local Baidu Netdisk 2008 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2008-026",
+      "number": 26,
+      "paperId": "politics-2008",
+      "paperName": "2008考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2008",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2008考研政治第26题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABD",
+      "explanation": "答案来自本地百度网盘 2008 考研政治真题及参考答案 PDF 的参考答案页；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2008/paper-page-05.jpg",
+          "caption": "试卷原页 p.5",
+          "alt": "2008考研政治试卷原页 p.5"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2008/paper-page-13.jpg",
+          "caption": "答案原页 p.13",
+          "alt": "2008考研政治答案原页 p.13"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2008",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2008-paper-answer",
+      "sourceEvidenceId": "politics-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:ed9ef70269ea78b4725f460f7d0d3239eb16006104ab717da6b02caf2726390d",
+      "answerTextHash": "sha256:ceeb954ec7dffea3a2ccc9b69d2792381ec5f314a33bc7067f13ce7a9bed056b",
+      "sourceEvidence": {
+        "evidenceId": "politics-2008-q26",
+        "sourceId": "src_707a04fbc3a5a127b5267c13",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:ed9ef70269ea78b4725f460f7d0d3239eb16006104ab717da6b02caf2726390d",
+        "answerTextHash": "sha256:ceeb954ec7dffea3a2ccc9b69d2792381ec5f314a33bc7067f13ce7a9bed056b"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_707a04fbc3a5a127b5267c13",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2008/2008-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:ceeb954ec7dffea3a2ccc9b69d2792381ec5f314a33bc7067f13ce7a9bed056b",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2008_bank",
+        "note": "Matched against local Baidu Netdisk 2008 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2008-027",
+      "number": 27,
+      "paperId": "politics-2008",
+      "paperName": "2008考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2008",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2008考研政治第27题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ACD",
+      "explanation": "答案来自本地百度网盘 2008 考研政治真题及参考答案 PDF 的参考答案页；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2008/paper-page-05.jpg",
+          "caption": "试卷原页 p.5",
+          "alt": "2008考研政治试卷原页 p.5"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2008/paper-page-13.jpg",
+          "caption": "答案原页 p.13",
+          "alt": "2008考研政治答案原页 p.13"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2008",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2008-paper-answer",
+      "sourceEvidenceId": "politics-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:d0d377a94487823e0e5c7c2f57121616c6dd498778d66188753b76b324976d66",
+      "answerTextHash": "sha256:58580f50f74c9ebf919bfeebede72ef4d76d97c1c41de87e393b863f04fbd302",
+      "sourceEvidence": {
+        "evidenceId": "politics-2008-q27",
+        "sourceId": "src_707a04fbc3a5a127b5267c13",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:d0d377a94487823e0e5c7c2f57121616c6dd498778d66188753b76b324976d66",
+        "answerTextHash": "sha256:58580f50f74c9ebf919bfeebede72ef4d76d97c1c41de87e393b863f04fbd302"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_707a04fbc3a5a127b5267c13",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2008/2008-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:58580f50f74c9ebf919bfeebede72ef4d76d97c1c41de87e393b863f04fbd302",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2008_bank",
+        "note": "Matched against local Baidu Netdisk 2008 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2008-028",
+      "number": 28,
+      "paperId": "politics-2008",
+      "paperName": "2008考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2008",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2008考研政治第28题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABCD",
+      "explanation": "答案来自本地百度网盘 2008 考研政治真题及参考答案 PDF 的参考答案页；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2008/paper-page-06.jpg",
+          "caption": "试卷原页 p.6",
+          "alt": "2008考研政治试卷原页 p.6"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2008/paper-page-13.jpg",
+          "caption": "答案原页 p.13",
+          "alt": "2008考研政治答案原页 p.13"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2008",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2008-paper-answer",
+      "sourceEvidenceId": "politics-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:0743f555867d92813166578ca32b76d651d6f95665b86f45fb82c121ec2cae26",
+      "answerTextHash": "sha256:43bc2e87d13ce9b5c39776f50eb7afddb8cf6d35b8c8aca79e57a093aa299505",
+      "sourceEvidence": {
+        "evidenceId": "politics-2008-q28",
+        "sourceId": "src_707a04fbc3a5a127b5267c13",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:0743f555867d92813166578ca32b76d651d6f95665b86f45fb82c121ec2cae26",
+        "answerTextHash": "sha256:43bc2e87d13ce9b5c39776f50eb7afddb8cf6d35b8c8aca79e57a093aa299505"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_707a04fbc3a5a127b5267c13",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2008/2008-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:43bc2e87d13ce9b5c39776f50eb7afddb8cf6d35b8c8aca79e57a093aa299505",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2008_bank",
+        "note": "Matched against local Baidu Netdisk 2008 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2008-029",
+      "number": 29,
+      "paperId": "politics-2008",
+      "paperName": "2008考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2008",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2008考研政治第29题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ACD",
+      "explanation": "答案来自本地百度网盘 2008 考研政治真题及参考答案 PDF 的参考答案页；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2008/paper-page-06.jpg",
+          "caption": "试卷原页 p.6",
+          "alt": "2008考研政治试卷原页 p.6"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2008/paper-page-13.jpg",
+          "caption": "答案原页 p.13",
+          "alt": "2008考研政治答案原页 p.13"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2008",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2008-paper-answer",
+      "sourceEvidenceId": "politics-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:0e12bd296a9f60b1f89810432751af387118098d1f9d7dee05a157087f233fa8",
+      "answerTextHash": "sha256:58580f50f74c9ebf919bfeebede72ef4d76d97c1c41de87e393b863f04fbd302",
+      "sourceEvidence": {
+        "evidenceId": "politics-2008-q29",
+        "sourceId": "src_707a04fbc3a5a127b5267c13",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:0e12bd296a9f60b1f89810432751af387118098d1f9d7dee05a157087f233fa8",
+        "answerTextHash": "sha256:58580f50f74c9ebf919bfeebede72ef4d76d97c1c41de87e393b863f04fbd302"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_707a04fbc3a5a127b5267c13",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2008/2008-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:58580f50f74c9ebf919bfeebede72ef4d76d97c1c41de87e393b863f04fbd302",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2008_bank",
+        "note": "Matched against local Baidu Netdisk 2008 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2008-030",
+      "number": 30,
+      "paperId": "politics-2008",
+      "paperName": "2008考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2008",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2008考研政治第30题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABC",
+      "explanation": "答案来自本地百度网盘 2008 考研政治真题及参考答案 PDF 的参考答案页；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2008/paper-page-06.jpg",
+          "caption": "试卷原页 p.6",
+          "alt": "2008考研政治试卷原页 p.6"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2008/paper-page-13.jpg",
+          "caption": "答案原页 p.13",
+          "alt": "2008考研政治答案原页 p.13"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2008",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2008-paper-answer",
+      "sourceEvidenceId": "politics-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:a8308ada98c46a855f8a31f2f40ba2e0b4a2616f1fd221078bff086f06b0f565",
+      "answerTextHash": "sha256:0b48efc4b9e367bad83050141ce04b78fb182040e78af15c2979ff862826ba8b",
+      "sourceEvidence": {
+        "evidenceId": "politics-2008-q30",
+        "sourceId": "src_707a04fbc3a5a127b5267c13",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:a8308ada98c46a855f8a31f2f40ba2e0b4a2616f1fd221078bff086f06b0f565",
+        "answerTextHash": "sha256:0b48efc4b9e367bad83050141ce04b78fb182040e78af15c2979ff862826ba8b"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_707a04fbc3a5a127b5267c13",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2008/2008-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:0b48efc4b9e367bad83050141ce04b78fb182040e78af15c2979ff862826ba8b",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2008_bank",
+        "note": "Matched against local Baidu Netdisk 2008 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2008-031",
+      "number": 31,
+      "paperId": "politics-2008",
+      "paperName": "2008考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2008",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2008考研政治第31题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABCD",
+      "explanation": "答案来自本地百度网盘 2008 考研政治真题及参考答案 PDF 的参考答案页；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2008/paper-page-06.jpg",
+          "caption": "试卷原页 p.6",
+          "alt": "2008考研政治试卷原页 p.6"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2008/paper-page-13.jpg",
+          "caption": "答案原页 p.13",
+          "alt": "2008考研政治答案原页 p.13"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2008",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2008-paper-answer",
+      "sourceEvidenceId": "politics-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:8d77ec25ebd536beb61c6e5e7d8c1079e97dc3bd76cc3c478100338d9aa7a025",
+      "answerTextHash": "sha256:43bc2e87d13ce9b5c39776f50eb7afddb8cf6d35b8c8aca79e57a093aa299505",
+      "sourceEvidence": {
+        "evidenceId": "politics-2008-q31",
+        "sourceId": "src_707a04fbc3a5a127b5267c13",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:8d77ec25ebd536beb61c6e5e7d8c1079e97dc3bd76cc3c478100338d9aa7a025",
+        "answerTextHash": "sha256:43bc2e87d13ce9b5c39776f50eb7afddb8cf6d35b8c8aca79e57a093aa299505"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_707a04fbc3a5a127b5267c13",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2008/2008-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:43bc2e87d13ce9b5c39776f50eb7afddb8cf6d35b8c8aca79e57a093aa299505",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2008_bank",
+        "note": "Matched against local Baidu Netdisk 2008 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2008-032",
+      "number": 32,
+      "paperId": "politics-2008",
+      "paperName": "2008考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2008",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2008考研政治第32题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "AC",
+      "explanation": "答案来自本地百度网盘 2008 考研政治真题及参考答案 PDF 的参考答案页；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2008/paper-page-06.jpg",
+          "caption": "试卷原页 p.6",
+          "alt": "2008考研政治试卷原页 p.6"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2008/paper-page-13.jpg",
+          "caption": "答案原页 p.13",
+          "alt": "2008考研政治答案原页 p.13"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2008",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2008-paper-answer",
+      "sourceEvidenceId": "politics-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:c6d096a14a7c0a4fe2ae8cd696a8200401a5805d1b3e32ed51ae4582d5a01870",
+      "answerTextHash": "sha256:ce06a2f6833648f0b102c32cc1b2bf63e8a95c41f38b80344f1360b02302d230",
+      "sourceEvidence": {
+        "evidenceId": "politics-2008-q32",
+        "sourceId": "src_707a04fbc3a5a127b5267c13",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:c6d096a14a7c0a4fe2ae8cd696a8200401a5805d1b3e32ed51ae4582d5a01870",
+        "answerTextHash": "sha256:ce06a2f6833648f0b102c32cc1b2bf63e8a95c41f38b80344f1360b02302d230"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_707a04fbc3a5a127b5267c13",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2008/2008-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:ce06a2f6833648f0b102c32cc1b2bf63e8a95c41f38b80344f1360b02302d230",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2008_bank",
+        "note": "Matched against local Baidu Netdisk 2008 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2008-033",
+      "number": 33,
+      "paperId": "politics-2008",
+      "paperName": "2008考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2008",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2008考研政治第33题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABCD",
+      "explanation": "答案来自本地百度网盘 2008 考研政治真题及参考答案 PDF 的参考答案页；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2008/paper-page-07.jpg",
+          "caption": "试卷原页 p.7",
+          "alt": "2008考研政治试卷原页 p.7"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2008/paper-page-13.jpg",
+          "caption": "答案原页 p.13",
+          "alt": "2008考研政治答案原页 p.13"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2008",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2008-paper-answer",
+      "sourceEvidenceId": "politics-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:0f8ff4934961a53a941c261b681409d78768b7f8332d66399941a2da52f417c9",
+      "answerTextHash": "sha256:43bc2e87d13ce9b5c39776f50eb7afddb8cf6d35b8c8aca79e57a093aa299505",
+      "sourceEvidence": {
+        "evidenceId": "politics-2008-q33",
+        "sourceId": "src_707a04fbc3a5a127b5267c13",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:0f8ff4934961a53a941c261b681409d78768b7f8332d66399941a2da52f417c9",
+        "answerTextHash": "sha256:43bc2e87d13ce9b5c39776f50eb7afddb8cf6d35b8c8aca79e57a093aa299505"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_707a04fbc3a5a127b5267c13",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2008/2008-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:43bc2e87d13ce9b5c39776f50eb7afddb8cf6d35b8c8aca79e57a093aa299505",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2008_bank",
+        "note": "Matched against local Baidu Netdisk 2008 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2008-034",
+      "number": 34,
+      "paperId": "politics-2008",
+      "paperName": "2008考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2008",
+      "section": "分析题",
+      "type": "analysis",
+      "question": "2008考研政治第34题（分析题）。题干、选项和材料以试卷原页图为准。",
+      "options": [],
+      "answer": "分析题参考答案要点见答案原页 p.13。",
+      "explanation": "参考答案来自本地百度网盘 2008 考研政治真题及参考答案 PDF；完整答案要点见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2008/paper-page-07.jpg",
+          "caption": "试卷原页 p.7",
+          "alt": "2008考研政治试卷原页 p.7"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2008/paper-page-13.jpg",
+          "caption": "答案原页 p.13",
+          "alt": "2008考研政治答案原页 p.13"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2008",
+        "分析题"
+      ],
+      "difficulty": 3,
+      "source": "politics-2008-paper-answer",
+      "sourceEvidenceId": "politics-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:1bc000590000e229b016636828f32d51b8b901e7027decca168c9b57ebc93754",
+      "answerTextHash": "sha256:ae183218fbcf2291799034a0c75eccc18449dbbe12a144d158bf990a2edaac08",
+      "sourceEvidence": {
+        "evidenceId": "politics-2008-q34",
+        "sourceId": "src_707a04fbc3a5a127b5267c13",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:1bc000590000e229b016636828f32d51b8b901e7027decca168c9b57ebc93754",
+        "answerTextHash": "sha256:ae183218fbcf2291799034a0c75eccc18449dbbe12a144d158bf990a2edaac08"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_reference_answer",
+        "sourceId": "src_707a04fbc3a5a127b5267c13",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2008/2008-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:ae183218fbcf2291799034a0c75eccc18449dbbe12a144d158bf990a2edaac08",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2008_bank",
+        "note": "Matched against local Baidu Netdisk 2008 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2008-035",
+      "number": 35,
+      "paperId": "politics-2008",
+      "paperName": "2008考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2008",
+      "section": "分析题",
+      "type": "analysis",
+      "question": "2008考研政治第35题（分析题）。题干、选项和材料以试卷原页图为准。",
+      "options": [],
+      "answer": "分析题参考答案要点见答案原页 p.13-p.14。",
+      "explanation": "参考答案来自本地百度网盘 2008 考研政治真题及参考答案 PDF；完整答案要点见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2008/paper-page-08.jpg",
+          "caption": "试卷原页 p.8",
+          "alt": "2008考研政治试卷原页 p.8"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2008/paper-page-13.jpg",
+          "caption": "答案原页 p.13",
+          "alt": "2008考研政治答案原页 p.13"
+        },
+        {
+          "src": "question-bank/politics-2008/paper-page-14.jpg",
+          "caption": "答案原页 p.14",
+          "alt": "2008考研政治答案原页 p.14"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2008",
+        "分析题"
+      ],
+      "difficulty": 3,
+      "source": "politics-2008-paper-answer",
+      "sourceEvidenceId": "politics-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:7ca0e4cf11c0ffdb44d4c9bbbb61b55ab0def02390ef328a9c97c53bd4d0e3cd",
+      "answerTextHash": "sha256:74407efc4267c9e413238634a0f772f18eeaf2e413a1a34a1e64a23c7c79b2c2",
+      "sourceEvidence": {
+        "evidenceId": "politics-2008-q35",
+        "sourceId": "src_707a04fbc3a5a127b5267c13",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:7ca0e4cf11c0ffdb44d4c9bbbb61b55ab0def02390ef328a9c97c53bd4d0e3cd",
+        "answerTextHash": "sha256:74407efc4267c9e413238634a0f772f18eeaf2e413a1a34a1e64a23c7c79b2c2"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_reference_answer",
+        "sourceId": "src_707a04fbc3a5a127b5267c13",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2008/2008-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:74407efc4267c9e413238634a0f772f18eeaf2e413a1a34a1e64a23c7c79b2c2",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2008_bank",
+        "note": "Matched against local Baidu Netdisk 2008 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2008-036",
+      "number": 36,
+      "paperId": "politics-2008",
+      "paperName": "2008考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2008",
+      "section": "分析题",
+      "type": "analysis",
+      "question": "2008考研政治第36题（分析题）。题干、选项和材料以试卷原页图为准。",
+      "options": [],
+      "answer": "分析题参考答案要点见答案原页 p.14-p.15。",
+      "explanation": "参考答案来自本地百度网盘 2008 考研政治真题及参考答案 PDF；完整答案要点见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2008/paper-page-08.jpg",
+          "caption": "试卷原页 p.8",
+          "alt": "2008考研政治试卷原页 p.8"
+        },
+        {
+          "src": "question-bank/politics-2008/paper-page-09.jpg",
+          "caption": "试卷原页 p.9",
+          "alt": "2008考研政治试卷原页 p.9"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2008/paper-page-14.jpg",
+          "caption": "答案原页 p.14",
+          "alt": "2008考研政治答案原页 p.14"
+        },
+        {
+          "src": "question-bank/politics-2008/paper-page-15.jpg",
+          "caption": "答案原页 p.15",
+          "alt": "2008考研政治答案原页 p.15"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2008",
+        "分析题"
+      ],
+      "difficulty": 3,
+      "source": "politics-2008-paper-answer",
+      "sourceEvidenceId": "politics-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:06921b33ae37fd41492c5c5a3075622a0ddfedb8493998eb64bd547f61960bfc",
+      "answerTextHash": "sha256:12f585d9327672762b1ba03d1a0d969cea58e8817ed98ff2ba83215b75d90c04",
+      "sourceEvidence": {
+        "evidenceId": "politics-2008-q36",
+        "sourceId": "src_707a04fbc3a5a127b5267c13",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:06921b33ae37fd41492c5c5a3075622a0ddfedb8493998eb64bd547f61960bfc",
+        "answerTextHash": "sha256:12f585d9327672762b1ba03d1a0d969cea58e8817ed98ff2ba83215b75d90c04"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_reference_answer",
+        "sourceId": "src_707a04fbc3a5a127b5267c13",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2008/2008-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:12f585d9327672762b1ba03d1a0d969cea58e8817ed98ff2ba83215b75d90c04",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2008_bank",
+        "note": "Matched against local Baidu Netdisk 2008 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2008-037",
+      "number": 37,
+      "paperId": "politics-2008",
+      "paperName": "2008考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2008",
+      "section": "分析题",
+      "type": "analysis",
+      "question": "2008考研政治第37题（分析题）。题干、选项和材料以试卷原页图为准。",
+      "options": [],
+      "answer": "分析题参考答案要点见答案原页 p.15。",
+      "explanation": "参考答案来自本地百度网盘 2008 考研政治真题及参考答案 PDF；完整答案要点见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2008/paper-page-09.jpg",
+          "caption": "试卷原页 p.9",
+          "alt": "2008考研政治试卷原页 p.9"
+        },
+        {
+          "src": "question-bank/politics-2008/paper-page-10.jpg",
+          "caption": "试卷原页 p.10",
+          "alt": "2008考研政治试卷原页 p.10"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2008/paper-page-15.jpg",
+          "caption": "答案原页 p.15",
+          "alt": "2008考研政治答案原页 p.15"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2008",
+        "分析题"
+      ],
+      "difficulty": 3,
+      "source": "politics-2008-paper-answer",
+      "sourceEvidenceId": "politics-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:b87dafee22a3b39ce9aeb1558e61ca20eb4deec4eef813907c447ab716ba6b30",
+      "answerTextHash": "sha256:2db2266891c9d8864e5f6256d556e86e19db0d26c47aa54b75fe8b5591feb4c5",
+      "sourceEvidence": {
+        "evidenceId": "politics-2008-q37",
+        "sourceId": "src_707a04fbc3a5a127b5267c13",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:b87dafee22a3b39ce9aeb1558e61ca20eb4deec4eef813907c447ab716ba6b30",
+        "answerTextHash": "sha256:2db2266891c9d8864e5f6256d556e86e19db0d26c47aa54b75fe8b5591feb4c5"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_reference_answer",
+        "sourceId": "src_707a04fbc3a5a127b5267c13",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2008/2008-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:2db2266891c9d8864e5f6256d556e86e19db0d26c47aa54b75fe8b5591feb4c5",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2008_bank",
+        "note": "Matched against local Baidu Netdisk 2008 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2008-038",
+      "number": 38,
+      "paperId": "politics-2008",
+      "paperName": "2008考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2008",
+      "section": "分析题",
+      "type": "analysis",
+      "question": "2008考研政治第38题（分析题）。题干、选项和材料以试卷原页图为准。",
+      "options": [],
+      "answer": "选做分析题参考答案要点见答案原页 p.15-p.16。",
+      "explanation": "参考答案来自本地百度网盘 2008 考研政治真题及参考答案 PDF；完整答案要点见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2008/paper-page-10.jpg",
+          "caption": "试卷原页 p.10",
+          "alt": "2008考研政治试卷原页 p.10"
+        },
+        {
+          "src": "question-bank/politics-2008/paper-page-11.jpg",
+          "caption": "试卷原页 p.11",
+          "alt": "2008考研政治试卷原页 p.11"
+        },
+        {
+          "src": "question-bank/politics-2008/paper-page-12.jpg",
+          "caption": "试卷原页 p.12",
+          "alt": "2008考研政治试卷原页 p.12"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2008/paper-page-15.jpg",
+          "caption": "答案原页 p.15",
+          "alt": "2008考研政治答案原页 p.15"
+        },
+        {
+          "src": "question-bank/politics-2008/paper-page-16.jpg",
+          "caption": "答案原页 p.16",
+          "alt": "2008考研政治答案原页 p.16"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2008",
+        "分析题"
+      ],
+      "difficulty": 3,
+      "source": "politics-2008-paper-answer",
+      "sourceEvidenceId": "politics-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:f2faa09856931cf051bfb6a82f9c953ef8bacc8e39efb5a7fcbc57f17280362d",
+      "answerTextHash": "sha256:d53034e079afc3bc8e5a8147d0ed891c385f7e43f53bf5a0c809adb5998c2611",
+      "sourceEvidence": {
+        "evidenceId": "politics-2008-q38",
+        "sourceId": "src_707a04fbc3a5a127b5267c13",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:f2faa09856931cf051bfb6a82f9c953ef8bacc8e39efb5a7fcbc57f17280362d",
+        "answerTextHash": "sha256:d53034e079afc3bc8e5a8147d0ed891c385f7e43f53bf5a0c809adb5998c2611"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_reference_answer",
+        "sourceId": "src_707a04fbc3a5a127b5267c13",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2008/2008-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:d53034e079afc3bc8e5a8147d0ed891c385f7e43f53bf5a0c809adb5998c2611",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2008_bank",
+        "note": "Matched against local Baidu Netdisk 2008 Politics paper-answer PDF."
+      }
+    }
+  ]
+}

@@ -1,0 +1,3024 @@
+{
+  "id": "politics-2010",
+  "source": "politics-2010-paper-answer",
+  "paperId": "politics-2010",
+  "paperName": "2010考研政治真题",
+  "subject": "政治",
+  "subjectKey": "politics",
+  "track": "politics",
+  "year": "2010",
+  "quality": "ready",
+  "publicationStatus": "published",
+  "publicationBlockers": [],
+  "sourceEvidencePolicy": "baidu_netdisk_official_paper_pdf_page_image_v1",
+  "sourceFiles": [
+    {
+      "id": "politics-2010-paper",
+      "sourceId": "src_095ea7cbf62c381b2ecdadf4",
+      "role": "paper",
+      "localPath": "data/raw-inbox/public-course-history/politics/2010/2010-politics-paper.pdf",
+      "sha256": "sha256:a3dd9873190e6104715eb4cdd8ddf974e23e2f82dcb5b689268bb40e76588d09"
+    },
+    {
+      "id": "politics-2010-paper-answer",
+      "sourceId": "src_89287710a63711bcbb6f0c10",
+      "role": "paper_answer",
+      "localPath": "data/raw-inbox/public-course-history/politics/2010/2010-politics-paper-answer.pdf",
+      "sha256": "sha256:978d4720ba32000c3c2fb140e63769f49a830991344b3d4d5c1698d716b4cdb2"
+    }
+  ],
+  "sourceNotes": [
+    "Standalone 2010 paper PDF omits question 21; question 21 wording is recovered from the paper-answer PDF and rendered as text without a question image to avoid exposing the answer before submission."
+  ],
+  "assetRoot": "question-bank/politics-2010",
+  "processed_at": "2026-05-27T01:31:50Z",
+  "total_cards": 38,
+  "sections": [
+    "单项选择",
+    "多项选择",
+    "分析题"
+  ],
+  "cards": [
+    {
+      "id": "politics-2010-001",
+      "number": 1,
+      "paperId": "politics-2010",
+      "paperName": "2010考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2010",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2010考研政治第1题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2010 考研政治真题及参考答案 PDF 的逐题解析页；题面以真题 PDF 原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2010/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2010考研政治试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2010/answer-page-13.jpg",
+          "caption": "答案原页 p.13",
+          "alt": "2010考研政治答案原页 p.13"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2010",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2010-paper-answer",
+      "sourceEvidenceId": "politics-2010-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:2aa134a857567b152c37507e4e29de08bb2a61f854b7d37834423bc7763808f5",
+      "answerTextHash": "sha256:a4362f7e14e484f2c75627a4d7609817776556e0cf51dd1e69a1e10351d07d1e",
+      "sourceEvidence": {
+        "evidenceId": "politics-2010-q01",
+        "sourceId": "src_095ea7cbf62c381b2ecdadf4",
+        "answerSourceId": "src_89287710a63711bcbb6f0c10",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2010-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:2aa134a857567b152c37507e4e29de08bb2a61f854b7d37834423bc7763808f5",
+        "answerTextHash": "sha256:a4362f7e14e484f2c75627a4d7609817776556e0cf51dd1e69a1e10351d07d1e"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_89287710a63711bcbb6f0c10",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2010/2010-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:a4362f7e14e484f2c75627a4d7609817776556e0cf51dd1e69a1e10351d07d1e",
+        "method": "local_pdf_text_or_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2010_bank",
+        "note": "Matched against local Baidu Netdisk 2010 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2010-002",
+      "number": 2,
+      "paperId": "politics-2010",
+      "paperName": "2010考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2010",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2010考研政治第2题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2010 考研政治真题及参考答案 PDF 的逐题解析页；题面以真题 PDF 原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2010/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2010考研政治试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2010/answer-page-13.jpg",
+          "caption": "答案原页 p.13",
+          "alt": "2010考研政治答案原页 p.13"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2010",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2010-paper-answer",
+      "sourceEvidenceId": "politics-2010-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:1617e487c604a34c0bd893c813ef857ed59b66b97757616684349282fe23ef82",
+      "answerTextHash": "sha256:91692058cd03fd243ff12fe50b8f3abbc69af52e4fa2b93bd72ecb10a8223bf7",
+      "sourceEvidence": {
+        "evidenceId": "politics-2010-q02",
+        "sourceId": "src_095ea7cbf62c381b2ecdadf4",
+        "answerSourceId": "src_89287710a63711bcbb6f0c10",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2010-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:1617e487c604a34c0bd893c813ef857ed59b66b97757616684349282fe23ef82",
+        "answerTextHash": "sha256:91692058cd03fd243ff12fe50b8f3abbc69af52e4fa2b93bd72ecb10a8223bf7"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_89287710a63711bcbb6f0c10",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2010/2010-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:91692058cd03fd243ff12fe50b8f3abbc69af52e4fa2b93bd72ecb10a8223bf7",
+        "method": "local_pdf_text_or_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2010_bank",
+        "note": "Matched against local Baidu Netdisk 2010 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2010-003",
+      "number": 3,
+      "paperId": "politics-2010",
+      "paperName": "2010考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2010",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2010考研政治第3题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2010 考研政治真题及参考答案 PDF 的逐题解析页；题面以真题 PDF 原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2010/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2010考研政治试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2010/answer-page-13.jpg",
+          "caption": "答案原页 p.13",
+          "alt": "2010考研政治答案原页 p.13"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2010",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2010-paper-answer",
+      "sourceEvidenceId": "politics-2010-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:5c3174ae387adf7fc69965420799567f7a36117f08002fb8c9ed9e03ac40c36b",
+      "answerTextHash": "sha256:e1d8f57fe9b8bfb58d332213eccb593d21f9706f11d4b6dce1865f22524ac928",
+      "sourceEvidence": {
+        "evidenceId": "politics-2010-q03",
+        "sourceId": "src_095ea7cbf62c381b2ecdadf4",
+        "answerSourceId": "src_89287710a63711bcbb6f0c10",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2010-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:5c3174ae387adf7fc69965420799567f7a36117f08002fb8c9ed9e03ac40c36b",
+        "answerTextHash": "sha256:e1d8f57fe9b8bfb58d332213eccb593d21f9706f11d4b6dce1865f22524ac928"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_89287710a63711bcbb6f0c10",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2010/2010-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:e1d8f57fe9b8bfb58d332213eccb593d21f9706f11d4b6dce1865f22524ac928",
+        "method": "local_pdf_text_or_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2010_bank",
+        "note": "Matched against local Baidu Netdisk 2010 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2010-004",
+      "number": 4,
+      "paperId": "politics-2010",
+      "paperName": "2010考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2010",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2010考研政治第4题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2010 考研政治真题及参考答案 PDF 的逐题解析页；题面以真题 PDF 原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2010/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2010考研政治试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2010/answer-page-13.jpg",
+          "caption": "答案原页 p.13",
+          "alt": "2010考研政治答案原页 p.13"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2010",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2010-paper-answer",
+      "sourceEvidenceId": "politics-2010-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:4fe435bff2221bab9f0cf4cb5b0eba01426cf0bf52486af8240f59799701166d",
+      "answerTextHash": "sha256:91692058cd03fd243ff12fe50b8f3abbc69af52e4fa2b93bd72ecb10a8223bf7",
+      "sourceEvidence": {
+        "evidenceId": "politics-2010-q04",
+        "sourceId": "src_095ea7cbf62c381b2ecdadf4",
+        "answerSourceId": "src_89287710a63711bcbb6f0c10",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2010-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:4fe435bff2221bab9f0cf4cb5b0eba01426cf0bf52486af8240f59799701166d",
+        "answerTextHash": "sha256:91692058cd03fd243ff12fe50b8f3abbc69af52e4fa2b93bd72ecb10a8223bf7"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_89287710a63711bcbb6f0c10",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2010/2010-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:91692058cd03fd243ff12fe50b8f3abbc69af52e4fa2b93bd72ecb10a8223bf7",
+        "method": "local_pdf_text_or_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2010_bank",
+        "note": "Matched against local Baidu Netdisk 2010 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2010-005",
+      "number": 5,
+      "paperId": "politics-2010",
+      "paperName": "2010考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2010",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2010考研政治第5题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2010 考研政治真题及参考答案 PDF 的逐题解析页；题面以真题 PDF 原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2010/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2010考研政治试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2010/answer-page-14.jpg",
+          "caption": "答案原页 p.14",
+          "alt": "2010考研政治答案原页 p.14"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2010",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2010-paper-answer",
+      "sourceEvidenceId": "politics-2010-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:d3fad4f4c6ec28ef84aefc61fcd937b74f3f41e85c4f685d72e08dd87ca16963",
+      "answerTextHash": "sha256:118ef5b2b24bdbaaa0f813a13f742e120483e1c961ed373eed0bbc86210501e8",
+      "sourceEvidence": {
+        "evidenceId": "politics-2010-q05",
+        "sourceId": "src_095ea7cbf62c381b2ecdadf4",
+        "answerSourceId": "src_89287710a63711bcbb6f0c10",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2010-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:d3fad4f4c6ec28ef84aefc61fcd937b74f3f41e85c4f685d72e08dd87ca16963",
+        "answerTextHash": "sha256:118ef5b2b24bdbaaa0f813a13f742e120483e1c961ed373eed0bbc86210501e8"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_89287710a63711bcbb6f0c10",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2010/2010-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:118ef5b2b24bdbaaa0f813a13f742e120483e1c961ed373eed0bbc86210501e8",
+        "method": "local_pdf_text_or_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2010_bank",
+        "note": "Matched against local Baidu Netdisk 2010 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2010-006",
+      "number": 6,
+      "paperId": "politics-2010",
+      "paperName": "2010考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2010",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2010考研政治第6题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2010 考研政治真题及参考答案 PDF 的逐题解析页；题面以真题 PDF 原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2010/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2010考研政治试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2010/answer-page-14.jpg",
+          "caption": "答案原页 p.14",
+          "alt": "2010考研政治答案原页 p.14"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2010",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2010-paper-answer",
+      "sourceEvidenceId": "politics-2010-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:3ba3d94adbffaeae266ee1a93f19e066188e2ea6c15a8f668bb054baf53f01fb",
+      "answerTextHash": "sha256:03327e6fc37387e4d3cf177122d0d00520174722d854f36c6c4e1130ff619bdf",
+      "sourceEvidence": {
+        "evidenceId": "politics-2010-q06",
+        "sourceId": "src_095ea7cbf62c381b2ecdadf4",
+        "answerSourceId": "src_89287710a63711bcbb6f0c10",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2010-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:3ba3d94adbffaeae266ee1a93f19e066188e2ea6c15a8f668bb054baf53f01fb",
+        "answerTextHash": "sha256:03327e6fc37387e4d3cf177122d0d00520174722d854f36c6c4e1130ff619bdf"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_89287710a63711bcbb6f0c10",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2010/2010-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:03327e6fc37387e4d3cf177122d0d00520174722d854f36c6c4e1130ff619bdf",
+        "method": "local_pdf_text_or_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2010_bank",
+        "note": "Matched against local Baidu Netdisk 2010 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2010-007",
+      "number": 7,
+      "paperId": "politics-2010",
+      "paperName": "2010考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2010",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2010考研政治第7题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2010 考研政治真题及参考答案 PDF 的逐题解析页；题面以真题 PDF 原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2010/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2010考研政治试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2010/answer-page-14.jpg",
+          "caption": "答案原页 p.14",
+          "alt": "2010考研政治答案原页 p.14"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2010",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2010-paper-answer",
+      "sourceEvidenceId": "politics-2010-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:303e300b7df5adefc0f331d61a1a76fcb525d93a9902b75718e3034ce6f5e65a",
+      "answerTextHash": "sha256:118ef5b2b24bdbaaa0f813a13f742e120483e1c961ed373eed0bbc86210501e8",
+      "sourceEvidence": {
+        "evidenceId": "politics-2010-q07",
+        "sourceId": "src_095ea7cbf62c381b2ecdadf4",
+        "answerSourceId": "src_89287710a63711bcbb6f0c10",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2010-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:303e300b7df5adefc0f331d61a1a76fcb525d93a9902b75718e3034ce6f5e65a",
+        "answerTextHash": "sha256:118ef5b2b24bdbaaa0f813a13f742e120483e1c961ed373eed0bbc86210501e8"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_89287710a63711bcbb6f0c10",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2010/2010-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:118ef5b2b24bdbaaa0f813a13f742e120483e1c961ed373eed0bbc86210501e8",
+        "method": "local_pdf_text_or_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2010_bank",
+        "note": "Matched against local Baidu Netdisk 2010 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2010-008",
+      "number": 8,
+      "paperId": "politics-2010",
+      "paperName": "2010考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2010",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2010考研政治第8题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2010 考研政治真题及参考答案 PDF 的逐题解析页；题面以真题 PDF 原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2010/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2010考研政治试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2010/answer-page-14.jpg",
+          "caption": "答案原页 p.14",
+          "alt": "2010考研政治答案原页 p.14"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2010",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2010-paper-answer",
+      "sourceEvidenceId": "politics-2010-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:3becc0df9f28f2101fb1f25d95b6a8df3a4d2ea52efd4b8ff6f16eb0e0b19d7c",
+      "answerTextHash": "sha256:c56db87ba4ddbe4eb70d4a4bcfd3f65cee038f2645a1c193430ff27f31234d34",
+      "sourceEvidence": {
+        "evidenceId": "politics-2010-q08",
+        "sourceId": "src_095ea7cbf62c381b2ecdadf4",
+        "answerSourceId": "src_89287710a63711bcbb6f0c10",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2010-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:3becc0df9f28f2101fb1f25d95b6a8df3a4d2ea52efd4b8ff6f16eb0e0b19d7c",
+        "answerTextHash": "sha256:c56db87ba4ddbe4eb70d4a4bcfd3f65cee038f2645a1c193430ff27f31234d34"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_89287710a63711bcbb6f0c10",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2010/2010-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:c56db87ba4ddbe4eb70d4a4bcfd3f65cee038f2645a1c193430ff27f31234d34",
+        "method": "local_pdf_text_or_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2010_bank",
+        "note": "Matched against local Baidu Netdisk 2010 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2010-009",
+      "number": 9,
+      "paperId": "politics-2010",
+      "paperName": "2010考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2010",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2010考研政治第9题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2010 考研政治真题及参考答案 PDF 的逐题解析页；题面以真题 PDF 原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2010/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2010考研政治试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2010/answer-page-15.jpg",
+          "caption": "答案原页 p.15",
+          "alt": "2010考研政治答案原页 p.15"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2010",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2010-paper-answer",
+      "sourceEvidenceId": "politics-2010-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:25b27b35386286d16e544abd7254b1485ffbad8e1da3c162175c3bd1d8ca3652",
+      "answerTextHash": "sha256:c657a288db86b51cbd719d00fa69ad255209b2ed2d1c0e0522c915622bc0104a",
+      "sourceEvidence": {
+        "evidenceId": "politics-2010-q09",
+        "sourceId": "src_095ea7cbf62c381b2ecdadf4",
+        "answerSourceId": "src_89287710a63711bcbb6f0c10",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2010-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:25b27b35386286d16e544abd7254b1485ffbad8e1da3c162175c3bd1d8ca3652",
+        "answerTextHash": "sha256:c657a288db86b51cbd719d00fa69ad255209b2ed2d1c0e0522c915622bc0104a"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_89287710a63711bcbb6f0c10",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2010/2010-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:c657a288db86b51cbd719d00fa69ad255209b2ed2d1c0e0522c915622bc0104a",
+        "method": "local_pdf_text_or_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2010_bank",
+        "note": "Matched against local Baidu Netdisk 2010 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2010-010",
+      "number": 10,
+      "paperId": "politics-2010",
+      "paperName": "2010考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2010",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2010考研政治第10题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2010 考研政治真题及参考答案 PDF 的逐题解析页；题面以真题 PDF 原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2010/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2010考研政治试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2010/answer-page-15.jpg",
+          "caption": "答案原页 p.15",
+          "alt": "2010考研政治答案原页 p.15"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2010",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2010-paper-answer",
+      "sourceEvidenceId": "politics-2010-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:e668ab9513951c7a0ef49f27c4c49df709ed322a05e9e662396bfc6c4dcf59fb",
+      "answerTextHash": "sha256:c657a288db86b51cbd719d00fa69ad255209b2ed2d1c0e0522c915622bc0104a",
+      "sourceEvidence": {
+        "evidenceId": "politics-2010-q10",
+        "sourceId": "src_095ea7cbf62c381b2ecdadf4",
+        "answerSourceId": "src_89287710a63711bcbb6f0c10",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2010-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:e668ab9513951c7a0ef49f27c4c49df709ed322a05e9e662396bfc6c4dcf59fb",
+        "answerTextHash": "sha256:c657a288db86b51cbd719d00fa69ad255209b2ed2d1c0e0522c915622bc0104a"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_89287710a63711bcbb6f0c10",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2010/2010-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:c657a288db86b51cbd719d00fa69ad255209b2ed2d1c0e0522c915622bc0104a",
+        "method": "local_pdf_text_or_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2010_bank",
+        "note": "Matched against local Baidu Netdisk 2010 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2010-011",
+      "number": 11,
+      "paperId": "politics-2010",
+      "paperName": "2010考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2010",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2010考研政治第11题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2010 考研政治真题及参考答案 PDF 的逐题解析页；题面以真题 PDF 原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2010/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2010考研政治试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2010/answer-page-15.jpg",
+          "caption": "答案原页 p.15",
+          "alt": "2010考研政治答案原页 p.15"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2010",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2010-paper-answer",
+      "sourceEvidenceId": "politics-2010-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:2baaa9f95592899cea016b2b232350bdcd237bc2627aee1fa0ec66d10fb1c857",
+      "answerTextHash": "sha256:c657a288db86b51cbd719d00fa69ad255209b2ed2d1c0e0522c915622bc0104a",
+      "sourceEvidence": {
+        "evidenceId": "politics-2010-q11",
+        "sourceId": "src_095ea7cbf62c381b2ecdadf4",
+        "answerSourceId": "src_89287710a63711bcbb6f0c10",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2010-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:2baaa9f95592899cea016b2b232350bdcd237bc2627aee1fa0ec66d10fb1c857",
+        "answerTextHash": "sha256:c657a288db86b51cbd719d00fa69ad255209b2ed2d1c0e0522c915622bc0104a"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_89287710a63711bcbb6f0c10",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2010/2010-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:c657a288db86b51cbd719d00fa69ad255209b2ed2d1c0e0522c915622bc0104a",
+        "method": "local_pdf_text_or_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2010_bank",
+        "note": "Matched against local Baidu Netdisk 2010 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2010-012",
+      "number": 12,
+      "paperId": "politics-2010",
+      "paperName": "2010考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2010",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2010考研政治第12题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2010 考研政治真题及参考答案 PDF 的逐题解析页；题面以真题 PDF 原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2010/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2010考研政治试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2010/answer-page-15.jpg",
+          "caption": "答案原页 p.15",
+          "alt": "2010考研政治答案原页 p.15"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2010",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2010-paper-answer",
+      "sourceEvidenceId": "politics-2010-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:f7e38fd6f42093b76666d57e018916a24954fb51172da1d57b7147cc57548971",
+      "answerTextHash": "sha256:57c1520d6c71be4ce45c196196b1b6008217db86450f5c95d9cd427e5ce8520c",
+      "sourceEvidence": {
+        "evidenceId": "politics-2010-q12",
+        "sourceId": "src_095ea7cbf62c381b2ecdadf4",
+        "answerSourceId": "src_89287710a63711bcbb6f0c10",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2010-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:f7e38fd6f42093b76666d57e018916a24954fb51172da1d57b7147cc57548971",
+        "answerTextHash": "sha256:57c1520d6c71be4ce45c196196b1b6008217db86450f5c95d9cd427e5ce8520c"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_89287710a63711bcbb6f0c10",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2010/2010-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:57c1520d6c71be4ce45c196196b1b6008217db86450f5c95d9cd427e5ce8520c",
+        "method": "local_pdf_text_or_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2010_bank",
+        "note": "Matched against local Baidu Netdisk 2010 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2010-013",
+      "number": 13,
+      "paperId": "politics-2010",
+      "paperName": "2010考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2010",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2010考研政治第13题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2010 考研政治真题及参考答案 PDF 的逐题解析页；题面以真题 PDF 原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2010/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2010考研政治试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2010/answer-page-16.jpg",
+          "caption": "答案原页 p.16",
+          "alt": "2010考研政治答案原页 p.16"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2010",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2010-paper-answer",
+      "sourceEvidenceId": "politics-2010-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:7a48ef357c3a4a688baeb5cde5cc412b3156bdeb5b8d9a676db95c86b2de837e",
+      "answerTextHash": "sha256:47b116ab2db9dcc212847deb011fb84f2c59e3e29f9c2ed0d43d9589b089482d",
+      "sourceEvidence": {
+        "evidenceId": "politics-2010-q13",
+        "sourceId": "src_095ea7cbf62c381b2ecdadf4",
+        "answerSourceId": "src_89287710a63711bcbb6f0c10",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2010-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:7a48ef357c3a4a688baeb5cde5cc412b3156bdeb5b8d9a676db95c86b2de837e",
+        "answerTextHash": "sha256:47b116ab2db9dcc212847deb011fb84f2c59e3e29f9c2ed0d43d9589b089482d"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_89287710a63711bcbb6f0c10",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2010/2010-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:47b116ab2db9dcc212847deb011fb84f2c59e3e29f9c2ed0d43d9589b089482d",
+        "method": "local_pdf_text_or_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2010_bank",
+        "note": "Matched against local Baidu Netdisk 2010 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2010-014",
+      "number": 14,
+      "paperId": "politics-2010",
+      "paperName": "2010考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2010",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2010考研政治第14题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2010 考研政治真题及参考答案 PDF 的逐题解析页；题面以真题 PDF 原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2010/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2010考研政治试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2010/answer-page-16.jpg",
+          "caption": "答案原页 p.16",
+          "alt": "2010考研政治答案原页 p.16"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2010",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2010-paper-answer",
+      "sourceEvidenceId": "politics-2010-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:c1196f05c508f2875f2372a2dc515e74af5ec7d4c6ffdd39040e5923ecc9f66a",
+      "answerTextHash": "sha256:bda2c8cd22ba2d64da13dd9e43523d7b26cbda1eaff4b708c4005691da984e3f",
+      "sourceEvidence": {
+        "evidenceId": "politics-2010-q14",
+        "sourceId": "src_095ea7cbf62c381b2ecdadf4",
+        "answerSourceId": "src_89287710a63711bcbb6f0c10",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2010-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:c1196f05c508f2875f2372a2dc515e74af5ec7d4c6ffdd39040e5923ecc9f66a",
+        "answerTextHash": "sha256:bda2c8cd22ba2d64da13dd9e43523d7b26cbda1eaff4b708c4005691da984e3f"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_89287710a63711bcbb6f0c10",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2010/2010-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:bda2c8cd22ba2d64da13dd9e43523d7b26cbda1eaff4b708c4005691da984e3f",
+        "method": "local_pdf_text_or_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2010_bank",
+        "note": "Matched against local Baidu Netdisk 2010 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2010-015",
+      "number": 15,
+      "paperId": "politics-2010",
+      "paperName": "2010考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2010",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2010考研政治第15题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2010 考研政治真题及参考答案 PDF 的逐题解析页；题面以真题 PDF 原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2010/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2010考研政治试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2010/answer-page-16.jpg",
+          "caption": "答案原页 p.16",
+          "alt": "2010考研政治答案原页 p.16"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2010",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2010-paper-answer",
+      "sourceEvidenceId": "politics-2010-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:0a45d2b2d2a4520afde65f01e64be43e3088908b271b03dd5e3dfb09bdee4296",
+      "answerTextHash": "sha256:58535606646a121340c14ce5f13a0481e4ddadaa739664402f7170ed32a5d2d7",
+      "sourceEvidence": {
+        "evidenceId": "politics-2010-q15",
+        "sourceId": "src_095ea7cbf62c381b2ecdadf4",
+        "answerSourceId": "src_89287710a63711bcbb6f0c10",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2010-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:0a45d2b2d2a4520afde65f01e64be43e3088908b271b03dd5e3dfb09bdee4296",
+        "answerTextHash": "sha256:58535606646a121340c14ce5f13a0481e4ddadaa739664402f7170ed32a5d2d7"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_89287710a63711bcbb6f0c10",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2010/2010-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:58535606646a121340c14ce5f13a0481e4ddadaa739664402f7170ed32a5d2d7",
+        "method": "local_pdf_text_or_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2010_bank",
+        "note": "Matched against local Baidu Netdisk 2010 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2010-016",
+      "number": 16,
+      "paperId": "politics-2010",
+      "paperName": "2010考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2010",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2010考研政治第16题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2010 考研政治真题及参考答案 PDF 的逐题解析页；题面以真题 PDF 原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2010/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2010考研政治试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2010/answer-page-16.jpg",
+          "caption": "答案原页 p.16",
+          "alt": "2010考研政治答案原页 p.16"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2010",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2010-paper-answer",
+      "sourceEvidenceId": "politics-2010-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:b0fa0e1f04040d1df2c6c8a4c9237845a8ed1fd6542cf3c391d7c516a55ed71b",
+      "answerTextHash": "sha256:58535606646a121340c14ce5f13a0481e4ddadaa739664402f7170ed32a5d2d7",
+      "sourceEvidence": {
+        "evidenceId": "politics-2010-q16",
+        "sourceId": "src_095ea7cbf62c381b2ecdadf4",
+        "answerSourceId": "src_89287710a63711bcbb6f0c10",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2010-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:b0fa0e1f04040d1df2c6c8a4c9237845a8ed1fd6542cf3c391d7c516a55ed71b",
+        "answerTextHash": "sha256:58535606646a121340c14ce5f13a0481e4ddadaa739664402f7170ed32a5d2d7"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_89287710a63711bcbb6f0c10",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2010/2010-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:58535606646a121340c14ce5f13a0481e4ddadaa739664402f7170ed32a5d2d7",
+        "method": "local_pdf_text_or_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2010_bank",
+        "note": "Matched against local Baidu Netdisk 2010 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2010-017",
+      "number": 17,
+      "paperId": "politics-2010",
+      "paperName": "2010考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2010",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2010考研政治第17题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ACD",
+      "explanation": "答案来自本地百度网盘 2010 考研政治真题及参考答案 PDF 的逐题解析页；题面以真题 PDF 原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2010/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2010考研政治试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2010/answer-page-17.jpg",
+          "caption": "答案原页 p.17",
+          "alt": "2010考研政治答案原页 p.17"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2010",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2010-paper-answer",
+      "sourceEvidenceId": "politics-2010-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:76a46d7c74f4c19aad88ad303a75ed7fe53a963cf68dd45e9a0a42235c1a8258",
+      "answerTextHash": "sha256:a4005c62fb700b31f00924db76696864615dac6294d9bf3eb3dfeb4b8a19c414",
+      "sourceEvidence": {
+        "evidenceId": "politics-2010-q17",
+        "sourceId": "src_095ea7cbf62c381b2ecdadf4",
+        "answerSourceId": "src_89287710a63711bcbb6f0c10",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2010-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:76a46d7c74f4c19aad88ad303a75ed7fe53a963cf68dd45e9a0a42235c1a8258",
+        "answerTextHash": "sha256:a4005c62fb700b31f00924db76696864615dac6294d9bf3eb3dfeb4b8a19c414"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_89287710a63711bcbb6f0c10",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2010/2010-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:a4005c62fb700b31f00924db76696864615dac6294d9bf3eb3dfeb4b8a19c414",
+        "method": "local_pdf_text_or_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2010_bank",
+        "note": "Matched against local Baidu Netdisk 2010 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2010-018",
+      "number": 18,
+      "paperId": "politics-2010",
+      "paperName": "2010考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2010",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2010考研政治第18题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "CD",
+      "explanation": "答案来自本地百度网盘 2010 考研政治真题及参考答案 PDF 的逐题解析页；题面以真题 PDF 原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2010/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2010考研政治试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2010/answer-page-17.jpg",
+          "caption": "答案原页 p.17",
+          "alt": "2010考研政治答案原页 p.17"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2010",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2010-paper-answer",
+      "sourceEvidenceId": "politics-2010-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:73fa8b34f8b274ec6a3fb8c1a328991b871fc28f618679ff30bc84468def1174",
+      "answerTextHash": "sha256:ed72d54c284b137b67aad449cde60b48a1bbcfb46f4aa77260052de34f0da64f",
+      "sourceEvidence": {
+        "evidenceId": "politics-2010-q18",
+        "sourceId": "src_095ea7cbf62c381b2ecdadf4",
+        "answerSourceId": "src_89287710a63711bcbb6f0c10",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2010-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:73fa8b34f8b274ec6a3fb8c1a328991b871fc28f618679ff30bc84468def1174",
+        "answerTextHash": "sha256:ed72d54c284b137b67aad449cde60b48a1bbcfb46f4aa77260052de34f0da64f"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_89287710a63711bcbb6f0c10",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2010/2010-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:ed72d54c284b137b67aad449cde60b48a1bbcfb46f4aa77260052de34f0da64f",
+        "method": "local_pdf_text_or_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2010_bank",
+        "note": "Matched against local Baidu Netdisk 2010 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2010-019",
+      "number": 19,
+      "paperId": "politics-2010",
+      "paperName": "2010考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2010",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2010考研政治第19题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ACD",
+      "explanation": "答案来自本地百度网盘 2010 考研政治真题及参考答案 PDF 的逐题解析页；题面以真题 PDF 原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2010/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2010考研政治试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2010/answer-page-17.jpg",
+          "caption": "答案原页 p.17",
+          "alt": "2010考研政治答案原页 p.17"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2010",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2010-paper-answer",
+      "sourceEvidenceId": "politics-2010-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:6383ea24955a054fbbf48f746ac735019b6526d4f106e1a2118cc1c882f86f1e",
+      "answerTextHash": "sha256:a4005c62fb700b31f00924db76696864615dac6294d9bf3eb3dfeb4b8a19c414",
+      "sourceEvidence": {
+        "evidenceId": "politics-2010-q19",
+        "sourceId": "src_095ea7cbf62c381b2ecdadf4",
+        "answerSourceId": "src_89287710a63711bcbb6f0c10",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2010-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:6383ea24955a054fbbf48f746ac735019b6526d4f106e1a2118cc1c882f86f1e",
+        "answerTextHash": "sha256:a4005c62fb700b31f00924db76696864615dac6294d9bf3eb3dfeb4b8a19c414"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_89287710a63711bcbb6f0c10",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2010/2010-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:a4005c62fb700b31f00924db76696864615dac6294d9bf3eb3dfeb4b8a19c414",
+        "method": "local_pdf_text_or_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2010_bank",
+        "note": "Matched against local Baidu Netdisk 2010 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2010-020",
+      "number": 20,
+      "paperId": "politics-2010",
+      "paperName": "2010考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2010",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2010考研政治第20题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "BCD",
+      "explanation": "答案来自本地百度网盘 2010 考研政治真题及参考答案 PDF 的逐题解析页；题面以真题 PDF 原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2010/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2010考研政治试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2010/answer-page-17.jpg",
+          "caption": "答案原页 p.17",
+          "alt": "2010考研政治答案原页 p.17"
+        },
+        {
+          "src": "question-bank/politics-2010/answer-page-18.jpg",
+          "caption": "答案原页 p.18",
+          "alt": "2010考研政治答案原页 p.18"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2010",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2010-paper-answer",
+      "sourceEvidenceId": "politics-2010-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:137d702c7d984dd59f58bc8f4f390e7822959d0273be095988c593184c48c07d",
+      "answerTextHash": "sha256:c88e29d0440faf1fc0e4d89ea6072e53dea6db9ccfea4943bb1f1399a06fabce",
+      "sourceEvidence": {
+        "evidenceId": "politics-2010-q20",
+        "sourceId": "src_095ea7cbf62c381b2ecdadf4",
+        "answerSourceId": "src_89287710a63711bcbb6f0c10",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2010-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:137d702c7d984dd59f58bc8f4f390e7822959d0273be095988c593184c48c07d",
+        "answerTextHash": "sha256:c88e29d0440faf1fc0e4d89ea6072e53dea6db9ccfea4943bb1f1399a06fabce"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_89287710a63711bcbb6f0c10",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2010/2010-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:c88e29d0440faf1fc0e4d89ea6072e53dea6db9ccfea4943bb1f1399a06fabce",
+        "method": "local_pdf_text_or_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2010_bank",
+        "note": "Matched against local Baidu Netdisk 2010 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2010-021",
+      "number": 21,
+      "paperId": "politics-2010",
+      "paperName": "2010考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2010",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "中国革命建设和改革的实践证明，要运用马克思主义指导实践，必须实现马克思主义中国化，马克思主义之所以能够中国化的原因在于：",
+      "options": [
+        {
+          "label": "A",
+          "text": "马克思主义理论的内在要求"
+        },
+        {
+          "label": "B",
+          "text": "马克思主义与中华民族优秀文化具有相融性"
+        },
+        {
+          "label": "C",
+          "text": "中国革命建设和改革的实践需要马克思主义指导"
+        },
+        {
+          "label": "D",
+          "text": "马克思主义为中国革命建设和改革提供了现实发展模式"
+        }
+      ],
+      "answer": "ABC",
+      "explanation": "答案来自本地百度网盘 2010 考研政治真题及参考答案 PDF 的逐题解析页；题面以真题 PDF 原页图为准。",
+      "questionImages": [],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2010/answer-page-18.jpg",
+          "caption": "答案原页 p.18",
+          "alt": "2010考研政治答案原页 p.18"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2010",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2010-paper-answer",
+      "sourceEvidenceId": "politics-2010-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:aea18fa67cbc549165571552aea6e6f57b05b4a8373856a8b3fd5cb6264d14bc",
+      "answerTextHash": "sha256:eac9c1264ddfca50c31d12e29fe6edf881d18cda54d6b235c02b2a730db42f54",
+      "sourceEvidence": {
+        "evidenceId": "politics-2010-q21",
+        "sourceId": "src_89287710a63711bcbb6f0c10",
+        "answerSourceId": "src_89287710a63711bcbb6f0c10",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2010-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:aea18fa67cbc549165571552aea6e6f57b05b4a8373856a8b3fd5cb6264d14bc",
+        "answerTextHash": "sha256:eac9c1264ddfca50c31d12e29fe6edf881d18cda54d6b235c02b2a730db42f54"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_89287710a63711bcbb6f0c10",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2010/2010-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:eac9c1264ddfca50c31d12e29fe6edf881d18cda54d6b235c02b2a730db42f54",
+        "method": "local_pdf_text_or_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2010_bank",
+        "note": "Matched against local Baidu Netdisk 2010 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2010-022",
+      "number": 22,
+      "paperId": "politics-2010",
+      "paperName": "2010考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2010",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2010考研政治第22题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABCD",
+      "explanation": "答案来自本地百度网盘 2010 考研政治真题及参考答案 PDF 的逐题解析页；题面以真题 PDF 原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2010/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2010考研政治试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2010/answer-page-18.jpg",
+          "caption": "答案原页 p.18",
+          "alt": "2010考研政治答案原页 p.18"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2010",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2010-paper-answer",
+      "sourceEvidenceId": "politics-2010-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:06908323389a3ad1bda7b0cc7d9cb8e8635ff39776ba3fb96f65c348bba72ac6",
+      "answerTextHash": "sha256:81a4f64d5f97808558d1f992448412d229db470f0e6f0ce0711a7926b37005b0",
+      "sourceEvidence": {
+        "evidenceId": "politics-2010-q22",
+        "sourceId": "src_095ea7cbf62c381b2ecdadf4",
+        "answerSourceId": "src_89287710a63711bcbb6f0c10",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2010-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:06908323389a3ad1bda7b0cc7d9cb8e8635ff39776ba3fb96f65c348bba72ac6",
+        "answerTextHash": "sha256:81a4f64d5f97808558d1f992448412d229db470f0e6f0ce0711a7926b37005b0"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_89287710a63711bcbb6f0c10",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2010/2010-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:81a4f64d5f97808558d1f992448412d229db470f0e6f0ce0711a7926b37005b0",
+        "method": "local_pdf_text_or_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2010_bank",
+        "note": "Matched against local Baidu Netdisk 2010 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2010-023",
+      "number": 23,
+      "paperId": "politics-2010",
+      "paperName": "2010考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2010",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2010考研政治第23题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABCD",
+      "explanation": "答案来自本地百度网盘 2010 考研政治真题及参考答案 PDF 的逐题解析页；题面以真题 PDF 原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2010/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2010考研政治试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2010/answer-page-18.jpg",
+          "caption": "答案原页 p.18",
+          "alt": "2010考研政治答案原页 p.18"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2010",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2010-paper-answer",
+      "sourceEvidenceId": "politics-2010-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:2c0881f948f2260ba7fa8ade95540ff1aa141ed6e4f6de6fb49cdfa2221e78ce",
+      "answerTextHash": "sha256:81a4f64d5f97808558d1f992448412d229db470f0e6f0ce0711a7926b37005b0",
+      "sourceEvidence": {
+        "evidenceId": "politics-2010-q23",
+        "sourceId": "src_095ea7cbf62c381b2ecdadf4",
+        "answerSourceId": "src_89287710a63711bcbb6f0c10",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2010-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:2c0881f948f2260ba7fa8ade95540ff1aa141ed6e4f6de6fb49cdfa2221e78ce",
+        "answerTextHash": "sha256:81a4f64d5f97808558d1f992448412d229db470f0e6f0ce0711a7926b37005b0"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_89287710a63711bcbb6f0c10",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2010/2010-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:81a4f64d5f97808558d1f992448412d229db470f0e6f0ce0711a7926b37005b0",
+        "method": "local_pdf_text_or_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2010_bank",
+        "note": "Matched against local Baidu Netdisk 2010 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2010-024",
+      "number": 24,
+      "paperId": "politics-2010",
+      "paperName": "2010考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2010",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2010考研政治第24题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "BCD",
+      "explanation": "答案来自本地百度网盘 2010 考研政治真题及参考答案 PDF 的逐题解析页；题面以真题 PDF 原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2010/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2010考研政治试卷原页 p.3"
+        },
+        {
+          "src": "question-bank/politics-2010/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2010考研政治试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2010/answer-page-18.jpg",
+          "caption": "答案原页 p.18",
+          "alt": "2010考研政治答案原页 p.18"
+        },
+        {
+          "src": "question-bank/politics-2010/answer-page-19.jpg",
+          "caption": "答案原页 p.19",
+          "alt": "2010考研政治答案原页 p.19"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2010",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2010-paper-answer",
+      "sourceEvidenceId": "politics-2010-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:b40a5ccbbfde17133f5d0e2fd66c4a4a4d9a3cd89215ed550d57c9f44e065c42",
+      "answerTextHash": "sha256:c121983ecbdc8d8eb5b9e41ab2943dda330dc1cef8c86900454202d07782d157",
+      "sourceEvidence": {
+        "evidenceId": "politics-2010-q24",
+        "sourceId": "src_095ea7cbf62c381b2ecdadf4",
+        "answerSourceId": "src_89287710a63711bcbb6f0c10",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2010-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:b40a5ccbbfde17133f5d0e2fd66c4a4a4d9a3cd89215ed550d57c9f44e065c42",
+        "answerTextHash": "sha256:c121983ecbdc8d8eb5b9e41ab2943dda330dc1cef8c86900454202d07782d157"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_89287710a63711bcbb6f0c10",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2010/2010-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:c121983ecbdc8d8eb5b9e41ab2943dda330dc1cef8c86900454202d07782d157",
+        "method": "local_pdf_text_or_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2010_bank",
+        "note": "Matched against local Baidu Netdisk 2010 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2010-025",
+      "number": 25,
+      "paperId": "politics-2010",
+      "paperName": "2010考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2010",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2010考研政治第25题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ACD",
+      "explanation": "答案来自本地百度网盘 2010 考研政治真题及参考答案 PDF 的逐题解析页；题面以真题 PDF 原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2010/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2010考研政治试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2010/answer-page-19.jpg",
+          "caption": "答案原页 p.19",
+          "alt": "2010考研政治答案原页 p.19"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2010",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2010-paper-answer",
+      "sourceEvidenceId": "politics-2010-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:397b840c1c9fe7950348bea3a955bbf73d738c169bb1172ce2dec05cc6e28e2f",
+      "answerTextHash": "sha256:2d362fac948a0174f6c70cc06b3d357aadf907fae6119a2b2e4808d3316d48d7",
+      "sourceEvidence": {
+        "evidenceId": "politics-2010-q25",
+        "sourceId": "src_095ea7cbf62c381b2ecdadf4",
+        "answerSourceId": "src_89287710a63711bcbb6f0c10",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2010-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:397b840c1c9fe7950348bea3a955bbf73d738c169bb1172ce2dec05cc6e28e2f",
+        "answerTextHash": "sha256:2d362fac948a0174f6c70cc06b3d357aadf907fae6119a2b2e4808d3316d48d7"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_89287710a63711bcbb6f0c10",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2010/2010-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:2d362fac948a0174f6c70cc06b3d357aadf907fae6119a2b2e4808d3316d48d7",
+        "method": "local_pdf_text_or_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2010_bank",
+        "note": "Matched against local Baidu Netdisk 2010 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2010-026",
+      "number": 26,
+      "paperId": "politics-2010",
+      "paperName": "2010考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2010",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2010考研政治第26题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "AB",
+      "explanation": "答案来自本地百度网盘 2010 考研政治真题及参考答案 PDF 的逐题解析页；题面以真题 PDF 原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2010/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2010考研政治试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2010/answer-page-19.jpg",
+          "caption": "答案原页 p.19",
+          "alt": "2010考研政治答案原页 p.19"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2010",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2010-paper-answer",
+      "sourceEvidenceId": "politics-2010-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:3677da60598f992da68708c441b8da918ec22defb538ee29c1a87d1d0bd9db97",
+      "answerTextHash": "sha256:d93201e75e4701894322a60d9c20301f824e2a5f7d415ce72faa1f32586be96a",
+      "sourceEvidence": {
+        "evidenceId": "politics-2010-q26",
+        "sourceId": "src_095ea7cbf62c381b2ecdadf4",
+        "answerSourceId": "src_89287710a63711bcbb6f0c10",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2010-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:3677da60598f992da68708c441b8da918ec22defb538ee29c1a87d1d0bd9db97",
+        "answerTextHash": "sha256:d93201e75e4701894322a60d9c20301f824e2a5f7d415ce72faa1f32586be96a"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_89287710a63711bcbb6f0c10",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2010/2010-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:d93201e75e4701894322a60d9c20301f824e2a5f7d415ce72faa1f32586be96a",
+        "method": "local_pdf_text_or_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2010_bank",
+        "note": "Matched against local Baidu Netdisk 2010 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2010-027",
+      "number": 27,
+      "paperId": "politics-2010",
+      "paperName": "2010考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2010",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2010考研政治第27题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABCD",
+      "explanation": "答案来自本地百度网盘 2010 考研政治真题及参考答案 PDF 的逐题解析页；题面以真题 PDF 原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2010/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2010考研政治试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2010/answer-page-19.jpg",
+          "caption": "答案原页 p.19",
+          "alt": "2010考研政治答案原页 p.19"
+        },
+        {
+          "src": "question-bank/politics-2010/answer-page-20.jpg",
+          "caption": "答案原页 p.20",
+          "alt": "2010考研政治答案原页 p.20"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2010",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2010-paper-answer",
+      "sourceEvidenceId": "politics-2010-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:d258121a2442fc34b9455057babe819dcffd0ca7e135e3eb735579e7a48a7502",
+      "answerTextHash": "sha256:78fcb9ebce26889bfef0f16f3a3997501c727e70b6567cac2c0275e444fd4569",
+      "sourceEvidence": {
+        "evidenceId": "politics-2010-q27",
+        "sourceId": "src_095ea7cbf62c381b2ecdadf4",
+        "answerSourceId": "src_89287710a63711bcbb6f0c10",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2010-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:d258121a2442fc34b9455057babe819dcffd0ca7e135e3eb735579e7a48a7502",
+        "answerTextHash": "sha256:78fcb9ebce26889bfef0f16f3a3997501c727e70b6567cac2c0275e444fd4569"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_89287710a63711bcbb6f0c10",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2010/2010-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:78fcb9ebce26889bfef0f16f3a3997501c727e70b6567cac2c0275e444fd4569",
+        "method": "local_pdf_text_or_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2010_bank",
+        "note": "Matched against local Baidu Netdisk 2010 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2010-028",
+      "number": 28,
+      "paperId": "politics-2010",
+      "paperName": "2010考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2010",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2010考研政治第28题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABD",
+      "explanation": "答案来自本地百度网盘 2010 考研政治真题及参考答案 PDF 的逐题解析页；题面以真题 PDF 原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2010/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2010考研政治试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2010/answer-page-20.jpg",
+          "caption": "答案原页 p.20",
+          "alt": "2010考研政治答案原页 p.20"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2010",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2010-paper-answer",
+      "sourceEvidenceId": "politics-2010-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:677b4ac0382e9b26d661f43e6df4f1a5e2fffef68da38237d0fb51be1d67ec82",
+      "answerTextHash": "sha256:3b57f727fbca66f936638d7703a4ba82c0e9233df6dd9247c9ef8aa87c40df22",
+      "sourceEvidence": {
+        "evidenceId": "politics-2010-q28",
+        "sourceId": "src_095ea7cbf62c381b2ecdadf4",
+        "answerSourceId": "src_89287710a63711bcbb6f0c10",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2010-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:677b4ac0382e9b26d661f43e6df4f1a5e2fffef68da38237d0fb51be1d67ec82",
+        "answerTextHash": "sha256:3b57f727fbca66f936638d7703a4ba82c0e9233df6dd9247c9ef8aa87c40df22"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_89287710a63711bcbb6f0c10",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2010/2010-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:3b57f727fbca66f936638d7703a4ba82c0e9233df6dd9247c9ef8aa87c40df22",
+        "method": "local_pdf_text_or_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2010_bank",
+        "note": "Matched against local Baidu Netdisk 2010 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2010-029",
+      "number": 29,
+      "paperId": "politics-2010",
+      "paperName": "2010考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2010",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2010考研政治第29题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ACD",
+      "explanation": "答案来自本地百度网盘 2010 考研政治真题及参考答案 PDF 的逐题解析页；题面以真题 PDF 原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2010/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2010考研政治试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2010/answer-page-20.jpg",
+          "caption": "答案原页 p.20",
+          "alt": "2010考研政治答案原页 p.20"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2010",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2010-paper-answer",
+      "sourceEvidenceId": "politics-2010-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:e42948bac999712d0e4f378601058fbb906069fa0b4287da8fd2448711643445",
+      "answerTextHash": "sha256:6a7b767e00280b587d9fbc4957c4ab8b2dd9f5a34af9a37decfe7cb6e88c5ff1",
+      "sourceEvidence": {
+        "evidenceId": "politics-2010-q29",
+        "sourceId": "src_095ea7cbf62c381b2ecdadf4",
+        "answerSourceId": "src_89287710a63711bcbb6f0c10",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2010-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:e42948bac999712d0e4f378601058fbb906069fa0b4287da8fd2448711643445",
+        "answerTextHash": "sha256:6a7b767e00280b587d9fbc4957c4ab8b2dd9f5a34af9a37decfe7cb6e88c5ff1"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_89287710a63711bcbb6f0c10",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2010/2010-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:6a7b767e00280b587d9fbc4957c4ab8b2dd9f5a34af9a37decfe7cb6e88c5ff1",
+        "method": "local_pdf_text_or_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2010_bank",
+        "note": "Matched against local Baidu Netdisk 2010 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2010-030",
+      "number": 30,
+      "paperId": "politics-2010",
+      "paperName": "2010考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2010",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2010考研政治第30题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABCD",
+      "explanation": "答案来自本地百度网盘 2010 考研政治真题及参考答案 PDF 的逐题解析页；题面以真题 PDF 原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2010/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2010考研政治试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2010/answer-page-20.jpg",
+          "caption": "答案原页 p.20",
+          "alt": "2010考研政治答案原页 p.20"
+        },
+        {
+          "src": "question-bank/politics-2010/answer-page-21.jpg",
+          "caption": "答案原页 p.21",
+          "alt": "2010考研政治答案原页 p.21"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2010",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2010-paper-answer",
+      "sourceEvidenceId": "politics-2010-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:6f2bb0839a5fa58e9918c57e50c584de8b89f2f4f96df1700e79a622277dbda1",
+      "answerTextHash": "sha256:ac153bcb3a2f24427406a61f7756f31ffccbfa7c805d404febef2ef075dcda6a",
+      "sourceEvidence": {
+        "evidenceId": "politics-2010-q30",
+        "sourceId": "src_095ea7cbf62c381b2ecdadf4",
+        "answerSourceId": "src_89287710a63711bcbb6f0c10",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2010-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:6f2bb0839a5fa58e9918c57e50c584de8b89f2f4f96df1700e79a622277dbda1",
+        "answerTextHash": "sha256:ac153bcb3a2f24427406a61f7756f31ffccbfa7c805d404febef2ef075dcda6a"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_89287710a63711bcbb6f0c10",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2010/2010-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:ac153bcb3a2f24427406a61f7756f31ffccbfa7c805d404febef2ef075dcda6a",
+        "method": "local_pdf_text_or_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2010_bank",
+        "note": "Matched against local Baidu Netdisk 2010 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2010-031",
+      "number": 31,
+      "paperId": "politics-2010",
+      "paperName": "2010考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2010",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2010考研政治第31题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "BD",
+      "explanation": "答案来自本地百度网盘 2010 考研政治真题及参考答案 PDF 的逐题解析页；题面以真题 PDF 原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2010/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2010考研政治试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2010/answer-page-21.jpg",
+          "caption": "答案原页 p.21",
+          "alt": "2010考研政治答案原页 p.21"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2010",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2010-paper-answer",
+      "sourceEvidenceId": "politics-2010-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:e3e5dba7bfa779561534e7866b23fd5bc5cd66128a9ef3500c8a88099f9a152f",
+      "answerTextHash": "sha256:a3de01795ffaee934ba15700d25ed0c8f0aa2d051d302bada9e7f77398b04f0d",
+      "sourceEvidence": {
+        "evidenceId": "politics-2010-q31",
+        "sourceId": "src_095ea7cbf62c381b2ecdadf4",
+        "answerSourceId": "src_89287710a63711bcbb6f0c10",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2010-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:e3e5dba7bfa779561534e7866b23fd5bc5cd66128a9ef3500c8a88099f9a152f",
+        "answerTextHash": "sha256:a3de01795ffaee934ba15700d25ed0c8f0aa2d051d302bada9e7f77398b04f0d"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_89287710a63711bcbb6f0c10",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2010/2010-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:a3de01795ffaee934ba15700d25ed0c8f0aa2d051d302bada9e7f77398b04f0d",
+        "method": "local_pdf_text_or_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2010_bank",
+        "note": "Matched against local Baidu Netdisk 2010 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2010-032",
+      "number": 32,
+      "paperId": "politics-2010",
+      "paperName": "2010考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2010",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2010考研政治第32题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABCD",
+      "explanation": "答案来自本地百度网盘 2010 考研政治真题及参考答案 PDF 的逐题解析页；题面以真题 PDF 原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2010/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2010考研政治试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2010/answer-page-21.jpg",
+          "caption": "答案原页 p.21",
+          "alt": "2010考研政治答案原页 p.21"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2010",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2010-paper-answer",
+      "sourceEvidenceId": "politics-2010-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:f1b92197d4caa5e15b5715ae3e9dedcb4e37e9b43b86f053016e11b58cf6b50e",
+      "answerTextHash": "sha256:2da14101b14dbf1b2ac8ab466e40e49cf4fbb48c8ce774a74ad5fae9b591a69b",
+      "sourceEvidence": {
+        "evidenceId": "politics-2010-q32",
+        "sourceId": "src_095ea7cbf62c381b2ecdadf4",
+        "answerSourceId": "src_89287710a63711bcbb6f0c10",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2010-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:f1b92197d4caa5e15b5715ae3e9dedcb4e37e9b43b86f053016e11b58cf6b50e",
+        "answerTextHash": "sha256:2da14101b14dbf1b2ac8ab466e40e49cf4fbb48c8ce774a74ad5fae9b591a69b"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_89287710a63711bcbb6f0c10",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2010/2010-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:2da14101b14dbf1b2ac8ab466e40e49cf4fbb48c8ce774a74ad5fae9b591a69b",
+        "method": "local_pdf_text_or_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2010_bank",
+        "note": "Matched against local Baidu Netdisk 2010 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2010-033",
+      "number": 33,
+      "paperId": "politics-2010",
+      "paperName": "2010考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2010",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2010考研政治第33题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABC",
+      "explanation": "答案来自本地百度网盘 2010 考研政治真题及参考答案 PDF 的逐题解析页；题面以真题 PDF 原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2010/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2010考研政治试卷原页 p.4"
+        },
+        {
+          "src": "question-bank/politics-2010/paper-page-05.jpg",
+          "caption": "试卷原页 p.5",
+          "alt": "2010考研政治试卷原页 p.5"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2010/answer-page-21.jpg",
+          "caption": "答案原页 p.21",
+          "alt": "2010考研政治答案原页 p.21"
+        },
+        {
+          "src": "question-bank/politics-2010/answer-page-22.jpg",
+          "caption": "答案原页 p.22",
+          "alt": "2010考研政治答案原页 p.22"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2010",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2010-paper-answer",
+      "sourceEvidenceId": "politics-2010-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:5ebb6128ab46ee9b60e296cc30a6feae3ce44164cc28089aefb18858cc8e1633",
+      "answerTextHash": "sha256:5a92f6e4d1b077ba286907d02fa21f17d5885e34d7afcc22298c7ac971c9294c",
+      "sourceEvidence": {
+        "evidenceId": "politics-2010-q33",
+        "sourceId": "src_095ea7cbf62c381b2ecdadf4",
+        "answerSourceId": "src_89287710a63711bcbb6f0c10",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2010-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:5ebb6128ab46ee9b60e296cc30a6feae3ce44164cc28089aefb18858cc8e1633",
+        "answerTextHash": "sha256:5a92f6e4d1b077ba286907d02fa21f17d5885e34d7afcc22298c7ac971c9294c"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_89287710a63711bcbb6f0c10",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2010/2010-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:5a92f6e4d1b077ba286907d02fa21f17d5885e34d7afcc22298c7ac971c9294c",
+        "method": "local_pdf_text_or_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2010_bank",
+        "note": "Matched against local Baidu Netdisk 2010 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2010-034",
+      "number": 34,
+      "paperId": "politics-2010",
+      "paperName": "2010考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2010",
+      "section": "分析题",
+      "type": "analysis",
+      "question": "2010考研政治第34题（分析题）。题干、选项和材料以试卷原页图为准。",
+      "options": [],
+      "answer": "分析题参考答案要点见答案原页 p.22-p.23。",
+      "explanation": "参考答案来自本地百度网盘 2010 考研政治真题及参考答案 PDF；完整答案要点见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2010/paper-page-05.jpg",
+          "caption": "试卷原页 p.5",
+          "alt": "2010考研政治试卷原页 p.5"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2010/answer-page-22.jpg",
+          "caption": "答案原页 p.22",
+          "alt": "2010考研政治答案原页 p.22"
+        },
+        {
+          "src": "question-bank/politics-2010/answer-page-23.jpg",
+          "caption": "答案原页 p.23",
+          "alt": "2010考研政治答案原页 p.23"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2010",
+        "分析题"
+      ],
+      "difficulty": 3,
+      "source": "politics-2010-paper-answer",
+      "sourceEvidenceId": "politics-2010-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:12ec852dce74edb9dd6cb0ff1ad0bc4871e2a53cc854dd322b673e264755aea3",
+      "answerTextHash": "sha256:bb8beff9e595e3682d80963cf58baf9e3ea8f319699df14f2fd5ae96eb1b69fc",
+      "sourceEvidence": {
+        "evidenceId": "politics-2010-q34",
+        "sourceId": "src_095ea7cbf62c381b2ecdadf4",
+        "answerSourceId": "src_89287710a63711bcbb6f0c10",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2010-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:12ec852dce74edb9dd6cb0ff1ad0bc4871e2a53cc854dd322b673e264755aea3",
+        "answerTextHash": "sha256:bb8beff9e595e3682d80963cf58baf9e3ea8f319699df14f2fd5ae96eb1b69fc"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_reference_answer",
+        "sourceId": "src_89287710a63711bcbb6f0c10",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2010/2010-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:bb8beff9e595e3682d80963cf58baf9e3ea8f319699df14f2fd5ae96eb1b69fc",
+        "method": "local_pdf_text_or_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2010_bank",
+        "note": "Matched against local Baidu Netdisk 2010 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2010-035",
+      "number": 35,
+      "paperId": "politics-2010",
+      "paperName": "2010考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2010",
+      "section": "分析题",
+      "type": "analysis",
+      "question": "2010考研政治第35题（分析题）。题干、选项和材料以试卷原页图为准。",
+      "options": [],
+      "answer": "分析题参考答案要点见答案原页 p.23-p.24。",
+      "explanation": "参考答案来自本地百度网盘 2010 考研政治真题及参考答案 PDF；完整答案要点见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2010/paper-page-05.jpg",
+          "caption": "试卷原页 p.5",
+          "alt": "2010考研政治试卷原页 p.5"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2010/answer-page-23.jpg",
+          "caption": "答案原页 p.23",
+          "alt": "2010考研政治答案原页 p.23"
+        },
+        {
+          "src": "question-bank/politics-2010/answer-page-24.jpg",
+          "caption": "答案原页 p.24",
+          "alt": "2010考研政治答案原页 p.24"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2010",
+        "分析题"
+      ],
+      "difficulty": 3,
+      "source": "politics-2010-paper-answer",
+      "sourceEvidenceId": "politics-2010-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:707c337636de89ff69ebbf7a63ce71adfb5ced6b7f71dc4d9201ae5474daf6fa",
+      "answerTextHash": "sha256:d19acdf8e3260c955fa2160c2ae5fb656406c294a749c7fb1d939c24aa82f14c",
+      "sourceEvidence": {
+        "evidenceId": "politics-2010-q35",
+        "sourceId": "src_095ea7cbf62c381b2ecdadf4",
+        "answerSourceId": "src_89287710a63711bcbb6f0c10",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2010-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:707c337636de89ff69ebbf7a63ce71adfb5ced6b7f71dc4d9201ae5474daf6fa",
+        "answerTextHash": "sha256:d19acdf8e3260c955fa2160c2ae5fb656406c294a749c7fb1d939c24aa82f14c"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_reference_answer",
+        "sourceId": "src_89287710a63711bcbb6f0c10",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2010/2010-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:d19acdf8e3260c955fa2160c2ae5fb656406c294a749c7fb1d939c24aa82f14c",
+        "method": "local_pdf_text_or_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2010_bank",
+        "note": "Matched against local Baidu Netdisk 2010 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2010-036",
+      "number": 36,
+      "paperId": "politics-2010",
+      "paperName": "2010考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2010",
+      "section": "分析题",
+      "type": "analysis",
+      "question": "2010考研政治第36题（分析题）。题干、选项和材料以试卷原页图为准。",
+      "options": [],
+      "answer": "分析题参考答案要点见答案原页 p.24-p.25。",
+      "explanation": "参考答案来自本地百度网盘 2010 考研政治真题及参考答案 PDF；完整答案要点见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2010/paper-page-05.jpg",
+          "caption": "试卷原页 p.5",
+          "alt": "2010考研政治试卷原页 p.5"
+        },
+        {
+          "src": "question-bank/politics-2010/paper-page-06.jpg",
+          "caption": "试卷原页 p.6",
+          "alt": "2010考研政治试卷原页 p.6"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2010/answer-page-24.jpg",
+          "caption": "答案原页 p.24",
+          "alt": "2010考研政治答案原页 p.24"
+        },
+        {
+          "src": "question-bank/politics-2010/answer-page-25.jpg",
+          "caption": "答案原页 p.25",
+          "alt": "2010考研政治答案原页 p.25"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2010",
+        "分析题"
+      ],
+      "difficulty": 3,
+      "source": "politics-2010-paper-answer",
+      "sourceEvidenceId": "politics-2010-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:e341b335a20adc561dc1f233e5c20a9a923d7e2399c1b5c6b2c76382eb98de6e",
+      "answerTextHash": "sha256:3d52177b35002387c9b3d49286a845019287df320db01a72c94553972c200f1e",
+      "sourceEvidence": {
+        "evidenceId": "politics-2010-q36",
+        "sourceId": "src_095ea7cbf62c381b2ecdadf4",
+        "answerSourceId": "src_89287710a63711bcbb6f0c10",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2010-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:e341b335a20adc561dc1f233e5c20a9a923d7e2399c1b5c6b2c76382eb98de6e",
+        "answerTextHash": "sha256:3d52177b35002387c9b3d49286a845019287df320db01a72c94553972c200f1e"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_reference_answer",
+        "sourceId": "src_89287710a63711bcbb6f0c10",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2010/2010-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:3d52177b35002387c9b3d49286a845019287df320db01a72c94553972c200f1e",
+        "method": "local_pdf_text_or_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2010_bank",
+        "note": "Matched against local Baidu Netdisk 2010 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2010-037",
+      "number": 37,
+      "paperId": "politics-2010",
+      "paperName": "2010考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2010",
+      "section": "分析题",
+      "type": "analysis",
+      "question": "2010考研政治第37题（分析题）。题干、选项和材料以试卷原页图为准。",
+      "options": [],
+      "answer": "分析题参考答案要点见答案原页 p.25-p.26。",
+      "explanation": "参考答案来自本地百度网盘 2010 考研政治真题及参考答案 PDF；完整答案要点见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2010/paper-page-06.jpg",
+          "caption": "试卷原页 p.6",
+          "alt": "2010考研政治试卷原页 p.6"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2010/answer-page-25.jpg",
+          "caption": "答案原页 p.25",
+          "alt": "2010考研政治答案原页 p.25"
+        },
+        {
+          "src": "question-bank/politics-2010/answer-page-26.jpg",
+          "caption": "答案原页 p.26",
+          "alt": "2010考研政治答案原页 p.26"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2010",
+        "分析题"
+      ],
+      "difficulty": 3,
+      "source": "politics-2010-paper-answer",
+      "sourceEvidenceId": "politics-2010-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:13e96a45b1e04492bf6b5716d71e594c01bcb0b72a957357de3b93ab2a0f3f4f",
+      "answerTextHash": "sha256:5337f484d7563b371f19825657e7ee441c8d966795a7d462e79d9e0cf9c907dd",
+      "sourceEvidence": {
+        "evidenceId": "politics-2010-q37",
+        "sourceId": "src_095ea7cbf62c381b2ecdadf4",
+        "answerSourceId": "src_89287710a63711bcbb6f0c10",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2010-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:13e96a45b1e04492bf6b5716d71e594c01bcb0b72a957357de3b93ab2a0f3f4f",
+        "answerTextHash": "sha256:5337f484d7563b371f19825657e7ee441c8d966795a7d462e79d9e0cf9c907dd"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_reference_answer",
+        "sourceId": "src_89287710a63711bcbb6f0c10",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2010/2010-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:5337f484d7563b371f19825657e7ee441c8d966795a7d462e79d9e0cf9c907dd",
+        "method": "local_pdf_text_or_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2010_bank",
+        "note": "Matched against local Baidu Netdisk 2010 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2010-038",
+      "number": 38,
+      "paperId": "politics-2010",
+      "paperName": "2010考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2010",
+      "section": "分析题",
+      "type": "analysis",
+      "question": "2010考研政治第38题（分析题）。题干、选项和材料以试卷原页图为准。",
+      "options": [],
+      "answer": "分析题参考答案要点见答案原页 p.26-p.27。",
+      "explanation": "参考答案来自本地百度网盘 2010 考研政治真题及参考答案 PDF；完整答案要点见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2010/paper-page-06.jpg",
+          "caption": "试卷原页 p.6",
+          "alt": "2010考研政治试卷原页 p.6"
+        },
+        {
+          "src": "question-bank/politics-2010/paper-page-07.jpg",
+          "caption": "试卷原页 p.7",
+          "alt": "2010考研政治试卷原页 p.7"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2010/answer-page-26.jpg",
+          "caption": "答案原页 p.26",
+          "alt": "2010考研政治答案原页 p.26"
+        },
+        {
+          "src": "question-bank/politics-2010/answer-page-27.jpg",
+          "caption": "答案原页 p.27",
+          "alt": "2010考研政治答案原页 p.27"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2010",
+        "分析题"
+      ],
+      "difficulty": 3,
+      "source": "politics-2010-paper-answer",
+      "sourceEvidenceId": "politics-2010-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:5c6f9aaf76ddfff70f5952b5596c611f3cca10ae6c5f95961ab30fc6d8bb2d5a",
+      "answerTextHash": "sha256:6175041dea90bac50ce28acbbf59ecc3534b1c33c8647d25070788e1e466a94a",
+      "sourceEvidence": {
+        "evidenceId": "politics-2010-q38",
+        "sourceId": "src_095ea7cbf62c381b2ecdadf4",
+        "answerSourceId": "src_89287710a63711bcbb6f0c10",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2010-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:5c6f9aaf76ddfff70f5952b5596c611f3cca10ae6c5f95961ab30fc6d8bb2d5a",
+        "answerTextHash": "sha256:6175041dea90bac50ce28acbbf59ecc3534b1c33c8647d25070788e1e466a94a"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_reference_answer",
+        "sourceId": "src_89287710a63711bcbb6f0c10",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2010/2010-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:6175041dea90bac50ce28acbbf59ecc3534b1c33c8647d25070788e1e466a94a",
+        "method": "local_pdf_text_or_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2010_bank",
+        "note": "Matched against local Baidu Netdisk 2010 Politics paper-answer PDF."
+      }
+    }
+  ]
+}

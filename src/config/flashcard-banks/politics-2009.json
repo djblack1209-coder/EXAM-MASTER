@@ -1,0 +1,2982 @@
+{
+  "id": "politics-2009",
+  "source": "politics-2009-paper-answer",
+  "paperId": "politics-2009",
+  "paperName": "2009考研政治真题",
+  "subject": "政治",
+  "subjectKey": "politics",
+  "track": "politics",
+  "year": "2009",
+  "quality": "ready",
+  "publicationStatus": "published",
+  "publicationBlockers": [],
+  "sourceEvidencePolicy": "baidu_netdisk_official_paper_pdf_page_image_v1",
+  "sourceFiles": [
+    {
+      "id": "politics-2009-paper-answer",
+      "sourceId": "src_a3d713a3b0ec0b57e158831e",
+      "role": "paper_answer",
+      "localPath": "data/raw-inbox/public-course-history/politics/2009/2009-politics-paper-answer.pdf",
+      "sha256": "sha256:32678b7a563f2b1f502a83365250acb4292f4d68bbaa6b3767e93e84e3915b9d"
+    }
+  ],
+  "assetRoot": "question-bank/politics-2009",
+  "processed_at": "2026-05-27T01:07:53Z",
+  "total_cards": 38,
+  "sections": [
+    "单项选择",
+    "多项选择",
+    "分析题"
+  ],
+  "cards": [
+    {
+      "id": "politics-2009-001",
+      "number": 1,
+      "paperId": "politics-2009",
+      "paperName": "2009考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2009",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2009考研政治第1题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2009 考研政治真题及参考答案 PDF 内嵌答案标记；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2009/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2009考研政治试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2009/paper-page-01.jpg",
+          "caption": "答案原页 p.1",
+          "alt": "2009考研政治答案原页 p.1"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2009",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2009-paper-answer",
+      "sourceEvidenceId": "politics-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:c15beee14df5aef07a315050b4605240c27fbf9c2cc016f99ddf47262d93d3e0",
+      "answerTextHash": "sha256:4ed63e010b225ac71dcb1a7de3ad2cb9a9e94cdb0bc29b90e0262baf6e6de6dc",
+      "sourceEvidence": {
+        "evidenceId": "politics-2009-q01",
+        "sourceId": "src_a3d713a3b0ec0b57e158831e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:c15beee14df5aef07a315050b4605240c27fbf9c2cc016f99ddf47262d93d3e0",
+        "answerTextHash": "sha256:4ed63e010b225ac71dcb1a7de3ad2cb9a9e94cdb0bc29b90e0262baf6e6de6dc"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_a3d713a3b0ec0b57e158831e",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2009/2009-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:4ed63e010b225ac71dcb1a7de3ad2cb9a9e94cdb0bc29b90e0262baf6e6de6dc",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2009_bank",
+        "note": "Matched against local Baidu Netdisk 2009 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2009-002",
+      "number": 2,
+      "paperId": "politics-2009",
+      "paperName": "2009考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2009",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2009考研政治第2题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2009 考研政治真题及参考答案 PDF 内嵌答案标记；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2009/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2009考研政治试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2009/paper-page-01.jpg",
+          "caption": "答案原页 p.1",
+          "alt": "2009考研政治答案原页 p.1"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2009",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2009-paper-answer",
+      "sourceEvidenceId": "politics-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:c113d2dc851f749eaa7c20b28dddf68463e27132fad576b06807bbdb1eea7753",
+      "answerTextHash": "sha256:1e0fb90153fd754d20abf4acce9f6720b52b42a6dbf3fe2f14c1028ea903701f",
+      "sourceEvidence": {
+        "evidenceId": "politics-2009-q02",
+        "sourceId": "src_a3d713a3b0ec0b57e158831e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:c113d2dc851f749eaa7c20b28dddf68463e27132fad576b06807bbdb1eea7753",
+        "answerTextHash": "sha256:1e0fb90153fd754d20abf4acce9f6720b52b42a6dbf3fe2f14c1028ea903701f"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_a3d713a3b0ec0b57e158831e",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2009/2009-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:1e0fb90153fd754d20abf4acce9f6720b52b42a6dbf3fe2f14c1028ea903701f",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2009_bank",
+        "note": "Matched against local Baidu Netdisk 2009 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2009-003",
+      "number": 3,
+      "paperId": "politics-2009",
+      "paperName": "2009考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2009",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2009考研政治第3题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2009 考研政治真题及参考答案 PDF 内嵌答案标记；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2009/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2009考研政治试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2009/paper-page-01.jpg",
+          "caption": "答案原页 p.1",
+          "alt": "2009考研政治答案原页 p.1"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2009",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2009-paper-answer",
+      "sourceEvidenceId": "politics-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:c9d1af5a1533bc44348b6addba8a88eea4f837776be05c90de62c8a3e4a4aae5",
+      "answerTextHash": "sha256:c2e85ec18509152e1d6bc0bc9e40d1a2669dce43b20bf8416c232527e78c1bb0",
+      "sourceEvidence": {
+        "evidenceId": "politics-2009-q03",
+        "sourceId": "src_a3d713a3b0ec0b57e158831e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:c9d1af5a1533bc44348b6addba8a88eea4f837776be05c90de62c8a3e4a4aae5",
+        "answerTextHash": "sha256:c2e85ec18509152e1d6bc0bc9e40d1a2669dce43b20bf8416c232527e78c1bb0"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_a3d713a3b0ec0b57e158831e",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2009/2009-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:c2e85ec18509152e1d6bc0bc9e40d1a2669dce43b20bf8416c232527e78c1bb0",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2009_bank",
+        "note": "Matched against local Baidu Netdisk 2009 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2009-004",
+      "number": 4,
+      "paperId": "politics-2009",
+      "paperName": "2009考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2009",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2009考研政治第4题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2009 考研政治真题及参考答案 PDF 内嵌答案标记；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2009/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2009考研政治试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2009/paper-page-01.jpg",
+          "caption": "答案原页 p.1",
+          "alt": "2009考研政治答案原页 p.1"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2009",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2009-paper-answer",
+      "sourceEvidenceId": "politics-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:66fc43d6efb4502258ce2b64a4c48918009c9a9419365da72520af13a8bd3cd4",
+      "answerTextHash": "sha256:898dfe56ec6417a9e4a63fc7181aef05836cf09e0853e5590478456c77a1bb03",
+      "sourceEvidence": {
+        "evidenceId": "politics-2009-q04",
+        "sourceId": "src_a3d713a3b0ec0b57e158831e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:66fc43d6efb4502258ce2b64a4c48918009c9a9419365da72520af13a8bd3cd4",
+        "answerTextHash": "sha256:898dfe56ec6417a9e4a63fc7181aef05836cf09e0853e5590478456c77a1bb03"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_a3d713a3b0ec0b57e158831e",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2009/2009-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:898dfe56ec6417a9e4a63fc7181aef05836cf09e0853e5590478456c77a1bb03",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2009_bank",
+        "note": "Matched against local Baidu Netdisk 2009 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2009-005",
+      "number": 5,
+      "paperId": "politics-2009",
+      "paperName": "2009考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2009",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2009考研政治第5题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2009 考研政治真题及参考答案 PDF 内嵌答案标记；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2009/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2009考研政治试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2009/paper-page-01.jpg",
+          "caption": "答案原页 p.1",
+          "alt": "2009考研政治答案原页 p.1"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2009",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2009-paper-answer",
+      "sourceEvidenceId": "politics-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:6c565255566fe552875559c3e98f8b087e4d549f598788ef31b4be9279857ef5",
+      "answerTextHash": "sha256:898dfe56ec6417a9e4a63fc7181aef05836cf09e0853e5590478456c77a1bb03",
+      "sourceEvidence": {
+        "evidenceId": "politics-2009-q05",
+        "sourceId": "src_a3d713a3b0ec0b57e158831e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:6c565255566fe552875559c3e98f8b087e4d549f598788ef31b4be9279857ef5",
+        "answerTextHash": "sha256:898dfe56ec6417a9e4a63fc7181aef05836cf09e0853e5590478456c77a1bb03"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_a3d713a3b0ec0b57e158831e",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2009/2009-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:898dfe56ec6417a9e4a63fc7181aef05836cf09e0853e5590478456c77a1bb03",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2009_bank",
+        "note": "Matched against local Baidu Netdisk 2009 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2009-006",
+      "number": 6,
+      "paperId": "politics-2009",
+      "paperName": "2009考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2009",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2009考研政治第6题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2009 考研政治真题及参考答案 PDF 内嵌答案标记；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2009/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2009考研政治试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2009/paper-page-01.jpg",
+          "caption": "答案原页 p.1",
+          "alt": "2009考研政治答案原页 p.1"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2009",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2009-paper-answer",
+      "sourceEvidenceId": "politics-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:71d5eef122cb306371379e3966196fb381992149bc3948939a412d78ba1ab4f5",
+      "answerTextHash": "sha256:4ed63e010b225ac71dcb1a7de3ad2cb9a9e94cdb0bc29b90e0262baf6e6de6dc",
+      "sourceEvidence": {
+        "evidenceId": "politics-2009-q06",
+        "sourceId": "src_a3d713a3b0ec0b57e158831e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:71d5eef122cb306371379e3966196fb381992149bc3948939a412d78ba1ab4f5",
+        "answerTextHash": "sha256:4ed63e010b225ac71dcb1a7de3ad2cb9a9e94cdb0bc29b90e0262baf6e6de6dc"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_a3d713a3b0ec0b57e158831e",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2009/2009-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:4ed63e010b225ac71dcb1a7de3ad2cb9a9e94cdb0bc29b90e0262baf6e6de6dc",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2009_bank",
+        "note": "Matched against local Baidu Netdisk 2009 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2009-007",
+      "number": 7,
+      "paperId": "politics-2009",
+      "paperName": "2009考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2009",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2009考研政治第7题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2009 考研政治真题及参考答案 PDF 内嵌答案标记；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2009/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2009考研政治试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2009/paper-page-02.jpg",
+          "caption": "答案原页 p.2",
+          "alt": "2009考研政治答案原页 p.2"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2009",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2009-paper-answer",
+      "sourceEvidenceId": "politics-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:bdfdc9a473cde14e7653d0724ed1f8d3d4182c6197043e8d843cd63db7605dae",
+      "answerTextHash": "sha256:988f0b57363bc9eb4a3739d0f1cfc3a27e6ffe285a76e0aefc5e0176a5fa4506",
+      "sourceEvidence": {
+        "evidenceId": "politics-2009-q07",
+        "sourceId": "src_a3d713a3b0ec0b57e158831e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:bdfdc9a473cde14e7653d0724ed1f8d3d4182c6197043e8d843cd63db7605dae",
+        "answerTextHash": "sha256:988f0b57363bc9eb4a3739d0f1cfc3a27e6ffe285a76e0aefc5e0176a5fa4506"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_a3d713a3b0ec0b57e158831e",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2009/2009-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:988f0b57363bc9eb4a3739d0f1cfc3a27e6ffe285a76e0aefc5e0176a5fa4506",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2009_bank",
+        "note": "Matched against local Baidu Netdisk 2009 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2009-008",
+      "number": 8,
+      "paperId": "politics-2009",
+      "paperName": "2009考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2009",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2009考研政治第8题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2009 考研政治真题及参考答案 PDF 内嵌答案标记；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2009/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2009考研政治试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2009/paper-page-02.jpg",
+          "caption": "答案原页 p.2",
+          "alt": "2009考研政治答案原页 p.2"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2009",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2009-paper-answer",
+      "sourceEvidenceId": "politics-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:e40e946b75cdb317384fedb8f5f625a5aecf6525ffb55237087c4a5e8f742b53",
+      "answerTextHash": "sha256:45caa87806081b2e5522d4efd653b8ac78ade52efa328931abce94987694589d",
+      "sourceEvidence": {
+        "evidenceId": "politics-2009-q08",
+        "sourceId": "src_a3d713a3b0ec0b57e158831e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:e40e946b75cdb317384fedb8f5f625a5aecf6525ffb55237087c4a5e8f742b53",
+        "answerTextHash": "sha256:45caa87806081b2e5522d4efd653b8ac78ade52efa328931abce94987694589d"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_a3d713a3b0ec0b57e158831e",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2009/2009-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:45caa87806081b2e5522d4efd653b8ac78ade52efa328931abce94987694589d",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2009_bank",
+        "note": "Matched against local Baidu Netdisk 2009 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2009-009",
+      "number": 9,
+      "paperId": "politics-2009",
+      "paperName": "2009考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2009",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2009考研政治第9题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2009 考研政治真题及参考答案 PDF 内嵌答案标记；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2009/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2009考研政治试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2009/paper-page-02.jpg",
+          "caption": "答案原页 p.2",
+          "alt": "2009考研政治答案原页 p.2"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2009",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2009-paper-answer",
+      "sourceEvidenceId": "politics-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:415595f28406a57ff3a55d41ba964f59a953f8bd949338c5dcd359c7f42abc40",
+      "answerTextHash": "sha256:45caa87806081b2e5522d4efd653b8ac78ade52efa328931abce94987694589d",
+      "sourceEvidence": {
+        "evidenceId": "politics-2009-q09",
+        "sourceId": "src_a3d713a3b0ec0b57e158831e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:415595f28406a57ff3a55d41ba964f59a953f8bd949338c5dcd359c7f42abc40",
+        "answerTextHash": "sha256:45caa87806081b2e5522d4efd653b8ac78ade52efa328931abce94987694589d"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_a3d713a3b0ec0b57e158831e",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2009/2009-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:45caa87806081b2e5522d4efd653b8ac78ade52efa328931abce94987694589d",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2009_bank",
+        "note": "Matched against local Baidu Netdisk 2009 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2009-010",
+      "number": 10,
+      "paperId": "politics-2009",
+      "paperName": "2009考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2009",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2009考研政治第10题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2009 考研政治真题及参考答案 PDF 内嵌答案标记；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2009/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2009考研政治试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2009/paper-page-02.jpg",
+          "caption": "答案原页 p.2",
+          "alt": "2009考研政治答案原页 p.2"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2009",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2009-paper-answer",
+      "sourceEvidenceId": "politics-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:9ca3ab2f68e521a35ff8524d243a958cb026d9f12fbda1dc19fb066249d9f039",
+      "answerTextHash": "sha256:988f0b57363bc9eb4a3739d0f1cfc3a27e6ffe285a76e0aefc5e0176a5fa4506",
+      "sourceEvidence": {
+        "evidenceId": "politics-2009-q10",
+        "sourceId": "src_a3d713a3b0ec0b57e158831e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:9ca3ab2f68e521a35ff8524d243a958cb026d9f12fbda1dc19fb066249d9f039",
+        "answerTextHash": "sha256:988f0b57363bc9eb4a3739d0f1cfc3a27e6ffe285a76e0aefc5e0176a5fa4506"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_a3d713a3b0ec0b57e158831e",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2009/2009-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:988f0b57363bc9eb4a3739d0f1cfc3a27e6ffe285a76e0aefc5e0176a5fa4506",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2009_bank",
+        "note": "Matched against local Baidu Netdisk 2009 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2009-011",
+      "number": 11,
+      "paperId": "politics-2009",
+      "paperName": "2009考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2009",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2009考研政治第11题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2009 考研政治真题及参考答案 PDF 内嵌答案标记；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2009/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2009考研政治试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2009/paper-page-02.jpg",
+          "caption": "答案原页 p.2",
+          "alt": "2009考研政治答案原页 p.2"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2009",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2009-paper-answer",
+      "sourceEvidenceId": "politics-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:95987012864dfe8279504d7db66821030ff98919943aa981b3a7adc4c20e2e52",
+      "answerTextHash": "sha256:676f513272f2e333598bd9369415789f5f816ae6a3759bcc8961ebfb350a34b2",
+      "sourceEvidence": {
+        "evidenceId": "politics-2009-q11",
+        "sourceId": "src_a3d713a3b0ec0b57e158831e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:95987012864dfe8279504d7db66821030ff98919943aa981b3a7adc4c20e2e52",
+        "answerTextHash": "sha256:676f513272f2e333598bd9369415789f5f816ae6a3759bcc8961ebfb350a34b2"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_a3d713a3b0ec0b57e158831e",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2009/2009-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:676f513272f2e333598bd9369415789f5f816ae6a3759bcc8961ebfb350a34b2",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2009_bank",
+        "note": "Matched against local Baidu Netdisk 2009 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2009-012",
+      "number": 12,
+      "paperId": "politics-2009",
+      "paperName": "2009考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2009",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2009考研政治第12题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2009 考研政治真题及参考答案 PDF 内嵌答案标记；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2009/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2009考研政治试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2009/paper-page-02.jpg",
+          "caption": "答案原页 p.2",
+          "alt": "2009考研政治答案原页 p.2"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2009",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2009-paper-answer",
+      "sourceEvidenceId": "politics-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:88df7af7d968b25f61c2c783fba48c5bc96af24668a77b509e63644a409c5faf",
+      "answerTextHash": "sha256:1b4ed64fbf07ecc3ef301dec4b6da6221886e24e888c978243015153eaa0f30a",
+      "sourceEvidence": {
+        "evidenceId": "politics-2009-q12",
+        "sourceId": "src_a3d713a3b0ec0b57e158831e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:88df7af7d968b25f61c2c783fba48c5bc96af24668a77b509e63644a409c5faf",
+        "answerTextHash": "sha256:1b4ed64fbf07ecc3ef301dec4b6da6221886e24e888c978243015153eaa0f30a"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_a3d713a3b0ec0b57e158831e",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2009/2009-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:1b4ed64fbf07ecc3ef301dec4b6da6221886e24e888c978243015153eaa0f30a",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2009_bank",
+        "note": "Matched against local Baidu Netdisk 2009 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2009-013",
+      "number": 13,
+      "paperId": "politics-2009",
+      "paperName": "2009考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2009",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2009考研政治第13题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2009 考研政治真题及参考答案 PDF 内嵌答案标记；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2009/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2009考研政治试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2009/paper-page-02.jpg",
+          "caption": "答案原页 p.2",
+          "alt": "2009考研政治答案原页 p.2"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2009",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2009-paper-answer",
+      "sourceEvidenceId": "politics-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:285b3cb8a8f9d1098ffc06851bd848d1d7b908640fb7b604d078922843990db7",
+      "answerTextHash": "sha256:676f513272f2e333598bd9369415789f5f816ae6a3759bcc8961ebfb350a34b2",
+      "sourceEvidence": {
+        "evidenceId": "politics-2009-q13",
+        "sourceId": "src_a3d713a3b0ec0b57e158831e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:285b3cb8a8f9d1098ffc06851bd848d1d7b908640fb7b604d078922843990db7",
+        "answerTextHash": "sha256:676f513272f2e333598bd9369415789f5f816ae6a3759bcc8961ebfb350a34b2"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_a3d713a3b0ec0b57e158831e",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2009/2009-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:676f513272f2e333598bd9369415789f5f816ae6a3759bcc8961ebfb350a34b2",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2009_bank",
+        "note": "Matched against local Baidu Netdisk 2009 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2009-014",
+      "number": 14,
+      "paperId": "politics-2009",
+      "paperName": "2009考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2009",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2009考研政治第14题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2009 考研政治真题及参考答案 PDF 内嵌答案标记；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2009/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2009考研政治试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2009/paper-page-03.jpg",
+          "caption": "答案原页 p.3",
+          "alt": "2009考研政治答案原页 p.3"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2009",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2009-paper-answer",
+      "sourceEvidenceId": "politics-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:ef8ab0fce5a3bc7241d044c594e6ab8176668ea64bd898e3dbf79042b12080be",
+      "answerTextHash": "sha256:0634ab203034f2c6374f15232206073cecbf4e9adb5bc8e37d45b9853b7f2948",
+      "sourceEvidence": {
+        "evidenceId": "politics-2009-q14",
+        "sourceId": "src_a3d713a3b0ec0b57e158831e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:ef8ab0fce5a3bc7241d044c594e6ab8176668ea64bd898e3dbf79042b12080be",
+        "answerTextHash": "sha256:0634ab203034f2c6374f15232206073cecbf4e9adb5bc8e37d45b9853b7f2948"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_a3d713a3b0ec0b57e158831e",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2009/2009-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:0634ab203034f2c6374f15232206073cecbf4e9adb5bc8e37d45b9853b7f2948",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2009_bank",
+        "note": "Matched against local Baidu Netdisk 2009 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2009-015",
+      "number": 15,
+      "paperId": "politics-2009",
+      "paperName": "2009考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2009",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2009考研政治第15题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2009 考研政治真题及参考答案 PDF 内嵌答案标记；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2009/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2009考研政治试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2009/paper-page-03.jpg",
+          "caption": "答案原页 p.3",
+          "alt": "2009考研政治答案原页 p.3"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2009",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2009-paper-answer",
+      "sourceEvidenceId": "politics-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:3935aca8564cc2a0ae0ec45c2597e575e0ac7f9cccb775e8d76e37307ea1b7e4",
+      "answerTextHash": "sha256:5366ae6fcc40a373c1eeff09793d22cc71b498d1a32633f1bdb78e984a2ac883",
+      "sourceEvidence": {
+        "evidenceId": "politics-2009-q15",
+        "sourceId": "src_a3d713a3b0ec0b57e158831e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:3935aca8564cc2a0ae0ec45c2597e575e0ac7f9cccb775e8d76e37307ea1b7e4",
+        "answerTextHash": "sha256:5366ae6fcc40a373c1eeff09793d22cc71b498d1a32633f1bdb78e984a2ac883"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_a3d713a3b0ec0b57e158831e",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2009/2009-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:5366ae6fcc40a373c1eeff09793d22cc71b498d1a32633f1bdb78e984a2ac883",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2009_bank",
+        "note": "Matched against local Baidu Netdisk 2009 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2009-016",
+      "number": 16,
+      "paperId": "politics-2009",
+      "paperName": "2009考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2009",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2009考研政治第16题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2009 考研政治真题及参考答案 PDF 内嵌答案标记；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2009/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2009考研政治试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2009/paper-page-03.jpg",
+          "caption": "答案原页 p.3",
+          "alt": "2009考研政治答案原页 p.3"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2009",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2009-paper-answer",
+      "sourceEvidenceId": "politics-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:0409be89f7c5f71ab5bdc4f8a5d8bb501db91358e806ec0cdd195946dea8525c",
+      "answerTextHash": "sha256:d866e836985ed7768dc852c419b0a0639c82cacb8d95deefa5b819c51e3d3918",
+      "sourceEvidence": {
+        "evidenceId": "politics-2009-q16",
+        "sourceId": "src_a3d713a3b0ec0b57e158831e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:0409be89f7c5f71ab5bdc4f8a5d8bb501db91358e806ec0cdd195946dea8525c",
+        "answerTextHash": "sha256:d866e836985ed7768dc852c419b0a0639c82cacb8d95deefa5b819c51e3d3918"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_a3d713a3b0ec0b57e158831e",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2009/2009-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:d866e836985ed7768dc852c419b0a0639c82cacb8d95deefa5b819c51e3d3918",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2009_bank",
+        "note": "Matched against local Baidu Netdisk 2009 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2009-017",
+      "number": 17,
+      "paperId": "politics-2009",
+      "paperName": "2009考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2009",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2009考研政治第17题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABD",
+      "explanation": "答案来自本地百度网盘 2009 考研政治真题及参考答案 PDF 内嵌答案标记；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2009/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2009考研政治试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2009/paper-page-03.jpg",
+          "caption": "答案原页 p.3",
+          "alt": "2009考研政治答案原页 p.3"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2009",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2009-paper-answer",
+      "sourceEvidenceId": "politics-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:5756685474fda913222dd03ed1adf7dda5d1fbde9ecd1f64fbea145fa0aeb830",
+      "answerTextHash": "sha256:adfd38349fbfff887892697da27a13b7010d19b383bff86bbfe265addd919594",
+      "sourceEvidence": {
+        "evidenceId": "politics-2009-q17",
+        "sourceId": "src_a3d713a3b0ec0b57e158831e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:5756685474fda913222dd03ed1adf7dda5d1fbde9ecd1f64fbea145fa0aeb830",
+        "answerTextHash": "sha256:adfd38349fbfff887892697da27a13b7010d19b383bff86bbfe265addd919594"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_a3d713a3b0ec0b57e158831e",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2009/2009-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:adfd38349fbfff887892697da27a13b7010d19b383bff86bbfe265addd919594",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2009_bank",
+        "note": "Matched against local Baidu Netdisk 2009 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2009-018",
+      "number": 18,
+      "paperId": "politics-2009",
+      "paperName": "2009考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2009",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2009考研政治第18题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ACD",
+      "explanation": "答案来自本地百度网盘 2009 考研政治真题及参考答案 PDF 内嵌答案标记；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2009/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2009考研政治试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2009/paper-page-03.jpg",
+          "caption": "答案原页 p.3",
+          "alt": "2009考研政治答案原页 p.3"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2009",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2009-paper-answer",
+      "sourceEvidenceId": "politics-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:9f49d7949068998b2af2af5f3155d9f4069d581d76364ac6bfd7f59cf0554367",
+      "answerTextHash": "sha256:e39e236b688edf1bd98dcc841b722c5c34aa0d4ca0542d664042bd331fc11fb6",
+      "sourceEvidence": {
+        "evidenceId": "politics-2009-q18",
+        "sourceId": "src_a3d713a3b0ec0b57e158831e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:9f49d7949068998b2af2af5f3155d9f4069d581d76364ac6bfd7f59cf0554367",
+        "answerTextHash": "sha256:e39e236b688edf1bd98dcc841b722c5c34aa0d4ca0542d664042bd331fc11fb6"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_a3d713a3b0ec0b57e158831e",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2009/2009-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:e39e236b688edf1bd98dcc841b722c5c34aa0d4ca0542d664042bd331fc11fb6",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2009_bank",
+        "note": "Matched against local Baidu Netdisk 2009 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2009-019",
+      "number": 19,
+      "paperId": "politics-2009",
+      "paperName": "2009考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2009",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2009考研政治第19题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "AC",
+      "explanation": "答案来自本地百度网盘 2009 考研政治真题及参考答案 PDF 内嵌答案标记；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2009/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2009考研政治试卷原页 p.3"
+        },
+        {
+          "src": "question-bank/politics-2009/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2009考研政治试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2009/paper-page-03.jpg",
+          "caption": "答案原页 p.3",
+          "alt": "2009考研政治答案原页 p.3"
+        },
+        {
+          "src": "question-bank/politics-2009/paper-page-04.jpg",
+          "caption": "答案原页 p.4",
+          "alt": "2009考研政治答案原页 p.4"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2009",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2009-paper-answer",
+      "sourceEvidenceId": "politics-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:324d8e71adaea3b59dbdc1a182a1140fd3aeb938cc28e784d40a353661edf422",
+      "answerTextHash": "sha256:7f5159ed5837f05e5f20c202ea9f22fa0d2e7b1cb5db18b75081a45492c8a695",
+      "sourceEvidence": {
+        "evidenceId": "politics-2009-q19",
+        "sourceId": "src_a3d713a3b0ec0b57e158831e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:324d8e71adaea3b59dbdc1a182a1140fd3aeb938cc28e784d40a353661edf422",
+        "answerTextHash": "sha256:7f5159ed5837f05e5f20c202ea9f22fa0d2e7b1cb5db18b75081a45492c8a695"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_a3d713a3b0ec0b57e158831e",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2009/2009-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:7f5159ed5837f05e5f20c202ea9f22fa0d2e7b1cb5db18b75081a45492c8a695",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2009_bank",
+        "note": "Matched against local Baidu Netdisk 2009 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2009-020",
+      "number": 20,
+      "paperId": "politics-2009",
+      "paperName": "2009考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2009",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2009考研政治第20题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "AB",
+      "explanation": "答案来自本地百度网盘 2009 考研政治真题及参考答案 PDF 内嵌答案标记；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2009/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2009考研政治试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2009/paper-page-04.jpg",
+          "caption": "答案原页 p.4",
+          "alt": "2009考研政治答案原页 p.4"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2009",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2009-paper-answer",
+      "sourceEvidenceId": "politics-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:b7fccd061717880f31261edf0adb1350a30c14d2230e01d5672ce9f0be05b429",
+      "answerTextHash": "sha256:3e9f0cff3d8667cd6306415258b03490825f36a7a194b5741a6398ccf7fd3920",
+      "sourceEvidence": {
+        "evidenceId": "politics-2009-q20",
+        "sourceId": "src_a3d713a3b0ec0b57e158831e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:b7fccd061717880f31261edf0adb1350a30c14d2230e01d5672ce9f0be05b429",
+        "answerTextHash": "sha256:3e9f0cff3d8667cd6306415258b03490825f36a7a194b5741a6398ccf7fd3920"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_a3d713a3b0ec0b57e158831e",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2009/2009-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:3e9f0cff3d8667cd6306415258b03490825f36a7a194b5741a6398ccf7fd3920",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2009_bank",
+        "note": "Matched against local Baidu Netdisk 2009 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2009-021",
+      "number": 21,
+      "paperId": "politics-2009",
+      "paperName": "2009考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2009",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2009考研政治第21题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABCD",
+      "explanation": "答案来自本地百度网盘 2009 考研政治真题及参考答案 PDF 内嵌答案标记；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2009/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2009考研政治试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2009/paper-page-04.jpg",
+          "caption": "答案原页 p.4",
+          "alt": "2009考研政治答案原页 p.4"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2009",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2009-paper-answer",
+      "sourceEvidenceId": "politics-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:709f176a01d4265ae573f77c722369a068c91e1b140fccf7cddde14c62e5c346",
+      "answerTextHash": "sha256:fdbaa05e57dd927a01100a519a14fb80c49d3e4876cb7f1c7485a416a05e387a",
+      "sourceEvidence": {
+        "evidenceId": "politics-2009-q21",
+        "sourceId": "src_a3d713a3b0ec0b57e158831e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:709f176a01d4265ae573f77c722369a068c91e1b140fccf7cddde14c62e5c346",
+        "answerTextHash": "sha256:fdbaa05e57dd927a01100a519a14fb80c49d3e4876cb7f1c7485a416a05e387a"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_a3d713a3b0ec0b57e158831e",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2009/2009-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:fdbaa05e57dd927a01100a519a14fb80c49d3e4876cb7f1c7485a416a05e387a",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2009_bank",
+        "note": "Matched against local Baidu Netdisk 2009 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2009-022",
+      "number": 22,
+      "paperId": "politics-2009",
+      "paperName": "2009考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2009",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2009考研政治第22题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ACD",
+      "explanation": "答案来自本地百度网盘 2009 考研政治真题及参考答案 PDF 内嵌答案标记；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2009/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2009考研政治试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2009/paper-page-04.jpg",
+          "caption": "答案原页 p.4",
+          "alt": "2009考研政治答案原页 p.4"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2009",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2009-paper-answer",
+      "sourceEvidenceId": "politics-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:90c4579d48dc53c106e1a7f670f11e81dfc4d5cd8040a84e51f894fb4108ac0c",
+      "answerTextHash": "sha256:b0215112f58a094920c641a6f01c17262d03f9287b9c3276424246db2e32f7c0",
+      "sourceEvidence": {
+        "evidenceId": "politics-2009-q22",
+        "sourceId": "src_a3d713a3b0ec0b57e158831e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:90c4579d48dc53c106e1a7f670f11e81dfc4d5cd8040a84e51f894fb4108ac0c",
+        "answerTextHash": "sha256:b0215112f58a094920c641a6f01c17262d03f9287b9c3276424246db2e32f7c0"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_a3d713a3b0ec0b57e158831e",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2009/2009-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:b0215112f58a094920c641a6f01c17262d03f9287b9c3276424246db2e32f7c0",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2009_bank",
+        "note": "Matched against local Baidu Netdisk 2009 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2009-023",
+      "number": 23,
+      "paperId": "politics-2009",
+      "paperName": "2009考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2009",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2009考研政治第23题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "BCD",
+      "explanation": "答案来自本地百度网盘 2009 考研政治真题及参考答案 PDF 内嵌答案标记；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2009/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2009考研政治试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2009/paper-page-04.jpg",
+          "caption": "答案原页 p.4",
+          "alt": "2009考研政治答案原页 p.4"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2009",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2009-paper-answer",
+      "sourceEvidenceId": "politics-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:eb119f4910317d2bc60e1a2c15d8d3e842b0d54f22eb54cb9790a32d3d909c30",
+      "answerTextHash": "sha256:310451338b4d917b1190e906193165fb13304c1e97535d8ad38f4b2c16ed93ce",
+      "sourceEvidence": {
+        "evidenceId": "politics-2009-q23",
+        "sourceId": "src_a3d713a3b0ec0b57e158831e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:eb119f4910317d2bc60e1a2c15d8d3e842b0d54f22eb54cb9790a32d3d909c30",
+        "answerTextHash": "sha256:310451338b4d917b1190e906193165fb13304c1e97535d8ad38f4b2c16ed93ce"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_a3d713a3b0ec0b57e158831e",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2009/2009-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:310451338b4d917b1190e906193165fb13304c1e97535d8ad38f4b2c16ed93ce",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2009_bank",
+        "note": "Matched against local Baidu Netdisk 2009 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2009-024",
+      "number": 24,
+      "paperId": "politics-2009",
+      "paperName": "2009考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2009",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2009考研政治第24题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ACD",
+      "explanation": "答案来自本地百度网盘 2009 考研政治真题及参考答案 PDF 内嵌答案标记；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2009/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2009考研政治试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2009/paper-page-04.jpg",
+          "caption": "答案原页 p.4",
+          "alt": "2009考研政治答案原页 p.4"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2009",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2009-paper-answer",
+      "sourceEvidenceId": "politics-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:8cfe610f12873f343661682289bf7dbc0ba43e974a4e81ea3e29a052644db808",
+      "answerTextHash": "sha256:b0215112f58a094920c641a6f01c17262d03f9287b9c3276424246db2e32f7c0",
+      "sourceEvidence": {
+        "evidenceId": "politics-2009-q24",
+        "sourceId": "src_a3d713a3b0ec0b57e158831e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:8cfe610f12873f343661682289bf7dbc0ba43e974a4e81ea3e29a052644db808",
+        "answerTextHash": "sha256:b0215112f58a094920c641a6f01c17262d03f9287b9c3276424246db2e32f7c0"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_a3d713a3b0ec0b57e158831e",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2009/2009-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:b0215112f58a094920c641a6f01c17262d03f9287b9c3276424246db2e32f7c0",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2009_bank",
+        "note": "Matched against local Baidu Netdisk 2009 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2009-025",
+      "number": 25,
+      "paperId": "politics-2009",
+      "paperName": "2009考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2009",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2009考研政治第25题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "BCD",
+      "explanation": "答案来自本地百度网盘 2009 考研政治真题及参考答案 PDF 内嵌答案标记；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2009/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2009考研政治试卷原页 p.4"
+        },
+        {
+          "src": "question-bank/politics-2009/paper-page-05.jpg",
+          "caption": "试卷原页 p.5",
+          "alt": "2009考研政治试卷原页 p.5"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2009/paper-page-04.jpg",
+          "caption": "答案原页 p.4",
+          "alt": "2009考研政治答案原页 p.4"
+        },
+        {
+          "src": "question-bank/politics-2009/paper-page-05.jpg",
+          "caption": "答案原页 p.5",
+          "alt": "2009考研政治答案原页 p.5"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2009",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2009-paper-answer",
+      "sourceEvidenceId": "politics-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:f8b2ac1e778d54840e7b7d9f803908764fc21757dbec0408a4cd4078b7c6b3af",
+      "answerTextHash": "sha256:af33a92d357071ed4d0a3eff25c910e587325eb59085ec82cf636736eb472a0c",
+      "sourceEvidence": {
+        "evidenceId": "politics-2009-q25",
+        "sourceId": "src_a3d713a3b0ec0b57e158831e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:f8b2ac1e778d54840e7b7d9f803908764fc21757dbec0408a4cd4078b7c6b3af",
+        "answerTextHash": "sha256:af33a92d357071ed4d0a3eff25c910e587325eb59085ec82cf636736eb472a0c"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_a3d713a3b0ec0b57e158831e",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2009/2009-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:af33a92d357071ed4d0a3eff25c910e587325eb59085ec82cf636736eb472a0c",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2009_bank",
+        "note": "Matched against local Baidu Netdisk 2009 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2009-026",
+      "number": 26,
+      "paperId": "politics-2009",
+      "paperName": "2009考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2009",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2009考研政治第26题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "BC",
+      "explanation": "答案来自本地百度网盘 2009 考研政治真题及参考答案 PDF 内嵌答案标记；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2009/paper-page-05.jpg",
+          "caption": "试卷原页 p.5",
+          "alt": "2009考研政治试卷原页 p.5"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2009/paper-page-05.jpg",
+          "caption": "答案原页 p.5",
+          "alt": "2009考研政治答案原页 p.5"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2009",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2009-paper-answer",
+      "sourceEvidenceId": "politics-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:fa237c8dbffb22e482094856d16f7dbee94e2ac969af7095deef374ea722577a",
+      "answerTextHash": "sha256:9ad24b949df15f3b82047096898ec2a03abfce16b003c92829ffa30bc7f9ff91",
+      "sourceEvidence": {
+        "evidenceId": "politics-2009-q26",
+        "sourceId": "src_a3d713a3b0ec0b57e158831e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:fa237c8dbffb22e482094856d16f7dbee94e2ac969af7095deef374ea722577a",
+        "answerTextHash": "sha256:9ad24b949df15f3b82047096898ec2a03abfce16b003c92829ffa30bc7f9ff91"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_a3d713a3b0ec0b57e158831e",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2009/2009-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:9ad24b949df15f3b82047096898ec2a03abfce16b003c92829ffa30bc7f9ff91",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2009_bank",
+        "note": "Matched against local Baidu Netdisk 2009 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2009-027",
+      "number": 27,
+      "paperId": "politics-2009",
+      "paperName": "2009考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2009",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2009考研政治第27题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABC",
+      "explanation": "答案来自本地百度网盘 2009 考研政治真题及参考答案 PDF 内嵌答案标记；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2009/paper-page-05.jpg",
+          "caption": "试卷原页 p.5",
+          "alt": "2009考研政治试卷原页 p.5"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2009/paper-page-05.jpg",
+          "caption": "答案原页 p.5",
+          "alt": "2009考研政治答案原页 p.5"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2009",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2009-paper-answer",
+      "sourceEvidenceId": "politics-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:32b240c1516dfc3b714f180ad4c4206940232adc2f71e1165cca8903d349a8ef",
+      "answerTextHash": "sha256:ea36374f6b2fc3110cee660246058638b635f3ee7f233e28f629a65f08622d7a",
+      "sourceEvidence": {
+        "evidenceId": "politics-2009-q27",
+        "sourceId": "src_a3d713a3b0ec0b57e158831e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:32b240c1516dfc3b714f180ad4c4206940232adc2f71e1165cca8903d349a8ef",
+        "answerTextHash": "sha256:ea36374f6b2fc3110cee660246058638b635f3ee7f233e28f629a65f08622d7a"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_a3d713a3b0ec0b57e158831e",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2009/2009-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:ea36374f6b2fc3110cee660246058638b635f3ee7f233e28f629a65f08622d7a",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2009_bank",
+        "note": "Matched against local Baidu Netdisk 2009 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2009-028",
+      "number": 28,
+      "paperId": "politics-2009",
+      "paperName": "2009考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2009",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2009考研政治第28题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABD",
+      "explanation": "答案来自本地百度网盘 2009 考研政治真题及参考答案 PDF 内嵌答案标记；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2009/paper-page-05.jpg",
+          "caption": "试卷原页 p.5",
+          "alt": "2009考研政治试卷原页 p.5"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2009/paper-page-05.jpg",
+          "caption": "答案原页 p.5",
+          "alt": "2009考研政治答案原页 p.5"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2009",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2009-paper-answer",
+      "sourceEvidenceId": "politics-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:5df4bc7c7b815fb79a8877b73e2c7d169aa5b8d32a0e5c6aa043545af7400815",
+      "answerTextHash": "sha256:e16db55c46d31a55905a882998938b1aab7879cf4a4776aacd9a9ce4532a1265",
+      "sourceEvidence": {
+        "evidenceId": "politics-2009-q28",
+        "sourceId": "src_a3d713a3b0ec0b57e158831e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:5df4bc7c7b815fb79a8877b73e2c7d169aa5b8d32a0e5c6aa043545af7400815",
+        "answerTextHash": "sha256:e16db55c46d31a55905a882998938b1aab7879cf4a4776aacd9a9ce4532a1265"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_a3d713a3b0ec0b57e158831e",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2009/2009-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:e16db55c46d31a55905a882998938b1aab7879cf4a4776aacd9a9ce4532a1265",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2009_bank",
+        "note": "Matched against local Baidu Netdisk 2009 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2009-029",
+      "number": 29,
+      "paperId": "politics-2009",
+      "paperName": "2009考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2009",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2009考研政治第29题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "BD",
+      "explanation": "答案来自本地百度网盘 2009 考研政治真题及参考答案 PDF 内嵌答案标记；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2009/paper-page-05.jpg",
+          "caption": "试卷原页 p.5",
+          "alt": "2009考研政治试卷原页 p.5"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2009/paper-page-05.jpg",
+          "caption": "答案原页 p.5",
+          "alt": "2009考研政治答案原页 p.5"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2009",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2009-paper-answer",
+      "sourceEvidenceId": "politics-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:c19481cad18bf5585e4b7307ab73b35ddca46f93a4d20e2cc498191172371777",
+      "answerTextHash": "sha256:ef76b2a52e1d2a649e7cb9246376ee6b20800c3ebdbe4b604c6fa16bbe158e72",
+      "sourceEvidence": {
+        "evidenceId": "politics-2009-q29",
+        "sourceId": "src_a3d713a3b0ec0b57e158831e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:c19481cad18bf5585e4b7307ab73b35ddca46f93a4d20e2cc498191172371777",
+        "answerTextHash": "sha256:ef76b2a52e1d2a649e7cb9246376ee6b20800c3ebdbe4b604c6fa16bbe158e72"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_a3d713a3b0ec0b57e158831e",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2009/2009-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:ef76b2a52e1d2a649e7cb9246376ee6b20800c3ebdbe4b604c6fa16bbe158e72",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2009_bank",
+        "note": "Matched against local Baidu Netdisk 2009 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2009-030",
+      "number": 30,
+      "paperId": "politics-2009",
+      "paperName": "2009考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2009",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2009考研政治第30题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABC",
+      "explanation": "答案来自本地百度网盘 2009 考研政治真题及参考答案 PDF 内嵌答案标记；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2009/paper-page-05.jpg",
+          "caption": "试卷原页 p.5",
+          "alt": "2009考研政治试卷原页 p.5"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2009/paper-page-05.jpg",
+          "caption": "答案原页 p.5",
+          "alt": "2009考研政治答案原页 p.5"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2009",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2009-paper-answer",
+      "sourceEvidenceId": "politics-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:2a78f26394ac2050ff6596abd1d2e3edc5df257133e602d0ef407e39809cb9f3",
+      "answerTextHash": "sha256:ea36374f6b2fc3110cee660246058638b635f3ee7f233e28f629a65f08622d7a",
+      "sourceEvidence": {
+        "evidenceId": "politics-2009-q30",
+        "sourceId": "src_a3d713a3b0ec0b57e158831e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:2a78f26394ac2050ff6596abd1d2e3edc5df257133e602d0ef407e39809cb9f3",
+        "answerTextHash": "sha256:ea36374f6b2fc3110cee660246058638b635f3ee7f233e28f629a65f08622d7a"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_a3d713a3b0ec0b57e158831e",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2009/2009-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:ea36374f6b2fc3110cee660246058638b635f3ee7f233e28f629a65f08622d7a",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2009_bank",
+        "note": "Matched against local Baidu Netdisk 2009 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2009-031",
+      "number": 31,
+      "paperId": "politics-2009",
+      "paperName": "2009考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2009",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2009考研政治第31题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABCD",
+      "explanation": "答案来自本地百度网盘 2009 考研政治真题及参考答案 PDF 内嵌答案标记；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2009/paper-page-05.jpg",
+          "caption": "试卷原页 p.5",
+          "alt": "2009考研政治试卷原页 p.5"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2009/paper-page-05.jpg",
+          "caption": "答案原页 p.5",
+          "alt": "2009考研政治答案原页 p.5"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2009",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2009-paper-answer",
+      "sourceEvidenceId": "politics-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:b34f6daef374d20c0bb5542b0c1071a245d2ad68f894ba68efa0a70b4cc87bb3",
+      "answerTextHash": "sha256:7016334264f2662310128fd93db7a7e15fcd83677432a606bc7281b50e994407",
+      "sourceEvidence": {
+        "evidenceId": "politics-2009-q31",
+        "sourceId": "src_a3d713a3b0ec0b57e158831e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:b34f6daef374d20c0bb5542b0c1071a245d2ad68f894ba68efa0a70b4cc87bb3",
+        "answerTextHash": "sha256:7016334264f2662310128fd93db7a7e15fcd83677432a606bc7281b50e994407"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_a3d713a3b0ec0b57e158831e",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2009/2009-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:7016334264f2662310128fd93db7a7e15fcd83677432a606bc7281b50e994407",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2009_bank",
+        "note": "Matched against local Baidu Netdisk 2009 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2009-032",
+      "number": 32,
+      "paperId": "politics-2009",
+      "paperName": "2009考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2009",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2009考研政治第32题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABCD",
+      "explanation": "答案来自本地百度网盘 2009 考研政治真题及参考答案 PDF 内嵌答案标记；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2009/paper-page-06.jpg",
+          "caption": "试卷原页 p.6",
+          "alt": "2009考研政治试卷原页 p.6"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2009/paper-page-06.jpg",
+          "caption": "答案原页 p.6",
+          "alt": "2009考研政治答案原页 p.6"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2009",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2009-paper-answer",
+      "sourceEvidenceId": "politics-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:34e0a9e7a3d677589b34f6b093187912df33d99552fa039d40722cc3f7dbf686",
+      "answerTextHash": "sha256:7a4657b05caff1e1c607e1acb4c45bebf4336d804408acbe49dc1ba174a7edd2",
+      "sourceEvidence": {
+        "evidenceId": "politics-2009-q32",
+        "sourceId": "src_a3d713a3b0ec0b57e158831e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:34e0a9e7a3d677589b34f6b093187912df33d99552fa039d40722cc3f7dbf686",
+        "answerTextHash": "sha256:7a4657b05caff1e1c607e1acb4c45bebf4336d804408acbe49dc1ba174a7edd2"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_a3d713a3b0ec0b57e158831e",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2009/2009-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:7a4657b05caff1e1c607e1acb4c45bebf4336d804408acbe49dc1ba174a7edd2",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2009_bank",
+        "note": "Matched against local Baidu Netdisk 2009 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2009-033",
+      "number": 33,
+      "paperId": "politics-2009",
+      "paperName": "2009考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2009",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2009考研政治第33题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "BCD",
+      "explanation": "答案来自本地百度网盘 2009 考研政治真题及参考答案 PDF 内嵌答案标记；完整题干和选项见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2009/paper-page-06.jpg",
+          "caption": "试卷原页 p.6",
+          "alt": "2009考研政治试卷原页 p.6"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2009/paper-page-06.jpg",
+          "caption": "答案原页 p.6",
+          "alt": "2009考研政治答案原页 p.6"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2009",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2009-paper-answer",
+      "sourceEvidenceId": "politics-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:08add6cf9ad06820248cd35952e7dc7e107ab8958d4e008c40d2673cb413ccd1",
+      "answerTextHash": "sha256:fc55814b772e923b37927b32230c74b2450179b9eb767be2fe815bda3aad25c4",
+      "sourceEvidence": {
+        "evidenceId": "politics-2009-q33",
+        "sourceId": "src_a3d713a3b0ec0b57e158831e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:08add6cf9ad06820248cd35952e7dc7e107ab8958d4e008c40d2673cb413ccd1",
+        "answerTextHash": "sha256:fc55814b772e923b37927b32230c74b2450179b9eb767be2fe815bda3aad25c4"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_inline_answer_key",
+        "sourceId": "src_a3d713a3b0ec0b57e158831e",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2009/2009-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:fc55814b772e923b37927b32230c74b2450179b9eb767be2fe815bda3aad25c4",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2009_bank",
+        "note": "Matched against local Baidu Netdisk 2009 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2009-034",
+      "number": 34,
+      "paperId": "politics-2009",
+      "paperName": "2009考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2009",
+      "section": "分析题",
+      "type": "analysis",
+      "question": "2009考研政治第34题（分析题）。题干、选项和材料以试卷原页图为准。",
+      "options": [],
+      "answer": "分析题参考答案要点见答案原页 p.6-p.7。",
+      "explanation": "参考答案来自本地百度网盘 2009 考研政治真题及参考答案 PDF；完整答案要点见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2009/paper-page-06.jpg",
+          "caption": "试卷原页 p.6",
+          "alt": "2009考研政治试卷原页 p.6"
+        },
+        {
+          "src": "question-bank/politics-2009/paper-page-07.jpg",
+          "caption": "试卷原页 p.7",
+          "alt": "2009考研政治试卷原页 p.7"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2009/paper-page-06.jpg",
+          "caption": "答案原页 p.6",
+          "alt": "2009考研政治答案原页 p.6"
+        },
+        {
+          "src": "question-bank/politics-2009/paper-page-07.jpg",
+          "caption": "答案原页 p.7",
+          "alt": "2009考研政治答案原页 p.7"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2009",
+        "分析题"
+      ],
+      "difficulty": 3,
+      "source": "politics-2009-paper-answer",
+      "sourceEvidenceId": "politics-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:ecc8244fd02171ff0ffc83d4206c4a08cb5adb0766afcc1dccf78352617a7f14",
+      "answerTextHash": "sha256:9c35c4c48cb647c51c27148c7762c1d2d9f6bb364a6e1d8dcd2fad4ccd123782",
+      "sourceEvidence": {
+        "evidenceId": "politics-2009-q34",
+        "sourceId": "src_a3d713a3b0ec0b57e158831e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:ecc8244fd02171ff0ffc83d4206c4a08cb5adb0766afcc1dccf78352617a7f14",
+        "answerTextHash": "sha256:9c35c4c48cb647c51c27148c7762c1d2d9f6bb364a6e1d8dcd2fad4ccd123782"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_reference_answer",
+        "sourceId": "src_a3d713a3b0ec0b57e158831e",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2009/2009-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:9c35c4c48cb647c51c27148c7762c1d2d9f6bb364a6e1d8dcd2fad4ccd123782",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2009_bank",
+        "note": "Matched against local Baidu Netdisk 2009 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2009-035",
+      "number": 35,
+      "paperId": "politics-2009",
+      "paperName": "2009考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2009",
+      "section": "分析题",
+      "type": "analysis",
+      "question": "2009考研政治第35题（分析题）。题干、选项和材料以试卷原页图为准。",
+      "options": [],
+      "answer": "分析题参考答案要点见答案原页 p.7-p.8。",
+      "explanation": "参考答案来自本地百度网盘 2009 考研政治真题及参考答案 PDF；完整答案要点见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2009/paper-page-07.jpg",
+          "caption": "试卷原页 p.7",
+          "alt": "2009考研政治试卷原页 p.7"
+        },
+        {
+          "src": "question-bank/politics-2009/paper-page-08.jpg",
+          "caption": "试卷原页 p.8",
+          "alt": "2009考研政治试卷原页 p.8"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2009/paper-page-07.jpg",
+          "caption": "答案原页 p.7",
+          "alt": "2009考研政治答案原页 p.7"
+        },
+        {
+          "src": "question-bank/politics-2009/paper-page-08.jpg",
+          "caption": "答案原页 p.8",
+          "alt": "2009考研政治答案原页 p.8"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2009",
+        "分析题"
+      ],
+      "difficulty": 3,
+      "source": "politics-2009-paper-answer",
+      "sourceEvidenceId": "politics-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:e670c4dbda4c9faf8711ba8cbb6725d5e81301e9a56be707b7d58bdc33d34220",
+      "answerTextHash": "sha256:e9f71d0a7540de69ab8966faa76ea57780bca18348da61ef6155d315c9f74dd2",
+      "sourceEvidence": {
+        "evidenceId": "politics-2009-q35",
+        "sourceId": "src_a3d713a3b0ec0b57e158831e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:e670c4dbda4c9faf8711ba8cbb6725d5e81301e9a56be707b7d58bdc33d34220",
+        "answerTextHash": "sha256:e9f71d0a7540de69ab8966faa76ea57780bca18348da61ef6155d315c9f74dd2"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_reference_answer",
+        "sourceId": "src_a3d713a3b0ec0b57e158831e",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2009/2009-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:e9f71d0a7540de69ab8966faa76ea57780bca18348da61ef6155d315c9f74dd2",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2009_bank",
+        "note": "Matched against local Baidu Netdisk 2009 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2009-036",
+      "number": 36,
+      "paperId": "politics-2009",
+      "paperName": "2009考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2009",
+      "section": "分析题",
+      "type": "analysis",
+      "question": "2009考研政治第36题（分析题）。题干、选项和材料以试卷原页图为准。",
+      "options": [],
+      "answer": "分析题参考答案要点见答案原页 p.8-p.9。",
+      "explanation": "参考答案来自本地百度网盘 2009 考研政治真题及参考答案 PDF；完整答案要点见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2009/paper-page-08.jpg",
+          "caption": "试卷原页 p.8",
+          "alt": "2009考研政治试卷原页 p.8"
+        },
+        {
+          "src": "question-bank/politics-2009/paper-page-09.jpg",
+          "caption": "试卷原页 p.9",
+          "alt": "2009考研政治试卷原页 p.9"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2009/paper-page-08.jpg",
+          "caption": "答案原页 p.8",
+          "alt": "2009考研政治答案原页 p.8"
+        },
+        {
+          "src": "question-bank/politics-2009/paper-page-09.jpg",
+          "caption": "答案原页 p.9",
+          "alt": "2009考研政治答案原页 p.9"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2009",
+        "分析题"
+      ],
+      "difficulty": 3,
+      "source": "politics-2009-paper-answer",
+      "sourceEvidenceId": "politics-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:c7681b0c4981cac30b7a0c84f761ba40bd4c5257774ecc2f661b17a6ff6582f0",
+      "answerTextHash": "sha256:cf6c50d5ab0b7b5e531be12591d429647b44733cce8e5c534df482fd4a37f349",
+      "sourceEvidence": {
+        "evidenceId": "politics-2009-q36",
+        "sourceId": "src_a3d713a3b0ec0b57e158831e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:c7681b0c4981cac30b7a0c84f761ba40bd4c5257774ecc2f661b17a6ff6582f0",
+        "answerTextHash": "sha256:cf6c50d5ab0b7b5e531be12591d429647b44733cce8e5c534df482fd4a37f349"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_reference_answer",
+        "sourceId": "src_a3d713a3b0ec0b57e158831e",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2009/2009-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:cf6c50d5ab0b7b5e531be12591d429647b44733cce8e5c534df482fd4a37f349",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2009_bank",
+        "note": "Matched against local Baidu Netdisk 2009 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2009-037",
+      "number": 37,
+      "paperId": "politics-2009",
+      "paperName": "2009考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2009",
+      "section": "分析题",
+      "type": "analysis",
+      "question": "2009考研政治第37题（分析题）。题干、选项和材料以试卷原页图为准。",
+      "options": [],
+      "answer": "分析题参考答案要点见答案原页 p.9-p.10。",
+      "explanation": "参考答案来自本地百度网盘 2009 考研政治真题及参考答案 PDF；完整答案要点见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2009/paper-page-09.jpg",
+          "caption": "试卷原页 p.9",
+          "alt": "2009考研政治试卷原页 p.9"
+        },
+        {
+          "src": "question-bank/politics-2009/paper-page-10.jpg",
+          "caption": "试卷原页 p.10",
+          "alt": "2009考研政治试卷原页 p.10"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2009/paper-page-09.jpg",
+          "caption": "答案原页 p.9",
+          "alt": "2009考研政治答案原页 p.9"
+        },
+        {
+          "src": "question-bank/politics-2009/paper-page-10.jpg",
+          "caption": "答案原页 p.10",
+          "alt": "2009考研政治答案原页 p.10"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2009",
+        "分析题"
+      ],
+      "difficulty": 3,
+      "source": "politics-2009-paper-answer",
+      "sourceEvidenceId": "politics-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:2e2b588625ed231807f954f0ffa57e85ac157443946feef4ab82b96d39a65024",
+      "answerTextHash": "sha256:f78cd670ad3872ebde0022cbef99bb8a098c7edd6c8b52dab3a4b7b315bcb1db",
+      "sourceEvidence": {
+        "evidenceId": "politics-2009-q37",
+        "sourceId": "src_a3d713a3b0ec0b57e158831e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:2e2b588625ed231807f954f0ffa57e85ac157443946feef4ab82b96d39a65024",
+        "answerTextHash": "sha256:f78cd670ad3872ebde0022cbef99bb8a098c7edd6c8b52dab3a4b7b315bcb1db"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_reference_answer",
+        "sourceId": "src_a3d713a3b0ec0b57e158831e",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2009/2009-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:f78cd670ad3872ebde0022cbef99bb8a098c7edd6c8b52dab3a4b7b315bcb1db",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2009_bank",
+        "note": "Matched against local Baidu Netdisk 2009 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2009-038",
+      "number": 38,
+      "paperId": "politics-2009",
+      "paperName": "2009考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2009",
+      "section": "分析题",
+      "type": "analysis",
+      "question": "2009考研政治第38题（分析题）。题干、选项和材料以试卷原页图为准。",
+      "options": [],
+      "answer": "选做分析题参考答案要点见答案原页 p.10-p.11。",
+      "explanation": "参考答案来自本地百度网盘 2009 考研政治真题及参考答案 PDF；完整答案要点见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2009/paper-page-10.jpg",
+          "caption": "试卷原页 p.10",
+          "alt": "2009考研政治试卷原页 p.10"
+        },
+        {
+          "src": "question-bank/politics-2009/paper-page-11.jpg",
+          "caption": "试卷原页 p.11",
+          "alt": "2009考研政治试卷原页 p.11"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2009/paper-page-10.jpg",
+          "caption": "答案原页 p.10",
+          "alt": "2009考研政治答案原页 p.10"
+        },
+        {
+          "src": "question-bank/politics-2009/paper-page-11.jpg",
+          "caption": "答案原页 p.11",
+          "alt": "2009考研政治答案原页 p.11"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2009",
+        "分析题"
+      ],
+      "difficulty": 3,
+      "source": "politics-2009-paper-answer",
+      "sourceEvidenceId": "politics-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:fff7580bacbfc1a92acb790375b74e486079665611d3059b9ac93aeb46332132",
+      "answerTextHash": "sha256:7f9505f27cfed77a0ad879dd50fccae4d70453d2de057a8f9d905591268e08a2",
+      "sourceEvidence": {
+        "evidenceId": "politics-2009-q38",
+        "sourceId": "src_a3d713a3b0ec0b57e158831e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:fff7580bacbfc1a92acb790375b74e486079665611d3059b9ac93aeb46332132",
+        "answerTextHash": "sha256:7f9505f27cfed77a0ad879dd50fccae4d70453d2de057a8f9d905591268e08a2"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_reference_answer",
+        "sourceId": "src_a3d713a3b0ec0b57e158831e",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2009/2009-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:7f9505f27cfed77a0ad879dd50fccae4d70453d2de057a8f9d905591268e08a2",
+        "method": "local_pdf_ocr_confirmed_page_image",
+        "verifiedBy": "build_politics_2009_bank",
+        "note": "Matched against local Baidu Netdisk 2009 Politics paper-answer PDF."
+      }
+    }
+  ]
+}

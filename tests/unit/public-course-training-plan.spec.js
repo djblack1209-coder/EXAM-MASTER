@@ -27,10 +27,12 @@ describe('public course training plan', () => {
     expect(plan.summary.requiredSlots).toBe(132);
     expect(plan.weeklyTasks).toHaveLength(7);
     expect(plan.today.track).toBe('english2');
-    expect(plan.today.status).toBe('pending');
+    expect(plan.today.status).toBe('ready');
     expect(plan.weeklyTasks.find((task) => task.track === 'english1').status).toBe('ready');
-    expect(plan.weeklyTasks.find((task) => task.track === 'politics').status).toBe('pending');
-    expect(plan.weeklyTasks.find((task) => task.track === 'math2').status).toBe('pending');
+    expect(plan.weeklyTasks.find((task) => task.track === 'math1').status).toBe('ready');
+    expect(plan.weeklyTasks.find((task) => task.track === 'politics').status).toBe('ready');
+    expect(plan.weeklyTasks.find((task) => task.track === 'math2').status).toBe('ready');
+    expect(plan.weeklyTasks.find((task) => task.track === 'math3').status).toBe('pending');
     expect(plan.rules.join('\n')).toContain('英语阅读先读完整文章');
   });
 });
