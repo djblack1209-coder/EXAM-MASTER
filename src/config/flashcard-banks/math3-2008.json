@@ -1,0 +1,1392 @@
+{
+  "id": "math3-2008",
+  "source": "math3-2008-paper-answer",
+  "paperId": "math3-2008",
+  "paperName": "2008考研数学三真题",
+  "subject": "数学",
+  "subjectKey": "math",
+  "track": "math3",
+  "year": "2008",
+  "quality": "ready",
+  "publicationStatus": "published",
+  "publicationBlockers": [],
+  "sourceEvidencePolicy": "baidu_netdisk_official_paper_pdf_page_image_v1",
+  "sourceFiles": [
+    {
+      "id": "math3-2008-paper-answer",
+      "role": "paper_answer",
+      "localPath": "data/raw-inbox/public-course-history/math3/2008/2008-math3-paper-answer.pdf",
+      "sha256": "sha256:213287b9eab773cad03f34070a6450a747c58d52fceae1049605c2dfd64477fc",
+      "sourceId": "src_3f3f50a172ccfeb563b82616"
+    }
+  ],
+  "assetRoot": "question-bank/math3-2008",
+  "processed_at": "2026-05-27T20:38:00Z",
+  "total_cards": 23,
+  "cards": [
+    {
+      "id": "math3-2008-001",
+      "number": 1,
+      "paperId": "math3-2008",
+      "paperName": "2008考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2008",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2008考研数学三第1题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2008 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2008/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2008考研数学三试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2008/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2008考研数学三答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2008",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:57032608a6e93d3b253f06690a4e5f9c2583170d2c5b374f2ad98b4e7e7201f2",
+      "answerTextHash": "sha256:a1fc181e7273154ad55820f682afb4ea6f525df2886ec51a36dedff5cdc77fe4",
+      "sourceEvidence": {
+        "evidenceId": "math3-2008-q01",
+        "sourceId": "src_3f3f50a172ccfeb563b82616",
+        "answerSourceId": "src_3f3f50a172ccfeb563b82616",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2008-paper-answer",
+        "answerEvidenceId": "math3-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:a1fc181e7273154ad55820f682afb4ea6f525df2886ec51a36dedff5cdc77fe4"
+      }
+    },
+    {
+      "id": "math3-2008-002",
+      "number": 2,
+      "paperId": "math3-2008",
+      "paperName": "2008考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2008",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2008考研数学三第2题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2008 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2008/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2008考研数学三试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2008/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2008考研数学三答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2008",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:0cf1fbce95083fb89468cd249b43020744320455b04e12553f569a31fc00405d",
+      "answerTextHash": "sha256:98d843014fcc06e8c015999ef30423714e3b0fc8d97ddf5a4680ed5e2e3f0339",
+      "sourceEvidence": {
+        "evidenceId": "math3-2008-q02",
+        "sourceId": "src_3f3f50a172ccfeb563b82616",
+        "answerSourceId": "src_3f3f50a172ccfeb563b82616",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2008-paper-answer",
+        "answerEvidenceId": "math3-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:98d843014fcc06e8c015999ef30423714e3b0fc8d97ddf5a4680ed5e2e3f0339"
+      }
+    },
+    {
+      "id": "math3-2008-003",
+      "number": 3,
+      "paperId": "math3-2008",
+      "paperName": "2008考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2008",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2008考研数学三第3题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2008 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2008/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2008考研数学三试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2008/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2008考研数学三答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2008",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:4cbda8544b81e5373f6b63fce6dcc50d8f15cdbfe8375a47313fde5326034236",
+      "answerTextHash": "sha256:a1fc181e7273154ad55820f682afb4ea6f525df2886ec51a36dedff5cdc77fe4",
+      "sourceEvidence": {
+        "evidenceId": "math3-2008-q03",
+        "sourceId": "src_3f3f50a172ccfeb563b82616",
+        "answerSourceId": "src_3f3f50a172ccfeb563b82616",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2008-paper-answer",
+        "answerEvidenceId": "math3-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:a1fc181e7273154ad55820f682afb4ea6f525df2886ec51a36dedff5cdc77fe4"
+      }
+    },
+    {
+      "id": "math3-2008-004",
+      "number": 4,
+      "paperId": "math3-2008",
+      "paperName": "2008考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2008",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2008考研数学三第4题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2008 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2008/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2008考研数学三试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2008/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2008考研数学三答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2008",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:92992a487944ad25e94245718b7e98bff70333b5ca18bfa0b15388ab58408487",
+      "answerTextHash": "sha256:7e89265d7268b43fc3379f8365eab4dd2ea97698a375e1f59cea607b2aeced60",
+      "sourceEvidence": {
+        "evidenceId": "math3-2008-q04",
+        "sourceId": "src_3f3f50a172ccfeb563b82616",
+        "answerSourceId": "src_3f3f50a172ccfeb563b82616",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2008-paper-answer",
+        "answerEvidenceId": "math3-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:7e89265d7268b43fc3379f8365eab4dd2ea97698a375e1f59cea607b2aeced60"
+      }
+    },
+    {
+      "id": "math3-2008-005",
+      "number": 5,
+      "paperId": "math3-2008",
+      "paperName": "2008考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2008",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2008考研数学三第5题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2008 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2008/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2008考研数学三试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2008/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2008考研数学三答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2008",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:34aae17eb2170abd50674f14e0e2e5821e007f1ed6cda3ef54c557e00f6ebcbe",
+      "answerTextHash": "sha256:98d843014fcc06e8c015999ef30423714e3b0fc8d97ddf5a4680ed5e2e3f0339",
+      "sourceEvidence": {
+        "evidenceId": "math3-2008-q05",
+        "sourceId": "src_3f3f50a172ccfeb563b82616",
+        "answerSourceId": "src_3f3f50a172ccfeb563b82616",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2008-paper-answer",
+        "answerEvidenceId": "math3-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:98d843014fcc06e8c015999ef30423714e3b0fc8d97ddf5a4680ed5e2e3f0339"
+      }
+    },
+    {
+      "id": "math3-2008-006",
+      "number": 6,
+      "paperId": "math3-2008",
+      "paperName": "2008考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2008",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2008考研数学三第6题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2008 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2008/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2008考研数学三试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2008/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2008考研数学三答案解析 p.5"
+        },
+        {
+          "src": "question-bank/math3-2008/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2008考研数学三答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2008",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:fdf8787b249bb130ef7cae3df34e57f1d1a00503b9dd589114e354079b4c5b26",
+      "answerTextHash": "sha256:a474b0876ac5c107f1ef5f66bdedfd1a155217ecf70743aa2d57723ff3a648fb",
+      "sourceEvidence": {
+        "evidenceId": "math3-2008-q06",
+        "sourceId": "src_3f3f50a172ccfeb563b82616",
+        "answerSourceId": "src_3f3f50a172ccfeb563b82616",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2008-paper-answer",
+        "answerEvidenceId": "math3-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:a474b0876ac5c107f1ef5f66bdedfd1a155217ecf70743aa2d57723ff3a648fb"
+      }
+    },
+    {
+      "id": "math3-2008-007",
+      "number": 7,
+      "paperId": "math3-2008",
+      "paperName": "2008考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2008",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2008考研数学三第7题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2008 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2008/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2008考研数学三试卷原页 p.1"
+        },
+        {
+          "src": "question-bank/math3-2008/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2008考研数学三试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2008/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2008考研数学三答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2008",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:25a9250ed71d619e239142e16c78bb6f47a1ab551a4cbd69ac703960e656162c",
+      "answerTextHash": "sha256:4209b11a0436dfb93acf2c09f66665ad24b609a48058f6de76eacd161bca58d7",
+      "sourceEvidence": {
+        "evidenceId": "math3-2008-q07",
+        "sourceId": "src_3f3f50a172ccfeb563b82616",
+        "answerSourceId": "src_3f3f50a172ccfeb563b82616",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2008-paper-answer",
+        "answerEvidenceId": "math3-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:4209b11a0436dfb93acf2c09f66665ad24b609a48058f6de76eacd161bca58d7"
+      }
+    },
+    {
+      "id": "math3-2008-008",
+      "number": 8,
+      "paperId": "math3-2008",
+      "paperName": "2008考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2008",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2008考研数学三第8题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2008 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2008/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2008考研数学三试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2008/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2008考研数学三答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2008",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:bb3ec334dce0f92fd6a5e48e007c070b4dcecad14fc4aa9a17577c1d7d824e3e",
+      "answerTextHash": "sha256:e4a2fe781d79b6ac0d0a57fdf6fcbe5f0bd7d1dfefea384e35b54f195a6a4c7c",
+      "sourceEvidence": {
+        "evidenceId": "math3-2008-q08",
+        "sourceId": "src_3f3f50a172ccfeb563b82616",
+        "answerSourceId": "src_3f3f50a172ccfeb563b82616",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2008-paper-answer",
+        "answerEvidenceId": "math3-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:e4a2fe781d79b6ac0d0a57fdf6fcbe5f0bd7d1dfefea384e35b54f195a6a4c7c"
+      }
+    },
+    {
+      "id": "math3-2008-009",
+      "number": 9,
+      "paperId": "math3-2008",
+      "paperName": "2008考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2008",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2008考研数学三第9题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "1",
+      "explanation": "答案来自本地百度网盘 2008 数学三真题及解析 PDF；完整题干、公式和解析见原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2008/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2008考研数学三试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2008/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2008考研数学三答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2008",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:1ff521e0041e471a2dbcf58e4982061f839f72db57067576199b7c4a80662b67",
+      "answerTextHash": "sha256:76cb563743198fc27174973ba3b2c75fc413896fb07705ba208d24fbcc80ceba",
+      "sourceEvidence": {
+        "evidenceId": "math3-2008-q09",
+        "sourceId": "src_3f3f50a172ccfeb563b82616",
+        "answerSourceId": "src_3f3f50a172ccfeb563b82616",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2008-paper-answer",
+        "answerEvidenceId": "math3-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:76cb563743198fc27174973ba3b2c75fc413896fb07705ba208d24fbcc80ceba"
+      }
+    },
+    {
+      "id": "math3-2008-010",
+      "number": 10,
+      "paperId": "math3-2008",
+      "paperName": "2008考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2008",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2008考研数学三第10题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "(1/2) ln 3",
+      "explanation": "答案来自本地百度网盘 2008 数学三真题及解析 PDF；完整题干、公式和解析见原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2008/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2008考研数学三试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2008/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2008考研数学三答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2008",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:00c2edc25315137dba0322d69a2d14a537f6683f088d8bd5787b373560b1a53c",
+      "answerTextHash": "sha256:7b346e817ae0326b1428953d0a6929de5da0d79b52569b758d615afb418c1f72",
+      "sourceEvidence": {
+        "evidenceId": "math3-2008-q10",
+        "sourceId": "src_3f3f50a172ccfeb563b82616",
+        "answerSourceId": "src_3f3f50a172ccfeb563b82616",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2008-paper-answer",
+        "answerEvidenceId": "math3-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:7b346e817ae0326b1428953d0a6929de5da0d79b52569b758d615afb418c1f72"
+      }
+    },
+    {
+      "id": "math3-2008-011",
+      "number": 11,
+      "paperId": "math3-2008",
+      "paperName": "2008考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2008",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2008考研数学三第11题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "pi / 4",
+      "explanation": "答案来自本地百度网盘 2008 数学三真题及解析 PDF；完整题干、公式和解析见原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2008/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2008考研数学三试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2008/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2008考研数学三答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2008",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:ef33ecdd3e27bf67b4b61b082d86288f5e4ca49ce329fb0c7520f08ae8a8c6e3",
+      "answerTextHash": "sha256:680971ac0e2bc3f468a71c5305e5f0c44fe4da5331248ebd3c0be95899fad427",
+      "sourceEvidence": {
+        "evidenceId": "math3-2008-q11",
+        "sourceId": "src_3f3f50a172ccfeb563b82616",
+        "answerSourceId": "src_3f3f50a172ccfeb563b82616",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2008-paper-answer",
+        "answerEvidenceId": "math3-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:680971ac0e2bc3f468a71c5305e5f0c44fe4da5331248ebd3c0be95899fad427"
+      }
+    },
+    {
+      "id": "math3-2008-012",
+      "number": 12,
+      "paperId": "math3-2008",
+      "paperName": "2008考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2008",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2008考研数学三第12题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "y = 1 / x",
+      "explanation": "答案来自本地百度网盘 2008 数学三真题及解析 PDF；完整题干、公式和解析见原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2008/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2008考研数学三试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2008/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2008考研数学三答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2008",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:ef1b439e4f6221c41e754032685b470dbfd0ada02e4b4e68c30c8cff04613fa9",
+      "answerTextHash": "sha256:760897490e75a5641683d815f93c5d4ed0dd572e55d3e370354457eb07065839",
+      "sourceEvidence": {
+        "evidenceId": "math3-2008-q12",
+        "sourceId": "src_3f3f50a172ccfeb563b82616",
+        "answerSourceId": "src_3f3f50a172ccfeb563b82616",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2008-paper-answer",
+        "answerEvidenceId": "math3-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:760897490e75a5641683d815f93c5d4ed0dd572e55d3e370354457eb07065839"
+      }
+    },
+    {
+      "id": "math3-2008-013",
+      "number": 13,
+      "paperId": "math3-2008",
+      "paperName": "2008考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2008",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2008考研数学三第13题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "3",
+      "explanation": "答案来自本地百度网盘 2008 数学三真题及解析 PDF；完整题干、公式和解析见原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2008/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2008考研数学三试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2008/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2008考研数学三答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2008",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:b3ab22147cc652dd522c4291a249b5ca2222367e2dc8dd8c0197cbc1bec09896",
+      "answerTextHash": "sha256:65bc171af875b71587e7e4188513111dc814076184d6395e841257d46bf198fb",
+      "sourceEvidence": {
+        "evidenceId": "math3-2008-q13",
+        "sourceId": "src_3f3f50a172ccfeb563b82616",
+        "answerSourceId": "src_3f3f50a172ccfeb563b82616",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2008-paper-answer",
+        "answerEvidenceId": "math3-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:65bc171af875b71587e7e4188513111dc814076184d6395e841257d46bf198fb"
+      }
+    },
+    {
+      "id": "math3-2008-014",
+      "number": 14,
+      "paperId": "math3-2008",
+      "paperName": "2008考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2008",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2008考研数学三第14题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "1 / (2e)",
+      "explanation": "答案来自本地百度网盘 2008 数学三真题及解析 PDF；完整题干、公式和解析见原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2008/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2008考研数学三试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2008/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2008考研数学三答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2008",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:48403be1ccefaf10231f7f6ee61060ea9dd2f701852c2eaee7c7d9962337f04e",
+      "answerTextHash": "sha256:e8decaa03fd982341ed5bf461354d578961815e3ac3d7ba915fb991e9c34eb31",
+      "sourceEvidence": {
+        "evidenceId": "math3-2008-q14",
+        "sourceId": "src_3f3f50a172ccfeb563b82616",
+        "answerSourceId": "src_3f3f50a172ccfeb563b82616",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2008-paper-answer",
+        "answerEvidenceId": "math3-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:e8decaa03fd982341ed5bf461354d578961815e3ac3d7ba915fb991e9c34eb31"
+      }
+    },
+    {
+      "id": "math3-2008-015",
+      "number": 15,
+      "paperId": "math3-2008",
+      "paperName": "2008考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2008",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2008考研数学三第15题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "极限计算结果为 -1/6；完整洛必达或等价无穷小计算见答案原页。",
+      "explanation": "答案来自本地百度网盘 2008 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2008/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2008考研数学三试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2008/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2008考研数学三答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2008",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:ba632cdb18818e24cc39363cfe591b1df60a7158dc17930e992a63b0a1dd0ff9",
+      "answerTextHash": "sha256:faaef79814d12761ca17f5ef9653a8d9a163f818738c2dded504a267dd715009",
+      "sourceEvidence": {
+        "evidenceId": "math3-2008-q15",
+        "sourceId": "src_3f3f50a172ccfeb563b82616",
+        "answerSourceId": "src_3f3f50a172ccfeb563b82616",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2008-paper-answer",
+        "answerEvidenceId": "math3-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:faaef79814d12761ca17f5ef9653a8d9a163f818738c2dded504a267dd715009"
+      }
+    },
+    {
+      "id": "math3-2008-016",
+      "number": 16,
+      "paperId": "math3-2008",
+      "paperName": "2008考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2008",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2008考研数学三第16题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "全微分、偏导与二阶偏导计算见答案原页。",
+      "explanation": "答案来自本地百度网盘 2008 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2008/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2008考研数学三试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2008/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2008考研数学三答案解析 p.7"
+        },
+        {
+          "src": "question-bank/math3-2008/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2008考研数学三答案解析 p.8"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2008",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:8952f8195fc8c2dd5a5a3d42422a83a0728a56ac6671791102d806888e2fb38e",
+      "answerTextHash": "sha256:eff245ad548c2db8439a8f14159a03add779351f77541860186b2bd6acb2f21b",
+      "sourceEvidence": {
+        "evidenceId": "math3-2008-q16",
+        "sourceId": "src_3f3f50a172ccfeb563b82616",
+        "answerSourceId": "src_3f3f50a172ccfeb563b82616",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2008-paper-answer",
+        "answerEvidenceId": "math3-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:eff245ad548c2db8439a8f14159a03add779351f77541860186b2bd6acb2f21b"
+      }
+    },
+    {
+      "id": "math3-2008-017",
+      "number": 17,
+      "paperId": "math3-2008",
+      "paperName": "2008考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2008",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2008考研数学三第17题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "积分结果为 2 + ln 2；区域分割和计算步骤见答案原页。",
+      "explanation": "答案来自本地百度网盘 2008 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2008/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2008考研数学三试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2008/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2008考研数学三答案解析 p.8"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2008",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:3b6c1a4420086443a23ed35d6903f37ca094fe4d6e2be8da5a0ccc8223e7aacd",
+      "answerTextHash": "sha256:2d453e54ab538faa10ff3e45d1128b1f7c597e563cfbc743972f6241bf9061ee",
+      "sourceEvidence": {
+        "evidenceId": "math3-2008-q17",
+        "sourceId": "src_3f3f50a172ccfeb563b82616",
+        "answerSourceId": "src_3f3f50a172ccfeb563b82616",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2008-paper-answer",
+        "answerEvidenceId": "math3-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:2d453e54ab538faa10ff3e45d1128b1f7c597e563cfbc743972f6241bf9061ee"
+      }
+    },
+    {
+      "id": "math3-2008-018",
+      "number": 18,
+      "paperId": "math3-2008",
+      "paperName": "2008考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2008",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2008考研数学三第18题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "周期积分恒等式与函数周期性证明见答案原页。",
+      "explanation": "答案来自本地百度网盘 2008 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2008/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2008考研数学三试卷原页 p.2"
+        },
+        {
+          "src": "question-bank/math3-2008/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2008考研数学三试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2008/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2008考研数学三答案解析 p.8"
+        },
+        {
+          "src": "question-bank/math3-2008/answer-page-09.jpg",
+          "caption": "答案解析 p.9",
+          "alt": "2008考研数学三答案解析 p.9"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2008",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:810767ede69d8dd46f87e13091a9774ae8e2de6aab485db6acf6407e02b1d7d2",
+      "answerTextHash": "sha256:a8a064c410f8312b866c6ed71027950ea8c04b9797423f453eb2d28cc5abca70",
+      "sourceEvidence": {
+        "evidenceId": "math3-2008-q18",
+        "sourceId": "src_3f3f50a172ccfeb563b82616",
+        "answerSourceId": "src_3f3f50a172ccfeb563b82616",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2008-paper-answer",
+        "answerEvidenceId": "math3-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:a8a064c410f8312b866c6ed71027950ea8c04b9797423f453eb2d28cc5abca70"
+      }
+    },
+    {
+      "id": "math3-2008-019",
+      "number": 19,
+      "paperId": "math3-2008",
+      "paperName": "2008考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2008",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2008考研数学三第19题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "至少应存入 3980 万元；贴现或差分方程计算见答案原页。",
+      "explanation": "答案来自本地百度网盘 2008 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2008/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2008考研数学三试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2008/answer-page-09.jpg",
+          "caption": "答案解析 p.9",
+          "alt": "2008考研数学三答案解析 p.9"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2008",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:f1a7e1e2361ed0e6e9a4337a296497d9aec093007ae72ca1643e753e977af03b",
+      "answerTextHash": "sha256:325d73d659939199474aee4a98b40d7caf42214cae0d5a881b753392cde9ce06",
+      "sourceEvidence": {
+        "evidenceId": "math3-2008-q19",
+        "sourceId": "src_3f3f50a172ccfeb563b82616",
+        "answerSourceId": "src_3f3f50a172ccfeb563b82616",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2008-paper-answer",
+        "answerEvidenceId": "math3-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:325d73d659939199474aee4a98b40d7caf42214cae0d5a881b753392cde9ce06"
+      }
+    },
+    {
+      "id": "math3-2008-020",
+      "number": 20,
+      "paperId": "math3-2008",
+      "paperName": "2008考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2008",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2008考研数学三第20题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "|A| = (n + 1)a^n；唯一解与无穷多解条件及求解过程见答案原页。",
+      "explanation": "答案来自本地百度网盘 2008 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2008/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2008考研数学三试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2008/answer-page-09.jpg",
+          "caption": "答案解析 p.9",
+          "alt": "2008考研数学三答案解析 p.9"
+        },
+        {
+          "src": "question-bank/math3-2008/answer-page-10.jpg",
+          "caption": "答案解析 p.10",
+          "alt": "2008考研数学三答案解析 p.10"
+        },
+        {
+          "src": "question-bank/math3-2008/answer-page-11.jpg",
+          "caption": "答案解析 p.11",
+          "alt": "2008考研数学三答案解析 p.11"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2008",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:846d49206355f488747e8087fba6b9d543580a3d4499ef9b79b7f86110c92848",
+      "answerTextHash": "sha256:becf2bb1a4e03e308b1611274fc34c5b63131c12718c284e6ca3f5875467726b",
+      "sourceEvidence": {
+        "evidenceId": "math3-2008-q20",
+        "sourceId": "src_3f3f50a172ccfeb563b82616",
+        "answerSourceId": "src_3f3f50a172ccfeb563b82616",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2008-paper-answer",
+        "answerEvidenceId": "math3-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:becf2bb1a4e03e308b1611274fc34c5b63131c12718c284e6ca3f5875467726b"
+      }
+    },
+    {
+      "id": "math3-2008-021",
+      "number": 21,
+      "paperId": "math3-2008",
+      "paperName": "2008考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2008",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2008考研数学三第21题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "特征向量线性无关证明与 P^{-1}AP 计算见答案原页。",
+      "explanation": "答案来自本地百度网盘 2008 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2008/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2008考研数学三试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2008/answer-page-11.jpg",
+          "caption": "答案解析 p.11",
+          "alt": "2008考研数学三答案解析 p.11"
+        },
+        {
+          "src": "question-bank/math3-2008/answer-page-12.jpg",
+          "caption": "答案解析 p.12",
+          "alt": "2008考研数学三答案解析 p.12"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2008",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:6ff7427073b3d674a5b0826190546e3236546a88f6e6dc5bf8b342e8df5a4c5b",
+      "answerTextHash": "sha256:c072a4fac0757a4e4f5f215a4d732f2f56a833eeefc222fa2cb4ede6988b1fee",
+      "sourceEvidence": {
+        "evidenceId": "math3-2008-q21",
+        "sourceId": "src_3f3f50a172ccfeb563b82616",
+        "answerSourceId": "src_3f3f50a172ccfeb563b82616",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2008-paper-answer",
+        "answerEvidenceId": "math3-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:c072a4fac0757a4e4f5f215a4d732f2f56a833eeefc222fa2cb4ede6988b1fee"
+      }
+    },
+    {
+      "id": "math3-2008-022",
+      "number": 22,
+      "paperId": "math3-2008",
+      "paperName": "2008考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2008",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2008考研数学三第22题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "条件概率和 Z 的概率密度计算见答案原页。",
+      "explanation": "答案来自本地百度网盘 2008 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2008/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2008考研数学三试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2008/answer-page-12.jpg",
+          "caption": "答案解析 p.12",
+          "alt": "2008考研数学三答案解析 p.12"
+        },
+        {
+          "src": "question-bank/math3-2008/answer-page-13.jpg",
+          "caption": "答案解析 p.13",
+          "alt": "2008考研数学三答案解析 p.13"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2008",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:0055ead2565e011fa6db2a26612b370dae83bcbd0049435a07ae400e0ee3eebd",
+      "answerTextHash": "sha256:af4ab070a06113c92436c8a2be264eb8cb2ab043c3778e269ccbf1bcff06ddd4",
+      "sourceEvidence": {
+        "evidenceId": "math3-2008-q22",
+        "sourceId": "src_3f3f50a172ccfeb563b82616",
+        "answerSourceId": "src_3f3f50a172ccfeb563b82616",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2008-paper-answer",
+        "answerEvidenceId": "math3-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:af4ab070a06113c92436c8a2be264eb8cb2ab043c3778e269ccbf1bcff06ddd4"
+      }
+    },
+    {
+      "id": "math3-2008-023",
+      "number": 23,
+      "paperId": "math3-2008",
+      "paperName": "2008考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2008",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2008考研数学三第23题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "无偏性证明和方差计算见答案原页。",
+      "explanation": "答案来自本地百度网盘 2008 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2008/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2008考研数学三试卷原页 p.3"
+        },
+        {
+          "src": "question-bank/math3-2008/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2008考研数学三试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2008/answer-page-13.jpg",
+          "caption": "答案解析 p.13",
+          "alt": "2008考研数学三答案解析 p.13"
+        },
+        {
+          "src": "question-bank/math3-2008/answer-page-14.jpg",
+          "caption": "答案解析 p.14",
+          "alt": "2008考研数学三答案解析 p.14"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2008",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:8231e1cdcbea6bc5fb1c854c7b6bcfb3b2d7cf40e8a7e58faf08e8d423a59679",
+      "answerTextHash": "sha256:4f1b97d6771895d1c60b386fd00d6ce0028f8633974447a0e6bb5a0b58051aaa",
+      "sourceEvidence": {
+        "evidenceId": "math3-2008-q23",
+        "sourceId": "src_3f3f50a172ccfeb563b82616",
+        "answerSourceId": "src_3f3f50a172ccfeb563b82616",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2008-paper-answer",
+        "answerEvidenceId": "math3-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:4f1b97d6771895d1c60b386fd00d6ce0028f8633974447a0e6bb5a0b58051aaa"
+      }
+    }
+  ]
+}
