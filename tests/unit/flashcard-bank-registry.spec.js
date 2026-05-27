@@ -359,10 +359,11 @@ describe('published flashcard bank registry', () => {
     expect(math.tracks.map((track) => track.pendingBanks[0]?.id)).toEqual([
       'math1-2024-pending-source',
       'math2-2024-pending-source',
-      'math3-2025'
+      'math3-2024-pending-source'
     ]);
     expect(math.tracks[0].banks.some((bank) => bank.id === 'math1-2025')).toBe(true);
     expect(math.tracks[1].banks.some((bank) => bank.id === 'math2-2025')).toBe(true);
+    expect(math.tracks[2].banks.some((bank) => bank.id === 'math3-2025')).toBe(true);
     expect(math.tracks.flatMap((track) => track.pendingBanks.map((bank) => bank.id))).not.toContain('math-2025');
     expect(english.tracks[0].modes.map((mode) => mode.id)).toEqual(['past_exam', 'timed_sprint', 'weakness']);
     expect(english.tracks[0].modes.map((mode) => mode.id)).not.toContain('knowledge_graph');
@@ -403,6 +404,12 @@ describe('published flashcard bank registry', () => {
     expect(math2.pendingYears).toEqual([]);
     expect(math2.missingYears).toEqual([2024, 2026]);
     expect(math2.releaseState).toBe('partial');
+
+    const math3 = coverage.tracks.find((item) => item.track === 'math3');
+    expect(math3.publishedYears).toEqual([2025]);
+    expect(math3.pendingYears).toEqual([]);
+    expect(math3.missingYears).toEqual([2024, 2026]);
+    expect(math3.releaseState).toBe('partial');
   });
 
   it('uses the production coverage scope requested for current exam prep by default', () => {

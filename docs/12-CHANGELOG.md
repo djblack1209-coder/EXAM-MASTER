@@ -1,5 +1,11 @@
 # 变更日志
 
+## 2026-05-26 — 2025 数学三 PDF 页图题库开放
+
+- 2025 考研数学三从“整理中”推进为正式题库：22 张题卡覆盖选择题、填空题和解答题，并具备题干、答案、`sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
+- 新增 `build_math3_2025_bank.py`，从本地百度网盘数学三真题及答案 PDF 和参考答案 PDF 生成题库与 `cdn-assets/question-bank/math3-2025` 页图资源；公式、证明与演算过程以 PDF 原页图为准，OCR 只用于辅助读取紧凑答案。
+- 题库导航中数学三 2025 年槽位从“整理中”变为可点击“正式”，公共课发布 backlog 的 pending 覆盖阻塞从 1 降为 0。
+
 ## 2026-05-26 — 2014 政治 PDF 页图题库开放
 
 - 2014 考研政治从“待入库”推进为正式题库：38 张题卡覆盖 16 道单选、17 道多选和 5 道分析题，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。

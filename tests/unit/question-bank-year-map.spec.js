@@ -23,7 +23,7 @@ describe('question bank public-course year map', () => {
   });
 
   it('keeps every track on the 2005-2026 map and marks verified banks as clickable', () => {
-    const tree = getPracticeNavigationTree({ tracks: ['english2', 'math1', 'math2'] });
+    const tree = getPracticeNavigationTree({ tracks: ['english2', 'math1', 'math2', 'math3'] });
     const tracks = tree.flatMap((subject) => subject.tracks);
 
     for (const track of tracks) {
@@ -56,6 +56,16 @@ describe('question bank public-course year map', () => {
     expect(math2.slotSummary).toEqual({ total: 22, ready: 1, organizing: 0, missing: 21 });
     expect(math2.yearSlots.find((slot) => slot.year === '2025')).toMatchObject({
       bankId: 'math2-2025',
+      status: 'ready',
+      statusLabel: '正式',
+      actionLabel: '开始',
+      clickable: true
+    });
+
+    const math3 = tracks.find((track) => track.id === 'math3');
+    expect(math3.slotSummary).toEqual({ total: 22, ready: 1, organizing: 0, missing: 21 });
+    expect(math3.yearSlots.find((slot) => slot.year === '2025')).toMatchObject({
+      bankId: 'math3-2025',
       status: 'ready',
       statusLabel: '正式',
       actionLabel: '开始',

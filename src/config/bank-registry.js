@@ -318,12 +318,12 @@ const BANK_REGISTRY = [
     track: 'math3',
     year: '2025',
     name: '2025考研数学三真题',
-    description: '高等数学 + 线性代数 + 概率统计',
-    enabled: false,
-    disabledReason: '公式与答案说明完善后开放整卷练习',
+    description: '10道选择 + 6道填空 + 6道解答',
+    releaseLabel: '正式题库',
+    caution: '按本地百度网盘数学三试卷及参考答案 PDF 页图训练；公式、证明和演算过程以原 PDF 页图为准',
     paperType: 'past_exam',
-    quality: PAPER_QUALITY.NEEDS_CLEANING,
-    sections: paperSections('高等数学', '线性代数', '概率统计'),
+    quality: PAPER_QUALITY.READY,
+    sections: paperSections('选择题', '填空题', '解答题'),
     loader: () => import('./flashcard-banks/math3-2025.json')
   }
   // 后续新增题库在这里添加

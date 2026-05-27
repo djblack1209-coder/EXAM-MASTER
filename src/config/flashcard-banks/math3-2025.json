@@ -1,17 +1,1335 @@
 {
   "id": "math3-2025",
-  "source": "math3-2025-pending-source",
+  "source": "math3-2025-paper-answer",
   "paperId": "math3-2025",
   "paperName": "2025考研数学三真题",
   "subject": "数学",
+  "subjectKey": "math",
   "track": "math3",
   "year": "2025",
-  "quality": "needs_cleaning",
-  "publicationStatus": "blocked",
-  "publicationBlockers": [
-    "source not fully cleaned and reviewed"
+  "quality": "ready",
+  "publicationStatus": "published",
+  "publicationBlockers": [],
+  "sourceEvidencePolicy": "baidu_netdisk_official_paper_pdf_page_image_v1",
+  "sourceFiles": [
+    {
+      "id": "math3-2025-paper-answer",
+      "role": "paper_answer",
+      "localPath": "data/raw-inbox/public-course-2025/math3/2025-math3-paper-answer.pdf",
+      "sha256": "sha256:dda8667c99d7ebc4eb64d53b9b3f2ac471f3d2dbb9f9d3090bc5ee2693594e4d"
+    },
+    {
+      "id": "math3-2025-answer-updating",
+      "role": "answer",
+      "localPath": "data/raw-inbox/public-course-2025/math3/2025-math3-answer-updating.pdf",
+      "sha256": "sha256:9379a5891bcf4fb86984849ae9caf78146244650c9277a6f644df1b5d9f15dd0"
+    }
   ],
-  "processed_at": "2026-05-14T00:00:00Z",
-  "total_cards": 0,
-  "cards": []
+  "assetRoot": "question-bank/math3-2025",
+  "processed_at": "2026-05-27T03:08:47Z",
+  "total_cards": 22,
+  "cards": [
+    {
+      "id": "math3-2025-001",
+      "number": 1,
+      "paperId": "math3-2025",
+      "paperName": "2025考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2025",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2025考研数学三第1题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘数学三参考答案 PDF；完整题干和公式见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2025/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2025考研数学三试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2025/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2025考研数学三答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2025",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2025-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:90dc78cc06ef74e8b18ca8e972a8aaedcc7e71b7ce1982b757a156aa18c57393",
+      "answerTextHash": "sha256:57a82881eeed7a34ffe62ec67b4dcffe86f24c0f80e15ddfe649b20cefa30efe",
+      "sourceEvidence": {
+        "evidenceId": "math3-2025-q01",
+        "sourceId": "src_f1ab602208dcc1f0e9b47fc1",
+        "answerSourceId": "src_bde489f3e657b3fb9311c82f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2025-paper-answer",
+        "answerEvidenceId": "math3-2025-answer-updating",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:57a82881eeed7a34ffe62ec67b4dcffe86f24c0f80e15ddfe649b20cefa30efe"
+      }
+    },
+    {
+      "id": "math3-2025-002",
+      "number": 2,
+      "paperId": "math3-2025",
+      "paperName": "2025考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2025",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2025考研数学三第2题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘数学三参考答案 PDF；完整题干和公式见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2025/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2025考研数学三试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2025/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2025考研数学三答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2025",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2025-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:2cf3e4670e1c98a01b1cc6dc5803b900ae30c9a435d59c0dee0cb561900f8c73",
+      "answerTextHash": "sha256:48a655724228f727dcd7f827c2a466e9941da8c76ac17f8df2a224b305cd0de5",
+      "sourceEvidence": {
+        "evidenceId": "math3-2025-q02",
+        "sourceId": "src_f1ab602208dcc1f0e9b47fc1",
+        "answerSourceId": "src_bde489f3e657b3fb9311c82f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2025-paper-answer",
+        "answerEvidenceId": "math3-2025-answer-updating",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:48a655724228f727dcd7f827c2a466e9941da8c76ac17f8df2a224b305cd0de5"
+      }
+    },
+    {
+      "id": "math3-2025-003",
+      "number": 3,
+      "paperId": "math3-2025",
+      "paperName": "2025考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2025",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2025考研数学三第3题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘数学三参考答案 PDF；完整题干和公式见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2025/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2025考研数学三试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2025/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2025考研数学三答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2025",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2025-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:e1fb94304c1eac168ac9334a9a8a9e9235c3b43cd5e196b594e2bdcf1257e2b5",
+      "answerTextHash": "sha256:48a655724228f727dcd7f827c2a466e9941da8c76ac17f8df2a224b305cd0de5",
+      "sourceEvidence": {
+        "evidenceId": "math3-2025-q03",
+        "sourceId": "src_f1ab602208dcc1f0e9b47fc1",
+        "answerSourceId": "src_bde489f3e657b3fb9311c82f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2025-paper-answer",
+        "answerEvidenceId": "math3-2025-answer-updating",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:48a655724228f727dcd7f827c2a466e9941da8c76ac17f8df2a224b305cd0de5"
+      }
+    },
+    {
+      "id": "math3-2025-004",
+      "number": 4,
+      "paperId": "math3-2025",
+      "paperName": "2025考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2025",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2025考研数学三第4题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘数学三参考答案 PDF；完整题干和公式见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2025/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2025考研数学三试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2025/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2025考研数学三答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2025",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2025-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:44f8a3c5c987ba21bdd3f6d1674b4a22350992b5394edd2ad4d6da8b004230c8",
+      "answerTextHash": "sha256:af561a8460fa8b36e9f5e23a8e2b70cda602707618904b4763c39855b872f90c",
+      "sourceEvidence": {
+        "evidenceId": "math3-2025-q04",
+        "sourceId": "src_f1ab602208dcc1f0e9b47fc1",
+        "answerSourceId": "src_bde489f3e657b3fb9311c82f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2025-paper-answer",
+        "answerEvidenceId": "math3-2025-answer-updating",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:af561a8460fa8b36e9f5e23a8e2b70cda602707618904b4763c39855b872f90c"
+      }
+    },
+    {
+      "id": "math3-2025-005",
+      "number": 5,
+      "paperId": "math3-2025",
+      "paperName": "2025考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2025",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2025考研数学三第5题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘数学三参考答案 PDF；完整题干和公式见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2025/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2025考研数学三试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2025/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2025考研数学三答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2025",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2025-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:6dc5dd21e70ec435a0edd9d0d062320be0ab83c962798dfc7fc2682a3a737159",
+      "answerTextHash": "sha256:e0379f21e18a4103fb1f2a55b207f44908f3ae98f7b934d91863940d970b293e",
+      "sourceEvidence": {
+        "evidenceId": "math3-2025-q05",
+        "sourceId": "src_f1ab602208dcc1f0e9b47fc1",
+        "answerSourceId": "src_bde489f3e657b3fb9311c82f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2025-paper-answer",
+        "answerEvidenceId": "math3-2025-answer-updating",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:e0379f21e18a4103fb1f2a55b207f44908f3ae98f7b934d91863940d970b293e"
+      }
+    },
+    {
+      "id": "math3-2025-006",
+      "number": 6,
+      "paperId": "math3-2025",
+      "paperName": "2025考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2025",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2025考研数学三第6题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘数学三参考答案 PDF；完整题干和公式见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2025/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2025考研数学三试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2025/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2025考研数学三答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2025",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2025-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:85e130d7b5160f64ced51f5e3677eec34d1c4221243ce0563260503f97aa33ed",
+      "answerTextHash": "sha256:48a655724228f727dcd7f827c2a466e9941da8c76ac17f8df2a224b305cd0de5",
+      "sourceEvidence": {
+        "evidenceId": "math3-2025-q06",
+        "sourceId": "src_f1ab602208dcc1f0e9b47fc1",
+        "answerSourceId": "src_bde489f3e657b3fb9311c82f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2025-paper-answer",
+        "answerEvidenceId": "math3-2025-answer-updating",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:48a655724228f727dcd7f827c2a466e9941da8c76ac17f8df2a224b305cd0de5"
+      }
+    },
+    {
+      "id": "math3-2025-007",
+      "number": 7,
+      "paperId": "math3-2025",
+      "paperName": "2025考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2025",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2025考研数学三第7题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘数学三参考答案 PDF；完整题干和公式见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2025/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2025考研数学三试卷原页 p.1"
+        },
+        {
+          "src": "question-bank/math3-2025/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2025考研数学三试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2025/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2025考研数学三答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2025",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2025-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:66698430b69e523ffbcf733a1c7f0aaa14c7078f4b7c4814f373db572def7c27",
+      "answerTextHash": "sha256:48a655724228f727dcd7f827c2a466e9941da8c76ac17f8df2a224b305cd0de5",
+      "sourceEvidence": {
+        "evidenceId": "math3-2025-q07",
+        "sourceId": "src_f1ab602208dcc1f0e9b47fc1",
+        "answerSourceId": "src_bde489f3e657b3fb9311c82f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2025-paper-answer",
+        "answerEvidenceId": "math3-2025-answer-updating",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:48a655724228f727dcd7f827c2a466e9941da8c76ac17f8df2a224b305cd0de5"
+      }
+    },
+    {
+      "id": "math3-2025-008",
+      "number": 8,
+      "paperId": "math3-2025",
+      "paperName": "2025考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2025",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2025考研数学三第8题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘数学三参考答案 PDF；完整题干和公式见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2025/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2025考研数学三试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2025/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2025考研数学三答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2025",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2025-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:eb63bf3917b18ee3375e0d166a798208851424804b415a7ede3c9e74239009e4",
+      "answerTextHash": "sha256:af561a8460fa8b36e9f5e23a8e2b70cda602707618904b4763c39855b872f90c",
+      "sourceEvidence": {
+        "evidenceId": "math3-2025-q08",
+        "sourceId": "src_f1ab602208dcc1f0e9b47fc1",
+        "answerSourceId": "src_bde489f3e657b3fb9311c82f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2025-paper-answer",
+        "answerEvidenceId": "math3-2025-answer-updating",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:af561a8460fa8b36e9f5e23a8e2b70cda602707618904b4763c39855b872f90c"
+      }
+    },
+    {
+      "id": "math3-2025-009",
+      "number": 9,
+      "paperId": "math3-2025",
+      "paperName": "2025考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2025",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2025考研数学三第9题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘数学三参考答案 PDF；完整题干和公式见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2025/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2025考研数学三试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2025/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2025考研数学三答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2025",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2025-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:fefd447242cf1f619b04d4125ebf4b36d154e2f954b52646037056114adb4565",
+      "answerTextHash": "sha256:57a82881eeed7a34ffe62ec67b4dcffe86f24c0f80e15ddfe649b20cefa30efe",
+      "sourceEvidence": {
+        "evidenceId": "math3-2025-q09",
+        "sourceId": "src_f1ab602208dcc1f0e9b47fc1",
+        "answerSourceId": "src_bde489f3e657b3fb9311c82f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2025-paper-answer",
+        "answerEvidenceId": "math3-2025-answer-updating",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:57a82881eeed7a34ffe62ec67b4dcffe86f24c0f80e15ddfe649b20cefa30efe"
+      }
+    },
+    {
+      "id": "math3-2025-010",
+      "number": 10,
+      "paperId": "math3-2025",
+      "paperName": "2025考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2025",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2025考研数学三第10题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘数学三参考答案 PDF；完整题干和公式见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2025/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2025考研数学三试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2025/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2025考研数学三答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2025",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2025-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:afadd52f7e0cb2b3ea41352a378e5393fd4eb219d904598a3a7957826d5afe8d",
+      "answerTextHash": "sha256:57a82881eeed7a34ffe62ec67b4dcffe86f24c0f80e15ddfe649b20cefa30efe",
+      "sourceEvidence": {
+        "evidenceId": "math3-2025-q10",
+        "sourceId": "src_f1ab602208dcc1f0e9b47fc1",
+        "answerSourceId": "src_bde489f3e657b3fb9311c82f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2025-paper-answer",
+        "answerEvidenceId": "math3-2025-answer-updating",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:57a82881eeed7a34ffe62ec67b4dcffe86f24c0f80e15ddfe649b20cefa30efe"
+      }
+    },
+    {
+      "id": "math3-2025-011",
+      "number": 11,
+      "paperId": "math3-2025",
+      "paperName": "2025考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2025",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2025考研数学三第11题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "y = 3 和 y = -3",
+      "explanation": "答案来自本地百度网盘数学三参考答案 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2025/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2025考研数学三试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2025/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2025考研数学三答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2025",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2025-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:7f82516cbfa3a237ced2d3a2d699e3e4e1d39350dfe6ea08595d2aeb76d58fc0",
+      "answerTextHash": "sha256:9352f46323ee2301bc4ec6f9d88d34ba72af603537369bdc2932818e8dc9a781",
+      "sourceEvidence": {
+        "evidenceId": "math3-2025-q11",
+        "sourceId": "src_f1ab602208dcc1f0e9b47fc1",
+        "answerSourceId": "src_bde489f3e657b3fb9311c82f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2025-paper-answer",
+        "answerEvidenceId": "math3-2025-answer-updating",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:9352f46323ee2301bc4ec6f9d88d34ba72af603537369bdc2932818e8dc9a781"
+      }
+    },
+    {
+      "id": "math3-2025-012",
+      "number": 12,
+      "paperId": "math3-2025",
+      "paperName": "2025考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2025",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2025考研数学三第12题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "a = 2",
+      "explanation": "答案来自本地百度网盘数学三参考答案 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2025/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2025考研数学三试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2025/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2025考研数学三答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2025",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2025-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:c96aef8d863721cf1772f634433f2fc2e718595a3bd44c3f5e59baa7576cd23f",
+      "answerTextHash": "sha256:13e7f18ad60cf4f13e1ba9c05f21aa2e3dc5adc599ab6a63ad3450aea6d4d3f7",
+      "sourceEvidence": {
+        "evidenceId": "math3-2025-q12",
+        "sourceId": "src_f1ab602208dcc1f0e9b47fc1",
+        "answerSourceId": "src_bde489f3e657b3fb9311c82f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2025-paper-answer",
+        "answerEvidenceId": "math3-2025-answer-updating",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:13e7f18ad60cf4f13e1ba9c05f21aa2e3dc5adc599ab6a63ad3450aea6d4d3f7"
+      }
+    },
+    {
+      "id": "math3-2025-013",
+      "number": 13,
+      "paperId": "math3-2025",
+      "paperName": "2025考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2025",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2025考研数学三第13题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "y = -x e^x",
+      "explanation": "答案来自本地百度网盘数学三参考答案 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2025/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2025考研数学三试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2025/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2025考研数学三答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2025",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2025-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:2833bd2d0ed812dec3f0b82cd227ea58be58d59c38825cf990763f87f1039a99",
+      "answerTextHash": "sha256:0613639be7d1a130240cb7938599a4894b75368e4dc4e2410204589e7986906c",
+      "sourceEvidence": {
+        "evidenceId": "math3-2025-q13",
+        "sourceId": "src_f1ab602208dcc1f0e9b47fc1",
+        "answerSourceId": "src_bde489f3e657b3fb9311c82f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2025-paper-answer",
+        "answerEvidenceId": "math3-2025-answer-updating",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:0613639be7d1a130240cb7938599a4894b75368e4dc4e2410204589e7986906c"
+      }
+    },
+    {
+      "id": "math3-2025-014",
+      "number": 14,
+      "paperId": "math3-2025",
+      "paperName": "2025考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2025",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2025考研数学三第14题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "1/(8e^2)",
+      "explanation": "答案来自本地百度网盘数学三参考答案 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2025/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2025考研数学三试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2025/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2025考研数学三答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2025",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2025-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:eae66d7d45cb95ba674458251009578b604057f436352d60ebfba403e82ebafa",
+      "answerTextHash": "sha256:19373e64afe7cef85b8e783dd480f99579c4b5a8bbf2e1fde3ee05fc642bad30",
+      "sourceEvidence": {
+        "evidenceId": "math3-2025-q14",
+        "sourceId": "src_f1ab602208dcc1f0e9b47fc1",
+        "answerSourceId": "src_bde489f3e657b3fb9311c82f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2025-paper-answer",
+        "answerEvidenceId": "math3-2025-answer-updating",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:19373e64afe7cef85b8e783dd480f99579c4b5a8bbf2e1fde3ee05fc642bad30"
+      }
+    },
+    {
+      "id": "math3-2025-015",
+      "number": 15,
+      "paperId": "math3-2025",
+      "paperName": "2025考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2025",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2025考研数学三第15题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "2",
+      "explanation": "答案来自本地百度网盘数学三参考答案 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2025/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2025考研数学三试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2025/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2025考研数学三答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2025",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2025-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:93780c68e48e369f2ab453b372d9f04cbfb2da9ac41bf549bb809de489acbacf",
+      "answerTextHash": "sha256:f1ff4b7d91f1ca82f4ffc06a71692ff549b2a5a4d43941326a6edf9b6ca242ab",
+      "sourceEvidence": {
+        "evidenceId": "math3-2025-q15",
+        "sourceId": "src_f1ab602208dcc1f0e9b47fc1",
+        "answerSourceId": "src_bde489f3e657b3fb9311c82f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2025-paper-answer",
+        "answerEvidenceId": "math3-2025-answer-updating",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:f1ff4b7d91f1ca82f4ffc06a71692ff549b2a5a4d43941326a6edf9b6ca242ab"
+      }
+    },
+    {
+      "id": "math3-2025-016",
+      "number": 16,
+      "paperId": "math3-2025",
+      "paperName": "2025考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2025",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2025考研数学三第16题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "2/3",
+      "explanation": "答案来自本地百度网盘数学三参考答案 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2025/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2025考研数学三试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2025/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2025考研数学三答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2025",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2025-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:98d1b94ca28f374ca63635b8a475e89208f53fe68c5e2af3951f37ef0c86f4d5",
+      "answerTextHash": "sha256:0e062bf6b63440e7e479f300c122cb36f7e3fadbe8fab16b61415040a5738726",
+      "sourceEvidence": {
+        "evidenceId": "math3-2025-q16",
+        "sourceId": "src_f1ab602208dcc1f0e9b47fc1",
+        "answerSourceId": "src_bde489f3e657b3fb9311c82f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2025-paper-answer",
+        "answerEvidenceId": "math3-2025-answer-updating",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:0e062bf6b63440e7e479f300c122cb36f7e3fadbe8fab16b61415040a5738726"
+      }
+    },
+    {
+      "id": "math3-2025-017",
+      "number": 17,
+      "paperId": "math3-2025",
+      "paperName": "2025考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2025",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2025考研数学三第17题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "3/10 ln 2 + pi/10",
+      "explanation": "答案来自本地百度网盘数学三参考答案 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2025/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2025考研数学三试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2025/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2025考研数学三答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2025",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2025-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:281343877a8716a94cc160fb7f0da72d467e087ecbfd1e01aaf6f53281133af6",
+      "answerTextHash": "sha256:6d773f6a2f9ca94e377079e09388af3efb9452d6e3053e13ee74eea3d17f68c8",
+      "sourceEvidence": {
+        "evidenceId": "math3-2025-q17",
+        "sourceId": "src_f1ab602208dcc1f0e9b47fc1",
+        "answerSourceId": "src_bde489f3e657b3fb9311c82f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2025-paper-answer",
+        "answerEvidenceId": "math3-2025-answer-updating",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:6d773f6a2f9ca94e377079e09388af3efb9452d6e3053e13ee74eea3d17f68c8"
+      }
+    },
+    {
+      "id": "math3-2025-018",
+      "number": 18,
+      "paperId": "math3-2025",
+      "paperName": "2025考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2025",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2025考研数学三第18题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "f(0) = 2，f'(0) = 5",
+      "explanation": "答案来自本地百度网盘数学三参考答案 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2025/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2025考研数学三试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2025/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2025考研数学三答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2025",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2025-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:ab343abcbb4e1ff31ed6350f4f94dea7fca7f3aace6c401ae24bfad683a52557",
+      "answerTextHash": "sha256:2103bd16f8050710a94f6c0bde329cb5992db8d3f93adefb85e9ffe01a53a4a3",
+      "sourceEvidence": {
+        "evidenceId": "math3-2025-q18",
+        "sourceId": "src_f1ab602208dcc1f0e9b47fc1",
+        "answerSourceId": "src_bde489f3e657b3fb9311c82f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2025-paper-answer",
+        "answerEvidenceId": "math3-2025-answer-updating",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:2103bd16f8050710a94f6c0bde329cb5992db8d3f93adefb85e9ffe01a53a4a3"
+      }
+    },
+    {
+      "id": "math3-2025-019",
+      "number": 19,
+      "paperId": "math3-2025",
+      "paperName": "2025考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2025",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2025考研数学三第19题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "71/210",
+      "explanation": "答案来自本地百度网盘数学三参考答案 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2025/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2025考研数学三试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2025/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2025考研数学三答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2025",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2025-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:4e9ad87c1623e190771b797d5d2f0beb3bc0caf520bcd05c9759caec34f9db34",
+      "answerTextHash": "sha256:17e12be8854954eee321fd062c788f96374466e3668070cc1ad395c10486711b",
+      "sourceEvidence": {
+        "evidenceId": "math3-2025-q19",
+        "sourceId": "src_f1ab602208dcc1f0e9b47fc1",
+        "answerSourceId": "src_bde489f3e657b3fb9311c82f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2025-paper-answer",
+        "answerEvidenceId": "math3-2025-answer-updating",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:17e12be8854954eee321fd062c788f96374466e3668070cc1ad395c10486711b"
+      }
+    },
+    {
+      "id": "math3-2025-020",
+      "number": 20,
+      "paperId": "math3-2025",
+      "paperName": "2025考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2025",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2025考研数学三第20题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "证明题，完整证明过程见答案原页。",
+      "explanation": "答案来自本地百度网盘数学三参考答案 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2025/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2025考研数学三试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2025/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2025考研数学三答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2025",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2025-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:90427749a72c8a16c0f81952e1a7ca5a043dd2b2e705d16b47d434ee6f0ea71a",
+      "answerTextHash": "sha256:703ad7d429c0688a955d39eeb57d39ef8eaca910665f61e756a649098216188e",
+      "sourceEvidence": {
+        "evidenceId": "math3-2025-q20",
+        "sourceId": "src_f1ab602208dcc1f0e9b47fc1",
+        "answerSourceId": "src_bde489f3e657b3fb9311c82f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2025-paper-answer",
+        "answerEvidenceId": "math3-2025-answer-updating",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:703ad7d429c0688a955d39eeb57d39ef8eaca910665f61e756a649098216188e"
+      }
+    },
+    {
+      "id": "math3-2025-021",
+      "number": 21,
+      "paperId": "math3-2025",
+      "paperName": "2025考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2025",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2025考研数学三第21题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "a = 1；alpha=(1,-1,1)^T，beta=(-1,0,1)^T；H 矩阵见答案原页。",
+      "explanation": "答案来自本地百度网盘数学三参考答案 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2025/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2025考研数学三试卷原页 p.3"
+        },
+        {
+          "src": "question-bank/math3-2025/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2025考研数学三试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2025/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2025考研数学三答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2025",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2025-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:75e26d24463db6a3a5ccbbc1bdfb7adcfc6771a8a4de80bc81a247ef35fe1905",
+      "answerTextHash": "sha256:6c62175c682a826064a3bfa5434bbae854d69a2de3e120ce8e7dcd92edecaaba",
+      "sourceEvidence": {
+        "evidenceId": "math3-2025-q21",
+        "sourceId": "src_f1ab602208dcc1f0e9b47fc1",
+        "answerSourceId": "src_bde489f3e657b3fb9311c82f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2025-paper-answer",
+        "answerEvidenceId": "math3-2025-answer-updating",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:6c62175c682a826064a3bfa5434bbae854d69a2de3e120ce8e7dcd92edecaaba"
+      }
+    },
+    {
+      "id": "math3-2025-022",
+      "number": 22,
+      "paperId": "math3-2025",
+      "paperName": "2025考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2025",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2025考研数学三第22题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "P{Y>0}=1/4，E(Y)=50；P{M=m}=e^-2 * 2^m / m!，m=0,1,2,...",
+      "explanation": "答案来自本地百度网盘数学三参考答案 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2025/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2025考研数学三试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2025/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2025考研数学三答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2025",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2025-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:112b4d4dbc0822ce3fb55cc223e04a127cc8d6323c5c8ccef2191db300105886",
+      "answerTextHash": "sha256:c038e89cbd5dfb1502bc79fb4156e86367bdff93049f93047545ac1dc9a1bb17",
+      "sourceEvidence": {
+        "evidenceId": "math3-2025-q22",
+        "sourceId": "src_f1ab602208dcc1f0e9b47fc1",
+        "answerSourceId": "src_bde489f3e657b3fb9311c82f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2025-paper-answer",
+        "answerEvidenceId": "math3-2025-answer-updating",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:c038e89cbd5dfb1502bc79fb4156e86367bdff93049f93047545ac1dc9a1bb17"
+      }
+    }
+  ]
 }

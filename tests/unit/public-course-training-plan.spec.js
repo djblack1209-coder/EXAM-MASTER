@@ -32,7 +32,7 @@ describe('public course training plan', () => {
     expect(plan.weeklyTasks.find((task) => task.track === 'math1').status).toBe('ready');
     expect(plan.weeklyTasks.find((task) => task.track === 'politics').status).toBe('ready');
     expect(plan.weeklyTasks.find((task) => task.track === 'math2').status).toBe('ready');
-    expect(plan.weeklyTasks.find((task) => task.track === 'math3').status).toBe('pending');
+    expect(plan.weeklyTasks.find((task) => task.track === 'math3').status).toBe('ready');
     expect(plan.rules.join('\n')).toContain('英语阅读先读完整文章');
   });
 });
