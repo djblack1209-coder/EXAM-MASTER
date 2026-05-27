@@ -1,0 +1,3036 @@
+{
+  "id": "politics-2016",
+  "source": "politics-2016-paper-answer",
+  "paperId": "politics-2016",
+  "paperName": "2016考研政治真题",
+  "subject": "政治",
+  "subjectKey": "politics",
+  "track": "politics",
+  "year": "2016",
+  "quality": "ready",
+  "publicationStatus": "published",
+  "publicationBlockers": [],
+  "sourceEvidencePolicy": "baidu_netdisk_official_paper_pdf_page_image_v1",
+  "sourceFiles": [
+    {
+      "id": "politics-2016-paper",
+      "sourceId": "src_a0b9ea80a5b70fed8e86331b",
+      "role": "paper",
+      "localPath": "data/raw-inbox/public-course-history/politics/2016/2016-politics-paper.pdf",
+      "sha256": "sha256:40eb2ec5c7598c8e30eaa8c270e4a6179ba519ce4219f3fefb225d76a39226b6"
+    },
+    {
+      "id": "politics-2016-paper-answer",
+      "sourceId": "src_aafa785d1995e4f6abee98fb",
+      "role": "paper_answer",
+      "localPath": "data/raw-inbox/public-course-history/politics/2016/2016-politics-paper-answer.pdf",
+      "sha256": "sha256:8f6929c48c1ff6d4bd36bdcc147cf03b7ef6211427bf4d414f398d830b040841"
+    }
+  ],
+  "sourceNotes": [
+    "The 2016 standalone paper PDF provides a readable text layer for question-page ranges. The scanned paper-answer PDF contains the visible choice key on pages 14-16 and analysis answer points on pages 16-19; OCR was used only to locate those pages while final release evidence remains rendered PDF page images.",
+    "For question 21, the answer PDF visibly marks the answer as CD while the explanation text names A/C-style rationale. This bank preserves the PDF answer-key label and attaches the answer page image for traceability."
+  ],
+  "assetRoot": "question-bank/politics-2016",
+  "processed_at": "2026-05-27T04:16:56Z",
+  "total_cards": 38,
+  "sections": [
+    "单项选择",
+    "多项选择",
+    "分析题"
+  ],
+  "cards": [
+    {
+      "id": "politics-2016-001",
+      "number": 1,
+      "paperId": "politics-2016",
+      "paperName": "2016考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2016",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2016考研政治第1题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2016 考研政治真题及参考答案 PDF 第 14-16 页可见答案键；题面以试卷原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2016/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2016考研政治试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2016/answer-page-14.jpg",
+          "caption": "答案原页 p.14",
+          "alt": "2016考研政治答案原页 p.14"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2016",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2016-paper-answer",
+      "sourceEvidenceId": "politics-2016-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:1085b8a37f0feb5a3ebce82efbd46144838b555057f82fb07a8058546cac0b50",
+      "answerTextHash": "sha256:870c0f8c6b7f8e98390116c9040105e38f11fdb8aec37ff2a8e8fd38864dfe2e",
+      "sourceEvidence": {
+        "evidenceId": "politics-2016-q01",
+        "sourceId": "src_a0b9ea80a5b70fed8e86331b",
+        "answerSourceId": "src_aafa785d1995e4f6abee98fb",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2016-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:1085b8a37f0feb5a3ebce82efbd46144838b555057f82fb07a8058546cac0b50",
+        "answerTextHash": "sha256:870c0f8c6b7f8e98390116c9040105e38f11fdb8aec37ff2a8e8fd38864dfe2e"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_aafa785d1995e4f6abee98fb",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2016/2016-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:870c0f8c6b7f8e98390116c9040105e38f11fdb8aec37ff2a8e8fd38864dfe2e",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2016_bank",
+        "note": "Matched against local Baidu Netdisk 2016 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2016-002",
+      "number": 2,
+      "paperId": "politics-2016",
+      "paperName": "2016考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2016",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2016考研政治第2题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2016 考研政治真题及参考答案 PDF 第 14-16 页可见答案键；题面以试卷原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2016/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2016考研政治试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2016/answer-page-14.jpg",
+          "caption": "答案原页 p.14",
+          "alt": "2016考研政治答案原页 p.14"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2016",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2016-paper-answer",
+      "sourceEvidenceId": "politics-2016-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:c94a8561168bd39b6051192e9f93df5b723c5f7ca21ca8699f93411ffde3c830",
+      "answerTextHash": "sha256:118ef5b2b24bdbaaa0f813a13f742e120483e1c961ed373eed0bbc86210501e8",
+      "sourceEvidence": {
+        "evidenceId": "politics-2016-q02",
+        "sourceId": "src_a0b9ea80a5b70fed8e86331b",
+        "answerSourceId": "src_aafa785d1995e4f6abee98fb",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2016-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:c94a8561168bd39b6051192e9f93df5b723c5f7ca21ca8699f93411ffde3c830",
+        "answerTextHash": "sha256:118ef5b2b24bdbaaa0f813a13f742e120483e1c961ed373eed0bbc86210501e8"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_aafa785d1995e4f6abee98fb",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2016/2016-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:118ef5b2b24bdbaaa0f813a13f742e120483e1c961ed373eed0bbc86210501e8",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2016_bank",
+        "note": "Matched against local Baidu Netdisk 2016 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2016-003",
+      "number": 3,
+      "paperId": "politics-2016",
+      "paperName": "2016考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2016",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2016考研政治第3题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2016 考研政治真题及参考答案 PDF 第 14-16 页可见答案键；题面以试卷原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2016/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2016考研政治试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2016/answer-page-14.jpg",
+          "caption": "答案原页 p.14",
+          "alt": "2016考研政治答案原页 p.14"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2016",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2016-paper-answer",
+      "sourceEvidenceId": "politics-2016-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:8853432cd5bcb07d49df01a1f46024f3d3bd36266d38b7904a08e3dc97d762a7",
+      "answerTextHash": "sha256:03327e6fc37387e4d3cf177122d0d00520174722d854f36c6c4e1130ff619bdf",
+      "sourceEvidence": {
+        "evidenceId": "politics-2016-q03",
+        "sourceId": "src_a0b9ea80a5b70fed8e86331b",
+        "answerSourceId": "src_aafa785d1995e4f6abee98fb",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2016-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:8853432cd5bcb07d49df01a1f46024f3d3bd36266d38b7904a08e3dc97d762a7",
+        "answerTextHash": "sha256:03327e6fc37387e4d3cf177122d0d00520174722d854f36c6c4e1130ff619bdf"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_aafa785d1995e4f6abee98fb",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2016/2016-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:03327e6fc37387e4d3cf177122d0d00520174722d854f36c6c4e1130ff619bdf",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2016_bank",
+        "note": "Matched against local Baidu Netdisk 2016 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2016-004",
+      "number": 4,
+      "paperId": "politics-2016",
+      "paperName": "2016考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2016",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2016考研政治第4题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2016 考研政治真题及参考答案 PDF 第 14-16 页可见答案键；题面以试卷原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2016/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2016考研政治试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2016/answer-page-14.jpg",
+          "caption": "答案原页 p.14",
+          "alt": "2016考研政治答案原页 p.14"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2016",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2016-paper-answer",
+      "sourceEvidenceId": "politics-2016-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:5144f0a2e4aa20d193cdce51aa8ec1a9e9b6f7d4fdb1ddf39b63e41656624508",
+      "answerTextHash": "sha256:03327e6fc37387e4d3cf177122d0d00520174722d854f36c6c4e1130ff619bdf",
+      "sourceEvidence": {
+        "evidenceId": "politics-2016-q04",
+        "sourceId": "src_a0b9ea80a5b70fed8e86331b",
+        "answerSourceId": "src_aafa785d1995e4f6abee98fb",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2016-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:5144f0a2e4aa20d193cdce51aa8ec1a9e9b6f7d4fdb1ddf39b63e41656624508",
+        "answerTextHash": "sha256:03327e6fc37387e4d3cf177122d0d00520174722d854f36c6c4e1130ff619bdf"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_aafa785d1995e4f6abee98fb",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2016/2016-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:03327e6fc37387e4d3cf177122d0d00520174722d854f36c6c4e1130ff619bdf",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2016_bank",
+        "note": "Matched against local Baidu Netdisk 2016 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2016-005",
+      "number": 5,
+      "paperId": "politics-2016",
+      "paperName": "2016考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2016",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2016考研政治第5题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2016 考研政治真题及参考答案 PDF 第 14-16 页可见答案键；题面以试卷原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2016/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2016考研政治试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2016/answer-page-14.jpg",
+          "caption": "答案原页 p.14",
+          "alt": "2016考研政治答案原页 p.14"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2016",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2016-paper-answer",
+      "sourceEvidenceId": "politics-2016-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:cd13e99a0b22f700b2e20a14baaef4470eac8802f6a5fa032bb6d05d276db967",
+      "answerTextHash": "sha256:c56db87ba4ddbe4eb70d4a4bcfd3f65cee038f2645a1c193430ff27f31234d34",
+      "sourceEvidence": {
+        "evidenceId": "politics-2016-q05",
+        "sourceId": "src_a0b9ea80a5b70fed8e86331b",
+        "answerSourceId": "src_aafa785d1995e4f6abee98fb",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2016-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:cd13e99a0b22f700b2e20a14baaef4470eac8802f6a5fa032bb6d05d276db967",
+        "answerTextHash": "sha256:c56db87ba4ddbe4eb70d4a4bcfd3f65cee038f2645a1c193430ff27f31234d34"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_aafa785d1995e4f6abee98fb",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2016/2016-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:c56db87ba4ddbe4eb70d4a4bcfd3f65cee038f2645a1c193430ff27f31234d34",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2016_bank",
+        "note": "Matched against local Baidu Netdisk 2016 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2016-006",
+      "number": 6,
+      "paperId": "politics-2016",
+      "paperName": "2016考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2016",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2016考研政治第6题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2016 考研政治真题及参考答案 PDF 第 14-16 页可见答案键；题面以试卷原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2016/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2016考研政治试卷原页 p.1"
+        },
+        {
+          "src": "question-bank/politics-2016/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2016考研政治试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2016/answer-page-14.jpg",
+          "caption": "答案原页 p.14",
+          "alt": "2016考研政治答案原页 p.14"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2016",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2016-paper-answer",
+      "sourceEvidenceId": "politics-2016-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:e5548bf5ee4bd5238d204f49212172bf8cec42c5a6416b832af3ccb7151f8f06",
+      "answerTextHash": "sha256:870c0f8c6b7f8e98390116c9040105e38f11fdb8aec37ff2a8e8fd38864dfe2e",
+      "sourceEvidence": {
+        "evidenceId": "politics-2016-q06",
+        "sourceId": "src_a0b9ea80a5b70fed8e86331b",
+        "answerSourceId": "src_aafa785d1995e4f6abee98fb",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2016-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:e5548bf5ee4bd5238d204f49212172bf8cec42c5a6416b832af3ccb7151f8f06",
+        "answerTextHash": "sha256:870c0f8c6b7f8e98390116c9040105e38f11fdb8aec37ff2a8e8fd38864dfe2e"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_aafa785d1995e4f6abee98fb",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2016/2016-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:870c0f8c6b7f8e98390116c9040105e38f11fdb8aec37ff2a8e8fd38864dfe2e",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2016_bank",
+        "note": "Matched against local Baidu Netdisk 2016 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2016-007",
+      "number": 7,
+      "paperId": "politics-2016",
+      "paperName": "2016考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2016",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2016考研政治第7题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2016 考研政治真题及参考答案 PDF 第 14-16 页可见答案键；题面以试卷原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2016/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2016考研政治试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2016/answer-page-14.jpg",
+          "caption": "答案原页 p.14",
+          "alt": "2016考研政治答案原页 p.14"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2016",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2016-paper-answer",
+      "sourceEvidenceId": "politics-2016-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:1b461b0ccc49c12a3202379cd95bb54aac1afec32cb110c24623d20f2323ec61",
+      "answerTextHash": "sha256:03327e6fc37387e4d3cf177122d0d00520174722d854f36c6c4e1130ff619bdf",
+      "sourceEvidence": {
+        "evidenceId": "politics-2016-q07",
+        "sourceId": "src_a0b9ea80a5b70fed8e86331b",
+        "answerSourceId": "src_aafa785d1995e4f6abee98fb",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2016-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:1b461b0ccc49c12a3202379cd95bb54aac1afec32cb110c24623d20f2323ec61",
+        "answerTextHash": "sha256:03327e6fc37387e4d3cf177122d0d00520174722d854f36c6c4e1130ff619bdf"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_aafa785d1995e4f6abee98fb",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2016/2016-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:03327e6fc37387e4d3cf177122d0d00520174722d854f36c6c4e1130ff619bdf",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2016_bank",
+        "note": "Matched against local Baidu Netdisk 2016 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2016-008",
+      "number": 8,
+      "paperId": "politics-2016",
+      "paperName": "2016考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2016",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2016考研政治第8题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2016 考研政治真题及参考答案 PDF 第 14-16 页可见答案键；题面以试卷原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2016/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2016考研政治试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2016/answer-page-14.jpg",
+          "caption": "答案原页 p.14",
+          "alt": "2016考研政治答案原页 p.14"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2016",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2016-paper-answer",
+      "sourceEvidenceId": "politics-2016-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:1ac08edc56edfc2bbdd209e5b6c45b642ad19ebe60eacffb0421d679c19eff74",
+      "answerTextHash": "sha256:870c0f8c6b7f8e98390116c9040105e38f11fdb8aec37ff2a8e8fd38864dfe2e",
+      "sourceEvidence": {
+        "evidenceId": "politics-2016-q08",
+        "sourceId": "src_a0b9ea80a5b70fed8e86331b",
+        "answerSourceId": "src_aafa785d1995e4f6abee98fb",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2016-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:1ac08edc56edfc2bbdd209e5b6c45b642ad19ebe60eacffb0421d679c19eff74",
+        "answerTextHash": "sha256:870c0f8c6b7f8e98390116c9040105e38f11fdb8aec37ff2a8e8fd38864dfe2e"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_aafa785d1995e4f6abee98fb",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2016/2016-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:870c0f8c6b7f8e98390116c9040105e38f11fdb8aec37ff2a8e8fd38864dfe2e",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2016_bank",
+        "note": "Matched against local Baidu Netdisk 2016 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2016-009",
+      "number": 9,
+      "paperId": "politics-2016",
+      "paperName": "2016考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2016",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2016考研政治第9题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2016 考研政治真题及参考答案 PDF 第 14-16 页可见答案键；题面以试卷原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2016/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2016考研政治试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2016/answer-page-14.jpg",
+          "caption": "答案原页 p.14",
+          "alt": "2016考研政治答案原页 p.14"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2016",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2016-paper-answer",
+      "sourceEvidenceId": "politics-2016-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:825a716c2ee06dee1f4f4e17b8e29a0d807731d0f6c339bb6238f680cea6e006",
+      "answerTextHash": "sha256:870c0f8c6b7f8e98390116c9040105e38f11fdb8aec37ff2a8e8fd38864dfe2e",
+      "sourceEvidence": {
+        "evidenceId": "politics-2016-q09",
+        "sourceId": "src_a0b9ea80a5b70fed8e86331b",
+        "answerSourceId": "src_aafa785d1995e4f6abee98fb",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2016-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:825a716c2ee06dee1f4f4e17b8e29a0d807731d0f6c339bb6238f680cea6e006",
+        "answerTextHash": "sha256:870c0f8c6b7f8e98390116c9040105e38f11fdb8aec37ff2a8e8fd38864dfe2e"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_aafa785d1995e4f6abee98fb",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2016/2016-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:870c0f8c6b7f8e98390116c9040105e38f11fdb8aec37ff2a8e8fd38864dfe2e",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2016_bank",
+        "note": "Matched against local Baidu Netdisk 2016 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2016-010",
+      "number": 10,
+      "paperId": "politics-2016",
+      "paperName": "2016考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2016",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2016考研政治第10题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2016 考研政治真题及参考答案 PDF 第 14-16 页可见答案键；题面以试卷原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2016/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2016考研政治试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2016/answer-page-14.jpg",
+          "caption": "答案原页 p.14",
+          "alt": "2016考研政治答案原页 p.14"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2016",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2016-paper-answer",
+      "sourceEvidenceId": "politics-2016-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:ce99a1786553f6fa59bd9bec9b37e80c9c5b4b2d4bbab3a886790fdd138381b6",
+      "answerTextHash": "sha256:c56db87ba4ddbe4eb70d4a4bcfd3f65cee038f2645a1c193430ff27f31234d34",
+      "sourceEvidence": {
+        "evidenceId": "politics-2016-q10",
+        "sourceId": "src_a0b9ea80a5b70fed8e86331b",
+        "answerSourceId": "src_aafa785d1995e4f6abee98fb",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2016-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:ce99a1786553f6fa59bd9bec9b37e80c9c5b4b2d4bbab3a886790fdd138381b6",
+        "answerTextHash": "sha256:c56db87ba4ddbe4eb70d4a4bcfd3f65cee038f2645a1c193430ff27f31234d34"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_aafa785d1995e4f6abee98fb",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2016/2016-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:c56db87ba4ddbe4eb70d4a4bcfd3f65cee038f2645a1c193430ff27f31234d34",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2016_bank",
+        "note": "Matched against local Baidu Netdisk 2016 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2016-011",
+      "number": 11,
+      "paperId": "politics-2016",
+      "paperName": "2016考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2016",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2016考研政治第11题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2016 考研政治真题及参考答案 PDF 第 14-16 页可见答案键；题面以试卷原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2016/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2016考研政治试卷原页 p.2"
+        },
+        {
+          "src": "question-bank/politics-2016/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2016考研政治试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2016/answer-page-14.jpg",
+          "caption": "答案原页 p.14",
+          "alt": "2016考研政治答案原页 p.14"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2016",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2016-paper-answer",
+      "sourceEvidenceId": "politics-2016-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:6becd8a0b295820dc4f50663a29f2eb488f1e2399217e2e6ae715a3f05135ebe",
+      "answerTextHash": "sha256:118ef5b2b24bdbaaa0f813a13f742e120483e1c961ed373eed0bbc86210501e8",
+      "sourceEvidence": {
+        "evidenceId": "politics-2016-q11",
+        "sourceId": "src_a0b9ea80a5b70fed8e86331b",
+        "answerSourceId": "src_aafa785d1995e4f6abee98fb",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2016-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:6becd8a0b295820dc4f50663a29f2eb488f1e2399217e2e6ae715a3f05135ebe",
+        "answerTextHash": "sha256:118ef5b2b24bdbaaa0f813a13f742e120483e1c961ed373eed0bbc86210501e8"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_aafa785d1995e4f6abee98fb",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2016/2016-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:118ef5b2b24bdbaaa0f813a13f742e120483e1c961ed373eed0bbc86210501e8",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2016_bank",
+        "note": "Matched against local Baidu Netdisk 2016 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2016-012",
+      "number": 12,
+      "paperId": "politics-2016",
+      "paperName": "2016考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2016",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2016考研政治第12题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2016 考研政治真题及参考答案 PDF 第 14-16 页可见答案键；题面以试卷原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2016/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2016考研政治试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2016/answer-page-14.jpg",
+          "caption": "答案原页 p.14",
+          "alt": "2016考研政治答案原页 p.14"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2016",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2016-paper-answer",
+      "sourceEvidenceId": "politics-2016-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:3cb0a4fa98db54f747078e094bb560e2fbb0aab7b559c123ad6d380999190727",
+      "answerTextHash": "sha256:c56db87ba4ddbe4eb70d4a4bcfd3f65cee038f2645a1c193430ff27f31234d34",
+      "sourceEvidence": {
+        "evidenceId": "politics-2016-q12",
+        "sourceId": "src_a0b9ea80a5b70fed8e86331b",
+        "answerSourceId": "src_aafa785d1995e4f6abee98fb",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2016-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:3cb0a4fa98db54f747078e094bb560e2fbb0aab7b559c123ad6d380999190727",
+        "answerTextHash": "sha256:c56db87ba4ddbe4eb70d4a4bcfd3f65cee038f2645a1c193430ff27f31234d34"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_aafa785d1995e4f6abee98fb",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2016/2016-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:c56db87ba4ddbe4eb70d4a4bcfd3f65cee038f2645a1c193430ff27f31234d34",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2016_bank",
+        "note": "Matched against local Baidu Netdisk 2016 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2016-013",
+      "number": 13,
+      "paperId": "politics-2016",
+      "paperName": "2016考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2016",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2016考研政治第13题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2016 考研政治真题及参考答案 PDF 第 14-16 页可见答案键；题面以试卷原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2016/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2016考研政治试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2016/answer-page-15.jpg",
+          "caption": "答案原页 p.15",
+          "alt": "2016考研政治答案原页 p.15"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2016",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2016-paper-answer",
+      "sourceEvidenceId": "politics-2016-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:b532f8265161db3a67d01575d74ad9919ada9a9ea28e757448f254277fd1d549",
+      "answerTextHash": "sha256:c657a288db86b51cbd719d00fa69ad255209b2ed2d1c0e0522c915622bc0104a",
+      "sourceEvidence": {
+        "evidenceId": "politics-2016-q13",
+        "sourceId": "src_a0b9ea80a5b70fed8e86331b",
+        "answerSourceId": "src_aafa785d1995e4f6abee98fb",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2016-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:b532f8265161db3a67d01575d74ad9919ada9a9ea28e757448f254277fd1d549",
+        "answerTextHash": "sha256:c657a288db86b51cbd719d00fa69ad255209b2ed2d1c0e0522c915622bc0104a"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_aafa785d1995e4f6abee98fb",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2016/2016-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:c657a288db86b51cbd719d00fa69ad255209b2ed2d1c0e0522c915622bc0104a",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2016_bank",
+        "note": "Matched against local Baidu Netdisk 2016 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2016-014",
+      "number": 14,
+      "paperId": "politics-2016",
+      "paperName": "2016考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2016",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2016考研政治第14题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2016 考研政治真题及参考答案 PDF 第 14-16 页可见答案键；题面以试卷原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2016/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2016考研政治试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2016/answer-page-15.jpg",
+          "caption": "答案原页 p.15",
+          "alt": "2016考研政治答案原页 p.15"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2016",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2016-paper-answer",
+      "sourceEvidenceId": "politics-2016-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:7f53f3a1a34da1365e2fcf824cc6829f595d5bbd2cc2330415aba257b0c1645e",
+      "answerTextHash": "sha256:74a0204a1734db387f88affbe0b2e5c36461a25aa3ba06717e8ffbfaab1843a2",
+      "sourceEvidence": {
+        "evidenceId": "politics-2016-q14",
+        "sourceId": "src_a0b9ea80a5b70fed8e86331b",
+        "answerSourceId": "src_aafa785d1995e4f6abee98fb",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2016-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:7f53f3a1a34da1365e2fcf824cc6829f595d5bbd2cc2330415aba257b0c1645e",
+        "answerTextHash": "sha256:74a0204a1734db387f88affbe0b2e5c36461a25aa3ba06717e8ffbfaab1843a2"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_aafa785d1995e4f6abee98fb",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2016/2016-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:74a0204a1734db387f88affbe0b2e5c36461a25aa3ba06717e8ffbfaab1843a2",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2016_bank",
+        "note": "Matched against local Baidu Netdisk 2016 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2016-015",
+      "number": 15,
+      "paperId": "politics-2016",
+      "paperName": "2016考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2016",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2016考研政治第15题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2016 考研政治真题及参考答案 PDF 第 14-16 页可见答案键；题面以试卷原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2016/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2016考研政治试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2016/answer-page-15.jpg",
+          "caption": "答案原页 p.15",
+          "alt": "2016考研政治答案原页 p.15"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2016",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2016-paper-answer",
+      "sourceEvidenceId": "politics-2016-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:b2849f1753a9436d9bbebc89aa5b5b98158796a78909ce11f49048707508f525",
+      "answerTextHash": "sha256:57c1520d6c71be4ce45c196196b1b6008217db86450f5c95d9cd427e5ce8520c",
+      "sourceEvidence": {
+        "evidenceId": "politics-2016-q15",
+        "sourceId": "src_a0b9ea80a5b70fed8e86331b",
+        "answerSourceId": "src_aafa785d1995e4f6abee98fb",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2016-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:b2849f1753a9436d9bbebc89aa5b5b98158796a78909ce11f49048707508f525",
+        "answerTextHash": "sha256:57c1520d6c71be4ce45c196196b1b6008217db86450f5c95d9cd427e5ce8520c"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_aafa785d1995e4f6abee98fb",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2016/2016-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:57c1520d6c71be4ce45c196196b1b6008217db86450f5c95d9cd427e5ce8520c",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2016_bank",
+        "note": "Matched against local Baidu Netdisk 2016 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2016-016",
+      "number": 16,
+      "paperId": "politics-2016",
+      "paperName": "2016考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2016",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2016考研政治第16题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2016 考研政治真题及参考答案 PDF 第 14-16 页可见答案键；题面以试卷原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2016/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2016考研政治试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2016/answer-page-15.jpg",
+          "caption": "答案原页 p.15",
+          "alt": "2016考研政治答案原页 p.15"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2016",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2016-paper-answer",
+      "sourceEvidenceId": "politics-2016-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:48952721acf9a3988246f434760e9d6ae96715ef59e845b0622bdda6ed1a2e67",
+      "answerTextHash": "sha256:c657a288db86b51cbd719d00fa69ad255209b2ed2d1c0e0522c915622bc0104a",
+      "sourceEvidence": {
+        "evidenceId": "politics-2016-q16",
+        "sourceId": "src_a0b9ea80a5b70fed8e86331b",
+        "answerSourceId": "src_aafa785d1995e4f6abee98fb",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2016-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:48952721acf9a3988246f434760e9d6ae96715ef59e845b0622bdda6ed1a2e67",
+        "answerTextHash": "sha256:c657a288db86b51cbd719d00fa69ad255209b2ed2d1c0e0522c915622bc0104a"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_aafa785d1995e4f6abee98fb",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2016/2016-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:c657a288db86b51cbd719d00fa69ad255209b2ed2d1c0e0522c915622bc0104a",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2016_bank",
+        "note": "Matched against local Baidu Netdisk 2016 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2016-017",
+      "number": 17,
+      "paperId": "politics-2016",
+      "paperName": "2016考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2016",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2016考研政治第17题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "CD",
+      "explanation": "答案来自本地百度网盘 2016 考研政治真题及参考答案 PDF 第 14-16 页可见答案键；题面以试卷原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2016/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2016考研政治试卷原页 p.3"
+        },
+        {
+          "src": "question-bank/politics-2016/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2016考研政治试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2016/answer-page-15.jpg",
+          "caption": "答案原页 p.15",
+          "alt": "2016考研政治答案原页 p.15"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2016",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2016-paper-answer",
+      "sourceEvidenceId": "politics-2016-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:01e90b5bf0d5ad32f81761404e579307b15ff3bef670e6de26b5d47f867c0c3d",
+      "answerTextHash": "sha256:405fa9c44502a2c6ec1679c740e3263b63f626fd4968644bc6100b660951e9bc",
+      "sourceEvidence": {
+        "evidenceId": "politics-2016-q17",
+        "sourceId": "src_a0b9ea80a5b70fed8e86331b",
+        "answerSourceId": "src_aafa785d1995e4f6abee98fb",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2016-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:01e90b5bf0d5ad32f81761404e579307b15ff3bef670e6de26b5d47f867c0c3d",
+        "answerTextHash": "sha256:405fa9c44502a2c6ec1679c740e3263b63f626fd4968644bc6100b660951e9bc"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_aafa785d1995e4f6abee98fb",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2016/2016-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:405fa9c44502a2c6ec1679c740e3263b63f626fd4968644bc6100b660951e9bc",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2016_bank",
+        "note": "Matched against local Baidu Netdisk 2016 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2016-018",
+      "number": 18,
+      "paperId": "politics-2016",
+      "paperName": "2016考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2016",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2016考研政治第18题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABD",
+      "explanation": "答案来自本地百度网盘 2016 考研政治真题及参考答案 PDF 第 14-16 页可见答案键；题面以试卷原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2016/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2016考研政治试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2016/answer-page-15.jpg",
+          "caption": "答案原页 p.15",
+          "alt": "2016考研政治答案原页 p.15"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2016",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2016-paper-answer",
+      "sourceEvidenceId": "politics-2016-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:64444f823ebda45dfa9bd4cc1efdcd7988d38a82ad1dcae405fb117550a28b7f",
+      "answerTextHash": "sha256:2f31e22b8ecce0b8fef316e4f11c56c12644c061a3188c340cbd32e8634e5ba6",
+      "sourceEvidence": {
+        "evidenceId": "politics-2016-q18",
+        "sourceId": "src_a0b9ea80a5b70fed8e86331b",
+        "answerSourceId": "src_aafa785d1995e4f6abee98fb",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2016-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:64444f823ebda45dfa9bd4cc1efdcd7988d38a82ad1dcae405fb117550a28b7f",
+        "answerTextHash": "sha256:2f31e22b8ecce0b8fef316e4f11c56c12644c061a3188c340cbd32e8634e5ba6"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_aafa785d1995e4f6abee98fb",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2016/2016-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:2f31e22b8ecce0b8fef316e4f11c56c12644c061a3188c340cbd32e8634e5ba6",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2016_bank",
+        "note": "Matched against local Baidu Netdisk 2016 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2016-019",
+      "number": 19,
+      "paperId": "politics-2016",
+      "paperName": "2016考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2016",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2016考研政治第19题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "BCD",
+      "explanation": "答案来自本地百度网盘 2016 考研政治真题及参考答案 PDF 第 14-16 页可见答案键；题面以试卷原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2016/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2016考研政治试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2016/answer-page-15.jpg",
+          "caption": "答案原页 p.15",
+          "alt": "2016考研政治答案原页 p.15"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2016",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2016-paper-answer",
+      "sourceEvidenceId": "politics-2016-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:2a3baf8743e3e55a2032d3fd6f83251a4e6afbb47d79512e9fd74053bfe67730",
+      "answerTextHash": "sha256:0d7b9351f68633ec6ae29d0a269d93804fd457afbc8a532673c87aa44b835dc6",
+      "sourceEvidence": {
+        "evidenceId": "politics-2016-q19",
+        "sourceId": "src_a0b9ea80a5b70fed8e86331b",
+        "answerSourceId": "src_aafa785d1995e4f6abee98fb",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2016-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:2a3baf8743e3e55a2032d3fd6f83251a4e6afbb47d79512e9fd74053bfe67730",
+        "answerTextHash": "sha256:0d7b9351f68633ec6ae29d0a269d93804fd457afbc8a532673c87aa44b835dc6"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_aafa785d1995e4f6abee98fb",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2016/2016-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:0d7b9351f68633ec6ae29d0a269d93804fd457afbc8a532673c87aa44b835dc6",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2016_bank",
+        "note": "Matched against local Baidu Netdisk 2016 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2016-020",
+      "number": 20,
+      "paperId": "politics-2016",
+      "paperName": "2016考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2016",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2016考研政治第20题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABD",
+      "explanation": "答案来自本地百度网盘 2016 考研政治真题及参考答案 PDF 第 14-16 页可见答案键；题面以试卷原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2016/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2016考研政治试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2016/answer-page-15.jpg",
+          "caption": "答案原页 p.15",
+          "alt": "2016考研政治答案原页 p.15"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2016",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2016-paper-answer",
+      "sourceEvidenceId": "politics-2016-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:b9aafde6abd3d542e4d4e8638f2a67327004254bf015765f9589b1b55771f823",
+      "answerTextHash": "sha256:2f31e22b8ecce0b8fef316e4f11c56c12644c061a3188c340cbd32e8634e5ba6",
+      "sourceEvidence": {
+        "evidenceId": "politics-2016-q20",
+        "sourceId": "src_a0b9ea80a5b70fed8e86331b",
+        "answerSourceId": "src_aafa785d1995e4f6abee98fb",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2016-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:b9aafde6abd3d542e4d4e8638f2a67327004254bf015765f9589b1b55771f823",
+        "answerTextHash": "sha256:2f31e22b8ecce0b8fef316e4f11c56c12644c061a3188c340cbd32e8634e5ba6"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_aafa785d1995e4f6abee98fb",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2016/2016-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:2f31e22b8ecce0b8fef316e4f11c56c12644c061a3188c340cbd32e8634e5ba6",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2016_bank",
+        "note": "Matched against local Baidu Netdisk 2016 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2016-021",
+      "number": 21,
+      "paperId": "politics-2016",
+      "paperName": "2016考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2016",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2016考研政治第21题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "CD",
+      "explanation": "答案来自本地百度网盘 2016 考研政治真题及参考答案 PDF 第 15 页可见答案键；该页第21题标注为 CD，但同页解析文字提到 A/C 相关要点，题库保留原页图证据。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2016/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2016考研政治试卷原页 p.4"
+        },
+        {
+          "src": "question-bank/politics-2016/paper-page-05.jpg",
+          "caption": "试卷原页 p.5",
+          "alt": "2016考研政治试卷原页 p.5"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2016/answer-page-15.jpg",
+          "caption": "答案原页 p.15",
+          "alt": "2016考研政治答案原页 p.15"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2016",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2016-paper-answer",
+      "sourceEvidenceId": "politics-2016-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:45214b4b32a701b39404445601f71c4d472dddc96d8e3ff4811ff009cb916a77",
+      "answerTextHash": "sha256:405fa9c44502a2c6ec1679c740e3263b63f626fd4968644bc6100b660951e9bc",
+      "sourceEvidence": {
+        "evidenceId": "politics-2016-q21",
+        "sourceId": "src_a0b9ea80a5b70fed8e86331b",
+        "answerSourceId": "src_aafa785d1995e4f6abee98fb",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2016-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:45214b4b32a701b39404445601f71c4d472dddc96d8e3ff4811ff009cb916a77",
+        "answerTextHash": "sha256:405fa9c44502a2c6ec1679c740e3263b63f626fd4968644bc6100b660951e9bc"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_aafa785d1995e4f6abee98fb",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2016/2016-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:405fa9c44502a2c6ec1679c740e3263b63f626fd4968644bc6100b660951e9bc",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2016_bank",
+        "note": "Matched to the visible page-15 answer key in the local Baidu Netdisk 2016 Politics paper-answer PDF; the same page has inconsistent explanatory wording, so the page image is kept as evidence."
+      }
+    },
+    {
+      "id": "politics-2016-022",
+      "number": 22,
+      "paperId": "politics-2016",
+      "paperName": "2016考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2016",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2016考研政治第22题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABC",
+      "explanation": "答案来自本地百度网盘 2016 考研政治真题及参考答案 PDF 第 14-16 页可见答案键；题面以试卷原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2016/paper-page-05.jpg",
+          "caption": "试卷原页 p.5",
+          "alt": "2016考研政治试卷原页 p.5"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2016/answer-page-15.jpg",
+          "caption": "答案原页 p.15",
+          "alt": "2016考研政治答案原页 p.15"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2016",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2016-paper-answer",
+      "sourceEvidenceId": "politics-2016-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:7e250031accd2aa3f5b9ed1a1f7ae2707f55b150f0aab603519d88138ac0e204",
+      "answerTextHash": "sha256:2144aba57bfea47c1207e9d4bddb16f337a1da9a74ba3bf8b3f3228630ee9b79",
+      "sourceEvidence": {
+        "evidenceId": "politics-2016-q22",
+        "sourceId": "src_a0b9ea80a5b70fed8e86331b",
+        "answerSourceId": "src_aafa785d1995e4f6abee98fb",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2016-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:7e250031accd2aa3f5b9ed1a1f7ae2707f55b150f0aab603519d88138ac0e204",
+        "answerTextHash": "sha256:2144aba57bfea47c1207e9d4bddb16f337a1da9a74ba3bf8b3f3228630ee9b79"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_aafa785d1995e4f6abee98fb",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2016/2016-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:2144aba57bfea47c1207e9d4bddb16f337a1da9a74ba3bf8b3f3228630ee9b79",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2016_bank",
+        "note": "Matched against local Baidu Netdisk 2016 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2016-023",
+      "number": 23,
+      "paperId": "politics-2016",
+      "paperName": "2016考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2016",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2016考研政治第23题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "AC",
+      "explanation": "答案来自本地百度网盘 2016 考研政治真题及参考答案 PDF 第 14-16 页可见答案键；题面以试卷原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2016/paper-page-05.jpg",
+          "caption": "试卷原页 p.5",
+          "alt": "2016考研政治试卷原页 p.5"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2016/answer-page-15.jpg",
+          "caption": "答案原页 p.15",
+          "alt": "2016考研政治答案原页 p.15"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2016",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2016-paper-answer",
+      "sourceEvidenceId": "politics-2016-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:b87877913ea5fa986f7d035c712f84fe433ea1e83ddd7efca47d7dc73309d119",
+      "answerTextHash": "sha256:df5795a3415be29477e8016c490a6bcf7223e514af465efcb0e60e1d496e9ae9",
+      "sourceEvidence": {
+        "evidenceId": "politics-2016-q23",
+        "sourceId": "src_a0b9ea80a5b70fed8e86331b",
+        "answerSourceId": "src_aafa785d1995e4f6abee98fb",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2016-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:b87877913ea5fa986f7d035c712f84fe433ea1e83ddd7efca47d7dc73309d119",
+        "answerTextHash": "sha256:df5795a3415be29477e8016c490a6bcf7223e514af465efcb0e60e1d496e9ae9"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_aafa785d1995e4f6abee98fb",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2016/2016-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:df5795a3415be29477e8016c490a6bcf7223e514af465efcb0e60e1d496e9ae9",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2016_bank",
+        "note": "Matched against local Baidu Netdisk 2016 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2016-024",
+      "number": 24,
+      "paperId": "politics-2016",
+      "paperName": "2016考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2016",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2016考研政治第24题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABCD",
+      "explanation": "答案来自本地百度网盘 2016 考研政治真题及参考答案 PDF 第 14-16 页可见答案键；题面以试卷原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2016/paper-page-05.jpg",
+          "caption": "试卷原页 p.5",
+          "alt": "2016考研政治试卷原页 p.5"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2016/answer-page-15.jpg",
+          "caption": "答案原页 p.15",
+          "alt": "2016考研政治答案原页 p.15"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2016",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2016-paper-answer",
+      "sourceEvidenceId": "politics-2016-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:c835f871a4de57171f7f78516fbca3d960bd4ed2612c6f9a6a7e122b098468aa",
+      "answerTextHash": "sha256:ad1cfde108e1e51504ff9fa914314b216a96f3b74012c5f3cccbdb127f136a51",
+      "sourceEvidence": {
+        "evidenceId": "politics-2016-q24",
+        "sourceId": "src_a0b9ea80a5b70fed8e86331b",
+        "answerSourceId": "src_aafa785d1995e4f6abee98fb",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2016-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:c835f871a4de57171f7f78516fbca3d960bd4ed2612c6f9a6a7e122b098468aa",
+        "answerTextHash": "sha256:ad1cfde108e1e51504ff9fa914314b216a96f3b74012c5f3cccbdb127f136a51"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_aafa785d1995e4f6abee98fb",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2016/2016-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:ad1cfde108e1e51504ff9fa914314b216a96f3b74012c5f3cccbdb127f136a51",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2016_bank",
+        "note": "Matched against local Baidu Netdisk 2016 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2016-025",
+      "number": 25,
+      "paperId": "politics-2016",
+      "paperName": "2016考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2016",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2016考研政治第25题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABCD",
+      "explanation": "答案来自本地百度网盘 2016 考研政治真题及参考答案 PDF 第 14-16 页可见答案键；题面以试卷原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2016/paper-page-05.jpg",
+          "caption": "试卷原页 p.5",
+          "alt": "2016考研政治试卷原页 p.5"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2016/answer-page-15.jpg",
+          "caption": "答案原页 p.15",
+          "alt": "2016考研政治答案原页 p.15"
+        },
+        {
+          "src": "question-bank/politics-2016/answer-page-16.jpg",
+          "caption": "答案原页 p.16",
+          "alt": "2016考研政治答案原页 p.16"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2016",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2016-paper-answer",
+      "sourceEvidenceId": "politics-2016-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:c195f9e13ae6adf6ba3fc764300db8c3ca28254119794c2816b21a8225b327ec",
+      "answerTextHash": "sha256:2380d41ce72b82ac2a1a297302e4137e8738227078bc594b4ba85917683b3902",
+      "sourceEvidence": {
+        "evidenceId": "politics-2016-q25",
+        "sourceId": "src_a0b9ea80a5b70fed8e86331b",
+        "answerSourceId": "src_aafa785d1995e4f6abee98fb",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2016-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:c195f9e13ae6adf6ba3fc764300db8c3ca28254119794c2816b21a8225b327ec",
+        "answerTextHash": "sha256:2380d41ce72b82ac2a1a297302e4137e8738227078bc594b4ba85917683b3902"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_aafa785d1995e4f6abee98fb",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2016/2016-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:2380d41ce72b82ac2a1a297302e4137e8738227078bc594b4ba85917683b3902",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2016_bank",
+        "note": "Matched against local Baidu Netdisk 2016 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2016-026",
+      "number": 26,
+      "paperId": "politics-2016",
+      "paperName": "2016考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2016",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2016考研政治第26题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABC",
+      "explanation": "答案来自本地百度网盘 2016 考研政治真题及参考答案 PDF 第 14-16 页可见答案键；题面以试卷原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2016/paper-page-05.jpg",
+          "caption": "试卷原页 p.5",
+          "alt": "2016考研政治试卷原页 p.5"
+        },
+        {
+          "src": "question-bank/politics-2016/paper-page-06.jpg",
+          "caption": "试卷原页 p.6",
+          "alt": "2016考研政治试卷原页 p.6"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2016/answer-page-16.jpg",
+          "caption": "答案原页 p.16",
+          "alt": "2016考研政治答案原页 p.16"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2016",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2016-paper-answer",
+      "sourceEvidenceId": "politics-2016-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:119867f01c1fe9cf30f564707ce72d71a796acd04d1e35160d95e6365e6cfdd9",
+      "answerTextHash": "sha256:18a697fc96b78ab6f7b12efd1922ad00a01d67c497efbf7cf99c70f20bc1df28",
+      "sourceEvidence": {
+        "evidenceId": "politics-2016-q26",
+        "sourceId": "src_a0b9ea80a5b70fed8e86331b",
+        "answerSourceId": "src_aafa785d1995e4f6abee98fb",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2016-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:119867f01c1fe9cf30f564707ce72d71a796acd04d1e35160d95e6365e6cfdd9",
+        "answerTextHash": "sha256:18a697fc96b78ab6f7b12efd1922ad00a01d67c497efbf7cf99c70f20bc1df28"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_aafa785d1995e4f6abee98fb",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2016/2016-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:18a697fc96b78ab6f7b12efd1922ad00a01d67c497efbf7cf99c70f20bc1df28",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2016_bank",
+        "note": "Matched against local Baidu Netdisk 2016 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2016-027",
+      "number": 27,
+      "paperId": "politics-2016",
+      "paperName": "2016考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2016",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2016考研政治第27题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "BCD",
+      "explanation": "答案来自本地百度网盘 2016 考研政治真题及参考答案 PDF 第 14-16 页可见答案键；题面以试卷原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2016/paper-page-06.jpg",
+          "caption": "试卷原页 p.6",
+          "alt": "2016考研政治试卷原页 p.6"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2016/answer-page-16.jpg",
+          "caption": "答案原页 p.16",
+          "alt": "2016考研政治答案原页 p.16"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2016",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2016-paper-answer",
+      "sourceEvidenceId": "politics-2016-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:ead17b16079248a557bcf71a9283a2f24bf4cd04bdc4ac0ce72ef18a4e48f95b",
+      "answerTextHash": "sha256:9e451cb708fcd0930860ed2924578baffa433d27f1819462360c3e5b32d72645",
+      "sourceEvidence": {
+        "evidenceId": "politics-2016-q27",
+        "sourceId": "src_a0b9ea80a5b70fed8e86331b",
+        "answerSourceId": "src_aafa785d1995e4f6abee98fb",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2016-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:ead17b16079248a557bcf71a9283a2f24bf4cd04bdc4ac0ce72ef18a4e48f95b",
+        "answerTextHash": "sha256:9e451cb708fcd0930860ed2924578baffa433d27f1819462360c3e5b32d72645"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_aafa785d1995e4f6abee98fb",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2016/2016-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:9e451cb708fcd0930860ed2924578baffa433d27f1819462360c3e5b32d72645",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2016_bank",
+        "note": "Matched against local Baidu Netdisk 2016 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2016-028",
+      "number": 28,
+      "paperId": "politics-2016",
+      "paperName": "2016考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2016",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2016考研政治第28题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABC",
+      "explanation": "答案来自本地百度网盘 2016 考研政治真题及参考答案 PDF 第 14-16 页可见答案键；题面以试卷原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2016/paper-page-06.jpg",
+          "caption": "试卷原页 p.6",
+          "alt": "2016考研政治试卷原页 p.6"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2016/answer-page-16.jpg",
+          "caption": "答案原页 p.16",
+          "alt": "2016考研政治答案原页 p.16"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2016",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2016-paper-answer",
+      "sourceEvidenceId": "politics-2016-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:d945b94d73774dae37dbe0cd35962e38915be629d2832a465788ded60fb3e4e4",
+      "answerTextHash": "sha256:18a697fc96b78ab6f7b12efd1922ad00a01d67c497efbf7cf99c70f20bc1df28",
+      "sourceEvidence": {
+        "evidenceId": "politics-2016-q28",
+        "sourceId": "src_a0b9ea80a5b70fed8e86331b",
+        "answerSourceId": "src_aafa785d1995e4f6abee98fb",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2016-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:d945b94d73774dae37dbe0cd35962e38915be629d2832a465788ded60fb3e4e4",
+        "answerTextHash": "sha256:18a697fc96b78ab6f7b12efd1922ad00a01d67c497efbf7cf99c70f20bc1df28"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_aafa785d1995e4f6abee98fb",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2016/2016-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:18a697fc96b78ab6f7b12efd1922ad00a01d67c497efbf7cf99c70f20bc1df28",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2016_bank",
+        "note": "Matched against local Baidu Netdisk 2016 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2016-029",
+      "number": 29,
+      "paperId": "politics-2016",
+      "paperName": "2016考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2016",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2016考研政治第29题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABCD",
+      "explanation": "答案来自本地百度网盘 2016 考研政治真题及参考答案 PDF 第 14-16 页可见答案键；题面以试卷原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2016/paper-page-06.jpg",
+          "caption": "试卷原页 p.6",
+          "alt": "2016考研政治试卷原页 p.6"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2016/answer-page-16.jpg",
+          "caption": "答案原页 p.16",
+          "alt": "2016考研政治答案原页 p.16"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2016",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2016-paper-answer",
+      "sourceEvidenceId": "politics-2016-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:d88998ea502f9ed318ee900de1ee1b0cd2a358252525716335c0e7e8ca95e615",
+      "answerTextHash": "sha256:7effcc8e9edfb1424c6cb7c9c1d50b360982e3f8db19816b184516f82aeb9fef",
+      "sourceEvidence": {
+        "evidenceId": "politics-2016-q29",
+        "sourceId": "src_a0b9ea80a5b70fed8e86331b",
+        "answerSourceId": "src_aafa785d1995e4f6abee98fb",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2016-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:d88998ea502f9ed318ee900de1ee1b0cd2a358252525716335c0e7e8ca95e615",
+        "answerTextHash": "sha256:7effcc8e9edfb1424c6cb7c9c1d50b360982e3f8db19816b184516f82aeb9fef"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_aafa785d1995e4f6abee98fb",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2016/2016-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:7effcc8e9edfb1424c6cb7c9c1d50b360982e3f8db19816b184516f82aeb9fef",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2016_bank",
+        "note": "Matched against local Baidu Netdisk 2016 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2016-030",
+      "number": 30,
+      "paperId": "politics-2016",
+      "paperName": "2016考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2016",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2016考研政治第30题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABCD",
+      "explanation": "答案来自本地百度网盘 2016 考研政治真题及参考答案 PDF 第 14-16 页可见答案键；题面以试卷原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2016/paper-page-06.jpg",
+          "caption": "试卷原页 p.6",
+          "alt": "2016考研政治试卷原页 p.6"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2016/answer-page-16.jpg",
+          "caption": "答案原页 p.16",
+          "alt": "2016考研政治答案原页 p.16"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2016",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2016-paper-answer",
+      "sourceEvidenceId": "politics-2016-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:e7c2cb30515c8c809324090f537f968dfb4c4c24edfee9e9a312d971e586b22b",
+      "answerTextHash": "sha256:7effcc8e9edfb1424c6cb7c9c1d50b360982e3f8db19816b184516f82aeb9fef",
+      "sourceEvidence": {
+        "evidenceId": "politics-2016-q30",
+        "sourceId": "src_a0b9ea80a5b70fed8e86331b",
+        "answerSourceId": "src_aafa785d1995e4f6abee98fb",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2016-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:e7c2cb30515c8c809324090f537f968dfb4c4c24edfee9e9a312d971e586b22b",
+        "answerTextHash": "sha256:7effcc8e9edfb1424c6cb7c9c1d50b360982e3f8db19816b184516f82aeb9fef"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_aafa785d1995e4f6abee98fb",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2016/2016-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:7effcc8e9edfb1424c6cb7c9c1d50b360982e3f8db19816b184516f82aeb9fef",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2016_bank",
+        "note": "Matched against local Baidu Netdisk 2016 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2016-031",
+      "number": 31,
+      "paperId": "politics-2016",
+      "paperName": "2016考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2016",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2016考研政治第31题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABD",
+      "explanation": "答案来自本地百度网盘 2016 考研政治真题及参考答案 PDF 第 14-16 页可见答案键；题面以试卷原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2016/paper-page-06.jpg",
+          "caption": "试卷原页 p.6",
+          "alt": "2016考研政治试卷原页 p.6"
+        },
+        {
+          "src": "question-bank/politics-2016/paper-page-07.jpg",
+          "caption": "试卷原页 p.7",
+          "alt": "2016考研政治试卷原页 p.7"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2016/answer-page-16.jpg",
+          "caption": "答案原页 p.16",
+          "alt": "2016考研政治答案原页 p.16"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2016",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2016-paper-answer",
+      "sourceEvidenceId": "politics-2016-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:895ee5543ac5c0b1a69dfa1813294f389632a207ca3a4af67ea590edb22b5a9c",
+      "answerTextHash": "sha256:045f3dc5ebce72344afabaa9825dc4684ac79a16da5694e1ac094dbbcada56f7",
+      "sourceEvidence": {
+        "evidenceId": "politics-2016-q31",
+        "sourceId": "src_a0b9ea80a5b70fed8e86331b",
+        "answerSourceId": "src_aafa785d1995e4f6abee98fb",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2016-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:895ee5543ac5c0b1a69dfa1813294f389632a207ca3a4af67ea590edb22b5a9c",
+        "answerTextHash": "sha256:045f3dc5ebce72344afabaa9825dc4684ac79a16da5694e1ac094dbbcada56f7"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_aafa785d1995e4f6abee98fb",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2016/2016-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:045f3dc5ebce72344afabaa9825dc4684ac79a16da5694e1ac094dbbcada56f7",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2016_bank",
+        "note": "Matched against local Baidu Netdisk 2016 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2016-032",
+      "number": 32,
+      "paperId": "politics-2016",
+      "paperName": "2016考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2016",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2016考研政治第32题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABCD",
+      "explanation": "答案来自本地百度网盘 2016 考研政治真题及参考答案 PDF 第 14-16 页可见答案键；题面以试卷原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2016/paper-page-07.jpg",
+          "caption": "试卷原页 p.7",
+          "alt": "2016考研政治试卷原页 p.7"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2016/answer-page-16.jpg",
+          "caption": "答案原页 p.16",
+          "alt": "2016考研政治答案原页 p.16"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2016",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2016-paper-answer",
+      "sourceEvidenceId": "politics-2016-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:b59ccaa480564f7583d0fe9753d996b5b5b8bb68568a27307bad2a8276ae3f60",
+      "answerTextHash": "sha256:7effcc8e9edfb1424c6cb7c9c1d50b360982e3f8db19816b184516f82aeb9fef",
+      "sourceEvidence": {
+        "evidenceId": "politics-2016-q32",
+        "sourceId": "src_a0b9ea80a5b70fed8e86331b",
+        "answerSourceId": "src_aafa785d1995e4f6abee98fb",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2016-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:b59ccaa480564f7583d0fe9753d996b5b5b8bb68568a27307bad2a8276ae3f60",
+        "answerTextHash": "sha256:7effcc8e9edfb1424c6cb7c9c1d50b360982e3f8db19816b184516f82aeb9fef"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_aafa785d1995e4f6abee98fb",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2016/2016-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:7effcc8e9edfb1424c6cb7c9c1d50b360982e3f8db19816b184516f82aeb9fef",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2016_bank",
+        "note": "Matched against local Baidu Netdisk 2016 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2016-033",
+      "number": 33,
+      "paperId": "politics-2016",
+      "paperName": "2016考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2016",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2016考研政治第33题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABD",
+      "explanation": "答案来自本地百度网盘 2016 考研政治真题及参考答案 PDF 第 14-16 页可见答案键；题面以试卷原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2016/paper-page-07.jpg",
+          "caption": "试卷原页 p.7",
+          "alt": "2016考研政治试卷原页 p.7"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2016/answer-page-16.jpg",
+          "caption": "答案原页 p.16",
+          "alt": "2016考研政治答案原页 p.16"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2016",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2016-paper-answer",
+      "sourceEvidenceId": "politics-2016-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:5fb7feb9e990683eb364cadd80351c102362a07d289dd570d8b222a3982c1f7f",
+      "answerTextHash": "sha256:045f3dc5ebce72344afabaa9825dc4684ac79a16da5694e1ac094dbbcada56f7",
+      "sourceEvidence": {
+        "evidenceId": "politics-2016-q33",
+        "sourceId": "src_a0b9ea80a5b70fed8e86331b",
+        "answerSourceId": "src_aafa785d1995e4f6abee98fb",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2016-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:5fb7feb9e990683eb364cadd80351c102362a07d289dd570d8b222a3982c1f7f",
+        "answerTextHash": "sha256:045f3dc5ebce72344afabaa9825dc4684ac79a16da5694e1ac094dbbcada56f7"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_aafa785d1995e4f6abee98fb",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2016/2016-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:045f3dc5ebce72344afabaa9825dc4684ac79a16da5694e1ac094dbbcada56f7",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2016_bank",
+        "note": "Matched against local Baidu Netdisk 2016 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2016-034",
+      "number": 34,
+      "paperId": "politics-2016",
+      "paperName": "2016考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2016",
+      "section": "分析题",
+      "type": "analysis",
+      "question": "2016考研政治第34题（分析题）。题干、选项和材料以试卷原页图为准。",
+      "options": [],
+      "answer": "分析题参考答案要点见答案原页 p.16-p.17。",
+      "explanation": "参考答案来自本地百度网盘 2016 考研政治真题及参考答案 PDF；完整答案要点见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2016/paper-page-07.jpg",
+          "caption": "试卷原页 p.7",
+          "alt": "2016考研政治试卷原页 p.7"
+        },
+        {
+          "src": "question-bank/politics-2016/paper-page-08.jpg",
+          "caption": "试卷原页 p.8",
+          "alt": "2016考研政治试卷原页 p.8"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2016/answer-page-16.jpg",
+          "caption": "答案原页 p.16",
+          "alt": "2016考研政治答案原页 p.16"
+        },
+        {
+          "src": "question-bank/politics-2016/answer-page-17.jpg",
+          "caption": "答案原页 p.17",
+          "alt": "2016考研政治答案原页 p.17"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2016",
+        "分析题"
+      ],
+      "difficulty": 3,
+      "source": "politics-2016-paper-answer",
+      "sourceEvidenceId": "politics-2016-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:2440050f989e72b0c302d8cef8e65f0293c77483eff25a8866ae07c4e822b596",
+      "answerTextHash": "sha256:a1c95aa70fb38886cf1332aaaee6b910ef26aaa53a52d463e15d15af024de35a",
+      "sourceEvidence": {
+        "evidenceId": "politics-2016-q34",
+        "sourceId": "src_a0b9ea80a5b70fed8e86331b",
+        "answerSourceId": "src_aafa785d1995e4f6abee98fb",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2016-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:2440050f989e72b0c302d8cef8e65f0293c77483eff25a8866ae07c4e822b596",
+        "answerTextHash": "sha256:a1c95aa70fb38886cf1332aaaee6b910ef26aaa53a52d463e15d15af024de35a"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_reference_answer",
+        "sourceId": "src_aafa785d1995e4f6abee98fb",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2016/2016-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:a1c95aa70fb38886cf1332aaaee6b910ef26aaa53a52d463e15d15af024de35a",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2016_bank",
+        "note": "Matched against local Baidu Netdisk 2016 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2016-035",
+      "number": 35,
+      "paperId": "politics-2016",
+      "paperName": "2016考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2016",
+      "section": "分析题",
+      "type": "analysis",
+      "question": "2016考研政治第35题（分析题）。题干、选项和材料以试卷原页图为准。",
+      "options": [],
+      "answer": "分析题参考答案要点见答案原页 p.17-p.18。",
+      "explanation": "参考答案来自本地百度网盘 2016 考研政治真题及参考答案 PDF；完整答案要点见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2016/paper-page-08.jpg",
+          "caption": "试卷原页 p.8",
+          "alt": "2016考研政治试卷原页 p.8"
+        },
+        {
+          "src": "question-bank/politics-2016/paper-page-09.jpg",
+          "caption": "试卷原页 p.9",
+          "alt": "2016考研政治试卷原页 p.9"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2016/answer-page-17.jpg",
+          "caption": "答案原页 p.17",
+          "alt": "2016考研政治答案原页 p.17"
+        },
+        {
+          "src": "question-bank/politics-2016/answer-page-18.jpg",
+          "caption": "答案原页 p.18",
+          "alt": "2016考研政治答案原页 p.18"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2016",
+        "分析题"
+      ],
+      "difficulty": 3,
+      "source": "politics-2016-paper-answer",
+      "sourceEvidenceId": "politics-2016-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:9ad287d1b5a4f7d75294ec80d8025ad415e6e89c05abe1e4847c8aab3db58e35",
+      "answerTextHash": "sha256:84739af354cbf42d7522d9ad34b602925874db684aeed893107af4accca56cad",
+      "sourceEvidence": {
+        "evidenceId": "politics-2016-q35",
+        "sourceId": "src_a0b9ea80a5b70fed8e86331b",
+        "answerSourceId": "src_aafa785d1995e4f6abee98fb",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2016-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:9ad287d1b5a4f7d75294ec80d8025ad415e6e89c05abe1e4847c8aab3db58e35",
+        "answerTextHash": "sha256:84739af354cbf42d7522d9ad34b602925874db684aeed893107af4accca56cad"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_reference_answer",
+        "sourceId": "src_aafa785d1995e4f6abee98fb",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2016/2016-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:84739af354cbf42d7522d9ad34b602925874db684aeed893107af4accca56cad",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2016_bank",
+        "note": "Matched against local Baidu Netdisk 2016 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2016-036",
+      "number": 36,
+      "paperId": "politics-2016",
+      "paperName": "2016考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2016",
+      "section": "分析题",
+      "type": "analysis",
+      "question": "2016考研政治第36题（分析题）。题干、选项和材料以试卷原页图为准。",
+      "options": [],
+      "answer": "分析题参考答案要点见答案原页 p.18。",
+      "explanation": "参考答案来自本地百度网盘 2016 考研政治真题及参考答案 PDF；完整答案要点见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2016/paper-page-09.jpg",
+          "caption": "试卷原页 p.9",
+          "alt": "2016考研政治试卷原页 p.9"
+        },
+        {
+          "src": "question-bank/politics-2016/paper-page-10.jpg",
+          "caption": "试卷原页 p.10",
+          "alt": "2016考研政治试卷原页 p.10"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2016/answer-page-18.jpg",
+          "caption": "答案原页 p.18",
+          "alt": "2016考研政治答案原页 p.18"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2016",
+        "分析题"
+      ],
+      "difficulty": 3,
+      "source": "politics-2016-paper-answer",
+      "sourceEvidenceId": "politics-2016-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:8b64a0ac27e35cbd71c6fbc6d79be54ce572bd6c648060ca0fe3ee8aa4651e82",
+      "answerTextHash": "sha256:c96f22c5cef2d695ae281ddf3f1667b8aa5cb1f9362fd2244f145f4989281e7d",
+      "sourceEvidence": {
+        "evidenceId": "politics-2016-q36",
+        "sourceId": "src_a0b9ea80a5b70fed8e86331b",
+        "answerSourceId": "src_aafa785d1995e4f6abee98fb",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2016-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:8b64a0ac27e35cbd71c6fbc6d79be54ce572bd6c648060ca0fe3ee8aa4651e82",
+        "answerTextHash": "sha256:c96f22c5cef2d695ae281ddf3f1667b8aa5cb1f9362fd2244f145f4989281e7d"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_reference_answer",
+        "sourceId": "src_aafa785d1995e4f6abee98fb",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2016/2016-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:c96f22c5cef2d695ae281ddf3f1667b8aa5cb1f9362fd2244f145f4989281e7d",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2016_bank",
+        "note": "Matched against local Baidu Netdisk 2016 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2016-037",
+      "number": 37,
+      "paperId": "politics-2016",
+      "paperName": "2016考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2016",
+      "section": "分析题",
+      "type": "analysis",
+      "question": "2016考研政治第37题（分析题）。题干、选项和材料以试卷原页图为准。",
+      "options": [],
+      "answer": "分析题参考答案要点见答案原页 p.18-p.19。",
+      "explanation": "参考答案来自本地百度网盘 2016 考研政治真题及参考答案 PDF；完整答案要点见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2016/paper-page-10.jpg",
+          "caption": "试卷原页 p.10",
+          "alt": "2016考研政治试卷原页 p.10"
+        },
+        {
+          "src": "question-bank/politics-2016/paper-page-11.jpg",
+          "caption": "试卷原页 p.11",
+          "alt": "2016考研政治试卷原页 p.11"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2016/answer-page-18.jpg",
+          "caption": "答案原页 p.18",
+          "alt": "2016考研政治答案原页 p.18"
+        },
+        {
+          "src": "question-bank/politics-2016/answer-page-19.jpg",
+          "caption": "答案原页 p.19",
+          "alt": "2016考研政治答案原页 p.19"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2016",
+        "分析题"
+      ],
+      "difficulty": 3,
+      "source": "politics-2016-paper-answer",
+      "sourceEvidenceId": "politics-2016-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:98a78551c952b7eb57504461e2805836768e3e76db5114e8dd274af2f639f3b4",
+      "answerTextHash": "sha256:c9d20e4424fcdbb5832e42eb86f00d8bd34bc883dca92b5f8d99bd6c54c7eb90",
+      "sourceEvidence": {
+        "evidenceId": "politics-2016-q37",
+        "sourceId": "src_a0b9ea80a5b70fed8e86331b",
+        "answerSourceId": "src_aafa785d1995e4f6abee98fb",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2016-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:98a78551c952b7eb57504461e2805836768e3e76db5114e8dd274af2f639f3b4",
+        "answerTextHash": "sha256:c9d20e4424fcdbb5832e42eb86f00d8bd34bc883dca92b5f8d99bd6c54c7eb90"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_reference_answer",
+        "sourceId": "src_aafa785d1995e4f6abee98fb",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2016/2016-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:c9d20e4424fcdbb5832e42eb86f00d8bd34bc883dca92b5f8d99bd6c54c7eb90",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2016_bank",
+        "note": "Matched against local Baidu Netdisk 2016 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2016-038",
+      "number": 38,
+      "paperId": "politics-2016",
+      "paperName": "2016考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2016",
+      "section": "分析题",
+      "type": "analysis",
+      "question": "2016考研政治第38题（分析题）。题干、选项和材料以试卷原页图为准。",
+      "options": [],
+      "answer": "分析题参考答案要点见答案原页 p.19。",
+      "explanation": "参考答案来自本地百度网盘 2016 考研政治真题及参考答案 PDF；完整答案要点见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2016/paper-page-11.jpg",
+          "caption": "试卷原页 p.11",
+          "alt": "2016考研政治试卷原页 p.11"
+        },
+        {
+          "src": "question-bank/politics-2016/paper-page-12.jpg",
+          "caption": "试卷原页 p.12",
+          "alt": "2016考研政治试卷原页 p.12"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2016/answer-page-19.jpg",
+          "caption": "答案原页 p.19",
+          "alt": "2016考研政治答案原页 p.19"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2016",
+        "分析题"
+      ],
+      "difficulty": 3,
+      "source": "politics-2016-paper-answer",
+      "sourceEvidenceId": "politics-2016-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:bb3a8e33477cc626f0902f3d13df841d7200ed43944f10c01151199452422b2f",
+      "answerTextHash": "sha256:d6d4f2bca2a9de03d625e8212c142cb44168fbf2e1d11216215674e9e951a2e2",
+      "sourceEvidence": {
+        "evidenceId": "politics-2016-q38",
+        "sourceId": "src_a0b9ea80a5b70fed8e86331b",
+        "answerSourceId": "src_aafa785d1995e4f6abee98fb",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2016-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:bb3a8e33477cc626f0902f3d13df841d7200ed43944f10c01151199452422b2f",
+        "answerTextHash": "sha256:d6d4f2bca2a9de03d625e8212c142cb44168fbf2e1d11216215674e9e951a2e2"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_reference_answer",
+        "sourceId": "src_aafa785d1995e4f6abee98fb",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2016/2016-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:d6d4f2bca2a9de03d625e8212c142cb44168fbf2e1d11216215674e9e951a2e2",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2016_bank",
+        "note": "Matched against local Baidu Netdisk 2016 Politics paper-answer PDF."
+      }
+    }
+  ]
+}
