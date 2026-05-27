@@ -1,0 +1,3030 @@
+{
+  "id": "politics-2017",
+  "source": "politics-2017-paper-answer",
+  "paperId": "politics-2017",
+  "paperName": "2017考研政治真题",
+  "subject": "政治",
+  "subjectKey": "politics",
+  "track": "politics",
+  "year": "2017",
+  "quality": "ready",
+  "publicationStatus": "published",
+  "publicationBlockers": [],
+  "sourceEvidencePolicy": "baidu_netdisk_official_paper_pdf_page_image_v1",
+  "sourceFiles": [
+    {
+      "id": "politics-2017-paper",
+      "sourceId": "src_08889d635d7647b5f127204f",
+      "role": "paper",
+      "localPath": "data/raw-inbox/public-course-history/politics/2017/2017-politics-paper.pdf",
+      "sha256": "sha256:cc9e2ff37c0331012297d1d5a16a18a875f858bdc52bb050bc89301607873820"
+    },
+    {
+      "id": "politics-2017-paper-answer",
+      "sourceId": "src_fd01a53b7ab40f39dda18695",
+      "role": "paper_answer",
+      "localPath": "data/raw-inbox/public-course-history/politics/2017/2017-politics-paper-answer.pdf",
+      "sha256": "sha256:c4042fe4ccea2896c6a6de1d18f807420158b038938db335ec16d51a4e48c805"
+    }
+  ],
+  "sourceNotes": [
+    "The 2017 standalone paper PDF provides a readable text layer for question-page ranges. The scanned paper-answer PDF contains per-question choice answers on pages 1-13 and analysis answer points on pages 14-20; OCR was used only to locate those pages while final release evidence remains rendered PDF page images."
+  ],
+  "assetRoot": "question-bank/politics-2017",
+  "processed_at": "2026-05-27T04:36:36Z",
+  "total_cards": 38,
+  "sections": [
+    "单项选择",
+    "多项选择",
+    "分析题"
+  ],
+  "cards": [
+    {
+      "id": "politics-2017-001",
+      "number": 1,
+      "paperId": "politics-2017",
+      "paperName": "2017考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2017",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2017考研政治第1题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2017 考研政治真题及参考答案 PDF 第 1-13 页逐题答案；题面以试卷原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2017/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2017考研政治试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2017/answer-page-01.jpg",
+          "caption": "答案原页 p.1",
+          "alt": "2017考研政治答案原页 p.1"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2017",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2017-paper-answer",
+      "sourceEvidenceId": "politics-2017-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:3eebcfa0d3214a72df0725d8fdaf78a71be2895f13018502c6b5d44f2c988263",
+      "answerTextHash": "sha256:4ed63e010b225ac71dcb1a7de3ad2cb9a9e94cdb0bc29b90e0262baf6e6de6dc",
+      "sourceEvidence": {
+        "evidenceId": "politics-2017-q01",
+        "sourceId": "src_08889d635d7647b5f127204f",
+        "answerSourceId": "src_fd01a53b7ab40f39dda18695",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2017-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:3eebcfa0d3214a72df0725d8fdaf78a71be2895f13018502c6b5d44f2c988263",
+        "answerTextHash": "sha256:4ed63e010b225ac71dcb1a7de3ad2cb9a9e94cdb0bc29b90e0262baf6e6de6dc"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_fd01a53b7ab40f39dda18695",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2017/2017-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:4ed63e010b225ac71dcb1a7de3ad2cb9a9e94cdb0bc29b90e0262baf6e6de6dc",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2017_bank",
+        "note": "Matched against local Baidu Netdisk 2017 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2017-002",
+      "number": 2,
+      "paperId": "politics-2017",
+      "paperName": "2017考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2017",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2017考研政治第2题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2017 考研政治真题及参考答案 PDF 第 1-13 页逐题答案；题面以试卷原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2017/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2017考研政治试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2017/answer-page-01.jpg",
+          "caption": "答案原页 p.1",
+          "alt": "2017考研政治答案原页 p.1"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2017",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2017-paper-answer",
+      "sourceEvidenceId": "politics-2017-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:f41c035ad8516490bde31e847e06fa6a11bb4c0d1a042e15b2b5821a6d2b2c27",
+      "answerTextHash": "sha256:898dfe56ec6417a9e4a63fc7181aef05836cf09e0853e5590478456c77a1bb03",
+      "sourceEvidence": {
+        "evidenceId": "politics-2017-q02",
+        "sourceId": "src_08889d635d7647b5f127204f",
+        "answerSourceId": "src_fd01a53b7ab40f39dda18695",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2017-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:f41c035ad8516490bde31e847e06fa6a11bb4c0d1a042e15b2b5821a6d2b2c27",
+        "answerTextHash": "sha256:898dfe56ec6417a9e4a63fc7181aef05836cf09e0853e5590478456c77a1bb03"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_fd01a53b7ab40f39dda18695",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2017/2017-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:898dfe56ec6417a9e4a63fc7181aef05836cf09e0853e5590478456c77a1bb03",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2017_bank",
+        "note": "Matched against local Baidu Netdisk 2017 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2017-003",
+      "number": 3,
+      "paperId": "politics-2017",
+      "paperName": "2017考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2017",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2017考研政治第3题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2017 考研政治真题及参考答案 PDF 第 1-13 页逐题答案；题面以试卷原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2017/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2017考研政治试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2017/answer-page-01.jpg",
+          "caption": "答案原页 p.1",
+          "alt": "2017考研政治答案原页 p.1"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2017",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2017-paper-answer",
+      "sourceEvidenceId": "politics-2017-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:6ce40c95f95795f9a8c5843850f23000a5eec5c8d662d05381d6faff8f4809f0",
+      "answerTextHash": "sha256:1e0fb90153fd754d20abf4acce9f6720b52b42a6dbf3fe2f14c1028ea903701f",
+      "sourceEvidence": {
+        "evidenceId": "politics-2017-q03",
+        "sourceId": "src_08889d635d7647b5f127204f",
+        "answerSourceId": "src_fd01a53b7ab40f39dda18695",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2017-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:6ce40c95f95795f9a8c5843850f23000a5eec5c8d662d05381d6faff8f4809f0",
+        "answerTextHash": "sha256:1e0fb90153fd754d20abf4acce9f6720b52b42a6dbf3fe2f14c1028ea903701f"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_fd01a53b7ab40f39dda18695",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2017/2017-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:1e0fb90153fd754d20abf4acce9f6720b52b42a6dbf3fe2f14c1028ea903701f",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2017_bank",
+        "note": "Matched against local Baidu Netdisk 2017 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2017-004",
+      "number": 4,
+      "paperId": "politics-2017",
+      "paperName": "2017考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2017",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2017考研政治第4题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2017 考研政治真题及参考答案 PDF 第 1-13 页逐题答案；题面以试卷原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2017/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2017考研政治试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2017/answer-page-02.jpg",
+          "caption": "答案原页 p.2",
+          "alt": "2017考研政治答案原页 p.2"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2017",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2017-paper-answer",
+      "sourceEvidenceId": "politics-2017-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:5131e6cfb9913d6c6850b4eb096f77f90c7d42bfdc150bd2fe8a8fc0ca495356",
+      "answerTextHash": "sha256:988f0b57363bc9eb4a3739d0f1cfc3a27e6ffe285a76e0aefc5e0176a5fa4506",
+      "sourceEvidence": {
+        "evidenceId": "politics-2017-q04",
+        "sourceId": "src_08889d635d7647b5f127204f",
+        "answerSourceId": "src_fd01a53b7ab40f39dda18695",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2017-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:5131e6cfb9913d6c6850b4eb096f77f90c7d42bfdc150bd2fe8a8fc0ca495356",
+        "answerTextHash": "sha256:988f0b57363bc9eb4a3739d0f1cfc3a27e6ffe285a76e0aefc5e0176a5fa4506"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_fd01a53b7ab40f39dda18695",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2017/2017-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:988f0b57363bc9eb4a3739d0f1cfc3a27e6ffe285a76e0aefc5e0176a5fa4506",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2017_bank",
+        "note": "Matched against local Baidu Netdisk 2017 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2017-005",
+      "number": 5,
+      "paperId": "politics-2017",
+      "paperName": "2017考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2017",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2017考研政治第5题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2017 考研政治真题及参考答案 PDF 第 1-13 页逐题答案；题面以试卷原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2017/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2017考研政治试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2017/answer-page-02.jpg",
+          "caption": "答案原页 p.2",
+          "alt": "2017考研政治答案原页 p.2"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2017",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2017-paper-answer",
+      "sourceEvidenceId": "politics-2017-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:43860f5c5b3b8dbc24ac3e7e5c1874cad2a04b1d8d744721280d9d1f73e5fbb9",
+      "answerTextHash": "sha256:676f513272f2e333598bd9369415789f5f816ae6a3759bcc8961ebfb350a34b2",
+      "sourceEvidence": {
+        "evidenceId": "politics-2017-q05",
+        "sourceId": "src_08889d635d7647b5f127204f",
+        "answerSourceId": "src_fd01a53b7ab40f39dda18695",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2017-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:43860f5c5b3b8dbc24ac3e7e5c1874cad2a04b1d8d744721280d9d1f73e5fbb9",
+        "answerTextHash": "sha256:676f513272f2e333598bd9369415789f5f816ae6a3759bcc8961ebfb350a34b2"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_fd01a53b7ab40f39dda18695",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2017/2017-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:676f513272f2e333598bd9369415789f5f816ae6a3759bcc8961ebfb350a34b2",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2017_bank",
+        "note": "Matched against local Baidu Netdisk 2017 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2017-006",
+      "number": 6,
+      "paperId": "politics-2017",
+      "paperName": "2017考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2017",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2017考研政治第6题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2017 考研政治真题及参考答案 PDF 第 1-13 页逐题答案；题面以试卷原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2017/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2017考研政治试卷原页 p.1"
+        },
+        {
+          "src": "question-bank/politics-2017/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2017考研政治试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2017/answer-page-02.jpg",
+          "caption": "答案原页 p.2",
+          "alt": "2017考研政治答案原页 p.2"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2017",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2017-paper-answer",
+      "sourceEvidenceId": "politics-2017-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:cde3b2a10d8557b9579b0ed2b79c7f031cd4631dec4d52fca4f362afabfcc4b3",
+      "answerTextHash": "sha256:988f0b57363bc9eb4a3739d0f1cfc3a27e6ffe285a76e0aefc5e0176a5fa4506",
+      "sourceEvidence": {
+        "evidenceId": "politics-2017-q06",
+        "sourceId": "src_08889d635d7647b5f127204f",
+        "answerSourceId": "src_fd01a53b7ab40f39dda18695",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2017-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:cde3b2a10d8557b9579b0ed2b79c7f031cd4631dec4d52fca4f362afabfcc4b3",
+        "answerTextHash": "sha256:988f0b57363bc9eb4a3739d0f1cfc3a27e6ffe285a76e0aefc5e0176a5fa4506"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_fd01a53b7ab40f39dda18695",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2017/2017-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:988f0b57363bc9eb4a3739d0f1cfc3a27e6ffe285a76e0aefc5e0176a5fa4506",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2017_bank",
+        "note": "Matched against local Baidu Netdisk 2017 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2017-007",
+      "number": 7,
+      "paperId": "politics-2017",
+      "paperName": "2017考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2017",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2017考研政治第7题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2017 考研政治真题及参考答案 PDF 第 1-13 页逐题答案；题面以试卷原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2017/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2017考研政治试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2017/answer-page-03.jpg",
+          "caption": "答案原页 p.3",
+          "alt": "2017考研政治答案原页 p.3"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2017",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2017-paper-answer",
+      "sourceEvidenceId": "politics-2017-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:1eaf6bc81eaa2c408f43e4f1d67743fdfa8d3d47ecd4da33cb7c39edfaf34147",
+      "answerTextHash": "sha256:5366ae6fcc40a373c1eeff09793d22cc71b498d1a32633f1bdb78e984a2ac883",
+      "sourceEvidence": {
+        "evidenceId": "politics-2017-q07",
+        "sourceId": "src_08889d635d7647b5f127204f",
+        "answerSourceId": "src_fd01a53b7ab40f39dda18695",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2017-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:1eaf6bc81eaa2c408f43e4f1d67743fdfa8d3d47ecd4da33cb7c39edfaf34147",
+        "answerTextHash": "sha256:5366ae6fcc40a373c1eeff09793d22cc71b498d1a32633f1bdb78e984a2ac883"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_fd01a53b7ab40f39dda18695",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2017/2017-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:5366ae6fcc40a373c1eeff09793d22cc71b498d1a32633f1bdb78e984a2ac883",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2017_bank",
+        "note": "Matched against local Baidu Netdisk 2017 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2017-008",
+      "number": 8,
+      "paperId": "politics-2017",
+      "paperName": "2017考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2017",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2017考研政治第8题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2017 考研政治真题及参考答案 PDF 第 1-13 页逐题答案；题面以试卷原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2017/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2017考研政治试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2017/answer-page-03.jpg",
+          "caption": "答案原页 p.3",
+          "alt": "2017考研政治答案原页 p.3"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2017",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2017-paper-answer",
+      "sourceEvidenceId": "politics-2017-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:30cffcd6792b14f3ce2301b02edc8b8cb78bbf48a2f8a3db50e95b25650cff10",
+      "answerTextHash": "sha256:04ec1392cd28549dbaddc0073958e13af49f2cfb6a360df78fd43db6aefcc6de",
+      "sourceEvidence": {
+        "evidenceId": "politics-2017-q08",
+        "sourceId": "src_08889d635d7647b5f127204f",
+        "answerSourceId": "src_fd01a53b7ab40f39dda18695",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2017-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:30cffcd6792b14f3ce2301b02edc8b8cb78bbf48a2f8a3db50e95b25650cff10",
+        "answerTextHash": "sha256:04ec1392cd28549dbaddc0073958e13af49f2cfb6a360df78fd43db6aefcc6de"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_fd01a53b7ab40f39dda18695",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2017/2017-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:04ec1392cd28549dbaddc0073958e13af49f2cfb6a360df78fd43db6aefcc6de",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2017_bank",
+        "note": "Matched against local Baidu Netdisk 2017 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2017-009",
+      "number": 9,
+      "paperId": "politics-2017",
+      "paperName": "2017考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2017",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2017考研政治第9题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2017 考研政治真题及参考答案 PDF 第 1-13 页逐题答案；题面以试卷原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2017/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2017考研政治试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2017/answer-page-03.jpg",
+          "caption": "答案原页 p.3",
+          "alt": "2017考研政治答案原页 p.3"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2017",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2017-paper-answer",
+      "sourceEvidenceId": "politics-2017-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:2be60ced8bc6eec13331acb32e2af48cbd33949bc94b118ad1b058bf87171dfd",
+      "answerTextHash": "sha256:0634ab203034f2c6374f15232206073cecbf4e9adb5bc8e37d45b9853b7f2948",
+      "sourceEvidence": {
+        "evidenceId": "politics-2017-q09",
+        "sourceId": "src_08889d635d7647b5f127204f",
+        "answerSourceId": "src_fd01a53b7ab40f39dda18695",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2017-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:2be60ced8bc6eec13331acb32e2af48cbd33949bc94b118ad1b058bf87171dfd",
+        "answerTextHash": "sha256:0634ab203034f2c6374f15232206073cecbf4e9adb5bc8e37d45b9853b7f2948"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_fd01a53b7ab40f39dda18695",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2017/2017-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:0634ab203034f2c6374f15232206073cecbf4e9adb5bc8e37d45b9853b7f2948",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2017_bank",
+        "note": "Matched against local Baidu Netdisk 2017 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2017-010",
+      "number": 10,
+      "paperId": "politics-2017",
+      "paperName": "2017考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2017",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2017考研政治第10题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2017 考研政治真题及参考答案 PDF 第 1-13 页逐题答案；题面以试卷原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2017/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2017考研政治试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2017/answer-page-04.jpg",
+          "caption": "答案原页 p.4",
+          "alt": "2017考研政治答案原页 p.4"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2017",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2017-paper-answer",
+      "sourceEvidenceId": "politics-2017-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:3c6db5ff7e649d3f6be7b3411c44666f2bb825af1e8adfc377206bc5a9c565f6",
+      "answerTextHash": "sha256:b0bb7a65fee4a880f1240497ee8e090f11ba886ae2b3ca6a99cba0bbbba9764a",
+      "sourceEvidence": {
+        "evidenceId": "politics-2017-q10",
+        "sourceId": "src_08889d635d7647b5f127204f",
+        "answerSourceId": "src_fd01a53b7ab40f39dda18695",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2017-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:3c6db5ff7e649d3f6be7b3411c44666f2bb825af1e8adfc377206bc5a9c565f6",
+        "answerTextHash": "sha256:b0bb7a65fee4a880f1240497ee8e090f11ba886ae2b3ca6a99cba0bbbba9764a"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_fd01a53b7ab40f39dda18695",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2017/2017-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:b0bb7a65fee4a880f1240497ee8e090f11ba886ae2b3ca6a99cba0bbbba9764a",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2017_bank",
+        "note": "Matched against local Baidu Netdisk 2017 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2017-011",
+      "number": 11,
+      "paperId": "politics-2017",
+      "paperName": "2017考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2017",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2017考研政治第11题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2017 考研政治真题及参考答案 PDF 第 1-13 页逐题答案；题面以试卷原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2017/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2017考研政治试卷原页 p.2"
+        },
+        {
+          "src": "question-bank/politics-2017/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2017考研政治试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2017/answer-page-04.jpg",
+          "caption": "答案原页 p.4",
+          "alt": "2017考研政治答案原页 p.4"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2017",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2017-paper-answer",
+      "sourceEvidenceId": "politics-2017-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:cc20ee73869a2338d456ddaab5794000adcb07ed5c5243a03124091714eff753",
+      "answerTextHash": "sha256:280315c20ba2e035785711fe9db555cb2d7482b9c3a74a60c6bb6324c86f8949",
+      "sourceEvidence": {
+        "evidenceId": "politics-2017-q11",
+        "sourceId": "src_08889d635d7647b5f127204f",
+        "answerSourceId": "src_fd01a53b7ab40f39dda18695",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2017-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:cc20ee73869a2338d456ddaab5794000adcb07ed5c5243a03124091714eff753",
+        "answerTextHash": "sha256:280315c20ba2e035785711fe9db555cb2d7482b9c3a74a60c6bb6324c86f8949"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_fd01a53b7ab40f39dda18695",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2017/2017-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:280315c20ba2e035785711fe9db555cb2d7482b9c3a74a60c6bb6324c86f8949",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2017_bank",
+        "note": "Matched against local Baidu Netdisk 2017 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2017-012",
+      "number": 12,
+      "paperId": "politics-2017",
+      "paperName": "2017考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2017",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2017考研政治第12题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2017 考研政治真题及参考答案 PDF 第 1-13 页逐题答案；题面以试卷原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2017/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2017考研政治试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2017/answer-page-05.jpg",
+          "caption": "答案原页 p.5",
+          "alt": "2017考研政治答案原页 p.5"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2017",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2017-paper-answer",
+      "sourceEvidenceId": "politics-2017-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:f6d567b33e4a3ad4dc23cbae6171fb5e3dfa9ae5a61362a9a5907f04ab74dbfe",
+      "answerTextHash": "sha256:e7e010b539bdaf68c1edd4ffcefb6fb1a2f2c5cf47bdca5bc27035c7b16dcdbb",
+      "sourceEvidence": {
+        "evidenceId": "politics-2017-q12",
+        "sourceId": "src_08889d635d7647b5f127204f",
+        "answerSourceId": "src_fd01a53b7ab40f39dda18695",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2017-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:f6d567b33e4a3ad4dc23cbae6171fb5e3dfa9ae5a61362a9a5907f04ab74dbfe",
+        "answerTextHash": "sha256:e7e010b539bdaf68c1edd4ffcefb6fb1a2f2c5cf47bdca5bc27035c7b16dcdbb"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_fd01a53b7ab40f39dda18695",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2017/2017-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:e7e010b539bdaf68c1edd4ffcefb6fb1a2f2c5cf47bdca5bc27035c7b16dcdbb",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2017_bank",
+        "note": "Matched against local Baidu Netdisk 2017 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2017-013",
+      "number": 13,
+      "paperId": "politics-2017",
+      "paperName": "2017考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2017",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2017考研政治第13题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2017 考研政治真题及参考答案 PDF 第 1-13 页逐题答案；题面以试卷原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2017/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2017考研政治试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2017/answer-page-05.jpg",
+          "caption": "答案原页 p.5",
+          "alt": "2017考研政治答案原页 p.5"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2017",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2017-paper-answer",
+      "sourceEvidenceId": "politics-2017-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:23fdeb71d281fe578847102f89017bfd62dfd367ae7c07702b174fc60ef49a9d",
+      "answerTextHash": "sha256:f82756dd2f052ba229ab97da26f2d6c4b0710ba71f313595fed3fb927bc2c0cb",
+      "sourceEvidence": {
+        "evidenceId": "politics-2017-q13",
+        "sourceId": "src_08889d635d7647b5f127204f",
+        "answerSourceId": "src_fd01a53b7ab40f39dda18695",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2017-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:23fdeb71d281fe578847102f89017bfd62dfd367ae7c07702b174fc60ef49a9d",
+        "answerTextHash": "sha256:f82756dd2f052ba229ab97da26f2d6c4b0710ba71f313595fed3fb927bc2c0cb"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_fd01a53b7ab40f39dda18695",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2017/2017-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:f82756dd2f052ba229ab97da26f2d6c4b0710ba71f313595fed3fb927bc2c0cb",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2017_bank",
+        "note": "Matched against local Baidu Netdisk 2017 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2017-014",
+      "number": 14,
+      "paperId": "politics-2017",
+      "paperName": "2017考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2017",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2017考研政治第14题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2017 考研政治真题及参考答案 PDF 第 1-13 页逐题答案；题面以试卷原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2017/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2017考研政治试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2017/answer-page-06.jpg",
+          "caption": "答案原页 p.6",
+          "alt": "2017考研政治答案原页 p.6"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2017",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2017-paper-answer",
+      "sourceEvidenceId": "politics-2017-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:6c6f838ef5668f6a00f82e0148dd0c0ecbe36c7b85d7e0be8ea2f547058c6020",
+      "answerTextHash": "sha256:9a033384516517ca59ccc63fad624fc99349bee02194be492f3db0ec682beb38",
+      "sourceEvidence": {
+        "evidenceId": "politics-2017-q14",
+        "sourceId": "src_08889d635d7647b5f127204f",
+        "answerSourceId": "src_fd01a53b7ab40f39dda18695",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2017-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:6c6f838ef5668f6a00f82e0148dd0c0ecbe36c7b85d7e0be8ea2f547058c6020",
+        "answerTextHash": "sha256:9a033384516517ca59ccc63fad624fc99349bee02194be492f3db0ec682beb38"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_fd01a53b7ab40f39dda18695",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2017/2017-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:9a033384516517ca59ccc63fad624fc99349bee02194be492f3db0ec682beb38",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2017_bank",
+        "note": "Matched against local Baidu Netdisk 2017 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2017-015",
+      "number": 15,
+      "paperId": "politics-2017",
+      "paperName": "2017考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2017",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2017考研政治第15题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2017 考研政治真题及参考答案 PDF 第 1-13 页逐题答案；题面以试卷原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2017/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2017考研政治试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2017/answer-page-06.jpg",
+          "caption": "答案原页 p.6",
+          "alt": "2017考研政治答案原页 p.6"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2017",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2017-paper-answer",
+      "sourceEvidenceId": "politics-2017-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:ab8d286c79ad5096b186e0178c029f6ba082fe5e408e54da8c9c45f185146971",
+      "answerTextHash": "sha256:370a281cae0ba93cdfa811d419348455084e9789186e7b39bc75832634c367fb",
+      "sourceEvidence": {
+        "evidenceId": "politics-2017-q15",
+        "sourceId": "src_08889d635d7647b5f127204f",
+        "answerSourceId": "src_fd01a53b7ab40f39dda18695",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2017-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:ab8d286c79ad5096b186e0178c029f6ba082fe5e408e54da8c9c45f185146971",
+        "answerTextHash": "sha256:370a281cae0ba93cdfa811d419348455084e9789186e7b39bc75832634c367fb"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_fd01a53b7ab40f39dda18695",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2017/2017-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:370a281cae0ba93cdfa811d419348455084e9789186e7b39bc75832634c367fb",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2017_bank",
+        "note": "Matched against local Baidu Netdisk 2017 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2017-016",
+      "number": 16,
+      "paperId": "politics-2017",
+      "paperName": "2017考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2017",
+      "section": "单项选择",
+      "type": "single_choice",
+      "question": "2017考研政治第16题（单项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2017 考研政治真题及参考答案 PDF 第 1-13 页逐题答案；题面以试卷原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2017/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2017考研政治试卷原页 p.3"
+        },
+        {
+          "src": "question-bank/politics-2017/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2017考研政治试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2017/answer-page-06.jpg",
+          "caption": "答案原页 p.6",
+          "alt": "2017考研政治答案原页 p.6"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2017",
+        "单项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2017-paper-answer",
+      "sourceEvidenceId": "politics-2017-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:0413c2dedd218604a8e3d8a103132459c3ca57099aa4c32b9db1baa7280f6ebb",
+      "answerTextHash": "sha256:9a033384516517ca59ccc63fad624fc99349bee02194be492f3db0ec682beb38",
+      "sourceEvidence": {
+        "evidenceId": "politics-2017-q16",
+        "sourceId": "src_08889d635d7647b5f127204f",
+        "answerSourceId": "src_fd01a53b7ab40f39dda18695",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2017-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:0413c2dedd218604a8e3d8a103132459c3ca57099aa4c32b9db1baa7280f6ebb",
+        "answerTextHash": "sha256:9a033384516517ca59ccc63fad624fc99349bee02194be492f3db0ec682beb38"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_fd01a53b7ab40f39dda18695",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2017/2017-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:9a033384516517ca59ccc63fad624fc99349bee02194be492f3db0ec682beb38",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2017_bank",
+        "note": "Matched against local Baidu Netdisk 2017 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2017-017",
+      "number": 17,
+      "paperId": "politics-2017",
+      "paperName": "2017考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2017",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2017考研政治第17题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABC",
+      "explanation": "答案来自本地百度网盘 2017 考研政治真题及参考答案 PDF 第 1-13 页逐题答案；题面以试卷原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2017/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2017考研政治试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2017/answer-page-07.jpg",
+          "caption": "答案原页 p.7",
+          "alt": "2017考研政治答案原页 p.7"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2017",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2017-paper-answer",
+      "sourceEvidenceId": "politics-2017-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:3f563c6fde9a13bde7deed04a4212b9719c1c4b1fc7d0c44953245048b8036d0",
+      "answerTextHash": "sha256:064042ae7f0f75622732c651a2767ecd89f2e3e76ffdb9baf3666e78078a4366",
+      "sourceEvidence": {
+        "evidenceId": "politics-2017-q17",
+        "sourceId": "src_08889d635d7647b5f127204f",
+        "answerSourceId": "src_fd01a53b7ab40f39dda18695",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2017-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:3f563c6fde9a13bde7deed04a4212b9719c1c4b1fc7d0c44953245048b8036d0",
+        "answerTextHash": "sha256:064042ae7f0f75622732c651a2767ecd89f2e3e76ffdb9baf3666e78078a4366"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_fd01a53b7ab40f39dda18695",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2017/2017-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:064042ae7f0f75622732c651a2767ecd89f2e3e76ffdb9baf3666e78078a4366",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2017_bank",
+        "note": "Matched against local Baidu Netdisk 2017 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2017-018",
+      "number": 18,
+      "paperId": "politics-2017",
+      "paperName": "2017考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2017",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2017考研政治第18题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABC",
+      "explanation": "答案来自本地百度网盘 2017 考研政治真题及参考答案 PDF 第 1-13 页逐题答案；题面以试卷原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2017/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2017考研政治试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2017/answer-page-07.jpg",
+          "caption": "答案原页 p.7",
+          "alt": "2017考研政治答案原页 p.7"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2017",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2017-paper-answer",
+      "sourceEvidenceId": "politics-2017-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:ae3c39afc33d85936ebce32a74e9ab46b8f509c89c6c37e70eb9677676c4ef6f",
+      "answerTextHash": "sha256:064042ae7f0f75622732c651a2767ecd89f2e3e76ffdb9baf3666e78078a4366",
+      "sourceEvidence": {
+        "evidenceId": "politics-2017-q18",
+        "sourceId": "src_08889d635d7647b5f127204f",
+        "answerSourceId": "src_fd01a53b7ab40f39dda18695",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2017-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:ae3c39afc33d85936ebce32a74e9ab46b8f509c89c6c37e70eb9677676c4ef6f",
+        "answerTextHash": "sha256:064042ae7f0f75622732c651a2767ecd89f2e3e76ffdb9baf3666e78078a4366"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_fd01a53b7ab40f39dda18695",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2017/2017-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:064042ae7f0f75622732c651a2767ecd89f2e3e76ffdb9baf3666e78078a4366",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2017_bank",
+        "note": "Matched against local Baidu Netdisk 2017 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2017-019",
+      "number": 19,
+      "paperId": "politics-2017",
+      "paperName": "2017考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2017",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2017考研政治第19题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "CD",
+      "explanation": "答案来自本地百度网盘 2017 考研政治真题及参考答案 PDF 第 1-13 页逐题答案；题面以试卷原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2017/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2017考研政治试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2017/answer-page-08.jpg",
+          "caption": "答案原页 p.8",
+          "alt": "2017考研政治答案原页 p.8"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2017",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2017-paper-answer",
+      "sourceEvidenceId": "politics-2017-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:a3bfc8358fca2e9fdbbdf95a333730ed8fc8a139324ed9f48bd5cd97c2e067d9",
+      "answerTextHash": "sha256:682f15a1dee611f4aaccf4e8486aa6720955fe2249736c9f928d9df95baf1c6c",
+      "sourceEvidence": {
+        "evidenceId": "politics-2017-q19",
+        "sourceId": "src_08889d635d7647b5f127204f",
+        "answerSourceId": "src_fd01a53b7ab40f39dda18695",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2017-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:a3bfc8358fca2e9fdbbdf95a333730ed8fc8a139324ed9f48bd5cd97c2e067d9",
+        "answerTextHash": "sha256:682f15a1dee611f4aaccf4e8486aa6720955fe2249736c9f928d9df95baf1c6c"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_fd01a53b7ab40f39dda18695",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2017/2017-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:682f15a1dee611f4aaccf4e8486aa6720955fe2249736c9f928d9df95baf1c6c",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2017_bank",
+        "note": "Matched against local Baidu Netdisk 2017 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2017-020",
+      "number": 20,
+      "paperId": "politics-2017",
+      "paperName": "2017考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2017",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2017考研政治第20题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "BCD",
+      "explanation": "答案来自本地百度网盘 2017 考研政治真题及参考答案 PDF 第 1-13 页逐题答案；题面以试卷原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2017/paper-page-05.jpg",
+          "caption": "试卷原页 p.5",
+          "alt": "2017考研政治试卷原页 p.5"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2017/answer-page-08.jpg",
+          "caption": "答案原页 p.8",
+          "alt": "2017考研政治答案原页 p.8"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2017",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2017-paper-answer",
+      "sourceEvidenceId": "politics-2017-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:cf13cd3663ee3fe3fcb1e6b538838f02a803f45f1900f19fd7a360c0e23540d5",
+      "answerTextHash": "sha256:83c8ea5655799dd2081b3dda63c482964d25bca447cc356d8abab260ffff217e",
+      "sourceEvidence": {
+        "evidenceId": "politics-2017-q20",
+        "sourceId": "src_08889d635d7647b5f127204f",
+        "answerSourceId": "src_fd01a53b7ab40f39dda18695",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2017-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:cf13cd3663ee3fe3fcb1e6b538838f02a803f45f1900f19fd7a360c0e23540d5",
+        "answerTextHash": "sha256:83c8ea5655799dd2081b3dda63c482964d25bca447cc356d8abab260ffff217e"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_fd01a53b7ab40f39dda18695",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2017/2017-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:83c8ea5655799dd2081b3dda63c482964d25bca447cc356d8abab260ffff217e",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2017_bank",
+        "note": "Matched against local Baidu Netdisk 2017 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2017-021",
+      "number": 21,
+      "paperId": "politics-2017",
+      "paperName": "2017考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2017",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2017考研政治第21题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABCD",
+      "explanation": "答案来自本地百度网盘 2017 考研政治真题及参考答案 PDF 第 1-13 页逐题答案；题面以试卷原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2017/paper-page-05.jpg",
+          "caption": "试卷原页 p.5",
+          "alt": "2017考研政治试卷原页 p.5"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2017/answer-page-09.jpg",
+          "caption": "答案原页 p.9",
+          "alt": "2017考研政治答案原页 p.9"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2017",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2017-paper-answer",
+      "sourceEvidenceId": "politics-2017-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:e9e1cc298ec76cc868ed8be3932906554027e6020a64f1404ce663112cc76a08",
+      "answerTextHash": "sha256:a29b1d6ef338f9fd22d808d71723df6d146732d65fe64253a689e66d7d281df4",
+      "sourceEvidence": {
+        "evidenceId": "politics-2017-q21",
+        "sourceId": "src_08889d635d7647b5f127204f",
+        "answerSourceId": "src_fd01a53b7ab40f39dda18695",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2017-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:e9e1cc298ec76cc868ed8be3932906554027e6020a64f1404ce663112cc76a08",
+        "answerTextHash": "sha256:a29b1d6ef338f9fd22d808d71723df6d146732d65fe64253a689e66d7d281df4"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_fd01a53b7ab40f39dda18695",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2017/2017-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:a29b1d6ef338f9fd22d808d71723df6d146732d65fe64253a689e66d7d281df4",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2017_bank",
+        "note": "Matched against local Baidu Netdisk 2017 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2017-022",
+      "number": 22,
+      "paperId": "politics-2017",
+      "paperName": "2017考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2017",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2017考研政治第22题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "BCD",
+      "explanation": "答案来自本地百度网盘 2017 考研政治真题及参考答案 PDF 第 1-13 页逐题答案；题面以试卷原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2017/paper-page-05.jpg",
+          "caption": "试卷原页 p.5",
+          "alt": "2017考研政治试卷原页 p.5"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2017/answer-page-09.jpg",
+          "caption": "答案原页 p.9",
+          "alt": "2017考研政治答案原页 p.9"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2017",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2017-paper-answer",
+      "sourceEvidenceId": "politics-2017-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:32a56549c8ef1bf5d10c91e88e986094f50500148657d61bc31f260464f02cab",
+      "answerTextHash": "sha256:6dedc1c698c4548029a7879bd42f830c61ace5ef7f2da18e3abd2db4ebbdce81",
+      "sourceEvidence": {
+        "evidenceId": "politics-2017-q22",
+        "sourceId": "src_08889d635d7647b5f127204f",
+        "answerSourceId": "src_fd01a53b7ab40f39dda18695",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2017-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:32a56549c8ef1bf5d10c91e88e986094f50500148657d61bc31f260464f02cab",
+        "answerTextHash": "sha256:6dedc1c698c4548029a7879bd42f830c61ace5ef7f2da18e3abd2db4ebbdce81"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_fd01a53b7ab40f39dda18695",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2017/2017-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:6dedc1c698c4548029a7879bd42f830c61ace5ef7f2da18e3abd2db4ebbdce81",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2017_bank",
+        "note": "Matched against local Baidu Netdisk 2017 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2017-023",
+      "number": 23,
+      "paperId": "politics-2017",
+      "paperName": "2017考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2017",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2017考研政治第23题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABCD",
+      "explanation": "答案来自本地百度网盘 2017 考研政治真题及参考答案 PDF 第 1-13 页逐题答案；题面以试卷原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2017/paper-page-05.jpg",
+          "caption": "试卷原页 p.5",
+          "alt": "2017考研政治试卷原页 p.5"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2017/answer-page-10.jpg",
+          "caption": "答案原页 p.10",
+          "alt": "2017考研政治答案原页 p.10"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2017",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2017-paper-answer",
+      "sourceEvidenceId": "politics-2017-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:d7964f5b097c2dee35e488ab8b726dd7aeff1554c936ee92e65fe44f086bc958",
+      "answerTextHash": "sha256:1055f2190ac9fe8e637e73f71340072de23d4bc4de3a63a49793159889e2d230",
+      "sourceEvidence": {
+        "evidenceId": "politics-2017-q23",
+        "sourceId": "src_08889d635d7647b5f127204f",
+        "answerSourceId": "src_fd01a53b7ab40f39dda18695",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2017-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:d7964f5b097c2dee35e488ab8b726dd7aeff1554c936ee92e65fe44f086bc958",
+        "answerTextHash": "sha256:1055f2190ac9fe8e637e73f71340072de23d4bc4de3a63a49793159889e2d230"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_fd01a53b7ab40f39dda18695",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2017/2017-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:1055f2190ac9fe8e637e73f71340072de23d4bc4de3a63a49793159889e2d230",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2017_bank",
+        "note": "Matched against local Baidu Netdisk 2017 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2017-024",
+      "number": 24,
+      "paperId": "politics-2017",
+      "paperName": "2017考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2017",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2017考研政治第24题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "BCD",
+      "explanation": "答案来自本地百度网盘 2017 考研政治真题及参考答案 PDF 第 1-13 页逐题答案；题面以试卷原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2017/paper-page-06.jpg",
+          "caption": "试卷原页 p.6",
+          "alt": "2017考研政治试卷原页 p.6"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2017/answer-page-10.jpg",
+          "caption": "答案原页 p.10",
+          "alt": "2017考研政治答案原页 p.10"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2017",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2017-paper-answer",
+      "sourceEvidenceId": "politics-2017-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:f4ac53ecde81476f341c8d2af7339d816d606152baff85c04065c2dcac91de71",
+      "answerTextHash": "sha256:dd7b70163589b0b8612f9b7d880e02fba09fe08a6b86808e4ac2a7142dea3cb5",
+      "sourceEvidence": {
+        "evidenceId": "politics-2017-q24",
+        "sourceId": "src_08889d635d7647b5f127204f",
+        "answerSourceId": "src_fd01a53b7ab40f39dda18695",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2017-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:f4ac53ecde81476f341c8d2af7339d816d606152baff85c04065c2dcac91de71",
+        "answerTextHash": "sha256:dd7b70163589b0b8612f9b7d880e02fba09fe08a6b86808e4ac2a7142dea3cb5"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_fd01a53b7ab40f39dda18695",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2017/2017-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:dd7b70163589b0b8612f9b7d880e02fba09fe08a6b86808e4ac2a7142dea3cb5",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2017_bank",
+        "note": "Matched against local Baidu Netdisk 2017 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2017-025",
+      "number": 25,
+      "paperId": "politics-2017",
+      "paperName": "2017考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2017",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2017考研政治第25题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ACD",
+      "explanation": "答案来自本地百度网盘 2017 考研政治真题及参考答案 PDF 第 1-13 页逐题答案；题面以试卷原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2017/paper-page-06.jpg",
+          "caption": "试卷原页 p.6",
+          "alt": "2017考研政治试卷原页 p.6"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2017/answer-page-10.jpg",
+          "caption": "答案原页 p.10",
+          "alt": "2017考研政治答案原页 p.10"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2017",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2017-paper-answer",
+      "sourceEvidenceId": "politics-2017-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:39f836f75655ee86d188201980d81fcd2f9330504192bd83c5cc5a5d4ed8efb4",
+      "answerTextHash": "sha256:ca9436e52109ab8dc0582f2183321c64b23eb11c5443db7128bbca32fcf17a65",
+      "sourceEvidence": {
+        "evidenceId": "politics-2017-q25",
+        "sourceId": "src_08889d635d7647b5f127204f",
+        "answerSourceId": "src_fd01a53b7ab40f39dda18695",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2017-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:39f836f75655ee86d188201980d81fcd2f9330504192bd83c5cc5a5d4ed8efb4",
+        "answerTextHash": "sha256:ca9436e52109ab8dc0582f2183321c64b23eb11c5443db7128bbca32fcf17a65"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_fd01a53b7ab40f39dda18695",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2017/2017-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:ca9436e52109ab8dc0582f2183321c64b23eb11c5443db7128bbca32fcf17a65",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2017_bank",
+        "note": "Matched against local Baidu Netdisk 2017 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2017-026",
+      "number": 26,
+      "paperId": "politics-2017",
+      "paperName": "2017考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2017",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2017考研政治第26题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABCD",
+      "explanation": "答案来自本地百度网盘 2017 考研政治真题及参考答案 PDF 第 1-13 页逐题答案；题面以试卷原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2017/paper-page-06.jpg",
+          "caption": "试卷原页 p.6",
+          "alt": "2017考研政治试卷原页 p.6"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2017/answer-page-11.jpg",
+          "caption": "答案原页 p.11",
+          "alt": "2017考研政治答案原页 p.11"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2017",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2017-paper-answer",
+      "sourceEvidenceId": "politics-2017-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:d3ef731b25cb5abfa4839cd61cef258527dd0986c2f07235d49fe1a528279e1e",
+      "answerTextHash": "sha256:0a037c01acb69063e66b472e1f84455c9221e487f40e43ab4b0505299ae6b26a",
+      "sourceEvidence": {
+        "evidenceId": "politics-2017-q26",
+        "sourceId": "src_08889d635d7647b5f127204f",
+        "answerSourceId": "src_fd01a53b7ab40f39dda18695",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2017-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:d3ef731b25cb5abfa4839cd61cef258527dd0986c2f07235d49fe1a528279e1e",
+        "answerTextHash": "sha256:0a037c01acb69063e66b472e1f84455c9221e487f40e43ab4b0505299ae6b26a"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_fd01a53b7ab40f39dda18695",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2017/2017-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:0a037c01acb69063e66b472e1f84455c9221e487f40e43ab4b0505299ae6b26a",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2017_bank",
+        "note": "Matched against local Baidu Netdisk 2017 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2017-027",
+      "number": 27,
+      "paperId": "politics-2017",
+      "paperName": "2017考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2017",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2017考研政治第27题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABC",
+      "explanation": "答案来自本地百度网盘 2017 考研政治真题及参考答案 PDF 第 1-13 页逐题答案；题面以试卷原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2017/paper-page-06.jpg",
+          "caption": "试卷原页 p.6",
+          "alt": "2017考研政治试卷原页 p.6"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2017/answer-page-11.jpg",
+          "caption": "答案原页 p.11",
+          "alt": "2017考研政治答案原页 p.11"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2017",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2017-paper-answer",
+      "sourceEvidenceId": "politics-2017-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:7f29cf578cc2bc5d0f9d4ecc67df53c3de053f4f674e0036a0cb8ff947abdcb2",
+      "answerTextHash": "sha256:04b9b825c447d4d716dcf16ff23f0ac629d5b62202be77763d9d7cd9ad043ee1",
+      "sourceEvidence": {
+        "evidenceId": "politics-2017-q27",
+        "sourceId": "src_08889d635d7647b5f127204f",
+        "answerSourceId": "src_fd01a53b7ab40f39dda18695",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2017-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:7f29cf578cc2bc5d0f9d4ecc67df53c3de053f4f674e0036a0cb8ff947abdcb2",
+        "answerTextHash": "sha256:04b9b825c447d4d716dcf16ff23f0ac629d5b62202be77763d9d7cd9ad043ee1"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_fd01a53b7ab40f39dda18695",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2017/2017-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:04b9b825c447d4d716dcf16ff23f0ac629d5b62202be77763d9d7cd9ad043ee1",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2017_bank",
+        "note": "Matched against local Baidu Netdisk 2017 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2017-028",
+      "number": 28,
+      "paperId": "politics-2017",
+      "paperName": "2017考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2017",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2017考研政治第28题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ACD",
+      "explanation": "答案来自本地百度网盘 2017 考研政治真题及参考答案 PDF 第 1-13 页逐题答案；题面以试卷原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2017/paper-page-06.jpg",
+          "caption": "试卷原页 p.6",
+          "alt": "2017考研政治试卷原页 p.6"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2017/answer-page-11.jpg",
+          "caption": "答案原页 p.11",
+          "alt": "2017考研政治答案原页 p.11"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2017",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2017-paper-answer",
+      "sourceEvidenceId": "politics-2017-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:fdeb71f4a8eb38611cd158dfa16ba5ef1017af7cf0df62d62dc9dba5d8d761a4",
+      "answerTextHash": "sha256:c5daccaba38cf7d48f27b0bf52cf9381c4491d18bbde14a3b8696e6f23c2d61b",
+      "sourceEvidence": {
+        "evidenceId": "politics-2017-q28",
+        "sourceId": "src_08889d635d7647b5f127204f",
+        "answerSourceId": "src_fd01a53b7ab40f39dda18695",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2017-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:fdeb71f4a8eb38611cd158dfa16ba5ef1017af7cf0df62d62dc9dba5d8d761a4",
+        "answerTextHash": "sha256:c5daccaba38cf7d48f27b0bf52cf9381c4491d18bbde14a3b8696e6f23c2d61b"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_fd01a53b7ab40f39dda18695",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2017/2017-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:c5daccaba38cf7d48f27b0bf52cf9381c4491d18bbde14a3b8696e6f23c2d61b",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2017_bank",
+        "note": "Matched against local Baidu Netdisk 2017 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2017-029",
+      "number": 29,
+      "paperId": "politics-2017",
+      "paperName": "2017考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2017",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2017考研政治第29题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABCD",
+      "explanation": "答案来自本地百度网盘 2017 考研政治真题及参考答案 PDF 第 1-13 页逐题答案；题面以试卷原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2017/paper-page-07.jpg",
+          "caption": "试卷原页 p.7",
+          "alt": "2017考研政治试卷原页 p.7"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2017/answer-page-12.jpg",
+          "caption": "答案原页 p.12",
+          "alt": "2017考研政治答案原页 p.12"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2017",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2017-paper-answer",
+      "sourceEvidenceId": "politics-2017-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:82daa37cfc083b14bd858e36ace355d14fbd687c218401cefcf0d9f5b029347a",
+      "answerTextHash": "sha256:ca456842a1d91a1439e140d3f5ca281926dddb58da85d766a72ffbfa0655787d",
+      "sourceEvidence": {
+        "evidenceId": "politics-2017-q29",
+        "sourceId": "src_08889d635d7647b5f127204f",
+        "answerSourceId": "src_fd01a53b7ab40f39dda18695",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2017-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:82daa37cfc083b14bd858e36ace355d14fbd687c218401cefcf0d9f5b029347a",
+        "answerTextHash": "sha256:ca456842a1d91a1439e140d3f5ca281926dddb58da85d766a72ffbfa0655787d"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_fd01a53b7ab40f39dda18695",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2017/2017-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:ca456842a1d91a1439e140d3f5ca281926dddb58da85d766a72ffbfa0655787d",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2017_bank",
+        "note": "Matched against local Baidu Netdisk 2017 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2017-030",
+      "number": 30,
+      "paperId": "politics-2017",
+      "paperName": "2017考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2017",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2017考研政治第30题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "AC",
+      "explanation": "答案来自本地百度网盘 2017 考研政治真题及参考答案 PDF 第 1-13 页逐题答案；题面以试卷原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2017/paper-page-07.jpg",
+          "caption": "试卷原页 p.7",
+          "alt": "2017考研政治试卷原页 p.7"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2017/answer-page-12.jpg",
+          "caption": "答案原页 p.12",
+          "alt": "2017考研政治答案原页 p.12"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2017",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2017-paper-answer",
+      "sourceEvidenceId": "politics-2017-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:c0cfadd290a4c3e5cf3fc17bd938b2238d4b789c036a57b5908ce8f2e76a090b",
+      "answerTextHash": "sha256:362b0df3fecc71513a7783542e90d7840b736bc7015933b98d4a0abc4ab7e0a0",
+      "sourceEvidence": {
+        "evidenceId": "politics-2017-q30",
+        "sourceId": "src_08889d635d7647b5f127204f",
+        "answerSourceId": "src_fd01a53b7ab40f39dda18695",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2017-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:c0cfadd290a4c3e5cf3fc17bd938b2238d4b789c036a57b5908ce8f2e76a090b",
+        "answerTextHash": "sha256:362b0df3fecc71513a7783542e90d7840b736bc7015933b98d4a0abc4ab7e0a0"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_fd01a53b7ab40f39dda18695",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2017/2017-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:362b0df3fecc71513a7783542e90d7840b736bc7015933b98d4a0abc4ab7e0a0",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2017_bank",
+        "note": "Matched against local Baidu Netdisk 2017 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2017-031",
+      "number": 31,
+      "paperId": "politics-2017",
+      "paperName": "2017考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2017",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2017考研政治第31题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABCD",
+      "explanation": "答案来自本地百度网盘 2017 考研政治真题及参考答案 PDF 第 1-13 页逐题答案；题面以试卷原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2017/paper-page-07.jpg",
+          "caption": "试卷原页 p.7",
+          "alt": "2017考研政治试卷原页 p.7"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2017/answer-page-13.jpg",
+          "caption": "答案原页 p.13",
+          "alt": "2017考研政治答案原页 p.13"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2017",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2017-paper-answer",
+      "sourceEvidenceId": "politics-2017-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:5a2c4784c1fca50e2e3b84799acbc7d1023c932ebbc3060702df767e001bf1a8",
+      "answerTextHash": "sha256:43bc2e87d13ce9b5c39776f50eb7afddb8cf6d35b8c8aca79e57a093aa299505",
+      "sourceEvidence": {
+        "evidenceId": "politics-2017-q31",
+        "sourceId": "src_08889d635d7647b5f127204f",
+        "answerSourceId": "src_fd01a53b7ab40f39dda18695",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2017-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:5a2c4784c1fca50e2e3b84799acbc7d1023c932ebbc3060702df767e001bf1a8",
+        "answerTextHash": "sha256:43bc2e87d13ce9b5c39776f50eb7afddb8cf6d35b8c8aca79e57a093aa299505"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_fd01a53b7ab40f39dda18695",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2017/2017-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:43bc2e87d13ce9b5c39776f50eb7afddb8cf6d35b8c8aca79e57a093aa299505",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2017_bank",
+        "note": "Matched against local Baidu Netdisk 2017 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2017-032",
+      "number": 32,
+      "paperId": "politics-2017",
+      "paperName": "2017考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2017",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2017考研政治第32题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ABD",
+      "explanation": "答案来自本地百度网盘 2017 考研政治真题及参考答案 PDF 第 1-13 页逐题答案；题面以试卷原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2017/paper-page-07.jpg",
+          "caption": "试卷原页 p.7",
+          "alt": "2017考研政治试卷原页 p.7"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2017/answer-page-13.jpg",
+          "caption": "答案原页 p.13",
+          "alt": "2017考研政治答案原页 p.13"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2017",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2017-paper-answer",
+      "sourceEvidenceId": "politics-2017-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:03715f45bc34bfbee3150afc2ba4920d8d9a35230be7fe0821b67bb34b887070",
+      "answerTextHash": "sha256:ceeb954ec7dffea3a2ccc9b69d2792381ec5f314a33bc7067f13ce7a9bed056b",
+      "sourceEvidence": {
+        "evidenceId": "politics-2017-q32",
+        "sourceId": "src_08889d635d7647b5f127204f",
+        "answerSourceId": "src_fd01a53b7ab40f39dda18695",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2017-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:03715f45bc34bfbee3150afc2ba4920d8d9a35230be7fe0821b67bb34b887070",
+        "answerTextHash": "sha256:ceeb954ec7dffea3a2ccc9b69d2792381ec5f314a33bc7067f13ce7a9bed056b"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_fd01a53b7ab40f39dda18695",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2017/2017-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:ceeb954ec7dffea3a2ccc9b69d2792381ec5f314a33bc7067f13ce7a9bed056b",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2017_bank",
+        "note": "Matched against local Baidu Netdisk 2017 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2017-033",
+      "number": 33,
+      "paperId": "politics-2017",
+      "paperName": "2017考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2017",
+      "section": "多项选择",
+      "type": "multi_choice",
+      "question": "2017考研政治第33题（多项选择）。题干、选项和材料以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "ACD",
+      "explanation": "答案来自本地百度网盘 2017 考研政治真题及参考答案 PDF 第 1-13 页逐题答案；题面以试卷原页图为准。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2017/paper-page-07.jpg",
+          "caption": "试卷原页 p.7",
+          "alt": "2017考研政治试卷原页 p.7"
+        },
+        {
+          "src": "question-bank/politics-2017/paper-page-08.jpg",
+          "caption": "试卷原页 p.8",
+          "alt": "2017考研政治试卷原页 p.8"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2017/answer-page-13.jpg",
+          "caption": "答案原页 p.13",
+          "alt": "2017考研政治答案原页 p.13"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2017",
+        "多项选择"
+      ],
+      "difficulty": 2,
+      "source": "politics-2017-paper-answer",
+      "sourceEvidenceId": "politics-2017-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:c444f37be0678d3f8a2910e9b85f4d161a25fd3a25b05684543a8c17dc6fbeb3",
+      "answerTextHash": "sha256:58580f50f74c9ebf919bfeebede72ef4d76d97c1c41de87e393b863f04fbd302",
+      "sourceEvidence": {
+        "evidenceId": "politics-2017-q33",
+        "sourceId": "src_08889d635d7647b5f127204f",
+        "answerSourceId": "src_fd01a53b7ab40f39dda18695",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2017-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:c444f37be0678d3f8a2910e9b85f4d161a25fd3a25b05684543a8c17dc6fbeb3",
+        "answerTextHash": "sha256:58580f50f74c9ebf919bfeebede72ef4d76d97c1c41de87e393b863f04fbd302"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_answer_key",
+        "sourceId": "src_fd01a53b7ab40f39dda18695",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2017/2017-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:58580f50f74c9ebf919bfeebede72ef4d76d97c1c41de87e393b863f04fbd302",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2017_bank",
+        "note": "Matched against local Baidu Netdisk 2017 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2017-034",
+      "number": 34,
+      "paperId": "politics-2017",
+      "paperName": "2017考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2017",
+      "section": "分析题",
+      "type": "analysis",
+      "question": "2017考研政治第34题（分析题）。题干、选项和材料以试卷原页图为准。",
+      "options": [],
+      "answer": "分析题参考答案要点见答案原页 p.14-p.15。",
+      "explanation": "参考答案来自本地百度网盘 2017 考研政治真题及参考答案 PDF；完整答案要点见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2017/paper-page-08.jpg",
+          "caption": "试卷原页 p.8",
+          "alt": "2017考研政治试卷原页 p.8"
+        },
+        {
+          "src": "question-bank/politics-2017/paper-page-09.jpg",
+          "caption": "试卷原页 p.9",
+          "alt": "2017考研政治试卷原页 p.9"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2017/answer-page-14.jpg",
+          "caption": "答案原页 p.14",
+          "alt": "2017考研政治答案原页 p.14"
+        },
+        {
+          "src": "question-bank/politics-2017/answer-page-15.jpg",
+          "caption": "答案原页 p.15",
+          "alt": "2017考研政治答案原页 p.15"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2017",
+        "分析题"
+      ],
+      "difficulty": 3,
+      "source": "politics-2017-paper-answer",
+      "sourceEvidenceId": "politics-2017-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:31f7cae1cbd7c734603250317a1a59c86b571619916d628d6e78c14b62b8a35c",
+      "answerTextHash": "sha256:12f585d9327672762b1ba03d1a0d969cea58e8817ed98ff2ba83215b75d90c04",
+      "sourceEvidence": {
+        "evidenceId": "politics-2017-q34",
+        "sourceId": "src_08889d635d7647b5f127204f",
+        "answerSourceId": "src_fd01a53b7ab40f39dda18695",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2017-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:31f7cae1cbd7c734603250317a1a59c86b571619916d628d6e78c14b62b8a35c",
+        "answerTextHash": "sha256:12f585d9327672762b1ba03d1a0d969cea58e8817ed98ff2ba83215b75d90c04"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_reference_answer",
+        "sourceId": "src_fd01a53b7ab40f39dda18695",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2017/2017-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:12f585d9327672762b1ba03d1a0d969cea58e8817ed98ff2ba83215b75d90c04",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2017_bank",
+        "note": "Matched against local Baidu Netdisk 2017 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2017-035",
+      "number": 35,
+      "paperId": "politics-2017",
+      "paperName": "2017考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2017",
+      "section": "分析题",
+      "type": "analysis",
+      "question": "2017考研政治第35题（分析题）。题干、选项和材料以试卷原页图为准。",
+      "options": [],
+      "answer": "分析题参考答案要点见答案原页 p.15-p.16。",
+      "explanation": "参考答案来自本地百度网盘 2017 考研政治真题及参考答案 PDF；完整答案要点见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2017/paper-page-09.jpg",
+          "caption": "试卷原页 p.9",
+          "alt": "2017考研政治试卷原页 p.9"
+        },
+        {
+          "src": "question-bank/politics-2017/paper-page-10.jpg",
+          "caption": "试卷原页 p.10",
+          "alt": "2017考研政治试卷原页 p.10"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2017/answer-page-15.jpg",
+          "caption": "答案原页 p.15",
+          "alt": "2017考研政治答案原页 p.15"
+        },
+        {
+          "src": "question-bank/politics-2017/answer-page-16.jpg",
+          "caption": "答案原页 p.16",
+          "alt": "2017考研政治答案原页 p.16"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2017",
+        "分析题"
+      ],
+      "difficulty": 3,
+      "source": "politics-2017-paper-answer",
+      "sourceEvidenceId": "politics-2017-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:7e47812c21ad75bd2b3412621736e8c15670326f267869fba79e1e5af8f1cb9a",
+      "answerTextHash": "sha256:89d487cea1c82a213de2f520d517182a289734b3a205bcd95e17419c9263152a",
+      "sourceEvidence": {
+        "evidenceId": "politics-2017-q35",
+        "sourceId": "src_08889d635d7647b5f127204f",
+        "answerSourceId": "src_fd01a53b7ab40f39dda18695",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2017-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:7e47812c21ad75bd2b3412621736e8c15670326f267869fba79e1e5af8f1cb9a",
+        "answerTextHash": "sha256:89d487cea1c82a213de2f520d517182a289734b3a205bcd95e17419c9263152a"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_reference_answer",
+        "sourceId": "src_fd01a53b7ab40f39dda18695",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2017/2017-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:89d487cea1c82a213de2f520d517182a289734b3a205bcd95e17419c9263152a",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2017_bank",
+        "note": "Matched against local Baidu Netdisk 2017 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2017-036",
+      "number": 36,
+      "paperId": "politics-2017",
+      "paperName": "2017考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2017",
+      "section": "分析题",
+      "type": "analysis",
+      "question": "2017考研政治第36题（分析题）。题干、选项和材料以试卷原页图为准。",
+      "options": [],
+      "answer": "分析题参考答案要点见答案原页 p.16-p.17。",
+      "explanation": "参考答案来自本地百度网盘 2017 考研政治真题及参考答案 PDF；完整答案要点见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2017/paper-page-10.jpg",
+          "caption": "试卷原页 p.10",
+          "alt": "2017考研政治试卷原页 p.10"
+        },
+        {
+          "src": "question-bank/politics-2017/paper-page-11.jpg",
+          "caption": "试卷原页 p.11",
+          "alt": "2017考研政治试卷原页 p.11"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2017/answer-page-16.jpg",
+          "caption": "答案原页 p.16",
+          "alt": "2017考研政治答案原页 p.16"
+        },
+        {
+          "src": "question-bank/politics-2017/answer-page-17.jpg",
+          "caption": "答案原页 p.17",
+          "alt": "2017考研政治答案原页 p.17"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2017",
+        "分析题"
+      ],
+      "difficulty": 3,
+      "source": "politics-2017-paper-answer",
+      "sourceEvidenceId": "politics-2017-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:ee8c8d54892c42bc95367ec56c606b22a9730d9b42c353e4038f09e6a11bf402",
+      "answerTextHash": "sha256:a1c95aa70fb38886cf1332aaaee6b910ef26aaa53a52d463e15d15af024de35a",
+      "sourceEvidence": {
+        "evidenceId": "politics-2017-q36",
+        "sourceId": "src_08889d635d7647b5f127204f",
+        "answerSourceId": "src_fd01a53b7ab40f39dda18695",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2017-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:ee8c8d54892c42bc95367ec56c606b22a9730d9b42c353e4038f09e6a11bf402",
+        "answerTextHash": "sha256:a1c95aa70fb38886cf1332aaaee6b910ef26aaa53a52d463e15d15af024de35a"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_reference_answer",
+        "sourceId": "src_fd01a53b7ab40f39dda18695",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2017/2017-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:a1c95aa70fb38886cf1332aaaee6b910ef26aaa53a52d463e15d15af024de35a",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2017_bank",
+        "note": "Matched against local Baidu Netdisk 2017 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2017-037",
+      "number": 37,
+      "paperId": "politics-2017",
+      "paperName": "2017考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2017",
+      "section": "分析题",
+      "type": "analysis",
+      "question": "2017考研政治第37题（分析题）。题干、选项和材料以试卷原页图为准。",
+      "options": [],
+      "answer": "分析题参考答案要点见答案原页 p.17-p.18。",
+      "explanation": "参考答案来自本地百度网盘 2017 考研政治真题及参考答案 PDF；完整答案要点见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2017/paper-page-11.jpg",
+          "caption": "试卷原页 p.11",
+          "alt": "2017考研政治试卷原页 p.11"
+        },
+        {
+          "src": "question-bank/politics-2017/paper-page-12.jpg",
+          "caption": "试卷原页 p.12",
+          "alt": "2017考研政治试卷原页 p.12"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2017/answer-page-17.jpg",
+          "caption": "答案原页 p.17",
+          "alt": "2017考研政治答案原页 p.17"
+        },
+        {
+          "src": "question-bank/politics-2017/answer-page-18.jpg",
+          "caption": "答案原页 p.18",
+          "alt": "2017考研政治答案原页 p.18"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2017",
+        "分析题"
+      ],
+      "difficulty": 3,
+      "source": "politics-2017-paper-answer",
+      "sourceEvidenceId": "politics-2017-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:03a00b6f31b0705cec652c7dc455b9c654900cb752ae542468eaf7956637f950",
+      "answerTextHash": "sha256:84739af354cbf42d7522d9ad34b602925874db684aeed893107af4accca56cad",
+      "sourceEvidence": {
+        "evidenceId": "politics-2017-q37",
+        "sourceId": "src_08889d635d7647b5f127204f",
+        "answerSourceId": "src_fd01a53b7ab40f39dda18695",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2017-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:03a00b6f31b0705cec652c7dc455b9c654900cb752ae542468eaf7956637f950",
+        "answerTextHash": "sha256:84739af354cbf42d7522d9ad34b602925874db684aeed893107af4accca56cad"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_reference_answer",
+        "sourceId": "src_fd01a53b7ab40f39dda18695",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2017/2017-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:84739af354cbf42d7522d9ad34b602925874db684aeed893107af4accca56cad",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2017_bank",
+        "note": "Matched against local Baidu Netdisk 2017 Politics paper-answer PDF."
+      }
+    },
+    {
+      "id": "politics-2017-038",
+      "number": 38,
+      "paperId": "politics-2017",
+      "paperName": "2017考研政治真题",
+      "subject": "政治",
+      "subjectKey": "politics",
+      "track": "politics",
+      "year": "2017",
+      "section": "分析题",
+      "type": "analysis",
+      "question": "2017考研政治第38题（分析题）。题干、选项和材料以试卷原页图为准。",
+      "options": [],
+      "answer": "分析题参考答案要点见答案原页 p.19-p.20。",
+      "explanation": "参考答案来自本地百度网盘 2017 考研政治真题及参考答案 PDF；完整答案要点见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/politics-2017/paper-page-12.jpg",
+          "caption": "试卷原页 p.12",
+          "alt": "2017考研政治试卷原页 p.12"
+        },
+        {
+          "src": "question-bank/politics-2017/paper-page-13.jpg",
+          "caption": "试卷原页 p.13",
+          "alt": "2017考研政治试卷原页 p.13"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/politics-2017/answer-page-19.jpg",
+          "caption": "答案原页 p.19",
+          "alt": "2017考研政治答案原页 p.19"
+        },
+        {
+          "src": "question-bank/politics-2017/answer-page-20.jpg",
+          "caption": "答案原页 p.20",
+          "alt": "2017考研政治答案原页 p.20"
+        }
+      ],
+      "tags": [
+        "politics",
+        "2017",
+        "分析题"
+      ],
+      "difficulty": 3,
+      "source": "politics-2017-paper-answer",
+      "sourceEvidenceId": "politics-2017-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:cc3f2ebcd5b256f0c944a4f6d303bd77a6f164e77fed1f035f5c55b9f5c36aa4",
+      "answerTextHash": "sha256:5c0846fe8ebb839081650284f3e8fe4578fce64accda9ff6c542c5bb58a4ab06",
+      "sourceEvidence": {
+        "evidenceId": "politics-2017-q38",
+        "sourceId": "src_08889d635d7647b5f127204f",
+        "answerSourceId": "src_fd01a53b7ab40f39dda18695",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "politics-2017-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "questionTextHash": "sha256:cc3f2ebcd5b256f0c944a4f6d303bd77a6f164e77fed1f035f5c55b9f5c36aa4",
+        "answerTextHash": "sha256:5c0846fe8ebb839081650284f3e8fe4578fce64accda9ff6c542c5bb58a4ab06"
+      },
+      "answerEvidence": {
+        "status": "matched",
+        "evidenceRole": "official_reference_answer",
+        "sourceId": "src_fd01a53b7ab40f39dda18695",
+        "sourceFilePath": "data/raw-inbox/public-course-history/politics/2017/2017-politics-paper-answer.pdf",
+        "answerTextHash": "sha256:5c0846fe8ebb839081650284f3e8fe4578fce64accda9ff6c542c5bb58a4ab06",
+        "method": "local_pdf_ocr_located_page_image",
+        "verifiedBy": "build_politics_2017_bank",
+        "note": "Matched against local Baidu Netdisk 2017 Politics paper-answer PDF."
+      }
+    }
+  ]
+}
