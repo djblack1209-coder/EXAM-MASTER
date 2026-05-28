@@ -1,0 +1,1382 @@
+{
+  "id": "math3-2010",
+  "source": "math3-2010-paper-answer",
+  "paperId": "math3-2010",
+  "paperName": "2010考研数学三真题",
+  "subject": "数学",
+  "subjectKey": "math",
+  "track": "math3",
+  "year": "2010",
+  "quality": "ready",
+  "publicationStatus": "published",
+  "publicationBlockers": [],
+  "sourceEvidencePolicy": "baidu_netdisk_official_paper_pdf_page_image_v1",
+  "sourceFiles": [
+    {
+      "id": "math3-2010-paper-answer",
+      "role": "paper_answer",
+      "localPath": "data/raw-inbox/public-course-history/math3/2010/2010-math3-paper-answer.pdf",
+      "sha256": "sha256:98fbb8d1be233c29d41f8c5deed579d8c6f05f82febb9d23025cb6a1959c538c",
+      "sourceId": "src_048d76159fa1b8887a9d78ba"
+    }
+  ],
+  "assetRoot": "question-bank/math3-2010",
+  "processed_at": "2026-05-28T23:01:00Z",
+  "total_cards": 23,
+  "cards": [
+    {
+      "id": "math3-2010-001",
+      "number": 1,
+      "paperId": "math3-2010",
+      "paperName": "2010考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2010",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2010考研数学三第1题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2010 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2010/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2010考研数学三试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2010/answer-page-03.jpg",
+          "caption": "答案解析 p.3",
+          "alt": "2010考研数学三答案解析 p.3"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2010",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2010-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:0991ef0eaeebfab65e734210a4ee81717da7e0fd3deabe31d13e969354740140",
+      "answerTextHash": "sha256:68d83c90862fc09ebf9a4584ba993943e3bb37788c1dc1201cb29f44689a49dc",
+      "sourceEvidence": {
+        "evidenceId": "math3-2010-q01",
+        "sourceId": "src_048d76159fa1b8887a9d78ba",
+        "answerSourceId": "src_048d76159fa1b8887a9d78ba",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2010-paper-answer",
+        "answerEvidenceId": "math3-2010-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:68d83c90862fc09ebf9a4584ba993943e3bb37788c1dc1201cb29f44689a49dc"
+      }
+    },
+    {
+      "id": "math3-2010-002",
+      "number": 2,
+      "paperId": "math3-2010",
+      "paperName": "2010考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2010",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2010考研数学三第2题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2010 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2010/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2010考研数学三试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2010/answer-page-03.jpg",
+          "caption": "答案解析 p.3",
+          "alt": "2010考研数学三答案解析 p.3"
+        },
+        {
+          "src": "question-bank/math3-2010/answer-page-04.jpg",
+          "caption": "答案解析 p.4",
+          "alt": "2010考研数学三答案解析 p.4"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2010",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2010-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:13f1a1b6dd1ed1926f5cc6419cbf8a4195ffa267ff86aacd22cfb5096afae0fe",
+      "answerTextHash": "sha256:7e1d852bfcb8d0dc88ad7cc700ea7470f41a55f2f3f75b4c0185b8a20d57b1c0",
+      "sourceEvidence": {
+        "evidenceId": "math3-2010-q02",
+        "sourceId": "src_048d76159fa1b8887a9d78ba",
+        "answerSourceId": "src_048d76159fa1b8887a9d78ba",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2010-paper-answer",
+        "answerEvidenceId": "math3-2010-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:7e1d852bfcb8d0dc88ad7cc700ea7470f41a55f2f3f75b4c0185b8a20d57b1c0"
+      }
+    },
+    {
+      "id": "math3-2010-003",
+      "number": 3,
+      "paperId": "math3-2010",
+      "paperName": "2010考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2010",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2010考研数学三第3题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2010 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2010/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2010考研数学三试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2010/answer-page-04.jpg",
+          "caption": "答案解析 p.4",
+          "alt": "2010考研数学三答案解析 p.4"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2010",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2010-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:95eb666c84671a818fd13f9b8f0c4b0a895c5ac3436cceae82e3f8f11cc7fb4a",
+      "answerTextHash": "sha256:d6ef538eebe4fac36acf0af56c101c395d0de17a2c04761459cb375418380c8d",
+      "sourceEvidence": {
+        "evidenceId": "math3-2010-q03",
+        "sourceId": "src_048d76159fa1b8887a9d78ba",
+        "answerSourceId": "src_048d76159fa1b8887a9d78ba",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2010-paper-answer",
+        "answerEvidenceId": "math3-2010-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:d6ef538eebe4fac36acf0af56c101c395d0de17a2c04761459cb375418380c8d"
+      }
+    },
+    {
+      "id": "math3-2010-004",
+      "number": 4,
+      "paperId": "math3-2010",
+      "paperName": "2010考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2010",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2010考研数学三第4题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2010 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2010/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2010考研数学三试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2010/answer-page-04.jpg",
+          "caption": "答案解析 p.4",
+          "alt": "2010考研数学三答案解析 p.4"
+        },
+        {
+          "src": "question-bank/math3-2010/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2010考研数学三答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2010",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2010-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:dd0721ac9c5d1fa5b63df44f3e13abbe6c19ab9ba91f82eb9e47f4b77ac81a62",
+      "answerTextHash": "sha256:99df575c7e5d50602dbd52e7a432ac1beb45288aa5748a05981603e7323b2910",
+      "sourceEvidence": {
+        "evidenceId": "math3-2010-q04",
+        "sourceId": "src_048d76159fa1b8887a9d78ba",
+        "answerSourceId": "src_048d76159fa1b8887a9d78ba",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2010-paper-answer",
+        "answerEvidenceId": "math3-2010-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:99df575c7e5d50602dbd52e7a432ac1beb45288aa5748a05981603e7323b2910"
+      }
+    },
+    {
+      "id": "math3-2010-005",
+      "number": 5,
+      "paperId": "math3-2010",
+      "paperName": "2010考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2010",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2010考研数学三第5题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2010 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2010/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2010考研数学三试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2010/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2010考研数学三答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2010",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2010-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:1b6fb0421306179138660829969e03db156838c2e36f8b536977a028d9af2c53",
+      "answerTextHash": "sha256:7e89265d7268b43fc3379f8365eab4dd2ea97698a375e1f59cea607b2aeced60",
+      "sourceEvidence": {
+        "evidenceId": "math3-2010-q05",
+        "sourceId": "src_048d76159fa1b8887a9d78ba",
+        "answerSourceId": "src_048d76159fa1b8887a9d78ba",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2010-paper-answer",
+        "answerEvidenceId": "math3-2010-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:7e89265d7268b43fc3379f8365eab4dd2ea97698a375e1f59cea607b2aeced60"
+      }
+    },
+    {
+      "id": "math3-2010-006",
+      "number": 6,
+      "paperId": "math3-2010",
+      "paperName": "2010考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2010",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2010考研数学三第6题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2010 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2010/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2010考研数学三试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2010/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2010考研数学三答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2010",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2010-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:459f6358a0b6b3eea66f61c98550e26131b31bc63dc44d560ebc273d0ddf88e0",
+      "answerTextHash": "sha256:28d0c2da83a91da6daa0b76dc4fb5ce9a2d98a69f7ac96655fe3d017a8584605",
+      "sourceEvidence": {
+        "evidenceId": "math3-2010-q06",
+        "sourceId": "src_048d76159fa1b8887a9d78ba",
+        "answerSourceId": "src_048d76159fa1b8887a9d78ba",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2010-paper-answer",
+        "answerEvidenceId": "math3-2010-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:28d0c2da83a91da6daa0b76dc4fb5ce9a2d98a69f7ac96655fe3d017a8584605"
+      }
+    },
+    {
+      "id": "math3-2010-007",
+      "number": 7,
+      "paperId": "math3-2010",
+      "paperName": "2010考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2010",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2010考研数学三第7题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2010 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2010/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2010考研数学三试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2010/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2010考研数学三答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2010",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2010-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:b5941cb4764c3c88b61657b75515a1bb95505926b95473a2b5aa3bf6c43536f5",
+      "answerTextHash": "sha256:98d843014fcc06e8c015999ef30423714e3b0fc8d97ddf5a4680ed5e2e3f0339",
+      "sourceEvidence": {
+        "evidenceId": "math3-2010-q07",
+        "sourceId": "src_048d76159fa1b8887a9d78ba",
+        "answerSourceId": "src_048d76159fa1b8887a9d78ba",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2010-paper-answer",
+        "answerEvidenceId": "math3-2010-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:98d843014fcc06e8c015999ef30423714e3b0fc8d97ddf5a4680ed5e2e3f0339"
+      }
+    },
+    {
+      "id": "math3-2010-008",
+      "number": 8,
+      "paperId": "math3-2010",
+      "paperName": "2010考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2010",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2010考研数学三第8题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2010 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2010/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2010考研数学三试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2010/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2010考研数学三答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2010",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2010-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:a46564c18970ef301e0fcd5338060bc5c16cf188db4c13122dee67b60497f4a9",
+      "answerTextHash": "sha256:7e89265d7268b43fc3379f8365eab4dd2ea97698a375e1f59cea607b2aeced60",
+      "sourceEvidence": {
+        "evidenceId": "math3-2010-q08",
+        "sourceId": "src_048d76159fa1b8887a9d78ba",
+        "answerSourceId": "src_048d76159fa1b8887a9d78ba",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2010-paper-answer",
+        "answerEvidenceId": "math3-2010-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:7e89265d7268b43fc3379f8365eab4dd2ea97698a375e1f59cea607b2aeced60"
+      }
+    },
+    {
+      "id": "math3-2010-009",
+      "number": 9,
+      "paperId": "math3-2010",
+      "paperName": "2010考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2010",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2010考研数学三第9题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "-1",
+      "explanation": "答案来自本地百度网盘 2010 数学三真题及解析 PDF；完整题干、公式和解析见原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2010/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2010考研数学三试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2010/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2010考研数学三答案解析 p.5"
+        },
+        {
+          "src": "question-bank/math3-2010/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2010考研数学三答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2010",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2010-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:e23c2be4b68c54a779ed4730c58d36d40a1dcca8c74f77a6cdec7b55a34f3ddf",
+      "answerTextHash": "sha256:a2e78b085b26a57d3c95d10ac31008dcffa0ecb78ea477ca958acaf18b96b93d",
+      "sourceEvidence": {
+        "evidenceId": "math3-2010-q09",
+        "sourceId": "src_048d76159fa1b8887a9d78ba",
+        "answerSourceId": "src_048d76159fa1b8887a9d78ba",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2010-paper-answer",
+        "answerEvidenceId": "math3-2010-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:a2e78b085b26a57d3c95d10ac31008dcffa0ecb78ea477ca958acaf18b96b93d"
+      }
+    },
+    {
+      "id": "math3-2010-010",
+      "number": 10,
+      "paperId": "math3-2010",
+      "paperName": "2010考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2010",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2010考研数学三第10题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "pi^2 / 4",
+      "explanation": "答案来自本地百度网盘 2010 数学三真题及解析 PDF；完整题干、公式和解析见原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2010/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2010考研数学三试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2010/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2010考研数学三答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2010",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2010-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:0d7a48d45286e6f4383067e31d93723aebb3a958a432c7ba653cef140aa25868",
+      "answerTextHash": "sha256:5d4a08981ad24dcdd7ce0c7e0e2b5b29d1b4a3f47cb19804a9195236b6708229",
+      "sourceEvidence": {
+        "evidenceId": "math3-2010-q10",
+        "sourceId": "src_048d76159fa1b8887a9d78ba",
+        "answerSourceId": "src_048d76159fa1b8887a9d78ba",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2010-paper-answer",
+        "answerEvidenceId": "math3-2010-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:5d4a08981ad24dcdd7ce0c7e0e2b5b29d1b4a3f47cb19804a9195236b6708229"
+      }
+    },
+    {
+      "id": "math3-2010-011",
+      "number": 11,
+      "paperId": "math3-2010",
+      "paperName": "2010考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2010",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2010考研数学三第11题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "R(p) = p * e^((p^3 - 1) / 3)",
+      "explanation": "答案来自本地百度网盘 2010 数学三真题及解析 PDF；完整题干、公式和解析见原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2010/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2010考研数学三试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2010/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2010考研数学三答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2010",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2010-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:5d4c3833b37e4ee851bf47c7c037c93ee545c8fe60f6f3fa219c35cd2f9f7156",
+      "answerTextHash": "sha256:039a8e63d9366c0c38e86a0263ec16615c2493e527c24e9e0f94d062e028465f",
+      "sourceEvidence": {
+        "evidenceId": "math3-2010-q11",
+        "sourceId": "src_048d76159fa1b8887a9d78ba",
+        "answerSourceId": "src_048d76159fa1b8887a9d78ba",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2010-paper-answer",
+        "answerEvidenceId": "math3-2010-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:039a8e63d9366c0c38e86a0263ec16615c2493e527c24e9e0f94d062e028465f"
+      }
+    },
+    {
+      "id": "math3-2010-012",
+      "number": 12,
+      "paperId": "math3-2010",
+      "paperName": "2010考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2010",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2010考研数学三第12题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "3",
+      "explanation": "答案来自本地百度网盘 2010 数学三真题及解析 PDF；完整题干、公式和解析见原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2010/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2010考研数学三试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2010/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2010考研数学三答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2010",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2010-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:f809fb4fecb59dff881deb33dc17c825c1400c34b865c46006be1935e61097d2",
+      "answerTextHash": "sha256:3d1bd2514cc5c8390da3dd156157c19a571c3ee6b5c2b99cecdf7e867bc8fe5f",
+      "sourceEvidence": {
+        "evidenceId": "math3-2010-q12",
+        "sourceId": "src_048d76159fa1b8887a9d78ba",
+        "answerSourceId": "src_048d76159fa1b8887a9d78ba",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2010-paper-answer",
+        "answerEvidenceId": "math3-2010-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:3d1bd2514cc5c8390da3dd156157c19a571c3ee6b5c2b99cecdf7e867bc8fe5f"
+      }
+    },
+    {
+      "id": "math3-2010-013",
+      "number": 13,
+      "paperId": "math3-2010",
+      "paperName": "2010考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2010",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2010考研数学三第13题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "3",
+      "explanation": "答案来自本地百度网盘 2010 数学三真题及解析 PDF；完整题干、公式和解析见原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2010/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2010考研数学三试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2010/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2010考研数学三答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2010",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2010-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:50858d4fa6320596a2f79afcafb7681d1de8b5fcf331332dd2fb633fd501c8b0",
+      "answerTextHash": "sha256:3d1bd2514cc5c8390da3dd156157c19a571c3ee6b5c2b99cecdf7e867bc8fe5f",
+      "sourceEvidence": {
+        "evidenceId": "math3-2010-q13",
+        "sourceId": "src_048d76159fa1b8887a9d78ba",
+        "answerSourceId": "src_048d76159fa1b8887a9d78ba",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2010-paper-answer",
+        "answerEvidenceId": "math3-2010-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:3d1bd2514cc5c8390da3dd156157c19a571c3ee6b5c2b99cecdf7e867bc8fe5f"
+      }
+    },
+    {
+      "id": "math3-2010-014",
+      "number": 14,
+      "paperId": "math3-2010",
+      "paperName": "2010考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2010",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2010考研数学三第14题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "mu^2 + delta^2",
+      "explanation": "答案来自本地百度网盘 2010 数学三真题及解析 PDF；完整题干、公式和解析见原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2010/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2010考研数学三试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2010/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2010考研数学三答案解析 p.6"
+        },
+        {
+          "src": "question-bank/math3-2010/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2010考研数学三答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2010",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2010-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:84b1b41c812edd95edef5194c6efc5ebdea66b9b475ee222de602ad80e6d067f",
+      "answerTextHash": "sha256:b8c237530565793eb0f24b469866c384df223932a2db8af337cc49b641ddd62a",
+      "sourceEvidence": {
+        "evidenceId": "math3-2010-q14",
+        "sourceId": "src_048d76159fa1b8887a9d78ba",
+        "answerSourceId": "src_048d76159fa1b8887a9d78ba",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2010-paper-answer",
+        "answerEvidenceId": "math3-2010-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:b8c237530565793eb0f24b469866c384df223932a2db8af337cc49b641ddd62a"
+      }
+    },
+    {
+      "id": "math3-2010-015",
+      "number": 15,
+      "paperId": "math3-2010",
+      "paperName": "2010考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2010",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2010考研数学三第15题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "极限为 e^(-1)；完整指数化与等价无穷小计算见答案原页。",
+      "explanation": "答案来自本地百度网盘 2010 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2010/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2010考研数学三试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2010/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2010考研数学三答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2010",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2010-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:2266fdef3898498f18cb98b3309a12164e23b619a32bf2691fb66d56fa30a500",
+      "answerTextHash": "sha256:79fe7d19b317e685f3f841d1894dfd87d383e5055ae08f0a0dafc3223ccfca61",
+      "sourceEvidence": {
+        "evidenceId": "math3-2010-q15",
+        "sourceId": "src_048d76159fa1b8887a9d78ba",
+        "answerSourceId": "src_048d76159fa1b8887a9d78ba",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2010-paper-answer",
+        "answerEvidenceId": "math3-2010-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:79fe7d19b317e685f3f841d1894dfd87d383e5055ae08f0a0dafc3223ccfca61"
+      }
+    },
+    {
+      "id": "math3-2010-016",
+      "number": 16,
+      "paperId": "math3-2010",
+      "paperName": "2010考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2010",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2010考研数学三第16题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "二重积分值为 14/15。",
+      "explanation": "答案来自本地百度网盘 2010 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2010/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2010考研数学三试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2010/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2010考研数学三答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2010",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2010-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:b4599c4c3d832913a98982090aa4bd1ebe4c2af163b6ce6e8083fb42532c1d6d",
+      "answerTextHash": "sha256:2765b9a8b401f00e817dde025f2c3ab2a5ab912b2adea9cdaa2b4807fe675ed4",
+      "sourceEvidence": {
+        "evidenceId": "math3-2010-q16",
+        "sourceId": "src_048d76159fa1b8887a9d78ba",
+        "answerSourceId": "src_048d76159fa1b8887a9d78ba",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2010-paper-answer",
+        "answerEvidenceId": "math3-2010-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:2765b9a8b401f00e817dde025f2c3ab2a5ab912b2adea9cdaa2b4807fe675ed4"
+      }
+    },
+    {
+      "id": "math3-2010-017",
+      "number": 17,
+      "paperId": "math3-2010",
+      "paperName": "2010考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2010",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2010考研数学三第17题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "最大值为 5 sqrt(5)，最小值为 -5 sqrt(5)。",
+      "explanation": "答案来自本地百度网盘 2010 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2010/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2010考研数学三试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2010/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2010考研数学三答案解析 p.7"
+        },
+        {
+          "src": "question-bank/math3-2010/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2010考研数学三答案解析 p.8"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2010",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2010-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:6576f1553b46146e954f5ecba73def0157ff1b935fe4f384175eadd6b1a6c1dd",
+      "answerTextHash": "sha256:4f98e2d11491a2817c93e0b1c9519634870f4d7ce493d110ad7a858717dfe8ea",
+      "sourceEvidence": {
+        "evidenceId": "math3-2010-q17",
+        "sourceId": "src_048d76159fa1b8887a9d78ba",
+        "answerSourceId": "src_048d76159fa1b8887a9d78ba",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2010-paper-answer",
+        "answerEvidenceId": "math3-2010-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:4f98e2d11491a2817c93e0b1c9519634870f4d7ce493d110ad7a858717dfe8ea"
+      }
+    },
+    {
+      "id": "math3-2010-018",
+      "number": 18,
+      "paperId": "math3-2010",
+      "paperName": "2010考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2010",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2010考研数学三第18题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "积分大小比较与数列极限证明见答案原页；lim u_n = 0。",
+      "explanation": "答案来自本地百度网盘 2010 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2010/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2010考研数学三试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2010/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2010考研数学三答案解析 p.8"
+        },
+        {
+          "src": "question-bank/math3-2010/answer-page-09.jpg",
+          "caption": "答案解析 p.9",
+          "alt": "2010考研数学三答案解析 p.9"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2010",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2010-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:0f51151578efa39ea59a1f4f6addf813eef4c94270a0fc13005228fea072884a",
+      "answerTextHash": "sha256:39c1d6dea1f17c558678557557a7e62ed6c89cdb922b50897d2298cc86426d4e",
+      "sourceEvidence": {
+        "evidenceId": "math3-2010-q18",
+        "sourceId": "src_048d76159fa1b8887a9d78ba",
+        "answerSourceId": "src_048d76159fa1b8887a9d78ba",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2010-paper-answer",
+        "answerEvidenceId": "math3-2010-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:39c1d6dea1f17c558678557557a7e62ed6c89cdb922b50897d2298cc86426d4e"
+      }
+    },
+    {
+      "id": "math3-2010-019",
+      "number": 19,
+      "paperId": "math3-2010",
+      "paperName": "2010考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2010",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2010考研数学三第19题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "存在性证明见答案原页。",
+      "explanation": "答案来自本地百度网盘 2010 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2010/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2010考研数学三试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2010/answer-page-09.jpg",
+          "caption": "答案解析 p.9",
+          "alt": "2010考研数学三答案解析 p.9"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2010",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2010-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:b800a20397a09dd2ce63cab9bf2f5541a91baa86b2336957f2b599518f81d017",
+      "answerTextHash": "sha256:7e7816d72ebbea63acfc00b8787d1f6b5fed90039f51b2a425c1cb69a9046f1d",
+      "sourceEvidence": {
+        "evidenceId": "math3-2010-q19",
+        "sourceId": "src_048d76159fa1b8887a9d78ba",
+        "answerSourceId": "src_048d76159fa1b8887a9d78ba",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2010-paper-answer",
+        "answerEvidenceId": "math3-2010-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:7e7816d72ebbea63acfc00b8787d1f6b5fed90039f51b2a425c1cb69a9046f1d"
+      }
+    },
+    {
+      "id": "math3-2010-020",
+      "number": 20,
+      "paperId": "math3-2010",
+      "paperName": "2010考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2010",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2010考研数学三第20题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "lambda = -1, a = -2；通解为 k(1,0,1)^T + (3/2,-1/2,0)^T。",
+      "explanation": "答案来自本地百度网盘 2010 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2010/paper-page-03-question-crop.jpg",
+          "caption": "试卷原页 p.3（题面裁切）",
+          "alt": "2010考研数学三试卷原页 p.3（题面裁切）"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2010/answer-page-09.jpg",
+          "caption": "答案解析 p.9",
+          "alt": "2010考研数学三答案解析 p.9"
+        },
+        {
+          "src": "question-bank/math3-2010/answer-page-10.jpg",
+          "caption": "答案解析 p.10",
+          "alt": "2010考研数学三答案解析 p.10"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2010",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2010-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:7caf369db0d7b46348eecfb512f92df5d13079ec1594ecd3c169fe5e6c97ecf9",
+      "answerTextHash": "sha256:89b50d967ad19881e58ee35c808989c1bff9ec88c16567e148ec903f1754da5c",
+      "sourceEvidence": {
+        "evidenceId": "math3-2010-q20",
+        "sourceId": "src_048d76159fa1b8887a9d78ba",
+        "answerSourceId": "src_048d76159fa1b8887a9d78ba",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2010-paper-answer",
+        "answerEvidenceId": "math3-2010-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:89b50d967ad19881e58ee35c808989c1bff9ec88c16567e148ec903f1754da5c"
+      }
+    },
+    {
+      "id": "math3-2010-021",
+      "number": 21,
+      "paperId": "math3-2010",
+      "paperName": "2010考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2010",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2010考研数学三第21题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "a = -1；正交矩阵 Q 与对角矩阵见答案原页。",
+      "explanation": "答案来自本地百度网盘 2010 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2010/paper-page-03-question-crop.jpg",
+          "caption": "试卷原页 p.3（题面裁切）",
+          "alt": "2010考研数学三试卷原页 p.3（题面裁切）"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2010/answer-page-10.jpg",
+          "caption": "答案解析 p.10",
+          "alt": "2010考研数学三答案解析 p.10"
+        },
+        {
+          "src": "question-bank/math3-2010/answer-page-11.jpg",
+          "caption": "答案解析 p.11",
+          "alt": "2010考研数学三答案解析 p.11"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2010",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2010-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:fed7b99af66db55f0ce7004392e2179d00616578873b2699db85c5aee0dbb519",
+      "answerTextHash": "sha256:4f7338aac9616305517a62737ebf598fbfc45c043582e0998249d5747ff9c9dc",
+      "sourceEvidence": {
+        "evidenceId": "math3-2010-q21",
+        "sourceId": "src_048d76159fa1b8887a9d78ba",
+        "answerSourceId": "src_048d76159fa1b8887a9d78ba",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2010-paper-answer",
+        "answerEvidenceId": "math3-2010-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:4f7338aac9616305517a62737ebf598fbfc45c043582e0998249d5747ff9c9dc"
+      }
+    },
+    {
+      "id": "math3-2010-022",
+      "number": 22,
+      "paperId": "math3-2010",
+      "paperName": "2010考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2010",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2010考研数学三第22题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "A = 1/pi；条件概率密度见答案原页。",
+      "explanation": "答案来自本地百度网盘 2010 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2010/paper-page-03-question-crop.jpg",
+          "caption": "试卷原页 p.3（题面裁切）",
+          "alt": "2010考研数学三试卷原页 p.3（题面裁切）"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2010/answer-page-11.jpg",
+          "caption": "答案解析 p.11",
+          "alt": "2010考研数学三答案解析 p.11"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2010",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2010-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:6881550428273daa86b73daff59c270febe19db0be75727411d757d04e97a5d5",
+      "answerTextHash": "sha256:ea843f2406e4ad8c79adc64aea80c7c1eb77d84b21cb4070634fb40ab30faf52",
+      "sourceEvidence": {
+        "evidenceId": "math3-2010-q22",
+        "sourceId": "src_048d76159fa1b8887a9d78ba",
+        "answerSourceId": "src_048d76159fa1b8887a9d78ba",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2010-paper-answer",
+        "answerEvidenceId": "math3-2010-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:ea843f2406e4ad8c79adc64aea80c7c1eb77d84b21cb4070634fb40ab30faf52"
+      }
+    },
+    {
+      "id": "math3-2010-023",
+      "number": 23,
+      "paperId": "math3-2010",
+      "paperName": "2010考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2010",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2010考研数学三第23题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "概率分布表见答案原页；Cov(X,Y) = -4/45。",
+      "explanation": "答案来自本地百度网盘 2010 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2010/paper-page-03-question-crop.jpg",
+          "caption": "试卷原页 p.3（题面裁切）",
+          "alt": "2010考研数学三试卷原页 p.3（题面裁切）"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2010/answer-page-11.jpg",
+          "caption": "答案解析 p.11",
+          "alt": "2010考研数学三答案解析 p.11"
+        },
+        {
+          "src": "question-bank/math3-2010/answer-page-12.jpg",
+          "caption": "答案解析 p.12",
+          "alt": "2010考研数学三答案解析 p.12"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2010",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2010-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:9e63131d69ceaf51d26201d2f67f859cddc6f0bf12dbc1cd7199948417432e6d",
+      "answerTextHash": "sha256:4a3273693d5d6afc70b8ea7e76534e9a82592cd11e164430c0f15992459bd50e",
+      "sourceEvidence": {
+        "evidenceId": "math3-2010-q23",
+        "sourceId": "src_048d76159fa1b8887a9d78ba",
+        "answerSourceId": "src_048d76159fa1b8887a9d78ba",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math3-2010-paper-answer",
+        "answerEvidenceId": "math3-2010-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:4a3273693d5d6afc70b8ea7e76534e9a82592cd11e164430c0f15992459bd50e"
+      }
+    }
+  ]
+}
