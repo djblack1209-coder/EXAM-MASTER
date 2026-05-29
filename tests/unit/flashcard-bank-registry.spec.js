@@ -359,6 +359,13 @@ describe('published flashcard bank registry', () => {
     expect(math32007.cards.find((card) => card.number === 24).answerImages.at(-1).src).toContain(
       'question-bank/math3-2007/answer-page-13.jpg'
     );
+    const math32011 = await loadBank('math3-2011');
+    expect(math32011.cards).toHaveLength(23);
+    expect(math32011.cards.every((card) => card.answerEvidenceStatus === 'matched')).toBe(true);
+    expect(math32011.cards.find((card) => card.number === 1).answer).toBe('C');
+    expect(math32011.cards.find((card) => card.number === 23).questionImages[0].src).toContain(
+      'question-bank/math3-2011/question-23.jpg'
+    );
   });
 
   it('builds public-course navigation tree without exposing disabled banks', () => {
@@ -535,7 +542,7 @@ describe('published flashcard bank registry', () => {
     expect(english.tracks[0].pendingBanks.some((bank) => bank.id === 'english1-2025-source')).toBe(false);
     expect(english.tracks[0].pendingBanks.some((bank) => bank.id === 'english-2025')).toBe(false);
     expect(english.tracks[0].yearSlots).toHaveLength(22);
-    expect(english.tracks[0].slotSummary).toEqual({ total: 22, ready: 11, organizing: 0, missing: 11 });
+    expect(english.tracks[0].slotSummary).toEqual({ total: 22, ready: 12, organizing: 0, missing: 10 });
     expect(english.tracks[0].yearSlots.find((slot) => slot.year === '2012')).toMatchObject({
       bankId: 'english1-2012',
       status: 'ready',
@@ -577,6 +584,7 @@ describe('published flashcard bank registry', () => {
     expect(math.tracks[2].banks.some((bank) => bank.id === 'math3-2005')).toBe(true);
     expect(math.tracks[2].banks.some((bank) => bank.id === 'math3-2006')).toBe(true);
     expect(math.tracks[2].banks.some((bank) => bank.id === 'math3-2007')).toBe(true);
+    expect(math.tracks[2].banks.some((bank) => bank.id === 'math3-2011')).toBe(true);
     expect(math.tracks.flatMap((track) => track.pendingBanks.map((bank) => bank.id))).not.toContain('math-2025');
     expect(english.tracks[0].modes.map((mode) => mode.id)).toEqual(['past_exam', 'timed_sprint', 'weakness']);
     expect(english.tracks[0].modes.map((mode) => mode.id)).not.toContain('knowledge_graph');

@@ -1,0 +1,1402 @@
+{
+  "id": "math3-2011",
+  "source": "math3-2011-paper-answer",
+  "paperId": "math3-2011",
+  "paperName": "2011考研数学三真题",
+  "subject": "数学",
+  "subjectKey": "math",
+  "track": "math3",
+  "year": "2011",
+  "quality": "ready",
+  "publicationStatus": "published",
+  "publicationBlockers": [],
+  "sourceEvidencePolicy": "baidu_netdisk_official_paper_pdf_question_crop_answer_page_image_v1",
+  "sourceFiles": [
+    {
+      "id": "math3-2011-paper-answer",
+      "role": "paper_answer",
+      "localPath": "data/raw-inbox/public-course-history/math3/2011/2011-math3-paper-answer.pdf",
+      "sha256": "sha256:f5185dde8b49fe7789356fc2ebb33e56b3fce0739600a0dc265eb438bab4a9b1",
+      "sourceId": "src_dd8bca3d308120a63db33b95"
+    }
+  ],
+  "assetRoot": "question-bank/math3-2011",
+  "processed_at": "2026-05-29T15:45:56Z",
+  "total_cards": 23,
+  "cards": [
+    {
+      "id": "math3-2011-001",
+      "number": 1,
+      "paperId": "math3-2011",
+      "paperName": "2011考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2011",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2011考研数学三第1题（选择题）。题干、公式和图形以题面裁切图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2011 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2011/question-01.jpg",
+          "caption": "题面裁切图 q01",
+          "alt": "2011考研数学三第01题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2011/answer-page-01.jpg",
+          "caption": "答案解析 p.1",
+          "alt": "2011考研数学三答案解析 p.1"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2011",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2011-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:0046c99c1016e574d7d963230ca8d83b5be0aedd65b0896e80b97e7290c8063a",
+      "answerTextHash": "sha256:01370fce298cb459b7c797138d9e825fda2e23c11e9e9249e65268241d053ce7",
+      "sourceEvidence": {
+        "evidenceId": "math3-2011-q01",
+        "sourceId": "src_dd8bca3d308120a63db33b95",
+        "answerSourceId": "src_dd8bca3d308120a63db33b95",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2011-paper-answer",
+        "answerEvidenceId": "math3-2011-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:01370fce298cb459b7c797138d9e825fda2e23c11e9e9249e65268241d053ce7"
+      }
+    },
+    {
+      "id": "math3-2011-002",
+      "number": 2,
+      "paperId": "math3-2011",
+      "paperName": "2011考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2011",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2011考研数学三第2题（选择题）。题干、公式和图形以题面裁切图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2011 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2011/question-02.jpg",
+          "caption": "题面裁切图 q02",
+          "alt": "2011考研数学三第02题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2011/answer-page-01.jpg",
+          "caption": "答案解析 p.1",
+          "alt": "2011考研数学三答案解析 p.1"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2011",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2011-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:12e486c6ebe27ea564db65799ed5fc67e214cf9a68d9877d0cc8b9b08e5000c2",
+      "answerTextHash": "sha256:eeb8f23963a55373792abcd7f5e7bf152df8a8573bd10989d302f7962035a04f",
+      "sourceEvidence": {
+        "evidenceId": "math3-2011-q02",
+        "sourceId": "src_dd8bca3d308120a63db33b95",
+        "answerSourceId": "src_dd8bca3d308120a63db33b95",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2011-paper-answer",
+        "answerEvidenceId": "math3-2011-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:eeb8f23963a55373792abcd7f5e7bf152df8a8573bd10989d302f7962035a04f"
+      }
+    },
+    {
+      "id": "math3-2011-003",
+      "number": 3,
+      "paperId": "math3-2011",
+      "paperName": "2011考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2011",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2011考研数学三第3题（选择题）。题干、公式和图形以题面裁切图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2011 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2011/question-03-a.jpg",
+          "caption": "题面裁切图 q03-a",
+          "alt": "2011考研数学三第03题题面裁切图"
+        },
+        {
+          "src": "question-bank/math3-2011/question-03-b.jpg",
+          "caption": "题面裁切图 q03-b",
+          "alt": "2011考研数学三第03题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2011/answer-page-01.jpg",
+          "caption": "答案解析 p.1",
+          "alt": "2011考研数学三答案解析 p.1"
+        },
+        {
+          "src": "question-bank/math3-2011/answer-page-02.jpg",
+          "caption": "答案解析 p.2",
+          "alt": "2011考研数学三答案解析 p.2"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2011",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2011-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:5e5e53b4b0ed1a0a473916b4047758c502e2a13c5ba54f33a905487aabce8948",
+      "answerTextHash": "sha256:6614e99bebb8c2c30f8c6feb22c98f3064a281595e4c733af7a3abbd0641df48",
+      "sourceEvidence": {
+        "evidenceId": "math3-2011-q03",
+        "sourceId": "src_dd8bca3d308120a63db33b95",
+        "answerSourceId": "src_dd8bca3d308120a63db33b95",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2011-paper-answer",
+        "answerEvidenceId": "math3-2011-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:6614e99bebb8c2c30f8c6feb22c98f3064a281595e4c733af7a3abbd0641df48"
+      }
+    },
+    {
+      "id": "math3-2011-004",
+      "number": 4,
+      "paperId": "math3-2011",
+      "paperName": "2011考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2011",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2011考研数学三第4题（选择题）。题干、公式和图形以题面裁切图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2011 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2011/question-04.jpg",
+          "caption": "题面裁切图 q04",
+          "alt": "2011考研数学三第04题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2011/answer-page-02.jpg",
+          "caption": "答案解析 p.2",
+          "alt": "2011考研数学三答案解析 p.2"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2011",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2011-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:32cad1b965bd38b13cd4e34c942092618f2d930240fa44fa9bd6815fafb6cf62",
+      "answerTextHash": "sha256:ea6b7035bde61a0fb21a8d4196db45fb2986b73187d0a84d810bab5409f63f7d",
+      "sourceEvidence": {
+        "evidenceId": "math3-2011-q04",
+        "sourceId": "src_dd8bca3d308120a63db33b95",
+        "answerSourceId": "src_dd8bca3d308120a63db33b95",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2011-paper-answer",
+        "answerEvidenceId": "math3-2011-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:ea6b7035bde61a0fb21a8d4196db45fb2986b73187d0a84d810bab5409f63f7d"
+      }
+    },
+    {
+      "id": "math3-2011-005",
+      "number": 5,
+      "paperId": "math3-2011",
+      "paperName": "2011考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2011",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2011考研数学三第5题（选择题）。题干、公式和图形以题面裁切图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2011 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2011/question-05.jpg",
+          "caption": "题面裁切图 q05",
+          "alt": "2011考研数学三第05题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2011/answer-page-02.jpg",
+          "caption": "答案解析 p.2",
+          "alt": "2011考研数学三答案解析 p.2"
+        },
+        {
+          "src": "question-bank/math3-2011/answer-page-03.jpg",
+          "caption": "答案解析 p.3",
+          "alt": "2011考研数学三答案解析 p.3"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2011",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2011-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:7acd93b1a035585c3856151b1da8c51a885d58b6cfe695ef459434f3b1922562",
+      "answerTextHash": "sha256:38bf5ae31db1c5337480921a2d6fa4ba60f2fac606abe12fc297f8c1a4cc9922",
+      "sourceEvidence": {
+        "evidenceId": "math3-2011-q05",
+        "sourceId": "src_dd8bca3d308120a63db33b95",
+        "answerSourceId": "src_dd8bca3d308120a63db33b95",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2011-paper-answer",
+        "answerEvidenceId": "math3-2011-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:38bf5ae31db1c5337480921a2d6fa4ba60f2fac606abe12fc297f8c1a4cc9922"
+      }
+    },
+    {
+      "id": "math3-2011-006",
+      "number": 6,
+      "paperId": "math3-2011",
+      "paperName": "2011考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2011",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2011考研数学三第6题（选择题）。题干、公式和图形以题面裁切图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2011 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2011/question-06.jpg",
+          "caption": "题面裁切图 q06",
+          "alt": "2011考研数学三第06题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2011/answer-page-03.jpg",
+          "caption": "答案解析 p.3",
+          "alt": "2011考研数学三答案解析 p.3"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2011",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2011-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:8b7d78ea6ad1af2c7a207346fcabab676b0145c64a3d02c50ab84e8800ff883b",
+      "answerTextHash": "sha256:68d83c90862fc09ebf9a4584ba993943e3bb37788c1dc1201cb29f44689a49dc",
+      "sourceEvidence": {
+        "evidenceId": "math3-2011-q06",
+        "sourceId": "src_dd8bca3d308120a63db33b95",
+        "answerSourceId": "src_dd8bca3d308120a63db33b95",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2011-paper-answer",
+        "answerEvidenceId": "math3-2011-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:68d83c90862fc09ebf9a4584ba993943e3bb37788c1dc1201cb29f44689a49dc"
+      }
+    },
+    {
+      "id": "math3-2011-007",
+      "number": 7,
+      "paperId": "math3-2011",
+      "paperName": "2011考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2011",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2011考研数学三第7题（选择题）。题干、公式和图形以题面裁切图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2011 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2011/question-07.jpg",
+          "caption": "题面裁切图 q07",
+          "alt": "2011考研数学三第07题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2011/answer-page-03.jpg",
+          "caption": "答案解析 p.3",
+          "alt": "2011考研数学三答案解析 p.3"
+        },
+        {
+          "src": "question-bank/math3-2011/answer-page-04.jpg",
+          "caption": "答案解析 p.4",
+          "alt": "2011考研数学三答案解析 p.4"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2011",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2011-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:8bf750b38411082e2ce833ba567e1be3642848321d54f14dde6cfc998ec9e9d9",
+      "answerTextHash": "sha256:a9bfd468c4359d21158307d84d2afed56351638ec1fed8c9719fe1553499ce9f",
+      "sourceEvidence": {
+        "evidenceId": "math3-2011-q07",
+        "sourceId": "src_dd8bca3d308120a63db33b95",
+        "answerSourceId": "src_dd8bca3d308120a63db33b95",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2011-paper-answer",
+        "answerEvidenceId": "math3-2011-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:a9bfd468c4359d21158307d84d2afed56351638ec1fed8c9719fe1553499ce9f"
+      }
+    },
+    {
+      "id": "math3-2011-008",
+      "number": 8,
+      "paperId": "math3-2011",
+      "paperName": "2011考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2011",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2011考研数学三第8题（选择题）。题干、公式和图形以题面裁切图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2011 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2011/question-08.jpg",
+          "caption": "题面裁切图 q08",
+          "alt": "2011考研数学三第08题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2011/answer-page-04.jpg",
+          "caption": "答案解析 p.4",
+          "alt": "2011考研数学三答案解析 p.4"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2011",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2011-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:57558d02e97ef3a7601bd10d7b27c4b0c58c0a0b590338e4abfa0636a9fe49ae",
+      "answerTextHash": "sha256:f9b62e4efbf2b7603b98d3f2ff418dcbd2c44acaa816fe2c2d633969ac0c75c5",
+      "sourceEvidence": {
+        "evidenceId": "math3-2011-q08",
+        "sourceId": "src_dd8bca3d308120a63db33b95",
+        "answerSourceId": "src_dd8bca3d308120a63db33b95",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2011-paper-answer",
+        "answerEvidenceId": "math3-2011-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:f9b62e4efbf2b7603b98d3f2ff418dcbd2c44acaa816fe2c2d633969ac0c75c5"
+      }
+    },
+    {
+      "id": "math3-2011-009",
+      "number": 9,
+      "paperId": "math3-2011",
+      "paperName": "2011考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2011",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2011考研数学三第9题（填空题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "e^(3x) * (1 + 3x)",
+      "explanation": "答案来自本地百度网盘 2011 数学三真题及解析 PDF；完整题干、公式和解析见原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2011/question-09.jpg",
+          "caption": "题面裁切图 q09",
+          "alt": "2011考研数学三第09题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2011/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2011考研数学三答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2011",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2011-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:f66d9013e7680f87bfbb914a4d976d0174215e5da3dc4faaac248be71e448e41",
+      "answerTextHash": "sha256:f4c5d5fdb6aa2118bd8807ce32cc93e89cc0eb3752cc9c8d3ef2b323577f640e",
+      "sourceEvidence": {
+        "evidenceId": "math3-2011-q09",
+        "sourceId": "src_dd8bca3d308120a63db33b95",
+        "answerSourceId": "src_dd8bca3d308120a63db33b95",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2011-paper-answer",
+        "answerEvidenceId": "math3-2011-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:f4c5d5fdb6aa2118bd8807ce32cc93e89cc0eb3752cc9c8d3ef2b323577f640e"
+      }
+    },
+    {
+      "id": "math3-2011-010",
+      "number": 10,
+      "paperId": "math3-2011",
+      "paperName": "2011考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2011",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2011考研数学三第10题（填空题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "(1 + 2 ln 2)(dx - dy)",
+      "explanation": "答案来自本地百度网盘 2011 数学三真题及解析 PDF；完整题干、公式和解析见原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2011/question-10.jpg",
+          "caption": "题面裁切图 q10",
+          "alt": "2011考研数学三第10题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2011/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2011考研数学三答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2011",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2011-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:faff6eea6de0a759e71954c17836d9a610edf01a1de0e04d2d7c3d30d6ffd1df",
+      "answerTextHash": "sha256:985d3b12eeb14adcb5cb6c9ff79bbad29662502f60b661d7c1e22b132c322835",
+      "sourceEvidence": {
+        "evidenceId": "math3-2011-q10",
+        "sourceId": "src_dd8bca3d308120a63db33b95",
+        "answerSourceId": "src_dd8bca3d308120a63db33b95",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2011-paper-answer",
+        "answerEvidenceId": "math3-2011-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:985d3b12eeb14adcb5cb6c9ff79bbad29662502f60b661d7c1e22b132c322835"
+      }
+    },
+    {
+      "id": "math3-2011-011",
+      "number": 11,
+      "paperId": "math3-2011",
+      "paperName": "2011考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2011",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2011考研数学三第11题（填空题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "y = -2x",
+      "explanation": "答案来自本地百度网盘 2011 数学三真题及解析 PDF；完整题干、公式和解析见原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2011/question-11.jpg",
+          "caption": "题面裁切图 q11",
+          "alt": "2011考研数学三第11题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2011/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2011考研数学三答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2011",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2011-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:ccb05668e9e66ed3c9fc9f2115b00d784fc595aa7539b7273c8884860334cd9a",
+      "answerTextHash": "sha256:dcf279324f1a5482154b494ed5f315f19d332df874a9fe75a70ff7ae548ffa8f",
+      "sourceEvidence": {
+        "evidenceId": "math3-2011-q11",
+        "sourceId": "src_dd8bca3d308120a63db33b95",
+        "answerSourceId": "src_dd8bca3d308120a63db33b95",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2011-paper-answer",
+        "answerEvidenceId": "math3-2011-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:dcf279324f1a5482154b494ed5f315f19d332df874a9fe75a70ff7ae548ffa8f"
+      }
+    },
+    {
+      "id": "math3-2011-012",
+      "number": 12,
+      "paperId": "math3-2011",
+      "paperName": "2011考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2011",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2011考研数学三第12题（填空题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "4pi / 3",
+      "explanation": "答案来自本地百度网盘 2011 数学三真题及解析 PDF；完整题干、公式和解析见原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2011/question-12.jpg",
+          "caption": "题面裁切图 q12",
+          "alt": "2011考研数学三第12题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2011/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2011考研数学三答案解析 p.5"
+        },
+        {
+          "src": "question-bank/math3-2011/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2011考研数学三答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2011",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2011-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:2a1e2220cccc86a9ae9e2b09ad0939b8484e8b10c5d2a4492daee03a8fa5a31d",
+      "answerTextHash": "sha256:1460430c4c9a22f29e52ba1c7cfccb472182190b3a6829d84addbca4ef5777e4",
+      "sourceEvidence": {
+        "evidenceId": "math3-2011-q12",
+        "sourceId": "src_dd8bca3d308120a63db33b95",
+        "answerSourceId": "src_dd8bca3d308120a63db33b95",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2011-paper-answer",
+        "answerEvidenceId": "math3-2011-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:1460430c4c9a22f29e52ba1c7cfccb472182190b3a6829d84addbca4ef5777e4"
+      }
+    },
+    {
+      "id": "math3-2011-013",
+      "number": 13,
+      "paperId": "math3-2011",
+      "paperName": "2011考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2011",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2011考研数学三第13题（填空题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "3y_1^2",
+      "explanation": "答案来自本地百度网盘 2011 数学三真题及解析 PDF；完整题干、公式和解析见原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2011/question-13.jpg",
+          "caption": "题面裁切图 q13",
+          "alt": "2011考研数学三第13题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2011/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2011考研数学三答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2011",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2011-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:829badedb0579b8716b48d28ae97211c4bc41befbad83e26eb06ddd0623848cd",
+      "answerTextHash": "sha256:e6a84ce06e777fb2ddd81cc43e0b4e35b24afffd61de7cb3d3dd57d6d0bdb293",
+      "sourceEvidence": {
+        "evidenceId": "math3-2011-q13",
+        "sourceId": "src_dd8bca3d308120a63db33b95",
+        "answerSourceId": "src_dd8bca3d308120a63db33b95",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2011-paper-answer",
+        "answerEvidenceId": "math3-2011-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:e6a84ce06e777fb2ddd81cc43e0b4e35b24afffd61de7cb3d3dd57d6d0bdb293"
+      }
+    },
+    {
+      "id": "math3-2011-014",
+      "number": 14,
+      "paperId": "math3-2011",
+      "paperName": "2011考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2011",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2011考研数学三第14题（填空题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "mu * (mu^2 + sigma^2)",
+      "explanation": "答案来自本地百度网盘 2011 数学三真题及解析 PDF；完整题干、公式和解析见原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2011/question-14.jpg",
+          "caption": "题面裁切图 q14",
+          "alt": "2011考研数学三第14题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2011/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2011考研数学三答案解析 p.6"
+        },
+        {
+          "src": "question-bank/math3-2011/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2011考研数学三答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2011",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2011-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:c0b0a8c35c4da226be2671954329c7a710b2e04efa3df366c345614962eb5763",
+      "answerTextHash": "sha256:5f6486c41026890682ea57b22ed4cbdaa080291925bf4d6226c7129251e1f059",
+      "sourceEvidence": {
+        "evidenceId": "math3-2011-q14",
+        "sourceId": "src_dd8bca3d308120a63db33b95",
+        "answerSourceId": "src_dd8bca3d308120a63db33b95",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2011-paper-answer",
+        "answerEvidenceId": "math3-2011-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:5f6486c41026890682ea57b22ed4cbdaa080291925bf4d6226c7129251e1f059"
+      }
+    },
+    {
+      "id": "math3-2011-015",
+      "number": 15,
+      "paperId": "math3-2011",
+      "paperName": "2011考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2011",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2011考研数学三第15题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "极限为 -1/2。",
+      "explanation": "答案来自本地百度网盘 2011 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2011/question-15.jpg",
+          "caption": "题面裁切图 q15",
+          "alt": "2011考研数学三第15题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2011/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2011考研数学三答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2011",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2011-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:11ada1b138a23617488951c4be47fd96cb55eaeb0464d5e25bf3191daa876b3d",
+      "answerTextHash": "sha256:f60e8cdf698c380a9e10988f7f7af4cb3fd2908623bd30bb382cf71af67b6d00",
+      "sourceEvidence": {
+        "evidenceId": "math3-2011-q15",
+        "sourceId": "src_dd8bca3d308120a63db33b95",
+        "answerSourceId": "src_dd8bca3d308120a63db33b95",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2011-paper-answer",
+        "answerEvidenceId": "math3-2011-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:f60e8cdf698c380a9e10988f7f7af4cb3fd2908623bd30bb382cf71af67b6d00"
+      }
+    },
+    {
+      "id": "math3-2011-016",
+      "number": 16,
+      "paperId": "math3-2011",
+      "paperName": "2011考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2011",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2011考研数学三第16题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "混合偏导数结果见答案原页，利用极值必要条件 f_1'(1,1)=f_2'(1,1)=0 化简。",
+      "explanation": "答案来自本地百度网盘 2011 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2011/question-16.jpg",
+          "caption": "题面裁切图 q16",
+          "alt": "2011考研数学三第16题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2011/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2011考研数学三答案解析 p.7"
+        },
+        {
+          "src": "question-bank/math3-2011/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2011考研数学三答案解析 p.8"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2011",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2011-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:c5e0baf49ef172fa477229ed90c90fa8d4667f1cf57b4643db451ba5cd2fe684",
+      "answerTextHash": "sha256:d719c21743f20d2c499c3c94a5627f6d23d20646125a6e3c13d96532b3b33358",
+      "sourceEvidence": {
+        "evidenceId": "math3-2011-q16",
+        "sourceId": "src_dd8bca3d308120a63db33b95",
+        "answerSourceId": "src_dd8bca3d308120a63db33b95",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2011-paper-answer",
+        "answerEvidenceId": "math3-2011-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:d719c21743f20d2c499c3c94a5627f6d23d20646125a6e3c13d96532b3b33358"
+      }
+    },
+    {
+      "id": "math3-2011-017",
+      "number": 17,
+      "paperId": "math3-2011",
+      "paperName": "2011考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2011",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2011考研数学三第17题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "2 sqrt(x) arcsin(sqrt(x)) + 2 sqrt(x) ln x + 2 sqrt(1 - x) - 4 sqrt(x) + C。",
+      "explanation": "答案来自本地百度网盘 2011 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2011/question-17.jpg",
+          "caption": "题面裁切图 q17",
+          "alt": "2011考研数学三第17题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2011/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2011考研数学三答案解析 p.8"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2011",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2011-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:935098d3852be4fa3c356fc332bd598f222324ee95ad15899b78c1fd6fec0867",
+      "answerTextHash": "sha256:eedae3902585a56d07f0efd15e2a19de8d0e77f671345673423af74ef3bcece1",
+      "sourceEvidence": {
+        "evidenceId": "math3-2011-q17",
+        "sourceId": "src_dd8bca3d308120a63db33b95",
+        "answerSourceId": "src_dd8bca3d308120a63db33b95",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2011-paper-answer",
+        "answerEvidenceId": "math3-2011-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:eedae3902585a56d07f0efd15e2a19de8d0e77f671345673423af74ef3bcece1"
+      }
+    },
+    {
+      "id": "math3-2011-018",
+      "number": 18,
+      "paperId": "math3-2011",
+      "paperName": "2011考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2011",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2011考研数学三第18题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "方程恰有两个实根；完整单调性与零点定理论证见答案原页。",
+      "explanation": "答案来自本地百度网盘 2011 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2011/question-18.jpg",
+          "caption": "题面裁切图 q18",
+          "alt": "2011考研数学三第18题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2011/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2011考研数学三答案解析 p.8"
+        },
+        {
+          "src": "question-bank/math3-2011/answer-page-09.jpg",
+          "caption": "答案解析 p.9",
+          "alt": "2011考研数学三答案解析 p.9"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2011",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2011-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:468727bbffa5dd085e52d40dc8db334e0c57813e0282daee1d5f92fe78c0899e",
+      "answerTextHash": "sha256:78c820386369c8b35ca132c4b8423e5f4195882352aba7276118991b97987687",
+      "sourceEvidence": {
+        "evidenceId": "math3-2011-q18",
+        "sourceId": "src_dd8bca3d308120a63db33b95",
+        "answerSourceId": "src_dd8bca3d308120a63db33b95",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2011-paper-answer",
+        "answerEvidenceId": "math3-2011-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:78c820386369c8b35ca132c4b8423e5f4195882352aba7276118991b97987687"
+      }
+    },
+    {
+      "id": "math3-2011-019",
+      "number": 19,
+      "paperId": "math3-2011",
+      "paperName": "2011考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2011",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2011考研数学三第19题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "f(x) = 4 / (x - 2)^2, 0 <= x <= 1。",
+      "explanation": "答案来自本地百度网盘 2011 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2011/question-19.jpg",
+          "caption": "题面裁切图 q19",
+          "alt": "2011考研数学三第19题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2011/answer-page-09.jpg",
+          "caption": "答案解析 p.9",
+          "alt": "2011考研数学三答案解析 p.9"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2011",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2011-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:20744953a3f2298cfe45b26dd388e2b7f1d38eb15a771813ed83a965014185b2",
+      "answerTextHash": "sha256:3ec250d114224be9d33a1edb3071f08241cfb5299a1b3501edace59c8959ecf1",
+      "sourceEvidence": {
+        "evidenceId": "math3-2011-q19",
+        "sourceId": "src_dd8bca3d308120a63db33b95",
+        "answerSourceId": "src_dd8bca3d308120a63db33b95",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2011-paper-answer",
+        "answerEvidenceId": "math3-2011-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:3ec250d114224be9d33a1edb3071f08241cfb5299a1b3501edace59c8959ecf1"
+      }
+    },
+    {
+      "id": "math3-2011-020",
+      "number": 20,
+      "paperId": "math3-2011",
+      "paperName": "2011考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2011",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2011考研数学三第20题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "a = 5；beta_1 = 2 alpha_1 + 4 alpha_2 - alpha_3，beta_2 = alpha_1 + 2 alpha_2，beta_3 = 5 alpha_1 + 10 alpha_2 - 2 alpha_3。",
+      "explanation": "答案来自本地百度网盘 2011 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2011/question-20-a.jpg",
+          "caption": "题面裁切图 q20-a",
+          "alt": "2011考研数学三第20题题面裁切图"
+        },
+        {
+          "src": "question-bank/math3-2011/question-20-b.jpg",
+          "caption": "题面裁切图 q20-b",
+          "alt": "2011考研数学三第20题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2011/answer-page-09.jpg",
+          "caption": "答案解析 p.9",
+          "alt": "2011考研数学三答案解析 p.9"
+        },
+        {
+          "src": "question-bank/math3-2011/answer-page-10.jpg",
+          "caption": "答案解析 p.10",
+          "alt": "2011考研数学三答案解析 p.10"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2011",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2011-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:69acf22932f81b250091a3565dde8409f3f3829847aa607b663d81acfc34ba1b",
+      "answerTextHash": "sha256:063eba9cc07bafe0a12d33eb9ceb4077ebe55252becdd0f77505c88383f5b16c",
+      "sourceEvidence": {
+        "evidenceId": "math3-2011-q20",
+        "sourceId": "src_dd8bca3d308120a63db33b95",
+        "answerSourceId": "src_dd8bca3d308120a63db33b95",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2011-paper-answer",
+        "answerEvidenceId": "math3-2011-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:063eba9cc07bafe0a12d33eb9ceb4077ebe55252becdd0f77505c88383f5b16c"
+      }
+    },
+    {
+      "id": "math3-2011-021",
+      "number": 21,
+      "paperId": "math3-2011",
+      "paperName": "2011考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2011",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2011考研数学三第21题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "特征值为 1, -1, 0；对应特征向量与矩阵 A 见答案原页。",
+      "explanation": "答案来自本地百度网盘 2011 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2011/question-21.jpg",
+          "caption": "题面裁切图 q21",
+          "alt": "2011考研数学三第21题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2011/answer-page-10.jpg",
+          "caption": "答案解析 p.10",
+          "alt": "2011考研数学三答案解析 p.10"
+        },
+        {
+          "src": "question-bank/math3-2011/answer-page-11.jpg",
+          "caption": "答案解析 p.11",
+          "alt": "2011考研数学三答案解析 p.11"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2011",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2011-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:06f6dbba939a0785564d0b9df0a5bfe570ee3060c76ea782191069d437192fb2",
+      "answerTextHash": "sha256:9d76887e898bc99fda941c85876d2dafcefe42594ad896db0b672f956dce5879",
+      "sourceEvidence": {
+        "evidenceId": "math3-2011-q21",
+        "sourceId": "src_dd8bca3d308120a63db33b95",
+        "answerSourceId": "src_dd8bca3d308120a63db33b95",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2011-paper-answer",
+        "answerEvidenceId": "math3-2011-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:9d76887e898bc99fda941c85876d2dafcefe42594ad896db0b672f956dce5879"
+      }
+    },
+    {
+      "id": "math3-2011-022",
+      "number": 22,
+      "paperId": "math3-2011",
+      "paperName": "2011考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2011",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2011考研数学三第22题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "(X,Y) 与 Z=XY 的概率分布表见答案原页；相关系数 rho_XY = 0。",
+      "explanation": "答案来自本地百度网盘 2011 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2011/question-22.jpg",
+          "caption": "题面裁切图 q22",
+          "alt": "2011考研数学三第22题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2011/answer-page-11.jpg",
+          "caption": "答案解析 p.11",
+          "alt": "2011考研数学三答案解析 p.11"
+        },
+        {
+          "src": "question-bank/math3-2011/answer-page-12.jpg",
+          "caption": "答案解析 p.12",
+          "alt": "2011考研数学三答案解析 p.12"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2011",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2011-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:a411eebdb26dffa0a6f941ced5db7c684670861a745c74ce4c12741a34a1e1f3",
+      "answerTextHash": "sha256:c1b88a75220e43bfb11c4676acd682818c8aa93b088b51a31cf86b4f5f099dc2",
+      "sourceEvidence": {
+        "evidenceId": "math3-2011-q22",
+        "sourceId": "src_dd8bca3d308120a63db33b95",
+        "answerSourceId": "src_dd8bca3d308120a63db33b95",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2011-paper-answer",
+        "answerEvidenceId": "math3-2011-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:c1b88a75220e43bfb11c4676acd682818c8aa93b088b51a31cf86b4f5f099dc2"
+      }
+    },
+    {
+      "id": "math3-2011-023",
+      "number": 23,
+      "paperId": "math3-2011",
+      "paperName": "2011考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2011",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2011考研数学三第23题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "f_X(x)=x (0<=x<1), 2-x (1<=x<=2), 其他为 0；条件密度 f_{X|Y}(x|y)=1/(2-2y), y<x<2-y, 0<=y<1。",
+      "explanation": "答案来自本地百度网盘 2011 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2011/question-23.jpg",
+          "caption": "题面裁切图 q23",
+          "alt": "2011考研数学三第23题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2011/answer-page-12.jpg",
+          "caption": "答案解析 p.12",
+          "alt": "2011考研数学三答案解析 p.12"
+        },
+        {
+          "src": "question-bank/math3-2011/answer-page-13.jpg",
+          "caption": "答案解析 p.13",
+          "alt": "2011考研数学三答案解析 p.13"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2011",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2011-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:ea7c50da00916634ba7d1d27419e874736c4a33b130bbb82e05ee0092a1f540a",
+      "answerTextHash": "sha256:8ef306cdbe37665b643e8a4fa10874b8907211c1f2afcfe2e53553e32ffe31a7",
+      "sourceEvidence": {
+        "evidenceId": "math3-2011-q23",
+        "sourceId": "src_dd8bca3d308120a63db33b95",
+        "answerSourceId": "src_dd8bca3d308120a63db33b95",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2011-paper-answer",
+        "answerEvidenceId": "math3-2011-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:8ef306cdbe37665b643e8a4fa10874b8907211c1f2afcfe2e53553e32ffe31a7"
+      }
+    }
+  ]
+}
