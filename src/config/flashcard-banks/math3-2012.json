@@ -1,0 +1,1402 @@
+{
+  "id": "math3-2012",
+  "source": "math3-2012-paper-answer",
+  "paperId": "math3-2012",
+  "paperName": "2012考研数学三真题",
+  "subject": "数学",
+  "subjectKey": "math",
+  "track": "math3",
+  "year": "2012",
+  "quality": "ready",
+  "publicationStatus": "published",
+  "publicationBlockers": [],
+  "sourceEvidencePolicy": "baidu_netdisk_official_paper_pdf_question_crop_answer_page_image_v1",
+  "sourceFiles": [
+    {
+      "id": "math3-2012-paper-answer",
+      "role": "paper_answer",
+      "localPath": "data/raw-inbox/public-course-history/math3/2012/2012-math3-paper-answer.pdf",
+      "sha256": "sha256:c3519aab1d3f6cf272760bc052c9fe8fa19e2e148e931ad2656eda55fc9fb720",
+      "sourceId": "src_c5b7051dec72a3ed3e898a0b"
+    }
+  ],
+  "assetRoot": "question-bank/math3-2012",
+  "processed_at": "2026-05-29T16:20:05Z",
+  "total_cards": 23,
+  "cards": [
+    {
+      "id": "math3-2012-001",
+      "number": 1,
+      "paperId": "math3-2012",
+      "paperName": "2012考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2012",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2012考研数学三第1题（选择题）。题干、公式和图形以题面裁切图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2012 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2012/question-01.jpg",
+          "caption": "题面裁切图 q01",
+          "alt": "2012考研数学三第01题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2012/answer-page-01.jpg",
+          "caption": "答案解析 p.1",
+          "alt": "2012考研数学三答案解析 p.1"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2012",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2012-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:021b69f72b3e281c69a197038be01e838a0d039e9cae76d796d7d83aabaddbdb",
+      "answerTextHash": "sha256:01370fce298cb459b7c797138d9e825fda2e23c11e9e9249e65268241d053ce7",
+      "sourceEvidence": {
+        "evidenceId": "math3-2012-q01",
+        "sourceId": "src_c5b7051dec72a3ed3e898a0b",
+        "answerSourceId": "src_c5b7051dec72a3ed3e898a0b",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2012-paper-answer",
+        "answerEvidenceId": "math3-2012-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:01370fce298cb459b7c797138d9e825fda2e23c11e9e9249e65268241d053ce7"
+      }
+    },
+    {
+      "id": "math3-2012-002",
+      "number": 2,
+      "paperId": "math3-2012",
+      "paperName": "2012考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2012",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2012考研数学三第2题（选择题）。题干、公式和图形以题面裁切图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2012 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2012/question-02.jpg",
+          "caption": "题面裁切图 q02",
+          "alt": "2012考研数学三第02题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2012/answer-page-01.jpg",
+          "caption": "答案解析 p.1",
+          "alt": "2012考研数学三答案解析 p.1"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2012",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2012-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:8f9a9328d4c93450f74894e50b5378d1da2fbdd3fb3799f9fd3818a6ae796b90",
+      "answerTextHash": "sha256:01370fce298cb459b7c797138d9e825fda2e23c11e9e9249e65268241d053ce7",
+      "sourceEvidence": {
+        "evidenceId": "math3-2012-q02",
+        "sourceId": "src_c5b7051dec72a3ed3e898a0b",
+        "answerSourceId": "src_c5b7051dec72a3ed3e898a0b",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2012-paper-answer",
+        "answerEvidenceId": "math3-2012-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:01370fce298cb459b7c797138d9e825fda2e23c11e9e9249e65268241d053ce7"
+      }
+    },
+    {
+      "id": "math3-2012-003",
+      "number": 3,
+      "paperId": "math3-2012",
+      "paperName": "2012考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2012",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2012考研数学三第3题（选择题）。题干、公式和图形以题面裁切图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2012 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2012/question-03-a.jpg",
+          "caption": "题面裁切图 q03-a",
+          "alt": "2012考研数学三第03题题面裁切图"
+        },
+        {
+          "src": "question-bank/math3-2012/question-03-b.jpg",
+          "caption": "题面裁切图 q03-b",
+          "alt": "2012考研数学三第03题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2012/answer-page-01.jpg",
+          "caption": "答案解析 p.1",
+          "alt": "2012考研数学三答案解析 p.1"
+        },
+        {
+          "src": "question-bank/math3-2012/answer-page-02.jpg",
+          "caption": "答案解析 p.2",
+          "alt": "2012考研数学三答案解析 p.2"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2012",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2012-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:9acf52406394cd028baca2fc54fbe31ea4529822f9a8454ec2da92429be04f73",
+      "answerTextHash": "sha256:6bb6d285bcddf9e1642b1bde9da8cf4525d80d7400efb1f8be4241eef32cd377",
+      "sourceEvidence": {
+        "evidenceId": "math3-2012-q03",
+        "sourceId": "src_c5b7051dec72a3ed3e898a0b",
+        "answerSourceId": "src_c5b7051dec72a3ed3e898a0b",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2012-paper-answer",
+        "answerEvidenceId": "math3-2012-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:6bb6d285bcddf9e1642b1bde9da8cf4525d80d7400efb1f8be4241eef32cd377"
+      }
+    },
+    {
+      "id": "math3-2012-004",
+      "number": 4,
+      "paperId": "math3-2012",
+      "paperName": "2012考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2012",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2012考研数学三第4题（选择题）。题干、公式和图形以题面裁切图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2012 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2012/question-04.jpg",
+          "caption": "题面裁切图 q04",
+          "alt": "2012考研数学三第04题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2012/answer-page-02.jpg",
+          "caption": "答案解析 p.2",
+          "alt": "2012考研数学三答案解析 p.2"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2012",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2012-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:1b8d4bd3d72b12b574f8b2347beff46247522b958a1ddfe143c6720eaa9effc2",
+      "answerTextHash": "sha256:7cd6122ff6ad5f4ed9210d1ae15379380ce2cd5f5ab3a3b9f0756d9b8d6dbe3f",
+      "sourceEvidence": {
+        "evidenceId": "math3-2012-q04",
+        "sourceId": "src_c5b7051dec72a3ed3e898a0b",
+        "answerSourceId": "src_c5b7051dec72a3ed3e898a0b",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2012-paper-answer",
+        "answerEvidenceId": "math3-2012-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:7cd6122ff6ad5f4ed9210d1ae15379380ce2cd5f5ab3a3b9f0756d9b8d6dbe3f"
+      }
+    },
+    {
+      "id": "math3-2012-005",
+      "number": 5,
+      "paperId": "math3-2012",
+      "paperName": "2012考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2012",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2012考研数学三第5题（选择题）。题干、公式和图形以题面裁切图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2012 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2012/question-05.jpg",
+          "caption": "题面裁切图 q05",
+          "alt": "2012考研数学三第05题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2012/answer-page-02.jpg",
+          "caption": "答案解析 p.2",
+          "alt": "2012考研数学三答案解析 p.2"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2012",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2012-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:f5ed850449fcb1328975037db3d54de16c12f48b9fe781c24a3b0c968b138096",
+      "answerTextHash": "sha256:cad57386346f62bee6aa00d160f80730cc923b804fff53afdd1c61b5181c7a0b",
+      "sourceEvidence": {
+        "evidenceId": "math3-2012-q05",
+        "sourceId": "src_c5b7051dec72a3ed3e898a0b",
+        "answerSourceId": "src_c5b7051dec72a3ed3e898a0b",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2012-paper-answer",
+        "answerEvidenceId": "math3-2012-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:cad57386346f62bee6aa00d160f80730cc923b804fff53afdd1c61b5181c7a0b"
+      }
+    },
+    {
+      "id": "math3-2012-006",
+      "number": 6,
+      "paperId": "math3-2012",
+      "paperName": "2012考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2012",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2012考研数学三第6题（选择题）。题干、公式和图形以题面裁切图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2012 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2012/question-06-a.jpg",
+          "caption": "题面裁切图 q06-a",
+          "alt": "2012考研数学三第06题题面裁切图"
+        },
+        {
+          "src": "question-bank/math3-2012/question-06-b.jpg",
+          "caption": "题面裁切图 q06-b",
+          "alt": "2012考研数学三第06题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2012/answer-page-02.jpg",
+          "caption": "答案解析 p.2",
+          "alt": "2012考研数学三答案解析 p.2"
+        },
+        {
+          "src": "question-bank/math3-2012/answer-page-03.jpg",
+          "caption": "答案解析 p.3",
+          "alt": "2012考研数学三答案解析 p.3"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2012",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2012-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:04284647ad6c4d3a9e7f6e9a05bfcd3086681e2dec6e3be03db999e50b16629b",
+      "answerTextHash": "sha256:b2e9af799ce3691d2a8144096ec7e4a07dc4c03a621ed6e8a6da1e4b5810f454",
+      "sourceEvidence": {
+        "evidenceId": "math3-2012-q06",
+        "sourceId": "src_c5b7051dec72a3ed3e898a0b",
+        "answerSourceId": "src_c5b7051dec72a3ed3e898a0b",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2012-paper-answer",
+        "answerEvidenceId": "math3-2012-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:b2e9af799ce3691d2a8144096ec7e4a07dc4c03a621ed6e8a6da1e4b5810f454"
+      }
+    },
+    {
+      "id": "math3-2012-007",
+      "number": 7,
+      "paperId": "math3-2012",
+      "paperName": "2012考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2012",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2012考研数学三第7题（选择题）。题干、公式和图形以题面裁切图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2012 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2012/question-07.jpg",
+          "caption": "题面裁切图 q07",
+          "alt": "2012考研数学三第07题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2012/answer-page-03.jpg",
+          "caption": "答案解析 p.3",
+          "alt": "2012考研数学三答案解析 p.3"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2012",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2012-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:545cf4633c88b85a383334c8dbc5753e99ace9f960115d4f8323e120f52f1464",
+      "answerTextHash": "sha256:d637b5249be391a9a0cef957e8d809d0203bcfb6b4872f45e530441f455f7bc1",
+      "sourceEvidence": {
+        "evidenceId": "math3-2012-q07",
+        "sourceId": "src_c5b7051dec72a3ed3e898a0b",
+        "answerSourceId": "src_c5b7051dec72a3ed3e898a0b",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2012-paper-answer",
+        "answerEvidenceId": "math3-2012-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:d637b5249be391a9a0cef957e8d809d0203bcfb6b4872f45e530441f455f7bc1"
+      }
+    },
+    {
+      "id": "math3-2012-008",
+      "number": 8,
+      "paperId": "math3-2012",
+      "paperName": "2012考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2012",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2012考研数学三第8题（选择题）。题干、公式和图形以题面裁切图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2012 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2012/question-08.jpg",
+          "caption": "题面裁切图 q08",
+          "alt": "2012考研数学三第08题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2012/answer-page-03.jpg",
+          "caption": "答案解析 p.3",
+          "alt": "2012考研数学三答案解析 p.3"
+        },
+        {
+          "src": "question-bank/math3-2012/answer-page-04.jpg",
+          "caption": "答案解析 p.4",
+          "alt": "2012考研数学三答案解析 p.4"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2012",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2012-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:d00a1bd8f61d765cc7d8dd7d6af43098fbeef7a52388fdd0078617b91af072c1",
+      "answerTextHash": "sha256:7d14305f576e4de846f6261cf723b95e1d701bc279f8bd226fc3c61162388065",
+      "sourceEvidence": {
+        "evidenceId": "math3-2012-q08",
+        "sourceId": "src_c5b7051dec72a3ed3e898a0b",
+        "answerSourceId": "src_c5b7051dec72a3ed3e898a0b",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2012-paper-answer",
+        "answerEvidenceId": "math3-2012-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:7d14305f576e4de846f6261cf723b95e1d701bc279f8bd226fc3c61162388065"
+      }
+    },
+    {
+      "id": "math3-2012-009",
+      "number": 9,
+      "paperId": "math3-2012",
+      "paperName": "2012考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2012",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2012考研数学三第9题（填空题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "e^(-sqrt(2))",
+      "explanation": "答案来自本地百度网盘 2012 数学三真题及解析 PDF；完整题干、公式和解析见原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2012/question-09.jpg",
+          "caption": "题面裁切图 q09",
+          "alt": "2012考研数学三第09题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2012/answer-page-04.jpg",
+          "caption": "答案解析 p.4",
+          "alt": "2012考研数学三答案解析 p.4"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2012",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2012-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:d4f333fb3849e90eb9d946dfb0c3d025f29c5f0fe54206f133516f8a32c3f5b9",
+      "answerTextHash": "sha256:c7d25a680ff9aad30781271820ef1065d149779b496a4ec2211f8b498588f4a2",
+      "sourceEvidence": {
+        "evidenceId": "math3-2012-q09",
+        "sourceId": "src_c5b7051dec72a3ed3e898a0b",
+        "answerSourceId": "src_c5b7051dec72a3ed3e898a0b",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2012-paper-answer",
+        "answerEvidenceId": "math3-2012-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:c7d25a680ff9aad30781271820ef1065d149779b496a4ec2211f8b498588f4a2"
+      }
+    },
+    {
+      "id": "math3-2012-010",
+      "number": 10,
+      "paperId": "math3-2012",
+      "paperName": "2012考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2012",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2012考研数学三第10题（填空题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "4",
+      "explanation": "答案来自本地百度网盘 2012 数学三真题及解析 PDF；完整题干、公式和解析见原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2012/question-10.jpg",
+          "caption": "题面裁切图 q10",
+          "alt": "2012考研数学三第10题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2012/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2012考研数学三答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2012",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2012-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:84b5288dc5254c1ef7241bfb7d1d89e8cf4e7e03e6e8b8ddf2d917087208aaf3",
+      "answerTextHash": "sha256:3edfa9e60fc9b122cbd554fae545a72deeba3c83b679f0230a63464a9659cc59",
+      "sourceEvidence": {
+        "evidenceId": "math3-2012-q10",
+        "sourceId": "src_c5b7051dec72a3ed3e898a0b",
+        "answerSourceId": "src_c5b7051dec72a3ed3e898a0b",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2012-paper-answer",
+        "answerEvidenceId": "math3-2012-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:3edfa9e60fc9b122cbd554fae545a72deeba3c83b679f0230a63464a9659cc59"
+      }
+    },
+    {
+      "id": "math3-2012-011",
+      "number": 11,
+      "paperId": "math3-2012",
+      "paperName": "2012考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2012",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2012考研数学三第11题（填空题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "2dx - dy",
+      "explanation": "答案来自本地百度网盘 2012 数学三真题及解析 PDF；完整题干、公式和解析见原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2012/question-11.jpg",
+          "caption": "题面裁切图 q11",
+          "alt": "2012考研数学三第11题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2012/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2012考研数学三答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2012",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2012-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:5f45fd0ac557ffaff02a2c090dbd1617eb3f413d7af3b01a2963338da2d5dd3a",
+      "answerTextHash": "sha256:c6915761b605d9c80c186c2d33743d361072f2937fc0a88207ae0c6b6c56c48c",
+      "sourceEvidence": {
+        "evidenceId": "math3-2012-q11",
+        "sourceId": "src_c5b7051dec72a3ed3e898a0b",
+        "answerSourceId": "src_c5b7051dec72a3ed3e898a0b",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2012-paper-answer",
+        "answerEvidenceId": "math3-2012-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:c6915761b605d9c80c186c2d33743d361072f2937fc0a88207ae0c6b6c56c48c"
+      }
+    },
+    {
+      "id": "math3-2012-012",
+      "number": 12,
+      "paperId": "math3-2012",
+      "paperName": "2012考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2012",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2012考研数学三第12题（填空题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "4 ln 2",
+      "explanation": "答案来自本地百度网盘 2012 数学三真题及解析 PDF；完整题干、公式和解析见原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2012/question-12.jpg",
+          "caption": "题面裁切图 q12",
+          "alt": "2012考研数学三第12题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2012/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2012考研数学三答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2012",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2012-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:d24d8e56634ae6263b66033f075508d8102886095d3322ab044558ae0043844f",
+      "answerTextHash": "sha256:bc57756f80793c7ec8d15f481cb0b57e82523a66c585dc5c40dfbab90308719b",
+      "sourceEvidence": {
+        "evidenceId": "math3-2012-q12",
+        "sourceId": "src_c5b7051dec72a3ed3e898a0b",
+        "answerSourceId": "src_c5b7051dec72a3ed3e898a0b",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2012-paper-answer",
+        "answerEvidenceId": "math3-2012-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:bc57756f80793c7ec8d15f481cb0b57e82523a66c585dc5c40dfbab90308719b"
+      }
+    },
+    {
+      "id": "math3-2012-013",
+      "number": 13,
+      "paperId": "math3-2012",
+      "paperName": "2012考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2012",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2012考研数学三第13题（填空题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "-27",
+      "explanation": "答案来自本地百度网盘 2012 数学三真题及解析 PDF；完整题干、公式和解析见原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2012/question-13.jpg",
+          "caption": "题面裁切图 q13",
+          "alt": "2012考研数学三第13题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2012/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2012考研数学三答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2012",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2012-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:65ff0f2076111550bf289a2b98bc96d0617f4289ae4e9782fcf2b31d93e3111b",
+      "answerTextHash": "sha256:a97a52bcb8562c6814fc572d572705091691d1376b14dbb5ea8aee48a7728985",
+      "sourceEvidence": {
+        "evidenceId": "math3-2012-q13",
+        "sourceId": "src_c5b7051dec72a3ed3e898a0b",
+        "answerSourceId": "src_c5b7051dec72a3ed3e898a0b",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2012-paper-answer",
+        "answerEvidenceId": "math3-2012-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:a97a52bcb8562c6814fc572d572705091691d1376b14dbb5ea8aee48a7728985"
+      }
+    },
+    {
+      "id": "math3-2012-014",
+      "number": 14,
+      "paperId": "math3-2012",
+      "paperName": "2012考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2012",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2012考研数学三第14题（填空题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "3/4",
+      "explanation": "答案来自本地百度网盘 2012 数学三真题及解析 PDF；完整题干、公式和解析见原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2012/question-14.jpg",
+          "caption": "题面裁切图 q14",
+          "alt": "2012考研数学三第14题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2012/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2012考研数学三答案解析 p.5"
+        },
+        {
+          "src": "question-bank/math3-2012/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2012考研数学三答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2012",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2012-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:25d2c63235d5d17947fc97224c4268cca4e1acf848558283958880a5b8a1139d",
+      "answerTextHash": "sha256:ac07fba9f463184416341f0fc91d613253e06e45455482348a609d5833d0b5fc",
+      "sourceEvidence": {
+        "evidenceId": "math3-2012-q14",
+        "sourceId": "src_c5b7051dec72a3ed3e898a0b",
+        "answerSourceId": "src_c5b7051dec72a3ed3e898a0b",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2012-paper-answer",
+        "answerEvidenceId": "math3-2012-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:ac07fba9f463184416341f0fc91d613253e06e45455482348a609d5833d0b5fc"
+      }
+    },
+    {
+      "id": "math3-2012-015",
+      "number": 15,
+      "paperId": "math3-2012",
+      "paperName": "2012考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2012",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2012考研数学三第15题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "极限为 1/12。",
+      "explanation": "答案来自本地百度网盘 2012 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2012/question-15.jpg",
+          "caption": "题面裁切图 q15",
+          "alt": "2012考研数学三第15题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2012/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2012考研数学三答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2012",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2012-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:0d0d03315bd1e7322b7f5b1749cb0a82e7ce1c38694f03e8335df64c42625bbc",
+      "answerTextHash": "sha256:f22ad40139868a63988de3cf7c9211ba83c08e427ad32fc907d34c8365b30e58",
+      "sourceEvidence": {
+        "evidenceId": "math3-2012-q15",
+        "sourceId": "src_c5b7051dec72a3ed3e898a0b",
+        "answerSourceId": "src_c5b7051dec72a3ed3e898a0b",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2012-paper-answer",
+        "answerEvidenceId": "math3-2012-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:f22ad40139868a63988de3cf7c9211ba83c08e427ad32fc907d34c8365b30e58"
+      }
+    },
+    {
+      "id": "math3-2012-016",
+      "number": 16,
+      "paperId": "math3-2012",
+      "paperName": "2012考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2012",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2012考研数学三第16题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "二重积分值为 1/2。",
+      "explanation": "答案来自本地百度网盘 2012 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2012/question-16.jpg",
+          "caption": "题面裁切图 q16",
+          "alt": "2012考研数学三第16题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2012/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2012考研数学三答案解析 p.6"
+        },
+        {
+          "src": "question-bank/math3-2012/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2012考研数学三答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2012",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2012-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:db5f6d7edd7ac92a87d455dafdcc3b0dfcee4a05550f17cbba72a09c49aa42d3",
+      "answerTextHash": "sha256:3cf8e38858bb21bbd7d16479718a78a614968e646c20be9b785854bc65e7b263",
+      "sourceEvidence": {
+        "evidenceId": "math3-2012-q16",
+        "sourceId": "src_c5b7051dec72a3ed3e898a0b",
+        "answerSourceId": "src_c5b7051dec72a3ed3e898a0b",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2012-paper-answer",
+        "answerEvidenceId": "math3-2012-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:3cf8e38858bb21bbd7d16479718a78a614968e646c20be9b785854bc65e7b263"
+      }
+    },
+    {
+      "id": "math3-2012-017",
+      "number": 17,
+      "paperId": "math3-2012",
+      "paperName": "2012考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2012",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2012考研数学三第17题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "总成本函数 C(x,y)=20x+x^2/4+6y+y^2/2+10000；x=24,y=26 时最小成本 11118；甲产品边际成本为 32 万元/件。",
+      "explanation": "答案来自本地百度网盘 2012 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2012/question-17.jpg",
+          "caption": "题面裁切图 q17",
+          "alt": "2012考研数学三第17题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2012/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2012考研数学三答案解析 p.7"
+        },
+        {
+          "src": "question-bank/math3-2012/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2012考研数学三答案解析 p.8"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2012",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2012-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:573b73fba0e8ca746d7a2137c1222590d61d26485750ec26d353b4d5fc838047",
+      "answerTextHash": "sha256:918a2de1e0e2bfdb89b4186650d3a90239e9b4f1d8de8a4d3146b482e512c287",
+      "sourceEvidence": {
+        "evidenceId": "math3-2012-q17",
+        "sourceId": "src_c5b7051dec72a3ed3e898a0b",
+        "answerSourceId": "src_c5b7051dec72a3ed3e898a0b",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2012-paper-answer",
+        "answerEvidenceId": "math3-2012-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:918a2de1e0e2bfdb89b4186650d3a90239e9b4f1d8de8a4d3146b482e512c287"
+      }
+    },
+    {
+      "id": "math3-2012-018",
+      "number": 18,
+      "paperId": "math3-2012",
+      "paperName": "2012考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2012",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2012考研数学三第18题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "不等式证明见答案原页，利用 f(x)=x ln((1+x)/(1-x))+cos x-1-x^2/2 及单调性讨论。",
+      "explanation": "答案来自本地百度网盘 2012 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2012/question-18.jpg",
+          "caption": "题面裁切图 q18",
+          "alt": "2012考研数学三第18题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2012/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2012考研数学三答案解析 p.8"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2012",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2012-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:eb82c85053d7032fb2056e7dfb96b707704619edbf353509a9fd61619c563483",
+      "answerTextHash": "sha256:c1e4e52bc5a16c40b8f01f21a0cef6102961bb915fadbf58d112982ebb099fb4",
+      "sourceEvidence": {
+        "evidenceId": "math3-2012-q18",
+        "sourceId": "src_c5b7051dec72a3ed3e898a0b",
+        "answerSourceId": "src_c5b7051dec72a3ed3e898a0b",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2012-paper-answer",
+        "answerEvidenceId": "math3-2012-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:c1e4e52bc5a16c40b8f01f21a0cef6102961bb915fadbf58d112982ebb099fb4"
+      }
+    },
+    {
+      "id": "math3-2012-019",
+      "number": 19,
+      "paperId": "math3-2012",
+      "paperName": "2012考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2012",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2012考研数学三第19题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "f(x)=e^x；曲线 y=f(x^2)∫_0^x f(-t^2)dt 的拐点为 (0,0)。",
+      "explanation": "答案来自本地百度网盘 2012 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2012/question-19.jpg",
+          "caption": "题面裁切图 q19",
+          "alt": "2012考研数学三第19题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2012/answer-page-09.jpg",
+          "caption": "答案解析 p.9",
+          "alt": "2012考研数学三答案解析 p.9"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2012",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2012-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:ff62b489417821c0147485c6d8fdc605ce9a1ced68f58b525da10f2583a83d81",
+      "answerTextHash": "sha256:ed6913cacd62ce97df753c17b55b456b17a0fc49061b44233dbecb63d02cb680",
+      "sourceEvidence": {
+        "evidenceId": "math3-2012-q19",
+        "sourceId": "src_c5b7051dec72a3ed3e898a0b",
+        "answerSourceId": "src_c5b7051dec72a3ed3e898a0b",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2012-paper-answer",
+        "answerEvidenceId": "math3-2012-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:ed6913cacd62ce97df753c17b55b456b17a0fc49061b44233dbecb63d02cb680"
+      }
+    },
+    {
+      "id": "math3-2012-020",
+      "number": 20,
+      "paperId": "math3-2012",
+      "paperName": "2012考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2012",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2012考研数学三第20题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "|A|=1-a^4；a=-1；通解为 k(1,1,1,1)^T + (0,-1,0,0)^T。",
+      "explanation": "答案来自本地百度网盘 2012 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2012/question-20.jpg",
+          "caption": "题面裁切图 q20",
+          "alt": "2012考研数学三第20题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2012/answer-page-09.jpg",
+          "caption": "答案解析 p.9",
+          "alt": "2012考研数学三答案解析 p.9"
+        },
+        {
+          "src": "question-bank/math3-2012/answer-page-10.jpg",
+          "caption": "答案解析 p.10",
+          "alt": "2012考研数学三答案解析 p.10"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2012",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2012-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:bde638c3deb9e942e9f0e825a86356e1cba68a7a4df11272602e150280880dec",
+      "answerTextHash": "sha256:9418d5b62595a4da1171d5eea96b8a2998e904f54df5e48f7d860035a323df16",
+      "sourceEvidence": {
+        "evidenceId": "math3-2012-q20",
+        "sourceId": "src_c5b7051dec72a3ed3e898a0b",
+        "answerSourceId": "src_c5b7051dec72a3ed3e898a0b",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2012-paper-answer",
+        "answerEvidenceId": "math3-2012-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:9418d5b62595a4da1171d5eea96b8a2998e904f54df5e48f7d860035a323df16"
+      }
+    },
+    {
+      "id": "math3-2012-021",
+      "number": 21,
+      "paperId": "math3-2012",
+      "paperName": "2012考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2012",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2012考研数学三第21题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "a=-1；二次型矩阵、特征值 0,2,6 及正交变换过程见答案原页。",
+      "explanation": "答案来自本地百度网盘 2012 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2012/question-21.jpg",
+          "caption": "题面裁切图 q21",
+          "alt": "2012考研数学三第21题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2012/answer-page-10.jpg",
+          "caption": "答案解析 p.10",
+          "alt": "2012考研数学三答案解析 p.10"
+        },
+        {
+          "src": "question-bank/math3-2012/answer-page-11.jpg",
+          "caption": "答案解析 p.11",
+          "alt": "2012考研数学三答案解析 p.11"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2012",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2012-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:579e4e1ee0a920886ec67d8edd2931d200092571a6abe4ca74897dae5e7748d5",
+      "answerTextHash": "sha256:f5a3b1eeb36b889228a833816ad1e9afad091d5015ab942ea81a55d4179c63dc",
+      "sourceEvidence": {
+        "evidenceId": "math3-2012-q21",
+        "sourceId": "src_c5b7051dec72a3ed3e898a0b",
+        "answerSourceId": "src_c5b7051dec72a3ed3e898a0b",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2012-paper-answer",
+        "answerEvidenceId": "math3-2012-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:f5a3b1eeb36b889228a833816ad1e9afad091d5015ab942ea81a55d4179c63dc"
+      }
+    },
+    {
+      "id": "math3-2012-022",
+      "number": 22,
+      "paperId": "math3-2012",
+      "paperName": "2012考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2012",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2012考研数学三第22题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "P(X=2Y)=1/4；cov(X-Y,Y)=-2/3；rho_XY=0。",
+      "explanation": "答案来自本地百度网盘 2012 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2012/question-22-a.jpg",
+          "caption": "题面裁切图 q22-a",
+          "alt": "2012考研数学三第22题题面裁切图"
+        },
+        {
+          "src": "question-bank/math3-2012/question-22-b.jpg",
+          "caption": "题面裁切图 q22-b",
+          "alt": "2012考研数学三第22题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2012/answer-page-11.jpg",
+          "caption": "答案解析 p.11",
+          "alt": "2012考研数学三答案解析 p.11"
+        },
+        {
+          "src": "question-bank/math3-2012/answer-page-12.jpg",
+          "caption": "答案解析 p.12",
+          "alt": "2012考研数学三答案解析 p.12"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2012",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2012-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:bb3e94a3790c030789d66cb296476ce04dfc105c8ed2549d76c9d9eab4fdba51",
+      "answerTextHash": "sha256:cca1088d059308f7008775d8244dc951fd3c80ad1c9461d7b1d64457e269b559",
+      "sourceEvidence": {
+        "evidenceId": "math3-2012-q22",
+        "sourceId": "src_c5b7051dec72a3ed3e898a0b",
+        "answerSourceId": "src_c5b7051dec72a3ed3e898a0b",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2012-paper-answer",
+        "answerEvidenceId": "math3-2012-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:cca1088d059308f7008775d8244dc951fd3c80ad1c9461d7b1d64457e269b559"
+      }
+    },
+    {
+      "id": "math3-2012-023",
+      "number": 23,
+      "paperId": "math3-2012",
+      "paperName": "2012考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2012",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2012考研数学三第23题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "f_V(v)=2e^(-2v), v>0, 其他为 0；E(U+V)=2。",
+      "explanation": "答案来自本地百度网盘 2012 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2012/question-23.jpg",
+          "caption": "题面裁切图 q23",
+          "alt": "2012考研数学三第23题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2012/answer-page-12.jpg",
+          "caption": "答案解析 p.12",
+          "alt": "2012考研数学三答案解析 p.12"
+        },
+        {
+          "src": "question-bank/math3-2012/answer-page-13.jpg",
+          "caption": "答案解析 p.13",
+          "alt": "2012考研数学三答案解析 p.13"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2012",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2012-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:caafcde29e16d2e3e34f4840e838fb615ee0c481eea91f4a44ca663f040401d1",
+      "answerTextHash": "sha256:6912cd7d44b1ee30b804b0b443b0525f8bb9effca8c343bf9aa9c545779a13b1",
+      "sourceEvidence": {
+        "evidenceId": "math3-2012-q23",
+        "sourceId": "src_c5b7051dec72a3ed3e898a0b",
+        "answerSourceId": "src_c5b7051dec72a3ed3e898a0b",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2012-paper-answer",
+        "answerEvidenceId": "math3-2012-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:6912cd7d44b1ee30b804b0b443b0525f8bb9effca8c343bf9aa9c545779a13b1"
+      }
+    }
+  ]
+}
