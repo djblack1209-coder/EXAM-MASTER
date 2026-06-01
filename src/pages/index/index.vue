@@ -186,6 +186,7 @@ import { useStudyStore } from '@/stores/modules/study';
 import { useUserStore } from '@/stores/modules/user';
 import { storageService } from '@/services/storageService.js';
 import { logger } from '@/utils/logger.js';
+import { safeNavigateTo } from '@/utils/safe-navigate';
 import { getPracticeNavigationTree } from '@/config/bank-registry.js';
 
 export default {
@@ -443,11 +444,11 @@ export default {
     },
 
     goToPractice() {
-      uni.switchTab({ url: '/pages/practice/index' });
+      safeNavigateTo('/pages/practice/index');
     },
 
     goOnboarding() {
-      uni.navigateTo({ url: '/pages/login/onboarding?source=home' });
+      safeNavigateTo('/pages/login/onboarding?source=home');
     },
 
     selectDashboardTab(tabId) {

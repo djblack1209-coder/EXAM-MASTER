@@ -232,7 +232,7 @@ export default {
               uni.$emit('loginStatusChanged', false);
               uni.showToast({ title: '已退出登录', icon: 'success' });
               setTimeout(() => {
-                uni.switchTab({ url: '/pages/index/index' });
+                safeNavigateTo('/pages/index/index');
               }, 1000);
             } catch (e) {
               logger.error('[Profile] logout failed:', e);
