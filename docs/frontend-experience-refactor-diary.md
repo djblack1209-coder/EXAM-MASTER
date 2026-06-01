@@ -75,3 +75,10 @@
 - Defer professional-course index, school/major discovery, social/invite/PK/leaderboard/poster growth, paid AI tutor, and complex agent chat until after the mini program core is production-grade.
 - Removed the professional-course/material-index entry from the Practice page so the core center does not expose school/major discovery copy.
 - Removed unused invite/social/AI tutor styling leftovers from Settings. This keeps the lightweight app visually polished without implying unavailable features.
+
+### 2026-06-01 Round 6
+
+- Tightened the mini program boundary at the route-registration layer, not only in visible page cards.
+- Removed the deferred `professional-index` route from `src/pages.json`, so the WeChat build no longer registers the professional-course index as part of the lightweight product.
+- Added `mini-program-scope-guard` to keep registered routes and core public pages free of deferred school-selection, social, PK/ranking, invite/poster, and AI tutor surfaces.
+- Product rule: historical or backend support files can remain for later phases, but any user-reachable mini program route must match the lightweight commercial scope.

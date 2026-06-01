@@ -50,6 +50,7 @@ The mini program is the lightweight commercial version, not the full future prod
 - `safeNavigateTo` for all user-triggered jumps where possible.
 - Loading, empty, error, and safe-area states on core pages.
 - No visible obsolete school-selection surface.
+- Route/build scope guard so deferred heavy-product surfaces cannot re-enter the registered mini program shell unnoticed.
 
 ### Phase 3: Question Bank Commercial Readiness
 
@@ -136,10 +137,45 @@ Run:
 npm run build:mp-weixin
 ```
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 Run:
 ```bash
 git add src/pages/practice-sub/do-quiz.vue src/pages/practice-sub/utils/session-feedback.js tests/unit/session-feedback.spec.js docs/frontend-experience-refactor-diary.md docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md
 git commit -m "feat: add commercial quiz session feedback"
+```
+
+### Task 4: Guard Lightweight Mini Program Scope
+
+**Files:**
+- Modify: `src/pages.json`
+- Create: `tests/unit/mini-program-scope-guard.spec.js`
+- Modify: `docs/frontend-experience-refactor-diary.md`
+- Modify: `docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md`
+
+- [x] **Step 1: Remove deferred route registration**
+
+Remove `pages/practice-sub/professional-index` from the WeChat mini program route registry while keeping the historical file available for later product phases.
+
+- [x] **Step 2: Add route and public-copy guard**
+
+Assert that registered mini program routes do not include deferred professional-course, school-selection, social, PK/ranking, invite/poster, or AI tutor surfaces.
+
+- [x] **Step 3: Run focused validation**
+
+Run:
+```bash
+npm run lint -- tests/unit/mini-program-scope-guard.spec.js
+npm run test -- tests/unit/mini-program-scope-guard.spec.js tests/unit/frontend-copy-guard.spec.js tests/unit/practice-dynamic-methods.spec.js tests/unit/session-feedback.spec.js tests/unit/integration-quiz.spec.js
+npm run build:mp-weixin
+```
+
+Result: passed on 2026-06-01.
+
+- [x] **Step 4: Commit**
+
+Run:
+```bash
+git add src/pages.json tests/unit/mini-program-scope-guard.spec.js docs/frontend-experience-refactor-diary.md docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md
+git commit -m "chore: guard lightweight mini program scope"
 ```
