@@ -599,7 +599,7 @@ import { useTypewriter } from './composables/useTypewriter.js';
 import { logger } from '@/utils/logger.js';
 
 import { useReviewStore } from '@/stores/modules/review.js';
-import { safeNavigateTo, safeNavigateBack } from '@/utils/safe-navigate';
+import { safeNavigateTo, safeNavigateBack, safeRedirectTo } from '@/utils/safe-navigate';
 import {
   calculateSpeedScore as calculateQuizSpeedScore,
   getQuestionEloRating,
@@ -1826,7 +1826,7 @@ export default {
         // AI已推荐下一组，直接开始
         this.showCompleteModal = false;
         uni.setStorageSync('smart_review_ids', this.nextRecommendationIds);
-        uni.redirectTo({ url: '/pages/practice-sub/do-quiz?mode=smart_review' });
+        safeRedirectTo('/pages/practice-sub/do-quiz?mode=smart_review');
       } else {
         // 没有推荐，查看诊断报告
         this.viewDiagnosisReport();
@@ -1926,7 +1926,7 @@ export default {
             cancelText: '返回',
             success: (modalRes) => {
               if (modalRes.confirm) {
-                uni.navigateTo({ url: '/pages/mistake/index' });
+                safeNavigateTo('/pages/mistake/index');
               } else {
                 safeNavigateBack();
               }

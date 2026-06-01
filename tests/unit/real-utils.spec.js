@@ -276,7 +276,7 @@ describe('throttle.js', () => {
 // ============================================================
 // 3. safe-navigate.js 测试
 // ============================================================
-import { safeNavigateTo } from '@/utils/safe-navigate.js';
+import { safeNavigateTo, safeRedirectTo } from '@/utils/safe-navigate.js';
 
 describe('safe-navigate.js', () => {
   beforeEach(() => {
@@ -378,6 +378,33 @@ describe('safe-navigate.js', () => {
       const completeFn = vi.fn();
       safeNavigateTo('/pages/login/index', { complete: completeFn });
       expect(completeFn).toHaveBeenCalled();
+    });
+  });
+
+  describe('safeRedirectTo', () => {
+    it('普通页面使用 redirectTo', () => {
+      safeRedirectTo('/pages/practice-sub/do-quiz?mode=smart_review');
+      expect(uni.redirectTo).toHaveBeenCalledWith(
+        expect.objectContaining({ url: '/pages/practice-sub/do-quiz?mode=smart_review' })
+      );
+    });
+
+    it('redirectTo 失败时降级为 safeNavigateTo', () => {
+      uni.redirectTo.mockImplementationOnce(({ fail }) => {
+        fail?.({ errMsg: 'redirectTo:fail' });
+      });
+
+      safeRedirectTo('/pages/practice-sub/do-quiz?mode=smart_review');
+
+      expect(uni.navigateTo).toHaveBeenCalledWith(
+        expect.objectContaining({ url: '/pages/practice-sub/do-quiz?mode=smart_review' })
+      );
+    });
+
+    it('tabBar 页面交给 safeNavigateTo', () => {
+      safeRedirectTo('/pages/practice/index');
+      expect(uni.switchTab).toHaveBeenCalledWith(expect.objectContaining({ url: '/pages/practice/index' }));
+      expect(uni.redirectTo).not.toHaveBeenCalled();
     });
   });
 });

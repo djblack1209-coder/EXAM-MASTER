@@ -125,6 +125,51 @@ export function safeNavigateTo(url, options = {}) {
 }
 
 /**
+ * 安全重定向页面
+ * 用于替换当前页面的场景，例如重新开启同一个刷题页。
+ * @param {string} url - 目标页面路径
+ * @param {Object} [options] - 额外选项
+ * @param {Function} [options.success] - 成功回调
+ * @param {Function} [options.fail] - 自定义失败处理（传入则不执行默认降级）
+ * @param {Function} [options.complete] - 完成回调
+ * @param {boolean} [options.silent=false] - 失败时是否静默（不显示toast）
+ */
+export function safeRedirectTo(url, options = {}) {
+  if (!url || typeof url !== 'string') {
+    logger.warn('[safeNavigate] invalid redirect url:', url);
+    return;
+  }
+
+  const { success, fail, complete, silent = false, ...rest } = options;
+
+  if (isTabBarPage(url)) {
+    safeNavigateTo(url, options);
+    return;
+  }
+
+  uni.redirectTo({
+    url,
+    ...ANIMATION.redirectTo,
+    ...rest,
+    success(res) {
+      success && success(res);
+    },
+    fail(err) {
+      if (fail) {
+        fail(err);
+        return;
+      }
+
+      logger.warn('[safeNavigate] redirectTo failed, fallback to navigateTo:', url, err);
+      safeNavigateTo(url, { silent });
+    },
+    complete(res) {
+      complete && complete(res);
+    }
+  });
+}
+
+/**
  * 安全返回上一页（带转场动画）
  * @param {Object} [options] - 额外选项
  * @param {number} [options.delta=1] - 返回的页面数
