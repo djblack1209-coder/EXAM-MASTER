@@ -8,14 +8,31 @@
 
       <!-- 统计摘要 -->
       <view class="sheet-summary">
-        <text class="summary-text"> 已答 {{ answeredCount }}/{{ questions.length }} </text>
+        <text class="summary-text">已答 {{ answeredCount }}/{{ questions.length }}</text>
         <text class="summary-divider">·</text>
         <text
           class="summary-text"
-          :class="{ 'accuracy-good': accuracy >= 60, 'accuracy-bad': accuracy < 60 && answeredCount > 0 }"
+          :class="{ 'accuracy-good': accuracy >= 60, 'accuracy-bad': accuracy < 60 && gradedCount > 0 }"
         >
           正确率 {{ accuracy }}%
         </text>
+        <text class="summary-divider">·</text>
+        <text class="summary-text summary-muted">剩 {{ remainingCount }}</text>
+      </view>
+
+      <view class="sheet-insight-row">
+        <view class="insight-pill correct">
+          <text class="insight-value">{{ correctCount }}</text>
+          <text class="insight-label">正确</text>
+        </view>
+        <view class="insight-pill wrong">
+          <text class="insight-value">{{ wrongCount }}</text>
+          <text class="insight-label">错误</text>
+        </view>
+        <view class="insight-pill reviewed">
+          <text class="insight-value">{{ reviewedCount }}</text>
+          <text class="insight-label">已复习</text>
+        </view>
       </view>
 
       <!-- 题号网格 -->
@@ -49,6 +66,10 @@
           <text class="legend-label">错误</text>
         </view>
         <view class="legend-item">
+          <view class="legend-dot dot-reviewed" />
+          <text class="legend-label">已复习</text>
+        </view>
+        <view class="legend-item">
           <view class="legend-dot dot-unanswered" />
           <text class="legend-label">未答</text>
         </view>
@@ -72,24 +93,29 @@ const emit = defineEmits(['jump', 'close']);
 const answeredMap = computed(() => {
   const map = {};
   props.answeredQuestions.forEach((item) => {
-    map[item.index] = item.isCorrect;
+    const index = Number(item?.index);
+    if (!Number.isFinite(index) || index < 0 || index >= props.questions.length) return;
+    map[index] = item.isCorrect === true ? 'correct' : item.isCorrect === false ? 'wrong' : 'reviewed';
   });
   return map;
 });
 
-const answeredCount = computed(() => props.answeredQuestions.length);
+const answeredCount = computed(() => Object.keys(answeredMap.value).length);
+const correctCount = computed(() => Object.values(answeredMap.value).filter((status) => status === 'correct').length);
+const wrongCount = computed(() => Object.values(answeredMap.value).filter((status) => status === 'wrong').length);
+const reviewedCount = computed(() => Object.values(answeredMap.value).filter((status) => status === 'reviewed').length);
+const gradedCount = computed(() => correctCount.value + wrongCount.value);
+const remainingCount = computed(() => Math.max(0, props.questions.length - answeredCount.value));
 
 const accuracy = computed(() => {
-  if (answeredCount.value === 0) return 0;
-  const correct = props.answeredQuestions.filter((a) => a.isCorrect).length;
-  return Math.round((correct / answeredCount.value) * 100);
+  if (gradedCount.value === 0) return 0;
+  return Math.round((correctCount.value / gradedCount.value) * 100);
 });
 
 function cellClass(idx) {
   if (idx === props.currentIndex) return 'cell-current';
-  if (idx in answeredMap.value) {
-    return answeredMap.value[idx] ? 'cell-correct' : 'cell-wrong';
-  }
+  const status = answeredMap.value[idx];
+  if (status) return `cell-${status}`;
   return 'cell-unanswered';
 }
 
@@ -153,7 +179,7 @@ function handleJump(idx) {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 16rpx 0 28rpx;
+  padding: 16rpx 0 18rpx;
 }
 
 .summary-text {
@@ -168,12 +194,60 @@ function handleJump(idx) {
   opacity: 0.4;
 }
 
+.summary-muted {
+  color: var(--text-sub, #35533f);
+}
+
 .accuracy-good {
   color: var(--success, #10b981);
 }
 
 .accuracy-bad {
   color: var(--danger, #ef4444);
+}
+
+.sheet-insight-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12rpx;
+  padding-bottom: 22rpx;
+}
+
+.insight-pill {
+  min-width: 124rpx;
+  display: inline-flex;
+  align-items: baseline;
+  justify-content: center;
+  padding: 10rpx 18rpx;
+  border-radius: 999rpx;
+  background: rgba(255, 255, 255, 0.52);
+  border: 1rpx solid rgba(15, 23, 42, 0.08);
+}
+
+.insight-value {
+  font-size: 26rpx;
+  font-weight: 850;
+  font-variant-numeric: tabular-nums;
+}
+
+.insight-label {
+  margin-left: 6rpx;
+  font-size: 20rpx;
+  font-weight: 650;
+  color: var(--text-sub, #35533f);
+}
+
+.insight-pill.correct .insight-value {
+  color: var(--success, #10b981);
+}
+
+.insight-pill.wrong .insight-value {
+  color: var(--danger, #ef4444);
+}
+
+.insight-pill.reviewed .insight-value {
+  color: var(--primary, #0f5f34);
 }
 
 /* 网格滚动区 */
@@ -226,6 +300,12 @@ function handleJump(idx) {
   color: var(--text-inverse);
 }
 
+.cell-reviewed .cell-num {
+  background: rgba(15, 95, 52, 0.14);
+  color: var(--primary, #0f5f34);
+  border: 1rpx solid rgba(15, 95, 52, 0.22);
+}
+
 .cell-unanswered .cell-num {
   background: var(--bg-secondary, #d4f2b4);
   color: var(--text-sub, #35533f);
@@ -270,6 +350,11 @@ function handleJump(idx) {
   background: var(--danger, #ef4444);
 }
 
+.dot-reviewed {
+  background: var(--primary, #0f5f34);
+  opacity: 0.72;
+}
+
 .dot-unanswered {
   background: var(--bg-secondary, #d4f2b4);
   border: 1px solid var(--border, #98cd6f);
@@ -294,6 +379,26 @@ function handleJump(idx) {
   color: var(--text-primary, #f5f5f7);
 }
 
+.dark-mode .summary-muted,
+.dark-mode .insight-label {
+  color: rgba(255, 255, 255, 0.56);
+}
+
+.dark-mode .insight-pill {
+  background: rgba(255, 255, 255, 0.07);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.dark-mode .insight-pill.reviewed .insight-value {
+  color: rgba(117, 221, 255, 0.86);
+}
+
+.dark-mode .cell-reviewed .cell-num {
+  background: rgba(117, 221, 255, 0.12);
+  color: rgba(117, 221, 255, 0.92);
+  border-color: rgba(117, 221, 255, 0.2);
+}
+
 .dark-mode .cell-unanswered .cell-num {
   background: rgba(255, 255, 255, 0.08);
   color: rgba(255, 255, 255, 0.4);
@@ -306,6 +411,10 @@ function handleJump(idx) {
 .dark-mode .dot-unanswered {
   background: rgba(255, 255, 255, 0.08);
   border-color: rgba(255, 255, 255, 0.15);
+}
+
+.dark-mode .dot-reviewed {
+  background: rgba(117, 221, 255, 0.78);
 }
 
 .dark-mode .legend-label {
