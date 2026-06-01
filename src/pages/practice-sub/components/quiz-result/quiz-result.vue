@@ -47,8 +47,8 @@
         <!-- 统计行 -->
         <view class="stats-row">
           <view class="stat-item">
-            <text class="stat-value">{{ totalCount }}</text>
-            <text class="stat-label">总题数</text>
+            <text class="stat-value">{{ answeredCount }}</text>
+            <text class="stat-label">已完成</text>
           </view>
           <view class="stat-divider" />
           <view class="stat-item">
@@ -62,8 +62,8 @@
           </view>
           <view class="stat-divider" />
           <view class="stat-item">
-            <text class="stat-value">{{ avgTimeDisplay }}</text>
-            <text class="stat-label">平均用时</text>
+            <text class="stat-value">{{ neutralCount > 0 ? neutralCount : avgTimeDisplay }}</text>
+            <text class="stat-label">{{ neutralCount > 0 ? '已复习' : '平均用时' }}</text>
           </view>
         </view>
 
@@ -73,9 +73,13 @@
           <view v-for="cat in categoryBreakdown" :key="cat.name" class="cat-row">
             <text class="cat-name">{{ cat.name }}</text>
             <view class="cat-bar-bg">
-              <view class="cat-bar-fill" :style="{ width: cat.accuracy + '%' }" />
+              <view
+                class="cat-bar-fill"
+                :class="{ reviewed: cat.graded === 0 }"
+                :style="{ width: (cat.graded > 0 ? cat.accuracy : 100) + '%' }"
+              />
             </view>
-            <text class="cat-pct">{{ cat.accuracy }}%</text>
+            <text class="cat-pct">{{ cat.graded > 0 ? `${cat.accuracy}%` : '已复习' }}</text>
           </view>
         </view>
 
@@ -150,6 +154,7 @@
 import { ref, computed, watch, onUnmounted } from 'vue';
 import { animateNumber } from '../../utils/micro-interactions.js';
 import { useStudyEngineStore } from '@/stores/modules/study-engine.js';
+import { summarizeQuizProgress } from '@/services/quiz-session-contract.js';
 // 静态资源 CDN 映射（大图已迁出主包）
 import { getAssetUrl } from '@/config/static-assets.js';
 import { logger } from '@/utils/logger.js';
@@ -180,12 +185,18 @@ const emit = defineEmits([
 ]);
 
 // --- 基础统计 ---
-const totalCount = computed(() => props.questions.length);
-const correctCount = computed(() => props.answeredQuestions.filter((a) => a.isCorrect).length);
-const wrongCount = computed(() => totalCount.value - correctCount.value);
+const progressSummary = computed(() =>
+  summarizeQuizProgress({
+    questions: props.questions,
+    answeredQuestions: props.answeredQuestions
+  })
+);
+const answeredCount = computed(() => progressSummary.value.answeredCount);
+const correctCount = computed(() => progressSummary.value.correctCount);
+const wrongCount = computed(() => progressSummary.value.wrongCount);
+const neutralCount = computed(() => progressSummary.value.neutralCount);
 const accuracy = computed(() => {
-  if (totalCount.value === 0) return 0;
-  return Math.round((correctCount.value / totalCount.value) * 100);
+  return progressSummary.value.accuracy;
 });
 
 const avgTimeDisplay = computed(() => {
@@ -242,8 +253,8 @@ async function loadNextSteps() {
 
     // 规则2：正确率低于60% → 推荐薄弱点训练
     if (accuracy.value < 60) {
-      const weakest =
-        categoryBreakdown.value.length > 0 ? categoryBreakdown.value[categoryBreakdown.value.length - 1] : null;
+      const gradedCategories = categoryBreakdown.value.filter((cat) => cat.graded > 0);
+      const weakest = gradedCategories.length > 0 ? gradedCategories[gradedCategories.length - 1] : null;
       steps.push({
         icon: 'target',
         title: weakest ? `强化: ${weakest.name}` : '薄弱点专练',
@@ -362,16 +373,26 @@ const categoryBreakdown = computed(() => {
     const q = props.questions[a.index ?? idx];
     if (!q) return;
     const cat = q.category || '未分类';
-    if (!map[cat]) map[cat] = { total: 0, correct: 0 };
-    map[cat].total++;
-    if (a.isCorrect) map[cat].correct++;
+    if (!map[cat]) map[cat] = { answered: 0, graded: 0, correct: 0, neutral: 0 };
+    map[cat].answered++;
+    if (a.isCorrect === true) {
+      map[cat].graded++;
+      map[cat].correct++;
+    } else if (a.isCorrect === false) {
+      map[cat].graded++;
+    } else {
+      map[cat].neutral++;
+    }
   });
   return Object.entries(map)
     .map(([name, d]) => ({
       name,
-      accuracy: d.total > 0 ? Math.round((d.correct / d.total) * 100) : 0
+      answered: d.answered,
+      graded: d.graded,
+      accuracy: d.graded > 0 ? Math.round((d.correct / d.graded) * 100) : 0,
+      reviewed: d.neutral
     }))
-    .sort((a, b) => b.accuracy - a.accuracy);
+    .sort((a, b) => Number(b.graded > 0) - Number(a.graded > 0) || b.accuracy - a.accuracy);
 });
 
 // --- 激励文案 — 优先使用真实AI诊断，降级到本地规则 ---
@@ -796,6 +817,9 @@ const motivationalText = computed(() => {
   border-radius: 10rpx;
   transition: width 0.8s ease-out;
   background: linear-gradient(90deg, #1cb0f6, #58cc02);
+}
+.cat-bar-fill.reviewed {
+  background: linear-gradient(90deg, rgba(31, 122, 77, 0.28), rgba(117, 221, 255, 0.36));
 }
 .cat-pct {
   font-size: 24rpx;
