@@ -523,3 +523,46 @@ Run:
 git add src/pages/practice-sub/components/answer-sheet/answer-sheet.vue tests/unit/answer-sheet-experience-guard.spec.js docs/frontend-experience-refactor-diary.md docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md
 git commit -m "feat: clarify answer sheet review state"
 ```
+
+### Task 14: Guard Answer Sheet Jump Flow
+
+**Files:**
+- Modify: `src/pages/practice-sub/do-quiz.vue`
+- Modify: `src/pages/practice-sub/components/answer-sheet/answer-sheet.vue`
+- Create: `tests/unit/answer-sheet-jump-guard.spec.js`
+- Modify: `docs/frontend-experience-refactor-diary.md`
+- Modify: `docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md`
+
+- [x] **Step 1: Lock jumps during feedback**
+
+Pass a lock flag to the answer sheet while result feedback, AI analysis, or navigation is active.
+
+- [x] **Step 2: Guard parent jump handler**
+
+Prevent locked, invalid, and current-index jumps from resetting quiz state.
+
+- [x] **Step 3: Show locked surface state**
+
+Keep the answer sheet inspectable, but show a compact lock notice and dim non-current cells while jumps are disabled.
+
+- [x] **Step 4: Add jump guard**
+
+Assert that answer-sheet jumps cannot bypass result feedback or active navigation states.
+
+- [x] **Step 5: Run focused validation**
+
+Run:
+```bash
+npm run lint -- src/pages/practice-sub/do-quiz.vue src/pages/practice-sub/components/answer-sheet/answer-sheet.vue tests/unit/answer-sheet-jump-guard.spec.js tests/unit/answer-sheet-experience-guard.spec.js
+npm run test -- tests/unit/answer-sheet-jump-guard.spec.js tests/unit/answer-sheet-experience-guard.spec.js tests/unit/do-quiz-result-surface-guard.spec.js tests/unit/integration-quiz.spec.js
+```
+
+Result: passed on 2026-06-01.
+
+- [x] **Step 6: Commit**
+
+Run:
+```bash
+git add src/pages/practice-sub/do-quiz.vue src/pages/practice-sub/components/answer-sheet/answer-sheet.vue tests/unit/answer-sheet-jump-guard.spec.js tests/unit/answer-sheet-experience-guard.spec.js docs/frontend-experience-refactor-diary.md docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md
+git commit -m "fix: guard answer sheet jumps during feedback"
+```

@@ -150,3 +150,11 @@
 - Continued the quiz-progress loop by upgrading the answer sheet into a clearer review surface.
 - Answer sheet now separates correct, wrong, reviewed, unanswered, and remaining counts; neutral flashcard records no longer lower accuracy or appear as wrong.
 - Added `answer-sheet-experience-guard` so the answer sheet stays aligned with the progress rail and preserves dark-mode reviewed-state coverage.
+
+### 2026-06-01 Round 16
+
+- Tightened the answer-sheet jump flow so the answer sheet can be inspected during result feedback without bypassing the deliberate next/continue action.
+- `do-quiz` now passes `isAnswerSheetJumpLocked` to the answer sheet whenever a result panel, AI analysis, or navigation transition is active.
+- `handleJumpToQuestion` now refuses locked jumps, ignores invalid/current indexes, and only resets question state for deliberate valid jumps.
+- Added a visible answer-sheet lock notice and dimmed locked cells while preserving the current-cell emphasis.
+- Added `answer-sheet-jump-guard` to prevent result feedback from being bypassed by answer-sheet jumps.

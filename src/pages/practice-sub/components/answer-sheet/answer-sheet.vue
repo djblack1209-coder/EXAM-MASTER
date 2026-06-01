@@ -6,6 +6,10 @@
         <view class="handle-bar" />
       </view>
 
+      <view v-if="jumpLocked" class="sheet-lock-notice">
+        <text>{{ lockText }}</text>
+      </view>
+
       <!-- 统计摘要 -->
       <view class="sheet-summary">
         <text class="summary-text">已答 {{ answeredCount }}/{{ questions.length }}</text>
@@ -85,7 +89,9 @@ const props = defineProps({
   visible: { type: Boolean, default: false },
   questions: { type: Array, default: () => [] },
   currentIndex: { type: Number, default: 0 },
-  answeredQuestions: { type: Array, default: () => [] }
+  answeredQuestions: { type: Array, default: () => [] },
+  jumpLocked: { type: Boolean, default: false },
+  lockText: { type: String, default: '请先完成当前反馈' }
 });
 
 const emit = defineEmits(['jump', 'close']);
@@ -113,13 +119,16 @@ const accuracy = computed(() => {
 });
 
 function cellClass(idx) {
+  const classes = [];
   if (idx === props.currentIndex) return 'cell-current';
   const status = answeredMap.value[idx];
-  if (status) return `cell-${status}`;
-  return 'cell-unanswered';
+  classes.push(status ? `cell-${status}` : 'cell-unanswered');
+  if (props.jumpLocked) classes.push('cell-locked');
+  return classes.join(' ');
 }
 
 function handleJump(idx) {
+  if (props.jumpLocked) return;
   emit('jump', idx);
 }
 </script>
@@ -172,6 +181,20 @@ function handleJump(idx) {
   border-radius: 4rpx;
   background: var(--muted, #d0ecad);
   opacity: 0.6;
+}
+
+.sheet-lock-notice {
+  margin: 0 auto 8rpx;
+  padding: 10rpx 18rpx;
+  border: 1rpx solid rgba(15, 23, 42, 0.08);
+  border-radius: 999rpx;
+  background: rgba(255, 255, 255, 0.58);
+}
+
+.sheet-lock-notice text {
+  color: var(--text-sub, #35533f);
+  font-size: 22rpx;
+  font-weight: 650;
 }
 
 /* 统计摘要 */
@@ -316,6 +339,14 @@ function handleJump(idx) {
   transform: scale(0.92);
 }
 
+.cell-locked .cell-num {
+  opacity: 0.58;
+}
+
+.cell-locked.cell-current .cell-num {
+  opacity: 1;
+}
+
 /* 图例 */
 .sheet-legend {
   display: flex;
@@ -373,6 +404,15 @@ function handleJump(idx) {
 
 .dark-mode .handle-bar {
   background: rgba(255, 255, 255, 0.2);
+}
+
+.dark-mode .sheet-lock-notice {
+  background: rgba(255, 255, 255, 0.07);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.dark-mode .sheet-lock-notice text {
+  color: rgba(255, 255, 255, 0.62);
 }
 
 .dark-mode .summary-text {

@@ -25,7 +25,7 @@ describe('answer sheet experience guard', () => {
   });
 
   it('keeps reviewed status visible in the grid and legend', () => {
-    expect(source).toContain('if (status) return `cell-${status}`');
+    expect(source).toContain("classes.push(status ? `cell-${status}` : 'cell-unanswered')");
     expect(source).toContain('dot-reviewed');
     expect(source).toContain('已复习</text>');
   });
