@@ -3721,8 +3721,20 @@ export default {
   animation: none;
 }
 
+.quiz-correct-animation .question-card {
+  animation:
+    correctPulse 360ms cubic-bezier(0.16, 1, 0.3, 1),
+    correctGlow 420ms ease-out;
+}
+
 .quiz-wrong-animation {
   animation: none;
+}
+
+.quiz-wrong-animation .question-card {
+  animation:
+    wrongShake 360ms cubic-bezier(0.36, 0.07, 0.19, 0.97),
+    wrongGlow 420ms ease-out;
 }
 
 /* ==================== 新增样式：滑动提示 ==================== */
