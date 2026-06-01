@@ -189,3 +189,11 @@
 - The readiness card uses `buildPublicCourseCoverage` but avoids backend release/audit terminology in the UI.
 - Styled the card with the existing Wise-like light mode and Bitget-like dark mode shell materials.
 - Added `practice-readiness-card-guard` so the Practice page keeps a public-course readiness signal without leaking release-gate wording.
+
+### 2026-06-01 Round 21
+
+- Continued Phase 3 by tightening the true question-bank year detail surface.
+- Added a compact `当前状态 / 下一步` readiness panel for the selected year, so unavailable years read as intentionally blocked instead of broken or empty.
+- Added a muted disabled action row for `整理中` and `待入库` slots, while keeping the primary start button only for `正式` slots.
+- Filled in dark-mode coverage for the question-bank page's hero, tabs, year map, detail card, paper list, pending panel, empty state, and action states.
+- Added `question-bank-slot-readiness-guard` so selected slot readiness, disabled actions, and user-facing wording stay protected.

@@ -738,3 +738,45 @@ Run:
 git add src/pages/practice/index.vue tests/unit/practice-readiness-card-guard.spec.js docs/frontend-experience-refactor-diary.md docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md
 git commit -m "feat: surface practice bank readiness"
 ```
+
+### Task 19: Clarify Question Bank Slot Readiness
+
+**Files:**
+- Modify: `src/pages/practice-sub/question-bank.vue`
+- Create: `tests/unit/question-bank-slot-readiness-guard.spec.js`
+- Modify: `docs/frontend-experience-refactor-diary.md`
+- Modify: `docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md`
+
+- [x] **Step 1: Add selected-slot readiness copy**
+
+Show `当前状态 / 下一步` inside the selected year detail card for `正式`, `整理中`, and `待入库` slots.
+
+- [x] **Step 2: Make blocked slots intentional**
+
+Keep the primary start action only for clickable `正式` slots and show a muted disabled action row for unavailable slots.
+
+- [x] **Step 3: Complete local dark-mode coverage**
+
+Cover the question-bank hero, tabs, year map, detail card, readiness panel, lists, pending panel, empty state, and action states in dark mode.
+
+- [x] **Step 4: Add slot-readiness guard**
+
+Assert that readiness copy, disabled action treatment, selected unavailable slot rendering, and user-facing wording stay in place.
+
+- [x] **Step 5: Run focused validation**
+
+Run:
+```bash
+npm run lint -- src/pages/practice-sub/question-bank.vue tests/unit/question-bank-slot-readiness-guard.spec.js
+npm run test -- tests/unit/question-bank-slot-readiness-guard.spec.js tests/unit/question-bank-year-map.spec.js tests/unit/practice-readiness-card-guard.spec.js tests/unit/frontend-copy-guard.spec.js tests/unit/mini-program-scope-guard.spec.js
+```
+
+Result: passed on 2026-06-01.
+
+- [x] **Step 6: Commit**
+
+Run:
+```bash
+git add src/pages/practice-sub/question-bank.vue tests/unit/question-bank-slot-readiness-guard.spec.js docs/frontend-experience-refactor-diary.md docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md
+git commit -m "feat: clarify question bank slot readiness"
+```

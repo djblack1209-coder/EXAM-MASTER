@@ -90,6 +90,20 @@
         <text class="slot-desc">{{ selectedYearSlot.description }}</text>
         <text v-if="selectedYearSlot.caution" class="slot-caution">{{ selectedYearSlot.caution }}</text>
         <text v-else class="slot-caution">{{ selectedYearSlot.disabledReason }}</text>
+        <view class="slot-readiness-panel" :class="`status-${selectedYearSlot.status}`">
+          <view class="slot-readiness-item">
+            <view class="readiness-label-row">
+              <view class="readiness-dot" :class="`status-${selectedYearSlot.status}`" />
+              <text class="readiness-label">当前状态</text>
+            </view>
+            <text class="readiness-value">{{ selectedYearSlotReadiness.current }}</text>
+          </view>
+          <view class="slot-readiness-divider" />
+          <view class="slot-readiness-item">
+            <text class="readiness-label">下一步</text>
+            <text class="readiness-value">{{ selectedYearSlotReadiness.next }}</text>
+          </view>
+        </view>
         <view v-if="selectedYearSlot.sections?.length" class="paper-section-row slot-sections">
           <text v-for="section in selectedYearSlot.sections" :key="section" class="paper-section">{{ section }}</text>
         </view>
@@ -100,6 +114,9 @@
           @tap="loadAndStartSlot(selectedYearSlot)"
         >
           <text>{{ loadingBankId === selectedYearSlot.bankId ? '加载中' : selectedYearSlot.actionLabel }}</text>
+        </view>
+        <view v-else class="paper-btn muted slot-action slot-action-disabled" aria-disabled="true">
+          <text>{{ selectedYearSlotReadiness.disabledActionLabel }}</text>
         </view>
       </view>
 
@@ -215,6 +232,7 @@ const selectedTrackSlotText = computed(() => {
   const missing = Number(summary.missing || 0);
   return `正式 ${ready} · 整理中 ${organizing} · 待入库 ${missing}`;
 });
+const selectedYearSlotReadiness = computed(() => buildYearSlotReadiness(selectedYearSlot.value));
 
 function goBack() {
   safeNavigateBack();
@@ -295,9 +313,42 @@ function isBankLoaded(bankId) {
 
 function qualityLabel(quality) {
   if (quality === 'needs_passage') return '篇章材料完善中';
+  if (quality === 'needs_review') return '题目与答案说明校对中';
   if (quality === 'needs_cleaning') return '题目与答案说明完善中';
   if (quality === 'source_missing') return '资料完善中';
   return '即将开放';
+}
+
+function buildYearSlotReadiness(slot) {
+  if (!slot) {
+    return {
+      current: '请选择年份',
+      next: '选择一个年份后查看训练状态。',
+      disabledActionLabel: '暂不可开始'
+    };
+  }
+
+  if (slot.status === 'ready') {
+    return {
+      current: '已正式开放，可进入整卷训练',
+      next: isBankLoaded(slot.bankId) ? '继续同步最新题目并进入本卷。' : '点击开始，同步题库后进入本卷。',
+      disabledActionLabel: ''
+    };
+  }
+
+  if (slot.status === 'organizing') {
+    return {
+      current: slot.disabledReason || qualityLabel(slot.quality),
+      next: '整理完成后开放开始入口，年份地图会自动切换为正式。',
+      disabledActionLabel: '整理中，暂不可开始'
+    };
+  }
+
+  return {
+    current: '资料暂未入库',
+    next: slot.disabledReason || '资料入库并完成答案说明后开放训练。',
+    disabledActionLabel: '待入库后开放'
+  };
 }
 
 async function loadPaper(paper) {
@@ -630,6 +681,63 @@ onMounted(() => {
   font-size: 22rpx;
   line-height: 1.45;
 }
+.slot-readiness-panel {
+  display: flex;
+  margin-top: 18rpx;
+  padding: 20rpx;
+  border-radius: 20rpx;
+  background: #f6f7f9;
+  border: 1rpx solid rgba(0, 0, 0, 0.04);
+}
+.slot-readiness-panel.status-ready {
+  background: #edf8f1;
+  border-color: rgba(31, 122, 77, 0.12);
+}
+.slot-readiness-panel.status-organizing {
+  background: #eef4ff;
+  border-color: rgba(0, 104, 214, 0.12);
+}
+.slot-readiness-item {
+  flex: 1;
+  min-width: 0;
+}
+.slot-readiness-divider {
+  width: 1rpx;
+  margin: 0 18rpx;
+  background: rgba(0, 0, 0, 0.06);
+}
+.readiness-label-row {
+  display: flex;
+  align-items: center;
+}
+.readiness-dot {
+  width: 12rpx;
+  height: 12rpx;
+  margin-right: 8rpx;
+  border-radius: 999rpx;
+  background: #8e8e93;
+}
+.readiness-dot.status-ready {
+  background: #1f7a4d;
+}
+.readiness-dot.status-organizing {
+  background: #0068d6;
+}
+.readiness-label {
+  display: block;
+  color: #8e8e93;
+  font-size: 19rpx;
+  font-weight: 900;
+  line-height: 1.2;
+}
+.readiness-value {
+  display: block;
+  margin-top: 9rpx;
+  color: #1d1d1f;
+  font-size: 23rpx;
+  font-weight: 760;
+  line-height: 1.35;
+}
 .slot-sections {
   margin-top: 16rpx;
 }
@@ -728,6 +836,13 @@ onMounted(() => {
   background: #e8f4ee;
   color: #1f7a4d;
 }
+.paper-btn.muted {
+  background: #eef0f3;
+  color: #8e8e93;
+}
+.slot-action-disabled {
+  border: 1rpx solid rgba(0, 0, 0, 0.04);
+}
 .pending-panel {
   margin: 30rpx 24rpx 0;
   padding: 26rpx 24rpx;
@@ -807,5 +922,104 @@ onMounted(() => {
 }
 .dark-mode {
   background: #1a1c23;
+}
+.dark-mode .navbar {
+  background: rgba(26, 28, 35, 0.92);
+  border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+.dark-mode .nav-title,
+.dark-mode .hero-title,
+.dark-mode .metric-value,
+.dark-mode .section-title,
+.dark-mode .slot-year,
+.dark-mode .slot-title,
+.dark-mode .readiness-value,
+.dark-mode .paper-year,
+.dark-mode .paper-name,
+.dark-mode .pending-title,
+.dark-mode .pending-name,
+.dark-mode .pending-year,
+.dark-mode .empty-text {
+  color: #f5f7fb;
+}
+.dark-mode .paper-hero,
+.dark-mode .subject-tab,
+.dark-mode .track-pill,
+.dark-mode .slot-detail,
+.dark-mode .paper-card,
+.dark-mode .pending-panel,
+.dark-mode .empty-state {
+  background: #20242d;
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 18rpx 48rpx rgba(0, 0, 0, 0.22);
+}
+.dark-mode .hero-metric,
+.dark-mode .year-slot,
+.dark-mode .paper-section,
+.dark-mode .paper-btn.muted {
+  background: #292e39;
+  border-color: rgba(255, 255, 255, 0.07);
+}
+.dark-mode .year-slot.active {
+  border-color: rgba(83, 146, 255, 0.72);
+  box-shadow: 0 12rpx 30rpx rgba(0, 104, 214, 0.16);
+}
+.dark-mode .year-slot.status-ready,
+.dark-mode .slot-readiness-panel.status-ready {
+  background: rgba(35, 134, 91, 0.16);
+  border-color: rgba(35, 134, 91, 0.24);
+}
+.dark-mode .year-slot.status-organizing,
+.dark-mode .slot-readiness-panel.status-organizing {
+  background: rgba(0, 104, 214, 0.16);
+  border-color: rgba(83, 146, 255, 0.24);
+}
+.dark-mode .year-slot.status-missing,
+.dark-mode .slot-readiness-panel {
+  background: #242933;
+  border-color: rgba(255, 255, 255, 0.07);
+}
+.dark-mode .subject-tab.active,
+.dark-mode .track-pill.active,
+.dark-mode .paper-btn.primary {
+  background: #5392ff;
+  color: #061121;
+  border-color: #5392ff;
+}
+.dark-mode .paper-btn.secondary {
+  background: rgba(35, 134, 91, 0.18);
+  color: #7ee0ac;
+}
+.dark-mode .paper-btn.muted {
+  color: #8f98a8;
+}
+.dark-mode .hero-kicker,
+.dark-mode .metric-label,
+.dark-mode .section-hint,
+.dark-mode .section-meta,
+.dark-mode .slot-kicker,
+.dark-mode .slot-caution,
+.dark-mode .readiness-label,
+.dark-mode .pending-sub,
+.dark-mode .pending-reason,
+.dark-mode .empty-sub {
+  color: #8f98a8;
+}
+.dark-mode .hero-desc,
+.dark-mode .subject-tab,
+.dark-mode .track-pill,
+.dark-mode .slot-status,
+.dark-mode .slot-desc,
+.dark-mode .paper-desc,
+.dark-mode .paper-caution,
+.dark-mode .paper-section {
+  color: #c4cad4;
+}
+.dark-mode .slot-readiness-divider,
+.dark-mode .pending-item {
+  border-color: rgba(255, 255, 255, 0.08);
+}
+.dark-mode .slot-readiness-divider {
+  background: rgba(255, 255, 255, 0.08);
 }
 </style>
