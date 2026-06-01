@@ -43,3 +43,27 @@
 - Removed visible emoji celebrations from the quiz completion page; replaced them with `BaseIcon` marks.
 - Tightened quiz card, option, and answer-result panel styling so the core flow feels like one system.
 - Added dark-mode guardrails to the quiz page cards, options, timers, and result panel.
+
+### 2026-06-01 Round 3
+
+- Commit created: `61672d7`.
+- Cleaned the settings page away from the obsolete school-selection surface:
+  - visible "报考院校/目标院校" became "备考方向/已载题库";
+  - the old target-school modal, handlers, and dead CSS were removed;
+  - the cartoon shield image was replaced with `BaseIcon`.
+- Added dark-mode coverage to the profile page and quiz progress component so core tabs no longer visually snap between themes.
+- Core path audit result: no visible emoji/cartoon/school-selection copy remains in Home, Practice, Quiz, Result, Profile, Settings, tabbar, or common modal surfaces. Remaining `user_school_info` is a compatibility storage key, not visible UI.
+- Verification: targeted lint passed, `frontend-copy-guard`/`practice-dynamic-methods`/`integration-quiz` passed, and `npm run build:mp-weixin` passed.
+
+### 2026-06-01 Round 4
+
+- Planning update: added `docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md` to define the next commercial-release sequence:
+  1. core practice feel;
+  2. shell and route cohesion;
+  3. question-bank commercial readiness;
+  4. account/security/privacy;
+  5. monetization-ready polish.
+- Current execution slice: core practice feel, focused on answer-session momentum.
+- Added a pure session-feedback utility for correct streaks, combo milestones, combo levels, and compact feedback copy.
+- Connected correct-answer streak milestones to the quiz page with a restrained floating combo indicator and existing combo sound/haptic channel.
+- Product rule: combo feedback is milestone-based, not every-answer noise. Wrong answers, next-question navigation, page hide, and unload clear the feedback state.

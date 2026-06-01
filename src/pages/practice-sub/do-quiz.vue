@@ -41,6 +41,11 @@
       </view>
     </view>
 
+    <view v-if="comboFeedback" class="combo-feedback" :class="`level-${comboFeedback.level}`">
+      <text class="combo-title">{{ comboFeedback.title }}</text>
+      <text class="combo-desc">{{ comboFeedback.desc }}</text>
+    </view>
+
     <scroll-view
       id="e2e-quiz-scroll"
       :scroll-y="!showResult"
@@ -612,6 +617,7 @@ import QuizResult from './components/quiz-result/quiz-result.vue';
 import RichText from './components/RichText.vue';
 import AnswerSheet from './components/answer-sheet/answer-sheet.vue';
 import QuizProgress from './components/quiz-progress/quiz-progress.vue';
+import { buildComboFeedback, calculateCorrectStreak } from './utils/session-feedback.js';
 // ✅ [P0重构] 核心引擎 composable
 import { useQuizEngine } from './composables/useQuizEngine.js';
 import {
@@ -719,6 +725,8 @@ export default {
       // ✅ 答题动画状态
       correctAnimationClass: '', // 正确答案动画类
       wrongAnimationClass: '', // 错误答案动画类
+      comboFeedback: null,
+      comboFeedbackTimer: null,
       // ✅ 单题计时器状态
       questionTimeLimit: 120, // 当前题目时限（秒）
       questionTimeRemaining: 120, // 剩余时间
@@ -970,6 +978,7 @@ export default {
       clearInterval(this.timer);
     }
     stopQuestionTimer();
+    this.clearComboFeedback();
 
     // [AUDIT FIX R264] 清理所有未完成的 setTimeout，防止内存泄漏
     this.pendingTimers.forEach(clearTimeout);
@@ -989,6 +998,7 @@ export default {
 
   // ✅ P0-3: 页面隐藏时也保存进度（应对小程序被杀死的情况）
   onHide() {
+    this.clearComboFeedback();
     // ✅ P1-1: 暂停计时器，避免后台持续计时
     if (this.timer) {
       clearInterval(this.timer);
@@ -1433,6 +1443,7 @@ export default {
       if (isCorrect) {
         // ✅ 播放正确答案动画
         this.playCorrectEffect();
+        this.showComboFeedbackIfNeeded();
 
         // ✅ 延迟解锁防重复点击（300ms后允许再次点击）
         this._safeTimeout(() => {
@@ -1446,6 +1457,7 @@ export default {
       } else {
         // ✅ 播放错误答案动画
         this.playWrongEffect();
+        this.clearComboFeedback();
 
         this.resultStatus = 'wrong';
         // ✅ [P0重构] 非阻塞AI分析：先立即显示结果（题目自带解析），AI异步增强
@@ -1669,6 +1681,7 @@ export default {
       // 重置状态
       this.showResult = false;
       this.isAnalyzing = false;
+      this.clearComboFeedback();
 
       // 停止打字机效果（如果正在进行）
       if (this._typewriter) {
@@ -2102,6 +2115,29 @@ export default {
       }, 360);
     },
 
+    showComboFeedbackIfNeeded() {
+      const feedback = buildComboFeedback(calculateCorrectStreak(this.answeredQuestions));
+      if (!feedback) return;
+
+      this.comboFeedback = feedback;
+      playQuizSound('combo', { level: feedback.level });
+      if (this.comboFeedbackTimer) {
+        clearTimeout(this.comboFeedbackTimer);
+      }
+      this.comboFeedbackTimer = this._safeTimeout(() => {
+        this.comboFeedback = null;
+        this.comboFeedbackTimer = null;
+      }, 1300);
+    },
+
+    clearComboFeedback() {
+      if (this.comboFeedbackTimer) {
+        clearTimeout(this.comboFeedbackTimer);
+        this.comboFeedbackTimer = null;
+      }
+      this.comboFeedback = null;
+    },
+
     // ==================== 单题计时器相关方法 ====================
 
     // ✅ 启动单题计时器
@@ -2315,6 +2351,98 @@ export default {
 /* 极光背景 */
 .aurora-bg {
   display: none;
+}
+
+.combo-feedback {
+  position: fixed;
+  top: calc(132rpx + env(safe-area-inset-top));
+  left: 50%;
+  z-index: 420;
+  min-width: 240rpx;
+  max-width: 540rpx;
+  padding: 18rpx 28rpx;
+  border-radius: 999rpx;
+  border: 1rpx solid rgba(15, 23, 42, 0.08);
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow:
+    0 18rpx 44rpx rgba(15, 23, 42, 0.14),
+    inset 0 1rpx 0 rgba(255, 255, 255, 0.92);
+  transform: translateX(-50%);
+  animation: comboFloat 1.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  pointer-events: none;
+}
+
+.combo-title,
+.combo-desc {
+  display: block;
+  text-align: center;
+}
+
+.combo-title {
+  font-size: 28rpx;
+  font-weight: 860;
+  color: #10281a;
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums;
+}
+
+.combo-desc {
+  margin-top: 4rpx;
+  font-size: 20rpx;
+  font-weight: 650;
+  color: rgba(16, 40, 26, 0.66);
+  line-height: 1.3;
+}
+
+.combo-feedback.level-2,
+.combo-feedback.level-3,
+.combo-feedback.level-4 {
+  border-color: rgba(117, 221, 255, 0.34);
+  background:
+    linear-gradient(135deg, rgba(159, 232, 112, 0.94) 0%, rgba(117, 221, 255, 0.94) 100%);
+}
+
+.dark-mode .combo-feedback {
+  border-color: rgba(255, 255, 255, 0.1);
+  background: rgba(34, 37, 45, 0.92);
+  box-shadow:
+    0 18rpx 46rpx rgba(0, 0, 0, 0.34),
+    inset 0 1rpx 0 rgba(255, 255, 255, 0.08);
+}
+
+.dark-mode .combo-feedback.level-2,
+.dark-mode .combo-feedback.level-3,
+.dark-mode .combo-feedback.level-4 {
+  background:
+    linear-gradient(135deg, rgba(14, 165, 233, 0.86) 0%, rgba(34, 211, 238, 0.82) 100%),
+    rgba(20, 24, 32, 0.94);
+}
+
+.dark-mode .combo-title {
+  color: #f5f7fb;
+}
+
+.dark-mode .combo-desc {
+  color: rgba(245, 247, 251, 0.7);
+}
+
+@keyframes comboFloat {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, 16rpx) scale(0.96);
+  }
+  16% {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+  78% {
+    opacity: 1;
+    transform: translate(-50%, -4rpx) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -18rpx) scale(0.98);
+  }
 }
 
 /* 导航栏 */
