@@ -181,3 +181,11 @@
 - The action dock now includes safe-area padding, a clear top divider, and dark-mode coverage.
 - Reworked the report primary/secondary/tertiary buttons away from the older blue game-like treatment toward the same green/blue financial-app accent used in the core quiz feedback.
 - Added `quiz-result-action-dock-guard` to keep completion actions outside the scroll view and prevent the old blue raised button style from returning.
+
+### 2026-06-01 Round 20
+
+- Started Phase 3 question-bank commercial readiness from the user-facing Practice shell.
+- Added a lightweight `题库就绪度` card that shows official playable coverage, organizing slots, missing slots, and the selected track's readiness in plain user language.
+- The readiness card uses `buildPublicCourseCoverage` but avoids backend release/audit terminology in the UI.
+- Styled the card with the existing Wise-like light mode and Bitget-like dark mode shell materials.
+- Added `practice-readiness-card-guard` so the Practice page keeps a public-course readiness signal without leaking release-gate wording.

@@ -696,3 +696,45 @@ Run:
 git add src/pages/practice-sub/components/quiz-result/quiz-result.vue tests/unit/quiz-result-action-dock-guard.spec.js docs/frontend-experience-refactor-diary.md docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md
 git commit -m "feat: stabilize quiz result action dock"
 ```
+
+### Task 18: Surface Practice Bank Readiness
+
+**Files:**
+- Modify: `src/pages/practice/index.vue`
+- Create: `tests/unit/practice-readiness-card-guard.spec.js`
+- Modify: `docs/frontend-experience-refactor-diary.md`
+- Modify: `docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md`
+
+- [x] **Step 1: Add user-facing readiness card**
+
+Show official playable coverage, organizing slots, missing slots, and selected-track readiness in the Practice shell.
+
+- [x] **Step 2: Reuse neutral coverage contract**
+
+Use `buildPublicCourseCoverage` for readiness data while keeping backend release/audit wording out of the UI.
+
+- [x] **Step 3: Match shell visual system**
+
+Style the card with the current green/white light-mode and blue/grey dark-mode financial shell.
+
+- [x] **Step 4: Add readiness guard**
+
+Assert that the Practice page keeps readiness metrics, neutral coverage wiring, and no release-gate copy leaks.
+
+- [x] **Step 5: Run focused validation**
+
+Run:
+```bash
+npm run lint -- src/pages/practice/index.vue tests/unit/practice-readiness-card-guard.spec.js
+npm run test -- tests/unit/practice-readiness-card-guard.spec.js tests/unit/practice-release-guard.spec.js tests/unit/core-shell-visual-guard.spec.js tests/unit/core-shell-state-guard.spec.js tests/unit/mini-program-scope-guard.spec.js
+```
+
+Result: passed on 2026-06-01.
+
+- [x] **Step 6: Commit**
+
+Run:
+```bash
+git add src/pages/practice/index.vue tests/unit/practice-readiness-card-guard.spec.js docs/frontend-experience-refactor-diary.md docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md
+git commit -m "feat: surface practice bank readiness"
+```
