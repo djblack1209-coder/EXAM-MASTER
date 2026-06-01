@@ -538,6 +538,7 @@
       :questions="questions"
       :current-index="currentIndex"
       :answered-questions="answeredQuestions"
+      :jump-locked="isAnswerSheetJumpLocked"
       @jump="handleJumpToQuestion"
       @close="showAnswerSheet = false"
     />
@@ -793,6 +794,9 @@ export default {
         paperId: this.paperId || '',
         questionBankFingerprint: this.questionBankFingerprint || ''
       };
+    },
+    isAnswerSheetJumpLocked() {
+      return this.showResult || this.isAnalyzing || this.isNavigating;
     },
     currentQuestionPassage() {
       return (
@@ -2319,6 +2323,14 @@ export default {
 
     // ✅ 答题卡跳转到指定题目
     handleJumpToQuestion(index) {
+      if (this.isAnswerSheetJumpLocked) {
+        toast.info('请先完成当前题目的反馈');
+        return;
+      }
+      if (index < 0 || index >= this.questions.length || index === this.currentIndex) {
+        this.showAnswerSheet = false;
+        return;
+      }
       this.showAnswerSheet = false;
       this.currentIndex = index;
       this.resetQuestionState();
