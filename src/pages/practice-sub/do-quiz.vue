@@ -6,7 +6,7 @@
       <view class="nav-content" :style="{ paddingRight: capsuleMargin + 'px', height: '44px' }">
         <view class="back-area" hover-class="item-hover" @tap="handleExit">
           <BaseIcon name="arrow-left" :size="36" />
-          <text id="e2e-quiz-progress" class="progress-text" @tap.stop="showAnswerSheet = true">
+          <text id="e2e-quiz-progress" class="progress-text" @tap.stop="handleOpenAnswerSheet">
             {{ currentIndex + 1 }} / {{ questions.length }}
           </text>
         </view>
@@ -115,9 +115,9 @@
               <!-- 笔记按钮 -->
               <view
                 class="note-btn"
-                :class="{ 'has-notes': currentQuestionNotes.length > 0 }"
+                :class="{ 'has-notes': currentQuestionNotes.length > 0, 'is-action-locked': isQuestionActionLocked }"
                 hover-class="item-hover"
-                @tap.stop="handleOpenNote"
+                @tap.stop="handleOpenNote()"
               >
                 <view class="note-icon">
                   <BaseIcon name="note" :size="28" />
@@ -129,9 +129,9 @@
               <!-- 收藏按钮 -->
               <view
                 class="favorite-btn"
-                :class="{ 'is-favorited': isCurrentFavorited }"
+                :class="{ 'is-favorited': isCurrentFavorited, 'is-action-locked': isQuestionActionLocked }"
                 hover-class="item-hover"
-                @tap.stop="handleToggleFavorite"
+                @tap.stop="handleToggleFavorite()"
               >
                 <view class="favorite-icon">
                   <BaseIcon :name="isCurrentFavorited ? 'star' : 'star-outline'" :size="28" />
@@ -416,6 +416,47 @@
         <TutorFeedbackCard v-if="tutorFeedback" :feedback="tutorFeedback" />
       </scroll-view>
 
+      <view class="result-assist-row">
+        <view
+          class="result-assist-btn"
+          :class="{ active: currentQuestionNotes.length > 0 }"
+          hover-class="result-assist-hover"
+          role="button"
+          @tap.stop="handleResultOpenNote"
+        >
+          <view class="result-assist-icon">
+            <BaseIcon name="note" :size="26" />
+          </view>
+          <text class="result-assist-label">笔记</text>
+          <text v-if="currentQuestionNotes.length > 0" class="result-assist-badge">
+            {{ currentQuestionNotes.length }}
+          </text>
+        </view>
+        <view
+          class="result-assist-btn"
+          :class="{ active: isCurrentFavorited }"
+          hover-class="result-assist-hover"
+          role="button"
+          @tap.stop="handleResultToggleFavorite"
+        >
+          <view class="result-assist-icon">
+            <BaseIcon :name="isCurrentFavorited ? 'star' : 'star-outline'" :size="26" />
+          </view>
+          <text class="result-assist-label">{{ isCurrentFavorited ? '已收藏' : '收藏' }}</text>
+        </view>
+        <view
+          class="result-assist-btn"
+          hover-class="result-assist-hover"
+          role="button"
+          @tap.stop="handleOpenAnswerSheet"
+        >
+          <view class="result-assist-icon">
+            <BaseIcon name="book-open" :size="26" />
+          </view>
+          <text class="result-assist-label">答题卡</text>
+        </view>
+      </view>
+
       <view class="result-action-row">
         <view
           id="e2e-quiz-next-btn"
@@ -523,7 +564,8 @@
             hover-class="item-hover"
             @tap="toggleNoteTag(tag.id)"
           >
-            <text>{{ tag.icon }} {{ tag.name }}</text>
+            <view class="note-tag-dot" :style="{ background: tag.color }" />
+            <text>{{ tag.name }}</text>
           </view>
         </view>
         <view class="note-modal-footer">
@@ -796,6 +838,9 @@ export default {
       };
     },
     isAnswerSheetJumpLocked() {
+      return this.showResult || this.isAnalyzing || this.isNavigating;
+    },
+    isQuestionActionLocked() {
       return this.showResult || this.isAnalyzing || this.isNavigating;
     },
     currentQuestionPassage() {
@@ -2080,8 +2125,12 @@ export default {
     // ==================== 收藏功能相关方法 ====================
 
     // ✅ 切换收藏状态（通过 Store，登录时走后端）
-    async handleToggleFavorite() {
+    async handleToggleFavorite(options = {}) {
       if (!this.currentQuestion) return;
+      if (this.isQuestionActionLocked && !options.allowDuringResult) {
+        toast.info('请先完成当前题目的反馈');
+        return;
+      }
 
       const favoriteStore = useFavoriteStore();
       const result = await favoriteStore.toggleFavorite(this.currentQuestion);
@@ -2090,6 +2139,10 @@ export default {
       playClickSound();
 
       logger.log('[do-quiz] ✅ 收藏状态切换:', result);
+    },
+
+    handleResultToggleFavorite() {
+      return this.handleToggleFavorite({ allowDuringResult: true });
     },
 
     // ✅ 更新当前题目的收藏状态
@@ -2263,8 +2316,12 @@ export default {
     // ==================== 题目笔记相关方法 ====================
 
     // ✅ 打开笔记弹窗
-    handleOpenNote() {
+    handleOpenNote(options = {}) {
       if (!this.currentQuestion) return;
+      if (this.isQuestionActionLocked && !options.allowDuringResult) {
+        toast.info('请先完成当前题目的反馈');
+        return;
+      }
 
       // 加载当前题目的笔记
       this.currentQuestionNotes = getNotesByQuestion(this.currentQuestion.id || this.currentQuestion.question);
@@ -2273,6 +2330,14 @@ export default {
       this.noteContent = '';
       this.selectedNoteTags = [];
       this.showNoteModal = true;
+    },
+
+    handleResultOpenNote() {
+      this.handleOpenNote({ allowDuringResult: true });
+    },
+
+    handleOpenAnswerSheet() {
+      this.showAnswerSheet = true;
     },
 
     // ✅ 切换笔记标签
@@ -3388,7 +3453,7 @@ export default {
 .result-action-row {
   position: relative;
   z-index: 2;
-  margin-top: 28rpx;
+  margin-top: 20rpx;
   padding-top: 24rpx;
   border-top: 1rpx solid rgba(15, 23, 42, 0.08);
 }
@@ -3421,6 +3486,93 @@ export default {
   font-size: 28rpx;
   font-weight: 700;
   color: #ffffff;
+}
+
+.result-assist-row {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12rpx;
+  margin-top: 22rpx;
+}
+
+.result-assist-btn {
+  min-width: 0;
+  min-height: 76rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8rpx;
+  padding: 0 14rpx;
+  border: 1rpx solid rgba(15, 23, 42, 0.08);
+  border-radius: 20rpx;
+  background: rgba(255, 255, 255, 0.68);
+  color: #3f4652;
+  transition:
+    transform 0.18s ease,
+    opacity 0.18s ease,
+    background 0.18s ease;
+}
+
+.result-assist-btn.active {
+  border-color: rgba(31, 122, 77, 0.22);
+  background: rgba(159, 232, 112, 0.14);
+  color: #1f7a4d;
+}
+
+.result-assist-hover,
+.result-assist-btn:active {
+  transform: scale(0.97);
+  opacity: 0.86;
+}
+
+.result-assist-icon {
+  width: 32rpx;
+  height: 32rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.result-assist-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 23rpx;
+  font-weight: 750;
+}
+
+.result-assist-badge {
+  min-width: 28rpx;
+  height: 28rpx;
+  padding: 0 7rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999rpx;
+  background: rgba(31, 122, 77, 0.12);
+  color: #1f7a4d;
+  font-size: 18rpx;
+  font-weight: 850;
+}
+
+.dark-mode .result-assist-btn {
+  border-color: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(245, 247, 251, 0.76);
+}
+
+.dark-mode .result-assist-btn.active {
+  border-color: rgba(117, 221, 255, 0.24);
+  background: rgba(0, 224, 255, 0.1);
+  color: #75ddff;
+}
+
+.dark-mode .result-assist-badge {
+  background: rgba(117, 221, 255, 0.12);
+  color: #75ddff;
 }
 
 .status-title {
@@ -3685,6 +3837,12 @@ export default {
   color: var(--warning);
 }
 
+.favorite-btn.is-action-locked,
+.note-btn.is-action-locked {
+  opacity: 0.52;
+  transform: none;
+}
+
 .favorite-icon {
   font-size: 32rpx;
   color: var(--text-sub);
@@ -3881,6 +4039,9 @@ export default {
 }
 
 .note-tag {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
   padding: 10rpx 20rpx;
   border: 2rpx solid var(--border);
   border-radius: 20rpx;
@@ -3888,6 +4049,13 @@ export default {
   color: var(--text-sub);
   background: var(--bg-secondary);
   transition: all 0.2s ease;
+}
+
+.note-tag-dot {
+  width: 12rpx;
+  height: 12rpx;
+  border-radius: 999rpx;
+  flex-shrink: 0;
 }
 
 .note-tag.selected {

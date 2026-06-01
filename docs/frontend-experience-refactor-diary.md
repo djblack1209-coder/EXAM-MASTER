@@ -158,3 +158,11 @@
 - `handleJumpToQuestion` now refuses locked jumps, ignores invalid/current indexes, and only resets question state for deliberate valid jumps.
 - Added a visible answer-sheet lock notice and dimmed locked cells while preserving the current-cell emphasis.
 - Added `answer-sheet-jump-guard` to prevent result feedback from being bypassed by answer-sheet jumps.
+
+### 2026-06-01 Round 17
+
+- Continued result-feedback polish by moving secondary actions into the result surface itself.
+- The result card now exposes compact assist actions for notes, favorite state, and the answer sheet above the primary next/continue action.
+- Background question-card note/favorite buttons now visibly lock during result feedback, AI analysis, or navigation transitions, while result-surface actions can still open the intended overlay.
+- Note tag chips now use color dots instead of exposing the stored tag icon text, keeping the mini-program UI free of stray emoji-like labels.
+- Added `do-quiz-result-assist-actions-guard` so the result assist row, background action lock, result bypass methods, and note-tag cleanup stay in place.

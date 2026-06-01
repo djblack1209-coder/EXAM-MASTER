@@ -566,3 +566,49 @@ Run:
 git add src/pages/practice-sub/do-quiz.vue src/pages/practice-sub/components/answer-sheet/answer-sheet.vue tests/unit/answer-sheet-jump-guard.spec.js tests/unit/answer-sheet-experience-guard.spec.js docs/frontend-experience-refactor-diary.md docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md
 git commit -m "fix: guard answer sheet jumps during feedback"
 ```
+
+### Task 15: Clarify Result Assist Actions
+
+**Files:**
+- Modify: `src/pages/practice-sub/do-quiz.vue`
+- Create: `tests/unit/do-quiz-result-assist-actions-guard.spec.js`
+- Modify: `docs/frontend-experience-refactor-diary.md`
+- Modify: `docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md`
+
+- [x] **Step 1: Move secondary actions into result feedback**
+
+Add a compact result-surface assist row for notes, favorite state, and answer-sheet inspection, positioned above the primary next/continue action.
+
+- [x] **Step 2: Lock background question actions**
+
+Keep background note/favorite buttons visible but locked while result feedback, AI analysis, or navigation transition is active.
+
+- [x] **Step 3: Preserve intentional result overlays**
+
+Allow only result-surface note/favorite actions to bypass the feedback lock, and keep answer-sheet opening inspectable with locked jumps.
+
+- [x] **Step 4: Clean note tag visual chips**
+
+Replace stored note tag icon text with compact color dots so the modal avoids emoji-like visual noise.
+
+- [x] **Step 5: Add result assist guard**
+
+Assert that the result assist row, background action lock, result bypass methods, and note-tag cleanup remain in place.
+
+- [x] **Step 6: Run focused validation**
+
+Run:
+```bash
+npm run lint -- src/pages/practice-sub/do-quiz.vue tests/unit/do-quiz-result-assist-actions-guard.spec.js
+npm run test -- tests/unit/do-quiz-result-assist-actions-guard.spec.js tests/unit/do-quiz-result-surface-guard.spec.js tests/unit/answer-sheet-jump-guard.spec.js tests/unit/integration-quiz.spec.js
+```
+
+Result: passed on 2026-06-01.
+
+- [x] **Step 7: Commit**
+
+Run:
+```bash
+git add src/pages/practice-sub/do-quiz.vue tests/unit/do-quiz-result-assist-actions-guard.spec.js docs/frontend-experience-refactor-diary.md docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md
+git commit -m "feat: clarify quiz result assist actions"
+```
