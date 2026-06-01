@@ -235,7 +235,7 @@ import { modal } from '@/utils/modal.js';
 import { toast } from '@/utils/toast.js';
 // Vue 原生钩子
 import { ref, computed, onMounted, onUnmounted, onErrorCaptured } from 'vue';
-import { safeNavigateBack } from '@/utils/safe-navigate';
+import { safeNavigateBack, safeNavigateTo } from '@/utils/safe-navigate';
 // UniApp 特有钩子
 import { onShow } from '@dcloudio/uni-app';
 // F005: CustomTabbar removed — settings is not a tabBar page
@@ -410,13 +410,12 @@ const loadData = () => {
 };
 
 const handleEditTrack = () => {
-  uni.navigateTo({
-    url: '/pages/practice-sub/question-bank',
-    fail: () => {
-      uni.switchTab({
-        url: '/pages/practice/index',
-        fail: (err) => {
-          logger.error('[Settings] 跳转题库入口失败:', err);
+  safeNavigateTo('/pages/practice-sub/question-bank', {
+    fail: (err) => {
+      logger.warn('[Settings] 跳转题库入口失败，回到刷题页:', err);
+      safeNavigateTo('/pages/practice/index', {
+        fail: (fallbackErr) => {
+          logger.error('[Settings] 跳转刷题页失败:', fallbackErr);
           toast.info('请前往刷题页选择备考方向');
         }
       });
@@ -748,8 +747,7 @@ const onNicknameChange = (e) => {
 const doRealLogin = async () => {
   // #ifdef MP-WEIXIN
   // 微信环境：必须跳转登录页，让用户主动同意隐私协议后登录
-  uni.navigateTo({
-    url: '/pages/login/index',
+  safeNavigateTo('/pages/login/index', {
     fail: (err) => {
       logger.error('[Settings] 跳转登录页失败:', err);
       toast.info('请前往登录页完成登录');

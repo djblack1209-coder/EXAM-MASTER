@@ -179,3 +179,40 @@ Run:
 git add src/pages.json tests/unit/mini-program-scope-guard.spec.js docs/frontend-experience-refactor-diary.md docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md
 git commit -m "chore: guard lightweight mini program scope"
 ```
+
+### Task 5: Standardize Core Shell Navigation
+
+**Files:**
+- Modify: `src/pages/index/index.vue`
+- Modify: `src/pages/profile/index.vue`
+- Modify: `src/pages/settings/index.vue`
+- Create: `tests/unit/shell-navigation-guard.spec.js`
+- Modify: `docs/frontend-experience-refactor-diary.md`
+- Modify: `docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md`
+
+- [x] **Step 1: Route core shell jumps through safe navigation**
+
+Home, Profile, and Settings should call `safeNavigateTo`/`safeNavigateBack` for user-triggered route changes instead of owning direct `uni.navigateTo` or `uni.switchTab` fallback branches.
+
+- [x] **Step 2: Add shell navigation guard**
+
+Assert that Home, Practice, Profile, and Settings do not directly call `uni.navigateTo`, `uni.switchTab`, `uni.redirectTo`, or `uni.reLaunch`.
+
+- [x] **Step 3: Run focused validation**
+
+Run:
+```bash
+npm run lint -- src/pages/index/index.vue src/pages/profile/index.vue src/pages/settings/index.vue tests/unit/shell-navigation-guard.spec.js
+npm run test -- tests/unit/shell-navigation-guard.spec.js tests/unit/mini-program-scope-guard.spec.js tests/unit/frontend-copy-guard.spec.js tests/unit/practice-dynamic-methods.spec.js tests/unit/integration-storage-nav.spec.js
+npm run build:mp-weixin
+```
+
+Result: passed on 2026-06-01.
+
+- [x] **Step 4: Commit**
+
+Run:
+```bash
+git add src/pages/index/index.vue src/pages/profile/index.vue src/pages/settings/index.vue tests/unit/shell-navigation-guard.spec.js docs/frontend-experience-refactor-diary.md docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md
+git commit -m "chore: standardize core shell navigation"
+```
