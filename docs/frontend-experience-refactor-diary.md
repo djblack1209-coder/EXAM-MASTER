@@ -118,3 +118,11 @@
 - `do-quiz` result actions and diagnosis actions now use safe navigation helpers instead of direct `uni.redirectTo`/`uni.navigateTo` calls.
 - Added `do-quiz-navigation-guard` so quiz-session exits, result actions, and review jumps cannot reintroduce direct route calls.
 - Product rule: the quiz page is the highest-stakes flow. Every exit, restart, review, and result action should share fallback behavior with the rest of the shell.
+
+### 2026-06-01 Round 12
+
+- Continued quiz-core polish by separating the result backdrop from the next-question action. Tapping outside the result card now only blocks background interaction instead of advancing the session.
+- Rebuilt the result surface into three stable zones: status header, scrollable explanation content, and a dedicated bottom primary action.
+- Kept the `e2e-quiz-next-btn` contract while moving it into a clearer bottom action row with disabled and accessibility states.
+- Added `do-quiz-result-surface-guard` so future edits cannot reattach the backdrop to `closeResult`, remove the bottom action row, or drop safe-area/disabled-state coverage.
+- Product rule: the answer result surface is part of the core rhythm. Progression should require a deliberate primary action, while long explanations must not hide the next action.

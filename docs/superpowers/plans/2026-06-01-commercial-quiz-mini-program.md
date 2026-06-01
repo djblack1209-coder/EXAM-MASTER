@@ -364,3 +364,42 @@ Run:
 git add src/utils/safe-navigate.js src/pages/practice-sub/do-quiz.vue tests/unit/real-utils.spec.js tests/unit/do-quiz-navigation-guard.spec.js docs/frontend-experience-refactor-diary.md docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md
 git commit -m "chore: guard quiz session navigation"
 ```
+
+### Task 10: Clarify Quiz Result Next Action
+
+**Files:**
+- Modify: `src/pages/practice-sub/do-quiz.vue`
+- Create: `tests/unit/do-quiz-result-surface-guard.spec.js`
+- Modify: `docs/frontend-experience-refactor-diary.md`
+- Modify: `docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md`
+
+- [x] **Step 1: Separate backdrop from progression**
+
+The result backdrop should intercept background taps without calling `closeResult`, so an accidental outside tap cannot advance the quiz.
+
+- [x] **Step 2: Promote next/continue into a bottom primary action**
+
+The result surface should use a status header, scrollable content body, and dedicated bottom action row. The `e2e-quiz-next-btn` contract remains on the deliberate primary action.
+
+- [x] **Step 3: Add result-surface guard**
+
+Assert that the backdrop does not call `closeResult`, the bottom action row remains present, the result body is scrollable, and safe-area/disabled-state contracts remain in place.
+
+- [x] **Step 4: Run focused validation**
+
+Run:
+```bash
+npm run lint -- src/pages/practice-sub/do-quiz.vue tests/unit/do-quiz-result-surface-guard.spec.js
+npm run test -- tests/unit/do-quiz-result-surface-guard.spec.js tests/unit/do-quiz-feedback-ui.spec.js tests/unit/do-quiz-navigation-guard.spec.js tests/unit/integration-quiz.spec.js tests/unit/session-feedback.spec.js
+npm run build:mp-weixin
+```
+
+Result: passed on 2026-06-01.
+
+- [x] **Step 5: Commit**
+
+Run:
+```bash
+git add src/pages/practice-sub/do-quiz.vue tests/unit/do-quiz-result-surface-guard.spec.js docs/frontend-experience-refactor-diary.md docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md
+git commit -m "feat: clarify quiz result next action"
+```

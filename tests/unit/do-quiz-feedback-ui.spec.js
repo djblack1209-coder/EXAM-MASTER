@@ -18,9 +18,9 @@ describe('do quiz formal feedback experience', () => {
   });
 
   it('keeps sound and haptic feedback for answer confirmation', () => {
-    expect(doQuizSource).toContain("vibrateLight('light')");
-    expect(doQuizSource).toContain("vibrateLight('medium')");
-    expect(doQuizSource).toContain('playCorrectSound()');
-    expect(doQuizSource).toContain('playWrongSound()');
+    expect(doQuizSource).toContain("playQuizSound('correct')");
+    expect(doQuizSource).toContain("playQuizSound('wrong')");
+    expect(doQuizSource).toContain('playCorrectEffect()');
+    expect(doQuizSource).toContain('playWrongEffect()');
   });
 });
