@@ -156,7 +156,9 @@ export function normalizeQuizQuestion(question, index = 0, options = {}) {
     passageSegments,
     context: question.context || passage,
     material: question.material || passage,
-    questionImages: normalizeImageList(question.questionImages || question.question_images || question.sourcePageImages),
+    questionImages: normalizeImageList(
+      question.questionImages || question.question_images || question.sourcePageImages
+    ),
     answerImages: normalizeImageList(question.answerImages || question.answer_images || question.answerPageImages),
     paperId: question.paperId || question.paper_id || '',
     paperName: question.paperName || question.paper_name || '',

@@ -1,0 +1,38 @@
+【微信公众号: 研池大叔】              全年免费分享各类资源              【微信公众号: 研池大叔】
+2005 年全国硕士研究生入学统一考试理工
+-、 ”填空题 (本题共 6 小题, 每小题 4 分, 满分 24 分. 把答案填在题中横线上)
+GQ) #y=(tsinx)", WU a =
+【答】 -ak.
+【详解】 dy=de"™" =(1+sinx)"d(xIn(1+sinx))
+= In(1+ sin x) 攻 +ln(1+sin x)dx
+1+sinx
+ay      =y'(1)dx = -ndx.
+3
+、   (1+ x)?   wps TH
+(2) 曲线了=一天一的斜渐近线方程为   .
+vx
+【答】  yx+3
+2
+【详解】 因为a= lim 2 = tim Q+ -1
+wey re ade
+3  3
+.        . (+x)? -x? 3
+b=1    ~ax|= lim 77 * ==,
+dim fe) ax] fim 5
+于是所求斜渐近线方程为?= x45.
+1   xdx
+(3) | 一一一一=
+人 (2一z2) hx?   -一
+【答】 7.
+4
+【详解】 令x=sint，则
+f   xdx   四 ig  sint cost  dt
+°(2-x?)W1—x?*° (2-sin* A)cost
+= fp feos =~arctan(cosf)| ? = =
+0 1+cos*t           o 4
+ay  rtp      yas     1   y
+(4) WATT xy +27= xx满足0D =一5的解为      :
+1    1
+【答】   =—xInx-=x.
+了=了xlnx一9
+【微信公众号: FieK RY]              全年免费分享各类资源              【微信公众号: 研池大叔】

@@ -487,6 +487,36 @@ describe('release blocker backlog', () => {
     expect(markdown).toContain('当前执行环境禁止本地端口监听');
   });
 
+  it('surfaces WeChat DevTools login failures with a specific next action', () => {
+    const backlog = buildReleaseBlockerBacklog({
+      questionAudit: { releaseReadiness: { canPublish: true }, summary: {}, coverage: { tracks: [] } },
+      flashcardQuality: { releaseReadiness: { canPromoteToPublic: true }, summary: {}, files: [] },
+      externalAudit: { releaseReadiness: { canPublish: true }, summary: {}, sections: {} },
+      wechatSmoke: {
+        status: 'blocked',
+        steps: [
+          {
+            name: 'wechat-devtools-preflight',
+            status: 'blocked',
+            error: 'Error: 需要重新登录 (code 10)',
+            code: 'wechat_devtools_login_required'
+          }
+        ]
+      },
+      generatedAt: '2026-05-22T00:00:00.000Z'
+    });
+
+    expect(backlog.verdict).toBe('blocked');
+    expect(backlog.items[0]).toMatchObject({
+      workstream: 'wechat_devtools_smoke',
+      blockerCode: 'wechat_devtools_smoke_not_passed'
+    });
+
+    const markdown = renderBacklogMarkdown(backlog);
+    expect(markdown).toContain('重新登录微信开发者工具');
+    expect(markdown).not.toContain('当前执行环境禁止本地端口监听');
+  });
+
   it('distinguishes local source companion gaps before source-manifest registration', () => {
     const questionAudit = {
       summary: {

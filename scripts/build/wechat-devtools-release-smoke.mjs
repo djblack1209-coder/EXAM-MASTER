@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createRequire } from 'node:module';
+import { spawnSync } from 'node:child_process';
 
 const require = createRequire(import.meta.url);
 const automator = require('miniprogram-automator');
@@ -79,11 +80,45 @@ function pass(name, details = {}) {
 }
 
 function block(name, error, details = {}) {
+  const diagnostic = classifyWechatDevtoolsSmokeError(error);
   return {
     name,
     status: 'blocked',
     error: error instanceof Error ? error.message : String(error),
+    code: diagnostic.code,
+    category: diagnostic.category,
+    action: diagnostic.action,
     ...details
+  };
+}
+
+export function classifyWechatDevtoolsSmokeError(error) {
+  const message = error instanceof Error ? error.message : String(error || '');
+  if (/需要重新登录|重新登录|code\s*10|login\s*false/i.test(message)) {
+    return {
+      code: 'wechat_devtools_login_required',
+      category: 'auth',
+      action: 'Log in to WeChat DevTools, then re-run npm run smoke:wechat:devtools.'
+    };
+  }
+  if (/listen EPERM|operation not permitted/i.test(message)) {
+    return {
+      code: 'local_port_listen_denied',
+      category: 'environment',
+      action: 'Run the smoke command in an environment that allows local automation ports.'
+    };
+  }
+  if (/http port is open|Port .* is in use|Failed connecting to ws/i.test(message)) {
+    return {
+      code: 'wechat_devtools_automation_port_unavailable',
+      category: 'environment',
+      action: 'Enable WeChat DevTools automation/service port, then re-run npm run smoke:wechat:devtools.'
+    };
+  }
+  return {
+    code: 'wechat_devtools_smoke_failed',
+    category: 'smoke',
+    action: 'Inspect the blocked smoke step, fix the mini-program flow, then re-run npm run smoke:wechat:devtools.'
   };
 }
 
@@ -213,6 +248,22 @@ async function runSmoke(options) {
 
   let miniProgram = null;
   try {
+    const loginCheck = spawnSync(options.cliPath, ['islogin'], {
+      cwd: PROJECT_ROOT,
+      encoding: 'utf8',
+      timeout: 15_000
+    });
+    const loginOutput = `${loginCheck.stdout || ''}\n${loginCheck.stderr || ''}`.trim();
+    if (/\"login\"\s*:\s*false/.test(loginOutput)) {
+      throw new Error(`WeChat DevTools login required: ${loginOutput}`);
+    }
+    if (loginCheck.status !== 0 && loginOutput) {
+      throw new Error(loginOutput);
+    }
+    if (/\"login\"\s*:\s*true/.test(loginOutput)) {
+      report.steps.push(pass('wechat-devtools-preflight', { login: true }));
+    }
+
     miniProgram = await automator.launch({
       cliPath: options.cliPath,
       projectPath: options.projectPath,
@@ -406,12 +457,14 @@ async function main() {
   return 0;
 }
 
-main().then(
-  (code) => {
-    process.exitCode = code;
-  },
-  (error) => {
-    console.error(error);
-    process.exitCode = 1;
-  }
-);
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  main().then(
+    (code) => {
+      process.exitCode = code;
+    },
+    (error) => {
+      console.error(error);
+      process.exitCode = 1;
+    }
+  );
+}

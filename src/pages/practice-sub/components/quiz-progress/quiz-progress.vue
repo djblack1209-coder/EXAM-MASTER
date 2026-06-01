@@ -1,5 +1,12 @@
 <template>
   <view class="quiz-progress">
+    <view class="progress-meter" :aria-label="`练习进度 ${safeCurrent} / ${safeTotal}`">
+      <view class="progress-meter-fill" :style="{ width: progressPercent + '%' }" />
+    </view>
+    <view class="progress-meta">
+      <text class="progress-count">{{ safeCurrent }} / {{ safeTotal }}</text>
+      <text class="progress-state">{{ answeredCount }} 已答</text>
+    </view>
     <scroll-view :id="scrollId" scroll-x :scroll-left="scrollLeft" scroll-with-animation class="progress-scroll">
       <view class="dot-track">
         <view v-for="idx in total" :key="idx - 1" class="dot-wrapper" @tap="$emit('tap', idx - 1)">
@@ -35,6 +42,19 @@ const answeredMap = computed(() => {
   return map;
 });
 
+const safeTotal = computed(() => Math.max(0, Number(props.total) || 0));
+const safeCurrent = computed(() => {
+  if (safeTotal.value <= 0) return 0;
+  return Math.min(safeTotal.value, Math.max(1, (Number(props.current) || 0) + 1));
+});
+const answeredCount = computed(() => {
+  return props.answered.filter((item) => item && Number.isFinite(Number(item.index))).length;
+});
+const progressPercent = computed(() => {
+  if (safeTotal.value <= 0) return 0;
+  return Math.max(0, Math.min(100, Math.round((safeCurrent.value / safeTotal.value) * 100)));
+});
+
 function dotClass(idx) {
   if (idx === props.current) return 'dot-active';
   if (idx in answeredMap.value) {
@@ -63,9 +83,50 @@ watch(
   overflow: hidden;
 }
 
+.progress-meter {
+  position: relative;
+  width: 100%;
+  height: 14rpx;
+  overflow: hidden;
+  border-radius: 999rpx;
+  background: rgba(148, 163, 184, 0.2);
+  box-shadow: inset 0 1rpx 2rpx rgba(15, 23, 42, 0.08);
+}
+
+.progress-meter-fill {
+  height: 100%;
+  min-width: 14rpx;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--success, #34d399), var(--primary, #00e0ff));
+  box-shadow: 0 0 18rpx var(--brand-glow, rgba(0, 224, 255, 0.22));
+  transition: width 280ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.progress-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 8rpx;
+  padding: 0 2rpx;
+}
+
+.progress-count {
+  font-size: 22rpx;
+  font-weight: 800;
+  color: var(--text-primary, #111827);
+  font-variant-numeric: tabular-nums;
+}
+
+.progress-state {
+  font-size: 20rpx;
+  font-weight: 600;
+  color: var(--text-secondary, #64748b);
+}
+
 .progress-scroll {
   white-space: nowrap;
   height: 48rpx;
+  margin-top: 2rpx;
 }
 
 .dot-track {
@@ -88,7 +149,11 @@ watch(
   width: 14rpx;
   height: 14rpx;
   border-radius: 50%;
-  transition: all 0.25s ease;
+  transition:
+    width 220ms cubic-bezier(0.16, 1, 0.3, 1),
+    height 220ms cubic-bezier(0.16, 1, 0.3, 1),
+    background-color 180ms ease,
+    box-shadow 180ms ease;
 }
 
 /* 当前题 */

@@ -6,6 +6,7 @@
  */
 
 import { logger } from '@/utils/logger.js';
+import { vibrateLight } from '@/utils/helpers/haptic.js';
 
 // ==================== 状态管理 ====================
 
@@ -142,13 +143,7 @@ function playTone(freq, duration, startOffset = 0, opts = {}) {
 // ==================== 小程序震动降级 ====================
 
 function vibrateFallback(pattern = 'light') {
-  try {
-    if (typeof uni !== 'undefined' && typeof uni.vibrateShort === 'function') {
-      uni.vibrateShort({ type: pattern });
-    }
-  } catch (_e) {
-    // 静默失败
-  }
+  vibrateLight(pattern);
 }
 
 function vibratePattern(count, interval = 100) {
