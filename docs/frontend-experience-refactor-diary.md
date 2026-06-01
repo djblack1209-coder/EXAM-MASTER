@@ -126,3 +126,10 @@
 - Kept the `e2e-quiz-next-btn` contract while moving it into a clearer bottom action row with disabled and accessibility states.
 - Added `do-quiz-result-surface-guard` so future edits cannot reattach the backdrop to `closeResult`, remove the bottom action row, or drop safe-area/disabled-state coverage.
 - Product rule: the answer result surface is part of the core rhythm. Progression should require a deliberate primary action, while long explanations must not hide the next action.
+
+### 2026-06-01 Round 13
+
+- Audited the answer feedback chain after the result-surface change: sound/haptic routing was active, but the visual feedback classes had drifted into `animation: none`.
+- Reconnected `quiz-correct-animation` and `quiz-wrong-animation` to the existing `correctPulse`, `wrongShake`, `correctGlow`, and `wrongGlow` motion vocabulary.
+- Added `do-quiz-answer-motion-guard` so the core answer confirmation moment cannot silently lose visual motion while sound and haptics still fire.
+- Product rule: Baicizhan-like certainty needs all three channels together: visual confirmation, sound cue, and haptic fallback.

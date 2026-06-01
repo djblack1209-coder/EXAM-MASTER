@@ -403,3 +403,42 @@ Run:
 git add src/pages/practice-sub/do-quiz.vue tests/unit/do-quiz-result-surface-guard.spec.js docs/frontend-experience-refactor-diary.md docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md
 git commit -m "feat: clarify quiz result next action"
 ```
+
+### Task 11: Guard Answer Confirmation Motion
+
+**Files:**
+- Modify: `src/pages/practice-sub/do-quiz.vue`
+- Create: `tests/unit/do-quiz-answer-motion-guard.spec.js`
+- Modify: `docs/frontend-experience-refactor-diary.md`
+- Modify: `docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md`
+
+- [x] **Step 1: Audit answer feedback chain**
+
+Confirm that correct/wrong answer events still call the unified quiz feedback sound channel and still set visual feedback classes.
+
+- [x] **Step 2: Reconnect card motion**
+
+Attach `quiz-correct-animation` and `quiz-wrong-animation` to the existing answer motion vocabulary instead of leaving them as `animation: none` no-ops.
+
+- [x] **Step 3: Add answer-motion guard**
+
+Assert that correct/wrong feedback keeps sound routing, animation class assignment, and active visual motion.
+
+- [x] **Step 4: Run focused validation**
+
+Run:
+```bash
+npm run lint -- src/pages/practice-sub/do-quiz.vue tests/unit/do-quiz-answer-motion-guard.spec.js
+npm run test -- tests/unit/do-quiz-answer-motion-guard.spec.js tests/unit/do-quiz-feedback-ui.spec.js tests/unit/do-quiz-result-surface-guard.spec.js tests/unit/session-feedback.spec.js tests/unit/quiz-sound.spec.js
+npm run build:mp-weixin
+```
+
+Result: passed on 2026-06-01.
+
+- [x] **Step 5: Commit**
+
+Run:
+```bash
+git add src/pages/practice-sub/do-quiz.vue tests/unit/do-quiz-answer-motion-guard.spec.js docs/frontend-experience-refactor-diary.md docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md
+git commit -m "fix: restore quiz answer motion feedback"
+```
