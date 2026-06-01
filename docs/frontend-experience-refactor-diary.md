@@ -141,3 +141,12 @@
 - Fixed neutral flashcard review records so they display as reviewed progress instead of being treated like wrong answers in the dot rail.
 - Added `quiz-progress-experience-guard` to preserve percent, thumb motion, answer distribution, safe totals, accessible copy, and dark-mode detail coverage.
 - Product rule: users should always know where they are in the session without opening the answer sheet.
+
+### 2026-06-01 Round 15
+
+- Performed a local process cleanup before continuing: terminated duplicate Codegraph, Playwright, XcodeBuildMCP, Computer Use, and stale gunicorn tool processes.
+- Found accumulated `<defunct>` processes under the Codex parent process; these cannot be killed directly and require the parent app to reap or restart.
+- Found `ANECompilerService` using sustained high CPU, but macOS denied termination. Continued with lightweight validation to avoid adding load.
+- Continued the quiz-progress loop by upgrading the answer sheet into a clearer review surface.
+- Answer sheet now separates correct, wrong, reviewed, unanswered, and remaining counts; neutral flashcard records no longer lower accuracy or appear as wrong.
+- Added `answer-sheet-experience-guard` so the answer sheet stays aligned with the progress rail and preserves dark-mode reviewed-state coverage.

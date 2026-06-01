@@ -481,3 +481,45 @@ Run:
 git add src/pages/practice-sub/components/quiz-progress/quiz-progress.vue tests/unit/quiz-progress-experience-guard.spec.js docs/frontend-experience-refactor-diary.md docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md
 git commit -m "feat: clarify quiz session progress"
 ```
+
+### Task 13: Clarify Answer Sheet Review Surface
+
+**Files:**
+- Modify: `src/pages/practice-sub/components/answer-sheet/answer-sheet.vue`
+- Create: `tests/unit/answer-sheet-experience-guard.spec.js`
+- Modify: `docs/frontend-experience-refactor-diary.md`
+- Modify: `docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md`
+
+- [x] **Step 1: Clean safe residual tool processes**
+
+Terminate duplicate local Codex tool services and stale local web service processes without killing the Codex parent app.
+
+- [x] **Step 2: Upgrade answer-sheet review state**
+
+Show correct, wrong, reviewed, remaining, and unanswered states in the summary/grid/legend.
+
+- [x] **Step 3: Preserve neutral flashcard semantics**
+
+Treat neutral flashcard records as reviewed, not wrong, and calculate accuracy only from graded correct/wrong records.
+
+- [x] **Step 4: Add answer-sheet guard**
+
+Assert that review summary, neutral semantics, reviewed grid/legend state, and dark-mode coverage remain in place.
+
+- [x] **Step 5: Run focused validation**
+
+Run:
+```bash
+npm run lint -- src/pages/practice-sub/components/answer-sheet/answer-sheet.vue tests/unit/answer-sheet-experience-guard.spec.js
+npm run test -- tests/unit/answer-sheet-experience-guard.spec.js tests/unit/quiz-progress-experience-guard.spec.js tests/unit/quiz-session-contract.spec.js
+```
+
+Result: passed on 2026-06-01. Full WeChat build intentionally deferred because `ANECompilerService` was consuming sustained high CPU and macOS denied termination.
+
+- [x] **Step 6: Commit**
+
+Run:
+```bash
+git add src/pages/practice-sub/components/answer-sheet/answer-sheet.vue tests/unit/answer-sheet-experience-guard.spec.js docs/frontend-experience-refactor-diary.md docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md
+git commit -m "feat: clarify answer sheet review state"
+```
