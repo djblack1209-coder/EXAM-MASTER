@@ -20,6 +20,23 @@
       :refresher-triggered="isRefreshing"
       @refresherrefresh="onRefresh"
     >
+      <view v-if="isPageLoading || pageError" class="section shell-state-section">
+        <view class="shell-state-card" :class="{ error: pageError }">
+          <view class="shell-state-copy">
+            <text class="shell-state-title">{{ pageError ? '学习数据暂未同步' : '正在同步学习轨迹' }}</text>
+            <text class="shell-state-desc">
+              {{ pageError ? '已保留本地默认视图，可以重试或直接继续刷题。' : '正在读取今日进度、题库资产和最近训练记录。' }}
+            </text>
+          </view>
+          <view v-if="pageError" class="shell-state-action" hover-class="btn-hover" @tap="retryLoadData">
+            <text>重试</text>
+          </view>
+          <view v-else class="shell-state-meter">
+            <view class="shell-state-meter-fill" />
+          </view>
+        </view>
+      </view>
+
       <!-- 品牌冲击首屏 -->
       <view class="section hero-section">
         <view class="hero-panel">
@@ -198,6 +215,8 @@ export default {
       statusBarHeight: 44,
       tabBarHeight: 90,
       isRefreshing: false,
+      isPageLoading: true,
+      pageError: '',
 
       // 数据
       dailyGoal: 25,
@@ -327,6 +346,8 @@ export default {
     },
 
     loadData() {
+      this.isPageLoading = true;
+      this.pageError = '';
       try {
         // 恢复 store 数据
         const studyStore = useStudyStore();
@@ -357,7 +378,9 @@ export default {
         this.loadRecentActivities(history);
       } catch (e) {
         logger.error('[Index] loadData failed:', e);
+        this.pageError = 'load_failed';
       } finally {
+        this.isPageLoading = false;
         this._loaded = true;
       }
     },
@@ -441,6 +464,10 @@ export default {
           this.isRefreshing = false;
         }, 500);
       }
+    },
+
+    retryLoadData() {
+      this.loadData();
     },
 
     goToPractice() {
@@ -528,6 +555,94 @@ $spacing-section: 24rpx;
 .section {
   padding: 0 $spacing-page;
   margin-bottom: $spacing-section;
+}
+
+.shell-state-section {
+  padding-top: 22rpx;
+  margin-bottom: 18rpx;
+}
+
+.shell-state-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 22rpx 24rpx;
+  border: 1rpx solid rgba(22, 51, 0, 0.08);
+  border-radius: 28rpx;
+  background: rgba(255, 255, 255, 0.74);
+  box-shadow: 0 14rpx 36rpx rgba(24, 169, 87, 0.08);
+}
+
+.shell-state-card.error {
+  border-color: rgba(239, 68, 68, 0.14);
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow: 0 14rpx 36rpx rgba(239, 68, 68, 0.08);
+}
+
+.shell-state-copy {
+  flex: 1;
+  min-width: 0;
+  padding-right: 18rpx;
+}
+
+.shell-state-title {
+  display: block;
+  color: $text-main;
+  font-size: 25rpx;
+  font-weight: 850;
+  line-height: 1.25;
+}
+
+.shell-state-desc {
+  display: block;
+  margin-top: 6rpx;
+  color: $text-sub;
+  font-size: 21rpx;
+  line-height: 1.42;
+}
+
+.shell-state-action {
+  @include em-mobile-pressable;
+  flex-shrink: 0;
+  padding: 12rpx 18rpx;
+  border-radius: 999rpx;
+  background: rgba(22, 51, 0, 0.08);
+}
+
+.shell-state-action text {
+  color: $primary-dark;
+  font-size: 21rpx;
+  font-weight: 850;
+}
+
+.shell-state-meter {
+  position: relative;
+  flex-shrink: 0;
+  width: 96rpx;
+  height: 10rpx;
+  overflow: hidden;
+  border-radius: 999rpx;
+  background: rgba(22, 51, 0, 0.08);
+}
+
+.shell-state-meter-fill {
+  width: 42rpx;
+  height: 100%;
+  border-radius: inherit;
+  background: $action-green;
+  animation: shellStateMeter 1.1s ease-in-out infinite;
+}
+
+@keyframes shellStateMeter {
+  0% {
+    transform: translateX(-48rpx);
+  }
+  50% {
+    transform: translateX(38rpx);
+  }
+  100% {
+    transform: translateX(104rpx);
+  }
 }
 
 .section-title {
@@ -1136,10 +1251,36 @@ $spacing-section: 24rpx;
 }
 
 .dark-mode .card,
-.dark-mode .stat-card {
+.dark-mode .stat-card,
+.dark-mode .shell-state-card {
   background: rgba(34, 37, 45, 0.82);
   border: 1rpx solid rgba(255, 255, 255, 0.08);
   box-shadow: 0 18rpx 48rpx rgba(0, 0, 0, 0.32);
+}
+
+.dark-mode .shell-state-card.error {
+  border-color: rgba(255, 120, 120, 0.18);
+  background: rgba(42, 35, 39, 0.82);
+}
+
+.dark-mode .shell-state-title {
+  color: #f5f7fb;
+}
+
+.dark-mode .shell-state-desc {
+  color: rgba(245, 247, 251, 0.58);
+}
+
+.dark-mode .shell-state-action {
+  background: rgba(159, 232, 112, 0.14);
+}
+
+.dark-mode .shell-state-action text {
+  color: #9fe870;
+}
+
+.dark-mode .shell-state-meter {
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .dark-mode .progress-card {
