@@ -524,11 +524,11 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-$primary: #1f7a4d;
-$primary-light: #e8f4ee;
-$primary-deep: #1d1d1f;
-$action-green: #1d9a52;
-$bg: #f5f5f7;
+$primary: #9fe870;
+$primary-light: #eafbe2;
+$primary-deep: #163300;
+$action-green: #18a957;
+$bg: #f5f7f1;
 $card-bg: #ffffff;
 $text-main: #1a1d26;
 $text-sub: #5f6672;
@@ -541,7 +541,6 @@ $spacing-section: 24rpx;
 
 .page {
   @include em-mobile-canvas;
-  background: $bg;
   color: $text-main;
 }
 
@@ -553,8 +552,6 @@ $spacing-section: 24rpx;
   right: 0;
   z-index: 100;
   @include em-mobile-topbar;
-  background: rgba(245, 245, 247, 0.86);
-  box-shadow: 0 1rpx 0 rgba(0, 0, 0, 0.06);
 }
 .nav-content {
   height: 44px;
@@ -582,14 +579,7 @@ $spacing-section: 24rpx;
 }
 
 .practice-hero {
-  position: relative;
-  overflow: hidden;
-  box-sizing: border-box;
-  padding: 38rpx 36rpx;
-  border-radius: 34rpx;
-  background: $card-bg;
-  border: 1rpx solid rgba(0, 0, 0, 0.06);
-  box-shadow: 0 18rpx 48rpx rgba(15, 23, 42, 0.08);
+  @include em-mobile-deep-panel(36rpx, 38rpx);
 }
 
 .practice-hero::after {
@@ -600,14 +590,14 @@ $spacing-section: 24rpx;
   width: 108rpx;
   height: 108rpx;
   border-radius: 30rpx;
-  background: linear-gradient(145deg, rgba(31, 122, 77, 0.16), rgba(52, 199, 89, 0.12));
+  background: linear-gradient(145deg, rgba(178, 255, 106, 0.2), rgba(117, 221, 255, 0.16));
 }
 
 .practice-kicker {
   position: relative;
   z-index: 1;
   display: block;
-  color: #8e8e93;
+  color: rgba(255, 255, 255, 0.6);
   font-size: 18rpx;
   font-weight: 900;
   letter-spacing: 0;
@@ -618,7 +608,7 @@ $spacing-section: 24rpx;
   z-index: 1;
   display: block;
   margin-top: 14rpx;
-  color: $text-main;
+  color: #ffffff;
   font-size: 48rpx;
   font-weight: 760;
   line-height: 1.12;
@@ -630,7 +620,7 @@ $spacing-section: 24rpx;
   display: block;
   max-width: 590rpx;
   margin-top: 18rpx;
-  color: $text-sub;
+  color: rgba(255, 255, 255, 0.68);
   font-size: 26rpx;
   line-height: 1.55;
 }
@@ -646,8 +636,8 @@ $spacing-section: 24rpx;
   flex: 1;
   padding: 18rpx 14rpx;
   border-radius: 22rpx;
-  background: #f6f7f9;
-  border: 1rpx solid rgba(0, 0, 0, 0.04);
+  background: rgba(255, 255, 255, 0.09);
+  border: 1rpx solid rgba(255, 255, 255, 0.1);
 }
 
 .practice-signal + .practice-signal {
@@ -657,7 +647,7 @@ $spacing-section: 24rpx;
 .signal-value {
   @include em-mobile-number;
   display: block;
-  color: $text-main;
+  color: #ffffff;
   font-size: 34rpx;
   font-weight: 760;
   line-height: 1;
@@ -666,7 +656,7 @@ $spacing-section: 24rpx;
 .signal-label {
   display: block;
   margin-top: 8rpx;
-  color: $text-weak;
+  color: rgba(255, 255, 255, 0.54);
   font-size: 21rpx;
   font-weight: 600;
 }
@@ -692,16 +682,15 @@ $spacing-section: 24rpx;
 }
 
 .practice-command.primary {
-  background: #1d1d1f;
-  color: #ffffff;
-  box-shadow: 0 12rpx 28rpx rgba(17, 24, 39, 0.16);
+  @include em-mobile-primary-action;
+  color: $primary-deep;
 }
 
 .practice-command.secondary {
   margin-left: 14rpx;
-  background: #f2f3f5;
-  color: $text-main;
-  box-shadow: none;
+  background: rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.86);
+  box-shadow: inset 0 1rpx 0 rgba(255, 255, 255, 0.16);
 }
 
 .section-head {
@@ -976,12 +965,7 @@ $spacing-section: 24rpx;
 }
 
 .card {
-  box-sizing: border-box;
-  padding: $spacing-card;
-  border-radius: $radius-lg;
-  background: $card-bg;
-  border: 1rpx solid rgba(0, 0, 0, 0.06);
-  box-shadow: 0 10rpx 28rpx rgba(15, 23, 42, 0.06);
+  @include em-mobile-glass-surface($radius-lg, $spacing-card);
 }
 
 /* 题库列表 */
@@ -1076,12 +1060,7 @@ $spacing-section: 24rpx;
 }
 
 .empty-track-card {
-  box-sizing: border-box;
-  padding: 32rpx;
-  border-radius: $radius-lg;
-  background: $card-bg;
-  border: 1rpx solid rgba(0, 0, 0, 0.06);
-  box-shadow: 0 10rpx 28rpx rgba(15, 23, 42, 0.06);
+  @include em-mobile-glass-surface($radius-lg, 32rpx);
 }
 
 .empty-track-title {
@@ -1169,8 +1148,7 @@ $spacing-section: 24rpx;
 }
 
 .primary-btn {
-  background: #1d1d1f;
-  box-shadow: 0 12rpx 28rpx rgba(17, 24, 39, 0.16);
+  @include em-mobile-primary-action;
 }
 
 .secondary-btn {
@@ -1182,7 +1160,7 @@ $spacing-section: 24rpx;
 .action-btn-text {
   font-size: 32rpx;
   font-weight: 600;
-  color: #ffffff;
+  color: $primary-deep;
 }
 
 .secondary-text {
