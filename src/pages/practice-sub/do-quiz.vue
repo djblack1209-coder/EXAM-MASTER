@@ -1874,14 +1874,6 @@ export default {
     },
 
     /**
-     * 小程序版不再提供付费 AI 导师跳转。
-     * 保留方法用于兼容旧组件事件，避免误触时进入不存在页面。
-     */
-    askAIAboutThis() {
-      toast.info('小程序版已关闭 AI 导师，请先查看解析并加入错题复习');
-    },
-
-    /**
      * 基于个人历史生成一句话AI微反馈（纯本地，零延迟）
      * 在用户答错时调用，根据该知识点的历史错误次数给出上下文提醒
      */
@@ -3462,40 +3454,6 @@ export default {
 .dark-mode .break-dismiss {
   color: var(--text-accent, #a78bfa);
   background: rgba(99, 102, 241, 0.2);
-}
-/* 答错时问AI导师按钮 */
-.ask-ai-btn {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin: 12rpx 20rpx 0;
-  padding: 18rpx 24rpx;
-  background: linear-gradient(135deg, rgba(52, 211, 153, 0.1), rgba(6, 182, 212, 0.1));
-  border: 1rpx solid rgba(52, 211, 153, 0.25);
-  border-radius: 16rpx;
-}
-.ask-ai-btn:active {
-  opacity: 0.8;
-  transform: scale(0.98);
-}
-.ask-ai-text {
-  font-size: 26rpx;
-  font-weight: 600;
-  color: var(--success, #059669);
-}
-.ask-ai-arrow {
-  font-size: 32rpx;
-  color: var(--success, #059669);
-}
-.dark-mode .ask-ai-text {
-  color: var(--success, #34d399);
-}
-.dark-mode .ask-ai-arrow {
-  color: var(--success, #34d399);
-}
-.dark-mode .ask-ai-btn {
-  background: linear-gradient(135deg, rgba(52, 211, 153, 0.15), rgba(6, 182, 212, 0.12));
-  border-color: rgba(52, 211, 153, 0.3);
 }
 .answer-display {
   display: flex;
