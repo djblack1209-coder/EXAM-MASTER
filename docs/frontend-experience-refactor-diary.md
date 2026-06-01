@@ -197,3 +197,11 @@
 - Added a muted disabled action row for `整理中` and `待入库` slots, while keeping the primary start button only for `正式` slots.
 - Filled in dark-mode coverage for the question-bank page's hero, tabs, year map, detail card, paper list, pending panel, empty state, and action states.
 - Added `question-bank-slot-readiness-guard` so selected slot readiness, disabled actions, and user-facing wording stay protected.
+
+### 2026-06-01 Round 22
+
+- Continued Phase 3 by hardening the question-bank start path from year/list actions into the quiz session.
+- `question-bank` now uses the shared safe-navigation helper for entering `do-quiz`, so this subpage follows the same fallback behavior as the core shell.
+- Loading failures are contained inside the question-bank page with a clear toast instead of bubbling into an unhandled rejected action.
+- The page now verifies that the selected paper actually produced usable local question IDs before writing `smart_review_ids` and navigating.
+- Added `question-bank-start-flow-guard` so direct quiz navigation, empty-paper jumps, and missing start-path feedback cannot regress.

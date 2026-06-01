@@ -780,3 +780,45 @@ Run:
 git add src/pages/practice-sub/question-bank.vue tests/unit/question-bank-slot-readiness-guard.spec.js docs/frontend-experience-refactor-diary.md docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md
 git commit -m "feat: clarify question bank slot readiness"
 ```
+
+### Task 20: Harden Question Bank Start Flow
+
+**Files:**
+- Modify: `src/pages/practice-sub/question-bank.vue`
+- Create: `tests/unit/question-bank-start-flow-guard.spec.js`
+- Modify: `docs/frontend-experience-refactor-diary.md`
+- Modify: `docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md`
+
+- [x] **Step 1: Use shared safe navigation**
+
+Route question-bank starts through `safeNavigateTo` instead of direct `uni.navigateTo`.
+
+- [x] **Step 2: Contain loading failures**
+
+Keep load failures inside the question-bank page with a clear user-facing toast and no unhandled rejected action.
+
+- [x] **Step 3: Block empty-paper jumps**
+
+Verify that the selected paper produced usable local question IDs before writing `smart_review_ids` and entering `do-quiz`.
+
+- [x] **Step 4: Add start-flow guard**
+
+Assert that loaded papers navigate with verified IDs, empty imports do not navigate, and direct quiz navigation does not return.
+
+- [x] **Step 5: Run focused validation**
+
+Run:
+```bash
+npm run lint -- src/pages/practice-sub/question-bank.vue tests/unit/question-bank-start-flow-guard.spec.js tests/unit/question-bank-slot-readiness-guard.spec.js
+npm run test -- tests/unit/question-bank-start-flow-guard.spec.js tests/unit/question-bank-slot-readiness-guard.spec.js tests/unit/question-bank-year-map.spec.js tests/unit/practice-readiness-card-guard.spec.js tests/unit/frontend-copy-guard.spec.js tests/unit/mini-program-scope-guard.spec.js
+```
+
+Result: passed on 2026-06-01.
+
+- [x] **Step 6: Commit**
+
+Run:
+```bash
+git add src/pages/practice-sub/question-bank.vue tests/unit/question-bank-start-flow-guard.spec.js docs/frontend-experience-refactor-diary.md docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md
+git commit -m "fix: harden question bank start flow"
+```

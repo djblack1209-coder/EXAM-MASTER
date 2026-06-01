@@ -177,7 +177,7 @@
 
 <script setup>
 import { computed, ref, onMounted, onBeforeUnmount } from 'vue';
-import { safeNavigateBack } from '@/utils/safe-navigate';
+import { safeNavigateBack, safeNavigateTo } from '@/utils/safe-navigate';
 import { getPracticeNavigationTree } from '@/config/bank-registry.js';
 import { loadBankData } from './bank-data-loader.js';
 import { importFlashcardsToBank } from '@/utils/flashcard-adapter.js';
@@ -352,6 +352,12 @@ function buildYearSlotReadiness(slot) {
 }
 
 async function loadPaper(paper) {
+  if (!paper?.id) {
+    toast.error('试卷信息缺失');
+    return null;
+  }
+  if (loadingBankId.value) return null;
+
   loadingBankId.value = paper.id;
   try {
     const data = await loadBankData(paper.id);
@@ -376,33 +382,51 @@ async function loadPaper(paper) {
   } catch (error) {
     logger.error('[QuestionBank] load paper failed:', error);
     toast.error('试卷加载失败');
-    throw error;
+    return null;
   } finally {
     loadingBankId.value = '';
   }
 }
 
 async function loadAndStartPaper(paper) {
-  await loadPaper(paper);
-  startLoadedPaper(paper);
+  const result = await loadPaper(paper);
+  startLoadedPaper(paper, result);
 }
 
 async function refreshAndStartPaper(paper) {
-  await loadPaper(paper);
-  startLoadedPaper(paper);
+  const result = await loadPaper(paper);
+  startLoadedPaper(paper, result);
 }
 
-function startLoadedPaper(paper) {
+function getPaperQuestionIds(paper) {
+  if (!paper?.id) return [];
   const bank = storageService.get('v30_bank', []);
-  const ids = bank
+  return bank
     .filter((q) => q.paperId === paper.id || (q.source === paper.source && q.year === paper.year))
-    .map((q) => q.id);
+    .map((q) => q.id || q._id)
+    .filter(Boolean);
+}
+
+function buildPracticeUrl(paper, ids) {
+  const encodedPaperId = encodeURIComponent(paper.id);
   if (ids.length > 0) {
-    storageService.save('smart_review_ids', ids);
-    uni.navigateTo({ url: `/pages/practice-sub/do-quiz?mode=smart_review&paperId=${encodeURIComponent(paper.id)}` });
-    return;
+    return `/pages/practice-sub/do-quiz?mode=smart_review&paperId=${encodedPaperId}`;
   }
-  uni.navigateTo({ url: `/pages/practice-sub/do-quiz?paperId=${encodeURIComponent(paper.id)}` });
+  return `/pages/practice-sub/do-quiz?paperId=${encodedPaperId}`;
+}
+
+function startLoadedPaper(paper, loadResult) {
+  if (!loadResult) return false;
+
+  const ids = getPaperQuestionIds(paper);
+  if (ids.length === 0) {
+    toast.error('本卷暂无可练题目');
+    return false;
+  }
+
+  storageService.save('smart_review_ids', ids);
+  safeNavigateTo(buildPracticeUrl(paper, ids));
+  return true;
 }
 
 onMounted(() => {
