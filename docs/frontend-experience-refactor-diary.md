@@ -67,3 +67,11 @@
 - Added a pure session-feedback utility for correct streaks, combo milestones, combo levels, and compact feedback copy.
 - Connected correct-answer streak milestones to the quiz page with a restrained floating combo indicator and existing combo sound/haptic channel.
 - Product rule: combo feedback is milestone-based, not every-answer noise. Wrong answers, next-question navigation, page hide, and unload clear the feedback state.
+
+### 2026-06-01 Round 5
+
+- Product boundary clarified: the mini program is the lightweight commercial version, not the full future product.
+- Keep the mini program focused on public-course question banks, quiz sessions, progress, sound/haptic/combo feedback, wrong-question review, FSRS, profile, settings, login, privacy, and release evidence.
+- Defer professional-course index, school/major discovery, social/invite/PK/leaderboard/poster growth, paid AI tutor, and complex agent chat until after the mini program core is production-grade.
+- Removed the professional-course/material-index entry from the Practice page so the core center does not expose school/major discovery copy.
+- Removed unused invite/social/AI tutor styling leftovers from Settings. This keeps the lightweight app visually polished without implying unavailable features.

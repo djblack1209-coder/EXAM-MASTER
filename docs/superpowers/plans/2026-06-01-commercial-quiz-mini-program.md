@@ -12,6 +12,25 @@
 
 ## Phase Order
 
+## Mini Program Product Boundary
+
+The mini program is the lightweight commercial version, not the full future product. It should keep the polished visual system and the core useful functions, while deferring heavy or unclear surfaces until the mini program is production-ready.
+
+**Keep in mini program:**
+- public-course question banks;
+- quiz session, progress, sound, haptic, combo feedback, and result review;
+- wrong-question review and FSRS memory loop;
+- profile, settings, login, privacy, account deletion, and storage safety;
+- release-quality question-bank evidence and build checks.
+
+**Defer from mini program for now:**
+- professional-course index and school/major discovery surfaces;
+- social, invite, friend, PK, leaderboard, and poster-growth surfaces;
+- paid AI tutor or complex agent chat;
+- monetization UI before the free core loop is production-grade.
+
+**Platform rule:** Start iOS and Android only after the mini program has production-grade core flow, release evidence, security/privacy checks, and store-review materials.
+
 ### Phase 1: Core Practice Feel
 
 **Why first:** This is the product's main commercial surface. Users judge quality within the first few answers.

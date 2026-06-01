@@ -1337,80 +1337,6 @@ const onAvatarError = (e) => {
   text-transform: uppercase;
 }
 
-/* F002: online-badge 样式已移至 AITutorList.vue */
-
-/* 邀请好友入口卡片 */
-.invite-entry-card {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 24rpx 28rpx;
-  background-color: var(--em3d-card-bg);
-  border: 2rpx solid var(--em3d-border);
-  border-radius: 28rpx;
-  box-shadow: 0 var(--em3d-depth-md) 0 var(--em3d-border-shadow);
-}
-
-.invite-entry-left {
-  display: flex;
-  align-items: center;
-  flex: 1;
-}
-
-.invite-entry-info {
-  margin-left: 16rpx;
-  display: flex;
-  flex-direction: column;
-}
-
-.invite-entry-badge {
-  background: var(--danger, #ff4b4b);
-  color: #ffffff;
-  font-size: 20rpx;
-  padding: 6rpx 16rpx;
-  border-radius: 999rpx;
-  font-weight: 600;
-  white-space: nowrap;
-}
-
-.invite-badge-text {
-  color: #ffffff;
-  font-size: 20rpx;
-}
-
-.invite-btn-small {
-  display: flex;
-  align-items: center;
-  /* gap: 4px; -- replaced for Android WebView compat */
-  background: var(--cta-primary-bg);
-  color: var(--cta-primary-text);
-  padding: 6px 12px;
-  border: 2rpx solid var(--cta-primary-border);
-  border-radius: 16px;
-  font-size: 24rpx;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  -webkit-tap-highlight-color: transparent;
-  box-shadow: var(--cta-primary-shadow);
-}
-
-.invite-btn-small:active {
-  opacity: 0.85;
-  transform: scale(0.95);
-}
-
-.invite-icon {
-  font-size: 28rpx;
-}
-
-.invite-text-small {
-  font-size: 24rpx;
-  color: inherit;
-}
-
-/* F002: 智能导师列表样式已移至 AITutorList.vue */
-
 /* 设置选项列表 */
 .settings-list {
   background-color: transparent;
@@ -1589,48 +1515,6 @@ const onAvatarError = (e) => {
   height: 20px;
 }
 
-/* F002: 智能对话窗样式已移至 AIChatModal.vue */
-
-/* F002: 好友入口卡片样式已移至 FriendsEntryCard.vue */
-
-/* 问题9修复：邀请按钮重新设计 */
-.invite-btn-header {
-  display: flex;
-  align-items: center;
-  /* gap: 4px; -- replaced for Android WebView compat */
-  background: var(--cta-primary-bg);
-  color: var(--cta-primary-text);
-  padding: 8px 16px;
-  border: 2rpx solid var(--cta-primary-border);
-  border-radius: 20px;
-  font-size: 24rpx;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: var(--cta-primary-shadow);
-  -webkit-tap-highlight-color: transparent;
-}
-
-.invite-btn-header:hover {
-  box-shadow: var(--cta-primary-shadow);
-  opacity: 0.9;
-  transform: translateY(-1px);
-}
-
-.invite-btn-header:active {
-  opacity: 0.9;
-  transform: translateY(0) scale(0.98);
-}
-
-.invite-icon-header {
-  font-size: 28rpx;
-}
-
-.invite-text-header {
-  font-size: 24rpx;
-  color: inherit;
-}
-
 /* F002: 主题选择器样式已移至 ThemeSelectorModal.vue */
 
 .setting-arrow {
@@ -1638,8 +1522,6 @@ const onAvatarError = (e) => {
   color: var(--text-secondary);
   opacity: 0.4;
 }
-
-/* F002: 表情选择器样式已移至 AIChatModal.vue */
 
 /* F018: 骨架屏样式 */
 .skeleton-settings {

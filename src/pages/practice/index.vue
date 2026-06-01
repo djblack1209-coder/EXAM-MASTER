@@ -164,17 +164,6 @@
           </view>
         </view>
 
-        <view class="professional-entry" hover-class="btn-hover" @tap="goProfessionalIndex">
-          <view class="professional-copy">
-            <text class="professional-kicker">专业课</text>
-            <text class="professional-title">资料索引</text>
-            <text class="professional-desc">按院校、方向和科目代码查找资料，整理完成后再开放题卡。</text>
-          </view>
-          <view class="professional-action">
-            <BaseIcon name="file-text" :size="30" />
-          </view>
-        </view>
-
         <view v-if="hasBank" class="card status-card">
           <text class="status-text">已加载 {{ totalQuestions }} 题</text>
           <view class="progress-mini">
@@ -207,7 +196,6 @@
 
 <script>
 import CustomTabbar from '@/components/layout/custom-tabbar/custom-tabbar.vue';
-import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 import { useFlashcardBank } from '@/composables/useFlashcardBank.js';
 import { useBankStatus } from '@/composables/useBankStatus.js';
 import { useDynamicMixin } from '@/composables/useDynamicMixin.js';
@@ -219,7 +207,7 @@ import { logger } from '@/utils/logger.js';
 import { toast } from '@/utils/toast.js';
 
 export default {
-  components: { CustomTabbar, BaseIcon },
+  components: { CustomTabbar },
 
   setup() {
     const dynamicMixinHelper = useDynamicMixin();
@@ -521,10 +509,6 @@ export default {
       }
       // 智能复习：跳转到 do-quiz 的复习模式
       safeNavigateTo('/pages/practice-sub/do-quiz?mode=smart_review');
-    },
-
-    goProfessionalIndex() {
-      safeNavigateTo('/pages/practice-sub/professional-index');
     },
 
     trainingStatusLabel(status) {
@@ -858,20 +842,6 @@ $spacing-section: 24rpx;
   color: $primary;
 }
 
-.professional-entry {
-  @include em-mobile-pressable;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  box-sizing: border-box;
-  padding: 30rpx 28rpx;
-  margin-bottom: 24rpx;
-  border-radius: 28rpx;
-  background: #ffffff;
-  border: 1rpx solid rgba(0, 0, 0, 0.06);
-  box-shadow: 0 10rpx 28rpx rgba(15, 23, 42, 0.06);
-}
-
 .training-plan-card {
   box-sizing: border-box;
   padding: 30rpx 28rpx;
@@ -1001,46 +971,6 @@ $spacing-section: 24rpx;
   color: $text-main;
   font-size: 19rpx;
   font-weight: 850;
-}
-
-.professional-copy {
-  flex: 1;
-  min-width: 0;
-  padding-right: 20rpx;
-}
-
-.professional-kicker {
-  display: block;
-  color: $text-weak;
-  font-size: 20rpx;
-  font-weight: 900;
-}
-
-.professional-title {
-  display: block;
-  margin-top: 8rpx;
-  color: $text-main;
-  font-size: 32rpx;
-  font-weight: 850;
-}
-
-.professional-desc {
-  display: block;
-  margin-top: 8rpx;
-  color: $text-sub;
-  font-size: 24rpx;
-  line-height: 1.45;
-}
-
-.professional-action {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 68rpx;
-  height: 68rpx;
-  border-radius: 22rpx;
-  background: #f2f3f5;
-  color: $text-main;
 }
 
 .card {
@@ -1283,7 +1213,6 @@ $spacing-section: 24rpx;
 .dark-mode .track-label,
 .dark-mode .training-title,
 .dark-mode .training-day-track,
-.dark-mode .professional-title,
 .dark-mode .bank-name,
 .dark-mode .empty-track-title,
 .dark-mode .status-text,
@@ -1293,7 +1222,6 @@ $spacing-section: 24rpx;
 
 .dark-mode .practice-hero,
 .dark-mode .card,
-.dark-mode .professional-entry,
 .dark-mode .training-plan-card,
 .dark-mode .track-pill,
 .dark-mode .empty-track-card,
@@ -1306,7 +1234,6 @@ $spacing-section: 24rpx;
 .dark-mode .subject-tabs,
 .dark-mode .practice-signal,
 .dark-mode .training-day,
-.dark-mode .professional-action,
 .dark-mode .mode-chip,
 .dark-mode .training-status,
 .dark-mode .practice-command.secondary {
@@ -1318,7 +1245,6 @@ $spacing-section: 24rpx;
 .dark-mode .section-meta,
 .dark-mode .signal-label,
 .dark-mode .training-meta,
-.dark-mode .professional-desc,
 .dark-mode .bank-desc,
 .dark-mode .bank-caution,
 .dark-mode .empty-track-desc,
