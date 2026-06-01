@@ -216,3 +216,38 @@ Run:
 git add src/pages/index/index.vue src/pages/profile/index.vue src/pages/settings/index.vue tests/unit/shell-navigation-guard.spec.js docs/frontend-experience-refactor-diary.md docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md
 git commit -m "chore: standardize core shell navigation"
 ```
+
+### Task 6: Guard Core Shell Page States
+
+**Files:**
+- Modify: `src/pages/index/index.vue`
+- Create: `tests/unit/core-shell-state-guard.spec.js`
+- Modify: `docs/frontend-experience-refactor-diary.md`
+- Modify: `docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md`
+
+- [x] **Step 1: Add Home loading/error/retry surface**
+
+Home should keep its hero usable while surfacing data sync and load-failure states above the first viewport.
+
+- [x] **Step 2: Add core shell state guard**
+
+Assert that Home, Practice, Profile, and Settings keep explicit loading, empty, login/error, and bottom safe-area affordances.
+
+- [x] **Step 3: Run focused validation**
+
+Run:
+```bash
+npm run lint -- src/pages/index/index.vue tests/unit/core-shell-state-guard.spec.js
+npm run test -- tests/unit/core-shell-state-guard.spec.js tests/unit/shell-navigation-guard.spec.js tests/unit/mini-program-scope-guard.spec.js tests/unit/frontend-copy-guard.spec.js tests/unit/practice-dynamic-methods.spec.js
+npm run build:mp-weixin
+```
+
+Result: passed on 2026-06-01.
+
+- [x] **Step 4: Commit**
+
+Run:
+```bash
+git add src/pages/index/index.vue tests/unit/core-shell-state-guard.spec.js docs/frontend-experience-refactor-diary.md docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md
+git commit -m "feat: guard core shell page states"
+```

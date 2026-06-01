@@ -89,3 +89,10 @@
 - Home, Profile, and Settings now route their user-triggered jumps through `safeNavigateTo`/`safeNavigateBack`, so tab pages, ordinary pages, and fallback behavior share one navigation path.
 - Added `shell-navigation-guard` to prevent `uni.navigateTo`, `uni.switchTab`, `uni.redirectTo`, or `uni.reLaunch` from being reintroduced directly in Home, Practice, Profile, or Settings.
 - Product rule: shell pages should not own navigation fallback logic. They express intent; the shared safe-navigation utility owns route type detection, transition defaults, and fallbacks.
+
+### 2026-06-01 Round 8
+
+- Continued Phase 2 by making the Home shell resilient to data-loading failures without blanking the first screen.
+- Added a compact loading/error/retry state strip above the Home hero. It keeps the page usable if local progress or bank status cannot be read, while still surfacing a clear recovery action.
+- Added `core-shell-state-guard` so Home, Practice, Profile, and Settings retain explicit loading, empty, error/login, and bottom safe-area affordances.
+- Product rule: lightweight pages may be simple, but every core page must show a deliberate state when data is loading, missing, failed, or positioned near the tabbar.
