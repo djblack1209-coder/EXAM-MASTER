@@ -251,3 +251,40 @@ Run:
 git add src/pages/index/index.vue tests/unit/core-shell-state-guard.spec.js docs/frontend-experience-refactor-diary.md docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md
 git commit -m "feat: guard core shell page states"
 ```
+
+### Task 7: Guard Core Shell Theme Synchronization
+
+**Files:**
+- Modify: `src/pages/index/index.vue`
+- Modify: `src/pages/practice/index.vue`
+- Modify: `src/pages/profile/index.vue`
+- Create: `tests/unit/core-shell-theme-guard.spec.js`
+- Modify: `docs/frontend-experience-refactor-diary.md`
+- Modify: `docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md`
+
+- [x] **Step 1: Normalize theme event listeners**
+
+Home, Practice, and Profile should listen to both `themeUpdate` and `updateTheme`, then unsubscribe from both on unload.
+
+- [x] **Step 2: Add dark-mode shell guard**
+
+Assert that Home, Practice, Profile, and Settings keep dark-mode root binding, theme event wiring, and key dark surface CSS.
+
+- [x] **Step 3: Run focused validation**
+
+Run:
+```bash
+npm run lint -- src/pages/index/index.vue src/pages/practice/index.vue src/pages/profile/index.vue tests/unit/core-shell-theme-guard.spec.js
+npm run test -- tests/unit/core-shell-theme-guard.spec.js tests/unit/core-shell-state-guard.spec.js tests/unit/shell-navigation-guard.spec.js tests/unit/mini-program-scope-guard.spec.js tests/unit/theme.spec.js tests/unit/theme-store.spec.js
+npm run build:mp-weixin
+```
+
+Result: passed on 2026-06-01.
+
+- [x] **Step 4: Commit**
+
+Run:
+```bash
+git add src/pages/index/index.vue src/pages/practice/index.vue src/pages/profile/index.vue tests/unit/core-shell-theme-guard.spec.js docs/frontend-experience-refactor-diary.md docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md
+git commit -m "chore: guard core shell theme sync"
+```
