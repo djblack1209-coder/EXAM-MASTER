@@ -822,3 +822,45 @@ Run:
 git add src/pages/practice-sub/question-bank.vue tests/unit/question-bank-start-flow-guard.spec.js docs/frontend-experience-refactor-diary.md docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md
 git commit -m "fix: harden question bank start flow"
 ```
+
+### Task 21: Surface Local Question Bank Sync State
+
+**Files:**
+- Modify: `src/pages/practice-sub/question-bank.vue`
+- Create: `tests/unit/question-bank-local-sync-guard.spec.js`
+- Modify: `docs/frontend-experience-refactor-diary.md`
+- Modify: `docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md`
+
+- [x] **Step 1: Derive local paper counts**
+
+Build a lightweight local paper stats index from `v30_bank` paper IDs and refresh it after successful sync.
+
+- [x] **Step 2: Show sync state in selected-year detail**
+
+Display `本地状态` and `可练题目` for clickable selected slots.
+
+- [x] **Step 3: Show sync state in ready paper cards**
+
+Add a compact local sync pill and question count to each ready paper card.
+
+- [x] **Step 4: Add local sync guard**
+
+Assert loaded and unsynced rendering, count visibility, refresh wiring, and dark-mode coverage.
+
+- [x] **Step 5: Run focused validation**
+
+Run:
+```bash
+npm run lint -- src/pages/practice-sub/question-bank.vue tests/unit/question-bank-local-sync-guard.spec.js tests/unit/question-bank-start-flow-guard.spec.js
+npm run test -- tests/unit/question-bank-local-sync-guard.spec.js tests/unit/question-bank-start-flow-guard.spec.js tests/unit/question-bank-slot-readiness-guard.spec.js tests/unit/question-bank-year-map.spec.js tests/unit/practice-readiness-card-guard.spec.js tests/unit/frontend-copy-guard.spec.js tests/unit/mini-program-scope-guard.spec.js
+```
+
+Result: passed on 2026-06-01.
+
+- [x] **Step 6: Commit**
+
+Run:
+```bash
+git add src/pages/practice-sub/question-bank.vue tests/unit/question-bank-local-sync-guard.spec.js docs/frontend-experience-refactor-diary.md docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md
+git commit -m "feat: surface question bank local sync"
+```

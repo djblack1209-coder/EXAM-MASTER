@@ -205,3 +205,11 @@
 - Loading failures are contained inside the question-bank page with a clear toast instead of bubbling into an unhandled rejected action.
 - The page now verifies that the selected paper actually produced usable local question IDs before writing `smart_review_ids` and navigating.
 - Added `question-bank-start-flow-guard` so direct quiz navigation, empty-paper jumps, and missing start-path feedback cannot regress.
+
+### 2026-06-01 Round 23
+
+- Continued Phase 3 by making local question-bank sync state visible before users enter a paper.
+- The selected year detail now shows `本地状态` and `可练题目`, distinguishing `未同步 / 待同步` from `已同步 / N 题`.
+- Ready paper cards now carry the same local sync pill and question count, so list-level and detail-level status match.
+- The local count is derived from `v30_bank` paper IDs and refreshed after every successful sync, rather than trusting the historical loaded-bank flag alone.
+- Added `question-bank-local-sync-guard` to protect loaded/unsynced rendering, count visibility, refresh wiring, and dark-mode coverage.

@@ -90,6 +90,16 @@
         <text class="slot-desc">{{ selectedYearSlot.description }}</text>
         <text v-if="selectedYearSlot.caution" class="slot-caution">{{ selectedYearSlot.caution }}</text>
         <text v-else class="slot-caution">{{ selectedYearSlot.disabledReason }}</text>
+        <view v-if="selectedYearSlot.clickable" class="local-sync-strip">
+          <view class="local-sync-item">
+            <text class="local-sync-label">本地状态</text>
+            <text class="local-sync-value">{{ getPaperLocalState(selectedYearSlot).label }}</text>
+          </view>
+          <view class="local-sync-item">
+            <text class="local-sync-label">可练题目</text>
+            <text class="local-sync-value">{{ getPaperLocalState(selectedYearSlot).countText }}</text>
+          </view>
+        </view>
         <view class="slot-readiness-panel" :class="`status-${selectedYearSlot.status}`">
           <view class="slot-readiness-item">
             <view class="readiness-label-row">
@@ -129,6 +139,12 @@
               <text v-if="paper.releaseLabel" class="paper-release-label">{{ paper.releaseLabel }}</text>
               <text class="paper-desc">{{ paper.description }}</text>
               <text v-if="paper.caution" class="paper-caution">{{ paper.caution }}</text>
+              <view class="paper-local-row">
+                <text class="paper-local-pill" :class="{ synced: getPaperLocalState(paper).isSynced }">
+                  {{ getPaperLocalState(paper).label }}
+                </text>
+                <text class="paper-local-count">{{ getPaperLocalState(paper).countText }}</text>
+              </view>
               <view class="paper-section-row">
                 <text v-for="section in paper.sections || []" :key="section" class="paper-section">{{ section }}</text>
               </view>
@@ -233,6 +249,7 @@ const selectedTrackSlotText = computed(() => {
   return `正式 ${ready} · 整理中 ${organizing} · 待入库 ${missing}`;
 });
 const selectedYearSlotReadiness = computed(() => buildYearSlotReadiness(selectedYearSlot.value));
+const localPaperStats = ref(buildLocalPaperStats());
 
 function goBack() {
   safeNavigateBack();
@@ -311,6 +328,33 @@ function isBankLoaded(bankId) {
   return loadedBankIds.value.has(bankId);
 }
 
+function buildLocalPaperStats() {
+  const stats = {};
+  const bank = storageService.get('v30_bank', []) || [];
+  for (const item of bank) {
+    const paperId = item?.paperId || '';
+    if (!paperId) continue;
+    stats[paperId] = (stats[paperId] || 0) + 1;
+  }
+  return stats;
+}
+
+function refreshLocalPaperStats() {
+  localPaperStats.value = buildLocalPaperStats();
+}
+
+function getPaperLocalState(paper) {
+  const paperId = paper?.bankId || paper?.id || '';
+  const count = Number(localPaperStats.value[paperId] || 0);
+  const isSynced = count > 0 || isBankLoaded(paperId);
+  return {
+    count,
+    isSynced,
+    label: isSynced ? '已同步' : '未同步',
+    countText: count > 0 ? `${count} 题` : '待同步'
+  };
+}
+
 function qualityLabel(quality) {
   if (quality === 'needs_passage') return '篇章材料完善中';
   if (quality === 'needs_review') return '题目与答案说明校对中';
@@ -376,6 +420,7 @@ async function loadPaper(paper) {
       storageService.save('loaded_flashcard_banks', loaded);
     }
     loadedBankIds.value = new Set(loaded);
+    refreshLocalPaperStats();
     const changed = result.imported + (result.updated || 0);
     toast.success(changed > 0 ? `已同步 ${changed} 题` : '题库已是最新');
     return result;
@@ -705,6 +750,37 @@ onMounted(() => {
   font-size: 22rpx;
   line-height: 1.45;
 }
+.local-sync-strip {
+  display: flex;
+  margin-top: 18rpx;
+  padding: 18rpx 20rpx;
+  border-radius: 18rpx;
+  background: #f6f7f9;
+  border: 1rpx solid rgba(0, 0, 0, 0.04);
+}
+.local-sync-item {
+  flex: 1;
+  min-width: 0;
+}
+.local-sync-item + .local-sync-item {
+  margin-left: 18rpx;
+  padding-left: 18rpx;
+  border-left: 1rpx solid rgba(0, 0, 0, 0.06);
+}
+.local-sync-label {
+  display: block;
+  color: #8e8e93;
+  font-size: 19rpx;
+  font-weight: 900;
+}
+.local-sync-value {
+  display: block;
+  margin-top: 8rpx;
+  color: #1d1d1f;
+  font-size: 24rpx;
+  font-weight: 860;
+  line-height: 1.25;
+}
 .slot-readiness-panel {
   display: flex;
   margin-top: 18rpx;
@@ -824,6 +900,32 @@ onMounted(() => {
   color: #8e8e93;
   font-size: 22rpx;
   line-height: 1.45;
+}
+.paper-local-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-top: 12rpx;
+}
+.paper-local-pill {
+  margin-right: 10rpx;
+  margin-bottom: 8rpx;
+  padding: 5rpx 12rpx;
+  border-radius: 999rpx;
+  background: #eef0f3;
+  color: #8e8e93;
+  font-size: 20rpx;
+  font-weight: 850;
+}
+.paper-local-pill.synced {
+  background: rgba(31, 122, 77, 0.1);
+  color: #1f7a4d;
+}
+.paper-local-count {
+  margin-bottom: 8rpx;
+  color: #5f6672;
+  font-size: 21rpx;
+  font-weight: 760;
 }
 .paper-section-row {
   display: flex;
@@ -957,6 +1059,7 @@ onMounted(() => {
 .dark-mode .section-title,
 .dark-mode .slot-year,
 .dark-mode .slot-title,
+.dark-mode .local-sync-value,
 .dark-mode .readiness-value,
 .dark-mode .paper-year,
 .dark-mode .paper-name,
@@ -979,7 +1082,9 @@ onMounted(() => {
 }
 .dark-mode .hero-metric,
 .dark-mode .year-slot,
+.dark-mode .local-sync-strip,
 .dark-mode .paper-section,
+.dark-mode .paper-local-pill,
 .dark-mode .paper-btn.muted {
   background: #292e39;
   border-color: rgba(255, 255, 255, 0.07);
@@ -1014,6 +1119,10 @@ onMounted(() => {
   background: rgba(35, 134, 91, 0.18);
   color: #7ee0ac;
 }
+.dark-mode .paper-local-pill.synced {
+  background: rgba(35, 134, 91, 0.18);
+  color: #7ee0ac;
+}
 .dark-mode .paper-btn.muted {
   color: #8f98a8;
 }
@@ -1023,6 +1132,7 @@ onMounted(() => {
 .dark-mode .section-meta,
 .dark-mode .slot-kicker,
 .dark-mode .slot-caution,
+.dark-mode .local-sync-label,
 .dark-mode .readiness-label,
 .dark-mode .pending-sub,
 .dark-mode .pending-reason,
@@ -1036,10 +1146,12 @@ onMounted(() => {
 .dark-mode .slot-desc,
 .dark-mode .paper-desc,
 .dark-mode .paper-caution,
+.dark-mode .paper-local-count,
 .dark-mode .paper-section {
   color: #c4cad4;
 }
 .dark-mode .slot-readiness-divider,
+.dark-mode .local-sync-item + .local-sync-item,
 .dark-mode .pending-item {
   border-color: rgba(255, 255, 255, 0.08);
 }
