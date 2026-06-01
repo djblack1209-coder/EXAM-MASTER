@@ -1,0 +1,38 @@
+【微信公众号: HHA]                           全年免费分享各类资源                           【组信公众号: HMA]
+连续型随机变量的概率密度 F(x) 的性质，。 fF (xd -1
+Len
+在本题中， 由于 fi(X) 与 和 (X)均为连续函数， 故它们的分布函数 F(x) 与 F(x) 也连续 .根据概率密度的性质，
+应有 f(X) 非负，且 [LF (x)dx = 1 在四个选项中， 只有 CD) 选项满足
+[If(x)Fz(x) +和(OOF(x)Hx = [Fe(x)dFi(x) + [FI(xdFz(x)
+4o          +0
+=Fi(x)Fo(x)|_22— Fi (x)dFo(x) + J Fi(x)dFo(x) =1
+故选CD)
+(8) 设总体 X 服从参数为 和(7 > 0) 的泊松分布， Xi Xa ,Xn(n>2) 为来自该总体的简单随机样本，则对
+ie    ig        外 watt
+FSi T,=—LD X, MT, =一一二 Xi +一Xu, 有( )
+Nia        n-lis    n
+(A) ET> ET,.DT,>DT,    (8) ET,>ET,, DT,<DT,
+(C) ET< ET,,DT,>DT,     (D) ET,<ET,, DT,<DT,
+【答案】 (D)
+【详解】本题涉及到的主要知识点:
+(1) 泊松分布 X P(A) 数学期望 EX =入，方差 DX =A
+(2) E(cCX)=cEX ，E(X +Y)=EX +EY，D(cX)=csDX ，D(X +Y)=DX+DY (X 与Y相互独
+立)
+在本题中，由于 X,, X26, X, 独立同分布，量“EXi = DXi =入 >0，i =1.2…,n，从而
+13     4 a8     1        ,
+E(T, )=E( = X)= E(ZX)= n&(X )=h>
+nia     n   it     n
+(1 glen 1 ee    1
+E(T, )=E|——= X +-X, [> —E(Z X,)+-E(X,)
+\n-1i4    n   ) n-1 ‘ia    n
+1           1            1      ft}
+=    (Nn -1)E(X\) + E(X,) =E(X FE (X Jal 1t—
+n-1                n                  n         \ ny/
+故E(T; )<E(T2 )
+又D (T; )=D(4E Xi) = n D(x)=4D(x )=生，
+nis     n          n       n
+4.    1       1        as pci   为   了
+D(T2 )=D(—-2 X +—X,) = (n-1) AF] = FG > =D)»
+n 一1 i二   n   (n-1)       n  n-1 n  n
+故选CD)
+UAE: 研池大报】                           全年免费分享各类资源                           【微信公众号: HK]

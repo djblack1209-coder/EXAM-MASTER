@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-05-29T16:23:42.099Z",
+  "generatedAt": "2026-05-31T02:52:19.620Z",
   "verdict": "blocked",
   "sources": {
     "questionAudit": "data/question-bank-release-audit.json",
@@ -12,17 +12,17 @@
   },
   "summary": {
     "canPublish": false,
-    "blockerItemCount": 97,
-    "p0Count": 97,
+    "blockerItemCount": 81,
+    "p0Count": 81,
     "publicCourseRequiredSlots": 132,
-    "publicCoursePublishedSlots": 52,
+    "publicCoursePublishedSlots": 67,
     "publicCoursePendingSlots": 0,
     "publicCoursePendingCoverageBlockers": 0,
-    "publicCourseCoverageGaps": 80,
-    "publicCourseBlockerItemCount": 95,
-    "publicCourseBlockedSlotCount": 80,
+    "publicCourseCoverageGaps": 65,
+    "publicCourseBlockerItemCount": 80,
+    "publicCourseBlockedSlotCount": 66,
     "publicCourseLocalSourceSummary": {
-      "totalBlockedSlots": 80,
+      "totalBlockedSlots": 66,
       "pairedReadableSlots": 0,
       "answerBlockedSlots": 0,
       "paperBlockedSlots": 0,
@@ -32,7 +32,7 @@
       "blockedLocalFileSlots": 0,
       "unpairedReadableSlots": 0,
       "missingLocalFileSlots": 0,
-      "notAvailableSlots": 80,
+      "notAvailableSlots": 66,
       "unknownSlots": 0
     },
     "sourceManifestHumanRegistrationQueue": {
@@ -53,7 +53,7 @@
     "enabledBankAnswerEvidenceBlockers": 0,
     "cleanedFlashcardBlockers": 0,
     "externalBlockers": 1,
-    "wechatDevtoolsSmokeStatus": "blocked",
+    "wechatDevtoolsSmokeStatus": "passed",
     "professionalIndexMode": "index_only"
   },
   "workstreams": {
@@ -65,18 +65,10 @@
         "external:wechatDevice:wechat_device_evidence_not_passed"
       ]
     },
-    "wechat_devtools_smoke": {
-      "status": "blocked",
-      "itemCount": 1,
-      "p0Count": 1,
-      "sampleItems": [
-        "wechat_devtools_smoke:not_passed"
-      ]
-    },
     "public_course_coverage": {
       "status": "blocked",
-      "itemCount": 80,
-      "p0Count": 80,
+      "itemCount": 65,
+      "p0Count": 65,
       "sampleItems": [
         "coverage_missing:english2:2005",
         "coverage_missing:math1:2005",
@@ -968,97 +960,6 @@
       "nextAction": "在 Source Manifest 中补齐同槽位 official_paper 试卷+答案或真题及答案合并 PDF，要求有 remotePath、contentHash，且风险标记不阻断发布。"
     },
     {
-      "slotKey": "math1:2008",
-      "track": "math1",
-      "trackLabel": "数学一",
-      "year": 2008,
-      "blockerCode": "missing_public_course_bank",
-      "slotStatus": "missing",
-      "blockers": [
-        "missing_public_course_bank"
-      ],
-      "blockerItemIds": [
-        "coverage_missing:math1:2008"
-      ],
-      "sourceEvidenceStatus": "publishable_source_present",
-      "sourceCandidateSummary": "source manifest 已发现 1 个候选，其中 official_paper=1；当前阻断: 未命中可发布条件",
-      "sourceCandidateSamples": [
-        {
-          "sourceId": "src_98dbae1b54d51d2784cc1728",
-          "status": "discovered",
-          "sourceType": "official_paper",
-          "sourceRole": "",
-          "inferredSourceRole": "paper_answer",
-          "roleSource": "filename",
-          "autoPairEligible": true,
-          "answerEvidenceStatus": "",
-          "riskFlags": [],
-          "publishBlocked": false,
-          "blockReasons": [],
-          "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学一真题答案解析/2008-数一真题、标准答案及解析 .pdf",
-          "sourceUrl": ""
-        }
-      ],
-      "localSourceAuditStatus": "not_available",
-      "localSourceAuditSummary": "",
-      "localSourceAuditSamples": [],
-      "localSourceAuditDiagnostics": {
-        "status": "not_available",
-        "sourceCount": 0,
-        "usableTextLayerCount": 0,
-        "needsOcrCount": 0,
-        "blockedCount": 0,
-        "paperLikeCount": 0,
-        "answerLikeCount": 0,
-        "usablePaperLikeCount": 0,
-        "usableAnswerLikeCount": 0,
-        "blockedPaperLikeCount": 0,
-        "blockedAnswerLikeCount": 0,
-        "roleCounts": {},
-        "samples": []
-      },
-      "sourceManifestRegistrationChecklist": {
-        "status": "blocked_before_auto_pair",
-        "readyForHumanVerification": false,
-        "requiredManifestFields": [
-          "eligible=true",
-          "status=discovered|verified|published",
-          "sourceType=official_paper",
-          "contentHash|sha256|fileSha256|sourceHash",
-          "remotePath|sourceUrl|provenanceUrl",
-          "sourceRole inferred as paper+answer or paper_answer",
-          "legalReview.publishBlocked=false",
-          "riskFlags excludes answer_missing,brand_leak,copyright_review_required,ad_or_promo"
-        ],
-        "verifiedSourceRegistryFields": [
-          "localPath",
-          "sourceUrl",
-          "track",
-          "year",
-          "sourceType=official_paper",
-          "answerEvidenceStatus=matched",
-          "expectedSha256",
-          "verifiedBy",
-          "evidenceNote"
-        ],
-        "humanVerificationSteps": [],
-        "postRegistrationCommands": [],
-        "localFileCandidates": [],
-        "verifiedSourceRegistryDrafts": [],
-        "manifestCandidateIds": [
-          "src_98dbae1b54d51d2784cc1728"
-        ],
-        "blockers": [
-          "local_source_audit_not_available"
-        ],
-        "note": "Resolve listed local-source blockers before the slot can be treated as an auto-paired official source."
-      },
-      "prerequisiteBlockers": [],
-      "coverageAction": "已有可发布题源证据时，完成题卡清洗、答案匹配、证据哈希，再按 registry 规范注册题库。",
-      "sourceEvidenceAction": "",
-      "nextAction": "已有可发布题源证据时，完成题卡清洗、答案匹配、证据哈希，再按 registry 规范注册题库。"
-    },
-    {
       "slotKey": "english2:2009",
       "track": "english2",
       "trackLabel": "英语二",
@@ -1194,97 +1095,6 @@
       "nextAction": "在 Source Manifest 中补齐同槽位 official_paper 试卷+答案或真题及答案合并 PDF，要求有 remotePath、contentHash，且风险标记不阻断发布。"
     },
     {
-      "slotKey": "math1:2009",
-      "track": "math1",
-      "trackLabel": "数学一",
-      "year": 2009,
-      "blockerCode": "missing_public_course_bank",
-      "slotStatus": "missing",
-      "blockers": [
-        "missing_public_course_bank"
-      ],
-      "blockerItemIds": [
-        "coverage_missing:math1:2009"
-      ],
-      "sourceEvidenceStatus": "publishable_source_present",
-      "sourceCandidateSummary": "source manifest 已发现 1 个候选，其中 official_paper=1；当前阻断: 未命中可发布条件",
-      "sourceCandidateSamples": [
-        {
-          "sourceId": "src_bc3eff652947c7daeed22cce",
-          "status": "discovered",
-          "sourceType": "official_paper",
-          "sourceRole": "",
-          "inferredSourceRole": "paper_answer",
-          "roleSource": "filename",
-          "autoPairEligible": true,
-          "answerEvidenceStatus": "",
-          "riskFlags": [],
-          "publishBlocked": false,
-          "blockReasons": [],
-          "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学一真题答案解析/2009-数一真题、标准答案及解析 .pdf",
-          "sourceUrl": ""
-        }
-      ],
-      "localSourceAuditStatus": "not_available",
-      "localSourceAuditSummary": "",
-      "localSourceAuditSamples": [],
-      "localSourceAuditDiagnostics": {
-        "status": "not_available",
-        "sourceCount": 0,
-        "usableTextLayerCount": 0,
-        "needsOcrCount": 0,
-        "blockedCount": 0,
-        "paperLikeCount": 0,
-        "answerLikeCount": 0,
-        "usablePaperLikeCount": 0,
-        "usableAnswerLikeCount": 0,
-        "blockedPaperLikeCount": 0,
-        "blockedAnswerLikeCount": 0,
-        "roleCounts": {},
-        "samples": []
-      },
-      "sourceManifestRegistrationChecklist": {
-        "status": "blocked_before_auto_pair",
-        "readyForHumanVerification": false,
-        "requiredManifestFields": [
-          "eligible=true",
-          "status=discovered|verified|published",
-          "sourceType=official_paper",
-          "contentHash|sha256|fileSha256|sourceHash",
-          "remotePath|sourceUrl|provenanceUrl",
-          "sourceRole inferred as paper+answer or paper_answer",
-          "legalReview.publishBlocked=false",
-          "riskFlags excludes answer_missing,brand_leak,copyright_review_required,ad_or_promo"
-        ],
-        "verifiedSourceRegistryFields": [
-          "localPath",
-          "sourceUrl",
-          "track",
-          "year",
-          "sourceType=official_paper",
-          "answerEvidenceStatus=matched",
-          "expectedSha256",
-          "verifiedBy",
-          "evidenceNote"
-        ],
-        "humanVerificationSteps": [],
-        "postRegistrationCommands": [],
-        "localFileCandidates": [],
-        "verifiedSourceRegistryDrafts": [],
-        "manifestCandidateIds": [
-          "src_bc3eff652947c7daeed22cce"
-        ],
-        "blockers": [
-          "local_source_audit_not_available"
-        ],
-        "note": "Resolve listed local-source blockers before the slot can be treated as an auto-paired official source."
-      },
-      "prerequisiteBlockers": [],
-      "coverageAction": "已有可发布题源证据时，完成题卡清洗、答案匹配、证据哈希，再按 registry 规范注册题库。",
-      "sourceEvidenceAction": "",
-      "nextAction": "已有可发布题源证据时，完成题卡清洗、答案匹配、证据哈希，再按 registry 规范注册题库。"
-    },
-    {
       "slotKey": "english2:2010",
       "track": "english2",
       "trackLabel": "英语二",
@@ -1408,101 +1218,6 @@
       "nextAction": "已有可发布题源证据时，完成题卡清洗、答案匹配、证据哈希，再按 registry 规范注册题库。"
     },
     {
-      "slotKey": "math1:2010",
-      "track": "math1",
-      "trackLabel": "数学一",
-      "year": 2010,
-      "blockerCode": "missing_public_course_bank",
-      "slotStatus": "missing",
-      "blockers": [
-        "missing_public_course_bank",
-        "missing_publishable_official_source"
-      ],
-      "blockerItemIds": [
-        "coverage_missing:math1:2010",
-        "source_evidence_missing:math1:2010"
-      ],
-      "sourceEvidenceStatus": "missing_publishable_official_source",
-      "sourceCandidateSummary": "source manifest 已发现 1 个候选，其中 official_paper=1；当前阻断: slotPair=missing_paper(1)",
-      "sourceCandidateSamples": [
-        {
-          "sourceId": "src_b3e24571a6135f06d1988818",
-          "status": "discovered",
-          "sourceType": "official_paper",
-          "sourceRole": "",
-          "inferredSourceRole": "answer",
-          "roleSource": "filename",
-          "autoPairEligible": true,
-          "answerEvidenceStatus": "",
-          "riskFlags": [],
-          "publishBlocked": false,
-          "blockReasons": [],
-          "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学一真题答案解析/2010-数一标准答案及解析 .pdf",
-          "sourceUrl": ""
-        }
-      ],
-      "localSourceAuditStatus": "not_available",
-      "localSourceAuditSummary": "",
-      "localSourceAuditSamples": [],
-      "localSourceAuditDiagnostics": {
-        "status": "not_available",
-        "sourceCount": 0,
-        "usableTextLayerCount": 0,
-        "needsOcrCount": 0,
-        "blockedCount": 0,
-        "paperLikeCount": 0,
-        "answerLikeCount": 0,
-        "usablePaperLikeCount": 0,
-        "usableAnswerLikeCount": 0,
-        "blockedPaperLikeCount": 0,
-        "blockedAnswerLikeCount": 0,
-        "roleCounts": {},
-        "samples": []
-      },
-      "sourceManifestRegistrationChecklist": {
-        "status": "blocked_before_auto_pair",
-        "readyForHumanVerification": false,
-        "requiredManifestFields": [
-          "eligible=true",
-          "status=discovered|verified|published",
-          "sourceType=official_paper",
-          "contentHash|sha256|fileSha256|sourceHash",
-          "remotePath|sourceUrl|provenanceUrl",
-          "sourceRole inferred as paper+answer or paper_answer",
-          "legalReview.publishBlocked=false",
-          "riskFlags excludes answer_missing,brand_leak,copyright_review_required,ad_or_promo"
-        ],
-        "verifiedSourceRegistryFields": [
-          "localPath",
-          "sourceUrl",
-          "track",
-          "year",
-          "sourceType=official_paper",
-          "answerEvidenceStatus=matched",
-          "expectedSha256",
-          "verifiedBy",
-          "evidenceNote"
-        ],
-        "humanVerificationSteps": [],
-        "postRegistrationCommands": [],
-        "localFileCandidates": [],
-        "verifiedSourceRegistryDrafts": [],
-        "manifestCandidateIds": [
-          "src_b3e24571a6135f06d1988818"
-        ],
-        "blockers": [
-          "local_source_audit_not_available"
-        ],
-        "note": "Resolve listed local-source blockers before the slot can be treated as an auto-paired official source."
-      },
-      "prerequisiteBlockers": [
-        "missing_publishable_official_source"
-      ],
-      "coverageAction": "在 Source Manifest 中补齐同槽位 official_paper 试卷+答案或真题及答案合并 PDF，要求有 remotePath、contentHash，且风险标记不阻断发布。再进入题卡清洗和 registry 注册。",
-      "sourceEvidenceAction": "在 Source Manifest 中补齐同槽位 official_paper 试卷+答案或真题及答案合并 PDF，要求有 remotePath、contentHash，且风险标记不阻断发布。",
-      "nextAction": "在 Source Manifest 中补齐同槽位 official_paper 试卷+答案或真题及答案合并 PDF，要求有 remotePath、contentHash，且风险标记不阻断发布。"
-    },
-    {
       "slotKey": "english2:2011",
       "track": "english2",
       "trackLabel": "英语二",
@@ -1614,188 +1329,6 @@
           "src_8bd9ac5ed7ab193f2a431a90",
           "src_34920bd67b9ce30f9cbc9b25",
           "src_c9921e1888e48f26536951d8"
-        ],
-        "blockers": [
-          "local_source_audit_not_available"
-        ],
-        "note": "Resolve listed local-source blockers before the slot can be treated as an auto-paired official source."
-      },
-      "prerequisiteBlockers": [],
-      "coverageAction": "已有可发布题源证据时，完成题卡清洗、答案匹配、证据哈希，再按 registry 规范注册题库。",
-      "sourceEvidenceAction": "",
-      "nextAction": "已有可发布题源证据时，完成题卡清洗、答案匹配、证据哈希，再按 registry 规范注册题库。"
-    },
-    {
-      "slotKey": "math1:2011",
-      "track": "math1",
-      "trackLabel": "数学一",
-      "year": 2011,
-      "blockerCode": "missing_public_course_bank",
-      "slotStatus": "missing",
-      "blockers": [
-        "missing_public_course_bank"
-      ],
-      "blockerItemIds": [
-        "coverage_missing:math1:2011"
-      ],
-      "sourceEvidenceStatus": "publishable_source_present",
-      "sourceCandidateSummary": "source manifest 已发现 1 个候选，其中 official_paper=1；当前阻断: 未命中可发布条件",
-      "sourceCandidateSamples": [
-        {
-          "sourceId": "src_478718437ac46f25dd795a67",
-          "status": "discovered",
-          "sourceType": "official_paper",
-          "sourceRole": "",
-          "inferredSourceRole": "paper_answer",
-          "roleSource": "filename",
-          "autoPairEligible": true,
-          "answerEvidenceStatus": "",
-          "riskFlags": [],
-          "publishBlocked": false,
-          "blockReasons": [],
-          "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学一真题答案解析/2011-数一考研真题及答案 .pdf",
-          "sourceUrl": ""
-        }
-      ],
-      "localSourceAuditStatus": "not_available",
-      "localSourceAuditSummary": "",
-      "localSourceAuditSamples": [],
-      "localSourceAuditDiagnostics": {
-        "status": "not_available",
-        "sourceCount": 0,
-        "usableTextLayerCount": 0,
-        "needsOcrCount": 0,
-        "blockedCount": 0,
-        "paperLikeCount": 0,
-        "answerLikeCount": 0,
-        "usablePaperLikeCount": 0,
-        "usableAnswerLikeCount": 0,
-        "blockedPaperLikeCount": 0,
-        "blockedAnswerLikeCount": 0,
-        "roleCounts": {},
-        "samples": []
-      },
-      "sourceManifestRegistrationChecklist": {
-        "status": "blocked_before_auto_pair",
-        "readyForHumanVerification": false,
-        "requiredManifestFields": [
-          "eligible=true",
-          "status=discovered|verified|published",
-          "sourceType=official_paper",
-          "contentHash|sha256|fileSha256|sourceHash",
-          "remotePath|sourceUrl|provenanceUrl",
-          "sourceRole inferred as paper+answer or paper_answer",
-          "legalReview.publishBlocked=false",
-          "riskFlags excludes answer_missing,brand_leak,copyright_review_required,ad_or_promo"
-        ],
-        "verifiedSourceRegistryFields": [
-          "localPath",
-          "sourceUrl",
-          "track",
-          "year",
-          "sourceType=official_paper",
-          "answerEvidenceStatus=matched",
-          "expectedSha256",
-          "verifiedBy",
-          "evidenceNote"
-        ],
-        "humanVerificationSteps": [],
-        "postRegistrationCommands": [],
-        "localFileCandidates": [],
-        "verifiedSourceRegistryDrafts": [],
-        "manifestCandidateIds": [
-          "src_478718437ac46f25dd795a67"
-        ],
-        "blockers": [
-          "local_source_audit_not_available"
-        ],
-        "note": "Resolve listed local-source blockers before the slot can be treated as an auto-paired official source."
-      },
-      "prerequisiteBlockers": [],
-      "coverageAction": "已有可发布题源证据时，完成题卡清洗、答案匹配、证据哈希，再按 registry 规范注册题库。",
-      "sourceEvidenceAction": "",
-      "nextAction": "已有可发布题源证据时，完成题卡清洗、答案匹配、证据哈希，再按 registry 规范注册题库。"
-    },
-    {
-      "slotKey": "math2:2011",
-      "track": "math2",
-      "trackLabel": "数学二",
-      "year": 2011,
-      "blockerCode": "missing_public_course_bank",
-      "slotStatus": "missing",
-      "blockers": [
-        "missing_public_course_bank"
-      ],
-      "blockerItemIds": [
-        "coverage_missing:math2:2011"
-      ],
-      "sourceEvidenceStatus": "publishable_source_present",
-      "sourceCandidateSummary": "source manifest 已发现 1 个候选，其中 official_paper=1；当前阻断: 未命中可发布条件",
-      "sourceCandidateSamples": [
-        {
-          "sourceId": "src_2f348d63b16be6d23121eb78",
-          "status": "discovered",
-          "sourceType": "official_paper",
-          "sourceRole": "",
-          "inferredSourceRole": "paper_answer",
-          "roleSource": "path",
-          "autoPairEligible": true,
-          "answerEvidenceStatus": "",
-          "riskFlags": [],
-          "publishBlocked": false,
-          "blockReasons": [],
-          "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学二真题答案解析/2011考研数学二真题 .pdf",
-          "sourceUrl": ""
-        }
-      ],
-      "localSourceAuditStatus": "not_available",
-      "localSourceAuditSummary": "",
-      "localSourceAuditSamples": [],
-      "localSourceAuditDiagnostics": {
-        "status": "not_available",
-        "sourceCount": 0,
-        "usableTextLayerCount": 0,
-        "needsOcrCount": 0,
-        "blockedCount": 0,
-        "paperLikeCount": 0,
-        "answerLikeCount": 0,
-        "usablePaperLikeCount": 0,
-        "usableAnswerLikeCount": 0,
-        "blockedPaperLikeCount": 0,
-        "blockedAnswerLikeCount": 0,
-        "roleCounts": {},
-        "samples": []
-      },
-      "sourceManifestRegistrationChecklist": {
-        "status": "blocked_before_auto_pair",
-        "readyForHumanVerification": false,
-        "requiredManifestFields": [
-          "eligible=true",
-          "status=discovered|verified|published",
-          "sourceType=official_paper",
-          "contentHash|sha256|fileSha256|sourceHash",
-          "remotePath|sourceUrl|provenanceUrl",
-          "sourceRole inferred as paper+answer or paper_answer",
-          "legalReview.publishBlocked=false",
-          "riskFlags excludes answer_missing,brand_leak,copyright_review_required,ad_or_promo"
-        ],
-        "verifiedSourceRegistryFields": [
-          "localPath",
-          "sourceUrl",
-          "track",
-          "year",
-          "sourceType=official_paper",
-          "answerEvidenceStatus=matched",
-          "expectedSha256",
-          "verifiedBy",
-          "evidenceNote"
-        ],
-        "humanVerificationSteps": [],
-        "postRegistrationCommands": [],
-        "localFileCandidates": [],
-        "verifiedSourceRegistryDrafts": [],
-        "manifestCandidateIds": [
-          "src_2f348d63b16be6d23121eb78"
         ],
         "blockers": [
           "local_source_audit_not_available"
@@ -1931,97 +1464,6 @@
       "nextAction": "已有可发布题源证据时，完成题卡清洗、答案匹配、证据哈希，再按 registry 规范注册题库。"
     },
     {
-      "slotKey": "math1:2012",
-      "track": "math1",
-      "trackLabel": "数学一",
-      "year": 2012,
-      "blockerCode": "missing_public_course_bank",
-      "slotStatus": "missing",
-      "blockers": [
-        "missing_public_course_bank"
-      ],
-      "blockerItemIds": [
-        "coverage_missing:math1:2012"
-      ],
-      "sourceEvidenceStatus": "publishable_source_present",
-      "sourceCandidateSummary": "source manifest 已发现 1 个候选，其中 official_paper=1；当前阻断: 未命中可发布条件",
-      "sourceCandidateSamples": [
-        {
-          "sourceId": "src_a445976117f3531be88a1ce5",
-          "status": "discovered",
-          "sourceType": "official_paper",
-          "sourceRole": "",
-          "inferredSourceRole": "paper_answer",
-          "roleSource": "filename",
-          "autoPairEligible": true,
-          "answerEvidenceStatus": "",
-          "riskFlags": [],
-          "publishBlocked": false,
-          "blockReasons": [],
-          "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学一真题答案解析/2012-数一真题及参考答案 .pdf",
-          "sourceUrl": ""
-        }
-      ],
-      "localSourceAuditStatus": "not_available",
-      "localSourceAuditSummary": "",
-      "localSourceAuditSamples": [],
-      "localSourceAuditDiagnostics": {
-        "status": "not_available",
-        "sourceCount": 0,
-        "usableTextLayerCount": 0,
-        "needsOcrCount": 0,
-        "blockedCount": 0,
-        "paperLikeCount": 0,
-        "answerLikeCount": 0,
-        "usablePaperLikeCount": 0,
-        "usableAnswerLikeCount": 0,
-        "blockedPaperLikeCount": 0,
-        "blockedAnswerLikeCount": 0,
-        "roleCounts": {},
-        "samples": []
-      },
-      "sourceManifestRegistrationChecklist": {
-        "status": "blocked_before_auto_pair",
-        "readyForHumanVerification": false,
-        "requiredManifestFields": [
-          "eligible=true",
-          "status=discovered|verified|published",
-          "sourceType=official_paper",
-          "contentHash|sha256|fileSha256|sourceHash",
-          "remotePath|sourceUrl|provenanceUrl",
-          "sourceRole inferred as paper+answer or paper_answer",
-          "legalReview.publishBlocked=false",
-          "riskFlags excludes answer_missing,brand_leak,copyright_review_required,ad_or_promo"
-        ],
-        "verifiedSourceRegistryFields": [
-          "localPath",
-          "sourceUrl",
-          "track",
-          "year",
-          "sourceType=official_paper",
-          "answerEvidenceStatus=matched",
-          "expectedSha256",
-          "verifiedBy",
-          "evidenceNote"
-        ],
-        "humanVerificationSteps": [],
-        "postRegistrationCommands": [],
-        "localFileCandidates": [],
-        "verifiedSourceRegistryDrafts": [],
-        "manifestCandidateIds": [
-          "src_a445976117f3531be88a1ce5"
-        ],
-        "blockers": [
-          "local_source_audit_not_available"
-        ],
-        "note": "Resolve listed local-source blockers before the slot can be treated as an auto-paired official source."
-      },
-      "prerequisiteBlockers": [],
-      "coverageAction": "已有可发布题源证据时，完成题卡清洗、答案匹配、证据哈希，再按 registry 规范注册题库。",
-      "sourceEvidenceAction": "",
-      "nextAction": "已有可发布题源证据时，完成题卡清洗、答案匹配、证据哈希，再按 registry 规范注册题库。"
-    },
-    {
       "slotKey": "english2:2013",
       "track": "english2",
       "trackLabel": "英语二",
@@ -2145,188 +1587,6 @@
       "nextAction": "已有可发布题源证据时，完成题卡清洗、答案匹配、证据哈希，再按 registry 规范注册题库。"
     },
     {
-      "slotKey": "math1:2013",
-      "track": "math1",
-      "trackLabel": "数学一",
-      "year": 2013,
-      "blockerCode": "missing_public_course_bank",
-      "slotStatus": "missing",
-      "blockers": [
-        "missing_public_course_bank"
-      ],
-      "blockerItemIds": [
-        "coverage_missing:math1:2013"
-      ],
-      "sourceEvidenceStatus": "publishable_source_present",
-      "sourceCandidateSummary": "source manifest 已发现 1 个候选，其中 official_paper=1；当前阻断: 未命中可发布条件",
-      "sourceCandidateSamples": [
-        {
-          "sourceId": "src_2f89f14b41d6bdb38f193cbc",
-          "status": "discovered",
-          "sourceType": "official_paper",
-          "sourceRole": "",
-          "inferredSourceRole": "paper_answer",
-          "roleSource": "filename",
-          "autoPairEligible": true,
-          "answerEvidenceStatus": "",
-          "riskFlags": [],
-          "publishBlocked": false,
-          "blockReasons": [],
-          "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学一真题答案解析/2013-数一考研真题及答案 .pdf",
-          "sourceUrl": ""
-        }
-      ],
-      "localSourceAuditStatus": "not_available",
-      "localSourceAuditSummary": "",
-      "localSourceAuditSamples": [],
-      "localSourceAuditDiagnostics": {
-        "status": "not_available",
-        "sourceCount": 0,
-        "usableTextLayerCount": 0,
-        "needsOcrCount": 0,
-        "blockedCount": 0,
-        "paperLikeCount": 0,
-        "answerLikeCount": 0,
-        "usablePaperLikeCount": 0,
-        "usableAnswerLikeCount": 0,
-        "blockedPaperLikeCount": 0,
-        "blockedAnswerLikeCount": 0,
-        "roleCounts": {},
-        "samples": []
-      },
-      "sourceManifestRegistrationChecklist": {
-        "status": "blocked_before_auto_pair",
-        "readyForHumanVerification": false,
-        "requiredManifestFields": [
-          "eligible=true",
-          "status=discovered|verified|published",
-          "sourceType=official_paper",
-          "contentHash|sha256|fileSha256|sourceHash",
-          "remotePath|sourceUrl|provenanceUrl",
-          "sourceRole inferred as paper+answer or paper_answer",
-          "legalReview.publishBlocked=false",
-          "riskFlags excludes answer_missing,brand_leak,copyright_review_required,ad_or_promo"
-        ],
-        "verifiedSourceRegistryFields": [
-          "localPath",
-          "sourceUrl",
-          "track",
-          "year",
-          "sourceType=official_paper",
-          "answerEvidenceStatus=matched",
-          "expectedSha256",
-          "verifiedBy",
-          "evidenceNote"
-        ],
-        "humanVerificationSteps": [],
-        "postRegistrationCommands": [],
-        "localFileCandidates": [],
-        "verifiedSourceRegistryDrafts": [],
-        "manifestCandidateIds": [
-          "src_2f89f14b41d6bdb38f193cbc"
-        ],
-        "blockers": [
-          "local_source_audit_not_available"
-        ],
-        "note": "Resolve listed local-source blockers before the slot can be treated as an auto-paired official source."
-      },
-      "prerequisiteBlockers": [],
-      "coverageAction": "已有可发布题源证据时，完成题卡清洗、答案匹配、证据哈希，再按 registry 规范注册题库。",
-      "sourceEvidenceAction": "",
-      "nextAction": "已有可发布题源证据时，完成题卡清洗、答案匹配、证据哈希，再按 registry 规范注册题库。"
-    },
-    {
-      "slotKey": "math3:2013",
-      "track": "math3",
-      "trackLabel": "数学三",
-      "year": 2013,
-      "blockerCode": "missing_public_course_bank",
-      "slotStatus": "missing",
-      "blockers": [
-        "missing_public_course_bank"
-      ],
-      "blockerItemIds": [
-        "coverage_missing:math3:2013"
-      ],
-      "sourceEvidenceStatus": "publishable_source_present",
-      "sourceCandidateSummary": "source manifest 已发现 1 个候选，其中 official_paper=1；当前阻断: 未命中可发布条件",
-      "sourceCandidateSamples": [
-        {
-          "sourceId": "src_b4cf0b63525b94f4333b545e",
-          "status": "discovered",
-          "sourceType": "official_paper",
-          "sourceRole": "",
-          "inferredSourceRole": "paper_answer",
-          "roleSource": "filename",
-          "autoPairEligible": true,
-          "answerEvidenceStatus": "",
-          "riskFlags": [],
-          "publishBlocked": false,
-          "blockReasons": [],
-          "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学三真题答案解析/2013年考研数学三真题及解析 .pdf",
-          "sourceUrl": ""
-        }
-      ],
-      "localSourceAuditStatus": "not_available",
-      "localSourceAuditSummary": "",
-      "localSourceAuditSamples": [],
-      "localSourceAuditDiagnostics": {
-        "status": "not_available",
-        "sourceCount": 0,
-        "usableTextLayerCount": 0,
-        "needsOcrCount": 0,
-        "blockedCount": 0,
-        "paperLikeCount": 0,
-        "answerLikeCount": 0,
-        "usablePaperLikeCount": 0,
-        "usableAnswerLikeCount": 0,
-        "blockedPaperLikeCount": 0,
-        "blockedAnswerLikeCount": 0,
-        "roleCounts": {},
-        "samples": []
-      },
-      "sourceManifestRegistrationChecklist": {
-        "status": "blocked_before_auto_pair",
-        "readyForHumanVerification": false,
-        "requiredManifestFields": [
-          "eligible=true",
-          "status=discovered|verified|published",
-          "sourceType=official_paper",
-          "contentHash|sha256|fileSha256|sourceHash",
-          "remotePath|sourceUrl|provenanceUrl",
-          "sourceRole inferred as paper+answer or paper_answer",
-          "legalReview.publishBlocked=false",
-          "riskFlags excludes answer_missing,brand_leak,copyright_review_required,ad_or_promo"
-        ],
-        "verifiedSourceRegistryFields": [
-          "localPath",
-          "sourceUrl",
-          "track",
-          "year",
-          "sourceType=official_paper",
-          "answerEvidenceStatus=matched",
-          "expectedSha256",
-          "verifiedBy",
-          "evidenceNote"
-        ],
-        "humanVerificationSteps": [],
-        "postRegistrationCommands": [],
-        "localFileCandidates": [],
-        "verifiedSourceRegistryDrafts": [],
-        "manifestCandidateIds": [
-          "src_b4cf0b63525b94f4333b545e"
-        ],
-        "blockers": [
-          "local_source_audit_not_available"
-        ],
-        "note": "Resolve listed local-source blockers before the slot can be treated as an auto-paired official source."
-      },
-      "prerequisiteBlockers": [],
-      "coverageAction": "已有可发布题源证据时，完成题卡清洗、答案匹配、证据哈希，再按 registry 规范注册题库。",
-      "sourceEvidenceAction": "",
-      "nextAction": "已有可发布题源证据时，完成题卡清洗、答案匹配、证据哈希，再按 registry 规范注册题库。"
-    },
-    {
       "slotKey": "english2:2014",
       "track": "english2",
       "trackLabel": "英语二",
@@ -2438,188 +1698,6 @@
           "src_32d7ee3bbd74494d32545ef0",
           "src_936d884aa30de09fe48f9eb2",
           "src_9900688bb11e744c7567d491"
-        ],
-        "blockers": [
-          "local_source_audit_not_available"
-        ],
-        "note": "Resolve listed local-source blockers before the slot can be treated as an auto-paired official source."
-      },
-      "prerequisiteBlockers": [],
-      "coverageAction": "已有可发布题源证据时，完成题卡清洗、答案匹配、证据哈希，再按 registry 规范注册题库。",
-      "sourceEvidenceAction": "",
-      "nextAction": "已有可发布题源证据时，完成题卡清洗、答案匹配、证据哈希，再按 registry 规范注册题库。"
-    },
-    {
-      "slotKey": "math1:2014",
-      "track": "math1",
-      "trackLabel": "数学一",
-      "year": 2014,
-      "blockerCode": "missing_public_course_bank",
-      "slotStatus": "missing",
-      "blockers": [
-        "missing_public_course_bank"
-      ],
-      "blockerItemIds": [
-        "coverage_missing:math1:2014"
-      ],
-      "sourceEvidenceStatus": "publishable_source_present",
-      "sourceCandidateSummary": "source manifest 已发现 1 个候选，其中 official_paper=1；当前阻断: 未命中可发布条件",
-      "sourceCandidateSamples": [
-        {
-          "sourceId": "src_b80ef3ade03a332b3d41ae2a",
-          "status": "discovered",
-          "sourceType": "official_paper",
-          "sourceRole": "",
-          "inferredSourceRole": "paper_answer",
-          "roleSource": "filename",
-          "autoPairEligible": true,
-          "answerEvidenceStatus": "",
-          "riskFlags": [],
-          "publishBlocked": false,
-          "blockReasons": [],
-          "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学一真题答案解析/2014-数一考研真题及答案 .pdf",
-          "sourceUrl": ""
-        }
-      ],
-      "localSourceAuditStatus": "not_available",
-      "localSourceAuditSummary": "",
-      "localSourceAuditSamples": [],
-      "localSourceAuditDiagnostics": {
-        "status": "not_available",
-        "sourceCount": 0,
-        "usableTextLayerCount": 0,
-        "needsOcrCount": 0,
-        "blockedCount": 0,
-        "paperLikeCount": 0,
-        "answerLikeCount": 0,
-        "usablePaperLikeCount": 0,
-        "usableAnswerLikeCount": 0,
-        "blockedPaperLikeCount": 0,
-        "blockedAnswerLikeCount": 0,
-        "roleCounts": {},
-        "samples": []
-      },
-      "sourceManifestRegistrationChecklist": {
-        "status": "blocked_before_auto_pair",
-        "readyForHumanVerification": false,
-        "requiredManifestFields": [
-          "eligible=true",
-          "status=discovered|verified|published",
-          "sourceType=official_paper",
-          "contentHash|sha256|fileSha256|sourceHash",
-          "remotePath|sourceUrl|provenanceUrl",
-          "sourceRole inferred as paper+answer or paper_answer",
-          "legalReview.publishBlocked=false",
-          "riskFlags excludes answer_missing,brand_leak,copyright_review_required,ad_or_promo"
-        ],
-        "verifiedSourceRegistryFields": [
-          "localPath",
-          "sourceUrl",
-          "track",
-          "year",
-          "sourceType=official_paper",
-          "answerEvidenceStatus=matched",
-          "expectedSha256",
-          "verifiedBy",
-          "evidenceNote"
-        ],
-        "humanVerificationSteps": [],
-        "postRegistrationCommands": [],
-        "localFileCandidates": [],
-        "verifiedSourceRegistryDrafts": [],
-        "manifestCandidateIds": [
-          "src_b80ef3ade03a332b3d41ae2a"
-        ],
-        "blockers": [
-          "local_source_audit_not_available"
-        ],
-        "note": "Resolve listed local-source blockers before the slot can be treated as an auto-paired official source."
-      },
-      "prerequisiteBlockers": [],
-      "coverageAction": "已有可发布题源证据时，完成题卡清洗、答案匹配、证据哈希，再按 registry 规范注册题库。",
-      "sourceEvidenceAction": "",
-      "nextAction": "已有可发布题源证据时，完成题卡清洗、答案匹配、证据哈希，再按 registry 规范注册题库。"
-    },
-    {
-      "slotKey": "math2:2014",
-      "track": "math2",
-      "trackLabel": "数学二",
-      "year": 2014,
-      "blockerCode": "missing_public_course_bank",
-      "slotStatus": "missing",
-      "blockers": [
-        "missing_public_course_bank"
-      ],
-      "blockerItemIds": [
-        "coverage_missing:math2:2014"
-      ],
-      "sourceEvidenceStatus": "publishable_source_present",
-      "sourceCandidateSummary": "source manifest 已发现 1 个候选，其中 official_paper=1；当前阻断: 未命中可发布条件",
-      "sourceCandidateSamples": [
-        {
-          "sourceId": "src_cabdf1fe95d0ffad0c8f0e8c",
-          "status": "discovered",
-          "sourceType": "official_paper",
-          "sourceRole": "",
-          "inferredSourceRole": "paper_answer",
-          "roleSource": "path",
-          "autoPairEligible": true,
-          "answerEvidenceStatus": "",
-          "riskFlags": [],
-          "publishBlocked": false,
-          "blockReasons": [],
-          "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学二真题答案解析/2014考研数学二真题 .pdf",
-          "sourceUrl": ""
-        }
-      ],
-      "localSourceAuditStatus": "not_available",
-      "localSourceAuditSummary": "",
-      "localSourceAuditSamples": [],
-      "localSourceAuditDiagnostics": {
-        "status": "not_available",
-        "sourceCount": 0,
-        "usableTextLayerCount": 0,
-        "needsOcrCount": 0,
-        "blockedCount": 0,
-        "paperLikeCount": 0,
-        "answerLikeCount": 0,
-        "usablePaperLikeCount": 0,
-        "usableAnswerLikeCount": 0,
-        "blockedPaperLikeCount": 0,
-        "blockedAnswerLikeCount": 0,
-        "roleCounts": {},
-        "samples": []
-      },
-      "sourceManifestRegistrationChecklist": {
-        "status": "blocked_before_auto_pair",
-        "readyForHumanVerification": false,
-        "requiredManifestFields": [
-          "eligible=true",
-          "status=discovered|verified|published",
-          "sourceType=official_paper",
-          "contentHash|sha256|fileSha256|sourceHash",
-          "remotePath|sourceUrl|provenanceUrl",
-          "sourceRole inferred as paper+answer or paper_answer",
-          "legalReview.publishBlocked=false",
-          "riskFlags excludes answer_missing,brand_leak,copyright_review_required,ad_or_promo"
-        ],
-        "verifiedSourceRegistryFields": [
-          "localPath",
-          "sourceUrl",
-          "track",
-          "year",
-          "sourceType=official_paper",
-          "answerEvidenceStatus=matched",
-          "expectedSha256",
-          "verifiedBy",
-          "evidenceNote"
-        ],
-        "humanVerificationSteps": [],
-        "postRegistrationCommands": [],
-        "localFileCandidates": [],
-        "verifiedSourceRegistryDrafts": [],
-        "manifestCandidateIds": [
-          "src_cabdf1fe95d0ffad0c8f0e8c"
         ],
         "blockers": [
           "local_source_audit_not_available"
@@ -2846,97 +1924,6 @@
       "nextAction": "已有可发布题源证据时，完成题卡清洗、答案匹配、证据哈希，再按 registry 规范注册题库。"
     },
     {
-      "slotKey": "math1:2015",
-      "track": "math1",
-      "trackLabel": "数学一",
-      "year": 2015,
-      "blockerCode": "missing_public_course_bank",
-      "slotStatus": "missing",
-      "blockers": [
-        "missing_public_course_bank"
-      ],
-      "blockerItemIds": [
-        "coverage_missing:math1:2015"
-      ],
-      "sourceEvidenceStatus": "publishable_source_present",
-      "sourceCandidateSummary": "source manifest 已发现 1 个候选，其中 official_paper=1；当前阻断: 未命中可发布条件",
-      "sourceCandidateSamples": [
-        {
-          "sourceId": "src_b83088449d1c3f7d3cd2653f",
-          "status": "discovered",
-          "sourceType": "official_paper",
-          "sourceRole": "",
-          "inferredSourceRole": "paper_answer",
-          "roleSource": "filename",
-          "autoPairEligible": true,
-          "answerEvidenceStatus": "",
-          "riskFlags": [],
-          "publishBlocked": false,
-          "blockReasons": [],
-          "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学一真题答案解析/2015-数一考研真题及答案 .pdf",
-          "sourceUrl": ""
-        }
-      ],
-      "localSourceAuditStatus": "not_available",
-      "localSourceAuditSummary": "",
-      "localSourceAuditSamples": [],
-      "localSourceAuditDiagnostics": {
-        "status": "not_available",
-        "sourceCount": 0,
-        "usableTextLayerCount": 0,
-        "needsOcrCount": 0,
-        "blockedCount": 0,
-        "paperLikeCount": 0,
-        "answerLikeCount": 0,
-        "usablePaperLikeCount": 0,
-        "usableAnswerLikeCount": 0,
-        "blockedPaperLikeCount": 0,
-        "blockedAnswerLikeCount": 0,
-        "roleCounts": {},
-        "samples": []
-      },
-      "sourceManifestRegistrationChecklist": {
-        "status": "blocked_before_auto_pair",
-        "readyForHumanVerification": false,
-        "requiredManifestFields": [
-          "eligible=true",
-          "status=discovered|verified|published",
-          "sourceType=official_paper",
-          "contentHash|sha256|fileSha256|sourceHash",
-          "remotePath|sourceUrl|provenanceUrl",
-          "sourceRole inferred as paper+answer or paper_answer",
-          "legalReview.publishBlocked=false",
-          "riskFlags excludes answer_missing,brand_leak,copyright_review_required,ad_or_promo"
-        ],
-        "verifiedSourceRegistryFields": [
-          "localPath",
-          "sourceUrl",
-          "track",
-          "year",
-          "sourceType=official_paper",
-          "answerEvidenceStatus=matched",
-          "expectedSha256",
-          "verifiedBy",
-          "evidenceNote"
-        ],
-        "humanVerificationSteps": [],
-        "postRegistrationCommands": [],
-        "localFileCandidates": [],
-        "verifiedSourceRegistryDrafts": [],
-        "manifestCandidateIds": [
-          "src_b83088449d1c3f7d3cd2653f"
-        ],
-        "blockers": [
-          "local_source_audit_not_available"
-        ],
-        "note": "Resolve listed local-source blockers before the slot can be treated as an auto-paired official source."
-      },
-      "prerequisiteBlockers": [],
-      "coverageAction": "已有可发布题源证据时，完成题卡清洗、答案匹配、证据哈希，再按 registry 规范注册题库。",
-      "sourceEvidenceAction": "",
-      "nextAction": "已有可发布题源证据时，完成题卡清洗、答案匹配、证据哈希，再按 registry 规范注册题库。"
-    },
-    {
       "slotKey": "math2:2015",
       "track": "math2",
       "trackLabel": "数学二",
@@ -3119,129 +2106,6 @@
       "nextAction": "已有可发布题源证据时，完成题卡清洗、答案匹配、证据哈希，再按 registry 规范注册题库。"
     },
     {
-      "slotKey": "english1:2016",
-      "track": "english1",
-      "trackLabel": "英语一",
-      "year": 2016,
-      "blockerCode": "missing_public_course_bank",
-      "slotStatus": "missing",
-      "blockers": [
-        "missing_public_course_bank"
-      ],
-      "blockerItemIds": [
-        "coverage_missing:english1:2016"
-      ],
-      "sourceEvidenceStatus": "publishable_source_present",
-      "sourceCandidateSummary": "source manifest 已发现 30 个候选，其中 official_paper=5；当前阻断: legalReview.publishBlocked=true(19), riskFlags=brand_leak,copyright_review_required(19), sourceType=institution_candidate(19)",
-      "sourceCandidateSamples": [
-        {
-          "sourceId": "src_ba027850b7b2359d583e19bc",
-          "status": "discovered",
-          "sourceType": "official_paper",
-          "sourceRole": "",
-          "inferredSourceRole": "paper_answer",
-          "roleSource": "filename",
-          "autoPairEligible": true,
-          "answerEvidenceStatus": "",
-          "riskFlags": [],
-          "publishBlocked": false,
-          "blockReasons": [],
-          "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【解析】1986-2024/英语一历年真题文档版（2010-2024）/2016考研英语（一）真题及解析 .pdf",
-          "sourceUrl": ""
-        },
-        {
-          "sourceId": "src_fd751ea21161f3c706d34b6d",
-          "status": "discovered",
-          "sourceType": "official_paper",
-          "sourceRole": "",
-          "inferredSourceRole": "paper_answer",
-          "roleSource": "filename",
-          "autoPairEligible": true,
-          "answerEvidenceStatus": "",
-          "riskFlags": [],
-          "publishBlocked": false,
-          "blockReasons": [],
-          "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/03.考研真相系列/26考研真相/英一/真题册+答案速查/2016年真题及答案速查/2016年真题及答案速查.pdf",
-          "sourceUrl": ""
-        },
-        {
-          "sourceId": "src_1727b1f7ac7aed776cc06a4b",
-          "status": "discovered",
-          "sourceType": "official_paper",
-          "sourceRole": "",
-          "inferredSourceRole": "paper",
-          "roleSource": "filename",
-          "autoPairEligible": true,
-          "answerEvidenceStatus": "",
-          "riskFlags": [],
-          "publishBlocked": false,
-          "blockReasons": [],
-          "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语一考研历年真题/2016年考研英语一真题 .pdf",
-          "sourceUrl": ""
-        }
-      ],
-      "localSourceAuditStatus": "not_available",
-      "localSourceAuditSummary": "",
-      "localSourceAuditSamples": [],
-      "localSourceAuditDiagnostics": {
-        "status": "not_available",
-        "sourceCount": 0,
-        "usableTextLayerCount": 0,
-        "needsOcrCount": 0,
-        "blockedCount": 0,
-        "paperLikeCount": 0,
-        "answerLikeCount": 0,
-        "usablePaperLikeCount": 0,
-        "usableAnswerLikeCount": 0,
-        "blockedPaperLikeCount": 0,
-        "blockedAnswerLikeCount": 0,
-        "roleCounts": {},
-        "samples": []
-      },
-      "sourceManifestRegistrationChecklist": {
-        "status": "blocked_before_auto_pair",
-        "readyForHumanVerification": false,
-        "requiredManifestFields": [
-          "eligible=true",
-          "status=discovered|verified|published",
-          "sourceType=official_paper",
-          "contentHash|sha256|fileSha256|sourceHash",
-          "remotePath|sourceUrl|provenanceUrl",
-          "sourceRole inferred as paper+answer or paper_answer",
-          "legalReview.publishBlocked=false",
-          "riskFlags excludes answer_missing,brand_leak,copyright_review_required,ad_or_promo"
-        ],
-        "verifiedSourceRegistryFields": [
-          "localPath",
-          "sourceUrl",
-          "track",
-          "year",
-          "sourceType=official_paper",
-          "answerEvidenceStatus=matched",
-          "expectedSha256",
-          "verifiedBy",
-          "evidenceNote"
-        ],
-        "humanVerificationSteps": [],
-        "postRegistrationCommands": [],
-        "localFileCandidates": [],
-        "verifiedSourceRegistryDrafts": [],
-        "manifestCandidateIds": [
-          "src_ba027850b7b2359d583e19bc",
-          "src_fd751ea21161f3c706d34b6d",
-          "src_1727b1f7ac7aed776cc06a4b"
-        ],
-        "blockers": [
-          "local_source_audit_not_available"
-        ],
-        "note": "Resolve listed local-source blockers before the slot can be treated as an auto-paired official source."
-      },
-      "prerequisiteBlockers": [],
-      "coverageAction": "已有可发布题源证据时，完成题卡清洗、答案匹配、证据哈希，再按 registry 规范注册题库。",
-      "sourceEvidenceAction": "",
-      "nextAction": "已有可发布题源证据时，完成题卡清洗、答案匹配、证据哈希，再按 registry 规范注册题库。"
-    },
-    {
       "slotKey": "english2:2016",
       "track": "english2",
       "trackLabel": "英语二",
@@ -3353,97 +2217,6 @@
           "src_22c001c9c9168eedcdbe4c54",
           "src_3ba11a1a4fee9c07a34bb3e1",
           "src_4d766c79514a899a20be297d"
-        ],
-        "blockers": [
-          "local_source_audit_not_available"
-        ],
-        "note": "Resolve listed local-source blockers before the slot can be treated as an auto-paired official source."
-      },
-      "prerequisiteBlockers": [],
-      "coverageAction": "已有可发布题源证据时，完成题卡清洗、答案匹配、证据哈希，再按 registry 规范注册题库。",
-      "sourceEvidenceAction": "",
-      "nextAction": "已有可发布题源证据时，完成题卡清洗、答案匹配、证据哈希，再按 registry 规范注册题库。"
-    },
-    {
-      "slotKey": "math1:2016",
-      "track": "math1",
-      "trackLabel": "数学一",
-      "year": 2016,
-      "blockerCode": "missing_public_course_bank",
-      "slotStatus": "missing",
-      "blockers": [
-        "missing_public_course_bank"
-      ],
-      "blockerItemIds": [
-        "coverage_missing:math1:2016"
-      ],
-      "sourceEvidenceStatus": "publishable_source_present",
-      "sourceCandidateSummary": "source manifest 已发现 1 个候选，其中 official_paper=1；当前阻断: 未命中可发布条件",
-      "sourceCandidateSamples": [
-        {
-          "sourceId": "src_826513b855ac46b155edc53b",
-          "status": "discovered",
-          "sourceType": "official_paper",
-          "sourceRole": "",
-          "inferredSourceRole": "paper_answer",
-          "roleSource": "filename",
-          "autoPairEligible": true,
-          "answerEvidenceStatus": "",
-          "riskFlags": [],
-          "publishBlocked": false,
-          "blockReasons": [],
-          "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学一真题答案解析/2016-数一考研真题及答案 .pdf",
-          "sourceUrl": ""
-        }
-      ],
-      "localSourceAuditStatus": "not_available",
-      "localSourceAuditSummary": "",
-      "localSourceAuditSamples": [],
-      "localSourceAuditDiagnostics": {
-        "status": "not_available",
-        "sourceCount": 0,
-        "usableTextLayerCount": 0,
-        "needsOcrCount": 0,
-        "blockedCount": 0,
-        "paperLikeCount": 0,
-        "answerLikeCount": 0,
-        "usablePaperLikeCount": 0,
-        "usableAnswerLikeCount": 0,
-        "blockedPaperLikeCount": 0,
-        "blockedAnswerLikeCount": 0,
-        "roleCounts": {},
-        "samples": []
-      },
-      "sourceManifestRegistrationChecklist": {
-        "status": "blocked_before_auto_pair",
-        "readyForHumanVerification": false,
-        "requiredManifestFields": [
-          "eligible=true",
-          "status=discovered|verified|published",
-          "sourceType=official_paper",
-          "contentHash|sha256|fileSha256|sourceHash",
-          "remotePath|sourceUrl|provenanceUrl",
-          "sourceRole inferred as paper+answer or paper_answer",
-          "legalReview.publishBlocked=false",
-          "riskFlags excludes answer_missing,brand_leak,copyright_review_required,ad_or_promo"
-        ],
-        "verifiedSourceRegistryFields": [
-          "localPath",
-          "sourceUrl",
-          "track",
-          "year",
-          "sourceType=official_paper",
-          "answerEvidenceStatus=matched",
-          "expectedSha256",
-          "verifiedBy",
-          "evidenceNote"
-        ],
-        "humanVerificationSteps": [],
-        "postRegistrationCommands": [],
-        "localFileCandidates": [],
-        "verifiedSourceRegistryDrafts": [],
-        "manifestCandidateIds": [
-          "src_826513b855ac46b155edc53b"
         ],
         "blockers": [
           "local_source_audit_not_available"
@@ -3638,129 +2411,6 @@
       "nextAction": "已有可发布题源证据时，完成题卡清洗、答案匹配、证据哈希，再按 registry 规范注册题库。"
     },
     {
-      "slotKey": "english1:2017",
-      "track": "english1",
-      "trackLabel": "英语一",
-      "year": 2017,
-      "blockerCode": "missing_public_course_bank",
-      "slotStatus": "missing",
-      "blockers": [
-        "missing_public_course_bank"
-      ],
-      "blockerItemIds": [
-        "coverage_missing:english1:2017"
-      ],
-      "sourceEvidenceStatus": "publishable_source_present",
-      "sourceCandidateSummary": "source manifest 已发现 30 个候选，其中 official_paper=5；当前阻断: legalReview.publishBlocked=true(19), riskFlags=brand_leak,copyright_review_required(19), sourceType=institution_candidate(19)",
-      "sourceCandidateSamples": [
-        {
-          "sourceId": "src_59f192bb67dfa8490c3de9d3",
-          "status": "discovered",
-          "sourceType": "official_paper",
-          "sourceRole": "",
-          "inferredSourceRole": "paper_answer",
-          "roleSource": "filename",
-          "autoPairEligible": true,
-          "answerEvidenceStatus": "",
-          "riskFlags": [],
-          "publishBlocked": false,
-          "blockReasons": [],
-          "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/03.考研真相系列/26考研真相/英一/真题册+答案速查/2017年真题及答案速查/2017年真题及答案速查.pdf",
-          "sourceUrl": ""
-        },
-        {
-          "sourceId": "src_d62dd96ab6391c4676b275cb",
-          "status": "discovered",
-          "sourceType": "official_paper",
-          "sourceRole": "",
-          "inferredSourceRole": "paper",
-          "roleSource": "filename",
-          "autoPairEligible": true,
-          "answerEvidenceStatus": "",
-          "riskFlags": [],
-          "publishBlocked": false,
-          "blockReasons": [],
-          "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语一考研历年真题/2017年考研英语一真题 .pdf",
-          "sourceUrl": ""
-        },
-        {
-          "sourceId": "src_60d042775102b5301ab077ca",
-          "status": "discovered",
-          "sourceType": "official_paper",
-          "sourceRole": "",
-          "inferredSourceRole": "answer",
-          "roleSource": "filename",
-          "autoPairEligible": true,
-          "answerEvidenceStatus": "",
-          "riskFlags": [],
-          "publishBlocked": false,
-          "blockReasons": [],
-          "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/03.考研真相系列/26考研真相/英一/解析册+逐词逐句册/2017年真题逐题细解/2017年真题逐题细解.pdf",
-          "sourceUrl": ""
-        }
-      ],
-      "localSourceAuditStatus": "not_available",
-      "localSourceAuditSummary": "",
-      "localSourceAuditSamples": [],
-      "localSourceAuditDiagnostics": {
-        "status": "not_available",
-        "sourceCount": 0,
-        "usableTextLayerCount": 0,
-        "needsOcrCount": 0,
-        "blockedCount": 0,
-        "paperLikeCount": 0,
-        "answerLikeCount": 0,
-        "usablePaperLikeCount": 0,
-        "usableAnswerLikeCount": 0,
-        "blockedPaperLikeCount": 0,
-        "blockedAnswerLikeCount": 0,
-        "roleCounts": {},
-        "samples": []
-      },
-      "sourceManifestRegistrationChecklist": {
-        "status": "blocked_before_auto_pair",
-        "readyForHumanVerification": false,
-        "requiredManifestFields": [
-          "eligible=true",
-          "status=discovered|verified|published",
-          "sourceType=official_paper",
-          "contentHash|sha256|fileSha256|sourceHash",
-          "remotePath|sourceUrl|provenanceUrl",
-          "sourceRole inferred as paper+answer or paper_answer",
-          "legalReview.publishBlocked=false",
-          "riskFlags excludes answer_missing,brand_leak,copyright_review_required,ad_or_promo"
-        ],
-        "verifiedSourceRegistryFields": [
-          "localPath",
-          "sourceUrl",
-          "track",
-          "year",
-          "sourceType=official_paper",
-          "answerEvidenceStatus=matched",
-          "expectedSha256",
-          "verifiedBy",
-          "evidenceNote"
-        ],
-        "humanVerificationSteps": [],
-        "postRegistrationCommands": [],
-        "localFileCandidates": [],
-        "verifiedSourceRegistryDrafts": [],
-        "manifestCandidateIds": [
-          "src_59f192bb67dfa8490c3de9d3",
-          "src_d62dd96ab6391c4676b275cb",
-          "src_60d042775102b5301ab077ca"
-        ],
-        "blockers": [
-          "local_source_audit_not_available"
-        ],
-        "note": "Resolve listed local-source blockers before the slot can be treated as an auto-paired official source."
-      },
-      "prerequisiteBlockers": [],
-      "coverageAction": "已有可发布题源证据时，完成题卡清洗、答案匹配、证据哈希，再按 registry 规范注册题库。",
-      "sourceEvidenceAction": "",
-      "nextAction": "已有可发布题源证据时，完成题卡清洗、答案匹配、证据哈希，再按 registry 规范注册题库。"
-    },
-    {
       "slotKey": "english2:2017",
       "track": "english2",
       "trackLabel": "英语二",
@@ -3872,97 +2522,6 @@
           "src_79ee7f93299f87bb47e7cab8",
           "src_d048e4f82dccc6edfd4675a4",
           "src_f44d6b155a346867e2790bcf"
-        ],
-        "blockers": [
-          "local_source_audit_not_available"
-        ],
-        "note": "Resolve listed local-source blockers before the slot can be treated as an auto-paired official source."
-      },
-      "prerequisiteBlockers": [],
-      "coverageAction": "已有可发布题源证据时，完成题卡清洗、答案匹配、证据哈希，再按 registry 规范注册题库。",
-      "sourceEvidenceAction": "",
-      "nextAction": "已有可发布题源证据时，完成题卡清洗、答案匹配、证据哈希，再按 registry 规范注册题库。"
-    },
-    {
-      "slotKey": "math1:2017",
-      "track": "math1",
-      "trackLabel": "数学一",
-      "year": 2017,
-      "blockerCode": "missing_public_course_bank",
-      "slotStatus": "missing",
-      "blockers": [
-        "missing_public_course_bank"
-      ],
-      "blockerItemIds": [
-        "coverage_missing:math1:2017"
-      ],
-      "sourceEvidenceStatus": "publishable_source_present",
-      "sourceCandidateSummary": "source manifest 已发现 1 个候选，其中 official_paper=1；当前阻断: 未命中可发布条件",
-      "sourceCandidateSamples": [
-        {
-          "sourceId": "src_1816f558544a3040d6e189dc",
-          "status": "discovered",
-          "sourceType": "official_paper",
-          "sourceRole": "",
-          "inferredSourceRole": "paper_answer",
-          "roleSource": "filename",
-          "autoPairEligible": true,
-          "answerEvidenceStatus": "",
-          "riskFlags": [],
-          "publishBlocked": false,
-          "blockReasons": [],
-          "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学一真题答案解析/2017-数一考研真题及答案 .pdf",
-          "sourceUrl": ""
-        }
-      ],
-      "localSourceAuditStatus": "not_available",
-      "localSourceAuditSummary": "",
-      "localSourceAuditSamples": [],
-      "localSourceAuditDiagnostics": {
-        "status": "not_available",
-        "sourceCount": 0,
-        "usableTextLayerCount": 0,
-        "needsOcrCount": 0,
-        "blockedCount": 0,
-        "paperLikeCount": 0,
-        "answerLikeCount": 0,
-        "usablePaperLikeCount": 0,
-        "usableAnswerLikeCount": 0,
-        "blockedPaperLikeCount": 0,
-        "blockedAnswerLikeCount": 0,
-        "roleCounts": {},
-        "samples": []
-      },
-      "sourceManifestRegistrationChecklist": {
-        "status": "blocked_before_auto_pair",
-        "readyForHumanVerification": false,
-        "requiredManifestFields": [
-          "eligible=true",
-          "status=discovered|verified|published",
-          "sourceType=official_paper",
-          "contentHash|sha256|fileSha256|sourceHash",
-          "remotePath|sourceUrl|provenanceUrl",
-          "sourceRole inferred as paper+answer or paper_answer",
-          "legalReview.publishBlocked=false",
-          "riskFlags excludes answer_missing,brand_leak,copyright_review_required,ad_or_promo"
-        ],
-        "verifiedSourceRegistryFields": [
-          "localPath",
-          "sourceUrl",
-          "track",
-          "year",
-          "sourceType=official_paper",
-          "answerEvidenceStatus=matched",
-          "expectedSha256",
-          "verifiedBy",
-          "evidenceNote"
-        ],
-        "humanVerificationSteps": [],
-        "postRegistrationCommands": [],
-        "localFileCandidates": [],
-        "verifiedSourceRegistryDrafts": [],
-        "manifestCandidateIds": [
-          "src_1816f558544a3040d6e189dc"
         ],
         "blockers": [
           "local_source_audit_not_available"
@@ -8887,6 +7446,99 @@
       "coverageAction": "在 Source Manifest 中补齐同槽位 official_paper 试卷+答案或真题及答案合并 PDF，要求有 remotePath、contentHash，且风险标记不阻断发布。再进入题卡清洗和 registry 注册。",
       "sourceEvidenceAction": "在 Source Manifest 中补齐同槽位 official_paper 试卷+答案或真题及答案合并 PDF，要求有 remotePath、contentHash，且风险标记不阻断发布。",
       "nextAction": "在 Source Manifest 中补齐同槽位 official_paper 试卷+答案或真题及答案合并 PDF，要求有 remotePath、contentHash，且风险标记不阻断发布。"
+    },
+    {
+      "slotKey": "math1:2010",
+      "track": "math1",
+      "trackLabel": "数学一",
+      "year": 2010,
+      "blockerCode": "missing_publishable_official_source",
+      "slotStatus": "source_evidence_missing",
+      "blockers": [
+        "missing_publishable_official_source"
+      ],
+      "blockerItemIds": [
+        "source_evidence_missing:math1:2010"
+      ],
+      "sourceEvidenceStatus": "missing_publishable_official_source",
+      "sourceCandidateSummary": "source manifest 已发现 1 个候选，其中 official_paper=1；当前阻断: slotPair=missing_paper(1)",
+      "sourceCandidateSamples": [
+        {
+          "sourceId": "src_b3e24571a6135f06d1988818",
+          "status": "discovered",
+          "sourceType": "official_paper",
+          "sourceRole": "",
+          "inferredSourceRole": "answer",
+          "roleSource": "filename",
+          "autoPairEligible": true,
+          "answerEvidenceStatus": "",
+          "riskFlags": [],
+          "publishBlocked": false,
+          "blockReasons": [],
+          "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学一真题答案解析/2010-数一标准答案及解析 .pdf",
+          "sourceUrl": ""
+        }
+      ],
+      "localSourceAuditStatus": "not_available",
+      "localSourceAuditSummary": "",
+      "localSourceAuditSamples": [],
+      "localSourceAuditDiagnostics": {
+        "status": "not_available",
+        "sourceCount": 0,
+        "usableTextLayerCount": 0,
+        "needsOcrCount": 0,
+        "blockedCount": 0,
+        "paperLikeCount": 0,
+        "answerLikeCount": 0,
+        "usablePaperLikeCount": 0,
+        "usableAnswerLikeCount": 0,
+        "blockedPaperLikeCount": 0,
+        "blockedAnswerLikeCount": 0,
+        "roleCounts": {},
+        "samples": []
+      },
+      "sourceManifestRegistrationChecklist": {
+        "status": "blocked_before_auto_pair",
+        "readyForHumanVerification": false,
+        "requiredManifestFields": [
+          "eligible=true",
+          "status=discovered|verified|published",
+          "sourceType=official_paper",
+          "contentHash|sha256|fileSha256|sourceHash",
+          "remotePath|sourceUrl|provenanceUrl",
+          "sourceRole inferred as paper+answer or paper_answer",
+          "legalReview.publishBlocked=false",
+          "riskFlags excludes answer_missing,brand_leak,copyright_review_required,ad_or_promo"
+        ],
+        "verifiedSourceRegistryFields": [
+          "localPath",
+          "sourceUrl",
+          "track",
+          "year",
+          "sourceType=official_paper",
+          "answerEvidenceStatus=matched",
+          "expectedSha256",
+          "verifiedBy",
+          "evidenceNote"
+        ],
+        "humanVerificationSteps": [],
+        "postRegistrationCommands": [],
+        "localFileCandidates": [],
+        "verifiedSourceRegistryDrafts": [],
+        "manifestCandidateIds": [
+          "src_b3e24571a6135f06d1988818"
+        ],
+        "blockers": [
+          "local_source_audit_not_available"
+        ],
+        "note": "Resolve listed local-source blockers before the slot can be treated as an auto-paired official source."
+      },
+      "prerequisiteBlockers": [
+        "missing_publishable_official_source"
+      ],
+      "coverageAction": "",
+      "sourceEvidenceAction": "在 Source Manifest 中补齐同槽位 official_paper 试卷+答案或真题及答案合并 PDF，要求有 remotePath、contentHash，且风险标记不阻断发布。",
+      "nextAction": "在 Source Manifest 中补齐同槽位 official_paper 试卷+答案或真题及答案合并 PDF，要求有 remotePath、contentHash，且风险标记不阻断发布。"
     }
   ],
   "sourceManifestHumanRegistrationQueue": {
@@ -8983,17 +7635,17 @@
       "nextAction": "已有可发布题源证据时，完成题卡清洗、答案匹配、证据哈希，再按 registry 规范注册题库。"
     },
     {
-      "id": "coverage_missing:english1:2016",
+      "id": "coverage_missing:english1:2018",
       "track": "english1",
       "trackLabel": "英语一",
-      "year": 2016,
+      "year": 2018,
       "blockerCode": "missing_public_course_bank",
       "slotStatus": "missing",
       "sourceEvidenceStatus": "publishable_source_present",
       "sourceCandidateSummary": "source manifest 已发现 30 个候选，其中 official_paper=5；当前阻断: legalReview.publishBlocked=true(19), riskFlags=brand_leak,copyright_review_required(19), sourceType=institution_candidate(19)",
       "sourceCandidateSamples": [
         {
-          "sourceId": "src_ba027850b7b2359d583e19bc",
+          "sourceId": "src_7fc9c83e38b149770e57c209",
           "status": "discovered",
           "sourceType": "official_paper",
           "sourceRole": "",
@@ -9004,11 +7656,11 @@
           "riskFlags": [],
           "publishBlocked": false,
           "blockReasons": [],
-          "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【解析】1986-2024/英语一历年真题文档版（2010-2024）/2016考研英语（一）真题及解析 .pdf",
+          "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【解析】1986-2024/英语一历年真题文档版（2010-2024）/2018考研英语（一）真题及解析 .pdf",
           "sourceUrl": ""
         },
         {
-          "sourceId": "src_fd751ea21161f3c706d34b6d",
+          "sourceId": "src_c2b2d9106a7394b9ebf94bb2",
           "status": "discovered",
           "sourceType": "official_paper",
           "sourceRole": "",
@@ -9019,11 +7671,11 @@
           "riskFlags": [],
           "publishBlocked": false,
           "blockReasons": [],
-          "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/03.考研真相系列/26考研真相/英一/真题册+答案速查/2016年真题及答案速查/2016年真题及答案速查.pdf",
+          "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/03.考研真相系列/26考研真相/英一/真题册+答案速查/2018年真题及答案速查/2018年真题及答案速查.pdf",
           "sourceUrl": ""
         },
         {
-          "sourceId": "src_1727b1f7ac7aed776cc06a4b",
+          "sourceId": "src_65e38afdd4cb892710781e4f",
           "status": "discovered",
           "sourceType": "official_paper",
           "sourceRole": "",
@@ -9034,7 +7686,7 @@
           "riskFlags": [],
           "publishBlocked": false,
           "blockReasons": [],
-          "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语一考研历年真题/2016年考研英语一真题 .pdf",
+          "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语一考研历年真题/2018年考研英语一真题 .pdf",
           "sourceUrl": ""
         }
       ],
@@ -9070,9 +7722,9 @@
         "localFileCandidates": [],
         "verifiedSourceRegistryDrafts": [],
         "manifestCandidateIds": [
-          "src_ba027850b7b2359d583e19bc",
-          "src_fd751ea21161f3c706d34b6d",
-          "src_1727b1f7ac7aed776cc06a4b"
+          "src_7fc9c83e38b149770e57c209",
+          "src_c2b2d9106a7394b9ebf94bb2",
+          "src_65e38afdd4cb892710781e4f"
         ],
         "blockers": [
           "local_source_audit_not_available"
@@ -9263,17 +7915,17 @@
       "nextAction": "在 Source Manifest 中补齐同槽位 official_paper 试卷+答案或真题及答案合并 PDF，要求有 remotePath、contentHash，且风险标记不阻断发布。"
     },
     {
-      "id": "coverage_missing:math2:2011",
+      "id": "coverage_missing:math2:2015",
       "track": "math2",
       "trackLabel": "数学二",
-      "year": 2011,
+      "year": 2015,
       "blockerCode": "missing_public_course_bank",
       "slotStatus": "missing",
       "sourceEvidenceStatus": "publishable_source_present",
       "sourceCandidateSummary": "source manifest 已发现 1 个候选，其中 official_paper=1；当前阻断: 未命中可发布条件",
       "sourceCandidateSamples": [
         {
-          "sourceId": "src_2f348d63b16be6d23121eb78",
+          "sourceId": "src_a37ec1fa555f79f247286bf4",
           "status": "discovered",
           "sourceType": "official_paper",
           "sourceRole": "",
@@ -9284,7 +7936,7 @@
           "riskFlags": [],
           "publishBlocked": false,
           "blockReasons": [],
-          "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学二真题答案解析/2011考研数学二真题 .pdf",
+          "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学二真题答案解析/2015考研数学二真题 .pdf",
           "sourceUrl": ""
         }
       ],
@@ -9320,7 +7972,7 @@
         "localFileCandidates": [],
         "verifiedSourceRegistryDrafts": [],
         "manifestCandidateIds": [
-          "src_2f348d63b16be6d23121eb78"
+          "src_a37ec1fa555f79f247286bf4"
         ],
         "blockers": [
           "local_source_audit_not_available"
@@ -9331,17 +7983,17 @@
       "nextAction": "已有可发布题源证据时，完成题卡清洗、答案匹配、证据哈希，再按 registry 规范注册题库。"
     },
     {
-      "id": "coverage_missing:math3:2013",
+      "id": "coverage_missing:math3:2014",
       "track": "math3",
       "trackLabel": "数学三",
-      "year": 2013,
+      "year": 2014,
       "blockerCode": "missing_public_course_bank",
       "slotStatus": "missing",
       "sourceEvidenceStatus": "publishable_source_present",
       "sourceCandidateSummary": "source manifest 已发现 1 个候选，其中 official_paper=1；当前阻断: 未命中可发布条件",
       "sourceCandidateSamples": [
         {
-          "sourceId": "src_b4cf0b63525b94f4333b545e",
+          "sourceId": "src_bd3bb496ed9148e3cd0127d9",
           "status": "discovered",
           "sourceType": "official_paper",
           "sourceRole": "",
@@ -9352,7 +8004,7 @@
           "riskFlags": [],
           "publishBlocked": false,
           "blockReasons": [],
-          "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学三真题答案解析/2013年考研数学三真题及解析 .pdf",
+          "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学三真题答案解析/2014年考研数学三真题及解析 .pdf",
           "sourceUrl": ""
         }
       ],
@@ -9388,7 +8040,7 @@
         "localFileCandidates": [],
         "verifiedSourceRegistryDrafts": [],
         "manifestCandidateIds": [
-          "src_b4cf0b63525b94f4333b545e"
+          "src_bd3bb496ed9148e3cd0127d9"
         ],
         "blockers": [
           "local_source_audit_not_available"
@@ -9525,17 +8177,17 @@
       "nextAction": "在 Source Manifest 中补齐同槽位 official_paper 试卷+答案或真题及答案合并 PDF，要求有 remotePath、contentHash，且风险标记不阻断发布。"
     },
     {
-      "id": "coverage_missing:english1:2017",
+      "id": "coverage_missing:english1:2019",
       "track": "english1",
       "trackLabel": "英语一",
-      "year": 2017,
+      "year": 2019,
       "blockerCode": "missing_public_course_bank",
       "slotStatus": "missing",
       "sourceEvidenceStatus": "publishable_source_present",
-      "sourceCandidateSummary": "source manifest 已发现 30 个候选，其中 official_paper=5；当前阻断: legalReview.publishBlocked=true(19), riskFlags=brand_leak,copyright_review_required(19), sourceType=institution_candidate(19)",
+      "sourceCandidateSummary": "source manifest 已发现 40 个候选，其中 official_paper=5；当前阻断: legalReview.publishBlocked=true(29), riskFlags=brand_leak,copyright_review_required(27), sourceType=institution_candidate(27)",
       "sourceCandidateSamples": [
         {
-          "sourceId": "src_59f192bb67dfa8490c3de9d3",
+          "sourceId": "src_a58a838f39f9fbe0ee9363f9",
           "status": "discovered",
           "sourceType": "official_paper",
           "sourceRole": "",
@@ -9546,11 +8198,26 @@
           "riskFlags": [],
           "publishBlocked": false,
           "blockReasons": [],
-          "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/03.考研真相系列/26考研真相/英一/真题册+答案速查/2017年真题及答案速查/2017年真题及答案速查.pdf",
+          "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【解析】1986-2024/英语一历年真题文档版（2010-2024）/2019考研英语（一）真题及解析 .pdf",
           "sourceUrl": ""
         },
         {
-          "sourceId": "src_d62dd96ab6391c4676b275cb",
+          "sourceId": "src_e5870f592977fc243c04658d",
+          "status": "discovered",
+          "sourceType": "official_paper",
+          "sourceRole": "",
+          "inferredSourceRole": "paper_answer",
+          "roleSource": "filename",
+          "autoPairEligible": true,
+          "answerEvidenceStatus": "",
+          "riskFlags": [],
+          "publishBlocked": false,
+          "blockReasons": [],
+          "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/03.考研真相系列/26考研真相/英一/真题册+答案速查/2019年真题及答案速查/2019年真题及答案速查.pdf",
+          "sourceUrl": ""
+        },
+        {
+          "sourceId": "src_8de590b865dceaba46e1cf1f",
           "status": "discovered",
           "sourceType": "official_paper",
           "sourceRole": "",
@@ -9561,22 +8228,7 @@
           "riskFlags": [],
           "publishBlocked": false,
           "blockReasons": [],
-          "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语一考研历年真题/2017年考研英语一真题 .pdf",
-          "sourceUrl": ""
-        },
-        {
-          "sourceId": "src_60d042775102b5301ab077ca",
-          "status": "discovered",
-          "sourceType": "official_paper",
-          "sourceRole": "",
-          "inferredSourceRole": "answer",
-          "roleSource": "filename",
-          "autoPairEligible": true,
-          "answerEvidenceStatus": "",
-          "riskFlags": [],
-          "publishBlocked": false,
-          "blockReasons": [],
-          "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/03.考研真相系列/26考研真相/英一/解析册+逐词逐句册/2017年真题逐题细解/2017年真题逐题细解.pdf",
+          "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语一考研历年真题/2019年考研英语一真题 .pdf",
           "sourceUrl": ""
         }
       ],
@@ -9612,9 +8264,9 @@
         "localFileCandidates": [],
         "verifiedSourceRegistryDrafts": [],
         "manifestCandidateIds": [
-          "src_59f192bb67dfa8490c3de9d3",
-          "src_d62dd96ab6391c4676b275cb",
-          "src_60d042775102b5301ab077ca"
+          "src_a58a838f39f9fbe0ee9363f9",
+          "src_e5870f592977fc243c04658d",
+          "src_8de590b865dceaba46e1cf1f"
         ],
         "blockers": [
           "local_source_audit_not_available"
@@ -9805,17 +8457,17 @@
       "nextAction": "在 Source Manifest 中补齐同槽位 official_paper 试卷+答案或真题及答案合并 PDF，要求有 remotePath、contentHash，且风险标记不阻断发布。"
     },
     {
-      "id": "coverage_missing:math2:2014",
+      "id": "coverage_missing:math2:2016",
       "track": "math2",
       "trackLabel": "数学二",
-      "year": 2014,
+      "year": 2016,
       "blockerCode": "missing_public_course_bank",
       "slotStatus": "missing",
       "sourceEvidenceStatus": "publishable_source_present",
       "sourceCandidateSummary": "source manifest 已发现 1 个候选，其中 official_paper=1；当前阻断: 未命中可发布条件",
       "sourceCandidateSamples": [
         {
-          "sourceId": "src_cabdf1fe95d0ffad0c8f0e8c",
+          "sourceId": "src_97fdbcbd12d0815374fbe91f",
           "status": "discovered",
           "sourceType": "official_paper",
           "sourceRole": "",
@@ -9826,7 +8478,7 @@
           "riskFlags": [],
           "publishBlocked": false,
           "blockReasons": [],
-          "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学二真题答案解析/2014考研数学二真题 .pdf",
+          "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学二真题答案解析/2016考研数学二真题 .pdf",
           "sourceUrl": ""
         }
       ],
@@ -9862,7 +8514,7 @@
         "localFileCandidates": [],
         "verifiedSourceRegistryDrafts": [],
         "manifestCandidateIds": [
-          "src_cabdf1fe95d0ffad0c8f0e8c"
+          "src_97fdbcbd12d0815374fbe91f"
         ],
         "blockers": [
           "local_source_audit_not_available"
@@ -9873,17 +8525,17 @@
       "nextAction": "已有可发布题源证据时，完成题卡清洗、答案匹配、证据哈希，再按 registry 规范注册题库。"
     },
     {
-      "id": "coverage_missing:math3:2014",
+      "id": "coverage_missing:math3:2015",
       "track": "math3",
       "trackLabel": "数学三",
-      "year": 2014,
+      "year": 2015,
       "blockerCode": "missing_public_course_bank",
       "slotStatus": "missing",
       "sourceEvidenceStatus": "publishable_source_present",
       "sourceCandidateSummary": "source manifest 已发现 1 个候选，其中 official_paper=1；当前阻断: 未命中可发布条件",
       "sourceCandidateSamples": [
         {
-          "sourceId": "src_bd3bb496ed9148e3cd0127d9",
+          "sourceId": "src_08c2498ac7b58e3542942300",
           "status": "discovered",
           "sourceType": "official_paper",
           "sourceRole": "",
@@ -9894,7 +8546,7 @@
           "riskFlags": [],
           "publishBlocked": false,
           "blockReasons": [],
-          "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学三真题答案解析/2014年考研数学三真题及解析 .pdf",
+          "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学三真题答案解析/2015年考研数学三真题及解析 .pdf",
           "sourceUrl": ""
         }
       ],
@@ -9930,7 +8582,7 @@
         "localFileCandidates": [],
         "verifiedSourceRegistryDrafts": [],
         "manifestCandidateIds": [
-          "src_bd3bb496ed9148e3cd0127d9"
+          "src_08c2498ac7b58e3542942300"
         ],
         "blockers": [
           "local_source_audit_not_available"
@@ -9941,17 +8593,17 @@
       "nextAction": "已有可发布题源证据时，完成题卡清洗、答案匹配、证据哈希，再按 registry 规范注册题库。"
     },
     {
-      "id": "coverage_missing:english1:2018",
+      "id": "coverage_missing:english1:2020",
       "track": "english1",
       "trackLabel": "英语一",
-      "year": 2018,
+      "year": 2020,
       "blockerCode": "missing_public_course_bank",
       "slotStatus": "missing",
       "sourceEvidenceStatus": "publishable_source_present",
       "sourceCandidateSummary": "source manifest 已发现 30 个候选，其中 official_paper=5；当前阻断: legalReview.publishBlocked=true(19), riskFlags=brand_leak,copyright_review_required(19), sourceType=institution_candidate(19)",
       "sourceCandidateSamples": [
         {
-          "sourceId": "src_7fc9c83e38b149770e57c209",
+          "sourceId": "src_1d24809436b0ec4b51ad791d",
           "status": "discovered",
           "sourceType": "official_paper",
           "sourceRole": "",
@@ -9962,11 +8614,11 @@
           "riskFlags": [],
           "publishBlocked": false,
           "blockReasons": [],
-          "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【解析】1986-2024/英语一历年真题文档版（2010-2024）/2018考研英语（一）真题及解析 .pdf",
+          "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/03.考研真相系列/26考研真相/英一/真题册+答案速查/2020年真题及答案速查/2020年真题及答案速查.pdf",
           "sourceUrl": ""
         },
         {
-          "sourceId": "src_c2b2d9106a7394b9ebf94bb2",
+          "sourceId": "src_7d24da239755e36b91b1f88c",
           "status": "discovered",
           "sourceType": "official_paper",
           "sourceRole": "",
@@ -9977,11 +8629,11 @@
           "riskFlags": [],
           "publishBlocked": false,
           "blockReasons": [],
-          "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/03.考研真相系列/26考研真相/英一/真题册+答案速查/2018年真题及答案速查/2018年真题及答案速查.pdf",
+          "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【解析】1986-2024/英语一历年真题文档版（2010-2024）/2020考研英语（一）真题及解析 .pdf",
           "sourceUrl": ""
         },
         {
-          "sourceId": "src_65e38afdd4cb892710781e4f",
+          "sourceId": "src_4ccc82ab098d5899704e062e",
           "status": "discovered",
           "sourceType": "official_paper",
           "sourceRole": "",
@@ -9992,7 +8644,7 @@
           "riskFlags": [],
           "publishBlocked": false,
           "blockReasons": [],
-          "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语一考研历年真题/2018年考研英语一真题 .pdf",
+          "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语一考研历年真题/2020年考研英语一真题 .pdf",
           "sourceUrl": ""
         }
       ],
@@ -10028,9 +8680,9 @@
         "localFileCandidates": [],
         "verifiedSourceRegistryDrafts": [],
         "manifestCandidateIds": [
-          "src_7fc9c83e38b149770e57c209",
-          "src_c2b2d9106a7394b9ebf94bb2",
-          "src_65e38afdd4cb892710781e4f"
+          "src_1d24809436b0ec4b51ad791d",
+          "src_7d24da239755e36b91b1f88c",
+          "src_4ccc82ab098d5899704e062e"
         ],
         "blockers": [
           "local_source_audit_not_available"
@@ -10221,17 +8873,17 @@
       "nextAction": "在 Source Manifest 中补齐同槽位 official_paper 试卷+答案或真题及答案合并 PDF，要求有 remotePath、contentHash，且风险标记不阻断发布。"
     },
     {
-      "id": "coverage_missing:math2:2015",
+      "id": "coverage_missing:math2:2017",
       "track": "math2",
       "trackLabel": "数学二",
-      "year": 2015,
+      "year": 2017,
       "blockerCode": "missing_public_course_bank",
       "slotStatus": "missing",
       "sourceEvidenceStatus": "publishable_source_present",
       "sourceCandidateSummary": "source manifest 已发现 1 个候选，其中 official_paper=1；当前阻断: 未命中可发布条件",
       "sourceCandidateSamples": [
         {
-          "sourceId": "src_a37ec1fa555f79f247286bf4",
+          "sourceId": "src_f91df4734f54ab6decaa093b",
           "status": "discovered",
           "sourceType": "official_paper",
           "sourceRole": "",
@@ -10242,7 +8894,7 @@
           "riskFlags": [],
           "publishBlocked": false,
           "blockReasons": [],
-          "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学二真题答案解析/2015考研数学二真题 .pdf",
+          "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学二真题答案解析/2017考研数学二真题 .pdf",
           "sourceUrl": ""
         }
       ],
@@ -10278,7 +8930,7 @@
         "localFileCandidates": [],
         "verifiedSourceRegistryDrafts": [],
         "manifestCandidateIds": [
-          "src_a37ec1fa555f79f247286bf4"
+          "src_f91df4734f54ab6decaa093b"
         ],
         "blockers": [
           "local_source_audit_not_available"
@@ -10289,17 +8941,17 @@
       "nextAction": "已有可发布题源证据时，完成题卡清洗、答案匹配、证据哈希，再按 registry 规范注册题库。"
     },
     {
-      "id": "coverage_missing:math3:2015",
+      "id": "coverage_missing:math3:2016",
       "track": "math3",
       "trackLabel": "数学三",
-      "year": 2015,
+      "year": 2016,
       "blockerCode": "missing_public_course_bank",
       "slotStatus": "missing",
       "sourceEvidenceStatus": "publishable_source_present",
       "sourceCandidateSummary": "source manifest 已发现 1 个候选，其中 official_paper=1；当前阻断: 未命中可发布条件",
       "sourceCandidateSamples": [
         {
-          "sourceId": "src_08c2498ac7b58e3542942300",
+          "sourceId": "src_fb595cd0da81efa6da3993c7",
           "status": "discovered",
           "sourceType": "official_paper",
           "sourceRole": "",
@@ -10310,7 +8962,7 @@
           "riskFlags": [],
           "publishBlocked": false,
           "blockReasons": [],
-          "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学三真题答案解析/2015年考研数学三真题及解析 .pdf",
+          "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学三真题答案解析/2016年考研数学三真题及解析 .pdf",
           "sourceUrl": ""
         }
       ],
@@ -10346,7 +8998,7 @@
         "localFileCandidates": [],
         "verifiedSourceRegistryDrafts": [],
         "manifestCandidateIds": [
-          "src_08c2498ac7b58e3542942300"
+          "src_fb595cd0da81efa6da3993c7"
         ],
         "blockers": [
           "local_source_audit_not_available"
@@ -10357,17 +9009,17 @@
       "nextAction": "已有可发布题源证据时，完成题卡清洗、答案匹配、证据哈希，再按 registry 规范注册题库。"
     },
     {
-      "id": "coverage_missing:english1:2019",
+      "id": "coverage_missing:english1:2021",
       "track": "english1",
       "trackLabel": "英语一",
-      "year": 2019,
+      "year": 2021,
       "blockerCode": "missing_public_course_bank",
       "slotStatus": "missing",
       "sourceEvidenceStatus": "publishable_source_present",
-      "sourceCandidateSummary": "source manifest 已发现 40 个候选，其中 official_paper=5；当前阻断: legalReview.publishBlocked=true(29), riskFlags=brand_leak,copyright_review_required(27), sourceType=institution_candidate(27)",
+      "sourceCandidateSummary": "source manifest 已发现 32 个候选，其中 official_paper=5；当前阻断: legalReview.publishBlocked=true(21), riskFlags=brand_leak,copyright_review_required(21), sourceType=institution_candidate(21)",
       "sourceCandidateSamples": [
         {
-          "sourceId": "src_a58a838f39f9fbe0ee9363f9",
+          "sourceId": "src_7d8cc9f5f039ff029da6b72a",
           "status": "discovered",
           "sourceType": "official_paper",
           "sourceRole": "",
@@ -10378,11 +9030,11 @@
           "riskFlags": [],
           "publishBlocked": false,
           "blockReasons": [],
-          "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【解析】1986-2024/英语一历年真题文档版（2010-2024）/2019考研英语（一）真题及解析 .pdf",
+          "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/03.考研真相系列/26考研真相/英一/真题册+答案速查/2021年真题及答案速查/2021年真题及答案速查.pdf",
           "sourceUrl": ""
         },
         {
-          "sourceId": "src_e5870f592977fc243c04658d",
+          "sourceId": "src_7df78c60e1027df9469e28af",
           "status": "discovered",
           "sourceType": "official_paper",
           "sourceRole": "",
@@ -10393,11 +9045,11 @@
           "riskFlags": [],
           "publishBlocked": false,
           "blockReasons": [],
-          "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/03.考研真相系列/26考研真相/英一/真题册+答案速查/2019年真题及答案速查/2019年真题及答案速查.pdf",
+          "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【解析】1986-2024/英语一历年真题文档版（2010-2024）/2021考研英语（一）真题及解析 .pdf",
           "sourceUrl": ""
         },
         {
-          "sourceId": "src_8de590b865dceaba46e1cf1f",
+          "sourceId": "src_89ed2d3a984d00084541829d",
           "status": "discovered",
           "sourceType": "official_paper",
           "sourceRole": "",
@@ -10408,7 +9060,7 @@
           "riskFlags": [],
           "publishBlocked": false,
           "blockReasons": [],
-          "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语一考研历年真题/2019年考研英语一真题 .pdf",
+          "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语一考研历年真题/2021年考研英语一真题 .pdf",
           "sourceUrl": ""
         }
       ],
@@ -10444,9 +9096,9 @@
         "localFileCandidates": [],
         "verifiedSourceRegistryDrafts": [],
         "manifestCandidateIds": [
-          "src_a58a838f39f9fbe0ee9363f9",
-          "src_e5870f592977fc243c04658d",
-          "src_8de590b865dceaba46e1cf1f"
+          "src_7d8cc9f5f039ff029da6b72a",
+          "src_7df78c60e1027df9469e28af",
+          "src_89ed2d3a984d00084541829d"
         ],
         "blockers": [
           "local_source_audit_not_available"
@@ -10567,17 +9219,17 @@
       "nextAction": "在 Source Manifest 中补齐同槽位 official_paper 试卷+答案或真题及答案合并 PDF，要求有 remotePath、contentHash，且风险标记不阻断发布。"
     },
     {
-      "id": "coverage_missing:math1:2008",
+      "id": "coverage_missing:math1:2018",
       "track": "math1",
       "trackLabel": "数学一",
-      "year": 2008,
+      "year": 2018,
       "blockerCode": "missing_public_course_bank",
       "slotStatus": "missing",
       "sourceEvidenceStatus": "publishable_source_present",
       "sourceCandidateSummary": "source manifest 已发现 1 个候选，其中 official_paper=1；当前阻断: 未命中可发布条件",
       "sourceCandidateSamples": [
         {
-          "sourceId": "src_98dbae1b54d51d2784cc1728",
+          "sourceId": "src_2cd530d0c9237cd5d84c348f",
           "status": "discovered",
           "sourceType": "official_paper",
           "sourceRole": "",
@@ -10588,7 +9240,7 @@
           "riskFlags": [],
           "publishBlocked": false,
           "blockReasons": [],
-          "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学一真题答案解析/2008-数一真题、标准答案及解析 .pdf",
+          "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学一真题答案解析/2018-数一考研真题及答案 .pdf",
           "sourceUrl": ""
         }
       ],
@@ -10624,7 +9276,7 @@
         "localFileCandidates": [],
         "verifiedSourceRegistryDrafts": [],
         "manifestCandidateIds": [
-          "src_98dbae1b54d51d2784cc1728"
+          "src_2cd530d0c9237cd5d84c348f"
         ],
         "blockers": [
           "local_source_audit_not_available"
@@ -10635,17 +9287,17 @@
       "nextAction": "已有可发布题源证据时，完成题卡清洗、答案匹配、证据哈希，再按 registry 规范注册题库。"
     },
     {
-      "id": "coverage_missing:math2:2016",
+      "id": "coverage_missing:math2:2018",
       "track": "math2",
       "trackLabel": "数学二",
-      "year": 2016,
+      "year": 2018,
       "blockerCode": "missing_public_course_bank",
       "slotStatus": "missing",
       "sourceEvidenceStatus": "publishable_source_present",
       "sourceCandidateSummary": "source manifest 已发现 1 个候选，其中 official_paper=1；当前阻断: 未命中可发布条件",
       "sourceCandidateSamples": [
         {
-          "sourceId": "src_97fdbcbd12d0815374fbe91f",
+          "sourceId": "src_a91bd4ebb8ae4c75b320a8a3",
           "status": "discovered",
           "sourceType": "official_paper",
           "sourceRole": "",
@@ -10656,7 +9308,7 @@
           "riskFlags": [],
           "publishBlocked": false,
           "blockReasons": [],
-          "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学二真题答案解析/2016考研数学二真题 .pdf",
+          "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学二真题答案解析/2018考研数学二真题 .pdf",
           "sourceUrl": ""
         }
       ],
@@ -10692,7 +9344,7 @@
         "localFileCandidates": [],
         "verifiedSourceRegistryDrafts": [],
         "manifestCandidateIds": [
-          "src_97fdbcbd12d0815374fbe91f"
+          "src_a91bd4ebb8ae4c75b320a8a3"
         ],
         "blockers": [
           "local_source_audit_not_available"
@@ -10703,17 +9355,17 @@
       "nextAction": "已有可发布题源证据时，完成题卡清洗、答案匹配、证据哈希，再按 registry 规范注册题库。"
     },
     {
-      "id": "coverage_missing:math3:2016",
+      "id": "coverage_missing:math3:2017",
       "track": "math3",
       "trackLabel": "数学三",
-      "year": 2016,
+      "year": 2017,
       "blockerCode": "missing_public_course_bank",
       "slotStatus": "missing",
       "sourceEvidenceStatus": "publishable_source_present",
       "sourceCandidateSummary": "source manifest 已发现 1 个候选，其中 official_paper=1；当前阻断: 未命中可发布条件",
       "sourceCandidateSamples": [
         {
-          "sourceId": "src_fb595cd0da81efa6da3993c7",
+          "sourceId": "src_1903dd7b391b0dc5da099c74",
           "status": "discovered",
           "sourceType": "official_paper",
           "sourceRole": "",
@@ -10724,7 +9376,7 @@
           "riskFlags": [],
           "publishBlocked": false,
           "blockReasons": [],
-          "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学三真题答案解析/2016年考研数学三真题及解析 .pdf",
+          "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学三真题答案解析/2017年考研数学三真题及解析 .pdf",
           "sourceUrl": ""
         }
       ],
@@ -10760,7 +9412,7 @@
         "localFileCandidates": [],
         "verifiedSourceRegistryDrafts": [],
         "manifestCandidateIds": [
-          "src_fb595cd0da81efa6da3993c7"
+          "src_1903dd7b391b0dc5da099c74"
         ],
         "blockers": [
           "local_source_audit_not_available"
@@ -10771,17 +9423,17 @@
       "nextAction": "已有可发布题源证据时，完成题卡清洗、答案匹配、证据哈希，再按 registry 规范注册题库。"
     },
     {
-      "id": "coverage_missing:english1:2020",
+      "id": "coverage_missing:english1:2022",
       "track": "english1",
       "trackLabel": "英语一",
-      "year": 2020,
+      "year": 2022,
       "blockerCode": "missing_public_course_bank",
       "slotStatus": "missing",
       "sourceEvidenceStatus": "publishable_source_present",
-      "sourceCandidateSummary": "source manifest 已发现 30 个候选，其中 official_paper=5；当前阻断: legalReview.publishBlocked=true(19), riskFlags=brand_leak,copyright_review_required(19), sourceType=institution_candidate(19)",
+      "sourceCandidateSummary": "source manifest 已发现 32 个候选，其中 official_paper=5；当前阻断: legalReview.publishBlocked=true(21), riskFlags=brand_leak,copyright_review_required(21), sourceType=institution_candidate(21)",
       "sourceCandidateSamples": [
         {
-          "sourceId": "src_1d24809436b0ec4b51ad791d",
+          "sourceId": "src_73ec5f093a5e18ea02a32aa0",
           "status": "discovered",
           "sourceType": "official_paper",
           "sourceRole": "",
@@ -10792,11 +9444,11 @@
           "riskFlags": [],
           "publishBlocked": false,
           "blockReasons": [],
-          "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/03.考研真相系列/26考研真相/英一/真题册+答案速查/2020年真题及答案速查/2020年真题及答案速查.pdf",
+          "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/03.考研真相系列/26考研真相/英一/真题册+答案速查/2022年真题及答案速查/2022年真题及答案速查.pdf",
           "sourceUrl": ""
         },
         {
-          "sourceId": "src_7d24da239755e36b91b1f88c",
+          "sourceId": "src_91e7e9e70ae27be01dd1ef44",
           "status": "discovered",
           "sourceType": "official_paper",
           "sourceRole": "",
@@ -10807,11 +9459,11 @@
           "riskFlags": [],
           "publishBlocked": false,
           "blockReasons": [],
-          "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【解析】1986-2024/英语一历年真题文档版（2010-2024）/2020考研英语（一）真题及解析 .pdf",
+          "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【解析】1986-2024/英语一历年真题文档版（2010-2024）/2022考研英语（一）真题及解析 .pdf",
           "sourceUrl": ""
         },
         {
-          "sourceId": "src_4ccc82ab098d5899704e062e",
+          "sourceId": "src_d2bf9f5c7296db25057f4a71",
           "status": "discovered",
           "sourceType": "official_paper",
           "sourceRole": "",
@@ -10822,7 +9474,7 @@
           "riskFlags": [],
           "publishBlocked": false,
           "blockReasons": [],
-          "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语一考研历年真题/2020年考研英语一真题 .pdf",
+          "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语一考研历年真题/2022年考研英语一真题 .pdf",
           "sourceUrl": ""
         }
       ],
@@ -10858,9 +9510,9 @@
         "localFileCandidates": [],
         "verifiedSourceRegistryDrafts": [],
         "manifestCandidateIds": [
-          "src_1d24809436b0ec4b51ad791d",
-          "src_7d24da239755e36b91b1f88c",
-          "src_4ccc82ab098d5899704e062e"
+          "src_73ec5f093a5e18ea02a32aa0",
+          "src_91e7e9e70ae27be01dd1ef44",
+          "src_d2bf9f5c7296db25057f4a71"
         ],
         "blockers": [
           "local_source_audit_not_available"
@@ -11003,36 +9655,8 @@
           "message": "Archive WeChat DevTools/import/real-device smoke evidence before release; evidence file must contain \"Status: passed\" and no pending placeholders",
           "path": "data/release-evidence/wechat-device-smoke.md"
         },
-        "devtoolsSmokeStatus": "blocked",
+        "devtoolsSmokeStatus": "passed",
         "devtoolsSmokeReport": "data/reports/wechat-devtools-release-smoke.json"
-      }
-    },
-    {
-      "id": "wechat_devtools_smoke:not_passed",
-      "workstream": "wechat_devtools_smoke",
-      "priority": "P0",
-      "status": "blocked",
-      "title": "WeChat DevTools 自动化 smoke 未通过: smoke-run",
-      "blockerCode": "wechat_devtools_smoke_not_passed",
-      "track": "",
-      "trackLabel": "",
-      "year": "",
-      "bankId": "",
-      "filePath": "",
-      "count": 1,
-      "nextAction": "当前执行环境禁止本地端口监听；在允许 WeChat DevTools 自动化端口的本机环境重新运行 npm run smoke:wechat:devtools。",
-      "evidence": {
-        "status": "blocked",
-        "startedAt": "2026-05-23T16:43:40.285Z",
-        "finishedAt": "2026-05-23T16:43:40.287Z",
-        "sampleBlockedSteps": [
-          {
-            "name": "smoke-run",
-            "status": "blocked",
-            "error": "listen EPERM: operation not permitted 0.0.0.0"
-          }
-        ],
-        "report": "data/reports/wechat-devtools-release-smoke.json"
       }
     },
     {
@@ -11326,6 +9950,16 @@
           2026
         ],
         "publishedYears": [
+          2008,
+          2009,
+          2010,
+          2011,
+          2012,
+          2013,
+          2014,
+          2015,
+          2016,
+          2017,
           2025
         ],
         "pendingYears": [],
@@ -11744,6 +10378,16 @@
           2026
         ],
         "publishedYears": [
+          2008,
+          2009,
+          2010,
+          2011,
+          2012,
+          2013,
+          2014,
+          2015,
+          2016,
+          2017,
           2025
         ],
         "pendingYears": [],
@@ -12162,6 +10806,16 @@
           2026
         ],
         "publishedYears": [
+          2008,
+          2009,
+          2010,
+          2011,
+          2012,
+          2013,
+          2014,
+          2015,
+          2016,
+          2017,
           2025
         ],
         "pendingYears": [],
@@ -12541,171 +11195,6 @@
       }
     },
     {
-      "id": "coverage_missing:math1:2008",
-      "workstream": "public_course_coverage",
-      "priority": "P0",
-      "status": "blocked",
-      "title": "数学一 2008 缺少可发布题库",
-      "blockerCode": "missing_public_course_bank",
-      "track": "math1",
-      "trackLabel": "数学一",
-      "year": 2008,
-      "bankId": "",
-      "filePath": "",
-      "count": 0,
-      "nextAction": "已有可发布题源证据时，完成题卡清洗、答案匹配、证据哈希，再按 registry 规范注册题库。",
-      "evidence": {
-        "requiredYears": [
-          2005,
-          2006,
-          2007,
-          2008,
-          2009,
-          2010,
-          2011,
-          2012,
-          2013,
-          2014,
-          2015,
-          2016,
-          2017,
-          2018,
-          2019,
-          2020,
-          2021,
-          2022,
-          2023,
-          2024,
-          2025,
-          2026
-        ],
-        "publishedYears": [
-          2025
-        ],
-        "pendingYears": [],
-        "sourceEvidenceStatus": "publishable_source_present",
-        "sourceEvidencePresentYears": [
-          2008,
-          2009,
-          2011,
-          2012,
-          2013,
-          2014,
-          2015,
-          2016,
-          2017,
-          2018,
-          2019,
-          2020,
-          2021,
-          2022,
-          2023,
-          2024,
-          2025
-        ],
-        "sourceEvidenceCoverageRate": 0.7727,
-        "sourceCandidateSummary": "source manifest 已发现 1 个候选，其中 official_paper=1；当前阻断: 未命中可发布条件",
-        "sourceCandidateSamples": [
-          {
-            "sourceId": "src_98dbae1b54d51d2784cc1728",
-            "status": "discovered",
-            "sourceType": "official_paper",
-            "sourceRole": "",
-            "inferredSourceRole": "paper_answer",
-            "roleSource": "filename",
-            "autoPairEligible": true,
-            "answerEvidenceStatus": "",
-            "riskFlags": [],
-            "publishBlocked": false,
-            "blockReasons": [],
-            "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学一真题答案解析/2008-数一真题、标准答案及解析 .pdf",
-            "sourceUrl": ""
-          }
-        ],
-        "sourceCandidateDiagnostics": {
-          "candidateCount": 1,
-          "officialPaperCandidateCount": 1,
-          "publishBlockedCandidateCount": 0,
-          "autoPairEligibleCandidateCount": 1,
-          "paperCandidateCount": 0,
-          "answerCandidateCount": 0,
-          "combinedCandidateCount": 1,
-          "blockReasons": {},
-          "sampleCandidates": [
-            {
-              "sourceId": "src_98dbae1b54d51d2784cc1728",
-              "status": "discovered",
-              "sourceType": "official_paper",
-              "sourceRole": "",
-              "inferredSourceRole": "paper_answer",
-              "roleSource": "filename",
-              "autoPairEligible": true,
-              "answerEvidenceStatus": "",
-              "riskFlags": [],
-              "publishBlocked": false,
-              "blockReasons": [],
-              "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学一真题答案解析/2008-数一真题、标准答案及解析 .pdf",
-              "sourceUrl": ""
-            }
-          ]
-        },
-        "localSourceAuditStatus": "not_available",
-        "localSourceAuditSummary": "",
-        "localSourceAuditSamples": [],
-        "localSourceAuditDiagnostics": {
-          "status": "not_available",
-          "sourceCount": 0,
-          "usableTextLayerCount": 0,
-          "needsOcrCount": 0,
-          "blockedCount": 0,
-          "paperLikeCount": 0,
-          "answerLikeCount": 0,
-          "usablePaperLikeCount": 0,
-          "usableAnswerLikeCount": 0,
-          "blockedPaperLikeCount": 0,
-          "blockedAnswerLikeCount": 0,
-          "roleCounts": {},
-          "samples": []
-        },
-        "sourceManifestRegistrationChecklist": {
-          "status": "blocked_before_auto_pair",
-          "readyForHumanVerification": false,
-          "requiredManifestFields": [
-            "eligible=true",
-            "status=discovered|verified|published",
-            "sourceType=official_paper",
-            "contentHash|sha256|fileSha256|sourceHash",
-            "remotePath|sourceUrl|provenanceUrl",
-            "sourceRole inferred as paper+answer or paper_answer",
-            "legalReview.publishBlocked=false",
-            "riskFlags excludes answer_missing,brand_leak,copyright_review_required,ad_or_promo"
-          ],
-          "verifiedSourceRegistryFields": [
-            "localPath",
-            "sourceUrl",
-            "track",
-            "year",
-            "sourceType=official_paper",
-            "answerEvidenceStatus=matched",
-            "expectedSha256",
-            "verifiedBy",
-            "evidenceNote"
-          ],
-          "humanVerificationSteps": [],
-          "postRegistrationCommands": [],
-          "localFileCandidates": [],
-          "verifiedSourceRegistryDrafts": [],
-          "manifestCandidateIds": [
-            "src_98dbae1b54d51d2784cc1728"
-          ],
-          "blockers": [
-            "local_source_audit_not_available"
-          ],
-          "note": "Resolve listed local-source blockers before the slot can be treated as an auto-paired official source."
-        }
-      }
-    },
-    {
       "id": "coverage_missing:english2:2009",
       "workstream": "public_course_coverage",
       "priority": "P0",
@@ -12957,171 +11446,6 @@
       }
     },
     {
-      "id": "coverage_missing:math1:2009",
-      "workstream": "public_course_coverage",
-      "priority": "P0",
-      "status": "blocked",
-      "title": "数学一 2009 缺少可发布题库",
-      "blockerCode": "missing_public_course_bank",
-      "track": "math1",
-      "trackLabel": "数学一",
-      "year": 2009,
-      "bankId": "",
-      "filePath": "",
-      "count": 0,
-      "nextAction": "已有可发布题源证据时，完成题卡清洗、答案匹配、证据哈希，再按 registry 规范注册题库。",
-      "evidence": {
-        "requiredYears": [
-          2005,
-          2006,
-          2007,
-          2008,
-          2009,
-          2010,
-          2011,
-          2012,
-          2013,
-          2014,
-          2015,
-          2016,
-          2017,
-          2018,
-          2019,
-          2020,
-          2021,
-          2022,
-          2023,
-          2024,
-          2025,
-          2026
-        ],
-        "publishedYears": [
-          2025
-        ],
-        "pendingYears": [],
-        "sourceEvidenceStatus": "publishable_source_present",
-        "sourceEvidencePresentYears": [
-          2008,
-          2009,
-          2011,
-          2012,
-          2013,
-          2014,
-          2015,
-          2016,
-          2017,
-          2018,
-          2019,
-          2020,
-          2021,
-          2022,
-          2023,
-          2024,
-          2025
-        ],
-        "sourceEvidenceCoverageRate": 0.7727,
-        "sourceCandidateSummary": "source manifest 已发现 1 个候选，其中 official_paper=1；当前阻断: 未命中可发布条件",
-        "sourceCandidateSamples": [
-          {
-            "sourceId": "src_bc3eff652947c7daeed22cce",
-            "status": "discovered",
-            "sourceType": "official_paper",
-            "sourceRole": "",
-            "inferredSourceRole": "paper_answer",
-            "roleSource": "filename",
-            "autoPairEligible": true,
-            "answerEvidenceStatus": "",
-            "riskFlags": [],
-            "publishBlocked": false,
-            "blockReasons": [],
-            "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学一真题答案解析/2009-数一真题、标准答案及解析 .pdf",
-            "sourceUrl": ""
-          }
-        ],
-        "sourceCandidateDiagnostics": {
-          "candidateCount": 1,
-          "officialPaperCandidateCount": 1,
-          "publishBlockedCandidateCount": 0,
-          "autoPairEligibleCandidateCount": 1,
-          "paperCandidateCount": 0,
-          "answerCandidateCount": 0,
-          "combinedCandidateCount": 1,
-          "blockReasons": {},
-          "sampleCandidates": [
-            {
-              "sourceId": "src_bc3eff652947c7daeed22cce",
-              "status": "discovered",
-              "sourceType": "official_paper",
-              "sourceRole": "",
-              "inferredSourceRole": "paper_answer",
-              "roleSource": "filename",
-              "autoPairEligible": true,
-              "answerEvidenceStatus": "",
-              "riskFlags": [],
-              "publishBlocked": false,
-              "blockReasons": [],
-              "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学一真题答案解析/2009-数一真题、标准答案及解析 .pdf",
-              "sourceUrl": ""
-            }
-          ]
-        },
-        "localSourceAuditStatus": "not_available",
-        "localSourceAuditSummary": "",
-        "localSourceAuditSamples": [],
-        "localSourceAuditDiagnostics": {
-          "status": "not_available",
-          "sourceCount": 0,
-          "usableTextLayerCount": 0,
-          "needsOcrCount": 0,
-          "blockedCount": 0,
-          "paperLikeCount": 0,
-          "answerLikeCount": 0,
-          "usablePaperLikeCount": 0,
-          "usableAnswerLikeCount": 0,
-          "blockedPaperLikeCount": 0,
-          "blockedAnswerLikeCount": 0,
-          "roleCounts": {},
-          "samples": []
-        },
-        "sourceManifestRegistrationChecklist": {
-          "status": "blocked_before_auto_pair",
-          "readyForHumanVerification": false,
-          "requiredManifestFields": [
-            "eligible=true",
-            "status=discovered|verified|published",
-            "sourceType=official_paper",
-            "contentHash|sha256|fileSha256|sourceHash",
-            "remotePath|sourceUrl|provenanceUrl",
-            "sourceRole inferred as paper+answer or paper_answer",
-            "legalReview.publishBlocked=false",
-            "riskFlags excludes answer_missing,brand_leak,copyright_review_required,ad_or_promo"
-          ],
-          "verifiedSourceRegistryFields": [
-            "localPath",
-            "sourceUrl",
-            "track",
-            "year",
-            "sourceType=official_paper",
-            "answerEvidenceStatus=matched",
-            "expectedSha256",
-            "verifiedBy",
-            "evidenceNote"
-          ],
-          "humanVerificationSteps": [],
-          "postRegistrationCommands": [],
-          "localFileCandidates": [],
-          "verifiedSourceRegistryDrafts": [],
-          "manifestCandidateIds": [
-            "src_bc3eff652947c7daeed22cce"
-          ],
-          "blockers": [
-            "local_source_audit_not_available"
-          ],
-          "note": "Resolve listed local-source blockers before the slot can be treated as an auto-paired official source."
-        }
-      }
-    },
-    {
       "id": "coverage_missing:english2:2010",
       "workstream": "public_course_coverage",
       "priority": "P0",
@@ -13349,173 +11673,6 @@
             "src_bb8925249bda668d7483e392",
             "src_6161ee08b2a764a79f84a2a1",
             "src_7b16f7d3e68a755bd34ea9d1"
-          ],
-          "blockers": [
-            "local_source_audit_not_available"
-          ],
-          "note": "Resolve listed local-source blockers before the slot can be treated as an auto-paired official source."
-        }
-      }
-    },
-    {
-      "id": "coverage_missing:math1:2010",
-      "workstream": "public_course_coverage",
-      "priority": "P0",
-      "status": "blocked",
-      "title": "数学一 2010 缺少可发布题库",
-      "blockerCode": "missing_public_course_bank",
-      "track": "math1",
-      "trackLabel": "数学一",
-      "year": 2010,
-      "bankId": "",
-      "filePath": "",
-      "count": 0,
-      "nextAction": "在 Source Manifest 中补齐同槽位 official_paper 试卷+答案或真题及答案合并 PDF，要求有 remotePath、contentHash，且风险标记不阻断发布。再进入题卡清洗和 registry 注册。",
-      "evidence": {
-        "requiredYears": [
-          2005,
-          2006,
-          2007,
-          2008,
-          2009,
-          2010,
-          2011,
-          2012,
-          2013,
-          2014,
-          2015,
-          2016,
-          2017,
-          2018,
-          2019,
-          2020,
-          2021,
-          2022,
-          2023,
-          2024,
-          2025,
-          2026
-        ],
-        "publishedYears": [
-          2025
-        ],
-        "pendingYears": [],
-        "sourceEvidenceStatus": "missing_publishable_official_source",
-        "sourceEvidencePresentYears": [
-          2008,
-          2009,
-          2011,
-          2012,
-          2013,
-          2014,
-          2015,
-          2016,
-          2017,
-          2018,
-          2019,
-          2020,
-          2021,
-          2022,
-          2023,
-          2024,
-          2025
-        ],
-        "sourceEvidenceCoverageRate": 0.7727,
-        "sourceCandidateSummary": "source manifest 已发现 1 个候选，其中 official_paper=1；当前阻断: slotPair=missing_paper(1)",
-        "sourceCandidateSamples": [
-          {
-            "sourceId": "src_b3e24571a6135f06d1988818",
-            "status": "discovered",
-            "sourceType": "official_paper",
-            "sourceRole": "",
-            "inferredSourceRole": "answer",
-            "roleSource": "filename",
-            "autoPairEligible": true,
-            "answerEvidenceStatus": "",
-            "riskFlags": [],
-            "publishBlocked": false,
-            "blockReasons": [],
-            "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学一真题答案解析/2010-数一标准答案及解析 .pdf",
-            "sourceUrl": ""
-          }
-        ],
-        "sourceCandidateDiagnostics": {
-          "candidateCount": 1,
-          "officialPaperCandidateCount": 1,
-          "publishBlockedCandidateCount": 0,
-          "autoPairEligibleCandidateCount": 1,
-          "paperCandidateCount": 0,
-          "answerCandidateCount": 1,
-          "combinedCandidateCount": 0,
-          "blockReasons": {
-            "slotPair=missing_paper": 1
-          },
-          "sampleCandidates": [
-            {
-              "sourceId": "src_b3e24571a6135f06d1988818",
-              "status": "discovered",
-              "sourceType": "official_paper",
-              "sourceRole": "",
-              "inferredSourceRole": "answer",
-              "roleSource": "filename",
-              "autoPairEligible": true,
-              "answerEvidenceStatus": "",
-              "riskFlags": [],
-              "publishBlocked": false,
-              "blockReasons": [],
-              "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学一真题答案解析/2010-数一标准答案及解析 .pdf",
-              "sourceUrl": ""
-            }
-          ]
-        },
-        "localSourceAuditStatus": "not_available",
-        "localSourceAuditSummary": "",
-        "localSourceAuditSamples": [],
-        "localSourceAuditDiagnostics": {
-          "status": "not_available",
-          "sourceCount": 0,
-          "usableTextLayerCount": 0,
-          "needsOcrCount": 0,
-          "blockedCount": 0,
-          "paperLikeCount": 0,
-          "answerLikeCount": 0,
-          "usablePaperLikeCount": 0,
-          "usableAnswerLikeCount": 0,
-          "blockedPaperLikeCount": 0,
-          "blockedAnswerLikeCount": 0,
-          "roleCounts": {},
-          "samples": []
-        },
-        "sourceManifestRegistrationChecklist": {
-          "status": "blocked_before_auto_pair",
-          "readyForHumanVerification": false,
-          "requiredManifestFields": [
-            "eligible=true",
-            "status=discovered|verified|published",
-            "sourceType=official_paper",
-            "contentHash|sha256|fileSha256|sourceHash",
-            "remotePath|sourceUrl|provenanceUrl",
-            "sourceRole inferred as paper+answer or paper_answer",
-            "legalReview.publishBlocked=false",
-            "riskFlags excludes answer_missing,brand_leak,copyright_review_required,ad_or_promo"
-          ],
-          "verifiedSourceRegistryFields": [
-            "localPath",
-            "sourceUrl",
-            "track",
-            "year",
-            "sourceType=official_paper",
-            "answerEvidenceStatus=matched",
-            "expectedSha256",
-            "verifiedBy",
-            "evidenceNote"
-          ],
-          "humanVerificationSteps": [],
-          "postRegistrationCommands": [],
-          "localFileCandidates": [],
-          "verifiedSourceRegistryDrafts": [],
-          "manifestCandidateIds": [
-            "src_b3e24571a6135f06d1988818"
           ],
           "blockers": [
             "local_source_audit_not_available"
@@ -13760,348 +11917,6 @@
       }
     },
     {
-      "id": "coverage_missing:math1:2011",
-      "workstream": "public_course_coverage",
-      "priority": "P0",
-      "status": "blocked",
-      "title": "数学一 2011 缺少可发布题库",
-      "blockerCode": "missing_public_course_bank",
-      "track": "math1",
-      "trackLabel": "数学一",
-      "year": 2011,
-      "bankId": "",
-      "filePath": "",
-      "count": 0,
-      "nextAction": "已有可发布题源证据时，完成题卡清洗、答案匹配、证据哈希，再按 registry 规范注册题库。",
-      "evidence": {
-        "requiredYears": [
-          2005,
-          2006,
-          2007,
-          2008,
-          2009,
-          2010,
-          2011,
-          2012,
-          2013,
-          2014,
-          2015,
-          2016,
-          2017,
-          2018,
-          2019,
-          2020,
-          2021,
-          2022,
-          2023,
-          2024,
-          2025,
-          2026
-        ],
-        "publishedYears": [
-          2025
-        ],
-        "pendingYears": [],
-        "sourceEvidenceStatus": "publishable_source_present",
-        "sourceEvidencePresentYears": [
-          2008,
-          2009,
-          2011,
-          2012,
-          2013,
-          2014,
-          2015,
-          2016,
-          2017,
-          2018,
-          2019,
-          2020,
-          2021,
-          2022,
-          2023,
-          2024,
-          2025
-        ],
-        "sourceEvidenceCoverageRate": 0.7727,
-        "sourceCandidateSummary": "source manifest 已发现 1 个候选，其中 official_paper=1；当前阻断: 未命中可发布条件",
-        "sourceCandidateSamples": [
-          {
-            "sourceId": "src_478718437ac46f25dd795a67",
-            "status": "discovered",
-            "sourceType": "official_paper",
-            "sourceRole": "",
-            "inferredSourceRole": "paper_answer",
-            "roleSource": "filename",
-            "autoPairEligible": true,
-            "answerEvidenceStatus": "",
-            "riskFlags": [],
-            "publishBlocked": false,
-            "blockReasons": [],
-            "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学一真题答案解析/2011-数一考研真题及答案 .pdf",
-            "sourceUrl": ""
-          }
-        ],
-        "sourceCandidateDiagnostics": {
-          "candidateCount": 1,
-          "officialPaperCandidateCount": 1,
-          "publishBlockedCandidateCount": 0,
-          "autoPairEligibleCandidateCount": 1,
-          "paperCandidateCount": 0,
-          "answerCandidateCount": 0,
-          "combinedCandidateCount": 1,
-          "blockReasons": {},
-          "sampleCandidates": [
-            {
-              "sourceId": "src_478718437ac46f25dd795a67",
-              "status": "discovered",
-              "sourceType": "official_paper",
-              "sourceRole": "",
-              "inferredSourceRole": "paper_answer",
-              "roleSource": "filename",
-              "autoPairEligible": true,
-              "answerEvidenceStatus": "",
-              "riskFlags": [],
-              "publishBlocked": false,
-              "blockReasons": [],
-              "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学一真题答案解析/2011-数一考研真题及答案 .pdf",
-              "sourceUrl": ""
-            }
-          ]
-        },
-        "localSourceAuditStatus": "not_available",
-        "localSourceAuditSummary": "",
-        "localSourceAuditSamples": [],
-        "localSourceAuditDiagnostics": {
-          "status": "not_available",
-          "sourceCount": 0,
-          "usableTextLayerCount": 0,
-          "needsOcrCount": 0,
-          "blockedCount": 0,
-          "paperLikeCount": 0,
-          "answerLikeCount": 0,
-          "usablePaperLikeCount": 0,
-          "usableAnswerLikeCount": 0,
-          "blockedPaperLikeCount": 0,
-          "blockedAnswerLikeCount": 0,
-          "roleCounts": {},
-          "samples": []
-        },
-        "sourceManifestRegistrationChecklist": {
-          "status": "blocked_before_auto_pair",
-          "readyForHumanVerification": false,
-          "requiredManifestFields": [
-            "eligible=true",
-            "status=discovered|verified|published",
-            "sourceType=official_paper",
-            "contentHash|sha256|fileSha256|sourceHash",
-            "remotePath|sourceUrl|provenanceUrl",
-            "sourceRole inferred as paper+answer or paper_answer",
-            "legalReview.publishBlocked=false",
-            "riskFlags excludes answer_missing,brand_leak,copyright_review_required,ad_or_promo"
-          ],
-          "verifiedSourceRegistryFields": [
-            "localPath",
-            "sourceUrl",
-            "track",
-            "year",
-            "sourceType=official_paper",
-            "answerEvidenceStatus=matched",
-            "expectedSha256",
-            "verifiedBy",
-            "evidenceNote"
-          ],
-          "humanVerificationSteps": [],
-          "postRegistrationCommands": [],
-          "localFileCandidates": [],
-          "verifiedSourceRegistryDrafts": [],
-          "manifestCandidateIds": [
-            "src_478718437ac46f25dd795a67"
-          ],
-          "blockers": [
-            "local_source_audit_not_available"
-          ],
-          "note": "Resolve listed local-source blockers before the slot can be treated as an auto-paired official source."
-        }
-      }
-    },
-    {
-      "id": "coverage_missing:math2:2011",
-      "workstream": "public_course_coverage",
-      "priority": "P0",
-      "status": "blocked",
-      "title": "数学二 2011 缺少可发布题库",
-      "blockerCode": "missing_public_course_bank",
-      "track": "math2",
-      "trackLabel": "数学二",
-      "year": 2011,
-      "bankId": "",
-      "filePath": "",
-      "count": 0,
-      "nextAction": "已有可发布题源证据时，完成题卡清洗、答案匹配、证据哈希，再按 registry 规范注册题库。",
-      "evidence": {
-        "requiredYears": [
-          2005,
-          2006,
-          2007,
-          2008,
-          2009,
-          2010,
-          2011,
-          2012,
-          2013,
-          2014,
-          2015,
-          2016,
-          2017,
-          2018,
-          2019,
-          2020,
-          2021,
-          2022,
-          2023,
-          2024,
-          2025,
-          2026
-        ],
-        "publishedYears": [
-          2005,
-          2006,
-          2007,
-          2008,
-          2009,
-          2010,
-          2012,
-          2013,
-          2025
-        ],
-        "pendingYears": [],
-        "sourceEvidenceStatus": "publishable_source_present",
-        "sourceEvidencePresentYears": [
-          2005,
-          2006,
-          2007,
-          2008,
-          2009,
-          2010,
-          2011,
-          2012,
-          2013,
-          2014,
-          2015,
-          2016,
-          2017,
-          2018,
-          2019,
-          2020,
-          2021,
-          2022,
-          2023,
-          2024,
-          2025
-        ],
-        "sourceEvidenceCoverageRate": 0.9545,
-        "sourceCandidateSummary": "source manifest 已发现 1 个候选，其中 official_paper=1；当前阻断: 未命中可发布条件",
-        "sourceCandidateSamples": [
-          {
-            "sourceId": "src_2f348d63b16be6d23121eb78",
-            "status": "discovered",
-            "sourceType": "official_paper",
-            "sourceRole": "",
-            "inferredSourceRole": "paper_answer",
-            "roleSource": "path",
-            "autoPairEligible": true,
-            "answerEvidenceStatus": "",
-            "riskFlags": [],
-            "publishBlocked": false,
-            "blockReasons": [],
-            "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学二真题答案解析/2011考研数学二真题 .pdf",
-            "sourceUrl": ""
-          }
-        ],
-        "sourceCandidateDiagnostics": {
-          "candidateCount": 1,
-          "officialPaperCandidateCount": 1,
-          "publishBlockedCandidateCount": 0,
-          "autoPairEligibleCandidateCount": 1,
-          "paperCandidateCount": 0,
-          "answerCandidateCount": 0,
-          "combinedCandidateCount": 1,
-          "blockReasons": {},
-          "sampleCandidates": [
-            {
-              "sourceId": "src_2f348d63b16be6d23121eb78",
-              "status": "discovered",
-              "sourceType": "official_paper",
-              "sourceRole": "",
-              "inferredSourceRole": "paper_answer",
-              "roleSource": "path",
-              "autoPairEligible": true,
-              "answerEvidenceStatus": "",
-              "riskFlags": [],
-              "publishBlocked": false,
-              "blockReasons": [],
-              "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学二真题答案解析/2011考研数学二真题 .pdf",
-              "sourceUrl": ""
-            }
-          ]
-        },
-        "localSourceAuditStatus": "not_available",
-        "localSourceAuditSummary": "",
-        "localSourceAuditSamples": [],
-        "localSourceAuditDiagnostics": {
-          "status": "not_available",
-          "sourceCount": 0,
-          "usableTextLayerCount": 0,
-          "needsOcrCount": 0,
-          "blockedCount": 0,
-          "paperLikeCount": 0,
-          "answerLikeCount": 0,
-          "usablePaperLikeCount": 0,
-          "usableAnswerLikeCount": 0,
-          "blockedPaperLikeCount": 0,
-          "blockedAnswerLikeCount": 0,
-          "roleCounts": {},
-          "samples": []
-        },
-        "sourceManifestRegistrationChecklist": {
-          "status": "blocked_before_auto_pair",
-          "readyForHumanVerification": false,
-          "requiredManifestFields": [
-            "eligible=true",
-            "status=discovered|verified|published",
-            "sourceType=official_paper",
-            "contentHash|sha256|fileSha256|sourceHash",
-            "remotePath|sourceUrl|provenanceUrl",
-            "sourceRole inferred as paper+answer or paper_answer",
-            "legalReview.publishBlocked=false",
-            "riskFlags excludes answer_missing,brand_leak,copyright_review_required,ad_or_promo"
-          ],
-          "verifiedSourceRegistryFields": [
-            "localPath",
-            "sourceUrl",
-            "track",
-            "year",
-            "sourceType=official_paper",
-            "answerEvidenceStatus=matched",
-            "expectedSha256",
-            "verifiedBy",
-            "evidenceNote"
-          ],
-          "humanVerificationSteps": [],
-          "postRegistrationCommands": [],
-          "localFileCandidates": [],
-          "verifiedSourceRegistryDrafts": [],
-          "manifestCandidateIds": [
-            "src_2f348d63b16be6d23121eb78"
-          ],
-          "blockers": [
-            "local_source_audit_not_available"
-          ],
-          "note": "Resolve listed local-source blockers before the slot can be treated as an auto-paired official source."
-        }
-      }
-    },
-    {
       "id": "coverage_missing:english2:2012",
       "workstream": "public_course_coverage",
       "priority": "P0",
@@ -14328,171 +12143,6 @@
             "src_8b2fb9a4169220ee3ae4ca43",
             "src_8b9967de841a77398661e6c8",
             "src_c24aa84fb2c247d0b2d13bdc"
-          ],
-          "blockers": [
-            "local_source_audit_not_available"
-          ],
-          "note": "Resolve listed local-source blockers before the slot can be treated as an auto-paired official source."
-        }
-      }
-    },
-    {
-      "id": "coverage_missing:math1:2012",
-      "workstream": "public_course_coverage",
-      "priority": "P0",
-      "status": "blocked",
-      "title": "数学一 2012 缺少可发布题库",
-      "blockerCode": "missing_public_course_bank",
-      "track": "math1",
-      "trackLabel": "数学一",
-      "year": 2012,
-      "bankId": "",
-      "filePath": "",
-      "count": 0,
-      "nextAction": "已有可发布题源证据时，完成题卡清洗、答案匹配、证据哈希，再按 registry 规范注册题库。",
-      "evidence": {
-        "requiredYears": [
-          2005,
-          2006,
-          2007,
-          2008,
-          2009,
-          2010,
-          2011,
-          2012,
-          2013,
-          2014,
-          2015,
-          2016,
-          2017,
-          2018,
-          2019,
-          2020,
-          2021,
-          2022,
-          2023,
-          2024,
-          2025,
-          2026
-        ],
-        "publishedYears": [
-          2025
-        ],
-        "pendingYears": [],
-        "sourceEvidenceStatus": "publishable_source_present",
-        "sourceEvidencePresentYears": [
-          2008,
-          2009,
-          2011,
-          2012,
-          2013,
-          2014,
-          2015,
-          2016,
-          2017,
-          2018,
-          2019,
-          2020,
-          2021,
-          2022,
-          2023,
-          2024,
-          2025
-        ],
-        "sourceEvidenceCoverageRate": 0.7727,
-        "sourceCandidateSummary": "source manifest 已发现 1 个候选，其中 official_paper=1；当前阻断: 未命中可发布条件",
-        "sourceCandidateSamples": [
-          {
-            "sourceId": "src_a445976117f3531be88a1ce5",
-            "status": "discovered",
-            "sourceType": "official_paper",
-            "sourceRole": "",
-            "inferredSourceRole": "paper_answer",
-            "roleSource": "filename",
-            "autoPairEligible": true,
-            "answerEvidenceStatus": "",
-            "riskFlags": [],
-            "publishBlocked": false,
-            "blockReasons": [],
-            "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学一真题答案解析/2012-数一真题及参考答案 .pdf",
-            "sourceUrl": ""
-          }
-        ],
-        "sourceCandidateDiagnostics": {
-          "candidateCount": 1,
-          "officialPaperCandidateCount": 1,
-          "publishBlockedCandidateCount": 0,
-          "autoPairEligibleCandidateCount": 1,
-          "paperCandidateCount": 0,
-          "answerCandidateCount": 0,
-          "combinedCandidateCount": 1,
-          "blockReasons": {},
-          "sampleCandidates": [
-            {
-              "sourceId": "src_a445976117f3531be88a1ce5",
-              "status": "discovered",
-              "sourceType": "official_paper",
-              "sourceRole": "",
-              "inferredSourceRole": "paper_answer",
-              "roleSource": "filename",
-              "autoPairEligible": true,
-              "answerEvidenceStatus": "",
-              "riskFlags": [],
-              "publishBlocked": false,
-              "blockReasons": [],
-              "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学一真题答案解析/2012-数一真题及参考答案 .pdf",
-              "sourceUrl": ""
-            }
-          ]
-        },
-        "localSourceAuditStatus": "not_available",
-        "localSourceAuditSummary": "",
-        "localSourceAuditSamples": [],
-        "localSourceAuditDiagnostics": {
-          "status": "not_available",
-          "sourceCount": 0,
-          "usableTextLayerCount": 0,
-          "needsOcrCount": 0,
-          "blockedCount": 0,
-          "paperLikeCount": 0,
-          "answerLikeCount": 0,
-          "usablePaperLikeCount": 0,
-          "usableAnswerLikeCount": 0,
-          "blockedPaperLikeCount": 0,
-          "blockedAnswerLikeCount": 0,
-          "roleCounts": {},
-          "samples": []
-        },
-        "sourceManifestRegistrationChecklist": {
-          "status": "blocked_before_auto_pair",
-          "readyForHumanVerification": false,
-          "requiredManifestFields": [
-            "eligible=true",
-            "status=discovered|verified|published",
-            "sourceType=official_paper",
-            "contentHash|sha256|fileSha256|sourceHash",
-            "remotePath|sourceUrl|provenanceUrl",
-            "sourceRole inferred as paper+answer or paper_answer",
-            "legalReview.publishBlocked=false",
-            "riskFlags excludes answer_missing,brand_leak,copyright_review_required,ad_or_promo"
-          ],
-          "verifiedSourceRegistryFields": [
-            "localPath",
-            "sourceUrl",
-            "track",
-            "year",
-            "sourceType=official_paper",
-            "answerEvidenceStatus=matched",
-            "expectedSha256",
-            "verifiedBy",
-            "evidenceNote"
-          ],
-          "humanVerificationSteps": [],
-          "postRegistrationCommands": [],
-          "localFileCandidates": [],
-          "verifiedSourceRegistryDrafts": [],
-          "manifestCandidateIds": [
-            "src_a445976117f3531be88a1ce5"
           ],
           "blockers": [
             "local_source_audit_not_available"
@@ -14737,348 +12387,6 @@
       }
     },
     {
-      "id": "coverage_missing:math1:2013",
-      "workstream": "public_course_coverage",
-      "priority": "P0",
-      "status": "blocked",
-      "title": "数学一 2013 缺少可发布题库",
-      "blockerCode": "missing_public_course_bank",
-      "track": "math1",
-      "trackLabel": "数学一",
-      "year": 2013,
-      "bankId": "",
-      "filePath": "",
-      "count": 0,
-      "nextAction": "已有可发布题源证据时，完成题卡清洗、答案匹配、证据哈希，再按 registry 规范注册题库。",
-      "evidence": {
-        "requiredYears": [
-          2005,
-          2006,
-          2007,
-          2008,
-          2009,
-          2010,
-          2011,
-          2012,
-          2013,
-          2014,
-          2015,
-          2016,
-          2017,
-          2018,
-          2019,
-          2020,
-          2021,
-          2022,
-          2023,
-          2024,
-          2025,
-          2026
-        ],
-        "publishedYears": [
-          2025
-        ],
-        "pendingYears": [],
-        "sourceEvidenceStatus": "publishable_source_present",
-        "sourceEvidencePresentYears": [
-          2008,
-          2009,
-          2011,
-          2012,
-          2013,
-          2014,
-          2015,
-          2016,
-          2017,
-          2018,
-          2019,
-          2020,
-          2021,
-          2022,
-          2023,
-          2024,
-          2025
-        ],
-        "sourceEvidenceCoverageRate": 0.7727,
-        "sourceCandidateSummary": "source manifest 已发现 1 个候选，其中 official_paper=1；当前阻断: 未命中可发布条件",
-        "sourceCandidateSamples": [
-          {
-            "sourceId": "src_2f89f14b41d6bdb38f193cbc",
-            "status": "discovered",
-            "sourceType": "official_paper",
-            "sourceRole": "",
-            "inferredSourceRole": "paper_answer",
-            "roleSource": "filename",
-            "autoPairEligible": true,
-            "answerEvidenceStatus": "",
-            "riskFlags": [],
-            "publishBlocked": false,
-            "blockReasons": [],
-            "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学一真题答案解析/2013-数一考研真题及答案 .pdf",
-            "sourceUrl": ""
-          }
-        ],
-        "sourceCandidateDiagnostics": {
-          "candidateCount": 1,
-          "officialPaperCandidateCount": 1,
-          "publishBlockedCandidateCount": 0,
-          "autoPairEligibleCandidateCount": 1,
-          "paperCandidateCount": 0,
-          "answerCandidateCount": 0,
-          "combinedCandidateCount": 1,
-          "blockReasons": {},
-          "sampleCandidates": [
-            {
-              "sourceId": "src_2f89f14b41d6bdb38f193cbc",
-              "status": "discovered",
-              "sourceType": "official_paper",
-              "sourceRole": "",
-              "inferredSourceRole": "paper_answer",
-              "roleSource": "filename",
-              "autoPairEligible": true,
-              "answerEvidenceStatus": "",
-              "riskFlags": [],
-              "publishBlocked": false,
-              "blockReasons": [],
-              "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学一真题答案解析/2013-数一考研真题及答案 .pdf",
-              "sourceUrl": ""
-            }
-          ]
-        },
-        "localSourceAuditStatus": "not_available",
-        "localSourceAuditSummary": "",
-        "localSourceAuditSamples": [],
-        "localSourceAuditDiagnostics": {
-          "status": "not_available",
-          "sourceCount": 0,
-          "usableTextLayerCount": 0,
-          "needsOcrCount": 0,
-          "blockedCount": 0,
-          "paperLikeCount": 0,
-          "answerLikeCount": 0,
-          "usablePaperLikeCount": 0,
-          "usableAnswerLikeCount": 0,
-          "blockedPaperLikeCount": 0,
-          "blockedAnswerLikeCount": 0,
-          "roleCounts": {},
-          "samples": []
-        },
-        "sourceManifestRegistrationChecklist": {
-          "status": "blocked_before_auto_pair",
-          "readyForHumanVerification": false,
-          "requiredManifestFields": [
-            "eligible=true",
-            "status=discovered|verified|published",
-            "sourceType=official_paper",
-            "contentHash|sha256|fileSha256|sourceHash",
-            "remotePath|sourceUrl|provenanceUrl",
-            "sourceRole inferred as paper+answer or paper_answer",
-            "legalReview.publishBlocked=false",
-            "riskFlags excludes answer_missing,brand_leak,copyright_review_required,ad_or_promo"
-          ],
-          "verifiedSourceRegistryFields": [
-            "localPath",
-            "sourceUrl",
-            "track",
-            "year",
-            "sourceType=official_paper",
-            "answerEvidenceStatus=matched",
-            "expectedSha256",
-            "verifiedBy",
-            "evidenceNote"
-          ],
-          "humanVerificationSteps": [],
-          "postRegistrationCommands": [],
-          "localFileCandidates": [],
-          "verifiedSourceRegistryDrafts": [],
-          "manifestCandidateIds": [
-            "src_2f89f14b41d6bdb38f193cbc"
-          ],
-          "blockers": [
-            "local_source_audit_not_available"
-          ],
-          "note": "Resolve listed local-source blockers before the slot can be treated as an auto-paired official source."
-        }
-      }
-    },
-    {
-      "id": "coverage_missing:math3:2013",
-      "workstream": "public_course_coverage",
-      "priority": "P0",
-      "status": "blocked",
-      "title": "数学三 2013 缺少可发布题库",
-      "blockerCode": "missing_public_course_bank",
-      "track": "math3",
-      "trackLabel": "数学三",
-      "year": 2013,
-      "bankId": "",
-      "filePath": "",
-      "count": 0,
-      "nextAction": "已有可发布题源证据时，完成题卡清洗、答案匹配、证据哈希，再按 registry 规范注册题库。",
-      "evidence": {
-        "requiredYears": [
-          2005,
-          2006,
-          2007,
-          2008,
-          2009,
-          2010,
-          2011,
-          2012,
-          2013,
-          2014,
-          2015,
-          2016,
-          2017,
-          2018,
-          2019,
-          2020,
-          2021,
-          2022,
-          2023,
-          2024,
-          2025,
-          2026
-        ],
-        "publishedYears": [
-          2005,
-          2006,
-          2007,
-          2008,
-          2009,
-          2010,
-          2011,
-          2012,
-          2025
-        ],
-        "pendingYears": [],
-        "sourceEvidenceStatus": "publishable_source_present",
-        "sourceEvidencePresentYears": [
-          2005,
-          2006,
-          2007,
-          2008,
-          2009,
-          2010,
-          2011,
-          2012,
-          2013,
-          2014,
-          2015,
-          2016,
-          2017,
-          2018,
-          2019,
-          2020,
-          2021,
-          2022,
-          2023,
-          2024,
-          2025
-        ],
-        "sourceEvidenceCoverageRate": 0.9545,
-        "sourceCandidateSummary": "source manifest 已发现 1 个候选，其中 official_paper=1；当前阻断: 未命中可发布条件",
-        "sourceCandidateSamples": [
-          {
-            "sourceId": "src_b4cf0b63525b94f4333b545e",
-            "status": "discovered",
-            "sourceType": "official_paper",
-            "sourceRole": "",
-            "inferredSourceRole": "paper_answer",
-            "roleSource": "filename",
-            "autoPairEligible": true,
-            "answerEvidenceStatus": "",
-            "riskFlags": [],
-            "publishBlocked": false,
-            "blockReasons": [],
-            "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学三真题答案解析/2013年考研数学三真题及解析 .pdf",
-            "sourceUrl": ""
-          }
-        ],
-        "sourceCandidateDiagnostics": {
-          "candidateCount": 1,
-          "officialPaperCandidateCount": 1,
-          "publishBlockedCandidateCount": 0,
-          "autoPairEligibleCandidateCount": 1,
-          "paperCandidateCount": 0,
-          "answerCandidateCount": 0,
-          "combinedCandidateCount": 1,
-          "blockReasons": {},
-          "sampleCandidates": [
-            {
-              "sourceId": "src_b4cf0b63525b94f4333b545e",
-              "status": "discovered",
-              "sourceType": "official_paper",
-              "sourceRole": "",
-              "inferredSourceRole": "paper_answer",
-              "roleSource": "filename",
-              "autoPairEligible": true,
-              "answerEvidenceStatus": "",
-              "riskFlags": [],
-              "publishBlocked": false,
-              "blockReasons": [],
-              "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学三真题答案解析/2013年考研数学三真题及解析 .pdf",
-              "sourceUrl": ""
-            }
-          ]
-        },
-        "localSourceAuditStatus": "not_available",
-        "localSourceAuditSummary": "",
-        "localSourceAuditSamples": [],
-        "localSourceAuditDiagnostics": {
-          "status": "not_available",
-          "sourceCount": 0,
-          "usableTextLayerCount": 0,
-          "needsOcrCount": 0,
-          "blockedCount": 0,
-          "paperLikeCount": 0,
-          "answerLikeCount": 0,
-          "usablePaperLikeCount": 0,
-          "usableAnswerLikeCount": 0,
-          "blockedPaperLikeCount": 0,
-          "blockedAnswerLikeCount": 0,
-          "roleCounts": {},
-          "samples": []
-        },
-        "sourceManifestRegistrationChecklist": {
-          "status": "blocked_before_auto_pair",
-          "readyForHumanVerification": false,
-          "requiredManifestFields": [
-            "eligible=true",
-            "status=discovered|verified|published",
-            "sourceType=official_paper",
-            "contentHash|sha256|fileSha256|sourceHash",
-            "remotePath|sourceUrl|provenanceUrl",
-            "sourceRole inferred as paper+answer or paper_answer",
-            "legalReview.publishBlocked=false",
-            "riskFlags excludes answer_missing,brand_leak,copyright_review_required,ad_or_promo"
-          ],
-          "verifiedSourceRegistryFields": [
-            "localPath",
-            "sourceUrl",
-            "track",
-            "year",
-            "sourceType=official_paper",
-            "answerEvidenceStatus=matched",
-            "expectedSha256",
-            "verifiedBy",
-            "evidenceNote"
-          ],
-          "humanVerificationSteps": [],
-          "postRegistrationCommands": [],
-          "localFileCandidates": [],
-          "verifiedSourceRegistryDrafts": [],
-          "manifestCandidateIds": [
-            "src_b4cf0b63525b94f4333b545e"
-          ],
-          "blockers": [
-            "local_source_audit_not_available"
-          ],
-          "note": "Resolve listed local-source blockers before the slot can be treated as an auto-paired official source."
-        }
-      }
-    },
-    {
       "id": "coverage_missing:english2:2014",
       "workstream": "public_course_coverage",
       "priority": "P0",
@@ -15314,348 +12622,6 @@
       }
     },
     {
-      "id": "coverage_missing:math1:2014",
-      "workstream": "public_course_coverage",
-      "priority": "P0",
-      "status": "blocked",
-      "title": "数学一 2014 缺少可发布题库",
-      "blockerCode": "missing_public_course_bank",
-      "track": "math1",
-      "trackLabel": "数学一",
-      "year": 2014,
-      "bankId": "",
-      "filePath": "",
-      "count": 0,
-      "nextAction": "已有可发布题源证据时，完成题卡清洗、答案匹配、证据哈希，再按 registry 规范注册题库。",
-      "evidence": {
-        "requiredYears": [
-          2005,
-          2006,
-          2007,
-          2008,
-          2009,
-          2010,
-          2011,
-          2012,
-          2013,
-          2014,
-          2015,
-          2016,
-          2017,
-          2018,
-          2019,
-          2020,
-          2021,
-          2022,
-          2023,
-          2024,
-          2025,
-          2026
-        ],
-        "publishedYears": [
-          2025
-        ],
-        "pendingYears": [],
-        "sourceEvidenceStatus": "publishable_source_present",
-        "sourceEvidencePresentYears": [
-          2008,
-          2009,
-          2011,
-          2012,
-          2013,
-          2014,
-          2015,
-          2016,
-          2017,
-          2018,
-          2019,
-          2020,
-          2021,
-          2022,
-          2023,
-          2024,
-          2025
-        ],
-        "sourceEvidenceCoverageRate": 0.7727,
-        "sourceCandidateSummary": "source manifest 已发现 1 个候选，其中 official_paper=1；当前阻断: 未命中可发布条件",
-        "sourceCandidateSamples": [
-          {
-            "sourceId": "src_b80ef3ade03a332b3d41ae2a",
-            "status": "discovered",
-            "sourceType": "official_paper",
-            "sourceRole": "",
-            "inferredSourceRole": "paper_answer",
-            "roleSource": "filename",
-            "autoPairEligible": true,
-            "answerEvidenceStatus": "",
-            "riskFlags": [],
-            "publishBlocked": false,
-            "blockReasons": [],
-            "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学一真题答案解析/2014-数一考研真题及答案 .pdf",
-            "sourceUrl": ""
-          }
-        ],
-        "sourceCandidateDiagnostics": {
-          "candidateCount": 1,
-          "officialPaperCandidateCount": 1,
-          "publishBlockedCandidateCount": 0,
-          "autoPairEligibleCandidateCount": 1,
-          "paperCandidateCount": 0,
-          "answerCandidateCount": 0,
-          "combinedCandidateCount": 1,
-          "blockReasons": {},
-          "sampleCandidates": [
-            {
-              "sourceId": "src_b80ef3ade03a332b3d41ae2a",
-              "status": "discovered",
-              "sourceType": "official_paper",
-              "sourceRole": "",
-              "inferredSourceRole": "paper_answer",
-              "roleSource": "filename",
-              "autoPairEligible": true,
-              "answerEvidenceStatus": "",
-              "riskFlags": [],
-              "publishBlocked": false,
-              "blockReasons": [],
-              "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学一真题答案解析/2014-数一考研真题及答案 .pdf",
-              "sourceUrl": ""
-            }
-          ]
-        },
-        "localSourceAuditStatus": "not_available",
-        "localSourceAuditSummary": "",
-        "localSourceAuditSamples": [],
-        "localSourceAuditDiagnostics": {
-          "status": "not_available",
-          "sourceCount": 0,
-          "usableTextLayerCount": 0,
-          "needsOcrCount": 0,
-          "blockedCount": 0,
-          "paperLikeCount": 0,
-          "answerLikeCount": 0,
-          "usablePaperLikeCount": 0,
-          "usableAnswerLikeCount": 0,
-          "blockedPaperLikeCount": 0,
-          "blockedAnswerLikeCount": 0,
-          "roleCounts": {},
-          "samples": []
-        },
-        "sourceManifestRegistrationChecklist": {
-          "status": "blocked_before_auto_pair",
-          "readyForHumanVerification": false,
-          "requiredManifestFields": [
-            "eligible=true",
-            "status=discovered|verified|published",
-            "sourceType=official_paper",
-            "contentHash|sha256|fileSha256|sourceHash",
-            "remotePath|sourceUrl|provenanceUrl",
-            "sourceRole inferred as paper+answer or paper_answer",
-            "legalReview.publishBlocked=false",
-            "riskFlags excludes answer_missing,brand_leak,copyright_review_required,ad_or_promo"
-          ],
-          "verifiedSourceRegistryFields": [
-            "localPath",
-            "sourceUrl",
-            "track",
-            "year",
-            "sourceType=official_paper",
-            "answerEvidenceStatus=matched",
-            "expectedSha256",
-            "verifiedBy",
-            "evidenceNote"
-          ],
-          "humanVerificationSteps": [],
-          "postRegistrationCommands": [],
-          "localFileCandidates": [],
-          "verifiedSourceRegistryDrafts": [],
-          "manifestCandidateIds": [
-            "src_b80ef3ade03a332b3d41ae2a"
-          ],
-          "blockers": [
-            "local_source_audit_not_available"
-          ],
-          "note": "Resolve listed local-source blockers before the slot can be treated as an auto-paired official source."
-        }
-      }
-    },
-    {
-      "id": "coverage_missing:math2:2014",
-      "workstream": "public_course_coverage",
-      "priority": "P0",
-      "status": "blocked",
-      "title": "数学二 2014 缺少可发布题库",
-      "blockerCode": "missing_public_course_bank",
-      "track": "math2",
-      "trackLabel": "数学二",
-      "year": 2014,
-      "bankId": "",
-      "filePath": "",
-      "count": 0,
-      "nextAction": "已有可发布题源证据时，完成题卡清洗、答案匹配、证据哈希，再按 registry 规范注册题库。",
-      "evidence": {
-        "requiredYears": [
-          2005,
-          2006,
-          2007,
-          2008,
-          2009,
-          2010,
-          2011,
-          2012,
-          2013,
-          2014,
-          2015,
-          2016,
-          2017,
-          2018,
-          2019,
-          2020,
-          2021,
-          2022,
-          2023,
-          2024,
-          2025,
-          2026
-        ],
-        "publishedYears": [
-          2005,
-          2006,
-          2007,
-          2008,
-          2009,
-          2010,
-          2012,
-          2013,
-          2025
-        ],
-        "pendingYears": [],
-        "sourceEvidenceStatus": "publishable_source_present",
-        "sourceEvidencePresentYears": [
-          2005,
-          2006,
-          2007,
-          2008,
-          2009,
-          2010,
-          2011,
-          2012,
-          2013,
-          2014,
-          2015,
-          2016,
-          2017,
-          2018,
-          2019,
-          2020,
-          2021,
-          2022,
-          2023,
-          2024,
-          2025
-        ],
-        "sourceEvidenceCoverageRate": 0.9545,
-        "sourceCandidateSummary": "source manifest 已发现 1 个候选，其中 official_paper=1；当前阻断: 未命中可发布条件",
-        "sourceCandidateSamples": [
-          {
-            "sourceId": "src_cabdf1fe95d0ffad0c8f0e8c",
-            "status": "discovered",
-            "sourceType": "official_paper",
-            "sourceRole": "",
-            "inferredSourceRole": "paper_answer",
-            "roleSource": "path",
-            "autoPairEligible": true,
-            "answerEvidenceStatus": "",
-            "riskFlags": [],
-            "publishBlocked": false,
-            "blockReasons": [],
-            "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学二真题答案解析/2014考研数学二真题 .pdf",
-            "sourceUrl": ""
-          }
-        ],
-        "sourceCandidateDiagnostics": {
-          "candidateCount": 1,
-          "officialPaperCandidateCount": 1,
-          "publishBlockedCandidateCount": 0,
-          "autoPairEligibleCandidateCount": 1,
-          "paperCandidateCount": 0,
-          "answerCandidateCount": 0,
-          "combinedCandidateCount": 1,
-          "blockReasons": {},
-          "sampleCandidates": [
-            {
-              "sourceId": "src_cabdf1fe95d0ffad0c8f0e8c",
-              "status": "discovered",
-              "sourceType": "official_paper",
-              "sourceRole": "",
-              "inferredSourceRole": "paper_answer",
-              "roleSource": "path",
-              "autoPairEligible": true,
-              "answerEvidenceStatus": "",
-              "riskFlags": [],
-              "publishBlocked": false,
-              "blockReasons": [],
-              "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学二真题答案解析/2014考研数学二真题 .pdf",
-              "sourceUrl": ""
-            }
-          ]
-        },
-        "localSourceAuditStatus": "not_available",
-        "localSourceAuditSummary": "",
-        "localSourceAuditSamples": [],
-        "localSourceAuditDiagnostics": {
-          "status": "not_available",
-          "sourceCount": 0,
-          "usableTextLayerCount": 0,
-          "needsOcrCount": 0,
-          "blockedCount": 0,
-          "paperLikeCount": 0,
-          "answerLikeCount": 0,
-          "usablePaperLikeCount": 0,
-          "usableAnswerLikeCount": 0,
-          "blockedPaperLikeCount": 0,
-          "blockedAnswerLikeCount": 0,
-          "roleCounts": {},
-          "samples": []
-        },
-        "sourceManifestRegistrationChecklist": {
-          "status": "blocked_before_auto_pair",
-          "readyForHumanVerification": false,
-          "requiredManifestFields": [
-            "eligible=true",
-            "status=discovered|verified|published",
-            "sourceType=official_paper",
-            "contentHash|sha256|fileSha256|sourceHash",
-            "remotePath|sourceUrl|provenanceUrl",
-            "sourceRole inferred as paper+answer or paper_answer",
-            "legalReview.publishBlocked=false",
-            "riskFlags excludes answer_missing,brand_leak,copyright_review_required,ad_or_promo"
-          ],
-          "verifiedSourceRegistryFields": [
-            "localPath",
-            "sourceUrl",
-            "track",
-            "year",
-            "sourceType=official_paper",
-            "answerEvidenceStatus=matched",
-            "expectedSha256",
-            "verifiedBy",
-            "evidenceNote"
-          ],
-          "humanVerificationSteps": [],
-          "postRegistrationCommands": [],
-          "localFileCandidates": [],
-          "verifiedSourceRegistryDrafts": [],
-          "manifestCandidateIds": [
-            "src_cabdf1fe95d0ffad0c8f0e8c"
-          ],
-          "blockers": [
-            "local_source_audit_not_available"
-          ],
-          "note": "Resolve listed local-source blockers before the slot can be treated as an auto-paired official source."
-        }
-      }
-    },
-    {
       "id": "coverage_missing:math3:2014",
       "workstream": "public_course_coverage",
       "priority": "P0",
@@ -15703,6 +12669,7 @@
           2010,
           2011,
           2012,
+          2013,
           2025
         ],
         "pendingYears": [],
@@ -16068,171 +13035,6 @@
       }
     },
     {
-      "id": "coverage_missing:math1:2015",
-      "workstream": "public_course_coverage",
-      "priority": "P0",
-      "status": "blocked",
-      "title": "数学一 2015 缺少可发布题库",
-      "blockerCode": "missing_public_course_bank",
-      "track": "math1",
-      "trackLabel": "数学一",
-      "year": 2015,
-      "bankId": "",
-      "filePath": "",
-      "count": 0,
-      "nextAction": "已有可发布题源证据时，完成题卡清洗、答案匹配、证据哈希，再按 registry 规范注册题库。",
-      "evidence": {
-        "requiredYears": [
-          2005,
-          2006,
-          2007,
-          2008,
-          2009,
-          2010,
-          2011,
-          2012,
-          2013,
-          2014,
-          2015,
-          2016,
-          2017,
-          2018,
-          2019,
-          2020,
-          2021,
-          2022,
-          2023,
-          2024,
-          2025,
-          2026
-        ],
-        "publishedYears": [
-          2025
-        ],
-        "pendingYears": [],
-        "sourceEvidenceStatus": "publishable_source_present",
-        "sourceEvidencePresentYears": [
-          2008,
-          2009,
-          2011,
-          2012,
-          2013,
-          2014,
-          2015,
-          2016,
-          2017,
-          2018,
-          2019,
-          2020,
-          2021,
-          2022,
-          2023,
-          2024,
-          2025
-        ],
-        "sourceEvidenceCoverageRate": 0.7727,
-        "sourceCandidateSummary": "source manifest 已发现 1 个候选，其中 official_paper=1；当前阻断: 未命中可发布条件",
-        "sourceCandidateSamples": [
-          {
-            "sourceId": "src_b83088449d1c3f7d3cd2653f",
-            "status": "discovered",
-            "sourceType": "official_paper",
-            "sourceRole": "",
-            "inferredSourceRole": "paper_answer",
-            "roleSource": "filename",
-            "autoPairEligible": true,
-            "answerEvidenceStatus": "",
-            "riskFlags": [],
-            "publishBlocked": false,
-            "blockReasons": [],
-            "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学一真题答案解析/2015-数一考研真题及答案 .pdf",
-            "sourceUrl": ""
-          }
-        ],
-        "sourceCandidateDiagnostics": {
-          "candidateCount": 1,
-          "officialPaperCandidateCount": 1,
-          "publishBlockedCandidateCount": 0,
-          "autoPairEligibleCandidateCount": 1,
-          "paperCandidateCount": 0,
-          "answerCandidateCount": 0,
-          "combinedCandidateCount": 1,
-          "blockReasons": {},
-          "sampleCandidates": [
-            {
-              "sourceId": "src_b83088449d1c3f7d3cd2653f",
-              "status": "discovered",
-              "sourceType": "official_paper",
-              "sourceRole": "",
-              "inferredSourceRole": "paper_answer",
-              "roleSource": "filename",
-              "autoPairEligible": true,
-              "answerEvidenceStatus": "",
-              "riskFlags": [],
-              "publishBlocked": false,
-              "blockReasons": [],
-              "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学一真题答案解析/2015-数一考研真题及答案 .pdf",
-              "sourceUrl": ""
-            }
-          ]
-        },
-        "localSourceAuditStatus": "not_available",
-        "localSourceAuditSummary": "",
-        "localSourceAuditSamples": [],
-        "localSourceAuditDiagnostics": {
-          "status": "not_available",
-          "sourceCount": 0,
-          "usableTextLayerCount": 0,
-          "needsOcrCount": 0,
-          "blockedCount": 0,
-          "paperLikeCount": 0,
-          "answerLikeCount": 0,
-          "usablePaperLikeCount": 0,
-          "usableAnswerLikeCount": 0,
-          "blockedPaperLikeCount": 0,
-          "blockedAnswerLikeCount": 0,
-          "roleCounts": {},
-          "samples": []
-        },
-        "sourceManifestRegistrationChecklist": {
-          "status": "blocked_before_auto_pair",
-          "readyForHumanVerification": false,
-          "requiredManifestFields": [
-            "eligible=true",
-            "status=discovered|verified|published",
-            "sourceType=official_paper",
-            "contentHash|sha256|fileSha256|sourceHash",
-            "remotePath|sourceUrl|provenanceUrl",
-            "sourceRole inferred as paper+answer or paper_answer",
-            "legalReview.publishBlocked=false",
-            "riskFlags excludes answer_missing,brand_leak,copyright_review_required,ad_or_promo"
-          ],
-          "verifiedSourceRegistryFields": [
-            "localPath",
-            "sourceUrl",
-            "track",
-            "year",
-            "sourceType=official_paper",
-            "answerEvidenceStatus=matched",
-            "expectedSha256",
-            "verifiedBy",
-            "evidenceNote"
-          ],
-          "humanVerificationSteps": [],
-          "postRegistrationCommands": [],
-          "localFileCandidates": [],
-          "verifiedSourceRegistryDrafts": [],
-          "manifestCandidateIds": [
-            "src_b83088449d1c3f7d3cd2653f"
-          ],
-          "blockers": [
-            "local_source_audit_not_available"
-          ],
-          "note": "Resolve listed local-source blockers before the slot can be treated as an auto-paired official source."
-        }
-      }
-    },
-    {
       "id": "coverage_missing:math2:2015",
       "workstream": "public_course_coverage",
       "priority": "P0",
@@ -16278,8 +13080,10 @@
           2008,
           2009,
           2010,
+          2011,
           2012,
           2013,
+          2014,
           2025
         ],
         "pendingYears": [],
@@ -16457,6 +13261,7 @@
           2010,
           2011,
           2012,
+          2013,
           2025
         ],
         "pendingYears": [],
@@ -16578,257 +13383,6 @@
           "verifiedSourceRegistryDrafts": [],
           "manifestCandidateIds": [
             "src_08c2498ac7b58e3542942300"
-          ],
-          "blockers": [
-            "local_source_audit_not_available"
-          ],
-          "note": "Resolve listed local-source blockers before the slot can be treated as an auto-paired official source."
-        }
-      }
-    },
-    {
-      "id": "coverage_missing:english1:2016",
-      "workstream": "public_course_coverage",
-      "priority": "P0",
-      "status": "blocked",
-      "title": "英语一 2016 缺少可发布题库",
-      "blockerCode": "missing_public_course_bank",
-      "track": "english1",
-      "trackLabel": "英语一",
-      "year": 2016,
-      "bankId": "",
-      "filePath": "",
-      "count": 0,
-      "nextAction": "已有可发布题源证据时，完成题卡清洗、答案匹配、证据哈希，再按 registry 规范注册题库。",
-      "evidence": {
-        "requiredYears": [
-          2005,
-          2006,
-          2007,
-          2008,
-          2009,
-          2010,
-          2011,
-          2012,
-          2013,
-          2014,
-          2015,
-          2016,
-          2017,
-          2018,
-          2019,
-          2020,
-          2021,
-          2022,
-          2023,
-          2024,
-          2025,
-          2026
-        ],
-        "publishedYears": [
-          2005,
-          2006,
-          2007,
-          2008,
-          2009,
-          2010,
-          2011,
-          2012,
-          2013,
-          2014,
-          2015,
-          2025
-        ],
-        "pendingYears": [],
-        "sourceEvidenceStatus": "publishable_source_present",
-        "sourceEvidencePresentYears": [
-          2005,
-          2006,
-          2007,
-          2008,
-          2009,
-          2010,
-          2011,
-          2012,
-          2013,
-          2014,
-          2015,
-          2016,
-          2017,
-          2018,
-          2019,
-          2020,
-          2021,
-          2022,
-          2023,
-          2024,
-          2025
-        ],
-        "sourceEvidenceCoverageRate": 0.9545,
-        "sourceCandidateSummary": "source manifest 已发现 30 个候选，其中 official_paper=5；当前阻断: legalReview.publishBlocked=true(19), riskFlags=brand_leak,copyright_review_required(19), sourceType=institution_candidate(19)",
-        "sourceCandidateSamples": [
-          {
-            "sourceId": "src_ba027850b7b2359d583e19bc",
-            "status": "discovered",
-            "sourceType": "official_paper",
-            "sourceRole": "",
-            "inferredSourceRole": "paper_answer",
-            "roleSource": "filename",
-            "autoPairEligible": true,
-            "answerEvidenceStatus": "",
-            "riskFlags": [],
-            "publishBlocked": false,
-            "blockReasons": [],
-            "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【解析】1986-2024/英语一历年真题文档版（2010-2024）/2016考研英语（一）真题及解析 .pdf",
-            "sourceUrl": ""
-          },
-          {
-            "sourceId": "src_fd751ea21161f3c706d34b6d",
-            "status": "discovered",
-            "sourceType": "official_paper",
-            "sourceRole": "",
-            "inferredSourceRole": "paper_answer",
-            "roleSource": "filename",
-            "autoPairEligible": true,
-            "answerEvidenceStatus": "",
-            "riskFlags": [],
-            "publishBlocked": false,
-            "blockReasons": [],
-            "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/03.考研真相系列/26考研真相/英一/真题册+答案速查/2016年真题及答案速查/2016年真题及答案速查.pdf",
-            "sourceUrl": ""
-          },
-          {
-            "sourceId": "src_1727b1f7ac7aed776cc06a4b",
-            "status": "discovered",
-            "sourceType": "official_paper",
-            "sourceRole": "",
-            "inferredSourceRole": "paper",
-            "roleSource": "filename",
-            "autoPairEligible": true,
-            "answerEvidenceStatus": "",
-            "riskFlags": [],
-            "publishBlocked": false,
-            "blockReasons": [],
-            "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语一考研历年真题/2016年考研英语一真题 .pdf",
-            "sourceUrl": ""
-          }
-        ],
-        "sourceCandidateDiagnostics": {
-          "candidateCount": 30,
-          "officialPaperCandidateCount": 5,
-          "publishBlockedCandidateCount": 19,
-          "autoPairEligibleCandidateCount": 5,
-          "paperCandidateCount": 1,
-          "answerCandidateCount": 2,
-          "combinedCandidateCount": 2,
-          "blockReasons": {
-            "sourceType=institution_candidate": 19,
-            "riskFlags=brand_leak,copyright_review_required": 19,
-            "legalReview.publishBlocked=true": 19,
-            "eligible=false": 6,
-            "status=rejected": 6,
-            "sourceType=unsupported": 3,
-            "sourceHash=missing": 3,
-            "sourceType=unsupported_media": 3
-          },
-          "sampleCandidates": [
-            {
-              "sourceId": "src_ba027850b7b2359d583e19bc",
-              "status": "discovered",
-              "sourceType": "official_paper",
-              "sourceRole": "",
-              "inferredSourceRole": "paper_answer",
-              "roleSource": "filename",
-              "autoPairEligible": true,
-              "answerEvidenceStatus": "",
-              "riskFlags": [],
-              "publishBlocked": false,
-              "blockReasons": [],
-              "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【解析】1986-2024/英语一历年真题文档版（2010-2024）/2016考研英语（一）真题及解析 .pdf",
-              "sourceUrl": ""
-            },
-            {
-              "sourceId": "src_fd751ea21161f3c706d34b6d",
-              "status": "discovered",
-              "sourceType": "official_paper",
-              "sourceRole": "",
-              "inferredSourceRole": "paper_answer",
-              "roleSource": "filename",
-              "autoPairEligible": true,
-              "answerEvidenceStatus": "",
-              "riskFlags": [],
-              "publishBlocked": false,
-              "blockReasons": [],
-              "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/03.考研真相系列/26考研真相/英一/真题册+答案速查/2016年真题及答案速查/2016年真题及答案速查.pdf",
-              "sourceUrl": ""
-            },
-            {
-              "sourceId": "src_1727b1f7ac7aed776cc06a4b",
-              "status": "discovered",
-              "sourceType": "official_paper",
-              "sourceRole": "",
-              "inferredSourceRole": "paper",
-              "roleSource": "filename",
-              "autoPairEligible": true,
-              "answerEvidenceStatus": "",
-              "riskFlags": [],
-              "publishBlocked": false,
-              "blockReasons": [],
-              "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语一考研历年真题/2016年考研英语一真题 .pdf",
-              "sourceUrl": ""
-            }
-          ]
-        },
-        "localSourceAuditStatus": "not_available",
-        "localSourceAuditSummary": "",
-        "localSourceAuditSamples": [],
-        "localSourceAuditDiagnostics": {
-          "status": "not_available",
-          "sourceCount": 0,
-          "usableTextLayerCount": 0,
-          "needsOcrCount": 0,
-          "blockedCount": 0,
-          "paperLikeCount": 0,
-          "answerLikeCount": 0,
-          "usablePaperLikeCount": 0,
-          "usableAnswerLikeCount": 0,
-          "blockedPaperLikeCount": 0,
-          "blockedAnswerLikeCount": 0,
-          "roleCounts": {},
-          "samples": []
-        },
-        "sourceManifestRegistrationChecklist": {
-          "status": "blocked_before_auto_pair",
-          "readyForHumanVerification": false,
-          "requiredManifestFields": [
-            "eligible=true",
-            "status=discovered|verified|published",
-            "sourceType=official_paper",
-            "contentHash|sha256|fileSha256|sourceHash",
-            "remotePath|sourceUrl|provenanceUrl",
-            "sourceRole inferred as paper+answer or paper_answer",
-            "legalReview.publishBlocked=false",
-            "riskFlags excludes answer_missing,brand_leak,copyright_review_required,ad_or_promo"
-          ],
-          "verifiedSourceRegistryFields": [
-            "localPath",
-            "sourceUrl",
-            "track",
-            "year",
-            "sourceType=official_paper",
-            "answerEvidenceStatus=matched",
-            "expectedSha256",
-            "verifiedBy",
-            "evidenceNote"
-          ],
-          "humanVerificationSteps": [],
-          "postRegistrationCommands": [],
-          "localFileCandidates": [],
-          "verifiedSourceRegistryDrafts": [],
-          "manifestCandidateIds": [
-            "src_ba027850b7b2359d583e19bc",
-            "src_fd751ea21161f3c706d34b6d",
-            "src_1727b1f7ac7aed776cc06a4b"
           ],
           "blockers": [
             "local_source_audit_not_available"
@@ -17073,171 +13627,6 @@
       }
     },
     {
-      "id": "coverage_missing:math1:2016",
-      "workstream": "public_course_coverage",
-      "priority": "P0",
-      "status": "blocked",
-      "title": "数学一 2016 缺少可发布题库",
-      "blockerCode": "missing_public_course_bank",
-      "track": "math1",
-      "trackLabel": "数学一",
-      "year": 2016,
-      "bankId": "",
-      "filePath": "",
-      "count": 0,
-      "nextAction": "已有可发布题源证据时，完成题卡清洗、答案匹配、证据哈希，再按 registry 规范注册题库。",
-      "evidence": {
-        "requiredYears": [
-          2005,
-          2006,
-          2007,
-          2008,
-          2009,
-          2010,
-          2011,
-          2012,
-          2013,
-          2014,
-          2015,
-          2016,
-          2017,
-          2018,
-          2019,
-          2020,
-          2021,
-          2022,
-          2023,
-          2024,
-          2025,
-          2026
-        ],
-        "publishedYears": [
-          2025
-        ],
-        "pendingYears": [],
-        "sourceEvidenceStatus": "publishable_source_present",
-        "sourceEvidencePresentYears": [
-          2008,
-          2009,
-          2011,
-          2012,
-          2013,
-          2014,
-          2015,
-          2016,
-          2017,
-          2018,
-          2019,
-          2020,
-          2021,
-          2022,
-          2023,
-          2024,
-          2025
-        ],
-        "sourceEvidenceCoverageRate": 0.7727,
-        "sourceCandidateSummary": "source manifest 已发现 1 个候选，其中 official_paper=1；当前阻断: 未命中可发布条件",
-        "sourceCandidateSamples": [
-          {
-            "sourceId": "src_826513b855ac46b155edc53b",
-            "status": "discovered",
-            "sourceType": "official_paper",
-            "sourceRole": "",
-            "inferredSourceRole": "paper_answer",
-            "roleSource": "filename",
-            "autoPairEligible": true,
-            "answerEvidenceStatus": "",
-            "riskFlags": [],
-            "publishBlocked": false,
-            "blockReasons": [],
-            "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学一真题答案解析/2016-数一考研真题及答案 .pdf",
-            "sourceUrl": ""
-          }
-        ],
-        "sourceCandidateDiagnostics": {
-          "candidateCount": 1,
-          "officialPaperCandidateCount": 1,
-          "publishBlockedCandidateCount": 0,
-          "autoPairEligibleCandidateCount": 1,
-          "paperCandidateCount": 0,
-          "answerCandidateCount": 0,
-          "combinedCandidateCount": 1,
-          "blockReasons": {},
-          "sampleCandidates": [
-            {
-              "sourceId": "src_826513b855ac46b155edc53b",
-              "status": "discovered",
-              "sourceType": "official_paper",
-              "sourceRole": "",
-              "inferredSourceRole": "paper_answer",
-              "roleSource": "filename",
-              "autoPairEligible": true,
-              "answerEvidenceStatus": "",
-              "riskFlags": [],
-              "publishBlocked": false,
-              "blockReasons": [],
-              "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学一真题答案解析/2016-数一考研真题及答案 .pdf",
-              "sourceUrl": ""
-            }
-          ]
-        },
-        "localSourceAuditStatus": "not_available",
-        "localSourceAuditSummary": "",
-        "localSourceAuditSamples": [],
-        "localSourceAuditDiagnostics": {
-          "status": "not_available",
-          "sourceCount": 0,
-          "usableTextLayerCount": 0,
-          "needsOcrCount": 0,
-          "blockedCount": 0,
-          "paperLikeCount": 0,
-          "answerLikeCount": 0,
-          "usablePaperLikeCount": 0,
-          "usableAnswerLikeCount": 0,
-          "blockedPaperLikeCount": 0,
-          "blockedAnswerLikeCount": 0,
-          "roleCounts": {},
-          "samples": []
-        },
-        "sourceManifestRegistrationChecklist": {
-          "status": "blocked_before_auto_pair",
-          "readyForHumanVerification": false,
-          "requiredManifestFields": [
-            "eligible=true",
-            "status=discovered|verified|published",
-            "sourceType=official_paper",
-            "contentHash|sha256|fileSha256|sourceHash",
-            "remotePath|sourceUrl|provenanceUrl",
-            "sourceRole inferred as paper+answer or paper_answer",
-            "legalReview.publishBlocked=false",
-            "riskFlags excludes answer_missing,brand_leak,copyright_review_required,ad_or_promo"
-          ],
-          "verifiedSourceRegistryFields": [
-            "localPath",
-            "sourceUrl",
-            "track",
-            "year",
-            "sourceType=official_paper",
-            "answerEvidenceStatus=matched",
-            "expectedSha256",
-            "verifiedBy",
-            "evidenceNote"
-          ],
-          "humanVerificationSteps": [],
-          "postRegistrationCommands": [],
-          "localFileCandidates": [],
-          "verifiedSourceRegistryDrafts": [],
-          "manifestCandidateIds": [
-            "src_826513b855ac46b155edc53b"
-          ],
-          "blockers": [
-            "local_source_audit_not_available"
-          ],
-          "note": "Resolve listed local-source blockers before the slot can be treated as an auto-paired official source."
-        }
-      }
-    },
-    {
       "id": "coverage_missing:math2:2016",
       "workstream": "public_course_coverage",
       "priority": "P0",
@@ -17283,8 +13672,10 @@
           2008,
           2009,
           2010,
+          2011,
           2012,
           2013,
+          2014,
           2025
         ],
         "pendingYears": [],
@@ -17462,6 +13853,7 @@
           2010,
           2011,
           2012,
+          2013,
           2025
         ],
         "pendingYears": [],
@@ -17583,257 +13975,6 @@
           "verifiedSourceRegistryDrafts": [],
           "manifestCandidateIds": [
             "src_fb595cd0da81efa6da3993c7"
-          ],
-          "blockers": [
-            "local_source_audit_not_available"
-          ],
-          "note": "Resolve listed local-source blockers before the slot can be treated as an auto-paired official source."
-        }
-      }
-    },
-    {
-      "id": "coverage_missing:english1:2017",
-      "workstream": "public_course_coverage",
-      "priority": "P0",
-      "status": "blocked",
-      "title": "英语一 2017 缺少可发布题库",
-      "blockerCode": "missing_public_course_bank",
-      "track": "english1",
-      "trackLabel": "英语一",
-      "year": 2017,
-      "bankId": "",
-      "filePath": "",
-      "count": 0,
-      "nextAction": "已有可发布题源证据时，完成题卡清洗、答案匹配、证据哈希，再按 registry 规范注册题库。",
-      "evidence": {
-        "requiredYears": [
-          2005,
-          2006,
-          2007,
-          2008,
-          2009,
-          2010,
-          2011,
-          2012,
-          2013,
-          2014,
-          2015,
-          2016,
-          2017,
-          2018,
-          2019,
-          2020,
-          2021,
-          2022,
-          2023,
-          2024,
-          2025,
-          2026
-        ],
-        "publishedYears": [
-          2005,
-          2006,
-          2007,
-          2008,
-          2009,
-          2010,
-          2011,
-          2012,
-          2013,
-          2014,
-          2015,
-          2025
-        ],
-        "pendingYears": [],
-        "sourceEvidenceStatus": "publishable_source_present",
-        "sourceEvidencePresentYears": [
-          2005,
-          2006,
-          2007,
-          2008,
-          2009,
-          2010,
-          2011,
-          2012,
-          2013,
-          2014,
-          2015,
-          2016,
-          2017,
-          2018,
-          2019,
-          2020,
-          2021,
-          2022,
-          2023,
-          2024,
-          2025
-        ],
-        "sourceEvidenceCoverageRate": 0.9545,
-        "sourceCandidateSummary": "source manifest 已发现 30 个候选，其中 official_paper=5；当前阻断: legalReview.publishBlocked=true(19), riskFlags=brand_leak,copyright_review_required(19), sourceType=institution_candidate(19)",
-        "sourceCandidateSamples": [
-          {
-            "sourceId": "src_59f192bb67dfa8490c3de9d3",
-            "status": "discovered",
-            "sourceType": "official_paper",
-            "sourceRole": "",
-            "inferredSourceRole": "paper_answer",
-            "roleSource": "filename",
-            "autoPairEligible": true,
-            "answerEvidenceStatus": "",
-            "riskFlags": [],
-            "publishBlocked": false,
-            "blockReasons": [],
-            "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/03.考研真相系列/26考研真相/英一/真题册+答案速查/2017年真题及答案速查/2017年真题及答案速查.pdf",
-            "sourceUrl": ""
-          },
-          {
-            "sourceId": "src_d62dd96ab6391c4676b275cb",
-            "status": "discovered",
-            "sourceType": "official_paper",
-            "sourceRole": "",
-            "inferredSourceRole": "paper",
-            "roleSource": "filename",
-            "autoPairEligible": true,
-            "answerEvidenceStatus": "",
-            "riskFlags": [],
-            "publishBlocked": false,
-            "blockReasons": [],
-            "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语一考研历年真题/2017年考研英语一真题 .pdf",
-            "sourceUrl": ""
-          },
-          {
-            "sourceId": "src_60d042775102b5301ab077ca",
-            "status": "discovered",
-            "sourceType": "official_paper",
-            "sourceRole": "",
-            "inferredSourceRole": "answer",
-            "roleSource": "filename",
-            "autoPairEligible": true,
-            "answerEvidenceStatus": "",
-            "riskFlags": [],
-            "publishBlocked": false,
-            "blockReasons": [],
-            "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/03.考研真相系列/26考研真相/英一/解析册+逐词逐句册/2017年真题逐题细解/2017年真题逐题细解.pdf",
-            "sourceUrl": ""
-          }
-        ],
-        "sourceCandidateDiagnostics": {
-          "candidateCount": 30,
-          "officialPaperCandidateCount": 5,
-          "publishBlockedCandidateCount": 19,
-          "autoPairEligibleCandidateCount": 5,
-          "paperCandidateCount": 1,
-          "answerCandidateCount": 3,
-          "combinedCandidateCount": 1,
-          "blockReasons": {
-            "sourceType=institution_candidate": 19,
-            "riskFlags=brand_leak,copyright_review_required": 19,
-            "legalReview.publishBlocked=true": 19,
-            "eligible=false": 6,
-            "status=rejected": 6,
-            "sourceType=unsupported": 3,
-            "sourceHash=missing": 3,
-            "sourceType=unsupported_media": 3
-          },
-          "sampleCandidates": [
-            {
-              "sourceId": "src_59f192bb67dfa8490c3de9d3",
-              "status": "discovered",
-              "sourceType": "official_paper",
-              "sourceRole": "",
-              "inferredSourceRole": "paper_answer",
-              "roleSource": "filename",
-              "autoPairEligible": true,
-              "answerEvidenceStatus": "",
-              "riskFlags": [],
-              "publishBlocked": false,
-              "blockReasons": [],
-              "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/03.考研真相系列/26考研真相/英一/真题册+答案速查/2017年真题及答案速查/2017年真题及答案速查.pdf",
-              "sourceUrl": ""
-            },
-            {
-              "sourceId": "src_d62dd96ab6391c4676b275cb",
-              "status": "discovered",
-              "sourceType": "official_paper",
-              "sourceRole": "",
-              "inferredSourceRole": "paper",
-              "roleSource": "filename",
-              "autoPairEligible": true,
-              "answerEvidenceStatus": "",
-              "riskFlags": [],
-              "publishBlocked": false,
-              "blockReasons": [],
-              "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语一考研历年真题/2017年考研英语一真题 .pdf",
-              "sourceUrl": ""
-            },
-            {
-              "sourceId": "src_60d042775102b5301ab077ca",
-              "status": "discovered",
-              "sourceType": "official_paper",
-              "sourceRole": "",
-              "inferredSourceRole": "answer",
-              "roleSource": "filename",
-              "autoPairEligible": true,
-              "answerEvidenceStatus": "",
-              "riskFlags": [],
-              "publishBlocked": false,
-              "blockReasons": [],
-              "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/03.考研真相系列/26考研真相/英一/解析册+逐词逐句册/2017年真题逐题细解/2017年真题逐题细解.pdf",
-              "sourceUrl": ""
-            }
-          ]
-        },
-        "localSourceAuditStatus": "not_available",
-        "localSourceAuditSummary": "",
-        "localSourceAuditSamples": [],
-        "localSourceAuditDiagnostics": {
-          "status": "not_available",
-          "sourceCount": 0,
-          "usableTextLayerCount": 0,
-          "needsOcrCount": 0,
-          "blockedCount": 0,
-          "paperLikeCount": 0,
-          "answerLikeCount": 0,
-          "usablePaperLikeCount": 0,
-          "usableAnswerLikeCount": 0,
-          "blockedPaperLikeCount": 0,
-          "blockedAnswerLikeCount": 0,
-          "roleCounts": {},
-          "samples": []
-        },
-        "sourceManifestRegistrationChecklist": {
-          "status": "blocked_before_auto_pair",
-          "readyForHumanVerification": false,
-          "requiredManifestFields": [
-            "eligible=true",
-            "status=discovered|verified|published",
-            "sourceType=official_paper",
-            "contentHash|sha256|fileSha256|sourceHash",
-            "remotePath|sourceUrl|provenanceUrl",
-            "sourceRole inferred as paper+answer or paper_answer",
-            "legalReview.publishBlocked=false",
-            "riskFlags excludes answer_missing,brand_leak,copyright_review_required,ad_or_promo"
-          ],
-          "verifiedSourceRegistryFields": [
-            "localPath",
-            "sourceUrl",
-            "track",
-            "year",
-            "sourceType=official_paper",
-            "answerEvidenceStatus=matched",
-            "expectedSha256",
-            "verifiedBy",
-            "evidenceNote"
-          ],
-          "humanVerificationSteps": [],
-          "postRegistrationCommands": [],
-          "localFileCandidates": [],
-          "verifiedSourceRegistryDrafts": [],
-          "manifestCandidateIds": [
-            "src_59f192bb67dfa8490c3de9d3",
-            "src_d62dd96ab6391c4676b275cb",
-            "src_60d042775102b5301ab077ca"
           ],
           "blockers": [
             "local_source_audit_not_available"
@@ -18078,171 +14219,6 @@
       }
     },
     {
-      "id": "coverage_missing:math1:2017",
-      "workstream": "public_course_coverage",
-      "priority": "P0",
-      "status": "blocked",
-      "title": "数学一 2017 缺少可发布题库",
-      "blockerCode": "missing_public_course_bank",
-      "track": "math1",
-      "trackLabel": "数学一",
-      "year": 2017,
-      "bankId": "",
-      "filePath": "",
-      "count": 0,
-      "nextAction": "已有可发布题源证据时，完成题卡清洗、答案匹配、证据哈希，再按 registry 规范注册题库。",
-      "evidence": {
-        "requiredYears": [
-          2005,
-          2006,
-          2007,
-          2008,
-          2009,
-          2010,
-          2011,
-          2012,
-          2013,
-          2014,
-          2015,
-          2016,
-          2017,
-          2018,
-          2019,
-          2020,
-          2021,
-          2022,
-          2023,
-          2024,
-          2025,
-          2026
-        ],
-        "publishedYears": [
-          2025
-        ],
-        "pendingYears": [],
-        "sourceEvidenceStatus": "publishable_source_present",
-        "sourceEvidencePresentYears": [
-          2008,
-          2009,
-          2011,
-          2012,
-          2013,
-          2014,
-          2015,
-          2016,
-          2017,
-          2018,
-          2019,
-          2020,
-          2021,
-          2022,
-          2023,
-          2024,
-          2025
-        ],
-        "sourceEvidenceCoverageRate": 0.7727,
-        "sourceCandidateSummary": "source manifest 已发现 1 个候选，其中 official_paper=1；当前阻断: 未命中可发布条件",
-        "sourceCandidateSamples": [
-          {
-            "sourceId": "src_1816f558544a3040d6e189dc",
-            "status": "discovered",
-            "sourceType": "official_paper",
-            "sourceRole": "",
-            "inferredSourceRole": "paper_answer",
-            "roleSource": "filename",
-            "autoPairEligible": true,
-            "answerEvidenceStatus": "",
-            "riskFlags": [],
-            "publishBlocked": false,
-            "blockReasons": [],
-            "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学一真题答案解析/2017-数一考研真题及答案 .pdf",
-            "sourceUrl": ""
-          }
-        ],
-        "sourceCandidateDiagnostics": {
-          "candidateCount": 1,
-          "officialPaperCandidateCount": 1,
-          "publishBlockedCandidateCount": 0,
-          "autoPairEligibleCandidateCount": 1,
-          "paperCandidateCount": 0,
-          "answerCandidateCount": 0,
-          "combinedCandidateCount": 1,
-          "blockReasons": {},
-          "sampleCandidates": [
-            {
-              "sourceId": "src_1816f558544a3040d6e189dc",
-              "status": "discovered",
-              "sourceType": "official_paper",
-              "sourceRole": "",
-              "inferredSourceRole": "paper_answer",
-              "roleSource": "filename",
-              "autoPairEligible": true,
-              "answerEvidenceStatus": "",
-              "riskFlags": [],
-              "publishBlocked": false,
-              "blockReasons": [],
-              "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学一真题答案解析/2017-数一考研真题及答案 .pdf",
-              "sourceUrl": ""
-            }
-          ]
-        },
-        "localSourceAuditStatus": "not_available",
-        "localSourceAuditSummary": "",
-        "localSourceAuditSamples": [],
-        "localSourceAuditDiagnostics": {
-          "status": "not_available",
-          "sourceCount": 0,
-          "usableTextLayerCount": 0,
-          "needsOcrCount": 0,
-          "blockedCount": 0,
-          "paperLikeCount": 0,
-          "answerLikeCount": 0,
-          "usablePaperLikeCount": 0,
-          "usableAnswerLikeCount": 0,
-          "blockedPaperLikeCount": 0,
-          "blockedAnswerLikeCount": 0,
-          "roleCounts": {},
-          "samples": []
-        },
-        "sourceManifestRegistrationChecklist": {
-          "status": "blocked_before_auto_pair",
-          "readyForHumanVerification": false,
-          "requiredManifestFields": [
-            "eligible=true",
-            "status=discovered|verified|published",
-            "sourceType=official_paper",
-            "contentHash|sha256|fileSha256|sourceHash",
-            "remotePath|sourceUrl|provenanceUrl",
-            "sourceRole inferred as paper+answer or paper_answer",
-            "legalReview.publishBlocked=false",
-            "riskFlags excludes answer_missing,brand_leak,copyright_review_required,ad_or_promo"
-          ],
-          "verifiedSourceRegistryFields": [
-            "localPath",
-            "sourceUrl",
-            "track",
-            "year",
-            "sourceType=official_paper",
-            "answerEvidenceStatus=matched",
-            "expectedSha256",
-            "verifiedBy",
-            "evidenceNote"
-          ],
-          "humanVerificationSteps": [],
-          "postRegistrationCommands": [],
-          "localFileCandidates": [],
-          "verifiedSourceRegistryDrafts": [],
-          "manifestCandidateIds": [
-            "src_1816f558544a3040d6e189dc"
-          ],
-          "blockers": [
-            "local_source_audit_not_available"
-          ],
-          "note": "Resolve listed local-source blockers before the slot can be treated as an auto-paired official source."
-        }
-      }
-    },
-    {
       "id": "coverage_missing:math2:2017",
       "workstream": "public_course_coverage",
       "priority": "P0",
@@ -18288,8 +14264,10 @@
           2008,
           2009,
           2010,
+          2011,
           2012,
           2013,
+          2014,
           2025
         ],
         "pendingYears": [],
@@ -18467,6 +14445,7 @@
           2010,
           2011,
           2012,
+          2013,
           2025
         ],
         "pendingYears": [],
@@ -18647,6 +14626,8 @@
           2013,
           2014,
           2015,
+          2016,
+          2017,
           2025
         ],
         "pendingYears": [],
@@ -19122,6 +15103,16 @@
           2026
         ],
         "publishedYears": [
+          2008,
+          2009,
+          2010,
+          2011,
+          2012,
+          2013,
+          2014,
+          2015,
+          2016,
+          2017,
           2025
         ],
         "pendingYears": [],
@@ -19293,8 +15284,10 @@
           2008,
           2009,
           2010,
+          2011,
           2012,
           2013,
+          2014,
           2025
         ],
         "pendingYears": [],
@@ -19472,6 +15465,7 @@
           2010,
           2011,
           2012,
+          2013,
           2025
         ],
         "pendingYears": [],
@@ -19652,6 +15646,8 @@
           2013,
           2014,
           2015,
+          2016,
+          2017,
           2025
         ],
         "pendingYears": [],
@@ -20128,6 +16124,16 @@
           2026
         ],
         "publishedYears": [
+          2008,
+          2009,
+          2010,
+          2011,
+          2012,
+          2013,
+          2014,
+          2015,
+          2016,
+          2017,
           2025
         ],
         "pendingYears": [],
@@ -20299,8 +16305,10 @@
           2008,
           2009,
           2010,
+          2011,
           2012,
           2013,
+          2014,
           2025
         ],
         "pendingYears": [],
@@ -20478,6 +16486,7 @@
           2010,
           2011,
           2012,
+          2013,
           2025
         ],
         "pendingYears": [],
@@ -20658,6 +16667,8 @@
           2013,
           2014,
           2015,
+          2016,
+          2017,
           2025
         ],
         "pendingYears": [],
@@ -21133,6 +17144,16 @@
           2026
         ],
         "publishedYears": [
+          2008,
+          2009,
+          2010,
+          2011,
+          2012,
+          2013,
+          2014,
+          2015,
+          2016,
+          2017,
           2025
         ],
         "pendingYears": [],
@@ -21304,8 +17325,10 @@
           2008,
           2009,
           2010,
+          2011,
           2012,
           2013,
+          2014,
           2025
         ],
         "pendingYears": [],
@@ -21483,6 +17506,7 @@
           2010,
           2011,
           2012,
+          2013,
           2025
         ],
         "pendingYears": [],
@@ -21663,6 +17687,8 @@
           2013,
           2014,
           2015,
+          2016,
+          2017,
           2025
         ],
         "pendingYears": [],
@@ -22138,6 +18164,16 @@
           2026
         ],
         "publishedYears": [
+          2008,
+          2009,
+          2010,
+          2011,
+          2012,
+          2013,
+          2014,
+          2015,
+          2016,
+          2017,
           2025
         ],
         "pendingYears": [],
@@ -22309,8 +18345,10 @@
           2008,
           2009,
           2010,
+          2011,
           2012,
           2013,
+          2014,
           2025
         ],
         "pendingYears": [],
@@ -22488,6 +18526,7 @@
           2010,
           2011,
           2012,
+          2013,
           2025
         ],
         "pendingYears": [],
@@ -22668,6 +18707,8 @@
           2013,
           2014,
           2015,
+          2016,
+          2017,
           2025
         ],
         "pendingYears": [],
@@ -23143,6 +19184,16 @@
           2026
         ],
         "publishedYears": [
+          2008,
+          2009,
+          2010,
+          2011,
+          2012,
+          2013,
+          2014,
+          2015,
+          2016,
+          2017,
           2025
         ],
         "pendingYears": [],
@@ -23314,8 +19365,10 @@
           2008,
           2009,
           2010,
+          2011,
           2012,
           2013,
+          2014,
           2025
         ],
         "pendingYears": [],
@@ -23493,6 +19546,7 @@
           2010,
           2011,
           2012,
+          2013,
           2025
         ],
         "pendingYears": [],
@@ -23892,6 +19946,8 @@
           2013,
           2014,
           2015,
+          2016,
+          2017,
           2025
         ],
         "pendingYears": [],
@@ -24367,6 +20423,16 @@
           2026
         ],
         "publishedYears": [
+          2008,
+          2009,
+          2010,
+          2011,
+          2012,
+          2013,
+          2014,
+          2015,
+          2016,
+          2017,
           2025
         ],
         "pendingYears": [],
@@ -24605,8 +20671,10 @@
           2008,
           2009,
           2010,
+          2011,
           2012,
           2013,
+          2014,
           2025
         ],
         "pendingYears": [],
@@ -24851,6 +20919,7 @@
           2010,
           2011,
           2012,
+          2013,
           2025
         ],
         "pendingYears": [],
@@ -25098,6 +21167,8 @@
           2013,
           2014,
           2015,
+          2016,
+          2017,
           2025
         ],
         "pendingYears": [],
@@ -25582,6 +21653,16 @@
           2026
         ],
         "publishedYears": [
+          2008,
+          2009,
+          2010,
+          2011,
+          2012,
+          2013,
+          2014,
+          2015,
+          2016,
+          2017,
           2025
         ],
         "pendingYears": [],
@@ -25753,8 +21834,10 @@
           2008,
           2009,
           2010,
+          2011,
           2012,
           2013,
+          2014,
           2025
         ],
         "pendingYears": [],
@@ -25932,6 +22015,7 @@
           2010,
           2011,
           2012,
+          2013,
           2025
         ],
         "pendingYears": [],
@@ -26419,6 +22503,8 @@
           2013,
           2014,
           2015,
+          2016,
+          2017,
           2025
         ],
         "pendingYears": [],
@@ -27002,6 +23088,16 @@
           2026
         ],
         "publishedYears": [
+          2008,
+          2009,
+          2010,
+          2011,
+          2012,
+          2013,
+          2014,
+          2015,
+          2016,
+          2017,
           2025
         ],
         "pendingYears": [],
@@ -27284,8 +23380,10 @@
           2008,
           2009,
           2010,
+          2011,
           2012,
           2013,
+          2014,
           2025
         ],
         "pendingYears": [],
@@ -27578,6 +23676,7 @@
           2010,
           2011,
           2012,
+          2013,
           2025
         ],
         "pendingYears": [],

@@ -1,0 +1,43 @@
+人                      人                      Css ania
+1     Tr
+(1,-1.1) ;
+iB
+MHRA (AE —A)X =0 的基础解系为 B =(10, -1 ，所以属于特征值 -4 的一个单位特征向量为
+1   Vor
+(=9 -)
+v2" 2
+fa.  A. AY
+[2  加   ve |        20 0]
+|    +           |     = a
+2Q=|— -一  0  |则有 Q As 5 0 上|故 Q 为所求答阵
+je 8     |        joo 4}
+[4  cy als               -
+Ive WB 2)
+评注 :因为正交短阵 “@@ 使得 Q AQ Ax AaE: QMFL “人将征向最 本题正是以此为切入点解出。
+(22) 【分析】 本题考查二维联合密度的性质与条件密度的计算，而求条件密度的本质还是求边缘密度。
+【详解】 由概率密度的性质得
+ae eng Re BH ay on ey ge epee ayia ee aes
+1= [dx j Ae    dy =Aj e* dx) eo“ dy=Ay eo" dxj “at
+=AdJn Ja =An
+所以A=工, my f(xy) =te2" ，
+x         x
+因为 X 的边缘概率密度为
+40     1 40 28     于 pee
+x00 = [FO yidy = [re PF dy = Te [Le dy
+Tet tg te
+=e    8 dt =e
+ee     ra
+FUSE AARC faye (y|X Ja LY) A gE og cte, cy <te
+h(x) Ve
+评注。 -KemeoAUIE [eat =i mite.
+23) 【分析】 KOLA AAA RE 第一问实际上为古典概率问题
+CED () 易知 X 的所有可能取佳为“0.1 ， Y 的所有可能取值为 0，1.2各信，由于
+{X =LY = 让表示到到 【个红球， 个白球 ，由古典概型得
+2
+PHX =0Y = 8-=P{取到两个黑球 1S =了
+C5 15
+cc 6
+P(x =0Y =儒=P信到一个白球与一个黑球 }=—5% <>
+CI 15
+"
+CBAs: MRK                    rete                    tansas: wee

@@ -1,0 +1,36 @@
+Trans: meee                     sanboseata                     Lamang: meked
+1
+=lim (etx (1 y’ - dx
+ee   \2   Ag
+1         )
+=lim [ex 全 ~5 ox
+x 0 人2x 2
+下，    4x2
+“sim (te dx一hexdx)
+A       ee oe
+=好(e-1-e x +2hexdx)
+im (-1+2 xder
+人de
+1      ee lat
+同人  2(e x, - Te dx ))
+-Tim (-1+2(e-(e-1)  ial
+20           )六2
+CAT) (本题满分“10 分) 某企业为生产甲、乙两种型号的产品，投入的固定成本为    10000〈万元) ，设该企
+业生产甲乙两种产品的产量分别为。 x CER A Cy 件) ，且国定两种产品的边际成本分别为  20+ (万元
+/件) 与 6+y (万元 MED 。
+1) 求生产甲乙两种产品的总成本函数 CUx,y)(万元)
+2) 当总产量为”50 件时，甲乙两种的产量各为多少时可以使总成本最小? 求最小的成本。
+3) 求总产量为”50 件时且总成本最小时甲产品的边际成本，并解释其经济意义。
+【解析】，1) 设成本函数为 ”C(x, y) ，由题意有: C(x y)=20+%,
+”
+对 x 积分得， C(x,y) =20x 证 +D(y)，
+再对y 求屋有， Cy (x,y) =D (y) =6+y，
+再对 y 积分有， D(y) =6y 有 yte
+x      1
+Hith, C(x, y)=20x *~ +6y+-y' +e
+4      2
+d      1
+又C(0,0) =10000, i ¢=10000, HILL C(x, y) =20x +e Heyy? +10000
+4
+2) # x ty =50. SU y =50-x(0 <x $50), RABRARBH, 7
+CMR ORE: HARI                        BERR PES LER                        URBARE: HKD

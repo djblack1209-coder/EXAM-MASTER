@@ -1,7 +1,6 @@
 /**
  * 闪卡题库注册表
- * 所有可用的闪卡题库在此注册，APP启动时按需加载
- * 新增题库只需：1.放JSON到flashcard-banks/ 2.在此注册
+ * 所有可用的闪卡题库在此注册；主包只保留元数据，真实题库数据由练习分包加载。
  */
 
 const PUBLIC_COURSE_TRACKS = [
@@ -46,14 +45,15 @@ function verifiedEnglish1Bank(year) {
     caution: '1-50题已按本地答案速查源核验；写作题按官方作答要求训练，不提供唯一范文答案',
     paperType: 'past_exam',
     quality: PAPER_QUALITY.READY,
-    sections: paperSections('完形填空', '阅读理解', '新题型', '翻译', '写作'),
-    loader: () => import(`./flashcard-banks/english1-${year}.json`)
+    sections: paperSections('完形填空', '阅读理解', '新题型', '翻译', '写作')
   };
 }
 
-// 题库注册表（懒加载，用到时才import）
+// 题库注册表
 const BANK_REGISTRY = [
-  ...[2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015].map(verifiedEnglish1Bank),
+  ...[2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017].map(
+    verifiedEnglish1Bank
+  ),
   {
     id: 'english1-2001',
     subject: '英语',
@@ -66,8 +66,7 @@ const BANK_REGISTRY = [
     quality: PAPER_QUALITY.NEEDS_PASSAGE,
     enabled: false,
     disabledReason: '英语阅读题需补齐原文材料后开放整卷练习',
-    sections: paperSections('完形填空', '阅读理解', '翻译', '写作'),
-    loader: () => import('./flashcard-banks/english1-2001.json')
+    sections: paperSections('完形填空', '阅读理解', '翻译', '写作')
   },
   {
     id: 'english1-2000',
@@ -81,8 +80,7 @@ const BANK_REGISTRY = [
     quality: PAPER_QUALITY.NEEDS_PASSAGE,
     enabled: false,
     disabledReason: '英语阅读题需补齐原文材料后开放整卷练习',
-    sections: paperSections('完形填空', '阅读理解', '翻译', '写作'),
-    loader: () => import('./flashcard-banks/english1-2000.json')
+    sections: paperSections('完形填空', '阅读理解', '翻译', '写作')
   },
   {
     id: 'politics-2025',
@@ -96,9 +94,7 @@ const BANK_REGISTRY = [
     caution: '按本地百度网盘 2025 政治真题及答案 PDF 匹配；分析题按参考答案解析训练',
     paperType: 'past_exam',
     quality: PAPER_QUALITY.READY,
-    sections: paperSections('单项选择', '多项选择', '分析题'),
-    // 动态导入，不会增加首屏加载体积
-    loader: () => import('./flashcard-banks/politics-2025.json')
+    sections: paperSections('单项选择', '多项选择', '分析题')
   },
   {
     id: 'politics-2024',
@@ -112,8 +108,7 @@ const BANK_REGISTRY = [
     caution: '按本地百度网盘 2024 政治真题及答案 PDF 文本层匹配；已过滤推广页文本',
     paperType: 'past_exam',
     quality: PAPER_QUALITY.READY,
-    sections: paperSections('单项选择', '多项选择', '分析题'),
-    loader: () => import('./flashcard-banks/politics-2024.json')
+    sections: paperSections('单项选择', '多项选择', '分析题')
   },
   {
     id: 'politics-2005',
@@ -124,11 +119,10 @@ const BANK_REGISTRY = [
     name: '2005考研政治真题',
     description: '15道单选 + 15道多选 + 7道辨析/分析题',
     releaseLabel: '正式题库',
-    caution: '按本地百度网盘 2005 政治试题及参考答案 PDF 页图训练；答案键已通过本地 OCR/渲染页确认',
+    caution: '按本地百度网盘 2005 政治试题及参考答案 PDF 页图训练；答案键已通过原始页图核对',
     paperType: 'past_exam',
     quality: PAPER_QUALITY.READY,
-    sections: paperSections('单项选择', '多项选择', '辨析题', '分析题'),
-    loader: () => import('./flashcard-banks/politics-2005.json')
+    sections: paperSections('单项选择', '多项选择', '辨析题', '分析题')
   },
   {
     id: 'politics-2006',
@@ -139,11 +133,10 @@ const BANK_REGISTRY = [
     name: '2006考研政治真题',
     description: '16道单选 + 17道多选 + 5道分析题',
     releaseLabel: '正式题库',
-    caution: '按本地百度网盘 2006 政治真题及参考答案 PDF 页图训练；答案键已通过本地 OCR/渲染页确认',
+    caution: '按本地百度网盘 2006 政治真题及参考答案 PDF 页图训练；答案键已通过原始页图核对',
     paperType: 'past_exam',
     quality: PAPER_QUALITY.READY,
-    sections: paperSections('单项选择', '多项选择', '分析题'),
-    loader: () => import('./flashcard-banks/politics-2006.json')
+    sections: paperSections('单项选择', '多项选择', '分析题')
   },
   {
     id: 'politics-2007',
@@ -154,11 +147,10 @@ const BANK_REGISTRY = [
     name: '2007考研政治真题',
     description: '16道单选 + 17道多选 + 5道分析题',
     releaseLabel: '正式题库',
-    caution: '按本地百度网盘 2007 政治真题及参考答案 PDF 页图训练；选择题内嵌答案和分析题答案要点已通过本地 OCR/渲染页确认',
+    caution: '按本地百度网盘 2007 政治真题及参考答案 PDF 页图训练；选择题内嵌答案和分析题答案要点已通过原始页图核对',
     paperType: 'past_exam',
     quality: PAPER_QUALITY.READY,
-    sections: paperSections('单项选择', '多项选择', '分析题'),
-    loader: () => import('./flashcard-banks/politics-2007.json')
+    sections: paperSections('单项选择', '多项选择', '分析题')
   },
   {
     id: 'politics-2008',
@@ -169,11 +161,10 @@ const BANK_REGISTRY = [
     name: '2008考研政治真题',
     description: '16道单选 + 17道多选 + 5道分析题',
     releaseLabel: '正式题库',
-    caution: '按本地百度网盘 2008 政治真题及参考答案 PDF 页图训练；答案键和分析题答案要点已通过本地 OCR/渲染页确认',
+    caution: '按本地百度网盘 2008 政治真题及参考答案 PDF 页图训练；答案键和分析题答案要点已通过原始页图核对',
     paperType: 'past_exam',
     quality: PAPER_QUALITY.READY,
-    sections: paperSections('单项选择', '多项选择', '分析题'),
-    loader: () => import('./flashcard-banks/politics-2008.json')
+    sections: paperSections('单项选择', '多项选择', '分析题')
   },
   {
     id: 'politics-2009',
@@ -184,11 +175,10 @@ const BANK_REGISTRY = [
     name: '2009考研政治真题',
     description: '16道单选 + 17道多选 + 5道分析题',
     releaseLabel: '正式题库',
-    caution: '按本地百度网盘 2009 政治真题及参考答案 PDF 页图训练；选择题答案标记和分析题答案要点已通过本地 OCR/渲染页确认',
+    caution: '按本地百度网盘 2009 政治真题及参考答案 PDF 页图训练；选择题答案标记和分析题答案要点已通过原始页图核对',
     paperType: 'past_exam',
     quality: PAPER_QUALITY.READY,
-    sections: paperSections('单项选择', '多项选择', '分析题'),
-    loader: () => import('./flashcard-banks/politics-2009.json')
+    sections: paperSections('单项选择', '多项选择', '分析题')
   },
   {
     id: 'politics-2010',
@@ -202,8 +192,7 @@ const BANK_REGISTRY = [
     caution: '按本地百度网盘 2010 政治真题 PDF 与真题及参考答案 PDF 页图训练；第21题题面由解析 PDF 补齐',
     paperType: 'past_exam',
     quality: PAPER_QUALITY.READY,
-    sections: paperSections('单项选择', '多项选择', '分析题'),
-    loader: () => import('./flashcard-banks/politics-2010.json')
+    sections: paperSections('单项选择', '多项选择', '分析题')
   },
   {
     id: 'politics-2011',
@@ -217,8 +206,7 @@ const BANK_REGISTRY = [
     caution: '按本地百度网盘 2011 政治真题 PDF 与真题及参考答案 PDF 页图训练；答案键来自答案 PDF 第10页',
     paperType: 'past_exam',
     quality: PAPER_QUALITY.READY,
-    sections: paperSections('单项选择', '多项选择', '分析题'),
-    loader: () => import('./flashcard-banks/politics-2011.json')
+    sections: paperSections('单项选择', '多项选择', '分析题')
   },
   {
     id: 'politics-2012',
@@ -229,11 +217,10 @@ const BANK_REGISTRY = [
     name: '2012考研政治真题',
     description: '16道单选 + 17道多选 + 5道分析题',
     releaseLabel: '正式题库',
-    caution: '按本地百度网盘 2012 政治真题 PDF 与真题及参考答案 PDF 页图训练；答案键由本地 OCR 定位并以答案页图为准',
+    caution: '按本地百度网盘 2012 政治真题 PDF 与真题及参考答案 PDF 页图训练；答案键以答案页图核对为准',
     paperType: 'past_exam',
     quality: PAPER_QUALITY.READY,
-    sections: paperSections('单项选择', '多项选择', '分析题'),
-    loader: () => import('./flashcard-banks/politics-2012.json')
+    sections: paperSections('单项选择', '多项选择', '分析题')
   },
   {
     id: 'politics-2013',
@@ -247,8 +234,7 @@ const BANK_REGISTRY = [
     caution: '按本地百度网盘 2013 政治真题及参考答案 PDF 页图训练；同源 PDF 内嵌答案作为答案键',
     paperType: 'past_exam',
     quality: PAPER_QUALITY.READY,
-    sections: paperSections('单项选择', '多项选择', '分析题'),
-    loader: () => import('./flashcard-banks/politics-2013.json')
+    sections: paperSections('单项选择', '多项选择', '分析题')
   },
   {
     id: 'politics-2014',
@@ -262,8 +248,7 @@ const BANK_REGISTRY = [
     caution: '按本地百度网盘 2014 政治真题 PDF 与真题及参考答案 PDF 页图训练；答案键来自答案 PDF 第11页',
     paperType: 'past_exam',
     quality: PAPER_QUALITY.READY,
-    sections: paperSections('单项选择', '多项选择', '分析题'),
-    loader: () => import('./flashcard-banks/politics-2014.json')
+    sections: paperSections('单项选择', '多项选择', '分析题')
   },
   {
     id: 'politics-2015',
@@ -277,8 +262,7 @@ const BANK_REGISTRY = [
     caution: '按本地百度网盘 2015 政治真题 PDF 与真题及参考答案 PDF 页图训练；答案键来自答案 PDF 第17页',
     paperType: 'past_exam',
     quality: PAPER_QUALITY.READY,
-    sections: paperSections('单项选择', '多项选择', '分析题'),
-    loader: () => import('./flashcard-banks/politics-2015.json')
+    sections: paperSections('单项选择', '多项选择', '分析题')
   },
   {
     id: 'politics-2016',
@@ -292,8 +276,7 @@ const BANK_REGISTRY = [
     caution: '按本地百度网盘 2016 政治真题 PDF 与真题及参考答案 PDF 页图训练；答案键来自答案 PDF 第14-16页',
     paperType: 'past_exam',
     quality: PAPER_QUALITY.READY,
-    sections: paperSections('单项选择', '多项选择', '分析题'),
-    loader: () => import('./flashcard-banks/politics-2016.json')
+    sections: paperSections('单项选择', '多项选择', '分析题')
   },
   {
     id: 'politics-2017',
@@ -307,8 +290,7 @@ const BANK_REGISTRY = [
     caution: '按本地百度网盘 2017 政治真题 PDF 与真题及参考答案 PDF 页图训练；答案来自答案 PDF 第1-13页逐题解析',
     paperType: 'past_exam',
     quality: PAPER_QUALITY.READY,
-    sections: paperSections('单项选择', '多项选择', '分析题'),
-    loader: () => import('./flashcard-banks/politics-2017.json')
+    sections: paperSections('单项选择', '多项选择', '分析题')
   },
   {
     id: 'politics-2018',
@@ -323,8 +305,7 @@ const BANK_REGISTRY = [
       '按本地百度网盘 2018 政治真题 PDF 与真题及参考答案 PDF 页图训练；答案来自答案 PDF 第1-13页逐题解析，并按试卷 PDF 选项顺序映射',
     paperType: 'past_exam',
     quality: PAPER_QUALITY.READY,
-    sections: paperSections('单项选择', '多项选择', '分析题'),
-    loader: () => import('./flashcard-banks/politics-2018.json')
+    sections: paperSections('单项选择', '多项选择', '分析题')
   },
   {
     id: 'politics-2019',
@@ -339,8 +320,7 @@ const BANK_REGISTRY = [
       '按本地百度网盘 2019 政治真题 PDF 与真题及参考答案 PDF 页图训练；答案来自答案 PDF 第1-16页逐题解析，并按试卷 PDF 选项顺序映射',
     paperType: 'past_exam',
     quality: PAPER_QUALITY.READY,
-    sections: paperSections('单项选择', '多项选择', '分析题'),
-    loader: () => import('./flashcard-banks/politics-2019.json')
+    sections: paperSections('单项选择', '多项选择', '分析题')
   },
   {
     id: 'politics-2020',
@@ -354,8 +334,7 @@ const BANK_REGISTRY = [
     caution: '按本地百度网盘 2020 政治真题 PDF 与真题及参考答案 PDF 页图训练；答案来自答案 PDF 第2-13页逐题解析',
     paperType: 'past_exam',
     quality: PAPER_QUALITY.READY,
-    sections: paperSections('单项选择', '多项选择', '分析题'),
-    loader: () => import('./flashcard-banks/politics-2020.json')
+    sections: paperSections('单项选择', '多项选择', '分析题')
   },
   {
     id: 'politics-2021',
@@ -370,8 +349,7 @@ const BANK_REGISTRY = [
       '按本地百度网盘 2021 政治真题 PDF 与真题及解析 PDF 页图训练；答案来自答案 PDF 第1-14页逐题解析，并按试卷 PDF 选项顺序映射',
     paperType: 'past_exam',
     quality: PAPER_QUALITY.READY,
-    sections: paperSections('单项选择', '多项选择', '分析题'),
-    loader: () => import('./flashcard-banks/politics-2021.json')
+    sections: paperSections('单项选择', '多项选择', '分析题')
   },
   {
     id: 'politics-2022',
@@ -386,8 +364,7 @@ const BANK_REGISTRY = [
       '按本地百度网盘 2022 政治真题及答案解析 PDF 文本层训练；独立试卷扫描页含答案标记，答题前不展示以免泄题',
     paperType: 'past_exam',
     quality: PAPER_QUALITY.READY,
-    sections: paperSections('单项选择', '多项选择', '分析题'),
-    loader: () => import('./flashcard-banks/politics-2022.json')
+    sections: paperSections('单项选择', '多项选择', '分析题')
   },
   {
     id: 'english1-2025',
@@ -401,8 +378,7 @@ const BANK_REGISTRY = [
     caution: '1-50题已按本地百度网盘答案 PDF 匹配；51-52 写作题按原卷写作任务训练，不提供唯一范文答案',
     paperType: 'past_exam',
     quality: PAPER_QUALITY.READY,
-    sections: paperSections('完形填空', '阅读理解', '新题型', '翻译', '写作'),
-    loader: () => import('./flashcard-banks/english1-2025.json')
+    sections: paperSections('完形填空', '阅读理解', '新题型', '翻译', '写作')
   },
   {
     id: 'english2-2025',
@@ -414,11 +390,10 @@ const BANK_REGISTRY = [
     description: '完形填空 + 阅读理解 + 新题型 + 翻译 + 写作',
     releaseLabel: '正式题库',
     caution:
-      '1-46题已按本地百度网盘答案 PDF 与逐题细解 PDF/OCR 匹配；47-48 写作题按原卷写作任务训练，不提供唯一范文答案',
+      '1-46题已按本地百度网盘答案 PDF 与逐题细解 PDF 页图匹配；47-48 写作题按原卷写作任务训练，不提供唯一范文答案',
     paperType: 'past_exam',
     quality: PAPER_QUALITY.READY,
-    sections: paperSections('完形填空', '阅读理解', '新题型', '翻译', '写作'),
-    loader: () => import('./flashcard-banks/english2-2025.json')
+    sections: paperSections('完形填空', '阅读理解', '新题型', '翻译', '写作')
   },
   {
     id: 'math1-2025',
@@ -432,9 +407,23 @@ const BANK_REGISTRY = [
     caution: '按本地百度网盘数学一试卷与答案 PDF 页图训练；公式和证明过程以原 PDF 页图为准',
     paperType: 'past_exam',
     quality: PAPER_QUALITY.READY,
-    sections: paperSections('选择题', '填空题', '解答题'),
-    loader: () => import('./flashcard-banks/math1-2025.json')
+    sections: paperSections('选择题', '填空题', '解答题')
   },
+  ...[2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017].map((year) => ({
+    id: `math1-${year}`,
+    subject: '数学',
+    subjectKey: 'math',
+    track: 'math1',
+    year: String(year),
+    name: `${year}考研数学一真题`,
+    description: '8道选择 + 6道填空 + 9道解答题',
+    releaseLabel: '正式题库',
+    caution:
+      '按本地百度网盘数学一真题答案解析 PDF 页图训练；题面使用原页或题面裁切图，答案和解析以原 PDF 页图为准',
+    paperType: 'past_exam',
+    quality: PAPER_QUALITY.READY,
+    sections: paperSections('选择题', '填空题', '解答题')
+  })),
   {
     id: 'math2-2025',
     subject: '数学',
@@ -447,8 +436,7 @@ const BANK_REGISTRY = [
     caution: '按本地百度网盘数学二试卷与参考答案 PDF 页图训练；公式、证明和演算过程以原 PDF 页图为准',
     paperType: 'past_exam',
     quality: PAPER_QUALITY.READY,
-    sections: paperSections('选择题', '填空题', '解答题'),
-    loader: () => import('./flashcard-banks/math2-2025.json')
+    sections: paperSections('选择题', '填空题', '解答题')
   },
   {
     id: 'math2-2005',
@@ -459,11 +447,10 @@ const BANK_REGISTRY = [
     name: '2005考研数学二真题',
     description: '6道填空 + 8道选择 + 9道解答题',
     releaseLabel: '正式题库',
-    caution: '按本地百度网盘 2005 数学二真题及解析 PDF 页图训练；答案键和解答页已通过本地 OCR/渲染页确认',
+    caution: '按本地百度网盘 2005 数学二真题及解析 PDF 页图训练；答案键和解答页已通过原始页图核对',
     paperType: 'past_exam',
     quality: PAPER_QUALITY.READY,
-    sections: paperSections('填空题', '选择题', '解答题'),
-    loader: () => import('./flashcard-banks/math2-2005.json')
+    sections: paperSections('填空题', '选择题', '解答题')
   },
   {
     id: 'math2-2006',
@@ -474,11 +461,10 @@ const BANK_REGISTRY = [
     name: '2006考研数学二真题',
     description: '6道填空 + 8道选择 + 9道解答题',
     releaseLabel: '正式题库',
-    caution: '按本地百度网盘 2006 数学二真题及解析 PDF 页图训练；答案键和解答页已通过本地 OCR/渲染页确认',
+    caution: '按本地百度网盘 2006 数学二真题及解析 PDF 页图训练；答案键和解答页已通过原始页图核对',
     paperType: 'past_exam',
     quality: PAPER_QUALITY.READY,
-    sections: paperSections('填空题', '选择题', '解答题'),
-    loader: () => import('./flashcard-banks/math2-2006.json')
+    sections: paperSections('填空题', '选择题', '解答题')
   },
   {
     id: 'math2-2007',
@@ -489,11 +475,10 @@ const BANK_REGISTRY = [
     name: '2007考研数学二真题',
     description: '10道选择 + 6道填空 + 8道解答题',
     releaseLabel: '正式题库',
-    caution: '按本地百度网盘 2007 数学二真题及解析 PDF 页图训练；答案键和解答页已通过本地 OCR/渲染页确认',
+    caution: '按本地百度网盘 2007 数学二真题及解析 PDF 页图训练；答案键和解答页已通过原始页图核对',
     paperType: 'past_exam',
     quality: PAPER_QUALITY.READY,
-    sections: paperSections('选择题', '填空题', '解答题'),
-    loader: () => import('./flashcard-banks/math2-2007.json')
+    sections: paperSections('选择题', '填空题', '解答题')
   },
   {
     id: 'math2-2008',
@@ -504,11 +489,10 @@ const BANK_REGISTRY = [
     name: '2008考研数学二真题',
     description: '8道选择 + 6道填空 + 9道解答题',
     releaseLabel: '正式题库',
-    caution: '按本地百度网盘 2008 数学二真题及解析 PDF 页图训练；答案键和解答页已通过本地 OCR/渲染页确认',
+    caution: '按本地百度网盘 2008 数学二真题及解析 PDF 页图训练；答案键和解答页已通过原始页图核对',
     paperType: 'past_exam',
     quality: PAPER_QUALITY.READY,
-    sections: paperSections('选择题', '填空题', '解答题'),
-    loader: () => import('./flashcard-banks/math2-2008.json')
+    sections: paperSections('选择题', '填空题', '解答题')
   },
   {
     id: 'math2-2009',
@@ -519,11 +503,10 @@ const BANK_REGISTRY = [
     name: '2009考研数学二真题',
     description: '8道选择 + 6道填空 + 9道解答题',
     releaseLabel: '正式题库',
-    caution: '按本地百度网盘 2009 数学二真题及解析 PDF 页图训练；答案键和解答页已通过本地 OCR/渲染页确认',
+    caution: '按本地百度网盘 2009 数学二真题及解析 PDF 页图训练；答案键和解答页已通过原始页图核对',
     paperType: 'past_exam',
     quality: PAPER_QUALITY.READY,
-    sections: paperSections('选择题', '填空题', '解答题'),
-    loader: () => import('./flashcard-banks/math2-2009.json')
+    sections: paperSections('选择题', '填空题', '解答题')
   },
   {
     id: 'math2-2010',
@@ -534,11 +517,24 @@ const BANK_REGISTRY = [
     name: '2010考研数学二真题',
     description: '8道选择 + 6道填空 + 9道解答题',
     releaseLabel: '正式题库',
-    caution: '按本地百度网盘 2010 数学二真题及解析 PDF 页图训练；答案键和解答页已通过本地 OCR/渲染页确认',
+    caution: '按本地百度网盘 2010 数学二真题及解析 PDF 页图训练；答案键和解答页已通过原始页图核对',
     paperType: 'past_exam',
     quality: PAPER_QUALITY.READY,
-    sections: paperSections('选择题', '填空题', '解答题'),
-    loader: () => import('./flashcard-banks/math2-2010.json')
+    sections: paperSections('选择题', '填空题', '解答题')
+  },
+  {
+    id: 'math2-2011',
+    subject: '数学',
+    subjectKey: 'math',
+    track: 'math2',
+    year: '2011',
+    name: '2011考研数学二真题',
+    description: '8道选择 + 6道填空 + 9道解答题',
+    releaseLabel: '正式题库',
+    caution: '按本地百度网盘 2011 数学二真题及解析 PDF 页图训练；答案键和解答页已通过原始页图核对',
+    paperType: 'past_exam',
+    quality: PAPER_QUALITY.READY,
+    sections: paperSections('选择题', '填空题', '解答题')
   },
   {
     id: 'math2-2012',
@@ -549,11 +545,10 @@ const BANK_REGISTRY = [
     name: '2012考研数学二真题',
     description: '8道选择 + 6道填空 + 9道解答题',
     releaseLabel: '正式题库',
-    caution: '按本地百度网盘 2012 数学二真题及解析 PDF 页图训练；答案键和解答页已通过本地 OCR/渲染页确认',
+    caution: '按本地百度网盘 2012 数学二真题及解析 PDF 页图训练；答案键和解答页已通过原始页图核对',
     paperType: 'past_exam',
     quality: PAPER_QUALITY.READY,
-    sections: paperSections('选择题', '填空题', '解答题'),
-    loader: () => import('./flashcard-banks/math2-2012.json')
+    sections: paperSections('选择题', '填空题', '解答题')
   },
   {
     id: 'math2-2013',
@@ -564,11 +559,24 @@ const BANK_REGISTRY = [
     name: '2013考研数学二真题',
     description: '8道选择 + 6道填空 + 9道解答题',
     releaseLabel: '正式题库',
-    caution: '按本地百度网盘 2013 数学二真题及解析 PDF 页图训练；答案键和解答页已通过本地 OCR/渲染页确认',
+    caution: '按本地百度网盘 2013 数学二真题及解析 PDF 页图训练；答案键和解答页已通过原始页图核对',
     paperType: 'past_exam',
     quality: PAPER_QUALITY.READY,
-    sections: paperSections('选择题', '填空题', '解答题'),
-    loader: () => import('./flashcard-banks/math2-2013.json')
+    sections: paperSections('选择题', '填空题', '解答题')
+  },
+  {
+    id: 'math2-2014',
+    subject: '数学',
+    subjectKey: 'math',
+    track: 'math2',
+    year: '2014',
+    name: '2014考研数学二真题',
+    description: '8道选择 + 6道填空 + 9道解答题',
+    releaseLabel: '正式题库',
+    caution: '按本地百度网盘 2014 数学二真题及解析 PDF 页图训练；答案键和解答页已通过原始页图核对',
+    paperType: 'past_exam',
+    quality: PAPER_QUALITY.READY,
+    sections: paperSections('选择题', '填空题', '解答题')
   },
   {
     id: 'math3-2005',
@@ -582,8 +590,7 @@ const BANK_REGISTRY = [
     caution: '按本地百度网盘 2005 数学三真题及解析 PDF 页图训练；公式、证明和演算过程以原 PDF 页图为准',
     paperType: 'past_exam',
     quality: PAPER_QUALITY.READY,
-    sections: paperSections('填空题', '选择题', '解答题'),
-    loader: () => import('./flashcard-banks/math3-2005.json')
+    sections: paperSections('填空题', '选择题', '解答题')
   },
   {
     id: 'math3-2006',
@@ -597,8 +604,7 @@ const BANK_REGISTRY = [
     caution: '按本地百度网盘 2006 数学三真题及解析 PDF 页图训练；公式、证明和演算过程以原 PDF 页图为准',
     paperType: 'past_exam',
     quality: PAPER_QUALITY.READY,
-    sections: paperSections('填空题', '选择题', '解答题'),
-    loader: () => import('./flashcard-banks/math3-2006.json')
+    sections: paperSections('填空题', '选择题', '解答题')
   },
   {
     id: 'math3-2007',
@@ -613,8 +619,7 @@ const BANK_REGISTRY = [
       '按本地百度网盘 2007 数学三真题及解析 PDF 页图训练；第24题题干来自同源解析页文本，答题前不展示含答案页图',
     paperType: 'past_exam',
     quality: PAPER_QUALITY.READY,
-    sections: paperSections('选择题', '填空题', '解答题'),
-    loader: () => import('./flashcard-banks/math3-2007.json')
+    sections: paperSections('选择题', '填空题', '解答题')
   },
   {
     id: 'math3-2008',
@@ -628,8 +633,7 @@ const BANK_REGISTRY = [
     caution: '按本地百度网盘 2008 数学三真题及解析 PDF 页图训练；公式、证明和演算过程以原 PDF 页图为准',
     paperType: 'past_exam',
     quality: PAPER_QUALITY.READY,
-    sections: paperSections('选择题', '填空题', '解答题'),
-    loader: () => import('./flashcard-banks/math3-2008.json')
+    sections: paperSections('选择题', '填空题', '解答题')
   },
   {
     id: 'math3-2009',
@@ -643,8 +647,7 @@ const BANK_REGISTRY = [
     caution: '按本地百度网盘 2009 数学三真题及解析 PDF 页图训练；公式、证明和演算过程以原 PDF 页图为准',
     paperType: 'past_exam',
     quality: PAPER_QUALITY.READY,
-    sections: paperSections('选择题', '填空题', '解答题'),
-    loader: () => import('./flashcard-banks/math3-2009.json')
+    sections: paperSections('选择题', '填空题', '解答题')
   },
   {
     id: 'math3-2010',
@@ -658,8 +661,7 @@ const BANK_REGISTRY = [
     caution: '按本地百度网盘 2010 数学三真题及解析 PDF 页图训练；第3页题面使用裁切图避免提前展示解析',
     paperType: 'past_exam',
     quality: PAPER_QUALITY.READY,
-    sections: paperSections('选择题', '填空题', '解答题'),
-    loader: () => import('./flashcard-banks/math3-2010.json')
+    sections: paperSections('选择题', '填空题', '解答题')
   },
   {
     id: 'math3-2011',
@@ -673,8 +675,7 @@ const BANK_REGISTRY = [
     caution: '按本地百度网盘 2011 数学三真题及解析 PDF 页图训练；题面使用逐题裁切图避免提前展示答案解析',
     paperType: 'past_exam',
     quality: PAPER_QUALITY.READY,
-    sections: paperSections('选择题', '填空题', '解答题'),
-    loader: () => import('./flashcard-banks/math3-2011.json')
+    sections: paperSections('选择题', '填空题', '解答题')
   },
   {
     id: 'math3-2012',
@@ -688,8 +689,21 @@ const BANK_REGISTRY = [
     caution: '按本地百度网盘 2012 数学三真题及解析 PDF 页图训练；题面使用逐题裁切图避免提前展示答案解析',
     paperType: 'past_exam',
     quality: PAPER_QUALITY.READY,
-    sections: paperSections('选择题', '填空题', '解答题'),
-    loader: () => import('./flashcard-banks/math3-2012.json')
+    sections: paperSections('选择题', '填空题', '解答题')
+  },
+  {
+    id: 'math3-2013',
+    subject: '数学',
+    subjectKey: 'math',
+    track: 'math3',
+    year: '2013',
+    name: '2013考研数学三真题',
+    description: '8道选择 + 6道填空 + 9道解答题',
+    releaseLabel: '正式题库',
+    caution: '按本地百度网盘 2013 数学三真题及解析 PDF 页图训练；题面使用逐题裁切图避免提前展示答案解析',
+    paperType: 'past_exam',
+    quality: PAPER_QUALITY.READY,
+    sections: paperSections('选择题', '填空题', '解答题')
   },
   {
     id: 'math3-2025',
@@ -703,8 +717,7 @@ const BANK_REGISTRY = [
     caution: '按本地百度网盘数学三试卷及参考答案 PDF 页图训练；公式、证明和演算过程以原 PDF 页图为准',
     paperType: 'past_exam',
     quality: PAPER_QUALITY.READY,
-    sections: paperSections('选择题', '填空题', '解答题'),
-    loader: () => import('./flashcard-banks/math3-2025.json')
+    sections: paperSections('选择题', '填空题', '解答题')
   }
   // 后续新增题库在这里添加
 ];
@@ -824,11 +837,11 @@ function getSelectedTracks(profile) {
  * 获取所有可用题库列表（不加载数据，只返回元信息）
  */
 export function getAvailableBanks() {
-  return BANK_REGISTRY.filter(isPracticeVisibleBank).map(({ loader, ...meta }) => meta);
+  return BANK_REGISTRY.filter(isPracticeVisibleBank).map((meta) => ({ ...meta }));
 }
 
 export function getAllBankMetas() {
-  return BANK_REGISTRY.map(({ loader, ...meta }) => meta);
+  return BANK_REGISTRY.map((meta) => ({ ...meta }));
 }
 
 export function getKnownSourcePapers(bankMetas = getAllBankMetas()) {
@@ -1024,29 +1037,11 @@ export function buildPublicCourseCoverage(options = {}) {
 }
 
 /**
- * 按ID加载某个题库的完整数据
- * @param {string} bankId - 题库ID
- * @returns {Promise<Object>} - 闪卡JSON数据
- */
-export async function loadBank(bankId) {
-  const entry = BANK_REGISTRY.find((b) => b.id === bankId && isPracticeVisibleBank(b));
-  if (!entry) {
-    throw new Error(`题库不存在或暂不可用: ${bankId}`);
-  }
-
-  const module = await entry.loader();
-  // 兼容ESM和CJS的default导出
-  return module.default || module;
-}
-
-/**
  * 按科目筛选题库
  * @param {string} subject - 科目名
  */
 export function getBanksBySubject(subject) {
-  return BANK_REGISTRY.filter((b) => b.subject === subject && isPracticeVisibleBank(b)).map(
-    ({ loader, ...meta }) => meta
-  );
+  return BANK_REGISTRY.filter((b) => b.subject === subject && isPracticeVisibleBank(b)).map((meta) => ({ ...meta }));
 }
 
 /**

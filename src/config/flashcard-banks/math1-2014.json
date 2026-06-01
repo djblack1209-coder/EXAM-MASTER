@@ -1,0 +1,1201 @@
+{
+  "id": "math1-2014",
+  "source": "math1-2014-paper-answer",
+  "paperId": "math1-2014",
+  "paperName": "2014考研数学一真题",
+  "subject": "数学",
+  "subjectKey": "math",
+  "track": "math1",
+  "year": "2014",
+  "quality": "ready",
+  "publicationStatus": "published",
+  "publicationBlockers": [],
+  "sourceEvidencePolicy": "baidu_netdisk_official_paper_pdf_question_crop_answer_page_image_v1",
+  "sourceFiles": [
+    {
+      "id": "math1-2014-paper-answer",
+      "role": "paper_answer",
+      "localPath": "data/raw-inbox/src_b80ef3ade03a332b3d41ae2a-2014数一考研真题及答案.pdf",
+      "sha256": "sha256:9d458e549bae83e6b4a2d9266fc2bdbd8c9e5057a8b22e396d5c79b3102d6b00",
+      "sourceId": "src_b80ef3ade03a332b3d41ae2a"
+    }
+  ],
+  "assetRoot": "question-bank/math1-2014",
+  "processed_at": "2026-05-31T02:48:45Z",
+  "total_cards": 23,
+  "cards": [
+    {
+      "id": "math1-2014-001",
+      "number": 1,
+      "paperId": "math1-2014",
+      "paperName": "2014考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2014",
+      "section": "选择题",
+      "type": "flashcard",
+      "question": "2014考研数学一第1题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2014 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2014/question-01.jpg",
+          "caption": "题面裁切图 q01",
+          "alt": "2014考研数学一题面裁切图 q01"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2014/answer-page-01.jpg",
+          "caption": "答案解析 p.1",
+          "alt": "2014考研数学一答案解析 p.1"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2014",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2014-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:a9f60d9c45f65415e48c20e7ba2b4a6c97e46c86bf425df9d7c07a4604bc9d88",
+      "answerTextHash": "sha256:f6335e8977ced096172680deb47d3c197da7774b472b4fe4ce3651e4656f09aa",
+      "sourceEvidence": {
+        "evidenceId": "math1-2014-q01",
+        "sourceId": "src_b80ef3ade03a332b3d41ae2a",
+        "answerSourceId": "src_b80ef3ade03a332b3d41ae2a",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2014-paper-answer",
+        "answerEvidenceId": "math1-2014-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:f6335e8977ced096172680deb47d3c197da7774b472b4fe4ce3651e4656f09aa"
+      }
+    },
+    {
+      "id": "math1-2014-002",
+      "number": 2,
+      "paperId": "math1-2014",
+      "paperName": "2014考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2014",
+      "section": "选择题",
+      "type": "flashcard",
+      "question": "2014考研数学一第2题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2014 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2014/question-02.jpg",
+          "caption": "题面裁切图 q02",
+          "alt": "2014考研数学一题面裁切图 q02"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2014/answer-page-01.jpg",
+          "caption": "答案解析 p.1",
+          "alt": "2014考研数学一答案解析 p.1"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2014",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2014-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:7dd3ec385f5763b4cf791227415ce22f36671b34649b0986eb382249dbe1eee9",
+      "answerTextHash": "sha256:ef6d5489e5a01fec1ec4bb9e6b4266e4057af244337145b922d948050679c07e",
+      "sourceEvidence": {
+        "evidenceId": "math1-2014-q02",
+        "sourceId": "src_b80ef3ade03a332b3d41ae2a",
+        "answerSourceId": "src_b80ef3ade03a332b3d41ae2a",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2014-paper-answer",
+        "answerEvidenceId": "math1-2014-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:ef6d5489e5a01fec1ec4bb9e6b4266e4057af244337145b922d948050679c07e"
+      }
+    },
+    {
+      "id": "math1-2014-003",
+      "number": 3,
+      "paperId": "math1-2014",
+      "paperName": "2014考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2014",
+      "section": "选择题",
+      "type": "flashcard",
+      "question": "2014考研数学一第3题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2014 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2014/question-03.jpg",
+          "caption": "题面裁切图 q03",
+          "alt": "2014考研数学一题面裁切图 q03"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2014/answer-page-01.jpg",
+          "caption": "答案解析 p.1",
+          "alt": "2014考研数学一答案解析 p.1"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2014",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2014-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:804d42c04477986b54488bbfe9cf7299c4fa15f16a0e2df14c9d3f40dd6c1309",
+      "answerTextHash": "sha256:eeb8f23963a55373792abcd7f5e7bf152df8a8573bd10989d302f7962035a04f",
+      "sourceEvidence": {
+        "evidenceId": "math1-2014-q03",
+        "sourceId": "src_b80ef3ade03a332b3d41ae2a",
+        "answerSourceId": "src_b80ef3ade03a332b3d41ae2a",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2014-paper-answer",
+        "answerEvidenceId": "math1-2014-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:eeb8f23963a55373792abcd7f5e7bf152df8a8573bd10989d302f7962035a04f"
+      }
+    },
+    {
+      "id": "math1-2014-004",
+      "number": 4,
+      "paperId": "math1-2014",
+      "paperName": "2014考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2014",
+      "section": "选择题",
+      "type": "flashcard",
+      "question": "2014考研数学一第4题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2014 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2014/question-04.jpg",
+          "caption": "题面裁切图 q04",
+          "alt": "2014考研数学一题面裁切图 q04"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2014/answer-page-02.jpg",
+          "caption": "答案解析 p.2",
+          "alt": "2014考研数学一答案解析 p.2"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2014",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2014-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:9383735d18cc1f32c3d134a03c0cb25e8728d933727181fe5873b344e9c04579",
+      "answerTextHash": "sha256:ea6b7035bde61a0fb21a8d4196db45fb2986b73187d0a84d810bab5409f63f7d",
+      "sourceEvidence": {
+        "evidenceId": "math1-2014-q04",
+        "sourceId": "src_b80ef3ade03a332b3d41ae2a",
+        "answerSourceId": "src_b80ef3ade03a332b3d41ae2a",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2014-paper-answer",
+        "answerEvidenceId": "math1-2014-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:ea6b7035bde61a0fb21a8d4196db45fb2986b73187d0a84d810bab5409f63f7d"
+      }
+    },
+    {
+      "id": "math1-2014-005",
+      "number": 5,
+      "paperId": "math1-2014",
+      "paperName": "2014考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2014",
+      "section": "选择题",
+      "type": "flashcard",
+      "question": "2014考研数学一第5题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2014 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2014/question-05.jpg",
+          "caption": "题面裁切图 q05",
+          "alt": "2014考研数学一题面裁切图 q05"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2014/answer-page-02.jpg",
+          "caption": "答案解析 p.2",
+          "alt": "2014考研数学一答案解析 p.2"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2014",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2014-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:63a2771acf74103654d56efcc6af235b1b9bd8bf8649cd71e3b4e8a984d5a658",
+      "answerTextHash": "sha256:7cd6122ff6ad5f4ed9210d1ae15379380ce2cd5f5ab3a3b9f0756d9b8d6dbe3f",
+      "sourceEvidence": {
+        "evidenceId": "math1-2014-q05",
+        "sourceId": "src_b80ef3ade03a332b3d41ae2a",
+        "answerSourceId": "src_b80ef3ade03a332b3d41ae2a",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2014-paper-answer",
+        "answerEvidenceId": "math1-2014-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:7cd6122ff6ad5f4ed9210d1ae15379380ce2cd5f5ab3a3b9f0756d9b8d6dbe3f"
+      }
+    },
+    {
+      "id": "math1-2014-006",
+      "number": 6,
+      "paperId": "math1-2014",
+      "paperName": "2014考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2014",
+      "section": "选择题",
+      "type": "flashcard",
+      "question": "2014考研数学一第6题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "完整答案与解析见答案原页。",
+      "explanation": "答案来自本地百度网盘 2014 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2014/question-06.jpg",
+          "caption": "题面裁切图 q06",
+          "alt": "2014考研数学一题面裁切图 q06"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2014/answer-page-03.jpg",
+          "caption": "答案解析 p.3",
+          "alt": "2014考研数学一答案解析 p.3"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2014",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2014-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:6b18632c2c22754cfb9cb59ee320dc884695b611d4b4debafbaf400beeda7f75",
+      "answerTextHash": "sha256:dc25a59546daa82284b8a85e8b8f68024da61e01a2e627c60bfaad2613ae7e1a",
+      "sourceEvidence": {
+        "evidenceId": "math1-2014-q06",
+        "sourceId": "src_b80ef3ade03a332b3d41ae2a",
+        "answerSourceId": "src_b80ef3ade03a332b3d41ae2a",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2014-paper-answer",
+        "answerEvidenceId": "math1-2014-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:dc25a59546daa82284b8a85e8b8f68024da61e01a2e627c60bfaad2613ae7e1a"
+      }
+    },
+    {
+      "id": "math1-2014-007",
+      "number": 7,
+      "paperId": "math1-2014",
+      "paperName": "2014考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2014",
+      "section": "选择题",
+      "type": "flashcard",
+      "question": "2014考研数学一第7题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "完整答案与解析见答案原页。",
+      "explanation": "答案来自本地百度网盘 2014 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2014/question-07.jpg",
+          "caption": "题面裁切图 q07",
+          "alt": "2014考研数学一题面裁切图 q07"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2014/answer-page-03.jpg",
+          "caption": "答案解析 p.3",
+          "alt": "2014考研数学一答案解析 p.3"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2014",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2014-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:a7ca9c91e9b5a07481401efe35cbee4a95e3e5b0a4a6504eb37cae07a55466a3",
+      "answerTextHash": "sha256:dc25a59546daa82284b8a85e8b8f68024da61e01a2e627c60bfaad2613ae7e1a",
+      "sourceEvidence": {
+        "evidenceId": "math1-2014-q07",
+        "sourceId": "src_b80ef3ade03a332b3d41ae2a",
+        "answerSourceId": "src_b80ef3ade03a332b3d41ae2a",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2014-paper-answer",
+        "answerEvidenceId": "math1-2014-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:dc25a59546daa82284b8a85e8b8f68024da61e01a2e627c60bfaad2613ae7e1a"
+      }
+    },
+    {
+      "id": "math1-2014-008",
+      "number": 8,
+      "paperId": "math1-2014",
+      "paperName": "2014考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2014",
+      "section": "选择题",
+      "type": "flashcard",
+      "question": "2014考研数学一第8题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "完整答案与解析见答案原页。",
+      "explanation": "答案来自本地百度网盘 2014 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2014/question-08.jpg",
+          "caption": "题面裁切图 q08",
+          "alt": "2014考研数学一题面裁切图 q08"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2014/answer-page-03.jpg",
+          "caption": "答案解析 p.3",
+          "alt": "2014考研数学一答案解析 p.3"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2014",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2014-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:a0e93e69e7329dc2929c0767bc906788bbe08253aa2c39de3ed6a9ac93d64410",
+      "answerTextHash": "sha256:dc25a59546daa82284b8a85e8b8f68024da61e01a2e627c60bfaad2613ae7e1a",
+      "sourceEvidence": {
+        "evidenceId": "math1-2014-q08",
+        "sourceId": "src_b80ef3ade03a332b3d41ae2a",
+        "answerSourceId": "src_b80ef3ade03a332b3d41ae2a",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2014-paper-answer",
+        "answerEvidenceId": "math1-2014-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:dc25a59546daa82284b8a85e8b8f68024da61e01a2e627c60bfaad2613ae7e1a"
+      }
+    },
+    {
+      "id": "math1-2014-009",
+      "number": 9,
+      "paperId": "math1-2014",
+      "paperName": "2014考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2014",
+      "section": "填空题",
+      "type": "flashcard",
+      "question": "2014考研数学一第9题（填空题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "填空题答案与解析见答案原页。",
+      "explanation": "答案来自本地百度网盘 2014 数学一真题答案解析 PDF；填空题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2014/question-09.jpg",
+          "caption": "题面裁切图 q09",
+          "alt": "2014考研数学一题面裁切图 q09"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2014/answer-page-04.jpg",
+          "caption": "答案解析 p.4",
+          "alt": "2014考研数学一答案解析 p.4"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2014",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2014-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:12d1ac733f654537808726ce65c9ae75f02d1bacdb5b82c9b835a53e8e4a45a2",
+      "answerTextHash": "sha256:58e7db98025ff317e7a33694edf4a827ab18a927387abe0e4e323e7571b2562b",
+      "sourceEvidence": {
+        "evidenceId": "math1-2014-q09",
+        "sourceId": "src_b80ef3ade03a332b3d41ae2a",
+        "answerSourceId": "src_b80ef3ade03a332b3d41ae2a",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2014-paper-answer",
+        "answerEvidenceId": "math1-2014-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:58e7db98025ff317e7a33694edf4a827ab18a927387abe0e4e323e7571b2562b"
+      }
+    },
+    {
+      "id": "math1-2014-010",
+      "number": 10,
+      "paperId": "math1-2014",
+      "paperName": "2014考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2014",
+      "section": "填空题",
+      "type": "flashcard",
+      "question": "2014考研数学一第10题（填空题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "填空题答案与解析见答案原页。",
+      "explanation": "答案来自本地百度网盘 2014 数学一真题答案解析 PDF；填空题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2014/question-10.jpg",
+          "caption": "题面裁切图 q10",
+          "alt": "2014考研数学一题面裁切图 q10"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2014/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2014考研数学一答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2014",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2014-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:3bed4f05e063ef0fcea1cc57663e1e8e40e7aa73242716032c64c4a4dc30c0a4",
+      "answerTextHash": "sha256:a0ba601d0de8a45f78a296c44a4aa8576d85572f0fa9c9c1e26f8fe03ce259de",
+      "sourceEvidence": {
+        "evidenceId": "math1-2014-q10",
+        "sourceId": "src_b80ef3ade03a332b3d41ae2a",
+        "answerSourceId": "src_b80ef3ade03a332b3d41ae2a",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2014-paper-answer",
+        "answerEvidenceId": "math1-2014-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:a0ba601d0de8a45f78a296c44a4aa8576d85572f0fa9c9c1e26f8fe03ce259de"
+      }
+    },
+    {
+      "id": "math1-2014-011",
+      "number": 11,
+      "paperId": "math1-2014",
+      "paperName": "2014考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2014",
+      "section": "填空题",
+      "type": "flashcard",
+      "question": "2014考研数学一第11题（填空题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "填空题答案与解析见答案原页。",
+      "explanation": "答案来自本地百度网盘 2014 数学一真题答案解析 PDF；填空题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2014/question-11.jpg",
+          "caption": "题面裁切图 q11",
+          "alt": "2014考研数学一题面裁切图 q11"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2014/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2014考研数学一答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2014",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2014-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:80d70c5336a2486334d0c9f553cf0e76b27825d2ca4e9c9eff78a9236a3a2c33",
+      "answerTextHash": "sha256:a0ba601d0de8a45f78a296c44a4aa8576d85572f0fa9c9c1e26f8fe03ce259de",
+      "sourceEvidence": {
+        "evidenceId": "math1-2014-q11",
+        "sourceId": "src_b80ef3ade03a332b3d41ae2a",
+        "answerSourceId": "src_b80ef3ade03a332b3d41ae2a",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2014-paper-answer",
+        "answerEvidenceId": "math1-2014-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:a0ba601d0de8a45f78a296c44a4aa8576d85572f0fa9c9c1e26f8fe03ce259de"
+      }
+    },
+    {
+      "id": "math1-2014-012",
+      "number": 12,
+      "paperId": "math1-2014",
+      "paperName": "2014考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2014",
+      "section": "填空题",
+      "type": "flashcard",
+      "question": "2014考研数学一第12题（填空题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "填空题答案与解析见答案原页。",
+      "explanation": "答案来自本地百度网盘 2014 数学一真题答案解析 PDF；填空题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2014/question-12.jpg",
+          "caption": "题面裁切图 q12",
+          "alt": "2014考研数学一题面裁切图 q12"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2014/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2014考研数学一答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2014",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2014-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:77f513dc582753369dfdc24bfd1812abfdb34749bd697ce36eed11dcc32f1087",
+      "answerTextHash": "sha256:a0ba601d0de8a45f78a296c44a4aa8576d85572f0fa9c9c1e26f8fe03ce259de",
+      "sourceEvidence": {
+        "evidenceId": "math1-2014-q12",
+        "sourceId": "src_b80ef3ade03a332b3d41ae2a",
+        "answerSourceId": "src_b80ef3ade03a332b3d41ae2a",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2014-paper-answer",
+        "answerEvidenceId": "math1-2014-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:a0ba601d0de8a45f78a296c44a4aa8576d85572f0fa9c9c1e26f8fe03ce259de"
+      }
+    },
+    {
+      "id": "math1-2014-013",
+      "number": 13,
+      "paperId": "math1-2014",
+      "paperName": "2014考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2014",
+      "section": "填空题",
+      "type": "flashcard",
+      "question": "2014考研数学一第13题（填空题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "填空题答案与解析见答案原页。",
+      "explanation": "答案来自本地百度网盘 2014 数学一真题答案解析 PDF；填空题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2014/question-13.jpg",
+          "caption": "题面裁切图 q13",
+          "alt": "2014考研数学一题面裁切图 q13"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2014/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2014考研数学一答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2014",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2014-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:09fa35b7dbae11c95c757815857115c6f023ca3e902a3f9c36271c7367080e07",
+      "answerTextHash": "sha256:623aa66b150a69b05aedfe840b9efb5c2213853ecb80fecb90be93c7ebdeb214",
+      "sourceEvidence": {
+        "evidenceId": "math1-2014-q13",
+        "sourceId": "src_b80ef3ade03a332b3d41ae2a",
+        "answerSourceId": "src_b80ef3ade03a332b3d41ae2a",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2014-paper-answer",
+        "answerEvidenceId": "math1-2014-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:623aa66b150a69b05aedfe840b9efb5c2213853ecb80fecb90be93c7ebdeb214"
+      }
+    },
+    {
+      "id": "math1-2014-014",
+      "number": 14,
+      "paperId": "math1-2014",
+      "paperName": "2014考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2014",
+      "section": "填空题",
+      "type": "flashcard",
+      "question": "2014考研数学一第14题（填空题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "填空题答案与解析见答案原页。",
+      "explanation": "答案来自本地百度网盘 2014 数学一真题答案解析 PDF；填空题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2014/question-14.jpg",
+          "caption": "题面裁切图 q14",
+          "alt": "2014考研数学一题面裁切图 q14"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2014/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2014考研数学一答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2014",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2014-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:e683745475ae654ab3b105ef07f32907993d1ff6b6fce51f811f1344ee9c8a23",
+      "answerTextHash": "sha256:623aa66b150a69b05aedfe840b9efb5c2213853ecb80fecb90be93c7ebdeb214",
+      "sourceEvidence": {
+        "evidenceId": "math1-2014-q14",
+        "sourceId": "src_b80ef3ade03a332b3d41ae2a",
+        "answerSourceId": "src_b80ef3ade03a332b3d41ae2a",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2014-paper-answer",
+        "answerEvidenceId": "math1-2014-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:623aa66b150a69b05aedfe840b9efb5c2213853ecb80fecb90be93c7ebdeb214"
+      }
+    },
+    {
+      "id": "math1-2014-015",
+      "number": 15,
+      "paperId": "math1-2014",
+      "paperName": "2014考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2014",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2014考研数学一第15题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "解答题完整演算、证明或推导过程见答案原页。",
+      "explanation": "答案来自本地百度网盘 2014 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2014/question-15.jpg",
+          "caption": "题面裁切图 q15",
+          "alt": "2014考研数学一题面裁切图 q15"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2014/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2014考研数学一答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2014",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2014-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:9155a7f15b7011ae9ef6755a1c616b43b87be445974c6404b91604f24cab3718",
+      "answerTextHash": "sha256:b9071119bb02ace73f4a2fd4fdce70e567c3810f5d185174e685b5f7d1834c2e",
+      "sourceEvidence": {
+        "evidenceId": "math1-2014-q15",
+        "sourceId": "src_b80ef3ade03a332b3d41ae2a",
+        "answerSourceId": "src_b80ef3ade03a332b3d41ae2a",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2014-paper-answer",
+        "answerEvidenceId": "math1-2014-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:b9071119bb02ace73f4a2fd4fdce70e567c3810f5d185174e685b5f7d1834c2e"
+      }
+    },
+    {
+      "id": "math1-2014-016",
+      "number": 16,
+      "paperId": "math1-2014",
+      "paperName": "2014考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2014",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2014考研数学一第16题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "解答题完整演算、证明或推导过程见答案原页。",
+      "explanation": "答案来自本地百度网盘 2014 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2014/question-16.jpg",
+          "caption": "题面裁切图 q16",
+          "alt": "2014考研数学一题面裁切图 q16"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2014/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2014考研数学一答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2014",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2014-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:64a60d961d90f17847b38926419c8facc0f93557c84a27cc6e9995690b39c186",
+      "answerTextHash": "sha256:b9071119bb02ace73f4a2fd4fdce70e567c3810f5d185174e685b5f7d1834c2e",
+      "sourceEvidence": {
+        "evidenceId": "math1-2014-q16",
+        "sourceId": "src_b80ef3ade03a332b3d41ae2a",
+        "answerSourceId": "src_b80ef3ade03a332b3d41ae2a",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2014-paper-answer",
+        "answerEvidenceId": "math1-2014-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:b9071119bb02ace73f4a2fd4fdce70e567c3810f5d185174e685b5f7d1834c2e"
+      }
+    },
+    {
+      "id": "math1-2014-017",
+      "number": 17,
+      "paperId": "math1-2014",
+      "paperName": "2014考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2014",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2014考研数学一第17题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "解答题完整演算、证明或推导过程见答案原页。",
+      "explanation": "答案来自本地百度网盘 2014 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2014/question-17.jpg",
+          "caption": "题面裁切图 q17",
+          "alt": "2014考研数学一题面裁切图 q17"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2014/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2014考研数学一答案解析 p.8"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2014",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2014-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:b4858bb4ff74536a4fa0ceb1416c2d65589916ee17badc8fcc3557e2c966f355",
+      "answerTextHash": "sha256:8267e216aabe86bdadcdaf7ef805d5f696de5e810b062971b8166a58a2ef5c72",
+      "sourceEvidence": {
+        "evidenceId": "math1-2014-q17",
+        "sourceId": "src_b80ef3ade03a332b3d41ae2a",
+        "answerSourceId": "src_b80ef3ade03a332b3d41ae2a",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2014-paper-answer",
+        "answerEvidenceId": "math1-2014-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:8267e216aabe86bdadcdaf7ef805d5f696de5e810b062971b8166a58a2ef5c72"
+      }
+    },
+    {
+      "id": "math1-2014-018",
+      "number": 18,
+      "paperId": "math1-2014",
+      "paperName": "2014考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2014",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2014考研数学一第18题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "解答题完整演算、证明或推导过程见答案原页。",
+      "explanation": "答案来自本地百度网盘 2014 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2014/question-18.jpg",
+          "caption": "题面裁切图 q18",
+          "alt": "2014考研数学一题面裁切图 q18"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2014/answer-page-09.jpg",
+          "caption": "答案解析 p.9",
+          "alt": "2014考研数学一答案解析 p.9"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2014",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2014-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:d38dff3d79bf1afb2b1bf08c2831d2cdf883557ea288c860c0143c157c9145f0",
+      "answerTextHash": "sha256:dff905b74383334bbda37448eaec568294f1b6ad9aff2005357ad27c4bfc66c9",
+      "sourceEvidence": {
+        "evidenceId": "math1-2014-q18",
+        "sourceId": "src_b80ef3ade03a332b3d41ae2a",
+        "answerSourceId": "src_b80ef3ade03a332b3d41ae2a",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2014-paper-answer",
+        "answerEvidenceId": "math1-2014-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:dff905b74383334bbda37448eaec568294f1b6ad9aff2005357ad27c4bfc66c9"
+      }
+    },
+    {
+      "id": "math1-2014-019",
+      "number": 19,
+      "paperId": "math1-2014",
+      "paperName": "2014考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2014",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2014考研数学一第19题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "解答题完整演算、证明或推导过程见答案原页。",
+      "explanation": "答案来自本地百度网盘 2014 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2014/question-19.jpg",
+          "caption": "题面裁切图 q19",
+          "alt": "2014考研数学一题面裁切图 q19"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2014/answer-page-09.jpg",
+          "caption": "答案解析 p.9",
+          "alt": "2014考研数学一答案解析 p.9"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2014",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2014-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:fbda1f92335dd71bf2e9b6248a425ffc7c759b08ad4f05d3f90d32a96eb3ecdd",
+      "answerTextHash": "sha256:dff905b74383334bbda37448eaec568294f1b6ad9aff2005357ad27c4bfc66c9",
+      "sourceEvidence": {
+        "evidenceId": "math1-2014-q19",
+        "sourceId": "src_b80ef3ade03a332b3d41ae2a",
+        "answerSourceId": "src_b80ef3ade03a332b3d41ae2a",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2014-paper-answer",
+        "answerEvidenceId": "math1-2014-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:dff905b74383334bbda37448eaec568294f1b6ad9aff2005357ad27c4bfc66c9"
+      }
+    },
+    {
+      "id": "math1-2014-020",
+      "number": 20,
+      "paperId": "math1-2014",
+      "paperName": "2014考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2014",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2014考研数学一第20题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "解答题完整演算、证明或推导过程见答案原页。",
+      "explanation": "答案来自本地百度网盘 2014 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2014/question-20.jpg",
+          "caption": "题面裁切图 q20",
+          "alt": "2014考研数学一题面裁切图 q20"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2014/answer-page-10.jpg",
+          "caption": "答案解析 p.10",
+          "alt": "2014考研数学一答案解析 p.10"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2014",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2014-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:7b2dd22b75b91a0fe5d6b7091524fb44072e3391b9c7499fcd99a600bcc895de",
+      "answerTextHash": "sha256:feac111251a272c201f36ec721e2f72dfa81e880e12ebe97cc06e762b2bb3956",
+      "sourceEvidence": {
+        "evidenceId": "math1-2014-q20",
+        "sourceId": "src_b80ef3ade03a332b3d41ae2a",
+        "answerSourceId": "src_b80ef3ade03a332b3d41ae2a",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2014-paper-answer",
+        "answerEvidenceId": "math1-2014-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:feac111251a272c201f36ec721e2f72dfa81e880e12ebe97cc06e762b2bb3956"
+      }
+    },
+    {
+      "id": "math1-2014-021",
+      "number": 21,
+      "paperId": "math1-2014",
+      "paperName": "2014考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2014",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2014考研数学一第21题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "解答题完整演算、证明或推导过程见答案原页。",
+      "explanation": "答案来自本地百度网盘 2014 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2014/question-21.jpg",
+          "caption": "题面裁切图 q21",
+          "alt": "2014考研数学一题面裁切图 q21"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2014/answer-page-11.jpg",
+          "caption": "答案解析 p.11",
+          "alt": "2014考研数学一答案解析 p.11"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2014",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2014-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:1d2342bc94f187008e7635370314da7171bbbda8602785d2d15ff29fb63016fb",
+      "answerTextHash": "sha256:fec6767cd52ea1974536ce76a309129161f0a83f8547b0597c881ebbc0c7ab6f",
+      "sourceEvidence": {
+        "evidenceId": "math1-2014-q21",
+        "sourceId": "src_b80ef3ade03a332b3d41ae2a",
+        "answerSourceId": "src_b80ef3ade03a332b3d41ae2a",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2014-paper-answer",
+        "answerEvidenceId": "math1-2014-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:fec6767cd52ea1974536ce76a309129161f0a83f8547b0597c881ebbc0c7ab6f"
+      }
+    },
+    {
+      "id": "math1-2014-022",
+      "number": 22,
+      "paperId": "math1-2014",
+      "paperName": "2014考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2014",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2014考研数学一第22题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "解答题完整演算、证明或推导过程见答案原页。",
+      "explanation": "答案来自本地百度网盘 2014 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2014/question-22.jpg",
+          "caption": "题面裁切图 q22",
+          "alt": "2014考研数学一题面裁切图 q22"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2014/answer-page-11.jpg",
+          "caption": "答案解析 p.11",
+          "alt": "2014考研数学一答案解析 p.11"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2014",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2014-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:fa3e83726a19a2ae760f37ec5e083be607cfbe7ef697a9b52b1f161deb1c539e",
+      "answerTextHash": "sha256:fec6767cd52ea1974536ce76a309129161f0a83f8547b0597c881ebbc0c7ab6f",
+      "sourceEvidence": {
+        "evidenceId": "math1-2014-q22",
+        "sourceId": "src_b80ef3ade03a332b3d41ae2a",
+        "answerSourceId": "src_b80ef3ade03a332b3d41ae2a",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2014-paper-answer",
+        "answerEvidenceId": "math1-2014-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:fec6767cd52ea1974536ce76a309129161f0a83f8547b0597c881ebbc0c7ab6f"
+      }
+    },
+    {
+      "id": "math1-2014-023",
+      "number": 23,
+      "paperId": "math1-2014",
+      "paperName": "2014考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2014",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2014考研数学一第23题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "解答题完整演算、证明或推导过程见答案原页。",
+      "explanation": "答案来自本地百度网盘 2014 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2014/question-23.jpg",
+          "caption": "题面裁切图 q23",
+          "alt": "2014考研数学一题面裁切图 q23"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2014/answer-page-12.jpg",
+          "caption": "答案解析 p.12",
+          "alt": "2014考研数学一答案解析 p.12"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2014",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2014-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:fc55cb6a8dd393c25765090b56005b83d917187e73d6654837444866888938c3",
+      "answerTextHash": "sha256:7abc6ede57ce6d6e4cca0fdd3dbd8a492c2d01e08de6ec79fe51212b6287f0f5",
+      "sourceEvidence": {
+        "evidenceId": "math1-2014-q23",
+        "sourceId": "src_b80ef3ade03a332b3d41ae2a",
+        "answerSourceId": "src_b80ef3ade03a332b3d41ae2a",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2014-paper-answer",
+        "answerEvidenceId": "math1-2014-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:7abc6ede57ce6d6e4cca0fdd3dbd8a492c2d01e08de6ec79fe51212b6287f0f5"
+      }
+    }
+  ]
+}

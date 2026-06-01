@@ -43,7 +43,7 @@ describe('question bank public-course year map', () => {
     });
 
     const math1 = tracks.find((track) => track.id === 'math1');
-    expect(math1.slotSummary).toEqual({ total: 22, ready: 1, organizing: 0, missing: 21 });
+    expect(math1.slotSummary).toEqual({ total: 22, ready: 11, organizing: 0, missing: 11 });
     expect(math1.yearSlots.find((slot) => slot.year === '2025')).toMatchObject({
       bankId: 'math1-2025',
       status: 'ready',
@@ -51,9 +51,18 @@ describe('question bank public-course year map', () => {
       actionLabel: '开始',
       clickable: true
     });
+    for (const year of ['2008', '2009', '2010', '2011', '2012', '2013', '2014', '2015', '2016', '2017']) {
+      expect(math1.yearSlots.find((slot) => slot.year === year)).toMatchObject({
+        bankId: `math1-${year}`,
+        status: 'ready',
+        statusLabel: '正式',
+        actionLabel: '开始',
+        clickable: true
+      });
+    }
 
     const math2 = tracks.find((track) => track.id === 'math2');
-    expect(math2.slotSummary).toEqual({ total: 22, ready: 1, organizing: 0, missing: 21 });
+    expect(math2.slotSummary).toEqual({ total: 22, ready: 11, organizing: 0, missing: 11 });
     expect(math2.yearSlots.find((slot) => slot.year === '2025')).toMatchObject({
       bankId: 'math2-2025',
       status: 'ready',
@@ -61,9 +70,18 @@ describe('question bank public-course year map', () => {
       actionLabel: '开始',
       clickable: true
     });
+    for (const year of ['2005', '2006', '2007', '2008', '2009', '2010', '2011', '2012', '2013', '2014']) {
+      expect(math2.yearSlots.find((slot) => slot.year === year)).toMatchObject({
+        bankId: `math2-${year}`,
+        status: 'ready',
+        statusLabel: '正式',
+        actionLabel: '开始',
+        clickable: true
+      });
+    }
 
     const math3 = tracks.find((track) => track.id === 'math3');
-    expect(math3.slotSummary).toEqual({ total: 22, ready: 4, organizing: 0, missing: 18 });
+    expect(math3.slotSummary).toEqual({ total: 22, ready: 10, organizing: 0, missing: 12 });
     expect(math3.yearSlots.find((slot) => slot.year === '2025')).toMatchObject({
       bankId: 'math3-2025',
       status: 'ready',
@@ -92,6 +110,15 @@ describe('question bank public-course year map', () => {
       actionLabel: '开始',
       clickable: true
     });
+    for (const year of ['2008', '2009', '2010', '2011', '2012', '2013']) {
+      expect(math3.yearSlots.find((slot) => slot.year === year)).toMatchObject({
+        bankId: `math3-${year}`,
+        status: 'ready',
+        statusLabel: '正式',
+        actionLabel: '开始',
+        clickable: true
+      });
+    }
   });
 
   it('defaults a track with a verified bank to its newest ready slot', async () => {
@@ -260,7 +287,7 @@ describe('question bank public-course year map', () => {
     expect(wrapper.text()).toContain('正式');
     expect(wrapper.text()).toContain('0');
     expect(wrapper.text()).toContain('整理中');
-    expect(wrapper.text()).toContain('正式 11 · 整理中 0 · 待入库 11');
+    expect(wrapper.text()).toContain('正式 14 · 整理中 0 · 待入库 8');
 
     wrapper.unmount();
   });

@@ -1081,6 +1081,19 @@ function buildWechatDevtoolsSmokeItems(wechatSmoke) {
   const sampleStep = blockedSteps[0] || null;
   const isMissing = !wechatSmoke;
   const errorText = String(sampleStep?.error || '').trim();
+  const diagnosticCode = String(sampleStep?.code || '').trim();
+  let nextAction =
+    '重新构建 mp-weixin 后运行 npm run smoke:wechat:devtools；若页面断言失败，按失败步骤修复小程序可用性。';
+  if (diagnosticCode === 'wechat_devtools_login_required' || /需要重新登录|login required|login\s*false/i.test(errorText)) {
+    nextAction = '重新登录微信开发者工具，确认 CLI islogin=true 后重新运行 npm run smoke:wechat:devtools。';
+  } else if (errorText.includes('listen EPERM')) {
+    nextAction = '当前执行环境禁止本地端口监听；在允许 WeChat DevTools 自动化端口的本机环境重新运行 npm run smoke:wechat:devtools。';
+  } else if (
+    diagnosticCode === 'wechat_devtools_automation_port_unavailable' ||
+    /http port is open|Failed connecting to ws|Port .* is in use/i.test(errorText)
+  ) {
+    nextAction = '开启微信开发者工具服务端口/自动化能力，必要时重启 DevTools 后重新运行 npm run smoke:wechat:devtools。';
+  }
 
   return [
     createItem({
@@ -1091,9 +1104,7 @@ function buildWechatDevtoolsSmokeItems(wechatSmoke) {
         ? '缺少 WeChat DevTools 自动化 smoke 报告'
         : `WeChat DevTools 自动化 smoke 未通过${sampleStep?.name ? `: ${sampleStep.name}` : ''}`,
       count: blockedSteps.length || 1,
-      nextAction: errorText.includes('listen EPERM')
-        ? '当前执行环境禁止本地端口监听；在允许 WeChat DevTools 自动化端口的本机环境重新运行 npm run smoke:wechat:devtools。'
-        : '重新构建 mp-weixin 后运行 npm run smoke:wechat:devtools；若页面断言失败，按失败步骤修复小程序可用性。',
+      nextAction,
       evidence: {
         status: wechatSmoke?.status || 'missing',
         startedAt: wechatSmoke?.startedAt || '',

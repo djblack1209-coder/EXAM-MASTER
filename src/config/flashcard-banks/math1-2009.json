@@ -1,0 +1,1211 @@
+{
+  "id": "math1-2009",
+  "source": "math1-2009-paper-answer",
+  "paperId": "math1-2009",
+  "paperName": "2009考研数学一真题",
+  "subject": "数学",
+  "subjectKey": "math",
+  "track": "math1",
+  "year": "2009",
+  "quality": "ready",
+  "publicationStatus": "published",
+  "publicationBlockers": [],
+  "sourceEvidencePolicy": "baidu_netdisk_official_paper_pdf_question_crop_answer_page_image_v1",
+  "sourceFiles": [
+    {
+      "id": "math1-2009-paper-answer",
+      "role": "paper_answer",
+      "localPath": "data/raw-inbox/src_bc3eff652947c7daeed22cce-2009数一真题、标准答案及解析.pdf",
+      "sha256": "sha256:f48079b90806b6a20b63b276584b003b3ea0541fb4a75dad95451ab955c2bfb8",
+      "sourceId": "src_bc3eff652947c7daeed22cce"
+    }
+  ],
+  "assetRoot": "question-bank/math1-2009",
+  "processed_at": "2026-05-31T02:46:49Z",
+  "total_cards": 23,
+  "cards": [
+    {
+      "id": "math1-2009-001",
+      "number": 1,
+      "paperId": "math1-2009",
+      "paperName": "2009考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2009",
+      "section": "选择题",
+      "type": "flashcard",
+      "question": "2009考研数学一第1题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2009 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2009/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2009考研数学一试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2009/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2009考研数学一答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2009",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:6756b70248410243d8b7264d3be4dc873652899528178014632dafd5001df388",
+      "answerTextHash": "sha256:4209b11a0436dfb93acf2c09f66665ad24b609a48058f6de76eacd161bca58d7",
+      "sourceEvidence": {
+        "evidenceId": "math1-2009-q01",
+        "sourceId": "src_bc3eff652947c7daeed22cce",
+        "answerSourceId": "src_bc3eff652947c7daeed22cce",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2009-paper-answer",
+        "answerEvidenceId": "math1-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:4209b11a0436dfb93acf2c09f66665ad24b609a48058f6de76eacd161bca58d7"
+      }
+    },
+    {
+      "id": "math1-2009-002",
+      "number": 2,
+      "paperId": "math1-2009",
+      "paperName": "2009考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2009",
+      "section": "选择题",
+      "type": "flashcard",
+      "question": "2009考研数学一第2题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2009 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2009/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2009考研数学一试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2009/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2009考研数学一答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2009",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:0fe393741adc2f154f1a2568d155e2789b39c9d57e0640791e88439d88573f57",
+      "answerTextHash": "sha256:4209b11a0436dfb93acf2c09f66665ad24b609a48058f6de76eacd161bca58d7",
+      "sourceEvidence": {
+        "evidenceId": "math1-2009-q02",
+        "sourceId": "src_bc3eff652947c7daeed22cce",
+        "answerSourceId": "src_bc3eff652947c7daeed22cce",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2009-paper-answer",
+        "answerEvidenceId": "math1-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:4209b11a0436dfb93acf2c09f66665ad24b609a48058f6de76eacd161bca58d7"
+      }
+    },
+    {
+      "id": "math1-2009-003",
+      "number": 3,
+      "paperId": "math1-2009",
+      "paperName": "2009考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2009",
+      "section": "选择题",
+      "type": "flashcard",
+      "question": "2009考研数学一第3题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2009 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2009/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2009考研数学一试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2009/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2009考研数学一答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2009",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:27be618ebb3e17e58bf7e436361d703017d36a2a1f5d823e81b461b4ac280951",
+      "answerTextHash": "sha256:e4a2fe781d79b6ac0d0a57fdf6fcbe5f0bd7d1dfefea384e35b54f195a6a4c7c",
+      "sourceEvidence": {
+        "evidenceId": "math1-2009-q03",
+        "sourceId": "src_bc3eff652947c7daeed22cce",
+        "answerSourceId": "src_bc3eff652947c7daeed22cce",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2009-paper-answer",
+        "answerEvidenceId": "math1-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:e4a2fe781d79b6ac0d0a57fdf6fcbe5f0bd7d1dfefea384e35b54f195a6a4c7c"
+      }
+    },
+    {
+      "id": "math1-2009-004",
+      "number": 4,
+      "paperId": "math1-2009",
+      "paperName": "2009考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2009",
+      "section": "选择题",
+      "type": "flashcard",
+      "question": "2009考研数学一第4题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2009 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2009/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2009考研数学一试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2009/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2009考研数学一答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2009",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:70ec87301375763532381f97a0a84759f4e7462773157d49518f6b0def6aa854",
+      "answerTextHash": "sha256:57a82881eeed7a34ffe62ec67b4dcffe86f24c0f80e15ddfe649b20cefa30efe",
+      "sourceEvidence": {
+        "evidenceId": "math1-2009-q04",
+        "sourceId": "src_bc3eff652947c7daeed22cce",
+        "answerSourceId": "src_bc3eff652947c7daeed22cce",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2009-paper-answer",
+        "answerEvidenceId": "math1-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:57a82881eeed7a34ffe62ec67b4dcffe86f24c0f80e15ddfe649b20cefa30efe"
+      }
+    },
+    {
+      "id": "math1-2009-005",
+      "number": 5,
+      "paperId": "math1-2009",
+      "paperName": "2009考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2009",
+      "section": "选择题",
+      "type": "flashcard",
+      "question": "2009考研数学一第5题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2009 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2009/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2009考研数学一试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2009/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2009考研数学一答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2009",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:9a94914941ad9e77a4e8fcb62dbec431199c55ba14f11f7da59be153bdeb0f8a",
+      "answerTextHash": "sha256:48a655724228f727dcd7f827c2a466e9941da8c76ac17f8df2a224b305cd0de5",
+      "sourceEvidence": {
+        "evidenceId": "math1-2009-q05",
+        "sourceId": "src_bc3eff652947c7daeed22cce",
+        "answerSourceId": "src_bc3eff652947c7daeed22cce",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2009-paper-answer",
+        "answerEvidenceId": "math1-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:48a655724228f727dcd7f827c2a466e9941da8c76ac17f8df2a224b305cd0de5"
+      }
+    },
+    {
+      "id": "math1-2009-006",
+      "number": 6,
+      "paperId": "math1-2009",
+      "paperName": "2009考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2009",
+      "section": "选择题",
+      "type": "flashcard",
+      "question": "2009考研数学一第6题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2009 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2009/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2009考研数学一试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2009/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2009考研数学一答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2009",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:db7443703d4003d2aeb508346a1c625a3315d72d18bb406e0acbb39f06a499e1",
+      "answerTextHash": "sha256:48a655724228f727dcd7f827c2a466e9941da8c76ac17f8df2a224b305cd0de5",
+      "sourceEvidence": {
+        "evidenceId": "math1-2009-q06",
+        "sourceId": "src_bc3eff652947c7daeed22cce",
+        "answerSourceId": "src_bc3eff652947c7daeed22cce",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2009-paper-answer",
+        "answerEvidenceId": "math1-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:48a655724228f727dcd7f827c2a466e9941da8c76ac17f8df2a224b305cd0de5"
+      }
+    },
+    {
+      "id": "math1-2009-007",
+      "number": 7,
+      "paperId": "math1-2009",
+      "paperName": "2009考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2009",
+      "section": "选择题",
+      "type": "flashcard",
+      "question": "2009考研数学一第7题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2009 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2009/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2009考研数学一试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2009/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2009考研数学一答案解析 p.8"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2009",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:9c26a880cbcd53c07a7153b406cccd87a3e12436cc663cf0a934664763ccafe7",
+      "answerTextHash": "sha256:97479da34231cef66231b63ccb1b2f4ab9c0878a6968e94ab9a2ec3b7e6371d9",
+      "sourceEvidence": {
+        "evidenceId": "math1-2009-q07",
+        "sourceId": "src_bc3eff652947c7daeed22cce",
+        "answerSourceId": "src_bc3eff652947c7daeed22cce",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2009-paper-answer",
+        "answerEvidenceId": "math1-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:97479da34231cef66231b63ccb1b2f4ab9c0878a6968e94ab9a2ec3b7e6371d9"
+      }
+    },
+    {
+      "id": "math1-2009-008",
+      "number": 8,
+      "paperId": "math1-2009",
+      "paperName": "2009考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2009",
+      "section": "选择题",
+      "type": "flashcard",
+      "question": "2009考研数学一第8题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2009 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2009/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2009考研数学一试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2009/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2009考研数学一答案解析 p.8"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2009",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:7daac628ee2c8b539b83f121df7a8440e7e109ce30a256cb515d84169efe5f7e",
+      "answerTextHash": "sha256:97479da34231cef66231b63ccb1b2f4ab9c0878a6968e94ab9a2ec3b7e6371d9",
+      "sourceEvidence": {
+        "evidenceId": "math1-2009-q08",
+        "sourceId": "src_bc3eff652947c7daeed22cce",
+        "answerSourceId": "src_bc3eff652947c7daeed22cce",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2009-paper-answer",
+        "answerEvidenceId": "math1-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:97479da34231cef66231b63ccb1b2f4ab9c0878a6968e94ab9a2ec3b7e6371d9"
+      }
+    },
+    {
+      "id": "math1-2009-009",
+      "number": 9,
+      "paperId": "math1-2009",
+      "paperName": "2009考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2009",
+      "section": "填空题",
+      "type": "flashcard",
+      "question": "2009考研数学一第9题（填空题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "填空题答案与解析见答案原页。",
+      "explanation": "答案来自本地百度网盘 2009 数学一真题答案解析 PDF；填空题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2009/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2009考研数学一试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2009/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2009考研数学一答案解析 p.8"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2009",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:701f6793c8ac3224f3a74aaec949b32101e515ac0838696cccb34ff7d8dbf5c7",
+      "answerTextHash": "sha256:1a375e7e03d859d5d6e29cb5c66c9ed2045bfa06745c844944e1abf0c60616d6",
+      "sourceEvidence": {
+        "evidenceId": "math1-2009-q09",
+        "sourceId": "src_bc3eff652947c7daeed22cce",
+        "answerSourceId": "src_bc3eff652947c7daeed22cce",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2009-paper-answer",
+        "answerEvidenceId": "math1-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:1a375e7e03d859d5d6e29cb5c66c9ed2045bfa06745c844944e1abf0c60616d6"
+      }
+    },
+    {
+      "id": "math1-2009-010",
+      "number": 10,
+      "paperId": "math1-2009",
+      "paperName": "2009考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2009",
+      "section": "填空题",
+      "type": "flashcard",
+      "question": "2009考研数学一第10题（填空题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "填空题答案与解析见答案原页。",
+      "explanation": "答案来自本地百度网盘 2009 数学一真题答案解析 PDF；填空题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2009/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2009考研数学一试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2009/answer-page-09.jpg",
+          "caption": "答案解析 p.9",
+          "alt": "2009考研数学一答案解析 p.9"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2009",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:8ceda6338293a8d7ad69c1d3ced86ee9b601269d65dae18d9ba69d8c3a5c063a",
+      "answerTextHash": "sha256:0c7c22fa6ff09d4f5f7bf8f7124915dd4208150d4a22c2e921ad58903ba69617",
+      "sourceEvidence": {
+        "evidenceId": "math1-2009-q10",
+        "sourceId": "src_bc3eff652947c7daeed22cce",
+        "answerSourceId": "src_bc3eff652947c7daeed22cce",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2009-paper-answer",
+        "answerEvidenceId": "math1-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:0c7c22fa6ff09d4f5f7bf8f7124915dd4208150d4a22c2e921ad58903ba69617"
+      }
+    },
+    {
+      "id": "math1-2009-011",
+      "number": 11,
+      "paperId": "math1-2009",
+      "paperName": "2009考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2009",
+      "section": "填空题",
+      "type": "flashcard",
+      "question": "2009考研数学一第11题（填空题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "填空题答案与解析见答案原页。",
+      "explanation": "答案来自本地百度网盘 2009 数学一真题答案解析 PDF；填空题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2009/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2009考研数学一试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2009/answer-page-09.jpg",
+          "caption": "答案解析 p.9",
+          "alt": "2009考研数学一答案解析 p.9"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2009",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:df1c16066f9247d5c1cedb6f871809479f0298f3e67ed5a65c8f10b17838eba3",
+      "answerTextHash": "sha256:0c7c22fa6ff09d4f5f7bf8f7124915dd4208150d4a22c2e921ad58903ba69617",
+      "sourceEvidence": {
+        "evidenceId": "math1-2009-q11",
+        "sourceId": "src_bc3eff652947c7daeed22cce",
+        "answerSourceId": "src_bc3eff652947c7daeed22cce",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2009-paper-answer",
+        "answerEvidenceId": "math1-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:0c7c22fa6ff09d4f5f7bf8f7124915dd4208150d4a22c2e921ad58903ba69617"
+      }
+    },
+    {
+      "id": "math1-2009-012",
+      "number": 12,
+      "paperId": "math1-2009",
+      "paperName": "2009考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2009",
+      "section": "填空题",
+      "type": "flashcard",
+      "question": "2009考研数学一第12题（填空题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "填空题答案与解析见答案原页。",
+      "explanation": "答案来自本地百度网盘 2009 数学一真题答案解析 PDF；填空题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2009/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2009考研数学一试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2009/answer-page-10.jpg",
+          "caption": "答案解析 p.10",
+          "alt": "2009考研数学一答案解析 p.10"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2009",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:eebe45da1d90216375b43c47e289ad0c8449a1241e25b427ad77259391e18541",
+      "answerTextHash": "sha256:4619861e2e22cc845ad9c8013fcd90a3681695c658b45dfee85a796fa7246472",
+      "sourceEvidence": {
+        "evidenceId": "math1-2009-q12",
+        "sourceId": "src_bc3eff652947c7daeed22cce",
+        "answerSourceId": "src_bc3eff652947c7daeed22cce",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2009-paper-answer",
+        "answerEvidenceId": "math1-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:4619861e2e22cc845ad9c8013fcd90a3681695c658b45dfee85a796fa7246472"
+      }
+    },
+    {
+      "id": "math1-2009-013",
+      "number": 13,
+      "paperId": "math1-2009",
+      "paperName": "2009考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2009",
+      "section": "填空题",
+      "type": "flashcard",
+      "question": "2009考研数学一第13题（填空题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "填空题答案与解析见答案原页。",
+      "explanation": "答案来自本地百度网盘 2009 数学一真题答案解析 PDF；填空题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2009/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2009考研数学一试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2009/answer-page-10.jpg",
+          "caption": "答案解析 p.10",
+          "alt": "2009考研数学一答案解析 p.10"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2009",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:0d162024546d57f99d1b794271723a72ba7ae81008504d50a3d4d0b57804ea9b",
+      "answerTextHash": "sha256:4619861e2e22cc845ad9c8013fcd90a3681695c658b45dfee85a796fa7246472",
+      "sourceEvidence": {
+        "evidenceId": "math1-2009-q13",
+        "sourceId": "src_bc3eff652947c7daeed22cce",
+        "answerSourceId": "src_bc3eff652947c7daeed22cce",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2009-paper-answer",
+        "answerEvidenceId": "math1-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:4619861e2e22cc845ad9c8013fcd90a3681695c658b45dfee85a796fa7246472"
+      }
+    },
+    {
+      "id": "math1-2009-014",
+      "number": 14,
+      "paperId": "math1-2009",
+      "paperName": "2009考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2009",
+      "section": "填空题",
+      "type": "flashcard",
+      "question": "2009考研数学一第14题（填空题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "填空题答案与解析见答案原页。",
+      "explanation": "答案来自本地百度网盘 2009 数学一真题答案解析 PDF；填空题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2009/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2009考研数学一试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2009/answer-page-13.jpg",
+          "caption": "答案解析 p.13",
+          "alt": "2009考研数学一答案解析 p.13"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2009",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:a06b670ecfd617f51a8e35218d1f7604d97bc575c3f58a89adf5256c21820cd5",
+      "answerTextHash": "sha256:9f95cf494d4dc4c3d00481ac2b40c98d75c6ef7ccf1e8599e5683b70a9f9470a",
+      "sourceEvidence": {
+        "evidenceId": "math1-2009-q14",
+        "sourceId": "src_bc3eff652947c7daeed22cce",
+        "answerSourceId": "src_bc3eff652947c7daeed22cce",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2009-paper-answer",
+        "answerEvidenceId": "math1-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:9f95cf494d4dc4c3d00481ac2b40c98d75c6ef7ccf1e8599e5683b70a9f9470a"
+      }
+    },
+    {
+      "id": "math1-2009-015",
+      "number": 15,
+      "paperId": "math1-2009",
+      "paperName": "2009考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2009",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2009考研数学一第15题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "解答题完整演算、证明或推导过程见答案原页。",
+      "explanation": "答案来自本地百度网盘 2009 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2009/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2009考研数学一试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2009/answer-page-14.jpg",
+          "caption": "答案解析 p.14",
+          "alt": "2009考研数学一答案解析 p.14"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2009",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:d0ae4c4f16a3acaf34d97e0f8010f5fc0dd2d4c06afa3dbd484ecca588cd8e86",
+      "answerTextHash": "sha256:558b91e96cbb29940e4c643ae551f9a9ce5a414cf41e7b3cc79fc50e2e5eb638",
+      "sourceEvidence": {
+        "evidenceId": "math1-2009-q15",
+        "sourceId": "src_bc3eff652947c7daeed22cce",
+        "answerSourceId": "src_bc3eff652947c7daeed22cce",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2009-paper-answer",
+        "answerEvidenceId": "math1-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:558b91e96cbb29940e4c643ae551f9a9ce5a414cf41e7b3cc79fc50e2e5eb638"
+      }
+    },
+    {
+      "id": "math1-2009-016",
+      "number": 16,
+      "paperId": "math1-2009",
+      "paperName": "2009考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2009",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2009考研数学一第16题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "解答题完整演算、证明或推导过程见答案原页。",
+      "explanation": "答案来自本地百度网盘 2009 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2009/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2009考研数学一试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2009/answer-page-14.jpg",
+          "caption": "答案解析 p.14",
+          "alt": "2009考研数学一答案解析 p.14"
+        },
+        {
+          "src": "question-bank/math1-2009/answer-page-15.jpg",
+          "caption": "答案解析 p.15",
+          "alt": "2009考研数学一答案解析 p.15"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2009",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:fc1d1c008d6807790a6c5e5bd0af19c84462181671bb36433a59d3e7f07bfc23",
+      "answerTextHash": "sha256:edc7f1542fec672f579472ee62ae267bbeb87573f2700f9fface928e27f6cb18",
+      "sourceEvidence": {
+        "evidenceId": "math1-2009-q16",
+        "sourceId": "src_bc3eff652947c7daeed22cce",
+        "answerSourceId": "src_bc3eff652947c7daeed22cce",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2009-paper-answer",
+        "answerEvidenceId": "math1-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:edc7f1542fec672f579472ee62ae267bbeb87573f2700f9fface928e27f6cb18"
+      }
+    },
+    {
+      "id": "math1-2009-017",
+      "number": 17,
+      "paperId": "math1-2009",
+      "paperName": "2009考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2009",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2009考研数学一第17题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "解答题完整演算、证明或推导过程见答案原页。",
+      "explanation": "答案来自本地百度网盘 2009 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2009/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2009考研数学一试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2009/answer-page-15.jpg",
+          "caption": "答案解析 p.15",
+          "alt": "2009考研数学一答案解析 p.15"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2009",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:d84d60ccb3deb6b4e2bf5741b5f7d897f7268e82fe73174da405658b4418f3d4",
+      "answerTextHash": "sha256:655009c50ff12c4ed8f3e1b705874999199b47de6851723c56fd0fbfebb52216",
+      "sourceEvidence": {
+        "evidenceId": "math1-2009-q17",
+        "sourceId": "src_bc3eff652947c7daeed22cce",
+        "answerSourceId": "src_bc3eff652947c7daeed22cce",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2009-paper-answer",
+        "answerEvidenceId": "math1-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:655009c50ff12c4ed8f3e1b705874999199b47de6851723c56fd0fbfebb52216"
+      }
+    },
+    {
+      "id": "math1-2009-018",
+      "number": 18,
+      "paperId": "math1-2009",
+      "paperName": "2009考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2009",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2009考研数学一第18题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "解答题完整演算、证明或推导过程见答案原页。",
+      "explanation": "答案来自本地百度网盘 2009 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2009/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2009考研数学一试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2009/answer-page-16.jpg",
+          "caption": "答案解析 p.16",
+          "alt": "2009考研数学一答案解析 p.16"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2009",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:a36778cd6a5595758c3a7f617a892bce912e81996df4f028427ef1e949a2a1bb",
+      "answerTextHash": "sha256:5aa671f1b34b3eeeb97819e9a48adc49e46373fe2bcfc404fcdd08a30672aeae",
+      "sourceEvidence": {
+        "evidenceId": "math1-2009-q18",
+        "sourceId": "src_bc3eff652947c7daeed22cce",
+        "answerSourceId": "src_bc3eff652947c7daeed22cce",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2009-paper-answer",
+        "answerEvidenceId": "math1-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:5aa671f1b34b3eeeb97819e9a48adc49e46373fe2bcfc404fcdd08a30672aeae"
+      }
+    },
+    {
+      "id": "math1-2009-019",
+      "number": 19,
+      "paperId": "math1-2009",
+      "paperName": "2009考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2009",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2009考研数学一第19题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "解答题完整演算、证明或推导过程见答案原页。",
+      "explanation": "答案来自本地百度网盘 2009 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2009/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2009考研数学一试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2009/answer-page-16.jpg",
+          "caption": "答案解析 p.16",
+          "alt": "2009考研数学一答案解析 p.16"
+        },
+        {
+          "src": "question-bank/math1-2009/answer-page-17.jpg",
+          "caption": "答案解析 p.17",
+          "alt": "2009考研数学一答案解析 p.17"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2009",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:f49114d5be9d2d06b71b589d688f48a6a371803e911a78137aa072e84153539b",
+      "answerTextHash": "sha256:a6447f597b17dbeab5ce6a78930fd2678c277dfbbfdc147a4dc15f252b0d9025",
+      "sourceEvidence": {
+        "evidenceId": "math1-2009-q19",
+        "sourceId": "src_bc3eff652947c7daeed22cce",
+        "answerSourceId": "src_bc3eff652947c7daeed22cce",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2009-paper-answer",
+        "answerEvidenceId": "math1-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:a6447f597b17dbeab5ce6a78930fd2678c277dfbbfdc147a4dc15f252b0d9025"
+      }
+    },
+    {
+      "id": "math1-2009-020",
+      "number": 20,
+      "paperId": "math1-2009",
+      "paperName": "2009考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2009",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2009考研数学一第20题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "解答题完整演算、证明或推导过程见答案原页。",
+      "explanation": "答案来自本地百度网盘 2009 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2009/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2009考研数学一试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2009/answer-page-17.jpg",
+          "caption": "答案解析 p.17",
+          "alt": "2009考研数学一答案解析 p.17"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2009",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:f18563e64a8ab72900e4877283b8a241a43cffb9fa72334c60cdfb45fb1ddeae",
+      "answerTextHash": "sha256:d1162325d510db572bdbfdf4959e7ecc8a6fe6459b8dfcdae783346c585f9c58",
+      "sourceEvidence": {
+        "evidenceId": "math1-2009-q20",
+        "sourceId": "src_bc3eff652947c7daeed22cce",
+        "answerSourceId": "src_bc3eff652947c7daeed22cce",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2009-paper-answer",
+        "answerEvidenceId": "math1-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:d1162325d510db572bdbfdf4959e7ecc8a6fe6459b8dfcdae783346c585f9c58"
+      }
+    },
+    {
+      "id": "math1-2009-021",
+      "number": 21,
+      "paperId": "math1-2009",
+      "paperName": "2009考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2009",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2009考研数学一第21题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "解答题完整演算、证明或推导过程见答案原页。",
+      "explanation": "答案来自本地百度网盘 2009 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2009/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2009考研数学一试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2009/answer-page-18.jpg",
+          "caption": "答案解析 p.18",
+          "alt": "2009考研数学一答案解析 p.18"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2009",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:34bdd826d7aae185e9f2768c873008f214f70d7b36692fe60194177baf3b84f4",
+      "answerTextHash": "sha256:a51f521bb26903fd8d1b299d7c9f095f5633bad41e1484cc1d8fd51d5ee80b74",
+      "sourceEvidence": {
+        "evidenceId": "math1-2009-q21",
+        "sourceId": "src_bc3eff652947c7daeed22cce",
+        "answerSourceId": "src_bc3eff652947c7daeed22cce",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2009-paper-answer",
+        "answerEvidenceId": "math1-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:a51f521bb26903fd8d1b299d7c9f095f5633bad41e1484cc1d8fd51d5ee80b74"
+      }
+    },
+    {
+      "id": "math1-2009-022",
+      "number": 22,
+      "paperId": "math1-2009",
+      "paperName": "2009考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2009",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2009考研数学一第22题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "解答题完整演算、证明或推导过程见答案原页。",
+      "explanation": "答案来自本地百度网盘 2009 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2009/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2009考研数学一试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2009/answer-page-18.jpg",
+          "caption": "答案解析 p.18",
+          "alt": "2009考研数学一答案解析 p.18"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2009",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:742899295de37b544933470270116e4449d54fecc6570fa8b048f51ec15373ce",
+      "answerTextHash": "sha256:a51f521bb26903fd8d1b299d7c9f095f5633bad41e1484cc1d8fd51d5ee80b74",
+      "sourceEvidence": {
+        "evidenceId": "math1-2009-q22",
+        "sourceId": "src_bc3eff652947c7daeed22cce",
+        "answerSourceId": "src_bc3eff652947c7daeed22cce",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2009-paper-answer",
+        "answerEvidenceId": "math1-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:a51f521bb26903fd8d1b299d7c9f095f5633bad41e1484cc1d8fd51d5ee80b74"
+      }
+    },
+    {
+      "id": "math1-2009-023",
+      "number": 23,
+      "paperId": "math1-2009",
+      "paperName": "2009考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2009",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2009考研数学一第23题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "解答题完整演算、证明或推导过程见答案原页。",
+      "explanation": "答案来自本地百度网盘 2009 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2009/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2009考研数学一试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2009/answer-page-19.jpg",
+          "caption": "答案解析 p.19",
+          "alt": "2009考研数学一答案解析 p.19"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2009",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2009-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:a96bd6fe07009435a5b08faf47eff81cfb0ec602e9328190d699e598adb9f840",
+      "answerTextHash": "sha256:b0f0f32dcbdfe607483697843cbb079e8b8eee41a32ec5b765ec61f145c74d13",
+      "sourceEvidence": {
+        "evidenceId": "math1-2009-q23",
+        "sourceId": "src_bc3eff652947c7daeed22cce",
+        "answerSourceId": "src_bc3eff652947c7daeed22cce",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2009-paper-answer",
+        "answerEvidenceId": "math1-2009-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:b0f0f32dcbdfe607483697843cbb079e8b8eee41a32ec5b765ec61f145c74d13"
+      }
+    }
+  ]
+}

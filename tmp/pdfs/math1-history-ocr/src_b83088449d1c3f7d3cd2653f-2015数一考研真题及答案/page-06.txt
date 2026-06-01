@@ -1,0 +1,28 @@
+oreran 2 t4y, 4 ctx
+x     本
+(a a)
+f(xy) ax ty tay (x.y) snerbioe gradf = | 2, AF |=(1+y%1+
+(4 y) =x Fy Hey O49)   wea, |
+f(xy £ (xy ORAM EHH AMR ERMA HM, RKM ARM HM
+gradt |= (Ty) (x)
+STDULMONE RRM F (x,y) =(1+x)? +(1 Fy)? keh © rx? ty? t xy —3 ReMi
+Ra IROE
+SLOG 多和=人+ HC yy F200 Fy? Hay -3)
+fr,’ a2q1 +x) s2en+y2 <0
+NEM OF," <2 ty) +2yatxa =0 ，得几个可能的模值点(11 1, -1)2, 1) 1,2)
+Ud ty! tay 3
+进行比较，可得，在点”=2,y = Shy = 2 外，方向导数取到最大, WB = 3
+18. (Amy 1 分)
+G4) i ule), v(x) ON, AIRTEL (UME) xjv(x) +utxjwa +
+(2) ABE u(x) ube) Mey (2) ATE, F(x) 一册(x)uu(x) Hug). all (x) HARB.
+CHEE CEH Ry = ULE)
+Ay = u(x * Ax)v(x + 4x) —u(x)v(x)
+U(x faxvx + AK) — Ulex A) FUL) x +3) -utxvtz
+= Suv(x * 4x) u(x) av
+ay _ du            Au
+这 AU x + ax) tux) Ae
+=  reall   x) = u(x) i
+由导数的定义和可导与连续的关系
+a            a
+= jy SE =m Svea 3) ra和-utovoo HUD
+(2) F(x) = u(x) (x) Hua)

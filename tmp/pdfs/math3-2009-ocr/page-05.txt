@@ -1,0 +1,45 @@
+Cs anki                      人和和信                      和二大
+x x
+《1) 函数 f(x) = 二一的可去间断点的个数为
+sin xx
+(A)          (B)2.        (C)3.            (D) 无穷多个
+[答案】 C
+【解析]
+x  x
+fc之一 -
+| simx
+WU X取任何整数时，。 (x HISEREL
+故人 (x )的间断点有无穷多个，但可去同断点为极限存在的点，故应是        x—x’ =0 the
+X29 =0,21
+x-x"     1-3x 4
+tim 之 -lim 一一 -一
+xsin XXX六邢COSTXX T
+xx-x 1-3x 2
+Im 一一 -im 一一 -二
+xsin XX "$ TCosTx 克
+et     1-3x" 2
+lim —— =lim ——— =—
+Sisinax %'nCosax a
+故可去间断点为”3个，即 0, £1
+《2) 4x3 OM f(x) =x -sin ax与 g(x) =x? In(1—bx) 是等价无穷小 则
+(A) a =1， § aed      (8) a=1, b=
+6                   6
+(cya =-1, peat       (oy a=, b=t,
+6                   6
+【答案】 A
+【解析】 f (x) =x -sinax,g(x) =x’In(1—bx) ASHE.
+
+,                 2
+ti £29 -im -sinax -im X-sinax洛jn TACOS, jy 2° 8iNAK
+8 g(x) Px? In(1—bx) 8 x” (bx) =F bx” =P -6bx
+
+a’ sin ax   a
+=lim ——— == =1 :ar =-6b 故排除(B)、(C
+im,    aE     a     故排除 (B)、(C)
+一ax
+a
+另外 tim 1=29°88% 存在， eer 1-acosax 0(x3 O)Ka=1. # (©).
+< -3bx
+所以本题选 (A)
+ss
+Cs mii                    人六和和                    0

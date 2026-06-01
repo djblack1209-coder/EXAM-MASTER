@@ -20,9 +20,9 @@ const PROGRESS_EXPIRE_TIME = 24 * 60 * 60 * 1000;
 let saveDebounceTimer = null;
 const DEBOUNCE_DELAY = 500;
 
-export function saveQuizProgress(progress, immediate = false) {
+export function saveQuizProgress(progress, immediate = false, context = null) {
   if (immediate) {
-    return doSaveProgress(progress);
+    return doSaveProgress(progress, context);
   }
 
   if (saveDebounceTimer) {
@@ -30,15 +30,16 @@ export function saveQuizProgress(progress, immediate = false) {
   }
 
   saveDebounceTimer = setTimeout(() => {
-    doSaveProgress(progress);
+    doSaveProgress(progress, context);
     saveDebounceTimer = null;
   }, DEBOUNCE_DELAY);
 
   return true;
 }
 
-function doSaveProgress(progress) {
+function doSaveProgress(progress, context = null) {
   try {
+    const normalizedContext = normalizeProgressContext(context);
     const data = {
       currentIndex: progress.currentIndex || 0,
       userChoice: progress.userChoice,
@@ -46,8 +47,11 @@ function doSaveProgress(progress) {
       seconds: progress.seconds || 0,
       aiComment: progress.aiComment || '',
       answeredQuestions: progress.answeredQuestions || [],
+      questions: Array.isArray(progress.questions) ? progress.questions : undefined,
+      context: normalizedContext,
+      contextKey: normalizedContext ? buildProgressContextKey(normalizedContext) : '',
       savedAt: Date.now(),
-      version: '1.0.0'
+      version: '1.1.0'
     };
 
     storageService.save(QUIZ_PROGRESS_KEY, data);
@@ -56,7 +60,8 @@ function doSaveProgress(progress) {
     logger.log('[QuizAutoSave] 进度已保存:', {
       currentIndex: data.currentIndex,
       seconds: data.seconds,
-      answeredCount: data.answeredQuestions.length
+      answeredCount: data.answeredQuestions.length,
+      contextKey: data.contextKey
     });
 
     return true;
@@ -66,7 +71,7 @@ function doSaveProgress(progress) {
   }
 }
 
-export function loadQuizProgress() {
+export function loadQuizProgress(context = null) {
   try {
     const dataRaw = storageService.get(QUIZ_PROGRESS_KEY);
     const timestampStr = storageService.get(QUIZ_PROGRESS_TIMESTAMP_KEY);
@@ -93,6 +98,11 @@ export function loadQuizProgress() {
     if (!isValidProgressData(data)) {
       logger.warn('[QuizAutoSave] 进度数据结构无效，清除损坏数据');
       clearQuizProgress();
+      return null;
+    }
+
+    if (!isProgressContextMatch(data, context)) {
+      logger.log('[QuizAutoSave] 存档上下文不匹配，跳过恢复');
       return null;
     }
 
@@ -127,13 +137,13 @@ export function clearQuizProgress() {
   }
 }
 
-export function hasUnfinishedProgress() {
-  const progress = loadQuizProgress();
+export function hasUnfinishedProgress(context = null) {
+  const progress = loadQuizProgress(context);
   return progress !== null && progress.currentIndex > 0;
 }
 
-export function getProgressSummary() {
-  const progress = loadQuizProgress();
+export function getProgressSummary(context = null) {
+  const progress = loadQuizProgress(context);
   if (!progress) return null;
 
   const savedAt = new Date(progress.savedAt);
@@ -153,6 +163,7 @@ export function getProgressSummary() {
   return {
     currentIndex: progress.currentIndex,
     answeredCount: progress.answeredQuestions?.length || 0,
+    totalQuestions: Array.isArray(progress.questions) ? progress.questions.length : 0,
     seconds: progress.seconds,
     timeAgo,
     formattedTime: formatSeconds(progress.seconds)
@@ -171,7 +182,52 @@ function isValidProgressData(data) {
   if (typeof data.seconds !== 'number') return false;
   if (!Array.isArray(data.answeredQuestions)) return false;
   if (typeof data.hasAnswered !== 'boolean') return false;
+  if (data.questions !== undefined && !Array.isArray(data.questions)) return false;
   return true;
+}
+
+function normalizeProgressContext(context) {
+  if (!context || typeof context !== 'object') return null;
+  const normalized = {};
+  const copyString = (key) => {
+    const value = context[key];
+    if (value !== undefined && value !== null && String(value) !== '') {
+      normalized[key] = String(value);
+    }
+  };
+
+  copyString('mode');
+  copyString('paperId');
+  copyString('questionBankFingerprint');
+
+  if (Array.isArray(context.questionIds)) {
+    normalized.questionIds = context.questionIds.map((id) => String(id || '')).filter(Boolean);
+  }
+
+  return Object.keys(normalized).length > 0 ? normalized : null;
+}
+
+function buildProgressContextKey(context) {
+  const normalized = normalizeProgressContext(context);
+  if (!normalized) return '';
+  return JSON.stringify({
+    mode: normalized.mode || '',
+    paperId: normalized.paperId || '',
+    questionBankFingerprint: normalized.questionBankFingerprint || '',
+    questionIds: normalized.questionIds || []
+  });
+}
+
+function isProgressContextMatch(progress, context) {
+  const expectedContext = normalizeProgressContext(context);
+  if (!expectedContext) return true;
+
+  const expectedKey = buildProgressContextKey(expectedContext);
+  if (!progress.contextKey) {
+    return false;
+  }
+
+  return progress.contextKey === expectedKey;
 }
 
 export function useQuizAutoSave() {

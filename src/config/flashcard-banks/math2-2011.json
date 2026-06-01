@@ -1,0 +1,1382 @@
+{
+  "id": "math2-2011",
+  "source": "math2-2011-paper-answer",
+  "paperId": "math2-2011",
+  "paperName": "2011考研数学二真题",
+  "subject": "数学",
+  "subjectKey": "math",
+  "track": "math2",
+  "year": "2011",
+  "quality": "ready",
+  "publicationStatus": "published",
+  "publicationBlockers": [],
+  "sourceEvidencePolicy": "baidu_netdisk_official_paper_pdf_page_image_v1",
+  "sourceFiles": [
+    {
+      "id": "math2-2011-paper-answer",
+      "role": "paper_answer",
+      "localPath": "data/raw-inbox/public-course-history/math2/2011/2011-math2-paper-answer.pdf",
+      "sha256": "sha256:75f255f93ddbfc2e1c4173654c7ecb30bf27b25d467cc0d7d772cb569902beca",
+      "sourceId": "src_2f348d63b16be6d23121eb78"
+    }
+  ],
+  "assetRoot": "question-bank/math2-2011",
+  "processed_at": "2026-05-30T21:52:36Z",
+  "total_cards": 23,
+  "cards": [
+    {
+      "id": "math2-2011-001",
+      "number": 1,
+      "paperId": "math2-2011",
+      "paperName": "2011考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2011",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2011考研数学二第1题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2011 数学二真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2011/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2011考研数学二试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2011/answer-page-01.jpg",
+          "caption": "答案解析 p.1",
+          "alt": "2011考研数学二答案解析 p.1"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2011",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2011-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:746d32d513201f62dcba66458db7734984c49b29b2c97f5ed5005b8fb6f71d59",
+      "answerTextHash": "sha256:01370fce298cb459b7c797138d9e825fda2e23c11e9e9249e65268241d053ce7",
+      "sourceEvidence": {
+        "evidenceId": "math2-2011-q01",
+        "sourceId": "src_2f348d63b16be6d23121eb78",
+        "answerSourceId": "src_2f348d63b16be6d23121eb78",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2011-paper-answer",
+        "answerEvidenceId": "math2-2011-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:01370fce298cb459b7c797138d9e825fda2e23c11e9e9249e65268241d053ce7"
+      }
+    },
+    {
+      "id": "math2-2011-002",
+      "number": 2,
+      "paperId": "math2-2011",
+      "paperName": "2011考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2011",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2011考研数学二第2题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2011 数学二真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2011/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2011考研数学二试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2011/answer-page-01.jpg",
+          "caption": "答案解析 p.1",
+          "alt": "2011考研数学二答案解析 p.1"
+        },
+        {
+          "src": "question-bank/math2-2011/answer-page-02.jpg",
+          "caption": "答案解析 p.2",
+          "alt": "2011考研数学二答案解析 p.2"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2011",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2011-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:6655d9aa86ff748337105b85a59dcc13d8c8e9dfb19bb6aac51d2d1a96af172e",
+      "answerTextHash": "sha256:6bb6d285bcddf9e1642b1bde9da8cf4525d80d7400efb1f8be4241eef32cd377",
+      "sourceEvidence": {
+        "evidenceId": "math2-2011-q02",
+        "sourceId": "src_2f348d63b16be6d23121eb78",
+        "answerSourceId": "src_2f348d63b16be6d23121eb78",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2011-paper-answer",
+        "answerEvidenceId": "math2-2011-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:6bb6d285bcddf9e1642b1bde9da8cf4525d80d7400efb1f8be4241eef32cd377"
+      }
+    },
+    {
+      "id": "math2-2011-003",
+      "number": 3,
+      "paperId": "math2-2011",
+      "paperName": "2011考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2011",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2011考研数学二第3题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2011 数学二真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2011/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2011考研数学二试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2011/answer-page-02.jpg",
+          "caption": "答案解析 p.2",
+          "alt": "2011考研数学二答案解析 p.2"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2011",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2011-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:eebc67db0b6d194bc86063882a9332eaadcba7a5ebcdd8c154dcc208c2a3b5b0",
+      "answerTextHash": "sha256:cad57386346f62bee6aa00d160f80730cc923b804fff53afdd1c61b5181c7a0b",
+      "sourceEvidence": {
+        "evidenceId": "math2-2011-q03",
+        "sourceId": "src_2f348d63b16be6d23121eb78",
+        "answerSourceId": "src_2f348d63b16be6d23121eb78",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2011-paper-answer",
+        "answerEvidenceId": "math2-2011-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:cad57386346f62bee6aa00d160f80730cc923b804fff53afdd1c61b5181c7a0b"
+      }
+    },
+    {
+      "id": "math2-2011-004",
+      "number": 4,
+      "paperId": "math2-2011",
+      "paperName": "2011考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2011",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2011考研数学二第4题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2011 数学二真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2011/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2011考研数学二试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2011/answer-page-02.jpg",
+          "caption": "答案解析 p.2",
+          "alt": "2011考研数学二答案解析 p.2"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2011",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2011-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:ece48d31cd6d4f723eeab67b1b3e97f4b2354923fdee0c9c8afc0f8f9cca986e",
+      "answerTextHash": "sha256:cad57386346f62bee6aa00d160f80730cc923b804fff53afdd1c61b5181c7a0b",
+      "sourceEvidence": {
+        "evidenceId": "math2-2011-q04",
+        "sourceId": "src_2f348d63b16be6d23121eb78",
+        "answerSourceId": "src_2f348d63b16be6d23121eb78",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2011-paper-answer",
+        "answerEvidenceId": "math2-2011-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:cad57386346f62bee6aa00d160f80730cc923b804fff53afdd1c61b5181c7a0b"
+      }
+    },
+    {
+      "id": "math2-2011-005",
+      "number": 5,
+      "paperId": "math2-2011",
+      "paperName": "2011考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2011",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2011考研数学二第5题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2011 数学二真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2011/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2011考研数学二试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2011/answer-page-02.jpg",
+          "caption": "答案解析 p.2",
+          "alt": "2011考研数学二答案解析 p.2"
+        },
+        {
+          "src": "question-bank/math2-2011/answer-page-03.jpg",
+          "caption": "答案解析 p.3",
+          "alt": "2011考研数学二答案解析 p.3"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2011",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2011-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:9fbcea8d4cb8b1ca538840fa2ccedb6f6065d5e32b3540af2778702cbe5f0781",
+      "answerTextHash": "sha256:0b1ecad589f058c49d83955fb25e522f05e4b8c21eda2a5e382e3023d4876c53",
+      "sourceEvidence": {
+        "evidenceId": "math2-2011-q05",
+        "sourceId": "src_2f348d63b16be6d23121eb78",
+        "answerSourceId": "src_2f348d63b16be6d23121eb78",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2011-paper-answer",
+        "answerEvidenceId": "math2-2011-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:0b1ecad589f058c49d83955fb25e522f05e4b8c21eda2a5e382e3023d4876c53"
+      }
+    },
+    {
+      "id": "math2-2011-006",
+      "number": 6,
+      "paperId": "math2-2011",
+      "paperName": "2011考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2011",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2011考研数学二第6题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2011 数学二真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2011/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2011考研数学二试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2011/answer-page-03.jpg",
+          "caption": "答案解析 p.3",
+          "alt": "2011考研数学二答案解析 p.3"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2011",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2011-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:cd9d7a7ee8a7f167a3a5e984517071bf5583c889f03333efd32861dbfa469ee2",
+      "answerTextHash": "sha256:1fcf9d558765341a30341480a7d24f877bc9966886f3ab2accbd71cffa0f1b38",
+      "sourceEvidence": {
+        "evidenceId": "math2-2011-q06",
+        "sourceId": "src_2f348d63b16be6d23121eb78",
+        "answerSourceId": "src_2f348d63b16be6d23121eb78",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2011-paper-answer",
+        "answerEvidenceId": "math2-2011-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:1fcf9d558765341a30341480a7d24f877bc9966886f3ab2accbd71cffa0f1b38"
+      }
+    },
+    {
+      "id": "math2-2011-007",
+      "number": 7,
+      "paperId": "math2-2011",
+      "paperName": "2011考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2011",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2011考研数学二第7题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2011 数学二真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2011/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2011考研数学二试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2011/answer-page-03.jpg",
+          "caption": "答案解析 p.3",
+          "alt": "2011考研数学二答案解析 p.3"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2011",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2011-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:29cc8ecb9b5216b56349b49fa946a85a83ab99b7c795be440f4a104324c89e9f",
+      "answerTextHash": "sha256:d637b5249be391a9a0cef957e8d809d0203bcfb6b4872f45e530441f455f7bc1",
+      "sourceEvidence": {
+        "evidenceId": "math2-2011-q07",
+        "sourceId": "src_2f348d63b16be6d23121eb78",
+        "answerSourceId": "src_2f348d63b16be6d23121eb78",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2011-paper-answer",
+        "answerEvidenceId": "math2-2011-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:d637b5249be391a9a0cef957e8d809d0203bcfb6b4872f45e530441f455f7bc1"
+      }
+    },
+    {
+      "id": "math2-2011-008",
+      "number": 8,
+      "paperId": "math2-2011",
+      "paperName": "2011考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2011",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2011考研数学二第8题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2011 数学二真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2011/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2011考研数学二试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2011/answer-page-03.jpg",
+          "caption": "答案解析 p.3",
+          "alt": "2011考研数学二答案解析 p.3"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2011",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2011-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:05aeb3a8ea06750ba894a22fe7b9541c68915e06b4faa887aa60046368b764ac",
+      "answerTextHash": "sha256:d637b5249be391a9a0cef957e8d809d0203bcfb6b4872f45e530441f455f7bc1",
+      "sourceEvidence": {
+        "evidenceId": "math2-2011-q08",
+        "sourceId": "src_2f348d63b16be6d23121eb78",
+        "answerSourceId": "src_2f348d63b16be6d23121eb78",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2011-paper-answer",
+        "answerEvidenceId": "math2-2011-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:d637b5249be391a9a0cef957e8d809d0203bcfb6b4872f45e530441f455f7bc1"
+      }
+    },
+    {
+      "id": "math2-2011-009",
+      "number": 9,
+      "paperId": "math2-2011",
+      "paperName": "2011考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2011",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2011考研数学二第9题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "sqrt(2)",
+      "explanation": "答案来自本地百度网盘 2011 数学二真题及解析 PDF；完整题干和公式见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2011/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2011考研数学二试卷原页 p.3"
+        },
+        {
+          "src": "question-bank/math2-2011/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2011考研数学二试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2011/answer-page-03.jpg",
+          "caption": "答案解析 p.3",
+          "alt": "2011考研数学二答案解析 p.3"
+        },
+        {
+          "src": "question-bank/math2-2011/answer-page-04.jpg",
+          "caption": "答案解析 p.4",
+          "alt": "2011考研数学二答案解析 p.4"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2011",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2011-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:c532e0f35872ce84711ad32c9955509d0119a47343acc81c8635f61e8af71589",
+      "answerTextHash": "sha256:b2932843ff85f2785f737e2dea9d83b995cff6ae6c7449f95d60c5d58d2a81ce",
+      "sourceEvidence": {
+        "evidenceId": "math2-2011-q09",
+        "sourceId": "src_2f348d63b16be6d23121eb78",
+        "answerSourceId": "src_2f348d63b16be6d23121eb78",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2011-paper-answer",
+        "answerEvidenceId": "math2-2011-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:b2932843ff85f2785f737e2dea9d83b995cff6ae6c7449f95d60c5d58d2a81ce"
+      }
+    },
+    {
+      "id": "math2-2011-010",
+      "number": 10,
+      "paperId": "math2-2011",
+      "paperName": "2011考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2011",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2011考研数学二第10题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "e^(-x) sin x",
+      "explanation": "答案来自本地百度网盘 2011 数学二真题及解析 PDF；完整题干和公式见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2011/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2011考研数学二试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2011/answer-page-04.jpg",
+          "caption": "答案解析 p.4",
+          "alt": "2011考研数学二答案解析 p.4"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2011",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2011-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:1c9ec919ae6595885bbff5c6d8553cfa6662747be8d877162070ea1ece1096a2",
+      "answerTextHash": "sha256:f51a191f754bdbffc8ccf5b732a40a1c83448c85f416a700d99ce65cad2f98d8",
+      "sourceEvidence": {
+        "evidenceId": "math2-2011-q10",
+        "sourceId": "src_2f348d63b16be6d23121eb78",
+        "answerSourceId": "src_2f348d63b16be6d23121eb78",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2011-paper-answer",
+        "answerEvidenceId": "math2-2011-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:f51a191f754bdbffc8ccf5b732a40a1c83448c85f416a700d99ce65cad2f98d8"
+      }
+    },
+    {
+      "id": "math2-2011-011",
+      "number": 11,
+      "paperId": "math2-2011",
+      "paperName": "2011考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2011",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2011考研数学二第11题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "ln(sqrt(2) + 1)",
+      "explanation": "答案来自本地百度网盘 2011 数学二真题及解析 PDF；完整题干和公式见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2011/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2011考研数学二试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2011/answer-page-04.jpg",
+          "caption": "答案解析 p.4",
+          "alt": "2011考研数学二答案解析 p.4"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2011",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2011-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:14d106cbb061c6c1ea03953113a12a79970d62ce4617d09ff69d704a8b8351e5",
+      "answerTextHash": "sha256:3c81abcffdb69d71eb6cf9ce80171bc1fff7e0f2d4e742850a2bbd1f528aef09",
+      "sourceEvidence": {
+        "evidenceId": "math2-2011-q11",
+        "sourceId": "src_2f348d63b16be6d23121eb78",
+        "answerSourceId": "src_2f348d63b16be6d23121eb78",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2011-paper-answer",
+        "answerEvidenceId": "math2-2011-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:3c81abcffdb69d71eb6cf9ce80171bc1fff7e0f2d4e742850a2bbd1f528aef09"
+      }
+    },
+    {
+      "id": "math2-2011-012",
+      "number": 12,
+      "paperId": "math2-2011",
+      "paperName": "2011考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2011",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2011考研数学二第12题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "1/lambda",
+      "explanation": "答案来自本地百度网盘 2011 数学二真题及解析 PDF；完整题干和公式见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2011/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2011考研数学二试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2011/answer-page-04.jpg",
+          "caption": "答案解析 p.4",
+          "alt": "2011考研数学二答案解析 p.4"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2011",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2011-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:5c4bb47992aaa624e7fd19509c3c1febfaff20b830d4590dc6fdcfb07dd80f2c",
+      "answerTextHash": "sha256:1e63bc1da4164c072eee1a0549f8d7c6c97463e48a387a0f8bbf61a50bf099c8",
+      "sourceEvidence": {
+        "evidenceId": "math2-2011-q12",
+        "sourceId": "src_2f348d63b16be6d23121eb78",
+        "answerSourceId": "src_2f348d63b16be6d23121eb78",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2011-paper-answer",
+        "answerEvidenceId": "math2-2011-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:1e63bc1da4164c072eee1a0549f8d7c6c97463e48a387a0f8bbf61a50bf099c8"
+      }
+    },
+    {
+      "id": "math2-2011-013",
+      "number": 13,
+      "paperId": "math2-2011",
+      "paperName": "2011考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2011",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2011考研数学二第13题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "7/12",
+      "explanation": "答案来自本地百度网盘 2011 数学二真题及解析 PDF；完整题干和公式见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2011/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2011考研数学二试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2011/answer-page-04.jpg",
+          "caption": "答案解析 p.4",
+          "alt": "2011考研数学二答案解析 p.4"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2011",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2011-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:7d0add78e5640ab32dd2c38df6664038c83901b796b49cd2e69af13f92ba0bb6",
+      "answerTextHash": "sha256:6d6fcd904bbcab98e16cc424166c4eb25de6f02d7b76fb5317a2b251c6941ef8",
+      "sourceEvidence": {
+        "evidenceId": "math2-2011-q13",
+        "sourceId": "src_2f348d63b16be6d23121eb78",
+        "answerSourceId": "src_2f348d63b16be6d23121eb78",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2011-paper-answer",
+        "answerEvidenceId": "math2-2011-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:6d6fcd904bbcab98e16cc424166c4eb25de6f02d7b76fb5317a2b251c6941ef8"
+      }
+    },
+    {
+      "id": "math2-2011-014",
+      "number": 14,
+      "paperId": "math2-2011",
+      "paperName": "2011考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2011",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2011考研数学二第14题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "2",
+      "explanation": "答案来自本地百度网盘 2011 数学二真题及解析 PDF；完整题干和公式见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2011/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2011考研数学二试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2011/answer-page-04.jpg",
+          "caption": "答案解析 p.4",
+          "alt": "2011考研数学二答案解析 p.4"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2011",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2011-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:ca6ae1fb79c63d69600969344fba156fb81c0380225fb3aa2b36d89b2e6fd117",
+      "answerTextHash": "sha256:a4c45c75502708f7ced2ce351c52cb59f6b6c09dd06b4ac465404b511c4e9b29",
+      "sourceEvidence": {
+        "evidenceId": "math2-2011-q14",
+        "sourceId": "src_2f348d63b16be6d23121eb78",
+        "answerSourceId": "src_2f348d63b16be6d23121eb78",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2011-paper-answer",
+        "answerEvidenceId": "math2-2011-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:a4c45c75502708f7ced2ce351c52cb59f6b6c09dd06b4ac465404b511c4e9b29"
+      }
+    },
+    {
+      "id": "math2-2011-015",
+      "number": 15,
+      "paperId": "math2-2011",
+      "paperName": "2011考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2011",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2011考研数学二第15题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "1/3 < a < 1。",
+      "explanation": "答案来自本地百度网盘 2011 数学二真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2011/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2011考研数学二试卷原页 p.4"
+        },
+        {
+          "src": "question-bank/math2-2011/paper-page-05.jpg",
+          "caption": "试卷原页 p.5",
+          "alt": "2011考研数学二试卷原页 p.5"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2011/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2011考研数学二答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2011",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2011-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:00be8b6c06b21d2ea044e27750fa384fdd5b8f56f410fac92e1e0eb79a2c904e",
+      "answerTextHash": "sha256:2820c01714821f269e09c69d43178b4ffb58acf6a7556ce37e4f8b3adf3cd26a",
+      "sourceEvidence": {
+        "evidenceId": "math2-2011-q15",
+        "sourceId": "src_2f348d63b16be6d23121eb78",
+        "answerSourceId": "src_2f348d63b16be6d23121eb78",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2011-paper-answer",
+        "answerEvidenceId": "math2-2011-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:2820c01714821f269e09c69d43178b4ffb58acf6a7556ce37e4f8b3adf3cd26a"
+      }
+    },
+    {
+      "id": "math2-2011-016",
+      "number": 16,
+      "paperId": "math2-2011",
+      "paperName": "2011考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2011",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2011考研数学二第16题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "极小值点为 (5/3, -1/3)，极大值点为 (-1, 1)，拐点为 (1/3, 1/3)；凹凸区间见答案原页。",
+      "explanation": "答案来自本地百度网盘 2011 数学二真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2011/paper-page-05.jpg",
+          "caption": "试卷原页 p.5",
+          "alt": "2011考研数学二试卷原页 p.5"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2011/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2011考研数学二答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2011",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2011-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:439edafc57b790934249731358c1cbfceb053d9f1deffad85769a59f6f5eda2b",
+      "answerTextHash": "sha256:4d299bd5e85bd916c3a0824d2506dd6fa45344da1c1a0038fcd8cd41e846cb1a",
+      "sourceEvidence": {
+        "evidenceId": "math2-2011-q16",
+        "sourceId": "src_2f348d63b16be6d23121eb78",
+        "answerSourceId": "src_2f348d63b16be6d23121eb78",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2011-paper-answer",
+        "answerEvidenceId": "math2-2011-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:4d299bd5e85bd916c3a0824d2506dd6fa45344da1c1a0038fcd8cd41e846cb1a"
+      }
+    },
+    {
+      "id": "math2-2011-017",
+      "number": 17,
+      "paperId": "math2-2011",
+      "paperName": "2011考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2011",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2011考研数学二第17题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "二阶偏导表达式见答案原页。",
+      "explanation": "答案来自本地百度网盘 2011 数学二真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2011/paper-page-06.jpg",
+          "caption": "试卷原页 p.6",
+          "alt": "2011考研数学二试卷原页 p.6"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2011/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2011考研数学二答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2011",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2011-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:05e30d27917a83a8fe6bac69dcea805ba72d7faee2b7b260dcbb88ac96558cec",
+      "answerTextHash": "sha256:8bde5773be6c1e23a0c57a40187c39a671ad719e02f2b41eb7536820aab224fe",
+      "sourceEvidence": {
+        "evidenceId": "math2-2011-q17",
+        "sourceId": "src_2f348d63b16be6d23121eb78",
+        "answerSourceId": "src_2f348d63b16be6d23121eb78",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2011-paper-answer",
+        "answerEvidenceId": "math2-2011-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:8bde5773be6c1e23a0c57a40187c39a671ad719e02f2b41eb7536820aab224fe"
+      }
+    },
+    {
+      "id": "math2-2011-018",
+      "number": 18,
+      "paperId": "math2-2011",
+      "paperName": "2011考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2011",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2011考研数学二第18题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "y(x)=arcsin((sqrt(2)/2)e^x)-pi/4。",
+      "explanation": "答案来自本地百度网盘 2011 数学二真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2011/paper-page-06.jpg",
+          "caption": "试卷原页 p.6",
+          "alt": "2011考研数学二试卷原页 p.6"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2011/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2011考研数学二答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2011",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2011-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:a05c1b375cc0686e4d76d6c8b2607a1b9e57f9c430b2a84f3b9b52793e771d5f",
+      "answerTextHash": "sha256:71e3b00f74d1cbcf328ed4e1412a88ab4b7a159c1232acac79862c68269e564f",
+      "sourceEvidence": {
+        "evidenceId": "math2-2011-q18",
+        "sourceId": "src_2f348d63b16be6d23121eb78",
+        "answerSourceId": "src_2f348d63b16be6d23121eb78",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2011-paper-answer",
+        "answerEvidenceId": "math2-2011-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:71e3b00f74d1cbcf328ed4e1412a88ab4b7a159c1232acac79862c68269e564f"
+      }
+    },
+    {
+      "id": "math2-2011-019",
+      "number": 19,
+      "paperId": "math2-2011",
+      "paperName": "2011考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2011",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2011考研数学二第19题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "不等式证明和数列收敛性证明见答案原页。",
+      "explanation": "答案来自本地百度网盘 2011 数学二真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2011/paper-page-07.jpg",
+          "caption": "试卷原页 p.7",
+          "alt": "2011考研数学二试卷原页 p.7"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2011/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2011考研数学二答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2011",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2011-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:56877f0ce4de16f2964d0fc7c847e994907f02172615bd48b8fffcf362f0d37e",
+      "answerTextHash": "sha256:86b6b1efa45515e04d6d52115e1296746cce7125a2f98a3b122eed61aef8ceea",
+      "sourceEvidence": {
+        "evidenceId": "math2-2011-q19",
+        "sourceId": "src_2f348d63b16be6d23121eb78",
+        "answerSourceId": "src_2f348d63b16be6d23121eb78",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2011-paper-answer",
+        "answerEvidenceId": "math2-2011-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:86b6b1efa45515e04d6d52115e1296746cce7125a2f98a3b122eed61aef8ceea"
+      }
+    },
+    {
+      "id": "math2-2011-020",
+      "number": 20,
+      "paperId": "math2-2011",
+      "paperName": "2011考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2011",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2011考研数学二第20题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "容器容积为 9pi/4；抽水所需功为 (27/4)pi*10^3*g。",
+      "explanation": "答案来自本地百度网盘 2011 数学二真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2011/paper-page-07.jpg",
+          "caption": "试卷原页 p.7",
+          "alt": "2011考研数学二试卷原页 p.7"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2011/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2011考研数学二答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2011",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2011-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:c2d011049510f32ee35bc1fc2c4bb367a9320485a518fb04d03eeba03d37bc1d",
+      "answerTextHash": "sha256:04fba6523b7dfeb055bb44286115686622bb847bafcf01b4e9900b9f3d5e904f",
+      "sourceEvidence": {
+        "evidenceId": "math2-2011-q20",
+        "sourceId": "src_2f348d63b16be6d23121eb78",
+        "answerSourceId": "src_2f348d63b16be6d23121eb78",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2011-paper-answer",
+        "answerEvidenceId": "math2-2011-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:04fba6523b7dfeb055bb44286115686622bb847bafcf01b4e9900b9f3d5e904f"
+      }
+    },
+    {
+      "id": "math2-2011-021",
+      "number": 21,
+      "paperId": "math2-2011",
+      "paperName": "2011考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2011",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2011考研数学二第21题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "二重积分结果为 a。",
+      "explanation": "答案来自本地百度网盘 2011 数学二真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2011/paper-page-07.jpg",
+          "caption": "试卷原页 p.7",
+          "alt": "2011考研数学二试卷原页 p.7"
+        },
+        {
+          "src": "question-bank/math2-2011/paper-page-08.jpg",
+          "caption": "试卷原页 p.8",
+          "alt": "2011考研数学二试卷原页 p.8"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2011/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2011考研数学二答案解析 p.7"
+        },
+        {
+          "src": "question-bank/math2-2011/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2011考研数学二答案解析 p.8"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2011",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2011-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:b2338cafe56bd46c4ef41cd0b2ae8b6447fc04c4594dd219af59783b47bb5285",
+      "answerTextHash": "sha256:bfa672a4470dabc599be941eb2045a4cff08cfac290b6eb15cf4af100d69b027",
+      "sourceEvidence": {
+        "evidenceId": "math2-2011-q21",
+        "sourceId": "src_2f348d63b16be6d23121eb78",
+        "answerSourceId": "src_2f348d63b16be6d23121eb78",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2011-paper-answer",
+        "answerEvidenceId": "math2-2011-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:bfa672a4470dabc599be941eb2045a4cff08cfac290b6eb15cf4af100d69b027"
+      }
+    },
+    {
+      "id": "math2-2011-022",
+      "number": 22,
+      "paperId": "math2-2011",
+      "paperName": "2011考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2011",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2011考研数学二第22题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "a=5；beta1、beta2、beta3 由 alpha1、alpha2、alpha3 线性表示见答案原页。",
+      "explanation": "答案来自本地百度网盘 2011 数学二真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2011/paper-page-08.jpg",
+          "caption": "试卷原页 p.8",
+          "alt": "2011考研数学二试卷原页 p.8"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2011/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2011考研数学二答案解析 p.8"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2011",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2011-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:49029248808b1ced37373874d6720c23028361ef69f352c586e4fe9d7b1dfbba",
+      "answerTextHash": "sha256:e8d8f815e3a7cb659db3a29654d8a65af1750ff3acd98d0884931448d7aba242",
+      "sourceEvidence": {
+        "evidenceId": "math2-2011-q22",
+        "sourceId": "src_2f348d63b16be6d23121eb78",
+        "answerSourceId": "src_2f348d63b16be6d23121eb78",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2011-paper-answer",
+        "answerEvidenceId": "math2-2011-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:e8d8f815e3a7cb659db3a29654d8a65af1750ff3acd98d0884931448d7aba242"
+      }
+    },
+    {
+      "id": "math2-2011-023",
+      "number": 23,
+      "paperId": "math2-2011",
+      "paperName": "2011考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2011",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2011考研数学二第23题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "A 的特征值、特征向量和矩阵 A 见答案原页。",
+      "explanation": "答案来自本地百度网盘 2011 数学二真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2011/paper-page-08.jpg",
+          "caption": "试卷原页 p.8",
+          "alt": "2011考研数学二试卷原页 p.8"
+        },
+        {
+          "src": "question-bank/math2-2011/paper-page-09.jpg",
+          "caption": "试卷原页 p.9",
+          "alt": "2011考研数学二试卷原页 p.9"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2011/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2011考研数学二答案解析 p.8"
+        },
+        {
+          "src": "question-bank/math2-2011/answer-page-09.jpg",
+          "caption": "答案解析 p.9",
+          "alt": "2011考研数学二答案解析 p.9"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2011",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2011-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:5560c078bbfe6c43dcf27be24e904c4771550bf606e24138bfaa9b7fe2e1f5ec",
+      "answerTextHash": "sha256:ee1bb0bdd65530952ec254012d18cd410aab7c4d7dc6dbbf4602cc20b229a8f2",
+      "sourceEvidence": {
+        "evidenceId": "math2-2011-q23",
+        "sourceId": "src_2f348d63b16be6d23121eb78",
+        "answerSourceId": "src_2f348d63b16be6d23121eb78",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2011-paper-answer",
+        "answerEvidenceId": "math2-2011-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:ee1bb0bdd65530952ec254012d18cd410aab7c4d7dc6dbbf4602cc20b229a8f2"
+      }
+    }
+  ]
+}

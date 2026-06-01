@@ -2,7 +2,7 @@
   <view class="tabbar-position-wrapper">
     <view
       class="tabbar-capsule"
-      :class="{ 'dark-mode': isDark, dragging: isDragging }"
+      :class="{ 'dark-mode': isDarkMode, dragging: isDragging }"
       :style="capsuleStyle"
       @touchstart="handleTouchStart"
       @touchmove.stop="handleTouchMove"
@@ -41,6 +41,7 @@ import config from '@/config/index.js';
 import { safeNavigateTo } from '@/utils/safe-navigate';
 import { getWindowInfo } from '@/utils/core/system.js';
 import { getAssetUrl } from '@/config/static-assets.js';
+import { vibrateLight } from '@/utils/helpers/haptic.js';
 
 const SWIPE_THRESHOLD = 28;
 const MAX_DRAG_OFFSET = 96;
@@ -99,6 +100,7 @@ const props = defineProps({
 });
 
 const mistakeDot = ref(false);
+const resolvedTheme = ref('light');
 const currentRoute = ref('');
 const safeAreaBottom = ref(0);
 const optimisticIndex = ref(null);
@@ -157,6 +159,8 @@ const visualActiveIndex = computed(() => {
   return Math.max(0, Math.min(idx, tabList.value.length - 1));
 });
 
+const isDarkMode = computed(() => props.isDark || resolvedTheme.value === 'dark');
+
 const capsuleStyle = computed(() => {
   if (safeAreaBottom.value > 0) {
     return { marginBottom: `calc(22rpx + ${safeAreaBottom.value}px)` };
@@ -195,14 +199,7 @@ function getTouchX(event) {
 }
 
 function triggerHaptic() {
-  const uniApi = getUniApi();
-  try {
-    if (uniApi && typeof uniApi.vibrateShort === 'function') {
-      uniApi.vibrateShort({ type: 'light' });
-    }
-  } catch (e) {
-    logger.log('[CustomTabbar] haptic failed:', e);
-  }
+  vibrateLight('light');
 }
 
 function clampDrag(delta) {
@@ -294,6 +291,14 @@ function checkMistakeStatus() {
   mistakeDot.value = mistakes.length > 0;
 }
 
+function syncTheme(mode) {
+  if (mode === 'dark' || mode === 'light') {
+    resolvedTheme.value = mode;
+    return;
+  }
+  resolvedTheme.value = storageService.get('theme_mode', 'light') === 'dark' ? 'dark' : 'light';
+}
+
 let _switchTabTimer = null;
 let _pressTimer = null;
 
@@ -361,10 +366,12 @@ function switchTab(path, index) {
 onMounted(() => {
   checkMistakeStatus();
   detectCurrentRoute();
+  syncTheme();
 
   const uniApi = getUniApi();
   if (uniApi && typeof uniApi.$on === 'function') {
     uniApi.$on('tabbarRouteUpdate', detectCurrentRoute);
+    uniApi.$on('themeUpdate', syncTheme);
   }
 
   detectSafeArea();
@@ -383,6 +390,7 @@ onBeforeUnmount(() => {
   const uniApi = getUniApi();
   if (uniApi && typeof uniApi.$off === 'function') {
     uniApi.$off('tabbarRouteUpdate', detectCurrentRoute);
+    uniApi.$off('themeUpdate', syncTheme);
   }
 });
 </script>

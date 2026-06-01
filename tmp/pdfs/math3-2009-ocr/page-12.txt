@@ -1,0 +1,46 @@
+Cs anki                      人和和信                      和二大
+1 1    1 1 1    2
+2
+Parnas aay
+1      1        1
+一In(t -1) -—In(t +1)+2一一+C
+0
+所以
++x    In(1+t) 1 t+1   1
+jw
+x     v4 4 t-1 2+)
++x. 1           1   ve
+=xin(1 +,|—*) +<1n( JT Fx + Vx) -— —* +.
+a+ Li  ew crests
+17) (本题满分 10 分)
+计算二重积分 [f(x -y)dxdy，其中 D =((x, y)|(x AY +(y-1)’ <2, y 29
+°
+【解析] (x 1° +(y-1) <2得F<2(sin 8 +cos 6).
+35
+a   (sin 6 +cos®)
+a [J(x-y)dxdy = [7 8 J            {rcose —rsin8)rdr
+2          =       9
+4
+Sag
+4 1        2(sin 6+cos6)]
+= [4 Ecose-sin6) 1° (     ) ae
+uaa               下     J
+4
+3
+on
+ssf  (C088 sin) {sin 8 +cos8) (sin 8 +cos8)"d8
+区
+4
+3
+ony
+=(*  3 tos? —sin 8) {sin 6 +cos®)'d®
+=
+4
+3
+84            8 _1      ax 8
+=5 [4 (sin @ +cos8)'d (sin 8 +cos6) == (sin @ +cos8)‘[, =-*
+3°                  3 4         4   3
+4
+(18) (本题满分 11 分)
+12-
+Cs mii                    人六和和                    0

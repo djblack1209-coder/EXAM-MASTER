@@ -1,0 +1,1201 @@
+{
+  "id": "math1-2015",
+  "source": "math1-2015-paper-answer",
+  "paperId": "math1-2015",
+  "paperName": "2015考研数学一真题",
+  "subject": "数学",
+  "subjectKey": "math",
+  "track": "math1",
+  "year": "2015",
+  "quality": "ready",
+  "publicationStatus": "published",
+  "publicationBlockers": [],
+  "sourceEvidencePolicy": "baidu_netdisk_official_paper_pdf_question_crop_answer_page_image_v1",
+  "sourceFiles": [
+    {
+      "id": "math1-2015-paper-answer",
+      "role": "paper_answer",
+      "localPath": "data/raw-inbox/src_b83088449d1c3f7d3cd2653f-2015数一考研真题及答案.pdf",
+      "sha256": "sha256:f57aa6b3b964460f3b924497ed41a5b856c4a1c5fce2a4cda4745276eeee1e5c",
+      "sourceId": "src_b83088449d1c3f7d3cd2653f"
+    }
+  ],
+  "assetRoot": "question-bank/math1-2015",
+  "processed_at": "2026-05-31T02:49:04Z",
+  "total_cards": 23,
+  "cards": [
+    {
+      "id": "math1-2015-001",
+      "number": 1,
+      "paperId": "math1-2015",
+      "paperName": "2015考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2015",
+      "section": "选择题",
+      "type": "flashcard",
+      "question": "2015考研数学一第1题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "完整答案与解析见答案原页。",
+      "explanation": "答案来自本地百度网盘 2015 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2015/question-01.jpg",
+          "caption": "题面裁切图 q01",
+          "alt": "2015考研数学一题面裁切图 q01"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2015/answer-page-01.jpg",
+          "caption": "答案解析 p.1",
+          "alt": "2015考研数学一答案解析 p.1"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2015",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2015-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:bbfd05bac83214218344f58c213149d0a1e51786223bba606d68a5d8856c8934",
+      "answerTextHash": "sha256:5f4c56696e78714539fc6088fa7cc308cd008dac2e701cb0fdd5e2c5820b72a2",
+      "sourceEvidence": {
+        "evidenceId": "math1-2015-q01",
+        "sourceId": "src_b83088449d1c3f7d3cd2653f",
+        "answerSourceId": "src_b83088449d1c3f7d3cd2653f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2015-paper-answer",
+        "answerEvidenceId": "math1-2015-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:5f4c56696e78714539fc6088fa7cc308cd008dac2e701cb0fdd5e2c5820b72a2"
+      }
+    },
+    {
+      "id": "math1-2015-002",
+      "number": 2,
+      "paperId": "math1-2015",
+      "paperName": "2015考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2015",
+      "section": "选择题",
+      "type": "flashcard",
+      "question": "2015考研数学一第2题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "完整答案与解析见答案原页。",
+      "explanation": "答案来自本地百度网盘 2015 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2015/question-02.jpg",
+          "caption": "题面裁切图 q02",
+          "alt": "2015考研数学一题面裁切图 q02"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2015/answer-page-01.jpg",
+          "caption": "答案解析 p.1",
+          "alt": "2015考研数学一答案解析 p.1"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2015",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2015-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:04add136184aa6e6d0941c2bae9fdb4b86035fbf5dd7258e23561454d4864a68",
+      "answerTextHash": "sha256:5f4c56696e78714539fc6088fa7cc308cd008dac2e701cb0fdd5e2c5820b72a2",
+      "sourceEvidence": {
+        "evidenceId": "math1-2015-q02",
+        "sourceId": "src_b83088449d1c3f7d3cd2653f",
+        "answerSourceId": "src_b83088449d1c3f7d3cd2653f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2015-paper-answer",
+        "answerEvidenceId": "math1-2015-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:5f4c56696e78714539fc6088fa7cc308cd008dac2e701cb0fdd5e2c5820b72a2"
+      }
+    },
+    {
+      "id": "math1-2015-003",
+      "number": 3,
+      "paperId": "math1-2015",
+      "paperName": "2015考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2015",
+      "section": "选择题",
+      "type": "flashcard",
+      "question": "2015考研数学一第3题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "完整答案与解析见答案原页。",
+      "explanation": "答案来自本地百度网盘 2015 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2015/question-03.jpg",
+          "caption": "题面裁切图 q03",
+          "alt": "2015考研数学一题面裁切图 q03"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2015/answer-page-01.jpg",
+          "caption": "答案解析 p.1",
+          "alt": "2015考研数学一答案解析 p.1"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2015",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2015-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:c08ccbe16dd1498a25f863d6882fef164e1939856d3b1a23e3b4f06d63a597ce",
+      "answerTextHash": "sha256:5f4c56696e78714539fc6088fa7cc308cd008dac2e701cb0fdd5e2c5820b72a2",
+      "sourceEvidence": {
+        "evidenceId": "math1-2015-q03",
+        "sourceId": "src_b83088449d1c3f7d3cd2653f",
+        "answerSourceId": "src_b83088449d1c3f7d3cd2653f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2015-paper-answer",
+        "answerEvidenceId": "math1-2015-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:5f4c56696e78714539fc6088fa7cc308cd008dac2e701cb0fdd5e2c5820b72a2"
+      }
+    },
+    {
+      "id": "math1-2015-004",
+      "number": 4,
+      "paperId": "math1-2015",
+      "paperName": "2015考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2015",
+      "section": "选择题",
+      "type": "flashcard",
+      "question": "2015考研数学一第4题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "完整答案与解析见答案原页。",
+      "explanation": "答案来自本地百度网盘 2015 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2015/question-04.jpg",
+          "caption": "题面裁切图 q04",
+          "alt": "2015考研数学一题面裁切图 q04"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2015/answer-page-01.jpg",
+          "caption": "答案解析 p.1",
+          "alt": "2015考研数学一答案解析 p.1"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2015",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2015-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:ecbbf20d74e880ebbe10ee398f7e34ea1a140585d59ef4d36e16a558f735acae",
+      "answerTextHash": "sha256:5f4c56696e78714539fc6088fa7cc308cd008dac2e701cb0fdd5e2c5820b72a2",
+      "sourceEvidence": {
+        "evidenceId": "math1-2015-q04",
+        "sourceId": "src_b83088449d1c3f7d3cd2653f",
+        "answerSourceId": "src_b83088449d1c3f7d3cd2653f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2015-paper-answer",
+        "answerEvidenceId": "math1-2015-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:5f4c56696e78714539fc6088fa7cc308cd008dac2e701cb0fdd5e2c5820b72a2"
+      }
+    },
+    {
+      "id": "math1-2015-005",
+      "number": 5,
+      "paperId": "math1-2015",
+      "paperName": "2015考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2015",
+      "section": "选择题",
+      "type": "flashcard",
+      "question": "2015考研数学一第5题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "完整答案与解析见答案原页。",
+      "explanation": "答案来自本地百度网盘 2015 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2015/question-05.jpg",
+          "caption": "题面裁切图 q05",
+          "alt": "2015考研数学一题面裁切图 q05"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2015/answer-page-01.jpg",
+          "caption": "答案解析 p.1",
+          "alt": "2015考研数学一答案解析 p.1"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2015",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2015-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:61c782851f397978e64e3b48acb752a7569828a2e08f87187aa47bb9f00b72f8",
+      "answerTextHash": "sha256:5f4c56696e78714539fc6088fa7cc308cd008dac2e701cb0fdd5e2c5820b72a2",
+      "sourceEvidence": {
+        "evidenceId": "math1-2015-q05",
+        "sourceId": "src_b83088449d1c3f7d3cd2653f",
+        "answerSourceId": "src_b83088449d1c3f7d3cd2653f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2015-paper-answer",
+        "answerEvidenceId": "math1-2015-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:5f4c56696e78714539fc6088fa7cc308cd008dac2e701cb0fdd5e2c5820b72a2"
+      }
+    },
+    {
+      "id": "math1-2015-006",
+      "number": 6,
+      "paperId": "math1-2015",
+      "paperName": "2015考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2015",
+      "section": "选择题",
+      "type": "flashcard",
+      "question": "2015考研数学一第6题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "完整答案与解析见答案原页。",
+      "explanation": "答案来自本地百度网盘 2015 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2015/question-06.jpg",
+          "caption": "题面裁切图 q06",
+          "alt": "2015考研数学一题面裁切图 q06"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2015/answer-page-01.jpg",
+          "caption": "答案解析 p.1",
+          "alt": "2015考研数学一答案解析 p.1"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2015",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2015-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:cd8a4f336883129279762e5094f2baa1b9ee8635bd3787983dc515d5a6471a3d",
+      "answerTextHash": "sha256:5f4c56696e78714539fc6088fa7cc308cd008dac2e701cb0fdd5e2c5820b72a2",
+      "sourceEvidence": {
+        "evidenceId": "math1-2015-q06",
+        "sourceId": "src_b83088449d1c3f7d3cd2653f",
+        "answerSourceId": "src_b83088449d1c3f7d3cd2653f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2015-paper-answer",
+        "answerEvidenceId": "math1-2015-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:5f4c56696e78714539fc6088fa7cc308cd008dac2e701cb0fdd5e2c5820b72a2"
+      }
+    },
+    {
+      "id": "math1-2015-007",
+      "number": 7,
+      "paperId": "math1-2015",
+      "paperName": "2015考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2015",
+      "section": "选择题",
+      "type": "flashcard",
+      "question": "2015考研数学一第7题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "完整答案与解析见答案原页。",
+      "explanation": "答案来自本地百度网盘 2015 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2015/question-07.jpg",
+          "caption": "题面裁切图 q07",
+          "alt": "2015考研数学一题面裁切图 q07"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2015/answer-page-02.jpg",
+          "caption": "答案解析 p.2",
+          "alt": "2015考研数学一答案解析 p.2"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2015",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2015-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:3a889bde5924f06cdfd705a8c3339d42958fada26beeaf152f37fb978b2f4c33",
+      "answerTextHash": "sha256:ba214c6f7c0d4af3ffe01531e9b9e28100a8c5e262dbf393ab396db25b8decd0",
+      "sourceEvidence": {
+        "evidenceId": "math1-2015-q07",
+        "sourceId": "src_b83088449d1c3f7d3cd2653f",
+        "answerSourceId": "src_b83088449d1c3f7d3cd2653f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2015-paper-answer",
+        "answerEvidenceId": "math1-2015-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:ba214c6f7c0d4af3ffe01531e9b9e28100a8c5e262dbf393ab396db25b8decd0"
+      }
+    },
+    {
+      "id": "math1-2015-008",
+      "number": 8,
+      "paperId": "math1-2015",
+      "paperName": "2015考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2015",
+      "section": "选择题",
+      "type": "flashcard",
+      "question": "2015考研数学一第8题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "完整答案与解析见答案原页。",
+      "explanation": "答案来自本地百度网盘 2015 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2015/question-08.jpg",
+          "caption": "题面裁切图 q08",
+          "alt": "2015考研数学一题面裁切图 q08"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2015/answer-page-02.jpg",
+          "caption": "答案解析 p.2",
+          "alt": "2015考研数学一答案解析 p.2"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2015",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2015-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:d6206fd4589cc481103516c59f1a10cb166bc507dbacae5a93e251aeb50a7de7",
+      "answerTextHash": "sha256:ba214c6f7c0d4af3ffe01531e9b9e28100a8c5e262dbf393ab396db25b8decd0",
+      "sourceEvidence": {
+        "evidenceId": "math1-2015-q08",
+        "sourceId": "src_b83088449d1c3f7d3cd2653f",
+        "answerSourceId": "src_b83088449d1c3f7d3cd2653f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2015-paper-answer",
+        "answerEvidenceId": "math1-2015-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:ba214c6f7c0d4af3ffe01531e9b9e28100a8c5e262dbf393ab396db25b8decd0"
+      }
+    },
+    {
+      "id": "math1-2015-009",
+      "number": 9,
+      "paperId": "math1-2015",
+      "paperName": "2015考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2015",
+      "section": "填空题",
+      "type": "flashcard",
+      "question": "2015考研数学一第9题（填空题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "填空题答案与解析见答案原页。",
+      "explanation": "答案来自本地百度网盘 2015 数学一真题答案解析 PDF；填空题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2015/question-09.jpg",
+          "caption": "题面裁切图 q09",
+          "alt": "2015考研数学一题面裁切图 q09"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2015/answer-page-02.jpg",
+          "caption": "答案解析 p.2",
+          "alt": "2015考研数学一答案解析 p.2"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2015",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2015-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:bbd2b50febf387f8c755d6f696e5fd9fdda79ed7b92f4138e3113fbb184cac61",
+      "answerTextHash": "sha256:f2ed30a6a82a080c66198d15755a717b138b3410d21a28d449738fb8a991294c",
+      "sourceEvidence": {
+        "evidenceId": "math1-2015-q09",
+        "sourceId": "src_b83088449d1c3f7d3cd2653f",
+        "answerSourceId": "src_b83088449d1c3f7d3cd2653f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2015-paper-answer",
+        "answerEvidenceId": "math1-2015-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:f2ed30a6a82a080c66198d15755a717b138b3410d21a28d449738fb8a991294c"
+      }
+    },
+    {
+      "id": "math1-2015-010",
+      "number": 10,
+      "paperId": "math1-2015",
+      "paperName": "2015考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2015",
+      "section": "填空题",
+      "type": "flashcard",
+      "question": "2015考研数学一第10题（填空题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "填空题答案与解析见答案原页。",
+      "explanation": "答案来自本地百度网盘 2015 数学一真题答案解析 PDF；填空题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2015/question-10.jpg",
+          "caption": "题面裁切图 q10",
+          "alt": "2015考研数学一题面裁切图 q10"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2015/answer-page-02.jpg",
+          "caption": "答案解析 p.2",
+          "alt": "2015考研数学一答案解析 p.2"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2015",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2015-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:e564c33888b28414ca45ed1f2786a7bcbf985c552c18b0f37c332dc484405591",
+      "answerTextHash": "sha256:f2ed30a6a82a080c66198d15755a717b138b3410d21a28d449738fb8a991294c",
+      "sourceEvidence": {
+        "evidenceId": "math1-2015-q10",
+        "sourceId": "src_b83088449d1c3f7d3cd2653f",
+        "answerSourceId": "src_b83088449d1c3f7d3cd2653f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2015-paper-answer",
+        "answerEvidenceId": "math1-2015-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:f2ed30a6a82a080c66198d15755a717b138b3410d21a28d449738fb8a991294c"
+      }
+    },
+    {
+      "id": "math1-2015-011",
+      "number": 11,
+      "paperId": "math1-2015",
+      "paperName": "2015考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2015",
+      "section": "填空题",
+      "type": "flashcard",
+      "question": "2015考研数学一第11题（填空题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "填空题答案与解析见答案原页。",
+      "explanation": "答案来自本地百度网盘 2015 数学一真题答案解析 PDF；填空题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2015/question-11.jpg",
+          "caption": "题面裁切图 q11",
+          "alt": "2015考研数学一题面裁切图 q11"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2015/answer-page-02.jpg",
+          "caption": "答案解析 p.2",
+          "alt": "2015考研数学一答案解析 p.2"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2015",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2015-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:e43782517911cb9bebbc6ca39c933b066586c96577b48faa679799c34153e526",
+      "answerTextHash": "sha256:f2ed30a6a82a080c66198d15755a717b138b3410d21a28d449738fb8a991294c",
+      "sourceEvidence": {
+        "evidenceId": "math1-2015-q11",
+        "sourceId": "src_b83088449d1c3f7d3cd2653f",
+        "answerSourceId": "src_b83088449d1c3f7d3cd2653f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2015-paper-answer",
+        "answerEvidenceId": "math1-2015-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:f2ed30a6a82a080c66198d15755a717b138b3410d21a28d449738fb8a991294c"
+      }
+    },
+    {
+      "id": "math1-2015-012",
+      "number": 12,
+      "paperId": "math1-2015",
+      "paperName": "2015考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2015",
+      "section": "填空题",
+      "type": "flashcard",
+      "question": "2015考研数学一第12题（填空题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "填空题答案与解析见答案原页。",
+      "explanation": "答案来自本地百度网盘 2015 数学一真题答案解析 PDF；填空题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2015/question-12.jpg",
+          "caption": "题面裁切图 q12",
+          "alt": "2015考研数学一题面裁切图 q12"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2015/answer-page-03.jpg",
+          "caption": "答案解析 p.3",
+          "alt": "2015考研数学一答案解析 p.3"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2015",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2015-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:8f119556b26136840860df6015640d6dbc09e6dce6769b1db02b599128000684",
+      "answerTextHash": "sha256:3b049aad124fc1e9733273799982415de43c719b8bb73dcc9c7ea743be5d99fa",
+      "sourceEvidence": {
+        "evidenceId": "math1-2015-q12",
+        "sourceId": "src_b83088449d1c3f7d3cd2653f",
+        "answerSourceId": "src_b83088449d1c3f7d3cd2653f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2015-paper-answer",
+        "answerEvidenceId": "math1-2015-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:3b049aad124fc1e9733273799982415de43c719b8bb73dcc9c7ea743be5d99fa"
+      }
+    },
+    {
+      "id": "math1-2015-013",
+      "number": 13,
+      "paperId": "math1-2015",
+      "paperName": "2015考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2015",
+      "section": "填空题",
+      "type": "flashcard",
+      "question": "2015考研数学一第13题（填空题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "填空题答案与解析见答案原页。",
+      "explanation": "答案来自本地百度网盘 2015 数学一真题答案解析 PDF；填空题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2015/question-13.jpg",
+          "caption": "题面裁切图 q13",
+          "alt": "2015考研数学一题面裁切图 q13"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2015/answer-page-03.jpg",
+          "caption": "答案解析 p.3",
+          "alt": "2015考研数学一答案解析 p.3"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2015",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2015-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:b0c893972a5e1a6e913d3815ec26e67d827b45d0de5c468444f1c7819af5b92b",
+      "answerTextHash": "sha256:3b049aad124fc1e9733273799982415de43c719b8bb73dcc9c7ea743be5d99fa",
+      "sourceEvidence": {
+        "evidenceId": "math1-2015-q13",
+        "sourceId": "src_b83088449d1c3f7d3cd2653f",
+        "answerSourceId": "src_b83088449d1c3f7d3cd2653f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2015-paper-answer",
+        "answerEvidenceId": "math1-2015-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:3b049aad124fc1e9733273799982415de43c719b8bb73dcc9c7ea743be5d99fa"
+      }
+    },
+    {
+      "id": "math1-2015-014",
+      "number": 14,
+      "paperId": "math1-2015",
+      "paperName": "2015考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2015",
+      "section": "填空题",
+      "type": "flashcard",
+      "question": "2015考研数学一第14题（填空题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "填空题答案与解析见答案原页。",
+      "explanation": "答案来自本地百度网盘 2015 数学一真题答案解析 PDF；填空题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2015/question-14.jpg",
+          "caption": "题面裁切图 q14",
+          "alt": "2015考研数学一题面裁切图 q14"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2015/answer-page-03.jpg",
+          "caption": "答案解析 p.3",
+          "alt": "2015考研数学一答案解析 p.3"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2015",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2015-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:2e40b9eb081714444163b5836a684411199dad766e2c7a0a54c386cd6f2f56a0",
+      "answerTextHash": "sha256:3b049aad124fc1e9733273799982415de43c719b8bb73dcc9c7ea743be5d99fa",
+      "sourceEvidence": {
+        "evidenceId": "math1-2015-q14",
+        "sourceId": "src_b83088449d1c3f7d3cd2653f",
+        "answerSourceId": "src_b83088449d1c3f7d3cd2653f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2015-paper-answer",
+        "answerEvidenceId": "math1-2015-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:3b049aad124fc1e9733273799982415de43c719b8bb73dcc9c7ea743be5d99fa"
+      }
+    },
+    {
+      "id": "math1-2015-015",
+      "number": 15,
+      "paperId": "math1-2015",
+      "paperName": "2015考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2015",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2015考研数学一第15题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "解答题完整演算、证明或推导过程见答案原页。",
+      "explanation": "答案来自本地百度网盘 2015 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2015/question-15.jpg",
+          "caption": "题面裁切图 q15",
+          "alt": "2015考研数学一题面裁切图 q15"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2015/answer-page-03.jpg",
+          "caption": "答案解析 p.3",
+          "alt": "2015考研数学一答案解析 p.3"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2015",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2015-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:0e94a023619c8746113d41b7a0313e4cd3bdadecf006f75bb2970973b19abc13",
+      "answerTextHash": "sha256:4285f5f5e6533d301e979524510b91fa7a0694d03e4c21176c03f469632e7db2",
+      "sourceEvidence": {
+        "evidenceId": "math1-2015-q15",
+        "sourceId": "src_b83088449d1c3f7d3cd2653f",
+        "answerSourceId": "src_b83088449d1c3f7d3cd2653f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2015-paper-answer",
+        "answerEvidenceId": "math1-2015-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:4285f5f5e6533d301e979524510b91fa7a0694d03e4c21176c03f469632e7db2"
+      }
+    },
+    {
+      "id": "math1-2015-016",
+      "number": 16,
+      "paperId": "math1-2015",
+      "paperName": "2015考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2015",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2015考研数学一第16题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "解答题完整演算、证明或推导过程见答案原页。",
+      "explanation": "答案来自本地百度网盘 2015 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2015/question-16.jpg",
+          "caption": "题面裁切图 q16",
+          "alt": "2015考研数学一题面裁切图 q16"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2015/answer-page-04.jpg",
+          "caption": "答案解析 p.4",
+          "alt": "2015考研数学一答案解析 p.4"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2015",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2015-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:e3e0ac300d759a263a2b5d947395db5f5d31ea1a15f22f907c2c94ca972d6701",
+      "answerTextHash": "sha256:a91cdf25a6154597e818b27f1dbcf26299e0a634107777319707eca82511c9a2",
+      "sourceEvidence": {
+        "evidenceId": "math1-2015-q16",
+        "sourceId": "src_b83088449d1c3f7d3cd2653f",
+        "answerSourceId": "src_b83088449d1c3f7d3cd2653f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2015-paper-answer",
+        "answerEvidenceId": "math1-2015-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:a91cdf25a6154597e818b27f1dbcf26299e0a634107777319707eca82511c9a2"
+      }
+    },
+    {
+      "id": "math1-2015-017",
+      "number": 17,
+      "paperId": "math1-2015",
+      "paperName": "2015考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2015",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2015考研数学一第17题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "解答题完整演算、证明或推导过程见答案原页。",
+      "explanation": "答案来自本地百度网盘 2015 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2015/question-17.jpg",
+          "caption": "题面裁切图 q17",
+          "alt": "2015考研数学一题面裁切图 q17"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2015/answer-page-04.jpg",
+          "caption": "答案解析 p.4",
+          "alt": "2015考研数学一答案解析 p.4"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2015",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2015-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:fd3e86a5e3033df32234ddee734092920a4d224e847d1e458cd38da30b964682",
+      "answerTextHash": "sha256:a91cdf25a6154597e818b27f1dbcf26299e0a634107777319707eca82511c9a2",
+      "sourceEvidence": {
+        "evidenceId": "math1-2015-q17",
+        "sourceId": "src_b83088449d1c3f7d3cd2653f",
+        "answerSourceId": "src_b83088449d1c3f7d3cd2653f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2015-paper-answer",
+        "answerEvidenceId": "math1-2015-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:a91cdf25a6154597e818b27f1dbcf26299e0a634107777319707eca82511c9a2"
+      }
+    },
+    {
+      "id": "math1-2015-018",
+      "number": 18,
+      "paperId": "math1-2015",
+      "paperName": "2015考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2015",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2015考研数学一第18题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "解答题完整演算、证明或推导过程见答案原页。",
+      "explanation": "答案来自本地百度网盘 2015 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2015/question-18.jpg",
+          "caption": "题面裁切图 q18",
+          "alt": "2015考研数学一题面裁切图 q18"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2015/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2015考研数学一答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2015",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2015-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:de62ddfc7e7c9232c0e4539dd89886db082f25ff3f3ddfede99f7ea5e3d55e0b",
+      "answerTextHash": "sha256:509b88ee1ec3f003cd48871f4327607e1d48dd2c9b9bd296be13843c17cb4e62",
+      "sourceEvidence": {
+        "evidenceId": "math1-2015-q18",
+        "sourceId": "src_b83088449d1c3f7d3cd2653f",
+        "answerSourceId": "src_b83088449d1c3f7d3cd2653f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2015-paper-answer",
+        "answerEvidenceId": "math1-2015-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:509b88ee1ec3f003cd48871f4327607e1d48dd2c9b9bd296be13843c17cb4e62"
+      }
+    },
+    {
+      "id": "math1-2015-019",
+      "number": 19,
+      "paperId": "math1-2015",
+      "paperName": "2015考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2015",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2015考研数学一第19题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "解答题完整演算、证明或推导过程见答案原页。",
+      "explanation": "答案来自本地百度网盘 2015 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2015/question-19.jpg",
+          "caption": "题面裁切图 q19",
+          "alt": "2015考研数学一题面裁切图 q19"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2015/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2015考研数学一答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2015",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2015-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:66fb1c1883ca0c77fab908d02a8ceeb35c11c1f662ad6b6476a4afbde96864c9",
+      "answerTextHash": "sha256:509b88ee1ec3f003cd48871f4327607e1d48dd2c9b9bd296be13843c17cb4e62",
+      "sourceEvidence": {
+        "evidenceId": "math1-2015-q19",
+        "sourceId": "src_b83088449d1c3f7d3cd2653f",
+        "answerSourceId": "src_b83088449d1c3f7d3cd2653f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2015-paper-answer",
+        "answerEvidenceId": "math1-2015-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:509b88ee1ec3f003cd48871f4327607e1d48dd2c9b9bd296be13843c17cb4e62"
+      }
+    },
+    {
+      "id": "math1-2015-020",
+      "number": 20,
+      "paperId": "math1-2015",
+      "paperName": "2015考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2015",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2015考研数学一第20题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "解答题完整演算、证明或推导过程见答案原页。",
+      "explanation": "答案来自本地百度网盘 2015 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2015/question-20.jpg",
+          "caption": "题面裁切图 q20",
+          "alt": "2015考研数学一题面裁切图 q20"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2015/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2015考研数学一答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2015",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2015-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:520b0b63a1bf2f6b760c2f41b9eab62c29b418e40f8264e42e6122502aa216e2",
+      "answerTextHash": "sha256:15954e891ae2bb41c6731017375077729d9cdd13ac4cdcdaa364f1fa855a614a",
+      "sourceEvidence": {
+        "evidenceId": "math1-2015-q20",
+        "sourceId": "src_b83088449d1c3f7d3cd2653f",
+        "answerSourceId": "src_b83088449d1c3f7d3cd2653f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2015-paper-answer",
+        "answerEvidenceId": "math1-2015-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:15954e891ae2bb41c6731017375077729d9cdd13ac4cdcdaa364f1fa855a614a"
+      }
+    },
+    {
+      "id": "math1-2015-021",
+      "number": 21,
+      "paperId": "math1-2015",
+      "paperName": "2015考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2015",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2015考研数学一第21题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "解答题完整演算、证明或推导过程见答案原页。",
+      "explanation": "答案来自本地百度网盘 2015 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2015/question-21.jpg",
+          "caption": "题面裁切图 q21",
+          "alt": "2015考研数学一题面裁切图 q21"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2015/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2015考研数学一答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2015",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2015-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:f4f4b30fb1c79bfe084b5ea34d74d9a028bacc69e6cc23b662142898db61e2ae",
+      "answerTextHash": "sha256:15954e891ae2bb41c6731017375077729d9cdd13ac4cdcdaa364f1fa855a614a",
+      "sourceEvidence": {
+        "evidenceId": "math1-2015-q21",
+        "sourceId": "src_b83088449d1c3f7d3cd2653f",
+        "answerSourceId": "src_b83088449d1c3f7d3cd2653f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2015-paper-answer",
+        "answerEvidenceId": "math1-2015-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:15954e891ae2bb41c6731017375077729d9cdd13ac4cdcdaa364f1fa855a614a"
+      }
+    },
+    {
+      "id": "math1-2015-022",
+      "number": 22,
+      "paperId": "math1-2015",
+      "paperName": "2015考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2015",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2015考研数学一第22题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "解答题完整演算、证明或推导过程见答案原页。",
+      "explanation": "答案来自本地百度网盘 2015 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2015/question-22.jpg",
+          "caption": "题面裁切图 q22",
+          "alt": "2015考研数学一题面裁切图 q22"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2015/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2015考研数学一答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2015",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2015-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:be10804be7cf5d35393104c8aeded7d8d48a69aeb536635c1fff3b47008d3b65",
+      "answerTextHash": "sha256:b9071119bb02ace73f4a2fd4fdce70e567c3810f5d185174e685b5f7d1834c2e",
+      "sourceEvidence": {
+        "evidenceId": "math1-2015-q22",
+        "sourceId": "src_b83088449d1c3f7d3cd2653f",
+        "answerSourceId": "src_b83088449d1c3f7d3cd2653f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2015-paper-answer",
+        "answerEvidenceId": "math1-2015-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:b9071119bb02ace73f4a2fd4fdce70e567c3810f5d185174e685b5f7d1834c2e"
+      }
+    },
+    {
+      "id": "math1-2015-023",
+      "number": 23,
+      "paperId": "math1-2015",
+      "paperName": "2015考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2015",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2015考研数学一第23题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "解答题完整演算、证明或推导过程见答案原页。",
+      "explanation": "答案来自本地百度网盘 2015 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2015/question-23.jpg",
+          "caption": "题面裁切图 q23",
+          "alt": "2015考研数学一题面裁切图 q23"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2015/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2015考研数学一答案解析 p.8"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2015",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2015-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:6d6719df39b88f56d8e7de8b554988295033ba7a69a5ec1e4a54d0a89af11ddc",
+      "answerTextHash": "sha256:8267e216aabe86bdadcdaf7ef805d5f696de5e810b062971b8166a58a2ef5c72",
+      "sourceEvidence": {
+        "evidenceId": "math1-2015-q23",
+        "sourceId": "src_b83088449d1c3f7d3cd2653f",
+        "answerSourceId": "src_b83088449d1c3f7d3cd2653f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2015-paper-answer",
+        "answerEvidenceId": "math1-2015-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:8267e216aabe86bdadcdaf7ef805d5f696de5e810b062971b8166a58a2ef5c72"
+      }
+    }
+  ]
+}

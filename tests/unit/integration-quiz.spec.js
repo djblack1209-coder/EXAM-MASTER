@@ -54,6 +54,29 @@ describe('全链路: 刷题核心流程', () => {
       expect(studyStore.studyProgress.completedQuestions).toBe(81);
       expect(studyStore.questionHistory).toHaveLength(1);
     });
+
+    it('recordQuestionAttempt 持久化答题进度，让首页统计切回后立即更新', async () => {
+      const { useStudyStore } = await import('@/stores/modules/study.js');
+      const studyStore = useStudyStore();
+
+      studyStore.recordQuestionAttempt({
+        question: { id: 'q_today', category: '英语一', type: 'single_choice' },
+        isCorrect: true,
+        timeSpent: 3200,
+        timestamp: Date.now()
+      });
+
+      expect(studyStore.studyProgress.completedQuestions).toBe(1);
+      expect(studyStore.studyProgress.correctQuestions).toBe(1);
+      expect(studyStore.studyProgress.studyDays).toBe(1);
+      expect(studyStore.questionHistory).toHaveLength(1);
+      expect(global.__mockStorage.EXAM_STUDY_PROGRESS).toEqual(
+        expect.objectContaining({
+          progress: expect.objectContaining({ completedQuestions: 1, correctQuestions: 1 }),
+          history: [expect.objectContaining({ questionId: 'q_today', isCorrect: true })]
+        })
+      );
+    });
   });
 
   describe('Phase 2: 边界场景', () => {

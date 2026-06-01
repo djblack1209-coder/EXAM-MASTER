@@ -1,5 +1,5 @@
 <template>
-  <view class="page">
+  <view class="page" :class="{ 'dark-mode': isDark }">
     <!-- 自定义导航栏 -->
     <view class="nav-bar" :style="{ paddingTop: statusBarHeight + 'px' }">
       <view class="nav-content">
@@ -114,6 +114,7 @@
             <view
               v-if="!isBankLoaded(bank.id)"
               class="bank-btn load-btn"
+              :class="{ disabled: loadingBankId === bank.id }"
               hover-class="btn-hover"
               @tap="handleLoadBank(bank.id)"
             >
@@ -215,13 +216,20 @@ import { buildPublicCourseTrainingPlan } from '@/config/public-course-training-p
 import { storageService } from '@/services/storageService.js';
 import { safeNavigateTo } from '@/utils/safe-navigate';
 import { logger } from '@/utils/logger.js';
+import { toast } from '@/utils/toast.js';
 
 export default {
   components: { CustomTabbar, BaseIcon },
 
   setup() {
     const dynamicMixinHelper = useDynamicMixin();
-    const { loading, availableBanks, loadedBankIds: loadedIds, loadFlashcardBank } = useFlashcardBank();
+    const {
+      loading,
+      availableBanks,
+      loadedBankIds: loadedIds,
+      syncLoadedBankIds,
+      openQuestionBank
+    } = useFlashcardBank();
 
     const { hasBank, totalQuestions, progressPercent, isPageLoading, refreshBankStatus } = useBankStatus();
 
@@ -229,7 +237,8 @@ export default {
       loading,
       availableBanks,
       loadedIds,
-      loadFlashcardBank,
+      syncLoadedBankIds,
+      openQuestionBank,
       hasBank,
       totalQuestions,
       progressPercent,
@@ -245,6 +254,7 @@ export default {
       statusBarHeight: 44,
       tabBarHeight: 90,
       loadingBankId: null,
+      isDark: false,
       selectedSubjectKey: '',
       selectedTrackId: '',
       selectedModeId: 'past_exam'
@@ -350,16 +360,24 @@ export default {
   },
 
   onLoad() {
+    this.syncTheme();
     this.initLayout();
     this.refreshBankStatus();
     this.ensureNavigationSelection();
     this.preloadPracticeSubPackage();
+    uni.$on('themeUpdate', this.syncTheme);
   },
 
   onShow() {
+    this.syncTheme();
     // 每次切回刷新题库状态（可能在do-quiz中答了题）
+    this.syncLoadedBankIds?.();
     this.refreshBankStatus();
     this.ensureNavigationSelection();
+  },
+
+  onUnload() {
+    uni.$off('themeUpdate', this.syncTheme);
   },
 
   onShareAppMessage() {
@@ -471,24 +489,36 @@ export default {
       }
     },
 
+    syncTheme(mode) {
+      const resolved = mode || storageService.get('theme_mode', 'light');
+      this.isDark = resolved === 'dark';
+    },
+
     async handleLoadBank(bankId) {
-      try {
-        this.loadingBankId = bankId;
-        await this.loadFlashcardBank(bankId);
-        this.refreshBankStatus();
-      } catch (e) {
-        logger.error('[Practice] load bank failed:', e);
-        uni.showToast({ title: '加载失败，请重试', icon: 'none' });
-      } finally {
-        this.loadingBankId = null;
+      if (!bankId || this.loadingBankId === bankId) {
+        return;
       }
+
+      this.loadingBankId = bankId;
+      this.openQuestionBank?.(bankId);
+      this.loadingBankId = null;
     },
 
     goDoQuiz() {
+      this.refreshBankStatus?.();
+      if (!this.hasBank) {
+        toast.info('请先加载题库');
+        return;
+      }
       safeNavigateTo('/pages/practice-sub/do-quiz');
     },
 
     goSmartReview() {
+      this.refreshBankStatus?.();
+      if (!this.hasBank) {
+        toast.info('请先加载题库');
+        return;
+      }
       // 智能复习：跳转到 do-quiz 的复习模式
       safeNavigateTo('/pages/practice-sub/do-quiz?mode=smart_review');
     },
@@ -1230,5 +1260,97 @@ $spacing-section: 24rpx;
 .btn-hover {
   opacity: 0.85;
   transform: scale(0.98);
+}
+
+/* ==================== Dark Theme Guardrail ==================== */
+.page.dark-mode {
+  color: #f5f7fb;
+  background:
+    radial-gradient(circle at 16% 8%, rgba(0, 224, 255, 0.1) 0, rgba(0, 224, 255, 0) 32%),
+    radial-gradient(circle at 82% 16%, rgba(155, 81, 224, 0.12) 0, rgba(155, 81, 224, 0) 34%),
+    linear-gradient(180deg, #11141c 0%, #1a1c23 58%, #12151d 100%);
+}
+
+.dark-mode .nav-bar {
+  background: rgba(17, 20, 28, 0.82);
+  box-shadow: 0 1rpx 0 rgba(255, 255, 255, 0.08);
+}
+
+.dark-mode .nav-title,
+.dark-mode .practice-title,
+.dark-mode .section-title,
+.dark-mode .signal-value,
+.dark-mode .track-label,
+.dark-mode .training-title,
+.dark-mode .training-day-track,
+.dark-mode .professional-title,
+.dark-mode .bank-name,
+.dark-mode .empty-track-title,
+.dark-mode .status-text,
+.dark-mode .secondary-text {
+  color: #f5f7fb;
+}
+
+.dark-mode .practice-hero,
+.dark-mode .card,
+.dark-mode .professional-entry,
+.dark-mode .training-plan-card,
+.dark-mode .track-pill,
+.dark-mode .empty-track-card,
+.dark-mode .secondary-btn {
+  background: rgba(34, 37, 45, 0.82);
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 18rpx 48rpx rgba(0, 0, 0, 0.32);
+}
+
+.dark-mode .subject-tabs,
+.dark-mode .practice-signal,
+.dark-mode .training-day,
+.dark-mode .professional-action,
+.dark-mode .mode-chip,
+.dark-mode .training-status,
+.dark-mode .practice-command.secondary {
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.dark-mode .practice-subtitle,
+.dark-mode .section-hint,
+.dark-mode .section-meta,
+.dark-mode .signal-label,
+.dark-mode .training-meta,
+.dark-mode .professional-desc,
+.dark-mode .bank-desc,
+.dark-mode .bank-caution,
+.dark-mode .empty-track-desc,
+.dark-mode .progress-label {
+  color: rgba(245, 247, 251, 0.62);
+}
+
+.dark-mode .subject-tab.active {
+  background: rgba(0, 224, 255, 0.12);
+  color: #75ddff;
+  box-shadow: none;
+}
+
+.dark-mode .track-pill.active,
+.dark-mode .primary-btn,
+.dark-mode .practice-command.primary,
+.dark-mode .load-btn,
+.dark-mode .empty-track-action {
+  background: linear-gradient(135deg, #00e0ff 0%, #3f8cff 100%);
+  box-shadow: 0 16rpx 38rpx rgba(0, 224, 255, 0.22);
+}
+
+.dark-mode .track-pill.active .track-code,
+.dark-mode .track-pill.active .track-label,
+.dark-mode .primary-btn .action-btn-text,
+.dark-mode .practice-command.primary text,
+.dark-mode .load-btn .bank-btn-text,
+.dark-mode .empty-track-action text {
+  color: #10131a;
+}
+
+.dark-mode .progress-bar-sm {
+  background: rgba(255, 255, 255, 0.1);
 }
 </style>

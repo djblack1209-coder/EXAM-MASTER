@@ -1,0 +1,1352 @@
+{
+  "id": "math2-2014",
+  "source": "math2-2014-paper-answer",
+  "paperId": "math2-2014",
+  "paperName": "2014考研数学二真题",
+  "subject": "数学",
+  "subjectKey": "math",
+  "track": "math2",
+  "year": "2014",
+  "quality": "ready",
+  "publicationStatus": "published",
+  "publicationBlockers": [],
+  "sourceEvidencePolicy": "baidu_netdisk_official_paper_pdf_page_image_v1",
+  "sourceFiles": [
+    {
+      "id": "math2-2014-paper-answer",
+      "role": "paper_answer",
+      "localPath": "data/raw-inbox/src_cabdf1fe95d0ffad0c8f0e8c-2014考研数学二真题.pdf",
+      "sha256": "sha256:72d2ac3545256e14843de1ccfa9c980480dc299b2cc49486e128e9c20ee820ef",
+      "sourceId": "src_cabdf1fe95d0ffad0c8f0e8c"
+    }
+  ],
+  "assetRoot": "question-bank/math2-2014",
+  "processed_at": "2026-05-31T00:06:18Z",
+  "total_cards": 23,
+  "cards": [
+    {
+      "id": "math2-2014-001",
+      "number": 1,
+      "paperId": "math2-2014",
+      "paperName": "2014考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2014",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2014考研数学二第1题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2014 数学二真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2014/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2014考研数学二试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2014/answer-page-04.jpg",
+          "caption": "答案解析 p.4",
+          "alt": "2014考研数学二答案解析 p.4"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2014",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2014-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:6afd03b888b4964989506871a1308d96f94cdaf70171c55ed8bc49c38493f164",
+      "answerTextHash": "sha256:d6ef538eebe4fac36acf0af56c101c395d0de17a2c04761459cb375418380c8d",
+      "sourceEvidence": {
+        "evidenceId": "math2-2014-q01",
+        "sourceId": "src_cabdf1fe95d0ffad0c8f0e8c",
+        "answerSourceId": "src_cabdf1fe95d0ffad0c8f0e8c",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2014-paper-answer",
+        "answerEvidenceId": "math2-2014-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:d6ef538eebe4fac36acf0af56c101c395d0de17a2c04761459cb375418380c8d"
+      }
+    },
+    {
+      "id": "math2-2014-002",
+      "number": 2,
+      "paperId": "math2-2014",
+      "paperName": "2014考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2014",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2014考研数学二第2题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2014 数学二真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2014/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2014考研数学二试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2014/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2014考研数学二答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2014",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2014-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:5628199e397eb2d9de280192101c085d0cef0fd4c8eb26467b3e0c34c9d73a88",
+      "answerTextHash": "sha256:98d843014fcc06e8c015999ef30423714e3b0fc8d97ddf5a4680ed5e2e3f0339",
+      "sourceEvidence": {
+        "evidenceId": "math2-2014-q02",
+        "sourceId": "src_cabdf1fe95d0ffad0c8f0e8c",
+        "answerSourceId": "src_cabdf1fe95d0ffad0c8f0e8c",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2014-paper-answer",
+        "answerEvidenceId": "math2-2014-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:98d843014fcc06e8c015999ef30423714e3b0fc8d97ddf5a4680ed5e2e3f0339"
+      }
+    },
+    {
+      "id": "math2-2014-003",
+      "number": 3,
+      "paperId": "math2-2014",
+      "paperName": "2014考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2014",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2014考研数学二第3题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2014 数学二真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2014/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2014考研数学二试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2014/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2014考研数学二答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2014",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2014-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:fffe9b1607d7b5ab876ee0faac259070e4eeead1501ff9040933f984094caacc",
+      "answerTextHash": "sha256:28d0c2da83a91da6daa0b76dc4fb5ce9a2d98a69f7ac96655fe3d017a8584605",
+      "sourceEvidence": {
+        "evidenceId": "math2-2014-q03",
+        "sourceId": "src_cabdf1fe95d0ffad0c8f0e8c",
+        "answerSourceId": "src_cabdf1fe95d0ffad0c8f0e8c",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2014-paper-answer",
+        "answerEvidenceId": "math2-2014-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:28d0c2da83a91da6daa0b76dc4fb5ce9a2d98a69f7ac96655fe3d017a8584605"
+      }
+    },
+    {
+      "id": "math2-2014-004",
+      "number": 4,
+      "paperId": "math2-2014",
+      "paperName": "2014考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2014",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2014考研数学二第4题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2014 数学二真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2014/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2014考研数学二试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2014/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2014考研数学二答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2014",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2014-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:fdcc67699faf944d2e6c35ce197547de198928bea9d4ab986d1612339eb4dba8",
+      "answerTextHash": "sha256:98d843014fcc06e8c015999ef30423714e3b0fc8d97ddf5a4680ed5e2e3f0339",
+      "sourceEvidence": {
+        "evidenceId": "math2-2014-q04",
+        "sourceId": "src_cabdf1fe95d0ffad0c8f0e8c",
+        "answerSourceId": "src_cabdf1fe95d0ffad0c8f0e8c",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2014-paper-answer",
+        "answerEvidenceId": "math2-2014-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:98d843014fcc06e8c015999ef30423714e3b0fc8d97ddf5a4680ed5e2e3f0339"
+      }
+    },
+    {
+      "id": "math2-2014-005",
+      "number": 5,
+      "paperId": "math2-2014",
+      "paperName": "2014考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2014",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2014考研数学二第5题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2014 数学二真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2014/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2014考研数学二试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2014/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2014考研数学二答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2014",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2014-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:0ff96a34ca2f832162cdf7cff83b080d8b1e54ecfb339c9989858f3b81f6ac9c",
+      "answerTextHash": "sha256:e4a2fe781d79b6ac0d0a57fdf6fcbe5f0bd7d1dfefea384e35b54f195a6a4c7c",
+      "sourceEvidence": {
+        "evidenceId": "math2-2014-q05",
+        "sourceId": "src_cabdf1fe95d0ffad0c8f0e8c",
+        "answerSourceId": "src_cabdf1fe95d0ffad0c8f0e8c",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2014-paper-answer",
+        "answerEvidenceId": "math2-2014-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:e4a2fe781d79b6ac0d0a57fdf6fcbe5f0bd7d1dfefea384e35b54f195a6a4c7c"
+      }
+    },
+    {
+      "id": "math2-2014-006",
+      "number": 6,
+      "paperId": "math2-2014",
+      "paperName": "2014考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2014",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2014考研数学二第6题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2014 数学二真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2014/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2014考研数学二试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2014/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2014考研数学二答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2014",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2014-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:c7a9e4120b17884fb8c508ac330d56da4ec698c02ba4b351bcbfe629d3ee0b7c",
+      "answerTextHash": "sha256:4209b11a0436dfb93acf2c09f66665ad24b609a48058f6de76eacd161bca58d7",
+      "sourceEvidence": {
+        "evidenceId": "math2-2014-q06",
+        "sourceId": "src_cabdf1fe95d0ffad0c8f0e8c",
+        "answerSourceId": "src_cabdf1fe95d0ffad0c8f0e8c",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2014-paper-answer",
+        "answerEvidenceId": "math2-2014-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:4209b11a0436dfb93acf2c09f66665ad24b609a48058f6de76eacd161bca58d7"
+      }
+    },
+    {
+      "id": "math2-2014-007",
+      "number": 7,
+      "paperId": "math2-2014",
+      "paperName": "2014考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2014",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2014考研数学二第7题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2014 数学二真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2014/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2014考研数学二试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2014/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2014考研数学二答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2014",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2014-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:725fb175eb12c92f4e29aa84080dc1206e2c7a05d48f5d4433cbf27ea936f9f6",
+      "answerTextHash": "sha256:48a655724228f727dcd7f827c2a466e9941da8c76ac17f8df2a224b305cd0de5",
+      "sourceEvidence": {
+        "evidenceId": "math2-2014-q07",
+        "sourceId": "src_cabdf1fe95d0ffad0c8f0e8c",
+        "answerSourceId": "src_cabdf1fe95d0ffad0c8f0e8c",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2014-paper-answer",
+        "answerEvidenceId": "math2-2014-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:48a655724228f727dcd7f827c2a466e9941da8c76ac17f8df2a224b305cd0de5"
+      }
+    },
+    {
+      "id": "math2-2014-008",
+      "number": 8,
+      "paperId": "math2-2014",
+      "paperName": "2014考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2014",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2014考研数学二第8题（选择题）。题干、公式和图形以试卷原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2014 数学二真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2014/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2014考研数学二试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2014/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2014考研数学二答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2014",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2014-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:d74c87bb841e9c71824f04a6413f812d6444be3a1647fb019e972a9e70c3a763",
+      "answerTextHash": "sha256:e0379f21e18a4103fb1f2a55b207f44908f3ae98f7b934d91863940d970b293e",
+      "sourceEvidence": {
+        "evidenceId": "math2-2014-q08",
+        "sourceId": "src_cabdf1fe95d0ffad0c8f0e8c",
+        "answerSourceId": "src_cabdf1fe95d0ffad0c8f0e8c",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2014-paper-answer",
+        "answerEvidenceId": "math2-2014-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:e0379f21e18a4103fb1f2a55b207f44908f3ae98f7b934d91863940d970b293e"
+      }
+    },
+    {
+      "id": "math2-2014-009",
+      "number": 9,
+      "paperId": "math2-2014",
+      "paperName": "2014考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2014",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2014考研数学二第9题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "3pi/8",
+      "explanation": "答案来自本地百度网盘 2014 数学二真题及解析 PDF；完整题干和公式见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2014/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2014考研数学二试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2014/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2014考研数学二答案解析 p.8"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2014",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2014-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:8a7e0d186c7a1a6488750f4b5649200f8033c8eb61fce55111b8bbe436c93948",
+      "answerTextHash": "sha256:5bf8090a13a26560bdea79de824c386aba898b37ec89c37aa6973f38b410a4a1",
+      "sourceEvidence": {
+        "evidenceId": "math2-2014-q09",
+        "sourceId": "src_cabdf1fe95d0ffad0c8f0e8c",
+        "answerSourceId": "src_cabdf1fe95d0ffad0c8f0e8c",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2014-paper-answer",
+        "answerEvidenceId": "math2-2014-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:5bf8090a13a26560bdea79de824c386aba898b37ec89c37aa6973f38b410a4a1"
+      }
+    },
+    {
+      "id": "math2-2014-010",
+      "number": 10,
+      "paperId": "math2-2014",
+      "paperName": "2014考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2014",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2014考研数学二第10题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "1",
+      "explanation": "答案来自本地百度网盘 2014 数学二真题及解析 PDF；完整题干和公式见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2014/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2014考研数学二试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2014/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2014考研数学二答案解析 p.8"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2014",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2014-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:27efde1b3bfaf1ce4fa6b0edd01d5528d1a4743a6fb0382c926fd4d8b3d0fa5d",
+      "answerTextHash": "sha256:d851271a5da33f2e61c37fc066c80aeb97dc4cf12d63147e7b7e765f7a220bdb",
+      "sourceEvidence": {
+        "evidenceId": "math2-2014-q10",
+        "sourceId": "src_cabdf1fe95d0ffad0c8f0e8c",
+        "answerSourceId": "src_cabdf1fe95d0ffad0c8f0e8c",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2014-paper-answer",
+        "answerEvidenceId": "math2-2014-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:d851271a5da33f2e61c37fc066c80aeb97dc4cf12d63147e7b7e765f7a220bdb"
+      }
+    },
+    {
+      "id": "math2-2014-011",
+      "number": 11,
+      "paperId": "math2-2014",
+      "paperName": "2014考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2014",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2014考研数学二第11题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "-1/2(dx+dy)",
+      "explanation": "答案来自本地百度网盘 2014 数学二真题及解析 PDF；完整题干和公式见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2014/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2014考研数学二试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2014/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2014考研数学二答案解析 p.8"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2014",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2014-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:3ac8c618dab2a12ac705db165aa360e9e79dee53c5b74cf8508c0998e0f41ce4",
+      "answerTextHash": "sha256:8215b37697e5dd6c3f76907462638f18de02bcd0c8b3d2e81a672fc69a13a1bd",
+      "sourceEvidence": {
+        "evidenceId": "math2-2014-q11",
+        "sourceId": "src_cabdf1fe95d0ffad0c8f0e8c",
+        "answerSourceId": "src_cabdf1fe95d0ffad0c8f0e8c",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2014-paper-answer",
+        "answerEvidenceId": "math2-2014-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:8215b37697e5dd6c3f76907462638f18de02bcd0c8b3d2e81a672fc69a13a1bd"
+      }
+    },
+    {
+      "id": "math2-2014-012",
+      "number": 12,
+      "paperId": "math2-2014",
+      "paperName": "2014考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2014",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2014考研数学二第12题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "y = -(2/pi)x + pi/2",
+      "explanation": "答案来自本地百度网盘 2014 数学二真题及解析 PDF；完整题干和公式见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2014/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2014考研数学二试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2014/answer-page-09.jpg",
+          "caption": "答案解析 p.9",
+          "alt": "2014考研数学二答案解析 p.9"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2014",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2014-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:8823559bfd454dadc8908fcc6cc2cb4cbcfbf85150c7727a6d48f753d81dc47d",
+      "answerTextHash": "sha256:34ecfbe0f15beca9c9e2566c887120d836c872f5c121f50cbd78e1a1dc14be9e",
+      "sourceEvidence": {
+        "evidenceId": "math2-2014-q12",
+        "sourceId": "src_cabdf1fe95d0ffad0c8f0e8c",
+        "answerSourceId": "src_cabdf1fe95d0ffad0c8f0e8c",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2014-paper-answer",
+        "answerEvidenceId": "math2-2014-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:34ecfbe0f15beca9c9e2566c887120d836c872f5c121f50cbd78e1a1dc14be9e"
+      }
+    },
+    {
+      "id": "math2-2014-013",
+      "number": 13,
+      "paperId": "math2-2014",
+      "paperName": "2014考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2014",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2014考研数学二第13题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "11/20",
+      "explanation": "答案来自本地百度网盘 2014 数学二真题及解析 PDF；完整题干和公式见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2014/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2014考研数学二试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2014/answer-page-09.jpg",
+          "caption": "答案解析 p.9",
+          "alt": "2014考研数学二答案解析 p.9"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2014",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2014-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:7e1e880893bfad85d4818c1fdf91d92a219fba9e66e561f90fb0e2c6e9901cc4",
+      "answerTextHash": "sha256:5709a6dd27c9dfce25e4785765949c72952e82c0d74f3e7745870de4151b096c",
+      "sourceEvidence": {
+        "evidenceId": "math2-2014-q13",
+        "sourceId": "src_cabdf1fe95d0ffad0c8f0e8c",
+        "answerSourceId": "src_cabdf1fe95d0ffad0c8f0e8c",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2014-paper-answer",
+        "answerEvidenceId": "math2-2014-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:5709a6dd27c9dfce25e4785765949c72952e82c0d74f3e7745870de4151b096c"
+      }
+    },
+    {
+      "id": "math2-2014-014",
+      "number": 14,
+      "paperId": "math2-2014",
+      "paperName": "2014考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2014",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2014考研数学二第14题（填空题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "[-2, 2]",
+      "explanation": "答案来自本地百度网盘 2014 数学二真题及解析 PDF；完整题干和公式见试卷原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2014/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2014考研数学二试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2014/answer-page-10.jpg",
+          "caption": "答案解析 p.10",
+          "alt": "2014考研数学二答案解析 p.10"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2014",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2014-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:0f388b792b90312e0d4550b8577b452eaabf829f9662b7b9dcaf66beb2279a9f",
+      "answerTextHash": "sha256:7e548f93839584da448e48fb6623fb51f216310ceb1262ea07af3200d87d84cd",
+      "sourceEvidence": {
+        "evidenceId": "math2-2014-q14",
+        "sourceId": "src_cabdf1fe95d0ffad0c8f0e8c",
+        "answerSourceId": "src_cabdf1fe95d0ffad0c8f0e8c",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2014-paper-answer",
+        "answerEvidenceId": "math2-2014-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:7e548f93839584da448e48fb6623fb51f216310ceb1262ea07af3200d87d84cd"
+      }
+    },
+    {
+      "id": "math2-2014-015",
+      "number": 15,
+      "paperId": "math2-2014",
+      "paperName": "2014考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2014",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2014考研数学二第15题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "极限为 1/2。",
+      "explanation": "答案来自本地百度网盘 2014 数学二真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2014/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2014考研数学二试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2014/answer-page-10.jpg",
+          "caption": "答案解析 p.10",
+          "alt": "2014考研数学二答案解析 p.10"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2014",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2014-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:490c0ddfeaf7895f17a8a6417c11dd8843d0ca84a47357556f4ffb384000c95a",
+      "answerTextHash": "sha256:928d401af2047bdd5c1efff50b8c7bba4b2c877a7e9af94f38617784145b340c",
+      "sourceEvidence": {
+        "evidenceId": "math2-2014-q15",
+        "sourceId": "src_cabdf1fe95d0ffad0c8f0e8c",
+        "answerSourceId": "src_cabdf1fe95d0ffad0c8f0e8c",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2014-paper-answer",
+        "answerEvidenceId": "math2-2014-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:928d401af2047bdd5c1efff50b8c7bba4b2c877a7e9af94f38617784145b340c"
+      }
+    },
+    {
+      "id": "math2-2014-016",
+      "number": 16,
+      "paperId": "math2-2014",
+      "paperName": "2014考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2014",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2014考研数学二第16题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "y(x) 的极大值为 1，极小值为 0。",
+      "explanation": "答案来自本地百度网盘 2014 数学二真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2014/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2014考研数学二试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2014/answer-page-11.jpg",
+          "caption": "答案解析 p.11",
+          "alt": "2014考研数学二答案解析 p.11"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2014",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2014-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:1e2f80cd8eae7870bf2f35fe871c954c346f685137e25bb265879063efde96a4",
+      "answerTextHash": "sha256:5792506ea86dd73be318904001631d1bdc715db9e8d73dd21a3e4059f51de1a6",
+      "sourceEvidence": {
+        "evidenceId": "math2-2014-q16",
+        "sourceId": "src_cabdf1fe95d0ffad0c8f0e8c",
+        "answerSourceId": "src_cabdf1fe95d0ffad0c8f0e8c",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2014-paper-answer",
+        "answerEvidenceId": "math2-2014-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:5792506ea86dd73be318904001631d1bdc715db9e8d73dd21a3e4059f51de1a6"
+      }
+    },
+    {
+      "id": "math2-2014-017",
+      "number": 17,
+      "paperId": "math2-2014",
+      "paperName": "2014考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2014",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2014考研数学二第17题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "积分值为 -3/4。",
+      "explanation": "答案来自本地百度网盘 2014 数学二真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2014/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2014考研数学二试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2014/answer-page-11.jpg",
+          "caption": "答案解析 p.11",
+          "alt": "2014考研数学二答案解析 p.11"
+        },
+        {
+          "src": "question-bank/math2-2014/answer-page-12.jpg",
+          "caption": "答案解析 p.12",
+          "alt": "2014考研数学二答案解析 p.12"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2014",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2014-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:ae91bc5cf60ed3f82fdd9943995b31b9a590c5f49b64b9e83c5f1b1f9cff8635",
+      "answerTextHash": "sha256:1376dfd391589b83858784d53455a15c844e60e027d2a53eb70184fa1e7eb88d",
+      "sourceEvidence": {
+        "evidenceId": "math2-2014-q17",
+        "sourceId": "src_cabdf1fe95d0ffad0c8f0e8c",
+        "answerSourceId": "src_cabdf1fe95d0ffad0c8f0e8c",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2014-paper-answer",
+        "answerEvidenceId": "math2-2014-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:1376dfd391589b83858784d53455a15c844e60e027d2a53eb70184fa1e7eb88d"
+      }
+    },
+    {
+      "id": "math2-2014-018",
+      "number": 18,
+      "paperId": "math2-2014",
+      "paperName": "2014考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2014",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2014考研数学二第18题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "f(u) = (1/16)e^(2u) - (1/16)e^(-2u) - u/4。",
+      "explanation": "答案来自本地百度网盘 2014 数学二真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2014/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2014考研数学二试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2014/answer-page-12.jpg",
+          "caption": "答案解析 p.12",
+          "alt": "2014考研数学二答案解析 p.12"
+        },
+        {
+          "src": "question-bank/math2-2014/answer-page-13.jpg",
+          "caption": "答案解析 p.13",
+          "alt": "2014考研数学二答案解析 p.13"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2014",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2014-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:0ef4b9b44f8fc218f812f630c889a2768063c67e3a427bcb7ed30dca0fee3067",
+      "answerTextHash": "sha256:6762b4c039a0c0ebe51349f59d63e4fba9ecdd1dcd626a14536520e3386cf3b7",
+      "sourceEvidence": {
+        "evidenceId": "math2-2014-q18",
+        "sourceId": "src_cabdf1fe95d0ffad0c8f0e8c",
+        "answerSourceId": "src_cabdf1fe95d0ffad0c8f0e8c",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2014-paper-answer",
+        "answerEvidenceId": "math2-2014-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:6762b4c039a0c0ebe51349f59d63e4fba9ecdd1dcd626a14536520e3386cf3b7"
+      }
+    },
+    {
+      "id": "math2-2014-019",
+      "number": 19,
+      "paperId": "math2-2014",
+      "paperName": "2014考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2014",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2014考研数学二第19题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "证明结论见答案原页。",
+      "explanation": "答案来自本地百度网盘 2014 数学二真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2014/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2014考研数学二试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2014/answer-page-13.jpg",
+          "caption": "答案解析 p.13",
+          "alt": "2014考研数学二答案解析 p.13"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2014",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2014-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:a3321857fc3331e8d1323b91d95e938cee2c92163e0f5d51019af24dedfe9fcd",
+      "answerTextHash": "sha256:96f1fa10079f1af39dfa7a7d2e090d6bcc3e32fd71a9af6ca3edb752838b8ebe",
+      "sourceEvidence": {
+        "evidenceId": "math2-2014-q19",
+        "sourceId": "src_cabdf1fe95d0ffad0c8f0e8c",
+        "answerSourceId": "src_cabdf1fe95d0ffad0c8f0e8c",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2014-paper-answer",
+        "answerEvidenceId": "math2-2014-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:96f1fa10079f1af39dfa7a7d2e090d6bcc3e32fd71a9af6ca3edb752838b8ebe"
+      }
+    },
+    {
+      "id": "math2-2014-020",
+      "number": 20,
+      "paperId": "math2-2014",
+      "paperName": "2014考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2014",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2014考研数学二第20题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "极限为 1。",
+      "explanation": "答案来自本地百度网盘 2014 数学二真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2014/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2014考研数学二试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2014/answer-page-14.jpg",
+          "caption": "答案解析 p.14",
+          "alt": "2014考研数学二答案解析 p.14"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2014",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2014-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:0338c42419f8feecf614964017502cf3216616f561053d779172558d5f7e7c81",
+      "answerTextHash": "sha256:579cb0b33639523e2f0d0579305dba76b344ee30cd311bdf3fdf930c28284b70",
+      "sourceEvidence": {
+        "evidenceId": "math2-2014-q20",
+        "sourceId": "src_cabdf1fe95d0ffad0c8f0e8c",
+        "answerSourceId": "src_cabdf1fe95d0ffad0c8f0e8c",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2014-paper-answer",
+        "answerEvidenceId": "math2-2014-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:579cb0b33639523e2f0d0579305dba76b344ee30cd311bdf3fdf930c28284b70"
+      }
+    },
+    {
+      "id": "math2-2014-021",
+      "number": 21,
+      "paperId": "math2-2014",
+      "paperName": "2014考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2014",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2014考研数学二第21题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "旋转体体积公式与计算过程见答案原页。",
+      "explanation": "答案来自本地百度网盘 2014 数学二真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2014/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2014考研数学二试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2014/answer-page-14.jpg",
+          "caption": "答案解析 p.14",
+          "alt": "2014考研数学二答案解析 p.14"
+        },
+        {
+          "src": "question-bank/math2-2014/answer-page-15.jpg",
+          "caption": "答案解析 p.15",
+          "alt": "2014考研数学二答案解析 p.15"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2014",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2014-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:ae26b966e7a712a18b57680a850e01c3d6d30193f6940ddbf1d6cefb11439d73",
+      "answerTextHash": "sha256:c66f245e979c92df3fd19940f551b2ea13ba99dcd8e345945c374906d592cef9",
+      "sourceEvidence": {
+        "evidenceId": "math2-2014-q21",
+        "sourceId": "src_cabdf1fe95d0ffad0c8f0e8c",
+        "answerSourceId": "src_cabdf1fe95d0ffad0c8f0e8c",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2014-paper-answer",
+        "answerEvidenceId": "math2-2014-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:c66f245e979c92df3fd19940f551b2ea13ba99dcd8e345945c374906d592cef9"
+      }
+    },
+    {
+      "id": "math2-2014-022",
+      "number": 22,
+      "paperId": "math2-2014",
+      "paperName": "2014考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2014",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2014考研数学二第22题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "方程组基础解系与满足 AB=E 的全部矩阵见答案原页。",
+      "explanation": "答案来自本地百度网盘 2014 数学二真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2014/paper-page-04-question-crop.jpg",
+          "caption": "试卷原页 p.4（题面裁切）",
+          "alt": "2014考研数学二试卷原页 p.4（题面裁切）"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2014/answer-page-15.jpg",
+          "caption": "答案解析 p.15",
+          "alt": "2014考研数学二答案解析 p.15"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2014",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2014-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:2592d8efa31ebd94aff46b288c07b3e49674ae6007b00ea13f899b0224b91ee5",
+      "answerTextHash": "sha256:2146c89d35c907c05f3a132171e42bee94a17a8a0327ff1b5f16468afa54fc7d",
+      "sourceEvidence": {
+        "evidenceId": "math2-2014-q22",
+        "sourceId": "src_cabdf1fe95d0ffad0c8f0e8c",
+        "answerSourceId": "src_cabdf1fe95d0ffad0c8f0e8c",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2014-paper-answer",
+        "answerEvidenceId": "math2-2014-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:2146c89d35c907c05f3a132171e42bee94a17a8a0327ff1b5f16468afa54fc7d"
+      }
+    },
+    {
+      "id": "math2-2014-023",
+      "number": 23,
+      "paperId": "math2-2014",
+      "paperName": "2014考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2014",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2014考研数学二第23题（解答题）。题干、公式和图形以试卷原页图为准。",
+      "options": [],
+      "answer": "矩阵相似性证明见答案原页。",
+      "explanation": "答案来自本地百度网盘 2014 数学二真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2014/paper-page-04-question-crop.jpg",
+          "caption": "试卷原页 p.4（题面裁切）",
+          "alt": "2014考研数学二试卷原页 p.4（题面裁切）"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2014/answer-page-16.jpg",
+          "caption": "答案解析 p.16",
+          "alt": "2014考研数学二答案解析 p.16"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2014",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2014-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:7534a41f8eefd8565fffcaede866c41468892a0330991807577d8e45ed7b07d3",
+      "answerTextHash": "sha256:87ca6ba2cd9eb8d2e1730949f881348dbf93f1fc1381a7f214396adea74ccf90",
+      "sourceEvidence": {
+        "evidenceId": "math2-2014-q23",
+        "sourceId": "src_cabdf1fe95d0ffad0c8f0e8c",
+        "answerSourceId": "src_cabdf1fe95d0ffad0c8f0e8c",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "paper_answer_page_image",
+        "sourceEvidenceId": "math2-2014-paper-answer",
+        "answerEvidenceId": "math2-2014-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:87ca6ba2cd9eb8d2e1730949f881348dbf93f1fc1381a7f214396adea74ccf90"
+      }
+    }
+  ]
+}

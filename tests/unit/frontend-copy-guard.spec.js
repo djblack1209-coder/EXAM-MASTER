@@ -9,6 +9,7 @@ const SCAN_TARGETS = [
   'src/config/home-data.js',
   'src/config/bank-registry.js'
 ];
+const GENERATED_DATA_FILES = new Set(['src/pages/practice-sub/bank-data-table.js']);
 
 const FORBIDDEN_PUBLIC_COPY = [
   '清洗',
@@ -60,6 +61,10 @@ describe('frontend public copy guard', () => {
   it('does not expose backend workflow terms in user-facing frontend files', () => {
     const offenders = [];
     for (const file of SCAN_TARGETS.flatMap(collectFiles)) {
+      if (GENERATED_DATA_FILES.has(relative(ROOT, file))) {
+        continue;
+      }
+
       const source = stripAllowedTechnicalTerms(readFileSync(file, 'utf8'));
       for (const term of FORBIDDEN_PUBLIC_COPY) {
         if (source.includes(term)) {

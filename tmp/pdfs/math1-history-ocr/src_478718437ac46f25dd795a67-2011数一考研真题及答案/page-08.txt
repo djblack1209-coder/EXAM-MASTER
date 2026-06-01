@@ -1,0 +1,26 @@
+综上所述，上<1时，方程arctan r- x= 0只有一个实恨
+
+E> bhe FRE Faxcton xy= 0有两个实要
+18、(本是满分 10 分) 证明。 (1) RHEE, eA <tnae dy <b
+@) Beate h+  oo ) ，证明数列{a,} 收仇
+【考点分析 本三考查不等式的证明和数收生性的证明，准度较大。(1) 要证明该不等
+式，可以和其转化为函数不等式，再利用单调性进生证明;(2) 还明收煞性时要用到单调有
+界收伊定理，注意应用 CL) 的结论，
+[角昕1 仿二= ，则不等式可化为-<laQ+轨<r>0。
+‘EMM INGL+ 3) <.x,7>05
+人AD- stn) FF )=1- E20. > 0. oa) fe [0.4) Lin
+AHF /O)=0, Wit x>ON, 7(2)> (O)=0, tHBInd +x) <x,4>0.
+Sib <Ind +. > 0%
+& o()=Ine yt FeO Doggone ‘ffm e(s) tf 0,+=0)
+单调过增, 由于8(O) = 9，因此当r>0时，8(t) > 8(0) -0 wo < Int av >0-
+因此， 我人证明了-<lnQ+汪<xx>0 再令由于，即可得到所需证明的不等式，
+@ ayaa, Apia +4), srt A ings 二可和 数列{,} nie
+a.
+又由不等起ma人+ 了 <} apa,
+
+Pon
+
+agate bed tne tng et) tng 2). tnd's 4) —tnir=In( 41) —In7>0.
+BLAH fc, 是有界的。故由单调有界收北定理可知， CH co, ye
+19, CASH 11) COMM (xy) 具有二阶连续俩导数，且.AQ.D= onD=0，
+ff Ddedvea ，其中 Da((ej)OSrshosy<l}. Ma HRD

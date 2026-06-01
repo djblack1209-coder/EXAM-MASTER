@@ -1,5 +1,5 @@
 <template>
-  <view class="page">
+  <view class="page" :class="{ 'dark-mode': isDark }">
     <!-- 微信隐私保护弹窗 -->
     <PrivacyPopup />
 
@@ -206,6 +206,7 @@ export default {
       loadedPaperCount: 0,
       accuracy: 0,
       recentActivities: [],
+      isDark: false,
       activeDashboardTab: 'today',
       dashboardTabs: [
         { id: 'today', label: '今日' },
@@ -280,15 +281,22 @@ export default {
   },
 
   onLoad() {
+    this.syncTheme();
     this.initLayout();
     this.loadData();
+    uni.$on('themeUpdate', this.syncTheme);
   },
 
   onShow() {
+    this.syncTheme();
     // 每次切回首页刷新统计
     if (this._loaded) {
       this.loadData();
     }
+  },
+
+  onUnload() {
+    uni.$off('themeUpdate', this.syncTheme);
   },
 
   // 微信分享
@@ -310,6 +318,11 @@ export default {
       } catch (_e) {
         logger.warn('[Index] layout init failed, using defaults');
       }
+    },
+
+    syncTheme(mode) {
+      const resolved = mode || storageService.get('theme_mode', 'light');
+      this.isDark = resolved === 'dark';
     },
 
     loadData() {
@@ -1090,5 +1103,55 @@ $spacing-section: 24rpx;
 .btn-hover {
   opacity: 0.85;
   transform: scale(0.98);
+}
+
+/* ==================== Dark Theme Guardrail ==================== */
+.page.dark-mode {
+  color: #f5f7fb;
+  background:
+    radial-gradient(circle at 16% 8%, rgba(0, 224, 255, 0.1) 0, rgba(0, 224, 255, 0) 32%),
+    radial-gradient(circle at 82% 16%, rgba(155, 81, 224, 0.12) 0, rgba(155, 81, 224, 0) 34%),
+    linear-gradient(180deg, #11141c 0%, #1a1c23 58%, #12151d 100%);
+}
+
+.dark-mode .nav-bar {
+  background: rgba(17, 20, 28, 0.82);
+  box-shadow: 0 1rpx 0 rgba(255, 255, 255, 0.08);
+}
+
+.dark-mode .nav-title,
+.dark-mode .section-title,
+.dark-mode .card-title,
+.dark-mode .stat-value,
+.dark-mode .activity-name,
+.dark-mode .progress-text {
+  color: #f5f7fb;
+}
+
+.dark-mode .nav-status {
+  border-color: rgba(0, 224, 255, 0.18);
+  background: rgba(0, 224, 255, 0.12);
+  color: #75ddff;
+}
+
+.dark-mode .card,
+.dark-mode .stat-card {
+  background: rgba(34, 37, 45, 0.82);
+  border: 1rpx solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 18rpx 48rpx rgba(0, 0, 0, 0.32);
+}
+
+.dark-mode .progress-card {
+  background: rgba(34, 37, 45, 0.82);
+}
+
+.dark-mode .progress-bar {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.dark-mode .stat-kicker,
+.dark-mode .stat-label,
+.dark-mode .activity-time {
+  color: rgba(245, 247, 251, 0.58);
 }
 </style>

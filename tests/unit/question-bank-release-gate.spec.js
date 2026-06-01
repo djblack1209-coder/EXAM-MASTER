@@ -125,7 +125,7 @@ describe('question bank release gate', () => {
     expect(report.summary.sourceManifestPublishableOfficialPapers).toBe(2);
     expect(report.summary.sourceManifestAutoPairedOfficialSourceSlots).toBe(2);
     expect(report.summary.sourceManifestCoverageGapCount).toBe(16);
-    expect(report.summary.pendingCoverageBlockerCount).toBeGreaterThan(0);
+    expect(report.summary.pendingCoverageBlockerCount).toBe(0);
     expect(report.sourceEvidence.coverage.english1.presentYears).toEqual([2024]);
     expect(report.sourceEvidence.coverage.english2.presentYears).toEqual([2024]);
     expect(report.sourceEvidence.candidateDiagnostics.english1[2024]).toMatchObject({
@@ -147,7 +147,7 @@ describe('question bank release gate', () => {
     expect(report.summary.enabledBankCount).toBeGreaterThan(0);
     expect(report.summary.selfStudyDraftBankCount).toBe(0);
     expect(report.summary.pendingBankCount).toBeGreaterThan(0);
-    expect(report.coverage.tracks.find((track) => track.track === 'english2').releaseState).toBe('empty');
+    expect(report.coverage.tracks.find((track) => track.track === 'english2').releaseState).toBe('partial');
     expect(report.answerEvidence.blockedBanks).toEqual([]);
   });
 

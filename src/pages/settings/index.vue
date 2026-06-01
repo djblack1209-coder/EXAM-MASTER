@@ -206,6 +206,22 @@
           <em3d-switch id="e2e-settings-dark-switch" :model-value="isDark" @change="toggleDark3d" />
         </view>
 
+        <view class="setting-item ds-flex ds-flex-between">
+          <view class="setting-info">
+            <text class="setting-title ds-text-sm ds-font-medium"> 答题音效 </text>
+            <text class="setting-desc ds-text-xs"> 点击、答对、答错和完成练习的声音反馈 </text>
+          </view>
+          <em3d-switch id="e2e-settings-sound-switch" :model-value="soundEnabled" @change="toggleSoundFeedback" />
+        </view>
+
+        <view class="setting-item ds-flex ds-flex-between">
+          <view class="setting-info">
+            <text class="setting-title ds-text-sm ds-font-medium"> 震动反馈 </text>
+            <text class="setting-desc ds-text-xs"> 答题、切换和完成动作的触觉反馈 </text>
+          </view>
+          <em3d-switch id="e2e-settings-haptic-switch" :model-value="hapticEnabled" @change="toggleHapticFeedback" />
+        </view>
+
         <!-- 安全/隐私 -->
         <view class="setting-item ds-flex ds-flex-between">
           <view class="setting-info" style="flex-direction: row; align-items: center; display: flex">
@@ -308,6 +324,8 @@ import { uploadAvatar } from '@/services/api/domains/user.api.js';
 import { getStatusBarHeight, getCapsuleSafeRight } from '@/utils/core/system.js';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 import { sanitizeInput } from '@/utils/security/sanitize.js';
+import { isSoundEnabled, setSoundEnabled } from '@/pages/practice-sub/utils/quiz-sound.js';
+import { isHapticEnabled, setHapticEnabled } from '@/utils/helpers/haptic.js';
 // 静态资源 CDN 映射
 import { ASSETS } from '@/config/static-assets.js';
 
@@ -322,6 +340,8 @@ const studyDays = ref(1);
 const targetSchools = ref([]);
 const cacheSize = ref('0KB');
 const isDark = ref(false);
+const soundEnabled = ref(true);
+const hapticEnabled = ref(true);
 const statusBarHeight = ref(44);
 const capsuleSafeRight = ref(20);
 const isPageLoading = ref(true); // F018: 页面加载状态
@@ -358,6 +378,8 @@ onMounted(() => {
   // 同步主题状态
   const savedTheme = storageService.get('theme_mode', 'light');
   isDark.value = savedTheme === 'dark';
+  soundEnabled.value = isSoundEnabled();
+  hapticEnabled.value = isHapticEnabled();
 
   // F003: 存储回调引用，确保 $off 只移除自己的监听器
   // 两个事件名（themeUpdate / updateTheme）做同一件事，共用同一个 handler
@@ -536,6 +558,18 @@ const toggleDark3d = (val) => {
   themeStore.setDarkMode(val);
   const toastMsg = val ? (isNightTime() ? '已开启深色模式（护眼模式已激活）' : '已开启深色模式') : '已关闭深色模式';
   toast.info(toastMsg);
+};
+
+const toggleSoundFeedback = (val) => {
+  soundEnabled.value = !!val;
+  setSoundEnabled(soundEnabled.value);
+  toast.info(soundEnabled.value ? '已开启答题音效' : '已关闭答题音效');
+};
+
+const toggleHapticFeedback = (val) => {
+  hapticEnabled.value = !!val;
+  setHapticEnabled(hapticEnabled.value);
+  toast.info(hapticEnabled.value ? '已开启震动反馈' : '已关闭震动反馈');
 };
 
 const handleClearCache = () => {

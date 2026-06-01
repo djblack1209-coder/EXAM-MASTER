@@ -161,7 +161,8 @@
 <script setup>
 import { computed, ref, onMounted, onBeforeUnmount } from 'vue';
 import { safeNavigateBack } from '@/utils/safe-navigate';
-import { getPracticeNavigationTree, loadBank } from '@/config/bank-registry.js';
+import { getPracticeNavigationTree } from '@/config/bank-registry.js';
+import { loadBankData } from './bank-data-loader.js';
 import { importFlashcardsToBank } from '@/utils/flashcard-adapter.js';
 import { getStatusBarHeight } from '@/utils/core/system.js';
 import storageService from '@/services/storageService.js';
@@ -261,6 +262,28 @@ function selectYearSlot(slot) {
   selectedYearSlotId.value = slot.id;
 }
 
+function selectBank(bankId) {
+  if (!bankId) return;
+  for (const subject of navigationTree.value) {
+    for (const track of subject.tracks || []) {
+      const slot = (track.yearSlots || []).find((item) => item.bankId === bankId);
+      if (slot) {
+        selectedSubjectKey.value = subject.id;
+        selectedTrackId.value = track.id;
+        selectedYearSlotId.value = slot.id;
+        return;
+      }
+    }
+  }
+}
+
+function getCurrentRouteBankId() {
+  if (typeof getCurrentPages !== 'function') return '';
+  const pages = getCurrentPages();
+  const current = pages[pages.length - 1];
+  return decodeURIComponent(current?.options?.bankId || '');
+}
+
 async function loadAndStartSlot(slot) {
   if (!slot?.bankId || !slot.clickable) return;
   await loadAndStartPaper({ ...slot, id: slot.bankId });
@@ -280,7 +303,7 @@ function qualityLabel(quality) {
 async function loadPaper(paper) {
   loadingBankId.value = paper.id;
   try {
-    const data = await loadBank(paper.id);
+    const data = await loadBankData(paper.id);
     const adapter = {
       get: (key) => storageService.get(key, []),
       set: (key, value) => storageService.save(key, value)
@@ -333,6 +356,7 @@ function startLoadedPaper(paper) {
 
 onMounted(() => {
   ensureSelection();
+  selectBank(getCurrentRouteBankId());
 });
 </script>
 

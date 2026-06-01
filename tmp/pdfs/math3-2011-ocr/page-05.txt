@@ -1,0 +1,42 @@
+【油信公众号: 研池大报】                                   全年免费分享各类资源                                   【组信公众号: HMA]
+=. BEE: 9~14 小题，每小题 4分，共 24 分，请将答案写在答题纸 ，指定位置上 ，
+(9) BF (x)=ling x(1+3t YF» MF (x)=     .
+
+【答案】 ex (1+3x )
+【详解】本题涉及到的主要知识点:
+1
+重要极限公式 1i m (Hx * ke
+xp
+在本题中，
+f (x palin x1 +3t } =n i +3t |   =xe
+WDA £ "(x =e” (143x).
+下
+(10) 设函数 2 +X), ww dz 6
+号 ¥y
+【答案】 (1+2In 2 Xdx-dy)
+【详解】用对数求导法 .两边取对数得
+Inz =~ int +2) ,
+y      y
+
+Ae 1     x   x    1@   x     x   x
+= hd es ln ee]
+
+ze y       y x+y zy     y:        yo xty
+&x=1, y=1, 得
+2   =2in 241.  a   =~(2In 241),
+Kiera              Clin
+从而 dz =(1+2Imn 2Xdx-dy)
+
+(       x )     .        .       _—
+(11) 曲线 tan pry a [ret tea (0,0 en mee      ;
+【答案】 y =-2x
+【详解】方程变形为 x bya =arctan(e’) , WE xR
+y
+
+er
+ey  1+e2
+在点 (0,0) 处 y (0) = -2 ，从而得到曲线在点 (0,0) 处的切线方程为 y =-2x
+(12) Hee y =yx° 1, BA x =2 及 X轴所围成的平面图形绕 x 轴旋转所成的旋转体的体积为 ~ .
+
+Laake   ri KAY                               eaegee  LE                               Lagan    i 42),
+A  y=Vx 二

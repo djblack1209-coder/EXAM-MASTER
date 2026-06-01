@@ -130,4 +130,27 @@ describe('practice 动态方法加载', () => {
     expect(uni.navigateTo).toHaveBeenCalledTimes(1);
     expect(uni.navigateTo.mock.calls[0][0].url).toBe('/pages/practice-sub/question-bank');
   });
+
+  it('handleLoadBank 应忽略同一题库的重复点击，避免并发导入', async () => {
+    const ctx = {
+      loadingBankId: null,
+      openQuestionBank: vi.fn()
+    };
+
+    await PracticePage.methods.handleLoadBank.call(ctx, 'english1-2025');
+    ctx.loadingBankId = 'english1-2025';
+    await PracticePage.methods.handleLoadBank.call(ctx, 'english1-2025');
+
+    expect(ctx.openQuestionBank).toHaveBeenCalledTimes(1);
+    expect(ctx.openQuestionBank).toHaveBeenCalledWith('english1-2025');
+  });
+
+  it('goDoQuiz 无本地题库时应停留在刷题中心并提示导入', () => {
+    const ctx = { hasBank: false };
+
+    PracticePage.methods.goDoQuiz.call(ctx);
+
+    expect(uni.navigateTo).not.toHaveBeenCalled();
+    expect(uni.showToast).toHaveBeenCalledWith(expect.objectContaining({ title: '请先加载题库' }));
+  });
 });

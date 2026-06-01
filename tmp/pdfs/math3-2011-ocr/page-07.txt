@@ -1,0 +1,37 @@
+【给信公众号: HAR)                              全年免费分享各类资源                              【组信公众号: HMA]
+望的性质有 E(XY?) =EX EY’, 又 EX =,
+EY’ =DY +(EY)? =07 +H”, jbl E(XY’) =H(H? +07)
+三、解答题: 15~23 小题，共 94 分.请将解答写在答题纸 ，指定的位置上,解答应写出文字说明、证明过程或演
+算步骤 .
+(15) (本题满分 10 分)
++2si   see hm!
+求极限 lm NL *28inx —x=1
+<p xin(1+x)
+【详解】本题涉及到的主要知识点:
+“4x3 OW, In(1+x) : X
+A 2si    二sa         +2si    -x-—
+在本题中， lim    2sin x —x-1 = tim vi  genx  x-1
+~P  xin(1+x)      ye        x
+2cos x   4
+=lim 2 +2sin x    = tim cosx—V1+2sin x zciiin cosx —J/1+2sin x
+sd      2x        *P 2xV1+2sin x    i       2x
+‘6        COSX
+—sin x —
+=lim ———1 *2sin x.      ViF2sin X _ _ tiny gn COS els
++?         2             “2V1+2sinx 2
+(16) (本是满分 10 分)
+已知函数 f (Uy )具有连续的二阶偏导数，。” f(11)=2是f(UV )的极值，Z=f(x+y,f(x,y)》.求
+ez |
+axay!(")
+【详解】本题涉及到的主要知识点:
+极值存在的必要条件 设zZ=f(xy)在点(xo,yo)具有偏导数，且在点(X,yo) 处有极值，则必有
+£06, Yo) =0，fy(x,y)=0
+在本题中， Z= F(x ty, f(x,y)
+县 和(x+y,f(x y)) * fa (x Fy, £(% y)) “06 y)
+éz
+= =f (xty Fy) thr (x ty, £6 y) f(x y) * xy)
+ay
+[fa'(xty, FOGy) tha" Oty, £069) FOG FOF, FOG) “fe” Ooy YP £11) = 2%
+f (U,V )的极值
+四USE (1,1)=0
+UAE: 研池大报】                              全年免费分享各类资源                              【微信公众号: HK]

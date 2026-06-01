@@ -1,0 +1,34 @@
+【给信公众号: HAR)                              全年免费分享各类资源                              【微信公众号: HAR)
+az
+S |  = f11"2,2 + f2'(2,2) .fi (11)
+KY e,2)
+(17) (本题满分 10 分)
+求不定积分  1arcsinwx +Inx x
+?      vx
+【详解】本题涉及到的主要知识点;
+(1) x=9t，Jf(xodx=Tf[9tDJbdt =G(t) +C =G[O7(x)] +C :
+(2) fudv =uv — [vdu ;
+(3) Lf (x) £9 (x)]dx = ff (x)dx + fg (x)dx
+在本题中 & tavx, x=t?, dx =2tdt
+,                 ell
+总  Jarcsinyx +m xdx = jets  Int  2tdt =2)(aresint +in t? pt
+vx               t             ;
+=2t arcsint —2 |  i   t + 2t int? —2{t Ae
+dt?
+=2t arcsint +2t int? + a —4t               =2t -arosint +2t Int? +2V1-t? -4t+C
+1-t
+=2VXxarcsinVX +2VxIn x+2V1-X-4VX+C，其中 C 是任意常数 ，
+(18) (本题满分 10 分)
+证明方程 4arctan x 一x <= — V3 =0 恰有两个实根
+【详解】本题涉及到的主要知识点:
+C1) 零点定理 设函数 f(x) 在闭区间 [ab] 上连续，且 f(a) 与f(b) SEY CAD F(a) .f(b) < 0 )，那么在开
+ial (a,b) Wada 上,使 (6) =0
+(2) 函数单调性的判定法 Bae y = F(x) 在[a,b] 上连续,在 (a,b) 内可导 .
+@@如果在 (ab) 内 f《x) > 0 ，那么函数 y= F(x) 在[ab]上单调增加，
+Qa KE (a, b) 内 f《X) <0 ，那么函数 y= f(x) 在[ab] 上单调减少 .
+1        «
+tA, & f(x) =4arctan x -x +4  -V3, f (x) =  4 21
+3                17*x
+til> VB mM. F(x) <0 ， f(x) AMAR,                  oon 4
+当|x|<\G时， f(x) 50, f(x) 单调递增
+【党人公众号: FRR)                              全年免费分享各类资源                              【微信公众号: HAR]

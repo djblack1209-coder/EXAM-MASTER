@@ -1,0 +1,1392 @@
+{
+  "id": "math3-2013",
+  "source": "math3-2013-paper-answer",
+  "paperId": "math3-2013",
+  "paperName": "2013考研数学三真题",
+  "subject": "数学",
+  "subjectKey": "math",
+  "track": "math3",
+  "year": "2013",
+  "quality": "ready",
+  "publicationStatus": "published",
+  "publicationBlockers": [],
+  "sourceEvidencePolicy": "baidu_netdisk_official_paper_pdf_question_crop_answer_page_image_v1",
+  "sourceFiles": [
+    {
+      "id": "math3-2013-paper-answer",
+      "role": "paper_answer",
+      "localPath": "data/raw-inbox/src_b4cf0b63525b94f4333b545e-2013年考研数学三真题及解析.pdf",
+      "sha256": "sha256:c031ea4ec4fc264e8b440d39b016cd61c26b326b480d570c0cb7bf0f94045e6f",
+      "sourceId": "src_b4cf0b63525b94f4333b545e"
+    }
+  ],
+  "assetRoot": "question-bank/math3-2013",
+  "processed_at": "2026-05-31T00:18:34Z",
+  "total_cards": 23,
+  "cards": [
+    {
+      "id": "math3-2013-001",
+      "number": 1,
+      "paperId": "math3-2013",
+      "paperName": "2013考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2013",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2013考研数学三第1题（选择题）。题干、公式和图形以题面裁切图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2013 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2013/question-01.jpg",
+          "caption": "题面裁切图 q01",
+          "alt": "2013考研数学三第01题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2013/answer-page-01.jpg",
+          "caption": "答案解析 p.1",
+          "alt": "2013考研数学三答案解析 p.1"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2013",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:e70d75fd7e73c4889828e05af5783d71e5ba149df0c182150f566fe8e4686502",
+      "answerTextHash": "sha256:f6335e8977ced096172680deb47d3c197da7774b472b4fe4ce3651e4656f09aa",
+      "sourceEvidence": {
+        "evidenceId": "math3-2013-q01",
+        "sourceId": "src_b4cf0b63525b94f4333b545e",
+        "answerSourceId": "src_b4cf0b63525b94f4333b545e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2013-paper-answer",
+        "answerEvidenceId": "math3-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:f6335e8977ced096172680deb47d3c197da7774b472b4fe4ce3651e4656f09aa"
+      }
+    },
+    {
+      "id": "math3-2013-002",
+      "number": 2,
+      "paperId": "math3-2013",
+      "paperName": "2013考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2013",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2013考研数学三第2题（选择题）。题干、公式和图形以题面裁切图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2013 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2013/question-02.jpg",
+          "caption": "题面裁切图 q02",
+          "alt": "2013考研数学三第02题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2013/answer-page-01.jpg",
+          "caption": "答案解析 p.1",
+          "alt": "2013考研数学三答案解析 p.1"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2013",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:9c46cf5e516247f879c399655f1c297683911c3f4bc8515096872326bbae526c",
+      "answerTextHash": "sha256:01370fce298cb459b7c797138d9e825fda2e23c11e9e9249e65268241d053ce7",
+      "sourceEvidence": {
+        "evidenceId": "math3-2013-q02",
+        "sourceId": "src_b4cf0b63525b94f4333b545e",
+        "answerSourceId": "src_b4cf0b63525b94f4333b545e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2013-paper-answer",
+        "answerEvidenceId": "math3-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:01370fce298cb459b7c797138d9e825fda2e23c11e9e9249e65268241d053ce7"
+      }
+    },
+    {
+      "id": "math3-2013-003",
+      "number": 3,
+      "paperId": "math3-2013",
+      "paperName": "2013考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2013",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2013考研数学三第3题（选择题）。题干、公式和图形以题面裁切图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2013 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2013/question-03.jpg",
+          "caption": "题面裁切图 q03",
+          "alt": "2013考研数学三第03题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2013/answer-page-01.jpg",
+          "caption": "答案解析 p.1",
+          "alt": "2013考研数学三答案解析 p.1"
+        },
+        {
+          "src": "question-bank/math3-2013/answer-page-02.jpg",
+          "caption": "答案解析 p.2",
+          "alt": "2013考研数学三答案解析 p.2"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2013",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:e8466c709a3de5403121f1d0e159339814e418a7fd1e1e544ab7fbfc56f0b549",
+      "answerTextHash": "sha256:6bb6d285bcddf9e1642b1bde9da8cf4525d80d7400efb1f8be4241eef32cd377",
+      "sourceEvidence": {
+        "evidenceId": "math3-2013-q03",
+        "sourceId": "src_b4cf0b63525b94f4333b545e",
+        "answerSourceId": "src_b4cf0b63525b94f4333b545e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2013-paper-answer",
+        "answerEvidenceId": "math3-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:6bb6d285bcddf9e1642b1bde9da8cf4525d80d7400efb1f8be4241eef32cd377"
+      }
+    },
+    {
+      "id": "math3-2013-004",
+      "number": 4,
+      "paperId": "math3-2013",
+      "paperName": "2013考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2013",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2013考研数学三第4题（选择题）。题干、公式和图形以题面裁切图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2013 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2013/question-04.jpg",
+          "caption": "题面裁切图 q04",
+          "alt": "2013考研数学三第04题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2013/answer-page-02.jpg",
+          "caption": "答案解析 p.2",
+          "alt": "2013考研数学三答案解析 p.2"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2013",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:fb0a89aa7cd224db15099bdaf0da198ae0a9e6a84faa5a2e0d534300d7a41a5f",
+      "answerTextHash": "sha256:7cd6122ff6ad5f4ed9210d1ae15379380ce2cd5f5ab3a3b9f0756d9b8d6dbe3f",
+      "sourceEvidence": {
+        "evidenceId": "math3-2013-q04",
+        "sourceId": "src_b4cf0b63525b94f4333b545e",
+        "answerSourceId": "src_b4cf0b63525b94f4333b545e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2013-paper-answer",
+        "answerEvidenceId": "math3-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:7cd6122ff6ad5f4ed9210d1ae15379380ce2cd5f5ab3a3b9f0756d9b8d6dbe3f"
+      }
+    },
+    {
+      "id": "math3-2013-005",
+      "number": 5,
+      "paperId": "math3-2013",
+      "paperName": "2013考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2013",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2013考研数学三第5题（选择题）。题干、公式和图形以题面裁切图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2013 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2013/question-05.jpg",
+          "caption": "题面裁切图 q05",
+          "alt": "2013考研数学三第05题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2013/answer-page-02.jpg",
+          "caption": "答案解析 p.2",
+          "alt": "2013考研数学三答案解析 p.2"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2013",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:d911d100f0c54977a3e578475af3f4f4aaa015b4813ad0b63f86d8eda4d31805",
+      "answerTextHash": "sha256:ea6b7035bde61a0fb21a8d4196db45fb2986b73187d0a84d810bab5409f63f7d",
+      "sourceEvidence": {
+        "evidenceId": "math3-2013-q05",
+        "sourceId": "src_b4cf0b63525b94f4333b545e",
+        "answerSourceId": "src_b4cf0b63525b94f4333b545e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2013-paper-answer",
+        "answerEvidenceId": "math3-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:ea6b7035bde61a0fb21a8d4196db45fb2986b73187d0a84d810bab5409f63f7d"
+      }
+    },
+    {
+      "id": "math3-2013-006",
+      "number": 6,
+      "paperId": "math3-2013",
+      "paperName": "2013考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2013",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2013考研数学三第6题（选择题）。题干、公式和图形以题面裁切图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2013 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2013/question-06-a.jpg",
+          "caption": "题面裁切图 q06-a",
+          "alt": "2013考研数学三第06题题面裁切图"
+        },
+        {
+          "src": "question-bank/math3-2013/question-06-b.jpg",
+          "caption": "题面裁切图 q06-b",
+          "alt": "2013考研数学三第06题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2013/answer-page-02.jpg",
+          "caption": "答案解析 p.2",
+          "alt": "2013考研数学三答案解析 p.2"
+        },
+        {
+          "src": "question-bank/math3-2013/answer-page-03.jpg",
+          "caption": "答案解析 p.3",
+          "alt": "2013考研数学三答案解析 p.3"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2013",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:8e9f1370c6da728f23e4121d7504b9decd1a0d01ea34aeee3520e7338d4840d5",
+      "answerTextHash": "sha256:b2e9af799ce3691d2a8144096ec7e4a07dc4c03a621ed6e8a6da1e4b5810f454",
+      "sourceEvidence": {
+        "evidenceId": "math3-2013-q06",
+        "sourceId": "src_b4cf0b63525b94f4333b545e",
+        "answerSourceId": "src_b4cf0b63525b94f4333b545e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2013-paper-answer",
+        "answerEvidenceId": "math3-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:b2e9af799ce3691d2a8144096ec7e4a07dc4c03a621ed6e8a6da1e4b5810f454"
+      }
+    },
+    {
+      "id": "math3-2013-007",
+      "number": 7,
+      "paperId": "math3-2013",
+      "paperName": "2013考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2013",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2013考研数学三第7题（选择题）。题干、公式和图形以题面裁切图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2013 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2013/question-07.jpg",
+          "caption": "题面裁切图 q07",
+          "alt": "2013考研数学三第07题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2013/answer-page-03.jpg",
+          "caption": "答案解析 p.3",
+          "alt": "2013考研数学三答案解析 p.3"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2013",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:aac0db4bdb7f1844079429714aa624d621e094bafb6d4c2d9b144ce6760c88f7",
+      "answerTextHash": "sha256:37047a4e1d0f087c0f0de2714845cbbfcf52e1f11a8dee1bd57c83d31cefed0f",
+      "sourceEvidence": {
+        "evidenceId": "math3-2013-q07",
+        "sourceId": "src_b4cf0b63525b94f4333b545e",
+        "answerSourceId": "src_b4cf0b63525b94f4333b545e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2013-paper-answer",
+        "answerEvidenceId": "math3-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:37047a4e1d0f087c0f0de2714845cbbfcf52e1f11a8dee1bd57c83d31cefed0f"
+      }
+    },
+    {
+      "id": "math3-2013-008",
+      "number": 8,
+      "paperId": "math3-2013",
+      "paperName": "2013考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2013",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2013考研数学三第8题（选择题）。题干、公式和图形以题面裁切图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2013 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2013/question-08-a.jpg",
+          "caption": "题面裁切图 q08-a",
+          "alt": "2013考研数学三第08题题面裁切图"
+        },
+        {
+          "src": "question-bank/math3-2013/question-08-b.jpg",
+          "caption": "题面裁切图 q08-b",
+          "alt": "2013考研数学三第08题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2013/answer-page-03.jpg",
+          "caption": "答案解析 p.3",
+          "alt": "2013考研数学三答案解析 p.3"
+        },
+        {
+          "src": "question-bank/math3-2013/answer-page-04.jpg",
+          "caption": "答案解析 p.4",
+          "alt": "2013考研数学三答案解析 p.4"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2013",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:98a96599dca1ac959cccdc12a847657bdec6428b79a9d178b92b1f8921bfb1b4",
+      "answerTextHash": "sha256:6256d6d1a31ff5a026dabdf646d1dee9cbd80e696c1186456602a3afe3d9bc43",
+      "sourceEvidence": {
+        "evidenceId": "math3-2013-q08",
+        "sourceId": "src_b4cf0b63525b94f4333b545e",
+        "answerSourceId": "src_b4cf0b63525b94f4333b545e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2013-paper-answer",
+        "answerEvidenceId": "math3-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:6256d6d1a31ff5a026dabdf646d1dee9cbd80e696c1186456602a3afe3d9bc43"
+      }
+    },
+    {
+      "id": "math3-2013-009",
+      "number": 9,
+      "paperId": "math3-2013",
+      "paperName": "2013考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2013",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2013考研数学三第9题（填空题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "-2",
+      "explanation": "答案来自本地百度网盘 2013 数学三真题及解析 PDF；完整题干、公式和解析见原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2013/question-09.jpg",
+          "caption": "题面裁切图 q09",
+          "alt": "2013考研数学三第09题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2013/answer-page-04.jpg",
+          "caption": "答案解析 p.4",
+          "alt": "2013考研数学三答案解析 p.4"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2013",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:cc6822f033014cdbf2e743c56b660edfa969bb6951c6178b4163f1bc88bb1be1",
+      "answerTextHash": "sha256:ae5e9f3f1f6700e06f4e7f014c8c0560acff3b4407b2b91886e36ad1cd900dd1",
+      "sourceEvidence": {
+        "evidenceId": "math3-2013-q09",
+        "sourceId": "src_b4cf0b63525b94f4333b545e",
+        "answerSourceId": "src_b4cf0b63525b94f4333b545e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2013-paper-answer",
+        "answerEvidenceId": "math3-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:ae5e9f3f1f6700e06f4e7f014c8c0560acff3b4407b2b91886e36ad1cd900dd1"
+      }
+    },
+    {
+      "id": "math3-2013-010",
+      "number": 10,
+      "paperId": "math3-2013",
+      "paperName": "2013考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2013",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2013考研数学三第10题（填空题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "2 - 2 ln 2",
+      "explanation": "答案来自本地百度网盘 2013 数学三真题及解析 PDF；完整题干、公式和解析见原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2013/question-10.jpg",
+          "caption": "题面裁切图 q10",
+          "alt": "2013考研数学三第10题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2013/answer-page-04.jpg",
+          "caption": "答案解析 p.4",
+          "alt": "2013考研数学三答案解析 p.4"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2013",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:5810ee9301ede6a4b3bd4b805fc8364c180749d9f33f259269f7c3133c42db31",
+      "answerTextHash": "sha256:400d37f812e3a06353b5039e1131a122555e24477c225ea959fec2c33e400954",
+      "sourceEvidence": {
+        "evidenceId": "math3-2013-q10",
+        "sourceId": "src_b4cf0b63525b94f4333b545e",
+        "answerSourceId": "src_b4cf0b63525b94f4333b545e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2013-paper-answer",
+        "answerEvidenceId": "math3-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:400d37f812e3a06353b5039e1131a122555e24477c225ea959fec2c33e400954"
+      }
+    },
+    {
+      "id": "math3-2013-011",
+      "number": 11,
+      "paperId": "math3-2013",
+      "paperName": "2013考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2013",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2013考研数学三第11题（填空题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "ln 2",
+      "explanation": "答案来自本地百度网盘 2013 数学三真题及解析 PDF；完整题干、公式和解析见原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2013/question-11.jpg",
+          "caption": "题面裁切图 q11",
+          "alt": "2013考研数学三第11题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2013/answer-page-04.jpg",
+          "caption": "答案解析 p.4",
+          "alt": "2013考研数学三答案解析 p.4"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2013",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:4edd5d42125fef59752f7a3c47553cc5c4a8b2161b118901324bc0270dbc9766",
+      "answerTextHash": "sha256:af898626bd4964d37e79086adc17bcec73cfcab6e8cb0c0d3bb3dfb94b3576ba",
+      "sourceEvidence": {
+        "evidenceId": "math3-2013-q11",
+        "sourceId": "src_b4cf0b63525b94f4333b545e",
+        "answerSourceId": "src_b4cf0b63525b94f4333b545e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2013-paper-answer",
+        "answerEvidenceId": "math3-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:af898626bd4964d37e79086adc17bcec73cfcab6e8cb0c0d3bb3dfb94b3576ba"
+      }
+    },
+    {
+      "id": "math3-2013-012",
+      "number": 12,
+      "paperId": "math3-2013",
+      "paperName": "2013考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2013",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2013考研数学三第12题（填空题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "y = (C1 + C2 x)e^(x/2)",
+      "explanation": "答案来自本地百度网盘 2013 数学三真题及解析 PDF；完整题干、公式和解析见原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2013/question-12.jpg",
+          "caption": "题面裁切图 q12",
+          "alt": "2013考研数学三第12题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2013/answer-page-04.jpg",
+          "caption": "答案解析 p.4",
+          "alt": "2013考研数学三答案解析 p.4"
+        },
+        {
+          "src": "question-bank/math3-2013/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2013考研数学三答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2013",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:cf16cdd3c5d105580e89eab098257bcf0c71c34951665fe2e1a1a2a9de7fa019",
+      "answerTextHash": "sha256:b4255077fa0c0a84834ff6f8adbf3af3892007696cebf2eacc3687b38cc2961d",
+      "sourceEvidence": {
+        "evidenceId": "math3-2013-q12",
+        "sourceId": "src_b4cf0b63525b94f4333b545e",
+        "answerSourceId": "src_b4cf0b63525b94f4333b545e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2013-paper-answer",
+        "answerEvidenceId": "math3-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:b4255077fa0c0a84834ff6f8adbf3af3892007696cebf2eacc3687b38cc2961d"
+      }
+    },
+    {
+      "id": "math3-2013-013",
+      "number": 13,
+      "paperId": "math3-2013",
+      "paperName": "2013考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2013",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2013考研数学三第13题（填空题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "-1",
+      "explanation": "答案来自本地百度网盘 2013 数学三真题及解析 PDF；完整题干、公式和解析见原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2013/question-13.jpg",
+          "caption": "题面裁切图 q13",
+          "alt": "2013考研数学三第13题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2013/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2013考研数学三答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2013",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:78e50465717fd226aefa8e92e1a066b7941c920283b8797d7dc1020f78f9eff7",
+      "answerTextHash": "sha256:88941492c23deac9416f7e36b58d135a8380cf655ee424b10b6049fa2c07b640",
+      "sourceEvidence": {
+        "evidenceId": "math3-2013-q13",
+        "sourceId": "src_b4cf0b63525b94f4333b545e",
+        "answerSourceId": "src_b4cf0b63525b94f4333b545e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2013-paper-answer",
+        "answerEvidenceId": "math3-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:88941492c23deac9416f7e36b58d135a8380cf655ee424b10b6049fa2c07b640"
+      }
+    },
+    {
+      "id": "math3-2013-014",
+      "number": 14,
+      "paperId": "math3-2013",
+      "paperName": "2013考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2013",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2013考研数学三第14题（填空题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "2e^2",
+      "explanation": "答案来自本地百度网盘 2013 数学三真题及解析 PDF；完整题干、公式和解析见原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2013/question-14.jpg",
+          "caption": "题面裁切图 q14",
+          "alt": "2013考研数学三第14题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2013/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2013考研数学三答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2013",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:5a87ac561a51a08a872a6120ad5a29c799a1ec3de3a221e43216f0eedaba551b",
+      "answerTextHash": "sha256:d7e1389e1897077723d2f44ad1fb1b9dc0dde5d59390a2eff437a3389f680342",
+      "sourceEvidence": {
+        "evidenceId": "math3-2013-q14",
+        "sourceId": "src_b4cf0b63525b94f4333b545e",
+        "answerSourceId": "src_b4cf0b63525b94f4333b545e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2013-paper-answer",
+        "answerEvidenceId": "math3-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:d7e1389e1897077723d2f44ad1fb1b9dc0dde5d59390a2eff437a3389f680342"
+      }
+    },
+    {
+      "id": "math3-2013-015",
+      "number": 15,
+      "paperId": "math3-2013",
+      "paperName": "2013考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2013",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2013考研数学三第15题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "a=7，n=2。",
+      "explanation": "答案来自本地百度网盘 2013 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2013/question-15.jpg",
+          "caption": "题面裁切图 q15",
+          "alt": "2013考研数学三第15题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2013/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2013考研数学三答案解析 p.5"
+        },
+        {
+          "src": "question-bank/math3-2013/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2013考研数学三答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2013",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:87efa26d4872ddf35563356ad089a5498b4bb4fcdc22b43a96db5fc86e80ff31",
+      "answerTextHash": "sha256:f19a5690ec2d75c51428376793c550dc54a264325b099fda83dd9264382d4a9b",
+      "sourceEvidence": {
+        "evidenceId": "math3-2013-q15",
+        "sourceId": "src_b4cf0b63525b94f4333b545e",
+        "answerSourceId": "src_b4cf0b63525b94f4333b545e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2013-paper-answer",
+        "answerEvidenceId": "math3-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:f19a5690ec2d75c51428376793c550dc54a264325b099fda83dd9264382d4a9b"
+      }
+    },
+    {
+      "id": "math3-2013-016",
+      "number": 16,
+      "paperId": "math3-2013",
+      "paperName": "2013考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2013",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2013考研数学三第16题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "a=7sqrt(7)。",
+      "explanation": "答案来自本地百度网盘 2013 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2013/question-16.jpg",
+          "caption": "题面裁切图 q16",
+          "alt": "2013考研数学三第16题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2013/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2013考研数学三答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2013",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:63391afc012aaded0b166de5a95f2a1f05532504b2dedc80307e5c65c14cf12c",
+      "answerTextHash": "sha256:4ed0a5f89845dadc063b1f3dfce9ed7ca3687f01830b8e905505ca694e64bee6",
+      "sourceEvidence": {
+        "evidenceId": "math3-2013-q16",
+        "sourceId": "src_b4cf0b63525b94f4333b545e",
+        "answerSourceId": "src_b4cf0b63525b94f4333b545e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2013-paper-answer",
+        "answerEvidenceId": "math3-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:4ed0a5f89845dadc063b1f3dfce9ed7ca3687f01830b8e905505ca694e64bee6"
+      }
+    },
+    {
+      "id": "math3-2013-017",
+      "number": 17,
+      "paperId": "math3-2013",
+      "paperName": "2013考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2013",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2013考研数学三第17题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "二重积分值为 416/3。",
+      "explanation": "答案来自本地百度网盘 2013 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2013/question-17.jpg",
+          "caption": "题面裁切图 q17",
+          "alt": "2013考研数学三第17题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2013/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2013考研数学三答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2013",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:21a45aa7197359093d073fe6be4a0c22ee71cc6f8d6690ecfe848baa79be44a9",
+      "answerTextHash": "sha256:4992aba7883344b46f7b7de9eac8a7e12a6715a3b88abda6d0ab7539752d47e2",
+      "sourceEvidence": {
+        "evidenceId": "math3-2013-q17",
+        "sourceId": "src_b4cf0b63525b94f4333b545e",
+        "answerSourceId": "src_b4cf0b63525b94f4333b545e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2013-paper-answer",
+        "answerEvidenceId": "math3-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:4992aba7883344b46f7b7de9eac8a7e12a6715a3b88abda6d0ab7539752d47e2"
+      }
+    },
+    {
+      "id": "math3-2013-018",
+      "number": 18,
+      "paperId": "math3-2013",
+      "paperName": "2013考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2013",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2013考研数学三第18题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "边际利润为 40 - Q/500；P=50 时边际利润为 20；最大利润定价 P=40。",
+      "explanation": "答案来自本地百度网盘 2013 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2013/question-18.jpg",
+          "caption": "题面裁切图 q18",
+          "alt": "2013考研数学三第18题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2013/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2013考研数学三答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2013",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:d866d84e7dcc6433507762428435bf6e710762c2fdf92bd2e0d24c14c96c1267",
+      "answerTextHash": "sha256:04e189335d02b388ca20bf095f3f9d4472ad2959d3029adf1d33210b9a51dec7",
+      "sourceEvidence": {
+        "evidenceId": "math3-2013-q18",
+        "sourceId": "src_b4cf0b63525b94f4333b545e",
+        "answerSourceId": "src_b4cf0b63525b94f4333b545e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2013-paper-answer",
+        "answerEvidenceId": "math3-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:04e189335d02b388ca20bf095f3f9d4472ad2959d3029adf1d33210b9a51dec7"
+      }
+    },
+    {
+      "id": "math3-2013-019",
+      "number": 19,
+      "paperId": "math3-2013",
+      "paperName": "2013考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2013",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2013考研数学三第19题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "证明结论见答案原页。",
+      "explanation": "答案来自本地百度网盘 2013 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2013/question-19.jpg",
+          "caption": "题面裁切图 q19",
+          "alt": "2013考研数学三第19题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2013/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2013考研数学三答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2013",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:16fb3d6fab91e56b7ff4328221680631c8f5c9ed46e3e8709f9bd707c9b4bbe4",
+      "answerTextHash": "sha256:0ed75bf73fa29d58ce583c886b4f4de122ce24088ebe58db69813cbe142eb1b9",
+      "sourceEvidence": {
+        "evidenceId": "math3-2013-q19",
+        "sourceId": "src_b4cf0b63525b94f4333b545e",
+        "answerSourceId": "src_b4cf0b63525b94f4333b545e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2013-paper-answer",
+        "answerEvidenceId": "math3-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:0ed75bf73fa29d58ce583c886b4f4de122ce24088ebe58db69813cbe142eb1b9"
+      }
+    },
+    {
+      "id": "math3-2013-020",
+      "number": 20,
+      "paperId": "math3-2013",
+      "paperName": "2013考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2013",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2013考研数学三第20题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "a=-1，b=0；满足 AC-CA=B 的矩阵 C 见答案原页。",
+      "explanation": "答案来自本地百度网盘 2013 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2013/question-20.jpg",
+          "caption": "题面裁切图 q20",
+          "alt": "2013考研数学三第20题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2013/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2013考研数学三答案解析 p.7"
+        },
+        {
+          "src": "question-bank/math3-2013/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2013考研数学三答案解析 p.8"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2013",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:7b982ee42d488543d2324ac6f8286cd991f65b1563aff5fe9a6b1c70d09ecf85",
+      "answerTextHash": "sha256:33a005979fc7952e40d14632d29b8a10a5b2a48fe68df8490663cc1005fd0b5c",
+      "sourceEvidence": {
+        "evidenceId": "math3-2013-q20",
+        "sourceId": "src_b4cf0b63525b94f4333b545e",
+        "answerSourceId": "src_b4cf0b63525b94f4333b545e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2013-paper-answer",
+        "answerEvidenceId": "math3-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:33a005979fc7952e40d14632d29b8a10a5b2a48fe68df8490663cc1005fd0b5c"
+      }
+    },
+    {
+      "id": "math3-2013-021",
+      "number": 21,
+      "paperId": "math3-2013",
+      "paperName": "2013考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2013",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2013考研数学三第21题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "二次型对应矩阵为 2aa^T + bb^T；正交变换下标准形为 2y1^2 + y2^2。",
+      "explanation": "答案来自本地百度网盘 2013 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2013/question-21.jpg",
+          "caption": "题面裁切图 q21",
+          "alt": "2013考研数学三第21题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2013/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2013考研数学三答案解析 p.8"
+        },
+        {
+          "src": "question-bank/math3-2013/answer-page-09.jpg",
+          "caption": "答案解析 p.9",
+          "alt": "2013考研数学三答案解析 p.9"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2013",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:bb8e0da6c223882258cdacb8176c8c1ccb71bda03dd34e817a145ffda8fa36a1",
+      "answerTextHash": "sha256:6f3dcc081523bae19026bec282ea7067188e9ca15bd0c6b37565d4a42b46ec72",
+      "sourceEvidence": {
+        "evidenceId": "math3-2013-q21",
+        "sourceId": "src_b4cf0b63525b94f4333b545e",
+        "answerSourceId": "src_b4cf0b63525b94f4333b545e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2013-paper-answer",
+        "answerEvidenceId": "math3-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:6f3dcc081523bae19026bec282ea7067188e9ca15bd0c6b37565d4a42b46ec72"
+      }
+    },
+    {
+      "id": "math3-2013-022",
+      "number": 22,
+      "paperId": "math3-2013",
+      "paperName": "2013考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2013",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2013考研数学三第22题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "联合概率密度与 Y 的边缘概率密度见答案原页。",
+      "explanation": "答案来自本地百度网盘 2013 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2013/question-22.jpg",
+          "caption": "题面裁切图 q22",
+          "alt": "2013考研数学三第22题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2013/answer-page-09.jpg",
+          "caption": "答案解析 p.9",
+          "alt": "2013考研数学三答案解析 p.9"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2013",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:f38acb43705797c208d5a98bba89ed34789944ef66ef2c8bb38a4fbaa95fcd52",
+      "answerTextHash": "sha256:1f27a0aa0198c234759676e64ef61f2ca6a131409ff05acbfb48e3712d43a111",
+      "sourceEvidence": {
+        "evidenceId": "math3-2013-q22",
+        "sourceId": "src_b4cf0b63525b94f4333b545e",
+        "answerSourceId": "src_b4cf0b63525b94f4333b545e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2013-paper-answer",
+        "answerEvidenceId": "math3-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:1f27a0aa0198c234759676e64ef61f2ca6a131409ff05acbfb48e3712d43a111"
+      }
+    },
+    {
+      "id": "math3-2013-023",
+      "number": 23,
+      "paperId": "math3-2013",
+      "paperName": "2013考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2013",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2013考研数学三第23题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "theta 的矩估计量与极大似然估计量见答案原页。",
+      "explanation": "答案来自本地百度网盘 2013 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2013/question-23.jpg",
+          "caption": "题面裁切图 q23",
+          "alt": "2013考研数学三第23题题面裁切图"
+        },
+        {
+          "src": "question-bank/math3-2013/question-23-b.jpg",
+          "caption": "题面裁切图 q23-b",
+          "alt": "2013考研数学三第23题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2013/answer-page-09.jpg",
+          "caption": "答案解析 p.9",
+          "alt": "2013考研数学三答案解析 p.9"
+        },
+        {
+          "src": "question-bank/math3-2013/answer-page-10.jpg",
+          "caption": "答案解析 p.10",
+          "alt": "2013考研数学三答案解析 p.10"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2013",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:81eb2579d8df1174360eea0b8a67388c9eab21c8d2cbd07d7e5f33d501a952a0",
+      "answerTextHash": "sha256:84f27352e5b7363d8dac09b959dfe106cbbddf4ececa9f5ee750a0f8816e17e2",
+      "sourceEvidence": {
+        "evidenceId": "math3-2013-q23",
+        "sourceId": "src_b4cf0b63525b94f4333b545e",
+        "answerSourceId": "src_b4cf0b63525b94f4333b545e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2013-paper-answer",
+        "answerEvidenceId": "math3-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:84f27352e5b7363d8dac09b959dfe106cbbddf4ececa9f5ee750a0f8816e17e2"
+      }
+    }
+  ]
+}

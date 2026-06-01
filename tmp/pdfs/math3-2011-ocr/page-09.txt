@@ -1,0 +1,35 @@
+【给信公众号: HAR)                           全年免费分享各类资源                           【微信公众号: HAR)
+f(-V3)= 4arctah( -3 (Baye   =3 0
+Sx < NBT, f(x) MBAR. xs (20, 3 ), F(x) > 0:
+2 4 WB <x<V3时，f(x)单调递增， -xs (V3, V3), FO >0
+2X = -VS是函数 f(X) 在 (—o, V3) 上唯一的零点 .
+又因为『(V3) =4arctan 人-人 = a -2N3 >0
+)
+AL lim. f (x)= lim (sarctan X一X +2 _B ==,
+xh     rho           3     )
+…… 由零点定理可知， ”3xo € (V3, +2), tH f(x )=0,
+忆 方程 4arctan x 一X 一VS =0恰有两个实根 .
+(19)(本题满分 10 分)
+Wm f(x) 在区间 [0,1]具有连续导数，。 f (0) <1, A
+[Jf (x+y)dxdy = [[f (t)dxdy, D, ={(x, y)|O<y <t—x,0 三xst}(0 <t <1), & F(x) 的表达式
+D,            o
+【详解】本题涉及到的主要知识点:
+一阶线性答分方各  昱+P(9y = (x) 的通解 y=e ojQ(xjeFeowdx +C)，
+IX
+de ET, DY [ff (x + y)dxdy = Taxf ftx+yay， 令xX+y=u，则
+Di
+人fx+ydy=【fYu)du=ft)-f(x)
+1                 1
+[J Gc ty)dxay = § (F(t) Fy) dx =H (1) — ff (x)
+Dy
+eth (t) = fF Odx = J f(dxdy =F 1° F(t) .
+D,
+:     el Re cheval         as         -ea C
+两边对 t求导, 得 f (t)+一一f人t)=0,解齐次方程得 flt)=Ce    se
+t-2                           (t-2)
+由(0) =1，得 C =4，所以函数表达式为 f(x) arenas <x 1).
+x
+(20) (本题满分 11 分)
+设向量组 o=(101) ，oa=(011) , %=(1.35) 不能由向量组 Bi=(111) ，
+B,=(1,2.3) ,了 = (3,4,a 】 线性表册
+【党人公众号: FRR)                           全年免费分享各类资源                           【微信公众号: HAR]

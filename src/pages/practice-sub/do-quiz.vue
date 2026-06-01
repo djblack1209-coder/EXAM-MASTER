@@ -298,7 +298,6 @@
       </view>
 
       <view class="footer-placeholder" />
-
     </scroll-view>
 
     <!-- ✅ [P0重构] AI分析已改为非阻塞，移除全屏遮罩 -->
@@ -537,6 +536,7 @@ import { modal } from '@/utils/modal.js';
 import { toast } from '@/utils/toast.js';
 import { storageService } from '@/services/storageService.js';
 import CustomModal from '@/components/common/CustomModal.vue';
+import { useStudyStore } from '@/stores/modules/study';
 
 // ✅ P0-3: 导入自动保存功能
 import {
@@ -562,7 +562,13 @@ import {
   handleTouchMove,
   handleTouchEnd
 } from './swipe-gesture.js';
-import { destroySoundResources, playClickSound, playCorrectSound, playFlipSound, playWrongSound } from './utils/quiz-sound.js';
+import {
+  destroySoundResources,
+  playClickSound,
+  playCompleteFanfare,
+  playFlipSound,
+  playQuizSound
+} from './utils/quiz-sound.js';
 // ✅ Phase 3-4: 卡片堆叠切换
 import { useCardStack } from './composables/useCardStack.js';
 // ✅ 导入单题计时器模块
@@ -574,7 +580,6 @@ import { generateAdaptiveSequence, getNextRecommendedQuestion } from '@/utils/le
 import { checkOfflineAvailability } from './services/offline-cache-service.js';
 // ✅ 导入题目笔记模块
 import { addQuestionNote, getNotesByQuestion, getNoteTags } from './question-note.js';
-import { vibrateLight } from '@/utils/helpers/haptic.js';
 // ✅ P1: 提取的模块
 import {
   saveToMistakes as saveMistake,
@@ -719,6 +724,8 @@ export default {
       questionTimeRemaining: 120, // 剩余时间
       showTimeWarning: false, // 是否显示时间警告
       questionTimerEnabled: true, // 是否启用单题计时
+      questionBankFingerprint: '',
+      forceResumeProgress: false,
       // ✅ 智能组题状态
       smartPickerEnabled: true, // 是否启用智能组题
       currentQuestionDifficulty: 2, // 当前题目难度
@@ -760,6 +767,13 @@ export default {
         defaultQuestion: '题目加载中...',
         resolveEloRating: (question) => getQuestionEloRating(question, this.eloState.questionRatings)
       });
+    },
+    quizProgressContext() {
+      return {
+        mode: this.mode || 'normal',
+        paperId: this.paperId || '',
+        questionBankFingerprint: this.questionBankFingerprint || ''
+      };
     },
     currentQuestionPassage() {
       return (
@@ -918,6 +932,7 @@ export default {
     const query = currentPage?.$page?.options || currentPage?.options || {};
     this.mode = query.mode || '';
     this.paperId = query.paperId || query.paper_id || '';
+    this.forceResumeProgress = query.resume === 'true';
     if (query.mode === 'single') {
       this._singleMode = true;
     }
@@ -1015,8 +1030,9 @@ export default {
     },
     // ✅ P0-3: 检查未完成的进度
     checkUnfinishedProgress() {
-      if (hasUnfinishedProgress()) {
-        const summary = getProgressSummary();
+      const progressContext = this.forceResumeProgress ? null : this.quizProgressContext;
+      if (hasUnfinishedProgress(progressContext)) {
+        const summary = getProgressSummary(progressContext);
         if (summary && summary.currentIndex > 0) {
           // ✅ 使用自定义弹窗
           this.resumeModalContent = `上次答到第 ${summary.currentIndex + 1} 题，用时 ${summary.formattedTime}（${summary.timeAgo}保存）。是否继续？`;
@@ -1031,9 +1047,12 @@ export default {
 
     // ✅ P0-3: 恢复进度
     restoreProgress() {
-      const progress = loadQuizProgress();
+      const progress = loadQuizProgress(this.forceResumeProgress ? null : this.quizProgressContext);
       if (progress) {
         this.currentIndex = progress.currentIndex || 0;
+        if (Array.isArray(progress.questions) && progress.questions.length > 0) {
+          this.questions = progress.questions;
+        }
         this.seconds = progress.seconds || 0;
         this.answeredQuestions = progress.answeredQuestions || [];
         this.aiComment = progress.aiComment || '';
@@ -1075,9 +1094,11 @@ export default {
           hasAnswered: this.hasAnswered,
           seconds: this.seconds,
           aiComment: this.aiComment,
-          answeredQuestions: this.answeredQuestions
+          answeredQuestions: this.answeredQuestions,
+          questions: this.questions
         },
-        immediate
+        immediate,
+        this.quizProgressContext
       );
 
       if (success) {
@@ -1115,6 +1136,7 @@ export default {
       if (this._singleMode) {
         const singleQ = storageService.get('temp_practice_question', null);
         if (singleQ) {
+          this.questionBankFingerprint = this.buildQuestionBankFingerprint([singleQ]);
           this.questions = [
             normalizePracticeQuestion(
               {
@@ -1140,6 +1162,7 @@ export default {
       if (this.mode === 'temp_bank') {
         const tempQuestions = storageService.get('temp_practice_questions', []);
         if (tempQuestions.length > 0) {
+          this.questionBankFingerprint = this.buildQuestionBankFingerprint(tempQuestions);
           this.questions = tempQuestions.map((q, index) =>
             normalizePracticeQuestion(
               {
@@ -1187,6 +1210,7 @@ export default {
               )
             );
           if (reviewQuestions.length > 0) {
+            this.questionBankFingerprint = this.buildQuestionBankFingerprint(reviewQuestions);
             this.questions = reviewQuestions;
             storageService.remove('smart_review_ids');
             this.startTimer();
@@ -1212,7 +1236,10 @@ export default {
         toast.info('指定试卷加载失败，已切换全部题库');
       }
 
-      let questions = (activeBank.length > 0 ? activeBank : bank)
+      const sourceQuestions = activeBank.length > 0 ? activeBank : bank;
+      this.questionBankFingerprint = this.buildQuestionBankFingerprint(sourceQuestions);
+
+      let questions = sourceQuestions
         .map((q, index) =>
           normalizePracticeQuestion(
             {
@@ -1265,6 +1292,13 @@ export default {
 
       // ✅ 启动单题计时器
       this.startQuestionTimer();
+    },
+    buildQuestionBankFingerprint(questions = []) {
+      return (questions || [])
+        .map((question, index) => question?.id || question?._id || question?.question || `q_${index}`)
+        .map((id) => String(id))
+        .sort()
+        .join('|');
     },
     // 从选项文本中提取标签（如 "A. 选项内容" -> "A"）
     getOptionLabel(idx) {
@@ -1407,7 +1441,7 @@ export default {
 
         this.resultStatus = 'correct';
         this.personalHint = '';
-        this.updateStudyStats();
+        this.updateStudyStats(isCorrect);
         this.showResult = true;
       } else {
         // ✅ 播放错误答案动画
@@ -1417,7 +1451,7 @@ export default {
         // ✅ [P0重构] 非阻塞AI分析：先立即显示结果（题目自带解析），AI异步增强
         this.aiComment = ''; // 清空，让模板先显示 currentQuestion.desc
         this.personalHint = this._buildPersonalHint(); // 生成个人历史微反馈
-        this.updateStudyStats();
+        this.updateStudyStats(isCorrect);
         this.showResult = true; // 立即显示结果弹窗，不等AI
 
         // 错误时：先保存到错题本（不含智能解析）
@@ -1482,7 +1516,20 @@ export default {
         aiAnalysis
       });
     },
-    async updateStudyStats() {
+    async updateStudyStats(isCorrect = this.resultStatus === 'correct') {
+      try {
+        const studyStore = useStudyStore();
+        studyStore.restoreProgress();
+        studyStore.recordQuestionAttempt({
+          question: this.currentQuestion,
+          isCorrect,
+          timeSpent: Date.now() - (this.answerStartTime || Date.now()),
+          timestamp: Date.now()
+        });
+      } catch (e) {
+        logger.warn('[do-quiz] study progress update failed:', e);
+      }
+
       // 更新学习热力图数据
       const today = new Date().toISOString().split('T')[0];
       const stats = storageService.get('study_stats', {});
@@ -1594,7 +1641,7 @@ export default {
       );
 
       // 更新学习统计
-      this.updateStudyStats();
+      this.updateStudyStats(rating >= 3);
 
       if (rating >= 3) {
         this.playCorrectEffect();
@@ -1674,6 +1721,7 @@ export default {
         });
 
         // ✅ [闭环核心] 自动触发AI诊断（不等用户点击）
+        playCompleteFanfare();
         this.showCompleteModal = true;
         this.autoDiagnose();
       }
@@ -2038,8 +2086,7 @@ export default {
 
     // ✅ 播放正确答案动画
     playCorrectEffect() {
-      playCorrectSound();
-      vibrateLight('light');
+      playQuizSound('correct');
       this.correctAnimationClass = 'quiz-correct-animation';
       this._safeTimeout(() => {
         this.correctAnimationClass = '';
@@ -2048,8 +2095,7 @@ export default {
 
     // 播放错误答案动画
     playWrongEffect() {
-      playWrongSound();
-      vibrateLight('medium');
+      playQuizSound('wrong');
       this.wrongAnimationClass = 'quiz-wrong-animation';
       this._safeTimeout(() => {
         this.wrongAnimationClass = '';

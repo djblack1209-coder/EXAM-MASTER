@@ -1,0 +1,1201 @@
+{
+  "id": "math1-2013",
+  "source": "math1-2013-paper-answer",
+  "paperId": "math1-2013",
+  "paperName": "2013考研数学一真题",
+  "subject": "数学",
+  "subjectKey": "math",
+  "track": "math1",
+  "year": "2013",
+  "quality": "ready",
+  "publicationStatus": "published",
+  "publicationBlockers": [],
+  "sourceEvidencePolicy": "baidu_netdisk_official_paper_pdf_question_crop_answer_page_image_v1",
+  "sourceFiles": [
+    {
+      "id": "math1-2013-paper-answer",
+      "role": "paper_answer",
+      "localPath": "data/raw-inbox/src_2f89f14b41d6bdb38f193cbc-2013数一考研真题及答案.pdf",
+      "sha256": "sha256:ceeb5bae2e5245ff5aefd41a7df8396700daa905c289be884a6ab9277aff70bf",
+      "sourceId": "src_2f89f14b41d6bdb38f193cbc"
+    }
+  ],
+  "assetRoot": "question-bank/math1-2013",
+  "processed_at": "2026-05-31T02:48:22Z",
+  "total_cards": 23,
+  "cards": [
+    {
+      "id": "math1-2013-001",
+      "number": 1,
+      "paperId": "math1-2013",
+      "paperName": "2013考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2013",
+      "section": "选择题",
+      "type": "flashcard",
+      "question": "2013考研数学一第1题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "完整答案与解析见答案原页。",
+      "explanation": "答案来自本地百度网盘 2013 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2013/question-01.jpg",
+          "caption": "题面裁切图 q01",
+          "alt": "2013考研数学一题面裁切图 q01"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2013/answer-page-01.jpg",
+          "caption": "答案解析 p.1",
+          "alt": "2013考研数学一答案解析 p.1"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2013",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:255c59258c6d4b73276725770c60632a5a25d2d46a3fb7ce150dd0d258fa3dd8",
+      "answerTextHash": "sha256:5f4c56696e78714539fc6088fa7cc308cd008dac2e701cb0fdd5e2c5820b72a2",
+      "sourceEvidence": {
+        "evidenceId": "math1-2013-q01",
+        "sourceId": "src_2f89f14b41d6bdb38f193cbc",
+        "answerSourceId": "src_2f89f14b41d6bdb38f193cbc",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2013-paper-answer",
+        "answerEvidenceId": "math1-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:5f4c56696e78714539fc6088fa7cc308cd008dac2e701cb0fdd5e2c5820b72a2"
+      }
+    },
+    {
+      "id": "math1-2013-002",
+      "number": 2,
+      "paperId": "math1-2013",
+      "paperName": "2013考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2013",
+      "section": "选择题",
+      "type": "flashcard",
+      "question": "2013考研数学一第2题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "完整答案与解析见答案原页。",
+      "explanation": "答案来自本地百度网盘 2013 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2013/question-02.jpg",
+          "caption": "题面裁切图 q02",
+          "alt": "2013考研数学一题面裁切图 q02"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2013/answer-page-01.jpg",
+          "caption": "答案解析 p.1",
+          "alt": "2013考研数学一答案解析 p.1"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2013",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:8b449a58a5bc2166260c32984cde473e0f88f0c6614bf1727316af48654ed821",
+      "answerTextHash": "sha256:5f4c56696e78714539fc6088fa7cc308cd008dac2e701cb0fdd5e2c5820b72a2",
+      "sourceEvidence": {
+        "evidenceId": "math1-2013-q02",
+        "sourceId": "src_2f89f14b41d6bdb38f193cbc",
+        "answerSourceId": "src_2f89f14b41d6bdb38f193cbc",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2013-paper-answer",
+        "answerEvidenceId": "math1-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:5f4c56696e78714539fc6088fa7cc308cd008dac2e701cb0fdd5e2c5820b72a2"
+      }
+    },
+    {
+      "id": "math1-2013-003",
+      "number": 3,
+      "paperId": "math1-2013",
+      "paperName": "2013考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2013",
+      "section": "选择题",
+      "type": "flashcard",
+      "question": "2013考研数学一第3题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "完整答案与解析见答案原页。",
+      "explanation": "答案来自本地百度网盘 2013 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2013/question-03.jpg",
+          "caption": "题面裁切图 q03",
+          "alt": "2013考研数学一题面裁切图 q03"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2013/answer-page-02.jpg",
+          "caption": "答案解析 p.2",
+          "alt": "2013考研数学一答案解析 p.2"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2013",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:25e0b41b3321a100a5e6ceae3d04838247db7693014057f78ea70e4aaa7af08f",
+      "answerTextHash": "sha256:ba214c6f7c0d4af3ffe01531e9b9e28100a8c5e262dbf393ab396db25b8decd0",
+      "sourceEvidence": {
+        "evidenceId": "math1-2013-q03",
+        "sourceId": "src_2f89f14b41d6bdb38f193cbc",
+        "answerSourceId": "src_2f89f14b41d6bdb38f193cbc",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2013-paper-answer",
+        "answerEvidenceId": "math1-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:ba214c6f7c0d4af3ffe01531e9b9e28100a8c5e262dbf393ab396db25b8decd0"
+      }
+    },
+    {
+      "id": "math1-2013-004",
+      "number": 4,
+      "paperId": "math1-2013",
+      "paperName": "2013考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2013",
+      "section": "选择题",
+      "type": "flashcard",
+      "question": "2013考研数学一第4题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "完整答案与解析见答案原页。",
+      "explanation": "答案来自本地百度网盘 2013 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2013/question-04.jpg",
+          "caption": "题面裁切图 q04",
+          "alt": "2013考研数学一题面裁切图 q04"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2013/answer-page-02.jpg",
+          "caption": "答案解析 p.2",
+          "alt": "2013考研数学一答案解析 p.2"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2013",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:cf5f78bb21582bdb2fdc1bb05e05ff4f15f2dda4595b4a5a9daf96875d0e13fe",
+      "answerTextHash": "sha256:ba214c6f7c0d4af3ffe01531e9b9e28100a8c5e262dbf393ab396db25b8decd0",
+      "sourceEvidence": {
+        "evidenceId": "math1-2013-q04",
+        "sourceId": "src_2f89f14b41d6bdb38f193cbc",
+        "answerSourceId": "src_2f89f14b41d6bdb38f193cbc",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2013-paper-answer",
+        "answerEvidenceId": "math1-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:ba214c6f7c0d4af3ffe01531e9b9e28100a8c5e262dbf393ab396db25b8decd0"
+      }
+    },
+    {
+      "id": "math1-2013-005",
+      "number": 5,
+      "paperId": "math1-2013",
+      "paperName": "2013考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2013",
+      "section": "选择题",
+      "type": "flashcard",
+      "question": "2013考研数学一第5题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "完整答案与解析见答案原页。",
+      "explanation": "答案来自本地百度网盘 2013 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2013/question-05.jpg",
+          "caption": "题面裁切图 q05",
+          "alt": "2013考研数学一题面裁切图 q05"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2013/answer-page-03.jpg",
+          "caption": "答案解析 p.3",
+          "alt": "2013考研数学一答案解析 p.3"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2013",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:99b9a06deb23eb50629ab7705624a5a0e3dca80d4d380edef6714f698ef1f1f6",
+      "answerTextHash": "sha256:dc25a59546daa82284b8a85e8b8f68024da61e01a2e627c60bfaad2613ae7e1a",
+      "sourceEvidence": {
+        "evidenceId": "math1-2013-q05",
+        "sourceId": "src_2f89f14b41d6bdb38f193cbc",
+        "answerSourceId": "src_2f89f14b41d6bdb38f193cbc",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2013-paper-answer",
+        "answerEvidenceId": "math1-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:dc25a59546daa82284b8a85e8b8f68024da61e01a2e627c60bfaad2613ae7e1a"
+      }
+    },
+    {
+      "id": "math1-2013-006",
+      "number": 6,
+      "paperId": "math1-2013",
+      "paperName": "2013考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2013",
+      "section": "选择题",
+      "type": "flashcard",
+      "question": "2013考研数学一第6题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "完整答案与解析见答案原页。",
+      "explanation": "答案来自本地百度网盘 2013 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2013/question-06.jpg",
+          "caption": "题面裁切图 q06",
+          "alt": "2013考研数学一题面裁切图 q06"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2013/answer-page-03.jpg",
+          "caption": "答案解析 p.3",
+          "alt": "2013考研数学一答案解析 p.3"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2013",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:3237a4e59e26b7c90cb47d498b6c1f6165ce11f3eb3ba47516d5cad68a91e3ee",
+      "answerTextHash": "sha256:dc25a59546daa82284b8a85e8b8f68024da61e01a2e627c60bfaad2613ae7e1a",
+      "sourceEvidence": {
+        "evidenceId": "math1-2013-q06",
+        "sourceId": "src_2f89f14b41d6bdb38f193cbc",
+        "answerSourceId": "src_2f89f14b41d6bdb38f193cbc",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2013-paper-answer",
+        "answerEvidenceId": "math1-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:dc25a59546daa82284b8a85e8b8f68024da61e01a2e627c60bfaad2613ae7e1a"
+      }
+    },
+    {
+      "id": "math1-2013-007",
+      "number": 7,
+      "paperId": "math1-2013",
+      "paperName": "2013考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2013",
+      "section": "选择题",
+      "type": "flashcard",
+      "question": "2013考研数学一第7题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "完整答案与解析见答案原页。",
+      "explanation": "答案来自本地百度网盘 2013 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2013/question-07.jpg",
+          "caption": "题面裁切图 q07",
+          "alt": "2013考研数学一题面裁切图 q07"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2013/answer-page-04.jpg",
+          "caption": "答案解析 p.4",
+          "alt": "2013考研数学一答案解析 p.4"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2013",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:1918564708c19394eff135c267a4011fd7d217ca772871956469b993b1a1d0ff",
+      "answerTextHash": "sha256:ef73881228b326b00b9e5b1e307ef7177e9ce38c5b2194919e9b8feac9a78be2",
+      "sourceEvidence": {
+        "evidenceId": "math1-2013-q07",
+        "sourceId": "src_2f89f14b41d6bdb38f193cbc",
+        "answerSourceId": "src_2f89f14b41d6bdb38f193cbc",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2013-paper-answer",
+        "answerEvidenceId": "math1-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:ef73881228b326b00b9e5b1e307ef7177e9ce38c5b2194919e9b8feac9a78be2"
+      }
+    },
+    {
+      "id": "math1-2013-008",
+      "number": 8,
+      "paperId": "math1-2013",
+      "paperName": "2013考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2013",
+      "section": "选择题",
+      "type": "flashcard",
+      "question": "2013考研数学一第8题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "完整答案与解析见答案原页。",
+      "explanation": "答案来自本地百度网盘 2013 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2013/question-08.jpg",
+          "caption": "题面裁切图 q08",
+          "alt": "2013考研数学一题面裁切图 q08"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2013/answer-page-04.jpg",
+          "caption": "答案解析 p.4",
+          "alt": "2013考研数学一答案解析 p.4"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2013",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:c1f2294b712b102a8f6c1001006df304f5314a419904aa22b250e82262d2dd8e",
+      "answerTextHash": "sha256:ef73881228b326b00b9e5b1e307ef7177e9ce38c5b2194919e9b8feac9a78be2",
+      "sourceEvidence": {
+        "evidenceId": "math1-2013-q08",
+        "sourceId": "src_2f89f14b41d6bdb38f193cbc",
+        "answerSourceId": "src_2f89f14b41d6bdb38f193cbc",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2013-paper-answer",
+        "answerEvidenceId": "math1-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:ef73881228b326b00b9e5b1e307ef7177e9ce38c5b2194919e9b8feac9a78be2"
+      }
+    },
+    {
+      "id": "math1-2013-009",
+      "number": 9,
+      "paperId": "math1-2013",
+      "paperName": "2013考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2013",
+      "section": "填空题",
+      "type": "flashcard",
+      "question": "2013考研数学一第9题（填空题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "填空题答案与解析见答案原页。",
+      "explanation": "答案来自本地百度网盘 2013 数学一真题答案解析 PDF；填空题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2013/question-09.jpg",
+          "caption": "题面裁切图 q09",
+          "alt": "2013考研数学一题面裁切图 q09"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2013/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2013考研数学一答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2013",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:05c19eaf34abe12e07a545a63c656bf7a549a1f9c6125eeb10b4864714f6aa61",
+      "answerTextHash": "sha256:a0ba601d0de8a45f78a296c44a4aa8576d85572f0fa9c9c1e26f8fe03ce259de",
+      "sourceEvidence": {
+        "evidenceId": "math1-2013-q09",
+        "sourceId": "src_2f89f14b41d6bdb38f193cbc",
+        "answerSourceId": "src_2f89f14b41d6bdb38f193cbc",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2013-paper-answer",
+        "answerEvidenceId": "math1-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:a0ba601d0de8a45f78a296c44a4aa8576d85572f0fa9c9c1e26f8fe03ce259de"
+      }
+    },
+    {
+      "id": "math1-2013-010",
+      "number": 10,
+      "paperId": "math1-2013",
+      "paperName": "2013考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2013",
+      "section": "填空题",
+      "type": "flashcard",
+      "question": "2013考研数学一第10题（填空题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "填空题答案与解析见答案原页。",
+      "explanation": "答案来自本地百度网盘 2013 数学一真题答案解析 PDF；填空题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2013/question-10.jpg",
+          "caption": "题面裁切图 q10",
+          "alt": "2013考研数学一题面裁切图 q10"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2013/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2013考研数学一答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2013",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:1e5b35059e37cfd37367083c73f5498945e569920a6a9fb09b20075cc7c87751",
+      "answerTextHash": "sha256:a0ba601d0de8a45f78a296c44a4aa8576d85572f0fa9c9c1e26f8fe03ce259de",
+      "sourceEvidence": {
+        "evidenceId": "math1-2013-q10",
+        "sourceId": "src_2f89f14b41d6bdb38f193cbc",
+        "answerSourceId": "src_2f89f14b41d6bdb38f193cbc",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2013-paper-answer",
+        "answerEvidenceId": "math1-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:a0ba601d0de8a45f78a296c44a4aa8576d85572f0fa9c9c1e26f8fe03ce259de"
+      }
+    },
+    {
+      "id": "math1-2013-011",
+      "number": 11,
+      "paperId": "math1-2013",
+      "paperName": "2013考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2013",
+      "section": "填空题",
+      "type": "flashcard",
+      "question": "2013考研数学一第11题（填空题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "填空题答案与解析见答案原页。",
+      "explanation": "答案来自本地百度网盘 2013 数学一真题答案解析 PDF；填空题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2013/question-11.jpg",
+          "caption": "题面裁切图 q11",
+          "alt": "2013考研数学一题面裁切图 q11"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2013/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2013考研数学一答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2013",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:f2586f1502741ff473f038bc4231549a9358fdb033ee623d2eca875ca71e2623",
+      "answerTextHash": "sha256:623aa66b150a69b05aedfe840b9efb5c2213853ecb80fecb90be93c7ebdeb214",
+      "sourceEvidence": {
+        "evidenceId": "math1-2013-q11",
+        "sourceId": "src_2f89f14b41d6bdb38f193cbc",
+        "answerSourceId": "src_2f89f14b41d6bdb38f193cbc",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2013-paper-answer",
+        "answerEvidenceId": "math1-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:623aa66b150a69b05aedfe840b9efb5c2213853ecb80fecb90be93c7ebdeb214"
+      }
+    },
+    {
+      "id": "math1-2013-012",
+      "number": 12,
+      "paperId": "math1-2013",
+      "paperName": "2013考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2013",
+      "section": "填空题",
+      "type": "flashcard",
+      "question": "2013考研数学一第12题（填空题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "填空题答案与解析见答案原页。",
+      "explanation": "答案来自本地百度网盘 2013 数学一真题答案解析 PDF；填空题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2013/question-12.jpg",
+          "caption": "题面裁切图 q12",
+          "alt": "2013考研数学一题面裁切图 q12"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2013/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2013考研数学一答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2013",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:70a5caac43a497861544c70d54907e219c0a6f47303c15571bede198512c426b",
+      "answerTextHash": "sha256:623aa66b150a69b05aedfe840b9efb5c2213853ecb80fecb90be93c7ebdeb214",
+      "sourceEvidence": {
+        "evidenceId": "math1-2013-q12",
+        "sourceId": "src_2f89f14b41d6bdb38f193cbc",
+        "answerSourceId": "src_2f89f14b41d6bdb38f193cbc",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2013-paper-answer",
+        "answerEvidenceId": "math1-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:623aa66b150a69b05aedfe840b9efb5c2213853ecb80fecb90be93c7ebdeb214"
+      }
+    },
+    {
+      "id": "math1-2013-013",
+      "number": 13,
+      "paperId": "math1-2013",
+      "paperName": "2013考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2013",
+      "section": "填空题",
+      "type": "flashcard",
+      "question": "2013考研数学一第13题（填空题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "填空题答案与解析见答案原页。",
+      "explanation": "答案来自本地百度网盘 2013 数学一真题答案解析 PDF；填空题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2013/question-13.jpg",
+          "caption": "题面裁切图 q13",
+          "alt": "2013考研数学一题面裁切图 q13"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2013/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2013考研数学一答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2013",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:c770c93657beb8b1126faf10c4ce243a7b74d69b320c35ddbacbc19d101ab3e7",
+      "answerTextHash": "sha256:0d5c84df8052980ce80857bb6fb694fdf3e3d4942974137ec54517cbb6afebef",
+      "sourceEvidence": {
+        "evidenceId": "math1-2013-q13",
+        "sourceId": "src_2f89f14b41d6bdb38f193cbc",
+        "answerSourceId": "src_2f89f14b41d6bdb38f193cbc",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2013-paper-answer",
+        "answerEvidenceId": "math1-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:0d5c84df8052980ce80857bb6fb694fdf3e3d4942974137ec54517cbb6afebef"
+      }
+    },
+    {
+      "id": "math1-2013-014",
+      "number": 14,
+      "paperId": "math1-2013",
+      "paperName": "2013考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2013",
+      "section": "填空题",
+      "type": "flashcard",
+      "question": "2013考研数学一第14题（填空题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "填空题答案与解析见答案原页。",
+      "explanation": "答案来自本地百度网盘 2013 数学一真题答案解析 PDF；填空题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2013/question-14.jpg",
+          "caption": "题面裁切图 q14",
+          "alt": "2013考研数学一题面裁切图 q14"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2013/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2013考研数学一答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2013",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:ac01139bea72e9263d1a382ff21fd361acf88a9cf02a6f1b14567a78d1cbce88",
+      "answerTextHash": "sha256:0d5c84df8052980ce80857bb6fb694fdf3e3d4942974137ec54517cbb6afebef",
+      "sourceEvidence": {
+        "evidenceId": "math1-2013-q14",
+        "sourceId": "src_2f89f14b41d6bdb38f193cbc",
+        "answerSourceId": "src_2f89f14b41d6bdb38f193cbc",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2013-paper-answer",
+        "answerEvidenceId": "math1-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:0d5c84df8052980ce80857bb6fb694fdf3e3d4942974137ec54517cbb6afebef"
+      }
+    },
+    {
+      "id": "math1-2013-015",
+      "number": 15,
+      "paperId": "math1-2013",
+      "paperName": "2013考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2013",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2013考研数学一第15题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "解答题完整演算、证明或推导过程见答案原页。",
+      "explanation": "答案来自本地百度网盘 2013 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2013/question-15.jpg",
+          "caption": "题面裁切图 q15",
+          "alt": "2013考研数学一题面裁切图 q15"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2013/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2013考研数学一答案解析 p.8"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2013",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:20ee5c7e81519fa3a7b60efe6271d2d6bc77dda76dc865ed6bc1497c2e748ad5",
+      "answerTextHash": "sha256:8267e216aabe86bdadcdaf7ef805d5f696de5e810b062971b8166a58a2ef5c72",
+      "sourceEvidence": {
+        "evidenceId": "math1-2013-q15",
+        "sourceId": "src_2f89f14b41d6bdb38f193cbc",
+        "answerSourceId": "src_2f89f14b41d6bdb38f193cbc",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2013-paper-answer",
+        "answerEvidenceId": "math1-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:8267e216aabe86bdadcdaf7ef805d5f696de5e810b062971b8166a58a2ef5c72"
+      }
+    },
+    {
+      "id": "math1-2013-016",
+      "number": 16,
+      "paperId": "math1-2013",
+      "paperName": "2013考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2013",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2013考研数学一第16题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "解答题完整演算、证明或推导过程见答案原页。",
+      "explanation": "答案来自本地百度网盘 2013 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2013/question-16.jpg",
+          "caption": "题面裁切图 q16",
+          "alt": "2013考研数学一题面裁切图 q16"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2013/answer-page-09.jpg",
+          "caption": "答案解析 p.9",
+          "alt": "2013考研数学一答案解析 p.9"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2013",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:4bf4cb9bd9e20732afaf347316f48e1d37fbeaecf2bc8bfbdb83523be0af5f1d",
+      "answerTextHash": "sha256:dff905b74383334bbda37448eaec568294f1b6ad9aff2005357ad27c4bfc66c9",
+      "sourceEvidence": {
+        "evidenceId": "math1-2013-q16",
+        "sourceId": "src_2f89f14b41d6bdb38f193cbc",
+        "answerSourceId": "src_2f89f14b41d6bdb38f193cbc",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2013-paper-answer",
+        "answerEvidenceId": "math1-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:dff905b74383334bbda37448eaec568294f1b6ad9aff2005357ad27c4bfc66c9"
+      }
+    },
+    {
+      "id": "math1-2013-017",
+      "number": 17,
+      "paperId": "math1-2013",
+      "paperName": "2013考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2013",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2013考研数学一第17题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "解答题完整演算、证明或推导过程见答案原页。",
+      "explanation": "答案来自本地百度网盘 2013 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2013/question-17.jpg",
+          "caption": "题面裁切图 q17",
+          "alt": "2013考研数学一题面裁切图 q17"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2013/answer-page-09.jpg",
+          "caption": "答案解析 p.9",
+          "alt": "2013考研数学一答案解析 p.9"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2013",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:ff29193d800051a2fe2d790f74affcc25255973dd544b3833536deecd205ab2f",
+      "answerTextHash": "sha256:dff905b74383334bbda37448eaec568294f1b6ad9aff2005357ad27c4bfc66c9",
+      "sourceEvidence": {
+        "evidenceId": "math1-2013-q17",
+        "sourceId": "src_2f89f14b41d6bdb38f193cbc",
+        "answerSourceId": "src_2f89f14b41d6bdb38f193cbc",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2013-paper-answer",
+        "answerEvidenceId": "math1-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:dff905b74383334bbda37448eaec568294f1b6ad9aff2005357ad27c4bfc66c9"
+      }
+    },
+    {
+      "id": "math1-2013-018",
+      "number": 18,
+      "paperId": "math1-2013",
+      "paperName": "2013考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2013",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2013考研数学一第18题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "解答题完整演算、证明或推导过程见答案原页。",
+      "explanation": "答案来自本地百度网盘 2013 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2013/question-18.jpg",
+          "caption": "题面裁切图 q18",
+          "alt": "2013考研数学一题面裁切图 q18"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2013/answer-page-10.jpg",
+          "caption": "答案解析 p.10",
+          "alt": "2013考研数学一答案解析 p.10"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2013",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:85e9bfcb6184afe45931c8e9cc8ee6431711aa048c25cdaf0fa9c24a5f11c0dc",
+      "answerTextHash": "sha256:feac111251a272c201f36ec721e2f72dfa81e880e12ebe97cc06e762b2bb3956",
+      "sourceEvidence": {
+        "evidenceId": "math1-2013-q18",
+        "sourceId": "src_2f89f14b41d6bdb38f193cbc",
+        "answerSourceId": "src_2f89f14b41d6bdb38f193cbc",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2013-paper-answer",
+        "answerEvidenceId": "math1-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:feac111251a272c201f36ec721e2f72dfa81e880e12ebe97cc06e762b2bb3956"
+      }
+    },
+    {
+      "id": "math1-2013-019",
+      "number": 19,
+      "paperId": "math1-2013",
+      "paperName": "2013考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2013",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2013考研数学一第19题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "解答题完整演算、证明或推导过程见答案原页。",
+      "explanation": "答案来自本地百度网盘 2013 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2013/question-19.jpg",
+          "caption": "题面裁切图 q19",
+          "alt": "2013考研数学一题面裁切图 q19"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2013/answer-page-10.jpg",
+          "caption": "答案解析 p.10",
+          "alt": "2013考研数学一答案解析 p.10"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2013",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:9850f00ce88dffedca7bc859471e036faca0617b94130db0c8acef59e949a3ad",
+      "answerTextHash": "sha256:feac111251a272c201f36ec721e2f72dfa81e880e12ebe97cc06e762b2bb3956",
+      "sourceEvidence": {
+        "evidenceId": "math1-2013-q19",
+        "sourceId": "src_2f89f14b41d6bdb38f193cbc",
+        "answerSourceId": "src_2f89f14b41d6bdb38f193cbc",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2013-paper-answer",
+        "answerEvidenceId": "math1-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:feac111251a272c201f36ec721e2f72dfa81e880e12ebe97cc06e762b2bb3956"
+      }
+    },
+    {
+      "id": "math1-2013-020",
+      "number": 20,
+      "paperId": "math1-2013",
+      "paperName": "2013考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2013",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2013考研数学一第20题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "解答题完整演算、证明或推导过程见答案原页。",
+      "explanation": "答案来自本地百度网盘 2013 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2013/question-20.jpg",
+          "caption": "题面裁切图 q20",
+          "alt": "2013考研数学一题面裁切图 q20"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2013/answer-page-11.jpg",
+          "caption": "答案解析 p.11",
+          "alt": "2013考研数学一答案解析 p.11"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2013",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:8908c4b525eb4a3069743705a41483ed493df7f644e7faff335a188599aa5f6a",
+      "answerTextHash": "sha256:fec6767cd52ea1974536ce76a309129161f0a83f8547b0597c881ebbc0c7ab6f",
+      "sourceEvidence": {
+        "evidenceId": "math1-2013-q20",
+        "sourceId": "src_2f89f14b41d6bdb38f193cbc",
+        "answerSourceId": "src_2f89f14b41d6bdb38f193cbc",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2013-paper-answer",
+        "answerEvidenceId": "math1-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:fec6767cd52ea1974536ce76a309129161f0a83f8547b0597c881ebbc0c7ab6f"
+      }
+    },
+    {
+      "id": "math1-2013-021",
+      "number": 21,
+      "paperId": "math1-2013",
+      "paperName": "2013考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2013",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2013考研数学一第21题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "解答题完整演算、证明或推导过程见答案原页。",
+      "explanation": "答案来自本地百度网盘 2013 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2013/question-21.jpg",
+          "caption": "题面裁切图 q21",
+          "alt": "2013考研数学一题面裁切图 q21"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2013/answer-page-11.jpg",
+          "caption": "答案解析 p.11",
+          "alt": "2013考研数学一答案解析 p.11"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2013",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:ba741c9126a583fb391b5c2e7459ec5076438a459812a2019287bcc059ec7256",
+      "answerTextHash": "sha256:fec6767cd52ea1974536ce76a309129161f0a83f8547b0597c881ebbc0c7ab6f",
+      "sourceEvidence": {
+        "evidenceId": "math1-2013-q21",
+        "sourceId": "src_2f89f14b41d6bdb38f193cbc",
+        "answerSourceId": "src_2f89f14b41d6bdb38f193cbc",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2013-paper-answer",
+        "answerEvidenceId": "math1-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:fec6767cd52ea1974536ce76a309129161f0a83f8547b0597c881ebbc0c7ab6f"
+      }
+    },
+    {
+      "id": "math1-2013-022",
+      "number": 22,
+      "paperId": "math1-2013",
+      "paperName": "2013考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2013",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2013考研数学一第22题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "解答题完整演算、证明或推导过程见答案原页。",
+      "explanation": "答案来自本地百度网盘 2013 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2013/question-22.jpg",
+          "caption": "题面裁切图 q22",
+          "alt": "2013考研数学一题面裁切图 q22"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2013/answer-page-12.jpg",
+          "caption": "答案解析 p.12",
+          "alt": "2013考研数学一答案解析 p.12"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2013",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:c425d1e80b94e0e3975076c4233822ec4563b3c71cc75bd647197adfa733d6af",
+      "answerTextHash": "sha256:7abc6ede57ce6d6e4cca0fdd3dbd8a492c2d01e08de6ec79fe51212b6287f0f5",
+      "sourceEvidence": {
+        "evidenceId": "math1-2013-q22",
+        "sourceId": "src_2f89f14b41d6bdb38f193cbc",
+        "answerSourceId": "src_2f89f14b41d6bdb38f193cbc",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2013-paper-answer",
+        "answerEvidenceId": "math1-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:7abc6ede57ce6d6e4cca0fdd3dbd8a492c2d01e08de6ec79fe51212b6287f0f5"
+      }
+    },
+    {
+      "id": "math1-2013-023",
+      "number": 23,
+      "paperId": "math1-2013",
+      "paperName": "2013考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2013",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2013考研数学一第23题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "解答题完整演算、证明或推导过程见答案原页。",
+      "explanation": "答案来自本地百度网盘 2013 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2013/question-23.jpg",
+          "caption": "题面裁切图 q23",
+          "alt": "2013考研数学一题面裁切图 q23"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2013/answer-page-12.jpg",
+          "caption": "答案解析 p.12",
+          "alt": "2013考研数学一答案解析 p.12"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2013",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2013-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:3e6f36bbac95d592a0a9e08243dd6227ea93d812c44f80c27aa7f258ff5f0b70",
+      "answerTextHash": "sha256:7abc6ede57ce6d6e4cca0fdd3dbd8a492c2d01e08de6ec79fe51212b6287f0f5",
+      "sourceEvidence": {
+        "evidenceId": "math1-2013-q23",
+        "sourceId": "src_2f89f14b41d6bdb38f193cbc",
+        "answerSourceId": "src_2f89f14b41d6bdb38f193cbc",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2013-paper-answer",
+        "answerEvidenceId": "math1-2013-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:7abc6ede57ce6d6e4cca0fdd3dbd8a492c2d01e08de6ec79fe51212b6287f0f5"
+      }
+    }
+  ]
+}

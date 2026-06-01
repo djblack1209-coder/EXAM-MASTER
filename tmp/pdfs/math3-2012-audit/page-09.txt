@@ -1,0 +1,28 @@
+Tuan: meted                    全和和分和和和                    人
+(19) CALS 10 分) ERIK f(x) 满足方程 f (x) + f(x) -2f(x) =0 & f (x) + f(x) =2e*
+1) 求表达式 f (x)
+2) RMA y =f(x) [ f(-t)dt
+【解析】，
+们 特征方程为”+r -2 = 0 ，特征根为 ri = 1r = -2 ，齐次微分方程 『"(X) + f(x) 一2f (X) = 0 的通解
+f(x) =C,e" +Cue和再由 f(x) + f (x) =2e" ## 2C,e° -C,e** =2e ,可知 C, =1,C, =0.
+# f (x) =e
+2 meesnDy y=e" Ce“ dt. 则 y'=1+2x6" (ef dt. y"=2x+2(1+2x" Ja [edt
+&y" <0 x =0.。为了说明 X= 0是y"=0唯一的解,我们来讨论 y"在 x > 0和X <0时的符号。
+当 x>0 时 ， 2x>02(+2Xje erdt>0 ，可知 y's 0 当x<0 时，
+2x <0,2(1+2x" Je” fe“ dt <0，可条 y"<O. 可知 x =0是 y"=0唯一的解。
+同时，由上述讨论可知曲线  y = f(x) | f(A? )dtee x = 0左右阿边的四上性相反， 可知 。 (0,0 )点是曲线
+y =fC2) [ F(A) dts.
+(20) (ARS 10分)
+人 a 0 0)   人 }
+wale 1a Ol ltl
+| 0 1 al   | |
+ia 00 1)   (0)
+CI)求|A
+CID) 已知线性方程组 AX =b 有无穷多解，求”a ，并求 Ax =b 的通解。
+1a0q
+otad  1 a 0     a 0 0
+【解析] C1)        =1x|o 1 atax(-t)'*|1 a gl=1-a?
+001a
+001     01 a
+aoo41
+tanang: wean                        perv rerey                        全，二大

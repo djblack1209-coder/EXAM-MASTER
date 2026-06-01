@@ -1,0 +1,35 @@
+Cs anki                      rere                      人全。二站
+(0) P(AUB) =P(AB) =1-P(AB) =1, a (D) Ew.
+(8) 设随机变量。 X 与Y 相互独立，且。 X 服从标准正态分布 -N (0,1). Y 的概率分布为
+1
+PLY =9j=PIY =} = ie F,(Z) 为随机变量 Z = XY 的分布函数， 则函数 F(Z)
+的间断点个数为( 。 )
+(A) 0.      (B)1.    (C)2   (D)3.
+[答案】 8B
+【解析】 Fz(z) =P(XY <z) =P(XY <ZY =0)P(Y =0) +P(XY <dY =1)P(Y =1)
+-Po <zlY =0) +P(XY <zlY =1)]
+= IP UX 0<z\Y =0) +P(X <z|Y =人
+X.Y sat
+2. Fe(z) = HIPC 0<z) +P(x <z)]
+(1) 着z<0,，则 F,(z) 二四
+(2) 当z>0, 则 Fe (2) =La+o@
+2.2 =O JIB. AO (8).
+Sy MO: 9-14 NL, EAL “4 分，共 2A REO
+ee
+(9) jim 一- =
+oe -1
+vse1 Se
+2
+4.                   e 12
+ey, 8-8    . e(1-e) ， e(1—cosx)      2    3
+【解析】 lim -= = fim SE = fim SP"? -lim一一=>e
+1
+(10) z= (x+e")", a   4
+liso)
+【答案】 2In 2 41.
+【解析] 由 z = (x+er )，故z(X0 )=(x+
+虹    at      有        x_]
+Salas ]=frr ] =e nt ty + |
+oe TL) Jal  ]   int x) ma
+=ge
+Cs mii                    人全和                    大

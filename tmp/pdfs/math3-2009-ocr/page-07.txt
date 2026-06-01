@@ -1,0 +1,38 @@
+Cs maa                      人和和信                      sa。地
+【答案】 D
+【解析】此三为定积分的应用知识考核， 由。 yY = f(X)的图形可见，其图像与 X轴及 y fi
+X =六所于的图形的代数面积为所求函数 。。F (X) ，从而可得出几个方面的特征，
+@xe ,1]时， F(x) <0 ，且单调递减
+@xe (21, F (x)单调递增
+图Xe 世,3 ht, F (x)为常函数
+@xe 401, F(x) <0为线性函数，单调递增
+加由于 Foo 为连续函数
+结合这些特点，可见正确选项为 (D).
+55) 设 A 日均为 2 阶年阵， ANB 分别为 A,B 的伴随算阵，若 | A|= 2,| B =- 3，则分块矩
+(oA)
+i    的伴随矩阵为
+\B Oo)
+Oo 3B     「o 2B
+网| .   ]    加|   |
+a oj    3A 0 J
+Oo 3A    fo 20
+ef :   ]    O)|。.   ]
+(28 0 J    (38° 0 J
+【答案】 B.
+Cer] 根据 CC* -|C|E ， 考C*-lclcsca-1c*
+pl
+(OA    °
+分据算隆 |    aa    =(-0” ap) =2x3 =6，即分块矩阵可闻
+\B o)    BO
+A
+‘    o —8
+@ ay jo al Ay _efo a),   [|
+BO) BOBO Wool |l1w o |
+WA     )
+tos
+o 识 ] fo 28")
+mat     | eaw o )
+<A" 0
+177    7/
+age
+Cannas: asad                    人六和和                    tases. mace

@@ -1,0 +1,1211 @@
+{
+  "id": "math1-2008",
+  "source": "math1-2008-paper-answer",
+  "paperId": "math1-2008",
+  "paperName": "2008考研数学一真题",
+  "subject": "数学",
+  "subjectKey": "math",
+  "track": "math1",
+  "year": "2008",
+  "quality": "ready",
+  "publicationStatus": "published",
+  "publicationBlockers": [],
+  "sourceEvidencePolicy": "baidu_netdisk_official_paper_pdf_question_crop_answer_page_image_v1",
+  "sourceFiles": [
+    {
+      "id": "math1-2008-paper-answer",
+      "role": "paper_answer",
+      "localPath": "data/raw-inbox/src_98dbae1b54d51d2784cc1728-2008数一真题、标准答案及解析.pdf",
+      "sha256": "sha256:6e2e8eb5f590dcd51fbc2d344332996f0bc2965a52cb8755757788264fac0503",
+      "sourceId": "src_98dbae1b54d51d2784cc1728"
+    }
+  ],
+  "assetRoot": "question-bank/math1-2008",
+  "processed_at": "2026-05-31T02:46:48Z",
+  "total_cards": 23,
+  "cards": [
+    {
+      "id": "math1-2008-001",
+      "number": 1,
+      "paperId": "math1-2008",
+      "paperName": "2008考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2008",
+      "section": "选择题",
+      "type": "flashcard",
+      "question": "2008考研数学一第1题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "完整答案与解析见答案原页。",
+      "explanation": "答案来自本地百度网盘 2008 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2008/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2008考研数学一试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2008/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2008考研数学一答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2008",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:94099a98af2bfa1aa0c985a49f1360c0548f034be291c7e8f9fca236078b2548",
+      "answerTextHash": "sha256:5cd132801425edd0f248eeeb09692dab6c92c96527048542eef80afa62be897e",
+      "sourceEvidence": {
+        "evidenceId": "math1-2008-q01",
+        "sourceId": "src_98dbae1b54d51d2784cc1728",
+        "answerSourceId": "src_98dbae1b54d51d2784cc1728",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2008-paper-answer",
+        "answerEvidenceId": "math1-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:5cd132801425edd0f248eeeb09692dab6c92c96527048542eef80afa62be897e"
+      }
+    },
+    {
+      "id": "math1-2008-002",
+      "number": 2,
+      "paperId": "math1-2008",
+      "paperName": "2008考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2008",
+      "section": "选择题",
+      "type": "flashcard",
+      "question": "2008考研数学一第2题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "完整答案与解析见答案原页。",
+      "explanation": "答案来自本地百度网盘 2008 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2008/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2008考研数学一试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2008/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2008考研数学一答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2008",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:326f38e79f0116fbc0d0e6462be4b7b89ee987020bf0ceccc91e3dfd72a91a78",
+      "answerTextHash": "sha256:5cd132801425edd0f248eeeb09692dab6c92c96527048542eef80afa62be897e",
+      "sourceEvidence": {
+        "evidenceId": "math1-2008-q02",
+        "sourceId": "src_98dbae1b54d51d2784cc1728",
+        "answerSourceId": "src_98dbae1b54d51d2784cc1728",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2008-paper-answer",
+        "answerEvidenceId": "math1-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:5cd132801425edd0f248eeeb09692dab6c92c96527048542eef80afa62be897e"
+      }
+    },
+    {
+      "id": "math1-2008-003",
+      "number": 3,
+      "paperId": "math1-2008",
+      "paperName": "2008考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2008",
+      "section": "选择题",
+      "type": "flashcard",
+      "question": "2008考研数学一第3题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "完整答案与解析见答案原页。",
+      "explanation": "答案来自本地百度网盘 2008 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2008/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2008考研数学一试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2008/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2008考研数学一答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2008",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:58e535f16d029584bfb09d373b94af20f56e0e8b653d7b76ca6cb225b75912de",
+      "answerTextHash": "sha256:5cd132801425edd0f248eeeb09692dab6c92c96527048542eef80afa62be897e",
+      "sourceEvidence": {
+        "evidenceId": "math1-2008-q03",
+        "sourceId": "src_98dbae1b54d51d2784cc1728",
+        "answerSourceId": "src_98dbae1b54d51d2784cc1728",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2008-paper-answer",
+        "answerEvidenceId": "math1-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:5cd132801425edd0f248eeeb09692dab6c92c96527048542eef80afa62be897e"
+      }
+    },
+    {
+      "id": "math1-2008-004",
+      "number": 4,
+      "paperId": "math1-2008",
+      "paperName": "2008考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2008",
+      "section": "选择题",
+      "type": "flashcard",
+      "question": "2008考研数学一第4题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "完整答案与解析见答案原页。",
+      "explanation": "答案来自本地百度网盘 2008 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2008/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2008考研数学一试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2008/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2008考研数学一答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2008",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:fba9ebf366b8ae9b31b0e96819589773791dcd1082ac009471ac3c2ba4f268c5",
+      "answerTextHash": "sha256:5cd132801425edd0f248eeeb09692dab6c92c96527048542eef80afa62be897e",
+      "sourceEvidence": {
+        "evidenceId": "math1-2008-q04",
+        "sourceId": "src_98dbae1b54d51d2784cc1728",
+        "answerSourceId": "src_98dbae1b54d51d2784cc1728",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2008-paper-answer",
+        "answerEvidenceId": "math1-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:5cd132801425edd0f248eeeb09692dab6c92c96527048542eef80afa62be897e"
+      }
+    },
+    {
+      "id": "math1-2008-005",
+      "number": 5,
+      "paperId": "math1-2008",
+      "paperName": "2008考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2008",
+      "section": "选择题",
+      "type": "flashcard",
+      "question": "2008考研数学一第5题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "完整答案与解析见答案原页。",
+      "explanation": "答案来自本地百度网盘 2008 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2008/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2008考研数学一试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2008/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2008考研数学一答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2008",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:fbbdbb6471955a5e735c214ffa3f49b063d59644ff4043d41d008cdaabdc1b99",
+      "answerTextHash": "sha256:3c83f3c291b20bce71cbbb103e7f68701918c92c6c74bec2b54de4d1f1d94a04",
+      "sourceEvidence": {
+        "evidenceId": "math1-2008-q05",
+        "sourceId": "src_98dbae1b54d51d2784cc1728",
+        "answerSourceId": "src_98dbae1b54d51d2784cc1728",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2008-paper-answer",
+        "answerEvidenceId": "math1-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:3c83f3c291b20bce71cbbb103e7f68701918c92c6c74bec2b54de4d1f1d94a04"
+      }
+    },
+    {
+      "id": "math1-2008-006",
+      "number": 6,
+      "paperId": "math1-2008",
+      "paperName": "2008考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2008",
+      "section": "选择题",
+      "type": "flashcard",
+      "question": "2008考研数学一第6题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "完整答案与解析见答案原页。",
+      "explanation": "答案来自本地百度网盘 2008 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2008/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2008考研数学一试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2008/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2008考研数学一答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2008",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:905d2a5b47de1944f6bb79671c2758be808639b0c2bd909e29eb6778ffaba505",
+      "answerTextHash": "sha256:3c83f3c291b20bce71cbbb103e7f68701918c92c6c74bec2b54de4d1f1d94a04",
+      "sourceEvidence": {
+        "evidenceId": "math1-2008-q06",
+        "sourceId": "src_98dbae1b54d51d2784cc1728",
+        "answerSourceId": "src_98dbae1b54d51d2784cc1728",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2008-paper-answer",
+        "answerEvidenceId": "math1-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:3c83f3c291b20bce71cbbb103e7f68701918c92c6c74bec2b54de4d1f1d94a04"
+      }
+    },
+    {
+      "id": "math1-2008-007",
+      "number": 7,
+      "paperId": "math1-2008",
+      "paperName": "2008考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2008",
+      "section": "选择题",
+      "type": "flashcard",
+      "question": "2008考研数学一第7题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "完整答案与解析见答案原页。",
+      "explanation": "答案来自本地百度网盘 2008 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2008/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2008考研数学一试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2008/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2008考研数学一答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2008",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:a9e8af13739df49be8daa763500b2f49d779e8230799a82c8e980576ac4a6235",
+      "answerTextHash": "sha256:3c83f3c291b20bce71cbbb103e7f68701918c92c6c74bec2b54de4d1f1d94a04",
+      "sourceEvidence": {
+        "evidenceId": "math1-2008-q07",
+        "sourceId": "src_98dbae1b54d51d2784cc1728",
+        "answerSourceId": "src_98dbae1b54d51d2784cc1728",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2008-paper-answer",
+        "answerEvidenceId": "math1-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:3c83f3c291b20bce71cbbb103e7f68701918c92c6c74bec2b54de4d1f1d94a04"
+      }
+    },
+    {
+      "id": "math1-2008-008",
+      "number": 8,
+      "paperId": "math1-2008",
+      "paperName": "2008考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2008",
+      "section": "选择题",
+      "type": "flashcard",
+      "question": "2008考研数学一第8题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "完整答案与解析见答案原页。",
+      "explanation": "答案来自本地百度网盘 2008 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2008/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2008考研数学一试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2008/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2008考研数学一答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2008",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:f6faa6a75c5bcf57dbfe0d8b0e16ee660c802dab6366ddc379c16e7c87c3ba59",
+      "answerTextHash": "sha256:3c83f3c291b20bce71cbbb103e7f68701918c92c6c74bec2b54de4d1f1d94a04",
+      "sourceEvidence": {
+        "evidenceId": "math1-2008-q08",
+        "sourceId": "src_98dbae1b54d51d2784cc1728",
+        "answerSourceId": "src_98dbae1b54d51d2784cc1728",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2008-paper-answer",
+        "answerEvidenceId": "math1-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:3c83f3c291b20bce71cbbb103e7f68701918c92c6c74bec2b54de4d1f1d94a04"
+      }
+    },
+    {
+      "id": "math1-2008-009",
+      "number": 9,
+      "paperId": "math1-2008",
+      "paperName": "2008考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2008",
+      "section": "填空题",
+      "type": "flashcard",
+      "question": "2008考研数学一第9题（填空题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "填空题答案与解析见答案原页。",
+      "explanation": "答案来自本地百度网盘 2008 数学一真题答案解析 PDF；填空题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2008/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2008考研数学一试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2008/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2008考研数学一答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2008",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:ae859fef2e627d4ac6eb1df98051af3e0d7dcce34f37d99bca5a9bb60403ee13",
+      "answerTextHash": "sha256:623aa66b150a69b05aedfe840b9efb5c2213853ecb80fecb90be93c7ebdeb214",
+      "sourceEvidence": {
+        "evidenceId": "math1-2008-q09",
+        "sourceId": "src_98dbae1b54d51d2784cc1728",
+        "answerSourceId": "src_98dbae1b54d51d2784cc1728",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2008-paper-answer",
+        "answerEvidenceId": "math1-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:623aa66b150a69b05aedfe840b9efb5c2213853ecb80fecb90be93c7ebdeb214"
+      }
+    },
+    {
+      "id": "math1-2008-010",
+      "number": 10,
+      "paperId": "math1-2008",
+      "paperName": "2008考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2008",
+      "section": "填空题",
+      "type": "flashcard",
+      "question": "2008考研数学一第10题（填空题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "填空题答案与解析见答案原页。",
+      "explanation": "答案来自本地百度网盘 2008 数学一真题答案解析 PDF；填空题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2008/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2008考研数学一试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2008/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2008考研数学一答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2008",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:ead00027440b0b2da9852de6affbaa3a252f4d4acf30bbea88f94b6e8647a439",
+      "answerTextHash": "sha256:623aa66b150a69b05aedfe840b9efb5c2213853ecb80fecb90be93c7ebdeb214",
+      "sourceEvidence": {
+        "evidenceId": "math1-2008-q10",
+        "sourceId": "src_98dbae1b54d51d2784cc1728",
+        "answerSourceId": "src_98dbae1b54d51d2784cc1728",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2008-paper-answer",
+        "answerEvidenceId": "math1-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:623aa66b150a69b05aedfe840b9efb5c2213853ecb80fecb90be93c7ebdeb214"
+      }
+    },
+    {
+      "id": "math1-2008-011",
+      "number": 11,
+      "paperId": "math1-2008",
+      "paperName": "2008考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2008",
+      "section": "填空题",
+      "type": "flashcard",
+      "question": "2008考研数学一第11题（填空题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "填空题答案与解析见答案原页。",
+      "explanation": "答案来自本地百度网盘 2008 数学一真题答案解析 PDF；填空题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2008/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2008考研数学一试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2008/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2008考研数学一答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2008",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:2662f3d8cac86d91c34b4ca8cb188616e95a2f628ab3f09fb1d633e80acad183",
+      "answerTextHash": "sha256:623aa66b150a69b05aedfe840b9efb5c2213853ecb80fecb90be93c7ebdeb214",
+      "sourceEvidence": {
+        "evidenceId": "math1-2008-q11",
+        "sourceId": "src_98dbae1b54d51d2784cc1728",
+        "answerSourceId": "src_98dbae1b54d51d2784cc1728",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2008-paper-answer",
+        "answerEvidenceId": "math1-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:623aa66b150a69b05aedfe840b9efb5c2213853ecb80fecb90be93c7ebdeb214"
+      }
+    },
+    {
+      "id": "math1-2008-012",
+      "number": 12,
+      "paperId": "math1-2008",
+      "paperName": "2008考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2008",
+      "section": "填空题",
+      "type": "flashcard",
+      "question": "2008考研数学一第12题（填空题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "填空题答案与解析见答案原页。",
+      "explanation": "答案来自本地百度网盘 2008 数学一真题答案解析 PDF；填空题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2008/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2008考研数学一试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2008/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2008考研数学一答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2008",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:dcc04b4b436490a36eb5123149cc49c309b1bd9eaea75285bcecb48b08e1cd0e",
+      "answerTextHash": "sha256:0d5c84df8052980ce80857bb6fb694fdf3e3d4942974137ec54517cbb6afebef",
+      "sourceEvidence": {
+        "evidenceId": "math1-2008-q12",
+        "sourceId": "src_98dbae1b54d51d2784cc1728",
+        "answerSourceId": "src_98dbae1b54d51d2784cc1728",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2008-paper-answer",
+        "answerEvidenceId": "math1-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:0d5c84df8052980ce80857bb6fb694fdf3e3d4942974137ec54517cbb6afebef"
+      }
+    },
+    {
+      "id": "math1-2008-013",
+      "number": 13,
+      "paperId": "math1-2008",
+      "paperName": "2008考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2008",
+      "section": "填空题",
+      "type": "flashcard",
+      "question": "2008考研数学一第13题（填空题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "填空题答案与解析见答案原页。",
+      "explanation": "答案来自本地百度网盘 2008 数学一真题答案解析 PDF；填空题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2008/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2008考研数学一试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2008/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2008考研数学一答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2008",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:2c5321c5e1fb8f13dd53572f364b5ea751c1bd059c2ddd89e47e0bc419317992",
+      "answerTextHash": "sha256:0d5c84df8052980ce80857bb6fb694fdf3e3d4942974137ec54517cbb6afebef",
+      "sourceEvidence": {
+        "evidenceId": "math1-2008-q13",
+        "sourceId": "src_98dbae1b54d51d2784cc1728",
+        "answerSourceId": "src_98dbae1b54d51d2784cc1728",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2008-paper-answer",
+        "answerEvidenceId": "math1-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:0d5c84df8052980ce80857bb6fb694fdf3e3d4942974137ec54517cbb6afebef"
+      }
+    },
+    {
+      "id": "math1-2008-014",
+      "number": 14,
+      "paperId": "math1-2008",
+      "paperName": "2008考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2008",
+      "section": "填空题",
+      "type": "flashcard",
+      "question": "2008考研数学一第14题（填空题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "填空题答案与解析见答案原页。",
+      "explanation": "答案来自本地百度网盘 2008 数学一真题答案解析 PDF；填空题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2008/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2008考研数学一试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2008/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2008考研数学一答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2008",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:5c70bc42ce96aaa07171e7d635d3b5195ae734699ed432694d742744a9fcde5e",
+      "answerTextHash": "sha256:0d5c84df8052980ce80857bb6fb694fdf3e3d4942974137ec54517cbb6afebef",
+      "sourceEvidence": {
+        "evidenceId": "math1-2008-q14",
+        "sourceId": "src_98dbae1b54d51d2784cc1728",
+        "answerSourceId": "src_98dbae1b54d51d2784cc1728",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2008-paper-answer",
+        "answerEvidenceId": "math1-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:0d5c84df8052980ce80857bb6fb694fdf3e3d4942974137ec54517cbb6afebef"
+      }
+    },
+    {
+      "id": "math1-2008-015",
+      "number": 15,
+      "paperId": "math1-2008",
+      "paperName": "2008考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2008",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2008考研数学一第15题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "解答题完整演算、证明或推导过程见答案原页。",
+      "explanation": "答案来自本地百度网盘 2008 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2008/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2008考研数学一试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2008/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2008考研数学一答案解析 p.8"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2008",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:fcd54bb36d4d23a27a8fb5810e10c0923b9c302bded65f3217ffa9ec79324a56",
+      "answerTextHash": "sha256:8267e216aabe86bdadcdaf7ef805d5f696de5e810b062971b8166a58a2ef5c72",
+      "sourceEvidence": {
+        "evidenceId": "math1-2008-q15",
+        "sourceId": "src_98dbae1b54d51d2784cc1728",
+        "answerSourceId": "src_98dbae1b54d51d2784cc1728",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2008-paper-answer",
+        "answerEvidenceId": "math1-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:8267e216aabe86bdadcdaf7ef805d5f696de5e810b062971b8166a58a2ef5c72"
+      }
+    },
+    {
+      "id": "math1-2008-016",
+      "number": 16,
+      "paperId": "math1-2008",
+      "paperName": "2008考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2008",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2008考研数学一第16题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "解答题完整演算、证明或推导过程见答案原页。",
+      "explanation": "答案来自本地百度网盘 2008 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2008/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2008考研数学一试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2008/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2008考研数学一答案解析 p.8"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2008",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:5e36d8aa8c441d6270aa26716b896c76fb1811e4f7a7189e09275a12a139b502",
+      "answerTextHash": "sha256:8267e216aabe86bdadcdaf7ef805d5f696de5e810b062971b8166a58a2ef5c72",
+      "sourceEvidence": {
+        "evidenceId": "math1-2008-q16",
+        "sourceId": "src_98dbae1b54d51d2784cc1728",
+        "answerSourceId": "src_98dbae1b54d51d2784cc1728",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2008-paper-answer",
+        "answerEvidenceId": "math1-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:8267e216aabe86bdadcdaf7ef805d5f696de5e810b062971b8166a58a2ef5c72"
+      }
+    },
+    {
+      "id": "math1-2008-017",
+      "number": 17,
+      "paperId": "math1-2008",
+      "paperName": "2008考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2008",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2008考研数学一第17题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "解答题完整演算、证明或推导过程见答案原页。",
+      "explanation": "答案来自本地百度网盘 2008 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2008/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2008考研数学一试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2008/answer-page-09.jpg",
+          "caption": "答案解析 p.9",
+          "alt": "2008考研数学一答案解析 p.9"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2008",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:b185047a9a9ed97789b9dd80f640ad7c629af1e4dc54e889047567f6ed6e5de0",
+      "answerTextHash": "sha256:dff905b74383334bbda37448eaec568294f1b6ad9aff2005357ad27c4bfc66c9",
+      "sourceEvidence": {
+        "evidenceId": "math1-2008-q17",
+        "sourceId": "src_98dbae1b54d51d2784cc1728",
+        "answerSourceId": "src_98dbae1b54d51d2784cc1728",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2008-paper-answer",
+        "answerEvidenceId": "math1-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:dff905b74383334bbda37448eaec568294f1b6ad9aff2005357ad27c4bfc66c9"
+      }
+    },
+    {
+      "id": "math1-2008-018",
+      "number": 18,
+      "paperId": "math1-2008",
+      "paperName": "2008考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2008",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2008考研数学一第18题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "解答题完整演算、证明或推导过程见答案原页。",
+      "explanation": "答案来自本地百度网盘 2008 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2008/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2008考研数学一试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2008/answer-page-09.jpg",
+          "caption": "答案解析 p.9",
+          "alt": "2008考研数学一答案解析 p.9"
+        },
+        {
+          "src": "question-bank/math1-2008/answer-page-10.jpg",
+          "caption": "答案解析 p.10",
+          "alt": "2008考研数学一答案解析 p.10"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2008",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:71a0b370489ed00e315dacff237d16f5d76f1cdffe6c68492fec1dfc9a6a7887",
+      "answerTextHash": "sha256:1fd6a8ef058410bdae6acf6147b0e67817b5780b2a1e4cc8fbe5f4db2a2177f8",
+      "sourceEvidence": {
+        "evidenceId": "math1-2008-q18",
+        "sourceId": "src_98dbae1b54d51d2784cc1728",
+        "answerSourceId": "src_98dbae1b54d51d2784cc1728",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2008-paper-answer",
+        "answerEvidenceId": "math1-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:1fd6a8ef058410bdae6acf6147b0e67817b5780b2a1e4cc8fbe5f4db2a2177f8"
+      }
+    },
+    {
+      "id": "math1-2008-019",
+      "number": 19,
+      "paperId": "math1-2008",
+      "paperName": "2008考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2008",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2008考研数学一第19题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "解答题完整演算、证明或推导过程见答案原页。",
+      "explanation": "答案来自本地百度网盘 2008 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2008/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2008考研数学一试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2008/answer-page-10.jpg",
+          "caption": "答案解析 p.10",
+          "alt": "2008考研数学一答案解析 p.10"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2008",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:49aaffbd520efa5dd18c08019f599cb6d977fbcd9aa111878882fe808f43515b",
+      "answerTextHash": "sha256:feac111251a272c201f36ec721e2f72dfa81e880e12ebe97cc06e762b2bb3956",
+      "sourceEvidence": {
+        "evidenceId": "math1-2008-q19",
+        "sourceId": "src_98dbae1b54d51d2784cc1728",
+        "answerSourceId": "src_98dbae1b54d51d2784cc1728",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2008-paper-answer",
+        "answerEvidenceId": "math1-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:feac111251a272c201f36ec721e2f72dfa81e880e12ebe97cc06e762b2bb3956"
+      }
+    },
+    {
+      "id": "math1-2008-020",
+      "number": 20,
+      "paperId": "math1-2008",
+      "paperName": "2008考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2008",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2008考研数学一第20题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "解答题完整演算、证明或推导过程见答案原页。",
+      "explanation": "答案来自本地百度网盘 2008 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2008/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2008考研数学一试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2008/answer-page-11.jpg",
+          "caption": "答案解析 p.11",
+          "alt": "2008考研数学一答案解析 p.11"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2008",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:17f767fec2cff2b00304689e3a818cbec2f65ab38f2f9000ef7b644bbf4f9c5d",
+      "answerTextHash": "sha256:fec6767cd52ea1974536ce76a309129161f0a83f8547b0597c881ebbc0c7ab6f",
+      "sourceEvidence": {
+        "evidenceId": "math1-2008-q20",
+        "sourceId": "src_98dbae1b54d51d2784cc1728",
+        "answerSourceId": "src_98dbae1b54d51d2784cc1728",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2008-paper-answer",
+        "answerEvidenceId": "math1-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:fec6767cd52ea1974536ce76a309129161f0a83f8547b0597c881ebbc0c7ab6f"
+      }
+    },
+    {
+      "id": "math1-2008-021",
+      "number": 21,
+      "paperId": "math1-2008",
+      "paperName": "2008考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2008",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2008考研数学一第21题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "解答题完整演算、证明或推导过程见答案原页。",
+      "explanation": "答案来自本地百度网盘 2008 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2008/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2008考研数学一试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2008/answer-page-11.jpg",
+          "caption": "答案解析 p.11",
+          "alt": "2008考研数学一答案解析 p.11"
+        },
+        {
+          "src": "question-bank/math1-2008/answer-page-12.jpg",
+          "caption": "答案解析 p.12",
+          "alt": "2008考研数学一答案解析 p.12"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2008",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:24c6804df26f60b0d200ed0b432c05137dd870ca4d33ffb9876fb9d1c73277bb",
+      "answerTextHash": "sha256:fa87df8b37edf9258e39b7abeb94d6b03df42947c57e51d68d7669f60701386c",
+      "sourceEvidence": {
+        "evidenceId": "math1-2008-q21",
+        "sourceId": "src_98dbae1b54d51d2784cc1728",
+        "answerSourceId": "src_98dbae1b54d51d2784cc1728",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2008-paper-answer",
+        "answerEvidenceId": "math1-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:fa87df8b37edf9258e39b7abeb94d6b03df42947c57e51d68d7669f60701386c"
+      }
+    },
+    {
+      "id": "math1-2008-022",
+      "number": 22,
+      "paperId": "math1-2008",
+      "paperName": "2008考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2008",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2008考研数学一第22题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "解答题完整演算、证明或推导过程见答案原页。",
+      "explanation": "答案来自本地百度网盘 2008 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2008/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2008考研数学一试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2008/answer-page-12.jpg",
+          "caption": "答案解析 p.12",
+          "alt": "2008考研数学一答案解析 p.12"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2008",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:945ab60045bf6cdf72a9cb09d005114f8beb1f689caaa6d9180c8d305bbb7452",
+      "answerTextHash": "sha256:7abc6ede57ce6d6e4cca0fdd3dbd8a492c2d01e08de6ec79fe51212b6287f0f5",
+      "sourceEvidence": {
+        "evidenceId": "math1-2008-q22",
+        "sourceId": "src_98dbae1b54d51d2784cc1728",
+        "answerSourceId": "src_98dbae1b54d51d2784cc1728",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2008-paper-answer",
+        "answerEvidenceId": "math1-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:7abc6ede57ce6d6e4cca0fdd3dbd8a492c2d01e08de6ec79fe51212b6287f0f5"
+      }
+    },
+    {
+      "id": "math1-2008-023",
+      "number": 23,
+      "paperId": "math1-2008",
+      "paperName": "2008考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2008",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2008考研数学一第23题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "解答题完整演算、证明或推导过程见答案原页。",
+      "explanation": "答案来自本地百度网盘 2008 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2008/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2008考研数学一试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2008/answer-page-13.jpg",
+          "caption": "答案解析 p.13",
+          "alt": "2008考研数学一答案解析 p.13"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2008",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2008-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:7adaa40566914a82769a8577fdec03f7940017c6d9e5316e97150966288273fe",
+      "answerTextHash": "sha256:94d305186316d1c075e9c714ac7efa0aa17b1fff90d28bb68285539d738771b7",
+      "sourceEvidence": {
+        "evidenceId": "math1-2008-q23",
+        "sourceId": "src_98dbae1b54d51d2784cc1728",
+        "answerSourceId": "src_98dbae1b54d51d2784cc1728",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2008-paper-answer",
+        "answerEvidenceId": "math1-2008-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:94d305186316d1c075e9c714ac7efa0aa17b1fff90d28bb68285539d738771b7"
+      }
+    }
+  ]
+}

@@ -54,6 +54,60 @@ export const useStudyStore = defineStore('study', () => {
     }
   };
 
+  const persistProgress = () => {
+    storageService.save(
+      APP_CONFIG.cacheKeys.studyProgress,
+      {
+        progress: studyProgress.value,
+        history: questionHistory.value
+      },
+      true
+    );
+  };
+
+  /**
+   * 记录一次真实答题，驱动首页/个人中心统计立即更新。
+   * @param {{ question?: Object, isCorrect?: boolean|null, timeSpent?: number, timestamp?: number }} attempt
+   */
+  const recordQuestionAttempt = (attempt = {}) => {
+    const question = attempt.question || {};
+    const now = Number(attempt.timestamp || Date.now());
+    const today = new Date(now).toISOString().split('T')[0];
+    const lastDate = studyProgress.value.lastStudyDate;
+    const isFirstStudyToday = lastDate !== today;
+    const isCorrect = attempt.isCorrect === true;
+    const attemptMinutes = Math.max(1, Math.ceil(Number(attempt.timeSpent || 0) / 60000));
+    const nextProgress = {
+      ...studyProgress.value,
+      totalQuestions: Math.max(studyProgress.value.totalQuestions || 0, studyProgress.value.completedQuestions || 0),
+      completedQuestions: (studyProgress.value.completedQuestions || 0) + 1,
+      correctQuestions: (studyProgress.value.correctQuestions || 0) + (isCorrect ? 1 : 0),
+      studyDays: (studyProgress.value.studyDays || 0) + (isFirstStudyToday ? 1 : 0),
+      studyMinutes: (studyProgress.value.studyMinutes || 0) + attemptMinutes,
+      lastStudyDate: today
+    };
+
+    nextProgress.totalQuestions = Math.max(nextProgress.totalQuestions || 0, nextProgress.completedQuestions || 0);
+    studyProgress.value = nextProgress;
+
+    questionHistory.value = [
+      {
+        questionId: question.id || question._id || attempt.questionId || '',
+        questionType: question.type || question.category || '综合题',
+        bankName: question.paperName || question.category || question.subject || '未分类',
+        category: question.category || question.subject || '未分类',
+        isCorrect: attempt.isCorrect,
+        correct: isCorrect,
+        timeSpent: Number(attempt.timeSpent || 0),
+        timestamp: now
+      },
+      ...questionHistory.value
+    ].slice(0, 100);
+
+    persistProgress();
+    return questionHistory.value[0];
+  };
+
   /**
    * 重置 store 状态到初始值（Setup Store 手动实现）
    */
@@ -77,6 +131,7 @@ export const useStudyStore = defineStore('study', () => {
 
     // 方法
     restoreProgress,
+    recordQuestionAttempt,
     $reset
   };
 });
