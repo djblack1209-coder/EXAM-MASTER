@@ -36,3 +36,10 @@
 - Added settings toggles for quiz sound and haptic feedback.
 - Made tabbar, home, and practice pages subscribe to theme updates instead of relying on incidental parent state.
 - Verification: targeted lint passed; `frontend-copy-guard` and `practice-dynamic-methods` passed; `npm run build:mp-weixin` passed.
+
+### 2026-06-01 Round 2
+
+- Checkpoint commit created before continuing: `4cb5148`.
+- Removed visible emoji celebrations from the quiz completion page; replaced them with `BaseIcon` marks.
+- Tightened quiz card, option, and answer-result panel styling so the core flow feels like one system.
+- Added dark-mode guardrails to the quiz page cards, options, timers, and result panel.

@@ -3,7 +3,9 @@
     <view class="result-container">
       <!-- 完美得分庆祝：纯CSS动画（100%正确率触发，2.5s后淡出） -->
       <view v-if="showCelebration && accuracy >= 100" class="celebration-overlay" @animationend="onCelebrationEnd">
-        <text class="celebration-emoji">🎉</text>
+        <view class="celebration-mark">
+          <BaseIcon name="award" :size="56" />
+        </view>
       </view>
 
       <!-- 顶部关闭 -->
@@ -24,7 +26,9 @@
           @animationend="onHighScoreEnd"
         >
           <image class="highscore-sparkle" :src="getAssetUrl('effects', 'star-sparkle')" mode="aspectFit" lazy-load />
-          <text class="celebration-emoji">🎉</text>
+          <view class="celebration-mark small">
+            <BaseIcon name="sparkle" :size="44" />
+          </view>
         </view>
 
         <!-- 正确率圆环 -->
@@ -106,9 +110,8 @@
           </view>
         </view>
 
-        <!-- 卡通勾选图标装饰（答题完成标志）— [AUDIT R432] checkmark-circle.png 不存在，改用 emoji -->
-        <view v-if="accuracy >= 60" style="text-align: center; margin-bottom: 16rpx">
-          <text class="feature-cartoon-icon" style="font-size: 60rpx">✅</text>
+        <view v-if="accuracy >= 60" class="completion-mark">
+          <BaseIcon name="check-circle" :size="48" />
         </view>
 
         <!-- 操作按钮 -->
@@ -150,6 +153,7 @@ import { useStudyEngineStore } from '@/stores/modules/study-engine.js';
 // 静态资源 CDN 映射（大图已迁出主包）
 import { getAssetUrl } from '@/config/static-assets.js';
 import { logger } from '@/utils/logger.js';
+import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 
 const studyEngineStore = useStudyEngineStore();
 
@@ -526,9 +530,25 @@ const motivationalText = computed(() => {
   height: 120rpx;
   animation: sparkle-twinkle 2s ease-in-out forwards;
 }
-.celebration-emoji {
-  font-size: 80rpx;
+.celebration-mark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 108rpx;
+  height: 108rpx;
+  margin: 120rpx auto 0;
+  border-radius: 999rpx;
+  color: #10281a;
+  background: linear-gradient(135deg, #9fe870 0%, #75ddff 100%);
+  box-shadow: 0 20rpx 60rpx rgba(52, 211, 153, 0.28);
   animation: celebration-bounce 0.8s ease-out;
+}
+
+.celebration-mark.small {
+  width: 82rpx;
+  height: 82rpx;
+  margin-top: -16rpx;
+  color: #10281a;
 }
 @keyframes highscore-appear {
   0% {
@@ -831,10 +851,16 @@ const motivationalText = computed(() => {
 .item-hover {
   opacity: 0.7;
 }
-/* 卡通图标通用样式 */
-.feature-cartoon-icon {
-  width: 80rpx;
-  height: 80rpx;
+.completion-mark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 86rpx;
+  height: 86rpx;
+  margin: 0 auto 16rpx;
+  border-radius: 999rpx;
+  color: var(--success, #34d399);
+  background: color-mix(in srgb, var(--success, #34d399) 12%, transparent);
 }
 .bottom-safe {
   height: 60rpx;
