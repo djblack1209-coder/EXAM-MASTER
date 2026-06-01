@@ -1,5 +1,5 @@
 <template>
-  <view class="page">
+  <view class="page" :class="{ 'dark-mode': isDark }">
     <!-- 自定义导航栏 -->
     <view class="nav-bar" :style="{ paddingTop: statusBarHeight + 'px' }">
       <view class="nav-content">
@@ -113,7 +113,8 @@ export default {
   data() {
     return {
       statusBarHeight: 44,
-      tabBarHeight: 90
+      tabBarHeight: 90,
+      isDark: false
     };
   },
 
@@ -162,10 +163,13 @@ export default {
   },
 
   onLoad() {
+    this.syncTheme();
     this.initLayout();
+    uni.$on('themeUpdate', this.syncTheme);
   },
 
   onShow() {
+    this.syncTheme();
     // 每次进入刷新数据
     try {
       this.studyStore.restoreProgress();
@@ -175,7 +179,16 @@ export default {
     }
   },
 
+  onUnload() {
+    uni.$off('themeUpdate', this.syncTheme);
+  },
+
   methods: {
+    syncTheme(mode) {
+      const resolved = mode || storageService.get('theme_mode', 'light');
+      this.isDark = resolved === 'dark';
+    },
+
     initLayout() {
       try {
         const info = uni.getWindowInfo();
@@ -253,6 +266,14 @@ $spacing-section: 24rpx;
   @include em-mobile-canvas;
 }
 
+.page.dark-mode {
+  color: #f5f7fb;
+  background:
+    radial-gradient(circle at 16% 8%, rgba(0, 224, 255, 0.1) 0, rgba(0, 224, 255, 0) 32%),
+    radial-gradient(circle at 82% 16%, rgba(155, 81, 224, 0.12) 0, rgba(155, 81, 224, 0) 34%),
+    linear-gradient(180deg, #11141c 0%, #1a1c23 58%, #12151d 100%);
+}
+
 /* 导航栏 */
 .nav-bar {
   position: fixed;
@@ -274,6 +295,15 @@ $spacing-section: 24rpx;
   color: $primary-deep;
 }
 
+.dark-mode .nav-bar {
+  background: rgba(17, 20, 28, 0.82);
+  box-shadow: 0 1rpx 0 rgba(255, 255, 255, 0.08);
+}
+
+.dark-mode .nav-title {
+  color: #f5f7fb;
+}
+
 .main-scroll {
   height: 100vh;
   box-sizing: border-box;
@@ -286,6 +316,14 @@ $spacing-section: 24rpx;
 
 .card {
   @include em-mobile-glass-surface($radius-lg, $spacing-card);
+}
+
+.dark-mode .card,
+.dark-mode .profile-command-card,
+.dark-mode .logout-btn {
+  background: rgba(34, 37, 45, 0.82);
+  border: 1rpx solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 18rpx 48rpx rgba(0, 0, 0, 0.32);
 }
 
 /* 用户信息 */
@@ -329,6 +367,14 @@ $spacing-section: 24rpx;
   color: $primary-deep;
 }
 
+.dark-mode .avatar-placeholder {
+  background: rgba(0, 224, 255, 0.12);
+}
+
+.dark-mode .avatar-text {
+  color: #75ddff;
+}
+
 .profile-copy {
   flex: 1;
   min-width: 0;
@@ -363,6 +409,31 @@ $spacing-section: 24rpx;
   padding: 24rpx;
   border-radius: 24rpx;
   background: rgba(22, 51, 0, 0.88);
+}
+
+.dark-mode .profile-pulse {
+  background:
+    radial-gradient(circle at 18% 0%, rgba(0, 224, 255, 0.16) 0, rgba(0, 224, 255, 0) 38%),
+    rgba(16, 19, 26, 0.88);
+}
+
+.dark-mode .pulse-title,
+.dark-mode .login-hint {
+  color: #75ddff;
+}
+
+.dark-mode .user-name,
+.dark-mode .stat-val,
+.dark-mode .menu-text,
+.dark-mode .banner-title {
+  color: #f5f7fb;
+}
+
+.dark-mode .profile-kicker,
+.dark-mode .stat-lbl,
+.dark-mode .menu-arrow,
+.dark-mode .banner-desc {
+  color: rgba(245, 247, 251, 0.58);
 }
 
 .pulse-title {
@@ -414,6 +485,10 @@ $spacing-section: 24rpx;
   background: rgba(0, 0, 0, 0.08);
 }
 
+.dark-mode .stat-divider {
+  background: rgba(255, 255, 255, 0.08);
+}
+
 /* 菜单 */
 .menu-card {
   padding: 0;
@@ -426,6 +501,10 @@ $spacing-section: 24rpx;
   align-items: center;
   padding: 28rpx $spacing-card;
   border-bottom: 1rpx solid rgba(0, 0, 0, 0.06);
+}
+
+.dark-mode .menu-item {
+  border-bottom-color: rgba(255, 255, 255, 0.08);
 }
 
 .menu-last {
@@ -456,6 +535,12 @@ $spacing-section: 24rpx;
     linear-gradient(135deg, rgba(255, 255, 255, 0.82) 0%, rgba(234, 251, 226, 0.74) 100%),
     rgba(255, 255, 255, 0.68);
   padding: 40rpx $spacing-card;
+}
+
+.dark-mode .app-banner {
+  background:
+    radial-gradient(circle at 16% 0%, rgba(0, 224, 255, 0.12) 0, rgba(0, 224, 255, 0) 36%),
+    rgba(34, 37, 45, 0.82);
 }
 
 .banner-title {
