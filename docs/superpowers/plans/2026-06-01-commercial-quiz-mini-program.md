@@ -654,3 +654,45 @@ Run:
 git add src/pages/practice-sub/components/quiz-result/quiz-result.vue tests/unit/quiz-result-progress-semantics-guard.spec.js docs/frontend-experience-refactor-diary.md docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md
 git commit -m "fix: align quiz result progress semantics"
 ```
+
+### Task 17: Stabilize Quiz Result Action Dock
+
+**Files:**
+- Modify: `src/pages/practice-sub/components/quiz-result/quiz-result.vue`
+- Create: `tests/unit/quiz-result-action-dock-guard.spec.js`
+- Modify: `docs/frontend-experience-refactor-diary.md`
+- Modify: `docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md`
+
+- [x] **Step 1: Move completion actions out of scroll content**
+
+Place the final report actions in a stable bottom dock so long reports cannot push primary actions off-screen.
+
+- [x] **Step 2: Add safe-area and dark-mode coverage**
+
+Give the action dock bottom safe-area padding, a top divider, shadow separation, and dark-mode surfaces.
+
+- [x] **Step 3: Align action visual hierarchy**
+
+Replace the older blue raised button treatment with the green/blue financial-app accent and restrained secondary/tertiary actions.
+
+- [x] **Step 4: Add action dock guard**
+
+Assert that completion actions remain outside the scroll view and the old blue raised button style does not return.
+
+- [x] **Step 5: Run focused validation**
+
+Run:
+```bash
+npm run lint -- src/pages/practice-sub/components/quiz-result/quiz-result.vue tests/unit/quiz-result-action-dock-guard.spec.js tests/unit/quiz-result-progress-semantics-guard.spec.js
+npm run test -- tests/unit/quiz-result-action-dock-guard.spec.js tests/unit/quiz-result-progress-semantics-guard.spec.js tests/unit/knowledge-link-flow.spec.js tests/unit/integration-quiz.spec.js
+```
+
+Result: passed on 2026-06-01.
+
+- [x] **Step 6: Commit**
+
+Run:
+```bash
+git add src/pages/practice-sub/components/quiz-result/quiz-result.vue tests/unit/quiz-result-action-dock-guard.spec.js docs/frontend-experience-refactor-diary.md docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md
+git commit -m "feat: stabilize quiz result action dock"
+```

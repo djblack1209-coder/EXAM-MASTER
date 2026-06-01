@@ -174,3 +174,10 @@
 - The report stats row now shows reviewed count when neutral records exist instead of hiding them inside the wrong-answer count.
 - Category rows now calculate accuracy only from graded records and show an `已复习` state for review-only categories.
 - Added `quiz-result-progress-semantics-guard` so the final report cannot drift back to `total - correct = wrong` math.
+
+### 2026-06-01 Round 19
+
+- Tightened the full-screen quiz report action layout so completion actions stay in a stable bottom dock instead of being pushed down by scrollable report content.
+- The action dock now includes safe-area padding, a clear top divider, and dark-mode coverage.
+- Reworked the report primary/secondary/tertiary buttons away from the older blue game-like treatment toward the same green/blue financial-app accent used in the core quiz feedback.
+- Added `quiz-result-action-dock-guard` to keep completion actions outside the scroll view and prevent the old blue raised button style from returning.

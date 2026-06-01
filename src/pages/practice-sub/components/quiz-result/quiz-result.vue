@@ -118,26 +118,6 @@
           <BaseIcon name="check-circle" :size="48" />
         </view>
 
-        <!-- 操作按钮 -->
-        <view class="action-row">
-          <button
-            v-if="hasNextRecommendation"
-            class="action-btn primary-btn"
-            hover-class="btn-hover"
-            @tap="emit('continueNext')"
-          >
-            继续刷下一组
-          </button>
-          <button
-            :class="['action-btn', hasNextRecommendation ? 'secondary-btn' : 'primary-btn']"
-            hover-class="btn-hover"
-            @tap="emit('viewReport')"
-          >
-            查看诊断报告
-          </button>
-          <button class="action-btn secondary-btn" hover-class="btn-hover" @tap="emit('close')">返回</button>
-        </view>
-
         <!-- XP 金币飞出动画 -->
         <view v-if="showXpCoins && accuracy > 0" class="xp-coins-flyout" @animationend="onXpCoinsEnd">
           <image class="xp-coins-img" src="../../static/effects/xp-coins.png" mode="aspectFit" lazy-load />
@@ -146,6 +126,26 @@
 
         <view class="bottom-safe" />
       </scroll-view>
+
+      <!-- 操作按钮 -->
+      <view class="action-dock">
+        <button
+          v-if="hasNextRecommendation"
+          class="action-btn primary-btn"
+          hover-class="btn-hover"
+          @tap="emit('continueNext')"
+        >
+          继续刷下一组
+        </button>
+        <button
+          :class="['action-btn', hasNextRecommendation ? 'secondary-btn' : 'primary-btn']"
+          hover-class="btn-hover"
+          @tap="emit('viewReport')"
+        >
+          查看诊断报告
+        </button>
+        <button class="action-btn tertiary-btn" hover-class="btn-hover" @tap="emit('close')">返回</button>
+      </view>
     </view>
   </view>
 </template>
@@ -447,6 +447,7 @@ const motivationalText = computed(() => {
   display: flex;
   flex-direction: column;
   position: relative;
+  overflow: hidden;
 }
 
 /* ==================== 完美得分庆祝叠加动画 ==================== */
@@ -617,6 +618,7 @@ const motivationalText = computed(() => {
 .result-scroll {
   flex: 1;
   padding: 0 40rpx;
+  min-height: 0;
 }
 
 /* 高分庆祝弹跳 */
@@ -840,37 +842,70 @@ const motivationalText = computed(() => {
 }
 
 /* 按钮 */
-.action-row {
+.action-dock {
   display: flex;
   flex-direction: column;
-  padding: 16rpx 0;
+  gap: 16rpx;
+  padding: 22rpx 40rpx;
+  padding-bottom: calc(22rpx + env(safe-area-inset-bottom, 0px));
+  background: var(--bg-card);
+  border-top: 1rpx solid rgba(15, 23, 42, 0.08);
+  box-shadow: 0 -12rpx 36rpx rgba(15, 23, 42, 0.08);
 }
 .action-btn {
   width: 100%;
   border-radius: 24rpx;
-  padding: 28rpx 0;
-  font-size: 30rpx;
-  font-weight: bold;
+  min-height: 88rpx;
+  padding: 0;
+  font-size: 29rpx;
+  font-weight: 750;
   border: none;
-  margin-bottom: 20rpx;
+  margin: 0;
+  transition:
+    transform 0.18s ease,
+    opacity 0.18s ease,
+    box-shadow 0.18s ease;
 }
 .primary-btn {
-  background: #1cb0f6;
-  color: var(--text-inverse);
-  box-shadow: 0 6rpx 0 #1899d6;
+  background: linear-gradient(135deg, #9fe870 0%, #75ddff 100%);
+  color: #10281a;
+  box-shadow: 0 12rpx 28rpx rgba(31, 122, 77, 0.16);
   border-radius: 20rpx;
 }
 .secondary-btn {
   background: var(--bg-card);
   color: var(--text-primary);
   border: 2rpx solid rgba(0, 0, 0, 0.08);
-  box-shadow: 0 4rpx 0 #e0e0e0;
+  box-shadow: none;
+  border-radius: 20rpx;
+}
+.tertiary-btn {
+  background: transparent;
+  color: var(--text-tertiary);
+  border: none;
+  box-shadow: none;
   border-radius: 20rpx;
 }
 .btn-hover {
-  transform: translateY(4rpx);
+  transform: scale(0.98);
   opacity: 0.9;
   box-shadow: none;
+}
+
+.dark-mode .action-dock {
+  background: rgba(18, 21, 29, 0.96);
+  border-top-color: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 -12rpx 40rpx rgba(0, 0, 0, 0.32);
+}
+
+.dark-mode .secondary-btn {
+  border-color: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.06);
+  color: #f5f7fb;
+}
+
+.dark-mode .tertiary-btn {
+  color: rgba(245, 247, 251, 0.62);
 }
 .item-hover {
   opacity: 0.7;
