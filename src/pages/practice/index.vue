@@ -354,6 +354,7 @@ export default {
     this.ensureNavigationSelection();
     this.preloadPracticeSubPackage();
     uni.$on('themeUpdate', this.syncTheme);
+    uni.$on('updateTheme', this.syncTheme);
   },
 
   onShow() {
@@ -366,6 +367,7 @@ export default {
 
   onUnload() {
     uni.$off('themeUpdate', this.syncTheme);
+    uni.$off('updateTheme', this.syncTheme);
   },
 
   onShareAppMessage() {
