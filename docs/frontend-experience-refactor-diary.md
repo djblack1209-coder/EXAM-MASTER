@@ -166,3 +166,11 @@
 - Background question-card note/favorite buttons now visibly lock during result feedback, AI analysis, or navigation transitions, while result-surface actions can still open the intended overlay.
 - Note tag chips now use color dots instead of exposing the stored tag icon text, keeping the mini-program UI free of stray emoji-like labels.
 - Added `do-quiz-result-assist-actions-guard` so the result assist row, background action lock, result bypass methods, and note-tag cleanup stay in place.
+
+### 2026-06-01 Round 18
+
+- Aligned the full-screen quiz report with the same progress semantics used by the progress rail and answer sheet.
+- `quiz-result` now reuses `summarizeQuizProgress`, so neutral flashcard/review records count as completed/reviewed but do not count as wrong or lower accuracy.
+- The report stats row now shows reviewed count when neutral records exist instead of hiding them inside the wrong-answer count.
+- Category rows now calculate accuracy only from graded records and show an `已复习` state for review-only categories.
+- Added `quiz-result-progress-semantics-guard` so the final report cannot drift back to `total - correct = wrong` math.

@@ -612,3 +612,45 @@ Run:
 git add src/pages/practice-sub/do-quiz.vue tests/unit/do-quiz-result-assist-actions-guard.spec.js docs/frontend-experience-refactor-diary.md docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md
 git commit -m "feat: clarify quiz result assist actions"
 ```
+
+### Task 16: Align Quiz Result Progress Semantics
+
+**Files:**
+- Modify: `src/pages/practice-sub/components/quiz-result/quiz-result.vue`
+- Create: `tests/unit/quiz-result-progress-semantics-guard.spec.js`
+- Modify: `docs/frontend-experience-refactor-diary.md`
+- Modify: `docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md`
+
+- [x] **Step 1: Reuse shared progress summary**
+
+Make the full-screen quiz report consume `summarizeQuizProgress` instead of recalculating correct/wrong/accuracy locally.
+
+- [x] **Step 2: Preserve neutral review semantics**
+
+Count neutral flashcard/review records as completed/reviewed, not wrong, and keep them out of the accuracy denominator.
+
+- [x] **Step 3: Fix category accuracy**
+
+Calculate category accuracy from graded records only and show a reviewed state for review-only categories.
+
+- [x] **Step 4: Add semantics guard**
+
+Assert that the quiz report cannot return to `total - correct = wrong` math and keeps reviewed display coverage.
+
+- [x] **Step 5: Run focused validation**
+
+Run:
+```bash
+npm run lint -- src/pages/practice-sub/components/quiz-result/quiz-result.vue tests/unit/quiz-result-progress-semantics-guard.spec.js
+npm run test -- tests/unit/quiz-result-progress-semantics-guard.spec.js tests/unit/quiz-session-contract.spec.js tests/unit/knowledge-link-flow.spec.js tests/unit/integration-quiz.spec.js
+```
+
+Result: passed on 2026-06-01.
+
+- [x] **Step 6: Commit**
+
+Run:
+```bash
+git add src/pages/practice-sub/components/quiz-result/quiz-result.vue tests/unit/quiz-result-progress-semantics-guard.spec.js docs/frontend-experience-refactor-diary.md docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md
+git commit -m "fix: align quiz result progress semantics"
+```
