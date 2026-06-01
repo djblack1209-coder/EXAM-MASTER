@@ -323,3 +323,44 @@ Run:
 git add src/pages/practice/index.vue tests/unit/core-shell-visual-guard.spec.js docs/frontend-experience-refactor-diary.md docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md
 git commit -m "chore: guard core shell visual language"
 ```
+
+### Task 9: Guard Quiz Session Navigation
+
+**Files:**
+- Modify: `src/utils/safe-navigate.js`
+- Modify: `src/pages/practice-sub/do-quiz.vue`
+- Modify: `tests/unit/real-utils.spec.js`
+- Create: `tests/unit/do-quiz-navigation-guard.spec.js`
+- Modify: `docs/frontend-experience-refactor-diary.md`
+- Modify: `docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md`
+
+- [x] **Step 1: Add safe redirect helper**
+
+Create `safeRedirectTo` for flows that must replace the current quiz page while keeping fallback behavior.
+
+- [x] **Step 2: Remove direct quiz route calls**
+
+Replace direct `uni.redirectTo` and `uni.navigateTo` calls in `do-quiz` result/diagnosis actions with safe navigation helpers.
+
+- [x] **Step 3: Add quiz navigation guard**
+
+Assert that `do-quiz.vue` does not directly call `uni.navigateTo`, `uni.switchTab`, `uni.redirectTo`, or `uni.reLaunch`.
+
+- [x] **Step 4: Run focused validation**
+
+Run:
+```bash
+npm run lint -- src/utils/safe-navigate.js src/pages/practice-sub/do-quiz.vue tests/unit/do-quiz-navigation-guard.spec.js tests/unit/real-utils.spec.js
+npm run test -- tests/unit/do-quiz-navigation-guard.spec.js tests/unit/real-utils.spec.js tests/unit/integration-storage-nav.spec.js tests/unit/integration-quiz.spec.js tests/unit/session-feedback.spec.js
+npm run build:mp-weixin
+```
+
+Result: passed on 2026-06-01.
+
+- [x] **Step 5: Commit**
+
+Run:
+```bash
+git add src/utils/safe-navigate.js src/pages/practice-sub/do-quiz.vue tests/unit/real-utils.spec.js tests/unit/do-quiz-navigation-guard.spec.js docs/frontend-experience-refactor-diary.md docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md
+git commit -m "chore: guard quiz session navigation"
+```

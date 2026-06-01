@@ -110,3 +110,11 @@
 - Practice now uses the shared mobile canvas/topbar/deep-panel/glass-surface/primary-action mixins for its page background, hero, cards, empty state, and primary actions.
 - Added `core-shell-visual-guard` so Home, Practice, Profile, and Settings keep shared shell primitives, press feedback, and bottom safe-area affordances.
 - Product rule: individual pages can vary their content density, but the shell material, primary action treatment, press behavior, and tabbar spacing should stay consistent.
+
+### 2026-06-01 Round 11
+
+- Continued Phase 2 stability by tightening navigation inside the core quiz session page.
+- Added `safeRedirectTo` for replace-current-page flows such as starting the recommended smart-review session after completion.
+- `do-quiz` result actions and diagnosis actions now use safe navigation helpers instead of direct `uni.redirectTo`/`uni.navigateTo` calls.
+- Added `do-quiz-navigation-guard` so quiz-session exits, result actions, and review jumps cannot reintroduce direct route calls.
+- Product rule: the quiz page is the highest-stakes flow. Every exit, restart, review, and result action should share fallback behavior with the rest of the shell.
