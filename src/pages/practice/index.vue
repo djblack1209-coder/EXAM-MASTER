@@ -54,6 +54,36 @@
           <text class="section-meta">{{ bankAvailabilityText }}</text>
         </view>
 
+        <view class="readiness-card">
+          <view class="readiness-head">
+            <view>
+              <text class="readiness-kicker">题库就绪度</text>
+              <text class="readiness-title">{{ readinessTitle }}</text>
+            </view>
+            <text class="readiness-percent">{{ readinessPercent }}%</text>
+          </view>
+          <view class="readiness-progress">
+            <view class="readiness-progress-fill" :style="{ width: readinessPercent + '%' }" />
+          </view>
+          <view class="readiness-metrics">
+            <view class="readiness-metric">
+              <text class="readiness-value">{{ readinessSummary.publishedSlots }}</text>
+              <text class="readiness-label">正式</text>
+            </view>
+            <view class="readiness-metric">
+              <text class="readiness-value">{{ readinessSummary.pendingSlots }}</text>
+              <text class="readiness-label">整理中</text>
+            </view>
+            <view class="readiness-metric">
+              <text class="readiness-value">{{ readinessSummary.missingSlots }}</text>
+              <text class="readiness-label">待入库</text>
+            </view>
+          </view>
+          <view class="readiness-track-line">
+            <text>{{ selectedTrackReadinessText }}</text>
+          </view>
+        </view>
+
         <view class="subject-tabs">
           <view
             v-for="subject in navigationTree"
@@ -199,7 +229,7 @@ import CustomTabbar from '@/components/layout/custom-tabbar/custom-tabbar.vue';
 import { useFlashcardBank } from '@/composables/useFlashcardBank.js';
 import { useBankStatus } from '@/composables/useBankStatus.js';
 import { useDynamicMixin } from '@/composables/useDynamicMixin.js';
-import { getPracticeNavigationTree } from '@/config/bank-registry.js';
+import { buildPublicCourseCoverage, getPracticeNavigationTree } from '@/config/bank-registry.js';
 import { buildPublicCourseTrainingPlan } from '@/config/public-course-training-plan.js';
 import { storageService } from '@/services/storageService.js';
 import { safeNavigateTo } from '@/utils/safe-navigate';
@@ -283,6 +313,46 @@ export default {
 
     bankAvailabilityText() {
       return this.availableBankCount > 0 ? `${this.availableBankCount} 个可用题库` : '暂无可用题库';
+    },
+
+    publicCourseCoverage() {
+      const selectedTracks = this.navigationTree.flatMap((subject) => subject.tracks.map((track) => track.id));
+      return buildPublicCourseCoverage({ tracks: selectedTracks });
+    },
+
+    readinessSummary() {
+      return (
+        this.publicCourseCoverage?.summary || {
+          publishedSlots: 0,
+          pendingSlots: 0,
+          missingSlots: 0,
+          requiredSlots: 0,
+          coverageRate: 0
+        }
+      );
+    },
+
+    readinessPercent() {
+      return Math.round(Number(this.readinessSummary.coverageRate || 0) * 100);
+    },
+
+    readinessTitle() {
+      if (this.readinessPercent >= 80) return '核心真题已基本可练';
+      if (this.readinessPercent > 0) return '已开放部分正式题库';
+      return '正式题库正在整理';
+    },
+
+    selectedTrackReadinessText() {
+      const coverage = this.selectedTrackCoverage;
+      const label = this.selectedTrack?.label || '当前方向';
+      if (!coverage) return `${label} 正在同步题库状态`;
+      if (coverage.publishedCount > 0) {
+        return `${label} 已开放 ${coverage.publishedCount}/${coverage.requiredCount} 套正式真题`;
+      }
+      if (coverage.pendingCount > 0) {
+        return `${label} 有 ${coverage.pendingCount} 套整理中`;
+      }
+      return `${label} 暂无可练整卷`;
     },
 
     selectedSubject() {
@@ -754,6 +824,107 @@ $spacing-section: 24rpx;
   box-shadow: 0 8rpx 18rpx rgba(15, 23, 42, 0.08);
 }
 
+.readiness-card {
+  box-sizing: border-box;
+  margin-bottom: 18rpx;
+  padding: 26rpx;
+  border-radius: 28rpx;
+  background: #ffffff;
+  border: 1rpx solid rgba(15, 23, 42, 0.06);
+  box-shadow: 0 10rpx 28rpx rgba(15, 23, 42, 0.06);
+}
+
+.readiness-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18rpx;
+}
+
+.readiness-kicker {
+  display: block;
+  color: $text-weak;
+  font-size: 19rpx;
+  font-weight: 900;
+}
+
+.readiness-title {
+  display: block;
+  margin-top: 8rpx;
+  color: $text-main;
+  font-size: 29rpx;
+  font-weight: 850;
+  line-height: 1.35;
+}
+
+.readiness-percent {
+  @include em-mobile-number;
+  flex-shrink: 0;
+  color: #1f7a4d;
+  font-size: 42rpx;
+  font-weight: 850;
+  line-height: 1;
+}
+
+.readiness-progress {
+  height: 12rpx;
+  margin-top: 22rpx;
+  overflow: hidden;
+  border-radius: 999rpx;
+  background: rgba(31, 122, 77, 0.09);
+}
+
+.readiness-progress-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #9fe870 0%, #75ddff 100%);
+  transition: width 0.28s ease;
+}
+
+.readiness-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10rpx;
+  margin-top: 18rpx;
+}
+
+.readiness-metric {
+  min-width: 0;
+  padding: 14rpx 12rpx;
+  border-radius: 18rpx;
+  background: rgba(20, 32, 23, 0.04);
+}
+
+.readiness-value {
+  @include em-mobile-number;
+  display: block;
+  color: $text-main;
+  font-size: 28rpx;
+  font-weight: 850;
+  line-height: 1;
+}
+
+.readiness-label {
+  display: block;
+  margin-top: 7rpx;
+  color: $text-weak;
+  font-size: 20rpx;
+  font-weight: 750;
+}
+
+.readiness-track-line {
+  margin-top: 16rpx;
+  padding-top: 16rpx;
+  border-top: 1rpx solid rgba(15, 23, 42, 0.06);
+}
+
+.readiness-track-line text {
+  color: $text-sub;
+  font-size: 23rpx;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
 .track-rail {
   display: flex;
   margin-top: 18rpx;
@@ -1192,6 +1363,8 @@ $spacing-section: 24rpx;
 .dark-mode .signal-value,
 .dark-mode .track-label,
 .dark-mode .training-title,
+.dark-mode .readiness-title,
+.dark-mode .readiness-value,
 .dark-mode .training-day-track,
 .dark-mode .bank-name,
 .dark-mode .empty-track-title,
@@ -1203,6 +1376,7 @@ $spacing-section: 24rpx;
 .dark-mode .practice-hero,
 .dark-mode .card,
 .dark-mode .training-plan-card,
+.dark-mode .readiness-card,
 .dark-mode .track-pill,
 .dark-mode .empty-track-card,
 .dark-mode .secondary-btn {
@@ -1214,6 +1388,7 @@ $spacing-section: 24rpx;
 .dark-mode .subject-tabs,
 .dark-mode .practice-signal,
 .dark-mode .training-day,
+.dark-mode .readiness-metric,
 .dark-mode .mode-chip,
 .dark-mode .training-status,
 .dark-mode .practice-command.secondary {
@@ -1225,6 +1400,9 @@ $spacing-section: 24rpx;
 .dark-mode .section-meta,
 .dark-mode .signal-label,
 .dark-mode .training-meta,
+.dark-mode .readiness-kicker,
+.dark-mode .readiness-label,
+.dark-mode .readiness-track-line text,
 .dark-mode .bank-desc,
 .dark-mode .bank-caution,
 .dark-mode .empty-track-desc,
@@ -1258,5 +1436,17 @@ $spacing-section: 24rpx;
 
 .dark-mode .progress-bar-sm {
   background: rgba(255, 255, 255, 0.1);
+}
+
+.dark-mode .readiness-percent {
+  color: #75ddff;
+}
+
+.dark-mode .readiness-progress {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.dark-mode .readiness-track-line {
+  border-top-color: rgba(255, 255, 255, 0.08);
 }
 </style>
