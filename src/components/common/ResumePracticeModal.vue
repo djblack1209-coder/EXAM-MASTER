@@ -193,10 +193,6 @@ function handleRestart() {
   box-shadow: 0 var(--em3d-depth-sm) 0 var(--em3d-border-shadow);
 }
 
-.icon-emoji {
-  font-size: 48rpx;
-}
-
 .header-title {
   font-size: 36rpx;
   font-weight: 700;

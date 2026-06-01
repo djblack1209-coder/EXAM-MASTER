@@ -1,5 +1,5 @@
 <template>
-  <view class="quiz-progress">
+  <view class="quiz-progress" :class="{ 'dark-mode': isDark }">
     <view class="progress-meter" :aria-label="`练习进度 ${safeCurrent} / ${safeTotal}`">
       <view class="progress-meter-fill" :style="{ width: progressPercent + '%' }" />
     </view>
@@ -18,7 +18,8 @@
 </template>
 
 <script setup>
-import { computed, watch, ref, nextTick } from 'vue';
+import { computed, watch, ref, nextTick, onMounted, onBeforeUnmount } from 'vue';
+import { storageService } from '@/services/storageService.js';
 
 const props = defineProps({
   total: { type: Number, default: 0 },
@@ -30,6 +31,22 @@ defineEmits(['tap']);
 
 const scrollId = 'quiz-progress-scroll';
 const scrollLeft = ref(0);
+const isDark = ref(storageService.get('theme_mode', 'light') === 'dark');
+let themeHandler;
+
+onMounted(() => {
+  themeHandler = (mode) => {
+    isDark.value = mode === 'dark';
+  };
+  uni.$on('themeUpdate', themeHandler);
+  uni.$on('updateTheme', themeHandler);
+});
+
+onBeforeUnmount(() => {
+  if (!themeHandler) return;
+  uni.$off('themeUpdate', themeHandler);
+  uni.$off('updateTheme', themeHandler);
+});
 
 // 每个 dot-wrapper 宽度约 40rpx = 20px（在 750rpx 设计稿下）
 const DOT_UNIT = 20;

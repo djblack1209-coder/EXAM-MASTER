@@ -95,14 +95,14 @@
             @blur="onNicknameChange"
           />
           <view class="info-grid">
-            <view class="info-item" @tap="handleEditSchool">
-              <text class="info-label"> 报考院校 </text>
+            <view class="info-item" @tap="handleEditTrack">
+              <text class="info-label"> 备考方向 </text>
               <text class="info-value">
-                {{ userSchoolInfo.school || '未设置' }}
+                {{ examProfileText }}
               </text>
             </view>
             <view class="info-item" @tap="handleEditMajor">
-              <text class="info-label"> 报考专业 </text>
+              <text class="info-label"> 专业方向 </text>
               <text class="info-value">
                 {{ userSchoolInfo.major || '未设置' }}
               </text>
@@ -120,63 +120,6 @@
             </picker>
           </view>
         </view>
-
-        <!-- 目标院校管理弹窗 -->
-        <view v-if="showTargetSchoolsModal" class="modal-mask" @tap="showTargetSchoolsModal = false">
-          <view class="modal-content target-modal-card" @tap.stop>
-            <view class="target-modal-handle" />
-            <view class="modal-header target-modal-header">
-              <view>
-                <text class="target-modal-eyebrow"> 目标院校 </text>
-                <text class="modal-title"> 目标院校管理 </text>
-              </view>
-              <text
-                id="e2e-settings-target-modal-close"
-                class="close-btn target-modal-close"
-                @tap="showTargetSchoolsModal = false"
-              >
-                <BaseIcon name="close" :size="32" />
-              </text>
-            </view>
-            <view class="modal-body target-modal-body">
-              <view v-if="targetSchools.length === 0" class="empty-targets">
-                <text class="empty-target-text">暂无目标院校</text>
-                <button class="add-btn" @tap="handleAddTargetSchool">去添加目标院校</button>
-              </view>
-              <view v-else class="target-list">
-                <view
-                  v-for="(school, index) in targetSchools"
-                  :key="school.id || school.name || index"
-                  class="target-item"
-                >
-                  <image
-                    class="target-avatar"
-                    :src="school.logo || DEFAULT_AVATAR"
-                    alt="Exam Master"
-                    mode="aspectFill"
-                    lazy-load
-                    @error="
-                      (e) => {
-                        e.target && (e.target.src = DEFAULT_AVATAR);
-                      }
-                    "
-                  />
-                  <view class="target-info">
-                    <text class="target-name">
-                      {{ school.name }}
-                    </text>
-                    <text class="target-location">
-                      {{ school.location }}
-                    </text>
-                  </view>
-                  <view class="target-actions">
-                    <text class="action-btn delete-btn" @tap="removeTargetSchool(index)"> 删除 </text>
-                  </view>
-                </view>
-              </view>
-            </view>
-          </view>
-        </view>
       </view>
       <view class="stats-section">
         <view class="stat-card">
@@ -185,11 +128,11 @@
           </text>
           <text class="stat-label"> 坚持天数 </text>
         </view>
-        <view id="e2e-settings-target-school-stat" class="stat-card" @tap="handleTargetSchoolClick">
+        <view id="e2e-settings-loaded-bank-stat" class="stat-card" @tap="handleEditTrack">
           <text class="stat-value">
-            {{ targetSchools.length }}
+            {{ loadedBankCount }}
           </text>
-          <text class="stat-label"> 目标院校 </text>
+          <text class="stat-label"> 已载题库 </text>
         </view>
       </view>
     </view>
@@ -225,13 +168,9 @@
         <!-- 安全/隐私 -->
         <view class="setting-item ds-flex ds-flex-between">
           <view class="setting-info" style="flex-direction: row; align-items: center; display: flex">
-            <!-- 卡通盾牌图标装饰 -->
-            <image
-              class="feature-cartoon-icon"
-              src="./static/icons/shield-check.png"
-              mode="aspectFit"
-              style="margin-right: 16rpx"
-            />
+            <view class="setting-icon" style="margin-right: 16rpx">
+              <BaseIcon name="shield" :size="36" />
+            </view>
             <view>
               <text class="setting-title ds-text-sm ds-font-medium"> 安全与隐私 </text>
               <text class="setting-desc ds-text-xs"> 数据安全，放心使用 </text>
@@ -326,6 +265,7 @@ import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 import { sanitizeInput } from '@/utils/security/sanitize.js';
 import { isSoundEnabled, setSoundEnabled } from '@/pages/practice-sub/utils/quiz-sound.js';
 import { isHapticEnabled, setHapticEnabled } from '@/utils/helpers/haptic.js';
+import { getPracticeNavigationTree } from '@/config/bank-registry.js';
 // 静态资源 CDN 映射
 import { ASSETS } from '@/config/static-assets.js';
 
@@ -334,10 +274,9 @@ const profileStore = useProfileStore();
 
 // 基础状态
 const userInfo = ref({});
-const userSchoolInfo = ref({}); // 用户学校信息（报考院校、专业）
+const userSchoolInfo = ref({}); // 兼容旧本地资料键，当前仅保留专业方向
 const defaultAvatar = DEFAULT_AVATAR; // 默认头像
 const studyDays = ref(1);
-const targetSchools = ref([]);
 const cacheSize = ref('0KB');
 const isDark = ref(false);
 const soundEnabled = ref(true);
@@ -346,7 +285,6 @@ const statusBarHeight = ref(44);
 const capsuleSafeRight = ref(20);
 const isPageLoading = ref(true); // F018: 页面加载状态
 // F002-S5: isLoggingOut moved to LogoutButton component
-const showTargetSchoolsModal = ref(false); // 目标院校管理弹窗
 // C5: 注销状态
 const deletionStatus = ref({ status: 'active', remainingDays: null });
 // D017: 考试日期
@@ -361,6 +299,20 @@ const examDateDisplay = computed(() => {
   const diff = Math.ceil((d - new Date()) / 86400000);
   const diffText = diff > 0 ? `（还有${diff}天）` : diff === 0 ? '（就是今天）' : '';
   return `${examDate.value} ${weekDays[d.getDay()]}${diffText}`;
+});
+const examProfile = computed(() => storageService.get('exam_profile', null) || {});
+const selectedTrackLabels = computed(() => {
+  const tree = getPracticeNavigationTree(examProfile.value);
+  return tree.flatMap((subject) => subject.tracks || []).map((track) => track.label);
+});
+const examProfileText = computed(() => {
+  if (!selectedTrackLabels.value.length) return '公共课全科';
+  if (selectedTrackLabels.value.length <= 2) return selectedTrackLabels.value.join(' / ');
+  return `${selectedTrackLabels.value.slice(0, 2).join(' / ')} 等${selectedTrackLabels.value.length}项`;
+});
+const loadedBankCount = computed(() => {
+  const loaded = storageService.get('loaded_flashcard_banks', []) || [];
+  return Array.isArray(loaded) ? loaded.length : 0;
 });
 
 // 主题系统
@@ -435,7 +387,6 @@ const loadData = () => {
   try {
     userInfo.value = storageService.get('userInfo', {});
     userSchoolInfo.value = storageService.get('user_school_info', {});
-    targetSchools.value = storageService.get('target_schools', []);
     const stats = storageService.get('study_stats', {});
     studyDays.value = Object.keys(stats).length || 1;
     // D017: 加载考试日期
@@ -458,42 +409,17 @@ const loadData = () => {
   }
 };
 
-// 编辑报考院校 - 直接使用搜索弹窗（school 是 tabBar 页面，switchTab 不支持 query params 和 events）
-const handleEditSchool = () => {
-  if (!isUserLoggedIn()) {
-    toast.info('请先登录后编辑院校');
-    return;
-  }
-  showSchoolSearchModal();
-};
-
-// 备用：院校搜索弹窗
-const showSchoolSearchModal = () => {
-  modal.show({
-    title: '搜索报考院校',
-    editable: true,
-    placeholderText: '输入院校名称或代码搜索',
-    content: '',
-    success: async (res) => {
-      if (res.confirm && res.content) {
-        const keyword = res.content.trim();
-        if (!keyword) {
-          toast.info('请输入搜索关键词');
-          return;
+const handleEditTrack = () => {
+  uni.navigateTo({
+    url: '/pages/practice-sub/question-bank',
+    fail: () => {
+      uni.switchTab({
+        url: '/pages/practice/index',
+        fail: (err) => {
+          logger.error('[Settings] 跳转题库入口失败:', err);
+          toast.info('请前往刷题页选择备考方向');
         }
-
-        toast.loading('搜索中...');
-        try {
-          // 调用后端搜索院校
-          // school store 已移除，院校搜索功能降级
-          toast.hide();
-          toast.info('院校搜索功能暂未开放');
-        } catch (error) {
-          toast.hide();
-          logger.error('[Settings] 搜索院校失败:', error);
-          toast.info('搜索失败，请重试');
-        }
-      }
+      });
     }
   });
 };
@@ -580,7 +506,7 @@ const handleClearCache = () => {
       if (res.confirm) {
         storageService.clear(true, {
           preserveGlobal: true,
-          preserveKeys: ['user_school_info', 'target_schools']
+          preserveKeys: ['user_school_info', 'exam_profile', 'loaded_flashcard_banks']
         });
         loadData();
         toast.success('缓存已清理');
@@ -663,45 +589,6 @@ const handleCancelDeletion = () => {
   });
 };
 
-// 移除目标院校
-const removeTargetSchool = (index) => {
-  modal.show({
-    title: '确认删除',
-    content: `确定要删除目标院校 "${targetSchools.value[index].name}" 吗？`,
-    confirmColor: 'var(--danger)',
-    success: (res) => {
-      if (res.confirm) {
-        // 从数组中删除
-        targetSchools.value.splice(index, 1);
-        // 更新本地存储
-        storageService.save('target_schools', targetSchools.value);
-        toast.success('已删除目标院校');
-      }
-    }
-  });
-};
-
-// 处理目标院校点击
-const handleTargetSchoolClick = () => {
-  showTargetSchoolsModal.value = true;
-};
-
-// 处理添加目标院校
-const handleAddTargetSchool = () => {
-  showTargetSchoolsModal.value = false;
-  // 小程序版已下线择校页，先引导到当前可用的刷题入口。
-  uni.switchTab({
-    url: '/pages/practice/index',
-    success: () => {
-      logger.log('[Settings] 已跳转到刷题页面');
-    },
-    fail: (err) => {
-      logger.error('[Settings] ❌ 跳转择校页面失败:', err);
-      toast.info('跳转失败');
-    }
-  });
-};
-
 // 头像选择防抖锁
 const isChoosingAvatar = ref(false);
 
@@ -719,7 +606,7 @@ async function _uploadAvatarToServer(filePath) {
       userInfo.value.avatarUrl = res.avatarUrl;
       storageService.save('userInfo', userInfo.value);
       uni.$emit('userInfoUpdated', { avatarUrl: res.avatarUrl });
-      logger.log('[Settings] ✅ 头像已上传到服务器:', res.avatarUrl);
+      logger.log('[Settings] 头像已上传到服务器:', res.avatarUrl);
     }
   } catch (e) {
     logger.warn('[Settings] 头像上传到服务器失败:', e.message);
@@ -739,7 +626,7 @@ const onChooseAvatar = (e) => {
   }
   // 防抖：如果正在选择，直接返回
   if (isChoosingAvatar.value) {
-    logger.log('[Settings] ⚠️ 头像选择进行中，忽略重复点击');
+    logger.log('[Settings] 头像选择进行中，忽略重复点击');
     return;
   }
 
@@ -750,7 +637,7 @@ const onChooseAvatar = (e) => {
     // #ifdef MP-WEIXIN
     const { avatarUrl } = e.detail;
     if (avatarUrl) {
-      logger.log('[Settings] 📸 头像已选择:', avatarUrl);
+      logger.log('[Settings] 头像已选择:', avatarUrl);
       // 更新用户头像（立即更新，确保UI响应）
       userInfo.value.avatarUrl = avatarUrl;
       // 如果已有用户信息，保留其他字段
@@ -759,7 +646,7 @@ const onChooseAvatar = (e) => {
       }
       // 保存用户信息到本地
       storageService.save('userInfo', userInfo.value);
-      logger.log('[Settings] ✅ 头像已保存到本地存储');
+      logger.log('[Settings] 头像已保存到本地存储');
       // 触发响应式更新（Vue 3 Proxy 可直接赋值触发）
       userInfo.value = { ...userInfo.value };
       // 显示成功提示
@@ -783,7 +670,7 @@ const onChooseAvatar = (e) => {
       success: (res) => {
         const tempFilePath = res.tempFilePaths[0];
         if (tempFilePath) {
-          logger.log('[Settings] 📸 非微信环境头像已选择:', tempFilePath);
+          logger.log('[Settings] 非微信环境头像已选择:', tempFilePath);
           userInfo.value.avatarUrl = tempFilePath;
           if (!userInfo.value.nickName) {
             userInfo.value.nickName = '考研人';
@@ -806,7 +693,7 @@ const onChooseAvatar = (e) => {
     });
     // #endif
   } catch (error) {
-    logger.error('[Settings] ❌ 头像选择失败', error);
+    logger.error('[Settings] 头像选择失败', error);
     toast.info('头像更新失败');
   } finally {
     // 1秒后解锁
@@ -901,7 +788,7 @@ const doRealLogin = async () => {
 
 // 保存用户信息到本地缓存
 const saveUserInfo = () => {
-  logger.log('[Settings] 💾 保存用户信息:', {
+  logger.log('[Settings] 保存用户信息:', {
     uid: userInfo.value.uid,
     nickName: userInfo.value.nickName,
     avatarUrl: userInfo.value.avatarUrl ? '已设置' : '未设置'
@@ -924,7 +811,7 @@ const saveUserInfo = () => {
 
 // 头像点击事件处理（优化：确保登录功能正常）
 const handleAvatarClick = () => {
-  logger.log('[Settings] 👤 头像被点击，当前登录状态:', !!userInfo.value.uid);
+  logger.log('[Settings] 头像被点击，当前登录状态:', !!userInfo.value.uid);
 
   if (!userInfo.value.uid) {
     // 未登录状态，提示用户点击头像按钮进行登录
@@ -942,12 +829,12 @@ const handleAvatarClick = () => {
 
 // 头像加载错误处理
 const onAvatarError = (e) => {
-  logger.log('[Settings] ⚠️ 头像加载失败，使用默认头像', e);
+  logger.log('[Settings] 头像加载失败，使用默认头像', e);
   // 注意：不要在这里修改 userInfo.avatarUrl，否则会覆盖用户选择的头像
   // 只在真正加载失败时使用默认头像显示，但不保存到 userInfo
   // 如果头像URL无效，让用户重新选择
   if (userInfo.value.avatarUrl && userInfo.value.avatarUrl !== defaultAvatar) {
-    logger.log('[Settings] ⚠️ 头像URL无效，但保留用户选择:', userInfo.value.avatarUrl);
+    logger.log('[Settings] 头像URL无效，但保留用户选择:', userInfo.value.avatarUrl);
     // 不修改 userInfo，让用户重新选择
   }
 };
@@ -1583,12 +1470,6 @@ const onAvatarError = (e) => {
   font-size: 28rpx;
   color: var(--text-secondary);
 }
-/* 卡通图标通用样式 */
-.feature-cartoon-icon {
-  width: 80rpx;
-  height: 80rpx;
-}
-
 /* C5: 注销账号 */
 .delete-account-section {
   margin: 30rpx 32rpx 0;
@@ -1706,193 +1587,6 @@ const onAvatarError = (e) => {
 /* 底部安全区域 */
 .footer-safe {
   height: 20px;
-}
-
-/* 目标院校管理弹窗样式 */
-.modal-mask {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(9, 18, 12, 0.3);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
-
-.modal-content {
-  background-color: var(--em3d-card-bg);
-  border: 2rpx solid var(--em3d-border);
-  border-radius: 28px;
-  width: 90%;
-  max-width: 400px;
-  max-height: 80vh;
-  overflow: hidden;
-  box-shadow: 0 var(--em3d-depth-md) 0 var(--em3d-border-shadow);
-}
-
-.target-modal-card {
-  padding: 14rpx 16rpx 18rpx;
-}
-
-.target-modal-handle {
-  width: 84rpx;
-  height: 8rpx;
-  border-radius: 999rpx;
-  background: rgba(0, 0, 0, 0.12);
-  margin: 6rpx auto 18rpx;
-}
-
-.modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px 12px 18px;
-  border-bottom: 2rpx solid var(--em3d-border);
-}
-
-.modal-title {
-  font-size: 36rpx;
-  font-weight: 650;
-  color: var(--text-main);
-}
-
-.target-modal-eyebrow {
-  display: block;
-  margin-bottom: 6rpx;
-  font-size: 20rpx;
-  letter-spacing: 3rpx;
-  text-transform: uppercase;
-  color: var(--text-secondary);
-}
-
-.close-btn {
-  width: 60rpx;
-  height: 60rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.62);
-  border: 2rpx solid rgba(255, 255, 255, 0.42);
-  box-shadow: 0 var(--em3d-depth-sm) 0 var(--em3d-border-shadow);
-  font-size: 42rpx;
-  color: var(--text-main);
-}
-
-.close-btn:hover {
-  color: var(--text-main);
-}
-
-.modal-body {
-  padding: 18px 12px 10px;
-  max-height: 60vh;
-  overflow-y: auto;
-}
-
-.empty-targets {
-  text-align: center;
-  padding: 40px 20px;
-  color: var(--text-sub);
-}
-
-.empty-target-text {
-  display: block;
-  font-size: 26rpx;
-}
-
-.add-btn {
-  margin-top: 20px;
-  background: var(--cta-primary-bg);
-  color: var(--cta-primary-text);
-  border: 2rpx solid var(--cta-primary-border);
-  border-radius: 16px;
-  padding: 12px 24px;
-  font-size: 28rpx;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: var(--cta-primary-shadow);
-}
-
-.add-btn:hover {
-  opacity: 0.92;
-  transform: translateY(-2px);
-}
-
-.target-list {
-  display: flex;
-  flex-direction: column;
-  /* gap: 16px; -- replaced for Android WebView compat */
-}
-
-.target-item {
-  display: flex;
-  align-items: center;
-  padding: 18px 16px;
-  background: rgba(255, 255, 255, 0.56);
-  border: 2rpx solid rgba(255, 255, 255, 0.42);
-  border-radius: 22px;
-  transition: all 0.2s ease;
-  box-shadow: 0 var(--em3d-depth-sm) 0 var(--em3d-border-shadow);
-}
-
-.target-item:hover {
-  background-color: rgba(255, 255, 255, 0.72);
-  transform: translateY(-2px);
-  box-shadow: 0 var(--em3d-depth-md) 0 var(--em3d-border-shadow);
-}
-
-.target-avatar {
-  width: 50px;
-  height: 50px;
-  border-radius: 25px;
-  margin-right: 16px;
-  object-fit: cover;
-}
-
-.target-info {
-  flex: 1;
-}
-
-.target-name {
-  display: block;
-  font-size: 32rpx;
-  font-weight: 650;
-  color: var(--text-main);
-  margin-bottom: 4px;
-}
-
-.target-location {
-  font-size: 24rpx;
-  color: var(--text-sub);
-}
-
-.target-actions {
-  display: flex;
-  /* gap: 8px; -- replaced for Android WebView compat */
-}
-
-.action-btn {
-  padding: 10px 14px;
-  border-radius: 999rpx;
-  font-size: 24rpx;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.delete-btn {
-  color: var(--danger);
-  background-color: rgba(255, 99, 90, 0.12);
-  border: 2rpx solid rgba(255, 99, 90, 0.24);
-}
-
-.delete-btn:hover {
-  background-color: var(--danger-light);
-  opacity: 0.8;
 }
 
 /* F002: 智能对话窗样式已移至 AIChatModal.vue */
