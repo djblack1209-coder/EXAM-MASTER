@@ -309,100 +309,43 @@
     <!-- AI解析在结果弹窗内异步加载，用户可随时点击下一题 -->
 
     <!-- 结果弹窗背景遮罩 -->
-    <view v-if="showResult" class="result-backdrop" @tap.stop="closeResult" />
+    <view v-if="showResult" class="result-backdrop" @tap.stop />
 
     <!-- 结果弹窗 -->
     <view v-if="showResult" :class="['result-pop', resultStatus]">
       <view class="result-header">
-        <!-- 左侧图标作为关闭按钮 -->
-        <view
-          id="e2e-quiz-next-btn"
-          class="result-icon-btn result-primary-action"
-          :class="{ disabled: isNavigating }"
-          hover-class="result-primary-action-hover"
-          role="button"
-          :aria-disabled="isNavigating ? 'true' : 'false'"
-          @tap.stop="closeResult"
-        >
-          <view class="result-icon">
-            <BaseIcon :name="resultStatus === 'correct' ? 'check' : 'cross'" :size="36" />
-          </view>
-          <text class="result-primary-label">
-            {{ isNavigating ? '加载中' : resultStatus === 'correct' ? '下一题' : '继续' }}
-          </text>
+        <view class="result-status-mark">
+          <BaseIcon :name="resultStatus === 'correct' ? 'check' : 'cross'" :size="30" />
         </view>
         <text class="status-title">
           {{ resultStatus === 'correct' ? '回答正确' : '再想想' }}
         </text>
       </view>
 
-      <scroll-view v-if="resultStatus === 'wrong'" scroll-y class="ai-analysis-scroll">
-        <view class="analysis-tag">
-          <view class="sparkle-icon">
-            <BaseIcon name="sparkle" :size="28" />
+      <scroll-view scroll-y class="result-content-scroll">
+        <view v-if="resultStatus === 'wrong'" class="ai-analysis-scroll">
+          <view class="analysis-tag">
+            <view class="sparkle-icon">
+              <BaseIcon name="sparkle" :size="28" />
+            </view>
+            <text>解析</text>
+            <!-- ✅ [P0重构] 内联AI加载指示器 -->
+            <text v-if="!aiComment" class="ai-loading-hint">分析中...</text>
           </view>
-          <text>解析</text>
-          <!-- ✅ [P0重构] 内联AI加载指示器 -->
-          <text v-if="!aiComment" class="ai-loading-hint">分析中...</text>
-        </view>
-        <!-- AI 个人历史微反馈 — 基于错题历史的一句话上下文提醒 -->
-        <view v-if="personalHint" class="personal-hint-bar">
-          <text class="personal-hint-text">{{ personalHint }}</text>
-        </view>
-        <view class="answer-display">
-          <text class="answer-label"> 正确答案： </text>
-          <text class="answer-value">
-            {{ currentQuestion ? currentQuestion.answer : 'A' }}
-          </text>
-        </view>
-        <view v-if="currentAnswerImages.length" class="q-image-list result-answer-images">
-          <view
-            v-for="(image, imageIndex) in currentAnswerImages"
-            :key="`${currentQuestion.id || currentIndex}-result-answer-image-${imageIndex}`"
-            class="q-image-card"
-          >
-            <image
-              class="q-source-image"
-              :src="image.src"
-              :alt="image.alt || image.caption || '答案原页'"
-              mode="widthFix"
-              lazy-load
-              show-menu-by-longpress
-            />
-            <text v-if="image.caption" class="q-image-caption">{{ image.caption }}</text>
+          <!-- AI 个人历史微反馈 — 基于错题历史的一句话上下文提醒 -->
+          <view v-if="personalHint" class="personal-hint-bar">
+            <text class="personal-hint-text">{{ personalHint }}</text>
           </view>
-        </view>
-        <view v-if="knowledgeCard" class="knowledge-card">
-          <view class="knowledge-card-head">
-            <text class="knowledge-label">考点</text>
-            <text class="knowledge-title">{{ knowledgeCard.title }}</text>
+          <view class="answer-display">
+            <text class="answer-label"> 正确答案： </text>
+            <text class="answer-value">
+              {{ currentQuestion ? currentQuestion.answer : 'A' }}
+            </text>
           </view>
-          <view v-if="knowledgeCard.tags.length" class="knowledge-tags">
-            <text v-for="tag in knowledgeCard.tags" :key="tag" class="knowledge-tag">{{ tag }}</text>
-          </view>
-          <RichText v-if="knowledgeCard.detail" class="knowledge-detail" :content="knowledgeCard.detail" />
-        </view>
-        <RichText class="analysis-body" :content="aiComment || (currentQuestion ? currentQuestion.desc : '暂无解析')" />
-      </scroll-view>
-
-      <view v-else class="ai-analysis-brief">
-        <view v-if="knowledgeCard" class="knowledge-card compact">
-          <view class="knowledge-card-head">
-            <text class="knowledge-label">考点</text>
-            <text class="knowledge-title">{{ knowledgeCard.title }}</text>
-          </view>
-          <view v-if="knowledgeCard.tags.length" class="knowledge-tags">
-            <text v-for="tag in knowledgeCard.tags" :key="tag" class="knowledge-tag">{{ tag }}</text>
-          </view>
-          <RichText v-if="knowledgeCard.detail" class="knowledge-detail" :content="knowledgeCard.detail" />
-        </view>
-        <view v-else>
-          <text class="label">解析：</text>
-          <RichText :content="aiComment || (currentQuestion ? currentQuestion.desc : '暂无解析')" />
           <view v-if="currentAnswerImages.length" class="q-image-list result-answer-images">
             <view
               v-for="(image, imageIndex) in currentAnswerImages"
-              :key="`${currentQuestion.id || currentIndex}-brief-answer-image-${imageIndex}`"
+              :key="`${currentQuestion.id || currentIndex}-result-answer-image-${imageIndex}`"
               class="q-image-card"
             >
               <image
@@ -416,13 +359,81 @@
               <text v-if="image.caption" class="q-image-caption">{{ image.caption }}</text>
             </view>
           </view>
+          <view v-if="knowledgeCard" class="knowledge-card">
+            <view class="knowledge-card-head">
+              <text class="knowledge-label">考点</text>
+              <text class="knowledge-title">{{ knowledgeCard.title }}</text>
+            </view>
+            <view v-if="knowledgeCard.tags.length" class="knowledge-tags">
+              <text v-for="tag in knowledgeCard.tags" :key="tag" class="knowledge-tag">{{ tag }}</text>
+            </view>
+            <RichText v-if="knowledgeCard.detail" class="knowledge-detail" :content="knowledgeCard.detail" />
+          </view>
+          <RichText
+            class="analysis-body"
+            :content="aiComment || (currentQuestion ? currentQuestion.desc : '暂无解析')"
+          />
+        </view>
+
+        <view v-else class="ai-analysis-brief">
+          <view v-if="knowledgeCard" class="knowledge-card compact">
+            <view class="knowledge-card-head">
+              <text class="knowledge-label">考点</text>
+              <text class="knowledge-title">{{ knowledgeCard.title }}</text>
+            </view>
+            <view v-if="knowledgeCard.tags.length" class="knowledge-tags">
+              <text v-for="tag in knowledgeCard.tags" :key="tag" class="knowledge-tag">{{ tag }}</text>
+            </view>
+            <RichText v-if="knowledgeCard.detail" class="knowledge-detail" :content="knowledgeCard.detail" />
+          </view>
+          <view v-else>
+            <text class="label">解析：</text>
+            <RichText :content="aiComment || (currentQuestion ? currentQuestion.desc : '暂无解析')" />
+            <view v-if="currentAnswerImages.length" class="q-image-list result-answer-images">
+              <view
+                v-for="(image, imageIndex) in currentAnswerImages"
+                :key="`${currentQuestion.id || currentIndex}-brief-answer-image-${imageIndex}`"
+                class="q-image-card"
+              >
+                <image
+                  class="q-source-image"
+                  :src="image.src"
+                  :alt="image.alt || image.caption || '答案原页'"
+                  mode="widthFix"
+                  lazy-load
+                  show-menu-by-longpress
+                />
+                <text v-if="image.caption" class="q-image-caption">{{ image.caption }}</text>
+              </view>
+            </view>
+          </view>
+        </view>
+
+        <!-- 新增: FSRS 记忆引擎状态展示 -->
+        <MemoryStatsRow v-if="memoryState" :memory-state="memoryState" />
+
+        <!-- 新增: AI Tutor 智能体辅导反馈 -->
+        <TutorFeedbackCard v-if="tutorFeedback" :feedback="tutorFeedback" />
+      </scroll-view>
+
+      <view class="result-action-row">
+        <view
+          id="e2e-quiz-next-btn"
+          class="result-next-btn result-primary-action"
+          :class="{ disabled: isNavigating }"
+          hover-class="result-primary-action-hover"
+          role="button"
+          :aria-disabled="isNavigating ? 'true' : 'false'"
+          @tap.stop="closeResult"
+        >
+          <view class="result-action-icon">
+            <BaseIcon :name="resultStatus === 'correct' ? 'check' : 'arrow-right'" :size="30" />
+          </view>
+          <text class="result-primary-label">
+            {{ isNavigating ? '加载中' : resultStatus === 'correct' ? '下一题' : '继续' }}
+          </text>
         </view>
       </view>
-      <!-- 新增: FSRS 记忆引擎状态展示 -->
-      <MemoryStatsRow v-if="memoryState" :memory-state="memoryState" />
-
-      <!-- 新增: AI Tutor 智能体辅导反馈 -->
-      <TutorFeedbackCard v-if="tutorFeedback" :feedback="tutorFeedback" />
     </view>
 
     <!-- ✅ 自定义弹窗：题库为空 -->
@@ -3211,6 +3222,10 @@ export default {
   right: 30rpx;
   z-index: 300;
   padding: 34rpx;
+  max-height: calc(78vh - env(safe-area-inset-bottom));
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
   background: rgba(255, 255, 255, 0.94);
   border: 1rpx solid rgba(15, 23, 42, 0.08);
   border-radius: 32rpx;
@@ -3279,37 +3294,61 @@ export default {
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  @include em-flex-gap(20rpx, row);
-  margin-bottom: 20rpx;
+  @include em-flex-gap(18rpx, row);
+  margin-bottom: 22rpx;
   position: relative;
 }
 
-.result-icon-btn {
-  min-width: 80rpx;
-  height: 80rpx;
+.result-status-mark {
+  width: 64rpx;
+  height: 64rpx;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  background: var(--overlay);
-  transition: all 0.3s;
   flex-shrink: 0;
+  background: rgba(15, 23, 42, 0.06);
+  color: #1d1d1f;
 }
 
 .result-primary-action {
-  width: auto;
-  padding: 0 24rpx;
+  width: 100%;
   border-radius: 999rpx;
   background: linear-gradient(135deg, #1d1d1f 0%, #30343b 100%);
   color: #ffffff;
   box-shadow: 0 12rpx 28rpx rgba(15, 23, 42, 0.16);
 }
 
+.result-pop.correct .result-status-mark {
+  background: rgba(159, 232, 112, 0.2);
+  color: #1f7a4d;
+}
+
+.result-pop.wrong .result-status-mark {
+  background: rgba(255, 123, 114, 0.15);
+  color: #b42318;
+}
+
+.dark-mode .result-status-mark {
+  background: rgba(255, 255, 255, 0.08);
+  color: #f5f7fb;
+}
+
+.dark-mode .result-pop.correct .result-status-mark {
+  background: rgba(159, 232, 112, 0.16);
+  color: #9fe870;
+}
+
+.dark-mode .result-pop.wrong .result-status-mark {
+  background: rgba(255, 123, 114, 0.18);
+  color: #ffb4ab;
+}
+
 .result-pop.correct .result-primary-action {
   background: linear-gradient(135deg, #9fe870 0%, #75ddff 100%);
 }
 
-.result-pop.correct .result-icon,
+.result-pop.correct .result-action-icon,
 .result-pop.correct .result-primary-label {
   color: #10281a;
 }
@@ -3323,11 +3362,6 @@ export default {
   box-shadow: 0 14rpx 34rpx rgba(0, 0, 0, 0.22);
 }
 
-.result-icon-btn:active {
-  background: var(--bg-secondary);
-  transform: scale(0.95);
-}
-
 .result-primary-action-hover,
 .result-primary-action:active {
   transform: scale(0.98);
@@ -3339,15 +3373,40 @@ export default {
   opacity: 0.72;
 }
 
-.result-icon {
-  font-size: 60rpx;
+.result-action-row {
+  position: relative;
+  z-index: 2;
+  margin-top: 28rpx;
+  padding-top: 24rpx;
+  border-top: 1rpx solid rgba(15, 23, 42, 0.08);
+}
+
+.dark-mode .result-action-row {
+  border-top-color: rgba(255, 255, 255, 0.08);
+}
+
+.result-next-btn {
+  min-height: 92rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  @include em-flex-gap(12rpx, row);
+  transition:
+    transform 0.22s ease,
+    opacity 0.22s ease,
+    box-shadow 0.22s ease;
+}
+
+.result-action-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-weight: 700;
   color: #ffffff;
 }
 
 .result-primary-label {
-  margin-left: 10rpx;
-  font-size: 26rpx;
+  font-size: 28rpx;
   font-weight: 700;
   color: #ffffff;
 }
@@ -3368,13 +3427,19 @@ export default {
   color: #f5f7fb;
 }
 
+.result-content-scroll {
+  position: relative;
+  z-index: 1;
+  min-height: 0;
+  max-height: 52vh;
+  flex: 1;
+}
+
 /* 智能深度诊断区域 */
 .ai-analysis-scroll {
   position: relative;
   z-index: 1;
-  max-height: 400rpx;
-  margin-bottom: 30rpx;
-  padding: 20rpx 0;
+  padding: 4rpx 0 10rpx;
 }
 .analysis-tag {
   display: flex;
