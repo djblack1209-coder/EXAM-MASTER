@@ -442,3 +442,42 @@ Run:
 git add src/pages/practice-sub/do-quiz.vue tests/unit/do-quiz-answer-motion-guard.spec.js docs/frontend-experience-refactor-diary.md docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md
 git commit -m "fix: restore quiz answer motion feedback"
 ```
+
+### Task 12: Clarify Quiz Session Progress
+
+**Files:**
+- Modify: `src/pages/practice-sub/components/quiz-progress/quiz-progress.vue`
+- Create: `tests/unit/quiz-progress-experience-guard.spec.js`
+- Modify: `docs/frontend-experience-refactor-diary.md`
+- Modify: `docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md`
+
+- [x] **Step 1: Upgrade progress hierarchy**
+
+Add a percent label, moving progress thumb, clearer current-question label, and compact session state copy.
+
+- [x] **Step 2: Preserve answer distribution**
+
+Show correct/wrong counts when mistakes exist, keep remaining count when clean, and treat neutral flashcard review records as reviewed rather than wrong.
+
+- [x] **Step 3: Add progress experience guard**
+
+Assert that percent, thumb motion, answer distribution, safe totals, accessibility copy, and dark-mode progress details remain in place.
+
+- [x] **Step 4: Run focused validation**
+
+Run:
+```bash
+npm run lint -- src/pages/practice-sub/components/quiz-progress/quiz-progress.vue tests/unit/quiz-progress-experience-guard.spec.js
+npm run test -- tests/unit/quiz-progress-experience-guard.spec.js tests/unit/quiz-session-contract.spec.js tests/unit/do-quiz-answer-motion-guard.spec.js tests/unit/session-feedback.spec.js
+npm run build:mp-weixin
+```
+
+Result: passed on 2026-06-01.
+
+- [x] **Step 5: Commit**
+
+Run:
+```bash
+git add src/pages/practice-sub/components/quiz-progress/quiz-progress.vue tests/unit/quiz-progress-experience-guard.spec.js docs/frontend-experience-refactor-diary.md docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md
+git commit -m "feat: clarify quiz session progress"
+```

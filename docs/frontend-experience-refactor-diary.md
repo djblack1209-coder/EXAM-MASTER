@@ -133,3 +133,11 @@
 - Reconnected `quiz-correct-animation` and `quiz-wrong-animation` to the existing `correctPulse`, `wrongShake`, `correctGlow`, and `wrongGlow` motion vocabulary.
 - Added `do-quiz-answer-motion-guard` so the core answer confirmation moment cannot silently lose visual motion while sound and haptics still fire.
 - Product rule: Baicizhan-like certainty needs all three channels together: visual confirmation, sound cue, and haptic fallback.
+
+### 2026-06-01 Round 14
+
+- Continued core-practice polish by upgrading the quiz progress component from a simple bar/dot rail into a clearer session status surface.
+- Added a percent label, moving progress thumb, stronger current-question label, and compact answered/correct/wrong summary.
+- Fixed neutral flashcard review records so they display as reviewed progress instead of being treated like wrong answers in the dot rail.
+- Added `quiz-progress-experience-guard` to preserve percent, thumb motion, answer distribution, safe totals, accessible copy, and dark-mode detail coverage.
+- Product rule: users should always know where they are in the session without opening the answer sheet.
