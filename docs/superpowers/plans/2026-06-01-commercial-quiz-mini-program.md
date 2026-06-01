@@ -288,3 +288,38 @@ Run:
 git add src/pages/index/index.vue src/pages/practice/index.vue src/pages/profile/index.vue tests/unit/core-shell-theme-guard.spec.js docs/frontend-experience-refactor-diary.md docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md
 git commit -m "chore: guard core shell theme sync"
 ```
+
+### Task 8: Guard Core Shell Visual Language
+
+**Files:**
+- Modify: `src/pages/practice/index.vue`
+- Create: `tests/unit/core-shell-visual-guard.spec.js`
+- Modify: `docs/frontend-experience-refactor-diary.md`
+- Modify: `docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md`
+
+- [x] **Step 1: Align Practice shell materials**
+
+Practice should use the shared mobile canvas, topbar, deep hero panel, glass cards, pressable controls, and primary action treatment instead of drifting into a separate black/white card language.
+
+- [x] **Step 2: Add visual language guard**
+
+Assert that core shell pages retain shared shell primitives, press feedback, and tabbar safe-area spacing.
+
+- [x] **Step 3: Run focused validation**
+
+Run:
+```bash
+npm run lint -- src/pages/practice/index.vue tests/unit/core-shell-visual-guard.spec.js
+npm run test -- tests/unit/core-shell-visual-guard.spec.js tests/unit/core-shell-theme-guard.spec.js tests/unit/core-shell-state-guard.spec.js tests/unit/shell-navigation-guard.spec.js tests/unit/mini-program-scope-guard.spec.js
+npm run build:mp-weixin
+```
+
+Result: passed on 2026-06-01.
+
+- [x] **Step 4: Commit**
+
+Run:
+```bash
+git add src/pages/practice/index.vue tests/unit/core-shell-visual-guard.spec.js docs/frontend-experience-refactor-diary.md docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md
+git commit -m "chore: guard core shell visual language"
+```

@@ -103,3 +103,10 @@
 - Home, Practice, and Profile now listen to both `themeUpdate` and `updateTheme`, matching Settings and reducing the chance of stale light/dark state after toggles.
 - Added `core-shell-theme-guard` so Home, Practice, Profile, and Settings must keep a dark-mode root class, event subscription/unsubscription, and core dark surface CSS coverage.
 - Product rule: theme switching is a shell contract. Core pages must react to both legacy and current theme events until the rest of the app is fully normalized.
+
+### 2026-06-01 Round 10
+
+- Continued Phase 2 visual cohesion by pulling Practice back onto the shared lightweight financial shell language.
+- Practice now uses the shared mobile canvas/topbar/deep-panel/glass-surface/primary-action mixins for its page background, hero, cards, empty state, and primary actions.
+- Added `core-shell-visual-guard` so Home, Practice, Profile, and Settings keep shared shell primitives, press feedback, and bottom safe-area affordances.
+- Product rule: individual pages can vary their content density, but the shell material, primary action treatment, press behavior, and tabbar spacing should stay consistent.
