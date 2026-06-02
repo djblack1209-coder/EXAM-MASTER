@@ -210,10 +210,11 @@ def normalize_choice_options(options: Any) -> list[dict[str, str]]:
 
 
 OPTION_MARK_PATTERN = re.compile(r"(?m)^\s*[［\[]\s*([A-Ga-g])\s*[］\]]\s*")
+DOTTED_OPTION_MARK_PATTERN = re.compile(r"(?<![A-Za-z])([A-Ga-g])\s*[.．]\s+")
 
 
 def clean_source_option_text(text: str) -> str:
-    text = re.split(r"(?m)^\s*(?:\d{1,3}\s*[.．]|Part\s+[A-Z]\b)", text)[0]
+    text = re.split(r"(?m)^\s*(?:\d{1,3}\s*[.．]|Part\s+[A-Z]\b|Section\s+\S+\b)", text)[0]
     text = re.sub(r"(?m)^---\s*PAGE\s+\d+\s*---$", " ", text)
     text = re.sub(r"(?m)^英语[（(].*?共\s*\d+\s*页.*$", " ", text)
     text = re.sub(r"(?m)^全年免费分享各类资源$", " ", text)
@@ -221,7 +222,8 @@ def clean_source_option_text(text: str) -> str:
 
 
 def parse_labeled_source_options(text: str) -> list[dict[str, str]]:
-    matches = list(OPTION_MARK_PATTERN.finditer(text or ""))
+    raw_matches = list(OPTION_MARK_PATTERN.finditer(text or "")) + list(DOTTED_OPTION_MARK_PATTERN.finditer(text or ""))
+    matches = sorted(raw_matches, key=lambda item: item.start())
     options: list[dict[str, str]] = []
     seen_labels: set[str] = set()
     for index, match in enumerate(matches):
@@ -374,6 +376,9 @@ def source_id_for_path(path: Path, output_source_map: dict[str, str]) -> str:
 def source_id_from_payload(payload: Any) -> str:
     if not isinstance(payload, dict):
         return ""
+    explicit_source_id = first_non_empty(payload.get("sourceId"), payload.get("source_id"))
+    if explicit_source_id:
+        return explicit_source_id
     source = first_non_empty(payload.get("source"), payload.get("sourcePath"), payload.get("fileName"))
     match = re.search(r"(src_[A-Za-z0-9]+)", source)
     return match.group(1) if match else ""
@@ -762,6 +767,46 @@ def collect_source_option_candidates(
     return candidates, stats
 
 
+def collect_companion_source_option_candidates(
+    companion_paths: list[Path],
+    *,
+    output_source_map: dict[str, str],
+    output_task_map: dict[str, dict[str, Any]] | None = None,
+) -> tuple[dict[str, dict[str, Any]], dict[str, list[dict[str, Any]]], dict[str, int]]:
+    buckets: dict[str, list[dict[str, Any]]] = {}
+    stats = {"companionSourceOptionCandidates": 0}
+
+    for companion_path in companion_paths:
+        payload = read_json(companion_path, {})
+        if not isinstance(payload, dict):
+            continue
+        task = queue_task_for_path(companion_path, output_task_map or {})
+        source_text, source_path = read_companion_source_text(task, companion_path, payload)
+        year = first_non_empty(payload.get("year"), task.get("year"))
+        source_id = source_id_for_path(companion_path, output_source_map) or source_id_from_payload(payload)
+        source_candidates, source_stats = collect_source_option_candidates(
+            source_text,
+            year=year,
+            source_id=source_id,
+            source_path=source_path,
+        )
+        stats["companionSourceOptionCandidates"] += source_stats["sourceOptionCandidates"]
+        for key, candidate in source_candidates.items():
+            candidate = dict(candidate)
+            candidate["method"] = "companion_source_option_text"
+            buckets.setdefault(key, []).append(candidate)
+
+    candidates: dict[str, dict[str, Any]] = {}
+    conflicts: dict[str, list[dict[str, Any]]] = {}
+    for key, items in buckets.items():
+        candidate, conflict = resolve_option_candidate_bucket(items)
+        if candidate:
+            candidates[key] = candidate
+        else:
+            conflicts[key] = conflict
+    return candidates, conflicts, stats
+
+
 def collect_answer_candidates(
     companion_paths: list[Path],
     *,
@@ -897,6 +942,13 @@ def repair_bank(
         companion_paths,
         output_source_map=output_source_map,
     )
+    companion_source_option_candidates, companion_source_option_conflicts, companion_source_option_stats = (
+        collect_companion_source_option_candidates(
+            companion_paths,
+            output_source_map=output_source_map,
+            output_task_map=output_task_map,
+        )
+    )
     source_option_candidates, source_option_stats = collect_source_option_candidates(
         target_source_text,
         year=target_year,
@@ -924,22 +976,29 @@ def repair_bank(
         current_id = card_id(card, index)
 
         if has_incomplete_choice_options(card) and key:
-            if key in option_conflicts:
+            if key in option_conflicts or key in companion_source_option_conflicts:
+                conflicts = option_conflicts.get(key) or companion_source_option_conflicts.get(key) or []
                 details.append(
                     {
                         "cardId": current_id,
                         "status": "skipped_option_conflict",
                         "key": key,
-                        "candidates": option_conflicts[key],
+                        "candidates": conflicts,
                     }
                 )
             else:
-                option_candidate = option_candidates.get(key) or source_option_candidates.get(key)
+                option_candidate = (
+                    option_candidates.get(key)
+                    or source_option_candidates.get(key)
+                    or companion_source_option_candidates.get(key)
+                )
                 if option_candidate:
                     option_method = option_candidate.get("method") or "year_number_companion_cleaned_json"
                     option_note = (
                         "Candidate options repaired from target source text; not publishable until verified."
                         if option_method == "target_source_option_text"
+                        else "Candidate options repaired from companion source text; not publishable until verified."
+                        if option_method == "companion_source_option_text"
                         else "Candidate options repaired from a cleaned companion file; not publishable until verified."
                     )
                     card["options"] = copy.deepcopy(option_candidate["options"])
@@ -1049,10 +1108,11 @@ def repair_bank(
             "remainingMissingAnswers": remaining_missing,
             "skippedNoCandidate": skipped_no_candidate,
             "conflictCount": len(answer_conflicts),
-            "optionConflictCount": len(option_conflicts),
+            "optionConflictCount": len(option_conflicts) + len(companion_source_option_conflicts),
             "structuredCandidates": candidate_stats["structuredCandidates"],
             "structuredOptionCandidates": option_candidate_stats["structuredOptionCandidates"],
             "sourceOptionCandidates": source_option_stats["sourceOptionCandidates"],
+            "companionSourceOptionCandidates": companion_source_option_stats["companionSourceOptionCandidates"],
             "answerKeyTextCandidates": candidate_stats["answerKeyTextCandidates"],
             "answerKeyGroupCandidates": candidate_stats["answerKeyGroupCandidates"],
             "numberedAnswerTextCandidates": candidate_stats["numberedAnswerTextCandidates"],

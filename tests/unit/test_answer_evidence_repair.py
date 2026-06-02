@@ -279,6 +279,78 @@ class AnswerEvidenceRepairTest(unittest.TestCase):
         self.assertEqual(cards[1]["options"][4]["text"], "Paragraph E text.")
         self.assertEqual(cards[1]["optionEvidence"]["method"], "target_source_option_text")
 
+    def test_repair_fills_choice_options_from_companion_source_text(self):
+        from scripts.baidu.answer_evidence_repair import repair_bank
+
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_dir = Path(tmp)
+            target = tmp_dir / "flashcards" / "english1-2019.json"
+            companion = tmp_dir / "flashcards" / "english-support-2019.json"
+            source_text = tmp_dir / "raw" / "english1-2019-answer.txt"
+            source_text.parent.mkdir(parents=True)
+            source_text.write_text(
+                "9. A. So              B. Yet             C. Instead         D. Besides\n"
+                "10. A. immediately     B. intentionally   C. unexpectedly    D. eventually\n"
+                "Part B\n"
+                "For questions 41-45, you are required to reorganize these paragraphs by choosing from the list A-G.\n"
+                "A. Paragraph A text.\n"
+                "B. Paragraph B text.\n"
+                "C. Paragraph C text.\n"
+                "D. Paragraph D text.\n"
+                "E. Paragraph E text.\n"
+                "F. Paragraph F text.\n"
+                "G. Paragraph G text.\n"
+                "Part C\n",
+                encoding="utf-8",
+            )
+            write_json(
+                target,
+                bank_payload(
+                    "english1-2019.pdf",
+                    "english1",
+                    2019,
+                    [
+                        {
+                            "id": "english1-2019-009",
+                            "number": 9,
+                            "type": "single_choice",
+                            "question": "So",
+                            "options": [{"label": "A", "text": "So"}],
+                            "answer": "A",
+                        },
+                        {
+                            "id": "english1-2019-041",
+                            "number": 41,
+                            "type": "single_choice",
+                            "question": "Part B",
+                            "options": [],
+                            "answer": "E",
+                        },
+                    ],
+                ),
+            )
+            write_json(
+                companion,
+                {
+                    "sourceId": "src_answer_key",
+                    "sourcePath": str(source_text),
+                    "subject": "english-support",
+                    "year": 2019,
+                    "cards": [],
+                },
+            )
+
+            report = repair_bank(target, [companion], write=True, now="2026-04-30T00:00:00Z")
+            cards = json.loads(target.read_text(encoding="utf-8"))["cards"]
+
+        self.assertEqual(report["summary"]["repairedOptions"], 2)
+        self.assertGreaterEqual(report["summary"]["companionSourceOptionCandidates"], 7)
+        self.assertEqual([option["label"] for option in cards[0]["options"]], ["A", "B", "C", "D"])
+        self.assertEqual(cards[0]["options"][3]["text"], "Besides")
+        self.assertEqual(len(cards[1]["options"]), 7)
+        self.assertEqual(cards[1]["optionEvidence"]["method"], "companion_source_option_text")
+        self.assertEqual(cards[1]["optionEvidence"]["sourceId"], "src_answer_key")
+
     def test_repair_uses_best_duplicate_queue_task_for_target_source_options(self):
         from scripts.baidu.answer_evidence_repair import repair_bank
 

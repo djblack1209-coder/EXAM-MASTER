@@ -386,3 +386,13 @@
 - Real `english1:2018` result: local bank now has 52 cards, `{single_choice:45, translation:5, essay:2}`, `missingAnswerCount=0`, and zero choice-option quality issues. Options 11/14/17/18 were repaired from `english-support-ebf94bb2-2018.json`; options 26 and 41-45 were repaired from the original main PDF OCR text.
 - Release caveat: repaired answers and options are still `candidate_matched` / `candidate_repaired` evidence, not final publishable verified evidence.
 - Product rule: when multiple source PDFs compete for one public-course slot, the automation must preserve the best cleaned bank and use weaker later runs only as supplemental evidence, never as a downgrade.
+
+### 2026-06-02 Round 44
+
+- Advanced the release-priority queue from `english1:2018` to `english1:2019`.
+- Downloaded the official 2019 English I answer-speed PDF into ignored `data/raw-inbox/` and used it as deterministic source text instead of forcing a long companion LLM run.
+- Rebuilt the local `english1:2019` bank with `english_passage_repair.py`: the answer-speed PDF text layer restored 52 cards, 45 single-choice cards, 5 translation cards, and 2 essay cards.
+- Extended `answer_evidence_repair.py` so companion source wrappers can also supply option candidates, including English `A. ... B. ...` dotted option rows and 41-45 A-G Part B paragraphs.
+- Real `english1:2019` repair result: `repairedAnswers=10`, `repairedOptions=3`, `remainingMissingAnswers=0`, and runner-quality evaluation now reports `questionCount=52`, `typeCounts={single_choice:45,translation:5,essay:2}`, and `qualityIssues=[]`.
+- Release caveat: the repaired 2019 English answers/options are still candidate evidence sourced from the answer-speed PDF and must go through the verified evidence flow before public promotion.
+- Product rule: when a companion answer PDF has a clean text layer, use it to rebuild deterministic English structure and evidence first; LLM reruns are the fallback, not the default.

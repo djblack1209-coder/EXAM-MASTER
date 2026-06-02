@@ -1778,10 +1778,89 @@ git diff --check
 
 Result: passed on 2026-06-02. Dry-run now advances past `english1:2018`; the next main release-priority task is `2005数一标准答案及解析.pdf`.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 Run:
 ```bash
 git add scripts/baidu/run_cleaning_queue.py scripts/baidu/answer_evidence_repair.py tests/unit/test_baidu_cleaning_runner.py tests/unit/test_answer_evidence_repair.py docs/frontend-experience-refactor-diary.md docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md
 git commit -m "chore: repair english option evidence"
 ```
+
+Result: committed as `52b459c chore: repair english option evidence`, followed by `a762196 chore: trim llm batch headroom` for the next English 2019 run stability pass.
+
+### Task 42: Rebuild English 2019 From Answer-Speed Source
+
+**Files:**
+- Modify: `scripts/baidu/answer_evidence_repair.py`
+- Modify: `tests/unit/test_answer_evidence_repair.py`
+- Modify: `docs/frontend-experience-refactor-diary.md`
+- Modify: `docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md`
+
+- [x] **Step 1: Pull deterministic companion source**
+
+Run:
+```bash
+set -a && source .env && set +a && .venv-baidu/bin/python scripts/baidu/pan.py download '/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/03.考研真相系列/26考研真相/英一/真题册+答案速查/2019年真题及答案速查/2019年真题及答案速查.pdf' data/raw-inbox/2019年真题及答案速查.pdf
+```
+
+Result: downloaded ignored local source `data/raw-inbox/2019年真题及答案速查.pdf`. The file has a usable text layer with the full 2019 English I paper plus answer-speed table.
+
+- [x] **Step 2: Extend option repair for companion source text**
+
+Add dotted English option parsing (`A. ... B. ...`) and companion source-text option candidates to `answer_evidence_repair.py`, so lightweight companion wrappers can supply options from PDFs/TXT files without first running a full LLM cleaned JSON pass.
+
+- [x] **Step 3: Rebuild the local 2019 English structure**
+
+Run:
+```bash
+python3 scripts/baidu/english_passage_repair.py --target data/flashcards/english1-2019.json --source-pdf data/raw-inbox/2019年真题及答案速查.pdf --output /tmp/english1-2019-passage-repair-report.json --write --repair-cloze-cards --repair-part-b-cards --reset-part-b-answers --repair-translation-cards --reset-translation-answers
+```
+
+Result: `cardCount=52`, `clozeRebuiltCount=20`, `translationSegmentCount=5`, `translationRebuiltCount=5`, and `translationAddedCount=2`.
+
+- [x] **Step 4: Repair answers and remaining options from answer-speed text**
+
+Run with an ignored wrapper JSON pointing at `data/raw-inbox/2019年真题及答案速查.pdf`:
+```bash
+python3 scripts/baidu/answer_evidence_repair.py --target data/flashcards/english1-2019.json --companion /tmp/english1-2019-answer-wrapper.json --output /tmp/english1-2019-repair-report.json --write
+```
+
+Result: `repairedAnswers=10`, `repairedOptions=3`, `remainingMissingAnswers=0`, `companionSourceOptionCandidates=45`, `answerKeyTextCandidates=45`, `answerKeyGroupCandidates=9`, and `numberedAnswerTextCandidates=5`.
+
+- [x] **Step 5: Verify release-quality structure**
+
+Run:
+```bash
+python3 - <<'PY'
+import json
+from pathlib import Path
+from scripts.baidu.run_cleaning_queue import output_result_for_path
+queue=json.loads(Path('data/cleaning-queue.json').read_text())
+task=next(t for t in queue['tasks'] if t.get('taskId')=='clean_a178787993d76cdd19ba4f51')
+print(output_result_for_path(task, Path('data/flashcards/english1-2019.json')))
+PY
+```
+
+Result: `questionCount=52`, `missingAnswerCount=0`, `typeCounts={single_choice:45,translation:5,essay:2}`, and `qualityIssues=[]`.
+
+- [x] **Step 6: Run validation**
+
+Run:
+```bash
+python3 -m unittest tests.unit.test_baidu_cleaning_runner tests.unit.test_baidu_cleaning_queue tests.unit.test_answer_evidence_repair tests.unit.test_english_passage_repair
+.venv-baidu/bin/python -m unittest tests.unit.test_pdf2flashcard_v2
+python3 scripts/baidu/run_cleaning_queue.py --dry-run --limit 8 --source-type official_paper --paper-role main
+git diff --check
+```
+
+Result: passed on 2026-06-02. Dry-run now points at `2019考研英语一真题及解析.pdf`, then the next math release backlog tasks.
+
+- [x] **Step 7: Commit**
+
+Run:
+```bash
+git add scripts/baidu/answer_evidence_repair.py tests/unit/test_answer_evidence_repair.py docs/frontend-experience-refactor-diary.md docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md
+git commit -m "chore: repair english companion option evidence"
+```
+
+Result: committed after validation on 2026-06-02.
