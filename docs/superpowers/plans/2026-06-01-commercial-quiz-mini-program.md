@@ -906,3 +906,45 @@ Run:
 git add src/pages/practice-sub/question-bank.vue tests/unit/question-bank-gap-panel-guard.spec.js docs/frontend-experience-refactor-diary.md docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md
 git commit -m "feat: explain question bank gap years"
 ```
+
+### Task 23: Add Recommended Question Bank Start Entry
+
+**Files:**
+- Modify: `src/pages/practice-sub/question-bank.vue`
+- Create: `tests/unit/question-bank-recommended-start-guard.spec.js`
+- Modify: `docs/frontend-experience-refactor-diary.md`
+- Modify: `docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md`
+
+- [x] **Step 1: Derive the newest playable recommendation**
+
+Build `recommendedSlot`, `recommendedLocalState`, `recommendedSlotRecommendation`, and `recommendedActionText` from the selected track's playable year slots.
+
+- [x] **Step 2: Add the primary recommendation card**
+
+Render `推荐开练` above the year map with direction, year, local question count, and a clear start action.
+
+- [x] **Step 3: Preserve the existing safe start path**
+
+Wire the recommendation action through `loadAndStartSlot(recommendedSlot)` so sync, usable ID verification, and safe navigation stay centralized.
+
+- [x] **Step 4: Add recommendation guard**
+
+Assert default recommendation rendering, synced/unsynced copy, safe start behavior, user-facing wording, and dark-mode coverage.
+
+- [x] **Step 5: Run focused validation**
+
+Run:
+```bash
+npm run lint -- src/pages/practice-sub/question-bank.vue tests/unit/question-bank-recommended-start-guard.spec.js tests/unit/question-bank-gap-panel-guard.spec.js
+npm run test -- tests/unit/question-bank-recommended-start-guard.spec.js tests/unit/question-bank-gap-panel-guard.spec.js tests/unit/question-bank-local-sync-guard.spec.js tests/unit/question-bank-start-flow-guard.spec.js tests/unit/question-bank-slot-readiness-guard.spec.js tests/unit/question-bank-year-map.spec.js tests/unit/practice-readiness-card-guard.spec.js tests/unit/frontend-copy-guard.spec.js tests/unit/mini-program-scope-guard.spec.js
+```
+
+Result: passed on 2026-06-01.
+
+- [x] **Step 6: Commit**
+
+Run:
+```bash
+git add src/pages/practice-sub/question-bank.vue tests/unit/question-bank-recommended-start-guard.spec.js docs/frontend-experience-refactor-diary.md docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md
+git commit -m "feat: add question bank recommended start"
+```

@@ -221,3 +221,11 @@
 - The panel summarizes `整理中 / 待入库` counts and limits the preview to the newest six gaps so it stays lightweight on mobile.
 - Kept the copy user-facing: reasons use `资料暂未入库` or existing disabled explanations, without backend release workflow terms.
 - Added `question-bank-gap-panel-guard` to protect gap summary rendering, track switching, user-facing wording, and dark-mode coverage.
+
+### 2026-06-01 Round 25
+
+- Continued Phase 3 by adding a clear `推荐开练` entry above the year map.
+- The recommendation selects the current track's newest playable year, so users see the primary action before scanning the full 2005-2026 grid.
+- The card reuses the existing local sync state: unsynced papers show `同步并开始`, while local papers show `继续本卷` with the usable question count.
+- The action still calls the existing load-and-start path, preserving bank sync, usable question ID verification, and safe navigation into the quiz page.
+- Added `question-bank-recommended-start-guard` to protect recommendation rendering, local-state copy, safe start wiring, user-facing wording, and dark-mode coverage.

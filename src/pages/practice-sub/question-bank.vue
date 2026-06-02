@@ -56,6 +56,39 @@
         </view>
       </view>
 
+      <view v-if="recommendedSlot" class="recommended-panel">
+        <view class="recommended-copy">
+          <view class="recommended-kicker-row">
+            <text class="recommended-kicker">推荐开练</text>
+            <text class="recommended-pill">{{ recommendedLocalState.label }}</text>
+          </view>
+          <text class="recommended-title">{{ recommendedSlot.name }}</text>
+          <text class="recommended-desc">{{ recommendedSlotRecommendation }}</text>
+        </view>
+        <view class="recommended-meta-row">
+          <view class="recommended-meta-item">
+            <text class="recommended-meta-label">方向</text>
+            <text class="recommended-meta-value">{{ selectedTrack?.code || '--' }}</text>
+          </view>
+          <view class="recommended-meta-item">
+            <text class="recommended-meta-label">年份</text>
+            <text class="recommended-meta-value">{{ recommendedSlot.year }}</text>
+          </view>
+          <view class="recommended-meta-item">
+            <text class="recommended-meta-label">可练题目</text>
+            <text class="recommended-meta-value">{{ recommendedLocalState.countText }}</text>
+          </view>
+        </view>
+        <view
+          class="recommended-action"
+          hover-class="btn-hover"
+          @tap="loadAndStartSlot(recommendedSlot)"
+        >
+          <text>{{ recommendedActionText }}</text>
+          <BaseIcon name="arrow-right" :size="24" />
+        </view>
+      </view>
+
       <view class="section-head">
         <view>
           <text class="section-title">{{ selectedTrack?.label || '公共课' }}</text>
@@ -273,6 +306,20 @@ const selectedTrackSlotText = computed(() => {
 });
 const selectedYearSlotReadiness = computed(() => buildYearSlotReadiness(selectedYearSlot.value));
 const localPaperStats = ref(buildLocalPaperStats());
+const recommendedSlot = computed(() => selectedYearSlots.value.find((slot) => slot.clickable) || null);
+const recommendedLocalState = computed(() => getPaperLocalState(recommendedSlot.value));
+const recommendedSlotRecommendation = computed(() => {
+  if (!recommendedSlot.value) return '';
+  if (recommendedLocalState.value.isSynced) {
+    return '当前方向最近可练整卷已在本地，可直接继续训练。';
+  }
+  return '当前方向最近可练整卷，点击后会先同步题目再进入训练。';
+});
+const recommendedActionText = computed(() => {
+  if (!recommendedSlot.value) return '暂不可开始';
+  if (loadingBankId.value === recommendedSlot.value.bankId) return '加载中';
+  return recommendedLocalState.value.isSynced ? '继续本卷' : '同步并开始';
+});
 const selectedGapSlots = computed(() => selectedYearSlots.value.filter((slot) => !slot.clickable));
 const selectedGapPreview = computed(() => selectedGapSlots.value.slice(0, 6));
 const selectedGapSummary = computed(() => {
@@ -654,6 +701,92 @@ onMounted(() => {
 .track-code {
   margin-right: 8rpx;
   font-weight: 900;
+}
+.recommended-panel {
+  margin: 24rpx 24rpx 6rpx;
+  padding: 28rpx 24rpx;
+  border-radius: 24rpx;
+  background: #ffffff;
+  border: 1rpx solid rgba(31, 122, 77, 0.1);
+  box-shadow: 0 16rpx 38rpx rgba(15, 23, 42, 0.07);
+}
+.recommended-kicker-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.recommended-kicker {
+  color: #1f7a4d;
+  font-size: 20rpx;
+  font-weight: 900;
+}
+.recommended-pill {
+  padding: 5rpx 12rpx;
+  border-radius: 999rpx;
+  background: rgba(31, 122, 77, 0.1);
+  color: #1f7a4d;
+  font-size: 20rpx;
+  font-weight: 850;
+}
+.recommended-title {
+  display: block;
+  margin-top: 10rpx;
+  color: #1d1d1f;
+  font-size: 32rpx;
+  font-weight: 900;
+  line-height: 1.25;
+}
+.recommended-desc {
+  display: block;
+  margin-top: 10rpx;
+  color: #5f6672;
+  font-size: 23rpx;
+  line-height: 1.45;
+}
+.recommended-meta-row {
+  display: flex;
+  margin-top: 20rpx;
+  padding: 16rpx;
+  border-radius: 18rpx;
+  background: #f6f7f9;
+}
+.recommended-meta-item {
+  flex: 1;
+  min-width: 0;
+}
+.recommended-meta-item + .recommended-meta-item {
+  margin-left: 14rpx;
+  padding-left: 14rpx;
+  border-left: 1rpx solid rgba(0, 0, 0, 0.06);
+}
+.recommended-meta-label {
+  display: block;
+  color: #8e8e93;
+  font-size: 18rpx;
+  font-weight: 900;
+}
+.recommended-meta-value {
+  display: block;
+  margin-top: 8rpx;
+  color: #1d1d1f;
+  font-size: 24rpx;
+  font-weight: 900;
+  line-height: 1.2;
+}
+.recommended-action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 76rpx;
+  margin-top: 22rpx;
+  border-radius: 16rpx;
+  background: #1d1d1f;
+  color: #ffffff;
+  font-size: 25rpx;
+  font-weight: 900;
+}
+.recommended-action text {
+  margin-right: 8rpx;
 }
 .section-head {
   display: flex;
@@ -1194,6 +1327,8 @@ onMounted(() => {
 .dark-mode .slot-year,
 .dark-mode .slot-title,
 .dark-mode .local-sync-value,
+.dark-mode .recommended-title,
+.dark-mode .recommended-meta-value,
 .dark-mode .readiness-value,
 .dark-mode .paper-year,
 .dark-mode .paper-name,
@@ -1209,6 +1344,7 @@ onMounted(() => {
 .dark-mode .paper-hero,
 .dark-mode .subject-tab,
 .dark-mode .track-pill,
+.dark-mode .recommended-panel,
 .dark-mode .slot-detail,
 .dark-mode .paper-card,
 .dark-mode .pending-panel,
@@ -1220,6 +1356,7 @@ onMounted(() => {
 }
 .dark-mode .hero-metric,
 .dark-mode .year-slot,
+.dark-mode .recommended-meta-row,
 .dark-mode .local-sync-strip,
 .dark-mode .paper-section,
 .dark-mode .paper-local-pill,
@@ -1248,6 +1385,7 @@ onMounted(() => {
 }
 .dark-mode .subject-tab.active,
 .dark-mode .track-pill.active,
+.dark-mode .recommended-action,
 .dark-mode .paper-btn.primary {
   background: #5392ff;
   color: #061121;
@@ -1266,6 +1404,7 @@ onMounted(() => {
 }
 .dark-mode .hero-kicker,
 .dark-mode .metric-label,
+.dark-mode .recommended-meta-label,
 .dark-mode .section-hint,
 .dark-mode .section-meta,
 .dark-mode .slot-kicker,
@@ -1283,6 +1422,7 @@ onMounted(() => {
 .dark-mode .hero-desc,
 .dark-mode .subject-tab,
 .dark-mode .track-pill,
+.dark-mode .recommended-desc,
 .dark-mode .slot-status,
 .dark-mode .slot-desc,
 .dark-mode .paper-desc,
@@ -1294,9 +1434,17 @@ onMounted(() => {
 }
 .dark-mode .slot-readiness-divider,
 .dark-mode .local-sync-item + .local-sync-item,
+.dark-mode .recommended-meta-item + .recommended-meta-item,
 .dark-mode .gap-item,
 .dark-mode .pending-item {
   border-color: rgba(255, 255, 255, 0.08);
+}
+.dark-mode .recommended-kicker {
+  color: #7ee0ac;
+}
+.dark-mode .recommended-pill {
+  background: rgba(35, 134, 91, 0.18);
+  color: #7ee0ac;
 }
 .dark-mode .gap-status {
   background: #292e39;
