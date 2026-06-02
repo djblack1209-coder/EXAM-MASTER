@@ -463,6 +463,27 @@ def parse_numbered_answer_text(text: str, *, min_number: int = 46, max_number: i
     return answers
 
 
+def parse_numbered_answer_point_sections(text: str, *, min_number: int = 1, max_number: int = 120) -> dict[str, str]:
+    answers: dict[str, str] = {}
+    if not text:
+        return answers
+
+    normalized = re.sub(r"\r\n?", "\n", text)
+    entry_pattern = re.compile(
+        r"(?ms)^\s*(\d{1,3})\s*[.．、]\s*【?\s*(?:答案要点|参考答案)\s*】?\s*"
+        r"(.+?)"
+        r"(?=^\s*\d{1,3}\s*[.．、]\s*【?\s*(?:答案要点|参考答案)\s*】?\s*|\Z)"
+    )
+    for match in entry_pattern.finditer(normalized):
+        number = int(match.group(1))
+        if number < min_number or number > max_number:
+            continue
+        answer = compact_numbered_answer_text(match.group(2))
+        if answer:
+            answers[str(number)] = answer
+    return answers
+
+
 def candidate_priority(item: dict[str, Any]) -> int:
     return ANSWER_CANDIDATE_METHOD_PRIORITY.get(str(item.get("method") or ""), 0)
 
@@ -558,6 +579,19 @@ def collect_answer_candidates(
                         "answer": answer,
                         "explanation": "",
                         "cardId": f"numbered-answer-{year}-{number}",
+                        "filePath": relative_path(answer_key_path or companion_path),
+                        "sourceId": source_id,
+                        "method": "companion_numbered_answer_text",
+                    }
+                )
+                stats["numberedAnswerTextCandidates"] += 1
+            for number, answer in parse_numbered_answer_point_sections(answer_key_text).items():
+                key = answer_key(year, number)
+                buckets.setdefault(key, []).append(
+                    {
+                        "answer": answer,
+                        "explanation": "",
+                        "cardId": f"numbered-answer-point-{year}-{number}",
                         "filePath": relative_path(answer_key_path or companion_path),
                         "sourceId": source_id,
                         "method": "companion_numbered_answer_text",

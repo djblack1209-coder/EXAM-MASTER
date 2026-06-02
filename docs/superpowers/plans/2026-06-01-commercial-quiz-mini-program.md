@@ -1613,3 +1613,57 @@ Run:
 git add scripts/pipeline/pdf2flashcard-v2.py tests/unit/test_pdf2flashcard_v2.py docs/frontend-experience-refactor-diary.md docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md
 git commit -m "chore: stabilize question batch fallback"
 ```
+
+### Task 39: Repair Politics 2023 Answer Evidence
+
+**Files:**
+- Modify: `scripts/baidu/answer_evidence_repair.py`
+- Modify: `tests/unit/test_answer_evidence_repair.py`
+- Modify: `docs/frontend-experience-refactor-diary.md`
+- Modify: `docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md`
+
+- [x] **Step 1: Add politics answer-point repair test**
+
+Assert `35.【答案要点】...` style answer text can repair a missing politics subjective answer.
+
+- [x] **Step 2: Parse numbered answer-point sections**
+
+Add `parse_numbered_answer_point_sections` and feed those candidates into the existing conservative answer evidence repair flow as `companion_numbered_answer_text`.
+
+- [x] **Step 3: Run real dry-run repair**
+
+Run:
+```bash
+.venv-baidu/bin/python scripts/baidu/answer_evidence_repair.py --target data/flashcards/politics-2023.json --companion data/flashcards/politics-support-6d757672-2023.json --output data/answer-evidence-repair-report.json
+```
+
+Result: `repaired=1`, `remainingMissing=0`, `conflicts=0`.
+
+- [x] **Step 4: Write repair to local ignored bank and queue**
+
+Run:
+```bash
+.venv-baidu/bin/python scripts/baidu/answer_evidence_repair.py --target data/flashcards/politics-2023.json --companion data/flashcards/politics-support-6d757672-2023.json --output data/answer-evidence-repair-report.json --write
+```
+
+Result: `politics:2023` now has `questionCount=38`, `missingAnswerCount=0`, `answerEvidenceStatus=candidate_repaired`, and `answerEvidenceMaterialized=38` in the repair report.
+
+- [x] **Step 5: Run final validation**
+
+Run:
+```bash
+python3 -m unittest tests.unit.test_answer_evidence_repair
+python3 -m unittest tests.unit.test_baidu_cleaning_runner tests.unit.test_baidu_cleaning_queue
+python3 scripts/baidu/run_cleaning_queue.py --dry-run --limit 8 --source-type official_paper --paper-role main
+git diff --check
+```
+
+Result: passed on 2026-06-01. Dry-run now advances past `politics:2023` because its local structure and candidate answer evidence are complete.
+
+- [x] **Step 6: Commit**
+
+Run:
+```bash
+git add scripts/baidu/answer_evidence_repair.py tests/unit/test_answer_evidence_repair.py docs/frontend-experience-refactor-diary.md docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md
+git commit -m "chore: repair numbered politics answer evidence"
+```

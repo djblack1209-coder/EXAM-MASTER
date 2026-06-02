@@ -370,6 +370,48 @@ class AnswerEvidenceRepairTest(unittest.TestCase):
         )
         self.assertEqual(repaired_cards[0]["answerEvidence"]["method"], "companion_numbered_answer_text")
 
+    def test_repair_fills_politics_subjective_answer_from_numbered_answer_points(self):
+        from scripts.baidu.answer_evidence_repair import repair_bank
+
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_dir = Path(tmp)
+            target = tmp_dir / "politics-2023.json"
+            companion = tmp_dir / "politics-support.json"
+            answer_text = tmp_dir / "politics-answer.txt"
+            queue = tmp_dir / "cleaning-queue.json"
+            answer_text.write_text(
+                "35.【答案要点】（1）人民性是马克思主义的本质属性，坚持人民至上是根本政治立场。\n"
+                "坚持以人民为中心的发展思想，发展为了人民、发展依靠人民、发展成果由人民共享。\n"
+                "36.【答案要点】团结奋斗是中国共产党和中国人民最显著的精神标识。\n",
+                encoding="utf-8",
+            )
+            write_json(
+                target,
+                bank_payload(
+                    "politics paper.pdf",
+                    "politics",
+                    2023,
+                    [{"id": "politics-2023-035", "number": 35, "type": "analysis", "question": "Q35", "answer": ""}],
+                ),
+            )
+            write_json(companion, bank_payload("politics answers.pdf", "politics", 2023, []))
+            write_json(
+                queue,
+                {
+                    "tasks": [
+                        {"sourceId": "src_question", "outputPath": str(target), "status": "completed"},
+                        {"sourceId": "src_answer", "outputPath": str(companion), "localPath": str(answer_text)},
+                    ]
+                },
+            )
+
+            report = repair_bank(target, [companion], queue_path=queue, write=True, now="2026-04-30T00:00:00Z")
+            repaired_cards = json.loads(target.read_text(encoding="utf-8"))["cards"]
+
+        self.assertEqual(report["summary"]["repairedAnswers"], 1)
+        self.assertIn("人民性是马克思主义的本质属性", repaired_cards[0]["answer"])
+        self.assertEqual(repaired_cards[0]["answerEvidence"]["method"], "companion_numbered_answer_text")
+
     def test_cli_writes_report_and_requires_write_flag_to_mutate(self):
         with tempfile.TemporaryDirectory() as tmp:
             tmp_dir = Path(tmp)

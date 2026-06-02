@@ -356,3 +356,12 @@
 - Re-ran `politics:2023` after clearing the ignored local AI cache; the runner completed with 38 cards, 16 single-choice, 17 multi-choice, 5 analysis, and no structural quality issues.
 - The completed task still reports `missingAnswerCount=1` and `answerEvidenceStatus=missing_answers` for `politics-2023-035`, so the next release task is answer evidence repair, not UI or queue ordering.
 - Product rule: a source can pass structure cleaning while still being blocked on answer evidence; the automation must preserve that distinction instead of pretending the slot is publish-ready.
+
+### 2026-06-01 Round 41
+
+- Repaired the remaining `politics:2023` answer evidence gap without forcing the 30-batch answer PDF through the full LLM cleaner.
+- Added support for numbered politics answer-point sections such as `35.【答案要点】...` in `answer_evidence_repair.py`.
+- Created an ignored minimal companion descriptor pointing at the existing 2023 politics answer-analysis PDF, then ran answer repair against `data/flashcards/politics-2023.json`.
+- Real repair result: `repairedAnswers=1`, `remainingMissingAnswers=0`, `numberedAnswerTextCandidates=5`, and the queue task now reports `answerEvidenceStatus=candidate_repaired`.
+- `politics-2023-035` now has candidate answer evidence from `data/raw-inbox/src_6d757672897de533d4ff50b6-2023考研政治真题及答案解析.pdf`.
+- Product rule: expensive LLM support cleaning is not the right first tool when the answer PDF already has deterministic numbered answer sections; use structured extraction first, then reserve LLM for genuinely ambiguous repair.
