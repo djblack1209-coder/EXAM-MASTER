@@ -149,6 +149,33 @@ def math1_2007_answers() -> dict[int, str]:
     return answers
 
 
+def math1_2018_answers() -> dict[int, str]:
+    answers = generic_answers(
+        2018,
+        {1: "D", 2: "B", 3: "B", 4: "C", 5: "A", 6: "A", 7: "A", 8: "D"},
+    )
+    answers.update(
+        {
+            9: "k = -2",
+            10: "2ln2 - 2",
+            11: "i - k",
+            12: "-π/3",
+            13: "-1",
+            14: "1/4",
+            15: "不定积分结果见答案原页。",
+            16: "最小面积为 1/(π + 4 + 3√3) m^2。",
+            17: "曲面积分值为 14π/45。",
+            18: "通解与唯一周期解证明见答案原页。",
+            19: "数列收敛，lim x_n = 0。",
+            20: "方程组解与规范形按 a 的取值分类，完整结果见答案原页。",
+            21: "a = 2；可逆矩阵 P 的完整参数形式见答案原页。",
+            22: "Cov(X,Z)=λ；Z 的分布律见答案原页。",
+            23: "σ 的极大似然估计、期望和方差见答案原页。",
+        }
+    )
+    return answers
+
+
 SPECS: dict[int, SourceSpec] = {
     2005: SourceSpec(
         year=2005,
@@ -544,6 +571,91 @@ SPECS: dict[int, SourceSpec] = {
         answer_pages=per_page_answer_pages({1: 3, 2: 3, 3: 4, 4: 3, 5: 3, 6: 3, 7: 2, 8: 1, 9: 1}),
         answers=generic_answers(2017, {1: "A", 2: "C", 3: "D", 4: "C", 5: "A", 6: "A", 7: "C", 8: "D"}),
     ),
+    2018: SourceSpec(
+        year=2018,
+        file_name="src_2cd530d0c9237cd5d84c348f-2018数一考研真题及答案.pdf",
+        source_id="src_2cd530d0c9237cd5d84c348f",
+        question_pages={
+            1: question_refs("q01"),
+            2: question_refs("q02"),
+            3: question_refs("q03"),
+            4: question_refs("q04"),
+            5: question_refs("q05a", "q05b"),
+            6: question_refs("q06"),
+            7: question_refs("q07"),
+            8: question_refs("q08"),
+            9: question_refs("q09"),
+            10: question_refs("q10"),
+            11: question_refs("q11"),
+            12: question_refs("q12"),
+            13: question_refs("q13"),
+            14: question_refs("q14"),
+            15: question_refs("q15"),
+            16: question_refs("q16"),
+            17: question_refs("q17"),
+            18: question_refs("q18"),
+            19: question_refs("q19"),
+            20: question_refs("q20"),
+            21: question_refs("q21"),
+            22: question_refs("q22"),
+            23: question_refs("q23"),
+        },
+        answer_pages={
+            1: [1],
+            2: [1],
+            3: [1],
+            4: [1],
+            5: [1, 2],
+            6: [2],
+            7: [2],
+            8: [2],
+            9: [2, 3],
+            10: [3],
+            11: [3],
+            12: [3],
+            13: [3],
+            14: [3],
+            15: [3, 4],
+            16: [4],
+            17: [4, 5],
+            18: [5],
+            19: [5],
+            20: [5, 6],
+            21: [6, 7],
+            22: [7],
+            23: [7, 8],
+        },
+        answers=math1_2018_answers(),
+        question_crop_boxes={
+            "q01": (1, 105, 475, 930, 115),
+            "q02": (1, 105, 620, 930, 58),
+            "q03": (1, 105, 795, 930, 72),
+            "q04": (1, 105, 1080, 930, 178),
+            "q05a": (1, 105, 1335, 930, 140),
+            "q05b": (2, 105, 145, 930, 125),
+            "q06": (2, 105, 345, 930, 105),
+            "q07": (2, 105, 625, 930, 90),
+            "q08": (2, 105, 885, 930, 205),
+            "q09": (2, 105, 1218, 930, 98),
+            "q10": (3, 105, 220, 930, 86),
+            "q11": (3, 105, 380, 930, 84),
+            "q12": (3, 105, 525, 930, 60),
+            "q13": (3, 105, 700, 930, 72),
+            "q14": (3, 105, 850, 930, 44),
+            "q15": (3, 105, 1110, 930, 140),
+            "q16": (4, 105, 398, 930, 116),
+            "q17": (4, 105, 960, 930, 98),
+            "q18": (5, 105, 265, 930, 150),
+            "q19": (5, 105, 830, 930, 70),
+            "q20": (5, 105, 1070, 930, 170),
+            "q21": (6, 105, 805, 930, 330),
+            "q22": (7, 105, 500, 930, 170),
+            "q23": (7, 105, 1225, 930, 230),
+        },
+        question_crop_masks={
+            "q16": [(68, 92, 868, 24)],
+        },
+    ),
 }
 
 
@@ -586,16 +698,23 @@ def render_pdf_assets(pdf: Path, prefix: str, *, asset_dir: Path, force: bool) -
         for item in expected:
             item.unlink()
 
-    TMP_RENDER_DIR.mkdir(parents=True, exist_ok=True)
-    for item in TMP_RENDER_DIR.glob(f"{prefix}-*.jpg"):
-        item.unlink()
+    render_dir = TMP_RENDER_DIR / "_rendered"
+    if render_dir.exists():
+        shutil.rmtree(render_dir)
+    render_dir.mkdir(parents=True, exist_ok=True)
 
-    output_prefix = TMP_RENDER_DIR / prefix
+    output_prefix = render_dir / prefix
     run(["pdftoppm", "-r", "130", "-jpeg", "-jpegopt", "quality=70", str(pdf), str(output_prefix)])
-    for rendered in sorted(TMP_RENDER_DIR.glob(f"{prefix}-*.jpg")):
-        page = int(rendered.stem.split("-")[-1])
+    for rendered in sorted(render_dir.glob(f"{prefix}-*.jpg"), key=rendered_page_number):
+        page = rendered_page_number(rendered)
         target = asset_dir / f"{prefix}-{page:02d}.jpg"
         shutil.copyfile(rendered, target)
+
+    shutil.rmtree(render_dir)
+
+
+def rendered_page_number(path: Path) -> int:
+    return int(path.stem.split("-")[-1])
 
 
 def image_height(image_path: Path) -> int:

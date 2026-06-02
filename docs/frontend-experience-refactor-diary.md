@@ -458,3 +458,13 @@
 - Release gate result: public-course coverage gaps dropped to 62, release blockers dropped to 74, public-course blocked slots dropped to 62, and `math1:2007` no longer appears in the refreshed release backlog.
 - Source caveat: the available 2007 Math I file is `2007数一标准答案及解析.pdf`, not a standalone blank paper. Choice-answer brackets are masked and explanations are cropped away, but fill-in-the-blank source pages still include filled answers where the source has no blank-paper equivalent.
 - Product rule: for scanned math answer-analysis editions, a publishable practice artifact requires both structural registration and crop-level leakage checks; passing the release gate is not a substitute for inspecting the actual question images.
+
+### 2026-06-02 Round 51
+
+- Promoted `math1:2018` from the release-priority queue through the formal Math I page-image bank path, bypassing generic LLM cleaning for the scanned formula-heavy PDF.
+- Downloaded the Baidu source `2018-数一考研真题及答案 .pdf` into local raw-inbox, confirmed it has 8 scanned pages and no usable text layer, then added a 2018 `SourceSpec` with 23 cards.
+- Published `src/config/flashcard-banks/math1-2018.json` plus 40 page/crop assets under `cdn-assets/question-bank/math1-2018`, registered the bank, and regenerated the compressed practice-bank table.
+- Validation result: `math1-2018.json` has 23 cards, `{flashcard:14, short_answer:9}`, section counts `{选择题:8, 填空题:6, 解答题:9}`, no missing assets, and the OCR leakage scan found no `【分析】` / `【详解】` / `【解析】` / choice-answer markers in question images.
+- Release gate result after sequential audit refresh: public-course coverage gaps dropped to 61, release blockers dropped to 73, public-course blocked slots dropped to 61, and the release-priority dry-run now starts at `2019数一真题及答案解析.pdf`.
+- Source caveat: the available 2018 Math I file is a same-page question-and-analysis PDF, not a standalone blank paper. The builder crops away visible analysis and masks q16's same-line `【解析】` start, while answer evidence remains the original rendered PDF pages.
+- Product rule: when a math source combines question and analysis on the same page, publishability depends on per-crop leakage inspection plus answer-page evidence, not on OCR text extraction.

@@ -1,0 +1,1241 @@
+{
+  "id": "math1-2018",
+  "source": "math1-2018-paper-answer",
+  "paperId": "math1-2018",
+  "paperName": "2018考研数学一真题",
+  "subject": "数学",
+  "subjectKey": "math",
+  "track": "math1",
+  "year": "2018",
+  "quality": "ready",
+  "publicationStatus": "published",
+  "publicationBlockers": [],
+  "sourceEvidencePolicy": "baidu_netdisk_official_paper_pdf_question_crop_answer_page_image_v1",
+  "sourceFiles": [
+    {
+      "id": "math1-2018-paper-answer",
+      "role": "paper_answer",
+      "localPath": "data/raw-inbox/src_2cd530d0c9237cd5d84c348f-2018数一考研真题及答案.pdf",
+      "sha256": "sha256:ec751301dbb1572a7ed302b7766d4a71fbc1026916dae73a8e83e98649f9a667",
+      "sourceId": "src_2cd530d0c9237cd5d84c348f"
+    }
+  ],
+  "assetRoot": "question-bank/math1-2018",
+  "processed_at": "2026-06-02T17:01:11Z",
+  "total_cards": 23,
+  "cards": [
+    {
+      "id": "math1-2018-001",
+      "number": 1,
+      "paperId": "math1-2018",
+      "paperName": "2018考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2018",
+      "section": "选择题",
+      "type": "flashcard",
+      "question": "2018考研数学一第1题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2018 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2018/question-01.jpg",
+          "caption": "题面裁切图 q01",
+          "alt": "2018考研数学一题面裁切图 q01"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2018/answer-page-01.jpg",
+          "caption": "答案解析 p.1",
+          "alt": "2018考研数学一答案解析 p.1"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2018",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2018-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:f9cea024746562fdfb5164af9a975cc5eb9b3246b16c215aec3a13f02d1164c2",
+      "answerTextHash": "sha256:f6335e8977ced096172680deb47d3c197da7774b472b4fe4ce3651e4656f09aa",
+      "sourceEvidence": {
+        "evidenceId": "math1-2018-q01",
+        "sourceId": "src_2cd530d0c9237cd5d84c348f",
+        "answerSourceId": "src_2cd530d0c9237cd5d84c348f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2018-paper-answer",
+        "answerEvidenceId": "math1-2018-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:f6335e8977ced096172680deb47d3c197da7774b472b4fe4ce3651e4656f09aa"
+      }
+    },
+    {
+      "id": "math1-2018-002",
+      "number": 2,
+      "paperId": "math1-2018",
+      "paperName": "2018考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2018",
+      "section": "选择题",
+      "type": "flashcard",
+      "question": "2018考研数学一第2题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2018 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2018/question-02.jpg",
+          "caption": "题面裁切图 q02",
+          "alt": "2018考研数学一题面裁切图 q02"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2018/answer-page-01.jpg",
+          "caption": "答案解析 p.1",
+          "alt": "2018考研数学一答案解析 p.1"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2018",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2018-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:aa897b927a2eeaf5080c2a695f1277f33181410da9c6ab24bf3159883cf0b83b",
+      "answerTextHash": "sha256:eeb8f23963a55373792abcd7f5e7bf152df8a8573bd10989d302f7962035a04f",
+      "sourceEvidence": {
+        "evidenceId": "math1-2018-q02",
+        "sourceId": "src_2cd530d0c9237cd5d84c348f",
+        "answerSourceId": "src_2cd530d0c9237cd5d84c348f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2018-paper-answer",
+        "answerEvidenceId": "math1-2018-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:eeb8f23963a55373792abcd7f5e7bf152df8a8573bd10989d302f7962035a04f"
+      }
+    },
+    {
+      "id": "math1-2018-003",
+      "number": 3,
+      "paperId": "math1-2018",
+      "paperName": "2018考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2018",
+      "section": "选择题",
+      "type": "flashcard",
+      "question": "2018考研数学一第3题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2018 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2018/question-03.jpg",
+          "caption": "题面裁切图 q03",
+          "alt": "2018考研数学一题面裁切图 q03"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2018/answer-page-01.jpg",
+          "caption": "答案解析 p.1",
+          "alt": "2018考研数学一答案解析 p.1"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2018",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2018-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:18fbeb7815d78c231a0681e3ffc5eec3b6b007f3a9bb53d61495744aa99d754b",
+      "answerTextHash": "sha256:eeb8f23963a55373792abcd7f5e7bf152df8a8573bd10989d302f7962035a04f",
+      "sourceEvidence": {
+        "evidenceId": "math1-2018-q03",
+        "sourceId": "src_2cd530d0c9237cd5d84c348f",
+        "answerSourceId": "src_2cd530d0c9237cd5d84c348f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2018-paper-answer",
+        "answerEvidenceId": "math1-2018-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:eeb8f23963a55373792abcd7f5e7bf152df8a8573bd10989d302f7962035a04f"
+      }
+    },
+    {
+      "id": "math1-2018-004",
+      "number": 4,
+      "paperId": "math1-2018",
+      "paperName": "2018考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2018",
+      "section": "选择题",
+      "type": "flashcard",
+      "question": "2018考研数学一第4题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2018 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2018/question-04.jpg",
+          "caption": "题面裁切图 q04",
+          "alt": "2018考研数学一题面裁切图 q04"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2018/answer-page-01.jpg",
+          "caption": "答案解析 p.1",
+          "alt": "2018考研数学一答案解析 p.1"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2018",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2018-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:50f6de3c048ca29a53293f785dd91490931e4e9541e2bcaa09a7b720b57f61c6",
+      "answerTextHash": "sha256:01370fce298cb459b7c797138d9e825fda2e23c11e9e9249e65268241d053ce7",
+      "sourceEvidence": {
+        "evidenceId": "math1-2018-q04",
+        "sourceId": "src_2cd530d0c9237cd5d84c348f",
+        "answerSourceId": "src_2cd530d0c9237cd5d84c348f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2018-paper-answer",
+        "answerEvidenceId": "math1-2018-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:01370fce298cb459b7c797138d9e825fda2e23c11e9e9249e65268241d053ce7"
+      }
+    },
+    {
+      "id": "math1-2018-005",
+      "number": 5,
+      "paperId": "math1-2018",
+      "paperName": "2018考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2018",
+      "section": "选择题",
+      "type": "flashcard",
+      "question": "2018考研数学一第5题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2018 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2018/question-05a.jpg",
+          "caption": "题面裁切图 q05",
+          "alt": "2018考研数学一题面裁切图 q05"
+        },
+        {
+          "src": "question-bank/math1-2018/question-05b.jpg",
+          "caption": "题面裁切图 q05",
+          "alt": "2018考研数学一题面裁切图 q05"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2018/answer-page-01.jpg",
+          "caption": "答案解析 p.1",
+          "alt": "2018考研数学一答案解析 p.1"
+        },
+        {
+          "src": "question-bank/math1-2018/answer-page-02.jpg",
+          "caption": "答案解析 p.2",
+          "alt": "2018考研数学一答案解析 p.2"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2018",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2018-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:cacf0d9e81feaf00eb4776159f9e8b36229af29533402d205c7168080128cdf2",
+      "answerTextHash": "sha256:6614e99bebb8c2c30f8c6feb22c98f3064a281595e4c733af7a3abbd0641df48",
+      "sourceEvidence": {
+        "evidenceId": "math1-2018-q05",
+        "sourceId": "src_2cd530d0c9237cd5d84c348f",
+        "answerSourceId": "src_2cd530d0c9237cd5d84c348f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2018-paper-answer",
+        "answerEvidenceId": "math1-2018-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:6614e99bebb8c2c30f8c6feb22c98f3064a281595e4c733af7a3abbd0641df48"
+      }
+    },
+    {
+      "id": "math1-2018-006",
+      "number": 6,
+      "paperId": "math1-2018",
+      "paperName": "2018考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2018",
+      "section": "选择题",
+      "type": "flashcard",
+      "question": "2018考研数学一第6题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2018 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2018/question-06.jpg",
+          "caption": "题面裁切图 q06",
+          "alt": "2018考研数学一题面裁切图 q06"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2018/answer-page-02.jpg",
+          "caption": "答案解析 p.2",
+          "alt": "2018考研数学一答案解析 p.2"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2018",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2018-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:5c53e31470b4823bde128314a88f12606556738c3ec6c8f203b63d34b3f1a084",
+      "answerTextHash": "sha256:be350ad3c0fc9a7257a73bd05aba736f028d2514441d66b0626e7a78bc85704b",
+      "sourceEvidence": {
+        "evidenceId": "math1-2018-q06",
+        "sourceId": "src_2cd530d0c9237cd5d84c348f",
+        "answerSourceId": "src_2cd530d0c9237cd5d84c348f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2018-paper-answer",
+        "answerEvidenceId": "math1-2018-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:be350ad3c0fc9a7257a73bd05aba736f028d2514441d66b0626e7a78bc85704b"
+      }
+    },
+    {
+      "id": "math1-2018-007",
+      "number": 7,
+      "paperId": "math1-2018",
+      "paperName": "2018考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2018",
+      "section": "选择题",
+      "type": "flashcard",
+      "question": "2018考研数学一第7题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2018 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2018/question-07.jpg",
+          "caption": "题面裁切图 q07",
+          "alt": "2018考研数学一题面裁切图 q07"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2018/answer-page-02.jpg",
+          "caption": "答案解析 p.2",
+          "alt": "2018考研数学一答案解析 p.2"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2018",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2018-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:ddba26f67b8c5f6bd58c62cb5628f6e6a9429b3120783ffab8b749130dda92c3",
+      "answerTextHash": "sha256:be350ad3c0fc9a7257a73bd05aba736f028d2514441d66b0626e7a78bc85704b",
+      "sourceEvidence": {
+        "evidenceId": "math1-2018-q07",
+        "sourceId": "src_2cd530d0c9237cd5d84c348f",
+        "answerSourceId": "src_2cd530d0c9237cd5d84c348f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2018-paper-answer",
+        "answerEvidenceId": "math1-2018-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:be350ad3c0fc9a7257a73bd05aba736f028d2514441d66b0626e7a78bc85704b"
+      }
+    },
+    {
+      "id": "math1-2018-008",
+      "number": 8,
+      "paperId": "math1-2018",
+      "paperName": "2018考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2018",
+      "section": "选择题",
+      "type": "flashcard",
+      "question": "2018考研数学一第8题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2018 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2018/question-08.jpg",
+          "caption": "题面裁切图 q08",
+          "alt": "2018考研数学一题面裁切图 q08"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2018/answer-page-02.jpg",
+          "caption": "答案解析 p.2",
+          "alt": "2018考研数学一答案解析 p.2"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2018",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2018-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:3db4e6a9db7e9b2a8948ea89f956be3907b559a9bbd39e3e344dd7db0dee254a",
+      "answerTextHash": "sha256:7cd6122ff6ad5f4ed9210d1ae15379380ce2cd5f5ab3a3b9f0756d9b8d6dbe3f",
+      "sourceEvidence": {
+        "evidenceId": "math1-2018-q08",
+        "sourceId": "src_2cd530d0c9237cd5d84c348f",
+        "answerSourceId": "src_2cd530d0c9237cd5d84c348f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2018-paper-answer",
+        "answerEvidenceId": "math1-2018-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:7cd6122ff6ad5f4ed9210d1ae15379380ce2cd5f5ab3a3b9f0756d9b8d6dbe3f"
+      }
+    },
+    {
+      "id": "math1-2018-009",
+      "number": 9,
+      "paperId": "math1-2018",
+      "paperName": "2018考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2018",
+      "section": "填空题",
+      "type": "flashcard",
+      "question": "2018考研数学一第9题（填空题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "k = -2",
+      "explanation": "答案来自本地百度网盘 2018 数学一真题答案解析 PDF；填空题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2018/question-09.jpg",
+          "caption": "题面裁切图 q09",
+          "alt": "2018考研数学一题面裁切图 q09"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2018/answer-page-02.jpg",
+          "caption": "答案解析 p.2",
+          "alt": "2018考研数学一答案解析 p.2"
+        },
+        {
+          "src": "question-bank/math1-2018/answer-page-03.jpg",
+          "caption": "答案解析 p.3",
+          "alt": "2018考研数学一答案解析 p.3"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2018",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2018-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:f489f482b67fb725535e4d43f0a2df0282b13ebadf0c6471992291a40d66a525",
+      "answerTextHash": "sha256:459345160f785fc467d2ae60ab7bfdeeb724cae0a35bcc8d7c38b005c6688c64",
+      "sourceEvidence": {
+        "evidenceId": "math1-2018-q09",
+        "sourceId": "src_2cd530d0c9237cd5d84c348f",
+        "answerSourceId": "src_2cd530d0c9237cd5d84c348f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2018-paper-answer",
+        "answerEvidenceId": "math1-2018-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:459345160f785fc467d2ae60ab7bfdeeb724cae0a35bcc8d7c38b005c6688c64"
+      }
+    },
+    {
+      "id": "math1-2018-010",
+      "number": 10,
+      "paperId": "math1-2018",
+      "paperName": "2018考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2018",
+      "section": "填空题",
+      "type": "flashcard",
+      "question": "2018考研数学一第10题（填空题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "2ln2 - 2",
+      "explanation": "答案来自本地百度网盘 2018 数学一真题答案解析 PDF；填空题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2018/question-10.jpg",
+          "caption": "题面裁切图 q10",
+          "alt": "2018考研数学一题面裁切图 q10"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2018/answer-page-03.jpg",
+          "caption": "答案解析 p.3",
+          "alt": "2018考研数学一答案解析 p.3"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2018",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2018-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:320ef3bbf4c138f872ffb0bb1c7d070a891d9bf404311f0c38873dcc2d4e05a4",
+      "answerTextHash": "sha256:47e598ce21c0db3c824c70f90dca37112aeb6d09c6f530da664e25542c01e99a",
+      "sourceEvidence": {
+        "evidenceId": "math1-2018-q10",
+        "sourceId": "src_2cd530d0c9237cd5d84c348f",
+        "answerSourceId": "src_2cd530d0c9237cd5d84c348f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2018-paper-answer",
+        "answerEvidenceId": "math1-2018-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:47e598ce21c0db3c824c70f90dca37112aeb6d09c6f530da664e25542c01e99a"
+      }
+    },
+    {
+      "id": "math1-2018-011",
+      "number": 11,
+      "paperId": "math1-2018",
+      "paperName": "2018考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2018",
+      "section": "填空题",
+      "type": "flashcard",
+      "question": "2018考研数学一第11题（填空题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "i - k",
+      "explanation": "答案来自本地百度网盘 2018 数学一真题答案解析 PDF；填空题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2018/question-11.jpg",
+          "caption": "题面裁切图 q11",
+          "alt": "2018考研数学一题面裁切图 q11"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2018/answer-page-03.jpg",
+          "caption": "答案解析 p.3",
+          "alt": "2018考研数学一答案解析 p.3"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2018",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2018-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:ef32e7fb3c4650299b793070f8dca4f1c71a1c4803efa684fe069d2841a4b491",
+      "answerTextHash": "sha256:1994fc5b91d902d8293b53b4694266207d6def8f04bd1a4fc30348e8de45a076",
+      "sourceEvidence": {
+        "evidenceId": "math1-2018-q11",
+        "sourceId": "src_2cd530d0c9237cd5d84c348f",
+        "answerSourceId": "src_2cd530d0c9237cd5d84c348f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2018-paper-answer",
+        "answerEvidenceId": "math1-2018-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:1994fc5b91d902d8293b53b4694266207d6def8f04bd1a4fc30348e8de45a076"
+      }
+    },
+    {
+      "id": "math1-2018-012",
+      "number": 12,
+      "paperId": "math1-2018",
+      "paperName": "2018考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2018",
+      "section": "填空题",
+      "type": "flashcard",
+      "question": "2018考研数学一第12题（填空题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "-π/3",
+      "explanation": "答案来自本地百度网盘 2018 数学一真题答案解析 PDF；填空题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2018/question-12.jpg",
+          "caption": "题面裁切图 q12",
+          "alt": "2018考研数学一题面裁切图 q12"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2018/answer-page-03.jpg",
+          "caption": "答案解析 p.3",
+          "alt": "2018考研数学一答案解析 p.3"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2018",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2018-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:36ffbdf8e9f3083e68fd8d4d9e21ee2c5f9e8762b648ce4347667a004da837b2",
+      "answerTextHash": "sha256:92da9a2e48ddc206ad208989ffca0f953c734c237bd9eb46a05b684908adf384",
+      "sourceEvidence": {
+        "evidenceId": "math1-2018-q12",
+        "sourceId": "src_2cd530d0c9237cd5d84c348f",
+        "answerSourceId": "src_2cd530d0c9237cd5d84c348f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2018-paper-answer",
+        "answerEvidenceId": "math1-2018-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:92da9a2e48ddc206ad208989ffca0f953c734c237bd9eb46a05b684908adf384"
+      }
+    },
+    {
+      "id": "math1-2018-013",
+      "number": 13,
+      "paperId": "math1-2018",
+      "paperName": "2018考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2018",
+      "section": "填空题",
+      "type": "flashcard",
+      "question": "2018考研数学一第13题（填空题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "-1",
+      "explanation": "答案来自本地百度网盘 2018 数学一真题答案解析 PDF；填空题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2018/question-13.jpg",
+          "caption": "题面裁切图 q13",
+          "alt": "2018考研数学一题面裁切图 q13"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2018/answer-page-03.jpg",
+          "caption": "答案解析 p.3",
+          "alt": "2018考研数学一答案解析 p.3"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2018",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2018-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:08957ddca4d9a179a92c911a519297d319b046ebcdafa5f52d152c6b65d317ec",
+      "answerTextHash": "sha256:742a22f329450f7845b6e6480cab3f3bd55abc56157d7a2241aa0c4ebadfa4e1",
+      "sourceEvidence": {
+        "evidenceId": "math1-2018-q13",
+        "sourceId": "src_2cd530d0c9237cd5d84c348f",
+        "answerSourceId": "src_2cd530d0c9237cd5d84c348f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2018-paper-answer",
+        "answerEvidenceId": "math1-2018-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:742a22f329450f7845b6e6480cab3f3bd55abc56157d7a2241aa0c4ebadfa4e1"
+      }
+    },
+    {
+      "id": "math1-2018-014",
+      "number": 14,
+      "paperId": "math1-2018",
+      "paperName": "2018考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2018",
+      "section": "填空题",
+      "type": "flashcard",
+      "question": "2018考研数学一第14题（填空题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "1/4",
+      "explanation": "答案来自本地百度网盘 2018 数学一真题答案解析 PDF；填空题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2018/question-14.jpg",
+          "caption": "题面裁切图 q14",
+          "alt": "2018考研数学一题面裁切图 q14"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2018/answer-page-03.jpg",
+          "caption": "答案解析 p.3",
+          "alt": "2018考研数学一答案解析 p.3"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2018",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2018-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:aa2d98c3fd0d62f62005bd852ac4eadf95b093562ea3ef17b9b7f1e6a45ba98d",
+      "answerTextHash": "sha256:0544a28ffbcd3e29d662d91abbaa19d3e8f0caf7e58f3d6646a0aedac3d8d1e1",
+      "sourceEvidence": {
+        "evidenceId": "math1-2018-q14",
+        "sourceId": "src_2cd530d0c9237cd5d84c348f",
+        "answerSourceId": "src_2cd530d0c9237cd5d84c348f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2018-paper-answer",
+        "answerEvidenceId": "math1-2018-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:0544a28ffbcd3e29d662d91abbaa19d3e8f0caf7e58f3d6646a0aedac3d8d1e1"
+      }
+    },
+    {
+      "id": "math1-2018-015",
+      "number": 15,
+      "paperId": "math1-2018",
+      "paperName": "2018考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2018",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2018考研数学一第15题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "不定积分结果见答案原页。",
+      "explanation": "答案来自本地百度网盘 2018 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2018/question-15.jpg",
+          "caption": "题面裁切图 q15",
+          "alt": "2018考研数学一题面裁切图 q15"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2018/answer-page-03.jpg",
+          "caption": "答案解析 p.3",
+          "alt": "2018考研数学一答案解析 p.3"
+        },
+        {
+          "src": "question-bank/math1-2018/answer-page-04.jpg",
+          "caption": "答案解析 p.4",
+          "alt": "2018考研数学一答案解析 p.4"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2018",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2018-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:a493fb27fbf1d81c7214bc9354a603050ca8635cca780e6d1dae2c6005898cd1",
+      "answerTextHash": "sha256:953a63b30de58bb37f4b4ff506ef5a736b0ad39a6a148ff69e4b79e973f4873b",
+      "sourceEvidence": {
+        "evidenceId": "math1-2018-q15",
+        "sourceId": "src_2cd530d0c9237cd5d84c348f",
+        "answerSourceId": "src_2cd530d0c9237cd5d84c348f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2018-paper-answer",
+        "answerEvidenceId": "math1-2018-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:953a63b30de58bb37f4b4ff506ef5a736b0ad39a6a148ff69e4b79e973f4873b"
+      }
+    },
+    {
+      "id": "math1-2018-016",
+      "number": 16,
+      "paperId": "math1-2018",
+      "paperName": "2018考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2018",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2018考研数学一第16题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "最小面积为 1/(π + 4 + 3√3) m^2。",
+      "explanation": "答案来自本地百度网盘 2018 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2018/question-16.jpg",
+          "caption": "题面裁切图 q16",
+          "alt": "2018考研数学一题面裁切图 q16"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2018/answer-page-04.jpg",
+          "caption": "答案解析 p.4",
+          "alt": "2018考研数学一答案解析 p.4"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2018",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2018-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:58e991bd818f2432169f52a07b722fbbc9e19a87790e64e4e773c850d2825210",
+      "answerTextHash": "sha256:4a0d5c4da6c4f845147b178a053162e1e8ea8405a67ed4bba5900160fb3cfea1",
+      "sourceEvidence": {
+        "evidenceId": "math1-2018-q16",
+        "sourceId": "src_2cd530d0c9237cd5d84c348f",
+        "answerSourceId": "src_2cd530d0c9237cd5d84c348f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2018-paper-answer",
+        "answerEvidenceId": "math1-2018-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:4a0d5c4da6c4f845147b178a053162e1e8ea8405a67ed4bba5900160fb3cfea1"
+      }
+    },
+    {
+      "id": "math1-2018-017",
+      "number": 17,
+      "paperId": "math1-2018",
+      "paperName": "2018考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2018",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2018考研数学一第17题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "曲面积分值为 14π/45。",
+      "explanation": "答案来自本地百度网盘 2018 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2018/question-17.jpg",
+          "caption": "题面裁切图 q17",
+          "alt": "2018考研数学一题面裁切图 q17"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2018/answer-page-04.jpg",
+          "caption": "答案解析 p.4",
+          "alt": "2018考研数学一答案解析 p.4"
+        },
+        {
+          "src": "question-bank/math1-2018/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2018考研数学一答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2018",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2018-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:93575019e6e9abf3e17e397c98258fa95222f7f7e6b241c7a8315dd862cb860d",
+      "answerTextHash": "sha256:a0b2bd3ce70558427e1ba2dd16600220b5e3bbcea0814a51452a569f65416604",
+      "sourceEvidence": {
+        "evidenceId": "math1-2018-q17",
+        "sourceId": "src_2cd530d0c9237cd5d84c348f",
+        "answerSourceId": "src_2cd530d0c9237cd5d84c348f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2018-paper-answer",
+        "answerEvidenceId": "math1-2018-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:a0b2bd3ce70558427e1ba2dd16600220b5e3bbcea0814a51452a569f65416604"
+      }
+    },
+    {
+      "id": "math1-2018-018",
+      "number": 18,
+      "paperId": "math1-2018",
+      "paperName": "2018考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2018",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2018考研数学一第18题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "通解与唯一周期解证明见答案原页。",
+      "explanation": "答案来自本地百度网盘 2018 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2018/question-18.jpg",
+          "caption": "题面裁切图 q18",
+          "alt": "2018考研数学一题面裁切图 q18"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2018/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2018考研数学一答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2018",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2018-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:2e0a57851f5dd0239fd217db4dc75be31c09bf202a131994d3b81831f4f90e41",
+      "answerTextHash": "sha256:dcba23544d6fcfd51baf9c447b5ba40b31ed70e3968f9de5d5e555a6fea8b015",
+      "sourceEvidence": {
+        "evidenceId": "math1-2018-q18",
+        "sourceId": "src_2cd530d0c9237cd5d84c348f",
+        "answerSourceId": "src_2cd530d0c9237cd5d84c348f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2018-paper-answer",
+        "answerEvidenceId": "math1-2018-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:dcba23544d6fcfd51baf9c447b5ba40b31ed70e3968f9de5d5e555a6fea8b015"
+      }
+    },
+    {
+      "id": "math1-2018-019",
+      "number": 19,
+      "paperId": "math1-2018",
+      "paperName": "2018考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2018",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2018考研数学一第19题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "数列收敛，lim x_n = 0。",
+      "explanation": "答案来自本地百度网盘 2018 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2018/question-19.jpg",
+          "caption": "题面裁切图 q19",
+          "alt": "2018考研数学一题面裁切图 q19"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2018/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2018考研数学一答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2018",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2018-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:1531e544c362bc2bbf13c33f3acd654d0a38b3c9c92ca5339631ca40d69f2ddf",
+      "answerTextHash": "sha256:5d2abf870148571a9ab802d4ffa66420ca348a97c3536e32664a92f3ca55426f",
+      "sourceEvidence": {
+        "evidenceId": "math1-2018-q19",
+        "sourceId": "src_2cd530d0c9237cd5d84c348f",
+        "answerSourceId": "src_2cd530d0c9237cd5d84c348f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2018-paper-answer",
+        "answerEvidenceId": "math1-2018-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:5d2abf870148571a9ab802d4ffa66420ca348a97c3536e32664a92f3ca55426f"
+      }
+    },
+    {
+      "id": "math1-2018-020",
+      "number": 20,
+      "paperId": "math1-2018",
+      "paperName": "2018考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2018",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2018考研数学一第20题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "方程组解与规范形按 a 的取值分类，完整结果见答案原页。",
+      "explanation": "答案来自本地百度网盘 2018 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2018/question-20.jpg",
+          "caption": "题面裁切图 q20",
+          "alt": "2018考研数学一题面裁切图 q20"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2018/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2018考研数学一答案解析 p.5"
+        },
+        {
+          "src": "question-bank/math1-2018/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2018考研数学一答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2018",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2018-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:e933ee577ab507abeb27383669b76117e3bcf5c0e03775e65517ee87b2924fb8",
+      "answerTextHash": "sha256:68092e9120a14ac64e0177c0c9385eccd7c13a138bba289d941f1e4c963d7a5e",
+      "sourceEvidence": {
+        "evidenceId": "math1-2018-q20",
+        "sourceId": "src_2cd530d0c9237cd5d84c348f",
+        "answerSourceId": "src_2cd530d0c9237cd5d84c348f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2018-paper-answer",
+        "answerEvidenceId": "math1-2018-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:68092e9120a14ac64e0177c0c9385eccd7c13a138bba289d941f1e4c963d7a5e"
+      }
+    },
+    {
+      "id": "math1-2018-021",
+      "number": 21,
+      "paperId": "math1-2018",
+      "paperName": "2018考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2018",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2018考研数学一第21题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "a = 2；可逆矩阵 P 的完整参数形式见答案原页。",
+      "explanation": "答案来自本地百度网盘 2018 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2018/question-21.jpg",
+          "caption": "题面裁切图 q21",
+          "alt": "2018考研数学一题面裁切图 q21"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2018/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2018考研数学一答案解析 p.6"
+        },
+        {
+          "src": "question-bank/math1-2018/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2018考研数学一答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2018",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2018-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:17c912ae0924c550c280283ff988f375b2c1530cafecd77c8237e70e919869d5",
+      "answerTextHash": "sha256:4b2f2ba4696e0d725e659bdbcaaff2dae5d0e17f444c06ba85c1569007afd0cc",
+      "sourceEvidence": {
+        "evidenceId": "math1-2018-q21",
+        "sourceId": "src_2cd530d0c9237cd5d84c348f",
+        "answerSourceId": "src_2cd530d0c9237cd5d84c348f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2018-paper-answer",
+        "answerEvidenceId": "math1-2018-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:4b2f2ba4696e0d725e659bdbcaaff2dae5d0e17f444c06ba85c1569007afd0cc"
+      }
+    },
+    {
+      "id": "math1-2018-022",
+      "number": 22,
+      "paperId": "math1-2018",
+      "paperName": "2018考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2018",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2018考研数学一第22题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "Cov(X,Z)=λ；Z 的分布律见答案原页。",
+      "explanation": "答案来自本地百度网盘 2018 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2018/question-22.jpg",
+          "caption": "题面裁切图 q22",
+          "alt": "2018考研数学一题面裁切图 q22"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2018/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2018考研数学一答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2018",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2018-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:9e529ad3dd5b81f9dd264c674703734411b8720dd2775f14e3d2f6120ae9e9aa",
+      "answerTextHash": "sha256:fefdb221626842df77249f700a7536e093ab0c0b10a309044f4788ceaa97630d",
+      "sourceEvidence": {
+        "evidenceId": "math1-2018-q22",
+        "sourceId": "src_2cd530d0c9237cd5d84c348f",
+        "answerSourceId": "src_2cd530d0c9237cd5d84c348f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2018-paper-answer",
+        "answerEvidenceId": "math1-2018-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:fefdb221626842df77249f700a7536e093ab0c0b10a309044f4788ceaa97630d"
+      }
+    },
+    {
+      "id": "math1-2018-023",
+      "number": 23,
+      "paperId": "math1-2018",
+      "paperName": "2018考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2018",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2018考研数学一第23题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "σ 的极大似然估计、期望和方差见答案原页。",
+      "explanation": "答案来自本地百度网盘 2018 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2018/question-23.jpg",
+          "caption": "题面裁切图 q23",
+          "alt": "2018考研数学一题面裁切图 q23"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2018/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2018考研数学一答案解析 p.7"
+        },
+        {
+          "src": "question-bank/math1-2018/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2018考研数学一答案解析 p.8"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2018",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2018-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:ad508cd36aebd156354d5bf6a5ef37f30a512e87a20f9bd3a17426c8c4e56a46",
+      "answerTextHash": "sha256:9a6b9e1d70d10f6b2bfb29f4d8895d993b588d909c4b13284a1f260480b55443",
+      "sourceEvidence": {
+        "evidenceId": "math1-2018-q23",
+        "sourceId": "src_2cd530d0c9237cd5d84c348f",
+        "answerSourceId": "src_2cd530d0c9237cd5d84c348f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2018-paper-answer",
+        "answerEvidenceId": "math1-2018-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:9a6b9e1d70d10f6b2bfb29f4d8895d993b588d909c4b13284a1f260480b55443"
+      }
+    }
+  ]
+}
