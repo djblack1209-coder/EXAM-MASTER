@@ -2216,6 +2216,69 @@ git -c core.hooksPath=/dev/null commit -m "chore: publish math1 2022 bank"
 
 Result: committed after validation on 2026-06-02.
 
+### Task 56: Fix Historical Math Source Manifest Year Inference
+
+**Files:**
+- Modify: `scripts/baidu/source_manifest.py`
+- Modify: `tests/unit/test_source_manifest_year.py`
+- Modify: `data/release-blocker-backlog.json`
+- Modify: `docs/frontend-experience-refactor-diary.md`
+- Modify: `docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md`
+- Modify: `docs/08C-SCRIPTS-REFERENCE.md`
+- Modify: `docs/12-CHANGELOG.md`
+
+- [x] **Step 1: Reproduce the queue-year mismatch**
+
+After publishing `math1-2022`, the release-priority dry-run incorrectly started with:
+
+```text
+1987数一真题、标准答案及解析.pdf
+1988数一真题、标准答案及解析.pdf
+1989数一真题、标准答案及解析.pdf
+```
+
+Those files were attached to `releaseBacklogSlot=math1:2023` because Source Manifest rejected 1980s filename years and then picked 2023 from the parent directory range `1987-2023`.
+
+- [x] **Step 2: Add regression coverage and fix inference**
+
+Added tests proving:
+
+```text
+1987数一真题、标准答案及解析.pdf -> year 1987
+stale manifest row year=2023 + 1988 filename -> year 1988
+```
+
+Updated `source_manifest.py` so valid source years are 1980-2035 and a clear filename year refreshes stale derived manifest years before fallback path-range matching.
+
+- [x] **Step 3: Refresh reports and queue**
+
+Run:
+
+```bash
+python3 -m unittest tests.unit.test_source_manifest_year tests.unit.test_baidu_cleaning_queue tests.unit.test_baidu_cleaning_runner
+python3 scripts/baidu/source_manifest.py --self-test
+python3 scripts/baidu/source_manifest.py --input data/source-manifest.json --existing data/source-manifest.json --output data/source-manifest.json --source-channel netdisk_full_path
+python3 scripts/baidu/manifest_quality.py --manifest data/source-manifest.json --output data/source-manifest-quality.json
+node scripts/build/question-bank-release-gate.mjs
+node scripts/build/release-blocker-backlog.mjs
+python3 scripts/baidu/cleaning_queue.py
+python3 scripts/baidu/run_cleaning_queue.py --dry-run --limit 8 --source-type official_paper --paper-role main
+git diff --check
+```
+
+Result: passed on 2026-06-02. Release metrics stayed at `coverageGaps=57`, `blockers=69`, `publicCourseBlockedSlots=57`, while release queue metadata dropped the misclassified 1987/1988/1989 rows and now starts at `2023数一真题答案解析.pdf`.
+
+- [x] **Step 4: Commit**
+
+Run:
+
+```bash
+git add scripts/baidu/source_manifest.py tests/unit/test_source_manifest_year.py data/release-blocker-backlog.json docs/frontend-experience-refactor-diary.md docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md docs/08C-SCRIPTS-REFERENCE.md docs/12-CHANGELOG.md
+git -c core.hooksPath=/dev/null commit -m "chore: fix historical math source years"
+```
+
+Result: committed after validation on 2026-06-02.
+
 ### Task 52: Publish Math I 2019 Page-Image Bank
 
 **Files:**

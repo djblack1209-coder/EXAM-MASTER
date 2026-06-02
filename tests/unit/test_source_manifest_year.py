@@ -42,6 +42,44 @@ class SourceManifestYearTest(unittest.TestCase):
 
         self.assertEqual(item["year"], 2001)
 
+    def test_1980s_math_file_name_year_wins_over_parent_directory_year_range(self):
+        item = normalize_record(
+            {
+                "fs_id": 9,
+                "path": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学一真题答案解析/1987数一真题、标准答案及解析 .pdf",
+                "server_filename": "1987数一真题、标准答案及解析 .pdf",
+                "size": 200_000,
+                "server_mtime": 1,
+            },
+            provider="baidu_pan",
+            source_channel="netdisk_full_path",
+            now="2026-04-30T00:00:00Z",
+        )
+
+        self.assertEqual(item["subject"], "math")
+        self.assertEqual(item["track"], "math1")
+        self.assertEqual(item["year"], 1987)
+
+    def test_file_name_year_refreshes_stale_manifest_year(self):
+        item = normalize_record(
+            {
+                "fs_id": 10,
+                "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学一真题答案解析/1988数一真题、标准答案及解析 .pdf",
+                "fileName": "1988数一真题、标准答案及解析 .pdf",
+                "size": 200_000,
+                "mtime": 1,
+                "track": "math1",
+                "year": 2023,
+                "sourceType": "official_paper",
+                "status": "discovered",
+            },
+            provider="baidu_pan",
+            source_channel="netdisk_full_path",
+            now="2026-04-30T00:00:00Z",
+        )
+
+        self.assertEqual(item["year"], 1988)
+
     def test_english_page_range_does_not_match_politics_exam_code(self):
         item = normalize_record(
             {

@@ -515,3 +515,12 @@
 - Visual spot checks tuned q04, q06, q08, q12, q13, q18, q19, q20, q21, and q22 crop boundaries to remove same-page answer/解析 leakage while preserving complete prompts.
 - Release gate result after sequential audit refresh: public-course coverage gaps dropped to 57, release blockers dropped to 69, public-course blocked slots dropped to 57, and the release-priority dry-run now starts at `1987数一真题、标准答案及解析.pdf`.
 - Source caveat: the available 2022 Math I file is an answer-analysis edition. User-facing question images depend on crop-level leakage controls, while answer evidence remains the original rendered PDF pages.
+
+### 2026-06-02 Round 56
+
+- Fixed Source Manifest year inference for historical math files before continuing the queue: filenames such as `1987数一真题、标准答案及解析.pdf` now resolve to 1987 instead of inheriting 2023 from the parent directory range `1987-2023`.
+- Extended `source_manifest.py` to accept 1980-2035 release-source years and to let an explicit filename year refresh stale derived `year` values already present in ignored local manifest data.
+- Added regression coverage proving both fresh 1987 math source records and stale manifest rows with `year=2023` are corrected from the filename.
+- Refreshed ignored Source Manifest runtime state, question-bank release gate, release backlog, and cleaning queue. Release metrics stayed at `coverageGaps=57`, `blockers=69`, `publicCourseBlockedSlots=57`.
+- Release-priority dry-run now starts at the real `2023数一真题答案解析.pdf`, followed by `2024年数学一真题及参考答案.pdf`, instead of incorrectly scheduling 1987/1988/1989 files against `math1:2023`.
+- Product rule: when source folders include historical ranges, filename-level year evidence must outrank parent-directory range years before release backlog metadata is attached.
