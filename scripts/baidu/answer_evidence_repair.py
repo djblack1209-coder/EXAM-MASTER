@@ -13,9 +13,11 @@ import argparse
 import copy
 import hashlib
 import json
+import os
 import re
 import shutil
 import subprocess
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -28,6 +30,7 @@ DEFAULT_OUTPUT = PROJECT_ROOT / "data" / "answer-evidence-repair-report.json"
 DEFAULT_RAW_INBOX = PROJECT_ROOT / "data" / "raw-inbox"
 CHOICE_TYPES = {"single_choice", "multi_choice"}
 CHOICE_OPTION_LABELS = set("ABCDEFG")
+MIN_CHOICE_OPTION_COUNT = 4
 ANSWER_CANDIDATE_METHOD_PRIORITY = {
     "companion_answer_key_text": 30,
     "companion_answer_key_range_text": 30,
@@ -95,6 +98,31 @@ def first_non_empty(*values: Any) -> str:
     return ""
 
 
+def safe_int(value: Any, fallback: int = 0) -> int:
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return fallback
+
+
+def queue_output_task_rank(task: dict[str, Any]) -> tuple[int, int, int, int, int]:
+    quality_issues = task.get("qualityIssues") if isinstance(task.get("qualityIssues"), list) else []
+    status_score = 1 if str(task.get("status") or "") == "completed" else 0
+    return (
+        safe_int(task.get("questionCount")),
+        -len(quality_issues),
+        -safe_int(task.get("missingAnswerCount")),
+        status_score,
+        -safe_int(task.get("attempts")),
+    )
+
+
+def choose_better_queue_output_task(current: dict[str, Any] | None, candidate: dict[str, Any]) -> dict[str, Any]:
+    if not current:
+        return candidate
+    return candidate if queue_output_task_rank(candidate) > queue_output_task_rank(current) else current
+
+
 def card_id(card: dict[str, Any], index: int) -> str:
     return first_non_empty(card.get("id"), card.get("questionId"), card.get("question_id"), card.get("number")) or (
         f"card-{index + 1}"
@@ -142,6 +170,116 @@ def normalize_answer(answer: Any, card_type: str = "") -> str:
     return text
 
 
+def normalize_option_label(value: Any, fallback: str = "") -> str:
+    label = normalize_text(value).upper()
+    if label in CHOICE_OPTION_LABELS:
+        return label
+    fallback = normalize_text(fallback).upper()
+    return fallback if fallback in CHOICE_OPTION_LABELS else ""
+
+
+def normalize_option_text(value: Any, label: str) -> str:
+    text = normalize_text(value)
+    if label:
+        text = re.sub(rf"^{re.escape(label)}\s*[.．、)]\s*", "", text, flags=re.IGNORECASE)
+    return text
+
+
+def normalize_choice_options(options: Any) -> list[dict[str, str]]:
+    if not isinstance(options, list):
+        return []
+
+    normalized: list[dict[str, str]] = []
+    seen_labels: set[str] = set()
+    for index, option in enumerate(options):
+        if not isinstance(option, dict):
+            continue
+        fallback_label = chr(ord("A") + index) if index < len(CHOICE_OPTION_LABELS) else ""
+        label = normalize_option_label(option.get("label"), fallback_label)
+        text = normalize_option_text(
+            first_non_empty(option.get("text"), option.get("content"), option.get("value")),
+            label,
+        )
+        if not label or label in seen_labels or not text:
+            continue
+        normalized.append({"label": label, "text": text})
+        seen_labels.add(label)
+
+    normalized.sort(key=lambda item: item["label"])
+    return normalized
+
+
+OPTION_MARK_PATTERN = re.compile(r"(?m)^\s*[［\[]\s*([A-Ga-g])\s*[］\]]\s*")
+
+
+def clean_source_option_text(text: str) -> str:
+    text = re.split(r"(?m)^\s*(?:\d{1,3}\s*[.．]|Part\s+[A-Z]\b)", text)[0]
+    text = re.sub(r"(?m)^---\s*PAGE\s+\d+\s*---$", " ", text)
+    text = re.sub(r"(?m)^英语[（(].*?共\s*\d+\s*页.*$", " ", text)
+    text = re.sub(r"(?m)^全年免费分享各类资源$", " ", text)
+    return normalize_text(text)
+
+
+def parse_labeled_source_options(text: str) -> list[dict[str, str]]:
+    matches = list(OPTION_MARK_PATTERN.finditer(text or ""))
+    options: list[dict[str, str]] = []
+    seen_labels: set[str] = set()
+    for index, match in enumerate(matches):
+        label = normalize_option_label(match.group(1))
+        if not label or label in seen_labels:
+            continue
+        end = matches[index + 1].start() if index + 1 < len(matches) else len(text)
+        option_text = clean_source_option_text(text[match.end():end])
+        if not option_text:
+            continue
+        options.append({"label": label, "text": option_text})
+        seen_labels.add(label)
+    options.sort(key=lambda item: item["label"])
+    return options
+
+
+def parse_numbered_choice_options(text: str) -> dict[str, list[dict[str, str]]]:
+    options_by_number: dict[str, list[dict[str, str]]] = {}
+    if not text:
+        return options_by_number
+
+    question_matches = list(re.finditer(r"(?m)^\s*(\d{1,3})\s*[.．]\s+", text))
+    for index, match in enumerate(question_matches):
+        number = int(match.group(1))
+        if number < 1 or number > 80:
+            continue
+        end = question_matches[index + 1].start() if index + 1 < len(question_matches) else len(text)
+        block = text[match.start():end]
+        options = parse_labeled_source_options(block)
+        if len(options) >= MIN_CHOICE_OPTION_COUNT:
+            options_by_number[str(number)] = options
+    return options_by_number
+
+
+def parse_english_new_type_options(text: str) -> dict[str, list[dict[str, str]]]:
+    if not text:
+        return {}
+
+    match = re.search(
+        r"(?ims)(?:Part\s+B\b.*?)?For\s+Questions\s+41\s*[-~～]\s*45\b.+?(?=^\s*Part\s+C\b|\Z)",
+        text,
+    )
+    if not match:
+        return {}
+
+    options = parse_labeled_source_options(match.group(0))
+    labels = {option["label"] for option in options}
+    if not set("ABCDEFG").issubset(labels):
+        return {}
+    return {str(number): copy.deepcopy(options) for number in range(41, 46)}
+
+
+def has_incomplete_choice_options(card: dict[str, Any]) -> bool:
+    if str(card.get("type") or "") not in CHOICE_TYPES:
+        return False
+    return len(normalize_choice_options(card.get("options"))) < MIN_CHOICE_OPTION_COUNT
+
+
 def is_missing_answer(card: dict[str, Any]) -> bool:
     answer = normalize_text(card.get("answer"))
     return not answer or answer in ANSWER_PLACEHOLDERS
@@ -150,7 +288,7 @@ def is_missing_answer(card: dict[str, Any]) -> bool:
 def load_queue_output_source_map(queue_path: Path | None) -> dict[str, str]:
     payload = read_json(queue_path, {}) if queue_path else {}
     tasks = payload.get("tasks") if isinstance(payload, dict) else []
-    mapping: dict[str, str] = {}
+    task_mapping: dict[str, dict[str, Any]] = {}
     for task in tasks or []:
         if not isinstance(task, dict):
             continue
@@ -162,8 +300,8 @@ def load_queue_output_source_map(queue_path: Path | None) -> dict[str, str]:
             key = str(Path(output_path).expanduser().resolve())
         except OSError:
             key = output_path
-        mapping[key] = source_id
-    return mapping
+        task_mapping[key] = choose_better_queue_output_task(task_mapping.get(key), task)
+    return {key: first_non_empty(task.get("sourceId")) for key, task in task_mapping.items()}
 
 
 def load_queue_output_task_map(queue_path: Path | None) -> dict[str, dict[str, Any]]:
@@ -180,7 +318,7 @@ def load_queue_output_task_map(queue_path: Path | None) -> dict[str, dict[str, A
             key = str(Path(output_path).expanduser().resolve())
         except OSError:
             key = output_path
-        mapping[key] = task
+        mapping[key] = choose_better_queue_output_task(mapping.get(key), task)
     return mapping
 
 
@@ -347,7 +485,45 @@ def extract_pdf_text(path: Path) -> str:
     with fitz.open(path) as doc:
         for page in doc:
             text_parts.append(page.get_text("text"))
-    return "\n".join(text_parts)
+    text = "\n".join(text_parts)
+    if normalize_text(text):
+        return text
+
+    return extract_pdf_text_with_apple_ocr(path)
+
+
+def extract_pdf_text_with_apple_ocr(path: Path) -> str:
+    try:
+        import fitz  # type: ignore[import-not-found]
+        from ocrmac import ocrmac  # type: ignore[import-not-found]
+    except Exception:  # noqa: BLE001 - OCR is an optional local fallback.
+        return ""
+
+    text_parts: list[str] = []
+    start = time.time()
+    with fitz.open(path) as doc:
+        total = doc.page_count
+        for index, page in enumerate(doc):
+            pix = page.get_pixmap(dpi=250)
+            image_path = Path(f"/tmp/answer-evidence-repair-ocr-{os.getpid()}-{index}.png")
+            pix.save(str(image_path))
+            try:
+                anns = ocrmac.OCR(str(image_path), language_preference=["zh-Hans", "en-US"]).recognize()
+                sorted_anns = sorted(anns, key=lambda item: (1 - item[2][1], item[2][0]))
+                page_text = "\n".join(item[0] for item in sorted_anns if str(item[0]).strip())
+                text_parts.append(f"\n--- PAGE {index + 1} ---\n{page_text}\n")
+            finally:
+                try:
+                    image_path.unlink()
+                except OSError:
+                    pass
+            if (index + 1) % 10 == 0:
+                print(f"  OCR progress: {index + 1}/{total}")
+    elapsed = time.time() - start
+    text = "\n".join(text_parts)
+    if text:
+        print(f"  OCR completed: {path.name} pages={len(text_parts)} seconds={elapsed:.1f} chars={len(text)}")
+    return text
 
 
 def resolve_companion_source_path(task: dict[str, Any], companion_path: Path, payload: Any) -> Path | None:
@@ -505,6 +681,87 @@ def resolve_answer_candidate_bucket(items: list[dict[str, Any]]) -> tuple[dict[s
     return None, items
 
 
+def option_signature(options: list[dict[str, str]]) -> tuple[tuple[str, str], ...]:
+    return tuple((option["label"], option["text"]) for option in options)
+
+
+def resolve_option_candidate_bucket(items: list[dict[str, Any]]) -> tuple[dict[str, Any] | None, list[dict[str, Any]]]:
+    signatures = {option_signature(item["options"]) for item in items}
+    if len(signatures) == 1:
+        return items[0], []
+    return None, items
+
+
+def collect_option_candidates(
+    companion_paths: list[Path],
+    *,
+    output_source_map: dict[str, str],
+) -> tuple[dict[str, dict[str, Any]], dict[str, list[dict[str, Any]]], dict[str, int]]:
+    buckets: dict[str, list[dict[str, Any]]] = {}
+    stats = {"structuredOptionCandidates": 0}
+    for companion_path in companion_paths:
+        payload = read_json(companion_path, {})
+        source_id = source_id_for_path(companion_path, output_source_map) or source_id_from_payload(payload)
+        for index, card in enumerate(load_cards(payload)):
+            if str(card.get("type") or "") not in CHOICE_TYPES:
+                continue
+            year = card_year(card, payload)
+            number = card_number(card)
+            if not year or not number:
+                continue
+            options = normalize_choice_options(card.get("options"))
+            if len(options) < MIN_CHOICE_OPTION_COUNT:
+                continue
+            key = answer_key(year, number)
+            buckets.setdefault(key, []).append(
+                {
+                    "options": options,
+                    "cardId": card_id(card, index),
+                    "filePath": relative_path(companion_path),
+                    "sourceId": source_id,
+                    "method": "year_number_companion_cleaned_json",
+                }
+            )
+            stats["structuredOptionCandidates"] += 1
+
+    candidates: dict[str, dict[str, Any]] = {}
+    conflicts: dict[str, list[dict[str, Any]]] = {}
+    for key, items in buckets.items():
+        candidate, conflict = resolve_option_candidate_bucket(items)
+        if candidate:
+            candidates[key] = candidate
+        else:
+            conflicts[key] = conflict
+    return candidates, conflicts, stats
+
+
+def collect_source_option_candidates(
+    text: str,
+    *,
+    year: str,
+    source_id: str,
+    source_path: Path | None,
+) -> tuple[dict[str, dict[str, Any]], dict[str, int]]:
+    candidates: dict[str, dict[str, Any]] = {}
+    stats = {"sourceOptionCandidates": 0}
+    if not text or not year:
+        return candidates, stats
+
+    merged = parse_numbered_choice_options(text)
+    merged.update(parse_english_new_type_options(text))
+    for number, options in merged.items():
+        key = answer_key(year, number)
+        candidates[key] = {
+            "options": options,
+            "cardId": f"source-option-{year}-{number}",
+            "filePath": relative_path(source_path) if source_path else "",
+            "sourceId": source_id,
+            "method": "target_source_option_text",
+        }
+        stats["sourceOptionCandidates"] += 1
+    return candidates, stats
+
+
 def collect_answer_candidates(
     companion_paths: list[Path],
     *,
@@ -628,14 +885,28 @@ def repair_bank(
     output_task_map = load_queue_output_task_map(queue_path)
     source_manifest = load_source_manifest(source_manifest_path)
     target_source_id = source_id_for_path(target_path, output_source_map)
+    target_task = queue_task_for_path(target_path, output_task_map)
+    target_source_text, target_source_path = read_companion_source_text(target_task, target_path, payload)
+    target_year = first_non_empty(payload.get("year") if isinstance(payload, dict) else "", target_task.get("year"))
     answer_candidates, answer_conflicts, candidate_stats = collect_answer_candidates(
         companion_paths,
         output_source_map=output_source_map,
         output_task_map=output_task_map,
     )
+    option_candidates, option_conflicts, option_candidate_stats = collect_option_candidates(
+        companion_paths,
+        output_source_map=output_source_map,
+    )
+    source_option_candidates, source_option_stats = collect_source_option_candidates(
+        target_source_text,
+        year=target_year,
+        source_id=target_source_id,
+        source_path=target_source_path,
+    )
 
     details: list[dict[str, Any]] = []
     repaired_answers = 0
+    repaired_options = 0
     question_evidence_count = 0
     answer_evidence_count = 0
     skipped_no_candidate = 0
@@ -647,13 +918,53 @@ def repair_bank(
         if materialize_existing_answer_evidence(card):
             answer_evidence_count += 1
 
-        if not is_missing_answer(card):
-            continue
-
         year = card_year(card, payload)
         number = card_number(card)
         key = answer_key(year, number) if year and number else ""
         current_id = card_id(card, index)
+
+        if has_incomplete_choice_options(card) and key:
+            if key in option_conflicts:
+                details.append(
+                    {
+                        "cardId": current_id,
+                        "status": "skipped_option_conflict",
+                        "key": key,
+                        "candidates": option_conflicts[key],
+                    }
+                )
+            else:
+                option_candidate = option_candidates.get(key) or source_option_candidates.get(key)
+                if option_candidate:
+                    option_method = option_candidate.get("method") or "year_number_companion_cleaned_json"
+                    option_note = (
+                        "Candidate options repaired from target source text; not publishable until verified."
+                        if option_method == "target_source_option_text"
+                        else "Candidate options repaired from a cleaned companion file; not publishable until verified."
+                    )
+                    card["options"] = copy.deepcopy(option_candidate["options"])
+                    card["optionEvidence"] = {
+                        "status": "candidate_matched",
+                        "sourceId": option_candidate.get("sourceId", ""),
+                        "sourceCardId": option_candidate.get("cardId", ""),
+                        "sourceFilePath": option_candidate.get("filePath", ""),
+                        "method": option_method,
+                        "verifiedAt": "",
+                        "verifiedBy": "",
+                        "note": option_note,
+                    }
+                    repaired_options += 1
+                    details.append(
+                        {
+                            "cardId": current_id,
+                            "status": "repaired_options_candidate",
+                            "key": key,
+                            "candidate": option_candidate,
+                        }
+                    )
+
+        if not is_missing_answer(card):
+            continue
 
         if key in answer_conflicts:
             details.append(
@@ -734,10 +1045,14 @@ def repair_bank(
         "summary": {
             "cardCount": len(cards),
             "repairedAnswers": repaired_answers,
+            "repairedOptions": repaired_options,
             "remainingMissingAnswers": remaining_missing,
             "skippedNoCandidate": skipped_no_candidate,
             "conflictCount": len(answer_conflicts),
+            "optionConflictCount": len(option_conflicts),
             "structuredCandidates": candidate_stats["structuredCandidates"],
+            "structuredOptionCandidates": option_candidate_stats["structuredOptionCandidates"],
+            "sourceOptionCandidates": source_option_stats["sourceOptionCandidates"],
             "answerKeyTextCandidates": candidate_stats["answerKeyTextCandidates"],
             "answerKeyGroupCandidates": candidate_stats["answerKeyGroupCandidates"],
             "numberedAnswerTextCandidates": candidate_stats["numberedAnswerTextCandidates"],
@@ -814,6 +1129,7 @@ def run(argv: list[str] | None = None) -> int:
         "[answer-evidence-repair] "
         f"write={args.write} "
         f"repaired={report['summary']['repairedAnswers']} "
+        f"repairedOptions={report['summary']['repairedOptions']} "
         f"remainingMissing={report['summary']['remainingMissingAnswers']} "
         f"conflicts={report['summary']['conflictCount']} "
         f"report={args.output}"

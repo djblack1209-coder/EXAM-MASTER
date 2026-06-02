@@ -375,3 +375,14 @@
 - Real `english1:2018` result: main-paper cleaning produced 52 cards with `{single_choice:45, translation:5, essay:2}` and no missing answers after candidate repair from `data/raw-inbox/src_c2b2d9106a7394b9ebf94bb2-2018年真题及答案速查.pdf`.
 - Added a choice-option quality gate. The current `english1:2018` local output still has 10 choice cards with fewer than 4 options, so the queue keeps this task failed with `qualityIssues` even though `missingAnswerCount=0` and `answerEvidenceStatus=candidate_repaired`.
 - Product rule: candidate answer evidence and correct paper-level counts are not enough for release. Choice-card option integrity must pass before a bank is treated as publishable.
+
+### 2026-06-02 Round 43
+
+- Finished the `english1:2018` option-integrity blocker exposed in Round 42.
+- Added quality-aware canonical output preservation in `run_cleaning_queue.py`: a later failed same-slot main source can no longer overwrite a better existing `data/flashcards/<track>-<year>.json` output.
+- Extended `answer_evidence_repair.py` beyond answers so it can repair incomplete choice options from same-year companion cleaned JSON by `year:number`, and from the target source text when companion output lacks options.
+- Added Apple OCR fallback to answer evidence repair source-text extraction, allowing scanned target PDFs to supply deterministic A-D and English 41-45 A-G option candidates without another LLM pass.
+- Fixed duplicate `outputPath` queue lookup in answer repair so the best same-output task is used as the source evidence owner; this prevents the poorer 47-card 2018 English analysis run from stealing source evidence from the 52-card main run.
+- Real `english1:2018` result: local bank now has 52 cards, `{single_choice:45, translation:5, essay:2}`, `missingAnswerCount=0`, and zero choice-option quality issues. Options 11/14/17/18 were repaired from `english-support-ebf94bb2-2018.json`; options 26 and 41-45 were repaired from the original main PDF OCR text.
+- Release caveat: repaired answers and options are still `candidate_matched` / `candidate_repaired` evidence, not final publishable verified evidence.
+- Product rule: when multiple source PDFs compete for one public-course slot, the automation must preserve the best cleaned bank and use weaker later runs only as supplemental evidence, never as a downgrade.

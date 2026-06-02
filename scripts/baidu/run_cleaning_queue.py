@@ -361,32 +361,20 @@ def quality_issues_for_task(
     return issues
 
 
-def default_processor(task: dict[str, Any], local_path: Path) -> dict[str, Any]:
-    subject = output_subject_for_task(task)
-    year = str(task.get("year") or "unknown")
-    subprocess.run(
-        [sys.executable, str(PDF2FLASHCARD), str(local_path), subject, year],
-        cwd=str(PROJECT_ROOT),
-        check=True,
-    )
-
-    output_path = PROJECT_ROOT / "data" / "flashcards" / f"{subject}-{year}.json"
-    question_count = 0
-    missing_answer_count = 0
-    type_counts: dict[str, int] = {}
-    if output_path.exists():
-        payload = read_json(output_path, {})
-        cards = payload.get("cards", [])
-        question_count = int(payload.get("total_cards") or len(cards) or 0)
-        if isinstance(cards, list):
-            missing_answer_count = sum(1 for card in cards if not has_usable_answer(card))
-            type_counts = count_card_types(cards)
-
+def output_result_for_payload(task: dict[str, Any], output_path: Path, payload: Any) -> dict[str, Any]:
+    if not isinstance(payload, dict):
+        payload = {}
+    cards = payload.get("cards", [])
+    if not isinstance(cards, list):
+        cards = []
+    question_count = int(payload.get("total_cards") or len(cards) or 0)
+    missing_answer_count = sum(1 for card in cards if isinstance(card, dict) and not has_usable_answer(card))
+    type_counts = count_card_types([card for card in cards if isinstance(card, dict)])
     quality_issues = quality_issues_for_task(
         task,
         question_count=question_count,
         type_counts=type_counts,
-        cards=cards if isinstance(cards, list) else [],
+        cards=[card for card in cards if isinstance(card, dict)],
     )
     answer_evidence_status = "missing_answers" if missing_answer_count else "manual_review"
     if quality_issues and not missing_answer_count:
@@ -400,6 +388,72 @@ def default_processor(task: dict[str, Any], local_path: Path) -> dict[str, Any]:
         "typeCounts": type_counts,
         "qualityIssues": quality_issues,
     }
+
+
+def output_result_for_path(task: dict[str, Any], output_path: Path) -> dict[str, Any]:
+    payload = read_json(output_path, {}) if output_path.exists() else {}
+    return output_result_for_payload(task, output_path, payload)
+
+
+def output_quality_rank(task: dict[str, Any], result: dict[str, Any]) -> tuple[int, int, int, int, int]:
+    question_count = int(result.get("questionCount") or 0)
+    type_counts = result.get("typeCounts") if isinstance(result.get("typeCounts"), dict) else {}
+    quality_issues = result.get("qualityIssues") if isinstance(result.get("qualityIssues"), list) else []
+    missing_answer_count = int(result.get("missingAnswerCount") or 0)
+    coverage_score = question_count
+    if quality_gate_applies_to_task(task):
+        minimums = PUBLIC_TRACK_QUALITY_MINIMUMS.get(str(task.get("track") or "")) or {}
+        total_minimum = int(minimums.get("total") or 0)
+        if total_minimum:
+            coverage_score += min(question_count, total_minimum)
+        for card_type, minimum in minimums.items():
+            if card_type in ("total", "min_year"):
+                continue
+            coverage_score += min(int(type_counts.get(card_type) or 0), int(minimum))
+    return (
+        1 if not quality_issues else 0,
+        coverage_score,
+        question_count,
+        -len(quality_issues),
+        -missing_answer_count,
+    )
+
+
+def should_restore_previous_output(
+    task: dict[str, Any],
+    previous_result: dict[str, Any] | None,
+    candidate_result: dict[str, Any],
+) -> bool:
+    if not previous_result:
+        return False
+    candidate_failed_quality = bool(candidate_result.get("qualityIssues")) or int(candidate_result.get("questionCount") or 0) <= 0
+    if not candidate_failed_quality:
+        return False
+    return output_quality_rank(task, previous_result) > output_quality_rank(task, candidate_result)
+
+
+def default_processor(task: dict[str, Any], local_path: Path) -> dict[str, Any]:
+    subject = output_subject_for_task(task)
+    year = str(task.get("year") or "unknown")
+    output_path = PROJECT_ROOT / "data" / "flashcards" / f"{subject}-{year}.json"
+    previous_bytes = output_path.read_bytes() if output_path.exists() else None
+    previous_result = output_result_for_path(task, output_path) if previous_bytes is not None else None
+    try:
+        subprocess.run(
+            [sys.executable, str(PDF2FLASHCARD), str(local_path), subject, year],
+            cwd=str(PROJECT_ROOT),
+            check=True,
+        )
+        result = output_result_for_path(task, output_path)
+    except Exception:
+        if previous_bytes is not None:
+            output_path.write_bytes(previous_bytes)
+        raise
+
+    if previous_bytes is not None and should_restore_previous_output(task, previous_result, result):
+        output_path.write_bytes(previous_bytes)
+
+    return result
 
 
 def run_queue_once(

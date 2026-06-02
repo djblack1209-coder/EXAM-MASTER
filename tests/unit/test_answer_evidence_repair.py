@@ -140,6 +140,214 @@ class AnswerEvidenceRepairTest(unittest.TestCase):
         self.assertEqual(target_task["answerEvidenceStatus"], "candidate_repaired")
         self.assertEqual(target_task["answerEvidenceRepairedAt"], "2026-04-30T00:00:00Z")
 
+    def test_repair_fills_incomplete_choice_options_from_companion_by_year_number(self):
+        from scripts.baidu.answer_evidence_repair import repair_bank
+
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_dir = Path(tmp)
+            target = tmp_dir / "flashcards" / "english1-2018.json"
+            companion = tmp_dir / "flashcards" / "english-support-2018.json"
+
+            write_json(
+                target,
+                bank_payload(
+                    "2018 paper.pdf",
+                    "english1",
+                    2018,
+                    [
+                        {
+                            "id": "english1-2018-011",
+                            "number": 11,
+                            "type": "single_choice",
+                            "question": "Funny",
+                            "options": [{"label": "A", "text": "Funny"}],
+                            "answer": "B",
+                        }
+                    ],
+                ),
+            )
+            write_json(
+                companion,
+                bank_payload(
+                    "2018 answers.pdf",
+                    "english-support",
+                    2018,
+                    [
+                        {
+                            "id": "english-support-2018-011",
+                            "number": 11,
+                            "type": "single_choice",
+                            "question": "Funny",
+                            "options": [
+                                {"label": "A", "text": "Funny"},
+                                {"label": "B", "text": "Lucky"},
+                                {"label": "C", "text": "Odd"},
+                                {"label": "D", "text": "Ironic"},
+                            ],
+                            "answer": "A",
+                        }
+                    ],
+                ),
+            )
+
+            report = repair_bank(target, [companion], write=True, now="2026-04-30T00:00:00Z")
+            card = json.loads(target.read_text(encoding="utf-8"))["cards"][0]
+
+        self.assertEqual(report["summary"]["repairedOptions"], 1)
+        self.assertEqual([option["label"] for option in card["options"]], ["A", "B", "C", "D"])
+        self.assertEqual(card["optionEvidence"]["status"], "candidate_matched")
+        self.assertEqual(card["answer"], "B")
+
+    def test_repair_fills_choice_options_from_target_source_text(self):
+        from scripts.baidu.answer_evidence_repair import repair_bank
+
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_dir = Path(tmp)
+            target = tmp_dir / "flashcards" / "english1-2018.json"
+            companion = tmp_dir / "flashcards" / "english-support-2018.json"
+            source_text = tmp_dir / "raw" / "english1-2018.txt"
+            queue = tmp_dir / "cleaning-queue.json"
+            source_text.parent.mkdir(parents=True)
+            source_text.write_text(
+                "26. According to Paragraphs 1 and 2, many young Americans cast doubts on\n"
+                "[A] the justification of the news-filtering practice.\n"
+                "[B] people's preference for social media platforms.\n"
+                "[C] the administration's ability to handle information.\n"
+                "[D] social media as a reliable source of news.\n"
+                "27. Next question\n"
+                "Part B\n"
+                "The following paragraphs are given in a wrong order. For Questions 41-45, you are\n"
+                "required to reorganize these paragraphs by choosing from the list A-G.\n"
+                "[A] Paragraph A text.\n"
+                "[B] Paragraph B text.\n"
+                "[C] Paragraph C text.\n"
+                "[D] Paragraph D text.\n"
+                "[E] Paragraph E text.\n"
+                "[F] Paragraph F text.\n"
+                "[G] Paragraph G text.\n"
+                "41. [ ] 42. [ ] 43. [ ] 44. [ ] 45. [ ]\n"
+                "Part C\n",
+                encoding="utf-8",
+            )
+            write_json(
+                target,
+                bank_payload(
+                    "english1-2018.txt",
+                    "english1",
+                    2018,
+                    [
+                        {
+                            "id": "english1-2018-026",
+                            "number": 26,
+                            "type": "single_choice",
+                            "question": "Text 2",
+                            "options": [],
+                            "answer": "A",
+                        },
+                        {
+                            "id": "english1-2018-041",
+                            "number": 41,
+                            "type": "single_choice",
+                            "question": "Part B",
+                            "options": [],
+                            "answer": "E",
+                        },
+                    ],
+                ),
+            )
+            write_json(companion, bank_payload("answers.pdf", "english-support", 2018, []))
+            write_json(
+                queue,
+                {
+                    "tasks": [
+                        {
+                            "sourceId": "src_question",
+                            "outputPath": str(target),
+                            "localPath": str(source_text),
+                        }
+                    ]
+                },
+            )
+
+            report = repair_bank(target, [companion], queue_path=queue, write=True, now="2026-04-30T00:00:00Z")
+            cards = json.loads(target.read_text(encoding="utf-8"))["cards"]
+
+        self.assertEqual(report["summary"]["repairedOptions"], 2)
+        self.assertEqual(len(cards[0]["options"]), 4)
+        self.assertEqual(cards[0]["options"][0]["text"], "the justification of the news-filtering practice.")
+        self.assertEqual(len(cards[1]["options"]), 7)
+        self.assertEqual(cards[1]["options"][4]["text"], "Paragraph E text.")
+        self.assertEqual(cards[1]["optionEvidence"]["method"], "target_source_option_text")
+
+    def test_repair_uses_best_duplicate_queue_task_for_target_source_options(self):
+        from scripts.baidu.answer_evidence_repair import repair_bank
+
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_dir = Path(tmp)
+            target = tmp_dir / "flashcards" / "english1-2018.json"
+            companion = tmp_dir / "flashcards" / "english-support-2018.json"
+            better_source = tmp_dir / "raw" / "better.txt"
+            worse_source = tmp_dir / "raw" / "worse.txt"
+            queue = tmp_dir / "cleaning-queue.json"
+            better_source.parent.mkdir(parents=True)
+            better_source.write_text(
+                "26. According to Paragraphs 1 and 2, many young Americans cast doubts on\n"
+                "[A] the justification of the news-filtering practice.\n"
+                "[B] people's preference for social media platforms.\n"
+                "[C] the administration's ability to handle information.\n"
+                "[D] social media as a reliable source of news.\n"
+                "27. Next question\n",
+                encoding="utf-8",
+            )
+            worse_source.write_text("26. Broken source without options\n27. Next question\n", encoding="utf-8")
+            write_json(
+                target,
+                bank_payload(
+                    "english1-2018.txt",
+                    "english1",
+                    2018,
+                    [
+                        {
+                            "id": "english1-2018-026",
+                            "number": 26,
+                            "type": "single_choice",
+                            "question": "Text 2",
+                            "options": [],
+                            "answer": "A",
+                        }
+                    ],
+                ),
+            )
+            write_json(companion, bank_payload("answers.pdf", "english-support", 2018, []))
+            write_json(
+                queue,
+                {
+                    "tasks": [
+                        {
+                            "sourceId": "src_better",
+                            "outputPath": str(target),
+                            "localPath": str(better_source),
+                            "questionCount": 52,
+                            "qualityIssues": ["english1_choice_option_count_below_minimum"],
+                        },
+                        {
+                            "sourceId": "src_worse",
+                            "outputPath": str(target),
+                            "localPath": str(worse_source),
+                            "questionCount": 47,
+                            "qualityIssues": ["english1_question_count_below_expected"],
+                        },
+                    ]
+                },
+            )
+
+            report = repair_bank(target, [companion], queue_path=queue, write=True, now="2026-04-30T00:00:00Z")
+            card = json.loads(target.read_text(encoding="utf-8"))["cards"][0]
+
+        self.assertEqual(report["targetSourceId"], "src_better")
+        self.assertEqual(report["summary"]["repairedOptions"], 1)
+        self.assertEqual(card["optionEvidence"]["sourceId"], "src_better")
+
     def test_conflicting_companion_answers_are_reported_and_skipped(self):
         from scripts.baidu.answer_evidence_repair import repair_bank
 

@@ -725,6 +725,79 @@ class BaiduCleaningRunnerTest(unittest.TestCase):
         self.assertIn("english1_translation_count_below_expected: expected>=5 actual=1", result["qualityIssues"])
         self.assertIn("english1_essay_count_below_expected: expected>=2 actual=1", result["qualityIssues"])
 
+    def test_default_processor_restores_better_existing_output_when_candidate_fails_quality(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            original_project_root = runner.PROJECT_ROOT
+            original_pdf2flashcard = runner.PDF2FLASHCARD
+            original_subprocess_run = runner.subprocess.run
+            tmp_root = Path(tmp)
+            output_dir = tmp_root / "data" / "flashcards"
+            output_dir.mkdir(parents=True)
+            output_path = output_dir / "english1-2018.json"
+
+            def choice_card(index, *, options=4):
+                return {
+                    "id": f"english1-2018-{index:03d}",
+                    "type": "single_choice",
+                    "answer": "A",
+                    "options": [{"label": label, "text": label} for label in "ABCDEFG"[:options]],
+                }
+
+            existing_cards = [choice_card(index) for index in range(1, 45)]
+            existing_cards.append(choice_card(45, options=0))
+            existing_cards.extend(
+                {"id": f"english1-2018-{index:03d}", "type": "translation", "answer": "译文"}
+                for index in range(46, 51)
+            )
+            existing_cards.extend(
+                {"id": f"english1-2018-{index:03d}", "type": "essay", "answer": "作文要求"}
+                for index in range(51, 53)
+            )
+            output_path.write_text(
+                runner.json.dumps({"total_cards": 52, "cards": existing_cards}, ensure_ascii=False),
+                encoding="utf-8",
+            )
+
+            candidate_cards = [choice_card(index) for index in range(1, 42)]
+            candidate_cards.extend(
+                {"id": f"english1-2018-{index:03d}", "type": "translation", "answer": "译文"}
+                for index in range(46, 50)
+            )
+            candidate_cards.extend(
+                {"id": f"english1-2018-{index:03d}", "type": "essay", "answer": "作文要求"}
+                for index in range(51, 53)
+            )
+
+            def fake_run(args, cwd, check):
+                output_path.write_text(
+                    runner.json.dumps({"total_cards": 47, "cards": candidate_cards}, ensure_ascii=False),
+                    encoding="utf-8",
+                )
+
+            try:
+                runner.PROJECT_ROOT = tmp_root
+                runner.PDF2FLASHCARD = tmp_root / "scripts" / "pipeline" / "pdf2flashcard-v2.py"
+                runner.subprocess.run = fake_run
+
+                result = runner.default_processor(
+                    {
+                        "subject": "english",
+                        "track": "english1",
+                        "year": 2018,
+                        "safeDisplayName": "2018考研英语一真题及解析.pdf",
+                    },
+                    tmp_root / "raw" / "2018.pdf",
+                )
+                restored = runner.json.loads(output_path.read_text(encoding="utf-8"))
+            finally:
+                runner.PROJECT_ROOT = original_project_root
+                runner.PDF2FLASHCARD = original_pdf2flashcard
+                runner.subprocess.run = original_subprocess_run
+
+        self.assertEqual(restored["total_cards"], 52)
+        self.assertEqual(result["questionCount"], 47)
+        self.assertIn("english1_question_count_below_expected: expected>=52 actual=47", result["qualityIssues"])
+
     def test_english_quality_gate_skips_pre_2005_and_support_evidence(self):
         pre_2005_issues = runner.quality_issues_for_task(
             {"track": "english1", "year": 2001, "safeDisplayName": "2001年考研英语一真题.pdf"},

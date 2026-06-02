@@ -1725,3 +1725,63 @@ Run:
 git add scripts/pipeline/pdf2flashcard-v2.py scripts/baidu/run_cleaning_queue.py tests/unit/test_pdf2flashcard_v2.py tests/unit/test_baidu_cleaning_runner.py docs/frontend-experience-refactor-diary.md docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md
 git commit -m "chore: gate english cleaning quality"
 ```
+
+### Task 41: Repair English 2018 Option Integrity
+
+**Files:**
+- Modify: `scripts/baidu/run_cleaning_queue.py`
+- Modify: `scripts/baidu/answer_evidence_repair.py`
+- Modify: `tests/unit/test_baidu_cleaning_runner.py`
+- Modify: `tests/unit/test_answer_evidence_repair.py`
+- Modify: `docs/frontend-experience-refactor-diary.md`
+- Modify: `docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md`
+
+- [x] **Step 1: Reproduce same-slot downgrade risk**
+
+Ran the next official main source:
+```bash
+LLM_DISABLED_PROVIDERS=llm_primary,iflow,nvidia LLM_REQUEST_TIMEOUT_SECONDS=8 LLM_MAX_RETRIES=1 PDF2FLASHCARD_BATCH_CHAR_LIMIT=1400 LLM_MAX_TOKENS=2048 .venv-baidu/bin/python scripts/baidu/run_cleaning_queue.py --task-id clean_c87c00b1ce6850cfb497859d --limit 1 --source-type official_paper --paper-role main
+```
+
+Result: the later 2018 English I analysis source produced only 47 cards and failed the English structure gate. This exposed a downgrade risk because it wrote to the same canonical `english1-2018.json` path as the better 52-card main source.
+
+- [x] **Step 2: Preserve better canonical outputs**
+
+Added a runner regression test and implementation so failed candidates restore a better existing canonical output. The task still records the failed candidate result, but the local bank file is no longer downgraded.
+
+- [x] **Step 3: Repair options from companion cleaned JSON**
+
+Extended `answer_evidence_repair.py` to repair incomplete choice options by `year:number` when a companion cleaned JSON has at least 4 options. This repaired English I 2018 cards 11, 14, 17, and 18 from `english-support-ebf94bb2-2018.json`.
+
+- [x] **Step 4: Repair options from target source text**
+
+Added source-text option extraction for numbered A-D choices and English 41-45 A-G new-type sections, with Apple OCR fallback for scanned PDFs. Also fixed duplicate `outputPath` queue mapping so answer repair chooses the better 52-card source task as the target evidence owner.
+
+- [x] **Step 5: Run real English I 2018 option repair**
+
+Run:
+```bash
+.venv-baidu/bin/python scripts/baidu/answer_evidence_repair.py --target data/flashcards/english1-2018.json --companion data/flashcards/english-support-ebf94bb2-2018.json --output data/answer-evidence-repair-report.json --write --mark-companions-supporting
+```
+
+Result: `repairedOptions=6` from the original main PDF OCR text, after the earlier 4 companion option repairs. The local `english1-2018.json` now has 52 cards, `{single_choice:45, translation:5, essay:2}`, `missingAnswerCount=0`, and `qualityIssues=[]`.
+
+- [x] **Step 6: Run final validation**
+
+Run:
+```bash
+.venv-baidu/bin/python -m unittest tests.unit.test_baidu_cleaning_runner tests.unit.test_answer_evidence_repair tests.unit.test_pdf2flashcard_v2
+.venv-baidu/bin/python scripts/baidu/run_cleaning_queue.py --self-test
+.venv-baidu/bin/python scripts/baidu/run_cleaning_queue.py --dry-run --limit 8 --source-type official_paper --paper-role main
+git diff --check
+```
+
+Result: passed on 2026-06-02. Dry-run now advances past `english1:2018`; the next main release-priority task is `2005数一标准答案及解析.pdf`.
+
+- [ ] **Step 7: Commit**
+
+Run:
+```bash
+git add scripts/baidu/run_cleaning_queue.py scripts/baidu/answer_evidence_repair.py tests/unit/test_baidu_cleaning_runner.py tests/unit/test_answer_evidence_repair.py docs/frontend-experience-refactor-diary.md docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md
+git commit -m "chore: repair english option evidence"
+```
