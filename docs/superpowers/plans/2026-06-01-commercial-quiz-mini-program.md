@@ -1865,6 +1865,52 @@ git commit -m "chore: repair english companion option evidence"
 
 Result: committed after validation on 2026-06-02.
 
+### Task 45: Publish Math I 2006 Page-Image Bank
+
+**Files:**
+- Modify: `scripts/cleaning/build_math1_history_banks.py`
+- Modify: `scripts/build/question-bank-release-gate.mjs`
+- Modify: `src/config/bank-registry.js`
+- Modify: `src/pages/practice-sub/bank-data-table.js`
+- Modify: `data/release-blocker-backlog.json`
+- Modify: `tests/unit/question-bank-release-gate.spec.js`
+- Create: `src/config/flashcard-banks/math1-2006.json`
+- Create: `cdn-assets/question-bank/math1-2006/*.jpg`
+- Modify: `docs/frontend-experience-refactor-diary.md`
+- Modify: `docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md`
+- Modify: `docs/08C-SCRIPTS-REFERENCE.md`
+- Modify: `docs/12-CHANGELOG.md`
+
+- [x] **Step 1: Use the page-image builder path**
+
+Chose `build_math1_history_banks.py` instead of a generic LLM cleaning run for `2006数一标准答案及解析.pdf`, because the source is formula-heavy and mixes题面, answers, and explanations on rendered pages.
+
+- [x] **Step 2: Add the 2006 Math I source spec**
+
+Added a 2006 `SourceSpec`, default-year inclusion, 2006-specific section/type mapping, A-D choice placeholders, and support for nonnumeric question crop refs such as `q09a` / `q09b`.
+
+- [x] **Step 3: Add audited manual crops**
+
+Added fixed crop boxes for the 23-question 2006 source so the pre-answer question images hide same-page answer/explanation text while preserving formula and diagram fidelity.
+
+- [x] **Step 4: Build and register the bank**
+
+Run:
+```bash
+python3 scripts/cleaning/build_math1_history_banks.py --years 2006 --force-assets
+node scripts/build/generate-compressed-bank-modules.mjs
+node scripts/build/question-bank-release-gate.mjs
+node scripts/build/release-blocker-backlog.mjs
+```
+
+Result: `math1-2006` now has 23 cards, `{single_choice:8, short_answer:15}`, `missingAnswerCount=0`, and runner `qualityIssues=[]`. The formal enabled-bank count rose to 68 and coverage gaps fell to 64.
+
+- [x] **Step 5: Close the same-source Source Manifest blocker**
+
+Added release-gate coverage for historical math files named `YYYY-数一/二/三标准答案及解析.pdf`. Same-year files now infer as `paper_answer`, while mismatched-year files stay answer-only to avoid hiding manifest slot errors.
+
+Result: the refreshed backlog removes both `coverage_missing:math1:2006` and `source_evidence_missing:math1:2006`; total release blockers dropped to 76, public-course blocked slots to 64, and `sourceEvidenceGaps` to 11.
+
 ### Task 44: Gate Math Main-Paper Cleaning Structure
 
 **Files:**

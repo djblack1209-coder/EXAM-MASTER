@@ -416,3 +416,14 @@
 - Verification passed: runner queue tests, main-paper dry-run, and `git diff --check`.
 - Release caveat: this is a structural fail-closed gate only. It does not verify formulas, page-image evidence, or answer correctness; those still require source/evidence repair or a purpose-built math builder for publishable output.
 - Product rule: when entering a new subject family, add the minimum structural gate before the first real queue run so partial extractions cannot quietly become completed commercial backlog slots.
+
+### 2026-06-02 Round 47
+
+- Promoted the next release-priority math slot, `math1:2006`, through the formal page-image bank path instead of the generic LLM cleaner.
+- Extended `build_math1_history_banks.py` to include 2006, whose historical structure is 6 fill-in-the-blank, 8 choice, and 9 solution questions rather than the later Math I ordering.
+- Added manual per-question crop boxes for the 2006 PDF so pre-answer question images do not expose same-page answers or explanations; multi-part crops such as 9/18/19/22 now use stable `q09a/q09b`-style refs.
+- Registered `math1-2006` in the public bank registry and regenerated the compressed bank table, bringing the formal enabled-bank count to 68 and public-course coverage gaps down to 64.
+- Tightened the release gate source-role inference so same-year historical math files named `YYYY-数一/二/三标准答案及解析.pdf` count as combined `paper_answer` evidence, while mismatched-year files remain answer-only.
+- Validation result: `math1-2006.json` has 23 cards, `{single_choice:8, short_answer:15}`, section counts `{填空题:6, 选择题:8, 解答题:9}`, `missingAnswerCount=0`, runner `qualityIssues=[]`, and `bankFileInventoryBlockers=0`.
+- Release gate result: `math1:2006` no longer appears in the refreshed backlog; total blockers dropped to 76, public-course blocked slots to 64, and source-evidence gaps to 11.
+- Product rule: formula-heavy math PDFs should prefer authoritative page-image banks with audited crops over lossy OCR/LLM text extraction when the source layout mixes questions and explanations.

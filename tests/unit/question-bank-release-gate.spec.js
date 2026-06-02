@@ -198,6 +198,94 @@ describe('question bank release gate', () => {
     });
   });
 
+  it('counts historical math standard-answer-analysis PDFs as combined paper-answer evidence', async () => {
+    const { buildQuestionBankReleaseReport } = await import('../../scripts/build/question-bank-release-gate.mjs');
+    const manifest = tempManifestPath([
+      {
+        sourceId: 'src_math1_2099_standard_answer_analysis',
+        eligible: true,
+        status: 'discovered',
+        sourceType: 'official_paper',
+        track: 'math1',
+        year: 2099,
+        remotePath: '/raw/math1/2099-数一标准答案及解析.pdf',
+        contentHash: 'sha256:math1-2099-paper-answer-source',
+        riskFlags: []
+      }
+    ]);
+
+    const report = buildQuestionBankReleaseReport({
+      minYear: 2099,
+      maxYear: 2099,
+      tracks: ['math1'],
+      sourceManifest: manifest,
+      banks: []
+    });
+
+    expect(report.summary.sourceManifestPublishableOfficialPapers).toBe(1);
+    expect(report.summary.sourceManifestCoverageGapCount).toBe(0);
+    expect(report.sourceEvidence.coverage.math1.presentYears).toEqual([2099]);
+    expect(report.sourceEvidence.candidateDiagnostics.math1[2099]).toMatchObject({
+      candidateCount: 1,
+      officialPaperCandidateCount: 1,
+      autoPairEligibleCandidateCount: 1,
+      paperCandidateCount: 0,
+      answerCandidateCount: 0,
+      combinedCandidateCount: 1
+    });
+    expect(report.sourceEvidence.candidateDiagnostics.math1[2099].sampleCandidates[0]).toMatchObject({
+      sourceId: 'src_math1_2099_standard_answer_analysis',
+      inferredSourceRole: 'paper_answer',
+      autoPairEligible: true,
+      blockReasons: []
+    });
+  });
+
+  it('does not count mismatched-year math standard-answer-analysis PDFs as combined source coverage', async () => {
+    const { buildQuestionBankReleaseReport } = await import('../../scripts/build/question-bank-release-gate.mjs');
+    const manifest = tempManifestPath([
+      {
+        sourceId: 'src_math2_2098_wrong_year_standard_answer_analysis',
+        eligible: true,
+        status: 'discovered',
+        sourceType: 'official_paper',
+        track: 'math2',
+        year: 2098,
+        remotePath: '/raw/math2/2097-数二标准答案及解析.pdf',
+        contentHash: 'sha256:math2-wrong-year-source',
+        riskFlags: []
+      }
+    ]);
+
+    const report = buildQuestionBankReleaseReport({
+      minYear: 2098,
+      maxYear: 2098,
+      tracks: ['math2'],
+      sourceManifest: manifest,
+      banks: []
+    });
+
+    expect(report.summary.sourceManifestPublishableOfficialPapers).toBe(0);
+    expect(report.summary.sourceManifestCoverageGapCount).toBe(1);
+    expect(report.sourceEvidence.coverage.math2.presentYears).toEqual([]);
+    expect(report.sourceEvidence.coverage.math2.missingYearDiagnostics[2098]).toMatchObject({
+      candidateCount: 1,
+      officialPaperCandidateCount: 1,
+      autoPairEligibleCandidateCount: 1,
+      answerCandidateCount: 1,
+      combinedCandidateCount: 0,
+      blockReasons: {
+        'slotPair=missing_paper': 1
+      }
+    });
+    expect(report.sourceEvidence.coverage.math2.missingYearDiagnostics[2098].sampleCandidates[0]).toMatchObject({
+      sourceId: 'src_math2_2098_wrong_year_standard_answer_analysis',
+      inferredSourceRole: 'answer',
+      autoPairEligible: true,
+      blockReasons: []
+    });
+  });
+
   it('keeps self-study draft banks as pending release blockers even when source evidence is complete', async () => {
     const { buildQuestionBankReleaseReport } = await import('../../scripts/build/question-bank-release-gate.mjs');
     const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'exam-master-qb-bank-'));

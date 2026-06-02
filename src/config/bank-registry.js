@@ -409,7 +409,7 @@ const BANK_REGISTRY = [
     quality: PAPER_QUALITY.READY,
     sections: paperSections('选择题', '填空题', '解答题')
   },
-  ...[2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017].map((year) => ({
+  ...[2006, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017].map((year) => ({
     id: `math1-${year}`,
     subject: '数学',
     subjectKey: 'math',

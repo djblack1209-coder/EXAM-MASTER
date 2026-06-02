@@ -266,6 +266,14 @@ function hasSourcePattern(text, patterns) {
   return patterns.some((pattern) => pattern.test(text));
 }
 
+function matchesMathStandardAnswerAnalysis(item, text) {
+  const match = String(text || '').match(/((?:19|20)\d{2})[-_、.]?数[一二三]标准答案及解析/i);
+  if (!match) return false;
+  const sourceYear = Number(match[1]);
+  const itemYear = Number(item?.year);
+  return Number.isInteger(sourceYear) && Number.isInteger(itemYear) && sourceYear === itemYear;
+}
+
 function inferManifestSourceRole(item) {
   const explicitRole = String(item?.sourceRole || item?.source_role || '').trim();
   if (explicitRole) {
@@ -305,6 +313,9 @@ function inferManifestSourceRole(item) {
   if (hasSourcePattern(fileName, partialPatterns)) {
     return { explicitRole, inferredRole: 'partial_answer', roleSource: 'filename' };
   }
+  if (matchesMathStandardAnswerAnalysis(item, fileName)) {
+    return { explicitRole, inferredRole: 'paper_answer', roleSource: 'filename' };
+  }
   if (hasSourcePattern(fileName, combinedPatterns)) {
     return { explicitRole, inferredRole: 'paper_answer', roleSource: 'filename' };
   }
@@ -323,6 +334,9 @@ function inferManifestSourceRole(item) {
   }
   if (hasSourcePattern(fullPath, partialPatterns)) {
     return { explicitRole, inferredRole: 'partial_answer', roleSource: 'path' };
+  }
+  if (matchesMathStandardAnswerAnalysis(item, fullPath)) {
+    return { explicitRole, inferredRole: 'paper_answer', roleSource: 'path' };
   }
   if (hasSourcePattern(fullPath, answerPatterns)) {
     return { explicitRole, inferredRole: 'answer', roleSource: 'path' };

@@ -1,0 +1,1437 @@
+{
+  "id": "math1-2006",
+  "source": "math1-2006-paper-answer",
+  "paperId": "math1-2006",
+  "paperName": "2006考研数学一真题",
+  "subject": "数学",
+  "subjectKey": "math",
+  "track": "math1",
+  "year": "2006",
+  "quality": "ready",
+  "publicationStatus": "published",
+  "publicationBlockers": [],
+  "sourceEvidencePolicy": "baidu_netdisk_official_paper_pdf_question_crop_answer_page_image_v1",
+  "sourceFiles": [
+    {
+      "id": "math1-2006-paper-answer",
+      "role": "paper_answer",
+      "localPath": "data/raw-inbox/src_220895f653fe227c0315cae9-2006数一标准答案及解析.pdf",
+      "sha256": "sha256:3f608c315134b87003062cf25eaca379dea7beb75f117a1921169d3a5e7c5195",
+      "sourceId": "src_220895f653fe227c0315cae9"
+    }
+  ],
+  "assetRoot": "question-bank/math1-2006",
+  "processed_at": "2026-06-02T14:09:21Z",
+  "total_cards": 23,
+  "cards": [
+    {
+      "id": "math1-2006-001",
+      "number": 1,
+      "paperId": "math1-2006",
+      "paperName": "2006考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2006",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2006考研数学一第1题（填空题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "完整答案与解析见答案原页。",
+      "explanation": "答案来自本地百度网盘 2006 数学一真题答案解析 PDF；填空题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2006/question-01.jpg",
+          "caption": "题面裁切图 q01",
+          "alt": "2006考研数学一题面裁切图 q01"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2006/answer-page-01.jpg",
+          "caption": "答案解析 p.1",
+          "alt": "2006考研数学一答案解析 p.1"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2006",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:54b624925f547595cd26317c8996b8804ad0234b67f592d195031300e2ae8dc9",
+      "answerTextHash": "sha256:5f4c56696e78714539fc6088fa7cc308cd008dac2e701cb0fdd5e2c5820b72a2",
+      "sourceEvidence": {
+        "evidenceId": "math1-2006-q01",
+        "sourceId": "src_220895f653fe227c0315cae9",
+        "answerSourceId": "src_220895f653fe227c0315cae9",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2006-paper-answer",
+        "answerEvidenceId": "math1-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:5f4c56696e78714539fc6088fa7cc308cd008dac2e701cb0fdd5e2c5820b72a2"
+      }
+    },
+    {
+      "id": "math1-2006-002",
+      "number": 2,
+      "paperId": "math1-2006",
+      "paperName": "2006考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2006",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2006考研数学一第2题（填空题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "完整答案与解析见答案原页。",
+      "explanation": "答案来自本地百度网盘 2006 数学一真题答案解析 PDF；填空题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2006/question-02.jpg",
+          "caption": "题面裁切图 q02",
+          "alt": "2006考研数学一题面裁切图 q02"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2006/answer-page-01.jpg",
+          "caption": "答案解析 p.1",
+          "alt": "2006考研数学一答案解析 p.1"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2006",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:7de654b467c109fea7316aef3e413c27979e09cdeb9f11662980dbed4657ec4b",
+      "answerTextHash": "sha256:5f4c56696e78714539fc6088fa7cc308cd008dac2e701cb0fdd5e2c5820b72a2",
+      "sourceEvidence": {
+        "evidenceId": "math1-2006-q02",
+        "sourceId": "src_220895f653fe227c0315cae9",
+        "answerSourceId": "src_220895f653fe227c0315cae9",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2006-paper-answer",
+        "answerEvidenceId": "math1-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:5f4c56696e78714539fc6088fa7cc308cd008dac2e701cb0fdd5e2c5820b72a2"
+      }
+    },
+    {
+      "id": "math1-2006-003",
+      "number": 3,
+      "paperId": "math1-2006",
+      "paperName": "2006考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2006",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2006考研数学一第3题（填空题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "完整答案与解析见答案原页。",
+      "explanation": "答案来自本地百度网盘 2006 数学一真题答案解析 PDF；填空题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2006/question-03.jpg",
+          "caption": "题面裁切图 q03",
+          "alt": "2006考研数学一题面裁切图 q03"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2006/answer-page-01.jpg",
+          "caption": "答案解析 p.1",
+          "alt": "2006考研数学一答案解析 p.1"
+        },
+        {
+          "src": "question-bank/math1-2006/answer-page-02.jpg",
+          "caption": "答案解析 p.2",
+          "alt": "2006考研数学一答案解析 p.2"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2006",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:0d1bde5136db23d58ed70af959c14108137c9fdf2f297288896e893ec80c199d",
+      "answerTextHash": "sha256:13110d2581521f3a4c102f119b53609b6761c4d4ea0fe9f0f250801e0a78fc86",
+      "sourceEvidence": {
+        "evidenceId": "math1-2006-q03",
+        "sourceId": "src_220895f653fe227c0315cae9",
+        "answerSourceId": "src_220895f653fe227c0315cae9",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2006-paper-answer",
+        "answerEvidenceId": "math1-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:13110d2581521f3a4c102f119b53609b6761c4d4ea0fe9f0f250801e0a78fc86"
+      }
+    },
+    {
+      "id": "math1-2006-004",
+      "number": 4,
+      "paperId": "math1-2006",
+      "paperName": "2006考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2006",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2006考研数学一第4题（填空题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "完整答案与解析见答案原页。",
+      "explanation": "答案来自本地百度网盘 2006 数学一真题答案解析 PDF；填空题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2006/question-04.jpg",
+          "caption": "题面裁切图 q04",
+          "alt": "2006考研数学一题面裁切图 q04"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2006/answer-page-02.jpg",
+          "caption": "答案解析 p.2",
+          "alt": "2006考研数学一答案解析 p.2"
+        },
+        {
+          "src": "question-bank/math1-2006/answer-page-03.jpg",
+          "caption": "答案解析 p.3",
+          "alt": "2006考研数学一答案解析 p.3"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2006",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:71a0854682b9ee05a37fb1f9980c287e23172ce98c6dae402c7e2b28166eaada",
+      "answerTextHash": "sha256:f07080beb605c11adc1a97775ff604407234400386dca1ad2fe7443bc912eea5",
+      "sourceEvidence": {
+        "evidenceId": "math1-2006-q04",
+        "sourceId": "src_220895f653fe227c0315cae9",
+        "answerSourceId": "src_220895f653fe227c0315cae9",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2006-paper-answer",
+        "answerEvidenceId": "math1-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:f07080beb605c11adc1a97775ff604407234400386dca1ad2fe7443bc912eea5"
+      }
+    },
+    {
+      "id": "math1-2006-005",
+      "number": 5,
+      "paperId": "math1-2006",
+      "paperName": "2006考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2006",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2006考研数学一第5题（填空题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "完整答案与解析见答案原页。",
+      "explanation": "答案来自本地百度网盘 2006 数学一真题答案解析 PDF；填空题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2006/question-05.jpg",
+          "caption": "题面裁切图 q05",
+          "alt": "2006考研数学一题面裁切图 q05"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2006/answer-page-03.jpg",
+          "caption": "答案解析 p.3",
+          "alt": "2006考研数学一答案解析 p.3"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2006",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:9c70bea340caa9aeb76e4d06612e1643d4efe4e0cd35c4e70ed5d1b5beb81b86",
+      "answerTextHash": "sha256:dc25a59546daa82284b8a85e8b8f68024da61e01a2e627c60bfaad2613ae7e1a",
+      "sourceEvidence": {
+        "evidenceId": "math1-2006-q05",
+        "sourceId": "src_220895f653fe227c0315cae9",
+        "answerSourceId": "src_220895f653fe227c0315cae9",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2006-paper-answer",
+        "answerEvidenceId": "math1-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:dc25a59546daa82284b8a85e8b8f68024da61e01a2e627c60bfaad2613ae7e1a"
+      }
+    },
+    {
+      "id": "math1-2006-006",
+      "number": 6,
+      "paperId": "math1-2006",
+      "paperName": "2006考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2006",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2006考研数学一第6题（填空题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "完整答案与解析见答案原页。",
+      "explanation": "答案来自本地百度网盘 2006 数学一真题答案解析 PDF；填空题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2006/question-06.jpg",
+          "caption": "题面裁切图 q06",
+          "alt": "2006考研数学一题面裁切图 q06"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2006/answer-page-03.jpg",
+          "caption": "答案解析 p.3",
+          "alt": "2006考研数学一答案解析 p.3"
+        },
+        {
+          "src": "question-bank/math1-2006/answer-page-04.jpg",
+          "caption": "答案解析 p.4",
+          "alt": "2006考研数学一答案解析 p.4"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2006",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:ace6a73f0c4ee8fdf58a6ed7376cbfcfea5be5dddfce9a7b52ae63c5efc3eaed",
+      "answerTextHash": "sha256:e95ef69a85391ad28886bb2236fbb2fd834ebb6da292a8514b1ed9533c9b9a78",
+      "sourceEvidence": {
+        "evidenceId": "math1-2006-q06",
+        "sourceId": "src_220895f653fe227c0315cae9",
+        "answerSourceId": "src_220895f653fe227c0315cae9",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2006-paper-answer",
+        "answerEvidenceId": "math1-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:e95ef69a85391ad28886bb2236fbb2fd834ebb6da292a8514b1ed9533c9b9a78"
+      }
+    },
+    {
+      "id": "math1-2006-007",
+      "number": 7,
+      "paperId": "math1-2006",
+      "paperName": "2006考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2006",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2006考研数学一第7题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2006 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2006/question-07.jpg",
+          "caption": "题面裁切图 q07",
+          "alt": "2006考研数学一题面裁切图 q07"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2006/answer-page-04.jpg",
+          "caption": "答案解析 p.4",
+          "alt": "2006考研数学一答案解析 p.4"
+        },
+        {
+          "src": "question-bank/math1-2006/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2006考研数学一答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2006",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:f9b770384be0bf4ee6c529ce29302778d4a56b3ee73597b00ff48c35684402c5",
+      "answerTextHash": "sha256:3b5cdff604cfadec60f8561c30f3d4580e263ad4a1736b2de87ea10fee20ad96",
+      "sourceEvidence": {
+        "evidenceId": "math1-2006-q07",
+        "sourceId": "src_220895f653fe227c0315cae9",
+        "answerSourceId": "src_220895f653fe227c0315cae9",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2006-paper-answer",
+        "answerEvidenceId": "math1-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:3b5cdff604cfadec60f8561c30f3d4580e263ad4a1736b2de87ea10fee20ad96"
+      }
+    },
+    {
+      "id": "math1-2006-008",
+      "number": 8,
+      "paperId": "math1-2006",
+      "paperName": "2006考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2006",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2006考研数学一第8题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2006 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2006/question-08.jpg",
+          "caption": "题面裁切图 q08",
+          "alt": "2006考研数学一题面裁切图 q08"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2006/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2006考研数学一答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2006",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:440dbb2803b7af14b998d96dc10a0424cd76635483a34d75e27656d64224eb07",
+      "answerTextHash": "sha256:98d843014fcc06e8c015999ef30423714e3b0fc8d97ddf5a4680ed5e2e3f0339",
+      "sourceEvidence": {
+        "evidenceId": "math1-2006-q08",
+        "sourceId": "src_220895f653fe227c0315cae9",
+        "answerSourceId": "src_220895f653fe227c0315cae9",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2006-paper-answer",
+        "answerEvidenceId": "math1-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:98d843014fcc06e8c015999ef30423714e3b0fc8d97ddf5a4680ed5e2e3f0339"
+      }
+    },
+    {
+      "id": "math1-2006-009",
+      "number": 9,
+      "paperId": "math1-2006",
+      "paperName": "2006考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2006",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2006考研数学一第9题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2006 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2006/question-09a.jpg",
+          "caption": "题面裁切图 q09",
+          "alt": "2006考研数学一题面裁切图 q09"
+        },
+        {
+          "src": "question-bank/math1-2006/question-09b.jpg",
+          "caption": "题面裁切图 q09",
+          "alt": "2006考研数学一题面裁切图 q09"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2006/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2006考研数学一答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2006",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:3f3f59d2106fd2992b41fa7a06f7e3d201fd8be07b6aad17f6638900da667a6f",
+      "answerTextHash": "sha256:e4a2fe781d79b6ac0d0a57fdf6fcbe5f0bd7d1dfefea384e35b54f195a6a4c7c",
+      "sourceEvidence": {
+        "evidenceId": "math1-2006-q09",
+        "sourceId": "src_220895f653fe227c0315cae9",
+        "answerSourceId": "src_220895f653fe227c0315cae9",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2006-paper-answer",
+        "answerEvidenceId": "math1-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:e4a2fe781d79b6ac0d0a57fdf6fcbe5f0bd7d1dfefea384e35b54f195a6a4c7c"
+      }
+    },
+    {
+      "id": "math1-2006-010",
+      "number": 10,
+      "paperId": "math1-2006",
+      "paperName": "2006考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2006",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2006考研数学一第10题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2006 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2006/question-10.jpg",
+          "caption": "题面裁切图 q10",
+          "alt": "2006考研数学一题面裁切图 q10"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2006/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2006考研数学一答案解析 p.6"
+        },
+        {
+          "src": "question-bank/math1-2006/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2006考研数学一答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2006",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:f4505cb7fedc75c16ba95d5f924345c967397b0d95518cfc7420099c99b461ef",
+      "answerTextHash": "sha256:c91e3595579e7b88a5c1b3824141098d686b64257a72955b90dd239665d9b745",
+      "sourceEvidence": {
+        "evidenceId": "math1-2006-q10",
+        "sourceId": "src_220895f653fe227c0315cae9",
+        "answerSourceId": "src_220895f653fe227c0315cae9",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2006-paper-answer",
+        "answerEvidenceId": "math1-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:c91e3595579e7b88a5c1b3824141098d686b64257a72955b90dd239665d9b745"
+      }
+    },
+    {
+      "id": "math1-2006-011",
+      "number": 11,
+      "paperId": "math1-2006",
+      "paperName": "2006考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2006",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2006考研数学一第11题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2006 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2006/question-11.jpg",
+          "caption": "题面裁切图 q11",
+          "alt": "2006考研数学一题面裁切图 q11"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2006/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2006考研数学一答案解析 p.7"
+        },
+        {
+          "src": "question-bank/math1-2006/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2006考研数学一答案解析 p.8"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2006",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:4835f6873a3e4457e8dc1f0541ae666b4fd640c7ef79b4e39abd61cc4c1da61d",
+      "answerTextHash": "sha256:b6d0e30a24367eae6330ccbf0c3b962bab48bb487386ca2fce80f8d5bdd64f13",
+      "sourceEvidence": {
+        "evidenceId": "math1-2006-q11",
+        "sourceId": "src_220895f653fe227c0315cae9",
+        "answerSourceId": "src_220895f653fe227c0315cae9",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2006-paper-answer",
+        "answerEvidenceId": "math1-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:b6d0e30a24367eae6330ccbf0c3b962bab48bb487386ca2fce80f8d5bdd64f13"
+      }
+    },
+    {
+      "id": "math1-2006-012",
+      "number": 12,
+      "paperId": "math1-2006",
+      "paperName": "2006考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2006",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2006考研数学一第12题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2006 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2006/question-12.jpg",
+          "caption": "题面裁切图 q12",
+          "alt": "2006考研数学一题面裁切图 q12"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2006/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2006考研数学一答案解析 p.8"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2006",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:514b8be5c3d67e6c07136016df180bd1e0c6c0b7b5c466f9846e93a01485e9df",
+      "answerTextHash": "sha256:f8bd040d50fd537c6444f6e4a9534952595ef9194270a36551f220fe4051e322",
+      "sourceEvidence": {
+        "evidenceId": "math1-2006-q12",
+        "sourceId": "src_220895f653fe227c0315cae9",
+        "answerSourceId": "src_220895f653fe227c0315cae9",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2006-paper-answer",
+        "answerEvidenceId": "math1-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:f8bd040d50fd537c6444f6e4a9534952595ef9194270a36551f220fe4051e322"
+      }
+    },
+    {
+      "id": "math1-2006-013",
+      "number": 13,
+      "paperId": "math1-2006",
+      "paperName": "2006考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2006",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2006考研数学一第13题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2006 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2006/question-13.jpg",
+          "caption": "题面裁切图 q13",
+          "alt": "2006考研数学一题面裁切图 q13"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2006/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2006考研数学一答案解析 p.8"
+        },
+        {
+          "src": "question-bank/math1-2006/answer-page-09.jpg",
+          "caption": "答案解析 p.9",
+          "alt": "2006考研数学一答案解析 p.9"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2006",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:dd316909f82d180cb317bda6c00d21b8c6cc51be80b9afe6bb5ebbb7ee52b408",
+      "answerTextHash": "sha256:ed10b92105c7de08ebfd96a08d067adfc71e948e88b3ef0e46f272f89b1eebef",
+      "sourceEvidence": {
+        "evidenceId": "math1-2006-q13",
+        "sourceId": "src_220895f653fe227c0315cae9",
+        "answerSourceId": "src_220895f653fe227c0315cae9",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2006-paper-answer",
+        "answerEvidenceId": "math1-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:ed10b92105c7de08ebfd96a08d067adfc71e948e88b3ef0e46f272f89b1eebef"
+      }
+    },
+    {
+      "id": "math1-2006-014",
+      "number": 14,
+      "paperId": "math1-2006",
+      "paperName": "2006考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2006",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2006考研数学一第14题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2006 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2006/question-14.jpg",
+          "caption": "题面裁切图 q14",
+          "alt": "2006考研数学一题面裁切图 q14"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2006/answer-page-09.jpg",
+          "caption": "答案解析 p.9",
+          "alt": "2006考研数学一答案解析 p.9"
+        },
+        {
+          "src": "question-bank/math1-2006/answer-page-10.jpg",
+          "caption": "答案解析 p.10",
+          "alt": "2006考研数学一答案解析 p.10"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2006",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:9362b63a51b83bf44550822188b8c5004bca37a9cb6c80dd250066c579e1c578",
+      "answerTextHash": "sha256:34434619dd9db0900cf8d723a6bd75aa80680febe6913acfe53165497d60682b",
+      "sourceEvidence": {
+        "evidenceId": "math1-2006-q14",
+        "sourceId": "src_220895f653fe227c0315cae9",
+        "answerSourceId": "src_220895f653fe227c0315cae9",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2006-paper-answer",
+        "answerEvidenceId": "math1-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:34434619dd9db0900cf8d723a6bd75aa80680febe6913acfe53165497d60682b"
+      }
+    },
+    {
+      "id": "math1-2006-015",
+      "number": 15,
+      "paperId": "math1-2006",
+      "paperName": "2006考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2006",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2006考研数学一第15题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "解答题完整演算、证明或推导过程见答案原页。",
+      "explanation": "答案来自本地百度网盘 2006 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2006/question-15.jpg",
+          "caption": "题面裁切图 q15",
+          "alt": "2006考研数学一题面裁切图 q15"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2006/answer-page-10.jpg",
+          "caption": "答案解析 p.10",
+          "alt": "2006考研数学一答案解析 p.10"
+        },
+        {
+          "src": "question-bank/math1-2006/answer-page-11.jpg",
+          "caption": "答案解析 p.11",
+          "alt": "2006考研数学一答案解析 p.11"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2006",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:0476c8f04c842ce2d27584558a18b32a58aa424fa15e67790141b168e368e295",
+      "answerTextHash": "sha256:793c8c64183c55518a67f36a8ecf820b64a4e90c8a04c41f18878804d420cb75",
+      "sourceEvidence": {
+        "evidenceId": "math1-2006-q15",
+        "sourceId": "src_220895f653fe227c0315cae9",
+        "answerSourceId": "src_220895f653fe227c0315cae9",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2006-paper-answer",
+        "answerEvidenceId": "math1-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:793c8c64183c55518a67f36a8ecf820b64a4e90c8a04c41f18878804d420cb75"
+      }
+    },
+    {
+      "id": "math1-2006-016",
+      "number": 16,
+      "paperId": "math1-2006",
+      "paperName": "2006考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2006",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2006考研数学一第16题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "解答题完整演算、证明或推导过程见答案原页。",
+      "explanation": "答案来自本地百度网盘 2006 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2006/question-16.jpg",
+          "caption": "题面裁切图 q16",
+          "alt": "2006考研数学一题面裁切图 q16"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2006/answer-page-11.jpg",
+          "caption": "答案解析 p.11",
+          "alt": "2006考研数学一答案解析 p.11"
+        },
+        {
+          "src": "question-bank/math1-2006/answer-page-12.jpg",
+          "caption": "答案解析 p.12",
+          "alt": "2006考研数学一答案解析 p.12"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2006",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:9dbd8b7cbe00a86c8a79b564aab22f696edd3b356915f4eb0d252bfec1023056",
+      "answerTextHash": "sha256:fa87df8b37edf9258e39b7abeb94d6b03df42947c57e51d68d7669f60701386c",
+      "sourceEvidence": {
+        "evidenceId": "math1-2006-q16",
+        "sourceId": "src_220895f653fe227c0315cae9",
+        "answerSourceId": "src_220895f653fe227c0315cae9",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2006-paper-answer",
+        "answerEvidenceId": "math1-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:fa87df8b37edf9258e39b7abeb94d6b03df42947c57e51d68d7669f60701386c"
+      }
+    },
+    {
+      "id": "math1-2006-017",
+      "number": 17,
+      "paperId": "math1-2006",
+      "paperName": "2006考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2006",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2006考研数学一第17题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "解答题完整演算、证明或推导过程见答案原页。",
+      "explanation": "答案来自本地百度网盘 2006 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2006/question-17.jpg",
+          "caption": "题面裁切图 q17",
+          "alt": "2006考研数学一题面裁切图 q17"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2006/answer-page-12.jpg",
+          "caption": "答案解析 p.12",
+          "alt": "2006考研数学一答案解析 p.12"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2006",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:d7716e03eba67eede21f2a26b20708754aef9cdbdab2440872aec57345cd7cb4",
+      "answerTextHash": "sha256:7abc6ede57ce6d6e4cca0fdd3dbd8a492c2d01e08de6ec79fe51212b6287f0f5",
+      "sourceEvidence": {
+        "evidenceId": "math1-2006-q17",
+        "sourceId": "src_220895f653fe227c0315cae9",
+        "answerSourceId": "src_220895f653fe227c0315cae9",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2006-paper-answer",
+        "answerEvidenceId": "math1-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:7abc6ede57ce6d6e4cca0fdd3dbd8a492c2d01e08de6ec79fe51212b6287f0f5"
+      }
+    },
+    {
+      "id": "math1-2006-018",
+      "number": 18,
+      "paperId": "math1-2006",
+      "paperName": "2006考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2006",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2006考研数学一第18题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "解答题完整演算、证明或推导过程见答案原页。",
+      "explanation": "答案来自本地百度网盘 2006 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2006/question-18a.jpg",
+          "caption": "题面裁切图 q18",
+          "alt": "2006考研数学一题面裁切图 q18"
+        },
+        {
+          "src": "question-bank/math1-2006/question-18b.jpg",
+          "caption": "题面裁切图 q18",
+          "alt": "2006考研数学一题面裁切图 q18"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2006/answer-page-12.jpg",
+          "caption": "答案解析 p.12",
+          "alt": "2006考研数学一答案解析 p.12"
+        },
+        {
+          "src": "question-bank/math1-2006/answer-page-13.jpg",
+          "caption": "答案解析 p.13",
+          "alt": "2006考研数学一答案解析 p.13"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2006",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:e701bc4dd2ceb7f628b413cbff03eb6b0af4062979c573b30d5075da1fdca5a5",
+      "answerTextHash": "sha256:615b0f75fd6dee23cdbb81dd4d3595906a91721fe026d208d0d9a5332926f04c",
+      "sourceEvidence": {
+        "evidenceId": "math1-2006-q18",
+        "sourceId": "src_220895f653fe227c0315cae9",
+        "answerSourceId": "src_220895f653fe227c0315cae9",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2006-paper-answer",
+        "answerEvidenceId": "math1-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:615b0f75fd6dee23cdbb81dd4d3595906a91721fe026d208d0d9a5332926f04c"
+      }
+    },
+    {
+      "id": "math1-2006-019",
+      "number": 19,
+      "paperId": "math1-2006",
+      "paperName": "2006考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2006",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2006考研数学一第19题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "解答题完整演算、证明或推导过程见答案原页。",
+      "explanation": "答案来自本地百度网盘 2006 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2006/question-19a.jpg",
+          "caption": "题面裁切图 q19",
+          "alt": "2006考研数学一题面裁切图 q19"
+        },
+        {
+          "src": "question-bank/math1-2006/question-19b.jpg",
+          "caption": "题面裁切图 q19",
+          "alt": "2006考研数学一题面裁切图 q19"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2006/answer-page-13.jpg",
+          "caption": "答案解析 p.13",
+          "alt": "2006考研数学一答案解析 p.13"
+        },
+        {
+          "src": "question-bank/math1-2006/answer-page-14.jpg",
+          "caption": "答案解析 p.14",
+          "alt": "2006考研数学一答案解析 p.14"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2006",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:24285ee609c23e99a45406f9179833d697374c662e3d7332fbdf6d1b71009480",
+      "answerTextHash": "sha256:02eab3b25df878b060ae029dd0743674400f3bf60a8f64cec3adb8f626d6048f",
+      "sourceEvidence": {
+        "evidenceId": "math1-2006-q19",
+        "sourceId": "src_220895f653fe227c0315cae9",
+        "answerSourceId": "src_220895f653fe227c0315cae9",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2006-paper-answer",
+        "answerEvidenceId": "math1-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:02eab3b25df878b060ae029dd0743674400f3bf60a8f64cec3adb8f626d6048f"
+      }
+    },
+    {
+      "id": "math1-2006-020",
+      "number": 20,
+      "paperId": "math1-2006",
+      "paperName": "2006考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2006",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2006考研数学一第20题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "解答题完整演算、证明或推导过程见答案原页。",
+      "explanation": "答案来自本地百度网盘 2006 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2006/question-20.jpg",
+          "caption": "题面裁切图 q20",
+          "alt": "2006考研数学一题面裁切图 q20"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2006/answer-page-14.jpg",
+          "caption": "答案解析 p.14",
+          "alt": "2006考研数学一答案解析 p.14"
+        },
+        {
+          "src": "question-bank/math1-2006/answer-page-15.jpg",
+          "caption": "答案解析 p.15",
+          "alt": "2006考研数学一答案解析 p.15"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2006",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:655e13112d149fd4248f451aeeb02680871bef6085cfe4912440dcf09ce08b19",
+      "answerTextHash": "sha256:edc7f1542fec672f579472ee62ae267bbeb87573f2700f9fface928e27f6cb18",
+      "sourceEvidence": {
+        "evidenceId": "math1-2006-q20",
+        "sourceId": "src_220895f653fe227c0315cae9",
+        "answerSourceId": "src_220895f653fe227c0315cae9",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2006-paper-answer",
+        "answerEvidenceId": "math1-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:edc7f1542fec672f579472ee62ae267bbeb87573f2700f9fface928e27f6cb18"
+      }
+    },
+    {
+      "id": "math1-2006-021",
+      "number": 21,
+      "paperId": "math1-2006",
+      "paperName": "2006考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2006",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2006考研数学一第21题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "解答题完整演算、证明或推导过程见答案原页。",
+      "explanation": "答案来自本地百度网盘 2006 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2006/question-21.jpg",
+          "caption": "题面裁切图 q21",
+          "alt": "2006考研数学一题面裁切图 q21"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2006/answer-page-15.jpg",
+          "caption": "答案解析 p.15",
+          "alt": "2006考研数学一答案解析 p.15"
+        },
+        {
+          "src": "question-bank/math1-2006/answer-page-16.jpg",
+          "caption": "答案解析 p.16",
+          "alt": "2006考研数学一答案解析 p.16"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2006",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:a49738052fe1e1034e08291891056dec191e6d25f6edb0b231d87927b78f2a4c",
+      "answerTextHash": "sha256:f48761e0936140a1ba4ae04ffa35bdea9b5220fd47b959db11f14414b55adaaf",
+      "sourceEvidence": {
+        "evidenceId": "math1-2006-q21",
+        "sourceId": "src_220895f653fe227c0315cae9",
+        "answerSourceId": "src_220895f653fe227c0315cae9",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2006-paper-answer",
+        "answerEvidenceId": "math1-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:f48761e0936140a1ba4ae04ffa35bdea9b5220fd47b959db11f14414b55adaaf"
+      }
+    },
+    {
+      "id": "math1-2006-022",
+      "number": 22,
+      "paperId": "math1-2006",
+      "paperName": "2006考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2006",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2006考研数学一第22题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "解答题完整演算、证明或推导过程见答案原页。",
+      "explanation": "答案来自本地百度网盘 2006 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2006/question-22a.jpg",
+          "caption": "题面裁切图 q22",
+          "alt": "2006考研数学一题面裁切图 q22"
+        },
+        {
+          "src": "question-bank/math1-2006/question-22b.jpg",
+          "caption": "题面裁切图 q22",
+          "alt": "2006考研数学一题面裁切图 q22"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2006/answer-page-16.jpg",
+          "caption": "答案解析 p.16",
+          "alt": "2006考研数学一答案解析 p.16"
+        },
+        {
+          "src": "question-bank/math1-2006/answer-page-17.jpg",
+          "caption": "答案解析 p.17",
+          "alt": "2006考研数学一答案解析 p.17"
+        },
+        {
+          "src": "question-bank/math1-2006/answer-page-18.jpg",
+          "caption": "答案解析 p.18",
+          "alt": "2006考研数学一答案解析 p.18"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2006",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:bebc9e572632245e7c3428f547f668f4f3e229a038747de22d95b77a05868cc9",
+      "answerTextHash": "sha256:dcd717fe5a61d8e395a03ce4cabf41d401a36e6fb23b709d53fe71d37ea779db",
+      "sourceEvidence": {
+        "evidenceId": "math1-2006-q22",
+        "sourceId": "src_220895f653fe227c0315cae9",
+        "answerSourceId": "src_220895f653fe227c0315cae9",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2006-paper-answer",
+        "answerEvidenceId": "math1-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:dcd717fe5a61d8e395a03ce4cabf41d401a36e6fb23b709d53fe71d37ea779db"
+      }
+    },
+    {
+      "id": "math1-2006-023",
+      "number": 23,
+      "paperId": "math1-2006",
+      "paperName": "2006考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2006",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2006考研数学一第23题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "解答题完整演算、证明或推导过程见答案原页。",
+      "explanation": "答案来自本地百度网盘 2006 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2006/question-23.jpg",
+          "caption": "题面裁切图 q23",
+          "alt": "2006考研数学一题面裁切图 q23"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2006/answer-page-18.jpg",
+          "caption": "答案解析 p.18",
+          "alt": "2006考研数学一答案解析 p.18"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2006",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2006-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:902b2387f7cc0a27e212427b6b21eb4b0cbaa48a8994b9df1674ef6b2a66a43f",
+      "answerTextHash": "sha256:a51f521bb26903fd8d1b299d7c9f095f5633bad41e1484cc1d8fd51d5ee80b74",
+      "sourceEvidence": {
+        "evidenceId": "math1-2006-q23",
+        "sourceId": "src_220895f653fe227c0315cae9",
+        "answerSourceId": "src_220895f653fe227c0315cae9",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2006-paper-answer",
+        "answerEvidenceId": "math1-2006-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:a51f521bb26903fd8d1b299d7c9f095f5633bad41e1484cc1d8fd51d5ee80b74"
+      }
+    }
+  ]
+}

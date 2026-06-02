@@ -2,7 +2,7 @@
 """
 Build Math I historical public-course banks from local Baidu Netdisk PDFs.
 
-The 2008-2017 Math I sources are scanned page-image PDFs. Several years are
+The 2006 and 2008-2017 Math I sources are scanned page-image PDFs. Several years are
 "paper + standard answer + explanation" layouts where an answer appears below
 the question on the same page. To keep the practice flow usable, this builder
 renders the original pages as answer evidence and generates conservative
@@ -38,6 +38,7 @@ class SourceSpec:
     question_pages: dict[int, list[int | str]]
     answer_pages: dict[int, list[int]]
     answers: dict[int, str]
+    question_crop_boxes: dict[str, tuple[int, int, int]] | None = None
 
 
 def pages_for_ranges(*ranges: tuple[int, int, int]) -> dict[int, list[int]]:
@@ -83,7 +84,96 @@ def generic_answers(year: int, choice_answers: dict[int, str] | None = None) -> 
     return answers
 
 
+def question_refs(*refs: str) -> list[int | str]:
+    return list(refs)
+
+
 SPECS: dict[int, SourceSpec] = {
+    2006: SourceSpec(
+        year=2006,
+        file_name="src_220895f653fe227c0315cae9-2006数一标准答案及解析.pdf",
+        source_id="src_220895f653fe227c0315cae9",
+        question_pages={
+            1: question_refs("q01"),
+            2: question_refs("q02"),
+            3: question_refs("q03"),
+            4: question_refs("q04"),
+            5: question_refs("q05"),
+            6: question_refs("q06"),
+            7: question_refs("q07"),
+            8: question_refs("q08"),
+            9: question_refs("q09a", "q09b"),
+            10: question_refs("q10"),
+            11: question_refs("q11"),
+            12: question_refs("q12"),
+            13: question_refs("q13"),
+            14: question_refs("q14"),
+            15: question_refs("q15"),
+            16: question_refs("q16"),
+            17: question_refs("q17"),
+            18: question_refs("q18a", "q18b"),
+            19: question_refs("q19a", "q19b"),
+            20: question_refs("q20"),
+            21: question_refs("q21"),
+            22: question_refs("q22a", "q22b"),
+            23: question_refs("q23"),
+        },
+        answer_pages={
+            1: [1],
+            2: [1],
+            3: [1, 2],
+            4: [2, 3],
+            5: [3],
+            6: [3, 4],
+            7: [4, 5],
+            8: [5],
+            9: [6],
+            10: [6, 7],
+            11: [7, 8],
+            12: [8],
+            13: [8, 9],
+            14: [9, 10],
+            15: [10, 11],
+            16: [11, 12],
+            17: [12],
+            18: [12, 13],
+            19: [13, 14],
+            20: [14, 15],
+            21: [15, 16],
+            22: [16, 17, 18],
+            23: [18],
+        },
+        answers=generic_answers(2006, {7: "A", 8: "C", 9: "D", 10: "D", 11: "A", 12: "B", 13: "C", 14: "A"}),
+        question_crop_boxes={
+            "q01": (1, 135, 180),
+            "q02": (1, 760, 82),
+            "q03": (1, 1225, 115),
+            "q04": (2, 920, 65),
+            "q05": (3, 380, 125),
+            "q06": (3, 945, 115),
+            "q07": (4, 335, 400),
+            "q08": (5, 465, 210),
+            "q09a": (5, 1260, 250),
+            "q09b": (6, 125, 80),
+            "q10": (6, 470, 390),
+            "q11": (7, 305, 340),
+            "q12": (8, 360, 260),
+            "q13": (8, 1060, 180),
+            "q14": (9, 420, 230),
+            "q15": (10, 365, 280),
+            "q16": (11, 530, 250),
+            "q17": (12, 675, 105),
+            "q18a": (12, 1335, 180),
+            "q18b": (13, 135, 220),
+            "q19a": (13, 1148, 380),
+            "q19b": (14, 140, 80),
+            "q20": (14, 925, 325),
+            "q21": (15, 1065, 280),
+            "q22a": (16, 1205, 315),
+            "q22b": (17, 145, 305),
+            "q23": (18, 445, 335),
+        },
+    ),
     2008: SourceSpec(
         year=2008,
         file_name="src_98dbae1b54d51d2784cc1728-2008数一真题、标准答案及解析.pdf",
@@ -409,6 +499,35 @@ def detect_question_crop_boxes(page_image: Path, numbers: list[int]) -> dict[int
 
 
 def crop_question_assets(spec: SourceSpec, *, asset_dir: Path, force: bool) -> None:
+    if spec.question_crop_boxes:
+        if force:
+            for item in asset_dir.glob("question-*.jpg"):
+                item.unlink()
+        for ref, (page, y_offset, crop_height) in spec.question_crop_boxes.items():
+            source = asset_dir / f"answer-page-{page:02d}.jpg"
+            if not source.exists():
+                raise FileNotFoundError(source)
+            if not ref.startswith("q"):
+                raise ValueError(f"math1-{spec.year}: unsupported crop ref {ref}")
+            target = asset_dir / f"question-{ref[1:]}.jpg"
+            if target.exists() and not force:
+                continue
+            run(
+                [
+                    "ffmpeg",
+                    "-y",
+                    "-hide_banner",
+                    "-loglevel",
+                    "error",
+                    "-i",
+                    str(source),
+                    "-vf",
+                    f"crop=iw:{crop_height}:0:{y_offset}",
+                    str(target),
+                ]
+            )
+        return
+
     questions_by_page: dict[int, list[int]] = {}
     for number, refs in spec.question_pages.items():
         if any(not isinstance(ref, int) for ref in refs):
@@ -451,7 +570,8 @@ def image_ref(spec: SourceSpec, kind: str, page: int | str, *, caption: str) -> 
     if isinstance(page, int):
         file_name = f"{kind}-{page:02d}.jpg"
     elif str(page).startswith("q"):
-        file_name = f"question-{int(str(page)[1:]):02d}.jpg"
+        suffix = str(page)[1:]
+        file_name = f"question-{int(suffix):02d}.jpg" if suffix.isdigit() else f"question-{suffix}.jpg"
     else:
         file_name = f"{kind}-{page}.jpg"
     return {
@@ -461,7 +581,13 @@ def image_ref(spec: SourceSpec, kind: str, page: int | str, *, caption: str) -> 
     }
 
 
-def section_for(number: int) -> str:
+def section_for(spec: SourceSpec, number: int) -> str:
+    if spec.year == 2006:
+        if number <= 6:
+            return "填空题"
+        if number <= 14:
+            return "选择题"
+        return "解答题"
     if number <= 8:
         return "选择题"
     if number <= 14:
@@ -469,18 +595,27 @@ def section_for(number: int) -> str:
     return "解答题"
 
 
-def type_for(number: int) -> str:
-    return "flashcard" if number <= 14 else "short_answer"
+def type_for(spec: SourceSpec, number: int) -> str:
+    if spec.year == 2006:
+        if 7 <= number <= 14:
+            return "single_choice"
+        return "short_answer"
+    if number <= 8:
+        return "flashcard"
+    if number <= 14:
+        return "flashcard"
+    return "short_answer"
 
 
 def question_anchor(spec: SourceSpec, number: int) -> str:
-    return f"{spec.year}考研数学一第{number}题（{section_for(number)}）。题干、公式和图形以题面原页图为准。"
+    return f"{spec.year}考研数学一第{number}题（{section_for(spec, number)}）。题干、公式和图形以题面原页图为准。"
 
 
 def explanation_for(spec: SourceSpec, number: int) -> str:
-    if number <= 8:
+    section = section_for(spec, number)
+    if section == "选择题":
         return f"答案来自本地百度网盘 {spec.year} 数学一真题答案解析 PDF；选择题完整解析见答案原页图。"
-    if number <= 14:
+    if section == "填空题":
         return f"答案来自本地百度网盘 {spec.year} 数学一真题答案解析 PDF；填空题完整解析见答案原页图。"
     return f"答案来自本地百度网盘 {spec.year} 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。"
 
@@ -504,6 +639,7 @@ def build_card(spec: SourceSpec, number: int) -> dict[str, Any]:
     answer = spec.answers[number]
     question_hash = sha256_text(f"{question}|question-pages:{spec.question_pages[number]}")
     answer_hash = sha256_text(f"{answer}|answer-pages:{spec.answer_pages[number]}")
+    card_type = type_for(spec, number)
     question_images = [
         image_ref(
             spec,
@@ -526,15 +662,22 @@ def build_card(spec: SourceSpec, number: int) -> dict[str, Any]:
         "subjectKey": "math",
         "track": "math1",
         "year": str(spec.year),
-        "section": section_for(number),
-        "type": type_for(number),
+        "section": section_for(spec, number),
+        "type": card_type,
         "question": question,
-        "options": [],
+        "options": [
+            {"label": "A", "text": "A"},
+            {"label": "B", "text": "B"},
+            {"label": "C", "text": "C"},
+            {"label": "D", "text": "D"},
+        ]
+        if card_type == "single_choice"
+        else [],
         "answer": answer,
         "explanation": explanation_for(spec, number),
         "questionImages": question_images,
         "answerImages": answer_images,
-        "tags": ["math1", str(spec.year), section_for(number)],
+        "tags": ["math1", str(spec.year), section_for(spec, number)],
         "difficulty": 3 if number >= 15 else 2,
         "sourceEvidenceId": f"math1-{spec.year}-paper-answer",
         "answerEvidenceStatus": "matched",
@@ -620,7 +763,7 @@ def write_json(path: Path, payload: Any) -> None:
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--years", default="2008-2017")
+    parser.add_argument("--years", default="2006,2008-2017")
     parser.add_argument("--bank-dir", type=Path, default=DEFAULT_BANK_DIR)
     parser.add_argument("--asset-root", type=Path, default=DEFAULT_ASSET_ROOT)
     parser.add_argument("--force-assets", action="store_true")
