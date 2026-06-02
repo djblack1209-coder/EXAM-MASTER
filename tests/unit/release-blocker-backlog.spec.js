@@ -709,6 +709,106 @@ describe('release blocker backlog', () => {
     expect(backlog.sourceManifestHumanRegistrationQueue.slots).toEqual([]);
   });
 
+  it('blocks politics paper-answer sources with incomplete answer markers before auto-pairing', () => {
+    const backlog = buildReleaseBlockerBacklog({
+      questionAudit: {
+        summary: {
+          requiredSlots: 1,
+          publishedSlots: 0,
+          pendingSlots: 1,
+          pendingCoverageBlockerCount: 1,
+          coverageGapCount: 0,
+          sourceManifestPublishableOfficialPapers: 0,
+          sourceManifestCoverageGapCount: 1
+        },
+        releaseReadiness: { canPublish: false },
+        coverage: {
+          tracks: [
+            {
+              track: 'politics',
+              requiredYears: [2023],
+              publishedYears: [],
+              pendingYears: [2023],
+              missingYears: []
+            }
+          ]
+        },
+        sourceEvidence: {
+          coverage: {
+            politics: {
+              presentYears: [2023],
+              missingYears: [],
+              coverageRate: 1
+            }
+          }
+        }
+      },
+      flashcardQuality: { releaseReadiness: { canPromoteToPublic: true }, summary: {}, files: [] },
+      externalAudit: { releaseReadiness: { canPublish: true }, summary: {}, sections: {} },
+      wechatSmoke: { status: 'passed' },
+      localSourceAudit: {
+        root: 'data/raw-inbox/public-course-history/politics/2023',
+        sources: [
+          {
+            id: 'politics-2023-paper',
+            track: 'politics',
+            year: '2023',
+            role: 'paper',
+            localPath: 'data/raw-inbox/public-course-history/politics/2023/2023-politics-paper.pdf',
+            sha256: 'sha256:politics-paper',
+            textLayer: 'usable',
+            quality: 'needs_review',
+            blockers: []
+          },
+          {
+            id: 'politics-2023-paper-answer',
+            track: 'politics',
+            year: '2023',
+            role: 'paper_answer',
+            localPath: 'data/raw-inbox/public-course-history/politics/2023/2023-politics-paper-answer.pdf',
+            sha256: 'sha256:politics-paper-answer',
+            textLayer: 'usable',
+            quality: 'needs_review',
+            blockers: ['missing_answer_markers:10,11']
+          }
+        ]
+      },
+      generatedAt: '2026-06-02T00:00:00.000Z'
+    });
+
+    const slot = backlog.publicCourseSlotBacklog.find((item) => item.slotKey === 'politics:2023');
+
+    expect(slot.localSourceAuditSummary).toContain('companions=answer有阻塞');
+    expect(slot.sourceEvidenceStatus).toBe('publishable_source_present');
+    expect(slot.nextAction).toContain('已有可读试卷，但答案文件仍有 1 个阻塞');
+    expect(slot.sourceManifestRegistrationChecklist).toMatchObject({
+      status: 'blocked_before_auto_pair',
+      blockers: ['local_answer_file_blocked'],
+      localFileCandidates: [
+        {
+          role: 'paper',
+          blockers: []
+        },
+        {
+          role: 'paper_answer',
+          blockers: ['missing_answer_markers:10,11']
+        }
+      ]
+    });
+    expect(backlog.nextBalancedPublicCourseSlots[0]).toMatchObject({
+      track: 'politics',
+      year: 2023,
+      sourceManifestRegistrationChecklist: {
+        status: 'blocked_before_auto_pair',
+        blockers: ['local_answer_file_blocked']
+      }
+    });
+    expect(backlog.summary.publicCourseLocalSourceSummary).toMatchObject({
+      answerBlockedSlots: 1,
+      pairedReadableSlots: 0
+    });
+  });
+
   it('reports when a loaded local source audit has no files for the blocked slot', () => {
     const backlog = buildReleaseBlockerBacklog({
       questionAudit: {

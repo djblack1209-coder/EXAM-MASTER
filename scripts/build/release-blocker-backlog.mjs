@@ -729,6 +729,12 @@ function buildCoverageItems(
       );
       const missingSource = sourceEvidence.status === 'missing_publishable_official_source';
       const candidateSamples = sourceCandidateSamples(candidateDiagnostics);
+      const registrationChecklist = sourceManifestRegistrationChecklist(localSourceAudit, candidateSamples, {
+        track: trackId,
+        year
+      });
+      const localSourceBlocked =
+        registrationChecklist.status === 'blocked_before_auto_pair' && localSourceAudit.status !== 'not_available';
       items.push(
         createItem({
           id: `coverage_missing:${trackId}:${year}`,
@@ -737,7 +743,7 @@ function buildCoverageItems(
           track: trackId,
           year,
           title: `${TRACK_LABELS[trackId] || trackId} ${year} 缺少可发布题库`,
-          nextAction: missingSource
+          nextAction: missingSource || localSourceBlocked
             ? sourceEvidenceNextAction(localSourceAudit, '再进入题卡清洗和 registry 注册。')
             : '已有可发布题源证据时，完成题卡清洗、答案匹配、证据哈希，再按 registry 规范注册题库。',
           evidence: {
@@ -754,14 +760,7 @@ function buildCoverageItems(
             localSourceAuditSummary: summarizeLocalSourceAudit(localSourceAudit),
             localSourceAuditSamples: localSourceAuditSamples(localSourceAudit),
             localSourceAuditDiagnostics: localSourceAudit,
-            sourceManifestRegistrationChecklist: sourceManifestRegistrationChecklist(
-              localSourceAudit,
-              candidateSamples,
-              {
-                track: trackId,
-                year
-              }
-            )
+            sourceManifestRegistrationChecklist: registrationChecklist
           }
         })
       );
@@ -778,6 +777,12 @@ function buildCoverageItems(
       );
       const missingSource = sourceEvidence.status === 'missing_publishable_official_source';
       const candidateSamples = sourceCandidateSamples(candidateDiagnostics);
+      const registrationChecklist = sourceManifestRegistrationChecklist(localSourceAudit, candidateSamples, {
+        track: trackId,
+        year
+      });
+      const localSourceBlocked =
+        registrationChecklist.status === 'blocked_before_auto_pair' && localSourceAudit.status !== 'not_available';
       items.push(
         createItem({
           id: `coverage_pending:${trackId}:${year}`,
@@ -786,7 +791,7 @@ function buildCoverageItems(
           track: trackId,
           year,
           title: `${TRACK_LABELS[trackId] || trackId} ${year} 有候选来源但未达到发布标准`,
-          nextAction: missingSource
+          nextAction: missingSource || localSourceBlocked
             ? sourceEvidenceNextAction(localSourceAudit, '再继续题卡清洗和 registry 发布状态核验。')
             : '沿用现有清洗队列推进，补齐题目结构、答案 evidence、source evidence 和注册状态；未通过前保持禁用或自用草稿。',
           evidence: {
@@ -803,14 +808,7 @@ function buildCoverageItems(
             localSourceAuditSummary: summarizeLocalSourceAudit(localSourceAudit),
             localSourceAuditSamples: localSourceAuditSamples(localSourceAudit),
             localSourceAuditDiagnostics: localSourceAudit,
-            sourceManifestRegistrationChecklist: sourceManifestRegistrationChecklist(
-              localSourceAudit,
-              candidateSamples,
-              {
-                track: trackId,
-                year
-              }
-            )
+            sourceManifestRegistrationChecklist: registrationChecklist
           }
         })
       );
