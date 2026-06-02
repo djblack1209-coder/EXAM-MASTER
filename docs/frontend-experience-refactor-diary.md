@@ -293,3 +293,11 @@
 - Fixed V2 local obfuscation for short identity strings such as `user_keep`, `user_123`, and `u1` by storing the encoded plaintext length before Feistel padding.
 - Added storage tests proving cache clearing keeps the authenticated session readable without leaving plaintext identity keys behind.
 - Product rule: cache cleanup should free app data, not silently weaken identity storage or accidentally log users out.
+
+### 2026-06-01 Round 34
+
+- Continued Phase 4 by moving recent account/privacy/storage hardening into the release gate instead of leaving it as scattered test knowledge.
+- `release-external-gate` now reports a `phase4Safety` section and blocks publish mode if the account-deletion auth guard, account-purge header guard, legal/privacy scope guard, or sensitive-storage cleanup guard is missing.
+- Added `--safety-tests-dir` so the gate can be tested against an isolated empty directory and still use the real `tests/unit` directory by default.
+- The external release report now records required/present safety evidence counts without writing secrets or running heavyweight builds.
+- Product rule: a commercial mini program release should fail closed when high-risk account, privacy, or storage regressions lose their guardrails.

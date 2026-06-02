@@ -11,10 +11,58 @@ const DEFAULT_BACKUP_EVIDENCE = path.join(PROJECT_ROOT, 'data/release-evidence/b
 const DEFAULT_MONITORING_EVIDENCE = path.join(PROJECT_ROOT, 'data/release-evidence/monitoring-health-alert.md');
 const DEFAULT_LINK_REGISTRY = path.join(PROJECT_ROOT, 'data/link-registry.json');
 const DEFAULT_SOURCE_MANIFEST = path.join(PROJECT_ROOT, 'data/source-manifest.json');
+const DEFAULT_SAFETY_TESTS_DIR = path.join(PROJECT_ROOT, 'tests/unit');
 const DEFAULT_ENV_FILES = [
   path.join(PROJECT_ROOT, '.env'),
   path.join(PROJECT_ROOT, '.env.production'),
   path.join(PROJECT_ROOT, 'laf-backend/.env')
+];
+
+const PHASE4_SAFETY_EVIDENCE = [
+  {
+    id: 'account_deletion_auth_guard',
+    file: 'account-deletion-api-auth-guard.spec.js',
+    label: 'Account deletion API auth guard',
+    requiredSnippets: [
+      'blocks account deletion actions when no auth credential is present',
+      'request).not.toHaveBeenCalled()',
+      'code: 401',
+      'accepts restored user id credentials as a login signal before backend verification'
+    ]
+  },
+  {
+    id: 'account_purge_header_guard',
+    file: 'audit-account-purge-field-mapping.spec.js',
+    label: 'Account purge administrator header guard',
+    requiredSnippets: [
+      '仅 body.adminToken 时应拒绝',
+      "'x-admin-token': 'admin_secret'",
+      'expect(result.code).toBe(403)',
+      '定时触发上下文不应被误判为 HTTP 请求'
+    ]
+  },
+  {
+    id: 'settings_legal_scope_guard',
+    file: 'settings-legal-scope-guard.spec.js',
+    label: 'Settings legal/privacy scope guard',
+    requiredSnippets: [
+      'id="e2e-settings-privacy-entry"',
+      'id="e2e-settings-terms-entry"',
+      '账号注销流程申请删除账号相关数据',
+      '7天冷静期'
+    ]
+  },
+  {
+    id: 'storage_sensitive_cleanup_guard',
+    file: 'storage-service.spec.js',
+    label: 'Sensitive storage cleanup guard',
+    requiredSnippets: [
+      'clear 默认保留全局键，仅清理业务缓存，并迁移明文敏感键',
+      'expect(global.__mockStorage.EXAM_TOKEN).toBeUndefined()',
+      'expect(global.__mockStorage._enc_EXAM_TOKEN).toBeTruthy()',
+      'clear 可显式关闭保留策略并执行全清'
+    ]
+  }
 ];
 
 function parseArgs(argv) {
@@ -26,6 +74,7 @@ function parseArgs(argv) {
     monitoringEvidence: DEFAULT_MONITORING_EVIDENCE,
     linkRegistry: DEFAULT_LINK_REGISTRY,
     sourceManifest: DEFAULT_SOURCE_MANIFEST,
+    safetyTestsDir: DEFAULT_SAFETY_TESTS_DIR,
     envFiles: [...DEFAULT_ENV_FILES],
     useEnvFiles: true,
     failOnBlockers: false
@@ -56,6 +105,9 @@ function parseArgs(argv) {
       if (inlineValue === undefined) index += 1;
     } else if (key === '--source-manifest') {
       options.sourceManifest = path.resolve(nextValue);
+      if (inlineValue === undefined) index += 1;
+    } else if (key === '--safety-tests-dir') {
+      options.safetyTestsDir = path.resolve(nextValue);
       if (inlineValue === undefined) index += 1;
     } else if (key === '--env-file') {
       options.envFiles.push(path.resolve(nextValue));
@@ -499,13 +551,58 @@ function checkOpsEvidence(options) {
   return buildSection(blockers);
 }
 
+function checkPhase4Safety(options) {
+  const blockers = [];
+  const evidence = PHASE4_SAFETY_EVIDENCE.map((item) => {
+    const filePath = path.join(options.safetyTestsDir, item.file);
+    const relativePath = path.relative(PROJECT_ROOT, filePath);
+
+    if (!existsFile(filePath)) {
+      blockers.push({
+        code: `missing_safety_evidence:${item.id}`,
+        message: `${item.label} test evidence is missing`,
+        path: relativePath
+      });
+      return {
+        id: item.id,
+        status: 'missing',
+        path: relativePath
+      };
+    }
+
+    const content = fs.readFileSync(filePath, 'utf8');
+    const missingSnippets = item.requiredSnippets.filter((snippet) => !content.includes(snippet));
+
+    if (missingSnippets.length) {
+      blockers.push({
+        code: `incomplete_safety_evidence:${item.id}`,
+        message: `${item.label} test evidence is missing required assertions: ${missingSnippets.join(', ')}`,
+        path: relativePath
+      });
+    }
+
+    return {
+      id: item.id,
+      status: missingSnippets.length ? 'incomplete' : 'present',
+      path: relativePath
+    };
+  });
+
+  return buildSection(blockers, {
+    requiredEvidenceCount: PHASE4_SAFETY_EVIDENCE.length,
+    presentEvidenceCount: evidence.filter((item) => item.status === 'present').length,
+    evidence
+  });
+}
+
 export function buildExternalReleaseReport(options = {}, env = process.env) {
   const sections = {
     productionConfig: checkProductionConfig(env),
     authSmoke: checkAuthSmoke(env),
     baiduSync: checkBaiduSync(env, options),
     wechatDevice: checkWechatDevice(options),
-    opsEvidence: checkOpsEvidence(options)
+    opsEvidence: checkOpsEvidence(options),
+    phase4Safety: checkPhase4Safety(options)
   };
   const blockerCount = Object.values(sections).reduce((sum, section) => sum + section.blockerCount, 0);
 
@@ -536,6 +633,7 @@ Options:
   --monitoring-evidence <path>   Monitoring/alert evidence markdown
   --link-registry <path>         Local Baidu share-link registry
   --source-manifest <path>       Local Source Manifest sync evidence
+  --safety-tests-dir <path>      Unit test directory for Phase 4 safety evidence
   --env-file <path>              Additional dotenv file; later files override earlier files
   --no-env-files                 Do not read local .env files; use process env only
   --fail-on-blockers             Exit 2 when external blockers remain

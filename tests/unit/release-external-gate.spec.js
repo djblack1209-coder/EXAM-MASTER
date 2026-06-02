@@ -57,6 +57,28 @@ function passedMonitoringEvidence() {
   ].join('\n');
 }
 
+function releaseEnv(overrides = {}) {
+  return {
+    VITE_WX_APP_ID: 'wx1234567890abcdef',
+    VITE_API_BASE_URL: 'https://api.exam-master.app',
+    JWT_SECRET: 'x'.repeat(64),
+    PASSWORD_SALT: 'y'.repeat(32),
+    REQUEST_SIGN_SALT: 'z'.repeat(32),
+    ADMIN_SECRET: 'admin-secret',
+    SMTP_HOST: 'smtp.exammaster.app',
+    SMTP_PORT: '465',
+    SMTP_USER: 'noreply@exammaster.app',
+    SMTP_PASS: 'smtp-pass',
+    SMOKE_BASE_URL: 'https://api.exam-master.app',
+    SMOKE_TOKEN: 'token',
+    ZHIPU_API_KEY: 'zhipu-key',
+    BAIDU_ACCESS_TOKEN: 'token',
+    BAIDU_LINK_REGISTRY_JSON:
+      '{"version":1,"links":[{"id":"lnk_release_001","url":"https://pan.baidu.com/s/1AbCdEfGhIjK","pwd":"abcd"}]}',
+    ...overrides
+  };
+}
+
 function tempDir() {
   return fs.mkdtempSync(path.join(os.tmpdir(), 'exam-master-release-gate-'));
 }
@@ -125,25 +147,11 @@ describe('release external gate', () => {
         '--no-env-files',
         '--fail-on-blockers'
       ],
-      {
-        VITE_WX_APP_ID: 'wx1234567890abcdef',
-        VITE_API_BASE_URL: 'https://api.exam-master.app',
-        JWT_SECRET: 'x'.repeat(64),
-        PASSWORD_SALT: 'y'.repeat(32),
-        SMTP_HOST: 'smtp.exammaster.app',
-        SMTP_PORT: '465',
-        SMTP_USER: 'noreply@exammaster.app',
-        SMTP_PASS: 'smtp-pass',
-        SMOKE_BASE_URL: 'https://api.exam-master.app',
+      releaseEnv({
         SMOKE_EMAIL: 'release@exammaster.app',
         SMOKE_PASSWORD: 'password',
-        ZHIPU_API_KEY: 'zhipu-key',
-        BAIDU_ACCESS_TOKEN: 'token',
-        BAIDU_LINK_REGISTRY_JSON:
-          '{"version":1,"links":[{"id":"lnk_release_001","url":"https://pan.baidu.com/s/1AbCdEfGhIjK","pwd":"abcd"}]}',
-        ADMIN_SECRET: 'admin-secret',
-        REQUEST_SIGN_SALT: 'z'.repeat(32)
-      }
+        SMOKE_TOKEN: ''
+      })
     );
 
     expect(result.status, result.stderr || result.stdout).toBe(0);
@@ -200,22 +208,7 @@ describe('release external gate', () => {
         '--no-env-files',
         '--fail-on-blockers'
       ],
-      {
-        VITE_WX_APP_ID: 'wx1234567890abcdef',
-        VITE_API_BASE_URL: 'https://api.exam-master.app',
-        JWT_SECRET: 'x'.repeat(64),
-        PASSWORD_SALT: 'y'.repeat(32),
-        SMTP_HOST: 'smtp.exammaster.app',
-        SMTP_PORT: '465',
-        SMTP_USER: 'noreply@exammaster.app',
-        SMTP_PASS: 'smtp-pass',
-        SMOKE_BASE_URL: 'https://api.exam-master.app',
-        SMOKE_TOKEN: 'token',
-        ZHIPU_API_KEY: 'zhipu-key',
-        BAIDU_ACCESS_TOKEN: 'token',
-        ADMIN_SECRET: 'admin-secret',
-        REQUEST_SIGN_SALT: 'z'.repeat(32)
-      }
+      releaseEnv({ BAIDU_LINK_REGISTRY_JSON: '' })
     );
 
     expect(result.status, result.stderr || result.stdout).toBe(0);
@@ -257,6 +250,55 @@ describe('release external gate', () => {
     expect(report.sections.baiduSync.blockers.map((item) => item.code)).not.toContain('empty_baidu_link_registry');
     expect(report.sections.baiduSync.registrySource).toBe('source_manifest');
     expect(report.sections.baiduSync.sourceManifestValidSourceCount).toBe(1);
+  });
+
+  it('requires Phase 4 account, privacy, and storage safety test evidence', () => {
+    const dir = tempDir();
+    const mpDir = path.join(dir, 'mp-weixin');
+    const evidenceDir = path.join(dir, 'evidence');
+    const emptyTestsDir = path.join(dir, 'empty-tests');
+    fs.mkdirSync(mpDir, { recursive: true });
+    fs.mkdirSync(evidenceDir, { recursive: true });
+    fs.mkdirSync(emptyTestsDir, { recursive: true });
+    fs.writeFileSync(path.join(mpDir, 'app.json'), '{}');
+    fs.writeFileSync(path.join(mpDir, 'project.config.json'), '{}');
+    fs.writeFileSync(path.join(evidenceDir, 'wechat-device.md'), passedWechatEvidence());
+    fs.writeFileSync(path.join(evidenceDir, 'backup-restore.md'), passedBackupEvidence());
+    fs.writeFileSync(path.join(evidenceDir, 'monitoring.md'), passedMonitoringEvidence());
+    const output = path.join(dir, 'external.json');
+
+    const result = runGate(
+      [
+        '--output',
+        output,
+        '--mp-dir',
+        mpDir,
+        '--wechat-evidence',
+        path.join(evidenceDir, 'wechat-device.md'),
+        '--backup-evidence',
+        path.join(evidenceDir, 'backup-restore.md'),
+        '--monitoring-evidence',
+        path.join(evidenceDir, 'monitoring.md'),
+        '--safety-tests-dir',
+        emptyTestsDir,
+        '--no-env-files',
+        '--fail-on-blockers'
+      ],
+      releaseEnv()
+    );
+
+    expect(result.status).toBe(2);
+
+    const report = JSON.parse(fs.readFileSync(output, 'utf8'));
+    expect(report.sections.phase4Safety.status).toBe('blocked');
+    expect(report.sections.phase4Safety.blockers.map((item) => item.code)).toEqual(
+      expect.arrayContaining([
+        'missing_safety_evidence:account_deletion_auth_guard',
+        'missing_safety_evidence:account_purge_header_guard',
+        'missing_safety_evidence:settings_legal_scope_guard',
+        'missing_safety_evidence:storage_sensitive_cleanup_guard'
+      ])
+    );
   });
 
   it('can load release configuration from dotenv files without writing secret values to the report', () => {
@@ -319,6 +361,8 @@ describe('release external gate', () => {
 
     const report = JSON.parse(reportText);
     expect(report.releaseReadiness.canPublish).toBe(true);
+    expect(report.sections.phase4Safety.status).toBe('passed');
+    expect(report.sections.phase4Safety.requiredEvidenceCount).toBeGreaterThanOrEqual(4);
   });
 
   it('rejects empty or example Baidu registries as release evidence', () => {
@@ -366,25 +410,11 @@ describe('release external gate', () => {
         '--no-env-files',
         '--fail-on-blockers'
       ],
-      {
-        VITE_WX_APP_ID: 'wx1234567890abcdef',
-        VITE_API_BASE_URL: 'https://api.exam-master.app',
-        JWT_SECRET: 'x'.repeat(64),
-        PASSWORD_SALT: 'y'.repeat(32),
-        SMTP_HOST: 'smtp.exammaster.app',
-        SMTP_PORT: '465',
-        SMTP_USER: 'noreply@exammaster.app',
-        SMTP_PASS: 'smtp-pass',
-        SMOKE_BASE_URL: 'https://api.exam-master.app',
+      releaseEnv({
         SMOKE_EMAIL: 'release@exammaster.app',
         SMOKE_PASSWORD: 'password',
-        ZHIPU_API_KEY: 'zhipu-key',
-        BAIDU_ACCESS_TOKEN: 'token',
-        BAIDU_LINK_REGISTRY_JSON:
-          '{"version":1,"links":[{"id":"lnk_release_001","url":"https://pan.baidu.com/s/1AbCdEfGhIjK","pwd":"abcd"}]}',
-        ADMIN_SECRET: 'admin-secret',
-        REQUEST_SIGN_SALT: 'z'.repeat(32)
-      }
+        SMOKE_TOKEN: ''
+      })
     );
 
     expect(result.status).toBe(2);
@@ -425,24 +455,7 @@ describe('release external gate', () => {
         '--no-env-files',
         '--fail-on-blockers'
       ],
-      {
-        VITE_WX_APP_ID: 'wx1234567890abcdef',
-        VITE_API_BASE_URL: 'https://api.exam-master.app',
-        JWT_SECRET: 'x'.repeat(64),
-        PASSWORD_SALT: 'y'.repeat(32),
-        SMTP_HOST: 'smtp.exammaster.app',
-        SMTP_PORT: '465',
-        SMTP_USER: 'noreply@exammaster.app',
-        SMTP_PASS: 'smtp-pass',
-        SMOKE_BASE_URL: 'https://api.exam-master.app',
-        SMOKE_TOKEN: 'token',
-        ZHIPU_API_KEY: 'zhipu-key',
-        BAIDU_ACCESS_TOKEN: 'token',
-        BAIDU_LINK_REGISTRY_JSON:
-          '{"version":1,"links":[{"id":"lnk_release_001","url":"https://pan.baidu.com/s/1AbCdEfGhIjK","pwd":"abcd"}]}',
-        ADMIN_SECRET: 'admin-secret',
-        REQUEST_SIGN_SALT: 'z'.repeat(32)
-      }
+      releaseEnv()
     );
 
     expect(result.status).toBe(2);

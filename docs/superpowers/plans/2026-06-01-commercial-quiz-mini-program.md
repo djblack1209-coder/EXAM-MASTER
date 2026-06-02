@@ -1287,3 +1287,41 @@ Run:
 git add src/services/storageService.js src/utils/crypto/cipher.js tests/unit/storage-service.spec.js tests/unit/integration-storage-nav.spec.js docs/frontend-experience-refactor-diary.md docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md
 git commit -m "fix: harden sensitive storage cleanup"
 ```
+
+### Task 32: Add Phase 4 Safety Release Gate
+
+**Files:**
+- Modify: `scripts/build/release-external-gate.mjs`
+- Modify: `tests/unit/release-external-gate.spec.js`
+- Modify: `docs/frontend-experience-refactor-diary.md`
+- Modify: `docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md`
+
+- [x] **Step 1: Add failing safety evidence gate test**
+
+Assert release mode blocks publishing when the Phase 4 account deletion, account purge, legal/privacy, or sensitive storage guard tests are missing.
+
+- [x] **Step 2: Add Phase 4 safety section to external release gate**
+
+Add `phase4Safety` to the release report and make it check for required test evidence before `canPublish=true`.
+
+- [x] **Step 3: Keep the gate configurable for isolated tests**
+
+Add `--safety-tests-dir` so tests can point the gate at an empty temporary directory without modifying the real repo.
+
+- [x] **Step 4: Run focused validation**
+
+Run:
+```bash
+npm run lint -- src/services/storageService.js src/utils/crypto/cipher.js src/services/api/domains/user.api.js src/pages/settings/index.vue src/pages/settings/privacy.vue src/pages/settings/terms.vue tests/unit/release-external-gate.spec.js tests/unit/account-deletion-api-auth-guard.spec.js tests/unit/audit-account-purge-field-mapping.spec.js tests/unit/storage-service.spec.js tests/unit/settings-legal-scope-guard.spec.js tests/unit/settings-account-identity-guard.spec.js
+npm run test -- tests/unit/release-external-gate.spec.js tests/unit/account-deletion-api-auth-guard.spec.js tests/unit/audit-account-purge-field-mapping.spec.js tests/unit/storage-service.spec.js tests/unit/integration-storage-nav.spec.js tests/unit/settings-legal-scope-guard.spec.js tests/unit/settings-account-identity-guard.spec.js tests/unit/settings-logout-flow-guard.spec.js
+```
+
+Result: passed on 2026-06-01.
+
+- [x] **Step 5: Commit**
+
+Run:
+```bash
+git add scripts/build/release-external-gate.mjs tests/unit/release-external-gate.spec.js docs/frontend-experience-refactor-diary.md docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md
+git commit -m "chore: gate phase four safety evidence"
+```
