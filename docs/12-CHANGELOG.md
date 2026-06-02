@@ -1,5 +1,11 @@
 # 变更日志
 
+## 2026-06-02 — 数学历史题源年份识别修复
+
+- 修复 Source Manifest 对 1980s 数学历史文件的年份推断：`1987数一真题、标准答案及解析.pdf`、`1988...`、`1989...` 不再被父目录 `1987-2023` 误归入 2023 年槽位。
+- `source_manifest.py` 的合法来源年份范围放宽为 1980-2035，并让文件名中的明确年份优先刷新旧 manifest 中残留的派生 `year`。
+- 刷新 release gate/backlog/cleaning queue 后，发布指标保持 `coverageGaps=57`、`blockers=69`、`publicCourseBlockedSlots=57`，但 release-priority dry-run 已改为从真正的 `2023数一真题答案解析.pdf` 开始。
+
 ## 2026-06-02 — 2022 数学一新结构逐题裁切题库开放
 
 - 2022 考研数学一从“待入库”推进为正式题库：22 张题卡覆盖 10 道选择、6 道填空和 6 道解答题，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。

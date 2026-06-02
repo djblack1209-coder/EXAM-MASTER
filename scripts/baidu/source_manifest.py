@@ -189,18 +189,21 @@ def guess_track(text: str, subject: str) -> str:
 
 def guess_year(text: str) -> int | None:
     matches = [int(match.group(0)) for match in YEAR_RE.finditer(text)]
-    candidates = [year for year in matches if 1990 <= year <= 2035]
+    candidates = [year for year in matches if 1980 <= year <= 2035]
     return candidates[0] if candidates else None
 
 
 def normalize_year(value: Any, fallback_text: str, preferred_text: str = "") -> int | None:
+    preferred_year = guess_year(preferred_text)
+    if preferred_year:
+        return preferred_year
     try:
         year = int(value)
-        if 1990 <= year <= 2035:
+        if 1980 <= year <= 2035:
             return year
     except (TypeError, ValueError):
         pass
-    return guess_year(preferred_text) or guess_year(fallback_text)
+    return guess_year(fallback_text)
 
 
 def classify_source(text: str, extension: str, size: int) -> tuple[str, bool, list[str], int]:

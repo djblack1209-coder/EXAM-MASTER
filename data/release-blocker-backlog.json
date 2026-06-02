@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-06-02T20:20:16.134Z",
+  "generatedAt": "2026-06-02T20:31:12.605Z",
   "verdict": "blocked",
   "sources": {
     "questionAudit": "data/question-bank-release-audit.json",
@@ -4937,38 +4937,8 @@
         "coverage_missing:math1:2023"
       ],
       "sourceEvidenceStatus": "publishable_source_present",
-      "sourceCandidateSummary": "source manifest 已发现 6 个候选，其中 official_paper=5；当前阻断: eligible=false(1), sourceHash=missing(1), sourceType=unsupported(1)",
+      "sourceCandidateSummary": "source manifest 已发现 2 个候选，其中 official_paper=1；当前阻断: eligible=false(1), sourceHash=missing(1), sourceType=unsupported(1)",
       "sourceCandidateSamples": [
-        {
-          "sourceId": "src_29e85e23689d635fef8a5cf0",
-          "status": "discovered",
-          "sourceType": "official_paper",
-          "sourceRole": "",
-          "inferredSourceRole": "paper_answer",
-          "roleSource": "filename",
-          "autoPairEligible": true,
-          "answerEvidenceStatus": "",
-          "riskFlags": [],
-          "publishBlocked": false,
-          "blockReasons": [],
-          "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学一真题答案解析/1989数一真题、标准答案及解析 .pdf",
-          "sourceUrl": ""
-        },
-        {
-          "sourceId": "src_89abe25a318349be72a36ea7",
-          "status": "discovered",
-          "sourceType": "official_paper",
-          "sourceRole": "",
-          "inferredSourceRole": "paper_answer",
-          "roleSource": "filename",
-          "autoPairEligible": true,
-          "answerEvidenceStatus": "",
-          "riskFlags": [],
-          "publishBlocked": false,
-          "blockReasons": [],
-          "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学一真题答案解析/1988数一真题、标准答案及解析 .pdf",
-          "sourceUrl": ""
-        },
         {
           "sourceId": "src_aa313861bc3f906e2af834b1",
           "status": "discovered",
@@ -4982,6 +4952,28 @@
           "publishBlocked": false,
           "blockReasons": [],
           "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学一真题答案解析/2023-数一真题答案解析 .pdf",
+          "sourceUrl": ""
+        },
+        {
+          "sourceId": "src_9d9a5ec56b74242b8135bb4d",
+          "status": "rejected",
+          "sourceType": "unsupported",
+          "sourceRole": "",
+          "inferredSourceRole": "paper_answer",
+          "roleSource": "filename",
+          "autoPairEligible": false,
+          "answerEvidenceStatus": "",
+          "riskFlags": [
+            "unsupported_extension"
+          ],
+          "publishBlocked": false,
+          "blockReasons": [
+            "eligible=false",
+            "status=rejected",
+            "sourceType=unsupported",
+            "sourceHash=missing"
+          ],
+          "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学一真题答案解析",
           "sourceUrl": ""
         }
       ],
@@ -5032,9 +5024,8 @@
         "localFileCandidates": [],
         "verifiedSourceRegistryDrafts": [],
         "manifestCandidateIds": [
-          "src_29e85e23689d635fef8a5cf0",
-          "src_89abe25a318349be72a36ea7",
-          "src_aa313861bc3f906e2af834b1"
+          "src_aa313861bc3f906e2af834b1",
+          "src_9d9a5ec56b74242b8135bb4d"
         ],
         "blockers": [
           "local_source_audit_not_available"
@@ -5060,7 +5051,7 @@
         "coverage_missing:math2:2023"
       ],
       "sourceEvidenceStatus": "publishable_source_present",
-      "sourceCandidateSummary": "source manifest 已发现 6 个候选，其中 official_paper=5；当前阻断: eligible=false(1), sourceHash=missing(1), sourceType=unsupported(1)",
+      "sourceCandidateSummary": "source manifest 已发现 2 个候选，其中 official_paper=1；当前阻断: eligible=false(1), sourceHash=missing(1), sourceType=unsupported(1)",
       "sourceCandidateSamples": [
         {
           "sourceId": "src_3340eda8eec8de639201ef55",
@@ -5078,33 +5069,25 @@
           "sourceUrl": ""
         },
         {
-          "sourceId": "src_7273f8122be049264d857788",
-          "status": "discovered",
-          "sourceType": "official_paper",
+          "sourceId": "src_10cc7f8b6d6dc1a9022c9578",
+          "status": "rejected",
+          "sourceType": "unsupported",
           "sourceRole": "",
           "inferredSourceRole": "paper_answer",
-          "roleSource": "path",
-          "autoPairEligible": true,
+          "roleSource": "filename",
+          "autoPairEligible": false,
           "answerEvidenceStatus": "",
-          "riskFlags": [],
+          "riskFlags": [
+            "unsupported_extension"
+          ],
           "publishBlocked": false,
-          "blockReasons": [],
-          "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学二真题答案解析/1987考研数学二真题 .pdf",
-          "sourceUrl": ""
-        },
-        {
-          "sourceId": "src_c393905cc2986f6b4875e830",
-          "status": "discovered",
-          "sourceType": "official_paper",
-          "sourceRole": "",
-          "inferredSourceRole": "paper_answer",
-          "roleSource": "path",
-          "autoPairEligible": true,
-          "answerEvidenceStatus": "",
-          "riskFlags": [],
-          "publishBlocked": false,
-          "blockReasons": [],
-          "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学二真题答案解析/1989考研数学二真题 .pdf",
+          "blockReasons": [
+            "eligible=false",
+            "status=rejected",
+            "sourceType=unsupported",
+            "sourceHash=missing"
+          ],
+          "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学二真题答案解析",
           "sourceUrl": ""
         }
       ],
@@ -5156,8 +5139,7 @@
         "verifiedSourceRegistryDrafts": [],
         "manifestCandidateIds": [
           "src_3340eda8eec8de639201ef55",
-          "src_7273f8122be049264d857788",
-          "src_c393905cc2986f6b4875e830"
+          "src_10cc7f8b6d6dc1a9022c9578"
         ],
         "blockers": [
           "local_source_audit_not_available"
@@ -5183,23 +5165,8 @@
         "coverage_missing:math3:2023"
       ],
       "sourceEvidenceStatus": "publishable_source_present",
-      "sourceCandidateSummary": "source manifest 已发现 6 个候选，其中 official_paper=5；当前阻断: eligible=false(1), sourceHash=missing(1), sourceType=unsupported(1)",
+      "sourceCandidateSummary": "source manifest 已发现 2 个候选，其中 official_paper=1；当前阻断: eligible=false(1), sourceHash=missing(1), sourceType=unsupported(1)",
       "sourceCandidateSamples": [
-        {
-          "sourceId": "src_150b6fde789a2040ee577661",
-          "status": "discovered",
-          "sourceType": "official_paper",
-          "sourceRole": "",
-          "inferredSourceRole": "paper_answer",
-          "roleSource": "filename",
-          "autoPairEligible": true,
-          "answerEvidenceStatus": "",
-          "riskFlags": [],
-          "publishBlocked": false,
-          "blockReasons": [],
-          "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学三真题答案解析/1989年考研数学三真题及解析 .pdf",
-          "sourceUrl": ""
-        },
         {
           "sourceId": "src_71c66fdb8a391c8fba8f2cb6",
           "status": "discovered",
@@ -5216,18 +5183,25 @@
           "sourceUrl": ""
         },
         {
-          "sourceId": "src_789175ffbca6204a5ed89ef2",
-          "status": "discovered",
-          "sourceType": "official_paper",
+          "sourceId": "src_0ac57b8fd1389c8d0e90dae7",
+          "status": "rejected",
+          "sourceType": "unsupported",
           "sourceRole": "",
           "inferredSourceRole": "paper_answer",
           "roleSource": "filename",
-          "autoPairEligible": true,
+          "autoPairEligible": false,
           "answerEvidenceStatus": "",
-          "riskFlags": [],
+          "riskFlags": [
+            "unsupported_extension"
+          ],
           "publishBlocked": false,
-          "blockReasons": [],
-          "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学三真题答案解析/1988年考研数学三真题及解析 .pdf",
+          "blockReasons": [
+            "eligible=false",
+            "status=rejected",
+            "sourceType=unsupported",
+            "sourceHash=missing"
+          ],
+          "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学三真题答案解析",
           "sourceUrl": ""
         }
       ],
@@ -5278,9 +5252,8 @@
         "localFileCandidates": [],
         "verifiedSourceRegistryDrafts": [],
         "manifestCandidateIds": [
-          "src_150b6fde789a2040ee577661",
           "src_71c66fdb8a391c8fba8f2cb6",
-          "src_789175ffbca6204a5ed89ef2"
+          "src_0ac57b8fd1389c8d0e90dae7"
         ],
         "blockers": [
           "local_source_audit_not_available"
@@ -7019,38 +6992,8 @@
       "blockerCode": "missing_public_course_bank",
       "slotStatus": "missing",
       "sourceEvidenceStatus": "publishable_source_present",
-      "sourceCandidateSummary": "source manifest 已发现 6 个候选，其中 official_paper=5；当前阻断: eligible=false(1), sourceHash=missing(1), sourceType=unsupported(1)",
+      "sourceCandidateSummary": "source manifest 已发现 2 个候选，其中 official_paper=1；当前阻断: eligible=false(1), sourceHash=missing(1), sourceType=unsupported(1)",
       "sourceCandidateSamples": [
-        {
-          "sourceId": "src_29e85e23689d635fef8a5cf0",
-          "status": "discovered",
-          "sourceType": "official_paper",
-          "sourceRole": "",
-          "inferredSourceRole": "paper_answer",
-          "roleSource": "filename",
-          "autoPairEligible": true,
-          "answerEvidenceStatus": "",
-          "riskFlags": [],
-          "publishBlocked": false,
-          "blockReasons": [],
-          "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学一真题答案解析/1989数一真题、标准答案及解析 .pdf",
-          "sourceUrl": ""
-        },
-        {
-          "sourceId": "src_89abe25a318349be72a36ea7",
-          "status": "discovered",
-          "sourceType": "official_paper",
-          "sourceRole": "",
-          "inferredSourceRole": "paper_answer",
-          "roleSource": "filename",
-          "autoPairEligible": true,
-          "answerEvidenceStatus": "",
-          "riskFlags": [],
-          "publishBlocked": false,
-          "blockReasons": [],
-          "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学一真题答案解析/1988数一真题、标准答案及解析 .pdf",
-          "sourceUrl": ""
-        },
         {
           "sourceId": "src_aa313861bc3f906e2af834b1",
           "status": "discovered",
@@ -7064,6 +7007,28 @@
           "publishBlocked": false,
           "blockReasons": [],
           "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学一真题答案解析/2023-数一真题答案解析 .pdf",
+          "sourceUrl": ""
+        },
+        {
+          "sourceId": "src_9d9a5ec56b74242b8135bb4d",
+          "status": "rejected",
+          "sourceType": "unsupported",
+          "sourceRole": "",
+          "inferredSourceRole": "paper_answer",
+          "roleSource": "filename",
+          "autoPairEligible": false,
+          "answerEvidenceStatus": "",
+          "riskFlags": [
+            "unsupported_extension"
+          ],
+          "publishBlocked": false,
+          "blockReasons": [
+            "eligible=false",
+            "status=rejected",
+            "sourceType=unsupported",
+            "sourceHash=missing"
+          ],
+          "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学一真题答案解析",
           "sourceUrl": ""
         }
       ],
@@ -7099,9 +7064,8 @@
         "localFileCandidates": [],
         "verifiedSourceRegistryDrafts": [],
         "manifestCandidateIds": [
-          "src_29e85e23689d635fef8a5cf0",
-          "src_89abe25a318349be72a36ea7",
-          "src_aa313861bc3f906e2af834b1"
+          "src_aa313861bc3f906e2af834b1",
+          "src_9d9a5ec56b74242b8135bb4d"
         ],
         "blockers": [
           "local_source_audit_not_available"
@@ -18308,38 +18272,8 @@
           2025
         ],
         "sourceEvidenceCoverageRate": 0.9545,
-        "sourceCandidateSummary": "source manifest 已发现 6 个候选，其中 official_paper=5；当前阻断: eligible=false(1), sourceHash=missing(1), sourceType=unsupported(1)",
+        "sourceCandidateSummary": "source manifest 已发现 2 个候选，其中 official_paper=1；当前阻断: eligible=false(1), sourceHash=missing(1), sourceType=unsupported(1)",
         "sourceCandidateSamples": [
-          {
-            "sourceId": "src_29e85e23689d635fef8a5cf0",
-            "status": "discovered",
-            "sourceType": "official_paper",
-            "sourceRole": "",
-            "inferredSourceRole": "paper_answer",
-            "roleSource": "filename",
-            "autoPairEligible": true,
-            "answerEvidenceStatus": "",
-            "riskFlags": [],
-            "publishBlocked": false,
-            "blockReasons": [],
-            "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学一真题答案解析/1989数一真题、标准答案及解析 .pdf",
-            "sourceUrl": ""
-          },
-          {
-            "sourceId": "src_89abe25a318349be72a36ea7",
-            "status": "discovered",
-            "sourceType": "official_paper",
-            "sourceRole": "",
-            "inferredSourceRole": "paper_answer",
-            "roleSource": "filename",
-            "autoPairEligible": true,
-            "answerEvidenceStatus": "",
-            "riskFlags": [],
-            "publishBlocked": false,
-            "blockReasons": [],
-            "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学一真题答案解析/1988数一真题、标准答案及解析 .pdf",
-            "sourceUrl": ""
-          },
           {
             "sourceId": "src_aa313861bc3f906e2af834b1",
             "status": "discovered",
@@ -18354,16 +18288,38 @@
             "blockReasons": [],
             "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学一真题答案解析/2023-数一真题答案解析 .pdf",
             "sourceUrl": ""
+          },
+          {
+            "sourceId": "src_9d9a5ec56b74242b8135bb4d",
+            "status": "rejected",
+            "sourceType": "unsupported",
+            "sourceRole": "",
+            "inferredSourceRole": "paper_answer",
+            "roleSource": "filename",
+            "autoPairEligible": false,
+            "answerEvidenceStatus": "",
+            "riskFlags": [
+              "unsupported_extension"
+            ],
+            "publishBlocked": false,
+            "blockReasons": [
+              "eligible=false",
+              "status=rejected",
+              "sourceType=unsupported",
+              "sourceHash=missing"
+            ],
+            "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学一真题答案解析",
+            "sourceUrl": ""
           }
         ],
         "sourceCandidateDiagnostics": {
-          "candidateCount": 6,
-          "officialPaperCandidateCount": 5,
+          "candidateCount": 2,
+          "officialPaperCandidateCount": 1,
           "publishBlockedCandidateCount": 0,
-          "autoPairEligibleCandidateCount": 5,
-          "paperCandidateCount": 1,
+          "autoPairEligibleCandidateCount": 1,
+          "paperCandidateCount": 0,
           "answerCandidateCount": 0,
-          "combinedCandidateCount": 4,
+          "combinedCandidateCount": 1,
           "blockReasons": {
             "eligible=false": 1,
             "status=rejected": 1,
@@ -18371,36 +18327,6 @@
             "sourceHash=missing": 1
           },
           "sampleCandidates": [
-            {
-              "sourceId": "src_29e85e23689d635fef8a5cf0",
-              "status": "discovered",
-              "sourceType": "official_paper",
-              "sourceRole": "",
-              "inferredSourceRole": "paper_answer",
-              "roleSource": "filename",
-              "autoPairEligible": true,
-              "answerEvidenceStatus": "",
-              "riskFlags": [],
-              "publishBlocked": false,
-              "blockReasons": [],
-              "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学一真题答案解析/1989数一真题、标准答案及解析 .pdf",
-              "sourceUrl": ""
-            },
-            {
-              "sourceId": "src_89abe25a318349be72a36ea7",
-              "status": "discovered",
-              "sourceType": "official_paper",
-              "sourceRole": "",
-              "inferredSourceRole": "paper_answer",
-              "roleSource": "filename",
-              "autoPairEligible": true,
-              "answerEvidenceStatus": "",
-              "riskFlags": [],
-              "publishBlocked": false,
-              "blockReasons": [],
-              "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学一真题答案解析/1988数一真题、标准答案及解析 .pdf",
-              "sourceUrl": ""
-            },
             {
               "sourceId": "src_aa313861bc3f906e2af834b1",
               "status": "discovered",
@@ -18414,6 +18340,28 @@
               "publishBlocked": false,
               "blockReasons": [],
               "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学一真题答案解析/2023-数一真题答案解析 .pdf",
+              "sourceUrl": ""
+            },
+            {
+              "sourceId": "src_9d9a5ec56b74242b8135bb4d",
+              "status": "rejected",
+              "sourceType": "unsupported",
+              "sourceRole": "",
+              "inferredSourceRole": "paper_answer",
+              "roleSource": "filename",
+              "autoPairEligible": false,
+              "answerEvidenceStatus": "",
+              "riskFlags": [
+                "unsupported_extension"
+              ],
+              "publishBlocked": false,
+              "blockReasons": [
+                "eligible=false",
+                "status=rejected",
+                "sourceType=unsupported",
+                "sourceHash=missing"
+              ],
+              "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学一真题答案解析",
               "sourceUrl": ""
             }
           ]
@@ -18465,9 +18413,8 @@
           "localFileCandidates": [],
           "verifiedSourceRegistryDrafts": [],
           "manifestCandidateIds": [
-            "src_29e85e23689d635fef8a5cf0",
-            "src_89abe25a318349be72a36ea7",
-            "src_aa313861bc3f906e2af834b1"
+            "src_aa313861bc3f906e2af834b1",
+            "src_9d9a5ec56b74242b8135bb4d"
           ],
           "blockers": [
             "local_source_audit_not_available"
@@ -18554,7 +18501,7 @@
           2025
         ],
         "sourceEvidenceCoverageRate": 0.9545,
-        "sourceCandidateSummary": "source manifest 已发现 6 个候选，其中 official_paper=5；当前阻断: eligible=false(1), sourceHash=missing(1), sourceType=unsupported(1)",
+        "sourceCandidateSummary": "source manifest 已发现 2 个候选，其中 official_paper=1；当前阻断: eligible=false(1), sourceHash=missing(1), sourceType=unsupported(1)",
         "sourceCandidateSamples": [
           {
             "sourceId": "src_3340eda8eec8de639201ef55",
@@ -18572,44 +18519,36 @@
             "sourceUrl": ""
           },
           {
-            "sourceId": "src_7273f8122be049264d857788",
-            "status": "discovered",
-            "sourceType": "official_paper",
+            "sourceId": "src_10cc7f8b6d6dc1a9022c9578",
+            "status": "rejected",
+            "sourceType": "unsupported",
             "sourceRole": "",
             "inferredSourceRole": "paper_answer",
-            "roleSource": "path",
-            "autoPairEligible": true,
+            "roleSource": "filename",
+            "autoPairEligible": false,
             "answerEvidenceStatus": "",
-            "riskFlags": [],
+            "riskFlags": [
+              "unsupported_extension"
+            ],
             "publishBlocked": false,
-            "blockReasons": [],
-            "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学二真题答案解析/1987考研数学二真题 .pdf",
-            "sourceUrl": ""
-          },
-          {
-            "sourceId": "src_c393905cc2986f6b4875e830",
-            "status": "discovered",
-            "sourceType": "official_paper",
-            "sourceRole": "",
-            "inferredSourceRole": "paper_answer",
-            "roleSource": "path",
-            "autoPairEligible": true,
-            "answerEvidenceStatus": "",
-            "riskFlags": [],
-            "publishBlocked": false,
-            "blockReasons": [],
-            "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学二真题答案解析/1989考研数学二真题 .pdf",
+            "blockReasons": [
+              "eligible=false",
+              "status=rejected",
+              "sourceType=unsupported",
+              "sourceHash=missing"
+            ],
+            "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学二真题答案解析",
             "sourceUrl": ""
           }
         ],
         "sourceCandidateDiagnostics": {
-          "candidateCount": 6,
-          "officialPaperCandidateCount": 5,
+          "candidateCount": 2,
+          "officialPaperCandidateCount": 1,
           "publishBlockedCandidateCount": 0,
-          "autoPairEligibleCandidateCount": 5,
-          "paperCandidateCount": 1,
+          "autoPairEligibleCandidateCount": 1,
+          "paperCandidateCount": 0,
           "answerCandidateCount": 0,
-          "combinedCandidateCount": 4,
+          "combinedCandidateCount": 1,
           "blockReasons": {
             "eligible=false": 1,
             "status=rejected": 1,
@@ -18633,33 +18572,25 @@
               "sourceUrl": ""
             },
             {
-              "sourceId": "src_7273f8122be049264d857788",
-              "status": "discovered",
-              "sourceType": "official_paper",
+              "sourceId": "src_10cc7f8b6d6dc1a9022c9578",
+              "status": "rejected",
+              "sourceType": "unsupported",
               "sourceRole": "",
               "inferredSourceRole": "paper_answer",
-              "roleSource": "path",
-              "autoPairEligible": true,
+              "roleSource": "filename",
+              "autoPairEligible": false,
               "answerEvidenceStatus": "",
-              "riskFlags": [],
+              "riskFlags": [
+                "unsupported_extension"
+              ],
               "publishBlocked": false,
-              "blockReasons": [],
-              "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学二真题答案解析/1987考研数学二真题 .pdf",
-              "sourceUrl": ""
-            },
-            {
-              "sourceId": "src_c393905cc2986f6b4875e830",
-              "status": "discovered",
-              "sourceType": "official_paper",
-              "sourceRole": "",
-              "inferredSourceRole": "paper_answer",
-              "roleSource": "path",
-              "autoPairEligible": true,
-              "answerEvidenceStatus": "",
-              "riskFlags": [],
-              "publishBlocked": false,
-              "blockReasons": [],
-              "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学二真题答案解析/1989考研数学二真题 .pdf",
+              "blockReasons": [
+                "eligible=false",
+                "status=rejected",
+                "sourceType=unsupported",
+                "sourceHash=missing"
+              ],
+              "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学二真题答案解析",
               "sourceUrl": ""
             }
           ]
@@ -18712,8 +18643,7 @@
           "verifiedSourceRegistryDrafts": [],
           "manifestCandidateIds": [
             "src_3340eda8eec8de639201ef55",
-            "src_7273f8122be049264d857788",
-            "src_c393905cc2986f6b4875e830"
+            "src_10cc7f8b6d6dc1a9022c9578"
           ],
           "blockers": [
             "local_source_audit_not_available"
@@ -18799,23 +18729,8 @@
           2025
         ],
         "sourceEvidenceCoverageRate": 0.9545,
-        "sourceCandidateSummary": "source manifest 已发现 6 个候选，其中 official_paper=5；当前阻断: eligible=false(1), sourceHash=missing(1), sourceType=unsupported(1)",
+        "sourceCandidateSummary": "source manifest 已发现 2 个候选，其中 official_paper=1；当前阻断: eligible=false(1), sourceHash=missing(1), sourceType=unsupported(1)",
         "sourceCandidateSamples": [
-          {
-            "sourceId": "src_150b6fde789a2040ee577661",
-            "status": "discovered",
-            "sourceType": "official_paper",
-            "sourceRole": "",
-            "inferredSourceRole": "paper_answer",
-            "roleSource": "filename",
-            "autoPairEligible": true,
-            "answerEvidenceStatus": "",
-            "riskFlags": [],
-            "publishBlocked": false,
-            "blockReasons": [],
-            "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学三真题答案解析/1989年考研数学三真题及解析 .pdf",
-            "sourceUrl": ""
-          },
           {
             "sourceId": "src_71c66fdb8a391c8fba8f2cb6",
             "status": "discovered",
@@ -18832,29 +18747,36 @@
             "sourceUrl": ""
           },
           {
-            "sourceId": "src_789175ffbca6204a5ed89ef2",
-            "status": "discovered",
-            "sourceType": "official_paper",
+            "sourceId": "src_0ac57b8fd1389c8d0e90dae7",
+            "status": "rejected",
+            "sourceType": "unsupported",
             "sourceRole": "",
             "inferredSourceRole": "paper_answer",
             "roleSource": "filename",
-            "autoPairEligible": true,
+            "autoPairEligible": false,
             "answerEvidenceStatus": "",
-            "riskFlags": [],
+            "riskFlags": [
+              "unsupported_extension"
+            ],
             "publishBlocked": false,
-            "blockReasons": [],
-            "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学三真题答案解析/1988年考研数学三真题及解析 .pdf",
+            "blockReasons": [
+              "eligible=false",
+              "status=rejected",
+              "sourceType=unsupported",
+              "sourceHash=missing"
+            ],
+            "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学三真题答案解析",
             "sourceUrl": ""
           }
         ],
         "sourceCandidateDiagnostics": {
-          "candidateCount": 6,
-          "officialPaperCandidateCount": 5,
+          "candidateCount": 2,
+          "officialPaperCandidateCount": 1,
           "publishBlockedCandidateCount": 0,
-          "autoPairEligibleCandidateCount": 5,
-          "paperCandidateCount": 1,
+          "autoPairEligibleCandidateCount": 1,
+          "paperCandidateCount": 0,
           "answerCandidateCount": 0,
-          "combinedCandidateCount": 4,
+          "combinedCandidateCount": 1,
           "blockReasons": {
             "eligible=false": 1,
             "status=rejected": 1,
@@ -18862,21 +18784,6 @@
             "sourceHash=missing": 1
           },
           "sampleCandidates": [
-            {
-              "sourceId": "src_150b6fde789a2040ee577661",
-              "status": "discovered",
-              "sourceType": "official_paper",
-              "sourceRole": "",
-              "inferredSourceRole": "paper_answer",
-              "roleSource": "filename",
-              "autoPairEligible": true,
-              "answerEvidenceStatus": "",
-              "riskFlags": [],
-              "publishBlocked": false,
-              "blockReasons": [],
-              "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学三真题答案解析/1989年考研数学三真题及解析 .pdf",
-              "sourceUrl": ""
-            },
             {
               "sourceId": "src_71c66fdb8a391c8fba8f2cb6",
               "status": "discovered",
@@ -18893,18 +18800,25 @@
               "sourceUrl": ""
             },
             {
-              "sourceId": "src_789175ffbca6204a5ed89ef2",
-              "status": "discovered",
-              "sourceType": "official_paper",
+              "sourceId": "src_0ac57b8fd1389c8d0e90dae7",
+              "status": "rejected",
+              "sourceType": "unsupported",
               "sourceRole": "",
               "inferredSourceRole": "paper_answer",
               "roleSource": "filename",
-              "autoPairEligible": true,
+              "autoPairEligible": false,
               "answerEvidenceStatus": "",
-              "riskFlags": [],
+              "riskFlags": [
+                "unsupported_extension"
+              ],
               "publishBlocked": false,
-              "blockReasons": [],
-              "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学三真题答案解析/1988年考研数学三真题及解析 .pdf",
+              "blockReasons": [
+                "eligible=false",
+                "status=rejected",
+                "sourceType=unsupported",
+                "sourceHash=missing"
+              ],
+              "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学三真题答案解析",
               "sourceUrl": ""
             }
           ]
@@ -18956,9 +18870,8 @@
           "localFileCandidates": [],
           "verifiedSourceRegistryDrafts": [],
           "manifestCandidateIds": [
-            "src_150b6fde789a2040ee577661",
             "src_71c66fdb8a391c8fba8f2cb6",
-            "src_789175ffbca6204a5ed89ef2"
+            "src_0ac57b8fd1389c8d0e90dae7"
           ],
           "blockers": [
             "local_source_audit_not_available"
