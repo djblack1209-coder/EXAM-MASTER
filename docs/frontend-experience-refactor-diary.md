@@ -326,3 +326,12 @@
 - Limited queue summaries now count preserved/changed tasks only after truncation, so `--limit` can no longer produce negative `newOrChangedTasks`.
 - Dry-run verification showed the first 20 cleaning tasks all target release backlog slots, starting with `politics:2023` and `english1:2018`.
 - Product rule: content work should be ordered by what reduces commercial release blockers fastest, not by generic source age or manifest ordering.
+
+### 2026-06-01 Round 38
+
+- Closed the handoff gap between the release-prioritized queue generator and the cleaning runner.
+- `run_cleaning_queue.py` now respects `releaseBacklogRank` during its own pending-task selection, so runner filters such as `--source-type official_paper --paper-role main` keep commercial release blockers ahead of generic same-priority work.
+- Added a runner regression test proving a release backlog task such as `english1:2018` is selected before a generic `politics:2005` task with the same priority.
+- Regenerated the ignored local cleaning queue: 824 pending release-backlog tasks are now visible to the runner, including 168 automation-actionable tasks and 656 manual-blocked tasks.
+- Dry-run verification now starts with `politics:2023`, `english1:2018`, and other release backlog papers, which makes the next real cleaning batch point at the highest release value.
+- Product rule: every automation layer that selects content work must preserve the same release-blocker priority, otherwise a correct backlog can still produce slow commercial progress.

@@ -200,6 +200,39 @@ class BaiduCleaningRunnerTest(unittest.TestCase):
             ["politics_2005", "english1_2005", "english2_2005", "math1_2005", "english1_2006"],
         )
 
+    def test_select_pending_tasks_respects_release_backlog_rank_before_year_balance(self):
+        queue = {
+            "tasks": [
+                {
+                    "taskId": "generic_politics_2005",
+                    "action": "download_and_extract",
+                    "status": "pending",
+                    "priority": 100,
+                    "track": "politics",
+                    "year": 2005,
+                    "sourceType": "official_paper",
+                    "safeDisplayName": "2005年政治真题.pdf",
+                },
+                {
+                    "taskId": "release_english1_2018",
+                    "action": "download_and_extract",
+                    "status": "pending",
+                    "priority": 100,
+                    "track": "english1",
+                    "year": 2018,
+                    "sourceType": "official_paper",
+                    "safeDisplayName": "2018年考研英语一真题.pdf",
+                    "releaseBacklogSlot": "english1:2018",
+                    "releaseBacklogRank": 0,
+                    "releaseBlockerCode": "missing_public_course_bank",
+                },
+            ]
+        }
+
+        selected = select_pending_tasks(queue, limit=10, source_type="official_paper", paper_role="main")
+
+        self.assertEqual([task["taskId"] for task in selected], ["release_english1_2018", "generic_politics_2005"])
+
     def test_paper_role_main_uses_file_name_not_parent_answer_directory(self):
         queue = {
             "tasks": [

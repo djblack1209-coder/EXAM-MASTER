@@ -1445,3 +1445,55 @@ Run:
 git add scripts/baidu/cleaning_queue.py tests/unit/test_baidu_cleaning_queue.py docs/frontend-experience-refactor-diary.md docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md
 git commit -m "chore: prioritize release backlog cleaning queue"
 ```
+
+### Task 36: Keep Cleaning Runner On Release Priority
+
+**Files:**
+- Modify: `scripts/baidu/run_cleaning_queue.py`
+- Modify: `tests/unit/test_baidu_cleaning_runner.py`
+- Modify: `docs/frontend-experience-refactor-diary.md`
+- Modify: `docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md`
+
+- [x] **Step 1: Add runner selection regression test**
+
+Assert `select_pending_tasks` keeps a task with `releaseBacklogRank: 0` ahead of a generic same-priority official-paper task, even when the generic task has an earlier year.
+
+- [x] **Step 2: Apply release backlog rank inside runner sorting**
+
+Add `releaseBacklogRank` to `cleaning_task_sort_key`, so the runner does not undo the release-prioritized ordering created by `cleaning_queue.py`.
+
+- [x] **Step 3: Regenerate local ignored queue**
+
+Run `python3 scripts/baidu/cleaning_queue.py` to refresh the ignored local queue used by the runner.
+
+Result: `totalTasks=1600`, `pendingTasks=1593`, `releaseBacklogTasks=824`, `releaseBacklogPendingTasks=824`, `releaseBacklogAutomationActionablePendingTasks=168`, `releaseBacklogManualBlockedPendingTasks=656`.
+
+- [x] **Step 4: Verify runner dry-run ordering**
+
+Run:
+```bash
+python3 scripts/baidu/run_cleaning_queue.py --dry-run --limit 8 --source-type official_paper --paper-role main
+```
+
+Result: passed on 2026-06-01. The first planned tasks now start with `politics:2023`, `english1:2018`, and other release backlog papers instead of generic 2005-order work.
+
+- [x] **Step 5: Run final focused validation**
+
+Run:
+```bash
+python3 -m unittest tests.unit.test_baidu_cleaning_queue tests.unit.test_baidu_cleaning_runner
+python3 scripts/baidu/cleaning_queue.py --self-test
+python3 scripts/baidu/run_cleaning_queue.py --self-test
+python3 scripts/baidu/run_cleaning_queue.py --dry-run --limit 8 --source-type official_paper --paper-role main
+git diff --check
+```
+
+Result: passed on 2026-06-01.
+
+- [x] **Step 6: Commit**
+
+Run:
+```bash
+git add scripts/baidu/run_cleaning_queue.py tests/unit/test_baidu_cleaning_runner.py docs/frontend-experience-refactor-diary.md docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md
+git commit -m "chore: run cleaning queue by release priority"
+```

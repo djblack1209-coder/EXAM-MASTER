@@ -217,7 +217,9 @@ def cleaning_task_sort_key(task: dict[str, Any]) -> tuple[Any, ...]:
     year = safe_int(task.get("year"))
     release_year = year if 2005 <= year <= 2026 else 9999
     track_order = PUBLIC_RELEASE_TRACK_ORDER.get(track, len(PUBLIC_RELEASE_TRACK_ORDER))
+    release_rank = safe_int(task.get("releaseBacklogRank"), 999_999)
     return (
+        release_rank,
         -int(task.get("priority") or 0),
         release_year,
         track_order,
