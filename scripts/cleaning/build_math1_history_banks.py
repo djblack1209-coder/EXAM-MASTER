@@ -38,7 +38,8 @@ class SourceSpec:
     question_pages: dict[int, list[int | str]]
     answer_pages: dict[int, list[int]]
     answers: dict[int, str]
-    question_crop_boxes: dict[str, tuple[int, int, int]] | None = None
+    question_crop_boxes: dict[str, tuple[int, ...]] | None = None
+    question_crop_masks: dict[str, list[tuple[int, int, int, int]]] | None = None
 
 
 def pages_for_ranges(*ranges: tuple[int, int, int]) -> dict[int, list[int]]:
@@ -88,7 +89,122 @@ def question_refs(*refs: str) -> list[int | str]:
     return list(refs)
 
 
+def math1_2005_answers() -> dict[int, str]:
+    answers = generic_answers(2005, {7: "C", 8: "A", 9: "B", 10: "D", 11: "B", 12: "C", 13: "B", 14: "D"})
+    answers.update(
+        {
+            1: "y = 1/2 x - 1/4",
+            2: "y = 1/3 x ln x - 1/9 x",
+            3: "sqrt(3) / 3",
+            4: "2π(1 - sqrt(2)/2)R^3",
+            5: "2",
+            6: "13/48",
+            15: "7/8",
+            16: "f(x)=2x arctan x - ln(1+x^2) + x^2/(1+x^2)，x in (-1,1)。",
+            17: "20",
+            18: "完整证明见答案原页。",
+            19: "φ(y) = -y^2",
+            20: "a=0；标准形与方程解见答案原页。",
+            21: "线性方程组通解按 k 与 r(A) 的情形分类，完整结果见答案原页。",
+            22: "边缘密度与 Z 的概率密度见答案原页。",
+            23: "D(Y_i) 与 Cov(Y_i,Y_n) 的完整结果见答案原页。",
+        }
+    )
+    return answers
+
+
 SPECS: dict[int, SourceSpec] = {
+    2005: SourceSpec(
+        year=2005,
+        file_name="src_c4907b9c46d2472fb0b3365c-2005数一标准答案及解析.pdf",
+        source_id="src_c4907b9c46d2472fb0b3365c",
+        question_pages={
+            1: question_refs("q01"),
+            2: question_refs("q02"),
+            3: question_refs("q03"),
+            4: question_refs("q04"),
+            5: question_refs("q05"),
+            6: question_refs("q06"),
+            7: question_refs("q07"),
+            8: question_refs("q08"),
+            9: question_refs("q09"),
+            10: question_refs("q10"),
+            11: question_refs("q11"),
+            12: question_refs("q12"),
+            13: question_refs("q13"),
+            14: question_refs("q14"),
+            15: question_refs("q15"),
+            16: question_refs("q16"),
+            17: question_refs("q17a", "q17b"),
+            18: question_refs("q18"),
+            19: question_refs("q19"),
+            20: question_refs("q20"),
+            21: question_refs("q21"),
+            22: question_refs("q22"),
+            23: question_refs("q23"),
+        },
+        answer_pages={
+            1: [1],
+            2: [1],
+            3: [1, 2],
+            4: [2],
+            5: [2],
+            6: [2, 3],
+            7: [3],
+            8: [3],
+            9: [3, 4],
+            10: [4],
+            11: [4, 5],
+            12: [5],
+            13: [5, 6],
+            14: [6],
+            15: [6, 7],
+            16: [7],
+            17: [7, 8],
+            18: [8],
+            19: [8, 9],
+            20: [9, 10],
+            21: [10, 11],
+            22: [11, 12],
+            23: [12, 13],
+        },
+        answers=math1_2005_answers(),
+        question_crop_boxes={
+            "q01": (1, 145, 230, 460, 80),
+            "q02": (1, 145, 560, 560, 85),
+            "q03": (1, 145, 1060, 695, 105),
+            "q04": (2, 145, 230, 520, 115),
+            "q05": (2, 145, 560, 600, 145),
+            "q06": (2, 145, 1065, 640, 120),
+            "q07": (3, 135, 245, 865, 120),
+            "q08": (3, 135, 688, 865, 140),
+            "q09": (3, 135, 1140, 865, 245),
+            "q10": (4, 135, 675, 865, 245),
+            "q11": (4, 135, 1225, 865, 165),
+            "q12": (5, 135, 705, 865, 185),
+            "q13": (5, 135, 1148, 865, 242),
+            "q14": (6, 135, 395, 865, 248),
+            "q15": (6, 135, 1128, 835, 145),
+            "q16": (7, 135, 350, 750, 115),
+            "q17a": (7, 105, 1280, 870, 105),
+            "q17b": (8, 95, 120, 860, 65),
+            "q18": (8, 135, 495, 850, 165),
+            "q19": (8, 135, 1055, 850, 290),
+            "q20": (9, 135, 1055, 850, 230),
+            "q21": (10, 135, 1165, 850, 175),
+            "q22": (11, 135, 745, 850, 255),
+            "q23": (12, 135, 690, 850, 265),
+        },
+        question_crop_masks={
+            "q07": [(580, 68, 260, 52)],
+            "q08": [(580, 105, 260, 35)],
+            "q09": [(570, 170, 280, 70)],
+            "q10": [(580, 205, 270, 40)],
+            "q11": [(560, 112, 305, 55)],
+            "q13": [(580, 180, 270, 62)],
+            "q14": [(580, 148, 270, 68)],
+        },
+    ),
     2006: SourceSpec(
         year=2006,
         file_name="src_220895f653fe227c0315cae9-2006数一标准答案及解析.pdf",
@@ -503,7 +619,15 @@ def crop_question_assets(spec: SourceSpec, *, asset_dir: Path, force: bool) -> N
         if force:
             for item in asset_dir.glob("question-*.jpg"):
                 item.unlink()
-        for ref, (page, y_offset, crop_height) in spec.question_crop_boxes.items():
+        for ref, box in spec.question_crop_boxes.items():
+            if len(box) == 3:
+                page, y_offset, crop_height = box
+                x_offset: int | str = 0
+                crop_width: int | str = "iw"
+            elif len(box) == 5:
+                page, x_offset, y_offset, crop_width, crop_height = box
+            else:
+                raise ValueError(f"math1-{spec.year}: unsupported crop box {ref}={box}")
             source = asset_dir / f"answer-page-{page:02d}.jpg"
             if not source.exists():
                 raise FileNotFoundError(source)
@@ -512,6 +636,12 @@ def crop_question_assets(spec: SourceSpec, *, asset_dir: Path, force: bool) -> N
             target = asset_dir / f"question-{ref[1:]}.jpg"
             if target.exists() and not force:
                 continue
+            filters = [f"crop={crop_width}:{crop_height}:{x_offset}:{y_offset}"]
+            for mask in (spec.question_crop_masks or {}).get(ref, []):
+                mask_x, mask_y, mask_width, mask_height = mask
+                filters.append(
+                    f"drawbox=x={mask_x}:y={mask_y}:w={mask_width}:h={mask_height}:color=white:t=fill"
+                )
             run(
                 [
                     "ffmpeg",
@@ -522,7 +652,7 @@ def crop_question_assets(spec: SourceSpec, *, asset_dir: Path, force: bool) -> N
                     "-i",
                     str(source),
                     "-vf",
-                    f"crop=iw:{crop_height}:0:{y_offset}",
+                    ",".join(filters),
                     str(target),
                 ]
             )
@@ -582,7 +712,7 @@ def image_ref(spec: SourceSpec, kind: str, page: int | str, *, caption: str) -> 
 
 
 def section_for(spec: SourceSpec, number: int) -> str:
-    if spec.year == 2006:
+    if spec.year in {2005, 2006}:
         if number <= 6:
             return "填空题"
         if number <= 14:
@@ -596,7 +726,7 @@ def section_for(spec: SourceSpec, number: int) -> str:
 
 
 def type_for(spec: SourceSpec, number: int) -> str:
-    if spec.year == 2006:
+    if spec.year in {2005, 2006}:
         if 7 <= number <= 14:
             return "single_choice"
         return "short_answer"
@@ -763,7 +893,7 @@ def write_json(path: Path, payload: Any) -> None:
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--years", default="2006,2008-2017")
+    parser.add_argument("--years", default="2005-2006,2008-2017")
     parser.add_argument("--bank-dir", type=Path, default=DEFAULT_BANK_DIR)
     parser.add_argument("--asset-root", type=Path, default=DEFAULT_ASSET_ROOT)
     parser.add_argument("--force-assets", action="store_true")

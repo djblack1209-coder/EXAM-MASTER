@@ -427,3 +427,13 @@
 - Validation result: `math1-2006.json` has 23 cards, `{single_choice:8, short_answer:15}`, section counts `{填空题:6, 选择题:8, 解答题:9}`, `missingAnswerCount=0`, runner `qualityIssues=[]`, and `bankFileInventoryBlockers=0`.
 - Release gate result: `math1:2006` no longer appears in the refreshed backlog; total blockers dropped to 76, public-course blocked slots to 64, and source-evidence gaps to 11.
 - Product rule: formula-heavy math PDFs should prefer authoritative page-image banks with audited crops over lossy OCR/LLM text extraction when the source layout mixes questions and explanations.
+
+### 2026-06-02 Round 48
+
+- Promoted `math1:2005` through the same formal page-image bank path after the release-priority queue exposed a local source but no publishable registered bank.
+- Extended `build_math1_history_banks.py` with a 2005 source spec, 5-value crop boxes, and optional `drawbox` crop masks so answer brackets in the 8 choice questions can be hidden without truncating formulas or options.
+- Published `src/config/flashcard-banks/math1-2005.json` plus 50 page/crop assets under `cdn-assets/question-bank/math1-2005`, then registered the bank and regenerated the compressed practice-bank table.
+- Validation result: `math1-2005.json` has 23 cards, `{single_choice:8, short_answer:15}`, section counts `{填空题:6, 选择题:8, 解答题:9}`, no missing answers, no missing assets, and the OCR leakage scan found no `【分析】` / `【详解】` / `[A-D]` markers in question images.
+- Release gate result: formal enabled-bank count rose to 69, public-course coverage gaps dropped to 63, total release blockers dropped to 75, and `math1:2005` no longer appears in the refreshed backlog.
+- Source caveat: the available 2005 Math I file is `2005数一标准答案及解析.pdf`, not a standalone blank paper. The builder masks choice-answer brackets and crops away explanations, but fill-in-the-blank questions 1-6 still come from source pages where the answer is already filled inline.
+- Product rule: when the only local source is an answer-analysis edition, make the leakage controls and remaining source limitations explicit instead of pretending the artifact is equivalent to a clean standalone exam paper.

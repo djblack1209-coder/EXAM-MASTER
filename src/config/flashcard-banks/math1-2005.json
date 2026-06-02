@@ -1,0 +1,1402 @@
+{
+  "id": "math1-2005",
+  "source": "math1-2005-paper-answer",
+  "paperId": "math1-2005",
+  "paperName": "2005考研数学一真题",
+  "subject": "数学",
+  "subjectKey": "math",
+  "track": "math1",
+  "year": "2005",
+  "quality": "ready",
+  "publicationStatus": "published",
+  "publicationBlockers": [],
+  "sourceEvidencePolicy": "baidu_netdisk_official_paper_pdf_question_crop_answer_page_image_v1",
+  "sourceFiles": [
+    {
+      "id": "math1-2005-paper-answer",
+      "role": "paper_answer",
+      "localPath": "data/raw-inbox/src_c4907b9c46d2472fb0b3365c-2005数一标准答案及解析.pdf",
+      "sha256": "sha256:eaebb5be99270ba0d17f9440994f8af5bd7599ab88cf2987770ad7353f86adf7",
+      "sourceId": "src_c4907b9c46d2472fb0b3365c"
+    }
+  ],
+  "assetRoot": "question-bank/math1-2005",
+  "processed_at": "2026-06-02T15:13:56Z",
+  "total_cards": 23,
+  "cards": [
+    {
+      "id": "math1-2005-001",
+      "number": 1,
+      "paperId": "math1-2005",
+      "paperName": "2005考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2005",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2005考研数学一第1题（填空题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "y = 1/2 x - 1/4",
+      "explanation": "答案来自本地百度网盘 2005 数学一真题答案解析 PDF；填空题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2005/question-01.jpg",
+          "caption": "题面裁切图 q01",
+          "alt": "2005考研数学一题面裁切图 q01"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2005/answer-page-01.jpg",
+          "caption": "答案解析 p.1",
+          "alt": "2005考研数学一答案解析 p.1"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2005",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2005-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:1b24163efee8659e53915193ed60487d72ec441fd17487a167871643b945be34",
+      "answerTextHash": "sha256:93df737d9650b489f7e6f144fb2c8eebb1b8b9569a662652b8c4c02e67f50b83",
+      "sourceEvidence": {
+        "evidenceId": "math1-2005-q01",
+        "sourceId": "src_c4907b9c46d2472fb0b3365c",
+        "answerSourceId": "src_c4907b9c46d2472fb0b3365c",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2005-paper-answer",
+        "answerEvidenceId": "math1-2005-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:93df737d9650b489f7e6f144fb2c8eebb1b8b9569a662652b8c4c02e67f50b83"
+      }
+    },
+    {
+      "id": "math1-2005-002",
+      "number": 2,
+      "paperId": "math1-2005",
+      "paperName": "2005考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2005",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2005考研数学一第2题（填空题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "y = 1/3 x ln x - 1/9 x",
+      "explanation": "答案来自本地百度网盘 2005 数学一真题答案解析 PDF；填空题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2005/question-02.jpg",
+          "caption": "题面裁切图 q02",
+          "alt": "2005考研数学一题面裁切图 q02"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2005/answer-page-01.jpg",
+          "caption": "答案解析 p.1",
+          "alt": "2005考研数学一答案解析 p.1"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2005",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2005-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:58dd8da45700bf6f764c0794f840dd0b4d1af2ea6783b5ccc68b1a9947b6de4c",
+      "answerTextHash": "sha256:ee688c5cacdd0ea3d64cb6369cc806b5b952b1830fd6d83939d0fd9bf2bb438e",
+      "sourceEvidence": {
+        "evidenceId": "math1-2005-q02",
+        "sourceId": "src_c4907b9c46d2472fb0b3365c",
+        "answerSourceId": "src_c4907b9c46d2472fb0b3365c",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2005-paper-answer",
+        "answerEvidenceId": "math1-2005-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:ee688c5cacdd0ea3d64cb6369cc806b5b952b1830fd6d83939d0fd9bf2bb438e"
+      }
+    },
+    {
+      "id": "math1-2005-003",
+      "number": 3,
+      "paperId": "math1-2005",
+      "paperName": "2005考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2005",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2005考研数学一第3题（填空题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "sqrt(3) / 3",
+      "explanation": "答案来自本地百度网盘 2005 数学一真题答案解析 PDF；填空题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2005/question-03.jpg",
+          "caption": "题面裁切图 q03",
+          "alt": "2005考研数学一题面裁切图 q03"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2005/answer-page-01.jpg",
+          "caption": "答案解析 p.1",
+          "alt": "2005考研数学一答案解析 p.1"
+        },
+        {
+          "src": "question-bank/math1-2005/answer-page-02.jpg",
+          "caption": "答案解析 p.2",
+          "alt": "2005考研数学一答案解析 p.2"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2005",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2005-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:48e2eb0aaec21a175991873c1071dec8470afa6e1d2a501f2373149fa6e86d68",
+      "answerTextHash": "sha256:45442de95227225702f2cc634e2be3876bb40adbabf200182ae3e32abf3237ae",
+      "sourceEvidence": {
+        "evidenceId": "math1-2005-q03",
+        "sourceId": "src_c4907b9c46d2472fb0b3365c",
+        "answerSourceId": "src_c4907b9c46d2472fb0b3365c",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2005-paper-answer",
+        "answerEvidenceId": "math1-2005-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:45442de95227225702f2cc634e2be3876bb40adbabf200182ae3e32abf3237ae"
+      }
+    },
+    {
+      "id": "math1-2005-004",
+      "number": 4,
+      "paperId": "math1-2005",
+      "paperName": "2005考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2005",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2005考研数学一第4题（填空题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "2π(1 - sqrt(2)/2)R^3",
+      "explanation": "答案来自本地百度网盘 2005 数学一真题答案解析 PDF；填空题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2005/question-04.jpg",
+          "caption": "题面裁切图 q04",
+          "alt": "2005考研数学一题面裁切图 q04"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2005/answer-page-02.jpg",
+          "caption": "答案解析 p.2",
+          "alt": "2005考研数学一答案解析 p.2"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2005",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2005-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:6bf3a16914ab3030b3149f41c3784545983dd63d821af1bce981f8708e35c28c",
+      "answerTextHash": "sha256:6524a7d02ca13ac26c6b5879e0a00852878dd473ee2c211148d1ad49c04a6859",
+      "sourceEvidence": {
+        "evidenceId": "math1-2005-q04",
+        "sourceId": "src_c4907b9c46d2472fb0b3365c",
+        "answerSourceId": "src_c4907b9c46d2472fb0b3365c",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2005-paper-answer",
+        "answerEvidenceId": "math1-2005-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:6524a7d02ca13ac26c6b5879e0a00852878dd473ee2c211148d1ad49c04a6859"
+      }
+    },
+    {
+      "id": "math1-2005-005",
+      "number": 5,
+      "paperId": "math1-2005",
+      "paperName": "2005考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2005",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2005考研数学一第5题（填空题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "2",
+      "explanation": "答案来自本地百度网盘 2005 数学一真题答案解析 PDF；填空题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2005/question-05.jpg",
+          "caption": "题面裁切图 q05",
+          "alt": "2005考研数学一题面裁切图 q05"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2005/answer-page-02.jpg",
+          "caption": "答案解析 p.2",
+          "alt": "2005考研数学一答案解析 p.2"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2005",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2005-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:85fd6ab6ac7a571512cc33bbc6a80b7775ec60b4dbe6923e971d4d36d7c06d18",
+      "answerTextHash": "sha256:360dda0a50b1e46e5d291b04b275562dfe392339ecd6ae79e6351f1cb68e0758",
+      "sourceEvidence": {
+        "evidenceId": "math1-2005-q05",
+        "sourceId": "src_c4907b9c46d2472fb0b3365c",
+        "answerSourceId": "src_c4907b9c46d2472fb0b3365c",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2005-paper-answer",
+        "answerEvidenceId": "math1-2005-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:360dda0a50b1e46e5d291b04b275562dfe392339ecd6ae79e6351f1cb68e0758"
+      }
+    },
+    {
+      "id": "math1-2005-006",
+      "number": 6,
+      "paperId": "math1-2005",
+      "paperName": "2005考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2005",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2005考研数学一第6题（填空题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "13/48",
+      "explanation": "答案来自本地百度网盘 2005 数学一真题答案解析 PDF；填空题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2005/question-06.jpg",
+          "caption": "题面裁切图 q06",
+          "alt": "2005考研数学一题面裁切图 q06"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2005/answer-page-02.jpg",
+          "caption": "答案解析 p.2",
+          "alt": "2005考研数学一答案解析 p.2"
+        },
+        {
+          "src": "question-bank/math1-2005/answer-page-03.jpg",
+          "caption": "答案解析 p.3",
+          "alt": "2005考研数学一答案解析 p.3"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2005",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2005-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:ec365656eeeb5a3d673b551eee92066d8891e320759a075a1313dc6796752a56",
+      "answerTextHash": "sha256:8179440e9802a4a6bff24e21488252de78045793b5bd7d3ecf3bbe1f20d422b4",
+      "sourceEvidence": {
+        "evidenceId": "math1-2005-q06",
+        "sourceId": "src_c4907b9c46d2472fb0b3365c",
+        "answerSourceId": "src_c4907b9c46d2472fb0b3365c",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2005-paper-answer",
+        "answerEvidenceId": "math1-2005-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:8179440e9802a4a6bff24e21488252de78045793b5bd7d3ecf3bbe1f20d422b4"
+      }
+    },
+    {
+      "id": "math1-2005-007",
+      "number": 7,
+      "paperId": "math1-2005",
+      "paperName": "2005考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2005",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2005考研数学一第7题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2005 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2005/question-07.jpg",
+          "caption": "题面裁切图 q07",
+          "alt": "2005考研数学一题面裁切图 q07"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2005/answer-page-03.jpg",
+          "caption": "答案解析 p.3",
+          "alt": "2005考研数学一答案解析 p.3"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2005",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2005-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:43f2eea44eb10cf52e0d7158fa398df225e0a7ae4fe375aa9637cb0fbb4f1ea1",
+      "answerTextHash": "sha256:68d83c90862fc09ebf9a4584ba993943e3bb37788c1dc1201cb29f44689a49dc",
+      "sourceEvidence": {
+        "evidenceId": "math1-2005-q07",
+        "sourceId": "src_c4907b9c46d2472fb0b3365c",
+        "answerSourceId": "src_c4907b9c46d2472fb0b3365c",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2005-paper-answer",
+        "answerEvidenceId": "math1-2005-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:68d83c90862fc09ebf9a4584ba993943e3bb37788c1dc1201cb29f44689a49dc"
+      }
+    },
+    {
+      "id": "math1-2005-008",
+      "number": 8,
+      "paperId": "math1-2005",
+      "paperName": "2005考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2005",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2005考研数学一第8题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2005 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2005/question-08.jpg",
+          "caption": "题面裁切图 q08",
+          "alt": "2005考研数学一题面裁切图 q08"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2005/answer-page-03.jpg",
+          "caption": "答案解析 p.3",
+          "alt": "2005考研数学一答案解析 p.3"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2005",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2005-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:8a1fcecfca165384d33577fb52dcb2bd4837a0a9ab26210d8f3f54c103e5f025",
+      "answerTextHash": "sha256:37047a4e1d0f087c0f0de2714845cbbfcf52e1f11a8dee1bd57c83d31cefed0f",
+      "sourceEvidence": {
+        "evidenceId": "math1-2005-q08",
+        "sourceId": "src_c4907b9c46d2472fb0b3365c",
+        "answerSourceId": "src_c4907b9c46d2472fb0b3365c",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2005-paper-answer",
+        "answerEvidenceId": "math1-2005-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:37047a4e1d0f087c0f0de2714845cbbfcf52e1f11a8dee1bd57c83d31cefed0f"
+      }
+    },
+    {
+      "id": "math1-2005-009",
+      "number": 9,
+      "paperId": "math1-2005",
+      "paperName": "2005考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2005",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2005考研数学一第9题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2005 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2005/question-09.jpg",
+          "caption": "题面裁切图 q09",
+          "alt": "2005考研数学一题面裁切图 q09"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2005/answer-page-03.jpg",
+          "caption": "答案解析 p.3",
+          "alt": "2005考研数学一答案解析 p.3"
+        },
+        {
+          "src": "question-bank/math1-2005/answer-page-04.jpg",
+          "caption": "答案解析 p.4",
+          "alt": "2005考研数学一答案解析 p.4"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2005",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2005-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:b22b8728bdd09e808ceb6e0c99300248dbc7ef02127ae8773f199cf5fff4a1ad",
+      "answerTextHash": "sha256:7d14305f576e4de846f6261cf723b95e1d701bc279f8bd226fc3c61162388065",
+      "sourceEvidence": {
+        "evidenceId": "math1-2005-q09",
+        "sourceId": "src_c4907b9c46d2472fb0b3365c",
+        "answerSourceId": "src_c4907b9c46d2472fb0b3365c",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2005-paper-answer",
+        "answerEvidenceId": "math1-2005-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:7d14305f576e4de846f6261cf723b95e1d701bc279f8bd226fc3c61162388065"
+      }
+    },
+    {
+      "id": "math1-2005-010",
+      "number": 10,
+      "paperId": "math1-2005",
+      "paperName": "2005考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2005",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2005考研数学一第10题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2005 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2005/question-10.jpg",
+          "caption": "题面裁切图 q10",
+          "alt": "2005考研数学一题面裁切图 q10"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2005/answer-page-04.jpg",
+          "caption": "答案解析 p.4",
+          "alt": "2005考研数学一答案解析 p.4"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2005",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2005-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:3707724e6441f6406376eaa4da42441983c0c33744f3516f0797675433f4c8d5",
+      "answerTextHash": "sha256:f9b62e4efbf2b7603b98d3f2ff418dcbd2c44acaa816fe2c2d633969ac0c75c5",
+      "sourceEvidence": {
+        "evidenceId": "math1-2005-q10",
+        "sourceId": "src_c4907b9c46d2472fb0b3365c",
+        "answerSourceId": "src_c4907b9c46d2472fb0b3365c",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2005-paper-answer",
+        "answerEvidenceId": "math1-2005-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:f9b62e4efbf2b7603b98d3f2ff418dcbd2c44acaa816fe2c2d633969ac0c75c5"
+      }
+    },
+    {
+      "id": "math1-2005-011",
+      "number": 11,
+      "paperId": "math1-2005",
+      "paperName": "2005考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2005",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2005考研数学一第11题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2005 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2005/question-11.jpg",
+          "caption": "题面裁切图 q11",
+          "alt": "2005考研数学一题面裁切图 q11"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2005/answer-page-04.jpg",
+          "caption": "答案解析 p.4",
+          "alt": "2005考研数学一答案解析 p.4"
+        },
+        {
+          "src": "question-bank/math1-2005/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2005考研数学一答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2005",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2005-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:e825052f77bbc2423662b5500d7a8fd03f210fa44cf976bfbd6c41a20cac50df",
+      "answerTextHash": "sha256:1149516b9de22f3bb2f95ce7b5210a31080ad68a7a3dc39ce4360cb10d48869d",
+      "sourceEvidence": {
+        "evidenceId": "math1-2005-q11",
+        "sourceId": "src_c4907b9c46d2472fb0b3365c",
+        "answerSourceId": "src_c4907b9c46d2472fb0b3365c",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2005-paper-answer",
+        "answerEvidenceId": "math1-2005-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:1149516b9de22f3bb2f95ce7b5210a31080ad68a7a3dc39ce4360cb10d48869d"
+      }
+    },
+    {
+      "id": "math1-2005-012",
+      "number": 12,
+      "paperId": "math1-2005",
+      "paperName": "2005考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2005",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2005考研数学一第12题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2005 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2005/question-12.jpg",
+          "caption": "题面裁切图 q12",
+          "alt": "2005考研数学一题面裁切图 q12"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2005/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2005考研数学一答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2005",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2005-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:030458b742704c7a256e66179edb6f36514279187afa844de16f02166b8eb7f5",
+      "answerTextHash": "sha256:98d843014fcc06e8c015999ef30423714e3b0fc8d97ddf5a4680ed5e2e3f0339",
+      "sourceEvidence": {
+        "evidenceId": "math1-2005-q12",
+        "sourceId": "src_c4907b9c46d2472fb0b3365c",
+        "answerSourceId": "src_c4907b9c46d2472fb0b3365c",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2005-paper-answer",
+        "answerEvidenceId": "math1-2005-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:98d843014fcc06e8c015999ef30423714e3b0fc8d97ddf5a4680ed5e2e3f0339"
+      }
+    },
+    {
+      "id": "math1-2005-013",
+      "number": 13,
+      "paperId": "math1-2005",
+      "paperName": "2005考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2005",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2005考研数学一第13题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2005 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2005/question-13.jpg",
+          "caption": "题面裁切图 q13",
+          "alt": "2005考研数学一题面裁切图 q13"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2005/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2005考研数学一答案解析 p.5"
+        },
+        {
+          "src": "question-bank/math1-2005/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2005考研数学一答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2005",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2005-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:88c5e3a12a6929298fba495bc30297e7c4cd1000a90c9c955d073e364b33aeeb",
+      "answerTextHash": "sha256:4de95feb6b0e82be9b628a9af73ba4a999d21fb83766ac44c3c90f9b49e1f87a",
+      "sourceEvidence": {
+        "evidenceId": "math1-2005-q13",
+        "sourceId": "src_c4907b9c46d2472fb0b3365c",
+        "answerSourceId": "src_c4907b9c46d2472fb0b3365c",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2005-paper-answer",
+        "answerEvidenceId": "math1-2005-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:4de95feb6b0e82be9b628a9af73ba4a999d21fb83766ac44c3c90f9b49e1f87a"
+      }
+    },
+    {
+      "id": "math1-2005-014",
+      "number": 14,
+      "paperId": "math1-2005",
+      "paperName": "2005考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2005",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2005考研数学一第14题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2005 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2005/question-14.jpg",
+          "caption": "题面裁切图 q14",
+          "alt": "2005考研数学一题面裁切图 q14"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2005/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2005考研数学一答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2005",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2005-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:4212c5dc6da1f8539a4fcf33a869ffb26bdbc07c926dec08d99838400778e3dd",
+      "answerTextHash": "sha256:e4a2fe781d79b6ac0d0a57fdf6fcbe5f0bd7d1dfefea384e35b54f195a6a4c7c",
+      "sourceEvidence": {
+        "evidenceId": "math1-2005-q14",
+        "sourceId": "src_c4907b9c46d2472fb0b3365c",
+        "answerSourceId": "src_c4907b9c46d2472fb0b3365c",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2005-paper-answer",
+        "answerEvidenceId": "math1-2005-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:e4a2fe781d79b6ac0d0a57fdf6fcbe5f0bd7d1dfefea384e35b54f195a6a4c7c"
+      }
+    },
+    {
+      "id": "math1-2005-015",
+      "number": 15,
+      "paperId": "math1-2005",
+      "paperName": "2005考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2005",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2005考研数学一第15题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "7/8",
+      "explanation": "答案来自本地百度网盘 2005 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2005/question-15.jpg",
+          "caption": "题面裁切图 q15",
+          "alt": "2005考研数学一题面裁切图 q15"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2005/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2005考研数学一答案解析 p.6"
+        },
+        {
+          "src": "question-bank/math1-2005/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2005考研数学一答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2005",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2005-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:1d27a42d2f6f4ab4b1bd4edadb8461115f7fa7c140d5102ebbb2a98ccf69c417",
+      "answerTextHash": "sha256:a78ce5afa1bfd523a0c0deb5eea7550c2600eee6dda39f4322b4cd1375874965",
+      "sourceEvidence": {
+        "evidenceId": "math1-2005-q15",
+        "sourceId": "src_c4907b9c46d2472fb0b3365c",
+        "answerSourceId": "src_c4907b9c46d2472fb0b3365c",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2005-paper-answer",
+        "answerEvidenceId": "math1-2005-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:a78ce5afa1bfd523a0c0deb5eea7550c2600eee6dda39f4322b4cd1375874965"
+      }
+    },
+    {
+      "id": "math1-2005-016",
+      "number": 16,
+      "paperId": "math1-2005",
+      "paperName": "2005考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2005",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2005考研数学一第16题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "f(x)=2x arctan x - ln(1+x^2) + x^2/(1+x^2)，x in (-1,1)。",
+      "explanation": "答案来自本地百度网盘 2005 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2005/question-16.jpg",
+          "caption": "题面裁切图 q16",
+          "alt": "2005考研数学一题面裁切图 q16"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2005/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2005考研数学一答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2005",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2005-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:5e18d86ece062d5c1d935c85ee6036429d732aa0cae2ffad4347bd9603d278ed",
+      "answerTextHash": "sha256:25511f6cbba602926769defdad6d4184e38388b78c0db3f0037b1ceda073b2c2",
+      "sourceEvidence": {
+        "evidenceId": "math1-2005-q16",
+        "sourceId": "src_c4907b9c46d2472fb0b3365c",
+        "answerSourceId": "src_c4907b9c46d2472fb0b3365c",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2005-paper-answer",
+        "answerEvidenceId": "math1-2005-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:25511f6cbba602926769defdad6d4184e38388b78c0db3f0037b1ceda073b2c2"
+      }
+    },
+    {
+      "id": "math1-2005-017",
+      "number": 17,
+      "paperId": "math1-2005",
+      "paperName": "2005考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2005",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2005考研数学一第17题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "20",
+      "explanation": "答案来自本地百度网盘 2005 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2005/question-17a.jpg",
+          "caption": "题面裁切图 q17",
+          "alt": "2005考研数学一题面裁切图 q17"
+        },
+        {
+          "src": "question-bank/math1-2005/question-17b.jpg",
+          "caption": "题面裁切图 q17",
+          "alt": "2005考研数学一题面裁切图 q17"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2005/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2005考研数学一答案解析 p.7"
+        },
+        {
+          "src": "question-bank/math1-2005/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2005考研数学一答案解析 p.8"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2005",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2005-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:d4830eeb8e8cf1c89e0aa2714ed6dcd7d00db75ab25f9e15b227d0c43723f6a5",
+      "answerTextHash": "sha256:32feb5986709ff1cba689bcf564d29fad9258049de4be9d80341439b3fd1951d",
+      "sourceEvidence": {
+        "evidenceId": "math1-2005-q17",
+        "sourceId": "src_c4907b9c46d2472fb0b3365c",
+        "answerSourceId": "src_c4907b9c46d2472fb0b3365c",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2005-paper-answer",
+        "answerEvidenceId": "math1-2005-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:32feb5986709ff1cba689bcf564d29fad9258049de4be9d80341439b3fd1951d"
+      }
+    },
+    {
+      "id": "math1-2005-018",
+      "number": 18,
+      "paperId": "math1-2005",
+      "paperName": "2005考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2005",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2005考研数学一第18题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "完整证明见答案原页。",
+      "explanation": "答案来自本地百度网盘 2005 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2005/question-18.jpg",
+          "caption": "题面裁切图 q18",
+          "alt": "2005考研数学一题面裁切图 q18"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2005/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2005考研数学一答案解析 p.8"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2005",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2005-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:b427b9eed1681c063ad6d9a251879891667d6a74199371afbcbbf903af888e0b",
+      "answerTextHash": "sha256:993e1e6e5d6277f2cce6d2efbcfb08de5432269405a9ea2af2fd5dcee7761144",
+      "sourceEvidence": {
+        "evidenceId": "math1-2005-q18",
+        "sourceId": "src_c4907b9c46d2472fb0b3365c",
+        "answerSourceId": "src_c4907b9c46d2472fb0b3365c",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2005-paper-answer",
+        "answerEvidenceId": "math1-2005-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:993e1e6e5d6277f2cce6d2efbcfb08de5432269405a9ea2af2fd5dcee7761144"
+      }
+    },
+    {
+      "id": "math1-2005-019",
+      "number": 19,
+      "paperId": "math1-2005",
+      "paperName": "2005考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2005",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2005考研数学一第19题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "φ(y) = -y^2",
+      "explanation": "答案来自本地百度网盘 2005 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2005/question-19.jpg",
+          "caption": "题面裁切图 q19",
+          "alt": "2005考研数学一题面裁切图 q19"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2005/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2005考研数学一答案解析 p.8"
+        },
+        {
+          "src": "question-bank/math1-2005/answer-page-09.jpg",
+          "caption": "答案解析 p.9",
+          "alt": "2005考研数学一答案解析 p.9"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2005",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2005-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:e2916154e2e3632ffde2a5d3e6c3252a993d0d80f583bfd7983d78d9c0d94bf5",
+      "answerTextHash": "sha256:39044a61131a00619f9f8c9252020171d910e65e6e0439ae988bc5ff8c1b90a4",
+      "sourceEvidence": {
+        "evidenceId": "math1-2005-q19",
+        "sourceId": "src_c4907b9c46d2472fb0b3365c",
+        "answerSourceId": "src_c4907b9c46d2472fb0b3365c",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2005-paper-answer",
+        "answerEvidenceId": "math1-2005-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:39044a61131a00619f9f8c9252020171d910e65e6e0439ae988bc5ff8c1b90a4"
+      }
+    },
+    {
+      "id": "math1-2005-020",
+      "number": 20,
+      "paperId": "math1-2005",
+      "paperName": "2005考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2005",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2005考研数学一第20题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "a=0；标准形与方程解见答案原页。",
+      "explanation": "答案来自本地百度网盘 2005 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2005/question-20.jpg",
+          "caption": "题面裁切图 q20",
+          "alt": "2005考研数学一题面裁切图 q20"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2005/answer-page-09.jpg",
+          "caption": "答案解析 p.9",
+          "alt": "2005考研数学一答案解析 p.9"
+        },
+        {
+          "src": "question-bank/math1-2005/answer-page-10.jpg",
+          "caption": "答案解析 p.10",
+          "alt": "2005考研数学一答案解析 p.10"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2005",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2005-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:c408b628d7aa79ce7ecdceaca9703add9ab48afb6f7c8666e9a2db4fa97bd8b6",
+      "answerTextHash": "sha256:ff9085bd73df18cd1411a362d0e404e42086b6fa34d27dcc1840e37f60bc223a",
+      "sourceEvidence": {
+        "evidenceId": "math1-2005-q20",
+        "sourceId": "src_c4907b9c46d2472fb0b3365c",
+        "answerSourceId": "src_c4907b9c46d2472fb0b3365c",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2005-paper-answer",
+        "answerEvidenceId": "math1-2005-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:ff9085bd73df18cd1411a362d0e404e42086b6fa34d27dcc1840e37f60bc223a"
+      }
+    },
+    {
+      "id": "math1-2005-021",
+      "number": 21,
+      "paperId": "math1-2005",
+      "paperName": "2005考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2005",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2005考研数学一第21题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "线性方程组通解按 k 与 r(A) 的情形分类，完整结果见答案原页。",
+      "explanation": "答案来自本地百度网盘 2005 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2005/question-21.jpg",
+          "caption": "题面裁切图 q21",
+          "alt": "2005考研数学一题面裁切图 q21"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2005/answer-page-10.jpg",
+          "caption": "答案解析 p.10",
+          "alt": "2005考研数学一答案解析 p.10"
+        },
+        {
+          "src": "question-bank/math1-2005/answer-page-11.jpg",
+          "caption": "答案解析 p.11",
+          "alt": "2005考研数学一答案解析 p.11"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2005",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2005-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:1fb8a4349616cd65e7878dfaa7e43ee8c606a09c6390b789e7883ac04ea193dd",
+      "answerTextHash": "sha256:20ed2f11a3cdb802c9a10005f37c134227edfc0656a600662fe9b45483e97abc",
+      "sourceEvidence": {
+        "evidenceId": "math1-2005-q21",
+        "sourceId": "src_c4907b9c46d2472fb0b3365c",
+        "answerSourceId": "src_c4907b9c46d2472fb0b3365c",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2005-paper-answer",
+        "answerEvidenceId": "math1-2005-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:20ed2f11a3cdb802c9a10005f37c134227edfc0656a600662fe9b45483e97abc"
+      }
+    },
+    {
+      "id": "math1-2005-022",
+      "number": 22,
+      "paperId": "math1-2005",
+      "paperName": "2005考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2005",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2005考研数学一第22题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "边缘密度与 Z 的概率密度见答案原页。",
+      "explanation": "答案来自本地百度网盘 2005 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2005/question-22.jpg",
+          "caption": "题面裁切图 q22",
+          "alt": "2005考研数学一题面裁切图 q22"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2005/answer-page-11.jpg",
+          "caption": "答案解析 p.11",
+          "alt": "2005考研数学一答案解析 p.11"
+        },
+        {
+          "src": "question-bank/math1-2005/answer-page-12.jpg",
+          "caption": "答案解析 p.12",
+          "alt": "2005考研数学一答案解析 p.12"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2005",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2005-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:34ece6d43bf886cc50b7dc7130dfb79416cd94ad11e809292dc7ac612ec6826c",
+      "answerTextHash": "sha256:6a98ed3f891d9931697bd19bd48467671e95fe57e5d5cb33b4a9c65c2abe4465",
+      "sourceEvidence": {
+        "evidenceId": "math1-2005-q22",
+        "sourceId": "src_c4907b9c46d2472fb0b3365c",
+        "answerSourceId": "src_c4907b9c46d2472fb0b3365c",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2005-paper-answer",
+        "answerEvidenceId": "math1-2005-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:6a98ed3f891d9931697bd19bd48467671e95fe57e5d5cb33b4a9c65c2abe4465"
+      }
+    },
+    {
+      "id": "math1-2005-023",
+      "number": 23,
+      "paperId": "math1-2005",
+      "paperName": "2005考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2005",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2005考研数学一第23题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "D(Y_i) 与 Cov(Y_i,Y_n) 的完整结果见答案原页。",
+      "explanation": "答案来自本地百度网盘 2005 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2005/question-23.jpg",
+          "caption": "题面裁切图 q23",
+          "alt": "2005考研数学一题面裁切图 q23"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2005/answer-page-12.jpg",
+          "caption": "答案解析 p.12",
+          "alt": "2005考研数学一答案解析 p.12"
+        },
+        {
+          "src": "question-bank/math1-2005/answer-page-13.jpg",
+          "caption": "答案解析 p.13",
+          "alt": "2005考研数学一答案解析 p.13"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2005",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2005-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:4c7a2952b058c0cc364886db1eea8ca5cf1a1b778a89a9a7a92395ccab500e2a",
+      "answerTextHash": "sha256:6e10c414abde28440c77c949002183831343eb3bc5aced5d0300394121863689",
+      "sourceEvidence": {
+        "evidenceId": "math1-2005-q23",
+        "sourceId": "src_c4907b9c46d2472fb0b3365c",
+        "answerSourceId": "src_c4907b9c46d2472fb0b3365c",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2005-paper-answer",
+        "answerEvidenceId": "math1-2005-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:6e10c414abde28440c77c949002183831343eb3bc5aced5d0300394121863689"
+      }
+    }
+  ]
+}

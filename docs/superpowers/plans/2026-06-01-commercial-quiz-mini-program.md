@@ -1911,6 +1911,65 @@ Added release-gate coverage for historical math files named `YYYY-数一/二/三
 
 Result: the refreshed backlog removes both `coverage_missing:math1:2006` and `source_evidence_missing:math1:2006`; total release blockers dropped to 76, public-course blocked slots to 64, and `sourceEvidenceGaps` to 11.
 
+### Task 46: Publish Math I 2005 Page-Image Bank
+
+**Files:**
+- Modify: `scripts/cleaning/build_math1_history_banks.py`
+- Modify: `src/config/bank-registry.js`
+- Modify: `src/pages/practice-sub/bank-data-table.js`
+- Modify: `data/release-blocker-backlog.json`
+- Create: `src/config/flashcard-banks/math1-2005.json`
+- Create: `cdn-assets/question-bank/math1-2005/*.jpg`
+- Modify: `docs/frontend-experience-refactor-diary.md`
+- Modify: `docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md`
+- Modify: `docs/08C-SCRIPTS-REFERENCE.md`
+- Modify: `docs/12-CHANGELOG.md`
+
+- [x] **Step 1: Select the 2005 source path**
+
+Used the existing Math I historical page-image builder instead of the generic LLM cleaner. The local source is `data/raw-inbox/src_c4907b9c46d2472fb0b3365c-2005数一标准答案及解析.pdf`, a scanned answer-analysis PDF with 13 pages and no reliable text layer.
+
+Source caveat: this is not a standalone blank paper. Choice answer brackets can be masked from pre-answer question crops, but fill-in-the-blank questions 1-6 are already filled inline in the source page.
+
+- [x] **Step 2: Add 2005 crop and mask support**
+
+Extended `SourceSpec` with optional `question_crop_masks` and taught `crop_question_assets()` to combine ffmpeg `crop` with one or more white `drawbox` masks. The 2005 choice questions use wider crop boxes to preserve formulas/options, then mask the visible answer bracket area.
+
+- [x] **Step 3: Build and inspect the bank**
+
+Run:
+```bash
+python3 scripts/cleaning/build_math1_history_banks.py --years 2005 --force-assets
+```
+
+Result: generated `math1-2005` with 23 cards and 50 assets. Structure is `{single_choice:8, short_answer:15}` with sections `{填空题:6, 选择题:8, 解答题:9}`.
+
+- [x] **Step 4: Verify question-image leakage**
+
+Run:
+```bash
+for p in cdn-assets/question-bank/math1-2005/question-*.jpg; do
+  txt=$(tesseract "$p" stdout -l chi_sim+eng --psm 6 2>/dev/null || true)
+  if printf '%s' "$txt" | rg -q '【分析|【详解|分析】|详解】|\[[[:space:]]*[ABCD][[:space:]]*\]'; then
+    echo "BAD $p"
+    printf '%s\n' "$txt" | sed -n '1,14p'
+  fi
+done
+```
+
+Result: no leaked analysis/detail tags or `[A-D]` answer brackets were detected in generated question images. Manual visual inspection also caught and fixed over-cropped q08/q10/q12/q14 choices before release registration.
+
+- [x] **Step 5: Register and refresh release reports**
+
+Run:
+```bash
+node scripts/build/generate-compressed-bank-modules.mjs
+node scripts/build/question-bank-release-gate.mjs
+node scripts/build/release-blocker-backlog.mjs
+```
+
+Result: formal enabled-bank count rose to 69, public-course coverage gaps fell to 63, release blockers fell to 75, public-course blocked slots fell to 63, and `math1:2005` no longer appears in the refreshed backlog.
+
 ### Task 44: Gate Math Main-Paper Cleaning Structure
 
 **Files:**
