@@ -1120,3 +1120,46 @@ Run:
 git add src/pages/settings/LogoutButton.vue src/pages/settings/index.vue tests/unit/settings-logout-flow-guard.spec.js docs/frontend-experience-refactor-diary.md docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md
 git commit -m "fix: harden settings logout flow"
 ```
+
+### Task 28: Guard Account Deletion API Auth
+
+**Files:**
+- Modify: `src/services/api/domains/user.api.js`
+- Modify: `tests/unit/integration-laf-engine.spec.js`
+- Create: `tests/unit/account-deletion-api-auth-guard.spec.js`
+- Modify: `docs/frontend-experience-refactor-diary.md`
+- Modify: `docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md`
+
+- [x] **Step 1: Add front-end auth preflight**
+
+Before calling `/account-delete`, require either `EXAM_TOKEN` or `EXAM_USER_ID` through the shared auth-storage entry points.
+
+- [x] **Step 2: Keep unauthenticated deletion local**
+
+Return `{ code: 401, success: false, message: '请先登录', data: null }` for request, cancel, and status actions when no credential exists, without calling the shared request layer.
+
+- [x] **Step 3: Preserve explicit backend action payloads**
+
+Authenticated request, cancel, and status calls must still send `{ action: 'request' }`, `{ action: 'cancel' }`, and `{ action: 'status' }` exactly.
+
+- [x] **Step 4: Add API auth guard**
+
+Assert unauthenticated account-deletion actions do not call `request`, and authenticated token/user-id states still reach the account-delete endpoint.
+
+- [x] **Step 5: Run focused validation**
+
+Run:
+```bash
+npm run lint -- src/services/api/domains/user.api.js tests/unit/account-deletion-api-auth-guard.spec.js tests/unit/integration-laf-engine.spec.js
+npm run test -- tests/unit/account-deletion-api-auth-guard.spec.js tests/unit/integration-laf-engine.spec.js tests/unit/settings-logout-flow-guard.spec.js tests/unit/settings-legal-scope-guard.spec.js tests/unit/audit-account-delete-safety.spec.js
+```
+
+Result: passed on 2026-06-01.
+
+- [x] **Step 6: Commit**
+
+Run:
+```bash
+git add src/services/api/domains/user.api.js tests/unit/account-deletion-api-auth-guard.spec.js tests/unit/integration-laf-engine.spec.js docs/frontend-experience-refactor-diary.md docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md
+git commit -m "fix: guard account deletion auth"
+```

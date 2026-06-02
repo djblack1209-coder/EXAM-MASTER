@@ -261,3 +261,11 @@
 - Settings now handles the `logged-out` event with `handleLoggedOut`, clearing both `userInfo` and any in-memory account-deletion status.
 - The logout flow still removes `userInfo`, `EXAM_USER_ID`, and `EXAM_TOKEN`, emits `loginStatusChanged`, and shows the existing success feedback.
 - Added `settings-logout-flow-guard` to protect safe navigation, sensitive-key cleanup, event broadcast, and deletion-state reset.
+
+### 2026-06-01 Round 30
+
+- Continued Phase 4 by hardening the account-deletion API entry points before they reach the shared Laf request layer.
+- `requestAccountDeletion`, `cancelAccountDeletion`, and `getAccountDeletionStatus` now require either a stored token or restored user id before sending `/account-delete`.
+- Unauthenticated account-deletion actions return a local `401 / 请先登录` response and do not call the cloud function, reducing noisy anonymous requests around a high-risk account action.
+- Existing authenticated behavior still preserves the explicit `request / cancel / status` action payloads used by the backend safety audit.
+- Added `account-deletion-api-auth-guard` and updated the Laf integration test so the normal account-deletion path deliberately models a logged-in user.

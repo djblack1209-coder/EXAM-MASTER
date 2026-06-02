@@ -18,12 +18,34 @@ import config from '../../../config/index.js';
 
 // ==================== 账号注销（7天冷静期） ====================
 
+const accountAuthRequiredResponse = {
+  code: 401,
+  success: false,
+  message: '请先登录',
+  data: null
+};
+
+function hasAccountAuthCredential() {
+  try {
+    return Boolean(getToken() || getUserId());
+  } catch (_error) {
+    return false;
+  }
+}
+
+function requireAccountAuth() {
+  return hasAccountAuthCredential() ? null : { ...accountAuthRequiredResponse };
+}
+
 /**
  * 申请注销账号
  * @returns {Promise}
  */
 export async function requestAccountDeletion() {
   try {
+    const authError = requireAccountAuth();
+    if (authError) return authError;
+
     const response = await request('/account-delete', { action: 'request' });
     return response;
   } catch (error) {
@@ -38,6 +60,9 @@ export async function requestAccountDeletion() {
  */
 export async function cancelAccountDeletion() {
   try {
+    const authError = requireAccountAuth();
+    if (authError) return authError;
+
     const response = await request('/account-delete', { action: 'cancel' });
     return response;
   } catch (error) {
@@ -52,6 +77,9 @@ export async function cancelAccountDeletion() {
  */
 export async function getAccountDeletionStatus() {
   try {
+    const authError = requireAccountAuth();
+    if (authError) return authError;
+
     const response = await request('/account-delete', { action: 'status' });
     return response;
   } catch (error) {

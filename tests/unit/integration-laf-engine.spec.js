@@ -69,6 +69,7 @@ describe('全链路: LafService 核心请求引擎', () => {
 
   describe('Phase 6: 账号注销', () => {
     it('requestAccountDeletion - 正常请求', async () => {
+      global.__mockStorage.EXAM_TOKEN = 'token_del_001';
       const { lafService } = await import('@/services/lafService.js');
       mockRequest.mockResolvedValue({
         code: 0,
@@ -82,6 +83,7 @@ describe('全链路: LafService 核心请求引擎', () => {
     });
 
     it('cancelAccountDeletion - 正常请求', async () => {
+      global.__mockStorage.EXAM_TOKEN = 'token_del_001';
       const { lafService } = await import('@/services/lafService.js');
       mockRequest.mockResolvedValue({
         code: 0,
@@ -94,6 +96,7 @@ describe('全链路: LafService 核心请求引擎', () => {
     });
 
     it('requestAccountDeletion - 网络失败', async () => {
+      global.__mockStorage.EXAM_TOKEN = 'token_del_001';
       const { lafService } = await import('@/services/lafService.js');
       mockRequest.mockRejectedValue(new Error('服务器错误'));
 
