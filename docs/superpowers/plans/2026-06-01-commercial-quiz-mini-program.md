@@ -1163,3 +1163,45 @@ Run:
 git add src/services/api/domains/user.api.js tests/unit/account-deletion-api-auth-guard.spec.js tests/unit/integration-laf-engine.spec.js docs/frontend-experience-refactor-diary.md docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md
 git commit -m "fix: guard account deletion auth"
 ```
+
+### Task 29: Normalize Settings Account Identity
+
+**Files:**
+- Modify: `src/pages/settings/index.vue`
+- Create: `tests/unit/settings-account-identity-guard.spec.js`
+- Modify: `docs/frontend-experience-refactor-diary.md`
+- Modify: `docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md`
+
+- [x] **Step 1: Add normalized account identity state**
+
+Derive `currentUserId` from `uid`, `_id`, `userId`, `id`, and cached `EXAM_USER_ID`, then expose `isAccountLoggedIn`.
+
+- [x] **Step 2: Use normalized login state in account-safety UI**
+
+Use `isAccountLoggedIn` for the login badge, account-deletion section, and deletion-status refresh instead of relying on `userInfo.uid`.
+
+- [x] **Step 3: Reuse normalized identity for profile-side effects**
+
+Use `currentUserId` for avatar upload and `EXAM_USER_ID` persistence, and generate local fallback IDs through `ensureLocalUserId`.
+
+- [x] **Step 4: Add Settings identity guard**
+
+Assert Settings keeps normalized identity fields, does not regress to `userInfo.uid` visibility checks, and saves the normalized ID.
+
+- [x] **Step 5: Run focused validation**
+
+Run:
+```bash
+npm run lint -- src/pages/settings/index.vue tests/unit/settings-account-identity-guard.spec.js
+npm run test -- tests/unit/settings-account-identity-guard.spec.js tests/unit/settings-logout-flow-guard.spec.js tests/unit/settings-legal-scope-guard.spec.js tests/unit/account-deletion-api-auth-guard.spec.js tests/unit/integration-profile.spec.js
+```
+
+Result: passed on 2026-06-01.
+
+- [x] **Step 6: Commit**
+
+Run:
+```bash
+git add src/pages/settings/index.vue tests/unit/settings-account-identity-guard.spec.js docs/frontend-experience-refactor-diary.md docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md
+git commit -m "fix: normalize settings account identity"
+```

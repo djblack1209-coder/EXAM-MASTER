@@ -81,7 +81,7 @@
             />
           </view>
           <!-- #endif -->
-          <view v-if="!userInfo.uid" class="login-badge"> 点击登录 </view>
+          <view v-if="!isAccountLoggedIn" class="login-badge"> 点击登录 </view>
           <view v-else class="login-badge logged-in"> 已登录 </view>
         </view>
         <view class="user-info-section">
@@ -216,7 +216,7 @@
     <LogoutButton @logged-out="handleLoggedOut" />
 
     <!-- C5: 注销账号（微信审核硬性要求） -->
-    <view v-if="userInfo.uid" class="delete-account-section">
+    <view v-if="isAccountLoggedIn" class="delete-account-section">
       <!-- 注销冷静期状态提示 -->
       <view v-if="deletionStatus.status === 'pending_deletion'" class="deletion-pending-card">
         <view class="deletion-pending-header">
@@ -304,6 +304,11 @@ const isPageLoading = ref(true); // F018: 页面加载状态
 // F002-S5: isLoggingOut moved to LogoutButton component
 // C5: 注销状态
 const deletionStatus = ref({ status: 'active', remainingDays: null });
+const currentUserId = computed(() => {
+  const info = userInfo.value || {};
+  return info.uid || info._id || info.userId || info.id || storageService.get('EXAM_USER_ID', null) || null;
+});
+const isAccountLoggedIn = computed(() => Boolean(currentUserId.value));
 // D017: 考试日期
 const examDate = ref('');
 /** 今天的日期字符串（picker 的最小可选日期） */
@@ -416,7 +421,7 @@ const loadData = () => {
     });
 
     // C5: 查询注销状态（已登录时）
-    if (userInfo.value.uid) {
+    if (isAccountLoggedIn.value) {
       checkDeletionStatus();
     }
   } catch (e) {
@@ -624,7 +629,7 @@ const isChoosingAvatar = ref(false);
 // H025 FIX: 通过 Service 层 uploadAvatar 调用，消除分层违规
 async function _uploadAvatarToServer(filePath) {
   try {
-    const userId = storageService.get('EXAM_USER_ID') || userInfo.value?.uid || userInfo.value?._id;
+    const userId = currentUserId.value;
     if (!userId) return;
 
     const res = await uploadAvatar(filePath, userId, { filePathToBase64, inferImageMimeType });
@@ -682,7 +687,7 @@ const onChooseAvatar = (e) => {
       // ✅ F020: 异步上传到服务器（不阻塞本地保存）
       _uploadAvatarToServer(avatarUrl);
       // 如果没有登录，完成登录流程（在清空前保存 uid 判断）
-      const needLogin = !userInfo.value.uid;
+      const needLogin = !isAccountLoggedIn.value;
       if (needLogin) {
         doRealLogin();
       }
@@ -709,7 +714,7 @@ const onChooseAvatar = (e) => {
           toast.success('头像已更新');
           // ✅ F020: 异步上传到服务器
           _uploadAvatarToServer(tempFilePath);
-          const needLogin = !userInfo.value.uid;
+          const needLogin = !isAccountLoggedIn.value;
           if (needLogin) {
             doRealLogin();
           }
@@ -793,30 +798,39 @@ const doRealLogin = async () => {
   if (!userInfo.value.nickName) {
     userInfo.value.nickName = '考研人';
   }
-  if (!userInfo.value.uid) {
-    // 生成随机 ID，兼容所有平台
-    let hex;
-    try {
-      const randomBytes = new Uint8Array(16);
-      (globalThis.crypto || globalThis.msCrypto).getRandomValues(randomBytes);
-      hex = Array.from(randomBytes)
-        .map((b) => b.toString(16).padStart(2, '0'))
-        .join('');
-    } catch (_e) {
-      // fallback: 非加密安全但功能可用
-      hex = Date.now().toString(16) + Math.random().toString(16).slice(2, 18);
-    }
-    userInfo.value.uid = 'USER_' + hex;
+  if (!isAccountLoggedIn.value) {
+    ensureLocalUserId();
   }
   saveUserInfo();
   toast.success('信息已保存');
   // #endif
 };
 
+const ensureLocalUserId = () => {
+  if (currentUserId.value) return currentUserId.value;
+
+  let hex;
+  try {
+    const randomBytes = new Uint8Array(16);
+    (globalThis.crypto || globalThis.msCrypto).getRandomValues(randomBytes);
+    hex = Array.from(randomBytes)
+      .map((b) => b.toString(16).padStart(2, '0'))
+      .join('');
+  } catch (_e) {
+    // fallback: 非加密安全但功能可用
+    hex = Date.now().toString(16) + Math.random().toString(16).slice(2, 18);
+  }
+
+  userInfo.value.uid = `USER_${hex}`;
+  return userInfo.value.uid;
+};
+
 // 保存用户信息到本地缓存
 const saveUserInfo = () => {
+  ensureLocalUserId();
+
   logger.log('[Settings] 保存用户信息:', {
-    uid: userInfo.value.uid,
+    uid: currentUserId.value,
     nickName: userInfo.value.nickName,
     avatarUrl: userInfo.value.avatarUrl ? '已设置' : '未设置'
   });
@@ -825,8 +839,8 @@ const saveUserInfo = () => {
   storageService.save('userInfo', userInfo.value);
 
   // 同时保存 userId 到统一的 key（加密存储）
-  if (userInfo.value.uid) {
-    storageService.save('EXAM_USER_ID', userInfo.value.uid, true);
+  if (currentUserId.value) {
+    storageService.save('EXAM_USER_ID', currentUserId.value, true);
   }
 
   // 触发响应式更新（Vue 3 Proxy 直接赋值即可）
@@ -838,9 +852,9 @@ const saveUserInfo = () => {
 
 // 头像点击事件处理（优化：确保登录功能正常）
 const handleAvatarClick = () => {
-  logger.log('[Settings] 头像被点击，当前登录状态:', !!userInfo.value.uid);
+  logger.log('[Settings] 头像被点击，当前登录状态:', isAccountLoggedIn.value);
 
-  if (!userInfo.value.uid) {
+  if (!isAccountLoggedIn.value) {
     // 未登录状态，提示用户点击头像按钮进行登录
     modal.show({
       title: '登录提示',

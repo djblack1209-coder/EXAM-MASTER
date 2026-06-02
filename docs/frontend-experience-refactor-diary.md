@@ -269,3 +269,11 @@
 - Unauthenticated account-deletion actions return a local `401 / 请先登录` response and do not call the cloud function, reducing noisy anonymous requests around a high-risk account action.
 - Existing authenticated behavior still preserves the explicit `request / cancel / status` action payloads used by the backend safety audit.
 - Added `account-deletion-api-auth-guard` and updated the Laf integration test so the normal account-deletion path deliberately models a logged-in user.
+
+### 2026-06-01 Round 31
+
+- Continued Phase 4 by normalizing Settings account identity handling around the account-safety UI.
+- Settings now derives `currentUserId` from `uid / _id / userId / id / EXAM_USER_ID`, so restored Laf sessions and local-profile sessions both show the correct login badge and account-deletion section.
+- Deletion status checks now use the same normalized login state instead of relying on `userInfo.uid` only.
+- Avatar upload, local profile save, and avatar-click status copy now share the normalized identity path; local fallback IDs are generated through `ensureLocalUserId`.
+- Added `settings-account-identity-guard` so future Settings edits do not hide account safety behind one legacy id shape.
