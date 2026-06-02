@@ -19,6 +19,7 @@ import { ref } from 'vue';
 import storageService from '@/services/storageService.js';
 import { logger } from '@/utils/logger.js';
 import { useUserStore } from '@/stores/modules/user';
+import { safeNavigateTo } from '@/utils/safe-navigate';
 
 const emit = defineEmits(['logged-out']);
 
@@ -53,7 +54,7 @@ const handleLogout = () => {
 
           // 延迟回到首页刷新
           setTimeout(() => {
-            uni.reLaunch({ url: '/pages/index/index' });
+            safeNavigateTo('/pages/index/index');
           }, 1000);
         } catch (error) {
           logger.error('[Settings] 退出登录失败:', error);

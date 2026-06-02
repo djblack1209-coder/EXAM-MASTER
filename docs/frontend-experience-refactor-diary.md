@@ -253,3 +253,11 @@
 - Privacy policy copy now matches the lightweight quiz product: question-bank sync, quiz records, wrong review, favorites, progress, local cache, and account deletion.
 - User agreement copy no longer claims deferred school-selection or AI tutor surfaces; it describes the current public-course quiz mini program and learning-reference boundary.
 - Added `settings-legal-scope-guard` to protect legal-entry routing, current product scope, deferred-feature cleanup, and account-deletion cooling-period copy.
+
+### 2026-06-01 Round 29
+
+- Continued Phase 4 by hardening the logout path inside Settings.
+- `LogoutButton` now returns users to Home through `safeNavigateTo('/pages/index/index')` instead of directly calling `uni.reLaunch`, so it shares the same tab-page fallback behavior as the rest of the shell.
+- Settings now handles the `logged-out` event with `handleLoggedOut`, clearing both `userInfo` and any in-memory account-deletion status.
+- The logout flow still removes `userInfo`, `EXAM_USER_ID`, and `EXAM_TOKEN`, emits `loginStatusChanged`, and shows the existing success feedback.
+- Added `settings-logout-flow-guard` to protect safe navigation, sensitive-key cleanup, event broadcast, and deletion-state reset.

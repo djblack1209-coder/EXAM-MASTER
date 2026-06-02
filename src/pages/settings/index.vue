@@ -213,7 +213,7 @@
     </view>
 
     <!-- 退出登录（已提取为独立组件） -->
-    <LogoutButton @logged-out="userInfo = {}" />
+    <LogoutButton @logged-out="handleLoggedOut" />
 
     <!-- C5: 注销账号（微信审核硬性要求） -->
     <view v-if="userInfo.uid" class="delete-account-section">
@@ -540,6 +540,10 @@ const handleClearCache = () => {
 };
 
 // F002-S5: handleLogout moved to LogoutButton component
+const handleLoggedOut = () => {
+  userInfo.value = {};
+  deletionStatus.value = { status: 'active', remainingDays: null };
+};
 
 // C5: 注销账号处理
 const handleDeleteAccount = () => {

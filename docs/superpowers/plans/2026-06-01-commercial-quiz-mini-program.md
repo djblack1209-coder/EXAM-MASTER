@@ -1077,3 +1077,46 @@ Run:
 git add src/pages/settings/index.vue src/pages/settings/privacy.vue src/pages/settings/terms.vue tests/unit/settings-legal-scope-guard.spec.js docs/frontend-experience-refactor-diary.md docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md
 git commit -m "feat: align legal scope for quiz product"
 ```
+
+### Task 27: Harden Settings Logout Flow
+
+**Files:**
+- Modify: `src/pages/settings/LogoutButton.vue`
+- Modify: `src/pages/settings/index.vue`
+- Create: `tests/unit/settings-logout-flow-guard.spec.js`
+- Modify: `docs/frontend-experience-refactor-diary.md`
+- Modify: `docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md`
+
+- [x] **Step 1: Route logout completion through safe navigation**
+
+Replace the direct Home `uni.reLaunch` call in `LogoutButton` with `safeNavigateTo('/pages/index/index')`.
+
+- [x] **Step 2: Reset Settings account state after logout**
+
+Handle the `logged-out` event with `handleLoggedOut`, clearing user info and in-memory deletion status.
+
+- [x] **Step 3: Preserve sensitive-key cleanup**
+
+Keep removal of `userInfo`, `EXAM_USER_ID`, and `EXAM_TOKEN`, plus the login-status broadcast.
+
+- [x] **Step 4: Add logout flow guard**
+
+Assert safe navigation, no direct relaunch, sensitive-key cleanup, status broadcast, and deletion-state reset.
+
+- [x] **Step 5: Run focused validation**
+
+Run:
+```bash
+npm run lint -- src/pages/settings/LogoutButton.vue src/pages/settings/index.vue tests/unit/settings-logout-flow-guard.spec.js
+npm run test -- tests/unit/settings-logout-flow-guard.spec.js tests/unit/settings-legal-scope-guard.spec.js tests/unit/shell-navigation-guard.spec.js tests/unit/core-shell-state-guard.spec.js tests/unit/core-shell-theme-guard.spec.js tests/unit/integration-storage-nav.spec.js
+```
+
+Result: passed on 2026-06-01.
+
+- [x] **Step 6: Commit**
+
+Run:
+```bash
+git add src/pages/settings/LogoutButton.vue src/pages/settings/index.vue tests/unit/settings-logout-flow-guard.spec.js docs/frontend-experience-refactor-diary.md docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md
+git commit -m "fix: harden settings logout flow"
+```
