@@ -176,6 +176,33 @@ def math1_2018_answers() -> dict[int, str]:
     return answers
 
 
+def math1_2019_answers() -> dict[int, str]:
+    answers = generic_answers(
+        2019,
+        {1: "C", 2: "B", 3: "C", 4: "D", 5: "C", 6: "C", 7: "C", 8: "A"},
+    )
+    answers.update(
+        {
+            9: "y/cos x + x/cos y",
+            10: "y = sqrt(3e^x - 2)",
+            11: "cos sqrt(x)",
+            12: "32/3",
+            13: "x = k(1,-2,1)^T，k in R。",
+            14: "2/3",
+            15: "y(x)=xe^(-x^2/2)；凹凸区间和拐点见答案原页。",
+            16: "a=b=-1；曲面面积为 13π/3。",
+            17: "面积为 1/2 + 1/(e^π - 1)。",
+            18: "递推关系与极限结果见答案原页。",
+            19: "形心坐标为 (0, 2, 1/4)。",
+            20: "a=1；β3=(-k-1)α1+kα2+2α3，k in R。",
+            21: "x=3，y=-2；可逆矩阵 P 见答案原页。",
+            22: "Z 的概率密度、不相关条件和独立性结论见答案原页。",
+            23: "A=sqrt(2/π)；σ² 的极大似然估计见答案原页。",
+        }
+    )
+    return answers
+
+
 SPECS: dict[int, SourceSpec] = {
     2005: SourceSpec(
         year=2005,
@@ -654,6 +681,90 @@ SPECS: dict[int, SourceSpec] = {
         },
         question_crop_masks={
             "q16": [(68, 92, 868, 24)],
+        },
+    ),
+    2019: SourceSpec(
+        year=2019,
+        file_name="src_f326d54beafcd7be5faed00f-2019数一真题及答案解析.pdf",
+        source_id="src_f326d54beafcd7be5faed00f",
+        question_pages={
+            1: question_refs("q01"),
+            2: question_refs("q02"),
+            3: question_refs("q03"),
+            4: question_refs("q04a", "q04b"),
+            5: question_refs("q05"),
+            6: question_refs("q06a", "q06b"),
+            7: question_refs("q07"),
+            8: question_refs("q08"),
+            9: question_refs("q09"),
+            10: question_refs("q10"),
+            11: question_refs("q11"),
+            12: question_refs("q12"),
+            13: question_refs("q13a", "q13b"),
+            14: question_refs("q14"),
+            15: question_refs("q15"),
+            16: question_refs("q16"),
+            17: question_refs("q17"),
+            18: question_refs("q18"),
+            19: question_refs("q19"),
+            20: question_refs("q20"),
+            21: question_refs("q21"),
+            22: question_refs("q22"),
+            23: question_refs("q23"),
+        },
+        answer_pages={
+            1: [1],
+            2: [1],
+            3: [1],
+            4: [1, 2],
+            5: [2],
+            6: [2, 3],
+            7: [3, 4],
+            8: [4],
+            9: [4, 5],
+            10: [5],
+            11: [5],
+            12: [5],
+            13: [5, 6],
+            14: [6, 7],
+            15: [7, 8],
+            16: [8, 9],
+            17: [9],
+            18: [9, 10, 11],
+            19: [11, 12],
+            20: [12],
+            21: [12, 13],
+            22: [13, 14],
+            23: [14, 15],
+        },
+        answers=math1_2019_answers(),
+        question_crop_boxes={
+            "q01": (1, 105, 340, 930, 108),
+            "q02": (1, 105, 535, 930, 130),
+            "q03": (1, 105, 872, 930, 220),
+            "q04a": (1, 105, 1190, 930, 250),
+            "q04b": (2, 105, 150, 930, 175),
+            "q05": (2, 105, 440, 930, 220),
+            "q06a": (2, 105, 1105, 930, 300),
+            "q06b": (3, 105, 150, 930, 300),
+            "q07": (3, 105, 1085, 930, 190),
+            "q08": (4, 105, 520, 930, 195),
+            "q09": (4, 105, 995, 930, 135),
+            "q10": (5, 105, 305, 930, 58),
+            "q11": (5, 105, 780, 930, 105),
+            "q12": (5, 105, 1040, 930, 72),
+            "q13a": (5, 105, 1340, 930, 115),
+            "q13b": (6, 105, 145, 930, 70),
+            "q14": (6, 105, 755, 930, 195),
+            "q15": (7, 105, 395, 930, 170),
+            "q16": (8, 105, 500, 930, 215),
+            "q17": (9, 105, 520, 930, 55),
+            "q18": (9, 105, 1055, 930, 220),
+            "q19": (11, 105, 550, 930, 105),
+            "q20": (12, 105, 340, 930, 225),
+            "q21": (12, 105, 1045, 930, 255),
+            "q22": (13, 105, 845, 930, 220),
+            "q23": (14, 105, 570, 930, 360),
         },
     ),
 }
@@ -1166,7 +1277,7 @@ def write_json(path: Path, payload: Any) -> None:
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--years", default="2005-2006,2008-2017")
+    parser.add_argument("--years", default="2005-2006,2008-2019")
     parser.add_argument("--bank-dir", type=Path, default=DEFAULT_BANK_DIR)
     parser.add_argument("--asset-root", type=Path, default=DEFAULT_ASSET_ROOT)
     parser.add_argument("--force-assets", action="store_true")

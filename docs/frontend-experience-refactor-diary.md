@@ -468,3 +468,15 @@
 - Release gate result after sequential audit refresh: public-course coverage gaps dropped to 61, release blockers dropped to 73, public-course blocked slots dropped to 61, and the release-priority dry-run now starts at `2019数一真题及答案解析.pdf`.
 - Source caveat: the available 2018 Math I file is a same-page question-and-analysis PDF, not a standalone blank paper. The builder crops away visible analysis and masks q16's same-line `【解析】` start, while answer evidence remains the original rendered PDF pages.
 - Product rule: when a math source combines question and analysis on the same page, publishability depends on per-crop leakage inspection plus answer-page evidence, not on OCR text extraction.
+
+### 2026-06-02 Round 52
+
+- Promoted `math1:2019` through the same formal Math I page-image bank path after the release-priority queue advanced to `2019数一真题及答案解析.pdf`.
+- Confirmed the local source is a 15-page scanned answer-analysis PDF with no usable text layer, so the builder uses rendered PDF page images plus audited per-question crops rather than OCR-derived formula text.
+- Added a 2019 structure regression test and a `SourceSpec` with 23 cards, `{选择题:8, 填空题:6, 解答题:9}`. Cross-page prompts q04, q06, and q13 use stable multi-image refs (`q04a/q04b`, `q06a/q06b`, `q13a/q13b`).
+- Published `src/config/flashcard-banks/math1-2019.json` plus 56 page/crop assets under `cdn-assets/question-bank/math1-2019`, registered the bank, and regenerated the compressed practice-bank table.
+- Validation result: `math1-2019.json` has 23 cards, `{flashcard:14, short_answer:9}`, section counts `{选择题:8, 填空题:6, 解答题:9}`, no missing assets, and the OCR leakage scan found no `【分析】` / `【详解】` / `【解析】` / `【答案】` / choice-answer markers in question images.
+- Visual spot checks covered cross-page q04/q06/q13, fill-in-the-blank q09/q10/q14, and solution prompts q15-q23. q18 and q22 crop heights were tuned before final generation to remove an answer-formula edge and preserve the third subquestion.
+- Release gate result after sequential audit refresh: public-course coverage gaps dropped to 60, release blockers dropped to 72, public-course blocked slots dropped to 60, and the release-priority dry-run now starts at `2020数一真题答案解析.pdf`.
+- Source caveat: the available 2019 Math I file is an answer-analysis edition, not a standalone blank paper. Publishability still depends on crop-level leakage controls, while answer evidence remains the original rendered PDF pages.
+- Product rule: for modern Math I answer-analysis PDFs, treat manual crop QA as part of the release artifact, not as an optional post-processing check.
