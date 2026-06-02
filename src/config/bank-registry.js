@@ -425,6 +425,21 @@ const BANK_REGISTRY = [
     sections: paperSections('选择题', '填空题', '解答题')
   },
   {
+    id: 'math1-2022',
+    subject: '数学',
+    subjectKey: 'math',
+    track: 'math1',
+    year: '2022',
+    name: '2022考研数学一真题',
+    description: '10道选择 + 6道填空 + 6道解答题',
+    releaseLabel: '正式题库',
+    caution:
+      '按本地百度网盘 2022 数学一真题答案解析 PDF 页图训练；题面使用逐题裁切图，答案和解析以原 PDF 页图为准',
+    paperType: 'past_exam',
+    quality: PAPER_QUALITY.READY,
+    sections: paperSections('选择题', '填空题', '解答题')
+  },
+  {
     id: 'math1-2007',
     subject: '数学',
     subjectKey: 'math',

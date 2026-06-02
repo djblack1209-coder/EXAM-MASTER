@@ -257,6 +257,33 @@ def math1_2021_answers() -> dict[int, str]:
     return answers
 
 
+def math1_2022_answers() -> dict[int, str]:
+    answers = generic_answers(
+        2022,
+        {1: "B", 2: "D", 3: "D", 5: "A", 6: "C", 7: "C"},
+        card_count=22,
+        choice_end=10,
+        fill_end=16,
+    )
+    answers.update(
+        {
+            11: "4",
+            12: "4",
+            13: "4/e^2",
+            14: "-1",
+            15: "((E-(A-E)^-1)^-1-E)A",
+            16: "5/8",
+            17: "斜渐近线为 y=2x。",
+            18: "二重积分值为 2π-2。",
+            19: "曲线积分完整计算见答案原页。",
+            20: "证明过程见答案原页。",
+            21: "二次型矩阵、正交变换和方程解见答案原页。",
+            22: "theta 的极大似然估计与方差见答案原页。",
+        }
+    )
+    return answers
+
+
 SPECS: dict[int, SourceSpec] = {
     2005: SourceSpec(
         year=2005,
@@ -983,6 +1010,85 @@ SPECS: dict[int, SourceSpec] = {
             "q22b": (16, 105, 125, 930, 75),
         },
     ),
+    2022: SourceSpec(
+        year=2022,
+        file_name="src_97122ca7e5901e146b32e0c1-2022数一真题答案解析.pdf",
+        source_id="src_97122ca7e5901e146b32e0c1",
+        question_pages={
+            1: question_refs("q01"),
+            2: question_refs("q02"),
+            3: question_refs("q03"),
+            4: question_refs("q04"),
+            5: question_refs("q05"),
+            6: question_refs("q06"),
+            7: question_refs("q07"),
+            8: question_refs("q08"),
+            9: question_refs("q09"),
+            10: question_refs("q10"),
+            11: question_refs("q11"),
+            12: question_refs("q12"),
+            13: question_refs("q13a", "q13b"),
+            14: question_refs("q14"),
+            15: question_refs("q15"),
+            16: question_refs("q16"),
+            17: question_refs("q17"),
+            18: question_refs("q18"),
+            19: question_refs("q19"),
+            20: question_refs("q20"),
+            21: question_refs("q21"),
+            22: question_refs("q22"),
+        },
+        answer_pages={
+            1: [1],
+            2: [1],
+            3: [1, 2],
+            4: [2],
+            5: [2],
+            6: [2, 3],
+            7: [3],
+            8: [3, 4],
+            9: [4],
+            10: [4],
+            11: [4],
+            12: [4, 5],
+            13: [5],
+            14: [5, 6],
+            15: [6],
+            16: [6, 7],
+            17: [7],
+            18: [7, 8],
+            19: [8],
+            20: [8, 9],
+            21: [9, 10],
+            22: [10, 11],
+        },
+        answers=math1_2022_answers(),
+        question_crop_boxes={
+            "q01": (1, 150, 206, 900, 90),
+            "q02": (1, 150, 420, 900, 210),
+            "q03": (1, 150, 880, 900, 285),
+            "q04": (2, 150, 34, 900, 208),
+            "q05": (2, 150, 363, 900, 205),
+            "q06": (2, 150, 672, 900, 308),
+            "q07": (3, 150, 178, 900, 168),
+            "q08": (3, 150, 1038, 900, 75),
+            "q09": (4, 150, 150, 900, 260),
+            "q10": (4, 150, 560, 900, 118),
+            "q11": (4, 150, 790, 900, 70),
+            "q12": (4, 150, 1068, 900, 70),
+            "q13a": (5, 625, 48, 330, 42),
+            "q13b": (5, 150, 112, 900, 56),
+            "q14": (5, 150, 1310, 900, 58),
+            "q15": (6, 150, 370, 900, 102),
+            "q16": (6, 150, 688, 900, 180),
+            "q17": (7, 150, 430, 900, 105),
+            "q18": (7, 150, 984, 900, 100),
+            "q19": (8, 150, 472, 900, 136),
+            "q20": (8, 150, 640, 900, 176),
+            "q21": (9, 150, 155, 900, 215),
+            "q22": (10, 150, 235, 900, 200),
+        },
+    ),
 }
 
 
@@ -1313,7 +1419,7 @@ def section_for(spec: SourceSpec, number: int) -> str:
         if number <= 16:
             return "填空题"
         return "解答题"
-    if spec.year == 2021:
+    if spec.year in {2021, 2022}:
         if number <= 10:
             return "选择题"
         if number <= 16:
@@ -1335,7 +1441,7 @@ def type_for(spec: SourceSpec, number: int) -> str:
         if number <= 10:
             return "single_choice"
         return "short_answer"
-    if spec.year == 2021:
+    if spec.year in {2021, 2022}:
         if number <= 16:
             return "flashcard"
         return "short_answer"
@@ -1503,7 +1609,7 @@ def write_json(path: Path, payload: Any) -> None:
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--years", default="2005-2006,2008-2021")
+    parser.add_argument("--years", default="2005-2006,2008-2022")
     parser.add_argument("--bank-dir", type=Path, default=DEFAULT_BANK_DIR)
     parser.add_argument("--asset-root", type=Path, default=DEFAULT_ASSET_ROOT)
     parser.add_argument("--force-assets", action="store_true")

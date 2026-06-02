@@ -2128,6 +2128,94 @@ git -c core.hooksPath=/dev/null commit -m "chore: publish math1 2021 bank"
 
 Result: committed after validation on 2026-06-02.
 
+### Task 55: Publish Math I 2022 Page-Image Bank
+
+**Files:**
+- Modify: `scripts/cleaning/build_math1_history_banks.py`
+- Modify: `tests/unit/test_build_math1_history_banks.py`
+- Modify: `src/config/bank-registry.js`
+- Modify: `src/pages/practice-sub/bank-data-table.js`
+- Add: `src/config/flashcard-banks/math1-2022.json`
+- Add: `cdn-assets/question-bank/math1-2022/*`
+- Modify: `data/release-blocker-backlog.json`
+- Modify: `docs/frontend-experience-refactor-diary.md`
+- Modify: `docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md`
+- Modify: `docs/08C-SCRIPTS-REFERENCE.md`
+- Modify: `docs/12-CHANGELOG.md`
+
+- [x] **Step 1: Inspect the source and add a failing structure test**
+
+Used the release-priority source:
+
+```bash
+data/raw-inbox/src_97122ca7e5901e146b32e0c1-2022数一真题答案解析.pdf
+```
+
+Confirmed with `pdfinfo`, `pdftotext`, rendered page images, and visual inspection that it is an 11-page answer-analysis PDF with same-page answers/解析 and a weak text layer. Added the 2022 structure test before implementation to lock the 22-card 10/6/6 shape and q13/q22 evidence layout.
+
+- [x] **Step 2: Extend the Math I history builder**
+
+Added `math1_2022_answers()` and a 2022 `SourceSpec`:
+
+```text
+card_numbers_for_spec(math1-2022) == 1..22
+sections == 10 choice + 6 fill + 6 solution
+q13 == ["q13a", "q13b"]
+answer_pages[22] == [10, 11]
+sourceId == src_97122ca7e5901e146b32e0c1
+```
+
+The spec uses manual crop boxes for every question because the source mixes question text with same-page answers and analysis. q04, q06, q08, q12, q13, q18, q19, q20, q21, and q22 crop boundaries were tuned after OCR/visual inspection to remove leakage while preserving complete prompts.
+
+- [x] **Step 3: Generate, register, and regenerate compressed data**
+
+Run:
+
+```bash
+python3 scripts/cleaning/build_math1_history_banks.py --years 2022 --force-assets
+node scripts/build/generate-compressed-bank-modules.mjs
+```
+
+Result: generated `src/config/flashcard-banks/math1-2022.json` and 45 assets under `cdn-assets/question-bank/math1-2022`; compressed bank modules now include 75 published banks. `math1-2022` is registered as a special 10/6/6 entry rather than added to the 2005-2020 8/6/9 mapped block.
+
+- [x] **Step 4: Run validation**
+
+Run:
+
+```bash
+python3 -m unittest tests.unit.test_build_math1_history_banks
+npm run test -- tests/unit/question-bank-release-gate.spec.js tests/unit/flashcard-bank-registry.spec.js
+node scripts/build/question-bank-release-gate.mjs
+node scripts/build/release-blocker-backlog.mjs
+python3 scripts/baidu/cleaning_queue.py
+python3 scripts/baidu/run_cleaning_queue.py --dry-run --limit 8 --source-type official_paper --paper-role main
+git diff --check
+```
+
+Additional OCR leakage scan:
+
+```bash
+for p in cdn-assets/question-bank/math1-2022/question-*.jpg; do
+  txt=$(tesseract "$p" stdout -l chi_sim+eng --psm 6 2>/dev/null || true)
+  if printf '%s' "$txt" | rg -q '【分析|【详解|【解析|【答案|分析】|详解】|解析】|答案】|选[[:space:]]*[ABCD]|故选|因此选|应选|故应选|\[[[:space:]]*[ABCD][[:space:]]*\]'; then
+    echo "BAD $p"
+  fi
+done
+```
+
+Result: passed on 2026-06-02. `math1-2022.json` has 22 cards, `{flashcard:16, short_answer:6}`, section counts `{选择题:10, 填空题:6, 解答题:6}`, 23 question crop assets, 11 answer pages, 11 paper pages, and no missing asset references. Sequential release audit refresh reports `coverageGaps=57`, `blockers=69`, `publicCourseBlockedSlots=57`; the next main queue dry-run starts at `1987数一真题、标准答案及解析.pdf`.
+
+- [x] **Step 5: Commit**
+
+Run after final diff/whitespace checks:
+
+```bash
+git add scripts/cleaning/build_math1_history_banks.py tests/unit/test_build_math1_history_banks.py src/config/bank-registry.js src/pages/practice-sub/bank-data-table.js src/config/flashcard-banks/math1-2022.json cdn-assets/question-bank/math1-2022 data/release-blocker-backlog.json docs/frontend-experience-refactor-diary.md docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md docs/08C-SCRIPTS-REFERENCE.md docs/12-CHANGELOG.md
+git -c core.hooksPath=/dev/null commit -m "chore: publish math1 2022 bank"
+```
+
+Result: committed after validation on 2026-06-02.
+
 ### Task 52: Publish Math I 2019 Page-Image Bank
 
 **Files:**

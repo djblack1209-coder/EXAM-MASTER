@@ -504,3 +504,14 @@
 - Release gate result after sequential audit refresh: public-course coverage gaps dropped to 58, release blockers dropped to 70, public-course blocked slots dropped to 58, and the release-priority dry-run now starts at `2022数一真题答案解析.pdf`.
 - Source caveat: the available 2021 Math I file is an answer-analysis edition. User-facing question images depend on crop-level leakage controls, while answer evidence remains the original rendered PDF pages.
 - Product rule: run `question-bank-release-gate` before `release-blocker-backlog`; running them in parallel can make the backlog read the previous audit and temporarily leave a newly published slot in the queue.
+
+### 2026-06-02 Round 55
+
+- Promoted `math1:2022` through the formal Math I page-image bank path after the release-priority queue advanced to `2022数一真题答案解析.pdf`.
+- Confirmed the source is an 11-page answer-analysis PDF with a weak text layer, then added a 2022 `SourceSpec` for the newer 22-card structure: 10 choice, 6 fill-in-the-blank, and 6 solution questions.
+- Added a 2022 structure regression test covering `card_numbers_for_spec == 1..22`, q13 split question crops, q22 answer evidence across pages 10-11, and the 2022 source id/file name.
+- Published `src/config/flashcard-banks/math1-2022.json` plus 45 page/crop assets under `cdn-assets/question-bank/math1-2022`, registered the bank as a special 10/6/6 Math I entry, and regenerated the compressed practice-bank table.
+- Validation result: `math1-2022.json` has 22 cards, `{flashcard:16, short_answer:6}`, section counts `{选择题:10, 填空题:6, 解答题:6}`, no missing assets, and the OCR leakage scan found no `【分析】` / `【详解】` / `【解析】` / `【答案】` / choice-answer markers in question images.
+- Visual spot checks tuned q04, q06, q08, q12, q13, q18, q19, q20, q21, and q22 crop boundaries to remove same-page answer/解析 leakage while preserving complete prompts.
+- Release gate result after sequential audit refresh: public-course coverage gaps dropped to 57, release blockers dropped to 69, public-course blocked slots dropped to 57, and the release-priority dry-run now starts at `1987数一真题、标准答案及解析.pdf`.
+- Source caveat: the available 2022 Math I file is an answer-analysis edition. User-facing question images depend on crop-level leakage controls, while answer evidence remains the original rendered PDF pages.

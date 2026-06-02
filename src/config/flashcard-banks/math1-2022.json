@@ -1,0 +1,1205 @@
+{
+  "id": "math1-2022",
+  "source": "math1-2022-paper-answer",
+  "paperId": "math1-2022",
+  "paperName": "2022考研数学一真题",
+  "subject": "数学",
+  "subjectKey": "math",
+  "track": "math1",
+  "year": "2022",
+  "quality": "ready",
+  "publicationStatus": "published",
+  "publicationBlockers": [],
+  "sourceEvidencePolicy": "baidu_netdisk_official_paper_pdf_question_crop_answer_page_image_v1",
+  "sourceFiles": [
+    {
+      "id": "math1-2022-paper-answer",
+      "role": "paper_answer",
+      "localPath": "data/raw-inbox/src_97122ca7e5901e146b32e0c1-2022数一真题答案解析.pdf",
+      "sha256": "sha256:f4655ee638682c649e49327f25257da44f44651da86bc1eb4486aef61aa7f479",
+      "sourceId": "src_97122ca7e5901e146b32e0c1"
+    }
+  ],
+  "assetRoot": "question-bank/math1-2022",
+  "processed_at": "2026-06-02T20:14:20Z",
+  "total_cards": 22,
+  "cards": [
+    {
+      "id": "math1-2022-001",
+      "number": 1,
+      "paperId": "math1-2022",
+      "paperName": "2022考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2022",
+      "section": "选择题",
+      "type": "flashcard",
+      "question": "2022考研数学一第1题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2022 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2022/question-01.jpg",
+          "caption": "题面裁切图 q01",
+          "alt": "2022考研数学一题面裁切图 q01"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2022/answer-page-01.jpg",
+          "caption": "答案解析 p.1",
+          "alt": "2022考研数学一答案解析 p.1"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2022",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2022-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:c2a3a3b3fc7a4c6d403991e05b183edcec8feaf844a18f922c963a1817c6776d",
+      "answerTextHash": "sha256:eeb8f23963a55373792abcd7f5e7bf152df8a8573bd10989d302f7962035a04f",
+      "sourceEvidence": {
+        "evidenceId": "math1-2022-q01",
+        "sourceId": "src_97122ca7e5901e146b32e0c1",
+        "answerSourceId": "src_97122ca7e5901e146b32e0c1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2022-paper-answer",
+        "answerEvidenceId": "math1-2022-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:eeb8f23963a55373792abcd7f5e7bf152df8a8573bd10989d302f7962035a04f"
+      }
+    },
+    {
+      "id": "math1-2022-002",
+      "number": 2,
+      "paperId": "math1-2022",
+      "paperName": "2022考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2022",
+      "section": "选择题",
+      "type": "flashcard",
+      "question": "2022考研数学一第2题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2022 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2022/question-02.jpg",
+          "caption": "题面裁切图 q02",
+          "alt": "2022考研数学一题面裁切图 q02"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2022/answer-page-01.jpg",
+          "caption": "答案解析 p.1",
+          "alt": "2022考研数学一答案解析 p.1"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2022",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2022-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:d871676fe4fca069372acf69f438cdd400ac738bd65035dfb9fa35064dc06087",
+      "answerTextHash": "sha256:f6335e8977ced096172680deb47d3c197da7774b472b4fe4ce3651e4656f09aa",
+      "sourceEvidence": {
+        "evidenceId": "math1-2022-q02",
+        "sourceId": "src_97122ca7e5901e146b32e0c1",
+        "answerSourceId": "src_97122ca7e5901e146b32e0c1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2022-paper-answer",
+        "answerEvidenceId": "math1-2022-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:f6335e8977ced096172680deb47d3c197da7774b472b4fe4ce3651e4656f09aa"
+      }
+    },
+    {
+      "id": "math1-2022-003",
+      "number": 3,
+      "paperId": "math1-2022",
+      "paperName": "2022考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2022",
+      "section": "选择题",
+      "type": "flashcard",
+      "question": "2022考研数学一第3题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2022 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2022/question-03.jpg",
+          "caption": "题面裁切图 q03",
+          "alt": "2022考研数学一题面裁切图 q03"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2022/answer-page-01.jpg",
+          "caption": "答案解析 p.1",
+          "alt": "2022考研数学一答案解析 p.1"
+        },
+        {
+          "src": "question-bank/math1-2022/answer-page-02.jpg",
+          "caption": "答案解析 p.2",
+          "alt": "2022考研数学一答案解析 p.2"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2022",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2022-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:0797af25e00a69dfc232340388d71b711ad8b456b3000049d8005c6b35a83a9a",
+      "answerTextHash": "sha256:83d8abeb12d9c0fa9a6e0901b76d8c482461cafa0bf4d238f7f8fae2c82d4275",
+      "sourceEvidence": {
+        "evidenceId": "math1-2022-q03",
+        "sourceId": "src_97122ca7e5901e146b32e0c1",
+        "answerSourceId": "src_97122ca7e5901e146b32e0c1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2022-paper-answer",
+        "answerEvidenceId": "math1-2022-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:83d8abeb12d9c0fa9a6e0901b76d8c482461cafa0bf4d238f7f8fae2c82d4275"
+      }
+    },
+    {
+      "id": "math1-2022-004",
+      "number": 4,
+      "paperId": "math1-2022",
+      "paperName": "2022考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2022",
+      "section": "选择题",
+      "type": "flashcard",
+      "question": "2022考研数学一第4题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "完整答案与解析见答案原页。",
+      "explanation": "答案来自本地百度网盘 2022 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2022/question-04.jpg",
+          "caption": "题面裁切图 q04",
+          "alt": "2022考研数学一题面裁切图 q04"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2022/answer-page-02.jpg",
+          "caption": "答案解析 p.2",
+          "alt": "2022考研数学一答案解析 p.2"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2022",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2022-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:5066cae23f7b36b506a1b2f91c3cf4e66a835c0f436bc1c3e204bb1a06832087",
+      "answerTextHash": "sha256:ba214c6f7c0d4af3ffe01531e9b9e28100a8c5e262dbf393ab396db25b8decd0",
+      "sourceEvidence": {
+        "evidenceId": "math1-2022-q04",
+        "sourceId": "src_97122ca7e5901e146b32e0c1",
+        "answerSourceId": "src_97122ca7e5901e146b32e0c1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2022-paper-answer",
+        "answerEvidenceId": "math1-2022-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:ba214c6f7c0d4af3ffe01531e9b9e28100a8c5e262dbf393ab396db25b8decd0"
+      }
+    },
+    {
+      "id": "math1-2022-005",
+      "number": 5,
+      "paperId": "math1-2022",
+      "paperName": "2022考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2022",
+      "section": "选择题",
+      "type": "flashcard",
+      "question": "2022考研数学一第5题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2022 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2022/question-05.jpg",
+          "caption": "题面裁切图 q05",
+          "alt": "2022考研数学一题面裁切图 q05"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2022/answer-page-02.jpg",
+          "caption": "答案解析 p.2",
+          "alt": "2022考研数学一答案解析 p.2"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2022",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2022-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:34651e8df3fc7d6485a7c99ca50ad4e1c231335d3561bf42a416524082a95f10",
+      "answerTextHash": "sha256:be350ad3c0fc9a7257a73bd05aba736f028d2514441d66b0626e7a78bc85704b",
+      "sourceEvidence": {
+        "evidenceId": "math1-2022-q05",
+        "sourceId": "src_97122ca7e5901e146b32e0c1",
+        "answerSourceId": "src_97122ca7e5901e146b32e0c1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2022-paper-answer",
+        "answerEvidenceId": "math1-2022-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:be350ad3c0fc9a7257a73bd05aba736f028d2514441d66b0626e7a78bc85704b"
+      }
+    },
+    {
+      "id": "math1-2022-006",
+      "number": 6,
+      "paperId": "math1-2022",
+      "paperName": "2022考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2022",
+      "section": "选择题",
+      "type": "flashcard",
+      "question": "2022考研数学一第6题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2022 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2022/question-06.jpg",
+          "caption": "题面裁切图 q06",
+          "alt": "2022考研数学一题面裁切图 q06"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2022/answer-page-02.jpg",
+          "caption": "答案解析 p.2",
+          "alt": "2022考研数学一答案解析 p.2"
+        },
+        {
+          "src": "question-bank/math1-2022/answer-page-03.jpg",
+          "caption": "答案解析 p.3",
+          "alt": "2022考研数学一答案解析 p.3"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2022",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2022-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:44dba73266d4531385165183727ff6881ed224cce11e94640aacaa470be30bd2",
+      "answerTextHash": "sha256:85f0822fafaa5e528251323fbbca342b6ad52a0d5a8adcd98bf97f006ba13533",
+      "sourceEvidence": {
+        "evidenceId": "math1-2022-q06",
+        "sourceId": "src_97122ca7e5901e146b32e0c1",
+        "answerSourceId": "src_97122ca7e5901e146b32e0c1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2022-paper-answer",
+        "answerEvidenceId": "math1-2022-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:85f0822fafaa5e528251323fbbca342b6ad52a0d5a8adcd98bf97f006ba13533"
+      }
+    },
+    {
+      "id": "math1-2022-007",
+      "number": 7,
+      "paperId": "math1-2022",
+      "paperName": "2022考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2022",
+      "section": "选择题",
+      "type": "flashcard",
+      "question": "2022考研数学一第7题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2022 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2022/question-07.jpg",
+          "caption": "题面裁切图 q07",
+          "alt": "2022考研数学一题面裁切图 q07"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2022/answer-page-03.jpg",
+          "caption": "答案解析 p.3",
+          "alt": "2022考研数学一答案解析 p.3"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2022",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2022-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:6a8d06cb4deed2a9c8192ef8c33f674980a27d43b936d41b4bea418c8e43fa62",
+      "answerTextHash": "sha256:68d83c90862fc09ebf9a4584ba993943e3bb37788c1dc1201cb29f44689a49dc",
+      "sourceEvidence": {
+        "evidenceId": "math1-2022-q07",
+        "sourceId": "src_97122ca7e5901e146b32e0c1",
+        "answerSourceId": "src_97122ca7e5901e146b32e0c1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2022-paper-answer",
+        "answerEvidenceId": "math1-2022-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:68d83c90862fc09ebf9a4584ba993943e3bb37788c1dc1201cb29f44689a49dc"
+      }
+    },
+    {
+      "id": "math1-2022-008",
+      "number": 8,
+      "paperId": "math1-2022",
+      "paperName": "2022考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2022",
+      "section": "选择题",
+      "type": "flashcard",
+      "question": "2022考研数学一第8题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "完整答案与解析见答案原页。",
+      "explanation": "答案来自本地百度网盘 2022 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2022/question-08.jpg",
+          "caption": "题面裁切图 q08",
+          "alt": "2022考研数学一题面裁切图 q08"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2022/answer-page-03.jpg",
+          "caption": "答案解析 p.3",
+          "alt": "2022考研数学一答案解析 p.3"
+        },
+        {
+          "src": "question-bank/math1-2022/answer-page-04.jpg",
+          "caption": "答案解析 p.4",
+          "alt": "2022考研数学一答案解析 p.4"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2022",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2022-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:c0682981dcdacfa701e5e33db919fd62b7c8a22100a6057c482de64d3f0c1019",
+      "answerTextHash": "sha256:e95ef69a85391ad28886bb2236fbb2fd834ebb6da292a8514b1ed9533c9b9a78",
+      "sourceEvidence": {
+        "evidenceId": "math1-2022-q08",
+        "sourceId": "src_97122ca7e5901e146b32e0c1",
+        "answerSourceId": "src_97122ca7e5901e146b32e0c1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2022-paper-answer",
+        "answerEvidenceId": "math1-2022-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:e95ef69a85391ad28886bb2236fbb2fd834ebb6da292a8514b1ed9533c9b9a78"
+      }
+    },
+    {
+      "id": "math1-2022-009",
+      "number": 9,
+      "paperId": "math1-2022",
+      "paperName": "2022考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2022",
+      "section": "选择题",
+      "type": "flashcard",
+      "question": "2022考研数学一第9题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "完整答案与解析见答案原页。",
+      "explanation": "答案来自本地百度网盘 2022 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2022/question-09.jpg",
+          "caption": "题面裁切图 q09",
+          "alt": "2022考研数学一题面裁切图 q09"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2022/answer-page-04.jpg",
+          "caption": "答案解析 p.4",
+          "alt": "2022考研数学一答案解析 p.4"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2022",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2022-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:7f259ac6f14a8ed4626efd78162ab8ded7df87cadd327bbcbd6ab1c5d9d3b533",
+      "answerTextHash": "sha256:ef73881228b326b00b9e5b1e307ef7177e9ce38c5b2194919e9b8feac9a78be2",
+      "sourceEvidence": {
+        "evidenceId": "math1-2022-q09",
+        "sourceId": "src_97122ca7e5901e146b32e0c1",
+        "answerSourceId": "src_97122ca7e5901e146b32e0c1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2022-paper-answer",
+        "answerEvidenceId": "math1-2022-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:ef73881228b326b00b9e5b1e307ef7177e9ce38c5b2194919e9b8feac9a78be2"
+      }
+    },
+    {
+      "id": "math1-2022-010",
+      "number": 10,
+      "paperId": "math1-2022",
+      "paperName": "2022考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2022",
+      "section": "选择题",
+      "type": "flashcard",
+      "question": "2022考研数学一第10题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "完整答案与解析见答案原页。",
+      "explanation": "答案来自本地百度网盘 2022 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2022/question-10.jpg",
+          "caption": "题面裁切图 q10",
+          "alt": "2022考研数学一题面裁切图 q10"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2022/answer-page-04.jpg",
+          "caption": "答案解析 p.4",
+          "alt": "2022考研数学一答案解析 p.4"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2022",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2022-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:c89a196b7fe2ec8f93afec8d3df5fc11c8a228da2509d0a1a46e5b40bfeb1225",
+      "answerTextHash": "sha256:ef73881228b326b00b9e5b1e307ef7177e9ce38c5b2194919e9b8feac9a78be2",
+      "sourceEvidence": {
+        "evidenceId": "math1-2022-q10",
+        "sourceId": "src_97122ca7e5901e146b32e0c1",
+        "answerSourceId": "src_97122ca7e5901e146b32e0c1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2022-paper-answer",
+        "answerEvidenceId": "math1-2022-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:ef73881228b326b00b9e5b1e307ef7177e9ce38c5b2194919e9b8feac9a78be2"
+      }
+    },
+    {
+      "id": "math1-2022-011",
+      "number": 11,
+      "paperId": "math1-2022",
+      "paperName": "2022考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2022",
+      "section": "填空题",
+      "type": "flashcard",
+      "question": "2022考研数学一第11题（填空题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "4",
+      "explanation": "答案来自本地百度网盘 2022 数学一真题答案解析 PDF；填空题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2022/question-11.jpg",
+          "caption": "题面裁切图 q11",
+          "alt": "2022考研数学一题面裁切图 q11"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2022/answer-page-04.jpg",
+          "caption": "答案解析 p.4",
+          "alt": "2022考研数学一答案解析 p.4"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2022",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2022-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:dc286fc870e063215088980456cfe2ba9525b97b399904daa5999c8c7b648aed",
+      "answerTextHash": "sha256:1b469e97fcaf3b8c0ab0ad22805c1da9cd954d8a3cca6d939852fe4e6fb3ec7c",
+      "sourceEvidence": {
+        "evidenceId": "math1-2022-q11",
+        "sourceId": "src_97122ca7e5901e146b32e0c1",
+        "answerSourceId": "src_97122ca7e5901e146b32e0c1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2022-paper-answer",
+        "answerEvidenceId": "math1-2022-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:1b469e97fcaf3b8c0ab0ad22805c1da9cd954d8a3cca6d939852fe4e6fb3ec7c"
+      }
+    },
+    {
+      "id": "math1-2022-012",
+      "number": 12,
+      "paperId": "math1-2022",
+      "paperName": "2022考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2022",
+      "section": "填空题",
+      "type": "flashcard",
+      "question": "2022考研数学一第12题（填空题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "4",
+      "explanation": "答案来自本地百度网盘 2022 数学一真题答案解析 PDF；填空题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2022/question-12.jpg",
+          "caption": "题面裁切图 q12",
+          "alt": "2022考研数学一题面裁切图 q12"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2022/answer-page-04.jpg",
+          "caption": "答案解析 p.4",
+          "alt": "2022考研数学一答案解析 p.4"
+        },
+        {
+          "src": "question-bank/math1-2022/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2022考研数学一答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2022",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2022-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:7cbd3dee38cef704983d24521fb2e6240c0fd88e382eaf9c9d665970c468c6ca",
+      "answerTextHash": "sha256:641943733423bbd62ff6e00f0d953be3d3f160e81b544c006e8c6047441d18ec",
+      "sourceEvidence": {
+        "evidenceId": "math1-2022-q12",
+        "sourceId": "src_97122ca7e5901e146b32e0c1",
+        "answerSourceId": "src_97122ca7e5901e146b32e0c1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2022-paper-answer",
+        "answerEvidenceId": "math1-2022-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:641943733423bbd62ff6e00f0d953be3d3f160e81b544c006e8c6047441d18ec"
+      }
+    },
+    {
+      "id": "math1-2022-013",
+      "number": 13,
+      "paperId": "math1-2022",
+      "paperName": "2022考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2022",
+      "section": "填空题",
+      "type": "flashcard",
+      "question": "2022考研数学一第13题（填空题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "4/e^2",
+      "explanation": "答案来自本地百度网盘 2022 数学一真题答案解析 PDF；填空题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2022/question-13a.jpg",
+          "caption": "题面裁切图 q13",
+          "alt": "2022考研数学一题面裁切图 q13"
+        },
+        {
+          "src": "question-bank/math1-2022/question-13b.jpg",
+          "caption": "题面裁切图 q13",
+          "alt": "2022考研数学一题面裁切图 q13"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2022/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2022考研数学一答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2022",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2022-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:88d0e238e9b85b2944360a7dafdf3ee901ebf55fc3fd6daa64b7124489237388",
+      "answerTextHash": "sha256:45a48c262fa6e1558fa65b5673a4652a4a23fdda8b410bb76b6a0dd3d85b8cbf",
+      "sourceEvidence": {
+        "evidenceId": "math1-2022-q13",
+        "sourceId": "src_97122ca7e5901e146b32e0c1",
+        "answerSourceId": "src_97122ca7e5901e146b32e0c1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2022-paper-answer",
+        "answerEvidenceId": "math1-2022-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:45a48c262fa6e1558fa65b5673a4652a4a23fdda8b410bb76b6a0dd3d85b8cbf"
+      }
+    },
+    {
+      "id": "math1-2022-014",
+      "number": 14,
+      "paperId": "math1-2022",
+      "paperName": "2022考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2022",
+      "section": "填空题",
+      "type": "flashcard",
+      "question": "2022考研数学一第14题（填空题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "-1",
+      "explanation": "答案来自本地百度网盘 2022 数学一真题答案解析 PDF；填空题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2022/question-14.jpg",
+          "caption": "题面裁切图 q14",
+          "alt": "2022考研数学一题面裁切图 q14"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2022/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2022考研数学一答案解析 p.5"
+        },
+        {
+          "src": "question-bank/math1-2022/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2022考研数学一答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2022",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2022-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:5ed10dd0c1c3317c86b9c13e0d105d76cdbc54558ee407a74603fef4f89d0967",
+      "answerTextHash": "sha256:a2e78b085b26a57d3c95d10ac31008dcffa0ecb78ea477ca958acaf18b96b93d",
+      "sourceEvidence": {
+        "evidenceId": "math1-2022-q14",
+        "sourceId": "src_97122ca7e5901e146b32e0c1",
+        "answerSourceId": "src_97122ca7e5901e146b32e0c1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2022-paper-answer",
+        "answerEvidenceId": "math1-2022-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:a2e78b085b26a57d3c95d10ac31008dcffa0ecb78ea477ca958acaf18b96b93d"
+      }
+    },
+    {
+      "id": "math1-2022-015",
+      "number": 15,
+      "paperId": "math1-2022",
+      "paperName": "2022考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2022",
+      "section": "填空题",
+      "type": "flashcard",
+      "question": "2022考研数学一第15题（填空题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "((E-(A-E)^-1)^-1-E)A",
+      "explanation": "答案来自本地百度网盘 2022 数学一真题答案解析 PDF；填空题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2022/question-15.jpg",
+          "caption": "题面裁切图 q15",
+          "alt": "2022考研数学一题面裁切图 q15"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2022/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2022考研数学一答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2022",
+        "填空题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2022-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:5968a851fbec10b42bc53ac362ca8e9ffbe992ea4d5278f785c6ef43b52d1acf",
+      "answerTextHash": "sha256:f489fd11717b56b3b2c5a89ac7f967ebca42e4b31268fd01673332faa21effbb",
+      "sourceEvidence": {
+        "evidenceId": "math1-2022-q15",
+        "sourceId": "src_97122ca7e5901e146b32e0c1",
+        "answerSourceId": "src_97122ca7e5901e146b32e0c1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2022-paper-answer",
+        "answerEvidenceId": "math1-2022-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:f489fd11717b56b3b2c5a89ac7f967ebca42e4b31268fd01673332faa21effbb"
+      }
+    },
+    {
+      "id": "math1-2022-016",
+      "number": 16,
+      "paperId": "math1-2022",
+      "paperName": "2022考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2022",
+      "section": "填空题",
+      "type": "flashcard",
+      "question": "2022考研数学一第16题（填空题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "5/8",
+      "explanation": "答案来自本地百度网盘 2022 数学一真题答案解析 PDF；填空题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2022/question-16.jpg",
+          "caption": "题面裁切图 q16",
+          "alt": "2022考研数学一题面裁切图 q16"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2022/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2022考研数学一答案解析 p.6"
+        },
+        {
+          "src": "question-bank/math1-2022/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2022考研数学一答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2022",
+        "填空题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2022-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:a129ac7346c640a3ef0c0a5b0eba48cac0d9104c5b532381d810a07c1ba8001f",
+      "answerTextHash": "sha256:4f0bc265763489141a1c2337504363d7127628700c1e8d0ce6fbe86a67795380",
+      "sourceEvidence": {
+        "evidenceId": "math1-2022-q16",
+        "sourceId": "src_97122ca7e5901e146b32e0c1",
+        "answerSourceId": "src_97122ca7e5901e146b32e0c1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2022-paper-answer",
+        "answerEvidenceId": "math1-2022-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:4f0bc265763489141a1c2337504363d7127628700c1e8d0ce6fbe86a67795380"
+      }
+    },
+    {
+      "id": "math1-2022-017",
+      "number": 17,
+      "paperId": "math1-2022",
+      "paperName": "2022考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2022",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2022考研数学一第17题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "斜渐近线为 y=2x。",
+      "explanation": "答案来自本地百度网盘 2022 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2022/question-17.jpg",
+          "caption": "题面裁切图 q17",
+          "alt": "2022考研数学一题面裁切图 q17"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2022/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2022考研数学一答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2022",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2022-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:7de8006e29bdf4ee113682c22265a2ec1fdd37a3024943b2a795ec4a667cbcab",
+      "answerTextHash": "sha256:0bd9859f4f85c49d6e038befd116e9ddb0065b629397d4e6b4bd496dfcd49719",
+      "sourceEvidence": {
+        "evidenceId": "math1-2022-q17",
+        "sourceId": "src_97122ca7e5901e146b32e0c1",
+        "answerSourceId": "src_97122ca7e5901e146b32e0c1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2022-paper-answer",
+        "answerEvidenceId": "math1-2022-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:0bd9859f4f85c49d6e038befd116e9ddb0065b629397d4e6b4bd496dfcd49719"
+      }
+    },
+    {
+      "id": "math1-2022-018",
+      "number": 18,
+      "paperId": "math1-2022",
+      "paperName": "2022考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2022",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2022考研数学一第18题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "二重积分值为 2π-2。",
+      "explanation": "答案来自本地百度网盘 2022 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2022/question-18.jpg",
+          "caption": "题面裁切图 q18",
+          "alt": "2022考研数学一题面裁切图 q18"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2022/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2022考研数学一答案解析 p.7"
+        },
+        {
+          "src": "question-bank/math1-2022/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2022考研数学一答案解析 p.8"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2022",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2022-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:b9773aef06e94cbf2182a5365c1a896de7246427c7d6eda1d74149497029e0f5",
+      "answerTextHash": "sha256:45e551162970a780907bc6401585c9470b41b594452f698f4c128c37d8905b5b",
+      "sourceEvidence": {
+        "evidenceId": "math1-2022-q18",
+        "sourceId": "src_97122ca7e5901e146b32e0c1",
+        "answerSourceId": "src_97122ca7e5901e146b32e0c1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2022-paper-answer",
+        "answerEvidenceId": "math1-2022-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:45e551162970a780907bc6401585c9470b41b594452f698f4c128c37d8905b5b"
+      }
+    },
+    {
+      "id": "math1-2022-019",
+      "number": 19,
+      "paperId": "math1-2022",
+      "paperName": "2022考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2022",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2022考研数学一第19题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "曲线积分完整计算见答案原页。",
+      "explanation": "答案来自本地百度网盘 2022 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2022/question-19.jpg",
+          "caption": "题面裁切图 q19",
+          "alt": "2022考研数学一题面裁切图 q19"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2022/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2022考研数学一答案解析 p.8"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2022",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2022-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:8ab36b94613022e1b5d10ee9fcc70370e33cbd64910cced85f29ccce4fce5083",
+      "answerTextHash": "sha256:5ecb18db4ef9d0e5e573b7be2581c8409456fe751c9f8ae6c3d25c6fbe96a811",
+      "sourceEvidence": {
+        "evidenceId": "math1-2022-q19",
+        "sourceId": "src_97122ca7e5901e146b32e0c1",
+        "answerSourceId": "src_97122ca7e5901e146b32e0c1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2022-paper-answer",
+        "answerEvidenceId": "math1-2022-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:5ecb18db4ef9d0e5e573b7be2581c8409456fe751c9f8ae6c3d25c6fbe96a811"
+      }
+    },
+    {
+      "id": "math1-2022-020",
+      "number": 20,
+      "paperId": "math1-2022",
+      "paperName": "2022考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2022",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2022考研数学一第20题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "证明过程见答案原页。",
+      "explanation": "答案来自本地百度网盘 2022 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2022/question-20.jpg",
+          "caption": "题面裁切图 q20",
+          "alt": "2022考研数学一题面裁切图 q20"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2022/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2022考研数学一答案解析 p.8"
+        },
+        {
+          "src": "question-bank/math1-2022/answer-page-09.jpg",
+          "caption": "答案解析 p.9",
+          "alt": "2022考研数学一答案解析 p.9"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2022",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2022-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:2b346969af73594b67a71c5b3389bac95bc5e8df6e6a44ff5c8bdbb6d5e5301e",
+      "answerTextHash": "sha256:a5bed72b8e3be7b222c9c4fa7cc95dbeecb6ddbd2a0938cd2e776e35909c41b7",
+      "sourceEvidence": {
+        "evidenceId": "math1-2022-q20",
+        "sourceId": "src_97122ca7e5901e146b32e0c1",
+        "answerSourceId": "src_97122ca7e5901e146b32e0c1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2022-paper-answer",
+        "answerEvidenceId": "math1-2022-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:a5bed72b8e3be7b222c9c4fa7cc95dbeecb6ddbd2a0938cd2e776e35909c41b7"
+      }
+    },
+    {
+      "id": "math1-2022-021",
+      "number": 21,
+      "paperId": "math1-2022",
+      "paperName": "2022考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2022",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2022考研数学一第21题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "二次型矩阵、正交变换和方程解见答案原页。",
+      "explanation": "答案来自本地百度网盘 2022 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2022/question-21.jpg",
+          "caption": "题面裁切图 q21",
+          "alt": "2022考研数学一题面裁切图 q21"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2022/answer-page-09.jpg",
+          "caption": "答案解析 p.9",
+          "alt": "2022考研数学一答案解析 p.9"
+        },
+        {
+          "src": "question-bank/math1-2022/answer-page-10.jpg",
+          "caption": "答案解析 p.10",
+          "alt": "2022考研数学一答案解析 p.10"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2022",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2022-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:87daf8186e0ae7121cdaaed8504aefbadc9e1f1cc77c62c9892191653722a0cd",
+      "answerTextHash": "sha256:ca20cf798e960e1af486d37ac4897980626a340ac3dc076f0b21a18a61b499f9",
+      "sourceEvidence": {
+        "evidenceId": "math1-2022-q21",
+        "sourceId": "src_97122ca7e5901e146b32e0c1",
+        "answerSourceId": "src_97122ca7e5901e146b32e0c1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2022-paper-answer",
+        "answerEvidenceId": "math1-2022-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:ca20cf798e960e1af486d37ac4897980626a340ac3dc076f0b21a18a61b499f9"
+      }
+    },
+    {
+      "id": "math1-2022-022",
+      "number": 22,
+      "paperId": "math1-2022",
+      "paperName": "2022考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2022",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2022考研数学一第22题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "theta 的极大似然估计与方差见答案原页。",
+      "explanation": "答案来自本地百度网盘 2022 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2022/question-22.jpg",
+          "caption": "题面裁切图 q22",
+          "alt": "2022考研数学一题面裁切图 q22"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2022/answer-page-10.jpg",
+          "caption": "答案解析 p.10",
+          "alt": "2022考研数学一答案解析 p.10"
+        },
+        {
+          "src": "question-bank/math1-2022/answer-page-11.jpg",
+          "caption": "答案解析 p.11",
+          "alt": "2022考研数学一答案解析 p.11"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2022",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2022-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:3bd2cae13e218c66eb28bf63085e4705c7fe44e942f6e488866c8288a0037563",
+      "answerTextHash": "sha256:59df95a955e76e1520dba634deac200746f3619176a18c1c347c032ccbf2d3fa",
+      "sourceEvidence": {
+        "evidenceId": "math1-2022-q22",
+        "sourceId": "src_97122ca7e5901e146b32e0c1",
+        "answerSourceId": "src_97122ca7e5901e146b32e0c1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2022-paper-answer",
+        "answerEvidenceId": "math1-2022-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:59df95a955e76e1520dba634deac200746f3619176a18c1c347c032ccbf2d3fa"
+      }
+    }
+  ]
+}
