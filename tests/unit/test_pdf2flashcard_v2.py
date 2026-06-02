@@ -159,7 +159,7 @@ class Pdf2FlashcardV2Test(unittest.TestCase):
                 model="fallback-model",
             )
             good_client = CountingClient(good_response)
-            module.split_text_into_batches = lambda _text: ["batch one", "batch two"]
+            module.split_text_into_batches = lambda *args, **kwargs: ["batch one", "batch two"]
             module.create_llm_backends = lambda: [
                 {
                     "name": "bad",
@@ -317,7 +317,7 @@ class Pdf2FlashcardV2Test(unittest.TestCase):
             duplicate_client = CountingClient(duplicate_response)
             good_client = CountingClient(good_response)
             first_client = CountingClient(first_response)
-            module.split_text_into_batches = lambda _text: [
+            module.split_text_into_batches = lambda *args, **kwargs: [
                 "34. 结合材料回答问题。" + "材料文本" * 120,
                 "35. 结合材料回答问题。" + "材料文本" * 120,
             ]
@@ -428,6 +428,56 @@ class Pdf2FlashcardV2Test(unittest.TestCase):
 
         self.assertEqual(module.BATCH_CHAR_LIMIT, 1800)
         self.assertEqual(module.LLM_MAX_TOKENS, 2048)
+
+    def test_split_text_into_batches_forces_long_lines_to_split(self):
+        module = load_pdf2flashcard_module()
+        long_line = "1. " + ("A" * 240)
+        text = "\n".join([long_line, "2. short question", "3. another question"])
+
+        batches = module.split_text_into_batches(text, limit=120)
+
+        self.assertGreater(len(batches), 1)
+        self.assertTrue(all(len(batch) <= 120 for batch in batches))
+        self.assertTrue(any("1." in batch for batch in batches))
+
+    def test_ai_parse_text_uses_headroom_for_llm_batches(self):
+        module = load_pdf2flashcard_module()
+        with tempfile.TemporaryDirectory() as tmp:
+            module.LLM_CACHE_PATH = Path(tmp) / "cache.json"
+            module.LLM_USAGE_PATH = Path(tmp) / "usage.json"
+            module.create_llm_backends = lambda: [
+                {
+                    "name": "fake",
+                    "base_url": "https://fake.example/v1",
+                    "model": "fake-model",
+                    "client": FakeClient(
+                        FakeResponse(
+                            choices=[
+                                {
+                                    "message": {
+                                        "content": '[{"number": 1, "type": "single_choice", "question": "Q", "options": [], "answer": "A"}]'
+                                    },
+                                    "finish_reason": "stop",
+                                }
+                            ],
+                            msg=None,
+                            status=None,
+                            model="fake-model",
+                        )
+                    ),
+                }
+            ]
+            seen_limits = []
+
+            def fake_split(text, limit):
+                seen_limits.append(limit)
+                return ["1. 示例题干 A. 甲 B. 乙 C. 丙 D. 丁"]
+
+            module.split_text_into_batches = fake_split
+            module.ai_parse_text("1. 示例题干 A. 甲 B. 乙 C. 丙 D. 丁", "english", "2000")
+
+        self.assertTrue(seen_limits)
+        self.assertLess(seen_limits[0], module.BATCH_CHAR_LIMIT)
 
     def test_process_pdf_normalizes_politics_exam_type_distribution(self):
         module = load_pdf2flashcard_module()

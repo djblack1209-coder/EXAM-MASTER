@@ -683,23 +683,46 @@ def split_text_into_batches(text: str, limit: int = BATCH_CHAR_LIMIT) -> list:
     current_batch = []
     current_len = 0
 
-    for line in lines:
-        line_len = len(line) + 1  # +1 for newline
-
-        # 如果当前行是题号开头且当前 batch 已接近限制，则切分
-        is_question_start = bool(re.match(r"^\d{1,2}[\.、．]\s*", line))
-        if is_question_start and current_len > limit * 0.6:
+    def flush_batch() -> None:
+        nonlocal current_batch, current_len
+        if current_batch:
             batches.append("\n".join(current_batch))
             current_batch = []
             current_len = 0
 
-        current_batch.append(line)
-        current_len += line_len
+    def split_long_line(line: str) -> list[str]:
+        if len(line) + 1 <= limit:
+            return [line]
+        parts = []
+        start = 0
+        chunk_size = max(1, limit - 1)
+        while start < len(line):
+            end = min(len(line), start + chunk_size)
+            parts.append(line[start:end])
+            start = end
+        return parts
 
-    if current_batch:
-        batches.append("\n".join(current_batch))
+    for line in lines:
+        line_parts = split_long_line(line)
+        for part_index, part in enumerate(line_parts):
+            part_text = part if part_index == 0 else part
+            part_len = len(part_text) + 1
+            is_question_start = bool(re.match(r"^\d{1,2}[\.、．]\s*", part_text))
+            if current_batch and (current_len + part_len > limit or (is_question_start and current_len > limit * 0.6)):
+                flush_batch()
+            current_batch.append(part_text)
+            current_len += part_len
+            if len(part_text) + 1 >= limit:
+                flush_batch()
+
+    flush_batch()
 
     return batches
+
+
+def llm_batch_text_limit(limit: int = BATCH_CHAR_LIMIT) -> int:
+    """Reserve prompt headroom so the user batch stays below provider limits."""
+    return max(500, int(limit * 0.6))
 
 
 def batch_should_have_cards(text: str) -> bool:
@@ -870,7 +893,7 @@ def ai_parse_text(text: str, subject: str, year: str) -> list:
         print("错误: 未配置可用 LLM 后端")
         sys.exit(1)
 
-    batches = split_text_into_batches(text)
+    batches = split_text_into_batches(text, limit=llm_batch_text_limit())
     print(f"  AI解析: 分{len(batches)}批处理, 可用后端{len(backends)}个")
 
     all_cards = []
