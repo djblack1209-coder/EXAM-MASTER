@@ -2045,3 +2045,61 @@ git -c core.hooksPath=/dev/null commit -m "chore: classify english analysis sour
 ```
 
 Result: committed after validation on 2026-06-02.
+
+### Task 47: Audit Politics 2023 Answer Source Completeness
+
+**Files:**
+- Modify: `scripts/cleaning/audit_public_course_2025.py`
+- Modify: `scripts/build/release-blocker-backlog.mjs`
+- Add: `tests/unit/test_public_course_source_audit.py`
+- Modify: `tests/unit/release-blocker-backlog.spec.js`
+- Modify: `docs/frontend-experience-refactor-diary.md`
+- Modify: `docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md`
+- Modify: `docs/08C-SCRIPTS-REFERENCE.md`
+- Modify: `docs/12-CHANGELOG.md`
+
+- [x] **Step 1: Turn the 2023 politics source finding into an audit gate**
+
+Extended `audit_public_course_2025.py` beyond the default 2025 root:
+
+```bash
+python3 scripts/cleaning/audit_public_course_2025.py \
+  --root data/raw-inbox/public-course-history/politics/2023 \
+  --audit-output /tmp/politics-2023-source-audit.json \
+  --skip-draft
+```
+
+The script now infers history-root track/year/role metadata and checks politics answer or paper-answer PDFs for numbered `【答案】` / `【答案要点】` markers.
+
+Result: the real `politics:2023` local audit reports two readable files, with the paper-answer source blocked by `missing_answer_markers:10,11`.
+
+- [x] **Step 2: Keep release backlog from treating incomplete answer sources as auto-pairable**
+
+Updated `release-blocker-backlog.mjs` so coverage rows also consult `sourceManifestRegistrationChecklist`. When a loaded local source audit has a blocked paper/answer companion, the slot next action now points operators to fix or replace that local answer source before auto-pairing, even if Source Manifest already has candidate/publishable-looking rows for the same slot.
+
+Regression coverage locks the `politics:2023` case: readable `paper` plus blocked `paper_answer` produces `blocked_before_auto_pair`, `local_answer_file_blocked`, and an action that says to resolve the answer-file blocker before continuing.
+
+- [x] **Step 3: Run validation**
+
+Run:
+```bash
+python3 -m unittest tests.unit.test_public_course_source_audit
+npm run test -- tests/unit/release-blocker-backlog.spec.js
+python3 scripts/cleaning/audit_public_course_2025.py --root data/raw-inbox/public-course-history/politics/2023 --audit-output /tmp/politics-2023-source-audit.json --skip-draft
+node scripts/build/release-blocker-backlog.mjs --local-source-audit /tmp/politics-2023-source-audit.json --output /tmp/release-blocker-backlog.json --markdown /tmp/release-blocker-backlog.md
+node scripts/build/question-bank-release-gate.mjs
+node scripts/build/release-blocker-backlog.mjs
+python3 scripts/baidu/run_cleaning_queue.py --dry-run --limit 8 --source-type official_paper --paper-role main
+```
+
+Result: passed on 2026-06-02. The temporary `politics:2023` backlog reports `sourceEvidenceStatus=publishable_source_present`, `checklistStatus=blocked_before_auto_pair`, and `blockers=["local_answer_file_blocked"]`; the action is to supplement or replace the incomplete answer file before refreshing Source Manifest auto-pairing. The default release backlog remains at 75 blockers and 63 public-course blocked slots after the latest report refresh.
+
+- [x] **Step 4: Commit**
+
+Run:
+```bash
+git add scripts/cleaning/audit_public_course_2025.py scripts/build/release-blocker-backlog.mjs tests/unit/test_public_course_source_audit.py tests/unit/release-blocker-backlog.spec.js docs/frontend-experience-refactor-diary.md docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md docs/08C-SCRIPTS-REFERENCE.md docs/12-CHANGELOG.md data/release-blocker-backlog.json
+git -c core.hooksPath=/dev/null commit -m "chore: audit politics answer source completeness"
+```
+
+Result: committed after validation on 2026-06-02.

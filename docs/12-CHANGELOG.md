@@ -1,5 +1,11 @@
 # 变更日志
 
+## 2026-06-02 — 政治 2023 答案源完整性门禁
+
+- 本地公共课 source audit 支持指定历史题源目录：可用 `--root data/raw-inbox/public-course-history/politics/2023 --audit-output /tmp/politics-2023-source-audit.json --skip-draft` 审计单个槽位，不再局限 2025 草稿目录。
+- 新增政治答案源编号完整性检查：对 `answer` / `paper_answer` PDF 的 `【答案】` / `【答案要点】` 标记做 1-38 覆盖检查；2023 政治答案解析源被标记为 `missing_answer_markers:10,11`，不得从 candidate evidence 直接升级为 publishable matched evidence。
+- 发布 backlog 会把已加载本地 source audit 中的 answer companion blocker 显示为 `blocked_before_auto_pair` / `local_answer_file_blocked`，即使 Source Manifest 里已有同槽位候选来源，也会优先要求补齐或替换完整答案源后再自动配对。
+
 ## 2026-06-02 — 2005 数学一遮罩裁切题库开放
 
 - 2005 考研数学一从“待入库”推进为正式题库：23 张题卡覆盖 6 道填空、8 道选择和 9 道解答题，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。

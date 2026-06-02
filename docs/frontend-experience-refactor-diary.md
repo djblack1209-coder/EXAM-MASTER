@@ -437,3 +437,13 @@
 - Release gate result: formal enabled-bank count rose to 69, public-course coverage gaps dropped to 63, total release blockers dropped to 75, and `math1:2005` no longer appears in the refreshed backlog.
 - Source caveat: the available 2005 Math I file is `2005数一标准答案及解析.pdf`, not a standalone blank paper. The builder masks choice-answer brackets and crops away explanations, but fill-in-the-blank questions 1-6 still come from source pages where the answer is already filled inline.
 - Product rule: when the only local source is an answer-analysis edition, make the leakage controls and remaining source limitations explicit instead of pretending the artifact is equivalent to a clean standalone exam paper.
+
+### 2026-06-02 Round 49
+
+- Audited the `politics:2023` local source pair before promoting its candidate-repaired flashcards into the publishable path.
+- Extended `audit_public_course_2025.py` so it can audit arbitrary public-course history roots with `--root`, infer track/year/role metadata, and flag politics answer or paper-answer PDFs that lack numbered `【答案】` / `【答案要点】` markers.
+- Real source audit result for `data/raw-inbox/public-course-history/politics/2023`: the paper PDF is readable, but the paper-answer PDF is blocked with `missing_answer_markers:10,11`.
+- Confirmed this is a source-quality blocker, not a parser-only issue: the source answer PDF jumps from answer 9 to answer 12, so `politics:2023` must not be treated as publishable `matched` evidence from the current answer source.
+- Updated release backlog action selection so a loaded local source audit with a blocked answer companion keeps the slot at `blocked_before_auto_pair` even when Source Manifest already has candidate/publishable-looking source rows.
+- Verification passed: source-audit unit tests, release-backlog Vitest, real `politics:2023` source audit to `/tmp`, temporary backlog with `local_answer_file_blocked`, question-bank release gate, default release backlog, and release-priority cleaning dry-run.
+- Product rule: candidate-repaired answers are useful for local cleaning progress, but incomplete answer-source coverage must stop auto-pairing and formal publication until a complete authoritative answer source or independently verified evidence is available.

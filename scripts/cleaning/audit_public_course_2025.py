@@ -436,6 +436,11 @@ def sha256_file(path: Path) -> str:
     return digest.hexdigest()
 
 
+POLITICS_ANSWER_MARKER_RE = re.compile(
+    r"(?m)^\s*\*?\s*(?P<number>\d{1,2})\s*[.．、,，]?\s*[【\[\［]\s*答案(?:要点)?\s*[】\]\］]"
+)
+
+
 def pdf_text(path: Path, first: int | None = None, last: int | None = None) -> str:
     args = ["pdftotext"]
     if first is not None:
@@ -464,6 +469,63 @@ def clean_text(text: str) -> str:
 def compact(text: str) -> str:
     text = re.sub(r"\s+", " ", text)
     return text.strip()
+
+
+def politics_answer_marker_blockers(text: str, expected_numbers: range = range(1, 39)) -> list[str]:
+    found = {
+        int(match.group("number"))
+        for match in POLITICS_ANSWER_MARKER_RE.finditer(text or "")
+        if 1 <= int(match.group("number")) <= 99
+    }
+    missing = [number for number in expected_numbers if number not in found]
+    if not missing:
+        return []
+    return [f"missing_answer_markers:{','.join(str(number) for number in missing)}"]
+
+
+def infer_history_source_meta(path: Path) -> dict[str, str]:
+    parts = path.parts
+    if "public-course-history" not in parts:
+        return {}
+
+    track = ""
+    year = ""
+    for index, part in enumerate(parts):
+        if part in {"politics", "english1", "english2", "math1", "math2", "math3"}:
+            track = part
+            if index + 1 < len(parts) and re.fullmatch(r"(?:19|20)\d{2}", parts[index + 1]):
+                year = parts[index + 1]
+            break
+    if not track or not year:
+        return {}
+
+    subject = "政治" if track == "politics" else "英语" if track.startswith("english") else "数学"
+    file_name = path.name.lower()
+    if "paper-answer" in file_name or "真题及答案" in file_name or "真题及解析" in file_name:
+        role = "paper_answer"
+    elif "answer" in file_name or "答案" in file_name or "解析" in file_name:
+        role = "answer"
+    elif "paper" in file_name or "真题" in file_name:
+        role = "paper"
+    else:
+        role = ""
+
+    return {
+        "id": f"{track}-{year}-{role or path.stem}",
+        "track": track,
+        "subject": subject,
+        "year": year,
+        "name": path.stem,
+        "role": role,
+    }
+
+
+def source_meta_for(path: Path, raw_root: Path) -> dict[str, str]:
+    rel = str(path.relative_to(raw_root))
+    meta = dict(PAPER_META.get(rel, {}))
+    if not meta:
+        meta = infer_history_source_meta(path)
+    return meta
 
 
 def section_between(text: str, start: str, end: str) -> str:
@@ -662,11 +724,10 @@ def build_english1_draft() -> dict[str, Any]:
     }
 
 
-def audit_sources() -> dict[str, Any]:
+def audit_sources(raw_root: Path = RAW_ROOT) -> dict[str, Any]:
     sources = []
-    for path in sorted(RAW_ROOT.glob("*/*.pdf")):
-        rel = str(path.relative_to(RAW_ROOT))
-        meta = PAPER_META.get(rel, {})
+    for path in sorted(raw_root.rglob("*.pdf")):
+        meta = source_meta_for(path, raw_root)
         sample_text = pdf_text(path, 1, min(2, pdf_page_count(path)))
         text_chars = len(sample_text.strip())
         page_count = pdf_page_count(path)
@@ -684,13 +745,15 @@ def audit_sources() -> dict[str, Any]:
             blockers.append("no usable text layer")
         if meta.get("knownIssue"):
             blockers.append(meta["knownIssue"])
+        if meta.get("track") == "politics" and meta.get("role") in {"answer", "paper_answer"} and text_layer == "usable":
+            blockers.extend(politics_answer_marker_blockers(pdf_text(path)))
 
         sources.append(
             {
-                "id": meta.get("id", rel),
+                "id": meta.get("id", str(path.relative_to(raw_root))),
                 "track": meta.get("track", ""),
                 "subject": meta.get("subject", ""),
-                "year": "2025",
+                "year": meta.get("year", "2025"),
                 "name": meta.get("name", path.stem),
                 "role": meta.get("role", ""),
                 "localPath": str(path.relative_to(PROJECT_ROOT)),
@@ -706,7 +769,7 @@ def audit_sources() -> dict[str, Any]:
     return {
         "version": 1,
         "generatedAt": utc_now(),
-        "root": str(RAW_ROOT.relative_to(PROJECT_ROOT)),
+        "root": str(raw_root.relative_to(PROJECT_ROOT)),
         "summary": {
             "sourceCount": len(sources),
             "usableTextLayerCount": sum(1 for item in sources if item["textLayer"] == "usable"),
@@ -722,28 +785,38 @@ def write_json(path: Path, payload: Any) -> None:
     path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
 
+def display_path(path: Path) -> str:
+    try:
+        return str(path.relative_to(PROJECT_ROOT))
+    except ValueError:
+        return str(path)
+
+
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Audit 2025 public-course PDFs and build review-only drafts.")
-    parser.add_argument("--audit-output", type=Path, default=DEFAULT_AUDIT_OUTPUT)
+    parser = argparse.ArgumentParser(description="Audit public-course PDFs and build review-only 2025 drafts.")
+    parser.add_argument("--root", type=Path, default=RAW_ROOT)
+    parser.add_argument("--audit-output", type=Path)
     parser.add_argument("--draft-output", type=Path, default=DEFAULT_DRAFT_OUTPUT)
     parser.add_argument("--skip-draft", action="store_true")
     args = parser.parse_args(argv)
+    root = args.root.resolve()
+    audit_output = args.audit_output or (root / "source-audit.json")
 
-    audit = audit_sources()
-    write_json(args.audit_output, audit)
+    audit = audit_sources(root)
+    write_json(audit_output, audit)
 
-    if not args.skip_draft:
+    if not args.skip_draft and root == RAW_ROOT.resolve():
         draft = build_english1_draft()
         write_json(args.draft_output, draft)
         print(
             "[public-course-2025] "
-            f"audit={args.audit_output.relative_to(PROJECT_ROOT)} "
-            f"draft={args.draft_output.relative_to(PROJECT_ROOT)} "
+            f"audit={display_path(audit_output)} "
+            f"draft={display_path(args.draft_output)} "
             f"cards={draft['total_cards']} "
             f"status={draft['publicationStatus']}"
         )
     else:
-        print(f"[public-course-2025] audit={args.audit_output.relative_to(PROJECT_ROOT)}")
+        print(f"[public-course-source-audit] audit={display_path(audit_output)}")
 
     return 0
 
