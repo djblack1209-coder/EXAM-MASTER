@@ -349,21 +349,29 @@ def anonymize_card(card: dict) -> dict:
 
 def normalize_exam_card_type(card: dict, subject: str) -> dict:
     """Apply fixed exam structures after LLM parsing where the format is deterministic."""
-    if str(subject).lower() != "politics":
-        return card
-
     try:
         number = int(card.get("number") or 0)
     except (TypeError, ValueError):
         return card
 
-    if 1 <= number <= 16:
-        card["type"] = "single_choice"
-    elif 17 <= number <= 33:
-        card["type"] = "multi_choice"
-    elif 34 <= number <= 38:
-        card["type"] = "analysis"
-        card["options"] = []
+    normalized_subject = str(subject).lower()
+    if normalized_subject == "politics":
+        if 1 <= number <= 16:
+            card["type"] = "single_choice"
+        elif 17 <= number <= 33:
+            card["type"] = "multi_choice"
+        elif 34 <= number <= 38:
+            card["type"] = "analysis"
+            card["options"] = []
+    elif normalized_subject in {"english1", "english2"}:
+        if 1 <= number <= 45:
+            card["type"] = "single_choice"
+        elif 46 <= number <= 50:
+            card["type"] = "translation"
+            card["options"] = []
+        elif number in {51, 52}:
+            card["type"] = "essay"
+            card["options"] = []
     return card
 
 

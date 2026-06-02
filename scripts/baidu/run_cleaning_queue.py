@@ -68,12 +68,28 @@ ANSWER_PLACEHOLDERS = {
     "参考答案全文",
     "答案解析文本",
 }
+CHOICE_CARD_TYPES = {"single_choice", "multi_choice"}
+MIN_CHOICE_OPTION_COUNT = 4
 PUBLIC_TRACK_QUALITY_MINIMUMS = {
     "politics": {
         "total": 38,
         "single_choice": 16,
         "multi_choice": 17,
         "analysis": 5,
+    },
+    "english1": {
+        "min_year": 2005,
+        "total": 52,
+        "single_choice": 45,
+        "translation": 5,
+        "essay": 2,
+    },
+    "english2": {
+        "min_year": 2010,
+        "total": 48,
+        "single_choice": 45,
+        "translation": 1,
+        "essay": 2,
     },
 }
 PUBLIC_RELEASE_TRACK_ORDER = {
@@ -256,11 +272,7 @@ def output_subject_for_task(task: dict[str, Any]) -> str:
     track = str(task.get("track") or "").strip()
     subject = str(task.get("subject") or "").strip()
     source_id = re.sub(r"[^A-Za-z0-9]+", "", str(task.get("sourceId") or ""))
-    evidence_name = " ".join(
-        str(task.get(key) or "")
-        for key in ("safeDisplayName", "fileName", "remotePath")
-    ).lower()
-    is_support_evidence = any(pattern.lower() in evidence_name for pattern in SUPPORT_EVIDENCE_NAME_PATTERNS)
+    is_support_evidence = is_support_evidence_task(task)
     if track and track.lower() != "unknown" and not is_support_evidence:
         return track
     if subject and source_id:
@@ -281,26 +293,71 @@ def count_card_types(cards: list[dict[str, Any]]) -> dict[str, int]:
     return counts
 
 
-def quality_issues_for_task(task: dict[str, Any], *, question_count: int, type_counts: dict[str, int]) -> list[str]:
+def quality_gate_applies_to_task(task: dict[str, Any]) -> bool:
     track = str(task.get("track") or "")
     if is_support_evidence_task(task):
-        return []
+        return False
 
     minimums = PUBLIC_TRACK_QUALITY_MINIMUMS.get(track)
     if not minimums:
+        return False
+    min_year = minimums.get("min_year")
+    if min_year is not None and safe_int(task.get("year")) < int(min_year):
+        return False
+    return True
+
+
+def choice_option_quality_issues_for_cards(task: dict[str, Any], cards: list[dict[str, Any]]) -> list[str]:
+    if not quality_gate_applies_to_task(task):
         return []
 
+    track = str(task.get("track") or "")
+    invalid_card_ids: list[str] = []
+    for index, card in enumerate(cards):
+        if str(card.get("type") or "") not in CHOICE_CARD_TYPES:
+            continue
+        options = card.get("options") if isinstance(card.get("options"), list) else []
+        if len(options) < MIN_CHOICE_OPTION_COUNT:
+            invalid_card_ids.append(str(card.get("id") or card.get("number") or f"card-{index + 1}"))
+
+    if not invalid_card_ids:
+        return []
+
+    sample = ",".join(invalid_card_ids[:10])
+    suffix = f" sample={sample}"
+    if len(invalid_card_ids) > 10:
+        suffix += f" remaining={len(invalid_card_ids) - 10}"
+    return [
+        f"{track}_choice_option_count_below_minimum: "
+        f"expected>={MIN_CHOICE_OPTION_COUNT} invalid={len(invalid_card_ids)}{suffix}"
+    ]
+
+
+def quality_issues_for_task(
+    task: dict[str, Any],
+    *,
+    question_count: int,
+    type_counts: dict[str, int],
+    cards: list[dict[str, Any]] | None = None,
+) -> list[str]:
+    track = str(task.get("track") or "")
+    if not quality_gate_applies_to_task(task):
+        return []
+
+    minimums = PUBLIC_TRACK_QUALITY_MINIMUMS.get(track) or {}
     issues = []
     total_minimum = int(minimums.get("total") or 0)
     if total_minimum and question_count < total_minimum:
         issues.append(f"{track}_question_count_below_expected: expected>={total_minimum} actual={question_count}")
 
     for card_type, minimum in minimums.items():
-        if card_type == "total":
+        if card_type in ("total", "min_year"):
             continue
         actual = int(type_counts.get(card_type) or 0)
         if actual < int(minimum):
             issues.append(f"{track}_{card_type}_count_below_expected: expected>={minimum} actual={actual}")
+    if cards:
+        issues.extend(choice_option_quality_issues_for_cards(task, cards))
     return issues
 
 
@@ -325,7 +382,12 @@ def default_processor(task: dict[str, Any], local_path: Path) -> dict[str, Any]:
             missing_answer_count = sum(1 for card in cards if not has_usable_answer(card))
             type_counts = count_card_types(cards)
 
-    quality_issues = quality_issues_for_task(task, question_count=question_count, type_counts=type_counts)
+    quality_issues = quality_issues_for_task(
+        task,
+        question_count=question_count,
+        type_counts=type_counts,
+        cards=cards if isinstance(cards, list) else [],
+    )
     answer_evidence_status = "missing_answers" if missing_answer_count else "manual_review"
     if quality_issues and not missing_answer_count:
         answer_evidence_status = "quality_review"

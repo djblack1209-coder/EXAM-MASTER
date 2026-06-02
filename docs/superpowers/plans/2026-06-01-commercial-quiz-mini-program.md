@@ -1667,3 +1667,61 @@ Run:
 git add scripts/baidu/answer_evidence_repair.py tests/unit/test_answer_evidence_repair.py docs/frontend-experience-refactor-diary.md docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md
 git commit -m "chore: repair numbered politics answer evidence"
 ```
+
+### Task 40: Gate English 2018 Structure And Support Isolation
+
+**Files:**
+- Modify: `scripts/pipeline/pdf2flashcard-v2.py`
+- Modify: `scripts/baidu/run_cleaning_queue.py`
+- Modify: `tests/unit/test_pdf2flashcard_v2.py`
+- Modify: `tests/unit/test_baidu_cleaning_runner.py`
+- Modify: `docs/frontend-experience-refactor-diary.md`
+- Modify: `docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md`
+
+- [x] **Step 1: Add English deterministic type normalization**
+
+Normalize English I/II cards after LLM parsing: questions 1-45 are choice, 46-50 are translation, and 51-52 are essay. Add a regression test proving 41-45 and 51-52 no longer stay as generic analysis cards.
+
+- [x] **Step 2: Add English main-paper quality gates**
+
+Require English I 2005+ main papers to produce at least 52 cards, 45 choice items, 5 translation items, and 2 essay items. Require English II 2010+ main papers to produce at least 48 cards, 45 choice items, 1 translation item, and 2 essay items.
+
+- [x] **Step 3: Gate incomplete choice options**
+
+Fail release-quality main papers when choice cards have fewer than 4 options. This allows English 41-45 A-G style items while blocking malformed 0/1/2/3-option cards.
+
+- [x] **Step 4: Fix answer-support output isolation**
+
+Use the same support-evidence detector for `output_subject_for_task`, so support files such as `2018年真题及答案速查.pdf` write to `english-support-<source>-2018.json` instead of overwriting `english1-2018.json`.
+
+- [x] **Step 5: Run real English I 2018 cleaning and support repair**
+
+Run:
+```bash
+LLM_DISABLED_PROVIDERS=llm_primary,iflow,nvidia LLM_REQUEST_TIMEOUT_SECONDS=8 LLM_MAX_RETRIES=1 PDF2FLASHCARD_BATCH_CHAR_LIMIT=1400 LLM_MAX_TOKENS=2048 .venv-baidu/bin/python scripts/baidu/run_cleaning_queue.py --task-id clean_c744b4e71478d47555f063fd --limit 1 --source-type official_paper --paper-role main
+LLM_DISABLED_PROVIDERS=llm_primary,iflow,nvidia LLM_REQUEST_TIMEOUT_SECONDS=8 LLM_MAX_RETRIES=1 PDF2FLASHCARD_BATCH_CHAR_LIMIT=1400 LLM_MAX_TOKENS=2048 .venv-baidu/bin/python scripts/baidu/run_cleaning_queue.py --task-id clean_c852e6675cee3f2df6dd6456 --limit 1 --source-type official_paper --paper-role support
+.venv-baidu/bin/python scripts/baidu/answer_evidence_repair.py --target data/flashcards/english1-2018.json --companion data/flashcards/english-support-ebf94bb2-2018.json --output data/answer-evidence-repair-report.json --write --mark-companions-supporting
+```
+
+Result: `english1:2018` has `questionCount=52`, `typeCounts={single_choice:45,translation:5,essay:2}`, `missingAnswerCount=0`, and `answerEvidenceStatus=candidate_repaired`. It remains failed for `english1_choice_option_count_below_minimum` because 10 choice cards still have fewer than 4 options.
+
+- [x] **Step 6: Run final validation**
+
+Run:
+```bash
+.venv-baidu/bin/python -m unittest tests.unit.test_pdf2flashcard_v2 tests.unit.test_baidu_cleaning_runner tests.unit.test_answer_evidence_repair
+python3 -m unittest discover -s tests/unit -p 'test_baidu_cleaning_runner.py'
+python3 scripts/baidu/run_cleaning_queue.py --self-test
+python3 scripts/baidu/run_cleaning_queue.py --dry-run --limit 8 --source-type official_paper --paper-role main
+git diff --check
+```
+
+Result: passed on 2026-06-01. Dry-run still starts with another `english1:2018` main/analysis PDF because the first main source is now structurally counted and answer-repaired but correctly blocked on option integrity.
+
+- [x] **Step 7: Commit**
+
+Run:
+```bash
+git add scripts/pipeline/pdf2flashcard-v2.py scripts/baidu/run_cleaning_queue.py tests/unit/test_pdf2flashcard_v2.py tests/unit/test_baidu_cleaning_runner.py docs/frontend-experience-refactor-diary.md docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md
+git commit -m "chore: gate english cleaning quality"
+```

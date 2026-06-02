@@ -365,3 +365,13 @@
 - Real repair result: `repairedAnswers=1`, `remainingMissingAnswers=0`, `numberedAnswerTextCandidates=5`, and the queue task now reports `answerEvidenceStatus=candidate_repaired`.
 - `politics-2023-035` now has candidate answer evidence from `data/raw-inbox/src_6d757672897de533d4ff50b6-2023考研政治真题及答案解析.pdf`.
 - Product rule: expensive LLM support cleaning is not the right first tool when the answer PDF already has deterministic numbered answer sections; use structured extraction first, then reserve LLM for genuinely ambiguous repair.
+
+### 2026-06-01 Round 42
+
+- Continued the release-blocker queue on `english1:2018`.
+- Added deterministic English paper structure guards: 2005+ English I requires 52 cards, 45 choice items, 5 translation items, and 2 essay items; English II uses the 2010+ 48-card structure.
+- Extended English card normalization so questions 1-45 are choice, 46-50 are translation, and 51-52 are essay, correcting LLM misclassification of 41-45 and 51-52.
+- Fixed support-material isolation: files such as `2018年真题及答案速查.pdf` now write to `english-support-<source>-2018.json` instead of overwriting the main `english1-2018.json` bank.
+- Real `english1:2018` result: main-paper cleaning produced 52 cards with `{single_choice:45, translation:5, essay:2}` and no missing answers after candidate repair from `data/raw-inbox/src_c2b2d9106a7394b9ebf94bb2-2018年真题及答案速查.pdf`.
+- Added a choice-option quality gate. The current `english1:2018` local output still has 10 choice cards with fewer than 4 options, so the queue keeps this task failed with `qualityIssues` even though `missingAnswerCount=0` and `answerEvidenceStatus=candidate_repaired`.
+- Product rule: candidate answer evidence and correct paper-level counts are not enough for release. Choice-card option integrity must pass before a bank is treated as publishable.

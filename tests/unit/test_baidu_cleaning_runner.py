@@ -679,6 +679,105 @@ class BaiduCleaningRunnerTest(unittest.TestCase):
         self.assertIn("politics_question_count_below_expected: expected>=38 actual=34", result["qualityIssues"])
         self.assertIn("politics_analysis_count_below_expected: expected>=5 actual=1", result["qualityIssues"])
 
+    def test_default_processor_flags_incomplete_english1_main_distribution(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            original_project_root = runner.PROJECT_ROOT
+            original_pdf2flashcard = runner.PDF2FLASHCARD
+            original_subprocess_run = runner.subprocess.run
+            tmp_root = Path(tmp)
+            output_dir = tmp_root / "data" / "flashcards"
+            output_dir.mkdir(parents=True)
+            cards = (
+                [{"id": f"e-choice-{index}", "type": "single_choice", "answer": "A"} for index in range(45)]
+                + [{"id": "e-translation-1", "type": "translation", "answer": "译文"}]
+                + [{"id": "e-essay-1", "type": "essay", "answer": "作文要求"}]
+            )
+            (output_dir / "english1-2018.json").write_text(
+                runner.json.dumps({"total_cards": 47, "cards": cards}, ensure_ascii=False),
+                encoding="utf-8",
+            )
+
+            def fake_run(args, cwd, check):
+                return None
+
+            try:
+                runner.PROJECT_ROOT = tmp_root
+                runner.PDF2FLASHCARD = tmp_root / "scripts" / "pipeline" / "pdf2flashcard-v2.py"
+                runner.subprocess.run = fake_run
+
+                result = runner.default_processor(
+                    {
+                        "subject": "english",
+                        "track": "english1",
+                        "year": 2018,
+                        "safeDisplayName": "2018年考研英语一真题.pdf",
+                    },
+                    tmp_root / "raw" / "2018.pdf",
+                )
+            finally:
+                runner.PROJECT_ROOT = original_project_root
+                runner.PDF2FLASHCARD = original_pdf2flashcard
+                runner.subprocess.run = original_subprocess_run
+
+        self.assertEqual(result["questionCount"], 47)
+        self.assertEqual(result["answerEvidenceStatus"], "quality_review")
+        self.assertIn("english1_question_count_below_expected: expected>=52 actual=47", result["qualityIssues"])
+        self.assertIn("english1_translation_count_below_expected: expected>=5 actual=1", result["qualityIssues"])
+        self.assertIn("english1_essay_count_below_expected: expected>=2 actual=1", result["qualityIssues"])
+
+    def test_english_quality_gate_skips_pre_2005_and_support_evidence(self):
+        pre_2005_issues = runner.quality_issues_for_task(
+            {"track": "english1", "year": 2001, "safeDisplayName": "2001年考研英语一真题.pdf"},
+            question_count=44,
+            type_counts={"single_choice": 38, "analysis": 6},
+        )
+        support_issues = runner.quality_issues_for_task(
+            {"track": "english1", "year": 2018, "safeDisplayName": "2018年真题逐题细解.pdf"},
+            question_count=1,
+            type_counts={"single_choice": 1},
+        )
+
+        self.assertEqual(pre_2005_issues, [])
+        self.assertEqual(support_issues, [])
+
+    def test_english_quality_gate_flags_incomplete_choice_options(self):
+        issues = runner.quality_issues_for_task(
+            {"track": "english1", "year": 2018, "safeDisplayName": "2018年考研英语一真题.pdf"},
+            question_count=52,
+            type_counts={"single_choice": 45, "translation": 5, "essay": 2},
+            cards=[
+                {
+                    "id": "english1-2018-001",
+                    "type": "single_choice",
+                    "options": [{"label": "A"}, {"label": "B"}, {"label": "C"}, {"label": "D"}],
+                },
+                {
+                    "id": "english1-2018-041",
+                    "type": "single_choice",
+                    "options": [{"label": label} for label in "ABCDEFG"],
+                },
+                {
+                    "id": "english1-2018-026",
+                    "type": "single_choice",
+                    "options": [],
+                },
+            ],
+        )
+
+        self.assertEqual(len(issues), 1)
+        self.assertIn("english1_choice_option_count_below_minimum", issues[0])
+        self.assertIn("english1-2018-026", issues[0])
+
+    def test_choice_option_quality_gate_skips_support_evidence(self):
+        issues = runner.quality_issues_for_task(
+            {"track": "english1", "year": 2018, "safeDisplayName": "2018年真题及答案速查.pdf"},
+            question_count=52,
+            type_counts={"single_choice": 45, "translation": 5, "essay": 2},
+            cards=[{"id": "support-001", "type": "single_choice", "options": []}],
+        )
+
+        self.assertEqual(issues, [])
+
     def test_default_processor_isolates_unknown_track_outputs_by_source_id(self):
         with tempfile.TemporaryDirectory() as tmp:
             original_project_root = runner.PROJECT_ROOT
@@ -758,6 +857,58 @@ class BaiduCleaningRunnerTest(unittest.TestCase):
 
         self.assertEqual(calls[0][0][-2:], ["english-support-abcdef12", "2010"])
         self.assertTrue(result["outputPath"].endswith("data/flashcards/english-support-abcdef12-2010.json"))
+
+    def test_default_processor_isolates_answer_quick_outputs_even_when_track_known(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            original_project_root = runner.PROJECT_ROOT
+            original_pdf2flashcard = runner.PDF2FLASHCARD
+            original_subprocess_run = runner.subprocess.run
+            tmp_root = Path(tmp)
+            output_dir = tmp_root / "data" / "flashcards"
+            output_dir.mkdir(parents=True)
+            (output_dir / "english-support-abcdef12-2018.json").write_text(
+                '{"total_cards":1,"cards":[{"id":"support-001","answer":"A"}]}',
+                encoding="utf-8",
+            )
+            calls = []
+
+            def fake_run(args, cwd, check):
+                calls.append((args, cwd, check))
+
+            try:
+                runner.PROJECT_ROOT = tmp_root
+                runner.PDF2FLASHCARD = tmp_root / "scripts" / "pipeline" / "pdf2flashcard-v2.py"
+                runner.subprocess.run = fake_run
+
+                result = runner.default_processor(
+                    {
+                        "subject": "english",
+                        "track": "english1",
+                        "sourceId": "src_1234567890abcdef12",
+                        "year": 2018,
+                        "safeDisplayName": "2018年真题及答案速查.pdf",
+                    },
+                    tmp_root / "raw" / "2018-answer.pdf",
+                )
+            finally:
+                runner.PROJECT_ROOT = original_project_root
+                runner.PDF2FLASHCARD = original_pdf2flashcard
+                runner.subprocess.run = original_subprocess_run
+
+        self.assertEqual(calls[0][0][-2:], ["english-support-abcdef12", "2018"])
+        self.assertTrue(result["outputPath"].endswith("data/flashcards/english-support-abcdef12-2018.json"))
+
+    def test_output_subject_uses_support_detection_for_answer_quick_files(self):
+        subject = runner.output_subject_for_task(
+            {
+                "subject": "english",
+                "track": "english1",
+                "sourceId": "src_1234567890abcdef12",
+                "safeDisplayName": "2018年真题及答案速查.pdf",
+            }
+        )
+
+        self.assertEqual(subject, "english-support-abcdef12")
 
     def test_default_processor_falls_back_to_subject_when_track_unknown(self):
         with tempfile.TemporaryDirectory() as tmp:
