@@ -301,3 +301,11 @@
 - Added `--safety-tests-dir` so the gate can be tested against an isolated empty directory and still use the real `tests/unit` directory by default.
 - The external release report now records required/present safety evidence counts without writing secrets or running heavyweight builds.
 - Product rule: a commercial mini program release should fail closed when high-risk account, privacy, or storage regressions lose their guardrails.
+
+### 2026-06-01 Round 35
+
+- Continued the release-readiness chain by teaching the release backlog about the new `phase4Safety` external-gate section.
+- Phase 4 safety blockers now become `phase4_safety_evidence` backlog items instead of being mixed into generic external evidence.
+- The backlog next action now points release operators toward restoring the account-deletion, privacy/legal, and sensitive-storage guard tests before publishing.
+- Markdown output now includes a dedicated `Phase 4 安全证据阻塞` section, making the release report easier to read for non-technical review.
+- Product rule: release tooling should tell the operator which commercial trust layer failed, not only that an external gate is blocked.

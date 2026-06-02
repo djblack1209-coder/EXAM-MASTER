@@ -1046,21 +1046,30 @@ function buildExternalItems(externalAudit, wechatSmoke) {
   for (const [sectionName, section] of Object.entries(sections)) {
     const blockers = Array.isArray(section.blockers) ? section.blockers : [];
     blockers.forEach((blocker, index) => {
+      const isWechatDevice = sectionName === 'wechatDevice';
+      const isPhase4Safety = sectionName === 'phase4Safety';
       items.push(
         createItem({
           id: `external:${sectionName}:${blocker.code || index}`,
-          workstream: sectionName === 'wechatDevice' ? 'wechat_real_device_evidence' : 'external_release_evidence',
+          workstream: isWechatDevice
+            ? 'wechat_real_device_evidence'
+            : isPhase4Safety
+              ? 'phase4_safety_evidence'
+              : 'external_release_evidence',
           blockerCode: blocker.code || `${sectionName}_blocked`,
           title: blocker.message || `${sectionName} release blocker`,
           filePath: blocker.path || '',
           count: 1,
-          nextAction:
-            sectionName === 'wechatDevice'
-              ? '在真实手机微信扫码预览后记录设备型号、微信版本、登录/游客态、刷题闭环、结果页和预览码归档；保持 Status: partial，直到证据真实通过。'
+          nextAction: isWechatDevice
+            ? '在真实手机微信扫码预览后记录设备型号、微信版本、登录/游客态、刷题闭环、结果页和预览码归档；保持 Status: partial，直到证据真实通过。'
+            : isPhase4Safety
+              ? '恢复或补齐 Phase 4 安全回归测试，并运行 release external gate 相关测试；不要在账号删除、隐私协议或敏感存储缺少护栏时发布。'
               : '补齐该外部门禁要求的真实生产证据；不要把占位文本写成 passed。',
           evidence: {
             section: sectionName,
             blocker,
+            requiredEvidenceCount: section.requiredEvidenceCount || 0,
+            presentEvidenceCount: section.presentEvidenceCount || 0,
             devtoolsSmokeStatus: wechatSmoke?.status || '',
             devtoolsSmokeReport: existsFile(DEFAULT_WECHAT_SMOKE) ? relative(DEFAULT_WECHAT_SMOKE) : ''
           }
@@ -1162,10 +1171,11 @@ function sortBacklogItems(items) {
     enabled_bank_evidence: 2,
     wechat_real_device_evidence: 3,
     wechat_devtools_smoke: 4,
-    public_course_coverage: 5,
-    source_manifest_evidence: 6,
-    cleaned_flashcard_quality: 7,
-    external_release_evidence: 8
+    phase4_safety_evidence: 5,
+    public_course_coverage: 6,
+    source_manifest_evidence: 7,
+    cleaned_flashcard_quality: 8,
+    external_release_evidence: 9
   };
   return [...items].sort((a, b) => {
     const workstreamDelta = (workstreamOrder[a.workstream] ?? 99) - (workstreamOrder[b.workstream] ?? 99);
@@ -1713,6 +1723,7 @@ export function renderBacklogMarkdown(backlog) {
   const inputReports = backlog.items.filter((item) => item.workstream === 'release_audit_inputs');
   const external = backlog.items.filter((item) => item.workstream === 'wechat_real_device_evidence');
   const devtoolsSmoke = backlog.items.filter((item) => item.workstream === 'wechat_devtools_smoke');
+  const phase4Safety = backlog.items.filter((item) => item.workstream === 'phase4_safety_evidence');
   const coverage = Array.isArray(backlog.nextBalancedPublicCourseSlots)
     ? backlog.nextBalancedPublicCourseSlots
     : nextPublicCourseCoverageItems(backlog.items, 24);
@@ -1767,6 +1778,10 @@ export function renderBacklogMarkdown(backlog) {
     devtoolsSmoke.length
       ? devtoolsSmoke.map((item) => `- ${item.blockerCode}: ${item.title}；nextAction=${item.nextAction}`).join('\n')
       : '_None._',
+    '',
+    '## Phase 4 安全证据阻塞',
+    '',
+    markdownBlockerTable(phase4Safety),
     '',
     '## 下一批公共课覆盖/待发布槽位',
     '',

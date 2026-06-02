@@ -1325,3 +1325,41 @@ Run:
 git add scripts/build/release-external-gate.mjs tests/unit/release-external-gate.spec.js docs/frontend-experience-refactor-diary.md docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md
 git commit -m "chore: gate phase four safety evidence"
 ```
+
+### Task 33: Surface Phase 4 Safety In Release Backlog
+
+**Files:**
+- Modify: `scripts/build/release-blocker-backlog.mjs`
+- Modify: `tests/unit/release-blocker-backlog.spec.js`
+- Modify: `docs/frontend-experience-refactor-diary.md`
+- Modify: `docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md`
+
+- [x] **Step 1: Add backlog classification test**
+
+Assert `externalAudit.sections.phase4Safety` blockers become `phase4_safety_evidence` backlog items instead of generic external evidence.
+
+- [x] **Step 2: Implement Phase 4 workstream mapping**
+
+Map `phase4Safety` to a dedicated workstream with a next action focused on restoring account deletion, privacy/legal, and sensitive storage guard tests.
+
+- [x] **Step 3: Add Markdown section**
+
+Render a `Phase 4 安全证据阻塞` section so release operators can see the missing safety guard without reading raw JSON.
+
+- [x] **Step 4: Run focused validation**
+
+Run:
+```bash
+npm run lint -- tests/unit/release-blocker-backlog.spec.js tests/unit/release-external-gate.spec.js tests/unit/release-scripts.spec.js
+npm run test -- tests/unit/release-blocker-backlog.spec.js tests/unit/release-external-gate.spec.js tests/unit/release-scripts.spec.js
+```
+
+Result: passed on 2026-06-01.
+
+- [x] **Step 5: Commit**
+
+Run:
+```bash
+git add scripts/build/release-blocker-backlog.mjs tests/unit/release-blocker-backlog.spec.js docs/frontend-experience-refactor-diary.md docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md
+git commit -m "chore: surface phase four release blockers"
+```

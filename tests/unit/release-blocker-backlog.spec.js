@@ -517,6 +517,55 @@ describe('release blocker backlog', () => {
     expect(markdown).not.toContain('当前执行环境禁止本地端口监听');
   });
 
+  it('classifies Phase 4 safety release blockers as account/privacy/storage evidence work', () => {
+    const backlog = buildReleaseBlockerBacklog({
+      questionAudit: { releaseReadiness: { canPublish: true }, summary: {}, coverage: { tracks: [] } },
+      flashcardQuality: { releaseReadiness: { canPromoteToPublic: true }, summary: {}, files: [] },
+      externalAudit: {
+        releaseReadiness: { canPublish: false },
+        summary: { blockerCount: 1 },
+        sections: {
+          phase4Safety: {
+            status: 'blocked',
+            requiredEvidenceCount: 4,
+            presentEvidenceCount: 3,
+            blockers: [
+              {
+                code: 'missing_safety_evidence:storage_sensitive_cleanup_guard',
+                message: 'Sensitive storage cleanup guard test evidence is missing',
+                path: 'tests/unit/storage-service.spec.js'
+              }
+            ]
+          }
+        }
+      },
+      wechatSmoke: { status: 'passed' },
+      generatedAt: '2026-05-22T00:00:00.000Z'
+    });
+
+    expect(backlog.verdict).toBe('blocked');
+    expect(backlog.items).toHaveLength(1);
+    expect(backlog.items[0]).toMatchObject({
+      workstream: 'phase4_safety_evidence',
+      blockerCode: 'missing_safety_evidence:storage_sensitive_cleanup_guard',
+      filePath: 'tests/unit/storage-service.spec.js'
+    });
+    expect(backlog.items[0].nextAction).toContain('恢复或补齐 Phase 4 安全回归测试');
+    expect(backlog.items[0].evidence).toMatchObject({
+      requiredEvidenceCount: 4,
+      presentEvidenceCount: 3
+    });
+    expect(backlog.workstreams.phase4_safety_evidence).toMatchObject({
+      itemCount: 1,
+      p0Count: 1
+    });
+
+    const markdown = renderBacklogMarkdown(backlog);
+    expect(markdown).toContain('Phase 4 安全证据阻塞');
+    expect(markdown).toContain('tests/unit/storage-service.spec.js');
+    expect(markdown).toContain('恢复或补齐 Phase 4 安全回归测试');
+  });
+
   it('distinguishes local source companion gaps before source-manifest registration', () => {
     const questionAudit = {
       summary: {
