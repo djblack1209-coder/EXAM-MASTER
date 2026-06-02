@@ -200,6 +200,137 @@ class BaiduCleaningQueueTest(unittest.TestCase):
         self.assertEqual(queue["summary"]["manualBlockedPendingTasks"], 1)
         self.assertEqual(queue["summary"]["transferBlockedPendingTasks"], 1)
 
+    def test_queue_prioritizes_release_backlog_slots_before_generic_sources(self):
+        manifest = {
+            "items": [
+                {
+                    "sourceId": "src_generic_english",
+                    "fingerprint": "fp_generic_english",
+                    "eligible": True,
+                    "status": "discovered",
+                    "sourceChannel": "netdisk_full_path",
+                    "fsId": 4001,
+                    "remotePath": "/EXAM-MASTER/考研历年真题/2000英语一.pdf",
+                    "fileName": "2000英语一.pdf",
+                    "extension": ".pdf",
+                    "sourceType": "official_paper",
+                    "track": "english1",
+                    "subject": "english",
+                    "year": 2000,
+                    "priority": 100,
+                    "riskFlags": [],
+                },
+                {
+                    "sourceId": "src_release_politics",
+                    "fingerprint": "fp_release_politics",
+                    "eligible": True,
+                    "status": "discovered",
+                    "sourceChannel": "netdisk_full_path",
+                    "fsId": 4002,
+                    "remotePath": "/EXAM-MASTER/考研历年真题/2023政治.pdf",
+                    "fileName": "2023政治.pdf",
+                    "extension": ".pdf",
+                    "sourceType": "official_paper",
+                    "track": "politics",
+                    "subject": "politics",
+                    "year": 2023,
+                    "priority": 100,
+                    "riskFlags": [],
+                },
+            ]
+        }
+        release_backlog = {
+            "nextBalancedPublicCourseSlots": [
+                {
+                    "slotKey": "politics:2023",
+                    "track": "politics",
+                    "year": 2023,
+                    "blockerCode": "missing_public_course_bank",
+                    "sourceEvidenceStatus": "publishable_source_present",
+                }
+            ]
+        }
+
+        queue = build_cleaning_queue(
+            manifest,
+            release_backlog=release_backlog,
+            now="2026-04-30T00:00:00Z",
+        )
+
+        self.assertEqual(queue["tasks"][0]["sourceId"], "src_release_politics")
+        self.assertEqual(queue["tasks"][0]["releaseBacklogSlot"], "politics:2023")
+        self.assertEqual(queue["tasks"][0]["releaseBacklogRank"], 0)
+        self.assertEqual(queue["tasks"][0]["releaseBlockerCode"], "missing_public_course_bank")
+        self.assertEqual(queue["summary"]["releaseBacklogTasks"], 1)
+        self.assertEqual(queue["summary"]["releaseBacklogAutomationActionablePendingTasks"], 1)
+
+    def test_limited_queue_summary_counts_only_returned_tasks(self):
+        manifest = {
+            "items": [
+                {
+                    "sourceId": "src_keep",
+                    "fingerprint": "fp_keep",
+                    "eligible": True,
+                    "status": "discovered",
+                    "sourceChannel": "netdisk_full_path",
+                    "fsId": 5001,
+                    "remotePath": "/EXAM-MASTER/考研历年真题/2023政治.pdf",
+                    "fileName": "2023政治.pdf",
+                    "extension": ".pdf",
+                    "sourceType": "official_paper",
+                    "track": "politics",
+                    "subject": "politics",
+                    "year": 2023,
+                    "priority": 100,
+                    "riskFlags": [],
+                },
+                {
+                    "sourceId": "src_drop",
+                    "fingerprint": "fp_drop",
+                    "eligible": True,
+                    "status": "discovered",
+                    "sourceChannel": "netdisk_full_path",
+                    "fsId": 5002,
+                    "remotePath": "/EXAM-MASTER/考研历年真题/2024政治.pdf",
+                    "fileName": "2024政治.pdf",
+                    "extension": ".pdf",
+                    "sourceType": "official_paper",
+                    "track": "politics",
+                    "subject": "politics",
+                    "year": 2024,
+                    "priority": 90,
+                    "riskFlags": [],
+                },
+            ]
+        }
+        previous_queue = {
+            "tasks": [
+                {
+                    "sourceId": "src_keep",
+                    "fingerprint": "fp_keep",
+                    "action": "download_and_extract",
+                    "status": "pending",
+                },
+                {
+                    "sourceId": "src_drop",
+                    "fingerprint": "fp_drop",
+                    "action": "download_and_extract",
+                    "status": "pending",
+                },
+            ]
+        }
+
+        queue = build_cleaning_queue(
+            manifest,
+            previous_queue=previous_queue,
+            now="2026-04-30T00:00:00Z",
+            limit=1,
+        )
+
+        self.assertEqual(queue["summary"]["totalTasks"], 1)
+        self.assertEqual(queue["summary"]["preservedTasks"], 1)
+        self.assertEqual(queue["summary"]["newOrChangedTasks"], 0)
+
 
 if __name__ == "__main__":
     unittest.main()

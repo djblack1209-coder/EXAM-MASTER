@@ -23,6 +23,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_MANIFEST = PROJECT_ROOT / "data" / "source-manifest.json"
 DEFAULT_OUTPUT = PROJECT_ROOT / "data" / "cleaning-queue.json"
 DEFAULT_RAW_INBOX = PROJECT_ROOT / "data" / "raw-inbox"
+DEFAULT_RELEASE_BACKLOG = PROJECT_ROOT / "data" / "release-blocker-backlog.json"
 
 SUPPORTED_SOURCE_CHANNELS = {"app_dir", "netdisk_full_path", "group_service", "group_file_index"}
 DIRECT_DOWNLOAD_CHANNELS = {"app_dir", "netdisk_full_path"}
@@ -190,6 +191,56 @@ def build_task(
     }
 
 
+def public_course_slot_key(track: Any, year: Any) -> str:
+    track_text = str(track or "").strip()
+    year_text = str(year or "").strip()
+    if not track_text or not year_text:
+        return ""
+    return f"{track_text}:{year_text}"
+
+
+def build_release_backlog_lookup(release_backlog: dict[str, Any] | None) -> dict[str, dict[str, Any]]:
+    if not isinstance(release_backlog, dict):
+        return {}
+
+    candidates: list[dict[str, Any]] = []
+    for key in ("nextBalancedPublicCourseSlots", "publicCourseSlotBacklog"):
+        items = release_backlog.get(key)
+        if isinstance(items, list):
+            candidates.extend(item for item in items if isinstance(item, dict))
+
+    lookup: dict[str, dict[str, Any]] = {}
+    for index, item in enumerate(candidates):
+        slot_key = str(item.get("slotKey") or public_course_slot_key(item.get("track"), item.get("year"))).strip()
+        if not slot_key or slot_key in lookup:
+            continue
+        lookup[slot_key] = {
+            "rank": index,
+            "slotKey": slot_key,
+            "blockerCode": item.get("blockerCode") or "",
+            "sourceEvidenceStatus": item.get("sourceEvidenceStatus") or "",
+            "slotStatus": item.get("slotStatus") or "",
+        }
+
+    return lookup
+
+
+def attach_release_backlog_metadata(task: dict[str, Any], lookup: dict[str, dict[str, Any]]) -> None:
+    slot_key = public_course_slot_key(task.get("track"), task.get("year"))
+    if not slot_key:
+        return
+
+    release_item = lookup.get(slot_key)
+    if not release_item:
+        return
+
+    task["releaseBacklogSlot"] = release_item["slotKey"]
+    task["releaseBacklogRank"] = release_item["rank"]
+    task["releaseBlockerCode"] = release_item["blockerCode"]
+    task["releaseSourceEvidenceStatus"] = release_item["sourceEvidenceStatus"]
+    task["releaseSlotStatus"] = release_item["slotStatus"]
+
+
 def merge_previous_task(task: dict[str, Any], previous_task: dict[str, Any] | None, *, now: str) -> tuple[dict[str, Any], bool]:
     if not previous_task:
         return task, False
@@ -216,6 +267,8 @@ def merge_previous_task(task: dict[str, Any], previous_task: dict[str, Any] | No
 
 def summarize_tasks(tasks: list[dict[str, Any]], *, preserved: int, changed: int) -> dict[str, Any]:
     pending_tasks = [task for task in tasks if task.get("status") == "pending"]
+    release_tasks = [task for task in tasks if task.get("releaseBacklogSlot")]
+    pending_release_tasks = [task for task in release_tasks if task.get("status") == "pending"]
     return {
         "totalTasks": len(tasks),
         "pendingTasks": len(pending_tasks),
@@ -231,6 +284,17 @@ def summarize_tasks(tasks: list[dict[str, Any]], *, preserved: int, changed: int
         "transferBlockedPendingTasks": sum(
             1 for task in pending_tasks if task.get("action") in TRANSFER_BLOCKED_ACTIONS
         ),
+        "releaseBacklogTasks": len(release_tasks),
+        "releaseBacklogPendingTasks": len(pending_release_tasks),
+        "releaseBacklogAutomationActionablePendingTasks": sum(
+            1 for task in pending_release_tasks if task.get("action") in AUTOMATION_READY_ACTIONS
+        ),
+        "releaseBacklogManualBlockedPendingTasks": sum(
+            1 for task in pending_release_tasks if task.get("action") in MANUAL_BLOCKED_ACTIONS
+        ),
+        "releaseBacklogTransferBlockedPendingTasks": sum(
+            1 for task in pending_release_tasks if task.get("action") in TRANSFER_BLOCKED_ACTIONS
+        ),
         "preservedTasks": preserved,
         "newOrChangedTasks": len(tasks) - preserved,
         "changedSourceTasks": changed,
@@ -241,6 +305,7 @@ def build_cleaning_queue(
     manifest: dict[str, Any],
     *,
     previous_queue: dict[str, Any] | None = None,
+    release_backlog: dict[str, Any] | None = None,
     raw_inbox_dir: Path = DEFAULT_RAW_INBOX,
     now: str | None = None,
     limit: int = 0,
@@ -255,6 +320,7 @@ def build_cleaning_queue(
         for task in previous_tasks
     }
     previous_by_source = {task.get("sourceId"): task for task in previous_tasks}
+    release_backlog_lookup = build_release_backlog_lookup(release_backlog)
 
     tasks: list[dict[str, Any]] = []
     preserved_count = 0
@@ -267,15 +333,19 @@ def build_cleaning_queue(
         task = build_task(item, raw_inbox_dir=raw_inbox_dir, previous_for_source=previous_for_source, now=now)
         previous_task = previous_by_key.get((task["sourceId"], task["fingerprint"], task["action"]))
         task, preserved = merge_previous_task(task, previous_task, now=now)
+        attach_release_backlog_metadata(task, release_backlog_lookup)
         if preserved:
             preserved_count += 1
+            task["_queuePreserved"] = True
         elif previous_for_source:
             changed_count += 1
+            task["_queueChangedSource"] = True
         tasks.append(task)
 
     tasks.sort(
         key=lambda row: (
             1 if row.get("status") == "completed" else 0,
+            int(row.get("releaseBacklogRank")) if row.get("releaseBacklogRank") is not None else 999_999,
             -int(row.get("priority") or 0),
             str(row.get("track") or ""),
             str(row.get("year") or ""),
@@ -284,6 +354,9 @@ def build_cleaning_queue(
     )
     if limit > 0:
         tasks = tasks[:limit]
+
+    preserved_count = sum(1 for task in tasks if task.pop("_queuePreserved", False))
+    changed_count = sum(1 for task in tasks if task.pop("_queueChangedSource", False))
 
     return {
         "version": 1,
@@ -334,6 +407,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Build an incremental Baidu source cleaning queue.")
     parser.add_argument("--manifest", type=Path, default=DEFAULT_MANIFEST)
     parser.add_argument("--previous-queue", type=Path)
+    parser.add_argument("--release-backlog", type=Path, default=DEFAULT_RELEASE_BACKLOG)
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
     parser.add_argument("--raw-inbox-dir", type=Path, default=DEFAULT_RAW_INBOX)
     parser.add_argument("--limit", type=int, default=0)
@@ -346,11 +420,13 @@ def main() -> None:
         return
 
     manifest = read_json(args.manifest, {"items": []})
+    release_backlog = read_json(args.release_backlog, None)
     previous_path = args.previous_queue or args.output
     previous_queue = read_json(previous_path, None)
     queue = build_cleaning_queue(
         manifest,
         previous_queue=previous_queue,
+        release_backlog=release_backlog,
         raw_inbox_dir=args.raw_inbox_dir,
         limit=args.limit,
     )

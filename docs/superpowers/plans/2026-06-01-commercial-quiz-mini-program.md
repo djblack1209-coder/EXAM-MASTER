@@ -1401,3 +1401,47 @@ Run:
 git add scripts/build/release-blocker-backlog.mjs tests/unit/release-blocker-backlog.spec.js docs/frontend-experience-refactor-diary.md docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md
 git commit -m "chore: scope backlog safety evidence fields"
 ```
+
+### Task 35: Prioritize Cleaning Queue By Release Backlog
+
+**Files:**
+- Modify: `scripts/baidu/cleaning_queue.py`
+- Modify: `tests/unit/test_baidu_cleaning_queue.py`
+- Modify: `docs/frontend-experience-refactor-diary.md`
+- Modify: `docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md`
+
+- [x] **Step 1: Add release-backlog priority test**
+
+Assert a source belonging to `nextBalancedPublicCourseSlots` is placed before generic same-priority sources and receives release backlog metadata.
+
+- [x] **Step 2: Add release backlog lookup and task metadata**
+
+Read `nextBalancedPublicCourseSlots` / `publicCourseSlotBacklog`, attach `releaseBacklogSlot`, `releaseBacklogRank`, `releaseBlockerCode`, and related status fields to matching tasks.
+
+- [x] **Step 3: Sort queue by release blocker rank before generic priority**
+
+Keep completed tasks at the bottom, then sort pending tasks by release backlog rank, source priority, track/year/name.
+
+- [x] **Step 4: Fix limited summary counts**
+
+When `--limit` truncates the queue, calculate preserved/changed counts from returned tasks only so summaries cannot report negative `newOrChangedTasks`.
+
+- [x] **Step 5: Run focused validation**
+
+Run:
+```bash
+python3 -m unittest tests.unit.test_baidu_cleaning_queue
+python3 -m unittest tests.unit.test_baidu_cleaning_runner
+python3 scripts/baidu/cleaning_queue.py --self-test
+python3 scripts/baidu/cleaning_queue.py --dry-run --limit 20
+```
+
+Result: passed on 2026-06-01. Dry-run first 20 tasks all hit release backlog slots.
+
+- [x] **Step 6: Commit**
+
+Run:
+```bash
+git add scripts/baidu/cleaning_queue.py tests/unit/test_baidu_cleaning_queue.py docs/frontend-experience-refactor-diary.md docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md
+git commit -m "chore: prioritize release backlog cleaning queue"
+```

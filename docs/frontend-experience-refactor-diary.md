@@ -317,3 +317,12 @@
 - `phase4Safety` blockers still preserve the safety evidence counters, so account/privacy/storage guard coverage remains visible where it belongs.
 - Regenerated the backlog report to verify it still reports 81 blockers and 66 public-course blocked slots, then avoided committing timestamp-only report churn.
 - Product rule: release reports should keep each field tied to the layer it explains, especially when the report is meant for non-technical review.
+
+### 2026-06-01 Round 37
+
+- Shifted from safety gate hardening to the largest remaining release blocker: public-course question-bank coverage.
+- `cleaning_queue.py` now reads the release backlog by default and prioritizes tasks from `nextBalancedPublicCourseSlots` / `publicCourseSlotBacklog` before generic high-priority sources.
+- Matching tasks now carry `releaseBacklogSlot`, `releaseBacklogRank`, `releaseBlockerCode`, `releaseSourceEvidenceStatus`, and `releaseSlotStatus`, making the handoff from release backlog to cleaning work explicit.
+- Limited queue summaries now count preserved/changed tasks only after truncation, so `--limit` can no longer produce negative `newOrChangedTasks`.
+- Dry-run verification showed the first 20 cleaning tasks all target release backlog slots, starting with `politics:2023` and `english1:2018`.
+- Product rule: content work should be ordered by what reduces commercial release blockers fastest, not by generic source age or manifest ordering.
