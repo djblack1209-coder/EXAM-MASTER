@@ -3001,3 +3001,89 @@ git -c core.hooksPath=/dev/null commit -m "chore: correct english2 coverage star
 ```
 
 Result: committed after validation on 2026-06-02.
+
+### Task 61: Publish Math III 2015 Page-Image Bank
+
+**Files:**
+- Add: `scripts/cleaning/build_math3_2015_bank.py`
+- Add: `src/config/flashcard-banks/math3-2015.json`
+- Add: `cdn-assets/question-bank/math3-2015/*`
+- Modify: `src/config/bank-registry.js`
+- Modify: `src/pages/practice-sub/bank-data-table.js`
+- Modify: `src/pages/practice-sub/question-bank.vue`
+- Modify: `tests/unit/flashcard-bank-registry.spec.js`
+- Modify: `tests/unit/question-bank-year-map.spec.js`
+- Modify: `docs/frontend-experience-refactor-diary.md`
+- Modify: `docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md`
+- Modify: `docs/08C-SCRIPTS-REFERENCE.md`
+- Modify: `docs/12-CHANGELOG.md`
+- Modify: `data/release-blocker-backlog.json`
+
+- [x] **Step 1: Add failing registry coverage**
+
+Added a registry/load regression for `math3-2015` expecting 23 cards, matched evidence, answer `D` for q01, answer `1/2` for q14, and a q23 question image under `question-bank/math3-2015`.
+
+Initial result:
+```bash
+npm test -- tests/unit/flashcard-bank-registry.spec.js
+```
+
+Failed because `math3-2015` was not registered or compressed yet.
+
+- [x] **Step 2: Verify source and build page-image bank**
+
+Downloaded the Baidu Netdisk source into ignored raw-inbox:
+
+```bash
+set -a && source .env && set +a && .venv-baidu/bin/python scripts/baidu/pan.py download \
+  '/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学三真题答案解析/2015年考研数学三真题及解析 .pdf' \
+  'data/raw-inbox/src_08c2498ac7b58e3542942300-2015年考研数学三真题及解析.pdf'
+```
+
+Source audit: 12-page scanned answer-analysis PDF, no usable text layer, no ad-only page, content matches 2015 Math III. Added `build_math3_2015_bank.py` with 23 cards, rendered answer pages, and per-question crops.
+
+- [x] **Step 3: Register and refresh practice data**
+
+Run:
+```bash
+python3 scripts/cleaning/build_math3_2015_bank.py --force-assets
+node scripts/build/generate-compressed-bank-modules.mjs
+```
+
+Result: published `src/config/flashcard-banks/math3-2015.json` plus 37 assets under `cdn-assets/question-bank/math3-2015`.
+
+- [x] **Step 4: Run validation**
+
+Run:
+```bash
+npm test -- tests/unit/flashcard-bank-registry.spec.js tests/unit/question-bank-year-map.spec.js tests/unit/question-bank-release-gate.spec.js tests/unit/release-blocker-backlog.spec.js
+node scripts/build/question-bank-release-gate.mjs --min-year=2005 --max-year=2020
+node scripts/build/release-blocker-backlog.mjs
+python3 scripts/baidu/cleaning_queue.py
+python3 scripts/baidu/run_cleaning_queue.py --dry-run --limit 12 --source-type official_paper --paper-role main --max-year 2020
+```
+
+Question-image leakage scan:
+```bash
+bad=0
+for p in cdn-assets/question-bank/math3-2015/question-*.jpg; do
+  txt=$(tesseract "$p" stdout -l chi_sim+eng --psm 6 2>/dev/null || true)
+  if printf '%s' "$txt" | rg -q '【答案|【解析|答案】|解析】|故选|所以选|选[ABCDEF]|\[[[:space:]]*[ABCD][[:space:]]*\]'; then
+    echo "BAD $p"
+    bad=$((bad+1))
+  fi
+done
+test "$bad" -eq 0
+```
+
+Result: passed on 2026-06-02. The 2005-2020 release gate now reports `coverageGaps=26`, `sourceEvidenceGaps=1`, and `pendingCoverageBlockers=0`; release backlog reports 26 public-course blocked slots. Rebuilt cleaning queue no longer schedules `math3:2015`.
+
+- [x] **Step 5: Commit**
+
+Run:
+```bash
+git add scripts/cleaning/build_math3_2015_bank.py src/config/flashcard-banks/math3-2015.json cdn-assets/question-bank/math3-2015 src/config/bank-registry.js src/pages/practice-sub/bank-data-table.js src/pages/practice-sub/question-bank.vue tests/unit/flashcard-bank-registry.spec.js tests/unit/question-bank-year-map.spec.js docs/frontend-experience-refactor-diary.md docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md docs/08C-SCRIPTS-REFERENCE.md docs/12-CHANGELOG.md data/release-blocker-backlog.json
+git -c core.hooksPath=/dev/null commit -m "chore: publish math3 2015 bank"
+```
+
+Result: committed after validation on 2026-06-02.

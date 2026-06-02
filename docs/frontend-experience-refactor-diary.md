@@ -567,3 +567,14 @@
 - Validation result: registry/release-gate/backlog Vitest passed, and the real 2005-2020 release audit now reports `requiredSlots=91`, `publishedSlots=64`, `coverageGaps=27`, `sourceEvidenceGaps=1`, `pendingCoverageBlockers=0`, and no answer/grading/bank-file blockers.
 - Current 2020 target gaps after policy correction: English I 2018-2020, English II 2010-2020, Math II 2015-2020, and Math III 2014-2020. `math2:2016` remains blocked on missing publishable official source evidence because the known source is mislabeled 2014 content.
 - Product rule: release blockers should represent real exam availability, not a uniform year rectangle. Track-specific start years must be applied before prioritizing cleaning work or source-evidence gaps.
+
+### 2026-06-02 Round 61
+
+- Promoted `math3:2015` through a formal Math III page-image bank path after the corrected release-priority queue ranked `2015年考研数学三真题及解析.pdf` first.
+- Downloaded the Baidu Netdisk source into ignored `data/raw-inbox/`, confirmed it is a 12-page scanned answer-analysis PDF with no usable text layer, and visually confirmed the content matches 2015 Math III with no ad-only pages.
+- Added `scripts/cleaning/build_math3_2015_bank.py`, published `src/config/flashcard-banks/math3-2015.json`, generated 12 answer pages plus 25 question crop assets under `cdn-assets/question-bank/math3-2015`, registered the bank, and regenerated the compressed practice-bank table.
+- Validation result: `math3-2015.json` has 23 cards, `{single_choice:8, short_answer:15}`, section counts `{选择题:8, 填空题:6, 解答题:9}`, no missing assets, and OCR leakage scan found no `【答案】` / `【解析】` / choice-answer markers in question images.
+- Visual spot checks tuned q02, q05, q06, q13, q15, q17, q18, q19, and q21-b crop boundaries to remove answer/解析 or previous-question residue while preserving complete prompts.
+- Release gate result after sequential audit refresh: 2005-2020 public-course `coverageGaps` dropped from 27 to 26, `publishedSlots` rose to 65, `sourceEvidenceGaps` stayed at 1, and release backlog now reports 26 public-course blocked slots.
+- Release-priority dry-run after rebuilding the cleaning queue now starts at English II 2010 paired candidates, followed by `2016年考研数学三真题及解析.pdf`, `2020年考研英语一真题.pdf`, and Math II/III follow-up years.
+- Frontend polish note: the question-bank year-map header now derives the range from the selected track. English II displays `2010-2026` instead of the old hard-coded `2005-2026`, matching the release policy.

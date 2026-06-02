@@ -439,6 +439,14 @@ describe('published flashcard bank registry', () => {
     expect(math32013.cards.find((card) => card.number === 23).questionImages[0].src).toContain(
       'question-bank/math3-2013/question-23.jpg'
     );
+    const math32015 = await loadBankData('math3-2015');
+    expect(math32015.cards).toHaveLength(23);
+    expect(math32015.cards.every((card) => card.answerEvidenceStatus === 'matched')).toBe(true);
+    expect(math32015.cards.find((card) => card.number === 1).answer).toBe('D');
+    expect(math32015.cards.find((card) => card.number === 14).answer).toBe('1/2');
+    expect(math32015.cards.find((card) => card.number === 23).questionImages[0].src).toContain(
+      'question-bank/math3-2015/question-23.jpg'
+    );
   });
 
   it('builds public-course navigation tree without exposing disabled banks', () => {

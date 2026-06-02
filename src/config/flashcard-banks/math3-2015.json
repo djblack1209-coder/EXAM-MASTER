@@ -1,0 +1,1402 @@
+{
+  "id": "math3-2015",
+  "source": "math3-2015-paper-answer",
+  "paperId": "math3-2015",
+  "paperName": "2015考研数学三真题",
+  "subject": "数学",
+  "subjectKey": "math",
+  "track": "math3",
+  "year": "2015",
+  "quality": "ready",
+  "publicationStatus": "published",
+  "publicationBlockers": [],
+  "sourceEvidencePolicy": "baidu_netdisk_official_paper_pdf_question_crop_answer_page_image_v1",
+  "sourceFiles": [
+    {
+      "id": "math3-2015-paper-answer",
+      "role": "paper_answer",
+      "localPath": "data/raw-inbox/src_08c2498ac7b58e3542942300-2015年考研数学三真题及解析.pdf",
+      "sha256": "sha256:e72302a99de24c1ae5793ac176b583aef47e869c3c02122cb3d26fb1535a4dc4",
+      "sourceId": "src_08c2498ac7b58e3542942300"
+    }
+  ],
+  "assetRoot": "question-bank/math3-2015",
+  "processed_at": "2026-06-02T23:03:45Z",
+  "total_cards": 23,
+  "cards": [
+    {
+      "id": "math3-2015-001",
+      "number": 1,
+      "paperId": "math3-2015",
+      "paperName": "2015考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2015",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2015考研数学三第1题（选择题）。题干、公式和图形以题面裁切图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2015 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2015/question-01.jpg",
+          "caption": "题面裁切图 q01",
+          "alt": "2015考研数学三第01题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2015/answer-page-01.jpg",
+          "caption": "答案解析 p.1",
+          "alt": "2015考研数学三答案解析 p.1"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2015",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2015-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:795f7be575abcf612081543836db422665bab52070293680def0800808eec140",
+      "answerTextHash": "sha256:f6335e8977ced096172680deb47d3c197da7774b472b4fe4ce3651e4656f09aa",
+      "sourceEvidence": {
+        "evidenceId": "math3-2015-q01",
+        "sourceId": "src_08c2498ac7b58e3542942300",
+        "answerSourceId": "src_08c2498ac7b58e3542942300",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2015-paper-answer",
+        "answerEvidenceId": "math3-2015-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:f6335e8977ced096172680deb47d3c197da7774b472b4fe4ce3651e4656f09aa"
+      }
+    },
+    {
+      "id": "math3-2015-002",
+      "number": 2,
+      "paperId": "math3-2015",
+      "paperName": "2015考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2015",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2015考研数学三第2题（选择题）。题干、公式和图形以题面裁切图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2015 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2015/question-02.jpg",
+          "caption": "题面裁切图 q02",
+          "alt": "2015考研数学三第02题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2015/answer-page-01.jpg",
+          "caption": "答案解析 p.1",
+          "alt": "2015考研数学三答案解析 p.1"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2015",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2015-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:1e9549bdd031800fb3b2026136070b34786aa82653ad73868ba99d22ca820d01",
+      "answerTextHash": "sha256:01370fce298cb459b7c797138d9e825fda2e23c11e9e9249e65268241d053ce7",
+      "sourceEvidence": {
+        "evidenceId": "math3-2015-q02",
+        "sourceId": "src_08c2498ac7b58e3542942300",
+        "answerSourceId": "src_08c2498ac7b58e3542942300",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2015-paper-answer",
+        "answerEvidenceId": "math3-2015-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:01370fce298cb459b7c797138d9e825fda2e23c11e9e9249e65268241d053ce7"
+      }
+    },
+    {
+      "id": "math3-2015-003",
+      "number": 3,
+      "paperId": "math3-2015",
+      "paperName": "2015考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2015",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2015考研数学三第3题（选择题）。题干、公式和图形以题面裁切图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2015 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2015/question-03.jpg",
+          "caption": "题面裁切图 q03",
+          "alt": "2015考研数学三第03题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2015/answer-page-01.jpg",
+          "caption": "答案解析 p.1",
+          "alt": "2015考研数学三答案解析 p.1"
+        },
+        {
+          "src": "question-bank/math3-2015/answer-page-02.jpg",
+          "caption": "答案解析 p.2",
+          "alt": "2015考研数学三答案解析 p.2"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2015",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2015-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:f0cd642d9d26a76ba27f5665f76ea2f76104721da77dfc1aadd40687fa8178cc",
+      "answerTextHash": "sha256:6bb6d285bcddf9e1642b1bde9da8cf4525d80d7400efb1f8be4241eef32cd377",
+      "sourceEvidence": {
+        "evidenceId": "math3-2015-q03",
+        "sourceId": "src_08c2498ac7b58e3542942300",
+        "answerSourceId": "src_08c2498ac7b58e3542942300",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2015-paper-answer",
+        "answerEvidenceId": "math3-2015-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:6bb6d285bcddf9e1642b1bde9da8cf4525d80d7400efb1f8be4241eef32cd377"
+      }
+    },
+    {
+      "id": "math3-2015-004",
+      "number": 4,
+      "paperId": "math3-2015",
+      "paperName": "2015考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2015",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2015考研数学三第4题（选择题）。题干、公式和图形以题面裁切图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2015 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2015/question-04.jpg",
+          "caption": "题面裁切图 q04",
+          "alt": "2015考研数学三第04题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2015/answer-page-02.jpg",
+          "caption": "答案解析 p.2",
+          "alt": "2015考研数学三答案解析 p.2"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2015",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2015-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:0574e473d7b0e3aedf9cfc2987ab6a037c2db2bce8a73f6aca92a64de246ad2a",
+      "answerTextHash": "sha256:cad57386346f62bee6aa00d160f80730cc923b804fff53afdd1c61b5181c7a0b",
+      "sourceEvidence": {
+        "evidenceId": "math3-2015-q04",
+        "sourceId": "src_08c2498ac7b58e3542942300",
+        "answerSourceId": "src_08c2498ac7b58e3542942300",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2015-paper-answer",
+        "answerEvidenceId": "math3-2015-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:cad57386346f62bee6aa00d160f80730cc923b804fff53afdd1c61b5181c7a0b"
+      }
+    },
+    {
+      "id": "math3-2015-005",
+      "number": 5,
+      "paperId": "math3-2015",
+      "paperName": "2015考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2015",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2015考研数学三第5题（选择题）。题干、公式和图形以题面裁切图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2015 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2015/question-05.jpg",
+          "caption": "题面裁切图 q05",
+          "alt": "2015考研数学三第05题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2015/answer-page-02.jpg",
+          "caption": "答案解析 p.2",
+          "alt": "2015考研数学三答案解析 p.2"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2015",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2015-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:a37e16257279ecf8c013396a21541e717a29502263fcbde462ec939da9315f7e",
+      "answerTextHash": "sha256:7cd6122ff6ad5f4ed9210d1ae15379380ce2cd5f5ab3a3b9f0756d9b8d6dbe3f",
+      "sourceEvidence": {
+        "evidenceId": "math3-2015-q05",
+        "sourceId": "src_08c2498ac7b58e3542942300",
+        "answerSourceId": "src_08c2498ac7b58e3542942300",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2015-paper-answer",
+        "answerEvidenceId": "math3-2015-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:7cd6122ff6ad5f4ed9210d1ae15379380ce2cd5f5ab3a3b9f0756d9b8d6dbe3f"
+      }
+    },
+    {
+      "id": "math3-2015-006",
+      "number": 6,
+      "paperId": "math3-2015",
+      "paperName": "2015考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2015",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2015考研数学三第6题（选择题）。题干、公式和图形以题面裁切图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2015 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2015/question-06.jpg",
+          "caption": "题面裁切图 q06",
+          "alt": "2015考研数学三第06题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2015/answer-page-02.jpg",
+          "caption": "答案解析 p.2",
+          "alt": "2015考研数学三答案解析 p.2"
+        },
+        {
+          "src": "question-bank/math3-2015/answer-page-03.jpg",
+          "caption": "答案解析 p.3",
+          "alt": "2015考研数学三答案解析 p.3"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2015",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2015-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:be5057f11409b98f45ce8abde6f0e9d230018793bf000973d4db7d8827c4e412",
+      "answerTextHash": "sha256:0b1ecad589f058c49d83955fb25e522f05e4b8c21eda2a5e382e3023d4876c53",
+      "sourceEvidence": {
+        "evidenceId": "math3-2015-q06",
+        "sourceId": "src_08c2498ac7b58e3542942300",
+        "answerSourceId": "src_08c2498ac7b58e3542942300",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2015-paper-answer",
+        "answerEvidenceId": "math3-2015-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:0b1ecad589f058c49d83955fb25e522f05e4b8c21eda2a5e382e3023d4876c53"
+      }
+    },
+    {
+      "id": "math3-2015-007",
+      "number": 7,
+      "paperId": "math3-2015",
+      "paperName": "2015考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2015",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2015考研数学三第7题（选择题）。题干、公式和图形以题面裁切图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2015 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2015/question-07.jpg",
+          "caption": "题面裁切图 q07",
+          "alt": "2015考研数学三第07题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2015/answer-page-03.jpg",
+          "caption": "答案解析 p.3",
+          "alt": "2015考研数学三答案解析 p.3"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2015",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2015-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:27d3518f628eb5bcc4324841700be5bcfb854e5d76dd5633e6696b5a2963a641",
+      "answerTextHash": "sha256:68d83c90862fc09ebf9a4584ba993943e3bb37788c1dc1201cb29f44689a49dc",
+      "sourceEvidence": {
+        "evidenceId": "math3-2015-q07",
+        "sourceId": "src_08c2498ac7b58e3542942300",
+        "answerSourceId": "src_08c2498ac7b58e3542942300",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2015-paper-answer",
+        "answerEvidenceId": "math3-2015-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:68d83c90862fc09ebf9a4584ba993943e3bb37788c1dc1201cb29f44689a49dc"
+      }
+    },
+    {
+      "id": "math3-2015-008",
+      "number": 8,
+      "paperId": "math3-2015",
+      "paperName": "2015考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2015",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2015考研数学三第8题（选择题）。题干、公式和图形以题面裁切图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2015 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2015/question-08-a.jpg",
+          "caption": "题面裁切图 q08-a",
+          "alt": "2015考研数学三第08题题面裁切图"
+        },
+        {
+          "src": "question-bank/math3-2015/question-08-b.jpg",
+          "caption": "题面裁切图 q08-b",
+          "alt": "2015考研数学三第08题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2015/answer-page-03.jpg",
+          "caption": "答案解析 p.3",
+          "alt": "2015考研数学三答案解析 p.3"
+        },
+        {
+          "src": "question-bank/math3-2015/answer-page-04.jpg",
+          "caption": "答案解析 p.4",
+          "alt": "2015考研数学三答案解析 p.4"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2015",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2015-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:dddaabfee16fb2e4deb5d2d7d70742a3a818049500935bcbafd1c9be92bd22c3",
+      "answerTextHash": "sha256:7d14305f576e4de846f6261cf723b95e1d701bc279f8bd226fc3c61162388065",
+      "sourceEvidence": {
+        "evidenceId": "math3-2015-q08",
+        "sourceId": "src_08c2498ac7b58e3542942300",
+        "answerSourceId": "src_08c2498ac7b58e3542942300",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2015-paper-answer",
+        "answerEvidenceId": "math3-2015-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:7d14305f576e4de846f6261cf723b95e1d701bc279f8bd226fc3c61162388065"
+      }
+    },
+    {
+      "id": "math3-2015-009",
+      "number": 9,
+      "paperId": "math3-2015",
+      "paperName": "2015考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2015",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2015考研数学三第9题（填空题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "-1/2",
+      "explanation": "答案来自本地百度网盘 2015 数学三真题及解析 PDF；完整题干、公式和解析见原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2015/question-09.jpg",
+          "caption": "题面裁切图 q09",
+          "alt": "2015考研数学三第09题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2015/answer-page-04.jpg",
+          "caption": "答案解析 p.4",
+          "alt": "2015考研数学三答案解析 p.4"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2015",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2015-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:3a8855467013b8e3965d2cf9f7a303a219fa8e33b021a0ea7979ad3477717781",
+      "answerTextHash": "sha256:efedfb51d93de3e17e78ddec9c082179da2baa83c78042982e6a97ef9187460d",
+      "sourceEvidence": {
+        "evidenceId": "math3-2015-q09",
+        "sourceId": "src_08c2498ac7b58e3542942300",
+        "answerSourceId": "src_08c2498ac7b58e3542942300",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2015-paper-answer",
+        "answerEvidenceId": "math3-2015-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:efedfb51d93de3e17e78ddec9c082179da2baa83c78042982e6a97ef9187460d"
+      }
+    },
+    {
+      "id": "math3-2015-010",
+      "number": 10,
+      "paperId": "math3-2015",
+      "paperName": "2015考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2015",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2015考研数学三第10题（填空题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "2",
+      "explanation": "答案来自本地百度网盘 2015 数学三真题及解析 PDF；完整题干、公式和解析见原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2015/question-10.jpg",
+          "caption": "题面裁切图 q10",
+          "alt": "2015考研数学三第10题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2015/answer-page-04.jpg",
+          "caption": "答案解析 p.4",
+          "alt": "2015考研数学三答案解析 p.4"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2015",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2015-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:0a27afd2ce58f98d22199b4acf04256423af267c730f0053bc7dd9488fb26f66",
+      "answerTextHash": "sha256:a4c45c75502708f7ced2ce351c52cb59f6b6c09dd06b4ac465404b511c4e9b29",
+      "sourceEvidence": {
+        "evidenceId": "math3-2015-q10",
+        "sourceId": "src_08c2498ac7b58e3542942300",
+        "answerSourceId": "src_08c2498ac7b58e3542942300",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2015-paper-answer",
+        "answerEvidenceId": "math3-2015-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:a4c45c75502708f7ced2ce351c52cb59f6b6c09dd06b4ac465404b511c4e9b29"
+      }
+    },
+    {
+      "id": "math3-2015-011",
+      "number": 11,
+      "paperId": "math3-2015",
+      "paperName": "2015考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2015",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2015考研数学三第11题（填空题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "-1/3 dx - 2/3 dy",
+      "explanation": "答案来自本地百度网盘 2015 数学三真题及解析 PDF；完整题干、公式和解析见原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2015/question-11.jpg",
+          "caption": "题面裁切图 q11",
+          "alt": "2015考研数学三第11题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2015/answer-page-04.jpg",
+          "caption": "答案解析 p.4",
+          "alt": "2015考研数学三答案解析 p.4"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2015",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2015-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:3e17d126a71dea8db9868a15efd8772523ae4ae64824a842548ad32bb302164f",
+      "answerTextHash": "sha256:1a3516bc11c154e998f437e50ad22e6362a4027430a8fa149e48bef2963aeb97",
+      "sourceEvidence": {
+        "evidenceId": "math3-2015-q11",
+        "sourceId": "src_08c2498ac7b58e3542942300",
+        "answerSourceId": "src_08c2498ac7b58e3542942300",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2015-paper-answer",
+        "answerEvidenceId": "math3-2015-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:1a3516bc11c154e998f437e50ad22e6362a4027430a8fa149e48bef2963aeb97"
+      }
+    },
+    {
+      "id": "math3-2015-012",
+      "number": 12,
+      "paperId": "math3-2015",
+      "paperName": "2015考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2015",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2015考研数学三第12题（填空题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "y(x)=e^(-2x)+2e^x",
+      "explanation": "答案来自本地百度网盘 2015 数学三真题及解析 PDF；完整题干、公式和解析见原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2015/question-12.jpg",
+          "caption": "题面裁切图 q12",
+          "alt": "2015考研数学三第12题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2015/answer-page-04.jpg",
+          "caption": "答案解析 p.4",
+          "alt": "2015考研数学三答案解析 p.4"
+        },
+        {
+          "src": "question-bank/math3-2015/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2015考研数学三答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2015",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2015-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:7363280aa2c16abad9461974d7960e26661dd4f0b166e82701692a7aecf5bec8",
+      "answerTextHash": "sha256:b753edfc6a460a9492c562515ff1833eef9bbf20ca1812e798e3f8820afec60a",
+      "sourceEvidence": {
+        "evidenceId": "math3-2015-q12",
+        "sourceId": "src_08c2498ac7b58e3542942300",
+        "answerSourceId": "src_08c2498ac7b58e3542942300",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2015-paper-answer",
+        "answerEvidenceId": "math3-2015-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:b753edfc6a460a9492c562515ff1833eef9bbf20ca1812e798e3f8820afec60a"
+      }
+    },
+    {
+      "id": "math3-2015-013",
+      "number": 13,
+      "paperId": "math3-2015",
+      "paperName": "2015考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2015",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2015考研数学三第13题（填空题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "21",
+      "explanation": "答案来自本地百度网盘 2015 数学三真题及解析 PDF；完整题干、公式和解析见原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2015/question-13.jpg",
+          "caption": "题面裁切图 q13",
+          "alt": "2015考研数学三第13题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2015/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2015考研数学三答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2015",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2015-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:bdaf151a5f15c64041e1261a3a1fea004b330385775515439f404dcb8b236cb8",
+      "answerTextHash": "sha256:6ca6d156150304abcdf2c2325df6da6ea85ad302c3559bc8bf8c24b79785db9f",
+      "sourceEvidence": {
+        "evidenceId": "math3-2015-q13",
+        "sourceId": "src_08c2498ac7b58e3542942300",
+        "answerSourceId": "src_08c2498ac7b58e3542942300",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2015-paper-answer",
+        "answerEvidenceId": "math3-2015-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:6ca6d156150304abcdf2c2325df6da6ea85ad302c3559bc8bf8c24b79785db9f"
+      }
+    },
+    {
+      "id": "math3-2015-014",
+      "number": 14,
+      "paperId": "math3-2015",
+      "paperName": "2015考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2015",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2015考研数学三第14题（填空题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "1/2",
+      "explanation": "答案来自本地百度网盘 2015 数学三真题及解析 PDF；完整题干、公式和解析见原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2015/question-14.jpg",
+          "caption": "题面裁切图 q14",
+          "alt": "2015考研数学三第14题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2015/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2015考研数学三答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2015",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2015-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:bee58d27a301015bc42224c23d81867b49e9caf0ac37b01a7307f6a676033d3e",
+      "answerTextHash": "sha256:386d8378ed9ce2d051592c1d69f33ef16357e4313f28326ded2eb464d1098352",
+      "sourceEvidence": {
+        "evidenceId": "math3-2015-q14",
+        "sourceId": "src_08c2498ac7b58e3542942300",
+        "answerSourceId": "src_08c2498ac7b58e3542942300",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2015-paper-answer",
+        "answerEvidenceId": "math3-2015-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:386d8378ed9ce2d051592c1d69f33ef16357e4313f28326ded2eb464d1098352"
+      }
+    },
+    {
+      "id": "math3-2015-015",
+      "number": 15,
+      "paperId": "math3-2015",
+      "paperName": "2015考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2015",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2015考研数学三第15题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "a=-1，b=-1/2，k=-1/3。",
+      "explanation": "答案来自本地百度网盘 2015 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2015/question-15.jpg",
+          "caption": "题面裁切图 q15",
+          "alt": "2015考研数学三第15题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2015/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2015考研数学三答案解析 p.5"
+        },
+        {
+          "src": "question-bank/math3-2015/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2015考研数学三答案解析 p.6"
+        },
+        {
+          "src": "question-bank/math3-2015/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2015考研数学三答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2015",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2015-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:5ed4c206c720bec3db0fe212f7266213cdfe01c0f9f44fb235ede3a579f9e32a",
+      "answerTextHash": "sha256:cfca2775560d02e3720449ab5b4030308ae96b820c271e92980a32c6aa6b9896",
+      "sourceEvidence": {
+        "evidenceId": "math3-2015-q15",
+        "sourceId": "src_08c2498ac7b58e3542942300",
+        "answerSourceId": "src_08c2498ac7b58e3542942300",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2015-paper-answer",
+        "answerEvidenceId": "math3-2015-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:cfca2775560d02e3720449ab5b4030308ae96b820c271e92980a32c6aa6b9896"
+      }
+    },
+    {
+      "id": "math3-2015-016",
+      "number": 16,
+      "paperId": "math3-2015",
+      "paperName": "2015考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2015",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2015考研数学三第16题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "二重积分值为 π/4 - 2/5。",
+      "explanation": "答案来自本地百度网盘 2015 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2015/question-16.jpg",
+          "caption": "题面裁切图 q16",
+          "alt": "2015考研数学三第16题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2015/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2015考研数学三答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2015",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2015-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:8a0d4afa7fe77bb19c5992c480c9e04752775b986cf9f1bba1c1f43d67509922",
+      "answerTextHash": "sha256:967f7706a517a0b52d0ac9d3cb556924e5ff40d30821106e9f7e94a7cdca2def",
+      "sourceEvidence": {
+        "evidenceId": "math3-2015-q16",
+        "sourceId": "src_08c2498ac7b58e3542942300",
+        "answerSourceId": "src_08c2498ac7b58e3542942300",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2015-paper-answer",
+        "answerEvidenceId": "math3-2015-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:967f7706a517a0b52d0ac9d3cb556924e5ff40d30821106e9f7e94a7cdca2def"
+      }
+    },
+    {
+      "id": "math3-2015-017",
+      "number": 17,
+      "paperId": "math3-2015",
+      "paperName": "2015考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2015",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2015考研数学三第17题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "定价模型证明见答案原页；由 C(Q)=1600+Q^2、Q=40-P 得 P=30。",
+      "explanation": "答案来自本地百度网盘 2015 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2015/question-17.jpg",
+          "caption": "题面裁切图 q17",
+          "alt": "2015考研数学三第17题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2015/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2015考研数学三答案解析 p.7"
+        },
+        {
+          "src": "question-bank/math3-2015/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2015考研数学三答案解析 p.8"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2015",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2015-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:b53b5b58091f73d68ec2e2b276aa235a46a9e7145322e658fba1e54c1eb9fed9",
+      "answerTextHash": "sha256:4131bacf46b6b08d270d140dad8713cb946ce4f47455da00798d48b04b19121a",
+      "sourceEvidence": {
+        "evidenceId": "math3-2015-q17",
+        "sourceId": "src_08c2498ac7b58e3542942300",
+        "answerSourceId": "src_08c2498ac7b58e3542942300",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2015-paper-answer",
+        "answerEvidenceId": "math3-2015-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:4131bacf46b6b08d270d140dad8713cb946ce4f47455da00798d48b04b19121a"
+      }
+    },
+    {
+      "id": "math3-2015-018",
+      "number": 18,
+      "paperId": "math3-2015",
+      "paperName": "2015考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2015",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2015考研数学三第18题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "f(x)=8/(4-x)。",
+      "explanation": "答案来自本地百度网盘 2015 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2015/question-18.jpg",
+          "caption": "题面裁切图 q18",
+          "alt": "2015考研数学三第18题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2015/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2015考研数学三答案解析 p.8"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2015",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2015-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:64a9739e3108c6c0df0162763cfda93880b9f6a57104232b6c62a89db83ad35d",
+      "answerTextHash": "sha256:55969e3f5f84b284773502c296bcb6ae3464d52a3c83c191c69ba3ad20f4c18f",
+      "sourceEvidence": {
+        "evidenceId": "math3-2015-q18",
+        "sourceId": "src_08c2498ac7b58e3542942300",
+        "answerSourceId": "src_08c2498ac7b58e3542942300",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2015-paper-answer",
+        "answerEvidenceId": "math3-2015-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:55969e3f5f84b284773502c296bcb6ae3464d52a3c83c191c69ba3ad20f4c18f"
+      }
+    },
+    {
+      "id": "math3-2015-019",
+      "number": 19,
+      "paperId": "math3-2015",
+      "paperName": "2015考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2015",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2015考研数学三第19题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "乘积求导公式证明及 n 个函数乘积求导公式见答案原页。",
+      "explanation": "答案来自本地百度网盘 2015 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2015/question-19.jpg",
+          "caption": "题面裁切图 q19",
+          "alt": "2015考研数学三第19题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2015/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2015考研数学三答案解析 p.8"
+        },
+        {
+          "src": "question-bank/math3-2015/answer-page-09.jpg",
+          "caption": "答案解析 p.9",
+          "alt": "2015考研数学三答案解析 p.9"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2015",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2015-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:cd33cf66edd445b5092da16016ade8195d36805da6486a7321318408fc50c170",
+      "answerTextHash": "sha256:1a4aca3af0eb248425ca2122dd88c7e029d5885761eacabf213760edf909ce8a",
+      "sourceEvidence": {
+        "evidenceId": "math3-2015-q19",
+        "sourceId": "src_08c2498ac7b58e3542942300",
+        "answerSourceId": "src_08c2498ac7b58e3542942300",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2015-paper-answer",
+        "answerEvidenceId": "math3-2015-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:1a4aca3af0eb248425ca2122dd88c7e029d5885761eacabf213760edf909ce8a"
+      }
+    },
+    {
+      "id": "math3-2015-020",
+      "number": 20,
+      "paperId": "math3-2015",
+      "paperName": "2015考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2015",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2015考研数学三第20题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "a=0；X=[[3,1,-2],[1,1,-1],[2,1,-1]]。",
+      "explanation": "答案来自本地百度网盘 2015 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2015/question-20.jpg",
+          "caption": "题面裁切图 q20",
+          "alt": "2015考研数学三第20题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2015/answer-page-09.jpg",
+          "caption": "答案解析 p.9",
+          "alt": "2015考研数学三答案解析 p.9"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2015",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2015-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:b26ec5b45c27a24d4cd1d9a6f3a73b97fd90f4fcbc4f97e987f832c45f6bea27",
+      "answerTextHash": "sha256:56d35d00e60d2f0646bcffe62fcbd17ca960a91f3bd7fc8261d198c4ffe298cf",
+      "sourceEvidence": {
+        "evidenceId": "math3-2015-q20",
+        "sourceId": "src_08c2498ac7b58e3542942300",
+        "answerSourceId": "src_08c2498ac7b58e3542942300",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2015-paper-answer",
+        "answerEvidenceId": "math3-2015-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:56d35d00e60d2f0646bcffe62fcbd17ca960a91f3bd7fc8261d198c4ffe298cf"
+      }
+    },
+    {
+      "id": "math3-2015-021",
+      "number": 21,
+      "paperId": "math3-2015",
+      "paperName": "2015考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2015",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2015考研数学三第21题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "a=4，b=5；P=[[2,-3,-1],[1,0,-1],[0,1,1]]。",
+      "explanation": "答案来自本地百度网盘 2015 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2015/question-21-a.jpg",
+          "caption": "题面裁切图 q21-a",
+          "alt": "2015考研数学三第21题题面裁切图"
+        },
+        {
+          "src": "question-bank/math3-2015/question-21-b.jpg",
+          "caption": "题面裁切图 q21-b",
+          "alt": "2015考研数学三第21题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2015/answer-page-09.jpg",
+          "caption": "答案解析 p.9",
+          "alt": "2015考研数学三答案解析 p.9"
+        },
+        {
+          "src": "question-bank/math3-2015/answer-page-10.jpg",
+          "caption": "答案解析 p.10",
+          "alt": "2015考研数学三答案解析 p.10"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2015",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2015-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:abfbdb7c81992d1029b1dc995dc8f4dd946327bf208c6ed3220b49297d81e759",
+      "answerTextHash": "sha256:ffc164d6a2fc4df753499d68492e377ac75270ae071ae344946f89347381a72f",
+      "sourceEvidence": {
+        "evidenceId": "math3-2015-q21",
+        "sourceId": "src_08c2498ac7b58e3542942300",
+        "answerSourceId": "src_08c2498ac7b58e3542942300",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2015-paper-answer",
+        "answerEvidenceId": "math3-2015-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:ffc164d6a2fc4df753499d68492e377ac75270ae071ae344946f89347381a72f"
+      }
+    },
+    {
+      "id": "math3-2015-022",
+      "number": 22,
+      "paperId": "math3-2015",
+      "paperName": "2015考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2015",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2015考研数学三第22题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "P(Y=n)=(n-1)(1/8)^2(7/8)^(n-2), n=2,3,...；E(Y)=16。",
+      "explanation": "答案来自本地百度网盘 2015 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2015/question-22.jpg",
+          "caption": "题面裁切图 q22",
+          "alt": "2015考研数学三第22题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2015/answer-page-10.jpg",
+          "caption": "答案解析 p.10",
+          "alt": "2015考研数学三答案解析 p.10"
+        },
+        {
+          "src": "question-bank/math3-2015/answer-page-11.jpg",
+          "caption": "答案解析 p.11",
+          "alt": "2015考研数学三答案解析 p.11"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2015",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2015-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:6b16613065e20085164259927f06de1731015fbdda51ac2e4c5dc0b1e05dd6bc",
+      "answerTextHash": "sha256:564075d019ab58df583c33ec64a017acd1f3fd38b1c85a0a9f766d293ff7e6bd",
+      "sourceEvidence": {
+        "evidenceId": "math3-2015-q22",
+        "sourceId": "src_08c2498ac7b58e3542942300",
+        "answerSourceId": "src_08c2498ac7b58e3542942300",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2015-paper-answer",
+        "answerEvidenceId": "math3-2015-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:564075d019ab58df583c33ec64a017acd1f3fd38b1c85a0a9f766d293ff7e6bd"
+      }
+    },
+    {
+      "id": "math3-2015-023",
+      "number": 23,
+      "paperId": "math3-2015",
+      "paperName": "2015考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2015",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2015考研数学三第23题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "矩估计量 θ_hat=2X_bar-1；最大似然估计量 θ_hat=min{X1,X2,...,Xn}。",
+      "explanation": "答案来自本地百度网盘 2015 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2015/question-23.jpg",
+          "caption": "题面裁切图 q23",
+          "alt": "2015考研数学三第23题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2015/answer-page-11.jpg",
+          "caption": "答案解析 p.11",
+          "alt": "2015考研数学三答案解析 p.11"
+        },
+        {
+          "src": "question-bank/math3-2015/answer-page-12.jpg",
+          "caption": "答案解析 p.12",
+          "alt": "2015考研数学三答案解析 p.12"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2015",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2015-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:ac8ac66257a7c14fd325bf647973aa53d4e15f917590d7fb8424991442447445",
+      "answerTextHash": "sha256:e6a1e1768568b74d396c45b6d98973b9177f27fc8b5892bb2ae1ae2110f48c3b",
+      "sourceEvidence": {
+        "evidenceId": "math3-2015-q23",
+        "sourceId": "src_08c2498ac7b58e3542942300",
+        "answerSourceId": "src_08c2498ac7b58e3542942300",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2015-paper-answer",
+        "answerEvidenceId": "math3-2015-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:e6a1e1768568b74d396c45b6d98973b9177f27fc8b5892bb2ae1ae2110f48c3b"
+      }
+    }
+  ]
+}

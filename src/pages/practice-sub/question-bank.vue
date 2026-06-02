@@ -92,7 +92,7 @@
       <view class="section-head">
         <view>
           <text class="section-title">{{ selectedTrack?.label || '公共课' }}</text>
-          <text class="section-hint">2005-2026 整卷真题地图</text>
+          <text class="section-hint">{{ selectedYearRangeText }} 整卷真题地图</text>
         </view>
         <text class="section-meta">{{ selectedTrackSlotText }}</text>
       </view>
@@ -310,6 +310,11 @@ const selectedTrackSlotText = computed(() => {
   const organizing = Number(summary.organizing || 0);
   const missing = Number(summary.missing || 0);
   return `正式 ${ready} · 整理中 ${organizing} · 待入库 ${missing}`;
+});
+const selectedYearRangeText = computed(() => {
+  const years = selectedYearSlots.value.map((slot) => Number(slot.year)).filter(Number.isFinite);
+  if (!years.length) return '2005-2026';
+  return `${Math.min(...years)}-${Math.max(...years)}`;
 });
 const selectedYearSlotReadiness = computed(() => buildYearSlotReadiness(selectedYearSlot.value));
 const localPaperStats = ref(buildLocalPaperStats());

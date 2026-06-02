@@ -11,7 +11,7 @@ const source = readFileSync(resolve(process.cwd(), 'src/pages/practice-sub/quest
 
 describe('question bank public-course year map', () => {
   it('renders the full release-scope year map with trustworthy slot states', () => {
-    expect(source).toContain('2005-2026 整卷真题地图');
+    expect(source).toContain('selectedYearRangeText');
     expect(source).toContain('selectedYearSlots');
     expect(source).toContain('selectedYearSlot.clickable');
     expect(source).toContain('loadAndStartSlot');
@@ -22,18 +22,21 @@ describe('question bank public-course year map', () => {
     expect(source).toContain('正式 ${ready} · 整理中 ${organizing} · 待入库 ${missing}');
   });
 
-  it('keeps every track on the 2005-2026 map and marks verified banks as clickable', () => {
+  it('keeps every track on its real release-scope year map and marks verified banks as clickable', () => {
     const tree = getPracticeNavigationTree({ tracks: ['english2', 'math1', 'math2', 'math3'] });
     const tracks = tree.flatMap((subject) => subject.tracks);
 
-    for (const track of tracks) {
+    for (const track of tracks.filter((item) => item.id !== 'english2')) {
       expect(track.yearSlots).toHaveLength(22);
       expect(track.yearSlots[0].year).toBe('2026');
       expect(track.yearSlots.at(-1).year).toBe('2005');
     }
 
     const english2 = tracks.find((track) => track.id === 'english2');
-    expect(english2.slotSummary).toEqual({ total: 22, ready: 1, organizing: 0, missing: 21 });
+    expect(english2.yearSlots).toHaveLength(17);
+    expect(english2.yearSlots[0].year).toBe('2026');
+    expect(english2.yearSlots.at(-1).year).toBe('2010');
+    expect(english2.slotSummary).toEqual({ total: 17, ready: 1, organizing: 0, missing: 16 });
     expect(english2.yearSlots.find((slot) => slot.year === '2025')).toMatchObject({
       bankId: 'english2-2025',
       status: 'ready',
@@ -43,7 +46,7 @@ describe('question bank public-course year map', () => {
     });
 
     const math1 = tracks.find((track) => track.id === 'math1');
-    expect(math1.slotSummary).toEqual({ total: 22, ready: 11, organizing: 0, missing: 11 });
+    expect(math1.slotSummary).toEqual({ total: 22, ready: 21, organizing: 0, missing: 1 });
     expect(math1.yearSlots.find((slot) => slot.year === '2025')).toMatchObject({
       bankId: 'math1-2025',
       status: 'ready',
@@ -51,7 +54,28 @@ describe('question bank public-course year map', () => {
       actionLabel: '开始',
       clickable: true
     });
-    for (const year of ['2008', '2009', '2010', '2011', '2012', '2013', '2014', '2015', '2016', '2017']) {
+    for (const year of [
+      '2005',
+      '2006',
+      '2007',
+      '2008',
+      '2009',
+      '2010',
+      '2011',
+      '2012',
+      '2013',
+      '2014',
+      '2015',
+      '2016',
+      '2017',
+      '2018',
+      '2019',
+      '2020',
+      '2021',
+      '2022',
+      '2023',
+      '2024'
+    ]) {
       expect(math1.yearSlots.find((slot) => slot.year === year)).toMatchObject({
         bankId: `math1-${year}`,
         status: 'ready',
@@ -81,7 +105,7 @@ describe('question bank public-course year map', () => {
     }
 
     const math3 = tracks.find((track) => track.id === 'math3');
-    expect(math3.slotSummary).toEqual({ total: 22, ready: 10, organizing: 0, missing: 12 });
+    expect(math3.slotSummary).toEqual({ total: 22, ready: 11, organizing: 0, missing: 11 });
     expect(math3.yearSlots.find((slot) => slot.year === '2025')).toMatchObject({
       bankId: 'math3-2025',
       status: 'ready',
@@ -110,7 +134,7 @@ describe('question bank public-course year map', () => {
       actionLabel: '开始',
       clickable: true
     });
-    for (const year of ['2008', '2009', '2010', '2011', '2012', '2013']) {
+    for (const year of ['2008', '2009', '2010', '2011', '2012', '2013', '2015']) {
       expect(math3.yearSlots.find((slot) => slot.year === year)).toMatchObject({
         bankId: `math3-${year}`,
         status: 'ready',
@@ -134,7 +158,8 @@ describe('question bank public-course year map', () => {
     await nextTick();
 
     expect(wrapper.text()).toContain('2025考研英语二真题');
-    expect(wrapper.text()).toContain('正式 1 · 整理中 0 · 待入库 21');
+    expect(wrapper.text()).toContain('2010-2026 整卷真题地图');
+    expect(wrapper.text()).toContain('正式 1 · 整理中 0 · 待入库 16');
     expect(wrapper.find('.year-slot.active .slot-year').text()).toBe('2025');
 
     wrapper.unmount();
