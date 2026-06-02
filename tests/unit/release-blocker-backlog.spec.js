@@ -323,6 +323,11 @@ describe('release blocker backlog', () => {
     expect(backlog.items.map((item) => item.workstream)).toContain('public_course_coverage');
     expect(backlog.items.map((item) => item.workstream)).toContain('source_manifest_evidence');
     expect(backlog.items.map((item) => item.workstream)).toContain('cleaned_flashcard_quality');
+    const wechatEvidenceItem = backlog.items.find(
+      (item) => item.id === 'external:wechatDevice:wechat_device_evidence_not_passed'
+    );
+    expect(wechatEvidenceItem?.evidence).not.toHaveProperty('requiredEvidenceCount');
+    expect(wechatEvidenceItem?.evidence).not.toHaveProperty('presentEvidenceCount');
     expect(backlog.nextBalancedPublicCourseSlots[0]).toMatchObject({
       id: 'coverage_pending:english1:2025',
       track: 'english1',
