@@ -240,6 +240,31 @@ function isUnscopedKey(key) {
   return GLOBAL_KEYS.has(key) || UNSCOPED_KEY_PREFIXES.some((prefix) => key.startsWith(prefix));
 }
 
+function migratePlainSensitiveKey(key) {
+  try {
+    const plainValue = uni.getStorageSync(key);
+    if (plainValue === '' || plainValue === null || plainValue === undefined) {
+      return false;
+    }
+
+    const existingEncrypted = uni.getStorageSync(`_enc_${key}`);
+    if (existingEncrypted === '' || existingEncrypted === null || existingEncrypted === undefined) {
+      const encrypted = obfuscate(plainValue);
+      if (encrypted === null || deobfuscate(encrypted) === null) {
+        return false;
+      }
+      uni.setStorageSync(`_enc_${key}`, encrypted);
+    } else if (deobfuscate(existingEncrypted) === null) {
+      return false;
+    }
+
+    uni.removeStorageSync(key);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 /**
  * 解析存储键：对用户级 key 自动加 userId 前缀
  * 全局 key 原样返回，用户级 key 返回 `u_${userId}_${key}`
@@ -589,6 +614,12 @@ class StorageService {
       const keep = new Set();
 
       if (preserveGlobal) {
+        SENSITIVE_KEYS.forEach((key) => {
+          if (GLOBAL_KEYS.has(key)) {
+            migratePlainSensitiveKey(key);
+          }
+        });
+
         GLOBAL_KEYS.forEach((key) => {
           keep.add(key);
           keep.add(`_enc_${key}`);
