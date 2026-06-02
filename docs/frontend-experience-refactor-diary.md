@@ -229,3 +229,11 @@
 - The card reuses the existing local sync state: unsynced papers show `同步并开始`, while local papers show `继续本卷` with the usable question count.
 - The action still calls the existing load-and-start path, preserving bank sync, usable question ID verification, and safe navigation into the quiz page.
 - Added `question-bank-recommended-start-guard` to protect recommendation rendering, local-state copy, safe start wiring, user-facing wording, and dark-mode coverage.
+
+### 2026-06-01 Round 26
+
+- Tightened the question-bank page hierarchy after adding the recommendation card.
+- The ready-paper list now becomes `更多可练整卷` and excludes the recommended paper, so the page has one clear primary start action instead of repeating the same卷 twice.
+- Tracks with only one playable paper now show the recommendation and year map without an unnecessary empty list state.
+- The secondary list keeps local sync pills and per-paper start actions, but reads as browsing support rather than the main path.
+- Added `question-bank-list-hierarchy-guard` to protect recommendation/list separation, count copy, empty-state behavior, and dark-mode heading coverage.

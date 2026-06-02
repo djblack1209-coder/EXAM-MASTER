@@ -163,8 +163,15 @@
         </view>
       </view>
 
-      <view v-if="selectedReadyBanks.length > 0" class="paper-list">
-        <view v-for="paper in selectedReadyBanks" :key="paper.id" class="paper-card">
+      <view v-if="secondaryReadyBanks.length > 0" class="paper-list">
+        <view class="paper-list-head">
+          <view>
+            <text class="paper-list-title">更多可练整卷</text>
+            <text class="paper-list-sub">推荐卷之外的正式年份</text>
+          </view>
+          <text class="paper-list-count">{{ secondaryReadyBanks.length }} 卷</text>
+        </view>
+        <view v-for="paper in secondaryReadyBanks" :key="paper.id" class="paper-card">
           <view class="paper-main">
             <text class="paper-year">{{ paper.year }}</text>
             <view class="paper-copy">
@@ -199,7 +206,7 @@
         </view>
       </view>
 
-      <view v-else class="empty-state">
+      <view v-else-if="!recommendedSlot" class="empty-state">
         <BaseIcon name="book" :size="56" />
         <text class="empty-text">该方向暂无可练整卷</text>
         <text class="empty-sub">资料和答案说明完善后，会按年份开放整卷练习。</text>
@@ -307,6 +314,10 @@ const selectedTrackSlotText = computed(() => {
 const selectedYearSlotReadiness = computed(() => buildYearSlotReadiness(selectedYearSlot.value));
 const localPaperStats = ref(buildLocalPaperStats());
 const recommendedSlot = computed(() => selectedYearSlots.value.find((slot) => slot.clickable) || null);
+const secondaryReadyBanks = computed(() => {
+  const recommendedBankId = recommendedSlot.value?.bankId || '';
+  return selectedReadyBanks.value.filter((paper) => paper.id !== recommendedBankId);
+});
 const recommendedLocalState = computed(() => getPaperLocalState(recommendedSlot.value));
 const recommendedSlotRecommendation = computed(() => {
   if (!recommendedSlot.value) return '';
@@ -1024,6 +1035,31 @@ onMounted(() => {
 .paper-list {
   padding: 0 24rpx;
 }
+.paper-list-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: 4rpx 8rpx 18rpx;
+}
+.paper-list-title {
+  display: block;
+  color: #1d1d1f;
+  font-size: 28rpx;
+  font-weight: 900;
+}
+.paper-list-sub,
+.paper-list-count {
+  display: block;
+  margin-top: 6rpx;
+  color: #8e8e93;
+  font-size: 21rpx;
+  font-weight: 760;
+}
+.paper-list-count {
+  flex-shrink: 0;
+  margin-left: 16rpx;
+  text-align: right;
+}
 .paper-card {
   padding: 28rpx 24rpx;
   margin-bottom: 18rpx;
@@ -1331,6 +1367,7 @@ onMounted(() => {
 .dark-mode .recommended-meta-value,
 .dark-mode .readiness-value,
 .dark-mode .paper-year,
+.dark-mode .paper-list-title,
 .dark-mode .paper-name,
 .dark-mode .pending-title,
 .dark-mode .pending-name,
@@ -1411,6 +1448,8 @@ onMounted(() => {
 .dark-mode .slot-caution,
 .dark-mode .local-sync-label,
 .dark-mode .readiness-label,
+.dark-mode .paper-list-sub,
+.dark-mode .paper-list-count,
 .dark-mode .pending-sub,
 .dark-mode .pending-reason,
 .dark-mode .gap-sub,

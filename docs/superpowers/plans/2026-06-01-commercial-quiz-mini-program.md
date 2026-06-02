@@ -948,3 +948,45 @@ Run:
 git add src/pages/practice-sub/question-bank.vue tests/unit/question-bank-recommended-start-guard.spec.js docs/frontend-experience-refactor-diary.md docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md
 git commit -m "feat: add question bank recommended start"
 ```
+
+### Task 24: Tighten Question Bank Ready List Hierarchy
+
+**Files:**
+- Modify: `src/pages/practice-sub/question-bank.vue`
+- Create: `tests/unit/question-bank-list-hierarchy-guard.spec.js`
+- Modify: `docs/frontend-experience-refactor-diary.md`
+- Modify: `docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md`
+
+- [x] **Step 1: Split primary and secondary playable entries**
+
+Build `secondaryReadyBanks` by filtering the recommended paper out of the selected track's ready bank list.
+
+- [x] **Step 2: Reframe the ready list as supporting browsing**
+
+Add a `更多可练整卷` list heading with count copy, and render the empty state only when there is no recommendation.
+
+- [x] **Step 3: Preserve per-paper sync/start affordances**
+
+Keep local sync pills, question counts, and per-paper start/continue actions for secondary ready papers.
+
+- [x] **Step 4: Add list hierarchy guard**
+
+Assert recommendation/list separation, secondary count copy, one-paper track behavior, and dark-mode heading coverage.
+
+- [x] **Step 5: Run focused validation**
+
+Run:
+```bash
+npm run lint -- src/pages/practice-sub/question-bank.vue tests/unit/question-bank-list-hierarchy-guard.spec.js tests/unit/question-bank-recommended-start-guard.spec.js
+npm run test -- tests/unit/question-bank-list-hierarchy-guard.spec.js tests/unit/question-bank-recommended-start-guard.spec.js tests/unit/question-bank-gap-panel-guard.spec.js tests/unit/question-bank-local-sync-guard.spec.js tests/unit/question-bank-start-flow-guard.spec.js tests/unit/question-bank-slot-readiness-guard.spec.js tests/unit/question-bank-year-map.spec.js tests/unit/practice-readiness-card-guard.spec.js tests/unit/frontend-copy-guard.spec.js tests/unit/mini-program-scope-guard.spec.js
+```
+
+Result: passed on 2026-06-01.
+
+- [x] **Step 6: Commit**
+
+Run:
+```bash
+git add src/pages/practice-sub/question-bank.vue tests/unit/question-bank-list-hierarchy-guard.spec.js docs/frontend-experience-refactor-diary.md docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md
+git commit -m "feat: tighten question bank list hierarchy"
+```

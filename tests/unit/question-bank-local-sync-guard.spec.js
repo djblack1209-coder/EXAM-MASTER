@@ -21,10 +21,11 @@ function mountQuestionBank() {
 
 describe('question bank local sync status', () => {
   it('shows local sync state and usable question count for loaded papers', async () => {
-    storageService.save('loaded_flashcard_banks', ['politics-2025']);
+    storageService.save('loaded_flashcard_banks', ['politics-2025', 'politics-2024']);
     storageService.save('v30_bank', [
       { id: 'politics-2025-001', paperId: 'politics-2025', question: '第一题题干内容足够长' },
-      { id: 'politics-2025-002', paperId: 'politics-2025', question: '第二题题干内容足够长' }
+      { id: 'politics-2025-002', paperId: 'politics-2025', question: '第二题题干内容足够长' },
+      { id: 'politics-2024-001', paperId: 'politics-2024', question: '2024第一题题干内容足够长' }
     ]);
 
     const wrapper = mountQuestionBank();
@@ -36,6 +37,7 @@ describe('question bank local sync status', () => {
     expect(wrapper.find('.local-sync-strip').text()).toContain('可练题目');
     expect(wrapper.find('.local-sync-strip').text()).toContain('2 题');
     expect(wrapper.find('.paper-local-pill').classes()).toContain('synced');
+    expect(wrapper.find('.paper-list').text()).toContain('1 题');
     expect(wrapper.text()).toContain('2 题');
 
     wrapper.unmount();
