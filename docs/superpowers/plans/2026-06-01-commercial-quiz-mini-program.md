@@ -864,3 +864,45 @@ Run:
 git add src/pages/practice-sub/question-bank.vue tests/unit/question-bank-local-sync-guard.spec.js docs/frontend-experience-refactor-diary.md docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md
 git commit -m "feat: surface question bank local sync"
 ```
+
+### Task 22: Explain Question Bank Gap Years
+
+**Files:**
+- Modify: `src/pages/practice-sub/question-bank.vue`
+- Create: `tests/unit/question-bank-gap-panel-guard.spec.js`
+- Modify: `docs/frontend-experience-refactor-diary.md`
+- Modify: `docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md`
+
+- [x] **Step 1: Derive selected-track gap preview**
+
+Build `selectedGapSlots`, `selectedGapPreview`, and `selectedGapSummary` from unavailable year slots.
+
+- [x] **Step 2: Add user-facing gap reasons**
+
+Show a reason and next step for each unavailable year without backend workflow wording.
+
+- [x] **Step 3: Add lightweight gap panel**
+
+Render the newest six unavailable years in a `待开放清单` panel with dark-mode coverage.
+
+- [x] **Step 4: Add gap panel guard**
+
+Assert summary rendering, track switching, user-facing wording, and dark-mode coverage.
+
+- [x] **Step 5: Run focused validation**
+
+Run:
+```bash
+npm run lint -- src/pages/practice-sub/question-bank.vue tests/unit/question-bank-gap-panel-guard.spec.js tests/unit/question-bank-local-sync-guard.spec.js
+npm run test -- tests/unit/question-bank-gap-panel-guard.spec.js tests/unit/question-bank-local-sync-guard.spec.js tests/unit/question-bank-start-flow-guard.spec.js tests/unit/question-bank-slot-readiness-guard.spec.js tests/unit/question-bank-year-map.spec.js tests/unit/practice-readiness-card-guard.spec.js tests/unit/frontend-copy-guard.spec.js tests/unit/mini-program-scope-guard.spec.js
+```
+
+Result: passed on 2026-06-01.
+
+- [x] **Step 6: Commit**
+
+Run:
+```bash
+git add src/pages/practice-sub/question-bank.vue tests/unit/question-bank-gap-panel-guard.spec.js docs/frontend-experience-refactor-diary.md docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md
+git commit -m "feat: explain question bank gap years"
+```

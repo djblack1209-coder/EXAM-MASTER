@@ -186,6 +186,29 @@
         </view>
       </view>
 
+      <view v-if="selectedGapPreview.length > 0" class="gap-panel">
+        <view class="gap-head">
+          <view>
+            <text class="gap-title">待开放清单</text>
+            <text class="gap-sub">优先展示当前方向最近年份</text>
+          </view>
+          <text class="gap-count">{{ selectedGapSummary }}</text>
+        </view>
+        <view class="gap-list">
+          <view v-for="slot in selectedGapPreview" :key="slot.id" class="gap-item" :class="`status-${slot.status}`">
+            <view class="gap-year-block">
+              <text class="gap-year">{{ slot.year }}</text>
+              <text class="gap-status">{{ slot.statusLabel }}</text>
+            </view>
+            <view class="gap-copy">
+              <text class="gap-name">{{ slot.name }}</text>
+              <text class="gap-reason">{{ buildGapReason(slot) }}</text>
+              <text class="gap-next">{{ buildGapNextStep(slot) }}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+
       <view class="bottom-spacer" />
     </scroll-view>
   </view>
@@ -250,6 +273,13 @@ const selectedTrackSlotText = computed(() => {
 });
 const selectedYearSlotReadiness = computed(() => buildYearSlotReadiness(selectedYearSlot.value));
 const localPaperStats = ref(buildLocalPaperStats());
+const selectedGapSlots = computed(() => selectedYearSlots.value.filter((slot) => !slot.clickable));
+const selectedGapPreview = computed(() => selectedGapSlots.value.slice(0, 6));
+const selectedGapSummary = computed(() => {
+  const organizing = selectedGapSlots.value.filter((slot) => slot.status === 'organizing').length;
+  const missing = selectedGapSlots.value.filter((slot) => slot.status === 'missing').length;
+  return `整理中 ${organizing} · 待入库 ${missing}`;
+});
 
 function goBack() {
   safeNavigateBack();
@@ -393,6 +423,20 @@ function buildYearSlotReadiness(slot) {
     next: slot.disabledReason || '资料入库并完成答案说明后开放训练。',
     disabledActionLabel: '待入库后开放'
   };
+}
+
+function buildGapReason(slot) {
+  if (slot?.status === 'organizing') {
+    return slot.disabledReason || qualityLabel(slot.quality);
+  }
+  return '资料暂未入库';
+}
+
+function buildGapNextStep(slot) {
+  if (slot?.status === 'organizing') {
+    return '资料完善后会开放整卷训练入口。';
+  }
+  return slot?.disabledReason || '资料入库并完成答案说明后开放。';
 }
 
 async function loadPaper(paper) {
@@ -1021,6 +1065,96 @@ onMounted(() => {
   font-size: 26rpx;
   font-weight: 900;
 }
+.gap-panel {
+  margin: 30rpx 24rpx 0;
+  padding: 26rpx 24rpx;
+  border-radius: 24rpx;
+  background: #ffffff;
+  border: 1rpx solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 10rpx 28rpx rgba(15, 23, 42, 0.04);
+}
+.gap-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 12rpx;
+}
+.gap-title {
+  display: block;
+  color: #1d1d1f;
+  font-size: 28rpx;
+  font-weight: 900;
+}
+.gap-sub,
+.gap-count {
+  display: block;
+  margin-top: 6rpx;
+  color: #8e8e93;
+  font-size: 21rpx;
+  font-weight: 760;
+}
+.gap-count {
+  flex-shrink: 0;
+  margin-left: 16rpx;
+  text-align: right;
+}
+.gap-list {
+  margin-top: 8rpx;
+}
+.gap-item {
+  display: flex;
+  padding: 18rpx 0;
+  border-top: 1rpx solid rgba(0, 0, 0, 0.06);
+}
+.gap-year-block {
+  flex-shrink: 0;
+  width: 96rpx;
+  padding-top: 2rpx;
+}
+.gap-year {
+  display: block;
+  color: #1d1d1f;
+  font-size: 28rpx;
+  font-weight: 900;
+  line-height: 1;
+}
+.gap-status {
+  display: inline-flex;
+  margin-top: 10rpx;
+  padding: 4rpx 10rpx;
+  border-radius: 999rpx;
+  background: #eef0f3;
+  color: #8e8e93;
+  font-size: 18rpx;
+  font-weight: 850;
+}
+.gap-item.status-organizing .gap-status {
+  background: rgba(0, 104, 214, 0.1);
+  color: #0068d6;
+}
+.gap-copy {
+  flex: 1;
+  min-width: 0;
+  padding-left: 14rpx;
+}
+.gap-name {
+  display: block;
+  color: #1d1d1f;
+  font-size: 24rpx;
+  font-weight: 820;
+  line-height: 1.35;
+}
+.gap-reason,
+.gap-next {
+  display: block;
+  margin-top: 7rpx;
+  color: #8e8e93;
+  font-size: 21rpx;
+  line-height: 1.4;
+}
+.gap-next {
+  color: #5f6672;
+}
 .empty-state {
   margin: 34rpx 24rpx;
   padding: 56rpx 32rpx;
@@ -1066,6 +1200,9 @@ onMounted(() => {
 .dark-mode .pending-title,
 .dark-mode .pending-name,
 .dark-mode .pending-year,
+.dark-mode .gap-title,
+.dark-mode .gap-year,
+.dark-mode .gap-name,
 .dark-mode .empty-text {
   color: #f5f7fb;
 }
@@ -1075,6 +1212,7 @@ onMounted(() => {
 .dark-mode .slot-detail,
 .dark-mode .paper-card,
 .dark-mode .pending-panel,
+.dark-mode .gap-panel,
 .dark-mode .empty-state {
   background: #20242d;
   border-color: rgba(255, 255, 255, 0.08);
@@ -1136,6 +1274,9 @@ onMounted(() => {
 .dark-mode .readiness-label,
 .dark-mode .pending-sub,
 .dark-mode .pending-reason,
+.dark-mode .gap-sub,
+.dark-mode .gap-count,
+.dark-mode .gap-reason,
 .dark-mode .empty-sub {
   color: #8f98a8;
 }
@@ -1147,13 +1288,23 @@ onMounted(() => {
 .dark-mode .paper-desc,
 .dark-mode .paper-caution,
 .dark-mode .paper-local-count,
+.dark-mode .gap-next,
 .dark-mode .paper-section {
   color: #c4cad4;
 }
 .dark-mode .slot-readiness-divider,
 .dark-mode .local-sync-item + .local-sync-item,
+.dark-mode .gap-item,
 .dark-mode .pending-item {
   border-color: rgba(255, 255, 255, 0.08);
+}
+.dark-mode .gap-status {
+  background: #292e39;
+  color: #8f98a8;
+}
+.dark-mode .gap-item.status-organizing .gap-status {
+  background: rgba(0, 104, 214, 0.18);
+  color: #8bb8ff;
 }
 .dark-mode .slot-readiness-divider {
   background: rgba(255, 255, 255, 0.08);

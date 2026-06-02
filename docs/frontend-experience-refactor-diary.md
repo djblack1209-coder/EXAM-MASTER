@@ -213,3 +213,11 @@
 - Ready paper cards now carry the same local sync pill and question count, so list-level and detail-level status match.
 - The local count is derived from `v30_bank` paper IDs and refreshed after every successful sync, rather than trusting the historical loaded-bank flag alone.
 - Added `question-bank-local-sync-guard` to protect loaded/unsynced rendering, count visibility, refresh wiring, and dark-mode coverage.
+
+### 2026-06-01 Round 24
+
+- Continued Phase 3 by making unavailable years scannable instead of leaving them as unexplained grey slots.
+- Added a `待开放清单` panel for the selected track, showing the closest unavailable years with their status, reason, and next step.
+- The panel summarizes `整理中 / 待入库` counts and limits the preview to the newest six gaps so it stays lightweight on mobile.
+- Kept the copy user-facing: reasons use `资料暂未入库` or existing disabled explanations, without backend release workflow terms.
+- Added `question-bank-gap-panel-guard` to protect gap summary rendering, track switching, user-facing wording, and dark-mode coverage.
