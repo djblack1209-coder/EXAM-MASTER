@@ -2279,6 +2279,101 @@ git -c core.hooksPath=/dev/null commit -m "chore: fix historical math source yea
 
 Result: committed after validation on 2026-06-02.
 
+### Task 57: Publish Math I 2023 Page-Image Bank
+
+**Files:**
+- Modify: `scripts/cleaning/build_math1_history_banks.py`
+- Modify: `tests/unit/test_build_math1_history_banks.py`
+- Modify: `src/config/bank-registry.js`
+- Modify: `src/pages/practice-sub/bank-data-table.js`
+- Add: `src/config/flashcard-banks/math1-2023.json`
+- Add: `cdn-assets/question-bank/math1-2023/*`
+- Modify: `data/release-blocker-backlog.json`
+- Modify: `docs/frontend-experience-refactor-diary.md`
+- Modify: `docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md`
+- Modify: `docs/08C-SCRIPTS-REFERENCE.md`
+- Modify: `docs/12-CHANGELOG.md`
+
+- [x] **Step 1: Inspect the corrected 2023 source**
+
+Used the corrected release-priority queue item:
+
+```text
+data/raw-inbox/src_aa313861bc3f906e2af834b1-2023数一真题答案解析.pdf
+```
+
+The source has 16 pages and a weak text layer, so it follows the 2021/2022 page-image bank path rather than generic OCR/LLM cleaning. Visual inspection confirmed the 22-card new structure:
+
+```text
+1-10 选择题
+11-16 填空题
+17-22 解答题
+```
+
+- [x] **Step 2: Add 2023 source spec and regression coverage**
+
+Added `math1_2023_answers()` plus a 2023 `SourceSpec` with manual per-question crop boxes. Split prompts:
+
+```text
+q07 -> q07a/q07b
+q09 -> q09a/q09b
+q20 -> q20a/q20b
+q22 -> q22a/q22b
+```
+
+Regression coverage now asserts:
+
+```text
+card_numbers_for_spec(math1-2023) == 1..22
+sections == 10 choice + 6 fill + 6 solution
+type mapping == flashcard for 1-16, short_answer for 17-22
+sourceId == src_aa313861bc3f906e2af834b1
+```
+
+- [x] **Step 3: Build and register the bank**
+
+Run:
+
+```bash
+python3 -m unittest tests.unit.test_build_math1_history_banks
+python3 scripts/cleaning/build_math1_history_banks.py --years 2023 --force-assets
+node scripts/build/generate-compressed-bank-modules.mjs
+```
+
+Result: generated `src/config/flashcard-banks/math1-2023.json` and 58 assets under `cdn-assets/question-bank/math1-2023`; compressed bank modules now include 76 published banks. `math1-2023` is registered as a special 10/6/6 entry.
+
+- [x] **Step 4: Verify question-image leakage and release metrics**
+
+Run:
+
+```bash
+for p in cdn-assets/question-bank/math1-2023/question-*.jpg; do
+  txt=$(tesseract "$p" stdout -l chi_sim+eng --psm 6 2>/dev/null || true)
+  if printf '%s' "$txt" | rg -q '【分析|【详解|【解析|【答案|分析】|详解】|解析】|答案】|选[[:space:]]*[ABCD]|故选|因此选|应选|故应选|\[[[:space:]]*[ABCD][[:space:]]*\]'; then
+    echo "BAD $p"
+  fi
+done
+npm run test -- tests/unit/question-bank-release-gate.spec.js tests/unit/flashcard-bank-registry.spec.js
+node scripts/build/question-bank-release-gate.mjs
+node scripts/build/release-blocker-backlog.mjs
+python3 scripts/baidu/cleaning_queue.py
+python3 scripts/baidu/run_cleaning_queue.py --dry-run --limit 8 --source-type official_paper --paper-role main
+git diff --check
+```
+
+Result: passed on 2026-06-02. `math1-2023.json` has 22 cards, `{flashcard:16, short_answer:6}`, section counts `{选择题:10, 填空题:6, 解答题:6}`, 26 question crop assets, 16 answer pages, 16 paper pages, and no missing asset references. Sequential release audit refresh reports `coverageGaps=56`, `blockers=68`, `publicCourseBlockedSlots=56`; the next main queue dry-run starts at `2024年数学一真题及参考答案.pdf`.
+
+- [x] **Step 5: Commit**
+
+Run after final diff/whitespace checks:
+
+```bash
+git add scripts/cleaning/build_math1_history_banks.py tests/unit/test_build_math1_history_banks.py src/config/bank-registry.js src/pages/practice-sub/bank-data-table.js src/config/flashcard-banks/math1-2023.json cdn-assets/question-bank/math1-2023 data/release-blocker-backlog.json docs/frontend-experience-refactor-diary.md docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md docs/08C-SCRIPTS-REFERENCE.md docs/12-CHANGELOG.md
+git -c core.hooksPath=/dev/null commit -m "chore: publish math1 2023 bank"
+```
+
+Result: committed after validation on 2026-06-02.
+
 ### Task 52: Publish Math I 2019 Page-Image Bank
 
 **Files:**

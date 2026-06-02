@@ -1,0 +1,1230 @@
+{
+  "id": "math1-2023",
+  "source": "math1-2023-paper-answer",
+  "paperId": "math1-2023",
+  "paperName": "2023考研数学一真题",
+  "subject": "数学",
+  "subjectKey": "math",
+  "track": "math1",
+  "year": "2023",
+  "quality": "ready",
+  "publicationStatus": "published",
+  "publicationBlockers": [],
+  "sourceEvidencePolicy": "baidu_netdisk_official_paper_pdf_question_crop_answer_page_image_v1",
+  "sourceFiles": [
+    {
+      "id": "math1-2023-paper-answer",
+      "role": "paper_answer",
+      "localPath": "data/raw-inbox/src_aa313861bc3f906e2af834b1-2023数一真题答案解析.pdf",
+      "sha256": "sha256:edace3ed374e2bcc3dc252c2182c717140f54dc79f7c19f2e18f3425af7c26dc",
+      "sourceId": "src_aa313861bc3f906e2af834b1"
+    }
+  ],
+  "assetRoot": "question-bank/math1-2023",
+  "processed_at": "2026-06-02T20:47:28Z",
+  "total_cards": 22,
+  "cards": [
+    {
+      "id": "math1-2023-001",
+      "number": 1,
+      "paperId": "math1-2023",
+      "paperName": "2023考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2023",
+      "section": "选择题",
+      "type": "flashcard",
+      "question": "2023考研数学一第1题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2023 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2023/question-01.jpg",
+          "caption": "题面裁切图 q01",
+          "alt": "2023考研数学一题面裁切图 q01"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2023/answer-page-02.jpg",
+          "caption": "答案解析 p.2",
+          "alt": "2023考研数学一答案解析 p.2"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2023",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2023-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:908696f17a38b704f40c55e785c0299bf840eaf439eb490b3e99cc4d3658eef8",
+      "answerTextHash": "sha256:ea6b7035bde61a0fb21a8d4196db45fb2986b73187d0a84d810bab5409f63f7d",
+      "sourceEvidence": {
+        "evidenceId": "math1-2023-q01",
+        "sourceId": "src_aa313861bc3f906e2af834b1",
+        "answerSourceId": "src_aa313861bc3f906e2af834b1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2023-paper-answer",
+        "answerEvidenceId": "math1-2023-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:ea6b7035bde61a0fb21a8d4196db45fb2986b73187d0a84d810bab5409f63f7d"
+      }
+    },
+    {
+      "id": "math1-2023-002",
+      "number": 2,
+      "paperId": "math1-2023",
+      "paperName": "2023考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2023",
+      "section": "选择题",
+      "type": "flashcard",
+      "question": "2023考研数学一第2题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2023 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2023/question-02.jpg",
+          "caption": "题面裁切图 q02",
+          "alt": "2023考研数学一题面裁切图 q02"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2023/answer-page-02.jpg",
+          "caption": "答案解析 p.2",
+          "alt": "2023考研数学一答案解析 p.2"
+        },
+        {
+          "src": "question-bank/math1-2023/answer-page-03.jpg",
+          "caption": "答案解析 p.3",
+          "alt": "2023考研数学一答案解析 p.3"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2023",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2023-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:42c29be114e0ed2e9baabe6d44cd1ceb5759f54a6b8df002765c8e17183dadec",
+      "answerTextHash": "sha256:85f0822fafaa5e528251323fbbca342b6ad52a0d5a8adcd98bf97f006ba13533",
+      "sourceEvidence": {
+        "evidenceId": "math1-2023-q02",
+        "sourceId": "src_aa313861bc3f906e2af834b1",
+        "answerSourceId": "src_aa313861bc3f906e2af834b1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2023-paper-answer",
+        "answerEvidenceId": "math1-2023-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:85f0822fafaa5e528251323fbbca342b6ad52a0d5a8adcd98bf97f006ba13533"
+      }
+    },
+    {
+      "id": "math1-2023-003",
+      "number": 3,
+      "paperId": "math1-2023",
+      "paperName": "2023考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2023",
+      "section": "选择题",
+      "type": "flashcard",
+      "question": "2023考研数学一第3题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2023 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2023/question-03.jpg",
+          "caption": "题面裁切图 q03",
+          "alt": "2023考研数学一题面裁切图 q03"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2023/answer-page-03.jpg",
+          "caption": "答案解析 p.3",
+          "alt": "2023考研数学一答案解析 p.3"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2023",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2023-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:aaab4a0a6b337aea10ee8de297d099afabb02ac507c2b37ed4da18ba1d552642",
+      "answerTextHash": "sha256:68d83c90862fc09ebf9a4584ba993943e3bb37788c1dc1201cb29f44689a49dc",
+      "sourceEvidence": {
+        "evidenceId": "math1-2023-q03",
+        "sourceId": "src_aa313861bc3f906e2af834b1",
+        "answerSourceId": "src_aa313861bc3f906e2af834b1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2023-paper-answer",
+        "answerEvidenceId": "math1-2023-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:68d83c90862fc09ebf9a4584ba993943e3bb37788c1dc1201cb29f44689a49dc"
+      }
+    },
+    {
+      "id": "math1-2023-004",
+      "number": 4,
+      "paperId": "math1-2023",
+      "paperName": "2023考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2023",
+      "section": "选择题",
+      "type": "flashcard",
+      "question": "2023考研数学一第4题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2023 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2023/question-04.jpg",
+          "caption": "题面裁切图 q04",
+          "alt": "2023考研数学一题面裁切图 q04"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2023/answer-page-04.jpg",
+          "caption": "答案解析 p.4",
+          "alt": "2023考研数学一答案解析 p.4"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2023",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2023-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:1ae99a38e8893146f50915157fc21c87629246969cd012926a5d0041d22a7332",
+      "answerTextHash": "sha256:478b109366420281686011c8cff90e9a721dc2465f77c9a112abe7a2b19acac0",
+      "sourceEvidence": {
+        "evidenceId": "math1-2023-q04",
+        "sourceId": "src_aa313861bc3f906e2af834b1",
+        "answerSourceId": "src_aa313861bc3f906e2af834b1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2023-paper-answer",
+        "answerEvidenceId": "math1-2023-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:478b109366420281686011c8cff90e9a721dc2465f77c9a112abe7a2b19acac0"
+      }
+    },
+    {
+      "id": "math1-2023-005",
+      "number": 5,
+      "paperId": "math1-2023",
+      "paperName": "2023考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2023",
+      "section": "选择题",
+      "type": "flashcard",
+      "question": "2023考研数学一第5题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2023 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2023/question-05.jpg",
+          "caption": "题面裁切图 q05",
+          "alt": "2023考研数学一题面裁切图 q05"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2023/answer-page-04.jpg",
+          "caption": "答案解析 p.4",
+          "alt": "2023考研数学一答案解析 p.4"
+        },
+        {
+          "src": "question-bank/math1-2023/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2023考研数学一答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2023",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2023-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:f6d43757a0e14a1b95ca7d6406532bf518e0cb48b72f021ab400c05c210de51d",
+      "answerTextHash": "sha256:1149516b9de22f3bb2f95ce7b5210a31080ad68a7a3dc39ce4360cb10d48869d",
+      "sourceEvidence": {
+        "evidenceId": "math1-2023-q05",
+        "sourceId": "src_aa313861bc3f906e2af834b1",
+        "answerSourceId": "src_aa313861bc3f906e2af834b1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2023-paper-answer",
+        "answerEvidenceId": "math1-2023-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:1149516b9de22f3bb2f95ce7b5210a31080ad68a7a3dc39ce4360cb10d48869d"
+      }
+    },
+    {
+      "id": "math1-2023-006",
+      "number": 6,
+      "paperId": "math1-2023",
+      "paperName": "2023考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2023",
+      "section": "选择题",
+      "type": "flashcard",
+      "question": "2023考研数学一第6题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2023 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2023/question-06.jpg",
+          "caption": "题面裁切图 q06",
+          "alt": "2023考研数学一题面裁切图 q06"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2023/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2023考研数学一答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2023",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2023-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:89032fcc1a5f5b7beedf4f4b8b7fb80504f65eede0288868b8ba6ad4e288966d",
+      "answerTextHash": "sha256:28d0c2da83a91da6daa0b76dc4fb5ce9a2d98a69f7ac96655fe3d017a8584605",
+      "sourceEvidence": {
+        "evidenceId": "math1-2023-q06",
+        "sourceId": "src_aa313861bc3f906e2af834b1",
+        "answerSourceId": "src_aa313861bc3f906e2af834b1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2023-paper-answer",
+        "answerEvidenceId": "math1-2023-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:28d0c2da83a91da6daa0b76dc4fb5ce9a2d98a69f7ac96655fe3d017a8584605"
+      }
+    },
+    {
+      "id": "math1-2023-007",
+      "number": 7,
+      "paperId": "math1-2023",
+      "paperName": "2023考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2023",
+      "section": "选择题",
+      "type": "flashcard",
+      "question": "2023考研数学一第7题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2023 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2023/question-07a.jpg",
+          "caption": "题面裁切图 q07",
+          "alt": "2023考研数学一题面裁切图 q07"
+        },
+        {
+          "src": "question-bank/math1-2023/question-07b.jpg",
+          "caption": "题面裁切图 q07",
+          "alt": "2023考研数学一题面裁切图 q07"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2023/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2023考研数学一答案解析 p.5"
+        },
+        {
+          "src": "question-bank/math1-2023/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2023考研数学一答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2023",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2023-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:86a30e44a61538f8971195971ff26baee4a23ea1fda266e90d426bbeaa34b046",
+      "answerTextHash": "sha256:a474b0876ac5c107f1ef5f66bdedfd1a155217ecf70743aa2d57723ff3a648fb",
+      "sourceEvidence": {
+        "evidenceId": "math1-2023-q07",
+        "sourceId": "src_aa313861bc3f906e2af834b1",
+        "answerSourceId": "src_aa313861bc3f906e2af834b1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2023-paper-answer",
+        "answerEvidenceId": "math1-2023-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:a474b0876ac5c107f1ef5f66bdedfd1a155217ecf70743aa2d57723ff3a648fb"
+      }
+    },
+    {
+      "id": "math1-2023-008",
+      "number": 8,
+      "paperId": "math1-2023",
+      "paperName": "2023考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2023",
+      "section": "选择题",
+      "type": "flashcard",
+      "question": "2023考研数学一第8题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2023 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2023/question-08.jpg",
+          "caption": "题面裁切图 q08",
+          "alt": "2023考研数学一题面裁切图 q08"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2023/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2023考研数学一答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2023",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2023-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:7ea599b83fa6bb82e36555e649688635d7c2e9e8101c3824067de509ac8cb41e",
+      "answerTextHash": "sha256:4bd414bf1f3c332d5656c55ac398a2d0417431bee33b2bb3c501278c096178b5",
+      "sourceEvidence": {
+        "evidenceId": "math1-2023-q08",
+        "sourceId": "src_aa313861bc3f906e2af834b1",
+        "answerSourceId": "src_aa313861bc3f906e2af834b1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2023-paper-answer",
+        "answerEvidenceId": "math1-2023-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:4bd414bf1f3c332d5656c55ac398a2d0417431bee33b2bb3c501278c096178b5"
+      }
+    },
+    {
+      "id": "math1-2023-009",
+      "number": 9,
+      "paperId": "math1-2023",
+      "paperName": "2023考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2023",
+      "section": "选择题",
+      "type": "flashcard",
+      "question": "2023考研数学一第9题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2023 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2023/question-09a.jpg",
+          "caption": "题面裁切图 q09",
+          "alt": "2023考研数学一题面裁切图 q09"
+        },
+        {
+          "src": "question-bank/math1-2023/question-09b.jpg",
+          "caption": "题面裁切图 q09",
+          "alt": "2023考研数学一题面裁切图 q09"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2023/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2023考研数学一答案解析 p.6"
+        },
+        {
+          "src": "question-bank/math1-2023/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2023考研数学一答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2023",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2023-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:50a28c1ff9fcd27f0799d30e53df98710391445774872e8e051395c420dea7c7",
+      "answerTextHash": "sha256:c91e3595579e7b88a5c1b3824141098d686b64257a72955b90dd239665d9b745",
+      "sourceEvidence": {
+        "evidenceId": "math1-2023-q09",
+        "sourceId": "src_aa313861bc3f906e2af834b1",
+        "answerSourceId": "src_aa313861bc3f906e2af834b1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2023-paper-answer",
+        "answerEvidenceId": "math1-2023-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:c91e3595579e7b88a5c1b3824141098d686b64257a72955b90dd239665d9b745"
+      }
+    },
+    {
+      "id": "math1-2023-010",
+      "number": 10,
+      "paperId": "math1-2023",
+      "paperName": "2023考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2023",
+      "section": "选择题",
+      "type": "flashcard",
+      "question": "2023考研数学一第10题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2023 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2023/question-10.jpg",
+          "caption": "题面裁切图 q10",
+          "alt": "2023考研数学一题面裁切图 q10"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2023/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2023考研数学一答案解析 p.7"
+        },
+        {
+          "src": "question-bank/math1-2023/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2023考研数学一答案解析 p.8"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2023",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2023-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:9e798dcd303dcbcb0359cc31974f4591ba7de742f119050b70984d46caab6b41",
+      "answerTextHash": "sha256:b6d0e30a24367eae6330ccbf0c3b962bab48bb487386ca2fce80f8d5bdd64f13",
+      "sourceEvidence": {
+        "evidenceId": "math1-2023-q10",
+        "sourceId": "src_aa313861bc3f906e2af834b1",
+        "answerSourceId": "src_aa313861bc3f906e2af834b1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2023-paper-answer",
+        "answerEvidenceId": "math1-2023-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:b6d0e30a24367eae6330ccbf0c3b962bab48bb487386ca2fce80f8d5bdd64f13"
+      }
+    },
+    {
+      "id": "math1-2023-011",
+      "number": 11,
+      "paperId": "math1-2023",
+      "paperName": "2023考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2023",
+      "section": "填空题",
+      "type": "flashcard",
+      "question": "2023考研数学一第11题（填空题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "-2",
+      "explanation": "答案来自本地百度网盘 2023 数学一真题答案解析 PDF；填空题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2023/question-11.jpg",
+          "caption": "题面裁切图 q11",
+          "alt": "2023考研数学一题面裁切图 q11"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2023/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2023考研数学一答案解析 p.8"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2023",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2023-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:e0eae70423ca320ba631fc12190aed198e57b2900040175f0394e27328d4e211",
+      "answerTextHash": "sha256:370dd2a0ced626ec3d4a9d13555a6c4e5eae3589e30100f6c3b748cadd9d8454",
+      "sourceEvidence": {
+        "evidenceId": "math1-2023-q11",
+        "sourceId": "src_aa313861bc3f906e2af834b1",
+        "answerSourceId": "src_aa313861bc3f906e2af834b1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2023-paper-answer",
+        "answerEvidenceId": "math1-2023-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:370dd2a0ced626ec3d4a9d13555a6c4e5eae3589e30100f6c3b748cadd9d8454"
+      }
+    },
+    {
+      "id": "math1-2023-012",
+      "number": 12,
+      "paperId": "math1-2023",
+      "paperName": "2023考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2023",
+      "section": "填空题",
+      "type": "flashcard",
+      "question": "2023考研数学一第12题（填空题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "x + 2y - z = 0",
+      "explanation": "答案来自本地百度网盘 2023 数学一真题答案解析 PDF；填空题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2023/question-12.jpg",
+          "caption": "题面裁切图 q12",
+          "alt": "2023考研数学一题面裁切图 q12"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2023/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2023考研数学一答案解析 p.8"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2023",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2023-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:429b519f93d8e2cd62d9e5e16626cdc3c0001d67c055db50453a106986c08783",
+      "answerTextHash": "sha256:4742f07f1317ecab5074b82c413b6753f1e55858b8d1d2a014cd751a828c83fd",
+      "sourceEvidence": {
+        "evidenceId": "math1-2023-q12",
+        "sourceId": "src_aa313861bc3f906e2af834b1",
+        "answerSourceId": "src_aa313861bc3f906e2af834b1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2023-paper-answer",
+        "answerEvidenceId": "math1-2023-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:4742f07f1317ecab5074b82c413b6753f1e55858b8d1d2a014cd751a828c83fd"
+      }
+    },
+    {
+      "id": "math1-2023-013",
+      "number": 13,
+      "paperId": "math1-2023",
+      "paperName": "2023考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2023",
+      "section": "填空题",
+      "type": "flashcard",
+      "question": "2023考研数学一第13题（填空题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "0",
+      "explanation": "答案来自本地百度网盘 2023 数学一真题答案解析 PDF；填空题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2023/question-13.jpg",
+          "caption": "题面裁切图 q13",
+          "alt": "2023考研数学一题面裁切图 q13"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2023/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2023考研数学一答案解析 p.8"
+        },
+        {
+          "src": "question-bank/math1-2023/answer-page-09.jpg",
+          "caption": "答案解析 p.9",
+          "alt": "2023考研数学一答案解析 p.9"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2023",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2023-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:0c7d6822d978b890771498881e866946a150003be31f33e3df7a9cfc456fada6",
+      "answerTextHash": "sha256:1a0dea2ede1d1d91bb60477e30c22129246d266f28d58c3be2a1a92ccfc49c4f",
+      "sourceEvidence": {
+        "evidenceId": "math1-2023-q13",
+        "sourceId": "src_aa313861bc3f906e2af834b1",
+        "answerSourceId": "src_aa313861bc3f906e2af834b1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2023-paper-answer",
+        "answerEvidenceId": "math1-2023-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:1a0dea2ede1d1d91bb60477e30c22129246d266f28d58c3be2a1a92ccfc49c4f"
+      }
+    },
+    {
+      "id": "math1-2023-014",
+      "number": 14,
+      "paperId": "math1-2023",
+      "paperName": "2023考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2023",
+      "section": "填空题",
+      "type": "flashcard",
+      "question": "2023考研数学一第14题（填空题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "1/2",
+      "explanation": "答案来自本地百度网盘 2023 数学一真题答案解析 PDF；填空题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2023/question-14.jpg",
+          "caption": "题面裁切图 q14",
+          "alt": "2023考研数学一题面裁切图 q14"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2023/answer-page-09.jpg",
+          "caption": "答案解析 p.9",
+          "alt": "2023考研数学一答案解析 p.9"
+        },
+        {
+          "src": "question-bank/math1-2023/answer-page-10.jpg",
+          "caption": "答案解析 p.10",
+          "alt": "2023考研数学一答案解析 p.10"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2023",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2023-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:090bc1697332c9bd0ae89195bb2a5c6a393cd1f89dea0b28146c53162fe86c1a",
+      "answerTextHash": "sha256:88aed12f0442dc198d79828741cc8196ae0c46b9a433c4716f4a6b2506b6b073",
+      "sourceEvidence": {
+        "evidenceId": "math1-2023-q14",
+        "sourceId": "src_aa313861bc3f906e2af834b1",
+        "answerSourceId": "src_aa313861bc3f906e2af834b1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2023-paper-answer",
+        "answerEvidenceId": "math1-2023-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:88aed12f0442dc198d79828741cc8196ae0c46b9a433c4716f4a6b2506b6b073"
+      }
+    },
+    {
+      "id": "math1-2023-015",
+      "number": 15,
+      "paperId": "math1-2023",
+      "paperName": "2023考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2023",
+      "section": "填空题",
+      "type": "flashcard",
+      "question": "2023考研数学一第15题（填空题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "11/9",
+      "explanation": "答案来自本地百度网盘 2023 数学一真题答案解析 PDF；填空题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2023/question-15.jpg",
+          "caption": "题面裁切图 q15",
+          "alt": "2023考研数学一题面裁切图 q15"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2023/answer-page-10.jpg",
+          "caption": "答案解析 p.10",
+          "alt": "2023考研数学一答案解析 p.10"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2023",
+        "填空题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2023-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:da32969033a28f86a74109d7bdd57eb0ba37972863c93d171dd177e55202b121",
+      "answerTextHash": "sha256:5162030a10c9d93617d70eff53b3cf9cd056d14a7363e4e66d12f723d8e31b43",
+      "sourceEvidence": {
+        "evidenceId": "math1-2023-q15",
+        "sourceId": "src_aa313861bc3f906e2af834b1",
+        "answerSourceId": "src_aa313861bc3f906e2af834b1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2023-paper-answer",
+        "answerEvidenceId": "math1-2023-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:5162030a10c9d93617d70eff53b3cf9cd056d14a7363e4e66d12f723d8e31b43"
+      }
+    },
+    {
+      "id": "math1-2023-016",
+      "number": 16,
+      "paperId": "math1-2023",
+      "paperName": "2023考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2023",
+      "section": "填空题",
+      "type": "flashcard",
+      "question": "2023考研数学一第16题（填空题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "1/3",
+      "explanation": "答案来自本地百度网盘 2023 数学一真题答案解析 PDF；填空题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2023/question-16.jpg",
+          "caption": "题面裁切图 q16",
+          "alt": "2023考研数学一题面裁切图 q16"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2023/answer-page-10.jpg",
+          "caption": "答案解析 p.10",
+          "alt": "2023考研数学一答案解析 p.10"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2023",
+        "填空题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2023-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:afea3aa31fb7bf52b23659b6e80185acf629b6886e4f83d04be681be7ee134a9",
+      "answerTextHash": "sha256:8092e934952c25c9d42e7e96ce7030ba86ac353eb87eea74b6c79c67577954ec",
+      "sourceEvidence": {
+        "evidenceId": "math1-2023-q16",
+        "sourceId": "src_aa313861bc3f906e2af834b1",
+        "answerSourceId": "src_aa313861bc3f906e2af834b1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2023-paper-answer",
+        "answerEvidenceId": "math1-2023-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:8092e934952c25c9d42e7e96ce7030ba86ac353eb87eea74b6c79c67577954ec"
+      }
+    },
+    {
+      "id": "math1-2023-017",
+      "number": 17,
+      "paperId": "math1-2023",
+      "paperName": "2023考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2023",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2023考研数学一第17题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "y=x(2-ln x)；最大值为 e^4/4 - 5/4。",
+      "explanation": "答案来自本地百度网盘 2023 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2023/question-17.jpg",
+          "caption": "题面裁切图 q17",
+          "alt": "2023考研数学一题面裁切图 q17"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2023/answer-page-11.jpg",
+          "caption": "答案解析 p.11",
+          "alt": "2023考研数学一答案解析 p.11"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2023",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2023-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:7e07924f8a165b8f6dc7373c885c8e6cedda6dc8c1a4071101f443def16dc53e",
+      "answerTextHash": "sha256:331ac62dbf0998f0e92e46c7ac1e5c44dfa02c5515f5c5484cd58dba26208759",
+      "sourceEvidence": {
+        "evidenceId": "math1-2023-q17",
+        "sourceId": "src_aa313861bc3f906e2af834b1",
+        "answerSourceId": "src_aa313861bc3f906e2af834b1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2023-paper-answer",
+        "answerEvidenceId": "math1-2023-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:331ac62dbf0998f0e92e46c7ac1e5c44dfa02c5515f5c5484cd58dba26208759"
+      }
+    },
+    {
+      "id": "math1-2023-018",
+      "number": 18,
+      "paperId": "math1-2023",
+      "paperName": "2023考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2023",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2023考研数学一第18题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "极小值为 -4/729，完整判别过程见答案原页。",
+      "explanation": "答案来自本地百度网盘 2023 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2023/question-18.jpg",
+          "caption": "题面裁切图 q18",
+          "alt": "2023考研数学一题面裁切图 q18"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2023/answer-page-11.jpg",
+          "caption": "答案解析 p.11",
+          "alt": "2023考研数学一答案解析 p.11"
+        },
+        {
+          "src": "question-bank/math1-2023/answer-page-12.jpg",
+          "caption": "答案解析 p.12",
+          "alt": "2023考研数学一答案解析 p.12"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2023",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2023-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:8d37b6e4896384bf563d3d36a3b1f34055c051fabfb9b3d825d3def720441ad5",
+      "answerTextHash": "sha256:f28b25e1f9394f44aa49ca338051471ee3c29954fdf97647cabf13030e008d2f",
+      "sourceEvidence": {
+        "evidenceId": "math1-2023-q18",
+        "sourceId": "src_aa313861bc3f906e2af834b1",
+        "answerSourceId": "src_aa313861bc3f906e2af834b1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2023-paper-answer",
+        "answerEvidenceId": "math1-2023-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:f28b25e1f9394f44aa49ca338051471ee3c29954fdf97647cabf13030e008d2f"
+      }
+    },
+    {
+      "id": "math1-2023-019",
+      "number": 19,
+      "paperId": "math1-2023",
+      "paperName": "2023考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2023",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2023考研数学一第19题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "曲面积分值为 5π/4。",
+      "explanation": "答案来自本地百度网盘 2023 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2023/question-19.jpg",
+          "caption": "题面裁切图 q19",
+          "alt": "2023考研数学一题面裁切图 q19"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2023/answer-page-12.jpg",
+          "caption": "答案解析 p.12",
+          "alt": "2023考研数学一答案解析 p.12"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2023",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2023-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:3ae7cf027bc3ba1285d5d9b245ef8050e3e1c5072dfe797875b4d0b22df84a85",
+      "answerTextHash": "sha256:355ec5ac6b7cd289bd517fb6a0997ed9179d6c887b38a42bb4b76e75f13ea1ef",
+      "sourceEvidence": {
+        "evidenceId": "math1-2023-q19",
+        "sourceId": "src_aa313861bc3f906e2af834b1",
+        "answerSourceId": "src_aa313861bc3f906e2af834b1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2023-paper-answer",
+        "answerEvidenceId": "math1-2023-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:355ec5ac6b7cd289bd517fb6a0997ed9179d6c887b38a42bb4b76e75f13ea1ef"
+      }
+    },
+    {
+      "id": "math1-2023-020",
+      "number": 20,
+      "paperId": "math1-2023",
+      "paperName": "2023考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2023",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2023考研数学一第20题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "证明过程见答案原页。",
+      "explanation": "答案来自本地百度网盘 2023 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2023/question-20a.jpg",
+          "caption": "题面裁切图 q20",
+          "alt": "2023考研数学一题面裁切图 q20"
+        },
+        {
+          "src": "question-bank/math1-2023/question-20b.jpg",
+          "caption": "题面裁切图 q20",
+          "alt": "2023考研数学一题面裁切图 q20"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2023/answer-page-12.jpg",
+          "caption": "答案解析 p.12",
+          "alt": "2023考研数学一答案解析 p.12"
+        },
+        {
+          "src": "question-bank/math1-2023/answer-page-13.jpg",
+          "caption": "答案解析 p.13",
+          "alt": "2023考研数学一答案解析 p.13"
+        },
+        {
+          "src": "question-bank/math1-2023/answer-page-14.jpg",
+          "caption": "答案解析 p.14",
+          "alt": "2023考研数学一答案解析 p.14"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2023",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2023-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:bac51e1c7b70556ffe9980fab0e95e2e969bc05d495845b9c739b18659c44feb",
+      "answerTextHash": "sha256:db584885ccc9a2c06a559379e5461a1a3d9e214d7081207c27ca6b966acc5099",
+      "sourceEvidence": {
+        "evidenceId": "math1-2023-q20",
+        "sourceId": "src_aa313861bc3f906e2af834b1",
+        "answerSourceId": "src_aa313861bc3f906e2af834b1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2023-paper-answer",
+        "answerEvidenceId": "math1-2023-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:db584885ccc9a2c06a559379e5461a1a3d9e214d7081207c27ca6b966acc5099"
+      }
+    },
+    {
+      "id": "math1-2023-021",
+      "number": 21,
+      "paperId": "math1-2023",
+      "paperName": "2023考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2023",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2023考研数学一第21题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "可逆矩阵 P 与不存在正交变换的结论见答案原页。",
+      "explanation": "答案来自本地百度网盘 2023 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2023/question-21.jpg",
+          "caption": "题面裁切图 q21",
+          "alt": "2023考研数学一题面裁切图 q21"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2023/answer-page-14.jpg",
+          "caption": "答案解析 p.14",
+          "alt": "2023考研数学一答案解析 p.14"
+        },
+        {
+          "src": "question-bank/math1-2023/answer-page-15.jpg",
+          "caption": "答案解析 p.15",
+          "alt": "2023考研数学一答案解析 p.15"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2023",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2023-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:b9ec38830b9626b7672d75815c8db1a4f6c82ba3ea068a013d98a29d3334d803",
+      "answerTextHash": "sha256:6413a1aae90a0068994fa52b0ad38dfaad6c1123dc0ac24a1b5ce8187aeb0a0c",
+      "sourceEvidence": {
+        "evidenceId": "math1-2023-q21",
+        "sourceId": "src_aa313861bc3f906e2af834b1",
+        "answerSourceId": "src_aa313861bc3f906e2af834b1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2023-paper-answer",
+        "answerEvidenceId": "math1-2023-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:6413a1aae90a0068994fa52b0ad38dfaad6c1123dc0ac24a1b5ce8187aeb0a0c"
+      }
+    },
+    {
+      "id": "math1-2023-022",
+      "number": 22,
+      "paperId": "math1-2023",
+      "paperName": "2023考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2023",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2023考研数学一第22题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "D(X)=D(Y)=1/3；X 与 Y 不相互独立；f_Z(z)=2z(0<z<1)，其它为 0。",
+      "explanation": "答案来自本地百度网盘 2023 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2023/question-22a.jpg",
+          "caption": "题面裁切图 q22",
+          "alt": "2023考研数学一题面裁切图 q22"
+        },
+        {
+          "src": "question-bank/math1-2023/question-22b.jpg",
+          "caption": "题面裁切图 q22",
+          "alt": "2023考研数学一题面裁切图 q22"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2023/answer-page-15.jpg",
+          "caption": "答案解析 p.15",
+          "alt": "2023考研数学一答案解析 p.15"
+        },
+        {
+          "src": "question-bank/math1-2023/answer-page-16.jpg",
+          "caption": "答案解析 p.16",
+          "alt": "2023考研数学一答案解析 p.16"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2023",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2023-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:6ad46d9488f11a9cb7eb1ca802f1b22ab6118c208fdfc98577cd135eb9de6802",
+      "answerTextHash": "sha256:f182fa2489304fedcb5ee735e74fbef3aad0bcbae5b9e03a7b2a18d54aed8ff9",
+      "sourceEvidence": {
+        "evidenceId": "math1-2023-q22",
+        "sourceId": "src_aa313861bc3f906e2af834b1",
+        "answerSourceId": "src_aa313861bc3f906e2af834b1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2023-paper-answer",
+        "answerEvidenceId": "math1-2023-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:f182fa2489304fedcb5ee735e74fbef3aad0bcbae5b9e03a7b2a18d54aed8ff9"
+      }
+    }
+  ]
+}
