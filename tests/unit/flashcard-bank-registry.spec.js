@@ -732,4 +732,14 @@ describe('published flashcard bank registry', () => {
     expect(english1.requiredYears.at(-1)).toBe(2026);
     expect(coverage.summary.requiredSlots).toBe(22);
   });
+
+  it('starts English II public-course coverage from the first real exam year', () => {
+    const coverage = buildPublicCourseCoverage({ tracks: ['english2'], minYear: 2005, maxYear: 2020 });
+    const english2 = coverage.tracks.find((item) => item.track === 'english2');
+
+    expect(english2.requiredYears[0]).toBe(2010);
+    expect(english2.requiredYears.at(-1)).toBe(2020);
+    expect(english2.requiredYears).not.toContain(2009);
+    expect(coverage.summary.requiredSlots).toBe(11);
+  });
 });

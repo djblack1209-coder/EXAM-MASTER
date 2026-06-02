@@ -2,7 +2,11 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { buildPublicCourseCoverage, getAllBankMetas } from '../../src/config/bank-registry.js';
+import {
+  buildPublicCourseCoverage,
+  buildPublicCourseRequiredYearsForTrack,
+  getAllBankMetas
+} from '../../src/config/bank-registry.js';
 
 const PROJECT_ROOT = path.resolve(fileURLToPath(import.meta.url), '../../..');
 const DEFAULT_BANK_DIR = path.join(PROJECT_ROOT, 'src/config/flashcard-banks');
@@ -509,11 +513,22 @@ function candidateSlotMatches(item, track, requiredYears) {
   return itemTrack === track && Number.isInteger(year) && requiredYears.includes(year);
 }
 
-function buildCandidateDiagnostics(items, tracks, requiredYears) {
+function requiredYearsForTrack(requiredYearsByTrack, track) {
+  return requiredYearsByTrack[track] || [];
+}
+
+function buildRequiredYearsByTrack(tracks, minYear, maxYear) {
+  return Object.fromEntries(
+    tracks.map((track) => [track, buildPublicCourseRequiredYearsForTrack(track, minYear, maxYear)])
+  );
+}
+
+function buildCandidateDiagnostics(items, tracks, requiredYearsByTrack) {
   const diagnostics = Object.fromEntries(tracks.map((track) => [track, {}]));
 
   for (const item of items) {
     for (const track of tracks) {
+      const requiredYears = requiredYearsForTrack(requiredYearsByTrack, track);
       if (!candidateSlotMatches(item, track, requiredYears)) continue;
 
       const year = Number(item.year);
@@ -588,7 +603,7 @@ function addSlotPairDiagnostics(diagnostics, coverage, tracks) {
 }
 
 function loadSourceManifestEvidence({ sourceManifest, tracks, minYear, maxYear }) {
-  const requiredYears = Array.from({ length: maxYear - minYear + 1 }, (_, index) => minYear + index);
+  const requiredYearsByTrack = buildRequiredYearsByTrack(tracks, minYear, maxYear);
 
   if (!sourceManifest || !fs.existsSync(sourceManifest)) {
     return {
@@ -599,10 +614,16 @@ function loadSourceManifestEvidence({ sourceManifest, tracks, minYear, maxYear }
       eligibleSources: 0,
       publishableOfficialPapers: 0,
       autoPairedOfficialSourceSlots: 0,
-      coverageGapCount: tracks.length * requiredYears.length,
+      coverageGapCount: Object.values(requiredYearsByTrack).reduce(
+        (sum, requiredYears) => sum + requiredYears.length,
+        0
+      ),
       candidateDiagnostics: Object.fromEntries(tracks.map((track) => [track, {}])),
       coverage: Object.fromEntries(
-        tracks.map((track) => [track, { presentYears: [], missingYears: requiredYears, coverageRate: 0 }])
+        tracks.map((track) => [
+          track,
+          { presentYears: [], missingYears: requiredYearsForTrack(requiredYearsByTrack, track), coverageRate: 0 }
+        ])
       )
     };
   }
@@ -611,9 +632,10 @@ function loadSourceManifestEvidence({ sourceManifest, tracks, minYear, maxYear }
   const items = Array.isArray(manifest.items) ? manifest.items : [];
   const autoPairable = items.filter(isAutoPairableManifestSource);
   const coverage = {};
-  const candidateDiagnostics = buildCandidateDiagnostics(items, tracks, requiredYears);
+  const candidateDiagnostics = buildCandidateDiagnostics(items, tracks, requiredYearsByTrack);
 
   for (const track of tracks) {
+    const requiredYears = requiredYearsForTrack(requiredYearsByTrack, track);
     const presentYears = [
       ...new Set(requiredYears.filter((year) => slotHasAutoPairedOfficialSource(items, track, year)))
     ].sort((a, b) => a - b);

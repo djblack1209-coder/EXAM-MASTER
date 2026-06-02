@@ -558,3 +558,12 @@
 - Release metrics after the correction: public-course coverage gaps stay at 55, release blockers rise to 68 because the previously miscounted source-evidence blocker is now visible, source evidence gaps are 12, and public-course blocked slots stay at 55.
 - Release-priority dry-run now skips `2016考研数学二真题.pdf` and starts at `2015年考研数学三真题及解析.pdf`, followed by `2020年考研英语一真题.pdf`, `2017考研数学二真题.pdf`, and `2016年考研数学三真题及解析.pdf`.
 - Product rule: never publish a public-course slot from filename/year metadata alone. When visual/OCR inspection shows the content is a different year, the source must become a manual-review blocker even if it looked like an official combined paper-answer PDF.
+
+### 2026-06-02 Round 60
+
+- Corrected the public-course release coverage policy for English II: `english2` now starts at 2010, the first real exam year, even when the global coverage request starts at 2005.
+- Exported a shared per-track required-year helper from `src/config/bank-registry.js` and reused it in `question-bank-release-gate.mjs` so registry coverage and Source Manifest evidence coverage no longer diverge.
+- Added regression coverage for both registry coverage and release gate source evidence: English II `minYear=2005,maxYear=2010` now requires only 2010 and no longer reports 2005-2009 as impossible blockers.
+- Validation result: registry/release-gate/backlog Vitest passed, and the real 2005-2020 release audit now reports `requiredSlots=91`, `publishedSlots=64`, `coverageGaps=27`, `sourceEvidenceGaps=1`, `pendingCoverageBlockers=0`, and no answer/grading/bank-file blockers.
+- Current 2020 target gaps after policy correction: English I 2018-2020, English II 2010-2020, Math II 2015-2020, and Math III 2014-2020. `math2:2016` remains blocked on missing publishable official source evidence because the known source is mislabeled 2014 content.
+- Product rule: release blockers should represent real exam availability, not a uniform year rectangle. Track-specific start years must be applied before prioritizing cleaning work or source-evidence gaps.

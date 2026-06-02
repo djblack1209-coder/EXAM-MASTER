@@ -2951,3 +2951,53 @@ git -c core.hooksPath=/dev/null commit -m "chore: audit politics answer source c
 ```
 
 Result: committed after validation on 2026-06-02.
+
+### Task 60: Correct English II Coverage Start Year
+
+**Files:**
+- Modify: `src/config/bank-registry.js`
+- Modify: `scripts/build/question-bank-release-gate.mjs`
+- Modify: `tests/unit/flashcard-bank-registry.spec.js`
+- Modify: `tests/unit/question-bank-release-gate.spec.js`
+- Modify: `docs/frontend-experience-refactor-diary.md`
+- Modify: `docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md`
+- Modify: `docs/08C-SCRIPTS-REFERENCE.md`
+- Modify: `docs/12-CHANGELOG.md`
+
+- [x] **Step 1: Add failing coverage regression**
+
+Added registry coverage for the real English II start year:
+
+```bash
+npm test -- tests/unit/flashcard-bank-registry.spec.js
+```
+
+Initial result: failed because `english2` still required 2005 as the first slot when the global audit range was 2005-2020.
+
+- [x] **Step 2: Share per-track required-year policy**
+
+Added `buildPublicCourseRequiredYearsForTrack()` with `english2` starting at 2010 and used it inside `buildPublicCourseCoverage()`.
+
+Added release-gate coverage proving Source Manifest evidence also ignores English II 2005-2009, so the source-evidence report cannot keep impossible blockers after registry coverage is corrected.
+
+- [x] **Step 3: Run validation and 2020 audit**
+
+Run:
+```bash
+npm test -- tests/unit/flashcard-bank-registry.spec.js tests/unit/question-bank-release-gate.spec.js tests/unit/release-blocker-backlog.spec.js
+node scripts/build/question-bank-release-gate.mjs --min-year=2005 --max-year=2020
+```
+
+Result: passed on 2026-06-02. The real 2005-2020 audit now reports `requiredSlots=91`, `publishedSlots=64`, `coverageGaps=27`, `sourceEvidenceGaps=1`, and `pendingCoverageBlockers=0`.
+
+Remaining real 2020 target gaps: English I 2018-2020, English II 2010-2020, Math II 2015-2020, Math III 2014-2020. `math2:2016` remains source-blocked because the current candidate is known mislabeled 2014 content.
+
+- [x] **Step 4: Commit**
+
+Run:
+```bash
+git add src/config/bank-registry.js scripts/build/question-bank-release-gate.mjs tests/unit/flashcard-bank-registry.spec.js tests/unit/question-bank-release-gate.spec.js docs/frontend-experience-refactor-diary.md docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md docs/08C-SCRIPTS-REFERENCE.md docs/12-CHANGELOG.md
+git -c core.hooksPath=/dev/null commit -m "chore: correct english2 coverage start year"
+```
+
+Result: committed after validation on 2026-06-02.

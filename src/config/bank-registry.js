@@ -889,6 +889,9 @@ const KNOWN_SOURCE_PAPERS = [
 
 const DEFAULT_COVERAGE_START_YEAR = 2005;
 const DEFAULT_COVERAGE_END_YEAR = 2026;
+const PUBLIC_COURSE_TRACK_COVERAGE_START_YEARS = {
+  english2: 2010
+};
 
 function getSubjectLabel(subjectKey) {
   if (subjectKey === 'politics') return '考研政治';
@@ -934,6 +937,15 @@ function buildYearRange(minYear = DEFAULT_COVERAGE_START_YEAR, maxYear = DEFAULT
   const end = Number(maxYear);
   if (!Number.isFinite(start) || !Number.isFinite(end) || start > end) return [];
   return Array.from({ length: end - start + 1 }, (_, index) => start + index);
+}
+
+export function buildPublicCourseRequiredYearsForTrack(
+  trackId,
+  minYear = DEFAULT_COVERAGE_START_YEAR,
+  maxYear = DEFAULT_COVERAGE_END_YEAR
+) {
+  const trackStart = PUBLIC_COURSE_TRACK_COVERAGE_START_YEARS[trackId] || DEFAULT_COVERAGE_START_YEAR;
+  return buildYearRange(Math.max(Number(minYear), trackStart), maxYear);
 }
 
 function normalizeBankYear(bank) {
@@ -1041,7 +1053,6 @@ function summarizeYearSlots(yearSlots) {
  * state is derived from the neutral bank registry.
  */
 export function buildPublicCourseCoverage(options = {}) {
-  const requiredYears = buildYearRange(options.minYear, options.maxYear);
   const selectedTracks =
     Array.isArray(options.tracks) && options.tracks.length
       ? options.tracks
@@ -1050,6 +1061,7 @@ export function buildPublicCourseCoverage(options = {}) {
   const sourcePapers = Array.isArray(options.sourcePapers) ? options.sourcePapers : getKnownSourcePapers(bankMetas);
 
   const tracks = PUBLIC_COURSE_TRACKS.filter((track) => selectedTracks.includes(track.id)).map((track) => {
+    const requiredYears = buildPublicCourseRequiredYearsForTrack(track.id, options.minYear, options.maxYear);
     const banksForTrack = bankMetas.filter((bank) => bank.track === track.id);
     const sourcesForTrack = sourcePapers.filter((paper) => paper.track === track.id);
     const publishedYears = Array.from(

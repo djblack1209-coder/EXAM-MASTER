@@ -151,6 +151,24 @@ describe('question bank release gate', () => {
     expect(report.answerEvidence.blockedBanks).toEqual([]);
   });
 
+  it('does not require English II source evidence before the first real exam year', async () => {
+    const { buildQuestionBankReleaseReport } = await import('../../scripts/build/question-bank-release-gate.mjs');
+
+    const report = buildQuestionBankReleaseReport({
+      minYear: 2005,
+      maxYear: 2010,
+      tracks: ['english2'],
+      sourceManifest: tempManifestPath(),
+      banks: []
+    });
+
+    expect(report.summary.requiredSlots).toBe(1);
+    expect(report.summary.coverageGapCount).toBe(1);
+    expect(report.summary.sourceManifestCoverageGapCount).toBe(1);
+    expect(report.coverage.tracks[0].requiredYears).toEqual([2010]);
+    expect(report.sourceEvidence.coverage.english2.missingYears).toEqual([2010]);
+  });
+
   it('does not count answer-only official sources as publishable paper coverage', async () => {
     const { buildQuestionBankReleaseReport } = await import('../../scripts/build/question-bank-release-gate.mjs');
     const manifest = tempManifestPath([
