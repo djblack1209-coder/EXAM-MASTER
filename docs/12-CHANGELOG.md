@@ -1,5 +1,11 @@
 # 变更日志
 
+## 2026-06-02 — 数学二 2016 错配题源发布拦截
+
+- 核验 `2016考研数学二真题.pdf` 后确认该源标题标为 2016，但首页题干与已发布 `math2-2014` 真题一致，且后续页混有同页解析与广告页；该源不得作为 `math2:2016` 可发布题源。
+- 新增 `scripts/baidu/source_quality.py`，并将 `source_content_mismatch` / `manual_review_required` 阻断接入 Source Manifest、manifest quality、候选覆盖、清洗队列、清洗 runner、question-bank release gate 和 release backlog。
+- 刷新发布报告后，`math2:2016` 从 `publishable_source_present` 改为 `missing_publishable_official_source`；公共课覆盖缺口保持 55，发布 backlog 阻塞从 67 变为 68，source evidence gaps 为 12，下一批自动清洗从 `2015年考研数学三真题及解析.pdf` 开始。
+
 ## 2026-06-02 — 2024 数学一新结构逐题裁切题库开放
 
 - 2024 考研数学一从“待入库”推进为正式题库：22 张题卡覆盖 10 道选择、6 道填空和 6 道解答题，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。

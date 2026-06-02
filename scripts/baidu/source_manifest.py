@@ -17,6 +17,11 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+try:
+    from scripts.baidu.source_quality import apply_source_quality_overrides
+except ModuleNotFoundError:  # pragma: no cover - direct script execution path.
+    from source_quality import apply_source_quality_overrides
+
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_MANIFEST = PROJECT_ROOT / "data" / "source-manifest.json"
@@ -284,6 +289,8 @@ def build_legal_review(risk_flags: list[str], *, brand_sanitized: bool, source_t
                 "brand_leak",
                 "copyright_review_required",
                 "answer_missing",
+                "source_content_mismatch",
+                "manual_review_required",
                 HUMAN_VERIFICATION_REQUIRED_FLAG,
             }
         ),
@@ -470,7 +477,7 @@ def normalize_record(
     if missing_human_fields or raw.get("missingHumanFields") is not None or raw.get("missing_human_fields") is not None:
         record["missingHumanFields"] = missing_human_fields
 
-    return record
+    return apply_source_quality_overrides(record)
 
 
 def load_manifest(path: Path) -> dict[str, Any]:

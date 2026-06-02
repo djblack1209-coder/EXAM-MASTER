@@ -412,7 +412,7 @@ const SOURCE_MANIFEST_REGISTRATION_FIELDS = [
   'remotePath|sourceUrl|provenanceUrl',
   'sourceRole inferred as paper+answer or paper_answer',
   'legalReview.publishBlocked=false',
-  'riskFlags excludes answer_missing,brand_leak,copyright_review_required,ad_or_promo'
+  'riskFlags excludes answer_missing,brand_leak,copyright_review_required,ad_or_promo,manual_review_required,source_content_mismatch'
 ];
 
 const VERIFIED_SOURCE_REGISTRY_FIELDS = [
