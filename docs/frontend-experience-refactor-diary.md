@@ -277,3 +277,11 @@
 - Deletion status checks now use the same normalized login state instead of relying on `userInfo.uid` only.
 - Avatar upload, local profile save, and avatar-click status copy now share the normalized identity path; local fallback IDs are generated through `ensureLocalUserId`.
 - Added `settings-account-identity-guard` so future Settings edits do not hide account safety behind one legacy id shape.
+
+### 2026-06-01 Round 32
+
+- Continued Phase 4 by tightening the high-risk account purge manual trigger.
+- `account-purge` now accepts the administrator purge token only from the `x-admin-token` header, with `X-Admin-Token` compatibility, and no longer accepts `body.adminToken`.
+- Scheduled purge contexts still run without being mistaken for HTTP manual triggers.
+- Added audit coverage proving body-only admin tokens are rejected, header tokens are accepted, and account-delete/token binding tests remain green.
+- Product rule: destructive administrator credentials should not travel in request bodies where they are more likely to appear in logs, replay payloads, or debugging snapshots.

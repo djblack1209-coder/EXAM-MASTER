@@ -84,6 +84,10 @@ function secureTokenEqual(providedToken: string, expectedToken: string): boolean
   return crypto.timingSafeEqual(provided, expected);
 }
 
+function getAdminPurgeHeaderToken(headers: Record<string, any> = {}): string {
+  return String(headers['x-admin-token'] || headers['X-Admin-Token'] || '');
+}
+
 /**
  * 清除单个用户的所有数据
  */
@@ -247,7 +251,7 @@ export default async function (_ctx: any) {
   const hasHttpHeaders = Boolean(_ctx?.headers && Object.keys(_ctx.headers).length > 0);
   const isHttpTrigger = hasHttpMethod || hasHttpHeaders;
   if (isHttpTrigger) {
-    const adminToken = String(_ctx?.headers?.['x-admin-token'] || _ctx?.body?.adminToken || '');
+    const adminToken = getAdminPurgeHeaderToken(_ctx?.headers);
     const expectedToken = process.env.ADMIN_PURGE_TOKEN;
     if (!expectedToken || !secureTokenEqual(adminToken, expectedToken)) {
       logger.warn(`[${requestId}] 未授权的手动触发尝试`);

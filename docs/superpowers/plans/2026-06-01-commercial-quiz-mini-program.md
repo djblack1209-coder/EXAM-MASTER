@@ -1205,3 +1205,41 @@ Run:
 git add src/pages/settings/index.vue tests/unit/settings-account-identity-guard.spec.js docs/frontend-experience-refactor-diary.md docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md
 git commit -m "fix: normalize settings account identity"
 ```
+
+### Task 30: Harden Account Purge Admin Trigger
+
+**Files:**
+- Modify: `laf-backend/functions/account-purge.ts`
+- Modify: `tests/unit/audit-account-purge-field-mapping.spec.js`
+- Modify: `docs/frontend-experience-refactor-diary.md`
+- Modify: `docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md`
+
+- [x] **Step 1: Add header-only admin token audit**
+
+Assert manual HTTP purge rejects `body.adminToken`, accepts `x-admin-token`, and still allows scheduled non-HTTP contexts.
+
+- [x] **Step 2: Remove body admin token fallback**
+
+Read the administrator purge token only from `x-admin-token` / `X-Admin-Token` headers before executing account purge.
+
+- [x] **Step 3: Preserve purge safety behavior**
+
+Keep missing-token rejection, scheduled-task handling, partial-failure retry marking, and account-delete/token-binding audit coverage intact.
+
+- [x] **Step 4: Run focused validation**
+
+Run:
+```bash
+npm run lint -- laf-backend/functions/account-purge.ts tests/unit/audit-account-purge-field-mapping.spec.js
+npm run test -- tests/unit/audit-account-purge-field-mapping.spec.js tests/unit/audit-account-delete-safety.spec.js tests/unit/audit-token-header-userid-enforcement.spec.js
+```
+
+Result: tests passed on 2026-06-01. Lint exited 0; ESLint reported `laf-backend/functions/account-purge.ts` is ignored by current config.
+
+- [x] **Step 5: Commit**
+
+Run:
+```bash
+git add laf-backend/functions/account-purge.ts tests/unit/audit-account-purge-field-mapping.spec.js docs/frontend-experience-refactor-diary.md docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md
+git commit -m "fix: harden account purge admin trigger"
+```

@@ -131,6 +131,33 @@ describe('[安全审计] account-purge 字段映射与脱敏', () => {
     expect(result.success).toBe(false);
   });
 
+  it('HTTP 手动触发仅 body.adminToken 时应拒绝，管理员令牌只能走 header', async () => {
+    process.env.ADMIN_PURGE_TOKEN = 'admin_secret';
+
+    const result = await accountPurgeHandler({
+      method: 'POST',
+      headers: {},
+      body: { action: 'execute_purge', adminToken: 'admin_secret' }
+    });
+
+    expect(result.code).toBe(403);
+    expect(result.success).toBe(false);
+  });
+
+  it('HTTP 手动触发使用 x-admin-token header 时应允许执行', async () => {
+    process.env.ADMIN_PURGE_TOKEN = 'admin_secret';
+
+    const result = await accountPurgeHandler({
+      method: 'POST',
+      headers: { 'x-admin-token': 'admin_secret' },
+      body: { action: 'execute_purge' }
+    });
+
+    expect(result.code).toBe(0);
+    expect(result.success).toBe(true);
+    expect(result.message).toContain('无待清除用户');
+  });
+
   it('定时触发上下文不应被误判为 HTTP 请求', async () => {
     const result = await accountPurgeHandler({
       headers: {},
