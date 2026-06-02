@@ -1363,3 +1363,41 @@ Run:
 git add scripts/build/release-blocker-backlog.mjs tests/unit/release-blocker-backlog.spec.js docs/frontend-experience-refactor-diary.md docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md
 git commit -m "chore: surface phase four release blockers"
 ```
+
+### Task 34: Keep Backlog Evidence Fields Scoped
+
+**Files:**
+- Modify: `scripts/build/release-blocker-backlog.mjs`
+- Modify: `tests/unit/release-blocker-backlog.spec.js`
+- Modify: `docs/frontend-experience-refactor-diary.md`
+- Modify: `docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md`
+
+- [x] **Step 1: Add non-Phase4 evidence field guard**
+
+Assert `wechatDevice` backlog items do not carry `requiredEvidenceCount` or `presentEvidenceCount`, because those fields only describe Phase 4 safety tests.
+
+- [x] **Step 2: Scope safety counters to Phase 4**
+
+Build the common external evidence payload first, then attach safety counts only when `sectionName === 'phase4Safety'`.
+
+- [x] **Step 3: Regenerate backlog and avoid timestamp-only churn**
+
+Run `npm run audit:release:backlog` to confirm the generated report still has 81 blockers and 66 public-course blocked slots, then avoid committing a pure `generatedAt` diff.
+
+- [x] **Step 4: Run focused validation**
+
+Run:
+```bash
+npm run lint -- tests/unit/release-blocker-backlog.spec.js
+npm run test -- tests/unit/release-blocker-backlog.spec.js
+```
+
+Result: passed on 2026-06-01.
+
+- [x] **Step 5: Commit**
+
+Run:
+```bash
+git add scripts/build/release-blocker-backlog.mjs tests/unit/release-blocker-backlog.spec.js docs/frontend-experience-refactor-diary.md docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md
+git commit -m "chore: scope backlog safety evidence fields"
+```

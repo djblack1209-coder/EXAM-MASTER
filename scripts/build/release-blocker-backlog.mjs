@@ -1048,6 +1048,17 @@ function buildExternalItems(externalAudit, wechatSmoke) {
     blockers.forEach((blocker, index) => {
       const isWechatDevice = sectionName === 'wechatDevice';
       const isPhase4Safety = sectionName === 'phase4Safety';
+      const evidence = {
+        section: sectionName,
+        blocker,
+        devtoolsSmokeStatus: wechatSmoke?.status || '',
+        devtoolsSmokeReport: existsFile(DEFAULT_WECHAT_SMOKE) ? relative(DEFAULT_WECHAT_SMOKE) : ''
+      };
+      if (isPhase4Safety) {
+        evidence.requiredEvidenceCount = section.requiredEvidenceCount || 0;
+        evidence.presentEvidenceCount = section.presentEvidenceCount || 0;
+      }
+
       items.push(
         createItem({
           id: `external:${sectionName}:${blocker.code || index}`,
@@ -1065,14 +1076,7 @@ function buildExternalItems(externalAudit, wechatSmoke) {
             : isPhase4Safety
               ? '恢复或补齐 Phase 4 安全回归测试，并运行 release external gate 相关测试；不要在账号删除、隐私协议或敏感存储缺少护栏时发布。'
               : '补齐该外部门禁要求的真实生产证据；不要把占位文本写成 passed。',
-          evidence: {
-            section: sectionName,
-            blocker,
-            requiredEvidenceCount: section.requiredEvidenceCount || 0,
-            presentEvidenceCount: section.presentEvidenceCount || 0,
-            devtoolsSmokeStatus: wechatSmoke?.status || '',
-            devtoolsSmokeReport: existsFile(DEFAULT_WECHAT_SMOKE) ? relative(DEFAULT_WECHAT_SMOKE) : ''
-          }
+          evidence
         })
       );
     });

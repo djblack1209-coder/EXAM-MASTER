@@ -309,3 +309,11 @@
 - The backlog next action now points release operators toward restoring the account-deletion, privacy/legal, and sensitive-storage guard tests before publishing.
 - Markdown output now includes a dedicated `Phase 4 安全证据阻塞` section, making the release report easier to read for non-technical review.
 - Product rule: release tooling should tell the operator which commercial trust layer failed, not only that an external gate is blocked.
+
+### 2026-06-01 Round 36
+
+- Tightened the release backlog evidence shape after refreshing the generated reports.
+- `wechatDevice` blockers no longer carry Phase 4-specific `requiredEvidenceCount` or `presentEvidenceCount` fields with meaningless zero values.
+- `phase4Safety` blockers still preserve the safety evidence counters, so account/privacy/storage guard coverage remains visible where it belongs.
+- Regenerated the backlog report to verify it still reports 81 blockers and 66 public-course blocked slots, then avoided committing timestamp-only report churn.
+- Product rule: release reports should keep each field tied to the layer it explains, especially when the report is meant for non-technical review.
