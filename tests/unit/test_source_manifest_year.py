@@ -221,6 +221,30 @@ class SourceManifestYearTest(unittest.TestCase):
         self.assertEqual(item["draftStatus"], "requires_human_verification")
         self.assertEqual(item["humanFieldStatus"], "requires_human_input")
 
+    def test_manifest_blocks_known_mislabeled_math2_2016_source(self):
+        item = normalize_record(
+            {
+                "fs_id": 769678800788424,
+                "path": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学二真题答案解析/2016考研数学二真题 .pdf",
+                "server_filename": "2016考研数学二真题 .pdf",
+                "size": 1_783_670,
+                "server_mtime": 1777141580,
+                "contentHash": "5347d192as7e7e3d20fdf8d7db3fdd68",
+            },
+            provider="baidu_pan",
+            source_channel="netdisk_full_path",
+            now="2026-06-02T00:00:00Z",
+        )
+
+        self.assertEqual(item["track"], "math2")
+        self.assertEqual(item["year"], 2016)
+        self.assertEqual(item["sourceType"], "official_paper")
+        self.assertIn("source_content_mismatch", item["riskFlags"])
+        self.assertIn("manual_review_required", item["riskFlags"])
+        self.assertTrue(item["legalReview"]["publishBlocked"])
+        self.assertEqual(item["sourceQuality"]["status"], "blocked")
+        self.assertEqual(item["sourceQuality"]["blockReason"], "source_content_mismatch")
+
 
 if __name__ == "__main__":
     unittest.main()

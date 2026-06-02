@@ -18,6 +18,11 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+try:
+    from scripts.baidu.source_quality import apply_source_quality_overrides
+except ModuleNotFoundError:  # pragma: no cover - direct script execution path.
+    from source_quality import apply_source_quality_overrides
+
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_MANIFEST = PROJECT_ROOT / "data" / "source-manifest.json"
@@ -37,6 +42,7 @@ MANUAL_REVIEW_FLAGS = {
     "brand_leak",
     "copyright_review_required",
     "manual_review_required",
+    "source_content_mismatch",
 }
 
 
@@ -328,6 +334,7 @@ def build_cleaning_queue(
     for item in manifest.get("items", []):
         if not isinstance(item, dict) or not is_supported_source(item):
             continue
+        item = apply_source_quality_overrides(item)
         source_id = str(item.get("sourceId"))
         previous_for_source = previous_by_source.get(source_id)
         task = build_task(item, raw_inbox_dir=raw_inbox_dir, previous_for_source=previous_for_source, now=now)

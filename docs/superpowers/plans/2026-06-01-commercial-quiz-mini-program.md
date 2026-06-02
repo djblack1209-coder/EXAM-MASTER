@@ -1865,6 +1865,87 @@ git commit -m "chore: repair english companion option evidence"
 
 Result: committed after validation on 2026-06-02.
 
+### Task 59: Block Mislabeled Math II 2016 Source
+
+**Files:**
+- Add: `scripts/baidu/source_quality.py`
+- Modify: `scripts/baidu/source_manifest.py`
+- Modify: `scripts/baidu/manifest_quality.py`
+- Modify: `scripts/baidu/public_course_candidate_coverage.py`
+- Modify: `scripts/baidu/cleaning_queue.py`
+- Modify: `scripts/baidu/run_cleaning_queue.py`
+- Modify: `scripts/build/question-bank-release-gate.mjs`
+- Modify: `scripts/build/release-blocker-backlog.mjs`
+- Modify: `tests/unit/test_source_manifest_year.py`
+- Modify: `tests/unit/test_baidu_cleaning_queue.py`
+- Modify: `tests/unit/test_baidu_cleaning_runner.py`
+- Modify: `tests/unit/question-bank-release-gate.spec.js`
+- Modify: `tests/unit/release-blocker-backlog.spec.js`
+- Modify: `docs/frontend-experience-refactor-diary.md`
+- Modify: `docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md`
+- Modify: `docs/08C-SCRIPTS-REFERENCE.md`
+- Modify: `docs/12-CHANGELOG.md`
+- Modify: `data/release-blocker-backlog.json`
+
+- [x] **Step 1: Confirm the source mismatch**
+
+Downloaded/inspected the release-priority `math2:2016` source:
+
+```text
+data/raw-inbox/src_97fdbcbd12d0815374fbe91f-2016考研数学二真题.pdf
+```
+
+Result: `pdfinfo` reports 14 scanned pages with no usable text layer. OCR and visual comparison show the title says `2016 年考研数学二真题与解析`, but the first-page questions match the already published `math2-2014` exam. Pages 11-14 are promotional/software pages. Publishing it as `math2:2016` would be wrong.
+
+- [x] **Step 2: Add a reusable source-quality blocker**
+
+Added `scripts/baidu/source_quality.py` with a known-source override for `src_97fdbcbd12d0815374fbe91f`. The override injects `source_content_mismatch` and `manual_review_required`, sets `legalReview.publishBlocked=true`, and stores a source-quality review note.
+
+Wired the override into Source Manifest normalization, manifest quality, raw candidate coverage, cleaning queue generation, and runner task selection. This protects both refreshed manifest state and stale queues that still contain the old `download_and_extract` task.
+
+- [x] **Step 3: Keep release evidence from counting the bad source**
+
+Updated `question-bank-release-gate.mjs` so known `source_content_mismatch` rows are not auto-pairable evidence, even if their path looks like a combined `paper_answer` PDF.
+
+Updated release backlog required-field copy and tests so `math2:2016` is reported as `missing_publishable_official_source` with candidate blockers:
+
+```text
+riskFlags=manual_review_required,source_content_mismatch
+legalReview.publishBlocked=true
+source_content_mismatch
+```
+
+- [x] **Step 4: Run validation**
+
+Run:
+```bash
+python3 -m unittest tests.unit.test_source_manifest_year tests.unit.test_baidu_cleaning_runner tests.unit.test_baidu_cleaning_queue tests.unit.test_public_course_candidate_coverage tests.unit.test_public_course_source_audit
+npx vitest run tests/unit/question-bank-release-gate.spec.js tests/unit/release-blocker-backlog.spec.js tests/unit/release-scripts.spec.js
+python3 scripts/baidu/source_manifest.py --self-test
+python3 scripts/baidu/manifest_quality.py --self-test
+python3 scripts/baidu/cleaning_queue.py --self-test
+python3 scripts/baidu/run_cleaning_queue.py --self-test
+node scripts/build/question-bank-release-gate.mjs
+node scripts/build/release-blocker-backlog.mjs
+python3 scripts/baidu/manifest_quality.py
+python3 scripts/baidu/public_course_candidate_coverage.py
+python3 scripts/baidu/cleaning_queue.py
+python3 scripts/baidu/run_cleaning_queue.py --dry-run --limit 8 --source-type official_paper --paper-role main
+git diff --check
+```
+
+Result: passed on 2026-06-02. Release metrics now report `coverageGaps=55`, `blockers=68`, `sourceEvidenceGaps=12`, and `publicCourseBlockedSlots=55`. The release-priority dry-run skips the bad `math2:2016` source and starts at `2015年考研数学三真题及解析.pdf`, followed by `2020年考研英语一真题.pdf`, `2017考研数学二真题.pdf`, and `2016年考研数学三真题及解析.pdf`.
+
+- [x] **Step 5: Commit**
+
+Run:
+```bash
+git add scripts/baidu/source_quality.py scripts/baidu/source_manifest.py scripts/baidu/manifest_quality.py scripts/baidu/public_course_candidate_coverage.py scripts/baidu/cleaning_queue.py scripts/baidu/run_cleaning_queue.py scripts/build/question-bank-release-gate.mjs scripts/build/release-blocker-backlog.mjs tests/unit/test_source_manifest_year.py tests/unit/test_baidu_cleaning_queue.py tests/unit/test_baidu_cleaning_runner.py tests/unit/question-bank-release-gate.spec.js tests/unit/release-blocker-backlog.spec.js docs/frontend-experience-refactor-diary.md docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md docs/08C-SCRIPTS-REFERENCE.md docs/12-CHANGELOG.md data/release-blocker-backlog.json
+git -c core.hooksPath=/dev/null commit -m "chore: block mislabeled math2 2016 source"
+```
+
+Result: ready to commit after validation on 2026-06-02.
+
 ### Task 51: Publish Math I 2018 Page-Image Bank
 
 **Files:**

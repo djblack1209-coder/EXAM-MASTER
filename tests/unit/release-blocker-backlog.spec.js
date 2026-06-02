@@ -468,6 +468,111 @@ describe('release blocker backlog', () => {
     expect(markdown).toContain('data/release-evidence/wechat-device-smoke.md');
   });
 
+  it('keeps a known mislabeled math2 source as a source-evidence blocker', () => {
+    const questionAudit = {
+      summary: {
+        requiredSlots: 1,
+        publishedSlots: 0,
+        pendingSlots: 0,
+        pendingCoverageBlockerCount: 0,
+        coverageGapCount: 1,
+        sourceManifestPublishableOfficialPapers: 0,
+        sourceManifestCoverageGapCount: 1
+      },
+      releaseReadiness: { canPublish: false },
+      coverage: {
+        tracks: [
+          {
+            track: 'math2',
+            requiredYears: [2016],
+            publishedYears: [],
+            pendingYears: [],
+            missingYears: [2016]
+          }
+        ]
+      },
+      sourceEvidence: {
+        coverage: {
+          math2: {
+            presentYears: [],
+            missingYears: [2016],
+            missingYearDiagnostics: {
+              2016: {
+                candidateCount: 1,
+                officialPaperCandidateCount: 1,
+                publishBlockedCandidateCount: 1,
+                autoPairEligibleCandidateCount: 0,
+                blockReasons: {
+                  'riskFlags=manual_review_required,source_content_mismatch': 1,
+                  'legalReview.publishBlocked=true': 1,
+                  source_content_mismatch: 1
+                },
+                sampleCandidates: [
+                  {
+                    sourceId: 'src_97fdbcbd12d0815374fbe91f',
+                    status: 'discovered',
+                    sourceType: 'official_paper',
+                    sourceRole: '',
+                    inferredSourceRole: 'paper_answer',
+                    roleSource: 'path',
+                    autoPairEligible: false,
+                    answerEvidenceStatus: '',
+                    riskFlags: ['manual_review_required', 'source_content_mismatch'],
+                    publishBlocked: true,
+                    blockReasons: [
+                      'riskFlags=manual_review_required,source_content_mismatch',
+                      'legalReview.publishBlocked=true',
+                      'source_content_mismatch'
+                    ],
+                    remotePath:
+                      '/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学二真题答案解析/2016考研数学二真题 .pdf',
+                    sourceUrl: ''
+                  }
+                ]
+              }
+            },
+            coverageRate: 0
+          }
+        }
+      }
+    };
+
+    const backlog = buildReleaseBlockerBacklog({
+      questionAudit,
+      flashcardQuality: { releaseReadiness: { canPromoteToPublic: true }, summary: {}, files: [] },
+      externalAudit: { releaseReadiness: { canPublish: true }, summary: {}, sections: {} },
+      wechatSmoke: { status: 'passed' },
+      generatedAt: '2026-06-02T00:00:00.000Z'
+    });
+
+    const slot = backlog.publicCourseSlotBacklog[0];
+
+    expect(slot).toMatchObject({
+      slotKey: 'math2:2016',
+      slotStatus: 'missing',
+      sourceEvidenceStatus: 'missing_publishable_official_source',
+      blockers: ['missing_public_course_bank', 'missing_publishable_official_source'],
+      prerequisiteBlockers: ['missing_publishable_official_source'],
+      sourceCandidateSamples: [
+        {
+          sourceId: 'src_97fdbcbd12d0815374fbe91f',
+          autoPairEligible: false,
+          publishBlocked: true,
+          riskFlags: ['manual_review_required', 'source_content_mismatch']
+        }
+      ]
+    });
+    expect(slot.sourceCandidateSummary).toContain('source_content_mismatch');
+    expect(slot.sourceManifestRegistrationChecklist.requiredManifestFields).toContain(
+      'riskFlags excludes answer_missing,brand_leak,copyright_review_required,ad_or_promo,manual_review_required,source_content_mismatch'
+    );
+    expect(backlog.nextBalancedPublicCourseSlots[0]).toMatchObject({
+      track: 'math2',
+      year: 2016,
+      sourceEvidenceStatus: 'missing_publishable_official_source'
+    });
+  });
+
   it('surfaces blocked WeChat DevTools smoke as an explicit backlog workstream', () => {
     const backlog = buildReleaseBlockerBacklog({
       questionAudit: { releaseReadiness: { canPublish: true }, summary: {}, coverage: { tracks: [] } },

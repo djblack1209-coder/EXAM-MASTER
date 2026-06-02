@@ -16,6 +16,11 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+try:
+    from scripts.baidu.source_quality import apply_source_quality_overrides
+except ModuleNotFoundError:  # pragma: no cover - direct script execution path.
+    from source_quality import apply_source_quality_overrides
+
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_MANIFEST = PROJECT_ROOT / "data" / "source-manifest.json"
@@ -23,7 +28,14 @@ DEFAULT_OUTPUT = PROJECT_ROOT / "data" / "public-course-netdisk-candidate-covera
 PUBLIC_TRACKS = ["politics", "english1", "english2", "math1", "math2", "math3"]
 CANDIDATE_SOURCE_TYPES = {"official_paper", "official_question_paper", "institution_candidate", "unknown_document"}
 ANSWER_RE = re.compile(r"答案|解析|参考答案|answer", re.I)
-BLOCKING_RISK_FLAGS = {"brand_leak", "copyright_review_required", "ad_or_promo", "answer_missing"}
+BLOCKING_RISK_FLAGS = {
+    "brand_leak",
+    "copyright_review_required",
+    "ad_or_promo",
+    "answer_missing",
+    "manual_review_required",
+    "source_content_mismatch",
+}
 
 
 def utc_now() -> str:
@@ -116,7 +128,11 @@ def analyze_candidate_coverage(
     years: list[int],
     source_channel: str = "netdisk_full_path",
 ) -> dict[str, Any]:
-    items = [item for item in manifest.get("items", []) if isinstance(item, dict)]
+    items = [
+        apply_source_quality_overrides(item)
+        for item in manifest.get("items", [])
+        if isinstance(item, dict)
+    ]
     summary: dict[str, Any] = {}
     matrix: dict[str, Any] = {}
 

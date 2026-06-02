@@ -546,3 +546,15 @@
 - Visual spot checks covered q02, q10, q21, and q22; q02 was narrowed after inspection to remove an advertising edge while preserving all options.
 - Release gate result after sequential audit refresh: public-course coverage gaps dropped to 55, release blockers dropped to 67, public-course blocked slots dropped to 55, and the release-priority dry-run now starts at `2016考研数学二真题.pdf`.
 - Source caveat: the available 2024 Math I source is still a combined question-answer PDF, not a standalone blank paper. User-facing question crops hide same-page answers, while answer evidence remains original rendered PDF pages.
+
+### 2026-06-02 Round 59
+
+- Audited the next release-priority source `math2:2016` before publishing because the downloaded PDF is scanned, has no usable text layer, and mixes questions with same-page explanations.
+- OCR/visual comparison showed `2016考研数学二真题.pdf` advertises 2016 in the title, but its first-page questions match the already published `math2-2014` question set. Pages 11-14 are promotional/software pages and are not valid exam evidence.
+- Added `scripts/baidu/source_quality.py` as a shared source-quality override registry. The known bad source `src_97fdbcbd12d0815374fbe91f` is now tagged with `source_content_mismatch` and `manual_review_required`, with `legalReview.publishBlocked=true`.
+- Wired the override into Source Manifest normalization, manifest quality, raw candidate coverage, cleaning queue generation, and the cleaning runner. Even an old queue containing the previous `download_and_extract` task will now skip this source in runner selection.
+- Updated `question-bank-release-gate.mjs` and release backlog diagnostics so the source no longer satisfies `math2:2016` publishable evidence. The refreshed backlog lists `math2:2016` as `missing_publishable_official_source` with the mismatch risk in candidate samples.
+- Validation result: Python unit set, question-bank release gate Vitest, release backlog Vitest, release scripts Vitest, self-tests, sequential release audit/backlog refresh, manifest quality, candidate coverage, cleaning queue rebuild, release-priority dry-run, and `git diff --check` all passed.
+- Release metrics after the correction: public-course coverage gaps stay at 55, release blockers rise to 68 because the previously miscounted source-evidence blocker is now visible, source evidence gaps are 12, and public-course blocked slots stay at 55.
+- Release-priority dry-run now skips `2016考研数学二真题.pdf` and starts at `2015年考研数学三真题及解析.pdf`, followed by `2020年考研英语一真题.pdf`, `2017考研数学二真题.pdf`, and `2016年考研数学三真题及解析.pdf`.
+- Product rule: never publish a public-course slot from filename/year metadata alone. When visual/OCR inspection shows the content is a different year, the source must become a manual-review blocker even if it looked like an official combined paper-answer PDF.

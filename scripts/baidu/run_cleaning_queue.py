@@ -28,6 +28,7 @@ BAIDU_DIR = PROJECT_ROOT / "scripts" / "baidu"
 sys.path.insert(0, str(BAIDU_DIR))
 
 from pan import BaiduPan  # noqa: E402
+from source_quality import apply_source_quality_overrides, source_quality_requires_manual_review  # noqa: E402
 
 
 DEFAULT_QUEUE = PROJECT_ROOT / "data" / "cleaning-queue.json"
@@ -204,10 +205,12 @@ def select_pending_tasks(
     paper_role: str = "all",
 ) -> list[dict[str, Any]]:
     tasks = [
-        task for task in queue.get("tasks", [])
+        apply_source_quality_overrides(task)
+        for task in queue.get("tasks", [])
         if isinstance(task, dict)
         and task.get("status") == "pending"
         and task.get("action") == "download_and_extract"
+        and not source_quality_requires_manual_review(task)
     ]
     if task_id:
         tasks = [task for task in tasks if task.get("taskId") == task_id]

@@ -233,6 +233,42 @@ class BaiduCleaningRunnerTest(unittest.TestCase):
 
         self.assertEqual([task["taskId"] for task in selected], ["release_english1_2018", "generic_politics_2005"])
 
+    def test_select_pending_tasks_skips_known_mislabeled_math2_2016_source(self):
+        queue = {
+            "tasks": [
+                {
+                    "taskId": "clean_51077a849d67a1a65bb9ab81",
+                    "sourceId": "src_97fdbcbd12d0815374fbe91f",
+                    "action": "download_and_extract",
+                    "status": "pending",
+                    "priority": 100,
+                    "track": "math2",
+                    "year": 2016,
+                    "sourceType": "official_paper",
+                    "safeDisplayName": "2016考研数学二真题.pdf",
+                    "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学二真题答案解析/2016考研数学二真题 .pdf",
+                    "contentHash": "5347d192as7e7e3d20fdf8d7db3fdd68",
+                    "riskFlags": [],
+                    "releaseBacklogRank": 0,
+                },
+                {
+                    "taskId": "next_math3_2015",
+                    "action": "download_and_extract",
+                    "status": "pending",
+                    "priority": 100,
+                    "track": "math3",
+                    "year": 2015,
+                    "sourceType": "official_paper",
+                    "safeDisplayName": "2015年考研数学三真题及解析.pdf",
+                    "releaseBacklogRank": 1,
+                },
+            ]
+        }
+
+        selected = select_pending_tasks(queue, limit=10, source_type="official_paper", paper_role="main")
+
+        self.assertEqual([task["taskId"] for task in selected], ["next_math3_2015"])
+
     def test_paper_role_main_uses_file_name_not_parent_answer_directory(self):
         queue = {
             "tasks": [

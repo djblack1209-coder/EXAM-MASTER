@@ -286,6 +286,53 @@ describe('question bank release gate', () => {
     });
   });
 
+  it('does not count known mislabeled math2 2016 source as source coverage', async () => {
+    const { buildQuestionBankReleaseReport } = await import('../../scripts/build/question-bank-release-gate.mjs');
+    const manifest = tempManifestPath([
+      {
+        sourceId: 'src_97fdbcbd12d0815374fbe91f',
+        eligible: true,
+        status: 'discovered',
+        sourceType: 'official_paper',
+        track: 'math2',
+        year: 2016,
+        remotePath:
+          '/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学二真题答案解析/2016考研数学二真题 .pdf',
+        contentHash: '5347d192as7e7e3d20fdf8d7db3fdd68',
+        riskFlags: []
+      }
+    ]);
+
+    const report = buildQuestionBankReleaseReport({
+      minYear: 2016,
+      maxYear: 2016,
+      tracks: ['math2'],
+      sourceManifest: manifest,
+      banks: []
+    });
+
+    expect(report.summary.sourceManifestPublishableOfficialPapers).toBe(0);
+    expect(report.summary.sourceManifestCoverageGapCount).toBe(1);
+    expect(report.sourceEvidence.coverage.math2.presentYears).toEqual([]);
+    expect(report.sourceEvidence.coverage.math2.missingYearDiagnostics[2016]).toMatchObject({
+      candidateCount: 1,
+      officialPaperCandidateCount: 1,
+      autoPairEligibleCandidateCount: 0,
+      blockReasons: {
+        'riskFlags=manual_review_required,source_content_mismatch': 1,
+        'legalReview.publishBlocked=true': 1,
+        source_content_mismatch: 1
+      }
+    });
+    expect(report.sourceEvidence.coverage.math2.missingYearDiagnostics[2016].sampleCandidates[0]).toMatchObject({
+      sourceId: 'src_97fdbcbd12d0815374fbe91f',
+      inferredSourceRole: 'paper_answer',
+      autoPairEligible: false,
+      publishBlocked: true,
+      riskFlags: ['manual_review_required', 'source_content_mismatch']
+    });
+  });
+
   it('keeps self-study draft banks as pending release blockers even when source evidence is complete', async () => {
     const { buildQuestionBankReleaseReport } = await import('../../scripts/build/question-bank-release-gate.mjs');
     const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'exam-master-qb-bank-'));

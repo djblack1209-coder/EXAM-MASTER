@@ -264,6 +264,55 @@ class BaiduCleaningQueueTest(unittest.TestCase):
         self.assertEqual(queue["summary"]["releaseBacklogTasks"], 1)
         self.assertEqual(queue["summary"]["releaseBacklogAutomationActionablePendingTasks"], 1)
 
+    def test_known_mislabeled_math2_2016_source_is_manual_review(self):
+        manifest = {
+            "items": [
+                {
+                    "sourceId": "src_97fdbcbd12d0815374fbe91f",
+                    "fingerprint": "fp_mislabeled_math2",
+                    "eligible": True,
+                    "status": "discovered",
+                    "sourceChannel": "netdisk_full_path",
+                    "fsId": 769678800788424,
+                    "remotePath": "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学二真题答案解析/2016考研数学二真题 .pdf",
+                    "fileName": "2016考研数学二真题 .pdf",
+                    "extension": ".pdf",
+                    "sourceType": "official_paper",
+                    "track": "math2",
+                    "subject": "math",
+                    "year": 2016,
+                    "priority": 100,
+                    "riskFlags": [],
+                    "contentHash": "5347d192as7e7e3d20fdf8d7db3fdd68",
+                }
+            ]
+        }
+        release_backlog = {
+            "nextBalancedPublicCourseSlots": [
+                {
+                    "slotKey": "math2:2016",
+                    "track": "math2",
+                    "year": 2016,
+                    "blockerCode": "missing_public_course_bank",
+                    "sourceEvidenceStatus": "publishable_source_present",
+                }
+            ]
+        }
+
+        queue = build_cleaning_queue(
+            manifest,
+            release_backlog=release_backlog,
+            now="2026-06-02T00:00:00Z",
+        )
+
+        task = queue["tasks"][0]
+        self.assertEqual(task["action"], "manual_review")
+        self.assertEqual(task["statusReason"], "legal_or_quality_review_required")
+        self.assertIn("source_content_mismatch", task["riskFlags"])
+        self.assertEqual(task["releaseBacklogSlot"], "math2:2016")
+        self.assertEqual(queue["summary"]["releaseBacklogAutomationActionablePendingTasks"], 0)
+        self.assertEqual(queue["summary"]["releaseBacklogManualBlockedPendingTasks"], 1)
+
     def test_limited_queue_summary_counts_only_returned_tasks(self):
         manifest = {
             "items": [

@@ -236,8 +236,22 @@ const BLOCKING_SOURCE_RISK_FLAGS = new Set([
   'answer_missing',
   'brand_leak',
   'copyright_review_required',
-  'ad_or_promo'
+  'ad_or_promo',
+  'manual_review_required',
+  'source_content_mismatch'
 ]);
+const KNOWN_SOURCE_QUALITY_OVERRIDES = [
+  {
+    sourceIds: new Set(['src_97fdbcbd12d0815374fbe91f']),
+    contentHashes: new Set([
+      '5347d192as7e7e3d20fdf8d7db3fdd68',
+      '6fd3ad9e10d9fc6043a5dea007843f8ea2fb06ff6dc7e9e6ffb970fe202633e5'
+    ]),
+    remotePathContains: ['/【完整版】数学二真题答案解析/2016考研数学二真题 .pdf'],
+    riskFlags: ['source_content_mismatch', 'manual_review_required'],
+    blockReason: 'source_content_mismatch'
+  }
+];
 
 function sourceLocation(item) {
   return firstNonEmpty(item?.remotePath, item?.sourceUrl, item?.provenanceUrl);
@@ -245,6 +259,27 @@ function sourceLocation(item) {
 
 function sourceHash(item) {
   return firstNonEmpty(item?.contentHash, item?.sha256, item?.fileSha256, item?.sourceHash);
+}
+
+function sourceQualityOverrideForItem(item) {
+  const sourceId = String(item?.sourceId || item?.id || '').trim();
+  const location = sourceLocation(item) || '';
+  const hashes = [
+    item?.contentHash,
+    item?.sha256,
+    item?.fileSha256,
+    item?.sourceHash,
+    item?.hash
+  ].map((value) => String(value || '').trim());
+
+  return (
+    KNOWN_SOURCE_QUALITY_OVERRIDES.find(
+      (override) =>
+        (sourceId && override.sourceIds.has(sourceId)) ||
+        hashes.some((hash) => hash && override.contentHashes.has(hash)) ||
+        override.remotePathContains.some((fragment) => location.includes(fragment))
+    ) || null
+  );
 }
 
 function normalizeSourceText(value) {
@@ -359,10 +394,17 @@ function manifestSourceBlockReasons(item) {
   if (role.inferredRole === 'partial_answer') reasons.push('sourceRole=partial_answer');
   if (role.inferredRole === 'unknown') reasons.push('sourceRole=unknown');
 
-  const riskFlags = Array.isArray(item?.riskFlags) ? item.riskFlags : [];
-  const blockedFlags = riskFlags.filter((flag) => BLOCKING_SOURCE_RISK_FLAGS.has(flag));
+  const qualityOverride = sourceQualityOverrideForItem(item);
+  const riskFlags = [
+    ...new Set([
+      ...(Array.isArray(item?.riskFlags) ? item.riskFlags : []),
+      ...(qualityOverride?.riskFlags || [])
+    ])
+  ];
+  const blockedFlags = riskFlags.filter((flag) => BLOCKING_SOURCE_RISK_FLAGS.has(flag)).sort();
   if (blockedFlags.length) reasons.push(`riskFlags=${blockedFlags.join(',')}`);
-  if (item?.legalReview?.publishBlocked) reasons.push('legalReview.publishBlocked=true');
+  if (item?.legalReview?.publishBlocked || qualityOverride) reasons.push('legalReview.publishBlocked=true');
+  if (qualityOverride?.blockReason) reasons.push(qualityOverride.blockReason);
   if (!sourceHash(item)) {
     reasons.push('sourceHash=missing');
   }
@@ -381,7 +423,8 @@ function manifestSourceAnalysis(item) {
   return {
     ...role,
     blockReasons,
-    autoPairEligible
+    autoPairEligible,
+    sourceQualityBlocked: Boolean(sourceQualityOverrideForItem(item))
   };
 }
 
@@ -390,6 +433,7 @@ function isAutoPairableManifestSource(item) {
 }
 
 function sourceCandidateSample(item, analysis) {
+  const qualityOverride = sourceQualityOverrideForItem(item);
   return {
     sourceId: item.sourceId || item.id || '',
     status: item.status || '',
@@ -399,8 +443,13 @@ function sourceCandidateSample(item, analysis) {
     roleSource: analysis.roleSource || '',
     autoPairEligible: analysis.autoPairEligible === true,
     answerEvidenceStatus: item.answerEvidenceStatus || '',
-    riskFlags: Array.isArray(item.riskFlags) ? item.riskFlags : [],
-    publishBlocked: item.legalReview?.publishBlocked === true,
+    riskFlags: [
+      ...new Set([
+        ...(Array.isArray(item.riskFlags) ? item.riskFlags : []),
+        ...(qualityOverride?.riskFlags || [])
+      ])
+    ].sort(),
+    publishBlocked: item.legalReview?.publishBlocked === true || analysis.sourceQualityBlocked === true,
     blockReasons: analysis.blockReasons || [],
     remotePath: item.remotePath || '',
     sourceUrl: item.sourceUrl || ''

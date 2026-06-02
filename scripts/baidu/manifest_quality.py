@@ -15,6 +15,11 @@ import json
 from pathlib import Path
 from typing import Any
 
+try:
+    from scripts.baidu.source_quality import apply_source_quality_overrides
+except ModuleNotFoundError:  # pragma: no cover - direct script execution path.
+    from source_quality import apply_source_quality_overrides
+
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_MANIFEST = PROJECT_ROOT / "data" / "source-manifest.json"
@@ -63,7 +68,14 @@ def is_publishable_source(item: dict[str, Any]) -> bool:
     source_role = str(item.get("sourceRole") or item.get("source_role") or "").strip()
     if source_role and source_role not in {"paper", "paper_answer"}:
         return False
-    blocking_flags = {"answer_missing", "brand_leak", "copyright_review_required", "ad_or_promo"}
+    blocking_flags = {
+        "answer_missing",
+        "brand_leak",
+        "copyright_review_required",
+        "ad_or_promo",
+        "manual_review_required",
+        "source_content_mismatch",
+    }
     if blocking_flags.intersection(set(item.get("riskFlags", []))):
         return False
     if item.get("legalReview", {}).get("publishBlocked"):
@@ -173,7 +185,11 @@ def analyze_manifest(
     tracks: list[str],
     years: list[int],
 ) -> dict[str, Any]:
-    items = [item for item in manifest.get("items", []) if isinstance(item, dict)]
+    items = [
+        apply_source_quality_overrides(item)
+        for item in manifest.get("items", [])
+        if isinstance(item, dict)
+    ]
     coverage: dict[str, dict[str, Any]] = {}
 
     for track in tracks:
