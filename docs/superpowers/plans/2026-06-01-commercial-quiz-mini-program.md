@@ -1865,6 +1865,88 @@ git commit -m "chore: repair english companion option evidence"
 
 Result: committed after validation on 2026-06-02.
 
+### Task 48: Publish Math I 2007 Page-Image Bank
+
+**Files:**
+- Modify: `scripts/cleaning/build_math1_history_banks.py`
+- Add: `tests/unit/test_build_math1_history_banks.py`
+- Add: `src/config/flashcard-banks/math1-2007.json`
+- Add: `cdn-assets/question-bank/math1-2007/*`
+- Modify: `src/config/bank-registry.js`
+- Modify: `src/pages/practice-sub/bank-data-table.js`
+- Modify: `data/release-blocker-backlog.json`
+- Modify: `docs/frontend-experience-refactor-diary.md`
+- Modify: `docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md`
+- Modify: `docs/08C-SCRIPTS-REFERENCE.md`
+- Modify: `docs/12-CHANGELOG.md`
+
+- [x] **Step 1: Add 2007 Math I historical structure**
+
+Extended `build_math1_history_banks.py` so `math1:2007` uses its historical 24-card shape: 10 choice, 6 fill-in-the-blank, and 8 solution questions.
+
+The 2007 spec uses explicit crop boxes and multi-image refs for cross-page prompts such as q09 and q24. Choice-answer brackets are hidden with white `drawbox` masks, and long solution questions are cropped to the prompt before `【分析】` / `【详解】`.
+
+- [x] **Step 2: Add regression coverage**
+
+Added `tests/unit/test_build_math1_history_banks.py` assertions for:
+
+```text
+card_numbers_for_spec(math1-2007) == 1..24
+section/type boundaries: 1-10 choice, 11-16 fill, 17-24 solution
+q09 -> q09a/q09b
+q19 -> q19a
+q24 -> q24a/q24b
+```
+
+- [x] **Step 3: Generate bank and assets**
+
+Run:
+```bash
+python3 scripts/cleaning/build_math1_history_banks.py --years 2007 --force-assets
+```
+
+Result: generated `src/config/flashcard-banks/math1-2007.json` and 51 assets under `cdn-assets/question-bank/math1-2007`.
+
+Structured output:
+
+```text
+total_cards=24
+typeCounts={single_choice:10, short_answer:14}
+sectionCounts={选择题:10, 填空题:6, 解答题:8}
+sourceFile=src_b6edc23c70615d39f9fbe692-2007数一标准答案及解析.pdf
+sha256=sha256:677b494e3ef715ed06bb9300dd417d75cf501f5b3bce8befc2a8a5019a9997b3
+```
+
+- [x] **Step 4: Verify question-image leakage**
+
+Run:
+```bash
+for p in cdn-assets/question-bank/math1-2007/question-*.jpg; do
+  txt=$(tesseract "$p" stdout -l chi_sim+eng --psm 6 2>/dev/null || true)
+  if printf '%s' "$txt" | rg -q '【分析|【详解|分析】|详解】|\[[[:space:]]*[ABCD][[:space:]]*\]'; then
+    echo "BAD $p"
+    printf '%s\n' "$txt" | sed -n '1,14p'
+  fi
+done
+```
+
+Result: no leaked analysis/detail tags or `[A-D]` answer brackets were detected in generated question images. Manual visual inspection also checked q09a/q09b, q19a, q22, and q24b after crop tuning.
+
+- [x] **Step 5: Register and refresh release reports**
+
+Run:
+```bash
+node scripts/build/generate-compressed-bank-modules.mjs
+node scripts/build/question-bank-release-gate.mjs
+node scripts/build/release-blocker-backlog.mjs
+python3 scripts/baidu/cleaning_queue.py
+python3 scripts/baidu/run_cleaning_queue.py --dry-run --limit 8 --source-type official_paper --paper-role main
+```
+
+Result: formal enabled-bank count rose to 70, public-course coverage gaps fell to 62, release blockers fell to 74, public-course blocked slots fell to 62, and `math1:2007` no longer appears in the refreshed backlog.
+
+The refreshed runner dry-run now skips 2007 and begins with later release-priority tasks including `2018数一考研真题及答案.pdf`, `2019数一真题及答案解析.pdf`, and `2016考研数学二真题.pdf`.
+
 ### Task 45: Publish Math I 2006 Page-Image Bank
 
 **Files:**

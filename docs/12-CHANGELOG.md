@@ -1,5 +1,11 @@
 # 变更日志
 
+## 2026-06-02 — 2007 数学一特殊结构题库开放
+
+- 2007 考研数学一从“待入库”推进为正式题库：24 张题卡覆盖 10 道选择、6 道填空和 8 道解答题，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
+- 扩展 `build_math1_history_banks.py`，从本地百度网盘 `2007数一标准答案及解析.pdf` 生成 `src/config/flashcard-banks/math1-2007.json` 与 `cdn-assets/question-bank/math1-2007` 页图资源；q09/q24 使用多图裁切，选择题答案括号用白底遮罩隐藏。
+- 题库导航中数学一 2007 年槽位从“待入库”变为可点击“正式”，公共课正式开放数从 69 套增至 70 套，公共课覆盖缺口从 63 个降至 62 个，发布 backlog 阻塞从 75 个降至 74 个；来源限制同步记录：该源为答案解析版 PDF，填空题原页已内嵌答案，后续若拿到独立空白试卷应替换题面证据。
+
 ## 2026-06-02 — 政治 2023 答案源完整性门禁
 
 - 本地公共课 source audit 支持指定历史题源目录：可用 `--root data/raw-inbox/public-course-history/politics/2023 --audit-output /tmp/politics-2023-source-audit.json --skip-draft` 审计单个槽位，不再局限 2025 草稿目录。

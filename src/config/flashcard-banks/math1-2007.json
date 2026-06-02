@@ -1,0 +1,1497 @@
+{
+  "id": "math1-2007",
+  "source": "math1-2007-paper-answer",
+  "paperId": "math1-2007",
+  "paperName": "2007考研数学一真题",
+  "subject": "数学",
+  "subjectKey": "math",
+  "track": "math1",
+  "year": "2007",
+  "quality": "ready",
+  "publicationStatus": "published",
+  "publicationBlockers": [],
+  "sourceEvidencePolicy": "baidu_netdisk_official_paper_pdf_question_crop_answer_page_image_v1",
+  "sourceFiles": [
+    {
+      "id": "math1-2007-paper-answer",
+      "role": "paper_answer",
+      "localPath": "data/raw-inbox/src_b6edc23c70615d39f9fbe692-2007数一标准答案及解析.pdf",
+      "sha256": "sha256:677b494e3ef715ed06bb9300dd417d75cf501f5b3bce8befc2a8a5019a9997b3",
+      "sourceId": "src_b6edc23c70615d39f9fbe692"
+    }
+  ],
+  "assetRoot": "question-bank/math1-2007",
+  "processed_at": "2026-06-02T16:30:47Z",
+  "total_cards": 24,
+  "cards": [
+    {
+      "id": "math1-2007-001",
+      "number": 1,
+      "paperId": "math1-2007",
+      "paperName": "2007考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2007",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2007考研数学一第1题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2007 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2007/question-01.jpg",
+          "caption": "题面裁切图 q01",
+          "alt": "2007考研数学一题面裁切图 q01"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2007/answer-page-01.jpg",
+          "caption": "答案解析 p.1",
+          "alt": "2007考研数学一答案解析 p.1"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2007",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:0be698ca2ed216ef9189d43931bfa389b7f5f446ef21d31dba6366ac354ae288",
+      "answerTextHash": "sha256:eeb8f23963a55373792abcd7f5e7bf152df8a8573bd10989d302f7962035a04f",
+      "sourceEvidence": {
+        "evidenceId": "math1-2007-q01",
+        "sourceId": "src_b6edc23c70615d39f9fbe692",
+        "answerSourceId": "src_b6edc23c70615d39f9fbe692",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2007-paper-answer",
+        "answerEvidenceId": "math1-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:eeb8f23963a55373792abcd7f5e7bf152df8a8573bd10989d302f7962035a04f"
+      }
+    },
+    {
+      "id": "math1-2007-002",
+      "number": 2,
+      "paperId": "math1-2007",
+      "paperName": "2007考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2007",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2007考研数学一第2题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2007 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2007/question-02.jpg",
+          "caption": "题面裁切图 q02",
+          "alt": "2007考研数学一题面裁切图 q02"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2007/answer-page-01.jpg",
+          "caption": "答案解析 p.1",
+          "alt": "2007考研数学一答案解析 p.1"
+        },
+        {
+          "src": "question-bank/math1-2007/answer-page-02.jpg",
+          "caption": "答案解析 p.2",
+          "alt": "2007考研数学一答案解析 p.2"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2007",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:343ef2f0e78afbd4beaf1f33dee6ff4df712d23c87dd4ec719cec1fa961db25d",
+      "answerTextHash": "sha256:83d8abeb12d9c0fa9a6e0901b76d8c482461cafa0bf4d238f7f8fae2c82d4275",
+      "sourceEvidence": {
+        "evidenceId": "math1-2007-q02",
+        "sourceId": "src_b6edc23c70615d39f9fbe692",
+        "answerSourceId": "src_b6edc23c70615d39f9fbe692",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2007-paper-answer",
+        "answerEvidenceId": "math1-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:83d8abeb12d9c0fa9a6e0901b76d8c482461cafa0bf4d238f7f8fae2c82d4275"
+      }
+    },
+    {
+      "id": "math1-2007-003",
+      "number": 3,
+      "paperId": "math1-2007",
+      "paperName": "2007考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2007",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2007考研数学一第3题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2007 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2007/question-03.jpg",
+          "caption": "题面裁切图 q03",
+          "alt": "2007考研数学一题面裁切图 q03"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2007/answer-page-01.jpg",
+          "caption": "答案解析 p.1",
+          "alt": "2007考研数学一答案解析 p.1"
+        },
+        {
+          "src": "question-bank/math1-2007/answer-page-02.jpg",
+          "caption": "答案解析 p.2",
+          "alt": "2007考研数学一答案解析 p.2"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2007",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:df0c8e0e58303462c125792c3d25e605d732fe0aaa70238c5ec0a3a04b124447",
+      "answerTextHash": "sha256:eb212dd8a585906a9c78f6774665712b9a66e0c6a4d610b755c1c87a851ed451",
+      "sourceEvidence": {
+        "evidenceId": "math1-2007-q03",
+        "sourceId": "src_b6edc23c70615d39f9fbe692",
+        "answerSourceId": "src_b6edc23c70615d39f9fbe692",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2007-paper-answer",
+        "answerEvidenceId": "math1-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:eb212dd8a585906a9c78f6774665712b9a66e0c6a4d610b755c1c87a851ed451"
+      }
+    },
+    {
+      "id": "math1-2007-004",
+      "number": 4,
+      "paperId": "math1-2007",
+      "paperName": "2007考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2007",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2007考研数学一第4题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2007 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2007/question-04.jpg",
+          "caption": "题面裁切图 q04",
+          "alt": "2007考研数学一题面裁切图 q04"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2007/answer-page-02.jpg",
+          "caption": "答案解析 p.2",
+          "alt": "2007考研数学一答案解析 p.2"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2007",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:d40610c6d70bb7ea98450d68733973fef8a9975d95e533544093df26327c9916",
+      "answerTextHash": "sha256:7cd6122ff6ad5f4ed9210d1ae15379380ce2cd5f5ab3a3b9f0756d9b8d6dbe3f",
+      "sourceEvidence": {
+        "evidenceId": "math1-2007-q04",
+        "sourceId": "src_b6edc23c70615d39f9fbe692",
+        "answerSourceId": "src_b6edc23c70615d39f9fbe692",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2007-paper-answer",
+        "answerEvidenceId": "math1-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:7cd6122ff6ad5f4ed9210d1ae15379380ce2cd5f5ab3a3b9f0756d9b8d6dbe3f"
+      }
+    },
+    {
+      "id": "math1-2007-005",
+      "number": 5,
+      "paperId": "math1-2007",
+      "paperName": "2007考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2007",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2007考研数学一第5题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2007 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2007/question-05.jpg",
+          "caption": "题面裁切图 q05",
+          "alt": "2007考研数学一题面裁切图 q05"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2007/answer-page-02.jpg",
+          "caption": "答案解析 p.2",
+          "alt": "2007考研数学一答案解析 p.2"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2007",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:5028516e648ca9bed802c66c84a6c75d4a7711d7efb42a0a19cc84295e502d09",
+      "answerTextHash": "sha256:7cd6122ff6ad5f4ed9210d1ae15379380ce2cd5f5ab3a3b9f0756d9b8d6dbe3f",
+      "sourceEvidence": {
+        "evidenceId": "math1-2007-q05",
+        "sourceId": "src_b6edc23c70615d39f9fbe692",
+        "answerSourceId": "src_b6edc23c70615d39f9fbe692",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2007-paper-answer",
+        "answerEvidenceId": "math1-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:7cd6122ff6ad5f4ed9210d1ae15379380ce2cd5f5ab3a3b9f0756d9b8d6dbe3f"
+      }
+    },
+    {
+      "id": "math1-2007-006",
+      "number": 6,
+      "paperId": "math1-2007",
+      "paperName": "2007考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2007",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2007考研数学一第6题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2007 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2007/question-06.jpg",
+          "caption": "题面裁切图 q06",
+          "alt": "2007考研数学一题面裁切图 q06"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2007/answer-page-02.jpg",
+          "caption": "答案解析 p.2",
+          "alt": "2007考研数学一答案解析 p.2"
+        },
+        {
+          "src": "question-bank/math1-2007/answer-page-03.jpg",
+          "caption": "答案解析 p.3",
+          "alt": "2007考研数学一答案解析 p.3"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2007",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:613f9f175b58d19d986f574d56f048a1f193c553ab2b72cd98d00b11f9eb8396",
+      "answerTextHash": "sha256:b2e9af799ce3691d2a8144096ec7e4a07dc4c03a621ed6e8a6da1e4b5810f454",
+      "sourceEvidence": {
+        "evidenceId": "math1-2007-q06",
+        "sourceId": "src_b6edc23c70615d39f9fbe692",
+        "answerSourceId": "src_b6edc23c70615d39f9fbe692",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2007-paper-answer",
+        "answerEvidenceId": "math1-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:b2e9af799ce3691d2a8144096ec7e4a07dc4c03a621ed6e8a6da1e4b5810f454"
+      }
+    },
+    {
+      "id": "math1-2007-007",
+      "number": 7,
+      "paperId": "math1-2007",
+      "paperName": "2007考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2007",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2007考研数学一第7题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2007 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2007/question-07.jpg",
+          "caption": "题面裁切图 q07",
+          "alt": "2007考研数学一题面裁切图 q07"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2007/answer-page-03.jpg",
+          "caption": "答案解析 p.3",
+          "alt": "2007考研数学一答案解析 p.3"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2007",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:c33b4f11a3e51c6d1319e1ff9a90c6dd2a934cb691f8c67bc43bc0537f79486e",
+      "answerTextHash": "sha256:37047a4e1d0f087c0f0de2714845cbbfcf52e1f11a8dee1bd57c83d31cefed0f",
+      "sourceEvidence": {
+        "evidenceId": "math1-2007-q07",
+        "sourceId": "src_b6edc23c70615d39f9fbe692",
+        "answerSourceId": "src_b6edc23c70615d39f9fbe692",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2007-paper-answer",
+        "answerEvidenceId": "math1-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:37047a4e1d0f087c0f0de2714845cbbfcf52e1f11a8dee1bd57c83d31cefed0f"
+      }
+    },
+    {
+      "id": "math1-2007-008",
+      "number": 8,
+      "paperId": "math1-2007",
+      "paperName": "2007考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2007",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2007考研数学一第8题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2007 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2007/question-08.jpg",
+          "caption": "题面裁切图 q08",
+          "alt": "2007考研数学一题面裁切图 q08"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2007/answer-page-03.jpg",
+          "caption": "答案解析 p.3",
+          "alt": "2007考研数学一答案解析 p.3"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2007",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:6ddfd25c2ae6fd7e64bf549c2ac50e3b7cb49d0c5364473aa4815d599fd884cf",
+      "answerTextHash": "sha256:1fcf9d558765341a30341480a7d24f877bc9966886f3ab2accbd71cffa0f1b38",
+      "sourceEvidence": {
+        "evidenceId": "math1-2007-q08",
+        "sourceId": "src_b6edc23c70615d39f9fbe692",
+        "answerSourceId": "src_b6edc23c70615d39f9fbe692",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2007-paper-answer",
+        "answerEvidenceId": "math1-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:1fcf9d558765341a30341480a7d24f877bc9966886f3ab2accbd71cffa0f1b38"
+      }
+    },
+    {
+      "id": "math1-2007-009",
+      "number": 9,
+      "paperId": "math1-2007",
+      "paperName": "2007考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2007",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2007考研数学一第9题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2007 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2007/question-09a.jpg",
+          "caption": "题面裁切图 q09",
+          "alt": "2007考研数学一题面裁切图 q09"
+        },
+        {
+          "src": "question-bank/math1-2007/question-09b.jpg",
+          "caption": "题面裁切图 q09",
+          "alt": "2007考研数学一题面裁切图 q09"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2007/answer-page-03.jpg",
+          "caption": "答案解析 p.3",
+          "alt": "2007考研数学一答案解析 p.3"
+        },
+        {
+          "src": "question-bank/math1-2007/answer-page-04.jpg",
+          "caption": "答案解析 p.4",
+          "alt": "2007考研数学一答案解析 p.4"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2007",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:49bbb4ccf28bf3d796651faf473c9703f821f8dc31bceaaaeaee14dd77dc0b54",
+      "answerTextHash": "sha256:6256d6d1a31ff5a026dabdf646d1dee9cbd80e696c1186456602a3afe3d9bc43",
+      "sourceEvidence": {
+        "evidenceId": "math1-2007-q09",
+        "sourceId": "src_b6edc23c70615d39f9fbe692",
+        "answerSourceId": "src_b6edc23c70615d39f9fbe692",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2007-paper-answer",
+        "answerEvidenceId": "math1-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:6256d6d1a31ff5a026dabdf646d1dee9cbd80e696c1186456602a3afe3d9bc43"
+      }
+    },
+    {
+      "id": "math1-2007-010",
+      "number": 10,
+      "paperId": "math1-2007",
+      "paperName": "2007考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2007",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2007考研数学一第10题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2007 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2007/question-10.jpg",
+          "caption": "题面裁切图 q10",
+          "alt": "2007考研数学一题面裁切图 q10"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2007/answer-page-04.jpg",
+          "caption": "答案解析 p.4",
+          "alt": "2007考研数学一答案解析 p.4"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2007",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:d35c3446fd0e5282c07e343327511384267dc81b93ec9324cc63e81caf628b3f",
+      "answerTextHash": "sha256:478b109366420281686011c8cff90e9a721dc2465f77c9a112abe7a2b19acac0",
+      "sourceEvidence": {
+        "evidenceId": "math1-2007-q10",
+        "sourceId": "src_b6edc23c70615d39f9fbe692",
+        "answerSourceId": "src_b6edc23c70615d39f9fbe692",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2007-paper-answer",
+        "answerEvidenceId": "math1-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:478b109366420281686011c8cff90e9a721dc2465f77c9a112abe7a2b19acac0"
+      }
+    },
+    {
+      "id": "math1-2007-011",
+      "number": 11,
+      "paperId": "math1-2007",
+      "paperName": "2007考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2007",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2007考研数学一第11题（填空题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "1/2 e^(1/2)",
+      "explanation": "答案来自本地百度网盘 2007 数学一真题答案解析 PDF；填空题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2007/question-11.jpg",
+          "caption": "题面裁切图 q11",
+          "alt": "2007考研数学一题面裁切图 q11"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2007/answer-page-04.jpg",
+          "caption": "答案解析 p.4",
+          "alt": "2007考研数学一答案解析 p.4"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2007",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:3bd1b56446cba5425077a8439c696f9c419912de73637bf1448a09ff552f17dc",
+      "answerTextHash": "sha256:d62d2bea6785337ab40005730df9384806a01404687cde0023b21c28ea906d8b",
+      "sourceEvidence": {
+        "evidenceId": "math1-2007-q11",
+        "sourceId": "src_b6edc23c70615d39f9fbe692",
+        "answerSourceId": "src_b6edc23c70615d39f9fbe692",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2007-paper-answer",
+        "answerEvidenceId": "math1-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:d62d2bea6785337ab40005730df9384806a01404687cde0023b21c28ea906d8b"
+      }
+    },
+    {
+      "id": "math1-2007-012",
+      "number": 12,
+      "paperId": "math1-2007",
+      "paperName": "2007考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2007",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2007考研数学一第12题（填空题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "f'_1 y x^(y-1) + f'_2 y^x ln y",
+      "explanation": "答案来自本地百度网盘 2007 数学一真题答案解析 PDF；填空题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2007/question-12.jpg",
+          "caption": "题面裁切图 q12",
+          "alt": "2007考研数学一题面裁切图 q12"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2007/answer-page-04.jpg",
+          "caption": "答案解析 p.4",
+          "alt": "2007考研数学一答案解析 p.4"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2007",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:45c9cd7df98c347cfc300da66359d3ca95715edd8819377f1e65df5d76dff622",
+      "answerTextHash": "sha256:89880af09e88394df84ac3685ea5dd9298d9c5b3cbc501f3c752a876daeb44b5",
+      "sourceEvidence": {
+        "evidenceId": "math1-2007-q12",
+        "sourceId": "src_b6edc23c70615d39f9fbe692",
+        "answerSourceId": "src_b6edc23c70615d39f9fbe692",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2007-paper-answer",
+        "answerEvidenceId": "math1-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:89880af09e88394df84ac3685ea5dd9298d9c5b3cbc501f3c752a876daeb44b5"
+      }
+    },
+    {
+      "id": "math1-2007-013",
+      "number": 13,
+      "paperId": "math1-2007",
+      "paperName": "2007考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2007",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2007考研数学一第13题（填空题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "C1e^x + C2e^(3x) - 2e^(2x)",
+      "explanation": "答案来自本地百度网盘 2007 数学一真题答案解析 PDF；填空题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2007/question-13.jpg",
+          "caption": "题面裁切图 q13",
+          "alt": "2007考研数学一题面裁切图 q13"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2007/answer-page-04.jpg",
+          "caption": "答案解析 p.4",
+          "alt": "2007考研数学一答案解析 p.4"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2007",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:72907e9d9956562057ab96758883b2aa3c7f098829f5bc01774348bfa0323639",
+      "answerTextHash": "sha256:a473d7feb9663ea4d5341be1802b6998b4b7ae1b3a34d12e6e40208e90eaef4c",
+      "sourceEvidence": {
+        "evidenceId": "math1-2007-q13",
+        "sourceId": "src_b6edc23c70615d39f9fbe692",
+        "answerSourceId": "src_b6edc23c70615d39f9fbe692",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2007-paper-answer",
+        "answerEvidenceId": "math1-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:a473d7feb9663ea4d5341be1802b6998b4b7ae1b3a34d12e6e40208e90eaef4c"
+      }
+    },
+    {
+      "id": "math1-2007-014",
+      "number": 14,
+      "paperId": "math1-2007",
+      "paperName": "2007考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2007",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2007考研数学一第14题（填空题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "4sqrt(3)/3",
+      "explanation": "答案来自本地百度网盘 2007 数学一真题答案解析 PDF；填空题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2007/question-14.jpg",
+          "caption": "题面裁切图 q14",
+          "alt": "2007考研数学一题面裁切图 q14"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2007/answer-page-04.jpg",
+          "caption": "答案解析 p.4",
+          "alt": "2007考研数学一答案解析 p.4"
+        },
+        {
+          "src": "question-bank/math1-2007/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2007考研数学一答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2007",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:c250b95364a20ebeb0846cdc944b6d889818ab105a2959c04279d253460ed78f",
+      "answerTextHash": "sha256:f1f76f775f813fe4ef83f978b8604cc410aaf73c0da03bfa8427bf502687dec2",
+      "sourceEvidence": {
+        "evidenceId": "math1-2007-q14",
+        "sourceId": "src_b6edc23c70615d39f9fbe692",
+        "answerSourceId": "src_b6edc23c70615d39f9fbe692",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2007-paper-answer",
+        "answerEvidenceId": "math1-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:f1f76f775f813fe4ef83f978b8604cc410aaf73c0da03bfa8427bf502687dec2"
+      }
+    },
+    {
+      "id": "math1-2007-015",
+      "number": 15,
+      "paperId": "math1-2007",
+      "paperName": "2007考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2007",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2007考研数学一第15题（填空题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "1",
+      "explanation": "答案来自本地百度网盘 2007 数学一真题答案解析 PDF；填空题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2007/question-15.jpg",
+          "caption": "题面裁切图 q15",
+          "alt": "2007考研数学一题面裁切图 q15"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2007/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2007考研数学一答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2007",
+        "填空题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:effeaebf61a9d5a605a50555479ec6b5cccc6663d01f947cb151e492b915e9e9",
+      "answerTextHash": "sha256:4f0ddced307a484d08fd3a9e124c655d902fe2d5a829b4a810ec8accf31d8d96",
+      "sourceEvidence": {
+        "evidenceId": "math1-2007-q15",
+        "sourceId": "src_b6edc23c70615d39f9fbe692",
+        "answerSourceId": "src_b6edc23c70615d39f9fbe692",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2007-paper-answer",
+        "answerEvidenceId": "math1-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:4f0ddced307a484d08fd3a9e124c655d902fe2d5a829b4a810ec8accf31d8d96"
+      }
+    },
+    {
+      "id": "math1-2007-016",
+      "number": 16,
+      "paperId": "math1-2007",
+      "paperName": "2007考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2007",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2007考研数学一第16题（填空题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "3/4",
+      "explanation": "答案来自本地百度网盘 2007 数学一真题答案解析 PDF；填空题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2007/question-16.jpg",
+          "caption": "题面裁切图 q16",
+          "alt": "2007考研数学一题面裁切图 q16"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2007/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2007考研数学一答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2007",
+        "填空题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:823ff1ec7131162f64d7e54a222a29e3169f664ea422128872211d804eef84fc",
+      "answerTextHash": "sha256:a4eaa842b486b48d4b6dba9dfd67fb5f4ed1f6a1845c5366eba6e8e6b9c124c3",
+      "sourceEvidence": {
+        "evidenceId": "math1-2007-q16",
+        "sourceId": "src_b6edc23c70615d39f9fbe692",
+        "answerSourceId": "src_b6edc23c70615d39f9fbe692",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2007-paper-answer",
+        "answerEvidenceId": "math1-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:a4eaa842b486b48d4b6dba9dfd67fb5f4ed1f6a1845c5366eba6e8e6b9c124c3"
+      }
+    },
+    {
+      "id": "math1-2007-017",
+      "number": 17,
+      "paperId": "math1-2007",
+      "paperName": "2007考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2007",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2007考研数学一第17题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "最大值为 8，最小值为 0。",
+      "explanation": "答案来自本地百度网盘 2007 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2007/question-17a.jpg",
+          "caption": "题面裁切图 q17",
+          "alt": "2007考研数学一题面裁切图 q17"
+        },
+        {
+          "src": "question-bank/math1-2007/question-17b.jpg",
+          "caption": "题面裁切图 q17",
+          "alt": "2007考研数学一题面裁切图 q17"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2007/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2007考研数学一答案解析 p.5"
+        },
+        {
+          "src": "question-bank/math1-2007/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2007考研数学一答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2007",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:405ef61233dccc661825fa2add88522f6bdac738e4609c6e3240cc1496a77013",
+      "answerTextHash": "sha256:3e09cc8c5871cd65afe89b72c3c89cac9e87011cb201d6dceff5e700b89f5a54",
+      "sourceEvidence": {
+        "evidenceId": "math1-2007-q17",
+        "sourceId": "src_b6edc23c70615d39f9fbe692",
+        "answerSourceId": "src_b6edc23c70615d39f9fbe692",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2007-paper-answer",
+        "answerEvidenceId": "math1-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:3e09cc8c5871cd65afe89b72c3c89cac9e87011cb201d6dceff5e700b89f5a54"
+      }
+    },
+    {
+      "id": "math1-2007-018",
+      "number": 18,
+      "paperId": "math1-2007",
+      "paperName": "2007考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2007",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2007考研数学一第18题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "曲面积分值为 π。",
+      "explanation": "答案来自本地百度网盘 2007 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2007/question-18.jpg",
+          "caption": "题面裁切图 q18",
+          "alt": "2007考研数学一题面裁切图 q18"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2007/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2007考研数学一答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2007",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:a73fcb4d54b1f0275739dd7079fd50e5bcf7197add234611511d12f708cf215e",
+      "answerTextHash": "sha256:0e38ec51d0062f4cb37b8062d422e6dcc31e4365b6f42fcf6d85d555a2d90c6f",
+      "sourceEvidence": {
+        "evidenceId": "math1-2007-q18",
+        "sourceId": "src_b6edc23c70615d39f9fbe692",
+        "answerSourceId": "src_b6edc23c70615d39f9fbe692",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2007-paper-answer",
+        "answerEvidenceId": "math1-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:0e38ec51d0062f4cb37b8062d422e6dcc31e4365b6f42fcf6d85d555a2d90c6f"
+      }
+    },
+    {
+      "id": "math1-2007-019",
+      "number": 19,
+      "paperId": "math1-2007",
+      "paperName": "2007考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2007",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2007考研数学一第19题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "完整证明见答案原页。",
+      "explanation": "答案来自本地百度网盘 2007 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2007/question-19a.jpg",
+          "caption": "题面裁切图 q19",
+          "alt": "2007考研数学一题面裁切图 q19"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2007/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2007考研数学一答案解析 p.6"
+        },
+        {
+          "src": "question-bank/math1-2007/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2007考研数学一答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2007",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:95a89443fe59c40b3db111914bdb6fa2e60635e8d0c167de265f1aedd4bf7446",
+      "answerTextHash": "sha256:6cc41918916686b435b6526e0ac00b9e1cf5169c3d6668bab1984f1f6732e4a1",
+      "sourceEvidence": {
+        "evidenceId": "math1-2007-q19",
+        "sourceId": "src_b6edc23c70615d39f9fbe692",
+        "answerSourceId": "src_b6edc23c70615d39f9fbe692",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2007-paper-answer",
+        "answerEvidenceId": "math1-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:6cc41918916686b435b6526e0ac00b9e1cf5169c3d6668bab1984f1f6732e4a1"
+      }
+    },
+    {
+      "id": "math1-2007-020",
+      "number": 20,
+      "paperId": "math1-2007",
+      "paperName": "2007考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2007",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2007考研数学一第20题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "完整计算与结论见答案原页。",
+      "explanation": "答案来自本地百度网盘 2007 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2007/question-20.jpg",
+          "caption": "题面裁切图 q20",
+          "alt": "2007考研数学一题面裁切图 q20"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2007/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2007考研数学一答案解析 p.7"
+        },
+        {
+          "src": "question-bank/math1-2007/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2007考研数学一答案解析 p.8"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2007",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:efee3a5705d7a7cd4152ace25a6ac06184cde9764821bd15dfb8064de9026e19",
+      "answerTextHash": "sha256:97c699605e5a8b826f6a73f50a2d3fbecb972adc95e4e456578d3138f458221c",
+      "sourceEvidence": {
+        "evidenceId": "math1-2007-q20",
+        "sourceId": "src_b6edc23c70615d39f9fbe692",
+        "answerSourceId": "src_b6edc23c70615d39f9fbe692",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2007-paper-answer",
+        "answerEvidenceId": "math1-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:97c699605e5a8b826f6a73f50a2d3fbecb972adc95e4e456578d3138f458221c"
+      }
+    },
+    {
+      "id": "math1-2007-021",
+      "number": 21,
+      "paperId": "math1-2007",
+      "paperName": "2007考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2007",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2007考研数学一第21题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "标准形及二次曲面方程见答案原页。",
+      "explanation": "答案来自本地百度网盘 2007 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2007/question-21.jpg",
+          "caption": "题面裁切图 q21",
+          "alt": "2007考研数学一题面裁切图 q21"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2007/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2007考研数学一答案解析 p.8"
+        },
+        {
+          "src": "question-bank/math1-2007/answer-page-09.jpg",
+          "caption": "答案解析 p.9",
+          "alt": "2007考研数学一答案解析 p.9"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2007",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:f6e135b975009f9d9233160292e7c36a5eb297cd5b25c6e08d57374af7cd3f3c",
+      "answerTextHash": "sha256:e89d73842f718d76260529dd5cdd1365f5e50617a556d47238247a8979280988",
+      "sourceEvidence": {
+        "evidenceId": "math1-2007-q21",
+        "sourceId": "src_b6edc23c70615d39f9fbe692",
+        "answerSourceId": "src_b6edc23c70615d39f9fbe692",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2007-paper-answer",
+        "answerEvidenceId": "math1-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:e89d73842f718d76260529dd5cdd1365f5e50617a556d47238247a8979280988"
+      }
+    },
+    {
+      "id": "math1-2007-022",
+      "number": 22,
+      "paperId": "math1-2007",
+      "paperName": "2007考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2007",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2007考研数学一第22题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "k 与通解分类见答案原页。",
+      "explanation": "答案来自本地百度网盘 2007 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2007/question-22.jpg",
+          "caption": "题面裁切图 q22",
+          "alt": "2007考研数学一题面裁切图 q22"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2007/answer-page-09.jpg",
+          "caption": "答案解析 p.9",
+          "alt": "2007考研数学一答案解析 p.9"
+        },
+        {
+          "src": "question-bank/math1-2007/answer-page-10.jpg",
+          "caption": "答案解析 p.10",
+          "alt": "2007考研数学一答案解析 p.10"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2007",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:17f1744abde050b990e6700ab4517ae97238cd6535ed3eebbeace1f16c106b12",
+      "answerTextHash": "sha256:29a75c40ce9e11daba09a6d97a4d42a63703d3b4c21671c833fa4648c4b52aa7",
+      "sourceEvidence": {
+        "evidenceId": "math1-2007-q22",
+        "sourceId": "src_b6edc23c70615d39f9fbe692",
+        "answerSourceId": "src_b6edc23c70615d39f9fbe692",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2007-paper-answer",
+        "answerEvidenceId": "math1-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:29a75c40ce9e11daba09a6d97a4d42a63703d3b4c21671c833fa4648c4b52aa7"
+      }
+    },
+    {
+      "id": "math1-2007-023",
+      "number": 23,
+      "paperId": "math1-2007",
+      "paperName": "2007考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2007",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2007考研数学一第23题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "概率密度与数学期望见答案原页。",
+      "explanation": "答案来自本地百度网盘 2007 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2007/question-23.jpg",
+          "caption": "题面裁切图 q23",
+          "alt": "2007考研数学一题面裁切图 q23"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2007/answer-page-10.jpg",
+          "caption": "答案解析 p.10",
+          "alt": "2007考研数学一答案解析 p.10"
+        },
+        {
+          "src": "question-bank/math1-2007/answer-page-11.jpg",
+          "caption": "答案解析 p.11",
+          "alt": "2007考研数学一答案解析 p.11"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2007",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:0ef6a1288d9d119e67b91389ba57bab0fa360fef5e12130b47bf561d97a5f758",
+      "answerTextHash": "sha256:ece81bc7461cf8d1e6e3c79550a48e4f2be6b3f435c9a47df58189a39404e789",
+      "sourceEvidence": {
+        "evidenceId": "math1-2007-q23",
+        "sourceId": "src_b6edc23c70615d39f9fbe692",
+        "answerSourceId": "src_b6edc23c70615d39f9fbe692",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2007-paper-answer",
+        "answerEvidenceId": "math1-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:ece81bc7461cf8d1e6e3c79550a48e4f2be6b3f435c9a47df58189a39404e789"
+      }
+    },
+    {
+      "id": "math1-2007-024",
+      "number": 24,
+      "paperId": "math1-2007",
+      "paperName": "2007考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2007",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2007考研数学一第24题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "统计量分布与拒绝域见答案原页。",
+      "explanation": "答案来自本地百度网盘 2007 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2007/question-24a.jpg",
+          "caption": "题面裁切图 q24",
+          "alt": "2007考研数学一题面裁切图 q24"
+        },
+        {
+          "src": "question-bank/math1-2007/question-24b.jpg",
+          "caption": "题面裁切图 q24",
+          "alt": "2007考研数学一题面裁切图 q24"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2007/answer-page-11.jpg",
+          "caption": "答案解析 p.11",
+          "alt": "2007考研数学一答案解析 p.11"
+        },
+        {
+          "src": "question-bank/math1-2007/answer-page-12.jpg",
+          "caption": "答案解析 p.12",
+          "alt": "2007考研数学一答案解析 p.12"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2007",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2007-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:b08b7b16e2e7be1c1b36ee710d95dc987ef92ceea38abad66eea878d2cfb7221",
+      "answerTextHash": "sha256:60a42c11026bd421d7ef5157c058c63b568c929824794302c172de118af7afd0",
+      "sourceEvidence": {
+        "evidenceId": "math1-2007-q24",
+        "sourceId": "src_b6edc23c70615d39f9fbe692",
+        "answerSourceId": "src_b6edc23c70615d39f9fbe692",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2007-paper-answer",
+        "answerEvidenceId": "math1-2007-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:60a42c11026bd421d7ef5157c058c63b568c929824794302c172de118af7afd0"
+      }
+    }
+  ]
+}

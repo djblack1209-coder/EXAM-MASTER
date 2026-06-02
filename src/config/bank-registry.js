@@ -409,6 +409,21 @@ const BANK_REGISTRY = [
     quality: PAPER_QUALITY.READY,
     sections: paperSections('选择题', '填空题', '解答题')
   },
+  {
+    id: 'math1-2007',
+    subject: '数学',
+    subjectKey: 'math',
+    track: 'math1',
+    year: '2007',
+    name: '2007考研数学一真题',
+    description: '10道选择 + 6道填空 + 8道解答题',
+    releaseLabel: '正式题库',
+    caution:
+      '按本地百度网盘 2007 数学一标准答案及解析 PDF 页图训练；选择题题面裁切图已遮盖答案标记，答案和解析以原 PDF 页图为准',
+    paperType: 'past_exam',
+    quality: PAPER_QUALITY.READY,
+    sections: paperSections('选择题', '填空题', '解答题')
+  },
   ...[2005, 2006, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017].map((year) => ({
     id: `math1-${year}`,
     subject: '数学',

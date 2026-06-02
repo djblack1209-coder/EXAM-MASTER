@@ -447,3 +447,14 @@
 - Updated release backlog action selection so a loaded local source audit with a blocked answer companion keeps the slot at `blocked_before_auto_pair` even when Source Manifest already has candidate/publishable-looking source rows.
 - Verification passed: source-audit unit tests, release-backlog Vitest, real `politics:2023` source audit to `/tmp`, temporary backlog with `local_answer_file_blocked`, question-bank release gate, default release backlog, and release-priority cleaning dry-run.
 - Product rule: candidate-repaired answers are useful for local cleaning progress, but incomplete answer-source coverage must stop auto-pairing and formal publication until a complete authoritative answer source or independently verified evidence is available.
+
+### 2026-06-02 Round 50
+
+- Promoted `math1:2007` through the formal Math I page-image bank path instead of the generic LLM cleaner that had already hung on the scanned formula-heavy PDF.
+- Extended `build_math1_history_banks.py` for the 2007 historical structure: 24 cards, 10 choice, 6 fill-in-the-blank, and 8 solution questions.
+- Added 2007-specific answer keys, section/type mapping, expected-card helpers, and manual crop boxes. Split cross-page/long prompts such as q09 and q24 into stable multi-image refs while keeping q19 as a question-only crop.
+- Published `src/config/flashcard-banks/math1-2007.json` plus 51 page/crop assets under `cdn-assets/question-bank/math1-2007`, registered the bank, and regenerated the compressed practice-bank table.
+- Validation result: `math1-2007.json` has 24 cards, `{single_choice:10, short_answer:14}`, section counts `{选择题:10, 填空题:6, 解答题:8}`, no missing assets, and the OCR leakage scan found no `【分析】` / `【详解】` / `[A-D]` markers in question images.
+- Release gate result: public-course coverage gaps dropped to 62, release blockers dropped to 74, public-course blocked slots dropped to 62, and `math1:2007` no longer appears in the refreshed release backlog.
+- Source caveat: the available 2007 Math I file is `2007数一标准答案及解析.pdf`, not a standalone blank paper. Choice-answer brackets are masked and explanations are cropped away, but fill-in-the-blank source pages still include filled answers where the source has no blank-paper equivalent.
+- Product rule: for scanned math answer-analysis editions, a publishable practice artifact requires both structural registration and crop-level leakage checks; passing the release gate is not a substitute for inspecting the actual question images.

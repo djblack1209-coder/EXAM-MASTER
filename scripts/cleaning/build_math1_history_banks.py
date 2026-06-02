@@ -70,15 +70,22 @@ def per_page_answer_pages(page_counts: dict[int, int]) -> dict[int, list[int]]:
     return pages
 
 
-def generic_answers(year: int, choice_answers: dict[int, str] | None = None) -> dict[int, str]:
+def generic_answers(
+    year: int,
+    choice_answers: dict[int, str] | None = None,
+    *,
+    card_count: int = 23,
+    choice_end: int = 8,
+    fill_end: int = 14,
+) -> dict[int, str]:
     answers: dict[int, str] = {}
     choice_answers = choice_answers or {}
-    for number in range(1, 24):
+    for number in range(1, card_count + 1):
         if number in choice_answers:
             answers[number] = choice_answers[number]
-        elif number <= 8:
+        elif number <= choice_end:
             answers[number] = "完整答案与解析见答案原页。"
-        elif number <= 14:
+        elif number <= fill_end:
             answers[number] = "填空题答案与解析见答案原页。"
         else:
             answers[number] = "解答题完整演算、证明或推导过程见答案原页。"
@@ -108,6 +115,35 @@ def math1_2005_answers() -> dict[int, str]:
             21: "线性方程组通解按 k 与 r(A) 的情形分类，完整结果见答案原页。",
             22: "边缘密度与 Z 的概率密度见答案原页。",
             23: "D(Y_i) 与 Cov(Y_i,Y_n) 的完整结果见答案原页。",
+        }
+    )
+    return answers
+
+
+def math1_2007_answers() -> dict[int, str]:
+    answers = generic_answers(
+        2007,
+        {1: "B", 2: "D", 3: "C", 4: "D", 5: "D", 6: "B", 7: "A", 8: "B", 9: "C", 10: "A"},
+        card_count=24,
+        choice_end=10,
+        fill_end=16,
+    )
+    answers.update(
+        {
+            11: "1/2 e^(1/2)",
+            12: "f'_1 y x^(y-1) + f'_2 y^x ln y",
+            13: "C1e^x + C2e^(3x) - 2e^(2x)",
+            14: "4sqrt(3)/3",
+            15: "1",
+            16: "3/4",
+            17: "最大值为 8，最小值为 0。",
+            18: "曲面积分值为 π。",
+            19: "完整证明见答案原页。",
+            20: "完整计算与结论见答案原页。",
+            21: "标准形及二次曲面方程见答案原页。",
+            22: "k 与通解分类见答案原页。",
+            23: "概率密度与数学期望见答案原页。",
+            24: "统计量分布与拒绝域见答案原页。",
         }
     )
     return answers
@@ -288,6 +324,105 @@ SPECS: dict[int, SourceSpec] = {
             "q22a": (16, 1205, 315),
             "q22b": (17, 145, 305),
             "q23": (18, 445, 335),
+        },
+    ),
+    2007: SourceSpec(
+        year=2007,
+        file_name="src_b6edc23c70615d39f9fbe692-2007数一标准答案及解析.pdf",
+        source_id="src_b6edc23c70615d39f9fbe692",
+        question_pages={
+            1: question_refs("q01"),
+            2: question_refs("q02"),
+            3: question_refs("q03"),
+            4: question_refs("q04"),
+            5: question_refs("q05"),
+            6: question_refs("q06"),
+            7: question_refs("q07"),
+            8: question_refs("q08"),
+            9: question_refs("q09a", "q09b"),
+            10: question_refs("q10"),
+            11: question_refs("q11"),
+            12: question_refs("q12"),
+            13: question_refs("q13"),
+            14: question_refs("q14"),
+            15: question_refs("q15"),
+            16: question_refs("q16"),
+            17: question_refs("q17a", "q17b"),
+            18: question_refs("q18"),
+            19: question_refs("q19a"),
+            20: question_refs("q20"),
+            21: question_refs("q21"),
+            22: question_refs("q22"),
+            23: question_refs("q23"),
+            24: question_refs("q24a", "q24b"),
+        },
+        answer_pages={
+            1: [1],
+            2: [1, 2],
+            3: [1, 2],
+            4: [2],
+            5: [2],
+            6: [2, 3],
+            7: [3],
+            8: [3],
+            9: [3, 4],
+            10: [4],
+            11: [4],
+            12: [4],
+            13: [4],
+            14: [4, 5],
+            15: [5],
+            16: [5],
+            17: [5, 6],
+            18: [6],
+            19: [6, 7],
+            20: [7, 8],
+            21: [8, 9],
+            22: [9, 10],
+            23: [10, 11],
+            24: [11, 12],
+        },
+        answers=math1_2007_answers(),
+        question_crop_boxes={
+            "q01": (1, 135, 285, 900, 125),
+            "q02": (1, 135, 590, 900, 75),
+            "q03": (1, 135, 1025, 900, 245),
+            "q04": (2, 135, 275, 900, 165),
+            "q05": (2, 135, 735, 900, 185),
+            "q06": (2, 135, 1185, 900, 190),
+            "q07": (3, 135, 390, 900, 165),
+            "q08": (3, 135, 1015, 900, 185),
+            "q09a": (3, 135, 1285, 900, 220),
+            "q09b": (4, 135, 120, 900, 70),
+            "q10": (4, 135, 285, 900, 185),
+            "q11": (4, 135, 595, 900, 75),
+            "q12": (4, 135, 875, 900, 70),
+            "q13": (4, 135, 990, 900, 105),
+            "q14": (4, 135, 1338, 900, 70),
+            "q15": (5, 135, 440, 900, 145),
+            "q16": (5, 135, 685, 900, 45),
+            "q17a": (5, 135, 930, 900, 125),
+            "q17b": (6, 135, 125, 900, 365),
+            "q18": (6, 135, 500, 900, 190),
+            "q19a": (6, 135, 1260, 900, 210),
+            "q20": (7, 135, 940, 900, 260),
+            "q21": (8, 135, 610, 900, 280),
+            "q22": (9, 135, 835, 900, 235),
+            "q23": (11, 135, 245, 900, 280),
+            "q24a": (11, 135, 1200, 900, 310),
+            "q24b": (12, 135, 120, 900, 375),
+        },
+        question_crop_masks={
+            "q01": [(645, 72, 185, 35)],
+            "q02": [(640, 50, 185, 25)],
+            "q03": [(645, 175, 185, 40)],
+            "q04": [(645, 125, 185, 35)],
+            "q05": [(645, 125, 185, 35)],
+            "q06": [(645, 145, 185, 35)],
+            "q07": [(645, 120, 185, 35)],
+            "q08": [(645, 130, 185, 35)],
+            "q09b": [(645, 35, 185, 35)],
+            "q10": [(645, 125, 185, 35)],
         },
     ),
     2008: SourceSpec(
@@ -711,12 +846,26 @@ def image_ref(spec: SourceSpec, kind: str, page: int | str, *, caption: str) -> 
     }
 
 
+def expected_card_count(spec: SourceSpec) -> int:
+    return max(spec.answers)
+
+
+def card_numbers_for_spec(spec: SourceSpec) -> list[int]:
+    return list(range(1, expected_card_count(spec) + 1))
+
+
 def section_for(spec: SourceSpec, number: int) -> str:
     if spec.year in {2005, 2006}:
         if number <= 6:
             return "填空题"
         if number <= 14:
             return "选择题"
+        return "解答题"
+    if spec.year == 2007:
+        if number <= 10:
+            return "选择题"
+        if number <= 16:
+            return "填空题"
         return "解答题"
     if number <= 8:
         return "选择题"
@@ -728,6 +877,10 @@ def section_for(spec: SourceSpec, number: int) -> str:
 def type_for(spec: SourceSpec, number: int) -> str:
     if spec.year in {2005, 2006}:
         if 7 <= number <= 14:
+            return "single_choice"
+        return "short_answer"
+    if spec.year == 2007:
+        if number <= 10:
             return "single_choice"
         return "short_answer"
     if number <= 8:
@@ -819,8 +972,9 @@ def build_card(spec: SourceSpec, number: int) -> dict[str, Any]:
 
 def validate_cards(spec: SourceSpec, cards: list[dict[str, Any]], *, asset_dir: Path) -> None:
     issues: list[str] = []
-    if len(cards) != 23:
-        issues.append(f"card count {len(cards)} != 23")
+    expected_count = expected_card_count(spec)
+    if len(cards) != expected_count:
+        issues.append(f"card count {len(cards)} != {expected_count}")
     for expected_number, card in enumerate(cards, start=1):
         if card.get("number") != expected_number:
             issues.append(f"card {expected_number}: number={card.get('number')}")
@@ -853,7 +1007,7 @@ def build_payload(spec: SourceSpec, *, asset_root: Path, force_assets: bool) -> 
             if isinstance(page, int) and not 1 <= page <= page_count:
                 raise ValueError(f"math1-{spec.year}: page {page} out of range 1..{page_count}")
 
-    cards = [build_card(spec, number) for number in range(1, 24)]
+    cards = [build_card(spec, number) for number in card_numbers_for_spec(spec)]
     validate_cards(spec, cards, asset_dir=asset_dir)
     return {
         "id": f"math1-{spec.year}",
