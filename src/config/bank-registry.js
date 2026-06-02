@@ -410,6 +410,21 @@ const BANK_REGISTRY = [
     sections: paperSections('选择题', '填空题', '解答题')
   },
   {
+    id: 'math1-2024',
+    subject: '数学',
+    subjectKey: 'math',
+    track: 'math1',
+    year: '2024',
+    name: '2024考研数学一真题',
+    description: '10道选择 + 6道填空 + 6道解答题',
+    releaseLabel: '正式题库',
+    caution:
+      '按本地百度网盘 2024 数学一真题及参考答案 PDF 页图训练；题面使用逐题裁切图，答案和解析以原 PDF 页图为准',
+    paperType: 'past_exam',
+    quality: PAPER_QUALITY.READY,
+    sections: paperSections('选择题', '填空题', '解答题')
+  },
+  {
     id: 'math1-2023',
     subject: '数学',
     subjectKey: 'math',

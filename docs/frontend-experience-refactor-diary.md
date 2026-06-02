@@ -535,3 +535,14 @@
 - Visual spot checks covered q01, q07, q09, q20, and q22; q22b was trimmed after the first inspection to remove the next-page `【解析】` edge while preserving the final prompt.
 - Release gate result after sequential audit refresh: public-course coverage gaps dropped to 56, release blockers dropped to 68, public-course blocked slots dropped to 56, and the release-priority dry-run now starts at `2024年数学一真题及参考答案.pdf`.
 - Source caveat: the available 2023 Math I file is an answer-analysis edition. User-facing question images depend on crop-level leakage controls, while answer evidence remains the original rendered PDF pages.
+
+### 2026-06-02 Round 58
+
+- Promoted `math1:2024` through the formal Math I page-image bank path after the release-priority queue advanced to `2024年数学一真题及参考答案.pdf`.
+- Downloaded the Baidu source into ignored `data/raw-inbox/`, confirmed it is a 6-page Word-exported PDF with readable text, and excluded the final ad-only page from rendered release assets.
+- Added a 2024 `SourceSpec` for the newer 22-card structure: 10 choice, 6 fill-in-the-blank, and 6 solution questions. q04 keeps answer evidence across pages 1-2 because its answer sits at the next page top.
+- Published `src/config/flashcard-banks/math1-2024.json` plus 32 page/crop assets under `cdn-assets/question-bank/math1-2024`, registered the bank, and regenerated the compressed practice-bank table.
+- Validation result: `math1-2024.json` has 22 cards, `{flashcard:16, short_answer:6}`, section counts `{选择题:10, 填空题:6, 解答题:6}`, 22 question crop assets, 5 answer pages, 5 paper pages, no missing assets, and no OCR-detected `答案/解析/详解` leakage in question images.
+- Visual spot checks covered q02, q10, q21, and q22; q02 was narrowed after inspection to remove an advertising edge while preserving all options.
+- Release gate result after sequential audit refresh: public-course coverage gaps dropped to 55, release blockers dropped to 67, public-course blocked slots dropped to 55, and the release-priority dry-run now starts at `2016考研数学二真题.pdf`.
+- Source caveat: the available 2024 Math I source is still a combined question-answer PDF, not a standalone blank paper. User-facing question crops hide same-page answers, while answer evidence remains original rendered PDF pages.

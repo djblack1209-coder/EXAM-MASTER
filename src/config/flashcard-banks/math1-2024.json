@@ -1,0 +1,1155 @@
+{
+  "id": "math1-2024",
+  "source": "math1-2024-paper-answer",
+  "paperId": "math1-2024",
+  "paperName": "2024考研数学一真题",
+  "subject": "数学",
+  "subjectKey": "math",
+  "track": "math1",
+  "year": "2024",
+  "quality": "ready",
+  "publicationStatus": "published",
+  "publicationBlockers": [],
+  "sourceEvidencePolicy": "baidu_netdisk_official_paper_pdf_question_crop_answer_page_image_v1",
+  "sourceFiles": [
+    {
+      "id": "math1-2024-paper-answer",
+      "role": "paper_answer",
+      "localPath": "data/raw-inbox/src_a98e37e10d544ea2a7f1791b-2024年数学一真题及参考答案.pdf",
+      "sha256": "sha256:f28156695ec00efe4ae019b9cb6db01ba85e92be41909dc8f474054be5befc82",
+      "sourceId": "src_a98e37e10d544ea2a7f1791b"
+    }
+  ],
+  "assetRoot": "question-bank/math1-2024",
+  "processed_at": "2026-06-02T21:10:16Z",
+  "total_cards": 22,
+  "cards": [
+    {
+      "id": "math1-2024-001",
+      "number": 1,
+      "paperId": "math1-2024",
+      "paperName": "2024考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2024",
+      "section": "选择题",
+      "type": "flashcard",
+      "question": "2024考研数学一第1题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2024 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2024/question-01.jpg",
+          "caption": "题面裁切图 q01",
+          "alt": "2024考研数学一题面裁切图 q01"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2024/answer-page-01.jpg",
+          "caption": "答案解析 p.1",
+          "alt": "2024考研数学一答案解析 p.1"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2024",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2024-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:8166fe8534c39c0cdefc00c63b0ed3fdbc583e0759f98d84e79bf1b12e4bd183",
+      "answerTextHash": "sha256:01370fce298cb459b7c797138d9e825fda2e23c11e9e9249e65268241d053ce7",
+      "sourceEvidence": {
+        "evidenceId": "math1-2024-q01",
+        "sourceId": "src_a98e37e10d544ea2a7f1791b",
+        "answerSourceId": "src_a98e37e10d544ea2a7f1791b",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2024-paper-answer",
+        "answerEvidenceId": "math1-2024-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:01370fce298cb459b7c797138d9e825fda2e23c11e9e9249e65268241d053ce7"
+      }
+    },
+    {
+      "id": "math1-2024-002",
+      "number": 2,
+      "paperId": "math1-2024",
+      "paperName": "2024考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2024",
+      "section": "选择题",
+      "type": "flashcard",
+      "question": "2024考研数学一第2题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2024 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2024/question-02.jpg",
+          "caption": "题面裁切图 q02",
+          "alt": "2024考研数学一题面裁切图 q02"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2024/answer-page-01.jpg",
+          "caption": "答案解析 p.1",
+          "alt": "2024考研数学一答案解析 p.1"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2024",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2024-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:297b50f78be270eb819a900ce1e4516b2f763fbdc3f2cfc934dac53d054f85dc",
+      "answerTextHash": "sha256:ef6d5489e5a01fec1ec4bb9e6b4266e4057af244337145b922d948050679c07e",
+      "sourceEvidence": {
+        "evidenceId": "math1-2024-q02",
+        "sourceId": "src_a98e37e10d544ea2a7f1791b",
+        "answerSourceId": "src_a98e37e10d544ea2a7f1791b",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2024-paper-answer",
+        "answerEvidenceId": "math1-2024-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:ef6d5489e5a01fec1ec4bb9e6b4266e4057af244337145b922d948050679c07e"
+      }
+    },
+    {
+      "id": "math1-2024-003",
+      "number": 3,
+      "paperId": "math1-2024",
+      "paperName": "2024考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2024",
+      "section": "选择题",
+      "type": "flashcard",
+      "question": "2024考研数学一第3题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2024 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2024/question-03.jpg",
+          "caption": "题面裁切图 q03",
+          "alt": "2024考研数学一题面裁切图 q03"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2024/answer-page-01.jpg",
+          "caption": "答案解析 p.1",
+          "alt": "2024考研数学一答案解析 p.1"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2024",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2024-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:200fba2ceb1fabad01376a5276175a0a8d4ff2dbf0227e121f0191b0388eef3e",
+      "answerTextHash": "sha256:ef6d5489e5a01fec1ec4bb9e6b4266e4057af244337145b922d948050679c07e",
+      "sourceEvidence": {
+        "evidenceId": "math1-2024-q03",
+        "sourceId": "src_a98e37e10d544ea2a7f1791b",
+        "answerSourceId": "src_a98e37e10d544ea2a7f1791b",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2024-paper-answer",
+        "answerEvidenceId": "math1-2024-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:ef6d5489e5a01fec1ec4bb9e6b4266e4057af244337145b922d948050679c07e"
+      }
+    },
+    {
+      "id": "math1-2024-004",
+      "number": 4,
+      "paperId": "math1-2024",
+      "paperName": "2024考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2024",
+      "section": "选择题",
+      "type": "flashcard",
+      "question": "2024考研数学一第4题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2024 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2024/question-04.jpg",
+          "caption": "题面裁切图 q04",
+          "alt": "2024考研数学一题面裁切图 q04"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2024/answer-page-01.jpg",
+          "caption": "答案解析 p.1",
+          "alt": "2024考研数学一答案解析 p.1"
+        },
+        {
+          "src": "question-bank/math1-2024/answer-page-02.jpg",
+          "caption": "答案解析 p.2",
+          "alt": "2024考研数学一答案解析 p.2"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2024",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2024-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:e6c969dd10eb5ecd7f47c8b0e21faf5ca58c32e49ae69ddec12481f88beb9a6b",
+      "answerTextHash": "sha256:6bb6d285bcddf9e1642b1bde9da8cf4525d80d7400efb1f8be4241eef32cd377",
+      "sourceEvidence": {
+        "evidenceId": "math1-2024-q04",
+        "sourceId": "src_a98e37e10d544ea2a7f1791b",
+        "answerSourceId": "src_a98e37e10d544ea2a7f1791b",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2024-paper-answer",
+        "answerEvidenceId": "math1-2024-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:6bb6d285bcddf9e1642b1bde9da8cf4525d80d7400efb1f8be4241eef32cd377"
+      }
+    },
+    {
+      "id": "math1-2024-005",
+      "number": 5,
+      "paperId": "math1-2024",
+      "paperName": "2024考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2024",
+      "section": "选择题",
+      "type": "flashcard",
+      "question": "2024考研数学一第5题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2024 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2024/question-05.jpg",
+          "caption": "题面裁切图 q05",
+          "alt": "2024考研数学一题面裁切图 q05"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2024/answer-page-02.jpg",
+          "caption": "答案解析 p.2",
+          "alt": "2024考研数学一答案解析 p.2"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2024",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2024-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:37316c929f4d1849472c86eba2b0297abb1202e6a8b63c64ac38227f2bca74b0",
+      "answerTextHash": "sha256:ea6b7035bde61a0fb21a8d4196db45fb2986b73187d0a84d810bab5409f63f7d",
+      "sourceEvidence": {
+        "evidenceId": "math1-2024-q05",
+        "sourceId": "src_a98e37e10d544ea2a7f1791b",
+        "answerSourceId": "src_a98e37e10d544ea2a7f1791b",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2024-paper-answer",
+        "answerEvidenceId": "math1-2024-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:ea6b7035bde61a0fb21a8d4196db45fb2986b73187d0a84d810bab5409f63f7d"
+      }
+    },
+    {
+      "id": "math1-2024-006",
+      "number": 6,
+      "paperId": "math1-2024",
+      "paperName": "2024考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2024",
+      "section": "选择题",
+      "type": "flashcard",
+      "question": "2024考研数学一第6题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2024 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2024/question-06.jpg",
+          "caption": "题面裁切图 q06",
+          "alt": "2024考研数学一题面裁切图 q06"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2024/answer-page-02.jpg",
+          "caption": "答案解析 p.2",
+          "alt": "2024考研数学一答案解析 p.2"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2024",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2024-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:a4b308c276a688672d5988a45f0ac5e8f748a17df7bda26925300edee287a1ca",
+      "answerTextHash": "sha256:7cd6122ff6ad5f4ed9210d1ae15379380ce2cd5f5ab3a3b9f0756d9b8d6dbe3f",
+      "sourceEvidence": {
+        "evidenceId": "math1-2024-q06",
+        "sourceId": "src_a98e37e10d544ea2a7f1791b",
+        "answerSourceId": "src_a98e37e10d544ea2a7f1791b",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2024-paper-answer",
+        "answerEvidenceId": "math1-2024-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:7cd6122ff6ad5f4ed9210d1ae15379380ce2cd5f5ab3a3b9f0756d9b8d6dbe3f"
+      }
+    },
+    {
+      "id": "math1-2024-007",
+      "number": 7,
+      "paperId": "math1-2024",
+      "paperName": "2024考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2024",
+      "section": "选择题",
+      "type": "flashcard",
+      "question": "2024考研数学一第7题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2024 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2024/question-07.jpg",
+          "caption": "题面裁切图 q07",
+          "alt": "2024考研数学一题面裁切图 q07"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2024/answer-page-02.jpg",
+          "caption": "答案解析 p.2",
+          "alt": "2024考研数学一答案解析 p.2"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2024",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2024-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:7be02c63b646a08679131a441697556c4a32d2986928541f9b29a0506a0c428c",
+      "answerTextHash": "sha256:be350ad3c0fc9a7257a73bd05aba736f028d2514441d66b0626e7a78bc85704b",
+      "sourceEvidence": {
+        "evidenceId": "math1-2024-q07",
+        "sourceId": "src_a98e37e10d544ea2a7f1791b",
+        "answerSourceId": "src_a98e37e10d544ea2a7f1791b",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2024-paper-answer",
+        "answerEvidenceId": "math1-2024-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:be350ad3c0fc9a7257a73bd05aba736f028d2514441d66b0626e7a78bc85704b"
+      }
+    },
+    {
+      "id": "math1-2024-008",
+      "number": 8,
+      "paperId": "math1-2024",
+      "paperName": "2024考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2024",
+      "section": "选择题",
+      "type": "flashcard",
+      "question": "2024考研数学一第8题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2024 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2024/question-08.jpg",
+          "caption": "题面裁切图 q08",
+          "alt": "2024考研数学一题面裁切图 q08"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2024/answer-page-02.jpg",
+          "caption": "答案解析 p.2",
+          "alt": "2024考研数学一答案解析 p.2"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2024",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2024-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:bea4948fad49fe7b0d4efd4d918d5b1efd068db6093faf850e61d218e37da33b",
+      "answerTextHash": "sha256:ea6b7035bde61a0fb21a8d4196db45fb2986b73187d0a84d810bab5409f63f7d",
+      "sourceEvidence": {
+        "evidenceId": "math1-2024-q08",
+        "sourceId": "src_a98e37e10d544ea2a7f1791b",
+        "answerSourceId": "src_a98e37e10d544ea2a7f1791b",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2024-paper-answer",
+        "answerEvidenceId": "math1-2024-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:ea6b7035bde61a0fb21a8d4196db45fb2986b73187d0a84d810bab5409f63f7d"
+      }
+    },
+    {
+      "id": "math1-2024-009",
+      "number": 9,
+      "paperId": "math1-2024",
+      "paperName": "2024考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2024",
+      "section": "选择题",
+      "type": "flashcard",
+      "question": "2024考研数学一第9题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2024 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2024/question-09.jpg",
+          "caption": "题面裁切图 q09",
+          "alt": "2024考研数学一题面裁切图 q09"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2024/answer-page-03.jpg",
+          "caption": "答案解析 p.3",
+          "alt": "2024考研数学一答案解析 p.3"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2024",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2024-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:53b0da5778fabea66bf254c0a70bbae51249413d589a222730bac5d5569246bb",
+      "answerTextHash": "sha256:d637b5249be391a9a0cef957e8d809d0203bcfb6b4872f45e530441f455f7bc1",
+      "sourceEvidence": {
+        "evidenceId": "math1-2024-q09",
+        "sourceId": "src_a98e37e10d544ea2a7f1791b",
+        "answerSourceId": "src_a98e37e10d544ea2a7f1791b",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2024-paper-answer",
+        "answerEvidenceId": "math1-2024-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:d637b5249be391a9a0cef957e8d809d0203bcfb6b4872f45e530441f455f7bc1"
+      }
+    },
+    {
+      "id": "math1-2024-010",
+      "number": 10,
+      "paperId": "math1-2024",
+      "paperName": "2024考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2024",
+      "section": "选择题",
+      "type": "flashcard",
+      "question": "2024考研数学一第10题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2024 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2024/question-10.jpg",
+          "caption": "题面裁切图 q10",
+          "alt": "2024考研数学一题面裁切图 q10"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2024/answer-page-03.jpg",
+          "caption": "答案解析 p.3",
+          "alt": "2024考研数学一答案解析 p.3"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2024",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2024-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:873bdefe0a1f875298bf339939b0654c4019acd08a5db3a8192b74d9b03ebe9a",
+      "answerTextHash": "sha256:d637b5249be391a9a0cef957e8d809d0203bcfb6b4872f45e530441f455f7bc1",
+      "sourceEvidence": {
+        "evidenceId": "math1-2024-q10",
+        "sourceId": "src_a98e37e10d544ea2a7f1791b",
+        "answerSourceId": "src_a98e37e10d544ea2a7f1791b",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2024-paper-answer",
+        "answerEvidenceId": "math1-2024-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:d637b5249be391a9a0cef957e8d809d0203bcfb6b4872f45e530441f455f7bc1"
+      }
+    },
+    {
+      "id": "math1-2024-011",
+      "number": 11,
+      "paperId": "math1-2024",
+      "paperName": "2024考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2024",
+      "section": "填空题",
+      "type": "flashcard",
+      "question": "2024考研数学一第11题（填空题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "6",
+      "explanation": "答案来自本地百度网盘 2024 数学一真题答案解析 PDF；填空题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2024/question-11.jpg",
+          "caption": "题面裁切图 q11",
+          "alt": "2024考研数学一题面裁切图 q11"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2024/answer-page-03.jpg",
+          "caption": "答案解析 p.3",
+          "alt": "2024考研数学一答案解析 p.3"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2024",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2024-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:d447e8f38df1c0a1a9b429343799ec9f9c49934f441cba89f23f236d96cdba0b",
+      "answerTextHash": "sha256:60d6554809e836064bd3184fb9e0de82d46766dcdf0962bb6943c427424ac7ea",
+      "sourceEvidence": {
+        "evidenceId": "math1-2024-q11",
+        "sourceId": "src_a98e37e10d544ea2a7f1791b",
+        "answerSourceId": "src_a98e37e10d544ea2a7f1791b",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2024-paper-answer",
+        "answerEvidenceId": "math1-2024-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:60d6554809e836064bd3184fb9e0de82d46766dcdf0962bb6943c427424ac7ea"
+      }
+    },
+    {
+      "id": "math1-2024-012",
+      "number": 12,
+      "paperId": "math1-2024",
+      "paperName": "2024考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2024",
+      "section": "填空题",
+      "type": "flashcard",
+      "question": "2024考研数学一第12题（填空题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "5",
+      "explanation": "答案来自本地百度网盘 2024 数学一真题答案解析 PDF；填空题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2024/question-12.jpg",
+          "caption": "题面裁切图 q12",
+          "alt": "2024考研数学一题面裁切图 q12"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2024/answer-page-03.jpg",
+          "caption": "答案解析 p.3",
+          "alt": "2024考研数学一答案解析 p.3"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2024",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2024-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:baa3532e19dda69cc76bbd6850f3b30fe3175af5a1c0e9c2e6b4693cc54f622d",
+      "answerTextHash": "sha256:08903cb5660f29b85c42b245a428f0d488cc888f6b9d0939efde866248b54e10",
+      "sourceEvidence": {
+        "evidenceId": "math1-2024-q12",
+        "sourceId": "src_a98e37e10d544ea2a7f1791b",
+        "answerSourceId": "src_a98e37e10d544ea2a7f1791b",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2024-paper-answer",
+        "answerEvidenceId": "math1-2024-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:08903cb5660f29b85c42b245a428f0d488cc888f6b9d0939efde866248b54e10"
+      }
+    },
+    {
+      "id": "math1-2024-013",
+      "number": 13,
+      "paperId": "math1-2024",
+      "paperName": "2024考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2024",
+      "section": "填空题",
+      "type": "flashcard",
+      "question": "2024考研数学一第13题（填空题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "-1/π",
+      "explanation": "答案来自本地百度网盘 2024 数学一真题答案解析 PDF；填空题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2024/question-13.jpg",
+          "caption": "题面裁切图 q13",
+          "alt": "2024考研数学一题面裁切图 q13"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2024/answer-page-03.jpg",
+          "caption": "答案解析 p.3",
+          "alt": "2024考研数学一答案解析 p.3"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2024",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2024-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:ed7d07a0e14376ffcb6888a4dbacd00a62a54d05a43df00ed83d3f696c349156",
+      "answerTextHash": "sha256:0bc9e718072723553a5303c87e5d992f93dc97037ba3b64b161476897b00e1a9",
+      "sourceEvidence": {
+        "evidenceId": "math1-2024-q13",
+        "sourceId": "src_a98e37e10d544ea2a7f1791b",
+        "answerSourceId": "src_a98e37e10d544ea2a7f1791b",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2024-paper-answer",
+        "answerEvidenceId": "math1-2024-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:0bc9e718072723553a5303c87e5d992f93dc97037ba3b64b161476897b00e1a9"
+      }
+    },
+    {
+      "id": "math1-2024-014",
+      "number": 14,
+      "paperId": "math1-2024",
+      "paperName": "2024考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2024",
+      "section": "填空题",
+      "type": "flashcard",
+      "question": "2024考研数学一第14题（填空题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "x = tan(y + π/4) - y",
+      "explanation": "答案来自本地百度网盘 2024 数学一真题答案解析 PDF；填空题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2024/question-14.jpg",
+          "caption": "题面裁切图 q14",
+          "alt": "2024考研数学一题面裁切图 q14"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2024/answer-page-03.jpg",
+          "caption": "答案解析 p.3",
+          "alt": "2024考研数学一答案解析 p.3"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2024",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2024-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:84ad5ff379e4a26af042e7339c0c11ed9ccd3c6d7993872f062fa91793a1d0e3",
+      "answerTextHash": "sha256:5696a44946ca9f9072eb94d70f9f4ef997c273ac74ff5d2a1835f9d0cf91a35e",
+      "sourceEvidence": {
+        "evidenceId": "math1-2024-q14",
+        "sourceId": "src_a98e37e10d544ea2a7f1791b",
+        "answerSourceId": "src_a98e37e10d544ea2a7f1791b",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2024-paper-answer",
+        "answerEvidenceId": "math1-2024-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:5696a44946ca9f9072eb94d70f9f4ef997c273ac74ff5d2a1835f9d0cf91a35e"
+      }
+    },
+    {
+      "id": "math1-2024-015",
+      "number": 15,
+      "paperId": "math1-2024",
+      "paperName": "2024考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2024",
+      "section": "填空题",
+      "type": "flashcard",
+      "question": "2024考研数学一第15题（填空题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "a >= 0",
+      "explanation": "答案来自本地百度网盘 2024 数学一真题答案解析 PDF；填空题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2024/question-15.jpg",
+          "caption": "题面裁切图 q15",
+          "alt": "2024考研数学一题面裁切图 q15"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2024/answer-page-04.jpg",
+          "caption": "答案解析 p.4",
+          "alt": "2024考研数学一答案解析 p.4"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2024",
+        "填空题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2024-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:bf804d5eb14a0b63a7d04e9b4a8a8befcb64888817573545498c65ae7b3f198e",
+      "answerTextHash": "sha256:e5fbfa93d91d3ae9ba8a3a020182e2ce10dd8fc531bf02535f770e9b02736b18",
+      "sourceEvidence": {
+        "evidenceId": "math1-2024-q15",
+        "sourceId": "src_a98e37e10d544ea2a7f1791b",
+        "answerSourceId": "src_a98e37e10d544ea2a7f1791b",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2024-paper-answer",
+        "answerEvidenceId": "math1-2024-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:e5fbfa93d91d3ae9ba8a3a020182e2ce10dd8fc531bf02535f770e9b02736b18"
+      }
+    },
+    {
+      "id": "math1-2024-016",
+      "number": 16,
+      "paperId": "math1-2024",
+      "paperName": "2024考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2024",
+      "section": "填空题",
+      "type": "flashcard",
+      "question": "2024考研数学一第16题（填空题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "2/3",
+      "explanation": "答案来自本地百度网盘 2024 数学一真题答案解析 PDF；填空题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2024/question-16.jpg",
+          "caption": "题面裁切图 q16",
+          "alt": "2024考研数学一题面裁切图 q16"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2024/answer-page-04.jpg",
+          "caption": "答案解析 p.4",
+          "alt": "2024考研数学一答案解析 p.4"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2024",
+        "填空题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2024-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:3679f3c40992f241330c04a421ff00f9409aa298c534719c0b12be5fa8c23ec4",
+      "answerTextHash": "sha256:69de57f22d24dadf6ad16b20f779587249f6b9b7ee6c53d9cd8066353dd1c88d",
+      "sourceEvidence": {
+        "evidenceId": "math1-2024-q16",
+        "sourceId": "src_a98e37e10d544ea2a7f1791b",
+        "answerSourceId": "src_a98e37e10d544ea2a7f1791b",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2024-paper-answer",
+        "answerEvidenceId": "math1-2024-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:69de57f22d24dadf6ad16b20f779587249f6b9b7ee6c53d9cd8066353dd1c88d"
+      }
+    },
+    {
+      "id": "math1-2024-017",
+      "number": 17,
+      "paperId": "math1-2024",
+      "paperName": "2024考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2024",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2024考研数学一第17题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "sqrt(2) + ln(1 + sqrt(2)) - 2",
+      "explanation": "答案来自本地百度网盘 2024 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2024/question-17.jpg",
+          "caption": "题面裁切图 q17",
+          "alt": "2024考研数学一题面裁切图 q17"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2024/answer-page-04.jpg",
+          "caption": "答案解析 p.4",
+          "alt": "2024考研数学一答案解析 p.4"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2024",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2024-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:2a84ec4a3dce79f84aca767711932eec1939a52b0adb9614329633ccec1ee93d",
+      "answerTextHash": "sha256:008370615c8afd6edb92e5e826f70cb40b498b5657196ad1d508823128fa29a8",
+      "sourceEvidence": {
+        "evidenceId": "math1-2024-q17",
+        "sourceId": "src_a98e37e10d544ea2a7f1791b",
+        "answerSourceId": "src_a98e37e10d544ea2a7f1791b",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2024-paper-answer",
+        "answerEvidenceId": "math1-2024-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:008370615c8afd6edb92e5e826f70cb40b498b5657196ad1d508823128fa29a8"
+      }
+    },
+    {
+      "id": "math1-2024-018",
+      "number": 18,
+      "paperId": "math1-2024",
+      "paperName": "2024考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2024",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2024考研数学一第18题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "切平面 x + y + z = 3；最大值 21，最小值 17/27。",
+      "explanation": "答案来自本地百度网盘 2024 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2024/question-18.jpg",
+          "caption": "题面裁切图 q18",
+          "alt": "2024考研数学一题面裁切图 q18"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2024/answer-page-04.jpg",
+          "caption": "答案解析 p.4",
+          "alt": "2024考研数学一答案解析 p.4"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2024",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2024-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:2d200ce22a394ab18e074b9f303c9d41aad005e8970b3b99cd77bcaff3a9cb69",
+      "answerTextHash": "sha256:67cfeecf773e40cc7ed5626543e1b2cb3948e70b6bfb75df341527fc2bb2a486",
+      "sourceEvidence": {
+        "evidenceId": "math1-2024-q18",
+        "sourceId": "src_a98e37e10d544ea2a7f1791b",
+        "answerSourceId": "src_a98e37e10d544ea2a7f1791b",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2024-paper-answer",
+        "answerEvidenceId": "math1-2024-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:67cfeecf773e40cc7ed5626543e1b2cb3948e70b6bfb75df341527fc2bb2a486"
+      }
+    },
+    {
+      "id": "math1-2024-019",
+      "number": 19,
+      "paperId": "math1-2024",
+      "paperName": "2024考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2024",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2024考研数学一第19题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "证明过程见答案原页。",
+      "explanation": "答案来自本地百度网盘 2024 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2024/question-19.jpg",
+          "caption": "题面裁切图 q19",
+          "alt": "2024考研数学一题面裁切图 q19"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2024/answer-page-04.jpg",
+          "caption": "答案解析 p.4",
+          "alt": "2024考研数学一答案解析 p.4"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2024",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2024-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:6f186bc14187f0f9a9e28532a2d006057a2dfd7c3561b896d838b22648fea463",
+      "answerTextHash": "sha256:03506807fc0f1140823f6d9d3f6aab5a42ffdd9bb993b44c9ec2f4cdd3ac1117",
+      "sourceEvidence": {
+        "evidenceId": "math1-2024-q19",
+        "sourceId": "src_a98e37e10d544ea2a7f1791b",
+        "answerSourceId": "src_a98e37e10d544ea2a7f1791b",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2024-paper-answer",
+        "answerEvidenceId": "math1-2024-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:03506807fc0f1140823f6d9d3f6aab5a42ffdd9bb993b44c9ec2f4cdd3ac1117"
+      }
+    },
+    {
+      "id": "math1-2024-020",
+      "number": 20,
+      "paperId": "math1-2024",
+      "paperName": "2024考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2024",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2024考研数学一第20题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "4π/(5√5)",
+      "explanation": "答案来自本地百度网盘 2024 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2024/question-20.jpg",
+          "caption": "题面裁切图 q20",
+          "alt": "2024考研数学一题面裁切图 q20"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2024/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2024考研数学一答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2024",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2024-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:9bb39e21574256aa4070d0816a7b605f0e67beb6d9059dabe34fecb65be60b82",
+      "answerTextHash": "sha256:9eeb040befa787e4b897e922329e827ca6165e6c986c3d62aaf5f1422f09e04a",
+      "sourceEvidence": {
+        "evidenceId": "math1-2024-q20",
+        "sourceId": "src_a98e37e10d544ea2a7f1791b",
+        "answerSourceId": "src_a98e37e10d544ea2a7f1791b",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2024-paper-answer",
+        "answerEvidenceId": "math1-2024-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:9eeb040befa787e4b897e922329e827ca6165e6c986c3d62aaf5f1422f09e04a"
+      }
+    },
+    {
+      "id": "math1-2024-021",
+      "number": 21,
+      "paperId": "math1-2024",
+      "paperName": "2024考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2024",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2024考研数学一第21题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "A=[[-2,0,2],[0,-2,-2],[-6,-3,3]]；xn=8+(-2)^n，yn=-8+(-2)^(n+1)，zn=12；A^n 见答案原页。",
+      "explanation": "答案来自本地百度网盘 2024 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2024/question-21.jpg",
+          "caption": "题面裁切图 q21",
+          "alt": "2024考研数学一题面裁切图 q21"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2024/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2024考研数学一答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2024",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2024-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:a456fb751425ac73e40db4a914804d20638fd5efa7c2c3dc8ffe8edcb20be9dd",
+      "answerTextHash": "sha256:a5c1e5766535cf70eaf7dd5792b178f0dbb1fda4f606d764a668574f78a68b19",
+      "sourceEvidence": {
+        "evidenceId": "math1-2024-q21",
+        "sourceId": "src_a98e37e10d544ea2a7f1791b",
+        "answerSourceId": "src_a98e37e10d544ea2a7f1791b",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2024-paper-answer",
+        "answerEvidenceId": "math1-2024-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:a5c1e5766535cf70eaf7dd5792b178f0dbb1fda4f606d764a668574f78a68b19"
+      }
+    },
+    {
+      "id": "math1-2024-022",
+      "number": 22,
+      "paperId": "math1-2024",
+      "paperName": "2024考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2024",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2024考研数学一第22题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "c=(n+1)/n；c=(n+2)/(n+1)。",
+      "explanation": "答案来自本地百度网盘 2024 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2024/question-22.jpg",
+          "caption": "题面裁切图 q22",
+          "alt": "2024考研数学一题面裁切图 q22"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2024/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2024考研数学一答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2024",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2024-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:58d2daf722741f85d10cadd34aa20d3d6519c92aa3a96730092121a80671980b",
+      "answerTextHash": "sha256:83272d2169ca6437bd3691c196b550402ddcaee9df23671571dbf3b15e798348",
+      "sourceEvidence": {
+        "evidenceId": "math1-2024-q22",
+        "sourceId": "src_a98e37e10d544ea2a7f1791b",
+        "answerSourceId": "src_a98e37e10d544ea2a7f1791b",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2024-paper-answer",
+        "answerEvidenceId": "math1-2024-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:83272d2169ca6437bd3691c196b550402ddcaee9df23671571dbf3b15e798348"
+      }
+    }
+  ]
+}

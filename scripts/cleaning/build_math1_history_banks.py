@@ -38,6 +38,7 @@ class SourceSpec:
     question_pages: dict[int, list[int | str]]
     answer_pages: dict[int, list[int]]
     answers: dict[int, str]
+    rendered_page_count: int | None = None
     question_crop_boxes: dict[str, tuple[int, ...]] | None = None
     question_crop_masks: dict[str, list[tuple[int, int, int, int]]] | None = None
 
@@ -306,6 +307,33 @@ def math1_2023_answers() -> dict[int, str]:
             20: "证明过程见答案原页。",
             21: "可逆矩阵 P 与不存在正交变换的结论见答案原页。",
             22: "D(X)=D(Y)=1/3；X 与 Y 不相互独立；f_Z(z)=2z(0<z<1)，其它为 0。",
+        }
+    )
+    return answers
+
+
+def math1_2024_answers() -> dict[int, str]:
+    answers = generic_answers(
+        2024,
+        {1: "C", 2: "A", 3: "A", 4: "B", 5: "B", 6: "D", 7: "A", 8: "B", 9: "D", 10: "D"},
+        card_count=22,
+        choice_end=10,
+        fill_end=16,
+    )
+    answers.update(
+        {
+            11: "6",
+            12: "5",
+            13: "-1/π",
+            14: "x = tan(y + π/4) - y",
+            15: "a >= 0",
+            16: "2/3",
+            17: "sqrt(2) + ln(1 + sqrt(2)) - 2",
+            18: "切平面 x + y + z = 3；最大值 21，最小值 17/27。",
+            19: "证明过程见答案原页。",
+            20: "4π/(5√5)",
+            21: "A=[[-2,0,2],[0,-2,-2],[-6,-3,3]]；xn=8+(-2)^n，yn=-8+(-2)^(n+1)，zn=12；A^n 见答案原页。",
+            22: "c=(n+1)/n；c=(n+2)/(n+1)。",
         }
     )
     return answers
@@ -1198,6 +1226,85 @@ SPECS: dict[int, SourceSpec] = {
             "q22b": (16, 250, 180, 1900, 205),
         },
     ),
+    2024: SourceSpec(
+        year=2024,
+        file_name="src_a98e37e10d544ea2a7f1791b-2024年数学一真题及参考答案.pdf",
+        source_id="src_a98e37e10d544ea2a7f1791b",
+        question_pages={
+            1: question_refs("q01"),
+            2: question_refs("q02"),
+            3: question_refs("q03"),
+            4: question_refs("q04"),
+            5: question_refs("q05"),
+            6: question_refs("q06"),
+            7: question_refs("q07"),
+            8: question_refs("q08"),
+            9: question_refs("q09"),
+            10: question_refs("q10"),
+            11: question_refs("q11"),
+            12: question_refs("q12"),
+            13: question_refs("q13"),
+            14: question_refs("q14"),
+            15: question_refs("q15"),
+            16: question_refs("q16"),
+            17: question_refs("q17"),
+            18: question_refs("q18"),
+            19: question_refs("q19"),
+            20: question_refs("q20"),
+            21: question_refs("q21"),
+            22: question_refs("q22"),
+        },
+        answer_pages={
+            1: [1],
+            2: [1],
+            3: [1],
+            4: [1, 2],
+            5: [2],
+            6: [2],
+            7: [2],
+            8: [2],
+            9: [3],
+            10: [3],
+            11: [3],
+            12: [3],
+            13: [3],
+            14: [3],
+            15: [4],
+            16: [4],
+            17: [4],
+            18: [4],
+            19: [4],
+            20: [5],
+            21: [5],
+            22: [5],
+        },
+        answers=math1_2024_answers(),
+        rendered_page_count=5,
+        question_crop_boxes={
+            "q01": (1, 150, 315, 820, 170),
+            "q02": (1, 150, 555, 660, 310),
+            "q03": (1, 150, 910, 780, 105),
+            "q04": (1, 150, 1080, 780, 280),
+            "q05": (2, 150, 160, 820, 320),
+            "q06": (2, 150, 560, 760, 270),
+            "q07": (2, 150, 930, 820, 135),
+            "q08": (2, 150, 1135, 820, 220),
+            "q09": (3, 150, 130, 780, 205),
+            "q10": (3, 150, 410, 700, 185),
+            "q11": (3, 150, 700, 780, 75),
+            "q12": (3, 150, 830, 800, 135),
+            "q13": (3, 150, 1070, 820, 145),
+            "q14": (3, 150, 1305, 800, 75),
+            "q15": (4, 150, 130, 820, 135),
+            "q16": (4, 150, 330, 780, 105),
+            "q17": (4, 150, 520, 820, 125),
+            "q18": (4, 150, 705, 820, 205),
+            "q19": (4, 150, 1015, 820, 205),
+            "q20": (5, 150, 120, 820, 215),
+            "q21": (5, 150, 410, 820, 275),
+            "q22": (5, 150, 975, 820, 225),
+        },
+    ),
 }
 
 
@@ -1229,7 +1336,14 @@ def pdf_page_count(pdf: Path) -> int:
     return int(match.group(1))
 
 
-def render_pdf_assets(pdf: Path, prefix: str, *, asset_dir: Path, force: bool) -> None:
+def render_pdf_assets(
+    pdf: Path,
+    prefix: str,
+    *,
+    asset_dir: Path,
+    force: bool,
+    page_count: int | None = None,
+) -> None:
     if not pdf.exists():
         raise FileNotFoundError(pdf)
     asset_dir.mkdir(parents=True, exist_ok=True)
@@ -1249,6 +1363,8 @@ def render_pdf_assets(pdf: Path, prefix: str, *, asset_dir: Path, force: bool) -
     run(["pdftoppm", "-r", "130", "-jpeg", "-jpegopt", "quality=70", str(pdf), str(output_prefix)])
     for rendered in sorted(render_dir.glob(f"{prefix}-*.jpg"), key=rendered_page_number):
         page = rendered_page_number(rendered)
+        if page_count is not None and page > page_count:
+            continue
         target = asset_dir / f"{prefix}-{page:02d}.jpg"
         shutil.copyfile(rendered, target)
 
@@ -1528,7 +1644,7 @@ def section_for(spec: SourceSpec, number: int) -> str:
         if number <= 16:
             return "填空题"
         return "解答题"
-    if spec.year in {2021, 2022, 2023}:
+    if spec.year in {2021, 2022, 2023, 2024}:
         if number <= 10:
             return "选择题"
         if number <= 16:
@@ -1550,7 +1666,7 @@ def type_for(spec: SourceSpec, number: int) -> str:
         if number <= 10:
             return "single_choice"
         return "short_answer"
-    if spec.year in {2021, 2022, 2023}:
+    if spec.year in {2021, 2022, 2023, 2024}:
         if number <= 16:
             return "flashcard"
         return "short_answer"
@@ -1669,8 +1785,20 @@ def validate_cards(spec: SourceSpec, cards: list[dict[str, Any]], *, asset_dir: 
 def build_payload(spec: SourceSpec, *, asset_root: Path, force_assets: bool) -> dict[str, Any]:
     pdf = RAW_DIR / spec.file_name
     asset_dir = asset_root / f"math1-{spec.year}"
-    render_pdf_assets(pdf, "answer-page", asset_dir=asset_dir, force=force_assets)
-    render_pdf_assets(pdf, "paper-page", asset_dir=asset_dir, force=force_assets)
+    render_pdf_assets(
+        pdf,
+        "answer-page",
+        asset_dir=asset_dir,
+        force=force_assets,
+        page_count=spec.rendered_page_count,
+    )
+    render_pdf_assets(
+        pdf,
+        "paper-page",
+        asset_dir=asset_dir,
+        force=force_assets,
+        page_count=spec.rendered_page_count,
+    )
     crop_question_assets(spec, asset_dir=asset_dir, force=force_assets)
     page_count = pdf_page_count(pdf)
     for pages in [*spec.question_pages.values(), *spec.answer_pages.values()]:
@@ -1718,7 +1846,7 @@ def write_json(path: Path, payload: Any) -> None:
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--years", default="2005-2006,2008-2023")
+    parser.add_argument("--years", default="2005-2006,2008-2024")
     parser.add_argument("--bank-dir", type=Path, default=DEFAULT_BANK_DIR)
     parser.add_argument("--asset-root", type=Path, default=DEFAULT_ASSET_ROOT)
     parser.add_argument("--force-assets", action="store_true")

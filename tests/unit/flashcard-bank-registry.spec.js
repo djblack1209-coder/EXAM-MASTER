@@ -661,11 +661,12 @@ describe('published flashcard bank registry', () => {
     });
     const math = getPracticeNavigationTree({ tracks: ['math1', 'math2', 'math3'] }).find((item) => item.id === 'math');
     expect(math.tracks.map((track) => track.pendingBanks[0]?.id)).toEqual([
-      'math1-2024-pending-source',
+      undefined,
       'math2-2024-pending-source',
       'math3-2024-pending-source'
     ]);
     expect(math.tracks[0].banks.some((bank) => bank.id === 'math1-2025')).toBe(true);
+    expect(math.tracks[0].banks.some((bank) => bank.id === 'math1-2024')).toBe(true);
     expect(math.tracks[1].banks.some((bank) => bank.id === 'math2-2025')).toBe(true);
     expect(math.tracks[2].banks.some((bank) => bank.id === 'math3-2025')).toBe(true);
     expect(math.tracks[2].banks.some((bank) => bank.id === 'math3-2005')).toBe(true);
@@ -705,9 +706,9 @@ describe('published flashcard bank registry', () => {
     expect(english1.pendingYears).toEqual([]);
 
     const math1 = coverage.tracks.find((item) => item.track === 'math1');
-    expect(math1.publishedYears).toEqual([2025]);
+    expect(math1.publishedYears).toEqual([2024, 2025]);
     expect(math1.pendingYears).toEqual([]);
-    expect(math1.missingYears).toEqual([2024, 2026]);
+    expect(math1.missingYears).toEqual([2026]);
     expect(math1.releaseState).toBe('partial');
 
     const math2 = coverage.tracks.find((item) => item.track === 'math2');

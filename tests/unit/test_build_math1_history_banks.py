@@ -109,6 +109,25 @@ class Math1HistoryBanksTest(unittest.TestCase):
         self.assertEqual(spec.source_id, "src_aa313861bc3f906e2af834b1")
         self.assertEqual(spec.file_name, "src_aa313861bc3f906e2af834b1-2023数一真题答案解析.pdf")
 
+    def test_2024_uses_22_card_new_structure_and_skips_ad_page(self):
+        spec = builder.SPECS[2024]
+
+        self.assertEqual(builder.card_numbers_for_spec(spec), list(range(1, 23)))
+        self.assertEqual(builder.expected_card_count(spec), 22)
+        self.assertEqual(builder.section_for(spec, 1), "选择题")
+        self.assertEqual(builder.section_for(spec, 10), "选择题")
+        self.assertEqual(builder.section_for(spec, 11), "填空题")
+        self.assertEqual(builder.section_for(spec, 16), "填空题")
+        self.assertEqual(builder.section_for(spec, 17), "解答题")
+        self.assertEqual(builder.type_for(spec, 1), "flashcard")
+        self.assertEqual(builder.type_for(spec, 16), "flashcard")
+        self.assertEqual(builder.type_for(spec, 17), "short_answer")
+        self.assertEqual(spec.answer_pages[4], [1, 2])
+        self.assertEqual(spec.answer_pages[22], [5])
+        self.assertEqual(spec.rendered_page_count, 5)
+        self.assertEqual(spec.source_id, "src_a98e37e10d544ea2a7f1791b")
+        self.assertEqual(spec.file_name, "src_a98e37e10d544ea2a7f1791b-2024年数学一真题及参考答案.pdf")
+
     def test_2007_uses_24_card_10_choice_structure(self):
         spec = builder.SPECS[2007]
 

@@ -2374,6 +2374,94 @@ git -c core.hooksPath=/dev/null commit -m "chore: publish math1 2023 bank"
 
 Result: committed after validation on 2026-06-02.
 
+### Task 58: Publish Math I 2024 Page-Image Bank
+
+**Files:**
+- Modify: `scripts/cleaning/build_math1_history_banks.py`
+- Modify: `tests/unit/test_build_math1_history_banks.py`
+- Modify: `tests/unit/flashcard-bank-registry.spec.js`
+- Modify: `src/config/bank-registry.js`
+- Modify: `src/pages/practice-sub/bank-data-table.js`
+- Add: `src/config/flashcard-banks/math1-2024.json`
+- Add: `cdn-assets/question-bank/math1-2024/*`
+- Modify: `data/release-blocker-backlog.json`
+- Modify: `docs/frontend-experience-refactor-diary.md`
+- Modify: `docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md`
+- Modify: `docs/08C-SCRIPTS-REFERENCE.md`
+- Modify: `docs/12-CHANGELOG.md`
+
+- [x] **Step 1: Download and inspect the 2024 source**
+
+Used the release-priority queue item:
+
+```text
+clean_b118f0d19796f4fd11ca197b 2024年数学一真题及参考答案.pdf
+```
+
+Downloaded only the PDF through `pan.py download` to avoid running generic OCR/LLM cleaning:
+
+```text
+data/raw-inbox/src_a98e37e10d544ea2a7f1791b-2024年数学一真题及参考答案.pdf
+```
+
+`pdfinfo` reports 6 pages and 1,688,844 bytes. Page 6 is ad-only, so the release spec renders only pages 1-5 as question/answer evidence.
+
+- [x] **Step 2: Add 2024 source spec and regression coverage**
+
+Added `math1_2024_answers()` plus a 2024 `SourceSpec` with manual per-question crop boxes. The bank follows the newer 22-card Math I structure:
+
+```text
+1-10 选择题
+11-16 填空题
+17-22 解答题
+```
+
+Regression coverage now asserts the 2024 section/type mapping, `rendered_page_count == 5`, q04 answer evidence across pages 1-2, and the Baidu source id/file name.
+
+- [x] **Step 3: Build, register, and refresh modules**
+
+Run:
+
+```bash
+python3 -m unittest tests.unit.test_build_math1_history_banks
+python3 scripts/cleaning/build_math1_history_banks.py --years 2024 --force-assets
+node scripts/build/generate-compressed-bank-modules.mjs
+```
+
+Result: generated `src/config/flashcard-banks/math1-2024.json` and 32 assets under `cdn-assets/question-bank/math1-2024`; compressed bank modules now include 77 published banks. `math1-2024` is registered as a formal 10/6/6 entry.
+
+- [x] **Step 4: Verify question-image leakage and release metrics**
+
+Run:
+
+```bash
+for p in cdn-assets/question-bank/math1-2024/question-*.jpg; do
+  text=$(tesseract "$p" stdout -l chi_sim+eng --psm 6 2>/dev/null | tr -d '[:space:]')
+  if printf '%s' "$text" | rg -q '答案|解析|详解|【答案】|\[答案\]'; then
+    printf '%s\t%s\n' "$(basename "$p")" "$text"
+  fi
+done
+npm run test -- tests/unit/question-bank-release-gate.spec.js tests/unit/flashcard-bank-registry.spec.js
+node scripts/build/question-bank-release-gate.mjs
+node scripts/build/release-blocker-backlog.mjs
+python3 scripts/baidu/cleaning_queue.py
+python3 scripts/baidu/run_cleaning_queue.py --dry-run --limit 8 --source-type official_paper --paper-role main
+git diff --check
+```
+
+Result: passed on 2026-06-02. `math1-2024.json` has 22 cards, `{flashcard:16, short_answer:6}`, section counts `{选择题:10, 填空题:6, 解答题:6}`, 22 question crop assets, 5 answer pages, 5 paper pages, and no missing asset references. Sequential release audit refresh reports `coverageGaps=55`, `blockers=67`, `publicCourseBlockedSlots=55`; the next main queue dry-run starts at `2016考研数学二真题.pdf`.
+
+- [x] **Step 5: Commit**
+
+Run after final diff/whitespace checks:
+
+```bash
+git add scripts/cleaning/build_math1_history_banks.py tests/unit/test_build_math1_history_banks.py tests/unit/flashcard-bank-registry.spec.js src/config/bank-registry.js src/pages/practice-sub/bank-data-table.js src/config/flashcard-banks/math1-2024.json cdn-assets/question-bank/math1-2024 data/release-blocker-backlog.json docs/frontend-experience-refactor-diary.md docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md docs/08C-SCRIPTS-REFERENCE.md docs/12-CHANGELOG.md
+git -c core.hooksPath=/dev/null commit -m "chore: publish math1 2024 bank"
+```
+
+Result: committed after validation on 2026-06-02.
+
 ### Task 52: Publish Math I 2019 Page-Image Bank
 
 **Files:**
