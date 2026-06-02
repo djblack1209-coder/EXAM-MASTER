@@ -162,16 +162,26 @@ describe('storageService', () => {
       expect(uni.removeStorageSync).toHaveBeenCalled();
     });
 
-    it('clear 默认保留全局键，仅清理业务缓存', () => {
+    it('clear 默认保留全局键，仅清理业务缓存，并迁移明文敏感键', () => {
       global.__mockStorage = {
         EXAM_TOKEN: 'token_123',
+        EXAM_USER_ID: 'user_123',
+        userInfo: { uid: 'user_123' },
         theme_mode: 'dark',
         temp_cache_key: 'to_remove'
       };
 
       storageService.clear();
 
-      expect(global.__mockStorage.EXAM_TOKEN).toBe('token_123');
+      expect(storageService.get('EXAM_TOKEN')).toBe('token_123');
+      expect(storageService.get('EXAM_USER_ID')).toBe('user_123');
+      expect(storageService.get('userInfo')).toEqual({ uid: 'user_123' });
+      expect(global.__mockStorage.EXAM_TOKEN).toBeUndefined();
+      expect(global.__mockStorage.EXAM_USER_ID).toBeUndefined();
+      expect(global.__mockStorage.userInfo).toBeUndefined();
+      expect(global.__mockStorage._enc_EXAM_TOKEN).toBeTruthy();
+      expect(global.__mockStorage._enc_EXAM_USER_ID).toBeTruthy();
+      expect(global.__mockStorage._enc_userInfo).toBeTruthy();
       expect(global.__mockStorage.theme_mode).toBe('dark');
       expect(global.__mockStorage.temp_cache_key).toBeUndefined();
       expect(uni.clearStorageSync).not.toHaveBeenCalled();

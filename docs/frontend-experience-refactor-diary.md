@@ -285,3 +285,11 @@
 - Scheduled purge contexts still run without being mistaken for HTTP manual triggers.
 - Added audit coverage proving body-only admin tokens are rejected, header tokens are accepted, and account-delete/token binding tests remain green.
 - Product rule: destructive administrator credentials should not travel in request bodies where they are more likely to appear in logs, replay payloads, or debugging snapshots.
+
+### 2026-06-01 Round 33
+
+- Continued Phase 4 by hardening local storage safety around Settings cache clearing and identity persistence.
+- Default `storageService.clear()` now preserves login state while migrating legacy plaintext `EXAM_TOKEN`, `EXAM_USER_ID`, and `userInfo` into encrypted keys, then removes the plaintext copies.
+- Fixed V2 local obfuscation for short identity strings such as `user_keep`, `user_123`, and `u1` by storing the encoded plaintext length before Feistel padding.
+- Added storage tests proving cache clearing keeps the authenticated session readable without leaving plaintext identity keys behind.
+- Product rule: cache cleanup should free app data, not silently weaken identity storage or accidentally log users out.

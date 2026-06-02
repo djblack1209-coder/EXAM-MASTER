@@ -1243,3 +1243,47 @@ Run:
 git add laf-backend/functions/account-purge.ts tests/unit/audit-account-purge-field-mapping.spec.js docs/frontend-experience-refactor-diary.md docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md
 git commit -m "fix: harden account purge admin trigger"
 ```
+
+### Task 31: Harden Sensitive Storage Cleanup
+
+**Files:**
+- Modify: `src/services/storageService.js`
+- Modify: `src/utils/crypto/cipher.js`
+- Modify: `tests/unit/storage-service.spec.js`
+- Modify: `tests/unit/integration-storage-nav.spec.js`
+- Modify: `docs/frontend-experience-refactor-diary.md`
+- Modify: `docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md`
+
+- [x] **Step 1: Add cache-clear plaintext identity regression tests**
+
+Assert default cache clearing keeps `EXAM_TOKEN`, `EXAM_USER_ID`, and `userInfo` readable while removing plaintext copies and preserving encrypted copies.
+
+- [x] **Step 2: Add short identity cipher regression tests**
+
+Assert V2 obfuscation round-trips short identity strings such as `user_keep`, `user_123`, and `u1`.
+
+- [x] **Step 3: Fix V2 obfuscation padding**
+
+Store encoded plaintext length in the V2 payload and trim decrypted bytes before URI decoding, so Feistel padding cannot corrupt short strings.
+
+- [x] **Step 4: Migrate plaintext sensitive globals during clear**
+
+When preserving global keys, migrate legacy plaintext sensitive keys into `_enc_` storage and remove plaintext only after the encrypted value is readable.
+
+- [x] **Step 5: Run focused validation**
+
+Run:
+```bash
+npm run lint -- src/utils/crypto/cipher.js src/services/storageService.js tests/unit/storage-service.spec.js tests/unit/integration-storage-nav.spec.js
+npm run test -- tests/unit/storage-service.spec.js tests/unit/integration-storage-nav.spec.js tests/unit/auth-storage.spec.js tests/unit/settings-logout-flow-guard.spec.js tests/unit/account-deletion-api-auth-guard.spec.js
+```
+
+Result: passed on 2026-06-01.
+
+- [x] **Step 6: Commit**
+
+Run:
+```bash
+git add src/services/storageService.js src/utils/crypto/cipher.js tests/unit/storage-service.spec.js tests/unit/integration-storage-nav.spec.js docs/frontend-experience-refactor-diary.md docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md
+git commit -m "fix: harden sensitive storage cleanup"
+```

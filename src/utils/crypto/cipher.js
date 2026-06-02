@@ -239,6 +239,14 @@ function randomBytes(len) {
   return bytes;
 }
 
+function encodeLength16(length) {
+  return [(length >>> 8) & 0xff, length & 0xff];
+}
+
+function decodeLength16(high, low) {
+  return ((high & 0xff) << 8) | (low & 0xff);
+}
+
 // ==================== 高层 API ====================
 
 /**
@@ -261,7 +269,7 @@ export function obfuscate(data) {
       plainBytes[i] = (plainBytes[i] ^ iv[i % iv.length]) & 0xff;
     }
     const cipherBytes = feistelEncrypt(plainBytes, OBFUSCATION_KEY);
-    const allBytes = [CIPHER_VERSION, ...iv, ...cipherBytes];
+    const allBytes = [CIPHER_VERSION, ...encodeLength16(plainBytes.length), ...iv, ...cipherBytes];
     const b64 = base64Encode(String.fromCharCode(...allBytes));
     const hmac = sipHash(str + OBFUSCATION_KEY, 0x5a3c);
     return `v2.${hmac}.${b64}`;
@@ -289,13 +297,26 @@ export function deobfuscate(encoded) {
       if (raw.length < 6) return null;
       const version = raw.charCodeAt(0);
       if (version !== CIPHER_VERSION) return null;
-      const iv = [raw.charCodeAt(1), raw.charCodeAt(2), raw.charCodeAt(3), raw.charCodeAt(4)];
+      const hasLengthPrefix = raw.length >= 8;
+      const lengthPrefix = hasLengthPrefix ? decodeLength16(raw.charCodeAt(1), raw.charCodeAt(2)) : 0;
+      const ivOffset = hasLengthPrefix ? 3 : 1;
+      const cipherOffset = ivOffset + 4;
+      const iv = [
+        raw.charCodeAt(ivOffset),
+        raw.charCodeAt(ivOffset + 1),
+        raw.charCodeAt(ivOffset + 2),
+        raw.charCodeAt(ivOffset + 3)
+      ];
       const cipherBytes = [];
-      for (let i = 5; i < raw.length; i++) {
+      for (let i = cipherOffset; i < raw.length; i++) {
         cipherBytes.push(raw.charCodeAt(i) & 0xff);
       }
       const plainWithIV = feistelDecrypt(cipherBytes, OBFUSCATION_KEY);
-      const plainBytes = plainWithIV.map((v, i) => (v ^ iv[i % iv.length]) & 0xff);
+      const plainBytesWithPadding = plainWithIV.map((v, i) => (v ^ iv[i % iv.length]) & 0xff);
+      const plainBytes =
+        hasLengthPrefix && lengthPrefix > 0 && lengthPrefix <= plainBytesWithPadding.length
+          ? plainBytesWithPadding.slice(0, lengthPrefix)
+          : plainBytesWithPadding;
       const str = decodeURIComponent(String.fromCharCode(...plainBytes));
       const actualHmac = sipHash(str + OBFUSCATION_KEY, 0x5a3c);
       if (actualHmac !== expectedHmac) {

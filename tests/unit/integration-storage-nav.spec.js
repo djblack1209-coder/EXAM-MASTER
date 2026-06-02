@@ -55,16 +55,22 @@ describe('全链路: 存储服务 & 导航 & 安全', () => {
       expect(result).toBe(true);
     });
 
-    it('clear 默认保留全局键，仅清理业务缓存', async () => {
+    it('clear 默认保留全局键，仅清理业务缓存，并迁移明文身份键', async () => {
       const { storageService } = await import('@/services/storageService.js');
 
-      storageService.save('EXAM_TOKEN', 'token_keep');
+      global.__mockStorage.EXAM_TOKEN = 'token_keep';
+      global.__mockStorage.EXAM_USER_ID = 'user_keep';
       storageService.save('theme_mode', 'dark');
       storageService.save('temp_cache_key', 'to_remove');
 
       const result = storageService.clear();
       expect(result).toBe(true);
+      expect(global.__mockStorage.EXAM_TOKEN).toBeUndefined();
+      expect(global.__mockStorage.EXAM_USER_ID).toBeUndefined();
       expect(storageService.has('EXAM_TOKEN')).toBe(true);
+      expect(storageService.has('EXAM_USER_ID')).toBe(true);
+      expect(storageService.get('EXAM_TOKEN')).toBe('token_keep');
+      expect(storageService.get('EXAM_USER_ID')).toBe('user_keep');
       expect(storageService.has('theme_mode')).toBe(true);
       expect(storageService.has('temp_cache_key')).toBe(false);
       expect(uni.clearStorageSync).not.toHaveBeenCalled();
@@ -350,6 +356,19 @@ describe('全链路: 存储服务 & 导航 & 安全', () => {
         expect(decrypted).toBe(original);
       }
       // 无密钥时 obfuscate 返回 null，这也是合法行为
+    });
+
+    it('obfuscate + deobfuscate 短身份字符串往返', async () => {
+      const { obfuscate, deobfuscate } = await import('@/utils/crypto/cipher.js');
+
+      const samples = ['user_keep', 'user_123', 'u1'];
+
+      for (const original of samples) {
+        const encrypted = obfuscate(original);
+        if (encrypted !== null) {
+          expect(deobfuscate(encrypted)).toBe(original);
+        }
+      }
     });
 
     it('obfuscate + deobfuscate 对象往返', async () => {
