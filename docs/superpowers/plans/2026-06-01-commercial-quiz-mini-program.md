@@ -990,3 +990,46 @@ Run:
 git add src/pages/practice-sub/question-bank.vue tests/unit/question-bank-list-hierarchy-guard.spec.js docs/frontend-experience-refactor-diary.md docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md
 git commit -m "feat: tighten question bank list hierarchy"
 ```
+
+### Task 25: Align Practice Home Question-Bank Handoff
+
+**Files:**
+- Modify: `src/pages/practice/index.vue`
+- Modify: `tests/unit/practice-dynamic-methods.spec.js`
+- Create: `tests/unit/practice-question-bank-entry-guard.spec.js`
+- Modify: `docs/frontend-experience-refactor-diary.md`
+- Modify: `docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md`
+
+- [x] **Step 1: Rename the bank-card action semantics**
+
+Change the Practice-page bank card action from `加载` to `查看`, and loaded cards from passive `已加载` to active `继续`.
+
+- [x] **Step 2: Route cards into question-bank detail**
+
+Rename `handleLoadBank` to `openBankDetail` and keep routing through `openQuestionBank(bankId)`.
+
+- [x] **Step 3: Preserve visual states**
+
+Keep dark-mode styling for both detail and continue actions.
+
+- [x] **Step 4: Add handoff guard**
+
+Assert source copy, routing, absence of old load semantics, dynamic method behavior, and dark-mode coverage.
+
+- [x] **Step 5: Run focused validation**
+
+Run:
+```bash
+npm run lint -- src/pages/practice/index.vue tests/unit/practice-question-bank-entry-guard.spec.js tests/unit/practice-dynamic-methods.spec.js
+npm run test -- tests/unit/practice-question-bank-entry-guard.spec.js tests/unit/practice-dynamic-methods.spec.js tests/unit/practice-readiness-card-guard.spec.js tests/unit/practice-release-guard.spec.js tests/unit/shell-navigation-guard.spec.js tests/unit/core-shell-visual-guard.spec.js tests/unit/mini-program-scope-guard.spec.js tests/unit/frontend-copy-guard.spec.js
+```
+
+Result: passed on 2026-06-01.
+
+- [x] **Step 6: Commit**
+
+Run:
+```bash
+git add src/pages/practice/index.vue tests/unit/practice-question-bank-entry-guard.spec.js tests/unit/practice-dynamic-methods.spec.js docs/frontend-experience-refactor-diary.md docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md
+git commit -m "feat: align practice question bank handoff"
+```

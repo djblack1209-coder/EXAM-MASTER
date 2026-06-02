@@ -143,15 +143,15 @@
             </view>
             <view
               v-if="!isBankLoaded(bank.id)"
-              class="bank-btn load-btn"
+              class="bank-btn detail-btn"
               :class="{ disabled: loadingBankId === bank.id }"
               hover-class="btn-hover"
-              @tap="handleLoadBank(bank.id)"
+              @tap="openBankDetail(bank.id)"
             >
-              <text class="bank-btn-text">{{ loadingBankId === bank.id ? '加载中' : '加载' }}</text>
+              <text class="bank-btn-text">{{ loadingBankId === bank.id ? '打开中' : '查看' }}</text>
             </view>
-            <view v-else class="bank-loaded">
-              <text class="bank-loaded-text">已加载</text>
+            <view v-else class="bank-btn continue-btn" hover-class="btn-hover" @tap="openBankDetail(bank.id)">
+              <text class="bank-btn-text">继续</text>
             </view>
           </view>
         </view>
@@ -554,7 +554,7 @@ export default {
       this.isDark = resolved === 'dark';
     },
 
-    async handleLoadBank(bankId) {
+    async openBankDetail(bankId) {
       if (!bankId || this.loadingBankId === bankId) {
         return;
       }
@@ -1210,8 +1210,12 @@ $spacing-section: 24rpx;
   flex-shrink: 0;
 }
 
-.load-btn {
+.detail-btn {
   background: #1d1d1f;
+}
+
+.continue-btn {
+  background: $primary-light;
 }
 
 .bank-btn-text {
@@ -1220,14 +1224,8 @@ $spacing-section: 24rpx;
   color: #ffffff;
 }
 
-.bank-loaded {
-  padding: 12rpx 28rpx;
-}
-
-.bank-loaded-text {
-  font-size: 26rpx;
+.continue-btn .bank-btn-text {
   color: $action-green;
-  font-weight: 500;
 }
 
 .empty-track-card {
@@ -1419,19 +1417,27 @@ $spacing-section: 24rpx;
 .dark-mode .track-pill.active,
 .dark-mode .primary-btn,
 .dark-mode .practice-command.primary,
-.dark-mode .load-btn,
+.dark-mode .detail-btn,
 .dark-mode .empty-track-action {
   background: linear-gradient(135deg, #00e0ff 0%, #3f8cff 100%);
   box-shadow: 0 16rpx 38rpx rgba(0, 224, 255, 0.22);
+}
+
+.dark-mode .continue-btn {
+  background: rgba(35, 134, 91, 0.18);
 }
 
 .dark-mode .track-pill.active .track-code,
 .dark-mode .track-pill.active .track-label,
 .dark-mode .primary-btn .action-btn-text,
 .dark-mode .practice-command.primary text,
-.dark-mode .load-btn .bank-btn-text,
+.dark-mode .detail-btn .bank-btn-text,
 .dark-mode .empty-track-action text {
   color: #10131a;
+}
+
+.dark-mode .continue-btn .bank-btn-text {
+  color: #7ee0ac;
 }
 
 .dark-mode .progress-bar-sm {

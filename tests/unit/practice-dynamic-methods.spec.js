@@ -131,15 +131,15 @@ describe('practice 动态方法加载', () => {
     expect(uni.navigateTo.mock.calls[0][0].url).toBe('/pages/practice-sub/question-bank');
   });
 
-  it('handleLoadBank 应忽略同一题库的重复点击，避免并发导入', async () => {
+  it('openBankDetail 应忽略同一题库的重复点击，避免重复打开', async () => {
     const ctx = {
       loadingBankId: null,
       openQuestionBank: vi.fn()
     };
 
-    await PracticePage.methods.handleLoadBank.call(ctx, 'english1-2025');
+    await PracticePage.methods.openBankDetail.call(ctx, 'english1-2025');
     ctx.loadingBankId = 'english1-2025';
-    await PracticePage.methods.handleLoadBank.call(ctx, 'english1-2025');
+    await PracticePage.methods.openBankDetail.call(ctx, 'english1-2025');
 
     expect(ctx.openQuestionBank).toHaveBeenCalledTimes(1);
     expect(ctx.openQuestionBank).toHaveBeenCalledWith('english1-2025');

@@ -237,3 +237,11 @@
 - Tracks with only one playable paper now show the recommendation and year map without an unnecessary empty list state.
 - The secondary list keeps local sync pills and per-paper start actions, but reads as browsing support rather than the main path.
 - Added `question-bank-list-hierarchy-guard` to protect recommendation/list separation, count copy, empty-state behavior, and dark-mode heading coverage.
+
+### 2026-06-01 Round 27
+
+- Tightened the Practice home to Question Bank handoff so the app no longer presents two competing bank-start mental models.
+- Practice-page bank cards now say `查看 / 继续` and open the corresponding question-bank detail instead of implying that the home page itself owns import/start behavior.
+- The question-bank page remains the single place responsible for local sync, usable question ID verification, recommended start, and safe navigation into quiz.
+- Updated the dynamic-method guard from `handleLoadBank` to `openBankDetail` and added `practice-question-bank-entry-guard` for source-level copy, routing, and dark-mode coverage.
+- Product rule: the shell should orient and route; the question-bank subpage should decide readiness and training entry.
