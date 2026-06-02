@@ -396,3 +396,13 @@
 - Real `english1:2019` repair result: `repairedAnswers=10`, `repairedOptions=3`, `remainingMissingAnswers=0`, and runner-quality evaluation now reports `questionCount=52`, `typeCounts={single_choice:45,translation:5,essay:2}`, and `qualityIssues=[]`.
 - Release caveat: the repaired 2019 English answers/options are still candidate evidence sourced from the answer-speed PDF and must go through the verified evidence flow before public promotion.
 - Product rule: when a companion answer PDF has a clean text layer, use it to rebuild deterministic English structure and evidence first; LLM reruns are the fallback, not the default.
+
+### 2026-06-02 Round 45
+
+- Removed a queue-ordering blocker left after the `english1:2019` repair: English analysis sources named `真题及解析` / `真题及答案解析` are now classified as support evidence, matching existing `真题解析` / `答案解析` handling.
+- Kept the math combined-paper exceptions intact, so release-backlog math files such as `2006数一标准答案及解析.pdf` still remain eligible as main-paper tasks.
+- Added a runner regression test proving `2019考研英语一真题及解析.pdf` and `2019考研英语（一）真题及答案解析.pdf` are excluded from `--paper-role main` and included under `--paper-role support`.
+- Updated a quality-preservation test fixture from an English analysis filename to a pure main-paper filename, preserving the test's intended coverage now that analysis sources are correctly treated as support evidence.
+- Verification passed: runner queue tests, main-paper dry-run, and `git diff --check`.
+- Dry-run now advances the main release-priority queue past already-repaired English analysis sources and starts at `2006数一标准答案及解析.pdf`, followed by `2016考研数学二真题.pdf`, `2015年考研数学三真题及解析.pdf`, and `2020年考研英语一真题.pdf`.
+- Product rule: support/analysis materials can be evidence for repairing a bank, but they must not consume main-paper cleaning slots once the release slot already has a stronger canonical bank.

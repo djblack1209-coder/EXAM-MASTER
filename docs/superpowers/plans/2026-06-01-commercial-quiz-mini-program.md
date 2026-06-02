@@ -1864,3 +1864,40 @@ git commit -m "chore: repair english companion option evidence"
 ```
 
 Result: committed after validation on 2026-06-02.
+
+### Task 43: Classify English Analysis Sources As Support Evidence
+
+**Files:**
+- Modify: `scripts/baidu/run_cleaning_queue.py`
+- Modify: `tests/unit/test_baidu_cleaning_runner.py`
+- Modify: `docs/frontend-experience-refactor-diary.md`
+- Modify: `docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md`
+
+- [x] **Step 1: Add queue classification coverage**
+
+Added a runner regression test proving English files named `2019考研英语一真题及解析.pdf` and `2019考研英语（一）真题及答案解析.pdf` are support evidence, not main-paper cleaning tasks.
+
+- [x] **Step 2: Extend support-evidence naming rules**
+
+Updated `is_support_evidence_task()` so `真题及解析` is treated like existing `真题解析` / `答案解析` support material. Math combined-paper exceptions remain intact, so math release tasks such as `2006数一标准答案及解析.pdf` still stay in the main queue.
+
+- [x] **Step 3: Re-run release-priority dry-run**
+
+Run:
+```bash
+python3 -m unittest tests.unit.test_baidu_cleaning_runner tests.unit.test_baidu_cleaning_queue
+python3 scripts/baidu/run_cleaning_queue.py --dry-run --limit 8 --source-type official_paper --paper-role main
+git diff --check
+```
+
+Result: passed on 2026-06-02. Main dry-run now advances past the already-repaired English analysis sources and starts at `2006数一标准答案及解析.pdf`, followed by `2016考研数学二真题.pdf`, `2015年考研数学三真题及解析.pdf`, and `2020年考研英语一真题.pdf`.
+
+- [x] **Step 4: Commit**
+
+Run:
+```bash
+git add scripts/baidu/run_cleaning_queue.py tests/unit/test_baidu_cleaning_runner.py docs/frontend-experience-refactor-diary.md docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md
+git -c core.hooksPath=/dev/null commit -m "chore: classify english analysis sources as support"
+```
+
+Result: committed after validation on 2026-06-02.

@@ -231,7 +231,10 @@ def is_support_evidence_task(task: dict[str, Any]) -> bool:
         return False
     if track.startswith("math") and re.search(r"\d{4}\s*数[一二三]\s*标准答案及解析", evidence_name):
         return False
-    if any(pattern in evidence_name for pattern in ("答案速查", "参考答案", "标准答案", "答案解析", "真题解析", "解析册")):
+    if any(
+        pattern in evidence_name
+        for pattern in ("答案速查", "参考答案", "标准答案", "答案解析", "真题解析", "真题及解析", "解析册")
+    ):
         return True
     return any(pattern.lower() in evidence_name for pattern in SUPPORT_EVIDENCE_NAME_PATTERNS)
 

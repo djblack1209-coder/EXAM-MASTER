@@ -301,6 +301,51 @@ class BaiduCleaningRunnerTest(unittest.TestCase):
 
         self.assertEqual([task["taskId"] for task in selected], ["math1_combined"])
 
+    def test_english_analysis_papers_are_support_evidence(self):
+        queue = {
+            "tasks": [
+                {
+                    "taskId": "english1_main",
+                    "action": "download_and_extract",
+                    "status": "pending",
+                    "priority": 100,
+                    "track": "english1",
+                    "year": 2020,
+                    "sourceType": "official_paper",
+                    "safeDisplayName": "2020年考研英语一真题.pdf",
+                },
+                {
+                    "taskId": "english1_analysis",
+                    "action": "download_and_extract",
+                    "status": "pending",
+                    "priority": 100,
+                    "track": "english1",
+                    "year": 2019,
+                    "sourceType": "official_paper",
+                    "safeDisplayName": "2019考研英语一真题及解析.pdf",
+                },
+                {
+                    "taskId": "english1_answer_analysis",
+                    "action": "download_and_extract",
+                    "status": "pending",
+                    "priority": 100,
+                    "track": "english1",
+                    "year": 2019,
+                    "sourceType": "official_paper",
+                    "safeDisplayName": "2019考研英语（一）真题及答案解析.pdf",
+                },
+            ]
+        }
+
+        main_tasks = select_pending_tasks(queue, limit=10, source_type="official_paper", paper_role="main")
+        support_tasks = select_pending_tasks(queue, limit=10, source_type="official_paper", paper_role="support")
+
+        self.assertEqual([task["taskId"] for task in main_tasks], ["english1_main"])
+        self.assertEqual(
+            [task["taskId"] for task in support_tasks],
+            ["english1_analysis", "english1_answer_analysis"],
+        )
+
     def test_reexecs_with_baidu_virtualenv_when_requests_missing(self):
         with tempfile.TemporaryDirectory() as tmp:
             original_project_root = runner.PROJECT_ROOT
@@ -784,7 +829,7 @@ class BaiduCleaningRunnerTest(unittest.TestCase):
                         "subject": "english",
                         "track": "english1",
                         "year": 2018,
-                        "safeDisplayName": "2018考研英语一真题及解析.pdf",
+                        "safeDisplayName": "2018年考研英语一真题.pdf",
                     },
                     tmp_root / "raw" / "2018.pdf",
                 )
