@@ -28,6 +28,20 @@ from openai import OpenAI
 # ============================================================
 # 配置
 # ============================================================
+def env_int(name: str, default: int) -> int:
+    try:
+        return int(os.environ.get(name, str(default)))
+    except ValueError:
+        return default
+
+
+def env_float(name: str, default: float) -> float:
+    try:
+        return float(os.environ.get(name, str(default)))
+    except ValueError:
+        return default
+
+
 OUTPUT_DIR = Path(__file__).parent.parent.parent / "data" / "flashcards"
 HASH_DB_PATH = Path(__file__).parent / ".card-hashes.json"
 AI_CACHE_DIR = Path(__file__).parent.parent.parent / "data" / "ai-cache"
@@ -38,8 +52,11 @@ LLM_USAGE_PATH = AI_CACHE_DIR / "pdf2flashcard-usage.json"
 LLM_BASE_URL = os.environ.get("LLM_BASE_URL", "https://api.openai.com/v1")
 LLM_API_KEY = os.environ.get("LLM_API_KEY", os.environ.get("OPENAI_API_KEY", ""))
 LLM_MODEL = os.environ.get("LLM_MODEL", "gpt-4o-mini")
-LLM_DAILY_REQUEST_LIMIT = int(os.environ.get("LLM_DAILY_REQUEST_LIMIT", "200"))
-LLM_DAILY_CHAR_LIMIT = int(os.environ.get("LLM_DAILY_CHAR_LIMIT", "1200000"))
+LLM_DAILY_REQUEST_LIMIT = env_int("LLM_DAILY_REQUEST_LIMIT", 200)
+LLM_DAILY_CHAR_LIMIT = env_int("LLM_DAILY_CHAR_LIMIT", 1200000)
+LLM_REQUEST_TIMEOUT_SECONDS = max(1.0, env_float("LLM_REQUEST_TIMEOUT_SECONDS", 20.0))
+LLM_MAX_RETRIES = max(1, env_int("LLM_MAX_RETRIES", 3))
+LLM_MAX_TOKENS = max(512, env_int("LLM_MAX_TOKENS", 8192))
 LLM_ALLOW_PAID_FALLBACKS = os.environ.get("LLM_ALLOW_PAID_FALLBACKS", "false").lower() in ("1", "true", "yes")
 
 SILICONFLOW_DS_KEY_ENVS = [f"SILICONFLOW_DS_KEY_{i}" for i in range(1, 11)]
@@ -154,7 +171,8 @@ LLM_PROVIDER_CONFIGS = [
 ]
 
 # 每批发给 AI 的 OCR 文本最大字符数（避免超出上下文窗口）
-BATCH_CHAR_LIMIT = 6000
+BATCH_CHAR_LIMIT = max(500, env_int("PDF2FLASHCARD_BATCH_CHAR_LIMIT", 6000))
+MIN_QUESTION_LIKE_BATCH_CHARS = max(100, env_int("PDF2FLASHCARD_MIN_QUESTION_LIKE_BATCH_CHARS", 200))
 PDF_TEXT_LAYER_FIRST = os.environ.get("PDF_TEXT_LAYER_FIRST", "true").lower() not in ("0", "false", "no")
 PDF_TEXT_MIN_CHARS_PER_PAGE = int(os.environ.get("PDF_TEXT_MIN_CHARS_PER_PAGE", "60"))
 
@@ -325,6 +343,26 @@ def anonymize_card(card: dict) -> dict:
             t = t.replace(kw, "")
         opt["text"] = t.strip()
 
+    return card
+
+
+def normalize_exam_card_type(card: dict, subject: str) -> dict:
+    """Apply fixed exam structures after LLM parsing where the format is deterministic."""
+    if str(subject).lower() != "politics":
+        return card
+
+    try:
+        number = int(card.get("number") or 0)
+    except (TypeError, ValueError):
+        return card
+
+    if 1 <= number <= 16:
+        card["type"] = "single_choice"
+    elif 17 <= number <= 33:
+        card["type"] = "multi_choice"
+    elif 34 <= number <= 38:
+        card["type"] = "analysis"
+        card["options"] = []
     return card
 
 
@@ -573,7 +611,7 @@ def add_llm_backend(backends: list, seen: set, name: str, base_url: str, model: 
     backend_id = (name, normalized_url, model, key_env)
     if backend_id in seen:
         return
-    client_kwargs = {"base_url": normalized_url, "api_key": api_key}
+    client_kwargs = {"base_url": normalized_url, "api_key": api_key, "timeout": LLM_REQUEST_TIMEOUT_SECONDS}
     if headers:
         client_kwargs["default_headers"] = headers
     backends.append(
@@ -594,7 +632,11 @@ def create_llm_client() -> OpenAI:
         print("错误: 请设置环境变量 LLM_API_KEY 或 OPENAI_API_KEY")
         sys.exit(1)
 
-    return OpenAI(base_url=normalize_openai_base_url(LLM_BASE_URL), api_key=LLM_API_KEY)
+    return OpenAI(
+        base_url=normalize_openai_base_url(LLM_BASE_URL),
+        api_key=LLM_API_KEY,
+        timeout=LLM_REQUEST_TIMEOUT_SECONDS,
+    )
 
 
 def create_llm_backends() -> list:
@@ -649,6 +691,17 @@ def split_text_into_batches(text: str, limit: int = BATCH_CHAR_LIMIT) -> list:
         batches.append("\n".join(current_batch))
 
     return batches
+
+
+def batch_should_have_cards(text: str) -> bool:
+    compact = re.sub(r"\s+", "", text or "")
+    if len(compact) < MIN_QUESTION_LIKE_BATCH_CHARS:
+        return False
+    return bool(
+        re.search(r"(?m)^\s*\d{1,2}[\.、．]\s*", text or "")
+        or re.search(r"(?m)^\s*[（(]\d+[）)]", text or "")
+        or re.search(r"(分析题|材料\d+|回答下列问题|结合材料)", text or "")
+    )
 
 
 def response_payload(response) -> dict:
@@ -707,16 +760,25 @@ def is_stable_backend_error(error: Exception) -> bool:
         "permission denied",
         "unauthorized",
         "invalid api key",
+        "access denied",
+        "identity verification",
+        "customer_verification_required",
+        "credit card",
+        "user not found",
+        "request too large",
+        "tokens per minute",
+        "free accounts is limited",
     )
     return any(marker in message for marker in stable_markers)
 
 
 def ai_parse_batch(client: OpenAI, text: str, subject: str, year: str,
-                   max_retries: int = 3, model: str | None = None,
+                   max_retries: int | None = None, model: str | None = None,
                    base_url: str | None = None, provider_name: str = "llm") -> list:
     """用 AI 解析一批 OCR 文本为结构化闪卡"""
     selected_model = model or LLM_MODEL
     selected_base_url = base_url or LLM_BASE_URL
+    max_retries = max(1, int(max_retries or LLM_MAX_RETRIES))
     cache_key = llm_cache_key(text, subject, year, selected_base_url, selected_model)
     cached = get_cached_cards(cache_key)
     if cached is not None:
@@ -740,7 +802,8 @@ def ai_parse_batch(client: OpenAI, text: str, subject: str, year: str,
                     {"role": "user", "content": user_msg},
                 ],
                 temperature=0.1,  # 低温度保证确定性
-                max_tokens=8192,
+                max_tokens=LLM_MAX_TOKENS,
+                timeout=LLM_REQUEST_TIMEOUT_SECONDS,
             )
 
             content = extract_llm_content(response)
@@ -771,6 +834,8 @@ def ai_parse_batch(client: OpenAI, text: str, subject: str, year: str,
         except Exception as e:
             last_error = e
             print(f"    {provider_name} AI请求失败 ({attempt+1}/{max_retries}): {e}")
+            if is_stable_backend_error(e):
+                raise RuntimeError(f"{provider_name} AI 解析失败: {last_error}") from e
             if attempt < max_retries - 1:
                 time.sleep(2 ** attempt)
 
@@ -810,6 +875,8 @@ def ai_parse_text(text: str, subject: str, year: str) -> list:
                     base_url=backend["base_url"],
                     provider_name=backend["name"],
                 )
+                if not cards and batch_should_have_cards(batch):
+                    raise RuntimeError(f"{backend['name']} returned 0 cards for a question-like batch")
                 break
             except Exception as exc:
                 errors.append(f"{backend['name']}: {exc}")
@@ -878,6 +945,7 @@ def process_pdf(pdf_path: str, subject: str, year: str, source: str = "") -> dic
         card.setdefault("options", [])
         card.setdefault("answer", "")
         card.setdefault("explanation", "")
+        card = normalize_exam_card_type(card, subject)
         card = anonymize_card(card)
 
     # 5. 卷内去重。不要跨年份/跨试卷过滤，否则会吞掉历史真题。
@@ -948,8 +1016,12 @@ def print_usage():
     print(f"  LLM_API_KEY   = API密钥 (当前: {'已设置' if LLM_API_KEY else '未设置'})")
     print(f"  LLM_BASE_URL  = API地址 (当前: {LLM_BASE_URL})")
     print(f"  LLM_MODEL     = 模型名   (当前: {LLM_MODEL})")
+    print(f"  LLM_REQUEST_TIMEOUT_SECONDS = 单请求超时秒数 (当前: {LLM_REQUEST_TIMEOUT_SECONDS})")
+    print(f"  LLM_MAX_RETRIES = 单后端最大重试次数 (当前: {LLM_MAX_RETRIES})")
+    print(f"  LLM_MAX_TOKENS = 单次输出 token 上限 (当前: {LLM_MAX_TOKENS})")
     print(f"  LLM_DAILY_REQUEST_LIMIT = 日请求上限 (当前: {LLM_DAILY_REQUEST_LIMIT})")
     print(f"  LLM_DAILY_CHAR_LIMIT    = 日字符上限 (当前: {LLM_DAILY_CHAR_LIMIT})")
+    print(f"  PDF2FLASHCARD_BATCH_CHAR_LIMIT = 每批文本字符上限 (当前: {BATCH_CHAR_LIMIT})")
     print(f"  PDF_TEXT_LAYER_FIRST    = 优先文本层提取 (当前: {PDF_TEXT_LAYER_FIRST})")
     print()
     print("支持的 LLM 后端:")

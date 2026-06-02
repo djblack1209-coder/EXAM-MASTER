@@ -519,6 +519,54 @@ class BaiduCleaningRunnerTest(unittest.TestCase):
         self.assertEqual(task["answerEvidenceStatus"], "missing_answers")
         self.assertEqual(report["completed"], 1)
 
+    def test_run_queue_once_fails_quality_gate_issues(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            local_pdf = Path(tmp) / "raw" / "src_1-2023政治.pdf"
+            local_pdf.parent.mkdir(parents=True)
+            local_pdf.write_bytes(b"%PDF-1.4")
+
+            def quality_gate_processor(task, local_path):
+                return {
+                    "outputPath": "data/flashcards/politics-2023.json",
+                    "questionCount": 34,
+                    "missingAnswerCount": 0,
+                    "answerEvidenceStatus": "quality_review",
+                    "typeCounts": {"single_choice": 32, "multi_choice": 1, "analysis": 1},
+                    "qualityIssues": ["politics_question_count_below_expected: expected>=38 actual=34"],
+                }
+
+            queue = {
+                "tasks": [
+                    {
+                        "taskId": "t_incomplete_politics",
+                        "action": "download_and_extract",
+                        "status": "pending",
+                        "attempts": 0,
+                        "priority": 100,
+                        "remotePath": "/EXAM-MASTER/考研历年真题/2023政治.pdf",
+                        "expectedLocalPath": str(local_pdf),
+                        "subject": "politics",
+                        "track": "politics",
+                        "year": 2023,
+                    }
+                ]
+            }
+
+            updated, report = run_queue_once(
+                queue,
+                limit=1,
+                now="2026-04-30T00:00:00Z",
+                processor=quality_gate_processor,
+            )
+
+        task = updated["tasks"][0]
+        self.assertEqual(task["status"], "failed")
+        self.assertEqual(task["questionCount"], 34)
+        self.assertEqual(task["answerEvidenceStatus"], "quality_review")
+        self.assertIn("processor quality gate failed", task["lastError"])
+        self.assertEqual(report["completed"], 0)
+        self.assertEqual(report["failed"], 1)
+
     def test_default_processor_uses_track_specific_output_to_avoid_overwrites(self):
         with tempfile.TemporaryDirectory() as tmp:
             original_project_root = runner.PROJECT_ROOT
@@ -585,6 +633,51 @@ class BaiduCleaningRunnerTest(unittest.TestCase):
 
         self.assertEqual(result["missingAnswerCount"], 1)
         self.assertEqual(result["answerEvidenceStatus"], "missing_answers")
+
+    def test_default_processor_flags_incomplete_politics_distribution(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            original_project_root = runner.PROJECT_ROOT
+            original_pdf2flashcard = runner.PDF2FLASHCARD
+            original_subprocess_run = runner.subprocess.run
+            tmp_root = Path(tmp)
+            output_dir = tmp_root / "data" / "flashcards"
+            output_dir.mkdir(parents=True)
+            cards = (
+                [{"id": f"p-s-{index}", "type": "single_choice", "answer": "A"} for index in range(32)]
+                + [{"id": "p-m-1", "type": "multi_choice", "answer": "AB"}]
+                + [{"id": "p-a-1", "type": "analysis", "answer": "参考答案"}]
+            )
+            (output_dir / "politics-2023.json").write_text(
+                runner.json.dumps({"total_cards": 34, "cards": cards}, ensure_ascii=False),
+                encoding="utf-8",
+            )
+
+            def fake_run(args, cwd, check):
+                return None
+
+            try:
+                runner.PROJECT_ROOT = tmp_root
+                runner.PDF2FLASHCARD = tmp_root / "scripts" / "pipeline" / "pdf2flashcard-v2.py"
+                runner.subprocess.run = fake_run
+
+                result = runner.default_processor(
+                    {
+                        "subject": "politics",
+                        "track": "politics",
+                        "year": 2023,
+                        "safeDisplayName": "2023考研政治真题.pdf",
+                    },
+                    tmp_root / "raw" / "2023.pdf",
+                )
+            finally:
+                runner.PROJECT_ROOT = original_project_root
+                runner.PDF2FLASHCARD = original_pdf2flashcard
+                runner.subprocess.run = original_subprocess_run
+
+        self.assertEqual(result["questionCount"], 34)
+        self.assertEqual(result["answerEvidenceStatus"], "quality_review")
+        self.assertIn("politics_question_count_below_expected: expected>=38 actual=34", result["qualityIssues"])
+        self.assertIn("politics_analysis_count_below_expected: expected>=5 actual=1", result["qualityIssues"])
 
     def test_default_processor_isolates_unknown_track_outputs_by_source_id(self):
         with tempfile.TemporaryDirectory() as tmp:

@@ -68,6 +68,14 @@ ANSWER_PLACEHOLDERS = {
     "参考答案全文",
     "答案解析文本",
 }
+PUBLIC_TRACK_QUALITY_MINIMUMS = {
+    "politics": {
+        "total": 38,
+        "single_choice": 16,
+        "multi_choice": 17,
+        "analysis": 5,
+    },
+}
 PUBLIC_RELEASE_TRACK_ORDER = {
     "politics": 0,
     "english1": 1,
@@ -265,6 +273,37 @@ def has_usable_answer(card: dict[str, Any]) -> bool:
     return bool(answer) and answer not in ANSWER_PLACEHOLDERS
 
 
+def count_card_types(cards: list[dict[str, Any]]) -> dict[str, int]:
+    counts: dict[str, int] = {}
+    for card in cards:
+        card_type = str(card.get("type") or "unknown")
+        counts[card_type] = counts.get(card_type, 0) + 1
+    return counts
+
+
+def quality_issues_for_task(task: dict[str, Any], *, question_count: int, type_counts: dict[str, int]) -> list[str]:
+    track = str(task.get("track") or "")
+    if is_support_evidence_task(task):
+        return []
+
+    minimums = PUBLIC_TRACK_QUALITY_MINIMUMS.get(track)
+    if not minimums:
+        return []
+
+    issues = []
+    total_minimum = int(minimums.get("total") or 0)
+    if total_minimum and question_count < total_minimum:
+        issues.append(f"{track}_question_count_below_expected: expected>={total_minimum} actual={question_count}")
+
+    for card_type, minimum in minimums.items():
+        if card_type == "total":
+            continue
+        actual = int(type_counts.get(card_type) or 0)
+        if actual < int(minimum):
+            issues.append(f"{track}_{card_type}_count_below_expected: expected>={minimum} actual={actual}")
+    return issues
+
+
 def default_processor(task: dict[str, Any], local_path: Path) -> dict[str, Any]:
     subject = output_subject_for_task(task)
     year = str(task.get("year") or "unknown")
@@ -277,18 +316,27 @@ def default_processor(task: dict[str, Any], local_path: Path) -> dict[str, Any]:
     output_path = PROJECT_ROOT / "data" / "flashcards" / f"{subject}-{year}.json"
     question_count = 0
     missing_answer_count = 0
+    type_counts: dict[str, int] = {}
     if output_path.exists():
         payload = read_json(output_path, {})
         cards = payload.get("cards", [])
         question_count = int(payload.get("total_cards") or len(cards) or 0)
         if isinstance(cards, list):
             missing_answer_count = sum(1 for card in cards if not has_usable_answer(card))
+            type_counts = count_card_types(cards)
+
+    quality_issues = quality_issues_for_task(task, question_count=question_count, type_counts=type_counts)
+    answer_evidence_status = "missing_answers" if missing_answer_count else "manual_review"
+    if quality_issues and not missing_answer_count:
+        answer_evidence_status = "quality_review"
 
     return {
         "outputPath": str(output_path),
         "questionCount": question_count,
         "missingAnswerCount": missing_answer_count,
-        "answerEvidenceStatus": "missing_answers" if missing_answer_count else "manual_review",
+        "answerEvidenceStatus": answer_evidence_status,
+        "typeCounts": type_counts,
+        "qualityIssues": quality_issues,
     }
 
 
@@ -320,7 +368,7 @@ def run_queue_once(
         source_type=source_type,
         paper_role=paper_role,
     )
-    active_downloader = downloader or (default_downloader(planned) if planned else None)
+    active_downloader = downloader
     active_processor = processor or default_processor
     by_task_id = {task.get("taskId"): task for task in updated.get("tasks", [])}
 
@@ -345,6 +393,8 @@ def run_queue_once(
                 report["skippedExistingLocal"] += 1
             else:
                 local_path.parent.mkdir(parents=True, exist_ok=True)
+                if active_downloader is None and planned:
+                    active_downloader = default_downloader(planned)
                 if active_downloader is None:
                     raise RuntimeError("downloader is not configured")
                 active_downloader.download(task["remotePath"], str(local_path), overwrite=False)
@@ -357,18 +407,23 @@ def run_queue_once(
             answer_evidence_status = result.get("answerEvidenceStatus", "manual_review")
             if missing_answer_count > 0:
                 answer_evidence_status = "missing_answers"
+            quality_issues = [str(issue) for issue in result.get("qualityIssues", []) if str(issue)]
+            result_payload = {
+                "localPath": str(local_path),
+                "outputPath": result.get("outputPath"),
+                "questionCount": question_count,
+                "missingAnswerCount": missing_answer_count,
+                "answerEvidenceStatus": answer_evidence_status,
+                "typeCounts": result.get("typeCounts", {}),
+                "qualityIssues": quality_issues,
+            }
+            if quality_issues:
+                task.update(result_payload)
+                raise RuntimeError("processor quality gate failed: " + "; ".join(quality_issues))
             task["status"] = "completed"
             task["completedAt"] = now
             task.pop("lastError", None)
-            task.update(
-                {
-                    "localPath": str(local_path),
-                    "outputPath": result.get("outputPath"),
-                    "questionCount": question_count,
-                    "missingAnswerCount": missing_answer_count,
-                    "answerEvidenceStatus": answer_evidence_status,
-                }
-            )
+            task.update(result_payload)
             report["completed"] += 1
             report["tasks"].append({"taskId": task["taskId"], "status": "completed"})
         except Exception as exc:  # noqa: BLE001 - batch runner records per-task failures.

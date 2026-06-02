@@ -1497,3 +1497,68 @@ Run:
 git add scripts/baidu/run_cleaning_queue.py tests/unit/test_baidu_cleaning_runner.py docs/frontend-experience-refactor-diary.md docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md
 git commit -m "chore: run cleaning queue by release priority"
 ```
+
+### Task 37: Harden Real Cleaning Smoke And Quality Gates
+
+**Files:**
+- Modify: `scripts/pipeline/pdf2flashcard-v2.py`
+- Modify: `scripts/baidu/run_cleaning_queue.py`
+- Modify: `tests/unit/test_pdf2flashcard_v2.py`
+- Modify: `tests/unit/test_baidu_cleaning_runner.py`
+- Modify: `docs/frontend-experience-refactor-diary.md`
+- Modify: `docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md`
+
+- [x] **Step 1: Restore usable Baidu cleaning runtime**
+
+Move the hung ignored `.venv-baidu` aside and rebuild `.venv-baidu` with Python 3.12 plus `requirements-baidu.txt`.
+
+- [x] **Step 2: Add LLM request controls**
+
+Make `LLM_REQUEST_TIMEOUT_SECONDS`, `LLM_MAX_RETRIES`, `LLM_MAX_TOKENS`, and `PDF2FLASHCARD_BATCH_CHAR_LIMIT` configurable so real cleaning can run against free or low-cost model limits without hanging.
+
+- [x] **Step 3: Fail fast on stable provider errors**
+
+Treat unsupported models, invalid accounts, access denied, identity verification, credit card verification, and token-limit errors as stable backend failures so fallback moves on quickly.
+
+- [x] **Step 4: Add batch-level zero-card fallback**
+
+When a question-like batch returns zero cards, try the next configured backend instead of silently accepting a likely missing block.
+
+- [x] **Step 5: Normalize deterministic politics exam types**
+
+Apply the fixed politics structure after LLM parsing: 1-16 single choice, 17-33 multi choice, 34-38 analysis.
+
+- [x] **Step 6: Add runner-side quality gate**
+
+For main politics papers, require at least 38 total cards, 16 single-choice, 17 multi-choice, and 5 analysis cards before the task can be marked completed. Persist `typeCounts` and `qualityIssues` for operator review.
+
+- [x] **Step 7: Run real single-paper smoke**
+
+Run:
+```bash
+LLM_DISABLED_PROVIDERS=llm_primary,iflow,nvidia LLM_REQUEST_TIMEOUT_SECONDS=8 LLM_MAX_RETRIES=1 PDF2FLASHCARD_BATCH_CHAR_LIMIT=1400 LLM_MAX_TOKENS=2048 python3 scripts/baidu/run_cleaning_queue.py --limit 1 --source-type official_paper --paper-role main
+```
+
+Result: download and text-layer extraction worked for `politics:2023`. The first run exposed provider failures; the guarded rerun produced 38 cards with 5 analysis items when fallback succeeded, and failed closed when cached/provider behavior still missed the required politics distribution.
+
+- [x] **Step 8: Run final validation**
+
+Run:
+```bash
+.venv-baidu/bin/python -m unittest tests.unit.test_pdf2flashcard_v2
+python3 -m unittest tests.unit.test_baidu_cleaning_runner tests.unit.test_baidu_cleaning_queue
+python3 scripts/baidu/cleaning_queue.py --self-test
+python3 scripts/baidu/run_cleaning_queue.py --self-test
+python3 scripts/baidu/run_cleaning_queue.py --dry-run --limit 8 --source-type official_paper --paper-role main
+git diff --check
+```
+
+Result: passed on 2026-06-01. Regenerated the ignored local queue after real smoke testing so the next dry-run again starts with `politics:2023`.
+
+- [x] **Step 9: Commit**
+
+Run:
+```bash
+git add scripts/pipeline/pdf2flashcard-v2.py scripts/baidu/run_cleaning_queue.py tests/unit/test_pdf2flashcard_v2.py tests/unit/test_baidu_cleaning_runner.py docs/frontend-experience-refactor-diary.md docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md
+git commit -m "chore: harden cleaning runner quality gates"
+```

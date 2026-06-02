@@ -335,3 +335,15 @@
 - Regenerated the ignored local cleaning queue: 824 pending release-backlog tasks are now visible to the runner, including 168 automation-actionable tasks and 656 manual-blocked tasks.
 - Dry-run verification now starts with `politics:2023`, `english1:2018`, and other release backlog papers, which makes the next real cleaning batch point at the highest release value.
 - Product rule: every automation layer that selects content work must preserve the same release-blocker priority, otherwise a correct backlog can still produce slow commercial progress.
+
+### 2026-06-01 Round 39
+
+- Moved from dry-run queue readiness into a real single-paper cleaning smoke on the top release blocker, `politics:2023`.
+- Rebuilt the ignored `.venv-baidu` runtime with Python 3.12 after the old Python 3.14 virtualenv hung during startup; the old env was preserved as `.venv-baidu.broken-*`.
+- `pdf2flashcard-v2.py` now has configurable LLM request timeout, retry count, output token limit, and batch character limit, so bad or slow OpenAI-compatible providers cannot freeze the cleaning runner.
+- Stable provider failures such as unsupported models, invalid accounts, identity verification, credit-card verification, and free-token limits are now detected and disabled quickly during fallback.
+- Added batch-level fallback when a question-like text batch returns zero cards, which improved the 2023 politics smoke from 34 cards / 1 analysis item to 38 cards / 5 analysis items when fallback providers were available.
+- Added deterministic politics exam type normalization: questions 1-16 are single choice, 17-33 are multi choice, and 34-38 are analysis, correcting LLM misclassification without relying on prompt luck.
+- Added runner-side quality gates for public politics papers, so incomplete or misdistributed outputs are marked `failed` with `qualityIssues` instead of being treated as release-ready cleaned banks.
+- Real smoke result: download and text extraction work; cleaned output is still blocked from completion when provider fallback misses the full politics distribution, which is the correct commercial-safe behavior.
+- Product rule: content automation must fail closed on incomplete or structurally suspicious papers; releasing fewer wrong questions is worse than clearly blocking the slot.

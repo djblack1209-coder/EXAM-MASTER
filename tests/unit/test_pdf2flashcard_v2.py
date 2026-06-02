@@ -66,12 +66,28 @@ class CountingClient(FakeClient):
         return self.response
 
 
+class RecordingClient(FakeClient):
+    def __init__(self, response=None):
+        self.response = response or FakeResponse()
+        super().__init__(self.response)
+        self.create_kwargs = []
+        self.chat.completions = self
+
+    def create(self, **kwargs):
+        self.create_kwargs.append(kwargs)
+        return self.response
+
+
 class Pdf2FlashcardV2Test(unittest.TestCase):
     def tearDown(self):
         os.environ.pop("AI_PROVIDER_DISABLED_LIST", None)
         os.environ.pop("LLM_DISABLED_PROVIDERS", None)
         os.environ.pop("AI_PROVIDER_DISABLED_KEYS", None)
         os.environ.pop("LLM_DISABLED_KEYS", None)
+        os.environ.pop("LLM_REQUEST_TIMEOUT_SECONDS", None)
+        os.environ.pop("LLM_MAX_TOKENS", None)
+        os.environ.pop("PDF2FLASHCARD_BATCH_CHAR_LIMIT", None)
+        os.environ.pop("TEST_LLM_API_KEY", None)
 
     def test_ai_parse_batch_raises_provider_error_when_choices_missing(self):
         module = load_pdf2flashcard_module()
@@ -161,8 +177,164 @@ class Pdf2FlashcardV2Test(unittest.TestCase):
 
             module.ai_parse_text("ignored", "english", "2000")
 
-        self.assertEqual(bad_client.calls, 3)
+        self.assertEqual(bad_client.calls, 1)
         self.assertEqual(good_client.calls, 2)
+
+    def test_ai_parse_text_falls_back_when_question_like_batch_returns_zero_cards(self):
+        module = load_pdf2flashcard_module()
+        with tempfile.TemporaryDirectory() as tmp:
+            module.LLM_CACHE_PATH = Path(tmp) / "cache.json"
+            module.LLM_USAGE_PATH = Path(tmp) / "usage.json"
+            empty_response = FakeResponse(
+                choices=[{"message": {"content": "[]"}, "finish_reason": "stop"}],
+                msg=None,
+                status=None,
+                model="empty-model",
+            )
+            good_response = FakeResponse(
+                choices=[
+                    {
+                        "message": {
+                            "content": '[{"number": 28, "type": "analysis", "question": "Q", "options": [], "answer": "A"}]'
+                        },
+                        "finish_reason": "stop",
+                    }
+                ],
+                msg=None,
+                status=None,
+                model="fallback-model",
+            )
+            empty_client = CountingClient(empty_response)
+            good_client = CountingClient(good_response)
+            module.create_llm_backends = lambda: [
+                {
+                    "name": "empty",
+                    "base_url": "https://empty.example/v1",
+                    "model": "empty-model",
+                    "client": empty_client,
+                },
+                {
+                    "name": "fallback",
+                    "base_url": "https://fallback.example/v1",
+                    "model": "fallback-model",
+                    "client": good_client,
+                },
+            ]
+            question_like_text = "28. 结合材料回答下列问题。" + "材料文本" * 120
+
+            cards = module.ai_parse_text(question_like_text, "politics", "2023")
+
+        self.assertEqual(empty_client.calls, 1)
+        self.assertEqual(good_client.calls, 1)
+        self.assertEqual(cards[0]["number"], 28)
+
+    def test_ai_parse_batch_passes_request_timeout(self):
+        os.environ["LLM_REQUEST_TIMEOUT_SECONDS"] = "7.5"
+        module = load_pdf2flashcard_module()
+        with tempfile.TemporaryDirectory() as tmp:
+            module.LLM_CACHE_PATH = Path(tmp) / "cache.json"
+            module.LLM_USAGE_PATH = Path(tmp) / "usage.json"
+            good_response = FakeResponse(
+                choices=[
+                    {
+                        "message": {
+                            "content": '[{"number": 1, "type": "single_choice", "question": "Q", "options": [], "answer": "A"}]'
+                        },
+                        "finish_reason": "stop",
+                    }
+                ],
+                msg=None,
+                status=None,
+            )
+            client = RecordingClient(good_response)
+
+            module.ai_parse_batch(
+                client,
+                "1. 示例题干 A. 甲 B. 乙 C. 丙 D. 丁",
+                "english",
+                "2000",
+                max_retries=1,
+            )
+
+        self.assertEqual(client.create_kwargs[0]["timeout"], 7.5)
+
+    def test_add_llm_backend_sets_client_timeout(self):
+        os.environ["TEST_LLM_API_KEY"] = "test-key"
+        module = load_pdf2flashcard_module()
+        module.LLM_REQUEST_TIMEOUT_SECONDS = 9.5
+
+        class FakeOpenAI:
+            def __init__(self, **kwargs):
+                self.kwargs = kwargs
+
+        original_openai = module.OpenAI
+        try:
+            module.OpenAI = FakeOpenAI
+            backends = []
+            module.add_llm_backend(
+                backends,
+                set(),
+                "test",
+                "https://example.test/v1",
+                "test-model",
+                "TEST_LLM_API_KEY",
+            )
+        finally:
+            module.OpenAI = original_openai
+
+        self.assertEqual(backends[0]["client"].kwargs["timeout"], 9.5)
+
+    def test_stable_backend_error_covers_quota_and_verification_failures(self):
+        module = load_pdf2flashcard_module()
+
+        stable_messages = [
+            "Request too large for model on tokens per minute",
+            "User not found.",
+            "Access denied: please complete identity verification before trying again.",
+            "AI Gateway requires a valid credit card on file",
+            "The number of prompt tokens for free accounts is limited to 4096.",
+        ]
+
+        for message in stable_messages:
+            with self.subTest(message=message):
+                self.assertTrue(module.is_stable_backend_error(RuntimeError(message)))
+
+    def test_env_controls_batch_size_and_token_limit(self):
+        os.environ["PDF2FLASHCARD_BATCH_CHAR_LIMIT"] = "1800"
+        os.environ["LLM_MAX_TOKENS"] = "2048"
+
+        module = load_pdf2flashcard_module()
+
+        self.assertEqual(module.BATCH_CHAR_LIMIT, 1800)
+        self.assertEqual(module.LLM_MAX_TOKENS, 2048)
+
+    def test_process_pdf_normalizes_politics_exam_type_distribution(self):
+        module = load_pdf2flashcard_module()
+        with tempfile.TemporaryDirectory() as tmp:
+            output_dir = Path(tmp) / "flashcards"
+            output_dir.mkdir()
+            parsed_cards = [
+                {"number": 16, "type": "single_choice", "question": "Q16", "options": [], "answer": "A"},
+                {"number": 17, "type": "single_choice", "question": "Q17", "options": [], "answer": "C"},
+                {"number": 28, "type": "single_choice", "question": "Q28", "options": [], "answer": "CD"},
+                {"number": 33, "type": "single_choice", "question": "Q33", "options": [], "answer": "ABCD"},
+                {"number": 34, "type": "single_choice", "question": "Q34", "options": [], "answer": "分析题答案"},
+            ]
+
+            module.OUTPUT_DIR = output_dir
+            module.HASH_DB_PATH = Path(tmp) / "hashes.json"
+            module.ocr_pdf = lambda _path: "政治真题文本"
+            module.sanitize_text = lambda text: text
+            module.ai_parse_text = lambda _text, _subject, _year: [dict(card) for card in parsed_cards]
+
+            result = module.process_pdf("/tmp/source.pdf", "politics", "2023")
+
+        by_number = {card["number"]: card for card in result["cards"]}
+        self.assertEqual(by_number[16]["type"], "single_choice")
+        self.assertEqual(by_number[17]["type"], "multi_choice")
+        self.assertEqual(by_number[28]["type"], "multi_choice")
+        self.assertEqual(by_number[33]["type"], "multi_choice")
+        self.assertEqual(by_number[34]["type"], "analysis")
 
     def test_provider_disabled_merges_global_and_local_disable_lists(self):
         module = load_pdf2flashcard_module()
