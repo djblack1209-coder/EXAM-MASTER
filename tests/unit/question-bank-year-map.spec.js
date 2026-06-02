@@ -105,7 +105,7 @@ describe('question bank public-course year map', () => {
     }
 
     const math3 = tracks.find((track) => track.id === 'math3');
-    expect(math3.slotSummary).toEqual({ total: 22, ready: 11, organizing: 0, missing: 11 });
+    expect(math3.slotSummary).toEqual({ total: 22, ready: 12, organizing: 0, missing: 10 });
     expect(math3.yearSlots.find((slot) => slot.year === '2025')).toMatchObject({
       bankId: 'math3-2025',
       status: 'ready',

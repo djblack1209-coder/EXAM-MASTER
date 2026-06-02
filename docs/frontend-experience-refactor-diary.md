@@ -578,3 +578,13 @@
 - Release gate result after sequential audit refresh: 2005-2020 public-course `coverageGaps` dropped from 27 to 26, `publishedSlots` rose to 65, `sourceEvidenceGaps` stayed at 1, and release backlog now reports 26 public-course blocked slots.
 - Release-priority dry-run after rebuilding the cleaning queue now starts at English II 2010 paired candidates, followed by `2016年考研数学三真题及解析.pdf`, `2020年考研英语一真题.pdf`, and Math II/III follow-up years.
 - Frontend polish note: the question-bank year-map header now derives the range from the selected track. English II displays `2010-2026` instead of the old hard-coded `2005-2026`, matching the release policy.
+
+### 2026-06-02 Round 62
+
+- Promoted `math3:2014` through the same formal Math III page-image bank path after the 2020 target still showed Math III 2014 as an uncovered public-course slot.
+- Verified the local source `src_bd3bb496ed9148e3cd0127d9-2014年考研数学三真题及解析.pdf`: 13 scanned pages, no usable text layer, SHA-256 `9b80c47a4411a9f006087e0ddf609f9b6d04bd467db1aaa1f4b418c81a647a35`.
+- Added `scripts/cleaning/build_math3_2014_bank.py`, published `src/config/flashcard-banks/math3-2014.json`, generated 13 answer pages plus 23 question crop assets under `cdn-assets/question-bank/math3-2014`, registered the bank, and regenerated the compressed practice-bank table.
+- Validation result: `math3-2014.json` has 23 cards, `{single_choice:8, short_answer:15}`, section counts `{选择题:8, 填空题:6, 解答题:9}`, no missing assets, and all cards carry `answerEvidenceStatus=matched`.
+- Crop QA tightened q02 and q03 after the first OCR leakage scan detected answer/解析 residue; the final leakage scan over all question crop images produced no answer-marker hits.
+- Release gate result after sequential audit refresh: 2005-2020 public-course `coverageGaps` dropped to 25, `sourceEvidenceGaps` stayed at 1, and release backlog reports 25 public-course blocked slots.
+- Product rule: for scanned Math III answer-analysis PDFs, publish only after both structured registry tests and crop-level leakage scans pass; OCR may guide cropping, but rendered PDF page images remain the release evidence.

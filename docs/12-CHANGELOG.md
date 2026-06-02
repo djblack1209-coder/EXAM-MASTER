@@ -1,5 +1,11 @@
 # 变更日志
 
+## 2026-06-02 — 2014 数学三逐题裁切题库开放
+
+- 2014 考研数学三从“待入库”推进为正式题库：23 张题卡覆盖 8 道选择、6 道填空和 9 道解答题，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
+- 新增 `build_math3_2014_bank.py`，从本地百度网盘 `2014年考研数学三真题及解析.pdf` 生成 `src/config/flashcard-banks/math3-2014.json` 与 `cdn-assets/question-bank/math3-2014` 页图资源；源 PDF 为 13 页题答混排扫描版，题面使用逐题裁切图并经 OCR/视觉检查移除答案解析泄漏。
+- 2005-2020 release gate 刷新后，公共课覆盖缺口降至 25，source evidence gap 保持 1；`math3:2014` 不再作为 2020 目标覆盖缺口进入发布 backlog。
+
 ## 2026-06-02 — 2015 数学三逐题裁切题库开放
 
 - 2015 考研数学三从“待入库”推进为正式题库：23 张题卡覆盖 8 道选择、6 道填空和 9 道解答题，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
