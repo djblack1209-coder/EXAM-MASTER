@@ -166,16 +166,33 @@
         </view>
 
         <!-- 安全/隐私 -->
-        <view class="setting-item ds-flex ds-flex-between">
-          <view class="setting-info" style="flex-direction: row; align-items: center; display: flex">
+        <view
+          id="e2e-settings-privacy-entry"
+          class="setting-item ds-flex ds-flex-between ds-touchable"
+          @tap="openPrivacyPolicy"
+        >
+          <view class="setting-info setting-info-inline">
             <view class="setting-icon" style="margin-right: 16rpx">
               <BaseIcon name="shield" :size="36" />
             </view>
             <view>
               <text class="setting-title ds-text-sm ds-font-medium"> 安全与隐私 </text>
-              <text class="setting-desc ds-text-xs"> 数据安全，放心使用 </text>
+              <text class="setting-desc ds-text-xs"> 查看隐私政策、用户协议与账号注销说明 </text>
             </view>
           </view>
+          <BaseIcon name="arrow-right" :size="24" />
+        </view>
+
+        <view
+          id="e2e-settings-terms-entry"
+          class="setting-item ds-flex ds-flex-between ds-touchable"
+          @tap="openTermsPage"
+        >
+          <view class="setting-info">
+            <text class="setting-title ds-text-sm ds-font-medium"> 用户协议 </text>
+            <text class="setting-desc ds-text-xs"> 了解刷题服务范围和使用规则 </text>
+          </view>
+          <BaseIcon name="arrow-right" :size="24" />
         </view>
 
         <!-- 清除缓存 -->
@@ -421,6 +438,14 @@ const handleEditTrack = () => {
       });
     }
   });
+};
+
+const openPrivacyPolicy = () => {
+  safeNavigateTo('/pages/settings/privacy');
+};
+
+const openTermsPage = () => {
+  safeNavigateTo('/pages/settings/terms');
 };
 
 // 编辑报考专业

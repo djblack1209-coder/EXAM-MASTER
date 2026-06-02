@@ -16,12 +16,9 @@
         <view class="section">
           <text class="section-title"> 一、服务说明 </text>
           <text class="section-text">
-            Exam
-            Master（以下简称"本应用"）是一款面向考研学生的智能学习辅助工具，提供刷题练习、错题管理、择校分析、智能辅导等功能。使用本应用即表示您同意本协议的全部条款。
+            Exam Master（以下简称"本应用"）是一款面向考研学生的刷题学习小程序，提供公共课真题练习、错题复习、收藏和学习进度管理等功能。使用本应用即表示您同意本协议的全部条款。
           </text>
-          <text class="section-text">
-            本应用主要基于用户主动提交的学习资料与公开招生信息提供学习辅助服务，不构成招生承诺、录取保证或替代官方信息发布。
-          </text>
+          <text class="section-text"> 本应用提供的内容用于学习辅助，不构成考试结果承诺或替代官方考试信息发布。 </text>
         </view>
 
         <view class="section">
@@ -49,18 +46,12 @@
 
         <view class="section">
           <text class="section-title"> 五、免责声明 </text>
-          <text class="section-text">
-            1. 本应用提供的题目、解析、择校数据等内容仅供学习参考，不构成任何专业建议。
-          </text>
+          <text class="section-text"> 1. 本应用提供的题目、解析和学习记录仅供学习参考，不构成任何考试通过承诺。 </text>
           <text class="section-text">
             2. 因不可抗力、网络故障等原因导致服务中断，本应用不承担责任，但将尽力恢复服务。
           </text>
-          <text class="section-text">
-            3. 智能辅导功能生成的内容由算法模型与规则策略联合处理，可能存在不准确或滞后之处，请您自行判断并核对。
-          </text>
-          <text class="section-text">
-            4. 您应确保上传资料合法合规且不侵犯他人权益；如因上传内容引发争议或损失，由上传方承担相应责任。
-          </text>
+          <text class="section-text"> 3. 您应自行核对学习内容，并结合官方考试要求安排复习。 </text>
+          <text class="section-text"> 4. 您应确保在本应用中保存或提交的信息合法合规且不侵犯他人权益。 </text>
         </view>
 
         <view class="section">

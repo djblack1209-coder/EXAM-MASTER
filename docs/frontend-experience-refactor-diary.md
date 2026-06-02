@@ -245,3 +245,11 @@
 - The question-bank page remains the single place responsible for local sync, usable question ID verification, recommended start, and safe navigation into quiz.
 - Updated the dynamic-method guard from `handleLoadBank` to `openBankDetail` and added `practice-question-bank-entry-guard` for source-level copy, routing, and dark-mode coverage.
 - Product rule: the shell should orient and route; the question-bank subpage should decide readiness and training entry.
+
+### 2026-06-01 Round 28
+
+- Started Phase 4 account, security, and privacy readiness from the user-facing compliance surfaces.
+- Settings now exposes direct entries for `隐私政策` and `用户协议` instead of leaving `安全与隐私` as a static row.
+- Privacy policy copy now matches the lightweight quiz product: question-bank sync, quiz records, wrong review, favorites, progress, local cache, and account deletion.
+- User agreement copy no longer claims deferred school-selection or AI tutor surfaces; it describes the current public-course quiz mini program and learning-reference boundary.
+- Added `settings-legal-scope-guard` to protect legal-entry routing, current product scope, deferred-feature cleanup, and account-deletion cooling-period copy.

@@ -1033,3 +1033,47 @@ Run:
 git add src/pages/practice/index.vue tests/unit/practice-question-bank-entry-guard.spec.js tests/unit/practice-dynamic-methods.spec.js docs/frontend-experience-refactor-diary.md docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md
 git commit -m "feat: align practice question bank handoff"
 ```
+
+### Task 26: Align Legal Scope With Lightweight Quiz Product
+
+**Files:**
+- Modify: `src/pages/settings/index.vue`
+- Modify: `src/pages/settings/privacy.vue`
+- Modify: `src/pages/settings/terms.vue`
+- Create: `tests/unit/settings-legal-scope-guard.spec.js`
+- Modify: `docs/frontend-experience-refactor-diary.md`
+- Modify: `docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md`
+
+- [x] **Step 1: Add direct legal entries in Settings**
+
+Make `安全与隐私` open the privacy policy and add a direct `用户协议` row.
+
+- [x] **Step 2: Scope privacy copy to the current product**
+
+Describe quiz records, wrong review, favorites, progress, local cache, account deletion, and data deletion rights without deferred feature claims.
+
+- [x] **Step 3: Scope terms copy to the current product**
+
+Describe public-course quiz, wrong review, favorites, and learning progress. Remove school-selection and AI tutor claims.
+
+- [x] **Step 4: Add legal scope guard**
+
+Assert legal entry routing, lightweight product copy, no deferred feature wording, and 7-day account deletion cooling-period copy.
+
+- [x] **Step 5: Run focused validation**
+
+Run:
+```bash
+npm run lint -- src/pages/settings/index.vue src/pages/settings/privacy.vue src/pages/settings/terms.vue tests/unit/settings-legal-scope-guard.spec.js
+npm run test -- tests/unit/settings-legal-scope-guard.spec.js tests/unit/mini-program-scope-guard.spec.js tests/unit/frontend-copy-guard.spec.js tests/unit/shell-navigation-guard.spec.js tests/unit/core-shell-state-guard.spec.js tests/unit/core-shell-theme-guard.spec.js
+```
+
+Result: passed on 2026-06-01.
+
+- [x] **Step 6: Commit**
+
+Run:
+```bash
+git add src/pages/settings/index.vue src/pages/settings/privacy.vue src/pages/settings/terms.vue tests/unit/settings-legal-scope-guard.spec.js docs/frontend-experience-refactor-diary.md docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md
+git commit -m "feat: align legal scope for quiz product"
+```

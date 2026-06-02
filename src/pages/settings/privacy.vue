@@ -25,9 +25,7 @@
           <text class="section-title"> 二、我们收集的信息 </text>
           <text class="section-text"> 为了向您提供服务，我们可能会收集以下信息： </text>
           <text class="section-text"> 1. 账号信息：微信昵称、头像，用于创建和展示您的个人资料。 </text>
-          <text class="section-text">
-            2. 学习数据：您的刷题记录、错题本、收藏、学习计划等，用于提供个性化学习服务。
-          </text>
+          <text class="section-text"> 2. 学习数据：您的刷题记录、错题本、收藏和题库同步状态，用于提供练习、复习和学习进度展示。 </text>
           <text class="section-text"> 3. 设备信息：设备型号、操作系统版本、屏幕分辨率，用于适配显示和优化性能。 </text>
         </view>
 
@@ -35,7 +33,7 @@
           <text class="section-title"> 三、信息的使用 </text>
           <text class="section-text"> 我们收集的信息仅用于以下目的： </text>
           <text class="section-text"> 1. 提供、维护和改进本应用的功能与服务。 </text>
-          <text class="section-text"> 2. 个性化您的学习体验，如智能推荐题目、生成学习报告。 </text>
+          <text class="section-text"> 2. 展示学习进度、错题复习和题库练习状态。 </text>
           <text class="section-text"> 3. 保障账号安全与服务稳定运行。 </text>
         </view>
 
@@ -66,16 +64,15 @@
         </view>
 
         <view class="section">
-          <text class="section-title"> 八、智能辅助与数据来源说明 </text>
+          <text class="section-title"> 八、题库与学习数据说明 </text>
           <text class="section-text">
-            1.
-            本应用的智能推荐、问答与学习分析，基于您主动输入或上传的学习资料、历史学习记录及公开可查询的院校招生信息进行处理。
+            1. 本应用的题库、练习进度、错题和收藏数据用于提供刷题、复习和结果回顾。
           </text>
           <text class="section-text">
-            2. 相关结果用于学习辅助与效率提升，不作为录取承诺、升学保证或任何具有法律效力的决策依据。
+            2. 题目和解析仅供学习参考，不作为考试结果、录取结果或任何具有法律效力的依据。
           </text>
           <text class="section-text">
-            3. 您可随时在应用内管理、删除个人学习记录与上传内容，或通过反馈通道申请处理。
+            3. 您可在应用内管理个人资料、清理本地缓存，或通过账号注销流程申请删除账号相关数据。
           </text>
         </view>
 
