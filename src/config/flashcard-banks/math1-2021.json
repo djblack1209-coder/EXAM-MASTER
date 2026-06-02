@@ -1,0 +1,1210 @@
+{
+  "id": "math1-2021",
+  "source": "math1-2021-paper-answer",
+  "paperId": "math1-2021",
+  "paperName": "2021考研数学一真题",
+  "subject": "数学",
+  "subjectKey": "math",
+  "track": "math1",
+  "year": "2021",
+  "quality": "ready",
+  "publicationStatus": "published",
+  "publicationBlockers": [],
+  "sourceEvidencePolicy": "baidu_netdisk_official_paper_pdf_question_crop_answer_page_image_v1",
+  "sourceFiles": [
+    {
+      "id": "math1-2021-paper-answer",
+      "role": "paper_answer",
+      "localPath": "data/raw-inbox/src_95ea7f661510831db3a2eb9e-2021数一真题答案解析.pdf",
+      "sha256": "sha256:df846f1ca7f6b422c96504c49f93d0ebed2a7a24ad80adbdc82904e1fc356b84",
+      "sourceId": "src_95ea7f661510831db3a2eb9e"
+    }
+  ],
+  "assetRoot": "question-bank/math1-2021",
+  "processed_at": "2026-06-02T18:42:59Z",
+  "total_cards": 22,
+  "cards": [
+    {
+      "id": "math1-2021-001",
+      "number": 1,
+      "paperId": "math1-2021",
+      "paperName": "2021考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2021",
+      "section": "选择题",
+      "type": "flashcard",
+      "question": "2021考研数学一第1题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2021 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2021/question-01.jpg",
+          "caption": "题面裁切图 q01",
+          "alt": "2021考研数学一题面裁切图 q01"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2021/answer-page-02.jpg",
+          "caption": "答案解析 p.2",
+          "alt": "2021考研数学一答案解析 p.2"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2021",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2021-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:f5324230090b57c5d7836cb6bfbed1370c0e8d1819d63201b8f65003c6d872ea",
+      "answerTextHash": "sha256:7cd6122ff6ad5f4ed9210d1ae15379380ce2cd5f5ab3a3b9f0756d9b8d6dbe3f",
+      "sourceEvidence": {
+        "evidenceId": "math1-2021-q01",
+        "sourceId": "src_95ea7f661510831db3a2eb9e",
+        "answerSourceId": "src_95ea7f661510831db3a2eb9e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2021-paper-answer",
+        "answerEvidenceId": "math1-2021-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:7cd6122ff6ad5f4ed9210d1ae15379380ce2cd5f5ab3a3b9f0756d9b8d6dbe3f"
+      }
+    },
+    {
+      "id": "math1-2021-002",
+      "number": 2,
+      "paperId": "math1-2021",
+      "paperName": "2021考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2021",
+      "section": "选择题",
+      "type": "flashcard",
+      "question": "2021考研数学一第2题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2021 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2021/question-02.jpg",
+          "caption": "题面裁切图 q02",
+          "alt": "2021考研数学一题面裁切图 q02"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2021/answer-page-02.jpg",
+          "caption": "答案解析 p.2",
+          "alt": "2021考研数学一答案解析 p.2"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2021",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2021-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:92dae87a4616ca92918845c4f7be171a9f4e7fbc66689d9e25c831ac7e25ea0a",
+      "answerTextHash": "sha256:cad57386346f62bee6aa00d160f80730cc923b804fff53afdd1c61b5181c7a0b",
+      "sourceEvidence": {
+        "evidenceId": "math1-2021-q02",
+        "sourceId": "src_95ea7f661510831db3a2eb9e",
+        "answerSourceId": "src_95ea7f661510831db3a2eb9e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2021-paper-answer",
+        "answerEvidenceId": "math1-2021-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:cad57386346f62bee6aa00d160f80730cc923b804fff53afdd1c61b5181c7a0b"
+      }
+    },
+    {
+      "id": "math1-2021-003",
+      "number": 3,
+      "paperId": "math1-2021",
+      "paperName": "2021考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2021",
+      "section": "选择题",
+      "type": "flashcard",
+      "question": "2021考研数学一第3题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2021 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2021/question-03.jpg",
+          "caption": "题面裁切图 q03",
+          "alt": "2021考研数学一题面裁切图 q03"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2021/answer-page-02.jpg",
+          "caption": "答案解析 p.2",
+          "alt": "2021考研数学一答案解析 p.2"
+        },
+        {
+          "src": "question-bank/math1-2021/answer-page-03.jpg",
+          "caption": "答案解析 p.3",
+          "alt": "2021考研数学一答案解析 p.3"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2021",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2021-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:692b1b427c83eb5669a07f4fa01ecedabb2286e4b68ba26ee4bbe3ade09ac37d",
+      "answerTextHash": "sha256:0b1ecad589f058c49d83955fb25e522f05e4b8c21eda2a5e382e3023d4876c53",
+      "sourceEvidence": {
+        "evidenceId": "math1-2021-q03",
+        "sourceId": "src_95ea7f661510831db3a2eb9e",
+        "answerSourceId": "src_95ea7f661510831db3a2eb9e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2021-paper-answer",
+        "answerEvidenceId": "math1-2021-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:0b1ecad589f058c49d83955fb25e522f05e4b8c21eda2a5e382e3023d4876c53"
+      }
+    },
+    {
+      "id": "math1-2021-004",
+      "number": 4,
+      "paperId": "math1-2021",
+      "paperName": "2021考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2021",
+      "section": "选择题",
+      "type": "flashcard",
+      "question": "2021考研数学一第4题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2021 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2021/question-04.jpg",
+          "caption": "题面裁切图 q04",
+          "alt": "2021考研数学一题面裁切图 q04"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2021/answer-page-03.jpg",
+          "caption": "答案解析 p.3",
+          "alt": "2021考研数学一答案解析 p.3"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2021",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2021-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:712e6ce7308ff85f25f3ec72b1cad5d1792914c8a1c8df1119d4949a0af6175a",
+      "answerTextHash": "sha256:1fcf9d558765341a30341480a7d24f877bc9966886f3ab2accbd71cffa0f1b38",
+      "sourceEvidence": {
+        "evidenceId": "math1-2021-q04",
+        "sourceId": "src_95ea7f661510831db3a2eb9e",
+        "answerSourceId": "src_95ea7f661510831db3a2eb9e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2021-paper-answer",
+        "answerEvidenceId": "math1-2021-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:1fcf9d558765341a30341480a7d24f877bc9966886f3ab2accbd71cffa0f1b38"
+      }
+    },
+    {
+      "id": "math1-2021-005",
+      "number": 5,
+      "paperId": "math1-2021",
+      "paperName": "2021考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2021",
+      "section": "选择题",
+      "type": "flashcard",
+      "question": "2021考研数学一第5题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2021 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2021/question-05.jpg",
+          "caption": "题面裁切图 q05",
+          "alt": "2021考研数学一题面裁切图 q05"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2021/answer-page-03.jpg",
+          "caption": "答案解析 p.3",
+          "alt": "2021考研数学一答案解析 p.3"
+        },
+        {
+          "src": "question-bank/math1-2021/answer-page-04.jpg",
+          "caption": "答案解析 p.4",
+          "alt": "2021考研数学一答案解析 p.4"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2021",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2021-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:b3e46c8ebf50c9df7cd1dd0fb018619176aae146de2d14242217d81061060fca",
+      "answerTextHash": "sha256:7d14305f576e4de846f6261cf723b95e1d701bc279f8bd226fc3c61162388065",
+      "sourceEvidence": {
+        "evidenceId": "math1-2021-q05",
+        "sourceId": "src_95ea7f661510831db3a2eb9e",
+        "answerSourceId": "src_95ea7f661510831db3a2eb9e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2021-paper-answer",
+        "answerEvidenceId": "math1-2021-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:7d14305f576e4de846f6261cf723b95e1d701bc279f8bd226fc3c61162388065"
+      }
+    },
+    {
+      "id": "math1-2021-006",
+      "number": 6,
+      "paperId": "math1-2021",
+      "paperName": "2021考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2021",
+      "section": "选择题",
+      "type": "flashcard",
+      "question": "2021考研数学一第6题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2021 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2021/question-06.jpg",
+          "caption": "题面裁切图 q06",
+          "alt": "2021考研数学一题面裁切图 q06"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2021/answer-page-04.jpg",
+          "caption": "答案解析 p.4",
+          "alt": "2021考研数学一答案解析 p.4"
+        },
+        {
+          "src": "question-bank/math1-2021/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2021考研数学一答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2021",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2021-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:5f9865c1cb4ccfe6b4886ab49fc9769174faa827a41afaf0dcac3c9f67d42147",
+      "answerTextHash": "sha256:3b5cdff604cfadec60f8561c30f3d4580e263ad4a1736b2de87ea10fee20ad96",
+      "sourceEvidence": {
+        "evidenceId": "math1-2021-q06",
+        "sourceId": "src_95ea7f661510831db3a2eb9e",
+        "answerSourceId": "src_95ea7f661510831db3a2eb9e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2021-paper-answer",
+        "answerEvidenceId": "math1-2021-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:3b5cdff604cfadec60f8561c30f3d4580e263ad4a1736b2de87ea10fee20ad96"
+      }
+    },
+    {
+      "id": "math1-2021-007",
+      "number": 7,
+      "paperId": "math1-2021",
+      "paperName": "2021考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2021",
+      "section": "选择题",
+      "type": "flashcard",
+      "question": "2021考研数学一第7题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2021 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2021/question-07.jpg",
+          "caption": "题面裁切图 q07",
+          "alt": "2021考研数学一题面裁切图 q07"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2021/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2021考研数学一答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2021",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2021-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:e146eb9161b72a05d143885d0cfe3db8125aeac4ba73db8dd667b95ad7e85af3",
+      "answerTextHash": "sha256:98d843014fcc06e8c015999ef30423714e3b0fc8d97ddf5a4680ed5e2e3f0339",
+      "sourceEvidence": {
+        "evidenceId": "math1-2021-q07",
+        "sourceId": "src_95ea7f661510831db3a2eb9e",
+        "answerSourceId": "src_95ea7f661510831db3a2eb9e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2021-paper-answer",
+        "answerEvidenceId": "math1-2021-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:98d843014fcc06e8c015999ef30423714e3b0fc8d97ddf5a4680ed5e2e3f0339"
+      }
+    },
+    {
+      "id": "math1-2021-008",
+      "number": 8,
+      "paperId": "math1-2021",
+      "paperName": "2021考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2021",
+      "section": "选择题",
+      "type": "flashcard",
+      "question": "2021考研数学一第8题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2021 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2021/question-08.jpg",
+          "caption": "题面裁切图 q08",
+          "alt": "2021考研数学一题面裁切图 q08"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2021/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2021考研数学一答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2021",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2021-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:8c024acc3d320d64788f142acfad24f340c85902b0ba5144d1584eec10077bdd",
+      "answerTextHash": "sha256:e4a2fe781d79b6ac0d0a57fdf6fcbe5f0bd7d1dfefea384e35b54f195a6a4c7c",
+      "sourceEvidence": {
+        "evidenceId": "math1-2021-q08",
+        "sourceId": "src_95ea7f661510831db3a2eb9e",
+        "answerSourceId": "src_95ea7f661510831db3a2eb9e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2021-paper-answer",
+        "answerEvidenceId": "math1-2021-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:e4a2fe781d79b6ac0d0a57fdf6fcbe5f0bd7d1dfefea384e35b54f195a6a4c7c"
+      }
+    },
+    {
+      "id": "math1-2021-009",
+      "number": 9,
+      "paperId": "math1-2021",
+      "paperName": "2021考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2021",
+      "section": "选择题",
+      "type": "flashcard",
+      "question": "2021考研数学一第9题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2021 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2021/question-09a.jpg",
+          "caption": "题面裁切图 q09",
+          "alt": "2021考研数学一题面裁切图 q09"
+        },
+        {
+          "src": "question-bank/math1-2021/question-09b.jpg",
+          "caption": "题面裁切图 q09",
+          "alt": "2021考研数学一题面裁切图 q09"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2021/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2021考研数学一答案解析 p.6"
+        },
+        {
+          "src": "question-bank/math1-2021/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2021考研数学一答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2021",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2021-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:1df48afac693f674672a9b6360713a5537be311fdd08f520870c7e2c99b676a0",
+      "answerTextHash": "sha256:2888a5bf5d8ce149ab34e927ca4c8695d198ede0d04a3273a45b4a943998e5bc",
+      "sourceEvidence": {
+        "evidenceId": "math1-2021-q09",
+        "sourceId": "src_95ea7f661510831db3a2eb9e",
+        "answerSourceId": "src_95ea7f661510831db3a2eb9e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2021-paper-answer",
+        "answerEvidenceId": "math1-2021-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:2888a5bf5d8ce149ab34e927ca4c8695d198ede0d04a3273a45b4a943998e5bc"
+      }
+    },
+    {
+      "id": "math1-2021-010",
+      "number": 10,
+      "paperId": "math1-2021",
+      "paperName": "2021考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2021",
+      "section": "选择题",
+      "type": "flashcard",
+      "question": "2021考研数学一第10题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2021 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2021/question-10.jpg",
+          "caption": "题面裁切图 q10",
+          "alt": "2021考研数学一题面裁切图 q10"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2021/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2021考研数学一答案解析 p.7"
+        },
+        {
+          "src": "question-bank/math1-2021/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2021考研数学一答案解析 p.8"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2021",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2021-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:ef762d319ae8c09b4f6756eaa5844e02855026380e702c3579987ff5920cd0b5",
+      "answerTextHash": "sha256:40af4b8f4473d090c371eb34f53fe177bc97a3beaf321b65a2a899574dfc8375",
+      "sourceEvidence": {
+        "evidenceId": "math1-2021-q10",
+        "sourceId": "src_95ea7f661510831db3a2eb9e",
+        "answerSourceId": "src_95ea7f661510831db3a2eb9e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2021-paper-answer",
+        "answerEvidenceId": "math1-2021-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:40af4b8f4473d090c371eb34f53fe177bc97a3beaf321b65a2a899574dfc8375"
+      }
+    },
+    {
+      "id": "math1-2021-011",
+      "number": 11,
+      "paperId": "math1-2021",
+      "paperName": "2021考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2021",
+      "section": "填空题",
+      "type": "flashcard",
+      "question": "2021考研数学一第11题（填空题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "π/4",
+      "explanation": "答案来自本地百度网盘 2021 数学一真题答案解析 PDF；填空题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2021/question-11.jpg",
+          "caption": "题面裁切图 q11",
+          "alt": "2021考研数学一题面裁切图 q11"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2021/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2021考研数学一答案解析 p.8"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2021",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2021-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:e90e97228ed28f82386040dbbd1e084273a8a5c4f77a2fe15a193c5c74530f47",
+      "answerTextHash": "sha256:8be107ec829947fa7583a1a5a22b9245959a90a6c1d3c0f9c82e8aac7dda22ed",
+      "sourceEvidence": {
+        "evidenceId": "math1-2021-q11",
+        "sourceId": "src_95ea7f661510831db3a2eb9e",
+        "answerSourceId": "src_95ea7f661510831db3a2eb9e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2021-paper-answer",
+        "answerEvidenceId": "math1-2021-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:8be107ec829947fa7583a1a5a22b9245959a90a6c1d3c0f9c82e8aac7dda22ed"
+      }
+    },
+    {
+      "id": "math1-2021-012",
+      "number": 12,
+      "paperId": "math1-2021",
+      "paperName": "2021考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2021",
+      "section": "填空题",
+      "type": "flashcard",
+      "question": "2021考研数学一第12题（填空题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "2/3",
+      "explanation": "答案来自本地百度网盘 2021 数学一真题答案解析 PDF；填空题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2021/question-12.jpg",
+          "caption": "题面裁切图 q12",
+          "alt": "2021考研数学一题面裁切图 q12"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2021/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2021考研数学一答案解析 p.8"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2021",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2021-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:30ee57a751bb8079b8197adcae4405a939a4b71d5a3a3169931c959b39e5d33a",
+      "answerTextHash": "sha256:75a8e1239343bbd25f5fe18c1f17185a5fb663e55c1d67468686396402304390",
+      "sourceEvidence": {
+        "evidenceId": "math1-2021-q12",
+        "sourceId": "src_95ea7f661510831db3a2eb9e",
+        "answerSourceId": "src_95ea7f661510831db3a2eb9e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2021-paper-answer",
+        "answerEvidenceId": "math1-2021-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:75a8e1239343bbd25f5fe18c1f17185a5fb663e55c1d67468686396402304390"
+      }
+    },
+    {
+      "id": "math1-2021-013",
+      "number": 13,
+      "paperId": "math1-2021",
+      "paperName": "2021考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2021",
+      "section": "填空题",
+      "type": "flashcard",
+      "question": "2021考研数学一第13题（填空题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "y = x^2",
+      "explanation": "答案来自本地百度网盘 2021 数学一真题答案解析 PDF；填空题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2021/question-13.jpg",
+          "caption": "题面裁切图 q13",
+          "alt": "2021考研数学一题面裁切图 q13"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2021/answer-page-09.jpg",
+          "caption": "答案解析 p.9",
+          "alt": "2021考研数学一答案解析 p.9"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2021",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2021-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:b9522464de1ba361ee21ec2f95bc5df507b42d742615dc498ce88daca339439c",
+      "answerTextHash": "sha256:e722472aa085b054f599bb767924fcef7419a710d8309b378675f7f7cf6b232a",
+      "sourceEvidence": {
+        "evidenceId": "math1-2021-q13",
+        "sourceId": "src_95ea7f661510831db3a2eb9e",
+        "answerSourceId": "src_95ea7f661510831db3a2eb9e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2021-paper-answer",
+        "answerEvidenceId": "math1-2021-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:e722472aa085b054f599bb767924fcef7419a710d8309b378675f7f7cf6b232a"
+      }
+    },
+    {
+      "id": "math1-2021-014",
+      "number": 14,
+      "paperId": "math1-2021",
+      "paperName": "2021考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2021",
+      "section": "填空题",
+      "type": "flashcard",
+      "question": "2021考研数学一第14题（填空题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "4π",
+      "explanation": "答案来自本地百度网盘 2021 数学一真题答案解析 PDF；填空题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2021/question-14.jpg",
+          "caption": "题面裁切图 q14",
+          "alt": "2021考研数学一题面裁切图 q14"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2021/answer-page-09.jpg",
+          "caption": "答案解析 p.9",
+          "alt": "2021考研数学一答案解析 p.9"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2021",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2021-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:db4d8ce803dd0c5e0768132cefdc1bb0eb15ef316d5f2b3d93ff23774206484b",
+      "answerTextHash": "sha256:4b0c86e97b83794ba365274edb830f44b2a402e0015ee8351081ad926a0aaf6a",
+      "sourceEvidence": {
+        "evidenceId": "math1-2021-q14",
+        "sourceId": "src_95ea7f661510831db3a2eb9e",
+        "answerSourceId": "src_95ea7f661510831db3a2eb9e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2021-paper-answer",
+        "answerEvidenceId": "math1-2021-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:4b0c86e97b83794ba365274edb830f44b2a402e0015ee8351081ad926a0aaf6a"
+      }
+    },
+    {
+      "id": "math1-2021-015",
+      "number": 15,
+      "paperId": "math1-2021",
+      "paperName": "2021考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2021",
+      "section": "填空题",
+      "type": "flashcard",
+      "question": "2021考研数学一第15题（填空题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "3/2",
+      "explanation": "答案来自本地百度网盘 2021 数学一真题答案解析 PDF；填空题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2021/question-15.jpg",
+          "caption": "题面裁切图 q15",
+          "alt": "2021考研数学一题面裁切图 q15"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2021/answer-page-09.jpg",
+          "caption": "答案解析 p.9",
+          "alt": "2021考研数学一答案解析 p.9"
+        },
+        {
+          "src": "question-bank/math1-2021/answer-page-10.jpg",
+          "caption": "答案解析 p.10",
+          "alt": "2021考研数学一答案解析 p.10"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2021",
+        "填空题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2021-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:27f9e1c12e34690a2b80efc9d6594acad6f8fa6f02a81e56efd10a769757a5b0",
+      "answerTextHash": "sha256:72d81d58331f4a52328cdcb0c70ec3875481b92ca0c929abbc9ef69363efc4a8",
+      "sourceEvidence": {
+        "evidenceId": "math1-2021-q15",
+        "sourceId": "src_95ea7f661510831db3a2eb9e",
+        "answerSourceId": "src_95ea7f661510831db3a2eb9e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2021-paper-answer",
+        "answerEvidenceId": "math1-2021-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:72d81d58331f4a52328cdcb0c70ec3875481b92ca0c929abbc9ef69363efc4a8"
+      }
+    },
+    {
+      "id": "math1-2021-016",
+      "number": 16,
+      "paperId": "math1-2021",
+      "paperName": "2021考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2021",
+      "section": "填空题",
+      "type": "flashcard",
+      "question": "2021考研数学一第16题（填空题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "1/5",
+      "explanation": "答案来自本地百度网盘 2021 数学一真题答案解析 PDF；填空题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2021/question-16.jpg",
+          "caption": "题面裁切图 q16",
+          "alt": "2021考研数学一题面裁切图 q16"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2021/answer-page-10.jpg",
+          "caption": "答案解析 p.10",
+          "alt": "2021考研数学一答案解析 p.10"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2021",
+        "填空题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2021-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:cd600bd35d32c00a5d7c8567c581cb5e300720b8a2ce45f1a2579ce03e1f39b2",
+      "answerTextHash": "sha256:196d33543f80ee48f2a343f65976d3133f56a0cba91c7ec3cad5103b214c1aec",
+      "sourceEvidence": {
+        "evidenceId": "math1-2021-q16",
+        "sourceId": "src_95ea7f661510831db3a2eb9e",
+        "answerSourceId": "src_95ea7f661510831db3a2eb9e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2021-paper-answer",
+        "answerEvidenceId": "math1-2021-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:196d33543f80ee48f2a343f65976d3133f56a0cba91c7ec3cad5103b214c1aec"
+      }
+    },
+    {
+      "id": "math1-2021-017",
+      "number": 17,
+      "paperId": "math1-2021",
+      "paperName": "2021考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2021",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2021考研数学一第17题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "极限值为 1/2。",
+      "explanation": "答案来自本地百度网盘 2021 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2021/question-17.jpg",
+          "caption": "题面裁切图 q17",
+          "alt": "2021考研数学一题面裁切图 q17"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2021/answer-page-11.jpg",
+          "caption": "答案解析 p.11",
+          "alt": "2021考研数学一答案解析 p.11"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2021",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2021-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:bfc0211058494041234bbe837df2b8248286f3ca77be436a37535c6a225bb5e4",
+      "answerTextHash": "sha256:51111eef6e7dd109ab709535bd30c6ee794f84314d1feedb30cddd13052df6bd",
+      "sourceEvidence": {
+        "evidenceId": "math1-2021-q17",
+        "sourceId": "src_95ea7f661510831db3a2eb9e",
+        "answerSourceId": "src_95ea7f661510831db3a2eb9e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2021-paper-answer",
+        "answerEvidenceId": "math1-2021-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:51111eef6e7dd109ab709535bd30c6ee794f84314d1feedb30cddd13052df6bd"
+      }
+    },
+    {
+      "id": "math1-2021-018",
+      "number": 18,
+      "paperId": "math1-2021",
+      "paperName": "2021考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2021",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2021考研数学一第18题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "最大距离为 66。",
+      "explanation": "答案来自本地百度网盘 2021 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2021/question-18.jpg",
+          "caption": "题面裁切图 q18",
+          "alt": "2021考研数学一题面裁切图 q18"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2021/answer-page-11.jpg",
+          "caption": "答案解析 p.11",
+          "alt": "2021考研数学一答案解析 p.11"
+        },
+        {
+          "src": "question-bank/math1-2021/answer-page-12.jpg",
+          "caption": "答案解析 p.12",
+          "alt": "2021考研数学一答案解析 p.12"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2021",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2021-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:cfd21455233e89110493433d42ad362782e2d41fed759b4b54998b5cbba22df2",
+      "answerTextHash": "sha256:cf58adda8e4bf9a02ea6fdd6e21715dbf40390a5f0cb62ad25e21cac99377e26",
+      "sourceEvidence": {
+        "evidenceId": "math1-2021-q18",
+        "sourceId": "src_95ea7f661510831db3a2eb9e",
+        "answerSourceId": "src_95ea7f661510831db3a2eb9e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2021-paper-answer",
+        "answerEvidenceId": "math1-2021-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:cf58adda8e4bf9a02ea6fdd6e21715dbf40390a5f0cb62ad25e21cac99377e26"
+      }
+    },
+    {
+      "id": "math1-2021-019",
+      "number": 19,
+      "paperId": "math1-2021",
+      "paperName": "2021考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2021",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2021考研数学一第19题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "I(D1)=8π；曲线积分值为 -π。",
+      "explanation": "答案来自本地百度网盘 2021 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2021/question-19.jpg",
+          "caption": "题面裁切图 q19",
+          "alt": "2021考研数学一题面裁切图 q19"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2021/answer-page-12.jpg",
+          "caption": "答案解析 p.12",
+          "alt": "2021考研数学一答案解析 p.12"
+        },
+        {
+          "src": "question-bank/math1-2021/answer-page-13.jpg",
+          "caption": "答案解析 p.13",
+          "alt": "2021考研数学一答案解析 p.13"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2021",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2021-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:e14fec8b9a86968fcef9e7b93f1cbc7f8182cd5f302dcd92ee4326543f8c9f50",
+      "answerTextHash": "sha256:bb13d40bb352846c5f3b7f2544bbb8cddc5ba57caa43325950968b58086f0d65",
+      "sourceEvidence": {
+        "evidenceId": "math1-2021-q19",
+        "sourceId": "src_95ea7f661510831db3a2eb9e",
+        "answerSourceId": "src_95ea7f661510831db3a2eb9e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2021-paper-answer",
+        "answerEvidenceId": "math1-2021-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:bb13d40bb352846c5f3b7f2544bbb8cddc5ba57caa43325950968b58086f0d65"
+      }
+    },
+    {
+      "id": "math1-2021-020",
+      "number": 20,
+      "paperId": "math1-2021",
+      "paperName": "2021考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2021",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2021考研数学一第20题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "收敛域为 (0,1]；和函数在 0<x<1 时为 1/(e^x-1)+(1-x)ln(1-x)+x，x=1 时为 e/(e-1)。",
+      "explanation": "答案来自本地百度网盘 2021 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2021/question-20.jpg",
+          "caption": "题面裁切图 q20",
+          "alt": "2021考研数学一题面裁切图 q20"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2021/answer-page-13.jpg",
+          "caption": "答案解析 p.13",
+          "alt": "2021考研数学一答案解析 p.13"
+        },
+        {
+          "src": "question-bank/math1-2021/answer-page-14.jpg",
+          "caption": "答案解析 p.14",
+          "alt": "2021考研数学一答案解析 p.14"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2021",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2021-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:b4b4bddc2c31a3092e2aa23f990fd14ef24562dd46d235e54adc6c1918cd9a68",
+      "answerTextHash": "sha256:3d170aa92887449d0a547b85ae456daab9a0e00ad5150764ec12c5983afd544c",
+      "sourceEvidence": {
+        "evidenceId": "math1-2021-q20",
+        "sourceId": "src_95ea7f661510831db3a2eb9e",
+        "answerSourceId": "src_95ea7f661510831db3a2eb9e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2021-paper-answer",
+        "answerEvidenceId": "math1-2021-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:3d170aa92887449d0a547b85ae456daab9a0e00ad5150764ec12c5983afd544c"
+      }
+    },
+    {
+      "id": "math1-2021-021",
+      "number": 21,
+      "paperId": "math1-2021",
+      "paperName": "2021考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2021",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2021考研数学一第21题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "正交矩阵 P 与正定矩阵 C 见答案原页。",
+      "explanation": "答案来自本地百度网盘 2021 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2021/question-21.jpg",
+          "caption": "题面裁切图 q21",
+          "alt": "2021考研数学一题面裁切图 q21"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2021/answer-page-14.jpg",
+          "caption": "答案解析 p.14",
+          "alt": "2021考研数学一答案解析 p.14"
+        },
+        {
+          "src": "question-bank/math1-2021/answer-page-15.jpg",
+          "caption": "答案解析 p.15",
+          "alt": "2021考研数学一答案解析 p.15"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2021",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2021-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:c953d12b72e83bf578655c1b2abcd9db89c5f8579b1b1c7e59022ac99df14b63",
+      "answerTextHash": "sha256:72952d23e4fedbe0e39deec9efadada671cdec15c90d1835f16d02bd9d27dcf4",
+      "sourceEvidence": {
+        "evidenceId": "math1-2021-q21",
+        "sourceId": "src_95ea7f661510831db3a2eb9e",
+        "answerSourceId": "src_95ea7f661510831db3a2eb9e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2021-paper-answer",
+        "answerEvidenceId": "math1-2021-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:72952d23e4fedbe0e39deec9efadada671cdec15c90d1835f16d02bd9d27dcf4"
+      }
+    },
+    {
+      "id": "math1-2021-022",
+      "number": 22,
+      "paperId": "math1-2021",
+      "paperName": "2021考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2021",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2021考研数学一第22题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "f_X(x)=1(0<x<1)，f_Z(z)=2/(z-1)^2(z>1)，E(X/Y)=2ln2-1。",
+      "explanation": "答案来自本地百度网盘 2021 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2021/question-22a.jpg",
+          "caption": "题面裁切图 q22",
+          "alt": "2021考研数学一题面裁切图 q22"
+        },
+        {
+          "src": "question-bank/math1-2021/question-22b.jpg",
+          "caption": "题面裁切图 q22",
+          "alt": "2021考研数学一题面裁切图 q22"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2021/answer-page-16.jpg",
+          "caption": "答案解析 p.16",
+          "alt": "2021考研数学一答案解析 p.16"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2021",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2021-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:b277a7d64b649890b8f38c60d7992910a83235b2f706e38bee6814510bf376e2",
+      "answerTextHash": "sha256:c8f118cc76c33a55f7f9ce5f3afa4855ac0936b86792b6672339f59c2f4162fe",
+      "sourceEvidence": {
+        "evidenceId": "math1-2021-q22",
+        "sourceId": "src_95ea7f661510831db3a2eb9e",
+        "answerSourceId": "src_95ea7f661510831db3a2eb9e",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2021-paper-answer",
+        "answerEvidenceId": "math1-2021-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:c8f118cc76c33a55f7f9ce5f3afa4855ac0936b86792b6672339f59c2f4162fe"
+      }
+    }
+  ]
+}

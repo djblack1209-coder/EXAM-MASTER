@@ -492,3 +492,15 @@
 - Release gate result after sequential audit refresh: public-course coverage gaps dropped to 59, release blockers dropped to 71, public-course blocked slots dropped to 59, and the release-priority dry-run now starts at `2021数一真题答案解析.pdf`.
 - Source caveat: the available 2020 Math I file is an answer-analysis edition, not a standalone blank paper. User-facing question images depend on crop-level leakage controls, while answer evidence remains the original rendered PDF pages.
 - Product rule: when an answer-analysis source has no text layer, do not let generic OCR/LLM cleaning create the commercial artifact; ship through audited page-image evidence.
+
+### 2026-06-02 Round 54
+
+- Promoted `math1:2021` through the formal Math I page-image bank path after the release-priority queue advanced to `2021数一真题答案解析.pdf`.
+- Confirmed the source is a 16-page scanned answer-analysis PDF with no usable text layer, then added a 2021 `SourceSpec` for the newer 22-card structure: 10 choice, 6 fill-in-the-blank, and 6 solution questions.
+- Added a 2021 structure regression test covering `card_numbers_for_spec == 1..22`, q09/q22 multi-image prompts, and 2021-specific section/type mapping.
+- Published `src/config/flashcard-banks/math1-2021.json` plus 56 page/crop assets under `cdn-assets/question-bank/math1-2021`, registered the bank as a special 10/6/6 Math I entry, and regenerated the compressed practice-bank table.
+- Validation result: `math1-2021.json` has 22 cards, `{flashcard:16, short_answer:6}`, section counts `{选择题:10, 填空题:6, 解答题:6}`, no missing assets, and the OCR leakage scan found no `【分析】` / `【详解】` / `【解析】` / `【答案】` / choice-answer markers in question images.
+- Visual spot checks tuned q05, q09a, q20, and q21 crop heights to remove answer/解析 leakage while preserving complete prompts. q22 uses `q22a/q22b` because the third subquestion starts at the top of the next page.
+- Release gate result after sequential audit refresh: public-course coverage gaps dropped to 58, release blockers dropped to 70, public-course blocked slots dropped to 58, and the release-priority dry-run now starts at `2022数一真题答案解析.pdf`.
+- Source caveat: the available 2021 Math I file is an answer-analysis edition. User-facing question images depend on crop-level leakage controls, while answer evidence remains the original rendered PDF pages.
+- Product rule: run `question-bank-release-gate` before `release-blocker-backlog`; running them in parallel can make the backlog read the previous audit and temporarily leave a newly published slot in the queue.
