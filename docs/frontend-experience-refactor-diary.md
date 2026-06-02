@@ -406,3 +406,13 @@
 - Verification passed: runner queue tests, main-paper dry-run, and `git diff --check`.
 - Dry-run now advances the main release-priority queue past already-repaired English analysis sources and starts at `2006数一标准答案及解析.pdf`, followed by `2016考研数学二真题.pdf`, `2015年考研数学三真题及解析.pdf`, and `2020年考研英语一真题.pdf`.
 - Product rule: support/analysis materials can be evidence for repairing a bank, but they must not consume main-paper cleaning slots once the release slot already has a stronger canonical bank.
+
+### 2026-06-02 Round 46
+
+- Added math public-course structural quality gates before running the next real release-priority math cleaning batch.
+- `math1`, `math2`, and `math3` main papers now require at least 23 cards, at least 8 choice-like cards, and at least 9 `short_answer` cards before the runner can treat an output as structurally clean.
+- The choice-like count accepts both `single_choice` and the older math1 history-bank `flashcard` representation, so existing published history banks are not penalized by a naming mismatch.
+- Added runner tests covering an incomplete `math2:2016` output and a valid `math1:2012` history-style distribution.
+- Verification passed: runner queue tests, main-paper dry-run, and `git diff --check`.
+- Release caveat: this is a structural fail-closed gate only. It does not verify formulas, page-image evidence, or answer correctness; those still require source/evidence repair or a purpose-built math builder for publishable output.
+- Product rule: when entering a new subject family, add the minimum structural gate before the first real queue run so partial extractions cannot quietly become completed commercial backlog slots.

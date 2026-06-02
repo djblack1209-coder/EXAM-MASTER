@@ -886,6 +886,26 @@ class BaiduCleaningRunnerTest(unittest.TestCase):
         self.assertIn("english1_choice_option_count_below_minimum", issues[0])
         self.assertIn("english1-2018-026", issues[0])
 
+    def test_math_quality_gate_flags_incomplete_main_distribution(self):
+        issues = runner.quality_issues_for_task(
+            {"track": "math2", "year": 2016, "safeDisplayName": "2016考研数学二真题.pdf"},
+            question_count=18,
+            type_counts={"single_choice": 4, "short_answer": 8},
+        )
+
+        self.assertIn("math2_question_count_below_expected: expected>=23 actual=18", issues)
+        self.assertIn("math2_choice_like_count_below_expected: expected>=8 actual=4", issues)
+        self.assertIn("math2_short_answer_count_below_expected: expected>=9 actual=8", issues)
+
+    def test_math_quality_gate_accepts_history_flashcard_choice_structure(self):
+        issues = runner.quality_issues_for_task(
+            {"track": "math1", "year": 2012, "safeDisplayName": "2012数一真题及参考答案.pdf"},
+            question_count=23,
+            type_counts={"flashcard": 14, "short_answer": 9},
+        )
+
+        self.assertEqual(issues, [])
+
     def test_choice_option_quality_gate_skips_support_evidence(self):
         issues = runner.quality_issues_for_task(
             {"track": "english1", "year": 2018, "safeDisplayName": "2018年真题及答案速查.pdf"},

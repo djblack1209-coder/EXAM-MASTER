@@ -70,6 +70,11 @@ ANSWER_PLACEHOLDERS = {
 }
 CHOICE_CARD_TYPES = {"single_choice", "multi_choice"}
 MIN_CHOICE_OPTION_COUNT = 4
+MATH_TRACK_QUALITY_MINIMUMS = {
+    "total": 23,
+    "choice_like": 8,
+    "short_answer": 9,
+}
 PUBLIC_TRACK_QUALITY_MINIMUMS = {
     "politics": {
         "total": 38,
@@ -91,6 +96,9 @@ PUBLIC_TRACK_QUALITY_MINIMUMS = {
         "translation": 1,
         "essay": 2,
     },
+    "math1": MATH_TRACK_QUALITY_MINIMUMS,
+    "math2": MATH_TRACK_QUALITY_MINIMUMS,
+    "math3": MATH_TRACK_QUALITY_MINIMUMS,
 }
 PUBLIC_RELEASE_TRACK_ORDER = {
     "politics": 0,
@@ -356,7 +364,10 @@ def quality_issues_for_task(
     for card_type, minimum in minimums.items():
         if card_type in ("total", "min_year"):
             continue
-        actual = int(type_counts.get(card_type) or 0)
+        if card_type == "choice_like":
+            actual = int(type_counts.get("single_choice") or 0) + int(type_counts.get("flashcard") or 0)
+        else:
+            actual = int(type_counts.get(card_type) or 0)
         if actual < int(minimum):
             issues.append(f"{track}_{card_type}_count_below_expected: expected>={minimum} actual={actual}")
     if cards:

@@ -1865,6 +1865,45 @@ git commit -m "chore: repair english companion option evidence"
 
 Result: committed after validation on 2026-06-02.
 
+### Task 44: Gate Math Main-Paper Cleaning Structure
+
+**Files:**
+- Modify: `scripts/baidu/run_cleaning_queue.py`
+- Modify: `tests/unit/test_baidu_cleaning_runner.py`
+- Modify: `docs/frontend-experience-refactor-diary.md`
+- Modify: `docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md`
+
+- [x] **Step 1: Add math structural minimums**
+
+Added `math1`, `math2`, and `math3` quality minimums to the cleaning runner: `total>=23`, `choice_like>=8`, and `short_answer>=9`.
+
+The `choice_like` count accepts both `single_choice` and the older math1 history-bank `flashcard` representation so valid local history banks are not penalized by type naming drift.
+
+- [x] **Step 2: Add regression coverage**
+
+Added runner tests proving an incomplete `math2:2016` distribution is flagged, while a valid `math1:2012` history-style distribution with 14 `flashcard` cards and 9 `short_answer` cards passes.
+
+- [x] **Step 3: Run validation**
+
+Run:
+```bash
+python3 -m unittest tests.unit.test_baidu_cleaning_runner tests.unit.test_baidu_cleaning_queue
+python3 scripts/baidu/run_cleaning_queue.py --dry-run --limit 8 --source-type official_paper --paper-role main
+git diff --check
+```
+
+Result: passed on 2026-06-02. Main dry-run still starts at `2006数一标准答案及解析.pdf`, but future real math cleaning runs now fail closed on incomplete structure.
+
+- [x] **Step 4: Commit**
+
+Run:
+```bash
+git add scripts/baidu/run_cleaning_queue.py tests/unit/test_baidu_cleaning_runner.py docs/frontend-experience-refactor-diary.md docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md
+git -c core.hooksPath=/dev/null commit -m "chore: gate math cleaning structure"
+```
+
+Result: committed after validation on 2026-06-02.
+
 ### Task 43: Classify English Analysis Sources As Support Evidence
 
 **Files:**
