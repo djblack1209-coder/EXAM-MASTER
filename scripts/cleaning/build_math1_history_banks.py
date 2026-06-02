@@ -203,6 +203,33 @@ def math1_2019_answers() -> dict[int, str]:
     return answers
 
 
+def math1_2020_answers() -> dict[int, str]:
+    answers = generic_answers(
+        2020,
+        {1: "D", 2: "C", 3: "A", 4: "A", 5: "B", 6: "C", 7: "D", 8: "B"},
+    )
+    answers.update(
+        {
+            9: "-1",
+            10: "-sqrt(2)",
+            11: "n + am",
+            12: "4e",
+            13: "a^4 - 4a^2",
+            14: "2/π",
+            15: "极小值点为 (1/6, 1/12)，极小值为 -1/216。",
+            16: "曲线积分值为 π。",
+            17: "幂级数在 |x|<1 收敛；和函数为 2/sqrt(1-x)-2。",
+            18: "曲面积分值为 14π/3。",
+            19: "证明过程见答案原页。",
+            20: "a=4，b=1；正交矩阵 Q 见答案原页。",
+            21: "P 可逆；P^-1AP 与相似对角化结论见答案原页。",
+            22: "(X1,Y) 的分布函数与 Y 的标准正态证明见答案原页。",
+            23: "条件概率与 θ 的极大似然估计见答案原页。",
+        }
+    )
+    return answers
+
+
 SPECS: dict[int, SourceSpec] = {
     2005: SourceSpec(
         year=2005,
@@ -767,6 +794,88 @@ SPECS: dict[int, SourceSpec] = {
             "q23": (14, 105, 570, 930, 360),
         },
     ),
+    2020: SourceSpec(
+        year=2020,
+        file_name="src_188f7642349fab77f135c2f5-2020数一真题答案解析.pdf",
+        source_id="src_188f7642349fab77f135c2f5",
+        question_pages={
+            1: question_refs("q01"),
+            2: question_refs("q02"),
+            3: question_refs("q03"),
+            4: question_refs("q04"),
+            5: question_refs("q05"),
+            6: question_refs("q06"),
+            7: question_refs("q07"),
+            8: question_refs("q08a", "q08b"),
+            9: question_refs("q09"),
+            10: question_refs("q10"),
+            11: question_refs("q11"),
+            12: question_refs("q12"),
+            13: question_refs("q13"),
+            14: question_refs("q14"),
+            15: question_refs("q15"),
+            16: question_refs("q16"),
+            17: question_refs("q17"),
+            18: question_refs("q18"),
+            19: question_refs("q19"),
+            20: question_refs("q20"),
+            21: question_refs("q21"),
+            22: question_refs("q22"),
+            23: question_refs("q23"),
+        },
+        answer_pages={
+            1: [1],
+            2: [1, 2],
+            3: [2, 3],
+            4: [3],
+            5: [3],
+            6: [3, 4],
+            7: [4],
+            8: [4, 5],
+            9: [5, 6],
+            10: [6],
+            11: [6],
+            12: [6, 7],
+            13: [7],
+            14: [7, 8],
+            15: [8],
+            16: [8, 9],
+            17: [9],
+            18: [9, 10],
+            19: [10],
+            20: [11],
+            21: [11, 12],
+            22: [12, 13],
+            23: [13],
+        },
+        answers=math1_2020_answers(),
+        question_crop_boxes={
+            "q01": (1, 105, 365, 930, 205),
+            "q02": (1, 105, 955, 930, 365),
+            "q03": (2, 105, 545, 930, 420),
+            "q04": (3, 105, 195, 930, 235),
+            "q05": (3, 105, 585, 930, 140),
+            "q06": (3, 105, 895, 930, 278),
+            "q07": (4, 105, 445, 930, 290),
+            "q08a": (4, 105, 1330, 930, 95),
+            "q08b": (5, 105, 140, 930, 235),
+            "q09": (5, 105, 920, 930, 115),
+            "q10": (6, 105, 255, 930, 105),
+            "q11": (6, 105, 780, 930, 125),
+            "q12": (6, 105, 1220, 930, 115),
+            "q13": (7, 105, 365, 930, 185),
+            "q14": (7, 105, 935, 930, 85),
+            "q15": (8, 105, 475, 930, 55),
+            "q16": (8, 105, 1110, 930, 125),
+            "q17": (9, 105, 555, 930, 150),
+            "q18": (9, 105, 1180, 930, 140),
+            "q19": (10, 105, 475, 930, 210),
+            "q20": (11, 105, 130, 930, 235),
+            "q21": (11, 105, 1015, 930, 180),
+            "q22": (12, 105, 655, 930, 245),
+            "q23": (13, 105, 350, 930, 220),
+        },
+    ),
 }
 
 
@@ -1277,7 +1386,7 @@ def write_json(path: Path, payload: Any) -> None:
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--years", default="2005-2006,2008-2019")
+    parser.add_argument("--years", default="2005-2006,2008-2020")
     parser.add_argument("--bank-dir", type=Path, default=DEFAULT_BANK_DIR)
     parser.add_argument("--asset-root", type=Path, default=DEFAULT_ASSET_ROOT)
     parser.add_argument("--force-assets", action="store_true")

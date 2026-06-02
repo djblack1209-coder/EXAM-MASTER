@@ -1953,6 +1953,94 @@ git -c core.hooksPath=/dev/null commit -m "chore: publish math1 2018 bank"
 
 Result: committed after validation on 2026-06-02.
 
+### Task 53: Publish Math I 2020 Page-Image Bank
+
+**Files:**
+- Modify: `scripts/cleaning/build_math1_history_banks.py`
+- Modify: `tests/unit/test_build_math1_history_banks.py`
+- Modify: `src/config/bank-registry.js`
+- Modify: `src/pages/practice-sub/bank-data-table.js`
+- Add: `src/config/flashcard-banks/math1-2020.json`
+- Add: `cdn-assets/question-bank/math1-2020/*`
+- Modify: `data/release-blocker-backlog.json`
+- Modify: `docs/frontend-experience-refactor-diary.md`
+- Modify: `docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md`
+- Modify: `docs/08C-SCRIPTS-REFERENCE.md`
+- Modify: `docs/12-CHANGELOG.md`
+
+- [x] **Step 1: Download, inspect, and add a failing structure test**
+
+Downloaded the release-priority source:
+
+```bash
+.venv-baidu/bin/python scripts/baidu/pan.py download \
+  '/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学一真题答案解析/2020-数一真题答案解析 .pdf' \
+  'data/raw-inbox/src_188f7642349fab77f135c2f5-2020数一真题答案解析.pdf'
+```
+
+Confirmed with `pdfinfo`, `pdftotext`, rendered page images, and visual inspection that it is a 13-page scanned answer-analysis PDF with same-page answers/解析 and no usable text layer. Added the 2020 structure test first; it failed with `KeyError: 2020`, proving the missing spec was guarded.
+
+- [x] **Step 2: Extend the Math I history builder**
+
+Added `math1_2020_answers()` and a 2020 `SourceSpec`:
+
+```text
+card_numbers_for_spec(math1-2020) == 1..23
+sections == 8 choice + 6 fill + 9 solution
+q08 == ["q08a", "q08b"]
+sourceId == src_188f7642349fab77f135c2f5
+```
+
+The spec uses manual crop boxes for every question because the source mixes question text with same-page answers and analysis. q10, q14, q15, q16, and q23 crop heights were tuned after visual inspection before final generation.
+
+- [x] **Step 3: Generate, register, and regenerate compressed data**
+
+Run:
+
+```bash
+python3 scripts/cleaning/build_math1_history_banks.py --years 2020 --force-assets
+node scripts/build/generate-compressed-bank-modules.mjs
+```
+
+Result: generated `src/config/flashcard-banks/math1-2020.json` and 50 assets under `cdn-assets/question-bank/math1-2020`; compressed bank modules now include 73 published banks.
+
+- [x] **Step 4: Run validation**
+
+Run:
+
+```bash
+python3 -m unittest tests.unit.test_build_math1_history_banks
+npm run test -- tests/unit/question-bank-release-gate.spec.js tests/unit/flashcard-bank-registry.spec.js
+node scripts/build/question-bank-release-gate.mjs
+node scripts/build/release-blocker-backlog.mjs
+python3 scripts/baidu/cleaning_queue.py
+python3 scripts/baidu/run_cleaning_queue.py --dry-run --limit 8 --source-type official_paper --paper-role main
+```
+
+Additional OCR leakage scan:
+
+```bash
+for p in cdn-assets/question-bank/math1-2020/question-*.jpg; do
+  txt=$(tesseract "$p" stdout -l chi_sim+eng --psm 6 2>/dev/null || true)
+  if printf '%s' "$txt" | rg -q '【分析|【详解|【解析|【答案|分析】|详解】|解析】|答案】|选[[:space:]]*[ABCD]|故选|因此选|\[[[:space:]]*[ABCD][[:space:]]*\]'; then
+    echo "BAD $p"
+  fi
+done
+```
+
+Result: passed on 2026-06-02. `math1-2020.json` has 23 cards, `{flashcard:14, short_answer:9}`, section counts `{选择题:8, 填空题:6, 解答题:9}`, 24 question crop assets, 13 answer pages, 13 paper pages, and no missing asset references. Sequential release audit refresh reports `coverageGaps=59`, `blockers=71`, `publicCourseBlockedSlots=59`; the next main queue dry-run starts at `2021数一真题答案解析.pdf`.
+
+- [x] **Step 5: Commit**
+
+Run after final diff/whitespace checks:
+
+```bash
+git add scripts/cleaning/build_math1_history_banks.py tests/unit/test_build_math1_history_banks.py src/config/bank-registry.js src/pages/practice-sub/bank-data-table.js src/config/flashcard-banks/math1-2020.json cdn-assets/question-bank/math1-2020 data/release-blocker-backlog.json docs/frontend-experience-refactor-diary.md docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md docs/08C-SCRIPTS-REFERENCE.md docs/12-CHANGELOG.md
+git -c core.hooksPath=/dev/null commit -m "chore: publish math1 2020 bank"
+```
+
+Result: committed after validation on 2026-06-02.
+
 ### Task 52: Publish Math I 2019 Page-Image Bank
 
 **Files:**

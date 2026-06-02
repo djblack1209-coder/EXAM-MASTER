@@ -480,3 +480,15 @@
 - Release gate result after sequential audit refresh: public-course coverage gaps dropped to 60, release blockers dropped to 72, public-course blocked slots dropped to 60, and the release-priority dry-run now starts at `2020数一真题答案解析.pdf`.
 - Source caveat: the available 2019 Math I file is an answer-analysis edition, not a standalone blank paper. Publishability still depends on crop-level leakage controls, while answer evidence remains the original rendered PDF pages.
 - Product rule: for modern Math I answer-analysis PDFs, treat manual crop QA as part of the release artifact, not as an optional post-processing check.
+
+### 2026-06-02 Round 53
+
+- Promoted `math1:2020` through the formal Math I page-image bank path after the release-priority queue advanced to `2020数一真题答案解析.pdf`.
+- Downloaded the Baidu source into ignored `data/raw-inbox/`, confirmed it is a 13-page scanned answer-analysis PDF with no usable text layer, then added a 2020 `SourceSpec` with 23 cards.
+- Added a 2020 structure regression test and a full set of manual crop boxes. q08 uses `q08a/q08b` because the prompt starts at the bottom of page 4 and continues on page 5.
+- Published `src/config/flashcard-banks/math1-2020.json` plus 50 page/crop assets under `cdn-assets/question-bank/math1-2020`, registered the bank, and regenerated the compressed practice-bank table.
+- Validation result: `math1-2020.json` has 23 cards, `{flashcard:14, short_answer:9}`, section counts `{选择题:8, 填空题:6, 解答题:9}`, no missing assets, and the OCR leakage scan found no `【分析】` / `【详解】` / `【解析】` / `【答案】` / choice-answer markers in question images.
+- Visual spot checks tuned q10, q14, q15, q16, and q23 crop heights to remove answer/解析 edges while preserving complete prompts.
+- Release gate result after sequential audit refresh: public-course coverage gaps dropped to 59, release blockers dropped to 71, public-course blocked slots dropped to 59, and the release-priority dry-run now starts at `2021数一真题答案解析.pdf`.
+- Source caveat: the available 2020 Math I file is an answer-analysis edition, not a standalone blank paper. User-facing question images depend on crop-level leakage controls, while answer evidence remains the original rendered PDF pages.
+- Product rule: when an answer-analysis source has no text layer, do not let generic OCR/LLM cleaning create the commercial artifact; ship through audited page-image evidence.

@@ -1,0 +1,1261 @@
+{
+  "id": "math1-2020",
+  "source": "math1-2020-paper-answer",
+  "paperId": "math1-2020",
+  "paperName": "2020考研数学一真题",
+  "subject": "数学",
+  "subjectKey": "math",
+  "track": "math1",
+  "year": "2020",
+  "quality": "ready",
+  "publicationStatus": "published",
+  "publicationBlockers": [],
+  "sourceEvidencePolicy": "baidu_netdisk_official_paper_pdf_question_crop_answer_page_image_v1",
+  "sourceFiles": [
+    {
+      "id": "math1-2020-paper-answer",
+      "role": "paper_answer",
+      "localPath": "data/raw-inbox/src_188f7642349fab77f135c2f5-2020数一真题答案解析.pdf",
+      "sha256": "sha256:4879dbe47a0a4cbb9677cf08a96ceccddfb6eb9010ad8ccd05f69ba7f58e0d0b",
+      "sourceId": "src_188f7642349fab77f135c2f5"
+    }
+  ],
+  "assetRoot": "question-bank/math1-2020",
+  "processed_at": "2026-06-02T18:14:57Z",
+  "total_cards": 23,
+  "cards": [
+    {
+      "id": "math1-2020-001",
+      "number": 1,
+      "paperId": "math1-2020",
+      "paperName": "2020考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2020",
+      "section": "选择题",
+      "type": "flashcard",
+      "question": "2020考研数学一第1题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2020 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2020/question-01.jpg",
+          "caption": "题面裁切图 q01",
+          "alt": "2020考研数学一题面裁切图 q01"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2020/answer-page-01.jpg",
+          "caption": "答案解析 p.1",
+          "alt": "2020考研数学一答案解析 p.1"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2020",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:6fd9df300c518c52261f3c78752df4619938b01c407fae7b7ade4d62964c7bd6",
+      "answerTextHash": "sha256:f6335e8977ced096172680deb47d3c197da7774b472b4fe4ce3651e4656f09aa",
+      "sourceEvidence": {
+        "evidenceId": "math1-2020-q01",
+        "sourceId": "src_188f7642349fab77f135c2f5",
+        "answerSourceId": "src_188f7642349fab77f135c2f5",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2020-paper-answer",
+        "answerEvidenceId": "math1-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:f6335e8977ced096172680deb47d3c197da7774b472b4fe4ce3651e4656f09aa"
+      }
+    },
+    {
+      "id": "math1-2020-002",
+      "number": 2,
+      "paperId": "math1-2020",
+      "paperName": "2020考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2020",
+      "section": "选择题",
+      "type": "flashcard",
+      "question": "2020考研数学一第2题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2020 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2020/question-02.jpg",
+          "caption": "题面裁切图 q02",
+          "alt": "2020考研数学一题面裁切图 q02"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2020/answer-page-01.jpg",
+          "caption": "答案解析 p.1",
+          "alt": "2020考研数学一答案解析 p.1"
+        },
+        {
+          "src": "question-bank/math1-2020/answer-page-02.jpg",
+          "caption": "答案解析 p.2",
+          "alt": "2020考研数学一答案解析 p.2"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2020",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:93cda1e2a419aa0c209a05b1ffe11a0cca84efc72e5e7fafc39f5ed2ae47b481",
+      "answerTextHash": "sha256:eb212dd8a585906a9c78f6774665712b9a66e0c6a4d610b755c1c87a851ed451",
+      "sourceEvidence": {
+        "evidenceId": "math1-2020-q02",
+        "sourceId": "src_188f7642349fab77f135c2f5",
+        "answerSourceId": "src_188f7642349fab77f135c2f5",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2020-paper-answer",
+        "answerEvidenceId": "math1-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:eb212dd8a585906a9c78f6774665712b9a66e0c6a4d610b755c1c87a851ed451"
+      }
+    },
+    {
+      "id": "math1-2020-003",
+      "number": 3,
+      "paperId": "math1-2020",
+      "paperName": "2020考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2020",
+      "section": "选择题",
+      "type": "flashcard",
+      "question": "2020考研数学一第3题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2020 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2020/question-03.jpg",
+          "caption": "题面裁切图 q03",
+          "alt": "2020考研数学一题面裁切图 q03"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2020/answer-page-02.jpg",
+          "caption": "答案解析 p.2",
+          "alt": "2020考研数学一答案解析 p.2"
+        },
+        {
+          "src": "question-bank/math1-2020/answer-page-03.jpg",
+          "caption": "答案解析 p.3",
+          "alt": "2020考研数学一答案解析 p.3"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2020",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:5e052dfb0f5bd6e2c9e59d543b978dca51c10f09c6852777d17d58e7da390668",
+      "answerTextHash": "sha256:0b1ecad589f058c49d83955fb25e522f05e4b8c21eda2a5e382e3023d4876c53",
+      "sourceEvidence": {
+        "evidenceId": "math1-2020-q03",
+        "sourceId": "src_188f7642349fab77f135c2f5",
+        "answerSourceId": "src_188f7642349fab77f135c2f5",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2020-paper-answer",
+        "answerEvidenceId": "math1-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:0b1ecad589f058c49d83955fb25e522f05e4b8c21eda2a5e382e3023d4876c53"
+      }
+    },
+    {
+      "id": "math1-2020-004",
+      "number": 4,
+      "paperId": "math1-2020",
+      "paperName": "2020考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2020",
+      "section": "选择题",
+      "type": "flashcard",
+      "question": "2020考研数学一第4题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2020 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2020/question-04.jpg",
+          "caption": "题面裁切图 q04",
+          "alt": "2020考研数学一题面裁切图 q04"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2020/answer-page-03.jpg",
+          "caption": "答案解析 p.3",
+          "alt": "2020考研数学一答案解析 p.3"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2020",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:8882d2cc4fedb69155e2a3211af7e5e5c96cef87b0fee15e46859f9ed646323e",
+      "answerTextHash": "sha256:37047a4e1d0f087c0f0de2714845cbbfcf52e1f11a8dee1bd57c83d31cefed0f",
+      "sourceEvidence": {
+        "evidenceId": "math1-2020-q04",
+        "sourceId": "src_188f7642349fab77f135c2f5",
+        "answerSourceId": "src_188f7642349fab77f135c2f5",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2020-paper-answer",
+        "answerEvidenceId": "math1-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:37047a4e1d0f087c0f0de2714845cbbfcf52e1f11a8dee1bd57c83d31cefed0f"
+      }
+    },
+    {
+      "id": "math1-2020-005",
+      "number": 5,
+      "paperId": "math1-2020",
+      "paperName": "2020考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2020",
+      "section": "选择题",
+      "type": "flashcard",
+      "question": "2020考研数学一第5题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2020 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2020/question-05.jpg",
+          "caption": "题面裁切图 q05",
+          "alt": "2020考研数学一题面裁切图 q05"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2020/answer-page-03.jpg",
+          "caption": "答案解析 p.3",
+          "alt": "2020考研数学一答案解析 p.3"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2020",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:00890987a7664fee11c94c9b15d1838261e4d5516a85f2068a1a16fb7ad84c93",
+      "answerTextHash": "sha256:1fcf9d558765341a30341480a7d24f877bc9966886f3ab2accbd71cffa0f1b38",
+      "sourceEvidence": {
+        "evidenceId": "math1-2020-q05",
+        "sourceId": "src_188f7642349fab77f135c2f5",
+        "answerSourceId": "src_188f7642349fab77f135c2f5",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2020-paper-answer",
+        "answerEvidenceId": "math1-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:1fcf9d558765341a30341480a7d24f877bc9966886f3ab2accbd71cffa0f1b38"
+      }
+    },
+    {
+      "id": "math1-2020-006",
+      "number": 6,
+      "paperId": "math1-2020",
+      "paperName": "2020考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2020",
+      "section": "选择题",
+      "type": "flashcard",
+      "question": "2020考研数学一第6题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2020 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2020/question-06.jpg",
+          "caption": "题面裁切图 q06",
+          "alt": "2020考研数学一题面裁切图 q06"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2020/answer-page-03.jpg",
+          "caption": "答案解析 p.3",
+          "alt": "2020考研数学一答案解析 p.3"
+        },
+        {
+          "src": "question-bank/math1-2020/answer-page-04.jpg",
+          "caption": "答案解析 p.4",
+          "alt": "2020考研数学一答案解析 p.4"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2020",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:d6168d6626164c0ff8c955ae61a90044144927a41de6ce5e4815f2ce5ee453a3",
+      "answerTextHash": "sha256:6256d6d1a31ff5a026dabdf646d1dee9cbd80e696c1186456602a3afe3d9bc43",
+      "sourceEvidence": {
+        "evidenceId": "math1-2020-q06",
+        "sourceId": "src_188f7642349fab77f135c2f5",
+        "answerSourceId": "src_188f7642349fab77f135c2f5",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2020-paper-answer",
+        "answerEvidenceId": "math1-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:6256d6d1a31ff5a026dabdf646d1dee9cbd80e696c1186456602a3afe3d9bc43"
+      }
+    },
+    {
+      "id": "math1-2020-007",
+      "number": 7,
+      "paperId": "math1-2020",
+      "paperName": "2020考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2020",
+      "section": "选择题",
+      "type": "flashcard",
+      "question": "2020考研数学一第7题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2020 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2020/question-07.jpg",
+          "caption": "题面裁切图 q07",
+          "alt": "2020考研数学一题面裁切图 q07"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2020/answer-page-04.jpg",
+          "caption": "答案解析 p.4",
+          "alt": "2020考研数学一答案解析 p.4"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2020",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:0f8383ee83c8ae3a972598f281c68a1d375bab222e9e83d5a45f66883c09e6b9",
+      "answerTextHash": "sha256:f9b62e4efbf2b7603b98d3f2ff418dcbd2c44acaa816fe2c2d633969ac0c75c5",
+      "sourceEvidence": {
+        "evidenceId": "math1-2020-q07",
+        "sourceId": "src_188f7642349fab77f135c2f5",
+        "answerSourceId": "src_188f7642349fab77f135c2f5",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2020-paper-answer",
+        "answerEvidenceId": "math1-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:f9b62e4efbf2b7603b98d3f2ff418dcbd2c44acaa816fe2c2d633969ac0c75c5"
+      }
+    },
+    {
+      "id": "math1-2020-008",
+      "number": 8,
+      "paperId": "math1-2020",
+      "paperName": "2020考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2020",
+      "section": "选择题",
+      "type": "flashcard",
+      "question": "2020考研数学一第8题（选择题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2020 数学一真题答案解析 PDF；选择题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2020/question-08a.jpg",
+          "caption": "题面裁切图 q08",
+          "alt": "2020考研数学一题面裁切图 q08"
+        },
+        {
+          "src": "question-bank/math1-2020/question-08b.jpg",
+          "caption": "题面裁切图 q08",
+          "alt": "2020考研数学一题面裁切图 q08"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2020/answer-page-04.jpg",
+          "caption": "答案解析 p.4",
+          "alt": "2020考研数学一答案解析 p.4"
+        },
+        {
+          "src": "question-bank/math1-2020/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2020考研数学一答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2020",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:a3298dbabfa9525a3501241713fe30019aa47a5b003ac6ec8c70ceaad62afc27",
+      "answerTextHash": "sha256:1149516b9de22f3bb2f95ce7b5210a31080ad68a7a3dc39ce4360cb10d48869d",
+      "sourceEvidence": {
+        "evidenceId": "math1-2020-q08",
+        "sourceId": "src_188f7642349fab77f135c2f5",
+        "answerSourceId": "src_188f7642349fab77f135c2f5",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2020-paper-answer",
+        "answerEvidenceId": "math1-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:1149516b9de22f3bb2f95ce7b5210a31080ad68a7a3dc39ce4360cb10d48869d"
+      }
+    },
+    {
+      "id": "math1-2020-009",
+      "number": 9,
+      "paperId": "math1-2020",
+      "paperName": "2020考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2020",
+      "section": "填空题",
+      "type": "flashcard",
+      "question": "2020考研数学一第9题（填空题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "-1",
+      "explanation": "答案来自本地百度网盘 2020 数学一真题答案解析 PDF；填空题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2020/question-09.jpg",
+          "caption": "题面裁切图 q09",
+          "alt": "2020考研数学一题面裁切图 q09"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2020/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2020考研数学一答案解析 p.5"
+        },
+        {
+          "src": "question-bank/math1-2020/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2020考研数学一答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2020",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:ef3d563d65b1018e982cb6e76a77ba5024f3188d9daacc58270d7c1f7f62a923",
+      "answerTextHash": "sha256:a2e78b085b26a57d3c95d10ac31008dcffa0ecb78ea477ca958acaf18b96b93d",
+      "sourceEvidence": {
+        "evidenceId": "math1-2020-q09",
+        "sourceId": "src_188f7642349fab77f135c2f5",
+        "answerSourceId": "src_188f7642349fab77f135c2f5",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2020-paper-answer",
+        "answerEvidenceId": "math1-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:a2e78b085b26a57d3c95d10ac31008dcffa0ecb78ea477ca958acaf18b96b93d"
+      }
+    },
+    {
+      "id": "math1-2020-010",
+      "number": 10,
+      "paperId": "math1-2020",
+      "paperName": "2020考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2020",
+      "section": "填空题",
+      "type": "flashcard",
+      "question": "2020考研数学一第10题（填空题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "-sqrt(2)",
+      "explanation": "答案来自本地百度网盘 2020 数学一真题答案解析 PDF；填空题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2020/question-10.jpg",
+          "caption": "题面裁切图 q10",
+          "alt": "2020考研数学一题面裁切图 q10"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2020/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2020考研数学一答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2020",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:5d19221782e0f6b771e1c5a10007133e227ada90dc830acd3f4dfd4d2c7a07aa",
+      "answerTextHash": "sha256:408c50b0ed3cf0f59c00906af3b7adaa6d0ce619c1c1ce3d0aefd73e74ab3538",
+      "sourceEvidence": {
+        "evidenceId": "math1-2020-q10",
+        "sourceId": "src_188f7642349fab77f135c2f5",
+        "answerSourceId": "src_188f7642349fab77f135c2f5",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2020-paper-answer",
+        "answerEvidenceId": "math1-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:408c50b0ed3cf0f59c00906af3b7adaa6d0ce619c1c1ce3d0aefd73e74ab3538"
+      }
+    },
+    {
+      "id": "math1-2020-011",
+      "number": 11,
+      "paperId": "math1-2020",
+      "paperName": "2020考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2020",
+      "section": "填空题",
+      "type": "flashcard",
+      "question": "2020考研数学一第11题（填空题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "n + am",
+      "explanation": "答案来自本地百度网盘 2020 数学一真题答案解析 PDF；填空题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2020/question-11.jpg",
+          "caption": "题面裁切图 q11",
+          "alt": "2020考研数学一题面裁切图 q11"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2020/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2020考研数学一答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2020",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:16ef73dac236b677e5171730b92af0f086013b725e852603e46430206d9f539a",
+      "answerTextHash": "sha256:f11df262f7f1829950049cfe907af1b12f83fe453f8e7018ef2636b04ae64c0f",
+      "sourceEvidence": {
+        "evidenceId": "math1-2020-q11",
+        "sourceId": "src_188f7642349fab77f135c2f5",
+        "answerSourceId": "src_188f7642349fab77f135c2f5",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2020-paper-answer",
+        "answerEvidenceId": "math1-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:f11df262f7f1829950049cfe907af1b12f83fe453f8e7018ef2636b04ae64c0f"
+      }
+    },
+    {
+      "id": "math1-2020-012",
+      "number": 12,
+      "paperId": "math1-2020",
+      "paperName": "2020考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2020",
+      "section": "填空题",
+      "type": "flashcard",
+      "question": "2020考研数学一第12题（填空题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "4e",
+      "explanation": "答案来自本地百度网盘 2020 数学一真题答案解析 PDF；填空题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2020/question-12.jpg",
+          "caption": "题面裁切图 q12",
+          "alt": "2020考研数学一题面裁切图 q12"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2020/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2020考研数学一答案解析 p.6"
+        },
+        {
+          "src": "question-bank/math1-2020/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2020考研数学一答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2020",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:d523c71cf2c53666f9c4cdbd8aaab08bc463d0fa005a85dc29c234e4b91b2971",
+      "answerTextHash": "sha256:93452d05f8704b3024c3a6249f9dfcb365e4315531362fade223dddf17fcae38",
+      "sourceEvidence": {
+        "evidenceId": "math1-2020-q12",
+        "sourceId": "src_188f7642349fab77f135c2f5",
+        "answerSourceId": "src_188f7642349fab77f135c2f5",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2020-paper-answer",
+        "answerEvidenceId": "math1-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:93452d05f8704b3024c3a6249f9dfcb365e4315531362fade223dddf17fcae38"
+      }
+    },
+    {
+      "id": "math1-2020-013",
+      "number": 13,
+      "paperId": "math1-2020",
+      "paperName": "2020考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2020",
+      "section": "填空题",
+      "type": "flashcard",
+      "question": "2020考研数学一第13题（填空题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "a^4 - 4a^2",
+      "explanation": "答案来自本地百度网盘 2020 数学一真题答案解析 PDF；填空题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2020/question-13.jpg",
+          "caption": "题面裁切图 q13",
+          "alt": "2020考研数学一题面裁切图 q13"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2020/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2020考研数学一答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2020",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:f54d0b8a7ac18f0660eda51db975710b0791046862585e9cfd30915b44246fda",
+      "answerTextHash": "sha256:32c2bf6461be345469a542f7ef8cafa7dc09e463c41b3cb21e12c3ba2129b9c1",
+      "sourceEvidence": {
+        "evidenceId": "math1-2020-q13",
+        "sourceId": "src_188f7642349fab77f135c2f5",
+        "answerSourceId": "src_188f7642349fab77f135c2f5",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2020-paper-answer",
+        "answerEvidenceId": "math1-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:32c2bf6461be345469a542f7ef8cafa7dc09e463c41b3cb21e12c3ba2129b9c1"
+      }
+    },
+    {
+      "id": "math1-2020-014",
+      "number": 14,
+      "paperId": "math1-2020",
+      "paperName": "2020考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2020",
+      "section": "填空题",
+      "type": "flashcard",
+      "question": "2020考研数学一第14题（填空题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "2/π",
+      "explanation": "答案来自本地百度网盘 2020 数学一真题答案解析 PDF；填空题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2020/question-14.jpg",
+          "caption": "题面裁切图 q14",
+          "alt": "2020考研数学一题面裁切图 q14"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2020/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2020考研数学一答案解析 p.7"
+        },
+        {
+          "src": "question-bank/math1-2020/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2020考研数学一答案解析 p.8"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2020",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math1-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:d5e20c60797e431466b617f39f259f4e84b60fe82d9aae0b851fab93944b8111",
+      "answerTextHash": "sha256:2d6fb1e41c8de24f2a0a124e0311d41a6a0cc0732e4a7bcd981796778e97454c",
+      "sourceEvidence": {
+        "evidenceId": "math1-2020-q14",
+        "sourceId": "src_188f7642349fab77f135c2f5",
+        "answerSourceId": "src_188f7642349fab77f135c2f5",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2020-paper-answer",
+        "answerEvidenceId": "math1-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:2d6fb1e41c8de24f2a0a124e0311d41a6a0cc0732e4a7bcd981796778e97454c"
+      }
+    },
+    {
+      "id": "math1-2020-015",
+      "number": 15,
+      "paperId": "math1-2020",
+      "paperName": "2020考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2020",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2020考研数学一第15题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "极小值点为 (1/6, 1/12)，极小值为 -1/216。",
+      "explanation": "答案来自本地百度网盘 2020 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2020/question-15.jpg",
+          "caption": "题面裁切图 q15",
+          "alt": "2020考研数学一题面裁切图 q15"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2020/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2020考研数学一答案解析 p.8"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2020",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:c31bb59d105382e91a9d7fc44e431f9c029f7acf9d792cf637f6c6280d450e6b",
+      "answerTextHash": "sha256:2f7c1f35e804745a3196764f480f954eaed4a0181c527f1dafad37092b2cb4f8",
+      "sourceEvidence": {
+        "evidenceId": "math1-2020-q15",
+        "sourceId": "src_188f7642349fab77f135c2f5",
+        "answerSourceId": "src_188f7642349fab77f135c2f5",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2020-paper-answer",
+        "answerEvidenceId": "math1-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:2f7c1f35e804745a3196764f480f954eaed4a0181c527f1dafad37092b2cb4f8"
+      }
+    },
+    {
+      "id": "math1-2020-016",
+      "number": 16,
+      "paperId": "math1-2020",
+      "paperName": "2020考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2020",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2020考研数学一第16题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "曲线积分值为 π。",
+      "explanation": "答案来自本地百度网盘 2020 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2020/question-16.jpg",
+          "caption": "题面裁切图 q16",
+          "alt": "2020考研数学一题面裁切图 q16"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2020/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2020考研数学一答案解析 p.8"
+        },
+        {
+          "src": "question-bank/math1-2020/answer-page-09.jpg",
+          "caption": "答案解析 p.9",
+          "alt": "2020考研数学一答案解析 p.9"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2020",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:42afce4bddd688c584161a5720e88c5908e16aadea64fced4c6b66c82761f260",
+      "answerTextHash": "sha256:365d54b5aad5b2b9487c8ae15846209ff08d1269dcecd9c418b1b77f8e258e49",
+      "sourceEvidence": {
+        "evidenceId": "math1-2020-q16",
+        "sourceId": "src_188f7642349fab77f135c2f5",
+        "answerSourceId": "src_188f7642349fab77f135c2f5",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2020-paper-answer",
+        "answerEvidenceId": "math1-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:365d54b5aad5b2b9487c8ae15846209ff08d1269dcecd9c418b1b77f8e258e49"
+      }
+    },
+    {
+      "id": "math1-2020-017",
+      "number": 17,
+      "paperId": "math1-2020",
+      "paperName": "2020考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2020",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2020考研数学一第17题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "幂级数在 |x|<1 收敛；和函数为 2/sqrt(1-x)-2。",
+      "explanation": "答案来自本地百度网盘 2020 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2020/question-17.jpg",
+          "caption": "题面裁切图 q17",
+          "alt": "2020考研数学一题面裁切图 q17"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2020/answer-page-09.jpg",
+          "caption": "答案解析 p.9",
+          "alt": "2020考研数学一答案解析 p.9"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2020",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:6e38074ce254ade7dce6c6f790e6bb7c972167d18ec2d56fb038c2698cc33b9f",
+      "answerTextHash": "sha256:fe9716abc002a99020e9118145191728f2a9e38360e82eee11c76a0d5f069403",
+      "sourceEvidence": {
+        "evidenceId": "math1-2020-q17",
+        "sourceId": "src_188f7642349fab77f135c2f5",
+        "answerSourceId": "src_188f7642349fab77f135c2f5",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2020-paper-answer",
+        "answerEvidenceId": "math1-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:fe9716abc002a99020e9118145191728f2a9e38360e82eee11c76a0d5f069403"
+      }
+    },
+    {
+      "id": "math1-2020-018",
+      "number": 18,
+      "paperId": "math1-2020",
+      "paperName": "2020考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2020",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2020考研数学一第18题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "曲面积分值为 14π/3。",
+      "explanation": "答案来自本地百度网盘 2020 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2020/question-18.jpg",
+          "caption": "题面裁切图 q18",
+          "alt": "2020考研数学一题面裁切图 q18"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2020/answer-page-09.jpg",
+          "caption": "答案解析 p.9",
+          "alt": "2020考研数学一答案解析 p.9"
+        },
+        {
+          "src": "question-bank/math1-2020/answer-page-10.jpg",
+          "caption": "答案解析 p.10",
+          "alt": "2020考研数学一答案解析 p.10"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2020",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:1c07ab0140241a74bd9029baa99a51cd8cfb8ee85db04d5b9988850b6b61e428",
+      "answerTextHash": "sha256:eb54b4b3a50815aabf3d0131da44c93887c4552e26927a671dcf70f205ba599c",
+      "sourceEvidence": {
+        "evidenceId": "math1-2020-q18",
+        "sourceId": "src_188f7642349fab77f135c2f5",
+        "answerSourceId": "src_188f7642349fab77f135c2f5",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2020-paper-answer",
+        "answerEvidenceId": "math1-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:eb54b4b3a50815aabf3d0131da44c93887c4552e26927a671dcf70f205ba599c"
+      }
+    },
+    {
+      "id": "math1-2020-019",
+      "number": 19,
+      "paperId": "math1-2020",
+      "paperName": "2020考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2020",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2020考研数学一第19题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "证明过程见答案原页。",
+      "explanation": "答案来自本地百度网盘 2020 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2020/question-19.jpg",
+          "caption": "题面裁切图 q19",
+          "alt": "2020考研数学一题面裁切图 q19"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2020/answer-page-10.jpg",
+          "caption": "答案解析 p.10",
+          "alt": "2020考研数学一答案解析 p.10"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2020",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:f9472b2121083c4f5a7b3b8f56d023cba12eaa46a99a1f814db4108096a52271",
+      "answerTextHash": "sha256:9d56f503217bdb6d18974ea6c9b41e5548db6a58ef9a9273360e71c0d317b42e",
+      "sourceEvidence": {
+        "evidenceId": "math1-2020-q19",
+        "sourceId": "src_188f7642349fab77f135c2f5",
+        "answerSourceId": "src_188f7642349fab77f135c2f5",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2020-paper-answer",
+        "answerEvidenceId": "math1-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:9d56f503217bdb6d18974ea6c9b41e5548db6a58ef9a9273360e71c0d317b42e"
+      }
+    },
+    {
+      "id": "math1-2020-020",
+      "number": 20,
+      "paperId": "math1-2020",
+      "paperName": "2020考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2020",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2020考研数学一第20题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "a=4，b=1；正交矩阵 Q 见答案原页。",
+      "explanation": "答案来自本地百度网盘 2020 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2020/question-20.jpg",
+          "caption": "题面裁切图 q20",
+          "alt": "2020考研数学一题面裁切图 q20"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2020/answer-page-11.jpg",
+          "caption": "答案解析 p.11",
+          "alt": "2020考研数学一答案解析 p.11"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2020",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:bcde10aa997f580517d6ae9df61f8a3cc1389602ebee22a2cd8d8f6218b404a8",
+      "answerTextHash": "sha256:0cd9110ead1d8f68f2e74aa44a92ffefb9d5ce73a7b3038c881c5719d89a1672",
+      "sourceEvidence": {
+        "evidenceId": "math1-2020-q20",
+        "sourceId": "src_188f7642349fab77f135c2f5",
+        "answerSourceId": "src_188f7642349fab77f135c2f5",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2020-paper-answer",
+        "answerEvidenceId": "math1-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:0cd9110ead1d8f68f2e74aa44a92ffefb9d5ce73a7b3038c881c5719d89a1672"
+      }
+    },
+    {
+      "id": "math1-2020-021",
+      "number": 21,
+      "paperId": "math1-2020",
+      "paperName": "2020考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2020",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2020考研数学一第21题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "P 可逆；P^-1AP 与相似对角化结论见答案原页。",
+      "explanation": "答案来自本地百度网盘 2020 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2020/question-21.jpg",
+          "caption": "题面裁切图 q21",
+          "alt": "2020考研数学一题面裁切图 q21"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2020/answer-page-11.jpg",
+          "caption": "答案解析 p.11",
+          "alt": "2020考研数学一答案解析 p.11"
+        },
+        {
+          "src": "question-bank/math1-2020/answer-page-12.jpg",
+          "caption": "答案解析 p.12",
+          "alt": "2020考研数学一答案解析 p.12"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2020",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:28dff204210f29a2a3aa00adbec1d80aeb48f726cc8af2d6de9fba8d34d3b1fc",
+      "answerTextHash": "sha256:fa145d7d647949aaf40e6faccb5470da6e77de386fb949058439a475d37e6e24",
+      "sourceEvidence": {
+        "evidenceId": "math1-2020-q21",
+        "sourceId": "src_188f7642349fab77f135c2f5",
+        "answerSourceId": "src_188f7642349fab77f135c2f5",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2020-paper-answer",
+        "answerEvidenceId": "math1-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:fa145d7d647949aaf40e6faccb5470da6e77de386fb949058439a475d37e6e24"
+      }
+    },
+    {
+      "id": "math1-2020-022",
+      "number": 22,
+      "paperId": "math1-2020",
+      "paperName": "2020考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2020",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2020考研数学一第22题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "(X1,Y) 的分布函数与 Y 的标准正态证明见答案原页。",
+      "explanation": "答案来自本地百度网盘 2020 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2020/question-22.jpg",
+          "caption": "题面裁切图 q22",
+          "alt": "2020考研数学一题面裁切图 q22"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2020/answer-page-12.jpg",
+          "caption": "答案解析 p.12",
+          "alt": "2020考研数学一答案解析 p.12"
+        },
+        {
+          "src": "question-bank/math1-2020/answer-page-13.jpg",
+          "caption": "答案解析 p.13",
+          "alt": "2020考研数学一答案解析 p.13"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2020",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:c5b50aa242576adf8e11d9ddb67cb1ebad158c1f9ccfb185e8dae432526d0b1a",
+      "answerTextHash": "sha256:f95f6f05c25eefde3e1706708add3d9bed2a8f55c524d1c59b79cb3a24aa2f9d",
+      "sourceEvidence": {
+        "evidenceId": "math1-2020-q22",
+        "sourceId": "src_188f7642349fab77f135c2f5",
+        "answerSourceId": "src_188f7642349fab77f135c2f5",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2020-paper-answer",
+        "answerEvidenceId": "math1-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:f95f6f05c25eefde3e1706708add3d9bed2a8f55c524d1c59b79cb3a24aa2f9d"
+      }
+    },
+    {
+      "id": "math1-2020-023",
+      "number": 23,
+      "paperId": "math1-2020",
+      "paperName": "2020考研数学一真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math1",
+      "year": "2020",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2020考研数学一第23题（解答题）。题干、公式和图形以题面原页图为准。",
+      "options": [],
+      "answer": "条件概率与 θ 的极大似然估计见答案原页。",
+      "explanation": "答案来自本地百度网盘 2020 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math1-2020/question-23.jpg",
+          "caption": "题面裁切图 q23",
+          "alt": "2020考研数学一题面裁切图 q23"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math1-2020/answer-page-13.jpg",
+          "caption": "答案解析 p.13",
+          "alt": "2020考研数学一答案解析 p.13"
+        }
+      ],
+      "tags": [
+        "math1",
+        "2020",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math1-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:1b4a5b3f4e6f1e6d3f87a57312a691aa4af7d154bf3a1d80ec8aac5f961efa71",
+      "answerTextHash": "sha256:55888531ec7ce09018ca4f6c40129e3b86a201a6368f0a798e3c7c636428dab4",
+      "sourceEvidence": {
+        "evidenceId": "math1-2020-q23",
+        "sourceId": "src_188f7642349fab77f135c2f5",
+        "answerSourceId": "src_188f7642349fab77f135c2f5",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math1-2020-paper-answer",
+        "answerEvidenceId": "math1-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:55888531ec7ce09018ca4f6c40129e3b86a201a6368f0a798e3c7c636428dab4"
+      }
+    }
+  ]
+}
