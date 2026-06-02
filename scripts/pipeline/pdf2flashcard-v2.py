@@ -58,6 +58,7 @@ LLM_REQUEST_TIMEOUT_SECONDS = max(1.0, env_float("LLM_REQUEST_TIMEOUT_SECONDS", 
 LLM_MAX_RETRIES = max(1, env_int("LLM_MAX_RETRIES", 3))
 LLM_MAX_TOKENS = max(512, env_int("LLM_MAX_TOKENS", 8192))
 LLM_ALLOW_PAID_FALLBACKS = os.environ.get("LLM_ALLOW_PAID_FALLBACKS", "false").lower() in ("1", "true", "yes")
+ALLOW_EMPTY_LLM_CACHE = os.environ.get("PDF2FLASHCARD_ALLOW_EMPTY_CACHE", "false").lower() in ("1", "true", "yes")
 
 SILICONFLOW_DS_KEY_ENVS = [f"SILICONFLOW_DS_KEY_{i}" for i in range(1, 11)]
 LLM_PROVIDER_CONFIGS = [
@@ -704,6 +705,16 @@ def batch_should_have_cards(text: str) -> bool:
     )
 
 
+def cards_have_new_number(cards: list, seen_numbers: set) -> bool:
+    for card in cards or []:
+        if not isinstance(card, dict):
+            continue
+        number = card.get("number")
+        if number and number not in seen_numbers:
+            return True
+    return False
+
+
 def response_payload(response) -> dict:
     """Return a plain response payload for diagnostics without secrets."""
     if hasattr(response, "model_dump"):
@@ -782,8 +793,10 @@ def ai_parse_batch(client: OpenAI, text: str, subject: str, year: str,
     cache_key = llm_cache_key(text, subject, year, selected_base_url, selected_model)
     cached = get_cached_cards(cache_key)
     if cached is not None:
-        print(" cache", end="", flush=True)
-        return cached
+        if cached or ALLOW_EMPTY_LLM_CACHE or not batch_should_have_cards(text):
+            print(" cache", end="", flush=True)
+            return cached
+        print(" empty-cache-miss", end="", flush=True)
 
     ok, reason = can_spend_llm_budget(len(text))
     if not ok:
@@ -877,6 +890,8 @@ def ai_parse_text(text: str, subject: str, year: str) -> list:
                 )
                 if not cards and batch_should_have_cards(batch):
                     raise RuntimeError(f"{backend['name']} returned 0 cards for a question-like batch")
+                if cards and batch_should_have_cards(batch) and not cards_have_new_number(cards, seen_numbers):
+                    raise RuntimeError(f"{backend['name']} returned only duplicate cards for a question-like batch")
                 break
             except Exception as exc:
                 errors.append(f"{backend['name']}: {exc}")

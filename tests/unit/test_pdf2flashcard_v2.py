@@ -228,6 +228,127 @@ class Pdf2FlashcardV2Test(unittest.TestCase):
         self.assertEqual(good_client.calls, 1)
         self.assertEqual(cards[0]["number"], 28)
 
+    def test_ai_parse_text_ignores_empty_cache_for_question_like_batch(self):
+        module = load_pdf2flashcard_module()
+        with tempfile.TemporaryDirectory() as tmp:
+            module.LLM_CACHE_PATH = Path(tmp) / "cache.json"
+            module.LLM_USAGE_PATH = Path(tmp) / "usage.json"
+            question_like_text = "35. 结合材料回答问题。" + "材料文本" * 120
+            cache_key = module.llm_cache_key(
+                question_like_text,
+                "politics",
+                "2023",
+                "https://cached.example/v1",
+                "cached-model",
+            )
+            module.save_cached_cards(cache_key, [], len(question_like_text))
+            good_response = FakeResponse(
+                choices=[
+                    {
+                        "message": {
+                            "content": '[{"number": 35, "type": "analysis", "question": "Q", "options": [], "answer": "A"}]'
+                        },
+                        "finish_reason": "stop",
+                    }
+                ],
+                msg=None,
+                status=None,
+                model="cached-model",
+            )
+            client = CountingClient(good_response)
+            module.create_llm_backends = lambda: [
+                {
+                    "name": "cached",
+                    "base_url": "https://cached.example/v1",
+                    "model": "cached-model",
+                    "client": client,
+                }
+            ]
+
+            cards = module.ai_parse_text(question_like_text, "politics", "2023")
+
+        self.assertEqual(client.calls, 1)
+        self.assertEqual(cards[0]["number"], 35)
+
+    def test_ai_parse_text_falls_back_when_question_like_batch_has_only_duplicate_numbers(self):
+        module = load_pdf2flashcard_module()
+        with tempfile.TemporaryDirectory() as tmp:
+            module.LLM_CACHE_PATH = Path(tmp) / "cache.json"
+            module.LLM_USAGE_PATH = Path(tmp) / "usage.json"
+            first_response = FakeResponse(
+                choices=[
+                    {
+                        "message": {
+                            "content": '[{"number": 34, "type": "analysis", "question": "Q34", "options": [], "answer": "A"}]'
+                        },
+                        "finish_reason": "stop",
+                    }
+                ],
+                msg=None,
+                status=None,
+                model="first-model",
+            )
+            duplicate_response = FakeResponse(
+                choices=[
+                    {
+                        "message": {
+                            "content": '[{"number": 34, "type": "analysis", "question": "Duplicate", "options": [], "answer": "A"}]'
+                        },
+                        "finish_reason": "stop",
+                    }
+                ],
+                msg=None,
+                status=None,
+                model="duplicate-model",
+            )
+            good_response = FakeResponse(
+                choices=[
+                    {
+                        "message": {
+                            "content": '[{"number": 35, "type": "analysis", "question": "Q35", "options": [], "answer": "A"}]'
+                        },
+                        "finish_reason": "stop",
+                    }
+                ],
+                msg=None,
+                status=None,
+                model="fallback-model",
+            )
+            duplicate_client = CountingClient(duplicate_response)
+            good_client = CountingClient(good_response)
+            first_client = CountingClient(first_response)
+            module.split_text_into_batches = lambda _text: [
+                "34. 结合材料回答问题。" + "材料文本" * 120,
+                "35. 结合材料回答问题。" + "材料文本" * 120,
+            ]
+            module.create_llm_backends = lambda: [
+                {
+                    "name": "first",
+                    "base_url": "https://first.example/v1",
+                    "model": "first-model",
+                    "client": first_client,
+                },
+                    {
+                        "name": "duplicate",
+                        "base_url": "https://duplicate.example/v1",
+                        "model": "duplicate-model",
+                        "client": duplicate_client,
+                    },
+                    {
+                        "name": "fallback",
+                        "base_url": "https://fallback.example/v1",
+                        "model": "fallback-model",
+                        "client": good_client,
+                    },
+            ]
+
+            cards = module.ai_parse_text("ignored", "politics", "2023")
+
+        self.assertEqual([card["number"] for card in cards], [34, 35])
+        self.assertEqual(first_client.calls, 2)
+        self.assertEqual(duplicate_client.calls, 1)
+        self.assertEqual(good_client.calls, 1)
+
     def test_ai_parse_batch_passes_request_timeout(self):
         os.environ["LLM_REQUEST_TIMEOUT_SECONDS"] = "7.5"
         module = load_pdf2flashcard_module()

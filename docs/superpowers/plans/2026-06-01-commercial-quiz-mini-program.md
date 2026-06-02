@@ -1562,3 +1562,54 @@ Run:
 git add scripts/pipeline/pdf2flashcard-v2.py scripts/baidu/run_cleaning_queue.py tests/unit/test_pdf2flashcard_v2.py tests/unit/test_baidu_cleaning_runner.py docs/frontend-experience-refactor-diary.md docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md
 git commit -m "chore: harden cleaning runner quality gates"
 ```
+
+### Task 38: Stabilize Question-Like Batch Fallback
+
+**Files:**
+- Modify: `scripts/pipeline/pdf2flashcard-v2.py`
+- Modify: `tests/unit/test_pdf2flashcard_v2.py`
+- Modify: `docs/frontend-experience-refactor-diary.md`
+- Modify: `docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md`
+
+- [x] **Step 1: Add empty-cache regression test**
+
+Assert a question-like batch with a cached empty result ignores that cache and sends a fresh LLM request.
+
+- [x] **Step 2: Add duplicate-number regression test**
+
+Assert a question-like batch whose first backend returns only already-seen question numbers falls back to the next backend and preserves the new analysis question.
+
+- [x] **Step 3: Implement cache and duplicate safeguards**
+
+Add `PDF2FLASHCARD_ALLOW_EMPTY_CACHE` as an explicit opt-in for empty cache hits, and reject duplicate-only question-like batch output before accepting a backend.
+
+- [x] **Step 4: Re-run real politics smoke**
+
+Run:
+```bash
+rm -f data/ai-cache/pdf2flashcard-cache.json data/ai-cache/pdf2flashcard-usage.json
+python3 scripts/baidu/cleaning_queue.py --previous-queue /tmp/exam-master-no-previous-cleaning-queue.json
+LLM_DISABLED_PROVIDERS=llm_primary,iflow,nvidia LLM_REQUEST_TIMEOUT_SECONDS=8 LLM_MAX_RETRIES=1 PDF2FLASHCARD_BATCH_CHAR_LIMIT=1400 LLM_MAX_TOKENS=2048 python3 scripts/baidu/run_cleaning_queue.py --limit 1 --source-type official_paper --paper-role main
+```
+
+Result: `politics:2023` completed with `questionCount=38`, `typeCounts={single_choice:16,multi_choice:17,analysis:5}`, `qualityIssues=[]`, and `answerEvidenceStatus=missing_answers` because `politics-2023-035` still lacks an answer.
+
+- [x] **Step 5: Run final validation**
+
+Run:
+```bash
+.venv-baidu/bin/python -m unittest tests.unit.test_pdf2flashcard_v2
+python3 -m unittest tests.unit.test_baidu_cleaning_runner tests.unit.test_baidu_cleaning_queue
+python3 scripts/baidu/run_cleaning_queue.py --dry-run --limit 8 --source-type official_paper --paper-role main
+git diff --check
+```
+
+Result: passed on 2026-06-01. Dry-run now starts after `politics:2023` because the ignored local queue has that structure-cleaning task completed with one missing-answer evidence blocker.
+
+- [x] **Step 6: Commit**
+
+Run:
+```bash
+git add scripts/pipeline/pdf2flashcard-v2.py tests/unit/test_pdf2flashcard_v2.py docs/frontend-experience-refactor-diary.md docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md
+git commit -m "chore: stabilize question batch fallback"
+```

@@ -347,3 +347,12 @@
 - Added runner-side quality gates for public politics papers, so incomplete or misdistributed outputs are marked `failed` with `qualityIssues` instead of being treated as release-ready cleaned banks.
 - Real smoke result: download and text extraction work; cleaned output is still blocked from completion when provider fallback misses the full politics distribution, which is the correct commercial-safe behavior.
 - Product rule: content automation must fail closed on incomplete or structurally suspicious papers; releasing fewer wrong questions is worse than clearly blocking the slot.
+
+### 2026-06-01 Round 40
+
+- Stabilized the `politics:2023` real cleaning smoke after the first quality gate exposed a second failure mode.
+- Empty LLM cache entries for question-like batches are now treated as cache misses unless explicitly allowed, so a previous bad `[]` response cannot permanently suppress a question block.
+- Question-like batches that return only already-seen question numbers now trigger backend fallback, preventing later analysis questions from being swallowed as duplicates of an earlier analysis item.
+- Re-ran `politics:2023` after clearing the ignored local AI cache; the runner completed with 38 cards, 16 single-choice, 17 multi-choice, 5 analysis, and no structural quality issues.
+- The completed task still reports `missingAnswerCount=1` and `answerEvidenceStatus=missing_answers` for `politics-2023-035`, so the next release task is answer evidence repair, not UI or queue ordering.
+- Product rule: a source can pass structure cleaning while still being blocked on answer evidence; the automation must preserve that distinction instead of pretending the slot is publish-ready.
