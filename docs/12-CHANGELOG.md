@@ -1,5 +1,11 @@
 # 变更日志
 
+## 2026-06-02 — 2006 数学一逐题裁切题库开放
+
+- 2006 考研数学一从“待入库”推进为正式题库：23 张题卡覆盖 6 道填空、8 道选择和 9 道解答题，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
+- 扩展 `build_math1_history_banks.py`，从本地百度网盘 `2006数一标准答案及解析.pdf` 生成 `src/config/flashcard-banks/math1-2006.json` 与 `cdn-assets/question-bank/math1-2006` 页图资源；题面使用逐题手工裁切图，避免答题前展示同页答案或解析。
+- 题库导航中数学一 2006 年槽位从“待入库”变为可点击“正式”，公共课正式开放数从 67 套增至 68 套，公共课覆盖缺口从 65 个降至 64 个；发布门禁同步识别同年 `数一/二/三标准答案及解析` PDF 为 `paper_answer` 来源证据，`math1:2006` 不再出现在发布 backlog 中。
+
 ## 2026-05-29 — 2012 数学三逐题裁切题库开放
 
 - 2012 考研数学三从“待入库”推进为正式题库：23 张题卡覆盖 8 道选择、6 道填空和 9 道解答题，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
