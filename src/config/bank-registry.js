@@ -516,6 +516,21 @@ const BANK_REGISTRY = [
     sections: paperSections('完形填空', '阅读理解', '新题型', '翻译', '写作')
   },
   {
+    id: 'english2-2019',
+    subject: '英语',
+    subjectKey: 'english',
+    track: 'english2',
+    year: '2019',
+    name: '2019考研英语二真题',
+    description: '完形填空 + 阅读理解 + 新题型 + 翻译 + 写作',
+    releaseLabel: '正式题库',
+    caution:
+      '1-46题已按本地百度网盘 2019 英语二答案速查 PDF 与逐题细解 PDF 匹配；47-48 写作题按原卷写作任务训练，不提供唯一范文答案',
+    paperType: 'past_exam',
+    quality: PAPER_QUALITY.READY,
+    sections: paperSections('完形填空', '阅读理解', '新题型', '翻译', '写作')
+  },
+  {
     id: 'english2-2025',
     subject: '英语',
     subjectKey: 'english',

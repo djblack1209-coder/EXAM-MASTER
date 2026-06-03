@@ -70,6 +70,7 @@ describe('published flashcard bank registry', () => {
         'english2-2016',
         'english2-2017',
         'english2-2018',
+        'english2-2019',
         'english2-2025'
       ])
     );
@@ -432,6 +433,23 @@ describe('published flashcard bank registry', () => {
       '2017年某市消费者选择餐厅时的关注因素'
     );
     expect(english22018.cards.find((card) => card.number === 48).answerEvidence.evidenceRole).toBe(
+      'official_writing_prompt'
+    );
+    const english22019 = await loadBankData('english2-2019');
+    expect(english22019.cards).toHaveLength(48);
+    expect(english22019.cards.every((card) => card.answerEvidenceStatus === 'matched')).toBe(true);
+    expect(english22019.cards.find((card) => card.number === 1).answer).toBe('C');
+    expect(english22019.cards.find((card) => card.number === 21).answer).toBe('C');
+    expect(english22019.cards.find((card) => card.number === 30).answer).toBe('A');
+    expect(english22019.cards.find((card) => card.number === 41).answer).toBe('D');
+    expect(english22019.cards.find((card) => card.number === 45).answer).toBe('B');
+    expect(english22019.cards.find((card) => card.number === 46).targetSegment).toContain(
+      'It is easy to underestimate English writer James Herriot'
+    );
+    expect(english22019.cards.find((card) => card.number === 48).question).toContain(
+      '某高校2013年和2018年本科毕业生去向统计'
+    );
+    expect(english22019.cards.find((card) => card.number === 48).answerEvidence.evidenceRole).toBe(
       'official_writing_prompt'
     );
     const english2005 = await loadBankData('english1-2005');
@@ -899,7 +917,7 @@ describe('published flashcard bank registry', () => {
     expect(english2.requiredYears[0]).toBe(2010);
     expect(english2.requiredYears.at(-1)).toBe(2020);
     expect(english2.requiredYears).not.toContain(2009);
-    expect(english2.publishedYears).toEqual([2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018]);
+    expect(english2.publishedYears).toEqual([2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019]);
     expect(coverage.summary.requiredSlots).toBe(11);
   });
 });
