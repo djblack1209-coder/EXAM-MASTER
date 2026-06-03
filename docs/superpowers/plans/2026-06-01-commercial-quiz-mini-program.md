@@ -2773,6 +2773,106 @@ PY
 
 Result: passed on 2026-06-03. The 2005-2020 release gate reports `coverageGaps=13`, `publishedSlots=78`, `sourceEvidenceGaps=1`, and `pendingCoverageBlockers=0`; release backlog reports `blockers=15` and `publicCourseBlockedSlots=13`; the rebuilt release-priority dry-run now starts at `2017年考研数学三真题及解析.pdf`, then `2018年考研数学三真题及解析.pdf`, then `2020年考研英语一真题.pdf`.
 
+### Task 75: Publish Math III 2017 Page-Image Bank
+
+**Files:**
+- Add: `scripts/cleaning/build_math3_2017_bank.py`
+- Add: `src/config/flashcard-banks/math3-2017.json`
+- Add: `tests/unit/math3-2017-data.spec.js`
+- Add: `cdn-assets/question-bank/math3-2017/*`
+- Modify: `src/config/bank-registry.js`
+- Modify: `src/pages/practice-sub/bank-data-table.js`
+- Modify: `tests/unit/flashcard-bank-registry.spec.js`
+- Modify: `tests/unit/question-bank-year-map.spec.js`
+- Modify: `docs/frontend-experience-refactor-diary.md`
+- Modify: `docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md`
+- Modify: `docs/08C-SCRIPTS-REFERENCE.md`
+- Modify: `docs/12-CHANGELOG.md`
+- Modify: `data/release-blocker-backlog.json`
+
+- [x] **Step 0: Recheck development environment and source path**
+
+Confirmed Codegraph MCP remained healthy with 617 indexed files, 9,681 nodes, and 22,720 edges. Local PDF/tooling support was available: Poppler `pdfinfo`/`pdftotext`/`pdftoppm`, ffmpeg, tesseract, Node, npm, Python, `rg`, and git.
+
+Ran the release-priority queue for the first `math3:2017` task. The Baidu Pan download completed and wrote the ignored source:
+
+```text
+data/raw-inbox/src_1903dd7b391b0dc5da099c74-2017年考研数学三真题及解析.pdf
+```
+
+The AI cleaning runner then hit the same unsupported iflow model / slow fallback backend pattern, so the release path used deterministic PDF rendering, OCR audit, and visual crop QA.
+
+- [x] **Step 1: Add failing registry coverage**
+
+Added a focused registry/load regression for `math3-2017` expecting registration, 23 cards, matched answer evidence, q01 answer `A`, q04 answer `C`, q08 answer `B`, q09 answer `π^3/2`, q14 answer `9/2`, q15 answer containing `2/3`, q23 answer evidence ending at `question-bank/math3-2017/answer-page-09.jpg`, and q23 split question crops under `question-bank/math3-2017/question-23-a.jpg` and `question-bank/math3-2017/question-23-b.jpg`.
+
+Initial result:
+```bash
+npm test -- tests/unit/math3-2017-data.spec.js
+```
+
+Failed because `math3-2017` was not registered or compressed yet.
+
+- [x] **Step 2: Verify source and build page-image bank**
+
+Source audit:
+
+```bash
+pdfinfo data/raw-inbox/src_1903dd7b391b0dc5da099c74-2017年考研数学三真题及解析.pdf
+pdftotext data/raw-inbox/src_1903dd7b391b0dc5da099c74-2017年考研数学三真题及解析.pdf -
+```
+
+Result: 9-page scanned PDF, no usable text layer, SHA-256 `cbef03ba3e2afb6d8467f0fabb97c2f7fde8f8f298a5c318057b6299dc2d9a56`. Visual/OCR inspection showed the source interleaves question prompts with immediate answer analysis; there are no standalone ad-only pages, but question crops must stop before the following analysis blocks.
+
+Added `build_math3_2017_bank.py` with 23 cards, 9 rendered evidence pages, 24 pre-answer question crop assets, and q23 split across two question crop images.
+
+- [x] **Step 3: Register and refresh practice data**
+
+Run:
+```bash
+python3 scripts/cleaning/build_math3_2017_bank.py --force-assets
+node scripts/build/generate-compressed-bank-modules.mjs
+```
+
+Result: published `src/config/flashcard-banks/math3-2017.json`, generated `cdn-assets/question-bank/math3-2017`, registered `math3-2017`, and regenerated 92 compressed practice-bank entries.
+
+- [x] **Step 4: Run validation**
+
+Run:
+```bash
+python3 -m py_compile scripts/cleaning/build_math3_2017_bank.py
+npm test -- tests/unit/math3-2017-data.spec.js tests/unit/question-bank-year-map.spec.js tests/unit/flashcard-bank-registry.spec.js
+node scripts/build/question-bank-release-gate.mjs --min-year=2005 --max-year=2020
+node scripts/build/release-blocker-backlog.mjs
+python3 scripts/baidu/cleaning_queue.py
+python3 scripts/baidu/run_cleaning_queue.py --dry-run --limit 12 --source-type official_paper --paper-role main --max-year 2020
+```
+
+Question-image leakage scan:
+```bash
+python3 - <<'PY'
+from pathlib import Path
+import subprocess
+
+asset = Path('cdn-assets/question-bank/math3-2017')
+out_dir = Path('tmp/pdfs/math3-2017-question-ocr')
+out_dir.mkdir(parents=True, exist_ok=True)
+for img in sorted(asset.glob('question-*.jpg')):
+    out = out_dir / img.stem
+    subprocess.run(['tesseract', str(img), str(out), '-l', 'chi_sim+eng', '--psm', '6'], check=False)
+bad = []
+for txt in sorted(out_dir.glob('question-*.txt')):
+    data = txt.read_text(errors='ignore')
+    flags = [word for word in ['详解', '应该选', '所以选', '解：', '解】', '故选择'] if word in data]
+    if flags:
+        bad.append((txt.name, flags))
+print({'bad': bad})
+raise SystemExit(1 if bad else 0)
+PY
+```
+
+Result: passed on 2026-06-03. `math3-2017.json` has 23 cards, `{single_choice:8, short_answer:15}`, section counts `{选择题:8, 填空题:6, 解答题:9}`, all cards carry `answerEvidenceStatus=matched`, and the final OCR leakage scan over 24 question crop images found no answer/analysis markers. The 2005-2020 release gate reports `coverageGaps=12`, `publishedSlots=79`, `sourceEvidenceGaps=1`, and `pendingCoverageBlockers=0`; release backlog reports `blockers=14` and `publicCourseBlockedSlots=12`; the rebuilt release-priority dry-run now starts at `2018年考研数学三真题及解析.pdf`, then `2019年考研数学三真题及解析.pdf`, then `2020年考研英语一真题.pdf`.
+
 ### Task 59: Block Mislabeled Math II 2016 Source
 
 **Files:**
