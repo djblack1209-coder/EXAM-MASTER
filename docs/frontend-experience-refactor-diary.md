@@ -626,3 +626,12 @@
 - Registered `english2-2013`, regenerated the compressed practice-bank table, and updated the question-bank year map so English II now reports `正式 5 · 整理中 0 · 待入库 12`.
 - Release gate result: 2005-2020 public-course `coverageGaps` dropped from 22 to 21, `publishedSlots` rose to 70, `sourceEvidenceGaps` stayed at 1, release backlog reports `blockers=23` and `publicCourseBlockedSlots=21`, and the rebuilt release-priority dry-run now starts at English II 2014 paired candidates.
 - Product rule: English II Part B can be a subtitle-selection task, not only information matching. Builders should keep the actual exam task wording and option labels instead of normalizing all Part B years to one format.
+
+### 2026-06-03 Round 67
+
+- Promoted `english2:2014` through the formal English II text-layer bank path after downloading the canonical 2014 document-version, original-paper, answer-speed, and detailed-analysis PDFs into ignored `data/raw-inbox/`.
+- Added `scripts/cleaning/build_english2_2014_bank.py`, which builds 48 cards from the 2014 answer-speed PDF text layer, records all four source hashes in `sourceFiles`, and cross-checks detailed-analysis anchors including `Happy Money`, `illusory superiority`, `Race Against the Machine`, `affordable housing`, `Stone Circle`, and the optimism translation passage.
+- Validation result: `english2-2014.json` has 48 cards, all cards carry `answerEvidenceStatus=matched`, q01 answer is `B`, q21 answer is `B`, q30 answer is `D`, Part B answers are `DEGCA`, q46 contains `Most people would define optimism`, and q48 uses `official_writing_prompt` evidence with the `20年间中国城镇人口与乡村人口变化图` chart prompt.
+- Registered `english2-2014`, regenerated the compressed practice-bank table, and updated the question-bank year map so English II now reports `正式 6 · 整理中 0 · 待入库 11`.
+- Release gate result: 2005-2020 public-course `coverageGaps` dropped from 21 to 20, `publishedSlots` rose to 71, `sourceEvidenceGaps` stayed at 1, release backlog reports `blockers=22` and `publicCourseBlockedSlots=20`, and the rebuilt release-priority dry-run now starts at English II 2015 paired candidates.
+- Product rule: English II cloze extraction must preserve spacing until blank markers are normalized; 2014 includes ordinary numeric text such as `BMI of 18 to 25`, so blank replacement cannot blindly rewrite every year-like number.
