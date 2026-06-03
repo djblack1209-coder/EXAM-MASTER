@@ -1,5 +1,11 @@
 # 变更日志
 
+## 2026-06-03 — 2018 英语二文本层题库开放
+
+- 2018 考研英语二从“待入库”推进为正式题库：48 张题卡覆盖完形填空、阅读理解、新题型、翻译和写作，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
+- 新增 `build_english2_2018_bank.py`，从本地百度网盘 2018 英语二文档版、原卷、答案速查和逐题细解 PDF 生成 `src/config/flashcard-banks/english2-2018.json`；Part B 按 `Five ways to make conversation with anyone` A-G 小标题选择题训练，写作题按官方 prompt 训练，不提供唯一范文答案，并拦截 PDF 页脚/OCR 噪声。
+- 2005-2020 release gate 刷新后，公共课覆盖缺口降至 16，source evidence gap 保持 1；英语二年份地图显示 `正式 10 · 整理中 0 · 待入库 7`。
+
 ## 2026-06-03 — 2017 英语二文本层题库开放
 
 - 2017 考研英语二从“待入库”推进为正式题库：48 张题卡覆盖完形填空、阅读理解、新题型、翻译和写作，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
