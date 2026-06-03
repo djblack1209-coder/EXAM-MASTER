@@ -30,7 +30,8 @@ describe('published flashcard bank registry', () => {
         'english1-2013',
         'english1-2014',
         'english1-2016',
-        'english1-2017'
+        'english1-2017',
+        'english1-2020'
       ])
     );
     expect(banks.map((bank) => bank.id)).toEqual(expect.arrayContaining(['english1-2025']));
@@ -525,6 +526,22 @@ describe('published flashcard bank registry', () => {
     expect(english2017.cards.find((card) => card.number === 52).answerEvidence.evidenceRole).toBe(
       'official_writing_prompt'
     );
+    const english2020 = await loadBankData('english1-2020');
+    expect(english2020.cards).toHaveLength(52);
+    expect(english2020.cards.every((card) => card.answerEvidenceStatus === 'matched')).toBe(true);
+    expect(english2020.cards.find((card) => card.number === 1).answer).toBe('C');
+    expect(english2020.cards.find((card) => card.number === 21).answer).toBe('C');
+    expect(english2020.cards.find((card) => card.number === 30).answer).toBe('D');
+    expect(english2020.cards.find((card) => card.number === 41).answer).toBe('C');
+    expect(english2020.cards.find((card) => card.number === 45).answer).toBe('D');
+    expect(english2020.cards.find((card) => card.number === 46).targetSegment).toContain(
+      "With the Church's teachings"
+    );
+    expect(english2020.cards.find((card) => card.number === 51).question).toContain('upcoming singing contest');
+    expect(english2020.cards.find((card) => card.number === 52).question).toContain('习惯');
+    expect(english2020.cards.find((card) => card.number === 52).answerEvidence.evidenceRole).toBe(
+      'official_writing_prompt'
+    );
     await expect(loadBankData('math-2025')).rejects.toThrow('题库不存在或暂不可用');
     const math12025 = await loadBankData('math1-2025');
     expect(math12025.cards).toHaveLength(22);
@@ -847,11 +864,12 @@ describe('published flashcard bank registry', () => {
     expect(english.tracks[0].banks.some((bank) => bank.id === 'english1-2012')).toBe(true);
     expect(english.tracks[0].banks.some((bank) => bank.id === 'english1-2016')).toBe(true);
     expect(english.tracks[0].banks.some((bank) => bank.id === 'english1-2017')).toBe(true);
+    expect(english.tracks[0].banks.some((bank) => bank.id === 'english1-2020')).toBe(true);
     expect(english.tracks[0].pendingBanks.some((bank) => bank.id === 'english1-2025')).toBe(false);
     expect(english.tracks[0].pendingBanks.some((bank) => bank.id === 'english1-2025-source')).toBe(false);
     expect(english.tracks[0].pendingBanks.some((bank) => bank.id === 'english-2025')).toBe(false);
     expect(english.tracks[0].yearSlots).toHaveLength(22);
-    expect(english.tracks[0].slotSummary).toEqual({ total: 22, ready: 14, organizing: 0, missing: 8 });
+    expect(english.tracks[0].slotSummary).toEqual({ total: 22, ready: 15, organizing: 0, missing: 7 });
     expect(english.tracks[0].yearSlots.find((slot) => slot.year === '2012')).toMatchObject({
       bankId: 'english1-2012',
       status: 'ready',
@@ -878,6 +896,12 @@ describe('published flashcard bank registry', () => {
     });
     expect(english.tracks[0].yearSlots.find((slot) => slot.year === '2017')).toMatchObject({
       bankId: 'english1-2017',
+      status: 'ready',
+      statusLabel: '正式',
+      clickable: true
+    });
+    expect(english.tracks[0].yearSlots.find((slot) => slot.year === '2020')).toMatchObject({
+      bankId: 'english1-2020',
       status: 'ready',
       statusLabel: '正式',
       clickable: true

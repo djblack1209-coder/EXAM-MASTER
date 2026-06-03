@@ -3138,6 +3138,87 @@ rg -n "答案|解析|详解|故选|所以选|应该选|故选择" tmp/pdfs/math3
 
 Result: passed on 2026-06-03. `math3-2020.json` has 23 cards, `{single_choice:8, short_answer:15}`, section counts `{选择题:8, 填空题:6, 解答题:9}`, all cards carry `answerEvidenceStatus=matched`, and the final OCR leakage scan over 24 question crop images found no answer/analysis markers. The 2005-2020 release gate reports `coverageGaps=9`, `publishedSlots=82`, `sourceEvidenceGaps=1`, and `pendingCoverageBlockers=0`; release backlog reports `blockers=11` and `publicCourseBlockedSlots=9`; the rebuilt release-priority dry-run now starts at `2020年考研英语一真题.pdf`, then `2017考研数学二真题.pdf`.
 
+### Task 79: Publish English I 2020 Text-Layer Bank
+
+**Files:**
+- Add: `scripts/cleaning/build_english1_2020_bank.py`
+- Add: `src/config/flashcard-banks/english1-2020.json`
+- Add: `cdn-assets/question-bank/english1-2020/*`
+- Add: `tests/unit/english1-2020-data.spec.js`
+- Modify: `src/config/bank-registry.js`
+- Modify: `src/pages/practice-sub/bank-data-table.js`
+- Modify: `tests/unit/flashcard-bank-registry.spec.js`
+- Modify: `tests/unit/question-bank-gap-panel-guard.spec.js`
+- Modify: `tests/unit/question-bank-year-map.spec.js`
+- Modify: `docs/frontend-experience-refactor-diary.md`
+- Modify: `docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md`
+- Modify: `docs/08C-SCRIPTS-REFERENCE.md`
+- Modify: `docs/12-CHANGELOG.md`
+- Modify: `data/release-blocker-backlog.json`
+
+- [x] **Step 0: Recheck development environment and source path**
+
+Rechecked the local development environment before continuing: CodeGraph was initialized and callable, local skill frontmatter checks had already passed in the preceding stage, and Poppler/Node/Python tooling was available. CodeGraph later reported the new builder as indexed after generation; only uncommitted worktree additions remained pending until commit.
+
+The release-priority queue had advanced to English I 2020. The following ignored source PDFs were available in `data/raw-inbox/`:
+
+```text
+src_4ccc82ab098d5899704e062e-2020年考研英语一真题.pdf
+src_1d24809436b0ec4b51ad791d-2020年真题及答案速查.pdf
+src_fdf78e9a8144f75d0ba9095b-2020年真题逐题细解.pdf
+src_7d24da239755e36b91b1f88c-2020考研英语一真题及解析.pdf
+```
+
+- [x] **Step 1: Add failing registry coverage**
+
+Added `tests/unit/english1-2020-data.spec.js` expecting `english1-2020` registration, 52 cards, all answer evidence matched, answer anchors `q01=C`, `q21=C`, `q30=D`, `q41=C`, `q45=D`, q46 containing `With the Church's teachings and ways of thinking`, q51 containing the singing-contest notice, q52 containing `习惯`, and no 2020 English II source bleed.
+
+Initial result:
+```bash
+npm test -- tests/unit/english1-2020-data.spec.js
+```
+
+Failed because `english1-2020` was not registered yet.
+
+- [x] **Step 2: Verify source and build text-layer bank**
+
+Source audit:
+
+```bash
+pdfinfo data/raw-inbox/src_4ccc82ab098d5899704e062e-2020年考研英语一真题.pdf
+pdfinfo data/raw-inbox/src_1d24809436b0ec4b51ad791d-2020年真题及答案速查.pdf
+pdftotext -layout data/raw-inbox/src_1d24809436b0ec4b51ad791d-2020年真题及答案速查.pdf -
+```
+
+Result: the original-paper PDF is a 15-page English I source but includes promotional header noise. The answer-speed PDF is a clean 16-page paper+answer source with the official answer table on page 16. The detailed-analysis PDF supplies supporting answer evidence, and the document-version scan is retained as additional document-version evidence.
+
+Added `build_english1_2020_bank.py` with 52 cards, 31 rendered page assets, text-layer passage extraction, answer anchors, writing prompt checks, and source-bleed guards for 2020 English II content.
+
+- [x] **Step 3: Register and refresh practice data**
+
+Run:
+```bash
+python3 scripts/cleaning/build_english1_2020_bank.py --force-assets
+node scripts/build/generate-compressed-bank-modules.mjs
+```
+
+Result: published `src/config/flashcard-banks/english1-2020.json`, generated `cdn-assets/question-bank/english1-2020`, registered `english1-2020`, and regenerated 96 compressed practice-bank entries.
+
+- [x] **Step 4: Run validation**
+
+Run:
+```bash
+python3 -m py_compile scripts/cleaning/build_english1_2020_bank.py
+npm test -- tests/unit/english1-2020-data.spec.js tests/unit/question-bank-year-map.spec.js tests/unit/flashcard-bank-registry.spec.js
+node scripts/build/question-bank-release-gate.mjs --min-year=2005 --max-year=2020
+node scripts/build/release-blocker-backlog.mjs
+python3 scripts/baidu/cleaning_queue.py
+python3 scripts/baidu/run_cleaning_queue.py --dry-run --limit 12 --source-type official_paper --paper-role main --max-year 2020
+git diff --check
+```
+
+Result: focused tests passed on 2026-06-03. `english1-2020.json` has 52 cards, all cards carry `answerEvidenceStatus=matched`, q01/q21/q30/q41/q45 answers are `C/C/D/C/D`, q46 carries the Renaissance translation segment, q51 uses the official singing-contest notice prompt, q52 uses the `习惯` writing prompt, and the generated bank does not contain the 2020 English II mobile-reading chart or failure translation source. The 2005-2020 release gate reports `coverageGaps=8`, `publishedSlots=83`, `sourceEvidenceGaps=1`, and `pendingCoverageBlockers=0`; release backlog reports `blockers=10` and `publicCourseBlockedSlots=8`; the rebuilt release-priority dry-run now starts at Math II 2017-2020.
+
 ### Task 59: Block Mislabeled Math II 2016 Source
 
 **Files:**
