@@ -644,3 +644,12 @@
 - Registered `english2-2015`, regenerated the compressed practice-bank table, and updated the question-bank year map so English II now reports `正式 7 · 整理中 0 · 待入库 10`.
 - Release gate result: 2005-2020 public-course `coverageGaps` dropped from 20 to 19, `publishedSlots` rose to 72, `sourceEvidenceGaps` stayed at 1, release backlog reports `blockers=21` and `publicCourseBlockedSlots=19`, and the rebuilt release-priority dry-run now starts at English II 2016 paired candidates and Math III 2016.
 - Product rule: when an English writing chart is missing from PDF text extraction but visible in the rendered official page, record the chart facts in the prompt evidence instead of deriving them from model essays.
+
+### 2026-06-03 Round 69
+
+- Promoted `english2:2016` through the formal English II text-layer bank path after verifying the canonical 2016 document-version, original-paper, answer-speed, and detailed-analysis PDFs in ignored `data/raw-inbox/`.
+- Added `scripts/cleaning/build_english2_2016_bank.py`, which builds 48 cards from the 2016 answer-speed PDF text layer, records all four source hashes in `sourceFiles`, cross-checks detailed-analysis anchors including Flatiron, lesser prairie chicken, Sacred Time, Schneider, Act Your Shoe Size, and the supermarket translation passage, and blocks known OCR/promo leakage in generated cards.
+- Validation result: `english2-2016.json` has 48 cards, all cards carry `answerEvidenceStatus=matched`, q01 answer is `C`, q21 answer is `B`, q30 answer is `C`, Part B answers are `CEABD`, q46 contains `The supermarket is designed to lure customers`, and q48 uses `official_writing_prompt` evidence with the `某高校学生旅游目的调查` chart prompt including `其他 15%`.
+- Registered `english2-2016`, regenerated the compressed practice-bank table, and updated the question-bank year map so English II now reports `正式 8 · 整理中 0 · 待入库 9`.
+- Release gate result: 2005-2020 public-course `coverageGaps` dropped from 19 to 18, `publishedSlots` rose to 73, `sourceEvidenceGaps` stayed at 1, release backlog reports `blockers=20` and `publicCourseBlockedSlots=18`, and the rebuilt release-priority dry-run now starts at English II 2017 paired candidates and Math III 2016.
+- Product rule: if a historical English source PDF is image-only but its answer-speed companion includes the full paper text layer, use the answer-speed PDF for question/answer matching and preserve the image-only document/original-paper hashes as supporting source evidence.
