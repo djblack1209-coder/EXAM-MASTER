@@ -598,3 +598,13 @@
 - Registered `english2-2010`, regenerated the compressed practice-bank table, and updated the question-bank year map so English II now reports `正式 2 · 整理中 0 · 待入库 15`.
 - Release gate result: 2005-2020 public-course `coverageGaps` dropped from 25 to 24, `publishedSlots` rose to 67, `sourceEvidenceGaps` stayed at 1, and the release-priority dry-run still shows follow-up English II paired candidates plus remaining English I/Math II/Math III gaps.
 - Product rule: for English II historical banks with usable local text layers, answer-speed and detailed-analysis PDFs can provide matched evidence, but writing tasks must stay prompt-based because there is no single official answer.
+
+### 2026-06-03 Round 64
+
+- Promoted `english2:2011` through the same formal English II text-layer bank path after the release-priority queue advanced to the paired 2011 English II sources.
+- Downloaded the canonical Baidu Netdisk 2011 document-version, original-paper, answer-speed, and detailed-analysis PDFs into ignored `data/raw-inbox/`, then recorded all four source IDs and SHA-256 hashes in the generated bank.
+- Added `scripts/cleaning/build_english2_2011_bank.py`, which builds 48 cards from the 2011 answer-speed PDF text layer and cross-checks stable anchors in the detailed-analysis PDF. Part B is represented as A-G information matching, not the 2010 T/F structure.
+- Validation result: `english2-2011.json` has 48 cards, all cards carry `answerEvidenceStatus=matched`, q01 answer is `A`, q21 answer is `B`, q30 answer is `A`, q46 contains the `greenhouse gases` translation segment, and q48 uses `official_writing_prompt` evidence with the domestic car market-share chart prompt.
+- Registered `english2-2011`, regenerated the compressed practice-bank table, and updated the question-bank year map so English II now reports `正式 3 · 整理中 0 · 待入库 14`.
+- Release gate result: 2005-2020 public-course `coverageGaps` dropped from 24 to 23, `publishedSlots` rose to 68, `sourceEvidenceGaps` stayed at 1, release backlog reports `blockers=25` and `publicCourseBlockedSlots=23`, and the release-priority dry-run now starts at English II 2012 paired candidates.
+- Product rule: English II historical Part B formats vary by year. The builder should encode the actual exam task shape for each year while keeping writing tasks prompt-based.
