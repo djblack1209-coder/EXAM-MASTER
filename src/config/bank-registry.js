@@ -974,6 +974,21 @@ const BANK_REGISTRY = [
     sections: paperSections('选择题', '填空题', '解答题')
   },
   {
+    id: 'math3-2016',
+    subject: '数学',
+    subjectKey: 'math',
+    track: 'math3',
+    year: '2016',
+    name: '2016考研数学三真题',
+    description: '8道选择 + 6道填空 + 9道解答题',
+    releaseLabel: '正式题库',
+    caution:
+      '按本地百度网盘 2016 数学三真题及解析 PDF 页图训练；题面使用逐题裁切图并排除 PDF 末尾推广页',
+    paperType: 'past_exam',
+    quality: PAPER_QUALITY.READY,
+    sections: paperSections('填空题', '选择题', '解答题')
+  },
+  {
     id: 'math3-2025',
     subject: '数学',
     subjectKey: 'math',

@@ -691,3 +691,13 @@
 - Registered `english2-2020`, regenerated the compressed practice-bank table, and updated the question-bank year map so English II now reports `正式 12 · 整理中 0 · 待入库 5`.
 - Release gate result: 2005-2020 public-course `coverageGaps` dropped from 15 to 14, `publishedSlots` rose to 77, `sourceEvidenceGaps` stayed at 1, release backlog reports `blockers=16` and `publicCourseBlockedSlots=14`, and the rebuilt release-priority dry-run now starts at Math III 2016, Math III 2017, then English I 2020.
 - Product rule: 2020 English II source PDFs may mix clean official text with 公众号 page headers and promo tail pages; text-layer builders must filter those source artifacts before hashing/storing learner-facing card content.
+
+### 2026-06-03 Round 74
+
+- Promoted `math3:2016` through the formal Math III page-image bank path after release-priority moved past English II 2020.
+- Environment check: Codegraph MCP stayed healthy, and Poppler, ffmpeg, tesseract, Node, npm, Python, and git were available. The AI cleaning runner downloaded the source successfully but hit an unsupported iflow model and a timed-out nvidia batch, so the release path switched to deterministic PDF rendering, OCR audit, and visual crop QA.
+- Added `scripts/cleaning/build_math3_2016_bank.py`, published `src/config/flashcard-banks/math3-2016.json`, generated 19 answer/evidence pages plus 28 question crop assets under `cdn-assets/question-bank/math3-2016`, registered the bank, and regenerated the compressed practice-bank table.
+- Source audit: `src_fb595cd0da81efa6da3993c7-2016年考研数学三真题及解析.pdf` is a 24-page scanned PDF with no usable text layer; pages 1-4 are the original paper, pages 5-19 are answer analysis, and pages 20-24 are promotional noise excluded from card evidence.
+- Validation result: `math3-2016.json` has 23 cards, `{short_answer:15, single_choice:8}`, section counts `{填空题:6, 选择题:8, 解答题:9}`, all cards carry `answerEvidenceStatus=matched`, q07 answer is `A`, q11 answer is `D`, q14 answer is `C`, and q23 answer evidence ends at `answer-page-19.jpg`.
+- Crop QA masks q11's source-printed `[D]` answer bracket and OCR spot checks for q11/q20/q23 found no answer/analysis leakage in question images.
+- Release gate result: 2005-2020 public-course `coverageGaps` dropped from 14 to 13, `publishedSlots` rose to 78, `sourceEvidenceGaps` stayed at 1, release backlog reports `blockers=15` and `publicCourseBlockedSlots=13`, and the rebuilt release-priority dry-run now starts at Math III 2017 followed by Math III 2018 and English I 2020.

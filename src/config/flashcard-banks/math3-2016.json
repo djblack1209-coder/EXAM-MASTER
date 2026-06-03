@@ -1,0 +1,1423 @@
+{
+  "id": "math3-2016",
+  "source": "math3-2016-paper-answer",
+  "paperId": "math3-2016",
+  "paperName": "2016考研数学三真题",
+  "subject": "数学",
+  "subjectKey": "math",
+  "track": "math3",
+  "year": "2016",
+  "quality": "ready",
+  "publicationStatus": "published",
+  "publicationBlockers": [],
+  "sourceEvidencePolicy": "baidu_netdisk_official_paper_pdf_question_crop_answer_page_image_v1",
+  "sourceFiles": [
+    {
+      "id": "math3-2016-paper-answer",
+      "role": "paper_answer",
+      "localPath": "data/raw-inbox/src_fb595cd0da81efa6da3993c7-2016年考研数学三真题及解析.pdf",
+      "sha256": "sha256:45279c2906d9c6c15f092dc307f9d3a451589f39b38fbbedaf4d74c5e5166a15",
+      "sourceId": "src_fb595cd0da81efa6da3993c7",
+      "evidenceNote": "PDF pages 20-24 are promotional noise and are excluded from question/answer evidence."
+    }
+  ],
+  "assetRoot": "question-bank/math3-2016",
+  "processed_at": "2026-06-03T17:19:45Z",
+  "total_cards": 23,
+  "cards": [
+    {
+      "id": "math3-2016-001",
+      "number": 1,
+      "paperId": "math3-2016",
+      "paperName": "2016考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2016",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2016考研数学三第1题（填空题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "a=1，b=-4。",
+      "explanation": "答案来自本地百度网盘 2016 数学三真题及解析 PDF；填空题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2016/question-01.jpg",
+          "caption": "题面裁切图 q01",
+          "alt": "2016考研数学三第01题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2016/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2016考研数学三答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2016",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2016-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:b82213542bb35c1df2adad86b13838ecbc3d883efa8d65cdc1a431a14224ce20",
+      "answerTextHash": "sha256:230a5d932bfd919aed58d88fccda84e777cd3584d971f223052f1d2ef032d633",
+      "sourceEvidence": {
+        "evidenceId": "math3-2016-q01",
+        "sourceId": "src_fb595cd0da81efa6da3993c7",
+        "answerSourceId": "src_fb595cd0da81efa6da3993c7",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2016-paper-answer",
+        "answerEvidenceId": "math3-2016-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:230a5d932bfd919aed58d88fccda84e777cd3584d971f223052f1d2ef032d633"
+      }
+    },
+    {
+      "id": "math3-2016-002",
+      "number": 2,
+      "paperId": "math3-2016",
+      "paperName": "2016考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2016",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2016考研数学三第2题（填空题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "-g'(v) / g^2(v)。",
+      "explanation": "答案来自本地百度网盘 2016 数学三真题及解析 PDF；填空题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2016/question-02.jpg",
+          "caption": "题面裁切图 q02",
+          "alt": "2016考研数学三第02题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2016/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2016考研数学三答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2016",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2016-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:4f5a92ff99eae326a601729e55796b343635ad79b63c6d235a05c7e55d836b38",
+      "answerTextHash": "sha256:1e4f4e769f2bc50cc695611fca120b07ee5c3fd8f23deeaa28ad97805f995cf7",
+      "sourceEvidence": {
+        "evidenceId": "math3-2016-q02",
+        "sourceId": "src_fb595cd0da81efa6da3993c7",
+        "answerSourceId": "src_fb595cd0da81efa6da3993c7",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2016-paper-answer",
+        "answerEvidenceId": "math3-2016-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:1e4f4e769f2bc50cc695611fca120b07ee5c3fd8f23deeaa28ad97805f995cf7"
+      }
+    },
+    {
+      "id": "math3-2016-003",
+      "number": 3,
+      "paperId": "math3-2016",
+      "paperName": "2016考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2016",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2016考研数学三第3题（填空题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "-1/2",
+      "explanation": "答案来自本地百度网盘 2016 数学三真题及解析 PDF；填空题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2016/question-03.jpg",
+          "caption": "题面裁切图 q03",
+          "alt": "2016考研数学三第03题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2016/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2016考研数学三答案解析 p.5"
+        },
+        {
+          "src": "question-bank/math3-2016/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2016考研数学三答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2016",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2016-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:778aadf88c588fd05de6265536b1c79cbbc96a21ce46fbf38508abdaefd5717c",
+      "answerTextHash": "sha256:b40adbbfb28934e3c2efdccaa942fed077c4bd07a3e73bc793d02ee092e48aa8",
+      "sourceEvidence": {
+        "evidenceId": "math3-2016-q03",
+        "sourceId": "src_fb595cd0da81efa6da3993c7",
+        "answerSourceId": "src_fb595cd0da81efa6da3993c7",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2016-paper-answer",
+        "answerEvidenceId": "math3-2016-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:b40adbbfb28934e3c2efdccaa942fed077c4bd07a3e73bc793d02ee092e48aa8"
+      }
+    },
+    {
+      "id": "math3-2016-004",
+      "number": 4,
+      "paperId": "math3-2016",
+      "paperName": "2016考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2016",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2016考研数学三第4题（填空题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "2",
+      "explanation": "答案来自本地百度网盘 2016 数学三真题及解析 PDF；填空题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2016/question-04.jpg",
+          "caption": "题面裁切图 q04",
+          "alt": "2016考研数学三第04题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2016/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2016考研数学三答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2016",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2016-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:ad7b11b2e62520125f509e9ea5a5810cbd9192ea2b366ba4c5a309229ba25607",
+      "answerTextHash": "sha256:8634432e9828a0160ec5d4fcbf51ac360da074f75705682e22e0b42eeed4df0e",
+      "sourceEvidence": {
+        "evidenceId": "math3-2016-q04",
+        "sourceId": "src_fb595cd0da81efa6da3993c7",
+        "answerSourceId": "src_fb595cd0da81efa6da3993c7",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2016-paper-answer",
+        "answerEvidenceId": "math3-2016-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:8634432e9828a0160ec5d4fcbf51ac360da074f75705682e22e0b42eeed4df0e"
+      }
+    },
+    {
+      "id": "math3-2016-005",
+      "number": 5,
+      "paperId": "math3-2016",
+      "paperName": "2016考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2016",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2016考研数学三第5题（填空题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "1/e",
+      "explanation": "答案来自本地百度网盘 2016 数学三真题及解析 PDF；填空题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2016/question-05.jpg",
+          "caption": "题面裁切图 q05",
+          "alt": "2016考研数学三第05题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2016/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2016考研数学三答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2016",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2016-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:247a5840c250479b4e0cd6a3e79e862bb4f948391e15bcc9e7cde348e58714a7",
+      "answerTextHash": "sha256:8509634d7023119c749e67764dd428cc949e278a78f809f47b0afdecee5104f6",
+      "sourceEvidence": {
+        "evidenceId": "math3-2016-q05",
+        "sourceId": "src_fb595cd0da81efa6da3993c7",
+        "answerSourceId": "src_fb595cd0da81efa6da3993c7",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2016-paper-answer",
+        "answerEvidenceId": "math3-2016-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:8509634d7023119c749e67764dd428cc949e278a78f809f47b0afdecee5104f6"
+      }
+    },
+    {
+      "id": "math3-2016-006",
+      "number": 6,
+      "paperId": "math3-2016",
+      "paperName": "2016考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2016",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2016考研数学三第6题（填空题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "sigma^2",
+      "explanation": "答案来自本地百度网盘 2016 数学三真题及解析 PDF；填空题完整解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2016/question-06.jpg",
+          "caption": "题面裁切图 q06",
+          "alt": "2016考研数学三第06题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2016/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2016考研数学三答案解析 p.6"
+        },
+        {
+          "src": "question-bank/math3-2016/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2016考研数学三答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2016",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2016-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:9d08cfd9697d0aeb2358d2603ece3583c2387cbdaf6beee20806884a7529c575",
+      "answerTextHash": "sha256:af00bbbfc1bcbc34f3d5f3be58c8324af081f200d546ddefeec1c4743345f2f9",
+      "sourceEvidence": {
+        "evidenceId": "math3-2016-q06",
+        "sourceId": "src_fb595cd0da81efa6da3993c7",
+        "answerSourceId": "src_fb595cd0da81efa6da3993c7",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2016-paper-answer",
+        "answerEvidenceId": "math3-2016-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:af00bbbfc1bcbc34f3d5f3be58c8324af081f200d546ddefeec1c4743345f2f9"
+      }
+    },
+    {
+      "id": "math3-2016-007",
+      "number": 7,
+      "paperId": "math3-2016",
+      "paperName": "2016考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2016",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2016考研数学三第7题（选择题）。题干、公式和图形以题面裁切图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2016 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2016/question-07.jpg",
+          "caption": "题面裁切图 q07",
+          "alt": "2016考研数学三第07题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2016/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2016考研数学三答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2016",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2016-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:5d15a7e0ac3be66b288c26a90aa5cf9565e69bf1dfb951180f186ec97a6514b7",
+      "answerTextHash": "sha256:e0379f21e18a4103fb1f2a55b207f44908f3ae98f7b934d91863940d970b293e",
+      "sourceEvidence": {
+        "evidenceId": "math3-2016-q07",
+        "sourceId": "src_fb595cd0da81efa6da3993c7",
+        "answerSourceId": "src_fb595cd0da81efa6da3993c7",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2016-paper-answer",
+        "answerEvidenceId": "math3-2016-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:e0379f21e18a4103fb1f2a55b207f44908f3ae98f7b934d91863940d970b293e"
+      }
+    },
+    {
+      "id": "math3-2016-008",
+      "number": 8,
+      "paperId": "math3-2016",
+      "paperName": "2016考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2016",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2016考研数学三第8题（选择题）。题干、公式和图形以题面裁切图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2016 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2016/question-08.jpg",
+          "caption": "题面裁切图 q08",
+          "alt": "2016考研数学三第08题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2016/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2016考研数学三答案解析 p.7"
+        },
+        {
+          "src": "question-bank/math3-2016/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2016考研数学三答案解析 p.8"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2016",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2016-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:defbb0e1f0b28d770f2fb9b465c05285d47d4767aa82d1b670b6248838bc1e8f",
+      "answerTextHash": "sha256:6214c3f9247b605e12ff2f241955108931a4d5b8cd71c114860b5974d12c1b13",
+      "sourceEvidence": {
+        "evidenceId": "math3-2016-q08",
+        "sourceId": "src_fb595cd0da81efa6da3993c7",
+        "answerSourceId": "src_fb595cd0da81efa6da3993c7",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2016-paper-answer",
+        "answerEvidenceId": "math3-2016-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:6214c3f9247b605e12ff2f241955108931a4d5b8cd71c114860b5974d12c1b13"
+      }
+    },
+    {
+      "id": "math3-2016-009",
+      "number": 9,
+      "paperId": "math3-2016",
+      "paperName": "2016考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2016",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2016考研数学三第9题（选择题）。题干、公式和图形以题面裁切图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2016 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2016/question-09.jpg",
+          "caption": "题面裁切图 q09",
+          "alt": "2016考研数学三第09题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2016/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2016考研数学三答案解析 p.8"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2016",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2016-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:0bb60db0e49b3dae95cb73a46d81ff1162f9f03f47d21205826dc804fdd6d7fd",
+      "answerTextHash": "sha256:97479da34231cef66231b63ccb1b2f4ab9c0878a6968e94ab9a2ec3b7e6371d9",
+      "sourceEvidence": {
+        "evidenceId": "math3-2016-q09",
+        "sourceId": "src_fb595cd0da81efa6da3993c7",
+        "answerSourceId": "src_fb595cd0da81efa6da3993c7",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2016-paper-answer",
+        "answerEvidenceId": "math3-2016-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:97479da34231cef66231b63ccb1b2f4ab9c0878a6968e94ab9a2ec3b7e6371d9"
+      }
+    },
+    {
+      "id": "math3-2016-010",
+      "number": 10,
+      "paperId": "math3-2016",
+      "paperName": "2016考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2016",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2016考研数学三第10题（选择题）。题干、公式和图形以题面裁切图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2016 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2016/question-10-a.jpg",
+          "caption": "题面裁切图 q10-a",
+          "alt": "2016考研数学三第10题题面裁切图"
+        },
+        {
+          "src": "question-bank/math3-2016/question-10-b.jpg",
+          "caption": "题面裁切图 q10-b",
+          "alt": "2016考研数学三第10题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2016/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2016考研数学三答案解析 p.8"
+        },
+        {
+          "src": "question-bank/math3-2016/answer-page-09.jpg",
+          "caption": "答案解析 p.9",
+          "alt": "2016考研数学三答案解析 p.9"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2016",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2016-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:467dd06252fb0b1b1785c19f405781a777db8a291472846cf65cd5cc23e50d1c",
+      "answerTextHash": "sha256:1d36232c99746bd3f839787a32e5e04ac67041510b0d5e853b80487cb576a47c",
+      "sourceEvidence": {
+        "evidenceId": "math3-2016-q10",
+        "sourceId": "src_fb595cd0da81efa6da3993c7",
+        "answerSourceId": "src_fb595cd0da81efa6da3993c7",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2016-paper-answer",
+        "answerEvidenceId": "math3-2016-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:1d36232c99746bd3f839787a32e5e04ac67041510b0d5e853b80487cb576a47c"
+      }
+    },
+    {
+      "id": "math3-2016-011",
+      "number": 11,
+      "paperId": "math3-2016",
+      "paperName": "2016考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2016",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2016考研数学三第11题（选择题）。题干、公式和图形以题面裁切图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2016 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2016/question-11.jpg",
+          "caption": "题面裁切图 q11",
+          "alt": "2016考研数学三第11题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2016/answer-page-09.jpg",
+          "caption": "答案解析 p.9",
+          "alt": "2016考研数学三答案解析 p.9"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2016",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2016-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:03a45a57f4f1d8354f3d53973a49f92aedea80a585b9e590e3d16c66ef464057",
+      "answerTextHash": "sha256:91b648e99f8276b56d930b37d62fef5912e168052a3c9691b654e1079183fca6",
+      "sourceEvidence": {
+        "evidenceId": "math3-2016-q11",
+        "sourceId": "src_fb595cd0da81efa6da3993c7",
+        "answerSourceId": "src_fb595cd0da81efa6da3993c7",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2016-paper-answer",
+        "answerEvidenceId": "math3-2016-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:91b648e99f8276b56d930b37d62fef5912e168052a3c9691b654e1079183fca6"
+      }
+    },
+    {
+      "id": "math3-2016-012",
+      "number": 12,
+      "paperId": "math3-2016",
+      "paperName": "2016考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2016",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2016考研数学三第12题（选择题）。题干、公式和图形以题面裁切图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2016 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2016/question-12.jpg",
+          "caption": "题面裁切图 q12",
+          "alt": "2016考研数学三第12题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2016/answer-page-09.jpg",
+          "caption": "答案解析 p.9",
+          "alt": "2016考研数学三答案解析 p.9"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2016",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2016-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:be013375c7837f7b35e112e7e99d49d5ab552e39e40f69a5f6434940e409c0b2",
+      "answerTextHash": "sha256:91b648e99f8276b56d930b37d62fef5912e168052a3c9691b654e1079183fca6",
+      "sourceEvidence": {
+        "evidenceId": "math3-2016-q12",
+        "sourceId": "src_fb595cd0da81efa6da3993c7",
+        "answerSourceId": "src_fb595cd0da81efa6da3993c7",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2016-paper-answer",
+        "answerEvidenceId": "math3-2016-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:91b648e99f8276b56d930b37d62fef5912e168052a3c9691b654e1079183fca6"
+      }
+    },
+    {
+      "id": "math3-2016-013",
+      "number": 13,
+      "paperId": "math3-2016",
+      "paperName": "2016考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2016",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2016考研数学三第13题（选择题）。题干、公式和图形以题面裁切图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2016 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2016/question-13.jpg",
+          "caption": "题面裁切图 q13",
+          "alt": "2016考研数学三第13题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2016/answer-page-10.jpg",
+          "caption": "答案解析 p.10",
+          "alt": "2016考研数学三答案解析 p.10"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2016",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2016-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:af047ee858d269d28e256dc65ff015b1ede8273e6cee29a09d2481a370718e9b",
+      "answerTextHash": "sha256:af7eecedcd076ef1bc5fd0018adb6f17689b5a384a5fc169e0f2cf420f16f95a",
+      "sourceEvidence": {
+        "evidenceId": "math3-2016-q13",
+        "sourceId": "src_fb595cd0da81efa6da3993c7",
+        "answerSourceId": "src_fb595cd0da81efa6da3993c7",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2016-paper-answer",
+        "answerEvidenceId": "math3-2016-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:af7eecedcd076ef1bc5fd0018adb6f17689b5a384a5fc169e0f2cf420f16f95a"
+      }
+    },
+    {
+      "id": "math3-2016-014",
+      "number": 14,
+      "paperId": "math3-2016",
+      "paperName": "2016考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2016",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2016考研数学三第14题（选择题）。题干、公式和图形以题面裁切图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2016 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2016/question-14.jpg",
+          "caption": "题面裁切图 q14",
+          "alt": "2016考研数学三第14题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2016/answer-page-10.jpg",
+          "caption": "答案解析 p.10",
+          "alt": "2016考研数学三答案解析 p.10"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2016",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2016-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:beaa1ead8741af376d5cc211b93569ae74fc689cb333709c43471750668d22e0",
+      "answerTextHash": "sha256:1b2990a8e8b52728a725389abcf19aab89666823749af312121ed8aa46ab9013",
+      "sourceEvidence": {
+        "evidenceId": "math3-2016-q14",
+        "sourceId": "src_fb595cd0da81efa6da3993c7",
+        "answerSourceId": "src_fb595cd0da81efa6da3993c7",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2016-paper-answer",
+        "answerEvidenceId": "math3-2016-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:1b2990a8e8b52728a725389abcf19aab89666823749af312121ed8aa46ab9013"
+      }
+    },
+    {
+      "id": "math3-2016-015",
+      "number": 15,
+      "paperId": "math3-2016",
+      "paperName": "2016考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2016",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2016考研数学三第15题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "极限为 4/3。",
+      "explanation": "答案来自本地百度网盘 2016 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2016/question-15.jpg",
+          "caption": "题面裁切图 q15",
+          "alt": "2016考研数学三第15题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2016/answer-page-10.jpg",
+          "caption": "答案解析 p.10",
+          "alt": "2016考研数学三答案解析 p.10"
+        },
+        {
+          "src": "question-bank/math3-2016/answer-page-11.jpg",
+          "caption": "答案解析 p.11",
+          "alt": "2016考研数学三答案解析 p.11"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2016",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2016-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:8792fe4ff7cf44c8fe10b5e37472a838d71861ec8bffa4cb3f749ed227237f44",
+      "answerTextHash": "sha256:1dca6f1f5f7aafb8f31fdb946ca78233f5374addce06d5375e5a2f29c882c697",
+      "sourceEvidence": {
+        "evidenceId": "math3-2016-q15",
+        "sourceId": "src_fb595cd0da81efa6da3993c7",
+        "answerSourceId": "src_fb595cd0da81efa6da3993c7",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2016-paper-answer",
+        "answerEvidenceId": "math3-2016-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:1dca6f1f5f7aafb8f31fdb946ca78233f5374addce06d5375e5a2f29c882c697"
+      }
+    },
+    {
+      "id": "math3-2016-016",
+      "number": 16,
+      "paperId": "math3-2016",
+      "paperName": "2016考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2016",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2016考研数学三第16题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "二重积分值为 16/9(3π-2)。",
+      "explanation": "答案来自本地百度网盘 2016 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2016/question-16.jpg",
+          "caption": "题面裁切图 q16",
+          "alt": "2016考研数学三第16题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2016/answer-page-11.jpg",
+          "caption": "答案解析 p.11",
+          "alt": "2016考研数学三答案解析 p.11"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2016",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2016-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:d0923bef6c5b2c24e6b1b7e554299a1861689f1f3d5d3e5dcf38674657f67945",
+      "answerTextHash": "sha256:d0baeffa3d0f88b0281302e55041954d3eca84feb2027463cb52033919979a50",
+      "sourceEvidence": {
+        "evidenceId": "math3-2016-q16",
+        "sourceId": "src_fb595cd0da81efa6da3993c7",
+        "answerSourceId": "src_fb595cd0da81efa6da3993c7",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2016-paper-answer",
+        "answerEvidenceId": "math3-2016-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:d0baeffa3d0f88b0281302e55041954d3eca84feb2027463cb52033919979a50"
+      }
+    },
+    {
+      "id": "math3-2016-017",
+      "number": 17,
+      "paperId": "math3-2016",
+      "paperName": "2016考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2016",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2016考研数学三第17题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "积分不等式证明见答案原页。",
+      "explanation": "答案来自本地百度网盘 2016 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2016/question-17.jpg",
+          "caption": "题面裁切图 q17",
+          "alt": "2016考研数学三第17题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2016/answer-page-11.jpg",
+          "caption": "答案解析 p.11",
+          "alt": "2016考研数学三答案解析 p.11"
+        },
+        {
+          "src": "question-bank/math3-2016/answer-page-12.jpg",
+          "caption": "答案解析 p.12",
+          "alt": "2016考研数学三答案解析 p.12"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2016",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2016-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:3067de951c61ecc67a5ffcae37775c7d6b8639ff5dbd39fd0069616fa2a8a40e",
+      "answerTextHash": "sha256:10e50ea012a4b30802c5b5687d24f7e3ef5dd21327f527cae475bbe21f5a8093",
+      "sourceEvidence": {
+        "evidenceId": "math3-2016-q17",
+        "sourceId": "src_fb595cd0da81efa6da3993c7",
+        "answerSourceId": "src_fb595cd0da81efa6da3993c7",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2016-paper-answer",
+        "answerEvidenceId": "math3-2016-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:10e50ea012a4b30802c5b5687d24f7e3ef5dd21327f527cae475bbe21f5a8093"
+      }
+    },
+    {
+      "id": "math3-2016-018",
+      "number": 18,
+      "paperId": "math3-2016",
+      "paperName": "2016考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2016",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2016考研数学三第18题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "需求弹性、收益导数与价格区间结论见答案原页。",
+      "explanation": "答案来自本地百度网盘 2016 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2016/question-18.jpg",
+          "caption": "题面裁切图 q18",
+          "alt": "2016考研数学三第18题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2016/answer-page-12.jpg",
+          "caption": "答案解析 p.12",
+          "alt": "2016考研数学三答案解析 p.12"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2016",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2016-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:9444676474251fa5bd8c712538cf34811e6555be00c9f719b804c313e9727134",
+      "answerTextHash": "sha256:0ebbe571948d5d38efe500d3150e3f2d3ccb7f5e65c545015e89ce61e17c499e",
+      "sourceEvidence": {
+        "evidenceId": "math3-2016-q18",
+        "sourceId": "src_fb595cd0da81efa6da3993c7",
+        "answerSourceId": "src_fb595cd0da81efa6da3993c7",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2016-paper-answer",
+        "answerEvidenceId": "math3-2016-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:0ebbe571948d5d38efe500d3150e3f2d3ccb7f5e65c545015e89ce61e17c499e"
+      }
+    },
+    {
+      "id": "math3-2016-019",
+      "number": 19,
+      "paperId": "math3-2016",
+      "paperName": "2016考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2016",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2016考研数学三第19题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "和函数 S(x) 满足的一阶微分方程及表达式见答案原页。",
+      "explanation": "答案来自本地百度网盘 2016 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2016/question-19.jpg",
+          "caption": "题面裁切图 q19",
+          "alt": "2016考研数学三第19题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2016/answer-page-12.jpg",
+          "caption": "答案解析 p.12",
+          "alt": "2016考研数学三答案解析 p.12"
+        },
+        {
+          "src": "question-bank/math3-2016/answer-page-13.jpg",
+          "caption": "答案解析 p.13",
+          "alt": "2016考研数学三答案解析 p.13"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2016",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2016-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:d6ef0677929dada395c2228dad37c9129f8cd6c5b13128767cbfaaed61dd1df5",
+      "answerTextHash": "sha256:83fc4018571b0e4a730062583cdd945e8a6396c6876ec6b336859ce43bedafb4",
+      "sourceEvidence": {
+        "evidenceId": "math3-2016-q19",
+        "sourceId": "src_fb595cd0da81efa6da3993c7",
+        "answerSourceId": "src_fb595cd0da81efa6da3993c7",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2016-paper-answer",
+        "answerEvidenceId": "math3-2016-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:83fc4018571b0e4a730062583cdd945e8a6396c6876ec6b336859ce43bedafb4"
+      }
+    },
+    {
+      "id": "math3-2016-020",
+      "number": 20,
+      "paperId": "math3-2016",
+      "paperName": "2016考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2016",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2016考研数学三第20题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "a、b 的分类讨论和 beta 的线性表示结论见答案原页。",
+      "explanation": "答案来自本地百度网盘 2016 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2016/question-20-a.jpg",
+          "caption": "题面裁切图 q20-a",
+          "alt": "2016考研数学三第20题题面裁切图"
+        },
+        {
+          "src": "question-bank/math3-2016/question-20-b.jpg",
+          "caption": "题面裁切图 q20-b",
+          "alt": "2016考研数学三第20题题面裁切图"
+        },
+        {
+          "src": "question-bank/math3-2016/question-20-c.jpg",
+          "caption": "题面裁切图 q20-c",
+          "alt": "2016考研数学三第20题题面裁切图"
+        },
+        {
+          "src": "question-bank/math3-2016/question-20-d.jpg",
+          "caption": "题面裁切图 q20-d",
+          "alt": "2016考研数学三第20题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2016/answer-page-13.jpg",
+          "caption": "答案解析 p.13",
+          "alt": "2016考研数学三答案解析 p.13"
+        },
+        {
+          "src": "question-bank/math3-2016/answer-page-14.jpg",
+          "caption": "答案解析 p.14",
+          "alt": "2016考研数学三答案解析 p.14"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2016",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2016-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:4c1960cd987d9ff32fdb9959a40a1f265777cf89301105d3e7ebd21655cf0501",
+      "answerTextHash": "sha256:1b781c2a506a02d5dc783f3f05b32d3edb81f0015e8305c43b92f4f48c631001",
+      "sourceEvidence": {
+        "evidenceId": "math3-2016-q20",
+        "sourceId": "src_fb595cd0da81efa6da3993c7",
+        "answerSourceId": "src_fb595cd0da81efa6da3993c7",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2016-paper-answer",
+        "answerEvidenceId": "math3-2016-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:1b781c2a506a02d5dc783f3f05b32d3edb81f0015e8305c43b92f4f48c631001"
+      }
+    },
+    {
+      "id": "math3-2016-021",
+      "number": 21,
+      "paperId": "math3-2016",
+      "paperName": "2016考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2016",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2016考研数学三第21题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "A 的特征值、特征向量和可逆矩阵 P 见答案原页。",
+      "explanation": "答案来自本地百度网盘 2016 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2016/question-21-a.jpg",
+          "caption": "题面裁切图 q21-a",
+          "alt": "2016考研数学三第21题题面裁切图"
+        },
+        {
+          "src": "question-bank/math3-2016/question-21-b.jpg",
+          "caption": "题面裁切图 q21-b",
+          "alt": "2016考研数学三第21题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2016/answer-page-15.jpg",
+          "caption": "答案解析 p.15",
+          "alt": "2016考研数学三答案解析 p.15"
+        },
+        {
+          "src": "question-bank/math3-2016/answer-page-16.jpg",
+          "caption": "答案解析 p.16",
+          "alt": "2016考研数学三答案解析 p.16"
+        },
+        {
+          "src": "question-bank/math3-2016/answer-page-17.jpg",
+          "caption": "答案解析 p.17",
+          "alt": "2016考研数学三答案解析 p.17"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2016",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2016-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:b8e6fccdb78a93bf73aee32828c41631d6ded5452eda33667feda3f75d20839e",
+      "answerTextHash": "sha256:cf70b3894f27bc03e920eb1e9c1e4d0d93e338da5a925007aed6f99fbb614098",
+      "sourceEvidence": {
+        "evidenceId": "math3-2016-q21",
+        "sourceId": "src_fb595cd0da81efa6da3993c7",
+        "answerSourceId": "src_fb595cd0da81efa6da3993c7",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2016-paper-answer",
+        "answerEvidenceId": "math3-2016-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:cf70b3894f27bc03e920eb1e9c1e4d0d93e338da5a925007aed6f99fbb614098"
+      }
+    },
+    {
+      "id": "math3-2016-022",
+      "number": 22,
+      "paperId": "math3-2016",
+      "paperName": "2016考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2016",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2016考研数学三第22题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "(X,Y) 的概率分布、相关系数和 Z 的概率分布见答案原页。",
+      "explanation": "答案来自本地百度网盘 2016 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2016/question-22.jpg",
+          "caption": "题面裁切图 q22",
+          "alt": "2016考研数学三第22题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2016/answer-page-17.jpg",
+          "caption": "答案解析 p.17",
+          "alt": "2016考研数学三答案解析 p.17"
+        },
+        {
+          "src": "question-bank/math3-2016/answer-page-18.jpg",
+          "caption": "答案解析 p.18",
+          "alt": "2016考研数学三答案解析 p.18"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2016",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2016-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:d26de160690e1e5658be748e9df4018782c626d7908cb1c4effeaef619a96513",
+      "answerTextHash": "sha256:c251db446b0ca61a3ab348fa93ed89de53a14a0fc743734f4a5c4c9c3ee9a82f",
+      "sourceEvidence": {
+        "evidenceId": "math3-2016-q22",
+        "sourceId": "src_fb595cd0da81efa6da3993c7",
+        "answerSourceId": "src_fb595cd0da81efa6da3993c7",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2016-paper-answer",
+        "answerEvidenceId": "math3-2016-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:c251db446b0ca61a3ab348fa93ed89de53a14a0fc743734f4a5c4c9c3ee9a82f"
+      }
+    },
+    {
+      "id": "math3-2016-023",
+      "number": 23,
+      "paperId": "math3-2016",
+      "paperName": "2016考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2016",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2016考研数学三第23题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "参数 alpha、beta 的矩估计与最大似然估计见答案原页。",
+      "explanation": "答案来自本地百度网盘 2016 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2016/question-23.jpg",
+          "caption": "题面裁切图 q23",
+          "alt": "2016考研数学三第23题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2016/answer-page-18.jpg",
+          "caption": "答案解析 p.18",
+          "alt": "2016考研数学三答案解析 p.18"
+        },
+        {
+          "src": "question-bank/math3-2016/answer-page-19.jpg",
+          "caption": "答案解析 p.19",
+          "alt": "2016考研数学三答案解析 p.19"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2016",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2016-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:075a66d9e5dfd9f21956b970533fbade567488d936a8d5d14f9f7f72164011cd",
+      "answerTextHash": "sha256:bc52c12e748849bf06b4f0d59f75efb8b147f8e6dd7e1087dca851d2598d0ab5",
+      "sourceEvidence": {
+        "evidenceId": "math3-2016-q23",
+        "sourceId": "src_fb595cd0da81efa6da3993c7",
+        "answerSourceId": "src_fb595cd0da81efa6da3993c7",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2016-paper-answer",
+        "answerEvidenceId": "math3-2016-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:bc52c12e748849bf06b4f0d59f75efb8b147f8e6dd7e1087dca851d2598d0ab5"
+      }
+    }
+  ]
+}

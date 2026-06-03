@@ -2683,6 +2683,96 @@ git add data/release-blocker-backlog.json docs/08C-SCRIPTS-REFERENCE.md docs/12-
 git -c core.hooksPath=/dev/null commit -m "chore: publish english2 2020 bank"
 ```
 
+### Task 74: Publish Math III 2016 Page-Image Bank
+
+**Files:**
+- Add: `scripts/cleaning/build_math3_2016_bank.py`
+- Add: `src/config/flashcard-banks/math3-2016.json`
+- Add: `tests/unit/math3-2016-data.spec.js`
+- Add: `cdn-assets/question-bank/math3-2016/*`
+- Modify: `src/config/bank-registry.js`
+- Modify: `src/pages/practice-sub/bank-data-table.js`
+- Modify: `tests/unit/flashcard-bank-registry.spec.js`
+- Modify: `tests/unit/question-bank-year-map.spec.js`
+- Modify: `docs/frontend-experience-refactor-diary.md`
+- Modify: `docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md`
+- Modify: `docs/08C-SCRIPTS-REFERENCE.md`
+- Modify: `docs/12-CHANGELOG.md`
+- Modify: `data/release-blocker-backlog.json`
+
+- [x] **Step 0: Recheck development environment and source path**
+
+Confirmed Codegraph MCP remained healthy and local tooling was available: Poppler `pdfinfo`/`pdftotext`/`pdftoppm`, ffmpeg, tesseract, Node, npm, Python, `rg`, and git.
+
+Ran the release-priority queue for the first `math3:2016` task. The Baidu Pan download completed and wrote the ignored source:
+
+```text
+data/raw-inbox/src_fb595cd0da81efa6da3993c7-2016年考研数学三真题及解析.pdf
+```
+
+The AI cleaning runner then hit `LLM response missing choices: status=435, msg=Model not support` on the iflow model and a timeout on a nvidia batch. To avoid blocking release on unstable AI parsing, switched to the existing Math III page-image builder pattern.
+
+- [x] **Step 1: Add failing registry coverage**
+
+Added a focused registry/load regression for `math3-2016` expecting registration, 23 cards, matched answer evidence, q01 answer containing `a=1`, q07 answer `A`, q11 answer `D`, q14 answer `C`, q15 answer containing `4/3`, q23 answer evidence ending at `question-bank/math3-2016/answer-page-19.jpg`, and q11 question evidence under `question-bank/math3-2016/question-11.jpg`.
+
+Initial result:
+```bash
+npm test -- tests/unit/math3-2016-data.spec.js
+```
+
+Failed because `math3-2016` was not registered or compressed yet.
+
+- [x] **Step 2: Verify source and build page-image bank**
+
+Source audit:
+
+```bash
+pdfinfo data/raw-inbox/src_fb595cd0da81efa6da3993c7-2016年考研数学三真题及解析.pdf
+pdftotext data/raw-inbox/src_fb595cd0da81efa6da3993c7-2016年考研数学三真题及解析.pdf - | wc -c
+```
+
+Result: 24-page scanned PDF, no usable text layer, SHA-256 `45279c2906d9c6c15f092dc307f9d3a451589f39b38fbbedaf4d74c5e5166a15`. Visual/OCR inspection showed pages 1-4 are the original paper, pages 5-19 are answer analysis, and pages 20-24 are promotional noise.
+
+Added `build_math3_2016_bank.py` with 23 cards, 19 rendered evidence pages, 28 pre-answer question crop assets, q11 answer-bracket masking, and an explicit note that PDF pages 20-24 are excluded from question/answer evidence.
+
+- [x] **Step 3: Register and refresh practice data**
+
+Run:
+```bash
+python3 scripts/cleaning/build_math3_2016_bank.py --force-assets
+node scripts/build/generate-compressed-bank-modules.mjs
+```
+
+Result: published `src/config/flashcard-banks/math3-2016.json`, generated `cdn-assets/question-bank/math3-2016`, registered `math3-2016`, and regenerated 91 compressed practice-bank entries.
+
+- [x] **Step 4: Run validation**
+
+Run:
+```bash
+python3 -m py_compile scripts/cleaning/build_math3_2016_bank.py
+npm test -- tests/unit/math3-2016-data.spec.js tests/unit/question-bank-year-map.spec.js tests/unit/flashcard-bank-registry.spec.js
+node scripts/build/question-bank-release-gate.mjs --min-year=2005 --max-year=2020
+node scripts/build/release-blocker-backlog.mjs
+python3 scripts/baidu/cleaning_queue.py
+python3 scripts/baidu/run_cleaning_queue.py --dry-run --limit 12 --source-type official_paper --paper-role main --max-year 2020
+```
+
+Question-image leakage spot check:
+```bash
+python3 - <<'PY'
+import subprocess
+from pathlib import Path
+for f in ['question-11.jpg','question-20-a.jpg','question-20-b.jpg','question-20-c.jpg','question-20-d.jpg','question-23.jpg']:
+    p = Path('cdn-assets/question-bank/math3-2016') / f
+    out = subprocess.run(['tesseract', str(p), 'stdout', '-l', 'chi_sim+eng', '--psm', '6'], text=True, capture_output=True, check=False).stdout
+    bad = [tok for tok in ['答案','解析','详解','[D]','【分析】','【详解】'] if tok in out]
+    print(f, 'bad=' + ','.join(bad) if bad else 'ok')
+PY
+```
+
+Result: passed on 2026-06-03. The 2005-2020 release gate reports `coverageGaps=13`, `publishedSlots=78`, `sourceEvidenceGaps=1`, and `pendingCoverageBlockers=0`; release backlog reports `blockers=15` and `publicCourseBlockedSlots=13`; the rebuilt release-priority dry-run now starts at `2017年考研数学三真题及解析.pdf`, then `2018年考研数学三真题及解析.pdf`, then `2020年考研英语一真题.pdf`.
+
 ### Task 59: Block Mislabeled Math II 2016 Source
 
 **Files:**
