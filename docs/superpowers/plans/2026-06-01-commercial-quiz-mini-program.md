@@ -2452,6 +2452,79 @@ git add data/release-blocker-backlog.json docs/08C-SCRIPTS-REFERENCE.md docs/12-
 git -c core.hooksPath=/dev/null commit -m "chore: publish english2 2017 bank"
 ```
 
+### Task 71: Publish English II 2018 Text-Layer Bank
+
+**Files:**
+- Add: `scripts/cleaning/build_english2_2018_bank.py`
+- Add: `src/config/flashcard-banks/english2-2018.json`
+- Add: `tests/unit/english2-2018-data.spec.js`
+- Modify: `src/config/bank-registry.js`
+- Modify: `src/pages/practice-sub/bank-data-table.js`
+- Modify: `tests/unit/flashcard-bank-registry.spec.js`
+- Modify: `tests/unit/question-bank-year-map.spec.js`
+- Modify: `docs/frontend-experience-refactor-diary.md`
+- Modify: `docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md`
+- Modify: `docs/08C-SCRIPTS-REFERENCE.md`
+- Modify: `docs/12-CHANGELOG.md`
+- Modify: `data/release-blocker-backlog.json`
+
+- [x] **Step 1: Add failing registry coverage**
+
+Added a focused registry/load regression for `english2-2018` expecting 48 cards, matched answer evidence, q01 answer `D`, q21 answer `B`, q30 answer `C`, Part B answers `AFEBD`, q46 translation anchor `A fifth grader gets a homework assignment to select his future career path`, no q46 `英语（二）试题` page-footer leakage, q48 restaurant-selection chart values `特色36.3%`, `服务26.8%`, `环境23.8%`, `价格8.4%`, and `其他4.7%`, and q48 `official_writing_prompt` evidence.
+
+Initial result:
+```bash
+npm test -- tests/unit/english2-2018-data.spec.js
+```
+
+Failed because `english2-2018` was not registered or compressed yet. A later focused RED check also caught q46 page-footer leakage in the compressed loaded bank before the builder footer filter and compressed table refresh were applied.
+
+- [x] **Step 2: Verify source and build text-layer bank**
+
+Used canonical local raw-inbox sources:
+
+```text
+data/raw-inbox/src_bb76d07247dcb5e9691b37dc-2018.pdf
+data/raw-inbox/src_d94f09a02cc4c2e33c83c874-2018年考研英语二真题.pdf
+data/raw-inbox/src_304822354811c024c7644fe7-2018年真题及答案速查.pdf
+data/raw-inbox/src_8ca8d55ed290ecfc593c4aef-2018年真题逐题细解.pdf
+```
+
+Source audit: SHA-256 hashes `97c2978573312f8d90747367df7277d00ac0d608245e8af760f8973a8c0e76ce`, `6bc6010b7b01262859fcb75d1fa641751c2c9cdbfeda49fde17b38401f670e1e`, `f15c6c39d6fa72410ad3be6a6bce4ea24900fd7c4d483ff70918cf0cde1ef3c1`, and `c4218f9f49f3a8fb1d510ab059fe4636f4b099e44ea0a542c527553da5d6a730`. Added `build_english2_2018_bank.py` with 48 cards, answer-speed text matching, detailed-analysis anchor cross-checks, A-G subtitle Part B matching, prompt-only writing evidence, and explicit footer/OCR leakage guards.
+
+- [x] **Step 3: Register and refresh practice data**
+
+Run:
+```bash
+python3 scripts/cleaning/build_english2_2018_bank.py
+node scripts/build/generate-compressed-bank-modules.mjs
+```
+
+Result: published `src/config/flashcard-banks/english2-2018.json`, registered `english2-2018`, regenerated the compressed practice-bank table, and removed q46 page-footer leakage from the loaded bank.
+
+- [x] **Step 4: Run validation**
+
+Run:
+```bash
+python3 -m py_compile scripts/cleaning/build_english2_2018_bank.py
+npm test -- tests/unit/english2-2018-data.spec.js tests/unit/question-bank-year-map.spec.js tests/unit/flashcard-bank-registry.spec.js
+node scripts/build/question-bank-release-gate.mjs --min-year=2005 --max-year=2020
+node scripts/build/release-blocker-backlog.mjs
+python3 scripts/baidu/cleaning_queue.py
+python3 scripts/baidu/run_cleaning_queue.py --dry-run --limit 12 --source-type official_paper --paper-role main --max-year 2020
+git diff --check
+```
+
+Result: passed on 2026-06-03. The 2005-2020 release gate reports `coverageGaps=16`, `publishedSlots=75`, `sourceEvidenceGaps=1`, and `pendingCoverageBlockers=0`; release backlog reports `blockers=18` and `publicCourseBlockedSlots=16`; English II year-map summary is now `正式 10 · 整理中 0 · 待入库 7`; the rebuilt release-priority dry-run now starts at English II 2019 paired candidates followed by Math III 2016.
+
+- [x] **Step 5: Commit**
+
+Run:
+```bash
+git add data/release-blocker-backlog.json docs/08C-SCRIPTS-REFERENCE.md docs/12-CHANGELOG.md docs/frontend-experience-refactor-diary.md docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md src/config/bank-registry.js src/pages/practice-sub/bank-data-table.js tests/unit/flashcard-bank-registry.spec.js tests/unit/question-bank-year-map.spec.js tests/unit/english2-2018-data.spec.js scripts/cleaning/build_english2_2018_bank.py src/config/flashcard-banks/english2-2018.json
+git -c core.hooksPath=/dev/null commit -m "chore: publish english2 2018 bank"
+```
+
 ### Task 59: Block Mislabeled Math II 2016 Source
 
 **Files:**
