@@ -1,5 +1,12 @@
 # 变更日志
 
+## 2026-06-03 — 2017 数学二逐题裁切题库开放
+
+- 2017 考研数学二从“待入库”推进为正式题库：23 张题卡覆盖 8 道选择、6 道填空和 9 道解答题，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
+- 新增 `build_math2_2017_bank.py`，从本地百度网盘 `2017考研数学二真题.pdf` 生成 `src/config/flashcard-banks/math2-2017.json` 与 `cdn-assets/question-bank/math2-2017` 页图资源；源 PDF 为 11 页题答混排扫描版，题面使用逐题裁切图，q06 跨页拆为 `question-06-a/b.jpg`，第 11 页推广尾页不进入发布证据。
+- 清洗质量：源 PDF 的部分选择题答案栏与解析结论不一致，发布答案按同页解析结论核对；题面裁切经 OCR/视觉检查收紧，最终无实际 `【答案】` / `【解析】` 泄漏，q09 仅保留官方题型说明里的“请将答案写在答题纸”。
+- 2005-2020 release gate 刷新后，公共课覆盖缺口降至 7，published slots 升至 84，source evidence gap 保持 1；release backlog 降至 `blockers=9`、`publicCourseBlockedSlots=7`，下一批 release-priority dry-run 从数学二 2018-2020 开始。
+
 ## 2026-06-03 — 2020 英语一文本层题库开放
 
 - 2020 考研英语一从“待入库”推进为正式题库：52 张题卡覆盖完形填空、阅读理解、新题型、翻译和写作，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
