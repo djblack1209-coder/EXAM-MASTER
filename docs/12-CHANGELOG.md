@@ -1,5 +1,11 @@
 # 变更日志
 
+## 2026-06-03 — 2010 英语二文本层题库开放
+
+- 2010 考研英语二从“待入库”推进为正式题库：48 张题卡覆盖完形填空、阅读理解、新题型、翻译和写作，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
+- 新增 `build_english2_2010_bank.py`，从本地百度网盘 2010 英语二原卷、答案速查和逐题细解 PDF 生成 `src/config/flashcard-banks/english2-2010.json`；写作题按官方 prompt 训练，不提供唯一范文答案。
+- 2005-2020 release gate 刷新后，公共课覆盖缺口降至 24，source evidence gap 保持 1；英语二年份地图显示 `正式 2 · 整理中 0 · 待入库 15`。
+
 ## 2026-06-02 — 2014 数学三逐题裁切题库开放
 
 - 2014 考研数学三从“待入库”推进为正式题库：23 张题卡覆盖 8 道选择、6 道填空和 9 道解答题，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
