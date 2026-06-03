@@ -1,5 +1,11 @@
 # 变更日志
 
+## 2026-06-03 — 2012 英语二文本层题库开放
+
+- 2012 考研英语二从“待入库”推进为正式题库：48 张题卡覆盖完形填空、阅读理解、新题型、翻译和写作，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
+- 新增 `build_english2_2012_bank.py`，从本地百度网盘 2012 英语二文档版、原卷、答案速查和逐题细解 PDF 生成 `src/config/flashcard-banks/english2-2012.json`；Part B 按 Petrarch/Machiavelli/Samuel Smiles/Thomas Carlyle/Marx and Engels 信息匹配训练，写作题按官方 prompt 训练，不提供唯一范文答案。
+- 2005-2020 release gate 刷新后，公共课覆盖缺口降至 22，source evidence gap 保持 1；英语二年份地图显示 `正式 4 · 整理中 0 · 待入库 13`。
+
 ## 2026-06-03 — 2011 英语二文本层题库开放
 
 - 2011 考研英语二从“待入库”推进为正式题库：48 张题卡覆盖完形填空、阅读理解、新题型、翻译和写作，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
