@@ -1865,6 +1865,82 @@ git commit -m "chore: repair english companion option evidence"
 
 Result: committed after validation on 2026-06-02.
 
+### Task 82: Publish Math II 2019 Page-Image Bank
+
+**Files:**
+- Add: `scripts/cleaning/build_math2_2019_bank.py`
+- Add: `src/config/flashcard-banks/math2-2019.json`
+- Add: `cdn-assets/question-bank/math2-2019/*`
+- Add: `tests/unit/math2-2019-data.spec.js`
+- Modify: `scripts/baidu/run_cleaning_queue.py`
+- Modify: `tests/unit/test_baidu_cleaning_runner.py`
+- Modify: `src/config/bank-registry.js`
+- Modify: `src/pages/practice-sub/bank-data-table.js`
+- Modify: `tests/unit/flashcard-bank-registry.spec.js`
+- Modify: `tests/unit/question-bank-year-map.spec.js`
+- Modify: `docs/frontend-experience-refactor-diary.md`
+- Modify: `docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md`
+- Modify: `docs/08C-SCRIPTS-REFERENCE.md`
+- Modify: `docs/12-CHANGELOG.md`
+- Modify: `data/release-blocker-backlog.json`
+
+- [x] **Step 1: Add failing data spec**
+
+Added `tests/unit/math2-2019-data.spec.js` for registration, loadability, 23-card structure, matched answer evidence, and anchors q01/q02/q08/q09/q10/q14/q17/q20/q23.
+
+Initial result:
+```bash
+npm test -- tests/unit/math2-2019-data.spec.js
+```
+
+Failed because `math2-2019` was not registered yet.
+
+- [x] **Step 2: Verify source and build page-image bank**
+
+Used local raw-inbox source:
+
+```text
+data/raw-inbox/src_021a329bfc22c3b26ed9b510-2019考研数学二真题.pdf
+```
+
+Source audit: 5-page scanned PDF, no usable text layer, pages 1-4 are questions and page 5 is a compact answer key. Visual confirmation corrected OCR anchors q09=`4e^(3/2)`, q10=`3π/2+2`, q11=`yf(y^2/x)`, q12=`1/2 ln3`, q18=`43√2/120`, and q20=`a=-3/4,b=3/4`. Added `build_math2_2019_bank.py` with 23 cards, per-question crops, and a trimmed answer page that excludes the promotional tail below q23.
+
+- [x] **Step 3: Register, refresh practice data, and fix release dry-run repeat**
+
+Run:
+```bash
+python3 scripts/cleaning/build_math2_2019_bank.py --force-assets
+node scripts/build/generate-compressed-bank-modules.mjs
+```
+
+Result: published `src/config/flashcard-banks/math2-2019.json` plus 24 assets under `cdn-assets/question-bank/math2-2019`.
+
+Also added release-audit filtering to `scripts/baidu/run_cleaning_queue.py` so pending download tasks for already published public-course slots are skipped in release-priority dry-runs.
+
+- [x] **Step 4: Run validation**
+
+Run:
+```bash
+python3 -m py_compile scripts/baidu/run_cleaning_queue.py scripts/cleaning/build_math2_2019_bank.py
+npm test -- tests/unit/math2-2019-data.spec.js tests/unit/question-bank-year-map.spec.js tests/unit/flashcard-bank-registry.spec.js
+python3 -m unittest tests.unit.test_baidu_cleaning_queue tests.unit.test_baidu_cleaning_runner
+npm test
+node scripts/build/question-bank-release-gate.mjs --min-year=2005 --max-year=2020
+node scripts/build/release-blocker-backlog.mjs
+python3 scripts/baidu/cleaning_queue.py
+python3 scripts/baidu/run_cleaning_queue.py --dry-run --limit 12 --source-type official_paper --paper-role main --min-year 2005 --max-year 2020
+```
+
+Question-image leakage scan:
+```bash
+for p in cdn-assets/question-bank/math2-2019/question-*.jpg; do
+  txt=$(tesseract "$p" stdout -l chi_sim+eng --psm 6 2>/dev/null | tr '\n' ' ')
+  case "$txt" in *答案*|*参考答案*|*解析*|*公众号*|*免费分享课程*) echo "LEAK $p :: $txt";; esac
+done
+```
+
+Result: passed on 2026-06-03. `math2-2019.json` has 23 cards, `{single_choice:8, short_answer:15}`, section counts `{选择题:8, 填空题:6, 解答题:9}`, all cards carry `answerEvidenceStatus=matched`, q01=`C`, q02=`B`, q08=`C`, q09=`4e^(3/2)`, q10=`3π/2+2`, q14=`-4`, q17 contains `1/2π(e^4-e)`, q20 contains `a=-3/4`, and q23 answer evidence ends at `answer-page-05.jpg`. The final OCR leakage scan produced no answer/analysis/promotion keyword hits in question crops. The 2005-2020 release gate reports `coverageGaps=5`, `publishedSlots=86`, `sourceEvidenceGaps=1`; release backlog reports `blockers=7` and `publicCourseBlockedSlots=5`. The next main dry-run starts at `2020考研数学二真题.pdf`.
+
 ### Task 81: Publish Math II 2018 Page-Image Bank
 
 **Files:**

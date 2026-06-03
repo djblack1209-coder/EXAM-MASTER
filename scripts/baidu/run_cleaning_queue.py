@@ -32,6 +32,7 @@ from source_quality import apply_source_quality_overrides, source_quality_requir
 
 
 DEFAULT_QUEUE = PROJECT_ROOT / "data" / "cleaning-queue.json"
+DEFAULT_QUESTION_BANK_AUDIT = PROJECT_ROOT / "data" / "question-bank-release-audit.json"
 PDF2FLASHCARD = PROJECT_ROOT / "scripts" / "pipeline" / "pdf2flashcard-v2.py"
 DEFAULT_ENV_FILES = [PROJECT_ROOT / ".env", PROJECT_ROOT / "laf-backend" / ".env"]
 LLM_PROVIDER_KEY_ENVS = [
@@ -154,6 +155,32 @@ def write_json(path: Path, payload: Any) -> None:
         f.write("\n")
 
 
+def slot_key_for_task(task: dict[str, Any]) -> str:
+    track = str(task.get("track") or "").strip()
+    year = safe_int(task.get("year"))
+    if not track or year < 0:
+        return ""
+    return f"{track}:{year}"
+
+
+def published_slots_from_audit(audit: dict[str, Any] | None) -> set[str]:
+    tracks = audit.get("coverage", {}).get("tracks", []) if isinstance(audit, dict) else []
+    published: set[str] = set()
+    if not isinstance(tracks, list):
+        return published
+    for track_report in tracks:
+        if not isinstance(track_report, dict):
+            continue
+        track = str(track_report.get("track") or "").strip()
+        if not track:
+            continue
+        for year in track_report.get("publishedYears", []) or []:
+            year_number = safe_int(year)
+            if year_number >= 0:
+                published.add(f"{track}:{year_number}")
+    return published
+
+
 def strip_inline_comment(value: str) -> str:
     quote = ""
     for index, char in enumerate(value):
@@ -203,7 +230,10 @@ def select_pending_tasks(
     max_year: int | None = None,
     source_type: str | None = None,
     paper_role: str = "all",
+    published_slots: set[str] | None = None,
 ) -> list[dict[str, Any]]:
+    published_slots = published_slots or set()
+    should_skip_published_slots = bool(published_slots) and not task_id and not source_id
     tasks = [
         apply_source_quality_overrides(task)
         for task in queue.get("tasks", [])
@@ -211,6 +241,7 @@ def select_pending_tasks(
         and task.get("status") == "pending"
         and task.get("action") == "download_and_extract"
         and not source_quality_requires_manual_review(task)
+        and (not should_skip_published_slots or slot_key_for_task(task) not in published_slots)
     ]
     if task_id:
         tasks = [task for task in tasks if task.get("taskId") == task_id]
@@ -595,6 +626,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Run a small batch from data/cleaning-queue.json.")
     parser.add_argument("--queue", type=Path, default=DEFAULT_QUEUE)
     parser.add_argument("--output", type=Path, default=DEFAULT_QUEUE)
+    parser.add_argument("--question-bank-audit", type=Path, default=DEFAULT_QUESTION_BANK_AUDIT)
     parser.add_argument("--limit", type=int, default=1)
     parser.add_argument("--task-id", help="Run one explicit pending download_and_extract task.")
     parser.add_argument("--source-id", help="Run pending download_and_extract tasks for one explicit sourceId.")
@@ -626,6 +658,7 @@ def main() -> None:
     load_env_files(env_files, override=args.override_env)
 
     queue = read_json(args.queue, {"tasks": []})
+    published_slots = published_slots_from_audit(read_json(args.question_bank_audit, None))
     planned = select_pending_tasks(
         queue,
         limit=args.limit,
@@ -636,6 +669,7 @@ def main() -> None:
         max_year=args.max_year,
         source_type=args.source_type,
         paper_role=args.paper_role,
+        published_slots=published_slots,
     )
     print(f"[cleaning-runner] planned={len(planned)} limit={args.limit}")
     for task in planned[:20]:
@@ -655,6 +689,7 @@ def main() -> None:
         max_year=args.max_year,
         source_type=args.source_type,
         paper_role=args.paper_role,
+        published_slots=published_slots,
     )
     write_json(args.output, updated)
     print(

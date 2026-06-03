@@ -233,6 +233,72 @@ class BaiduCleaningRunnerTest(unittest.TestCase):
 
         self.assertEqual([task["taskId"] for task in selected], ["release_english1_2018", "generic_politics_2005"])
 
+    def test_select_pending_tasks_skips_already_published_public_course_slots(self):
+        queue = {
+            "tasks": [
+                {
+                    "taskId": "published_math2_2019",
+                    "action": "download_and_extract",
+                    "status": "pending",
+                    "priority": 100,
+                    "track": "math2",
+                    "year": 2019,
+                    "sourceType": "official_paper",
+                    "safeDisplayName": "2019考研数学二真题.pdf",
+                    "releaseBacklogRank": 0,
+                },
+                {
+                    "taskId": "missing_math2_2020",
+                    "action": "download_and_extract",
+                    "status": "pending",
+                    "priority": 100,
+                    "track": "math2",
+                    "year": 2020,
+                    "sourceType": "official_paper",
+                    "safeDisplayName": "2020考研数学二真题.pdf",
+                    "releaseBacklogRank": 1,
+                },
+            ]
+        }
+
+        selected = select_pending_tasks(
+            queue,
+            limit=10,
+            source_type="official_paper",
+            paper_role="main",
+            published_slots={"math2:2019"},
+        )
+
+        self.assertEqual([task["taskId"] for task in selected], ["missing_math2_2020"])
+
+    def test_select_pending_tasks_allows_explicit_published_task_id(self):
+        queue = {
+            "tasks": [
+                {
+                    "taskId": "published_math2_2019",
+                    "sourceId": "src_math2_2019",
+                    "action": "download_and_extract",
+                    "status": "pending",
+                    "priority": 100,
+                    "track": "math2",
+                    "year": 2019,
+                    "sourceType": "official_paper",
+                    "safeDisplayName": "2019考研数学二真题.pdf",
+                }
+            ]
+        }
+
+        selected = select_pending_tasks(
+            queue,
+            limit=10,
+            task_id="published_math2_2019",
+            source_type="official_paper",
+            paper_role="main",
+            published_slots={"math2:2019"},
+        )
+
+        self.assertEqual([task["taskId"] for task in selected], ["published_math2_2019"])
+
     def test_select_pending_tasks_skips_known_mislabeled_math2_2016_source(self):
         queue = {
             "tasks": [

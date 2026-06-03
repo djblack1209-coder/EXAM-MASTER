@@ -1,0 +1,1338 @@
+{
+  "id": "math2-2019",
+  "source": "math2-2019-paper-answer",
+  "paperId": "math2-2019",
+  "paperName": "2019考研数学二真题",
+  "subject": "数学",
+  "subjectKey": "math",
+  "track": "math2",
+  "year": "2019",
+  "quality": "ready",
+  "publicationStatus": "published",
+  "publicationBlockers": [],
+  "sourceEvidencePolicy": "baidu_netdisk_official_paper_pdf_question_crop_trimmed_answer_key_image_v1",
+  "sourceFiles": [
+    {
+      "id": "math2-2019-paper-answer",
+      "role": "paper_answer",
+      "localPath": "data/raw-inbox/src_021a329bfc22c3b26ed9b510-2019考研数学二真题.pdf",
+      "sha256": "sha256:b7554df125b6d9884eef6a58427e9e526eb3c8fb49f4860294dd53449357b088",
+      "sourceId": "src_021a329bfc22c3b26ed9b510",
+      "evidenceNote": "The 5-page scanned source uses pages 1-4 for questions and page 5 for the reference answer key. Question pages include a faint publisher watermark that does not contain answers; the published answer-page-05 crop removes the promotional tail below q23."
+    }
+  ],
+  "assetRoot": "question-bank/math2-2019",
+  "processed_at": "2026-06-03T23:55:58Z",
+  "total_cards": 23,
+  "cards": [
+    {
+      "id": "math2-2019-001",
+      "number": 1,
+      "paperId": "math2-2019",
+      "paperName": "2019考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2019",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2019考研数学二第1题（选择题）。题干、公式和图形以题面裁切图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2019 数学二真题 PDF；选择题答案键见参考答案页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2019/question-01.jpg",
+          "caption": "题面裁切图 q01",
+          "alt": "2019考研数学二第01题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2019/answer-page-05.jpg",
+          "caption": "参考答案 p.5",
+          "alt": "2019考研数学二参考答案 p.5"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2019",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2019-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:6e57ce0cbd1b0dc68435a5a7e4e2935432aa2448a3bbc3abe380234884eb99a2",
+      "answerTextHash": "sha256:98d843014fcc06e8c015999ef30423714e3b0fc8d97ddf5a4680ed5e2e3f0339",
+      "sourceEvidence": {
+        "evidenceId": "math2-2019-q01",
+        "sourceId": "src_021a329bfc22c3b26ed9b510",
+        "answerSourceId": "src_021a329bfc22c3b26ed9b510",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_trimmed_answer_key_page_image",
+        "sourceEvidenceId": "math2-2019-paper-answer",
+        "answerEvidenceId": "math2-2019-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:98d843014fcc06e8c015999ef30423714e3b0fc8d97ddf5a4680ed5e2e3f0339"
+      }
+    },
+    {
+      "id": "math2-2019-002",
+      "number": 2,
+      "paperId": "math2-2019",
+      "paperName": "2019考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2019",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2019考研数学二第2题（选择题）。题干、公式和图形以题面裁切图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2019 数学二真题 PDF；选择题答案键见参考答案页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2019/question-02.jpg",
+          "caption": "题面裁切图 q02",
+          "alt": "2019考研数学二第02题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2019/answer-page-05.jpg",
+          "caption": "参考答案 p.5",
+          "alt": "2019考研数学二参考答案 p.5"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2019",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2019-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:7719b6b11b2537fec79033fd1035e7bfe3b10171fee148f88a2200df153b5d47",
+      "answerTextHash": "sha256:a1fc181e7273154ad55820f682afb4ea6f525df2886ec51a36dedff5cdc77fe4",
+      "sourceEvidence": {
+        "evidenceId": "math2-2019-q02",
+        "sourceId": "src_021a329bfc22c3b26ed9b510",
+        "answerSourceId": "src_021a329bfc22c3b26ed9b510",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_trimmed_answer_key_page_image",
+        "sourceEvidenceId": "math2-2019-paper-answer",
+        "answerEvidenceId": "math2-2019-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:a1fc181e7273154ad55820f682afb4ea6f525df2886ec51a36dedff5cdc77fe4"
+      }
+    },
+    {
+      "id": "math2-2019-003",
+      "number": 3,
+      "paperId": "math2-2019",
+      "paperName": "2019考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2019",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2019考研数学二第3题（选择题）。题干、公式和图形以题面裁切图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2019 数学二真题 PDF；选择题答案键见参考答案页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2019/question-03.jpg",
+          "caption": "题面裁切图 q03",
+          "alt": "2019考研数学二第03题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2019/answer-page-05.jpg",
+          "caption": "参考答案 p.5",
+          "alt": "2019考研数学二参考答案 p.5"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2019",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2019-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:9b9d942c0e75ca52a1c992aa901bf966fefcc26f29e56c878421eaa223d8783d",
+      "answerTextHash": "sha256:28d0c2da83a91da6daa0b76dc4fb5ce9a2d98a69f7ac96655fe3d017a8584605",
+      "sourceEvidence": {
+        "evidenceId": "math2-2019-q03",
+        "sourceId": "src_021a329bfc22c3b26ed9b510",
+        "answerSourceId": "src_021a329bfc22c3b26ed9b510",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_trimmed_answer_key_page_image",
+        "sourceEvidenceId": "math2-2019-paper-answer",
+        "answerEvidenceId": "math2-2019-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:28d0c2da83a91da6daa0b76dc4fb5ce9a2d98a69f7ac96655fe3d017a8584605"
+      }
+    },
+    {
+      "id": "math2-2019-004",
+      "number": 4,
+      "paperId": "math2-2019",
+      "paperName": "2019考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2019",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2019考研数学二第4题（选择题）。题干、公式和图形以题面裁切图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2019 数学二真题 PDF；选择题答案键见参考答案页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2019/question-04.jpg",
+          "caption": "题面裁切图 q04",
+          "alt": "2019考研数学二第04题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2019/answer-page-05.jpg",
+          "caption": "参考答案 p.5",
+          "alt": "2019考研数学二参考答案 p.5"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2019",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2019-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:070885a1aebbb44d3ca7d5462e6cb7ccac5e9dd9824e597cb9921bb5dc65d21f",
+      "answerTextHash": "sha256:28d0c2da83a91da6daa0b76dc4fb5ce9a2d98a69f7ac96655fe3d017a8584605",
+      "sourceEvidence": {
+        "evidenceId": "math2-2019-q04",
+        "sourceId": "src_021a329bfc22c3b26ed9b510",
+        "answerSourceId": "src_021a329bfc22c3b26ed9b510",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_trimmed_answer_key_page_image",
+        "sourceEvidenceId": "math2-2019-paper-answer",
+        "answerEvidenceId": "math2-2019-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:28d0c2da83a91da6daa0b76dc4fb5ce9a2d98a69f7ac96655fe3d017a8584605"
+      }
+    },
+    {
+      "id": "math2-2019-005",
+      "number": 5,
+      "paperId": "math2-2019",
+      "paperName": "2019考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2019",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2019考研数学二第5题（选择题）。题干、公式和图形以题面裁切图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2019 数学二真题 PDF；选择题答案键见参考答案页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2019/question-05.jpg",
+          "caption": "题面裁切图 q05",
+          "alt": "2019考研数学二第05题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2019/answer-page-05.jpg",
+          "caption": "参考答案 p.5",
+          "alt": "2019考研数学二参考答案 p.5"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2019",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2019-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:cfab7a9850f430f1766248913153670b19263f1893346129001761e86339e6f0",
+      "answerTextHash": "sha256:7e89265d7268b43fc3379f8365eab4dd2ea97698a375e1f59cea607b2aeced60",
+      "sourceEvidence": {
+        "evidenceId": "math2-2019-q05",
+        "sourceId": "src_021a329bfc22c3b26ed9b510",
+        "answerSourceId": "src_021a329bfc22c3b26ed9b510",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_trimmed_answer_key_page_image",
+        "sourceEvidenceId": "math2-2019-paper-answer",
+        "answerEvidenceId": "math2-2019-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:7e89265d7268b43fc3379f8365eab4dd2ea97698a375e1f59cea607b2aeced60"
+      }
+    },
+    {
+      "id": "math2-2019-006",
+      "number": 6,
+      "paperId": "math2-2019",
+      "paperName": "2019考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2019",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2019考研数学二第6题（选择题）。题干、公式和图形以题面裁切图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2019 数学二真题 PDF；选择题答案键见参考答案页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2019/question-06.jpg",
+          "caption": "题面裁切图 q06",
+          "alt": "2019考研数学二第06题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2019/answer-page-05.jpg",
+          "caption": "参考答案 p.5",
+          "alt": "2019考研数学二参考答案 p.5"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2019",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2019-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:93281e714c6171d4c359ea6b05d9c81371ee678f8fe5d173fafe43d7612937b6",
+      "answerTextHash": "sha256:7e89265d7268b43fc3379f8365eab4dd2ea97698a375e1f59cea607b2aeced60",
+      "sourceEvidence": {
+        "evidenceId": "math2-2019-q06",
+        "sourceId": "src_021a329bfc22c3b26ed9b510",
+        "answerSourceId": "src_021a329bfc22c3b26ed9b510",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_trimmed_answer_key_page_image",
+        "sourceEvidenceId": "math2-2019-paper-answer",
+        "answerEvidenceId": "math2-2019-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:7e89265d7268b43fc3379f8365eab4dd2ea97698a375e1f59cea607b2aeced60"
+      }
+    },
+    {
+      "id": "math2-2019-007",
+      "number": 7,
+      "paperId": "math2-2019",
+      "paperName": "2019考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2019",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2019考研数学二第7题（选择题）。题干、公式和图形以题面裁切图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2019 数学二真题 PDF；选择题答案键见参考答案页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2019/question-07.jpg",
+          "caption": "题面裁切图 q07",
+          "alt": "2019考研数学二第07题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2019/answer-page-05.jpg",
+          "caption": "参考答案 p.5",
+          "alt": "2019考研数学二参考答案 p.5"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2019",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2019-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:6e6da9c5ea9a620358bd4b965ffb1e9b1ecd54024a7b3b5b99eac692ed8547ef",
+      "answerTextHash": "sha256:7e89265d7268b43fc3379f8365eab4dd2ea97698a375e1f59cea607b2aeced60",
+      "sourceEvidence": {
+        "evidenceId": "math2-2019-q07",
+        "sourceId": "src_021a329bfc22c3b26ed9b510",
+        "answerSourceId": "src_021a329bfc22c3b26ed9b510",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_trimmed_answer_key_page_image",
+        "sourceEvidenceId": "math2-2019-paper-answer",
+        "answerEvidenceId": "math2-2019-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:7e89265d7268b43fc3379f8365eab4dd2ea97698a375e1f59cea607b2aeced60"
+      }
+    },
+    {
+      "id": "math2-2019-008",
+      "number": 8,
+      "paperId": "math2-2019",
+      "paperName": "2019考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2019",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2019考研数学二第8题（选择题）。题干、公式和图形以题面裁切图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2019 数学二真题 PDF；选择题答案键见参考答案页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2019/question-08.jpg",
+          "caption": "题面裁切图 q08",
+          "alt": "2019考研数学二第08题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2019/answer-page-05.jpg",
+          "caption": "参考答案 p.5",
+          "alt": "2019考研数学二参考答案 p.5"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2019",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2019-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:6448ccb7a33d46fcbbf748750bb5eb803f735ec0c060efb95716ab2821a2adda",
+      "answerTextHash": "sha256:98d843014fcc06e8c015999ef30423714e3b0fc8d97ddf5a4680ed5e2e3f0339",
+      "sourceEvidence": {
+        "evidenceId": "math2-2019-q08",
+        "sourceId": "src_021a329bfc22c3b26ed9b510",
+        "answerSourceId": "src_021a329bfc22c3b26ed9b510",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_trimmed_answer_key_page_image",
+        "sourceEvidenceId": "math2-2019-paper-answer",
+        "answerEvidenceId": "math2-2019-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:98d843014fcc06e8c015999ef30423714e3b0fc8d97ddf5a4680ed5e2e3f0339"
+      }
+    },
+    {
+      "id": "math2-2019-009",
+      "number": 9,
+      "paperId": "math2-2019",
+      "paperName": "2019考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2019",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2019考研数学二第9题（填空题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "4e^(3/2)",
+      "explanation": "答案来自本地百度网盘 2019 数学二真题 PDF；完整题干、公式和答案键见原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2019/question-09.jpg",
+          "caption": "题面裁切图 q09",
+          "alt": "2019考研数学二第09题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2019/answer-page-05.jpg",
+          "caption": "参考答案 p.5",
+          "alt": "2019考研数学二参考答案 p.5"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2019",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2019-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:a3ead7d0df56a7de993590309c78ff54f63014183dbb47793b7db528cd7be897",
+      "answerTextHash": "sha256:957f0f05d29da88278d8b8c3f7bdb24c0b9e44811ba8236a299b3a06927e7e42",
+      "sourceEvidence": {
+        "evidenceId": "math2-2019-q09",
+        "sourceId": "src_021a329bfc22c3b26ed9b510",
+        "answerSourceId": "src_021a329bfc22c3b26ed9b510",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_trimmed_answer_key_page_image",
+        "sourceEvidenceId": "math2-2019-paper-answer",
+        "answerEvidenceId": "math2-2019-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:957f0f05d29da88278d8b8c3f7bdb24c0b9e44811ba8236a299b3a06927e7e42"
+      }
+    },
+    {
+      "id": "math2-2019-010",
+      "number": 10,
+      "paperId": "math2-2019",
+      "paperName": "2019考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2019",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2019考研数学二第10题（填空题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "3π/2+2",
+      "explanation": "答案来自本地百度网盘 2019 数学二真题 PDF；完整题干、公式和答案键见原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2019/question-10.jpg",
+          "caption": "题面裁切图 q10",
+          "alt": "2019考研数学二第10题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2019/answer-page-05.jpg",
+          "caption": "参考答案 p.5",
+          "alt": "2019考研数学二参考答案 p.5"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2019",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2019-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:6703da540f18b22e7ffcbce9f3338a77d1950351ee67308e3207b9c7a0e1eb51",
+      "answerTextHash": "sha256:ec0405d35f864acbb4d4666b1ae1ed8f5d03f43f829167195afa97745262c8ee",
+      "sourceEvidence": {
+        "evidenceId": "math2-2019-q10",
+        "sourceId": "src_021a329bfc22c3b26ed9b510",
+        "answerSourceId": "src_021a329bfc22c3b26ed9b510",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_trimmed_answer_key_page_image",
+        "sourceEvidenceId": "math2-2019-paper-answer",
+        "answerEvidenceId": "math2-2019-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:ec0405d35f864acbb4d4666b1ae1ed8f5d03f43f829167195afa97745262c8ee"
+      }
+    },
+    {
+      "id": "math2-2019-011",
+      "number": 11,
+      "paperId": "math2-2019",
+      "paperName": "2019考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2019",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2019考研数学二第11题（填空题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "yf(y^2/x)",
+      "explanation": "答案来自本地百度网盘 2019 数学二真题 PDF；完整题干、公式和答案键见原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2019/question-11.jpg",
+          "caption": "题面裁切图 q11",
+          "alt": "2019考研数学二第11题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2019/answer-page-05.jpg",
+          "caption": "参考答案 p.5",
+          "alt": "2019考研数学二参考答案 p.5"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2019",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2019-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:c89480ade44e879a71fefa3c4310ec3be37e895f8e6c26e8220b94c208aecfe3",
+      "answerTextHash": "sha256:925d7422af4e27ed9f6a0066a6edab68d52b790347e329b4846e15649a87392c",
+      "sourceEvidence": {
+        "evidenceId": "math2-2019-q11",
+        "sourceId": "src_021a329bfc22c3b26ed9b510",
+        "answerSourceId": "src_021a329bfc22c3b26ed9b510",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_trimmed_answer_key_page_image",
+        "sourceEvidenceId": "math2-2019-paper-answer",
+        "answerEvidenceId": "math2-2019-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:925d7422af4e27ed9f6a0066a6edab68d52b790347e329b4846e15649a87392c"
+      }
+    },
+    {
+      "id": "math2-2019-012",
+      "number": 12,
+      "paperId": "math2-2019",
+      "paperName": "2019考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2019",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2019考研数学二第12题（填空题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "1/2 ln3",
+      "explanation": "答案来自本地百度网盘 2019 数学二真题 PDF；完整题干、公式和答案键见原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2019/question-12.jpg",
+          "caption": "题面裁切图 q12",
+          "alt": "2019考研数学二第12题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2019/answer-page-05.jpg",
+          "caption": "参考答案 p.5",
+          "alt": "2019考研数学二参考答案 p.5"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2019",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2019-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:c2d6b245093f94120c3b938785f219ace7fa7fad1b5c37c329858459d6acb0af",
+      "answerTextHash": "sha256:87e1db14410431acba7e0ac7bc9db57a1890c730df51956d02f6e76e63f33573",
+      "sourceEvidence": {
+        "evidenceId": "math2-2019-q12",
+        "sourceId": "src_021a329bfc22c3b26ed9b510",
+        "answerSourceId": "src_021a329bfc22c3b26ed9b510",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_trimmed_answer_key_page_image",
+        "sourceEvidenceId": "math2-2019-paper-answer",
+        "answerEvidenceId": "math2-2019-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:87e1db14410431acba7e0ac7bc9db57a1890c730df51956d02f6e76e63f33573"
+      }
+    },
+    {
+      "id": "math2-2019-013",
+      "number": 13,
+      "paperId": "math2-2019",
+      "paperName": "2019考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2019",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2019考研数学二第13题（填空题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "1/4(cos1-1)",
+      "explanation": "答案来自本地百度网盘 2019 数学二真题 PDF；完整题干、公式和答案键见原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2019/question-13.jpg",
+          "caption": "题面裁切图 q13",
+          "alt": "2019考研数学二第13题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2019/answer-page-05.jpg",
+          "caption": "参考答案 p.5",
+          "alt": "2019考研数学二参考答案 p.5"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2019",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2019-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:407755ae0bdb3643f366d58f21c9ee98a667673dae1ae295f8203a0b219387ad",
+      "answerTextHash": "sha256:58436febba29e8d5c884e3dabfd481675fc00875fadc7bf276e16460778f8c1c",
+      "sourceEvidence": {
+        "evidenceId": "math2-2019-q13",
+        "sourceId": "src_021a329bfc22c3b26ed9b510",
+        "answerSourceId": "src_021a329bfc22c3b26ed9b510",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_trimmed_answer_key_page_image",
+        "sourceEvidenceId": "math2-2019-paper-answer",
+        "answerEvidenceId": "math2-2019-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:58436febba29e8d5c884e3dabfd481675fc00875fadc7bf276e16460778f8c1c"
+      }
+    },
+    {
+      "id": "math2-2019-014",
+      "number": 14,
+      "paperId": "math2-2019",
+      "paperName": "2019考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2019",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2019考研数学二第14题（填空题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "-4",
+      "explanation": "答案来自本地百度网盘 2019 数学二真题 PDF；完整题干、公式和答案键见原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2019/question-14.jpg",
+          "caption": "题面裁切图 q14",
+          "alt": "2019考研数学二第14题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2019/answer-page-05.jpg",
+          "caption": "参考答案 p.5",
+          "alt": "2019考研数学二参考答案 p.5"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2019",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2019-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:313b3ac246fee8b9f4fae88589477287ee19873bfe6cd533eb9d60375b5a8a04",
+      "answerTextHash": "sha256:e146a77f8e6cdba088156b7cc3cc7af09f48295f0f90bb53941c1cfd42e5976d",
+      "sourceEvidence": {
+        "evidenceId": "math2-2019-q14",
+        "sourceId": "src_021a329bfc22c3b26ed9b510",
+        "answerSourceId": "src_021a329bfc22c3b26ed9b510",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_trimmed_answer_key_page_image",
+        "sourceEvidenceId": "math2-2019-paper-answer",
+        "answerEvidenceId": "math2-2019-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:e146a77f8e6cdba088156b7cc3cc7af09f48295f0f90bb53941c1cfd42e5976d"
+      }
+    },
+    {
+      "id": "math2-2019-015",
+      "number": 15,
+      "paperId": "math2-2019",
+      "paperName": "2019考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2019",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2019考研数学二第15题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "f'(x) 分段表达式、极小值点 x=-1 与 x=1/e、极大值点 x=0；完整极值结果见答案原页。",
+      "explanation": "答案来自本地百度网盘 2019 数学二真题 PDF；完整演算、证明或推导过程见参考答案页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2019/question-15.jpg",
+          "caption": "题面裁切图 q15",
+          "alt": "2019考研数学二第15题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2019/answer-page-05.jpg",
+          "caption": "参考答案 p.5",
+          "alt": "2019考研数学二参考答案 p.5"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2019",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2019-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:3196ca946f4122c013f5ab31cf2761776e76c5d7aad2cc7d58d3f4cf9124173c",
+      "answerTextHash": "sha256:bf17eb767753a3c9eb024ce353cb5b25e4f552caecb44dab16845a89162526dc",
+      "sourceEvidence": {
+        "evidenceId": "math2-2019-q15",
+        "sourceId": "src_021a329bfc22c3b26ed9b510",
+        "answerSourceId": "src_021a329bfc22c3b26ed9b510",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_trimmed_answer_key_page_image",
+        "sourceEvidenceId": "math2-2019-paper-answer",
+        "answerEvidenceId": "math2-2019-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:bf17eb767753a3c9eb024ce353cb5b25e4f552caecb44dab16845a89162526dc"
+      }
+    },
+    {
+      "id": "math2-2019-016",
+      "number": 16,
+      "paperId": "math2-2019",
+      "paperName": "2019考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2019",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2019考研数学二第16题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "不定积分为 -2ln|x-1|-3/(x-1)+ln(x^2+x+1)+C。",
+      "explanation": "答案来自本地百度网盘 2019 数学二真题 PDF；完整演算、证明或推导过程见参考答案页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2019/question-16.jpg",
+          "caption": "题面裁切图 q16",
+          "alt": "2019考研数学二第16题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2019/answer-page-05.jpg",
+          "caption": "参考答案 p.5",
+          "alt": "2019考研数学二参考答案 p.5"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2019",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2019-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:2269c61b917cd116620a668ee3b11fb570042be15c69026832b71d72806a637d",
+      "answerTextHash": "sha256:939e0dbc40dac324db55b7d6da2dc40dd819264da7ad5d0723daa81ee90c89d9",
+      "sourceEvidence": {
+        "evidenceId": "math2-2019-q16",
+        "sourceId": "src_021a329bfc22c3b26ed9b510",
+        "answerSourceId": "src_021a329bfc22c3b26ed9b510",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_trimmed_answer_key_page_image",
+        "sourceEvidenceId": "math2-2019-paper-answer",
+        "answerEvidenceId": "math2-2019-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:939e0dbc40dac324db55b7d6da2dc40dd819264da7ad5d0723daa81ee90c89d9"
+      }
+    },
+    {
+      "id": "math2-2019-017",
+      "number": 17,
+      "paperId": "math2-2019",
+      "paperName": "2019考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2019",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2019考研数学二第17题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "(I) y(x)=sqrt(x)e^(x^2/2)；(II) 旋转体体积为 1/2π(e^4-e)。",
+      "explanation": "答案来自本地百度网盘 2019 数学二真题 PDF；完整演算、证明或推导过程见参考答案页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2019/question-17.jpg",
+          "caption": "题面裁切图 q17",
+          "alt": "2019考研数学二第17题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2019/answer-page-05.jpg",
+          "caption": "参考答案 p.5",
+          "alt": "2019考研数学二参考答案 p.5"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2019",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2019-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:66705ae6c21b48164a4a63b06612f69a9e54ed37e558baa9e816d0465066ab73",
+      "answerTextHash": "sha256:6b2e75496f92d0070f050378e2f75d0d1e3444b7b821cc5116cd01b6e239150a",
+      "sourceEvidence": {
+        "evidenceId": "math2-2019-q17",
+        "sourceId": "src_021a329bfc22c3b26ed9b510",
+        "answerSourceId": "src_021a329bfc22c3b26ed9b510",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_trimmed_answer_key_page_image",
+        "sourceEvidenceId": "math2-2019-paper-answer",
+        "answerEvidenceId": "math2-2019-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:6b2e75496f92d0070f050378e2f75d0d1e3444b7b821cc5116cd01b6e239150a"
+      }
+    },
+    {
+      "id": "math2-2019-018",
+      "number": 18,
+      "paperId": "math2-2019",
+      "paperName": "2019考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2019",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2019考研数学二第18题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "二重积分值为 43√2/120。",
+      "explanation": "答案来自本地百度网盘 2019 数学二真题 PDF；完整演算、证明或推导过程见参考答案页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2019/question-18.jpg",
+          "caption": "题面裁切图 q18",
+          "alt": "2019考研数学二第18题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2019/answer-page-05.jpg",
+          "caption": "参考答案 p.5",
+          "alt": "2019考研数学二参考答案 p.5"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2019",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2019-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:fd27b5b1addfd467ab0ca8d2a07f6680acce758cd10b1eb1e926d3bd071155f1",
+      "answerTextHash": "sha256:1c5e8a9cf447b3aafbec21e52659ce93d86350946c981a95e397b43fe2b5c184",
+      "sourceEvidence": {
+        "evidenceId": "math2-2019-q18",
+        "sourceId": "src_021a329bfc22c3b26ed9b510",
+        "answerSourceId": "src_021a329bfc22c3b26ed9b510",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_trimmed_answer_key_page_image",
+        "sourceEvidenceId": "math2-2019-paper-answer",
+        "answerEvidenceId": "math2-2019-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:1c5e8a9cf447b3aafbec21e52659ce93d86350946c981a95e397b43fe2b5c184"
+      }
+    },
+    {
+      "id": "math2-2019-019",
+      "number": 19,
+      "paperId": "math2-2019",
+      "paperName": "2019考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2019",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2019考研数学二第19题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "S_n=1/2+e^(-π)(1-e^(-(n-1)π))/(1-e^(-π))+1/2e^(-nπ)，lim S_n=1/2+1/(e^π-1)。",
+      "explanation": "答案来自本地百度网盘 2019 数学二真题 PDF；完整演算、证明或推导过程见参考答案页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2019/question-19.jpg",
+          "caption": "题面裁切图 q19",
+          "alt": "2019考研数学二第19题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2019/answer-page-05.jpg",
+          "caption": "参考答案 p.5",
+          "alt": "2019考研数学二参考答案 p.5"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2019",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2019-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:16c72aff1f09e3b8de17c1ecdf97bc696ecf678d5957d7b2bd8ead9c49579a26",
+      "answerTextHash": "sha256:1d444e03b49b22a6d802429bbd1d22391ff3b17b4fe50ccd88af6badbb720818",
+      "sourceEvidence": {
+        "evidenceId": "math2-2019-q19",
+        "sourceId": "src_021a329bfc22c3b26ed9b510",
+        "answerSourceId": "src_021a329bfc22c3b26ed9b510",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_trimmed_answer_key_page_image",
+        "sourceEvidenceId": "math2-2019-paper-answer",
+        "answerEvidenceId": "math2-2019-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:1d444e03b49b22a6d802429bbd1d22391ff3b17b4fe50ccd88af6badbb720818"
+      }
+    },
+    {
+      "id": "math2-2019-020",
+      "number": 20,
+      "paperId": "math2-2019",
+      "paperName": "2019考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2019",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2019考研数学二第20题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "a=-3/4，b=3/4。",
+      "explanation": "答案来自本地百度网盘 2019 数学二真题 PDF；完整演算、证明或推导过程见参考答案页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2019/question-20.jpg",
+          "caption": "题面裁切图 q20",
+          "alt": "2019考研数学二第20题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2019/answer-page-05.jpg",
+          "caption": "参考答案 p.5",
+          "alt": "2019考研数学二参考答案 p.5"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2019",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2019-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:c4976ac361dc6de8f1467cb08922c6dabf7cbf36f904daccbe177d8db5536568",
+      "answerTextHash": "sha256:c1db82df56e4ca54462ae5e06b7531e63294dd6308fa5a4984cb8f33a88050c0",
+      "sourceEvidence": {
+        "evidenceId": "math2-2019-q20",
+        "sourceId": "src_021a329bfc22c3b26ed9b510",
+        "answerSourceId": "src_021a329bfc22c3b26ed9b510",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_trimmed_answer_key_page_image",
+        "sourceEvidenceId": "math2-2019-paper-answer",
+        "answerEvidenceId": "math2-2019-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:c1db82df56e4ca54462ae5e06b7531e63294dd6308fa5a4984cb8f33a88050c0"
+      }
+    },
+    {
+      "id": "math2-2019-021",
+      "number": 21,
+      "paperId": "math2-2019",
+      "paperName": "2019考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2019",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2019考研数学二第21题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "证明略，完整证明见答案原页。",
+      "explanation": "答案来自本地百度网盘 2019 数学二真题 PDF；完整演算、证明或推导过程见参考答案页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2019/question-21.jpg",
+          "caption": "题面裁切图 q21",
+          "alt": "2019考研数学二第21题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2019/answer-page-05.jpg",
+          "caption": "参考答案 p.5",
+          "alt": "2019考研数学二参考答案 p.5"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2019",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2019-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:169ce44a164d813319d58dc6e5be5857bcf807169091870c5048e385779f94de",
+      "answerTextHash": "sha256:ef0001991be1df84b7708262e197d839ec34c08ee0d8444026f5661e27928781",
+      "sourceEvidence": {
+        "evidenceId": "math2-2019-q21",
+        "sourceId": "src_021a329bfc22c3b26ed9b510",
+        "answerSourceId": "src_021a329bfc22c3b26ed9b510",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_trimmed_answer_key_page_image",
+        "sourceEvidenceId": "math2-2019-paper-answer",
+        "answerEvidenceId": "math2-2019-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:ef0001991be1df84b7708262e197d839ec34c08ee0d8444026f5661e27928781"
+      }
+    },
+    {
+      "id": "math2-2019-022",
+      "number": 22,
+      "paperId": "math2-2019",
+      "paperName": "2019考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2019",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2019考研数学二第22题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "a≠-1 时向量组 I 与 II 等价；a=1 时 β3=(3-2k)α1+(-2+k)α2+kα3；a≠±1 时 β3=α1-α2+α3。",
+      "explanation": "答案来自本地百度网盘 2019 数学二真题 PDF；完整演算、证明或推导过程见参考答案页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2019/question-22.jpg",
+          "caption": "题面裁切图 q22",
+          "alt": "2019考研数学二第22题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2019/answer-page-05.jpg",
+          "caption": "参考答案 p.5",
+          "alt": "2019考研数学二参考答案 p.5"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2019",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2019-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:c2db3e31de92e9ba87dd02acdc14e32ecd46256f96a97100456eb424db07d695",
+      "answerTextHash": "sha256:331420fba4ed935929c264bbb6bc97a411a216a949480fe8d068bf3e3a365a4e",
+      "sourceEvidence": {
+        "evidenceId": "math2-2019-q22",
+        "sourceId": "src_021a329bfc22c3b26ed9b510",
+        "answerSourceId": "src_021a329bfc22c3b26ed9b510",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_trimmed_answer_key_page_image",
+        "sourceEvidenceId": "math2-2019-paper-answer",
+        "answerEvidenceId": "math2-2019-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:331420fba4ed935929c264bbb6bc97a411a216a949480fe8d068bf3e3a365a4e"
+      }
+    },
+    {
+      "id": "math2-2019-023",
+      "number": 23,
+      "paperId": "math2-2019",
+      "paperName": "2019考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2019",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2019考研数学二第23题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "(I) x=3，y=-2；(II) 可取满足 P^(-1)AP=B 的 P=[[-1,-1,-1],[2,1,2],[0,0,4]]。",
+      "explanation": "答案来自本地百度网盘 2019 数学二真题 PDF；完整演算、证明或推导过程见参考答案页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2019/question-23.jpg",
+          "caption": "题面裁切图 q23",
+          "alt": "2019考研数学二第23题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2019/answer-page-05.jpg",
+          "caption": "参考答案 p.5",
+          "alt": "2019考研数学二参考答案 p.5"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2019",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2019-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:5189fd51b38d60b48c053e1efb25ccad7a4e18f76d9a403abc9a7a0f49a1d555",
+      "answerTextHash": "sha256:a0624b1349fe35f802634ec907360ed9a7dfe8e851b20f7eef9505444a3ddcb3",
+      "sourceEvidence": {
+        "evidenceId": "math2-2019-q23",
+        "sourceId": "src_021a329bfc22c3b26ed9b510",
+        "answerSourceId": "src_021a329bfc22c3b26ed9b510",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_trimmed_answer_key_page_image",
+        "sourceEvidenceId": "math2-2019-paper-answer",
+        "answerEvidenceId": "math2-2019-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:a0624b1349fe35f802634ec907360ed9a7dfe8e851b20f7eef9505444a3ddcb3"
+      }
+    }
+  ]
+}

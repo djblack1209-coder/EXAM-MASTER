@@ -604,6 +604,15 @@ describe('published flashcard bank registry', () => {
     expect(math22018.cards.find((card) => card.number === 23).answerImages.at(-1).src).toContain(
       'question-bank/math2-2018/answer-page-14.jpg'
     );
+    const math22019 = await loadBankData('math2-2019');
+    expect(math22019.cards).toHaveLength(23);
+    expect(math22019.cards.every((card) => card.answerEvidenceStatus === 'matched')).toBe(true);
+    expect(math22019.cards.find((card) => card.number === 1).answer).toBe('C');
+    expect(math22019.cards.find((card) => card.number === 10).answer).toBe('3π/2+2');
+    expect(math22019.cards.find((card) => card.number === 17).answer).toContain('1/2π(e^4-e)');
+    expect(math22019.cards.find((card) => card.number === 23).answerImages.at(-1).src).toContain(
+      'question-bank/math2-2019/answer-page-05.jpg'
+    );
     const math32005 = await loadBankData('math3-2005');
     expect(math32005.cards).toHaveLength(23);
     expect(math32005.cards.every((card) => card.answerEvidenceStatus === 'matched')).toBe(true);
