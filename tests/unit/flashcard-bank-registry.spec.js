@@ -587,6 +587,14 @@ describe('published flashcard bank registry', () => {
     expect(math22014.cards.find((card) => card.number === 23).answerImages.at(-1).src).toContain(
       'question-bank/math2-2014/answer-page-16.jpg'
     );
+    const math22017 = await loadBankData('math2-2017');
+    expect(math22017.cards).toHaveLength(23);
+    expect(math22017.cards.every((card) => card.answerEvidenceStatus === 'matched')).toBe(true);
+    expect(math22017.cards.find((card) => card.number === 1).answer).toBe('A');
+    expect(math22017.cards.find((card) => card.number === 6).answer).toBe('C');
+    expect(math22017.cards.find((card) => card.number === 23).answerImages.at(-1).src).toContain(
+      'question-bank/math2-2017/answer-page-10.jpg'
+    );
     const math32005 = await loadBankData('math3-2005');
     expect(math32005.cards).toHaveLength(23);
     expect(math32005.cards.every((card) => card.answerEvidenceStatus === 'matched')).toBe(true);
@@ -933,6 +941,7 @@ describe('published flashcard bank registry', () => {
     expect(math.tracks[2].banks.some((bank) => bank.id === 'math3-2011')).toBe(true);
     expect(math.tracks[2].banks.some((bank) => bank.id === 'math3-2012')).toBe(true);
     expect(math.tracks[1].banks.some((bank) => bank.id === 'math2-2014')).toBe(true);
+    expect(math.tracks[1].banks.some((bank) => bank.id === 'math2-2017')).toBe(true);
     expect(math.tracks[2].banks.some((bank) => bank.id === 'math3-2013')).toBe(true);
     expect(math.tracks[2].banks.some((bank) => bank.id === 'math3-2014')).toBe(true);
     expect(math.tracks[2].banks.some((bank) => bank.id === 'math3-2016')).toBe(true);

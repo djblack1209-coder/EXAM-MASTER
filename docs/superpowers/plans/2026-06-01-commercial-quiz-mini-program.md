@@ -1865,6 +1865,93 @@ git commit -m "chore: repair english companion option evidence"
 
 Result: committed after validation on 2026-06-02.
 
+### Task 80: Publish Math II 2017 Page-Image Bank
+
+**Files:**
+- Add: `scripts/cleaning/build_math2_2017_bank.py`
+- Add: `src/config/flashcard-banks/math2-2017.json`
+- Add: `cdn-assets/question-bank/math2-2017/*`
+- Add: `tests/unit/math2-2017-data.spec.js`
+- Modify: `src/config/bank-registry.js`
+- Modify: `src/pages/practice-sub/bank-data-table.js`
+- Modify: `tests/unit/flashcard-bank-registry.spec.js`
+- Modify: `tests/unit/question-bank-year-map.spec.js`
+- Modify: `docs/frontend-experience-refactor-diary.md`
+- Modify: `docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md`
+- Modify: `docs/08C-SCRIPTS-REFERENCE.md`
+- Modify: `docs/12-CHANGELOG.md`
+- Modify: `data/release-blocker-backlog.json`
+
+- [x] **Step 1: Repair local development environment**
+
+Repaired the local plugin cache symlink `openai-curated/build-web-data-visualization/83d1f0d2` to point at the valid `0732ec94` cache. Follow-up checks reported 26 plugin-cache symlinks checked with 0 broken links, CodeGraph MCP callable, and all discovered `SKILL.md` files with frontmatter.
+
+- [x] **Step 2: Add failing data spec**
+
+Added `tests/unit/math2-2017-data.spec.js` expecting `math2-2017` to be registered, loadable, published, 23 cards, matched answer evidence, and audited answer/page-image anchors.
+
+Initial result:
+```bash
+npm test -- tests/unit/math2-2017-data.spec.js
+```
+
+Failed because `math2-2017` was not registered yet.
+
+- [x] **Step 3: Verify source and build page-image bank**
+
+Used local raw-inbox source:
+
+```text
+data/raw-inbox/src_f91df4734f54ab6decaa093b-2017考研数学二真题.pdf
+```
+
+Source audit: 11-page scanned answer-analysis PDF, no usable text layer. Questions and answer analysis are interleaved on the same pages; page 11 contains promotional tail text and is excluded from published evidence. The source has several visible choice-answer label conflicts, so the bank follows the worked-solution conclusion where the same source's answer label conflicts with its解析.
+
+Run:
+```bash
+python3 -m py_compile scripts/cleaning/build_math2_2017_bank.py
+python3 scripts/cleaning/build_math2_2017_bank.py --force-assets
+```
+
+Result: published `src/config/flashcard-banks/math2-2017.json` plus 34 assets under `cdn-assets/question-bank/math2-2017`.
+
+- [x] **Step 4: Register and refresh practice data**
+
+Run:
+```bash
+node scripts/build/generate-compressed-bank-modules.mjs
+```
+
+Result: compressed practice-bank table generated 97 banks and includes `math2-2017`.
+
+- [x] **Step 5: Run validation**
+
+Run:
+```bash
+npm test -- tests/unit/math2-2017-data.spec.js tests/unit/question-bank-year-map.spec.js tests/unit/flashcard-bank-registry.spec.js
+node scripts/build/question-bank-release-gate.mjs --min-year=2005 --max-year=2020
+node scripts/build/release-blocker-backlog.mjs
+python3 scripts/baidu/cleaning_queue.py
+python3 scripts/baidu/run_cleaning_queue.py --dry-run --limit 12 --source-type official_paper --paper-role main --max-year 2020
+```
+
+Question-image leakage scan:
+```bash
+for img in cdn-assets/question-bank/math2-2017/question-*.jpg; do
+  base=$(basename "$img")
+  out="tmp/pdfs/math2-2017-audit/ocr-${base%.jpg}"
+  tesseract "$img" "$out" -l chi_sim+eng --psm 6 >/dev/null 2>&1 || true
+  if rg -q '答案|解析' "${out}.txt"; then
+    echo "$base"
+    rg -n '答案|解析' "${out}.txt"
+  fi
+done
+```
+
+Result: passed on 2026-06-03. The final OCR scan only reported q09's official instruction phrase `请将答案写在答题纸`, not an actual answer/analysis marker. `math2-2017.json` has 23 cards, all cards carry `answerEvidenceStatus=matched`, q01 answer is `A`, q04/q06 are `C`, q09 answer is `y=x+2`, q14 answer is `-1`, q20 contains `5π/4`, and q23 answer evidence ends at `answer-page-10.jpg`.
+
+Release gate result: 2005-2020 public-course `coverageGaps` dropped from 8 to 7, `publishedSlots` rose to 84, `sourceEvidenceGaps` stayed at 1; release backlog reports `blockers=9` and `publicCourseBlockedSlots=7`. The rebuilt release-priority dry-run now starts at Math II 2018-2020.
+
 ### Task 63: Publish English II 2010 Text-Layer Bank
 
 **Files:**
@@ -3218,6 +3305,95 @@ git diff --check
 ```
 
 Result: focused tests passed on 2026-06-03. `english1-2020.json` has 52 cards, all cards carry `answerEvidenceStatus=matched`, q01/q21/q30/q41/q45 answers are `C/C/D/C/D`, q46 carries the Renaissance translation segment, q51 uses the official singing-contest notice prompt, q52 uses the `习惯` writing prompt, and the generated bank does not contain the 2020 English II mobile-reading chart or failure translation source. The 2005-2020 release gate reports `coverageGaps=8`, `publishedSlots=83`, `sourceEvidenceGaps=1`, and `pendingCoverageBlockers=0`; release backlog reports `blockers=10` and `publicCourseBlockedSlots=8`; the rebuilt release-priority dry-run now starts at Math II 2017-2020.
+
+### Task 80: Publish Math II 2017 Page-Image Bank
+
+**Files:**
+- Add: `scripts/cleaning/build_math2_2017_bank.py`
+- Add: `src/config/flashcard-banks/math2-2017.json`
+- Add: `cdn-assets/question-bank/math2-2017/*`
+- Add: `tests/unit/math2-2017-data.spec.js`
+- Modify: `src/config/bank-registry.js`
+- Modify: `src/pages/practice-sub/bank-data-table.js`
+- Modify: `tests/unit/flashcard-bank-registry.spec.js`
+- Modify: `tests/unit/question-bank-year-map.spec.js`
+- Modify: `docs/frontend-experience-refactor-diary.md`
+- Modify: `docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md`
+- Modify: `docs/08C-SCRIPTS-REFERENCE.md`
+- Modify: `docs/12-CHANGELOG.md`
+- Modify: `data/release-blocker-backlog.json`
+
+- [x] **Step 0: Recheck development environment and source path**
+
+CodeGraph MCP was healthy before implementation, and Poppler, ffmpeg, tesseract, Node, npm, Python, `rg`, and git were available. The release-priority cleaning runner downloaded the ignored local source and then entered generic AI parsing; that auxiliary process was stopped because the deterministic page-image builder is the release path for scanned formula-heavy math sources.
+
+Downloaded/used ignored source:
+
+```text
+data/raw-inbox/src_f91df4734f54ab6decaa093b-2017考研数学二真题.pdf
+```
+
+Source audit: 11-page scanned PDF, no usable text layer. Pages 1-10 interleave question prompts and answer analysis; page 11 is promotional tail text and is not referenced by published cards.
+
+- [x] **Step 1: Add failing registry coverage**
+
+Added `tests/unit/math2-2017-data.spec.js` expecting `math2-2017` registration, 23 cards, all answer evidence matched, answer anchors q01=`A`, q04=`C`, q06=`C`, q08=`B`, q09=`y=x+2`, q14=`-1`, q15 containing `2/3`, q20 containing `5π/4`, q23 answer evidence ending at `answer-page-10.jpg`, and q23 using a single question crop.
+
+Initial result:
+```bash
+npm test -- tests/unit/math2-2017-data.spec.js
+```
+
+Failed because `math2-2017` was not registered yet.
+
+- [x] **Step 2: Build page-image bank and crop QA**
+
+Added `build_math2_2017_bank.py` with 23 cards, 10 answer/evidence page images, 24 pre-answer question crops, q06 split across two question images, and a validation guard that prevents `answer-page-11` promotional evidence from being referenced.
+
+Run:
+```bash
+python3 scripts/cleaning/build_math2_2017_bank.py --force-assets
+```
+
+Result: published `src/config/flashcard-banks/math2-2017.json` plus 34 assets under `cdn-assets/question-bank/math2-2017`.
+
+Question-image leakage scan:
+```bash
+leaks=0
+for img in cdn-assets/question-bank/math2-2017/question-*.jpg; do
+  text=$(tesseract "$img" stdout -l chi_sim+eng --psm 6 2>/dev/null | tr '\n' ' ')
+  if printf '%s' "$text" | rg -q '【答案】|\[答案\]|【解析】|\[解析\]|故选|综上'; then
+    echo "LEAK $img :: $text"
+    leaks=$((leaks+1))
+  fi
+done
+test "$leaks" -eq 0
+```
+
+Result: passed after tightening q01/q02/q03/q04/q05/q06/q07/q08/q13/q14/q16/q17/q18/q21/q23 crop boxes. The source has internal conflicts where some answer labels disagree with their own worked-solution conclusion; the published choice keys follow the worked-solution conclusions.
+
+- [x] **Step 3: Register and refresh practice data**
+
+Run:
+```bash
+node scripts/build/generate-compressed-bank-modules.mjs
+```
+
+Result: registered `math2-2017`, refreshed the year map so Math II now reports `{ total: 22, ready: 12, organizing: 0, missing: 10 }`, and regenerated 97 compressed practice-bank entries.
+
+- [x] **Step 4: Run validation**
+
+Run:
+```bash
+python3 -m py_compile scripts/cleaning/build_math2_2017_bank.py
+npm test -- tests/unit/math2-2017-data.spec.js tests/unit/question-bank-year-map.spec.js tests/unit/flashcard-bank-registry.spec.js
+node scripts/build/question-bank-release-gate.mjs --min-year=2005 --max-year=2020
+node scripts/build/release-blocker-backlog.mjs
+python3 scripts/baidu/cleaning_queue.py
+python3 scripts/baidu/run_cleaning_queue.py --dry-run --limit 12 --source-type official_paper --paper-role main --max-year 2020
+```
+
+Result: focused tests passed on 2026-06-03. `math2-2017.json` has 23 cards, `{single_choice:8, short_answer:15}`, section counts `{选择题:8, 填空题:6, 解答题:9}`, all cards carry `answerEvidenceStatus=matched`, and no card references the page 11 promotional tail. The 2005-2020 release gate reports `coverageGaps=7`, `publishedSlots=84`, `sourceEvidenceGaps=1`, and `pendingCoverageBlockers=0`; release backlog reports `blockers=9` and `publicCourseBlockedSlots=7`; the rebuilt release-priority dry-run now starts at Math II 2018-2020.
 
 ### Task 59: Block Mislabeled Math II 2016 Source
 
