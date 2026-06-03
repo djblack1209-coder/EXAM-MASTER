@@ -1,0 +1,1398 @@
+{
+  "id": "math3-2018",
+  "source": "math3-2018-paper-answer",
+  "paperId": "math3-2018",
+  "paperName": "2018考研数学三真题",
+  "subject": "数学",
+  "subjectKey": "math",
+  "track": "math3",
+  "year": "2018",
+  "quality": "ready",
+  "publicationStatus": "published",
+  "publicationBlockers": [],
+  "sourceEvidencePolicy": "baidu_netdisk_official_paper_pdf_question_crop_answer_page_image_v1",
+  "sourceFiles": [
+    {
+      "id": "math3-2018-paper-answer",
+      "role": "paper_answer",
+      "localPath": "data/raw-inbox/src_96a8e7cbc8f19d8e26451784-2018年考研数学三真题及解析.pdf",
+      "sha256": "sha256:ad61384649db753496a51cd5710aeb05c17427563f67e4c5e629d2b586b07a3d",
+      "sourceId": "src_96a8e7cbc8f19d8e26451784",
+      "evidenceNote": "The 14-page source interleaves each question with its answer analysis; page 14 is the continuation of q23 answer evidence, not an ad-only page."
+    }
+  ],
+  "assetRoot": "question-bank/math3-2018",
+  "processed_at": "2026-06-03T18:32:42Z",
+  "total_cards": 23,
+  "cards": [
+    {
+      "id": "math3-2018-001",
+      "number": 1,
+      "paperId": "math3-2018",
+      "paperName": "2018考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2018",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2018考研数学三第1题（选择题）。题干、公式和图形以题面裁切图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2018 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2018/question-01.jpg",
+          "caption": "题面裁切图 q01",
+          "alt": "2018考研数学三第01题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2018/answer-page-01.jpg",
+          "caption": "答案解析 p.1",
+          "alt": "2018考研数学三答案解析 p.1"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2018",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2018-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:5585c60600915fbe288fb3e2bfdf3b5c14326be76bc22d8bd3f4cec3a437f595",
+      "answerTextHash": "sha256:f6335e8977ced096172680deb47d3c197da7774b472b4fe4ce3651e4656f09aa",
+      "sourceEvidence": {
+        "evidenceId": "math3-2018-q01",
+        "sourceId": "src_96a8e7cbc8f19d8e26451784",
+        "answerSourceId": "src_96a8e7cbc8f19d8e26451784",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2018-paper-answer",
+        "answerEvidenceId": "math3-2018-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:f6335e8977ced096172680deb47d3c197da7774b472b4fe4ce3651e4656f09aa"
+      }
+    },
+    {
+      "id": "math3-2018-002",
+      "number": 2,
+      "paperId": "math3-2018",
+      "paperName": "2018考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2018",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2018考研数学三第2题（选择题）。题干、公式和图形以题面裁切图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2018 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2018/question-02.jpg",
+          "caption": "题面裁切图 q02",
+          "alt": "2018考研数学三第02题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2018/answer-page-01.jpg",
+          "caption": "答案解析 p.1",
+          "alt": "2018考研数学三答案解析 p.1"
+        },
+        {
+          "src": "question-bank/math3-2018/answer-page-02.jpg",
+          "caption": "答案解析 p.2",
+          "alt": "2018考研数学三答案解析 p.2"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2018",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2018-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:6bc1d341d32084bd0838bdaa319556c5aee931780618484b515b1f519071fcc9",
+      "answerTextHash": "sha256:83d8abeb12d9c0fa9a6e0901b76d8c482461cafa0bf4d238f7f8fae2c82d4275",
+      "sourceEvidence": {
+        "evidenceId": "math3-2018-q02",
+        "sourceId": "src_96a8e7cbc8f19d8e26451784",
+        "answerSourceId": "src_96a8e7cbc8f19d8e26451784",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2018-paper-answer",
+        "answerEvidenceId": "math3-2018-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:83d8abeb12d9c0fa9a6e0901b76d8c482461cafa0bf4d238f7f8fae2c82d4275"
+      }
+    },
+    {
+      "id": "math3-2018-003",
+      "number": 3,
+      "paperId": "math3-2018",
+      "paperName": "2018考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2018",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2018考研数学三第3题（选择题）。题干、公式和图形以题面裁切图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2018 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2018/question-03.jpg",
+          "caption": "题面裁切图 q03",
+          "alt": "2018考研数学三第03题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2018/answer-page-02.jpg",
+          "caption": "答案解析 p.2",
+          "alt": "2018考研数学三答案解析 p.2"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2018",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2018-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:52cc0e423ecb6388c115d1edda04b7c99da2a70e6b46d843d4e1c27b91a43490",
+      "answerTextHash": "sha256:cad57386346f62bee6aa00d160f80730cc923b804fff53afdd1c61b5181c7a0b",
+      "sourceEvidence": {
+        "evidenceId": "math3-2018-q03",
+        "sourceId": "src_96a8e7cbc8f19d8e26451784",
+        "answerSourceId": "src_96a8e7cbc8f19d8e26451784",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2018-paper-answer",
+        "answerEvidenceId": "math3-2018-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:cad57386346f62bee6aa00d160f80730cc923b804fff53afdd1c61b5181c7a0b"
+      }
+    },
+    {
+      "id": "math3-2018-004",
+      "number": 4,
+      "paperId": "math3-2018",
+      "paperName": "2018考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2018",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2018考研数学三第4题（选择题）。题干、公式和图形以题面裁切图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2018 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2018/question-04.jpg",
+          "caption": "题面裁切图 q04",
+          "alt": "2018考研数学三第04题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2018/answer-page-03.jpg",
+          "caption": "答案解析 p.3",
+          "alt": "2018考研数学三答案解析 p.3"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2018",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2018-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:c4721b5220cb2a3f3aa8779cdb88582c4355a40460bcfa7b40de3e51c43b3a6d",
+      "answerTextHash": "sha256:d637b5249be391a9a0cef957e8d809d0203bcfb6b4872f45e530441f455f7bc1",
+      "sourceEvidence": {
+        "evidenceId": "math3-2018-q04",
+        "sourceId": "src_96a8e7cbc8f19d8e26451784",
+        "answerSourceId": "src_96a8e7cbc8f19d8e26451784",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2018-paper-answer",
+        "answerEvidenceId": "math3-2018-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:d637b5249be391a9a0cef957e8d809d0203bcfb6b4872f45e530441f455f7bc1"
+      }
+    },
+    {
+      "id": "math3-2018-005",
+      "number": 5,
+      "paperId": "math3-2018",
+      "paperName": "2018考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2018",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2018考研数学三第5题（选择题）。题干、公式和图形以题面裁切图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2018 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2018/question-05.jpg",
+          "caption": "题面裁切图 q05",
+          "alt": "2018考研数学三第05题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2018/answer-page-03.jpg",
+          "caption": "答案解析 p.3",
+          "alt": "2018考研数学三答案解析 p.3"
+        },
+        {
+          "src": "question-bank/math3-2018/answer-page-04.jpg",
+          "caption": "答案解析 p.4",
+          "alt": "2018考研数学三答案解析 p.4"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2018",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2018-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:18d338cab7586d5c05bd5fb5d9b42267e143e8464a95931836ce2d16f6384898",
+      "answerTextHash": "sha256:7e1d852bfcb8d0dc88ad7cc700ea7470f41a55f2f3f75b4c0185b8a20d57b1c0",
+      "sourceEvidence": {
+        "evidenceId": "math3-2018-q05",
+        "sourceId": "src_96a8e7cbc8f19d8e26451784",
+        "answerSourceId": "src_96a8e7cbc8f19d8e26451784",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2018-paper-answer",
+        "answerEvidenceId": "math3-2018-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:7e1d852bfcb8d0dc88ad7cc700ea7470f41a55f2f3f75b4c0185b8a20d57b1c0"
+      }
+    },
+    {
+      "id": "math3-2018-006",
+      "number": 6,
+      "paperId": "math3-2018",
+      "paperName": "2018考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2018",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2018考研数学三第6题（选择题）。题干、公式和图形以题面裁切图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2018 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2018/question-06.jpg",
+          "caption": "题面裁切图 q06",
+          "alt": "2018考研数学三第06题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2018/answer-page-04.jpg",
+          "caption": "答案解析 p.4",
+          "alt": "2018考研数学三答案解析 p.4"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2018",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2018-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:ec7536e8fccce053c6c4bf6bf41ed544a645042703b95cd1847997bf55c2268b",
+      "answerTextHash": "sha256:478b109366420281686011c8cff90e9a721dc2465f77c9a112abe7a2b19acac0",
+      "sourceEvidence": {
+        "evidenceId": "math3-2018-q06",
+        "sourceId": "src_96a8e7cbc8f19d8e26451784",
+        "answerSourceId": "src_96a8e7cbc8f19d8e26451784",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2018-paper-answer",
+        "answerEvidenceId": "math3-2018-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:478b109366420281686011c8cff90e9a721dc2465f77c9a112abe7a2b19acac0"
+      }
+    },
+    {
+      "id": "math3-2018-007",
+      "number": 7,
+      "paperId": "math3-2018",
+      "paperName": "2018考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2018",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2018考研数学三第7题（选择题）。题干、公式和图形以题面裁切图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2018 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2018/question-07.jpg",
+          "caption": "题面裁切图 q07",
+          "alt": "2018考研数学三第07题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2018/answer-page-04.jpg",
+          "caption": "答案解析 p.4",
+          "alt": "2018考研数学三答案解析 p.4"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2018",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2018-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:eb7741a5324b39beb73b6e8e3a04480c925371cc3e1e61603f4fa68fb2c9947f",
+      "answerTextHash": "sha256:478b109366420281686011c8cff90e9a721dc2465f77c9a112abe7a2b19acac0",
+      "sourceEvidence": {
+        "evidenceId": "math3-2018-q07",
+        "sourceId": "src_96a8e7cbc8f19d8e26451784",
+        "answerSourceId": "src_96a8e7cbc8f19d8e26451784",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2018-paper-answer",
+        "answerEvidenceId": "math3-2018-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:478b109366420281686011c8cff90e9a721dc2465f77c9a112abe7a2b19acac0"
+      }
+    },
+    {
+      "id": "math3-2018-008",
+      "number": 8,
+      "paperId": "math3-2018",
+      "paperName": "2018考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2018",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2018考研数学三第8题（选择题）。题干、公式和图形以题面裁切图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2018 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2018/question-08-a.jpg",
+          "caption": "题面裁切图 q08-a",
+          "alt": "2018考研数学三第08题题面裁切图"
+        },
+        {
+          "src": "question-bank/math3-2018/question-08-b.jpg",
+          "caption": "题面裁切图 q08-b",
+          "alt": "2018考研数学三第08题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2018/answer-page-04.jpg",
+          "caption": "答案解析 p.4",
+          "alt": "2018考研数学三答案解析 p.4"
+        },
+        {
+          "src": "question-bank/math3-2018/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2018考研数学三答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2018",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2018-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:dcebc9b7d691a12249a1001555b06a0ae5882bf34a1a081ec5f15c5003ef26d5",
+      "answerTextHash": "sha256:1149516b9de22f3bb2f95ce7b5210a31080ad68a7a3dc39ce4360cb10d48869d",
+      "sourceEvidence": {
+        "evidenceId": "math3-2018-q08",
+        "sourceId": "src_96a8e7cbc8f19d8e26451784",
+        "answerSourceId": "src_96a8e7cbc8f19d8e26451784",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2018-paper-answer",
+        "answerEvidenceId": "math3-2018-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:1149516b9de22f3bb2f95ce7b5210a31080ad68a7a3dc39ce4360cb10d48869d"
+      }
+    },
+    {
+      "id": "math3-2018-009",
+      "number": 9,
+      "paperId": "math3-2018",
+      "paperName": "2018考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2018",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2018考研数学三第9题（填空题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "y=4x-3",
+      "explanation": "答案来自本地百度网盘 2018 数学三真题及解析 PDF；完整题干、公式和解析见原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2018/question-09.jpg",
+          "caption": "题面裁切图 q09",
+          "alt": "2018考研数学三第09题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2018/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2018考研数学三答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2018",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2018-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:c0f7e578d33ffd06ac40b523b9b2782173ad1687e5b9e3fc5a6a36c9bca381fe",
+      "answerTextHash": "sha256:7abfc500ab833e31afec6c77cb31ac164c333e051434ab6174a46c5dd937a5e1",
+      "sourceEvidence": {
+        "evidenceId": "math3-2018-q09",
+        "sourceId": "src_96a8e7cbc8f19d8e26451784",
+        "answerSourceId": "src_96a8e7cbc8f19d8e26451784",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2018-paper-answer",
+        "answerEvidenceId": "math3-2018-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:7abfc500ab833e31afec6c77cb31ac164c333e051434ab6174a46c5dd937a5e1"
+      }
+    },
+    {
+      "id": "math3-2018-010",
+      "number": 10,
+      "paperId": "math3-2018",
+      "paperName": "2018考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2018",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2018考研数学三第10题（填空题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "e^x arccos(e^x) - sqrt(1-e^(2x)) + C",
+      "explanation": "答案来自本地百度网盘 2018 数学三真题及解析 PDF；完整题干、公式和解析见原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2018/question-10.jpg",
+          "caption": "题面裁切图 q10",
+          "alt": "2018考研数学三第10题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2018/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2018考研数学三答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2018",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2018-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:581d47d8c3f37cabb605b500744a4052ee6877d3486ed774c39c344e1515a253",
+      "answerTextHash": "sha256:84218f0602cccb862d801cb1150e56f52536c3cb3a721369dc0ef2372c4496d3",
+      "sourceEvidence": {
+        "evidenceId": "math3-2018-q10",
+        "sourceId": "src_96a8e7cbc8f19d8e26451784",
+        "answerSourceId": "src_96a8e7cbc8f19d8e26451784",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2018-paper-answer",
+        "answerEvidenceId": "math3-2018-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:84218f0602cccb862d801cb1150e56f52536c3cb3a721369dc0ef2372c4496d3"
+      }
+    },
+    {
+      "id": "math3-2018-011",
+      "number": 11,
+      "paperId": "math3-2018",
+      "paperName": "2018考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2018",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2018考研数学三第11题（填空题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "y_x = C1 + C2 2^x - 5",
+      "explanation": "答案来自本地百度网盘 2018 数学三真题及解析 PDF；完整题干、公式和解析见原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2018/question-11.jpg",
+          "caption": "题面裁切图 q11",
+          "alt": "2018考研数学三第11题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2018/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2018考研数学三答案解析 p.5"
+        },
+        {
+          "src": "question-bank/math3-2018/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2018考研数学三答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2018",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2018-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:5b9bb980e357b5c6c4742a0b5053848d069822335d7f42ce58e9926d84e54f36",
+      "answerTextHash": "sha256:66147b28184a36a4d6c38085656bd44aab53ad07dbe38036c3304db94146ceec",
+      "sourceEvidence": {
+        "evidenceId": "math3-2018-q11",
+        "sourceId": "src_96a8e7cbc8f19d8e26451784",
+        "answerSourceId": "src_96a8e7cbc8f19d8e26451784",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2018-paper-answer",
+        "answerEvidenceId": "math3-2018-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:66147b28184a36a4d6c38085656bd44aab53ad07dbe38036c3304db94146ceec"
+      }
+    },
+    {
+      "id": "math3-2018-012",
+      "number": 12,
+      "paperId": "math3-2018",
+      "paperName": "2018考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2018",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2018考研数学三第12题（填空题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "2e",
+      "explanation": "答案来自本地百度网盘 2018 数学三真题及解析 PDF；完整题干、公式和解析见原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2018/question-12.jpg",
+          "caption": "题面裁切图 q12",
+          "alt": "2018考研数学三第12题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2018/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2018考研数学三答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2018",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2018-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:fb1df533b89034132f820ffa870204ca9fd26b383a10937dd7477ca402b823b6",
+      "answerTextHash": "sha256:976ad4187b78b4e3efaeb4e9b68a69ab52da878fcd68c300add57399ab5e8dfa",
+      "sourceEvidence": {
+        "evidenceId": "math3-2018-q12",
+        "sourceId": "src_96a8e7cbc8f19d8e26451784",
+        "answerSourceId": "src_96a8e7cbc8f19d8e26451784",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2018-paper-answer",
+        "answerEvidenceId": "math3-2018-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:976ad4187b78b4e3efaeb4e9b68a69ab52da878fcd68c300add57399ab5e8dfa"
+      }
+    },
+    {
+      "id": "math3-2018-013",
+      "number": 13,
+      "paperId": "math3-2018",
+      "paperName": "2018考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2018",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2018考研数学三第13题（填空题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "2",
+      "explanation": "答案来自本地百度网盘 2018 数学三真题及解析 PDF；完整题干、公式和解析见原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2018/question-13.jpg",
+          "caption": "题面裁切图 q13",
+          "alt": "2018考研数学三第13题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2018/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2018考研数学三答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2018",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2018-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:b0547ae456a4ba9f6dfbb741e3ec4f72aa0bd675f7d54230e60d26a986891d7f",
+      "answerTextHash": "sha256:8634432e9828a0160ec5d4fcbf51ac360da074f75705682e22e0b42eeed4df0e",
+      "sourceEvidence": {
+        "evidenceId": "math3-2018-q13",
+        "sourceId": "src_96a8e7cbc8f19d8e26451784",
+        "answerSourceId": "src_96a8e7cbc8f19d8e26451784",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2018-paper-answer",
+        "answerEvidenceId": "math3-2018-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:8634432e9828a0160ec5d4fcbf51ac360da074f75705682e22e0b42eeed4df0e"
+      }
+    },
+    {
+      "id": "math3-2018-014",
+      "number": 14,
+      "paperId": "math3-2018",
+      "paperName": "2018考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2018",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2018考研数学三第14题（填空题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "1/3",
+      "explanation": "答案来自本地百度网盘 2018 数学三真题及解析 PDF；完整题干、公式和解析见原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2018/question-14.jpg",
+          "caption": "题面裁切图 q14",
+          "alt": "2018考研数学三第14题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2018/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2018考研数学三答案解析 p.6"
+        },
+        {
+          "src": "question-bank/math3-2018/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2018考研数学三答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2018",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2018-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:af62e965c63ce4225488d752bd542ed17de7f2ae56e7a38766b06989371ec2f5",
+      "answerTextHash": "sha256:611ddce2a1b0e7f738e181f2881eab34f70e26e6776eac24e3803c686e13e5b3",
+      "sourceEvidence": {
+        "evidenceId": "math3-2018-q14",
+        "sourceId": "src_96a8e7cbc8f19d8e26451784",
+        "answerSourceId": "src_96a8e7cbc8f19d8e26451784",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2018-paper-answer",
+        "answerEvidenceId": "math3-2018-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:611ddce2a1b0e7f738e181f2881eab34f70e26e6776eac24e3803c686e13e5b3"
+      }
+    },
+    {
+      "id": "math3-2018-015",
+      "number": 15,
+      "paperId": "math3-2018",
+      "paperName": "2018考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2018",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2018考研数学三第15题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "a=1，b=1。",
+      "explanation": "答案来自本地百度网盘 2018 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2018/question-15.jpg",
+          "caption": "题面裁切图 q15",
+          "alt": "2018考研数学三第15题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2018/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2018考研数学三答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2018",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2018-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:c3818ecc4a8514ef3ff0350dd31afaeb034e97a932f9c1592ca2f91c30c3272b",
+      "answerTextHash": "sha256:2b019cb01614d99d2cb8c8422465b0ec1fe3b4e0bb301de060ece796af3f00fa",
+      "sourceEvidence": {
+        "evidenceId": "math3-2018-q15",
+        "sourceId": "src_96a8e7cbc8f19d8e26451784",
+        "answerSourceId": "src_96a8e7cbc8f19d8e26451784",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2018-paper-answer",
+        "answerEvidenceId": "math3-2018-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:2b019cb01614d99d2cb8c8422465b0ec1fe3b4e0bb301de060ece796af3f00fa"
+      }
+    },
+    {
+      "id": "math3-2018-016",
+      "number": 16,
+      "paperId": "math3-2018",
+      "paperName": "2018考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2018",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2018考研数学三第16题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "二重积分值为 sqrt(3)π/32 - sqrt(3)/16。",
+      "explanation": "答案来自本地百度网盘 2018 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2018/question-16.jpg",
+          "caption": "题面裁切图 q16",
+          "alt": "2018考研数学三第16题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2018/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2018考研数学三答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2018",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2018-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:9f0a9f1b42f7f170c5c0200d5639e2a8cd9e54a7887c7c0cb78e510e063e6af1",
+      "answerTextHash": "sha256:64d8e05715963cb2e381017ed99f19a210ca3a92219de41e1c1e9e0d97725bea",
+      "sourceEvidence": {
+        "evidenceId": "math3-2018-q16",
+        "sourceId": "src_96a8e7cbc8f19d8e26451784",
+        "answerSourceId": "src_96a8e7cbc8f19d8e26451784",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2018-paper-answer",
+        "answerEvidenceId": "math3-2018-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:64d8e05715963cb2e381017ed99f19a210ca3a92219de41e1c1e9e0d97725bea"
+      }
+    },
+    {
+      "id": "math3-2018-017",
+      "number": 17,
+      "paperId": "math3-2018",
+      "paperName": "2018考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2018",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2018考研数学三第17题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "最小面积为 1/(π+4+3sqrt(3))。",
+      "explanation": "答案来自本地百度网盘 2018 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2018/question-17.jpg",
+          "caption": "题面裁切图 q17",
+          "alt": "2018考研数学三第17题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2018/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2018考研数学三答案解析 p.8"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2018",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2018-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:cf45f525526db9ca632242384a9e78795671c5981fbda265d94fe5dd30d64a94",
+      "answerTextHash": "sha256:5e22df65a8ab6b310c08264b97fa68fb00ae233cce339421097c57f9536913ae",
+      "sourceEvidence": {
+        "evidenceId": "math3-2018-q17",
+        "sourceId": "src_96a8e7cbc8f19d8e26451784",
+        "answerSourceId": "src_96a8e7cbc8f19d8e26451784",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2018-paper-answer",
+        "answerEvidenceId": "math3-2018-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:5e22df65a8ab6b310c08264b97fa68fb00ae233cce339421097c57f9536913ae"
+      }
+    },
+    {
+      "id": "math3-2018-018",
+      "number": 18,
+      "paperId": "math3-2018",
+      "paperName": "2018考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2018",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2018考研数学三第18题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "a_n: n 为奇数时 n+1；n 为偶数时 (-1)^(n/2)2^n/n! - n - 1。",
+      "explanation": "答案来自本地百度网盘 2018 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2018/question-18.jpg",
+          "caption": "题面裁切图 q18",
+          "alt": "2018考研数学三第18题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2018/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2018考研数学三答案解析 p.8"
+        },
+        {
+          "src": "question-bank/math3-2018/answer-page-09.jpg",
+          "caption": "答案解析 p.9",
+          "alt": "2018考研数学三答案解析 p.9"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2018",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2018-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:fd30c4689e3d01e06866519b59d98009f336361449788bff69e2726c6ae62cc7",
+      "answerTextHash": "sha256:dc1efdb7e395f3b87a4343261751b8cccaf45d8f8ecff9bc6cc92610cdda2079",
+      "sourceEvidence": {
+        "evidenceId": "math3-2018-q18",
+        "sourceId": "src_96a8e7cbc8f19d8e26451784",
+        "answerSourceId": "src_96a8e7cbc8f19d8e26451784",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2018-paper-answer",
+        "answerEvidenceId": "math3-2018-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:dc1efdb7e395f3b87a4343261751b8cccaf45d8f8ecff9bc6cc92610cdda2079"
+      }
+    },
+    {
+      "id": "math3-2018-019",
+      "number": 19,
+      "paperId": "math3-2018",
+      "paperName": "2018考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2018",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2018考研数学三第19题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "数列收敛，lim x_n = 0。",
+      "explanation": "答案来自本地百度网盘 2018 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2018/question-19.jpg",
+          "caption": "题面裁切图 q19",
+          "alt": "2018考研数学三第19题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2018/answer-page-09.jpg",
+          "caption": "答案解析 p.9",
+          "alt": "2018考研数学三答案解析 p.9"
+        },
+        {
+          "src": "question-bank/math3-2018/answer-page-10.jpg",
+          "caption": "答案解析 p.10",
+          "alt": "2018考研数学三答案解析 p.10"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2018",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2018-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:5d3ba31dd312b5cbde540cb40bef5a5602caa5ce7ec22b4cde1823d487b4ba17",
+      "answerTextHash": "sha256:2d290270f93d1b38a69cc4d98f30b47bde5979dcd12c5d94297d838b79bb7e72",
+      "sourceEvidence": {
+        "evidenceId": "math3-2018-q19",
+        "sourceId": "src_96a8e7cbc8f19d8e26451784",
+        "answerSourceId": "src_96a8e7cbc8f19d8e26451784",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2018-paper-answer",
+        "answerEvidenceId": "math3-2018-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:2d290270f93d1b38a69cc4d98f30b47bde5979dcd12c5d94297d838b79bb7e72"
+      }
+    },
+    {
+      "id": "math3-2018-020",
+      "number": 20,
+      "paperId": "math3-2018",
+      "paperName": "2018考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2018",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2018考研数学三第20题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "a=2 时 f=0 有非零解，通解 x=k(2,1,-1)^T；规范形见答案原页。",
+      "explanation": "答案来自本地百度网盘 2018 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2018/question-20.jpg",
+          "caption": "题面裁切图 q20",
+          "alt": "2018考研数学三第20题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2018/answer-page-10.jpg",
+          "caption": "答案解析 p.10",
+          "alt": "2018考研数学三答案解析 p.10"
+        },
+        {
+          "src": "question-bank/math3-2018/answer-page-11.jpg",
+          "caption": "答案解析 p.11",
+          "alt": "2018考研数学三答案解析 p.11"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2018",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2018-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:19215fb73519f879682e5b616f19c4ad147b30702b123a696e70a1a1a1e29a50",
+      "answerTextHash": "sha256:28294be88a8c08097055ea08bf073138ead9624ea9f8c43115360b81c62cacc5",
+      "sourceEvidence": {
+        "evidenceId": "math3-2018-q20",
+        "sourceId": "src_96a8e7cbc8f19d8e26451784",
+        "answerSourceId": "src_96a8e7cbc8f19d8e26451784",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2018-paper-answer",
+        "answerEvidenceId": "math3-2018-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:28294be88a8c08097055ea08bf073138ead9624ea9f8c43115360b81c62cacc5"
+      }
+    },
+    {
+      "id": "math3-2018-021",
+      "number": 21,
+      "paperId": "math3-2018",
+      "paperName": "2018考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2018",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2018考研数学三第21题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "a=2；满足 AP=B 的可逆矩阵 P 见答案原页。",
+      "explanation": "答案来自本地百度网盘 2018 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2018/question-21.jpg",
+          "caption": "题面裁切图 q21",
+          "alt": "2018考研数学三第21题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2018/answer-page-11.jpg",
+          "caption": "答案解析 p.11",
+          "alt": "2018考研数学三答案解析 p.11"
+        },
+        {
+          "src": "question-bank/math3-2018/answer-page-12.jpg",
+          "caption": "答案解析 p.12",
+          "alt": "2018考研数学三答案解析 p.12"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2018",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2018-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:7693f9b4ed527a0dacaadee5ac6c96592b129e9706f8969ff19e3f33b7dccf27",
+      "answerTextHash": "sha256:2882e737f2cfb3b373b463b6b3a117b004aa134bc681be50991fc4626ad5c37a",
+      "sourceEvidence": {
+        "evidenceId": "math3-2018-q21",
+        "sourceId": "src_96a8e7cbc8f19d8e26451784",
+        "answerSourceId": "src_96a8e7cbc8f19d8e26451784",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2018-paper-answer",
+        "answerEvidenceId": "math3-2018-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:2882e737f2cfb3b373b463b6b3a117b004aa134bc681be50991fc4626ad5c37a"
+      }
+    },
+    {
+      "id": "math3-2018-022",
+      "number": 22,
+      "paperId": "math3-2018",
+      "paperName": "2018考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2018",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2018考研数学三第22题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "Cov(X,Z)=λ；Z 的分布律见答案原页。",
+      "explanation": "答案来自本地百度网盘 2018 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2018/question-22.jpg",
+          "caption": "题面裁切图 q22",
+          "alt": "2018考研数学三第22题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2018/answer-page-12.jpg",
+          "caption": "答案解析 p.12",
+          "alt": "2018考研数学三答案解析 p.12"
+        },
+        {
+          "src": "question-bank/math3-2018/answer-page-13.jpg",
+          "caption": "答案解析 p.13",
+          "alt": "2018考研数学三答案解析 p.13"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2018",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2018-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:4ee07908092573cd4280e37bae287fffb963113248e934de238fb613ddcebbda",
+      "answerTextHash": "sha256:79768f1f9d945d15e8d6ffa76a6187e83fdda97cda29925d51cc36217c44478a",
+      "sourceEvidence": {
+        "evidenceId": "math3-2018-q22",
+        "sourceId": "src_96a8e7cbc8f19d8e26451784",
+        "answerSourceId": "src_96a8e7cbc8f19d8e26451784",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2018-paper-answer",
+        "answerEvidenceId": "math3-2018-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:79768f1f9d945d15e8d6ffa76a6187e83fdda97cda29925d51cc36217c44478a"
+      }
+    },
+    {
+      "id": "math3-2018-023",
+      "number": 23,
+      "paperId": "math3-2018",
+      "paperName": "2018考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2018",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2018考研数学三第23题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "σ 的最大似然估计量为 sum(|X_i|)/n，Eσhat 与 Dσhat 见答案原页。",
+      "explanation": "答案来自本地百度网盘 2018 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2018/question-23.jpg",
+          "caption": "题面裁切图 q23",
+          "alt": "2018考研数学三第23题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2018/answer-page-13.jpg",
+          "caption": "答案解析 p.13",
+          "alt": "2018考研数学三答案解析 p.13"
+        },
+        {
+          "src": "question-bank/math3-2018/answer-page-14.jpg",
+          "caption": "答案解析 p.14",
+          "alt": "2018考研数学三答案解析 p.14"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2018",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2018-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:def9f667a285b42304bff5cc347d9334de3620752b324986516ae345881491ed",
+      "answerTextHash": "sha256:7b944468e1e0dee50e34892a51730eb605d028b53620d0481364ffbf0b1fd9cf",
+      "sourceEvidence": {
+        "evidenceId": "math3-2018-q23",
+        "sourceId": "src_96a8e7cbc8f19d8e26451784",
+        "answerSourceId": "src_96a8e7cbc8f19d8e26451784",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2018-paper-answer",
+        "answerEvidenceId": "math3-2018-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:7b944468e1e0dee50e34892a51730eb605d028b53620d0481364ffbf0b1fd9cf"
+      }
+    }
+  ]
+}

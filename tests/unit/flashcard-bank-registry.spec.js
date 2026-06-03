@@ -649,6 +649,14 @@ describe('published flashcard bank registry', () => {
     expect(math32017.cards.find((card) => card.number === 23).answerImages.at(-1).src).toContain(
       'question-bank/math3-2017/answer-page-09.jpg'
     );
+    const math32018 = await loadBankData('math3-2018');
+    expect(math32018.cards).toHaveLength(23);
+    expect(math32018.cards.every((card) => card.answerEvidenceStatus === 'matched')).toBe(true);
+    expect(math32018.cards.find((card) => card.number === 1).answer).toBe('D');
+    expect(math32018.cards.find((card) => card.number === 14).answer).toBe('1/3');
+    expect(math32018.cards.find((card) => card.number === 23).answerImages.at(-1).src).toContain(
+      'question-bank/math3-2018/answer-page-14.jpg'
+    );
   });
 
   it('builds public-course navigation tree without exposing disabled banks', () => {

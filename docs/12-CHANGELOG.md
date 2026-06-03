@@ -1,5 +1,11 @@
 # 变更日志
 
+## 2026-06-03 — 2018 数学三逐题裁切题库开放
+
+- 2018 考研数学三从“待入库”推进为正式题库：23 张题卡覆盖 8 道选择、6 道填空和 9 道解答题，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
+- 新增 `build_math3_2018_bank.py`，从本地百度网盘 `2018年考研数学三真题及解析.pdf` 生成 `src/config/flashcard-banks/math3-2018.json` 与 `cdn-assets/question-bank/math3-2018` 页图资源；源 PDF 为 14 页题答混排扫描版，题面使用逐题裁切图，q08 跨页题面拆为 `question-08-a/b.jpg`，第 14 页确认是 q23 答案延续而非推广页，OCR/视觉检查未发现题面答案解析泄漏。
+- 2005-2020 release gate 刷新后，公共课覆盖缺口降至 11，published slots 升至 80，source evidence gap 保持 1；release backlog 降至 `blockers=13`、`publicCourseBlockedSlots=11`，下一批 release-priority dry-run 从 `2019年考研数学三真题及解析.pdf` 开始。
+
 ## 2026-06-03 — 2017 数学三逐题裁切题库开放
 
 - 2017 考研数学三从“待入库”推进为正式题库：23 张题卡覆盖 8 道选择、6 道填空和 9 道解答题，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
