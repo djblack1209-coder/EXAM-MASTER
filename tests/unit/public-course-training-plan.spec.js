@@ -24,7 +24,7 @@ describe('public course training plan', () => {
   it('builds a weekly plan without marking missing banks as ready', () => {
     const plan = buildPublicCourseTrainingPlan({ now: '2026-05-22T12:00:00Z', todayIndex: 4 });
 
-    expect(plan.summary.requiredSlots).toBe(132);
+    expect(plan.summary.requiredSlots).toBe(127);
     expect(plan.weeklyTasks).toHaveLength(7);
     expect(plan.today.track).toBe('english2');
     expect(plan.today.status).toBe('ready');

@@ -37,12 +37,16 @@ describe('question bank list hierarchy', () => {
     wrapper.unmount();
   });
 
-  it('shows no secondary list when a track only has one playable recommendation', async () => {
+  it('shows the secondary list when a track has additional playable years', async () => {
     const wrapper = mountQuestionBank({ tracks: ['english2'] });
     await nextTick();
 
     expect(wrapper.find('.recommended-panel').text()).toContain('2025考研英语二真题');
-    expect(wrapper.find('.paper-list').exists()).toBe(false);
+    expect(wrapper.find('.paper-list').exists()).toBe(true);
+    expect(wrapper.find('.paper-list-head').text()).toContain('11 卷');
+    expect(wrapper.findAll('.paper-card')).toHaveLength(11);
+    expect(wrapper.find('.paper-list').text()).not.toContain('2025考研英语二真题');
+    expect(wrapper.find('.paper-list').text()).toContain('2020考研英语二真题');
     expect(wrapper.find('.empty-state').exists()).toBe(false);
 
     wrapper.unmount();
