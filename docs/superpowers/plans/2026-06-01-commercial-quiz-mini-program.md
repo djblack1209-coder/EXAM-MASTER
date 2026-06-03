@@ -2009,6 +2009,81 @@ git add data/release-blocker-backlog.json docs/08C-SCRIPTS-REFERENCE.md docs/12-
 git -c core.hooksPath=/dev/null commit -m "chore: publish english2 2011 bank"
 ```
 
+### Task 65: Publish English II 2012 Text-Layer Bank
+
+**Files:**
+- Add: `scripts/cleaning/build_english2_2012_bank.py`
+- Add: `src/config/flashcard-banks/english2-2012.json`
+- Add: `tests/unit/english2-2012-data.spec.js`
+- Modify: `src/config/bank-registry.js`
+- Modify: `src/pages/practice-sub/bank-data-table.js`
+- Modify: `tests/unit/flashcard-bank-registry.spec.js`
+- Modify: `tests/unit/question-bank-year-map.spec.js`
+- Modify: `docs/frontend-experience-refactor-diary.md`
+- Modify: `docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md`
+- Modify: `docs/08C-SCRIPTS-REFERENCE.md`
+- Modify: `docs/12-CHANGELOG.md`
+- Modify: `data/release-blocker-backlog.json`
+
+- [x] **Step 1: Add failing registry coverage**
+
+Added a focused registry/load regression for `english2-2012` expecting 48 cards, matched answer evidence, q01 answer `A`, q21 answer `A`, q30 answer `C`, q46 translation anchors `brain drain` and `developing countries`, q48 employee work satisfaction survey prompt, and q48 `official_writing_prompt` evidence.
+
+Initial result:
+```bash
+npm test -- tests/unit/english2-2012-data.spec.js
+```
+
+Failed because `english2-2012` was not registered or compressed yet.
+
+- [x] **Step 2: Verify source and build text-layer bank**
+
+Used canonical local raw-inbox sources:
+
+```text
+data/raw-inbox/src_c24aa84fb2c247d0b2d13bdc-2012.pdf
+data/raw-inbox/src_8b9967de841a77398661e6c8-2012年考研英语二真题.pdf
+data/raw-inbox/src_8b2fb9a4169220ee3ae4ca43-2012年真题及答案速查.pdf
+data/raw-inbox/src_edc0970329d767e5a81b2ff9-2012年真题逐题细解.pdf
+```
+
+Added `build_english2_2012_bank.py` with 48 cards. The builder uses the answer-speed PDF text layer for question/answer matching, records all four canonical source hashes in `sourceFiles`, cross-checks stable detailed-analysis anchors, and treats writing cards as official-prompt tasks. The 2012 parser uses the trailing A-D option block for reading choices so abbreviations such as `L. A. Unified` do not masquerade as options.
+
+- [x] **Step 3: Register and refresh practice data**
+
+Run:
+```bash
+python3 scripts/cleaning/build_english2_2012_bank.py
+node scripts/build/generate-compressed-bank-modules.mjs
+```
+
+Result: published `src/config/flashcard-banks/english2-2012.json`, registered `english2-2012`, and regenerated the compressed practice-bank table.
+
+- [x] **Step 4: Run validation**
+
+Run:
+```bash
+python3 -m py_compile scripts/cleaning/build_english2_2012_bank.py
+npm test -- tests/unit/english2-2012-data.spec.js
+npm test -- tests/unit/question-bank-year-map.spec.js
+npm test -- tests/unit/flashcard-bank-registry.spec.js
+node scripts/build/question-bank-release-gate.mjs --min-year=2005 --max-year=2020
+node scripts/build/release-blocker-backlog.mjs
+python3 scripts/baidu/cleaning_queue.py
+python3 scripts/baidu/run_cleaning_queue.py --dry-run --limit 12 --source-type official_paper --paper-role main --max-year 2020
+git diff --check
+```
+
+Result: passed on 2026-06-03. The 2005-2020 release gate reports `coverageGaps=22`, `publishedSlots=69`, `sourceEvidenceGaps=1`, and `pendingCoverageBlockers=0`; release backlog reports `blockers=24` and `publicCourseBlockedSlots=22`; English II year-map summary is now `正式 4 · 整理中 0 · 待入库 13`; the rebuilt release-priority dry-run now starts at English II 2013 paired candidates.
+
+- [x] **Step 5: Commit**
+
+Run:
+```bash
+git add data/release-blocker-backlog.json docs/08C-SCRIPTS-REFERENCE.md docs/12-CHANGELOG.md docs/frontend-experience-refactor-diary.md docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md src/config/bank-registry.js src/pages/practice-sub/bank-data-table.js tests/unit/flashcard-bank-registry.spec.js tests/unit/question-bank-year-map.spec.js tests/unit/english2-2012-data.spec.js scripts/cleaning/build_english2_2012_bank.py src/config/flashcard-banks/english2-2012.json
+git -c core.hooksPath=/dev/null commit -m "chore: publish english2 2012 bank"
+```
+
 ### Task 59: Block Mislabeled Math II 2016 Source
 
 **Files:**

@@ -608,3 +608,12 @@
 - Registered `english2-2011`, regenerated the compressed practice-bank table, and updated the question-bank year map so English II now reports `正式 3 · 整理中 0 · 待入库 14`.
 - Release gate result: 2005-2020 public-course `coverageGaps` dropped from 24 to 23, `publishedSlots` rose to 68, `sourceEvidenceGaps` stayed at 1, release backlog reports `blockers=25` and `publicCourseBlockedSlots=23`, and the release-priority dry-run now starts at English II 2012 paired candidates.
 - Product rule: English II historical Part B formats vary by year. The builder should encode the actual exam task shape for each year while keeping writing tasks prompt-based.
+
+### 2026-06-03 Round 65
+
+- Promoted `english2:2012` through the formal English II text-layer bank path after verifying the canonical 2012 document-version, original-paper, answer-speed, and detailed-analysis PDFs in ignored `data/raw-inbox/`.
+- Added `scripts/cleaning/build_english2_2012_bank.py`, which builds 48 cards from the 2012 answer-speed PDF text layer, records all four source hashes in `sourceFiles`, and cross-checks detailed-analysis anchors including `G. I. Joe`, Part B historical figures, and the `brain drain` translation passage.
+- Validation result: `english2-2012.json` has 48 cards, all cards carry `answerEvidenceStatus=matched`, q01 answer is `A`, q21 answer is `A`, q30 answer is `C`, q46 contains both `brain drain` and `developing countries`, and q48 uses `official_writing_prompt` evidence with the employee work satisfaction survey prompt.
+- Registered `english2-2012`, regenerated the compressed practice-bank table, and updated the question-bank year map so English II now reports `正式 4 · 整理中 0 · 待入库 13`.
+- Release gate result: 2005-2020 public-course `coverageGaps` dropped from 23 to 22, `publishedSlots` rose to 69, `sourceEvidenceGaps` stayed at 1, release backlog reports `blockers=24` and `publicCourseBlockedSlots=22`, and the rebuilt release-priority dry-run now starts at English II 2013 paired candidates.
+- Product rule: historical English II text-layer builders must tolerate OCR abbreviations such as `L. A. Unified` without confusing them for answer options; option parsing now uses the trailing A-D option block for 2012 choice questions.
