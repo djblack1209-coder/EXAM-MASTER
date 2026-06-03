@@ -59,7 +59,7 @@ describe('published flashcard bank registry', () => {
       ])
     );
     expect(banks.map((bank) => bank.id)).not.toEqual(expect.arrayContaining(['english-2025', 'math-2025']));
-    expect(banks.map((bank) => bank.id)).toEqual(expect.arrayContaining(['english2-2025']));
+    expect(banks.map((bank) => bank.id)).toEqual(expect.arrayContaining(['english2-2010', 'english2-2025']));
     const bank = await loadBankData('english1-2005');
     expect(bank.cards.length).toBeGreaterThan(0);
     expect(bank.cards[0]).toEqual(
@@ -289,6 +289,16 @@ describe('published flashcard bank registry', () => {
     expect(english22025.cards.find((card) => card.number === 21).passage).toEqual(expect.any(String));
     expect(english22025.cards.find((card) => card.number === 30).answer).toBe('C');
     expect(english22025.cards.find((card) => card.number === 48).answerEvidence.evidenceRole).toBe(
+      'official_writing_prompt'
+    );
+    const english22010 = await loadBankData('english2-2010');
+    expect(english22010.cards).toHaveLength(48);
+    expect(english22010.cards.every((card) => card.answerEvidenceStatus === 'matched')).toBe(true);
+    expect(english22010.cards.find((card) => card.number === 1).answer).toBe('D');
+    expect(english22010.cards.find((card) => card.number === 21).passage).toContain('Damien Hirst');
+    expect(english22010.cards.find((card) => card.number === 30).answer).toBe('B');
+    expect(english22010.cards.find((card) => card.number === 46).targetSegment).toContain('Sustainability');
+    expect(english22010.cards.find((card) => card.number === 48).answerEvidence.evidenceRole).toBe(
       'official_writing_prompt'
     );
     const english2005 = await loadBankData('english1-2005');

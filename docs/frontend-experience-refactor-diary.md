@@ -588,3 +588,13 @@
 - Crop QA tightened q02 and q03 after the first OCR leakage scan detected answer/解析 residue; the final leakage scan over all question crop images produced no answer-marker hits.
 - Release gate result after sequential audit refresh: 2005-2020 public-course `coverageGaps` dropped to 25, `sourceEvidenceGaps` stayed at 1, and release backlog reports 25 public-course blocked slots.
 - Product rule: for scanned Math III answer-analysis PDFs, publish only after both structured registry tests and crop-level leakage scans pass; OCR may guide cropping, but rendered PDF page images remain the release evidence.
+
+### 2026-06-03 Round 63
+
+- Promoted `english2:2010`, the first real English II exam year, from release backlog into the formal practice-bank registry.
+- Added `scripts/cleaning/build_english2_2010_bank.py`, which builds 48 cards from local Baidu Netdisk 2010 English II paper, answer-speed, and detailed-analysis PDFs.
+- Source evidence uses the answer-speed PDF text layer for question and answer matching, while preserving the original paper and detailed-analysis PDF hashes in `sourceFiles`. Writing cards 47-48 are recorded as official prompt tasks rather than unique model-answer questions.
+- Validation result: `english2-2010.json` has 48 cards, all cards carry `answerEvidenceStatus=matched`, q01 answer is `D`, q21 passage contains `Damien Hirst`, q30 answer is `B`, q46 contains the `Sustainability` translation segment, and q48 uses `official_writing_prompt` evidence.
+- Registered `english2-2010`, regenerated the compressed practice-bank table, and updated the question-bank year map so English II now reports `正式 2 · 整理中 0 · 待入库 15`.
+- Release gate result: 2005-2020 public-course `coverageGaps` dropped from 25 to 24, `publishedSlots` rose to 67, `sourceEvidenceGaps` stayed at 1, and the release-priority dry-run still shows follow-up English II paired candidates plus remaining English I/Math II/Math III gaps.
+- Product rule: for English II historical banks with usable local text layers, answer-speed and detailed-analysis PDFs can provide matched evidence, but writing tasks must stay prompt-based because there is no single official answer.

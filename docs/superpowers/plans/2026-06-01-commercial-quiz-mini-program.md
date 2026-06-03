@@ -1865,6 +1865,78 @@ git commit -m "chore: repair english companion option evidence"
 
 Result: committed after validation on 2026-06-02.
 
+### Task 63: Publish English II 2010 Text-Layer Bank
+
+**Files:**
+- Add: `scripts/cleaning/build_english2_2010_bank.py`
+- Add: `src/config/flashcard-banks/english2-2010.json`
+- Modify: `src/config/bank-registry.js`
+- Modify: `src/pages/practice-sub/bank-data-table.js`
+- Modify: `tests/unit/flashcard-bank-registry.spec.js`
+- Modify: `tests/unit/question-bank-year-map.spec.js`
+- Modify: `docs/frontend-experience-refactor-diary.md`
+- Modify: `docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md`
+- Modify: `docs/08C-SCRIPTS-REFERENCE.md`
+- Modify: `docs/12-CHANGELOG.md`
+- Modify: `data/release-blocker-backlog.json`
+
+- [x] **Step 1: Add failing registry coverage**
+
+Added a registry/load regression for `english2-2010` expecting 48 cards, matched answer evidence, q01 answer `D`, q21 passage anchor `Damien Hirst`, q30 answer `B`, q46 translation anchor `Sustainability`, and q48 `official_writing_prompt` evidence.
+
+Initial result:
+```bash
+npm test -- tests/unit/flashcard-bank-registry.spec.js
+```
+
+Failed because `english2-2010` was not registered or compressed yet.
+
+- [x] **Step 2: Verify source and build text-layer bank**
+
+Used local raw-inbox sources:
+
+```text
+data/raw-inbox/src_7b16f7d3e68a755bd34ea9d1-2010年考研英语二真题.pdf
+data/raw-inbox/src_bb8925249bda668d7483e392-2010年真题及答案速查.pdf
+data/raw-inbox/src_b3494f6fe46050f95c946aac-2010年真题逐题细解.pdf
+```
+
+Added `build_english2_2010_bank.py` with 48 cards. The builder uses the answer-speed PDF text layer for question/answer matching, keeps the original paper and detailed-analysis hashes in `sourceFiles`, and treats writing cards as official-prompt tasks.
+
+- [x] **Step 3: Register and refresh practice data**
+
+Run:
+```bash
+python3 scripts/cleaning/build_english2_2010_bank.py
+node scripts/build/generate-compressed-bank-modules.mjs
+```
+
+Result: published `src/config/flashcard-banks/english2-2010.json`, registered `english2-2010`, and regenerated the compressed practice-bank table.
+
+- [x] **Step 4: Run validation**
+
+Run:
+```bash
+python3 -m py_compile scripts/cleaning/build_english2_2010_bank.py
+npm test -- tests/unit/flashcard-bank-registry.spec.js tests/unit/question-bank-year-map.spec.js tests/unit/question-bank-release-gate.spec.js tests/unit/release-blocker-backlog.spec.js
+node scripts/build/question-bank-release-gate.mjs --min-year=2005 --max-year=2020
+node scripts/build/release-blocker-backlog.mjs
+python3 scripts/baidu/run_cleaning_queue.py --dry-run --limit 12 --source-type official_paper --paper-role main --max-year 2020
+git diff --check
+```
+
+Result: passed on 2026-06-03. The 2005-2020 release gate reports `coverageGaps=24`, `sourceEvidenceGaps=1`, and `pendingCoverageBlockers=0`; release backlog reports `blockers=26` and `publicCourseBlockedSlots=24`; English II year-map summary is now `正式 2 · 整理中 0 · 待入库 15`.
+
+- [x] **Step 5: Commit**
+
+Run:
+```bash
+git add data/release-blocker-backlog.json docs/08C-SCRIPTS-REFERENCE.md docs/12-CHANGELOG.md docs/frontend-experience-refactor-diary.md docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md src/config/bank-registry.js src/pages/practice-sub/bank-data-table.js tests/unit/flashcard-bank-registry.spec.js tests/unit/question-bank-year-map.spec.js scripts/cleaning/build_english2_2010_bank.py src/config/flashcard-banks/english2-2010.json
+git -c core.hooksPath=/dev/null commit -m "chore: publish english2 2010 bank"
+```
+
+Result: committed after validation on 2026-06-03.
+
 ### Task 59: Block Mislabeled Math II 2016 Source
 
 **Files:**

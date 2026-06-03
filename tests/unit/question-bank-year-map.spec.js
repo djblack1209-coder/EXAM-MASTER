@@ -36,9 +36,16 @@ describe('question bank public-course year map', () => {
     expect(english2.yearSlots).toHaveLength(17);
     expect(english2.yearSlots[0].year).toBe('2026');
     expect(english2.yearSlots.at(-1).year).toBe('2010');
-    expect(english2.slotSummary).toEqual({ total: 17, ready: 1, organizing: 0, missing: 16 });
+    expect(english2.slotSummary).toEqual({ total: 17, ready: 2, organizing: 0, missing: 15 });
     expect(english2.yearSlots.find((slot) => slot.year === '2025')).toMatchObject({
       bankId: 'english2-2025',
+      status: 'ready',
+      statusLabel: '正式',
+      actionLabel: '开始',
+      clickable: true
+    });
+    expect(english2.yearSlots.find((slot) => slot.year === '2010')).toMatchObject({
+      bankId: 'english2-2010',
       status: 'ready',
       statusLabel: '正式',
       actionLabel: '开始',
@@ -159,7 +166,7 @@ describe('question bank public-course year map', () => {
 
     expect(wrapper.text()).toContain('2025考研英语二真题');
     expect(wrapper.text()).toContain('2010-2026 整卷真题地图');
-    expect(wrapper.text()).toContain('正式 1 · 整理中 0 · 待入库 16');
+    expect(wrapper.text()).toContain('正式 2 · 整理中 0 · 待入库 15');
     expect(wrapper.find('.year-slot.active .slot-year').text()).toBe('2025');
 
     wrapper.unmount();
