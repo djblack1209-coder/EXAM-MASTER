@@ -1032,6 +1032,21 @@ const BANK_REGISTRY = [
     sections: paperSections('选择题', '填空题', '解答题')
   },
   {
+    id: 'math3-2020',
+    subject: '数学',
+    subjectKey: 'math',
+    track: 'math3',
+    year: '2020',
+    name: '2020考研数学三真题',
+    description: '8道选择 + 6道填空 + 9道解答题',
+    releaseLabel: '正式题库',
+    caution:
+      '按本地百度网盘 2020 数学三真题及解析 PDF 页图训练；题面从试题页逐题裁切，答案解析页 1-13 已核对',
+    paperType: 'past_exam',
+    quality: PAPER_QUALITY.READY,
+    sections: paperSections('选择题', '填空题', '解答题')
+  },
+  {
     id: 'math3-2025',
     subject: '数学',
     subjectKey: 'math',

@@ -731,3 +731,12 @@
 - Validation result: `math3-2019.json` has 23 cards, `{single_choice:8, short_answer:15}`, section counts `{选择题:8, 填空题:6, 解答题:9}`, all cards carry `answerEvidenceStatus=matched`, q01 answer is `C`, q04 answer is `B`, q08 answer is `A`, q09 answer is `e^(-1)`, q14 answer is `2/3`, q21 answer contains `x=3`, and q23 answer evidence ends at `answer-page-12.jpg`.
 - Crop QA tightened q01/q02/q03/q04/q06/q07/q08/q09/q11/q12/q14/q15/q17/q19/q21/q22/q23 after OCR/visual checks found early answer-analysis leakage, blank crops, answer markers, or previous-question residue; the final OCR leakage scan over all 25 question images found no answer/analysis markers.
 - Release gate result: 2005-2020 public-course `coverageGaps` dropped from 11 to 10, `publishedSlots` rose to 81, `sourceEvidenceGaps` stayed at 1, release backlog reports `blockers=12` and `publicCourseBlockedSlots=10`, and the rebuilt release-priority dry-run now starts at Math III 2020 followed by English I 2020 and Math II 2017-2020.
+
+### 2026-06-03 Round 78
+
+- Promoted `math3:2020` through the deterministic Math III page-image bank path after release-priority advanced to `2020年考研数学三真题及解析.pdf`.
+- Added `scripts/cleaning/build_math3_2020_bank.py`, published `src/config/flashcard-banks/math3-2020.json`, generated 5 paper pages, 13 answer pages, and 24 question crop assets under `cdn-assets/question-bank/math3-2020`, registered the bank, and regenerated the compressed practice-bank table.
+- Source audit: `src_5b15e18fa7b78e9d43c07840-2020年考研数学三真题及解析.pdf` is an 18-page scanned PDF with no usable text layer; pages 1-5 are the original paper, pages 6-18 are answer analysis, and q06 is split across paper pages 2-3.
+- Validation result: `math3-2020.json` has 23 cards, `{single_choice:8, short_answer:15}`, section counts `{选择题:8, 填空题:6, 解答题:9}`, all cards carry `answerEvidenceStatus=matched`, q01 answer is `B`, q06 answer is `D`, q14 answer is `8/7`, q17 answer contains `e^(-x)cos2x`, and q23 answer evidence ends at `answer-page-13.jpg`.
+- Crop QA tightened q19/q20 after visual checks found overlapping prompt boundaries; the final OCR leakage scan over all 24 question images found no answer/analysis markers.
+- Release gate result: 2005-2020 public-course `coverageGaps` dropped from 10 to 9, `publishedSlots` rose to 82, `sourceEvidenceGaps` stayed at 1, release backlog reports `blockers=11` and `publicCourseBlockedSlots=9`, and the rebuilt release-priority dry-run now starts at English I 2020 followed by Math II 2017-2020.

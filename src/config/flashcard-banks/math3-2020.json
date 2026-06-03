@@ -1,0 +1,1383 @@
+{
+  "id": "math3-2020",
+  "source": "math3-2020-paper-answer",
+  "paperId": "math3-2020",
+  "paperName": "2020考研数学三真题",
+  "subject": "数学",
+  "subjectKey": "math",
+  "track": "math3",
+  "year": "2020",
+  "quality": "ready",
+  "publicationStatus": "published",
+  "publicationBlockers": [],
+  "sourceEvidencePolicy": "baidu_netdisk_official_paper_pdf_question_crop_answer_page_image_v1",
+  "sourceFiles": [
+    {
+      "id": "math3-2020-paper-answer",
+      "role": "paper_answer",
+      "localPath": "data/raw-inbox/src_5b15e18fa7b78e9d43c07840-2020年考研数学三真题及解析.pdf",
+      "sha256": "sha256:6061f1c1d78150cce65ba620fb0638086cff0890a30e9a3cb0770b19e076b217",
+      "sourceId": "src_5b15e18fa7b78e9d43c07840",
+      "evidenceNote": "The 18-page source has paper pages 1-5 and answer-analysis pages 6-18; question prompts are cropped from paper pages only."
+    }
+  ],
+  "assetRoot": "question-bank/math3-2020",
+  "processed_at": "2026-06-03T20:00:54Z",
+  "total_cards": 23,
+  "cards": [
+    {
+      "id": "math3-2020-001",
+      "number": 1,
+      "paperId": "math3-2020",
+      "paperName": "2020考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2020",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2020考研数学三第1题（选择题）。题干、公式和图形以题面裁切图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2020 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2020/question-01.jpg",
+          "caption": "题面裁切图 q01",
+          "alt": "2020考研数学三第01题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2020/answer-page-01.jpg",
+          "caption": "答案解析 p.1",
+          "alt": "2020考研数学三答案解析 p.1"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2020",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:51ad74ce727d7aef4e7b68437b344606e88ce96ed0fdce5426eb086dedb53e91",
+      "answerTextHash": "sha256:eeb8f23963a55373792abcd7f5e7bf152df8a8573bd10989d302f7962035a04f",
+      "sourceEvidence": {
+        "evidenceId": "math3-2020-q01",
+        "sourceId": "src_5b15e18fa7b78e9d43c07840",
+        "answerSourceId": "src_5b15e18fa7b78e9d43c07840",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2020-paper-answer",
+        "answerEvidenceId": "math3-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:eeb8f23963a55373792abcd7f5e7bf152df8a8573bd10989d302f7962035a04f"
+      }
+    },
+    {
+      "id": "math3-2020-002",
+      "number": 2,
+      "paperId": "math3-2020",
+      "paperName": "2020考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2020",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2020考研数学三第2题（选择题）。题干、公式和图形以题面裁切图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2020 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2020/question-02.jpg",
+          "caption": "题面裁切图 q02",
+          "alt": "2020考研数学三第02题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2020/answer-page-01.jpg",
+          "caption": "答案解析 p.1",
+          "alt": "2020考研数学三答案解析 p.1"
+        },
+        {
+          "src": "question-bank/math3-2020/answer-page-02.jpg",
+          "caption": "答案解析 p.2",
+          "alt": "2020考研数学三答案解析 p.2"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2020",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:6711274c2f56e0afcc5ec831b31d127805790ee452b4badaf982922e0487444d",
+      "answerTextHash": "sha256:eb212dd8a585906a9c78f6774665712b9a66e0c6a4d610b755c1c87a851ed451",
+      "sourceEvidence": {
+        "evidenceId": "math3-2020-q02",
+        "sourceId": "src_5b15e18fa7b78e9d43c07840",
+        "answerSourceId": "src_5b15e18fa7b78e9d43c07840",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2020-paper-answer",
+        "answerEvidenceId": "math3-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:eb212dd8a585906a9c78f6774665712b9a66e0c6a4d610b755c1c87a851ed451"
+      }
+    },
+    {
+      "id": "math3-2020-003",
+      "number": 3,
+      "paperId": "math3-2020",
+      "paperName": "2020考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2020",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2020考研数学三第3题（选择题）。题干、公式和图形以题面裁切图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2020 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2020/question-03.jpg",
+          "caption": "题面裁切图 q03",
+          "alt": "2020考研数学三第03题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2020/answer-page-02.jpg",
+          "caption": "答案解析 p.2",
+          "alt": "2020考研数学三答案解析 p.2"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2020",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:aed3d3ef63fc95cc131ffe1b6347d3bb3cec4b3b0c70b838ca346ba3ef7c604a",
+      "answerTextHash": "sha256:be350ad3c0fc9a7257a73bd05aba736f028d2514441d66b0626e7a78bc85704b",
+      "sourceEvidence": {
+        "evidenceId": "math3-2020-q03",
+        "sourceId": "src_5b15e18fa7b78e9d43c07840",
+        "answerSourceId": "src_5b15e18fa7b78e9d43c07840",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2020-paper-answer",
+        "answerEvidenceId": "math3-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:be350ad3c0fc9a7257a73bd05aba736f028d2514441d66b0626e7a78bc85704b"
+      }
+    },
+    {
+      "id": "math3-2020-004",
+      "number": 4,
+      "paperId": "math3-2020",
+      "paperName": "2020考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2020",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2020考研数学三第4题（选择题）。题干、公式和图形以题面裁切图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2020 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2020/question-04.jpg",
+          "caption": "题面裁切图 q04",
+          "alt": "2020考研数学三第04题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2020/answer-page-02.jpg",
+          "caption": "答案解析 p.2",
+          "alt": "2020考研数学三答案解析 p.2"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2020",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:b11652b0b3b56ad7f90c6a00ef92219bdf265a563072075b61b6eef9f1372d07",
+      "answerTextHash": "sha256:cad57386346f62bee6aa00d160f80730cc923b804fff53afdd1c61b5181c7a0b",
+      "sourceEvidence": {
+        "evidenceId": "math3-2020-q04",
+        "sourceId": "src_5b15e18fa7b78e9d43c07840",
+        "answerSourceId": "src_5b15e18fa7b78e9d43c07840",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2020-paper-answer",
+        "answerEvidenceId": "math3-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:cad57386346f62bee6aa00d160f80730cc923b804fff53afdd1c61b5181c7a0b"
+      }
+    },
+    {
+      "id": "math3-2020-005",
+      "number": 5,
+      "paperId": "math3-2020",
+      "paperName": "2020考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2020",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2020考研数学三第5题（选择题）。题干、公式和图形以题面裁切图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2020 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2020/question-05.jpg",
+          "caption": "题面裁切图 q05",
+          "alt": "2020考研数学三第05题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2020/answer-page-03.jpg",
+          "caption": "答案解析 p.3",
+          "alt": "2020考研数学三答案解析 p.3"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2020",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:892b8918ecf944563e1bae9ca00443cfcd065ff1bf47b20d55e1562137277b9f",
+      "answerTextHash": "sha256:68d83c90862fc09ebf9a4584ba993943e3bb37788c1dc1201cb29f44689a49dc",
+      "sourceEvidence": {
+        "evidenceId": "math3-2020-q05",
+        "sourceId": "src_5b15e18fa7b78e9d43c07840",
+        "answerSourceId": "src_5b15e18fa7b78e9d43c07840",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2020-paper-answer",
+        "answerEvidenceId": "math3-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:68d83c90862fc09ebf9a4584ba993943e3bb37788c1dc1201cb29f44689a49dc"
+      }
+    },
+    {
+      "id": "math3-2020-006",
+      "number": 6,
+      "paperId": "math3-2020",
+      "paperName": "2020考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2020",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2020考研数学三第6题（选择题）。题干、公式和图形以题面裁切图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2020 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2020/question-06-a.jpg",
+          "caption": "题面裁切图 q06-a",
+          "alt": "2020考研数学三第06题题面裁切图"
+        },
+        {
+          "src": "question-bank/math3-2020/question-06-b.jpg",
+          "caption": "题面裁切图 q06-b",
+          "alt": "2020考研数学三第06题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2020/answer-page-03.jpg",
+          "caption": "答案解析 p.3",
+          "alt": "2020考研数学三答案解析 p.3"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2020",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:fb89c951787c1878de0295e17cdb18b5d4d55119604a17b322ca76342f5da700",
+      "answerTextHash": "sha256:d637b5249be391a9a0cef957e8d809d0203bcfb6b4872f45e530441f455f7bc1",
+      "sourceEvidence": {
+        "evidenceId": "math3-2020-q06",
+        "sourceId": "src_5b15e18fa7b78e9d43c07840",
+        "answerSourceId": "src_5b15e18fa7b78e9d43c07840",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2020-paper-answer",
+        "answerEvidenceId": "math3-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:d637b5249be391a9a0cef957e8d809d0203bcfb6b4872f45e530441f455f7bc1"
+      }
+    },
+    {
+      "id": "math3-2020-007",
+      "number": 7,
+      "paperId": "math3-2020",
+      "paperName": "2020考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2020",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2020考研数学三第7题（选择题）。题干、公式和图形以题面裁切图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2020 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2020/question-07.jpg",
+          "caption": "题面裁切图 q07",
+          "alt": "2020考研数学三第07题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2020/answer-page-04.jpg",
+          "caption": "答案解析 p.4",
+          "alt": "2020考研数学三答案解析 p.4"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2020",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:4bdaa98e915dbff70b1b42971ebf25903b10fbcd9c5184a0ea4e85bafe5eb59a",
+      "answerTextHash": "sha256:f9b62e4efbf2b7603b98d3f2ff418dcbd2c44acaa816fe2c2d633969ac0c75c5",
+      "sourceEvidence": {
+        "evidenceId": "math3-2020-q07",
+        "sourceId": "src_5b15e18fa7b78e9d43c07840",
+        "answerSourceId": "src_5b15e18fa7b78e9d43c07840",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2020-paper-answer",
+        "answerEvidenceId": "math3-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:f9b62e4efbf2b7603b98d3f2ff418dcbd2c44acaa816fe2c2d633969ac0c75c5"
+      }
+    },
+    {
+      "id": "math3-2020-008",
+      "number": 8,
+      "paperId": "math3-2020",
+      "paperName": "2020考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2020",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2020考研数学三第8题（选择题）。题干、公式和图形以题面裁切图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2020 数学三真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2020/question-08.jpg",
+          "caption": "题面裁切图 q08",
+          "alt": "2020考研数学三第08题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2020/answer-page-04.jpg",
+          "caption": "答案解析 p.4",
+          "alt": "2020考研数学三答案解析 p.4"
+        },
+        {
+          "src": "question-bank/math3-2020/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2020考研数学三答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2020",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:68dbfbebb2cf1109ba74bf643b27c8ffb37ff7927c1bacb5d6b8a869acad4b95",
+      "answerTextHash": "sha256:99df575c7e5d50602dbd52e7a432ac1beb45288aa5748a05981603e7323b2910",
+      "sourceEvidence": {
+        "evidenceId": "math3-2020-q08",
+        "sourceId": "src_5b15e18fa7b78e9d43c07840",
+        "answerSourceId": "src_5b15e18fa7b78e9d43c07840",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2020-paper-answer",
+        "answerEvidenceId": "math3-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:99df575c7e5d50602dbd52e7a432ac1beb45288aa5748a05981603e7323b2910"
+      }
+    },
+    {
+      "id": "math3-2020-009",
+      "number": 9,
+      "paperId": "math3-2020",
+      "paperName": "2020考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2020",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2020考研数学三第9题（填空题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "(π - 1)dx - dy",
+      "explanation": "答案来自本地百度网盘 2020 数学三真题及解析 PDF；完整题干、公式和解析见原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2020/question-09.jpg",
+          "caption": "题面裁切图 q09",
+          "alt": "2020考研数学三第09题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2020/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2020考研数学三答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2020",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:398bdbf99b9ce44e3597363f9ea2090e21f280986266fd212ffe9aada4db495d",
+      "answerTextHash": "sha256:545c63003decb011f66d58dc35bc2911b11e8486d740228be8b0ed08490c3fcc",
+      "sourceEvidence": {
+        "evidenceId": "math3-2020-q09",
+        "sourceId": "src_5b15e18fa7b78e9d43c07840",
+        "answerSourceId": "src_5b15e18fa7b78e9d43c07840",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2020-paper-answer",
+        "answerEvidenceId": "math3-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:545c63003decb011f66d58dc35bc2911b11e8486d740228be8b0ed08490c3fcc"
+      }
+    },
+    {
+      "id": "math3-2020-010",
+      "number": 10,
+      "paperId": "math3-2020",
+      "paperName": "2020考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2020",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2020考研数学三第10题（填空题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "y=x-1",
+      "explanation": "答案来自本地百度网盘 2020 数学三真题及解析 PDF；完整题干、公式和解析见原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2020/question-10.jpg",
+          "caption": "题面裁切图 q10",
+          "alt": "2020考研数学三第10题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2020/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2020考研数学三答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2020",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:263078966eec7f27e47361e88d784e863de9828e0f608ee2ae678845968fb0a0",
+      "answerTextHash": "sha256:7fda616e17860cec51983c895154f08bee01a29ece41c0f7a15b4f8ef935b4ad",
+      "sourceEvidence": {
+        "evidenceId": "math3-2020-q10",
+        "sourceId": "src_5b15e18fa7b78e9d43c07840",
+        "answerSourceId": "src_5b15e18fa7b78e9d43c07840",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2020-paper-answer",
+        "answerEvidenceId": "math3-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:7fda616e17860cec51983c895154f08bee01a29ece41c0f7a15b4f8ef935b4ad"
+      }
+    },
+    {
+      "id": "math3-2020-011",
+      "number": 11,
+      "paperId": "math3-2020",
+      "paperName": "2020考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2020",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2020考研数学三第11题（填空题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "8",
+      "explanation": "答案来自本地百度网盘 2020 数学三真题及解析 PDF；完整题干、公式和解析见原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2020/question-11.jpg",
+          "caption": "题面裁切图 q11",
+          "alt": "2020考研数学三第11题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2020/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2020考研数学三答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2020",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:96439ad08c26d8aa39251873b6ec2a961c4f1db00fdf2cda750550fa0e6cc589",
+      "answerTextHash": "sha256:9e8f01c9e3b11eb665cddda0c3fbaf6b18fe853023becbbf2edcc62ad6208234",
+      "sourceEvidence": {
+        "evidenceId": "math3-2020-q11",
+        "sourceId": "src_5b15e18fa7b78e9d43c07840",
+        "answerSourceId": "src_5b15e18fa7b78e9d43c07840",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2020-paper-answer",
+        "answerEvidenceId": "math3-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:9e8f01c9e3b11eb665cddda0c3fbaf6b18fe853023becbbf2edcc62ad6208234"
+      }
+    },
+    {
+      "id": "math3-2020-012",
+      "number": 12,
+      "paperId": "math3-2020",
+      "paperName": "2020考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2020",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2020考研数学三第12题（填空题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "π ln 2 - π/3",
+      "explanation": "答案来自本地百度网盘 2020 数学三真题及解析 PDF；完整题干、公式和解析见原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2020/question-12.jpg",
+          "caption": "题面裁切图 q12",
+          "alt": "2020考研数学三第12题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2020/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2020考研数学三答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2020",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:a7ae15e9fc5ee9837d4f8964a27fbe55713e8b1484263d89d61cd5fb25e80264",
+      "answerTextHash": "sha256:8b7cca794d869c36fa9458f63e84bbf6913003bb11724c985a304774f4271db3",
+      "sourceEvidence": {
+        "evidenceId": "math3-2020-q12",
+        "sourceId": "src_5b15e18fa7b78e9d43c07840",
+        "answerSourceId": "src_5b15e18fa7b78e9d43c07840",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2020-paper-answer",
+        "answerEvidenceId": "math3-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:8b7cca794d869c36fa9458f63e84bbf6913003bb11724c985a304774f4271db3"
+      }
+    },
+    {
+      "id": "math3-2020-013",
+      "number": 13,
+      "paperId": "math3-2020",
+      "paperName": "2020考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2020",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2020考研数学三第13题（填空题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "a^4 - 4a^2",
+      "explanation": "答案来自本地百度网盘 2020 数学三真题及解析 PDF；完整题干、公式和解析见原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2020/question-13.jpg",
+          "caption": "题面裁切图 q13",
+          "alt": "2020考研数学三第13题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2020/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2020考研数学三答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2020",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:a124608a8df0849806947257e3a4a1021f510a4313f3074330cc0b092b20a174",
+      "answerTextHash": "sha256:11854b66ce2f42c37c29dd572da39bc58ccd59ee8b14cd18f54f419db68bbad7",
+      "sourceEvidence": {
+        "evidenceId": "math3-2020-q13",
+        "sourceId": "src_5b15e18fa7b78e9d43c07840",
+        "answerSourceId": "src_5b15e18fa7b78e9d43c07840",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2020-paper-answer",
+        "answerEvidenceId": "math3-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:11854b66ce2f42c37c29dd572da39bc58ccd59ee8b14cd18f54f419db68bbad7"
+      }
+    },
+    {
+      "id": "math3-2020-014",
+      "number": 14,
+      "paperId": "math3-2020",
+      "paperName": "2020考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2020",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2020考研数学三第14题（填空题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "8/7",
+      "explanation": "答案来自本地百度网盘 2020 数学三真题及解析 PDF；完整题干、公式和解析见原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2020/question-14.jpg",
+          "caption": "题面裁切图 q14",
+          "alt": "2020考研数学三第14题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2020/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2020考研数学三答案解析 p.6"
+        },
+        {
+          "src": "question-bank/math3-2020/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2020考研数学三答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2020",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:cca4a1bdfcdeb5ae813479e4ef75fada5850bb8e8d1310580a6495252f56485c",
+      "answerTextHash": "sha256:231af6e30ac697d457196c310aa37e1646f4a07026c29c0c23ebb48a0c53c0d5",
+      "sourceEvidence": {
+        "evidenceId": "math3-2020-q14",
+        "sourceId": "src_5b15e18fa7b78e9d43c07840",
+        "answerSourceId": "src_5b15e18fa7b78e9d43c07840",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2020-paper-answer",
+        "answerEvidenceId": "math3-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:231af6e30ac697d457196c310aa37e1646f4a07026c29c0c23ebb48a0c53c0d5"
+      }
+    },
+    {
+      "id": "math3-2020-015",
+      "number": 15,
+      "paperId": "math3-2020",
+      "paperName": "2020考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2020",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2020考研数学三第15题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "a=1，b=-e/2。",
+      "explanation": "答案来自本地百度网盘 2020 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2020/question-15.jpg",
+          "caption": "题面裁切图 q15",
+          "alt": "2020考研数学三第15题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2020/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2020考研数学三答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2020",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:28e9f9ea273a5e359f37c6b5b789d24f795d7ca409959d9390d9b80bf4d16021",
+      "answerTextHash": "sha256:5adaafa0f70df0cf9df0f14623c3a73855d14b83eb950be4436bf49706482ba0",
+      "sourceEvidence": {
+        "evidenceId": "math3-2020-q15",
+        "sourceId": "src_5b15e18fa7b78e9d43c07840",
+        "answerSourceId": "src_5b15e18fa7b78e9d43c07840",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2020-paper-answer",
+        "answerEvidenceId": "math3-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:5adaafa0f70df0cf9df0f14623c3a73855d14b83eb950be4436bf49706482ba0"
+      }
+    },
+    {
+      "id": "math3-2020-016",
+      "number": 16,
+      "paperId": "math3-2020",
+      "paperName": "2020考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2020",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2020考研数学三第16题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "极小点为 (1/6, 1/12)，极小值为 -1/216；(0,0) 不是极值点。",
+      "explanation": "答案来自本地百度网盘 2020 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2020/question-16.jpg",
+          "caption": "题面裁切图 q16",
+          "alt": "2020考研数学三第16题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2020/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2020考研数学三答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2020",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:da23cfe52b961abf32f6680725fcef05b7e7c9a2021ebd5ef0e4eb80c29d709e",
+      "answerTextHash": "sha256:af526ad88b7de5ea0fbef81d78263a26843968bc02304df152674a8b9b0b482e",
+      "sourceEvidence": {
+        "evidenceId": "math3-2020-q16",
+        "sourceId": "src_5b15e18fa7b78e9d43c07840",
+        "answerSourceId": "src_5b15e18fa7b78e9d43c07840",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2020-paper-answer",
+        "answerEvidenceId": "math3-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:af526ad88b7de5ea0fbef81d78263a26843968bc02304df152674a8b9b0b482e"
+      }
+    },
+    {
+      "id": "math3-2020-017",
+      "number": 17,
+      "paperId": "math3-2020",
+      "paperName": "2020考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2020",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2020考研数学三第17题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "f(x)=e^(-x)cos2x；sum a_n = 1/[5(e^π-1)]。",
+      "explanation": "答案来自本地百度网盘 2020 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2020/question-17.jpg",
+          "caption": "题面裁切图 q17",
+          "alt": "2020考研数学三第17题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2020/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2020考研数学三答案解析 p.8"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2020",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:1935f550455f451730e0c9dd3b4175b52006434048614b861027f3420c813908",
+      "answerTextHash": "sha256:174a0e3a52a6645a41e63b4f69b7f1d15594afcb358f2d150f7b8b37e06c2f6b",
+      "sourceEvidence": {
+        "evidenceId": "math3-2020-q17",
+        "sourceId": "src_5b15e18fa7b78e9d43c07840",
+        "answerSourceId": "src_5b15e18fa7b78e9d43c07840",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2020-paper-answer",
+        "answerEvidenceId": "math3-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:174a0e3a52a6645a41e63b4f69b7f1d15594afcb358f2d150f7b8b37e06c2f6b"
+      }
+    },
+    {
+      "id": "math3-2020-018",
+      "number": 18,
+      "paperId": "math3-2020",
+      "paperName": "2020考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2020",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2020考研数学三第18题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "∫∫_D x f(x,y) dxdy = 3π^2/128。",
+      "explanation": "答案来自本地百度网盘 2020 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2020/question-18.jpg",
+          "caption": "题面裁切图 q18",
+          "alt": "2020考研数学三第18题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2020/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2020考研数学三答案解析 p.8"
+        },
+        {
+          "src": "question-bank/math3-2020/answer-page-09.jpg",
+          "caption": "答案解析 p.9",
+          "alt": "2020考研数学三答案解析 p.9"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2020",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:02d85be3b33d46718d67307518442d0bd9871b29f8302fa8b99e65a47ba7e168",
+      "answerTextHash": "sha256:d3501a3a77913aee45123ee75939d42e36a7f70010644f240593b59c65378a32",
+      "sourceEvidence": {
+        "evidenceId": "math3-2020-q18",
+        "sourceId": "src_5b15e18fa7b78e9d43c07840",
+        "answerSourceId": "src_5b15e18fa7b78e9d43c07840",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2020-paper-answer",
+        "answerEvidenceId": "math3-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:d3501a3a77913aee45123ee75939d42e36a7f70010644f240593b59c65378a32"
+      }
+    },
+    {
+      "id": "math3-2020-019",
+      "number": 19,
+      "paperId": "math3-2020",
+      "paperName": "2020考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2020",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2020考研数学三第19题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "两项证明命题均成立；完整拉格朗日中值定理与积分估计证明见答案原页。",
+      "explanation": "答案来自本地百度网盘 2020 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2020/question-19.jpg",
+          "caption": "题面裁切图 q19",
+          "alt": "2020考研数学三第19题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2020/answer-page-09.jpg",
+          "caption": "答案解析 p.9",
+          "alt": "2020考研数学三答案解析 p.9"
+        },
+        {
+          "src": "question-bank/math3-2020/answer-page-10.jpg",
+          "caption": "答案解析 p.10",
+          "alt": "2020考研数学三答案解析 p.10"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2020",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:503f63a03b442bfd5a4e2bc20793cf103a1db0a706f5cc3f72e580eca233a8eb",
+      "answerTextHash": "sha256:67d63f18ef90be3f2ec86d4c065aff59a74e8c2ab66a3e97c5853e2e167eb604",
+      "sourceEvidence": {
+        "evidenceId": "math3-2020-q19",
+        "sourceId": "src_5b15e18fa7b78e9d43c07840",
+        "answerSourceId": "src_5b15e18fa7b78e9d43c07840",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2020-paper-answer",
+        "answerEvidenceId": "math3-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:67d63f18ef90be3f2ec86d4c065aff59a74e8c2ab66a3e97c5853e2e167eb604"
+      }
+    },
+    {
+      "id": "math3-2020-020",
+      "number": 20,
+      "paperId": "math3-2020",
+      "paperName": "2020考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2020",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2020考研数学三第20题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "a=4，b=1；Q=1/5[[4,-3],[-3,-4]]。",
+      "explanation": "答案来自本地百度网盘 2020 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2020/question-20.jpg",
+          "caption": "题面裁切图 q20",
+          "alt": "2020考研数学三第20题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2020/answer-page-10.jpg",
+          "caption": "答案解析 p.10",
+          "alt": "2020考研数学三答案解析 p.10"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2020",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:02ec2b62ee8dae366223417f5819d7c9f3d1ba5216c493ed3d5439186a4d15b4",
+      "answerTextHash": "sha256:839a76ec6dc65b1ce07814fb6c86ac1694a4bf4ce7dacf96c0dde4c806bbfe9f",
+      "sourceEvidence": {
+        "evidenceId": "math3-2020-q20",
+        "sourceId": "src_5b15e18fa7b78e9d43c07840",
+        "answerSourceId": "src_5b15e18fa7b78e9d43c07840",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2020-paper-answer",
+        "answerEvidenceId": "math3-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:839a76ec6dc65b1ce07814fb6c86ac1694a4bf4ce7dacf96c0dde4c806bbfe9f"
+      }
+    },
+    {
+      "id": "math3-2020-021",
+      "number": 21,
+      "paperId": "math3-2020",
+      "paperName": "2020考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2020",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2020考研数学三第21题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "P 可逆；P^(-1)AP=[[0,6],[1,-1]]；A 可相似对角化。",
+      "explanation": "答案来自本地百度网盘 2020 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2020/question-21.jpg",
+          "caption": "题面裁切图 q21",
+          "alt": "2020考研数学三第21题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2020/answer-page-10.jpg",
+          "caption": "答案解析 p.10",
+          "alt": "2020考研数学三答案解析 p.10"
+        },
+        {
+          "src": "question-bank/math3-2020/answer-page-11.jpg",
+          "caption": "答案解析 p.11",
+          "alt": "2020考研数学三答案解析 p.11"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2020",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:c2e0c3d9433f703e3f927628d1acb59335a7498b655fe7aa8903969a6f7cf85d",
+      "answerTextHash": "sha256:a9e2ea67822fa55b8b8ad25b63ced85d99c5d59577de257d0acf66f1993e89e5",
+      "sourceEvidence": {
+        "evidenceId": "math3-2020-q21",
+        "sourceId": "src_5b15e18fa7b78e9d43c07840",
+        "answerSourceId": "src_5b15e18fa7b78e9d43c07840",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2020-paper-answer",
+        "answerEvidenceId": "math3-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:a9e2ea67822fa55b8b8ad25b63ced85d99c5d59577de257d0acf66f1993e89e5"
+      }
+    },
+    {
+      "id": "math3-2020-022",
+      "number": 22,
+      "paperId": "math3-2020",
+      "paperName": "2020考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2020",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2020考研数学三第22题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "联合分布 P(0,0)=1/4，P(0,1)=1/2，P(1,0)=0，P(1,1)=1/4；相关系数为 1/3。",
+      "explanation": "答案来自本地百度网盘 2020 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2020/question-22.jpg",
+          "caption": "题面裁切图 q22",
+          "alt": "2020考研数学三第22题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2020/answer-page-11.jpg",
+          "caption": "答案解析 p.11",
+          "alt": "2020考研数学三答案解析 p.11"
+        },
+        {
+          "src": "question-bank/math3-2020/answer-page-12.jpg",
+          "caption": "答案解析 p.12",
+          "alt": "2020考研数学三答案解析 p.12"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2020",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:4b08daa4c3c27f0ee78baf840fe889ca5be261230e90d55fc5891292b3a628c3",
+      "answerTextHash": "sha256:46c2c0d1c42bf189db766eb29c80c2b6d8e3c4ec63a55f5f33175093289a2ece",
+      "sourceEvidence": {
+        "evidenceId": "math3-2020-q22",
+        "sourceId": "src_5b15e18fa7b78e9d43c07840",
+        "answerSourceId": "src_5b15e18fa7b78e9d43c07840",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2020-paper-answer",
+        "answerEvidenceId": "math3-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:46c2c0d1c42bf189db766eb29c80c2b6d8e3c4ec63a55f5f33175093289a2ece"
+      }
+    },
+    {
+      "id": "math3-2020-023",
+      "number": 23,
+      "paperId": "math3-2020",
+      "paperName": "2020考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2020",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2020考研数学三第23题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "P{T>t}=exp[-(t/θ)^m]；P{T>s+t|T>s}=exp[-((s+t)^m-s^m)/θ^m]；θ_hat=(n^-1 sum(t_i^m))^(1/m)。",
+      "explanation": "答案来自本地百度网盘 2020 数学三真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2020/question-23.jpg",
+          "caption": "题面裁切图 q23",
+          "alt": "2020考研数学三第23题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2020/answer-page-12.jpg",
+          "caption": "答案解析 p.12",
+          "alt": "2020考研数学三答案解析 p.12"
+        },
+        {
+          "src": "question-bank/math3-2020/answer-page-13.jpg",
+          "caption": "答案解析 p.13",
+          "alt": "2020考研数学三答案解析 p.13"
+        }
+      ],
+      "tags": [
+        "math3",
+        "2020",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:249c3301fd6cc142e082d768dcb1e6b2cbd999513e4881800bb5f84d785d2193",
+      "answerTextHash": "sha256:785d5c2d3d0ce8fdd3923e017fa0b46a213fae07c8e4854c86ac124bbf3d743e",
+      "sourceEvidence": {
+        "evidenceId": "math3-2020-q23",
+        "sourceId": "src_5b15e18fa7b78e9d43c07840",
+        "answerSourceId": "src_5b15e18fa7b78e9d43c07840",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math3-2020-paper-answer",
+        "answerEvidenceId": "math3-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:785d5c2d3d0ce8fdd3923e017fa0b46a213fae07c8e4854c86ac124bbf3d743e"
+      }
+    }
+  ]
+}

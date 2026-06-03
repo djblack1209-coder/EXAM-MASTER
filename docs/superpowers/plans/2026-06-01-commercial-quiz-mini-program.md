@@ -3051,6 +3051,93 @@ rg -n "答案|解析|详解|故选|所以选|应该选|故选择" tmp/pdfs/math3
 
 Result: passed on 2026-06-03. `math3-2019.json` has 23 cards, `{single_choice:8, short_answer:15}`, section counts `{选择题:8, 填空题:6, 解答题:9}`, all cards carry `answerEvidenceStatus=matched`, and the final OCR leakage scan over 25 question crop images found no answer/analysis markers. The 2005-2020 release gate reports `coverageGaps=10`, `publishedSlots=81`, `sourceEvidenceGaps=1`, and `pendingCoverageBlockers=0`; release backlog reports `blockers=12` and `publicCourseBlockedSlots=10`; the rebuilt release-priority dry-run now starts at `2020年考研数学三真题及解析.pdf`, then `2020年考研英语一真题.pdf`, then `2017考研数学二真题.pdf`.
 
+### Task 78: Publish Math III 2020 Page-Image Bank
+
+**Files:**
+- Add: `scripts/cleaning/build_math3_2020_bank.py`
+- Add: `src/config/flashcard-banks/math3-2020.json`
+- Add: `tests/unit/math3-2020-data.spec.js`
+- Add: `cdn-assets/question-bank/math3-2020/*`
+- Modify: `src/config/bank-registry.js`
+- Modify: `src/pages/practice-sub/bank-data-table.js`
+- Modify: `tests/unit/flashcard-bank-registry.spec.js`
+- Modify: `tests/unit/question-bank-year-map.spec.js`
+- Modify: `docs/frontend-experience-refactor-diary.md`
+- Modify: `docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md`
+- Modify: `docs/08C-SCRIPTS-REFERENCE.md`
+- Modify: `docs/12-CHANGELOG.md`
+- Modify: `data/release-blocker-backlog.json`
+
+- [x] **Step 0: Recheck development environment and source path**
+
+Rechecked CodeGraph after the previous stage. `codegraph sync` and full `codegraph index` both completed; `build_math3_2020_bank.py` and `math3-2020-data.spec.js` are searchable in the index. The remaining CodeGraph pending marker is the uncommitted data-asset worktree state, not an unindexed Python/JS source file.
+
+The release-priority queue had advanced to the `math3:2020` source. The ignored local PDF was downloaded into:
+
+```text
+data/raw-inbox/src_5b15e18fa7b78e9d43c07840-2020年考研数学三真题及解析.pdf
+```
+
+- [x] **Step 1: Add failing registry coverage**
+
+Added a focused registry/load regression for `math3-2020` expecting registration, 23 cards, matched answer evidence, q01 answer `B`, q02 answer `C`, q06 answer `D`, q08 answer `C`, q09 answer `(π - 1)dx - dy`, q12 answer `π ln 2 - π/3`, q14 answer `8/7`, q17 containing `e^(-x)cos2x`, q22 containing `相关系数为 1/3`, q23 answer evidence ending at `question-bank/math3-2020/answer-page-13.jpg`, plus split q06 question crops.
+
+Initial result:
+```bash
+npm test -- tests/unit/math3-2020-data.spec.js
+```
+
+Failed because `math3-2020` was not registered or compressed yet.
+
+- [x] **Step 2: Verify source and build page-image bank**
+
+Source audit:
+
+```bash
+pdfinfo data/raw-inbox/src_5b15e18fa7b78e9d43c07840-2020年考研数学三真题及解析.pdf
+pdftotext data/raw-inbox/src_5b15e18fa7b78e9d43c07840-2020年考研数学三真题及解析.pdf -
+pdftoppm -r 130 -jpeg -jpegopt quality=70 data/raw-inbox/src_5b15e18fa7b78e9d43c07840-2020年考研数学三真题及解析.pdf tmp/pdfs/math3-2020-pages/page
+```
+
+Result: 18-page scanned PDF with no usable text layer. Pages 1-5 are the original paper, pages 6-18 are answer analysis, and q06 crosses paper pages 2-3.
+
+Added `build_math3_2020_bank.py` with 23 cards, 5 rendered paper pages, 13 rendered answer pages, 24 pre-answer question crop assets, and q06 split across two question images.
+
+- [x] **Step 3: Register and refresh practice data**
+
+Run:
+```bash
+python3 scripts/cleaning/build_math3_2020_bank.py --force-assets
+node scripts/build/generate-compressed-bank-modules.mjs
+```
+
+Result: published `src/config/flashcard-banks/math3-2020.json`, generated `cdn-assets/question-bank/math3-2020`, registered `math3-2020`, and regenerated 95 compressed practice-bank entries.
+
+- [x] **Step 4: Run validation**
+
+Run:
+```bash
+python3 -m py_compile scripts/cleaning/build_math3_2020_bank.py
+npm test -- tests/unit/math3-2020-data.spec.js tests/unit/question-bank-year-map.spec.js tests/unit/flashcard-bank-registry.spec.js
+node scripts/build/question-bank-release-gate.mjs --min-year=2005 --max-year=2020
+node scripts/build/release-blocker-backlog.mjs
+python3 scripts/baidu/cleaning_queue.py
+python3 scripts/baidu/run_cleaning_queue.py --dry-run --limit 12 --source-type official_paper --paper-role main --max-year 2020
+```
+
+Question-image leakage scan:
+```bash
+rm -rf tmp/pdfs/math3-2020-question-ocr
+mkdir -p tmp/pdfs/math3-2020-question-ocr
+for p in cdn-assets/question-bank/math3-2020/question-*.jpg; do
+  base=$(basename "$p" .jpg)
+  tesseract "$p" "tmp/pdfs/math3-2020-question-ocr/$base" -l chi_sim+eng --psm 6
+done
+rg -n "答案|解析|详解|故选|所以选|应该选|故选择" tmp/pdfs/math3-2020-question-ocr
+```
+
+Result: passed on 2026-06-03. `math3-2020.json` has 23 cards, `{single_choice:8, short_answer:15}`, section counts `{选择题:8, 填空题:6, 解答题:9}`, all cards carry `answerEvidenceStatus=matched`, and the final OCR leakage scan over 24 question crop images found no answer/analysis markers. The 2005-2020 release gate reports `coverageGaps=9`, `publishedSlots=82`, `sourceEvidenceGaps=1`, and `pendingCoverageBlockers=0`; release backlog reports `blockers=11` and `publicCourseBlockedSlots=9`; the rebuilt release-priority dry-run now starts at `2020年考研英语一真题.pdf`, then `2017考研数学二真题.pdf`.
+
 ### Task 59: Block Mislabeled Math II 2016 Source
 
 **Files:**

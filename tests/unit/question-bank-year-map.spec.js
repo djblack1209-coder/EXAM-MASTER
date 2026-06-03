@@ -182,7 +182,7 @@ describe('question bank public-course year map', () => {
     }
 
     const math3 = tracks.find((track) => track.id === 'math3');
-    expect(math3.slotSummary).toEqual({ total: 22, ready: 16, organizing: 0, missing: 6 });
+    expect(math3.slotSummary).toEqual({ total: 22, ready: 17, organizing: 0, missing: 5 });
     expect(math3.yearSlots.find((slot) => slot.year === '2025')).toMatchObject({
       bankId: 'math3-2025',
       status: 'ready',
@@ -211,7 +211,20 @@ describe('question bank public-course year map', () => {
       actionLabel: '开始',
       clickable: true
     });
-    for (const year of ['2008', '2009', '2010', '2011', '2012', '2013', '2015', '2016', '2017', '2018', '2019']) {
+    for (const year of [
+      '2008',
+      '2009',
+      '2010',
+      '2011',
+      '2012',
+      '2013',
+      '2015',
+      '2016',
+      '2017',
+      '2018',
+      '2019',
+      '2020'
+    ]) {
       expect(math3.yearSlots.find((slot) => slot.year === year)).toMatchObject({
         bankId: `math3-${year}`,
         status: 'ready',

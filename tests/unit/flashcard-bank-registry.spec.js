@@ -665,6 +665,14 @@ describe('published flashcard bank registry', () => {
     expect(math32019.cards.find((card) => card.number === 23).answerImages.at(-1).src).toContain(
       'question-bank/math3-2019/answer-page-12.jpg'
     );
+    const math32020 = await loadBankData('math3-2020');
+    expect(math32020.cards).toHaveLength(23);
+    expect(math32020.cards.every((card) => card.answerEvidenceStatus === 'matched')).toBe(true);
+    expect(math32020.cards.find((card) => card.number === 1).answer).toBe('B');
+    expect(math32020.cards.find((card) => card.number === 14).answer).toBe('8/7');
+    expect(math32020.cards.find((card) => card.number === 23).answerImages.at(-1).src).toContain(
+      'question-bank/math3-2020/answer-page-13.jpg'
+    );
   });
 
   it('builds public-course navigation tree without exposing disabled banks', () => {
@@ -906,6 +914,7 @@ describe('published flashcard bank registry', () => {
     expect(math.tracks[2].banks.some((bank) => bank.id === 'math3-2016')).toBe(true);
     expect(math.tracks[2].banks.some((bank) => bank.id === 'math3-2017')).toBe(true);
     expect(math.tracks[2].banks.some((bank) => bank.id === 'math3-2019')).toBe(true);
+    expect(math.tracks[2].banks.some((bank) => bank.id === 'math3-2020')).toBe(true);
     expect(math.tracks.flatMap((track) => track.pendingBanks.map((bank) => bank.id))).not.toContain('math-2025');
     expect(english.tracks[0].modes.map((mode) => mode.id)).toEqual(['past_exam', 'timed_sprint', 'weakness']);
     expect(english.tracks[0].modes.map((mode) => mode.id)).not.toContain('knowledge_graph');
