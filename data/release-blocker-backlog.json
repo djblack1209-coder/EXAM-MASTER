@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-06-03T03:35:45.469Z",
+  "generatedAt": "2026-06-03T04:17:08.657Z",
   "verdict": "blocked",
   "sources": {
     "questionAudit": "data/question-bank-release-audit.json",
@@ -12,17 +12,17 @@
   },
   "summary": {
     "canPublish": false,
-    "blockerItemCount": 22,
-    "p0Count": 22,
+    "blockerItemCount": 21,
+    "p0Count": 21,
     "publicCourseRequiredSlots": 91,
-    "publicCoursePublishedSlots": 71,
+    "publicCoursePublishedSlots": 72,
     "publicCoursePendingSlots": 0,
     "publicCoursePendingCoverageBlockers": 0,
-    "publicCourseCoverageGaps": 20,
-    "publicCourseBlockerItemCount": 21,
-    "publicCourseBlockedSlotCount": 20,
+    "publicCourseCoverageGaps": 19,
+    "publicCourseBlockerItemCount": 20,
+    "publicCourseBlockedSlotCount": 19,
     "publicCourseLocalSourceSummary": {
-      "totalBlockedSlots": 20,
+      "totalBlockedSlots": 19,
       "pairedReadableSlots": 0,
       "answerBlockedSlots": 0,
       "paperBlockedSlots": 0,
@@ -32,7 +32,7 @@
       "blockedLocalFileSlots": 0,
       "unpairedReadableSlots": 0,
       "missingLocalFileSlots": 0,
-      "notAvailableSlots": 20,
+      "notAvailableSlots": 19,
       "unknownSlots": 0
     },
     "sourceManifestHumanRegistrationQueue": {
@@ -67,14 +67,14 @@
     },
     "public_course_coverage": {
       "status": "blocked",
-      "itemCount": 20,
-      "p0Count": 20,
+      "itemCount": 19,
+      "p0Count": 19,
       "sampleItems": [
-        "coverage_missing:english2:2015",
         "coverage_missing:math2:2015",
         "coverage_missing:english2:2016",
         "coverage_missing:math2:2016",
-        "coverage_missing:math3:2016"
+        "coverage_missing:math3:2016",
+        "coverage_missing:english2:2017"
       ]
     },
     "source_manifest_evidence": {
@@ -130,129 +130,6 @@
     }
   },
   "publicCourseSlotBacklog": [
-    {
-      "slotKey": "english2:2015",
-      "track": "english2",
-      "trackLabel": "英语二",
-      "year": 2015,
-      "blockerCode": "missing_public_course_bank",
-      "slotStatus": "missing",
-      "blockers": [
-        "missing_public_course_bank"
-      ],
-      "blockerItemIds": [
-        "coverage_missing:english2:2015"
-      ],
-      "sourceEvidenceStatus": "publishable_source_present",
-      "sourceCandidateSummary": "source manifest 已发现 25 个候选，其中 official_paper=5；当前阻断: legalReview.publishBlocked=true(14), riskFlags=brand_leak,copyright_review_required(14), sourceType=institution_candidate(14)",
-      "sourceCandidateSamples": [
-        {
-          "sourceId": "src_26e806e10a80d41b9831037e",
-          "status": "discovered",
-          "sourceType": "official_paper",
-          "sourceRole": "",
-          "inferredSourceRole": "paper_answer",
-          "roleSource": "filename",
-          "autoPairEligible": true,
-          "answerEvidenceStatus": "",
-          "riskFlags": [],
-          "publishBlocked": false,
-          "blockReasons": [],
-          "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/03.考研真相系列/26考研真相/英二/真题册+答案速查/2015年真题及答案速查/2015年真题及答案速查.pdf",
-          "sourceUrl": ""
-        },
-        {
-          "sourceId": "src_9861ae9bce681b33f3f0495e",
-          "status": "discovered",
-          "sourceType": "official_paper",
-          "sourceRole": "",
-          "inferredSourceRole": "paper",
-          "roleSource": "filename",
-          "autoPairEligible": true,
-          "answerEvidenceStatus": "",
-          "riskFlags": [],
-          "publishBlocked": false,
-          "blockReasons": [],
-          "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语二考研历年真题/2015年考研英语二真题 .pdf",
-          "sourceUrl": ""
-        },
-        {
-          "sourceId": "src_bc9bdd2b47254ff5fa5bc408",
-          "status": "discovered",
-          "sourceType": "official_paper",
-          "sourceRole": "",
-          "inferredSourceRole": "paper",
-          "roleSource": "filename",
-          "autoPairEligible": true,
-          "answerEvidenceStatus": "",
-          "riskFlags": [],
-          "publishBlocked": false,
-          "blockReasons": [],
-          "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【解析】1986-2024/英语二历年真题文档版（2010-2024）/2015 .pdf",
-          "sourceUrl": ""
-        }
-      ],
-      "localSourceAuditStatus": "not_available",
-      "localSourceAuditSummary": "",
-      "localSourceAuditSamples": [],
-      "localSourceAuditDiagnostics": {
-        "status": "not_available",
-        "sourceCount": 0,
-        "usableTextLayerCount": 0,
-        "needsOcrCount": 0,
-        "blockedCount": 0,
-        "paperLikeCount": 0,
-        "answerLikeCount": 0,
-        "usablePaperLikeCount": 0,
-        "usableAnswerLikeCount": 0,
-        "blockedPaperLikeCount": 0,
-        "blockedAnswerLikeCount": 0,
-        "roleCounts": {},
-        "samples": []
-      },
-      "sourceManifestRegistrationChecklist": {
-        "status": "blocked_before_auto_pair",
-        "readyForHumanVerification": false,
-        "requiredManifestFields": [
-          "eligible=true",
-          "status=discovered|verified|published",
-          "sourceType=official_paper",
-          "contentHash|sha256|fileSha256|sourceHash",
-          "remotePath|sourceUrl|provenanceUrl",
-          "sourceRole inferred as paper+answer or paper_answer",
-          "legalReview.publishBlocked=false",
-          "riskFlags excludes answer_missing,brand_leak,copyright_review_required,ad_or_promo,manual_review_required,source_content_mismatch"
-        ],
-        "verifiedSourceRegistryFields": [
-          "localPath",
-          "sourceUrl",
-          "track",
-          "year",
-          "sourceType=official_paper",
-          "answerEvidenceStatus=matched",
-          "expectedSha256",
-          "verifiedBy",
-          "evidenceNote"
-        ],
-        "humanVerificationSteps": [],
-        "postRegistrationCommands": [],
-        "localFileCandidates": [],
-        "verifiedSourceRegistryDrafts": [],
-        "manifestCandidateIds": [
-          "src_26e806e10a80d41b9831037e",
-          "src_9861ae9bce681b33f3f0495e",
-          "src_bc9bdd2b47254ff5fa5bc408"
-        ],
-        "blockers": [
-          "local_source_audit_not_available"
-        ],
-        "note": "Resolve listed local-source blockers before the slot can be treated as an auto-paired official source."
-      },
-      "prerequisiteBlockers": [],
-      "coverageAction": "已有可发布题源证据时，完成题卡清洗、答案匹配、证据哈希，再按 registry 规范注册题库。",
-      "sourceEvidenceAction": "",
-      "nextAction": "已有可发布题源证据时，完成题卡清洗、答案匹配、证据哈希，再按 registry 规范注册题库。"
-    },
     {
       "slotKey": "math2:2015",
       "track": "math2",
@@ -2360,17 +2237,17 @@
       "nextAction": "已有可发布题源证据时，完成题卡清洗、答案匹配、证据哈希，再按 registry 规范注册题库。"
     },
     {
-      "id": "coverage_missing:english2:2015",
+      "id": "coverage_missing:english2:2016",
       "track": "english2",
       "trackLabel": "英语二",
-      "year": 2015,
+      "year": 2016,
       "blockerCode": "missing_public_course_bank",
       "slotStatus": "missing",
       "sourceEvidenceStatus": "publishable_source_present",
-      "sourceCandidateSummary": "source manifest 已发现 25 个候选，其中 official_paper=5；当前阻断: legalReview.publishBlocked=true(14), riskFlags=brand_leak,copyright_review_required(14), sourceType=institution_candidate(14)",
+      "sourceCandidateSummary": "source manifest 已发现 27 个候选，其中 official_paper=5；当前阻断: legalReview.publishBlocked=true(16), riskFlags=brand_leak,copyright_review_required(16), sourceType=institution_candidate(16)",
       "sourceCandidateSamples": [
         {
-          "sourceId": "src_26e806e10a80d41b9831037e",
+          "sourceId": "src_22c001c9c9168eedcdbe4c54",
           "status": "discovered",
           "sourceType": "official_paper",
           "sourceRole": "",
@@ -2381,11 +2258,11 @@
           "riskFlags": [],
           "publishBlocked": false,
           "blockReasons": [],
-          "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/03.考研真相系列/26考研真相/英二/真题册+答案速查/2015年真题及答案速查/2015年真题及答案速查.pdf",
+          "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/03.考研真相系列/26考研真相/英二/真题册+答案速查/2016年真题及答案速查/2016年真题及答案速查.pdf",
           "sourceUrl": ""
         },
         {
-          "sourceId": "src_9861ae9bce681b33f3f0495e",
+          "sourceId": "src_3ba11a1a4fee9c07a34bb3e1",
           "status": "discovered",
           "sourceType": "official_paper",
           "sourceRole": "",
@@ -2396,11 +2273,11 @@
           "riskFlags": [],
           "publishBlocked": false,
           "blockReasons": [],
-          "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语二考研历年真题/2015年考研英语二真题 .pdf",
+          "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语二考研历年真题/2016年考研英语二真题 .pdf",
           "sourceUrl": ""
         },
         {
-          "sourceId": "src_bc9bdd2b47254ff5fa5bc408",
+          "sourceId": "src_4d766c79514a899a20be297d",
           "status": "discovered",
           "sourceType": "official_paper",
           "sourceRole": "",
@@ -2411,7 +2288,7 @@
           "riskFlags": [],
           "publishBlocked": false,
           "blockReasons": [],
-          "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【解析】1986-2024/英语二历年真题文档版（2010-2024）/2015 .pdf",
+          "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【解析】1986-2024/英语二历年真题文档版（2010-2024）/2016 .pdf",
           "sourceUrl": ""
         }
       ],
@@ -2447,9 +2324,9 @@
         "localFileCandidates": [],
         "verifiedSourceRegistryDrafts": [],
         "manifestCandidateIds": [
-          "src_26e806e10a80d41b9831037e",
-          "src_9861ae9bce681b33f3f0495e",
-          "src_bc9bdd2b47254ff5fa5bc408"
+          "src_22c001c9c9168eedcdbe4c54",
+          "src_3ba11a1a4fee9c07a34bb3e1",
+          "src_4d766c79514a899a20be297d"
         ],
         "blockers": [
           "local_source_audit_not_available"
@@ -2696,17 +2573,17 @@
       "nextAction": "已有可发布题源证据时，完成题卡清洗、答案匹配、证据哈希，再按 registry 规范注册题库。"
     },
     {
-      "id": "coverage_missing:english2:2016",
+      "id": "coverage_missing:english2:2017",
       "track": "english2",
       "trackLabel": "英语二",
-      "year": 2016,
+      "year": 2017,
       "blockerCode": "missing_public_course_bank",
       "slotStatus": "missing",
       "sourceEvidenceStatus": "publishable_source_present",
-      "sourceCandidateSummary": "source manifest 已发现 27 个候选，其中 official_paper=5；当前阻断: legalReview.publishBlocked=true(16), riskFlags=brand_leak,copyright_review_required(16), sourceType=institution_candidate(16)",
+      "sourceCandidateSummary": "source manifest 已发现 25 个候选，其中 official_paper=5；当前阻断: legalReview.publishBlocked=true(14), riskFlags=brand_leak,copyright_review_required(14), sourceType=institution_candidate(14)",
       "sourceCandidateSamples": [
         {
-          "sourceId": "src_22c001c9c9168eedcdbe4c54",
+          "sourceId": "src_79ee7f93299f87bb47e7cab8",
           "status": "discovered",
           "sourceType": "official_paper",
           "sourceRole": "",
@@ -2717,11 +2594,11 @@
           "riskFlags": [],
           "publishBlocked": false,
           "blockReasons": [],
-          "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/03.考研真相系列/26考研真相/英二/真题册+答案速查/2016年真题及答案速查/2016年真题及答案速查.pdf",
+          "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/03.考研真相系列/26考研真相/英二/真题册+答案速查/2017年真题及答案速查/2017年真题及答案速查.pdf",
           "sourceUrl": ""
         },
         {
-          "sourceId": "src_3ba11a1a4fee9c07a34bb3e1",
+          "sourceId": "src_d048e4f82dccc6edfd4675a4",
           "status": "discovered",
           "sourceType": "official_paper",
           "sourceRole": "",
@@ -2732,11 +2609,11 @@
           "riskFlags": [],
           "publishBlocked": false,
           "blockReasons": [],
-          "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语二考研历年真题/2016年考研英语二真题 .pdf",
+          "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【解析】1986-2024/英语二历年真题文档版（2010-2024）/2017 .pdf",
           "sourceUrl": ""
         },
         {
-          "sourceId": "src_4d766c79514a899a20be297d",
+          "sourceId": "src_f44d6b155a346867e2790bcf",
           "status": "discovered",
           "sourceType": "official_paper",
           "sourceRole": "",
@@ -2747,7 +2624,7 @@
           "riskFlags": [],
           "publishBlocked": false,
           "blockReasons": [],
-          "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【解析】1986-2024/英语二历年真题文档版（2010-2024）/2016 .pdf",
+          "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语二考研历年真题/2017年考研英语二真题 .pdf",
           "sourceUrl": ""
         }
       ],
@@ -2783,9 +2660,9 @@
         "localFileCandidates": [],
         "verifiedSourceRegistryDrafts": [],
         "manifestCandidateIds": [
-          "src_22c001c9c9168eedcdbe4c54",
-          "src_3ba11a1a4fee9c07a34bb3e1",
-          "src_4d766c79514a899a20be297d"
+          "src_79ee7f93299f87bb47e7cab8",
+          "src_d048e4f82dccc6edfd4675a4",
+          "src_f44d6b155a346867e2790bcf"
         ],
         "blockers": [
           "local_source_audit_not_available"
@@ -3041,17 +2918,17 @@
       "nextAction": "已有可发布题源证据时，完成题卡清洗、答案匹配、证据哈希，再按 registry 规范注册题库。"
     },
     {
-      "id": "coverage_missing:english2:2017",
+      "id": "coverage_missing:english2:2018",
       "track": "english2",
       "trackLabel": "英语二",
-      "year": 2017,
+      "year": 2018,
       "blockerCode": "missing_public_course_bank",
       "slotStatus": "missing",
       "sourceEvidenceStatus": "publishable_source_present",
       "sourceCandidateSummary": "source manifest 已发现 25 个候选，其中 official_paper=5；当前阻断: legalReview.publishBlocked=true(14), riskFlags=brand_leak,copyright_review_required(14), sourceType=institution_candidate(14)",
       "sourceCandidateSamples": [
         {
-          "sourceId": "src_79ee7f93299f87bb47e7cab8",
+          "sourceId": "src_304822354811c024c7644fe7",
           "status": "discovered",
           "sourceType": "official_paper",
           "sourceRole": "",
@@ -3062,11 +2939,11 @@
           "riskFlags": [],
           "publishBlocked": false,
           "blockReasons": [],
-          "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/03.考研真相系列/26考研真相/英二/真题册+答案速查/2017年真题及答案速查/2017年真题及答案速查.pdf",
+          "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/03.考研真相系列/26考研真相/英二/真题册+答案速查/2018年真题及答案速查/2018年真题及答案速查.pdf",
           "sourceUrl": ""
         },
         {
-          "sourceId": "src_d048e4f82dccc6edfd4675a4",
+          "sourceId": "src_bb76d07247dcb5e9691b37dc",
           "status": "discovered",
           "sourceType": "official_paper",
           "sourceRole": "",
@@ -3077,11 +2954,11 @@
           "riskFlags": [],
           "publishBlocked": false,
           "blockReasons": [],
-          "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【解析】1986-2024/英语二历年真题文档版（2010-2024）/2017 .pdf",
+          "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【解析】1986-2024/英语二历年真题文档版（2010-2024）/2018 .pdf",
           "sourceUrl": ""
         },
         {
-          "sourceId": "src_f44d6b155a346867e2790bcf",
+          "sourceId": "src_d94f09a02cc4c2e33c83c874",
           "status": "discovered",
           "sourceType": "official_paper",
           "sourceRole": "",
@@ -3092,7 +2969,7 @@
           "riskFlags": [],
           "publishBlocked": false,
           "blockReasons": [],
-          "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语二考研历年真题/2017年考研英语二真题 .pdf",
+          "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语二考研历年真题/2018年考研英语二真题 .pdf",
           "sourceUrl": ""
         }
       ],
@@ -3128,9 +3005,9 @@
         "localFileCandidates": [],
         "verifiedSourceRegistryDrafts": [],
         "manifestCandidateIds": [
-          "src_79ee7f93299f87bb47e7cab8",
-          "src_d048e4f82dccc6edfd4675a4",
-          "src_f44d6b155a346867e2790bcf"
+          "src_304822354811c024c7644fe7",
+          "src_bb76d07247dcb5e9691b37dc",
+          "src_d94f09a02cc4c2e33c83c874"
         ],
         "blockers": [
           "local_source_audit_not_available"
@@ -3277,17 +3154,17 @@
       "nextAction": "已有可发布题源证据时，完成题卡清洗、答案匹配、证据哈希，再按 registry 规范注册题库。"
     },
     {
-      "id": "coverage_missing:english2:2018",
+      "id": "coverage_missing:english2:2019",
       "track": "english2",
       "trackLabel": "英语二",
-      "year": 2018,
+      "year": 2019,
       "blockerCode": "missing_public_course_bank",
       "slotStatus": "missing",
       "sourceEvidenceStatus": "publishable_source_present",
-      "sourceCandidateSummary": "source manifest 已发现 25 个候选，其中 official_paper=5；当前阻断: legalReview.publishBlocked=true(14), riskFlags=brand_leak,copyright_review_required(14), sourceType=institution_candidate(14)",
+      "sourceCandidateSummary": "source manifest 已发现 21 个候选，其中 official_paper=5；当前阻断: legalReview.publishBlocked=true(10), riskFlags=brand_leak,copyright_review_required(10), sourceType=institution_candidate(10)",
       "sourceCandidateSamples": [
         {
-          "sourceId": "src_304822354811c024c7644fe7",
+          "sourceId": "src_7389cb9947ec7ddd99d292b0",
           "status": "discovered",
           "sourceType": "official_paper",
           "sourceRole": "",
@@ -3298,11 +3175,11 @@
           "riskFlags": [],
           "publishBlocked": false,
           "blockReasons": [],
-          "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/03.考研真相系列/26考研真相/英二/真题册+答案速查/2018年真题及答案速查/2018年真题及答案速查.pdf",
+          "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/03.考研真相系列/26考研真相/英二/真题册+答案速查/2019年真题及答案速查/2019年真题及答案速查.pdf",
           "sourceUrl": ""
         },
         {
-          "sourceId": "src_bb76d07247dcb5e9691b37dc",
+          "sourceId": "src_e4bdc96c3ef9004d2fe974ac",
           "status": "discovered",
           "sourceType": "official_paper",
           "sourceRole": "",
@@ -3313,11 +3190,11 @@
           "riskFlags": [],
           "publishBlocked": false,
           "blockReasons": [],
-          "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【解析】1986-2024/英语二历年真题文档版（2010-2024）/2018 .pdf",
+          "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语二考研历年真题/2019年考研英语二真题 .pdf",
           "sourceUrl": ""
         },
         {
-          "sourceId": "src_d94f09a02cc4c2e33c83c874",
+          "sourceId": "src_f60e4219c81bc8a4489b9223",
           "status": "discovered",
           "sourceType": "official_paper",
           "sourceRole": "",
@@ -3328,7 +3205,7 @@
           "riskFlags": [],
           "publishBlocked": false,
           "blockReasons": [],
-          "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语二考研历年真题/2018年考研英语二真题 .pdf",
+          "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【解析】1986-2024/英语二历年真题文档版（2010-2024）/2019 .pdf",
           "sourceUrl": ""
         }
       ],
@@ -3364,9 +3241,9 @@
         "localFileCandidates": [],
         "verifiedSourceRegistryDrafts": [],
         "manifestCandidateIds": [
-          "src_304822354811c024c7644fe7",
-          "src_bb76d07247dcb5e9691b37dc",
-          "src_d94f09a02cc4c2e33c83c874"
+          "src_7389cb9947ec7ddd99d292b0",
+          "src_e4bdc96c3ef9004d2fe974ac",
+          "src_f60e4219c81bc8a4489b9223"
         ],
         "blockers": [
           "local_source_audit_not_available"
@@ -3513,17 +3390,17 @@
       "nextAction": "已有可发布题源证据时，完成题卡清洗、答案匹配、证据哈希，再按 registry 规范注册题库。"
     },
     {
-      "id": "coverage_missing:english2:2019",
+      "id": "coverage_missing:english2:2020",
       "track": "english2",
       "trackLabel": "英语二",
-      "year": 2019,
+      "year": 2020,
       "blockerCode": "missing_public_course_bank",
       "slotStatus": "missing",
       "sourceEvidenceStatus": "publishable_source_present",
       "sourceCandidateSummary": "source manifest 已发现 21 个候选，其中 official_paper=5；当前阻断: legalReview.publishBlocked=true(10), riskFlags=brand_leak,copyright_review_required(10), sourceType=institution_candidate(10)",
       "sourceCandidateSamples": [
         {
-          "sourceId": "src_7389cb9947ec7ddd99d292b0",
+          "sourceId": "src_e2a5233040d61414cb4a4589",
           "status": "discovered",
           "sourceType": "official_paper",
           "sourceRole": "",
@@ -3534,11 +3411,11 @@
           "riskFlags": [],
           "publishBlocked": false,
           "blockReasons": [],
-          "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/03.考研真相系列/26考研真相/英二/真题册+答案速查/2019年真题及答案速查/2019年真题及答案速查.pdf",
+          "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/03.考研真相系列/26考研真相/英二/真题册+答案速查/2020年真题及答案速查/2020年真题及答案速查.pdf",
           "sourceUrl": ""
         },
         {
-          "sourceId": "src_e4bdc96c3ef9004d2fe974ac",
+          "sourceId": "src_8d78ccec060de76134b13cbf",
           "status": "discovered",
           "sourceType": "official_paper",
           "sourceRole": "",
@@ -3549,11 +3426,11 @@
           "riskFlags": [],
           "publishBlocked": false,
           "blockReasons": [],
-          "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语二考研历年真题/2019年考研英语二真题 .pdf",
+          "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语二考研历年真题/2020年考研英语二真题 .pdf",
           "sourceUrl": ""
         },
         {
-          "sourceId": "src_f60e4219c81bc8a4489b9223",
+          "sourceId": "src_efd6104a55adbacf4339a6d1",
           "status": "discovered",
           "sourceType": "official_paper",
           "sourceRole": "",
@@ -3564,7 +3441,7 @@
           "riskFlags": [],
           "publishBlocked": false,
           "blockReasons": [],
-          "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【解析】1986-2024/英语二历年真题文档版（2010-2024）/2019 .pdf",
+          "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【解析】1986-2024/英语二历年真题文档版（2010-2024）/2020 .pdf",
           "sourceUrl": ""
         }
       ],
@@ -3600,9 +3477,9 @@
         "localFileCandidates": [],
         "verifiedSourceRegistryDrafts": [],
         "manifestCandidateIds": [
-          "src_7389cb9947ec7ddd99d292b0",
-          "src_e4bdc96c3ef9004d2fe974ac",
-          "src_f60e4219c81bc8a4489b9223"
+          "src_e2a5233040d61414cb4a4589",
+          "src_8d78ccec060de76134b13cbf",
+          "src_efd6104a55adbacf4339a6d1"
         ],
         "blockers": [
           "local_source_audit_not_available"
@@ -3749,106 +3626,6 @@
       "nextAction": "已有可发布题源证据时，完成题卡清洗、答案匹配、证据哈希，再按 registry 规范注册题库。"
     },
     {
-      "id": "coverage_missing:english2:2020",
-      "track": "english2",
-      "trackLabel": "英语二",
-      "year": 2020,
-      "blockerCode": "missing_public_course_bank",
-      "slotStatus": "missing",
-      "sourceEvidenceStatus": "publishable_source_present",
-      "sourceCandidateSummary": "source manifest 已发现 21 个候选，其中 official_paper=5；当前阻断: legalReview.publishBlocked=true(10), riskFlags=brand_leak,copyright_review_required(10), sourceType=institution_candidate(10)",
-      "sourceCandidateSamples": [
-        {
-          "sourceId": "src_e2a5233040d61414cb4a4589",
-          "status": "discovered",
-          "sourceType": "official_paper",
-          "sourceRole": "",
-          "inferredSourceRole": "paper_answer",
-          "roleSource": "filename",
-          "autoPairEligible": true,
-          "answerEvidenceStatus": "",
-          "riskFlags": [],
-          "publishBlocked": false,
-          "blockReasons": [],
-          "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/03.考研真相系列/26考研真相/英二/真题册+答案速查/2020年真题及答案速查/2020年真题及答案速查.pdf",
-          "sourceUrl": ""
-        },
-        {
-          "sourceId": "src_8d78ccec060de76134b13cbf",
-          "status": "discovered",
-          "sourceType": "official_paper",
-          "sourceRole": "",
-          "inferredSourceRole": "paper",
-          "roleSource": "filename",
-          "autoPairEligible": true,
-          "answerEvidenceStatus": "",
-          "riskFlags": [],
-          "publishBlocked": false,
-          "blockReasons": [],
-          "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语二考研历年真题/2020年考研英语二真题 .pdf",
-          "sourceUrl": ""
-        },
-        {
-          "sourceId": "src_efd6104a55adbacf4339a6d1",
-          "status": "discovered",
-          "sourceType": "official_paper",
-          "sourceRole": "",
-          "inferredSourceRole": "paper",
-          "roleSource": "filename",
-          "autoPairEligible": true,
-          "answerEvidenceStatus": "",
-          "riskFlags": [],
-          "publishBlocked": false,
-          "blockReasons": [],
-          "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【解析】1986-2024/英语二历年真题文档版（2010-2024）/2020 .pdf",
-          "sourceUrl": ""
-        }
-      ],
-      "localSourceAuditStatus": "not_available",
-      "localSourceAuditSummary": "",
-      "localSourceAuditSamples": [],
-      "sourceManifestRegistrationChecklist": {
-        "status": "blocked_before_auto_pair",
-        "readyForHumanVerification": false,
-        "requiredManifestFields": [
-          "eligible=true",
-          "status=discovered|verified|published",
-          "sourceType=official_paper",
-          "contentHash|sha256|fileSha256|sourceHash",
-          "remotePath|sourceUrl|provenanceUrl",
-          "sourceRole inferred as paper+answer or paper_answer",
-          "legalReview.publishBlocked=false",
-          "riskFlags excludes answer_missing,brand_leak,copyright_review_required,ad_or_promo,manual_review_required,source_content_mismatch"
-        ],
-        "verifiedSourceRegistryFields": [
-          "localPath",
-          "sourceUrl",
-          "track",
-          "year",
-          "sourceType=official_paper",
-          "answerEvidenceStatus=matched",
-          "expectedSha256",
-          "verifiedBy",
-          "evidenceNote"
-        ],
-        "humanVerificationSteps": [],
-        "postRegistrationCommands": [],
-        "localFileCandidates": [],
-        "verifiedSourceRegistryDrafts": [],
-        "manifestCandidateIds": [
-          "src_e2a5233040d61414cb4a4589",
-          "src_8d78ccec060de76134b13cbf",
-          "src_efd6104a55adbacf4339a6d1"
-        ],
-        "blockers": [
-          "local_source_audit_not_available"
-        ],
-        "note": "Resolve listed local-source blockers before the slot can be treated as an auto-paired official source."
-      },
-      "prerequisiteBlockers": [],
-      "nextAction": "已有可发布题源证据时，完成题卡清洗、答案匹配、证据哈希，再按 registry 规范注册题库。"
-    },
-    {
       "id": "coverage_missing:math2:2020",
       "track": "math2",
       "trackLabel": "数学二",
@@ -3941,229 +3718,6 @@
         },
         "devtoolsSmokeStatus": "passed",
         "devtoolsSmokeReport": "data/reports/wechat-devtools-release-smoke.json"
-      }
-    },
-    {
-      "id": "coverage_missing:english2:2015",
-      "workstream": "public_course_coverage",
-      "priority": "P0",
-      "status": "blocked",
-      "title": "英语二 2015 缺少可发布题库",
-      "blockerCode": "missing_public_course_bank",
-      "track": "english2",
-      "trackLabel": "英语二",
-      "year": 2015,
-      "bankId": "",
-      "filePath": "",
-      "count": 0,
-      "nextAction": "已有可发布题源证据时，完成题卡清洗、答案匹配、证据哈希，再按 registry 规范注册题库。",
-      "evidence": {
-        "requiredYears": [
-          2010,
-          2011,
-          2012,
-          2013,
-          2014,
-          2015,
-          2016,
-          2017,
-          2018,
-          2019,
-          2020
-        ],
-        "publishedYears": [
-          2010,
-          2011,
-          2012,
-          2013,
-          2014
-        ],
-        "pendingYears": [],
-        "sourceEvidenceStatus": "publishable_source_present",
-        "sourceEvidencePresentYears": [
-          2010,
-          2011,
-          2012,
-          2013,
-          2014,
-          2015,
-          2016,
-          2017,
-          2018,
-          2019,
-          2020
-        ],
-        "sourceEvidenceCoverageRate": 1,
-        "sourceCandidateSummary": "source manifest 已发现 25 个候选，其中 official_paper=5；当前阻断: legalReview.publishBlocked=true(14), riskFlags=brand_leak,copyright_review_required(14), sourceType=institution_candidate(14)",
-        "sourceCandidateSamples": [
-          {
-            "sourceId": "src_26e806e10a80d41b9831037e",
-            "status": "discovered",
-            "sourceType": "official_paper",
-            "sourceRole": "",
-            "inferredSourceRole": "paper_answer",
-            "roleSource": "filename",
-            "autoPairEligible": true,
-            "answerEvidenceStatus": "",
-            "riskFlags": [],
-            "publishBlocked": false,
-            "blockReasons": [],
-            "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/03.考研真相系列/26考研真相/英二/真题册+答案速查/2015年真题及答案速查/2015年真题及答案速查.pdf",
-            "sourceUrl": ""
-          },
-          {
-            "sourceId": "src_9861ae9bce681b33f3f0495e",
-            "status": "discovered",
-            "sourceType": "official_paper",
-            "sourceRole": "",
-            "inferredSourceRole": "paper",
-            "roleSource": "filename",
-            "autoPairEligible": true,
-            "answerEvidenceStatus": "",
-            "riskFlags": [],
-            "publishBlocked": false,
-            "blockReasons": [],
-            "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语二考研历年真题/2015年考研英语二真题 .pdf",
-            "sourceUrl": ""
-          },
-          {
-            "sourceId": "src_bc9bdd2b47254ff5fa5bc408",
-            "status": "discovered",
-            "sourceType": "official_paper",
-            "sourceRole": "",
-            "inferredSourceRole": "paper",
-            "roleSource": "filename",
-            "autoPairEligible": true,
-            "answerEvidenceStatus": "",
-            "riskFlags": [],
-            "publishBlocked": false,
-            "blockReasons": [],
-            "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【解析】1986-2024/英语二历年真题文档版（2010-2024）/2015 .pdf",
-            "sourceUrl": ""
-          }
-        ],
-        "sourceCandidateDiagnostics": {
-          "candidateCount": 25,
-          "officialPaperCandidateCount": 5,
-          "publishBlockedCandidateCount": 14,
-          "autoPairEligibleCandidateCount": 5,
-          "paperCandidateCount": 2,
-          "answerCandidateCount": 2,
-          "combinedCandidateCount": 1,
-          "blockReasons": {
-            "sourceType=institution_candidate": 14,
-            "riskFlags=brand_leak,copyright_review_required": 14,
-            "legalReview.publishBlocked=true": 14,
-            "eligible=false": 6,
-            "status=rejected": 6,
-            "sourceType=unsupported": 3,
-            "sourceHash=missing": 3,
-            "sourceType=unsupported_media": 3
-          },
-          "sampleCandidates": [
-            {
-              "sourceId": "src_26e806e10a80d41b9831037e",
-              "status": "discovered",
-              "sourceType": "official_paper",
-              "sourceRole": "",
-              "inferredSourceRole": "paper_answer",
-              "roleSource": "filename",
-              "autoPairEligible": true,
-              "answerEvidenceStatus": "",
-              "riskFlags": [],
-              "publishBlocked": false,
-              "blockReasons": [],
-              "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/03.考研真相系列/26考研真相/英二/真题册+答案速查/2015年真题及答案速查/2015年真题及答案速查.pdf",
-              "sourceUrl": ""
-            },
-            {
-              "sourceId": "src_9861ae9bce681b33f3f0495e",
-              "status": "discovered",
-              "sourceType": "official_paper",
-              "sourceRole": "",
-              "inferredSourceRole": "paper",
-              "roleSource": "filename",
-              "autoPairEligible": true,
-              "answerEvidenceStatus": "",
-              "riskFlags": [],
-              "publishBlocked": false,
-              "blockReasons": [],
-              "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【真题】1999-2024/英语二考研历年真题/2015年考研英语二真题 .pdf",
-              "sourceUrl": ""
-            },
-            {
-              "sourceId": "src_bc9bdd2b47254ff5fa5bc408",
-              "status": "discovered",
-              "sourceType": "official_paper",
-              "sourceRole": "",
-              "inferredSourceRole": "paper",
-              "roleSource": "filename",
-              "autoPairEligible": true,
-              "answerEvidenceStatus": "",
-              "riskFlags": [],
-              "publishBlocked": false,
-              "blockReasons": [],
-              "remotePath": "/EXAM-MASTER/考研历年真题/02.考研英语/01.考研英语【历年真题】/01.真题试卷系列/【解析】1986-2024/英语二历年真题文档版（2010-2024）/2015 .pdf",
-              "sourceUrl": ""
-            }
-          ]
-        },
-        "localSourceAuditStatus": "not_available",
-        "localSourceAuditSummary": "",
-        "localSourceAuditSamples": [],
-        "localSourceAuditDiagnostics": {
-          "status": "not_available",
-          "sourceCount": 0,
-          "usableTextLayerCount": 0,
-          "needsOcrCount": 0,
-          "blockedCount": 0,
-          "paperLikeCount": 0,
-          "answerLikeCount": 0,
-          "usablePaperLikeCount": 0,
-          "usableAnswerLikeCount": 0,
-          "blockedPaperLikeCount": 0,
-          "blockedAnswerLikeCount": 0,
-          "roleCounts": {},
-          "samples": []
-        },
-        "sourceManifestRegistrationChecklist": {
-          "status": "blocked_before_auto_pair",
-          "readyForHumanVerification": false,
-          "requiredManifestFields": [
-            "eligible=true",
-            "status=discovered|verified|published",
-            "sourceType=official_paper",
-            "contentHash|sha256|fileSha256|sourceHash",
-            "remotePath|sourceUrl|provenanceUrl",
-            "sourceRole inferred as paper+answer or paper_answer",
-            "legalReview.publishBlocked=false",
-            "riskFlags excludes answer_missing,brand_leak,copyright_review_required,ad_or_promo,manual_review_required,source_content_mismatch"
-          ],
-          "verifiedSourceRegistryFields": [
-            "localPath",
-            "sourceUrl",
-            "track",
-            "year",
-            "sourceType=official_paper",
-            "answerEvidenceStatus=matched",
-            "expectedSha256",
-            "verifiedBy",
-            "evidenceNote"
-          ],
-          "humanVerificationSteps": [],
-          "postRegistrationCommands": [],
-          "localFileCandidates": [],
-          "verifiedSourceRegistryDrafts": [],
-          "manifestCandidateIds": [
-            "src_26e806e10a80d41b9831037e",
-            "src_9861ae9bce681b33f3f0495e",
-            "src_bc9bdd2b47254ff5fa5bc408"
-          ],
-          "blockers": [
-            "local_source_audit_not_available"
-          ],
-          "note": "Resolve listed local-source blockers before the slot can be treated as an auto-paired official source."
-        }
       }
     },
     {
@@ -4365,7 +3919,8 @@
           2011,
           2012,
           2013,
-          2014
+          2014,
+          2015
         ],
         "pendingYears": [],
         "sourceEvidenceStatus": "publishable_source_present",
@@ -4940,7 +4495,8 @@
           2011,
           2012,
           2013,
-          2014
+          2014,
+          2015
         ],
         "pendingYears": [],
         "sourceEvidenceStatus": "publishable_source_present",
@@ -5738,7 +5294,8 @@
           2011,
           2012,
           2013,
-          2014
+          2014,
+          2015
         ],
         "pendingYears": [],
         "sourceEvidenceStatus": "publishable_source_present",
@@ -6537,7 +6094,8 @@
           2011,
           2012,
           2013,
-          2014
+          2014,
+          2015
         ],
         "pendingYears": [],
         "sourceEvidenceStatus": "publishable_source_present",
@@ -7335,7 +6893,8 @@
           2011,
           2012,
           2013,
-          2014
+          2014,
+          2015
         ],
         "pendingYears": [],
         "sourceEvidenceStatus": "publishable_source_present",
