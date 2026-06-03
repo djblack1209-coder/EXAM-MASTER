@@ -2604,6 +2604,85 @@ git add data/release-blocker-backlog.json docs/08C-SCRIPTS-REFERENCE.md docs/12-
 git -c core.hooksPath=/dev/null commit -m "chore: publish english2 2019 bank"
 ```
 
+### Task 73: Publish English II 2020 Text-Layer Bank
+
+**Files:**
+- Add: `scripts/cleaning/build_english2_2020_bank.py`
+- Add: `src/config/flashcard-banks/english2-2020.json`
+- Add: `tests/unit/english2-2020-data.spec.js`
+- Modify: `src/config/bank-registry.js`
+- Modify: `src/pages/practice-sub/bank-data-table.js`
+- Modify: `tests/unit/flashcard-bank-registry.spec.js`
+- Modify: `tests/unit/question-bank-year-map.spec.js`
+- Modify: `docs/frontend-experience-refactor-diary.md`
+- Modify: `docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md`
+- Modify: `docs/08C-SCRIPTS-REFERENCE.md`
+- Modify: `docs/12-CHANGELOG.md`
+- Modify: `data/release-blocker-backlog.json`
+
+- [x] **Step 0: Recheck development environment**
+
+Confirmed Codegraph MCP is live with 613 indexed files, 9,574 nodes, 22,457 edges, and an 18.75 MB DB. Confirmed Python 3.14.4, Node 22.22.3, npm 10.9.8, Poppler `pdftotext`/`pdfinfo`/`pdftoppm`, `rg`, and git are available. Confirmed `.codegraph/`, `.env*`, `data/raw-inbox/`, `data/cleaning-queue.json`, reports, caches, and `node_modules/` are ignored and not tracked.
+
+- [x] **Step 1: Add failing registry coverage**
+
+Added a focused registry/load regression for `english2-2020` expecting 48 cards, matched answer evidence, q01 answer `B`, q21 answer `A`, q30 answer `A`, Part B answers `EFDAC`, q46 translation anchor `It's almost impossible to go through life without experiencing some kind of failure`, no q46 `公众号` leakage, q48 mobile-reading chart values `59.5%`, `21.3%`, `17.0%`, and `2.2%`, and q48 `official_writing_prompt` evidence.
+
+Initial result:
+```bash
+npm test -- tests/unit/english2-2020-data.spec.js
+```
+
+Failed because `english2-2020` was not registered or compressed yet.
+
+- [x] **Step 2: Verify source and build text-layer bank**
+
+Used canonical local raw-inbox sources:
+
+```text
+data/raw-inbox/src_efd6104a55adbacf4339a6d1-2020.pdf
+data/raw-inbox/src_8d78ccec060de76134b13cbf-2020年考研英语二真题.pdf
+data/raw-inbox/src_e2a5233040d61414cb4a4589-2020年真题及答案速查.pdf
+data/raw-inbox/src_ca2554877698dac7a218b6e9-2020年真题逐题细解.pdf
+```
+
+Source audit: page counts 15, 15, 16, and 40; SHA-256 hashes `0efc29014e31f69d43475536ca62bf07d9af7eed5d1bc10e43bc6950d4011c20`, `15bbc1472991edae7e79981d73d1a3b28104c58a54ee353d7759c8463463190f`, `c72f48c898d2c775d811b40faf634a14bb8301b19d857bf9a48fb32160a911aa`, and `1e208bc904c1b4d8832aff468add5d99b49e754729e76c9285e511ea0bb06ce5`.
+
+Added `build_english2_2020_bank.py` with 48 cards, answer-speed text matching, detailed-analysis anchor cross-checks, A-G subtitle-selection Part B, prompt-only writing evidence, and explicit guards for 公众号 headers, PDF footers, promo-tail text, and OCR leakage.
+
+- [x] **Step 3: Register and refresh practice data**
+
+Run:
+```bash
+python3 scripts/cleaning/build_english2_2020_bank.py
+node scripts/build/generate-compressed-bank-modules.mjs
+```
+
+Result: published `src/config/flashcard-banks/english2-2020.json`, registered `english2-2020`, and regenerated the compressed practice-bank table.
+
+- [x] **Step 4: Run validation**
+
+Run:
+```bash
+python3 -m py_compile scripts/cleaning/build_english2_2020_bank.py
+npm test -- tests/unit/english2-2020-data.spec.js tests/unit/question-bank-year-map.spec.js tests/unit/flashcard-bank-registry.spec.js
+node scripts/build/question-bank-release-gate.mjs --min-year=2005 --max-year=2020
+node scripts/build/release-blocker-backlog.mjs
+python3 scripts/baidu/cleaning_queue.py
+python3 scripts/baidu/run_cleaning_queue.py --dry-run --limit 12 --source-type official_paper --paper-role main --max-year 2020
+git diff --check
+```
+
+Result: passed on 2026-06-03. The 2005-2020 release gate reports `coverageGaps=14`, `publishedSlots=77`, `sourceEvidenceGaps=1`, and `pendingCoverageBlockers=0`; release backlog reports `blockers=16` and `publicCourseBlockedSlots=14`; English II year-map summary is now `正式 12 · 整理中 0 · 待入库 5`; the rebuilt release-priority dry-run now starts at Math III 2016, Math III 2017, then English I 2020.
+
+- [x] **Step 5: Commit**
+
+Run:
+```bash
+git add data/release-blocker-backlog.json docs/08C-SCRIPTS-REFERENCE.md docs/12-CHANGELOG.md docs/frontend-experience-refactor-diary.md docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md src/config/bank-registry.js src/pages/practice-sub/bank-data-table.js tests/unit/flashcard-bank-registry.spec.js tests/unit/question-bank-year-map.spec.js tests/unit/english2-2020-data.spec.js scripts/cleaning/build_english2_2020_bank.py src/config/flashcard-banks/english2-2020.json
+git -c core.hooksPath=/dev/null commit -m "chore: publish english2 2020 bank"
+```
+
 ### Task 59: Block Mislabeled Math II 2016 Source
 
 **Files:**
