@@ -1,5 +1,11 @@
 # 变更日志
 
+## 2026-06-03 — 2020 数学三逐题裁切题库开放
+
+- 2020 考研数学三从“待入库”推进为正式题库：23 张题卡覆盖 8 道选择、6 道填空和 9 道解答题，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
+- 新增 `build_math3_2020_bank.py`，从本地百度网盘 `2020年考研数学三真题及解析.pdf` 生成 `src/config/flashcard-banks/math3-2020.json` 与 `cdn-assets/question-bank/math3-2020` 页图资源；源 PDF 为 18 页扫描版，1-5 页为试卷题面、6-18 页为答案解析，题面从试题页逐题裁切，q06 拆为跨页题面图，OCR/视觉检查未发现题面答案解析泄漏。
+- 2005-2020 release gate 刷新后，公共课覆盖缺口降至 9，published slots 升至 82，source evidence gap 保持 1；release backlog 降至 `blockers=11`、`publicCourseBlockedSlots=9`，下一批 release-priority dry-run 从 `2020年考研英语一真题.pdf` 开始。
+
 ## 2026-06-03 — 2019 数学三逐题裁切题库开放
 
 - 2019 考研数学三从“待入库”推进为正式题库：23 张题卡覆盖 8 道选择、6 道填空和 9 道解答题，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
