@@ -617,3 +617,12 @@
 - Registered `english2-2012`, regenerated the compressed practice-bank table, and updated the question-bank year map so English II now reports `正式 4 · 整理中 0 · 待入库 13`.
 - Release gate result: 2005-2020 public-course `coverageGaps` dropped from 23 to 22, `publishedSlots` rose to 69, `sourceEvidenceGaps` stayed at 1, release backlog reports `blockers=24` and `publicCourseBlockedSlots=22`, and the rebuilt release-priority dry-run now starts at English II 2013 paired candidates.
 - Product rule: historical English II text-layer builders must tolerate OCR abbreviations such as `L. A. Unified` without confusing them for answer options; option parsing now uses the trailing A-D option block for 2012 choice questions.
+
+### 2026-06-03 Round 66
+
+- Promoted `english2:2013` through the same formal English II text-layer bank path after downloading the canonical 2013 document-version, original-paper, answer-speed, and detailed-analysis PDFs into ignored `data/raw-inbox/`.
+- Added `scripts/cleaning/build_english2_2013_bank.py`, which builds 48 cards from the 2013 answer-speed PDF text layer, records all four source hashes in `sourceFiles`, and cross-checks detailed-analysis anchors including `Average Is Over`, `birds of passage`, `Hair opened on Broadway`, and the part-time job writing chart.
+- Validation result: `english2-2013.json` has 48 cards, all cards carry `answerEvidenceStatus=matched`, q01 answer is `A`, q21 answer is `A`, q30 answer is `D`, Part B answers are `FEGCD`, q46 contains `Hair opened on Broadway`, and q48 uses `official_writing_prompt` evidence with the `某高校学生兼职情况` chart prompt.
+- Registered `english2-2013`, regenerated the compressed practice-bank table, and updated the question-bank year map so English II now reports `正式 5 · 整理中 0 · 待入库 12`.
+- Release gate result: 2005-2020 public-course `coverageGaps` dropped from 22 to 21, `publishedSlots` rose to 70, `sourceEvidenceGaps` stayed at 1, release backlog reports `blockers=23` and `publicCourseBlockedSlots=21`, and the rebuilt release-priority dry-run now starts at English II 2014 paired candidates.
+- Product rule: English II Part B can be a subtitle-selection task, not only information matching. Builders should keep the actual exam task wording and option labels instead of normalizing all Part B years to one format.

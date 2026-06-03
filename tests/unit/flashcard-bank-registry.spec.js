@@ -60,7 +60,7 @@ describe('published flashcard bank registry', () => {
     );
     expect(banks.map((bank) => bank.id)).not.toEqual(expect.arrayContaining(['english-2025', 'math-2025']));
     expect(banks.map((bank) => bank.id)).toEqual(
-      expect.arrayContaining(['english2-2010', 'english2-2011', 'english2-2012', 'english2-2025'])
+      expect.arrayContaining(['english2-2010', 'english2-2011', 'english2-2012', 'english2-2013', 'english2-2025'])
     );
     const bank = await loadBankData('english1-2005');
     expect(bank.cards.length).toBeGreaterThan(0);
@@ -323,6 +323,21 @@ describe('published flashcard bank registry', () => {
     expect(english22012.cards.find((card) => card.number === 46).targetSegment).toContain('brain drain');
     expect(english22012.cards.find((card) => card.number === 48).question).toContain('某公司员工工作满意度调查');
     expect(english22012.cards.find((card) => card.number === 48).answerEvidence.evidenceRole).toBe(
+      'official_writing_prompt'
+    );
+    const english22013 = await loadBankData('english2-2013');
+    expect(english22013.cards).toHaveLength(48);
+    expect(english22013.cards.every((card) => card.answerEvidenceStatus === 'matched')).toBe(true);
+    expect(english22013.cards.find((card) => card.number === 1).answer).toBe('A');
+    expect(english22013.cards.find((card) => card.number === 21).answer).toBe('A');
+    expect(english22013.cards.find((card) => card.number === 30).answer).toBe('D');
+    expect(english22013.cards.find((card) => card.number === 41).answer).toBe('F');
+    expect(english22013.cards.find((card) => card.number === 45).answer).toBe('D');
+    expect(english22013.cards.find((card) => card.number === 46).targetSegment).toContain(
+      'Hair opened on Broadway'
+    );
+    expect(english22013.cards.find((card) => card.number === 48).question).toContain('某高校学生兼职情况');
+    expect(english22013.cards.find((card) => card.number === 48).answerEvidence.evidenceRole).toBe(
       'official_writing_prompt'
     );
     const english2005 = await loadBankData('english1-2005');
@@ -790,7 +805,7 @@ describe('published flashcard bank registry', () => {
     expect(english2.requiredYears[0]).toBe(2010);
     expect(english2.requiredYears.at(-1)).toBe(2020);
     expect(english2.requiredYears).not.toContain(2009);
-    expect(english2.publishedYears).toEqual([2010, 2011, 2012]);
+    expect(english2.publishedYears).toEqual([2010, 2011, 2012, 2013]);
     expect(coverage.summary.requiredSlots).toBe(11);
   });
 });
