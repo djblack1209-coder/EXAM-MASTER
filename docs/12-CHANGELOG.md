@@ -1,5 +1,12 @@
 # 变更日志
 
+## 2026-06-03 — 2020 英语一文本层题库开放
+
+- 2020 考研英语一从“待入库”推进为正式题库：52 张题卡覆盖完形填空、阅读理解、新题型、翻译和写作，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
+- 新增 `build_english1_2020_bank.py`，从本地百度网盘 2020 英语一原卷、答案速查、逐题细解和文档版扫描 PDF 生成 `src/config/flashcard-banks/english1-2020.json` 与 `cdn-assets/question-bank/english1-2020` 页图资源；发布题面使用干净答案速查 PDF 文本层和页图，原卷因含推广页眉保留为 audit source，逐题细解保留为答案支持证据。
+- 验收点：总卡数 52，全部 `answerEvidenceStatus=matched`，q01/q21/q30/q41/q45 分别为 `C/C/D/C/D`，q46 命中 `With the Church's teachings and ways of thinking`，q51 为 singing contest notice，q52 为“习惯”看图作文，并拦截 2020 英语二 `手机阅读目的调查` / failure 翻译串源。
+- 2005-2020 release gate 刷新后，公共课覆盖缺口降至 8，published slots 升至 83，source evidence gap 保持 1；release backlog 降至 `blockers=10`、`publicCourseBlockedSlots=8`，下一批 release-priority dry-run 转向数学二 2017-2020。
+
 ## 2026-06-03 — 2020 数学三逐题裁切题库开放
 
 - 2020 考研数学三从“待入库”推进为正式题库：23 张题卡覆盖 8 道选择、6 道填空和 9 道解答题，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
