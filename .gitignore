@@ -108,6 +108,7 @@ database/
 
 # Claude / agent runtime state (dev tooling, not app code)
 .claude/
+.codegraph/
 
 # One-time data fix artifacts
 data/schools/fix-report.json
