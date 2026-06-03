@@ -1,0 +1,1403 @@
+{
+  "id": "math2-2018",
+  "source": "math2-2018-paper-answer",
+  "paperId": "math2-2018",
+  "paperName": "2018考研数学二真题",
+  "subject": "数学",
+  "subjectKey": "math",
+  "track": "math2",
+  "year": "2018",
+  "quality": "ready",
+  "publicationStatus": "published",
+  "publicationBlockers": [],
+  "sourceEvidencePolicy": "baidu_netdisk_official_paper_pdf_question_crop_answer_page_image_v1",
+  "sourceFiles": [
+    {
+      "id": "math2-2018-paper-answer",
+      "role": "paper_answer",
+      "localPath": "data/raw-inbox/src_a91bd4ebb8ae4c75b320a8a3-2018考研数学二真题.pdf",
+      "sha256": "sha256:2722227f7c68c08e93d417a87a49fc93fd869c282e56c151ffb73e68eda753d4",
+      "sourceId": "src_a91bd4ebb8ae4c75b320a8a3",
+      "evidenceNote": "The 14-page source interleaves each question with its answer analysis; page 14 is the continuation of q23 answer evidence, not an ad-only page."
+    }
+  ],
+  "assetRoot": "question-bank/math2-2018",
+  "processed_at": "2026-06-03T23:29:39Z",
+  "total_cards": 23,
+  "cards": [
+    {
+      "id": "math2-2018-001",
+      "number": 1,
+      "paperId": "math2-2018",
+      "paperName": "2018考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2018",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2018考研数学二第1题（选择题）。题干、公式和图形以题面裁切图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2018 数学二真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2018/question-01.jpg",
+          "caption": "题面裁切图 q01",
+          "alt": "2018考研数学二第01题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2018/answer-page-01.jpg",
+          "caption": "答案解析 p.1",
+          "alt": "2018考研数学二答案解析 p.1"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2018",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2018-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:65e9c78841c8e0fc9dbd06783e8543a5f8676f6c7d432b63b2ea01a6704552e8",
+      "answerTextHash": "sha256:eeb8f23963a55373792abcd7f5e7bf152df8a8573bd10989d302f7962035a04f",
+      "sourceEvidence": {
+        "evidenceId": "math2-2018-q01",
+        "sourceId": "src_a91bd4ebb8ae4c75b320a8a3",
+        "answerSourceId": "src_a91bd4ebb8ae4c75b320a8a3",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math2-2018-paper-answer",
+        "answerEvidenceId": "math2-2018-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:eeb8f23963a55373792abcd7f5e7bf152df8a8573bd10989d302f7962035a04f"
+      }
+    },
+    {
+      "id": "math2-2018-002",
+      "number": 2,
+      "paperId": "math2-2018",
+      "paperName": "2018考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2018",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2018考研数学二第2题（选择题）。题干、公式和图形以题面裁切图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2018 数学二真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2018/question-02.jpg",
+          "caption": "题面裁切图 q02",
+          "alt": "2018考研数学二第02题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2018/answer-page-01.jpg",
+          "caption": "答案解析 p.1",
+          "alt": "2018考研数学二答案解析 p.1"
+        },
+        {
+          "src": "question-bank/math2-2018/answer-page-02.jpg",
+          "caption": "答案解析 p.2",
+          "alt": "2018考研数学二答案解析 p.2"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2018",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2018-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:860f2f6fa9867b33dde5913fe33438925b45f716eb039509813d1b785f1020f1",
+      "answerTextHash": "sha256:83d8abeb12d9c0fa9a6e0901b76d8c482461cafa0bf4d238f7f8fae2c82d4275",
+      "sourceEvidence": {
+        "evidenceId": "math2-2018-q02",
+        "sourceId": "src_a91bd4ebb8ae4c75b320a8a3",
+        "answerSourceId": "src_a91bd4ebb8ae4c75b320a8a3",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math2-2018-paper-answer",
+        "answerEvidenceId": "math2-2018-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:83d8abeb12d9c0fa9a6e0901b76d8c482461cafa0bf4d238f7f8fae2c82d4275"
+      }
+    },
+    {
+      "id": "math2-2018-003",
+      "number": 3,
+      "paperId": "math2-2018",
+      "paperName": "2018考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2018",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2018考研数学二第3题（选择题）。题干、公式和图形以题面裁切图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2018 数学二真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2018/question-03.jpg",
+          "caption": "题面裁切图 q03",
+          "alt": "2018考研数学二第03题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2018/answer-page-02.jpg",
+          "caption": "答案解析 p.2",
+          "alt": "2018考研数学二答案解析 p.2"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2018",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2018-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:e9acfc57eb0e67eb1bf2b56fe548a1fbdc26d2a883a034244311c63e0bddbcb2",
+      "answerTextHash": "sha256:7cd6122ff6ad5f4ed9210d1ae15379380ce2cd5f5ab3a3b9f0756d9b8d6dbe3f",
+      "sourceEvidence": {
+        "evidenceId": "math2-2018-q03",
+        "sourceId": "src_a91bd4ebb8ae4c75b320a8a3",
+        "answerSourceId": "src_a91bd4ebb8ae4c75b320a8a3",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math2-2018-paper-answer",
+        "answerEvidenceId": "math2-2018-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:7cd6122ff6ad5f4ed9210d1ae15379380ce2cd5f5ab3a3b9f0756d9b8d6dbe3f"
+      }
+    },
+    {
+      "id": "math2-2018-004",
+      "number": 4,
+      "paperId": "math2-2018",
+      "paperName": "2018考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2018",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2018考研数学二第4题（选择题）。题干、公式和图形以题面裁切图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2018 数学二真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2018/question-04.jpg",
+          "caption": "题面裁切图 q04",
+          "alt": "2018考研数学二第04题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2018/answer-page-02.jpg",
+          "caption": "答案解析 p.2",
+          "alt": "2018考研数学二答案解析 p.2"
+        },
+        {
+          "src": "question-bank/math2-2018/answer-page-03.jpg",
+          "caption": "答案解析 p.3",
+          "alt": "2018考研数学二答案解析 p.3"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2018",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2018-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:e6e8d2f0297bb415dd0c26c4ee33395dedd08e424ed5982103403c48e282bc54",
+      "answerTextHash": "sha256:38bf5ae31db1c5337480921a2d6fa4ba60f2fac606abe12fc297f8c1a4cc9922",
+      "sourceEvidence": {
+        "evidenceId": "math2-2018-q04",
+        "sourceId": "src_a91bd4ebb8ae4c75b320a8a3",
+        "answerSourceId": "src_a91bd4ebb8ae4c75b320a8a3",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math2-2018-paper-answer",
+        "answerEvidenceId": "math2-2018-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:38bf5ae31db1c5337480921a2d6fa4ba60f2fac606abe12fc297f8c1a4cc9922"
+      }
+    },
+    {
+      "id": "math2-2018-005",
+      "number": 5,
+      "paperId": "math2-2018",
+      "paperName": "2018考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2018",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2018考研数学二第5题（选择题）。题干、公式和图形以题面裁切图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2018 数学二真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2018/question-05.jpg",
+          "caption": "题面裁切图 q05",
+          "alt": "2018考研数学二第05题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2018/answer-page-03.jpg",
+          "caption": "答案解析 p.3",
+          "alt": "2018考研数学二答案解析 p.3"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2018",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2018-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:27fdfd9ddd87319501a44515368e3cf6f24d33841fd9ff70a45d082b4ba6a488",
+      "answerTextHash": "sha256:68d83c90862fc09ebf9a4584ba993943e3bb37788c1dc1201cb29f44689a49dc",
+      "sourceEvidence": {
+        "evidenceId": "math2-2018-q05",
+        "sourceId": "src_a91bd4ebb8ae4c75b320a8a3",
+        "answerSourceId": "src_a91bd4ebb8ae4c75b320a8a3",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math2-2018-paper-answer",
+        "answerEvidenceId": "math2-2018-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:68d83c90862fc09ebf9a4584ba993943e3bb37788c1dc1201cb29f44689a49dc"
+      }
+    },
+    {
+      "id": "math2-2018-006",
+      "number": 6,
+      "paperId": "math2-2018",
+      "paperName": "2018考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2018",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2018考研数学二第6题（选择题）。题干、公式和图形以题面裁切图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2018 数学二真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2018/question-06.jpg",
+          "caption": "题面裁切图 q06",
+          "alt": "2018考研数学二第06题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2018/answer-page-03.jpg",
+          "caption": "答案解析 p.3",
+          "alt": "2018考研数学二答案解析 p.3"
+        },
+        {
+          "src": "question-bank/math2-2018/answer-page-04.jpg",
+          "caption": "答案解析 p.4",
+          "alt": "2018考研数学二答案解析 p.4"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2018",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2018-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:79a258a2930a94bf07e008f15dd3050b65abe5a5993365c4935ffa226dfbe5db",
+      "answerTextHash": "sha256:6256d6d1a31ff5a026dabdf646d1dee9cbd80e696c1186456602a3afe3d9bc43",
+      "sourceEvidence": {
+        "evidenceId": "math2-2018-q06",
+        "sourceId": "src_a91bd4ebb8ae4c75b320a8a3",
+        "answerSourceId": "src_a91bd4ebb8ae4c75b320a8a3",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math2-2018-paper-answer",
+        "answerEvidenceId": "math2-2018-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:6256d6d1a31ff5a026dabdf646d1dee9cbd80e696c1186456602a3afe3d9bc43"
+      }
+    },
+    {
+      "id": "math2-2018-007",
+      "number": 7,
+      "paperId": "math2-2018",
+      "paperName": "2018考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2018",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2018考研数学二第7题（选择题）。题干、公式和图形以题面裁切图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2018 数学二真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2018/question-07.jpg",
+          "caption": "题面裁切图 q07",
+          "alt": "2018考研数学二第07题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2018/answer-page-04.jpg",
+          "caption": "答案解析 p.4",
+          "alt": "2018考研数学二答案解析 p.4"
+        },
+        {
+          "src": "question-bank/math2-2018/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2018考研数学二答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2018",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2018-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:bb8e18b12b5830fc6f6d1e8b2d42e741e8f82258a1eedb2ccfe0eec1686d89fc",
+      "answerTextHash": "sha256:3b5cdff604cfadec60f8561c30f3d4580e263ad4a1736b2de87ea10fee20ad96",
+      "sourceEvidence": {
+        "evidenceId": "math2-2018-q07",
+        "sourceId": "src_a91bd4ebb8ae4c75b320a8a3",
+        "answerSourceId": "src_a91bd4ebb8ae4c75b320a8a3",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math2-2018-paper-answer",
+        "answerEvidenceId": "math2-2018-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:3b5cdff604cfadec60f8561c30f3d4580e263ad4a1736b2de87ea10fee20ad96"
+      }
+    },
+    {
+      "id": "math2-2018-008",
+      "number": 8,
+      "paperId": "math2-2018",
+      "paperName": "2018考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2018",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2018考研数学二第8题（选择题）。题干、公式和图形以题面裁切图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2018 数学二真题及解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2018/question-08.jpg",
+          "caption": "题面裁切图 q08",
+          "alt": "2018考研数学二第08题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2018/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2018考研数学二答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2018",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2018-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:13617af0326a47e4699882c88c71e5fb029ccef1099816e022753f97deb4a7a1",
+      "answerTextHash": "sha256:7e89265d7268b43fc3379f8365eab4dd2ea97698a375e1f59cea607b2aeced60",
+      "sourceEvidence": {
+        "evidenceId": "math2-2018-q08",
+        "sourceId": "src_a91bd4ebb8ae4c75b320a8a3",
+        "answerSourceId": "src_a91bd4ebb8ae4c75b320a8a3",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math2-2018-paper-answer",
+        "answerEvidenceId": "math2-2018-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:7e89265d7268b43fc3379f8365eab4dd2ea97698a375e1f59cea607b2aeced60"
+      }
+    },
+    {
+      "id": "math2-2018-009",
+      "number": 9,
+      "paperId": "math2-2018",
+      "paperName": "2018考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2018",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2018考研数学二第9题（填空题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "1",
+      "explanation": "答案来自本地百度网盘 2018 数学二真题及解析 PDF；完整题干、公式和解析见原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2018/question-09.jpg",
+          "caption": "题面裁切图 q09",
+          "alt": "2018考研数学二第09题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2018/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2018考研数学二答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2018",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2018-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:425e66adea3c3f93ca05ffee3ba2a54ead2d74feeb97e51ecb5d8275067b17b5",
+      "answerTextHash": "sha256:4f0ddced307a484d08fd3a9e124c655d902fe2d5a829b4a810ec8accf31d8d96",
+      "sourceEvidence": {
+        "evidenceId": "math2-2018-q09",
+        "sourceId": "src_a91bd4ebb8ae4c75b320a8a3",
+        "answerSourceId": "src_a91bd4ebb8ae4c75b320a8a3",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math2-2018-paper-answer",
+        "answerEvidenceId": "math2-2018-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:4f0ddced307a484d08fd3a9e124c655d902fe2d5a829b4a810ec8accf31d8d96"
+      }
+    },
+    {
+      "id": "math2-2018-010",
+      "number": 10,
+      "paperId": "math2-2018",
+      "paperName": "2018考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2018",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2018考研数学二第10题（填空题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "y=4x-3",
+      "explanation": "答案来自本地百度网盘 2018 数学二真题及解析 PDF；完整题干、公式和解析见原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2018/question-10.jpg",
+          "caption": "题面裁切图 q10",
+          "alt": "2018考研数学二第10题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2018/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2018考研数学二答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2018",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2018-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:b963821042282719cc7a8ddd28c7415a10f7b41e95d89a029408c4ce05761377",
+      "answerTextHash": "sha256:7abfc500ab833e31afec6c77cb31ac164c333e051434ab6174a46c5dd937a5e1",
+      "sourceEvidence": {
+        "evidenceId": "math2-2018-q10",
+        "sourceId": "src_a91bd4ebb8ae4c75b320a8a3",
+        "answerSourceId": "src_a91bd4ebb8ae4c75b320a8a3",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math2-2018-paper-answer",
+        "answerEvidenceId": "math2-2018-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:7abfc500ab833e31afec6c77cb31ac164c333e051434ab6174a46c5dd937a5e1"
+      }
+    },
+    {
+      "id": "math2-2018-011",
+      "number": 11,
+      "paperId": "math2-2018",
+      "paperName": "2018考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2018",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2018考研数学二第11题（填空题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "1/2 ln2",
+      "explanation": "答案来自本地百度网盘 2018 数学二真题及解析 PDF；完整题干、公式和解析见原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2018/question-11.jpg",
+          "caption": "题面裁切图 q11",
+          "alt": "2018考研数学二第11题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2018/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2018考研数学二答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2018",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2018-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:b974edce519d63a86a3e3c410eab1ed290d4352f0b3a3c9aa95e1cc0e74eba2a",
+      "answerTextHash": "sha256:7a54c523c45f77b24004bafac2d0f8527cc3f003638a3a44ff069f72a548d43c",
+      "sourceEvidence": {
+        "evidenceId": "math2-2018-q11",
+        "sourceId": "src_a91bd4ebb8ae4c75b320a8a3",
+        "answerSourceId": "src_a91bd4ebb8ae4c75b320a8a3",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math2-2018-paper-answer",
+        "answerEvidenceId": "math2-2018-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:7a54c523c45f77b24004bafac2d0f8527cc3f003638a3a44ff069f72a548d43c"
+      }
+    },
+    {
+      "id": "math2-2018-012",
+      "number": 12,
+      "paperId": "math2-2018",
+      "paperName": "2018考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2018",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2018考研数学二第12题（填空题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "2/3",
+      "explanation": "答案来自本地百度网盘 2018 数学二真题及解析 PDF；完整题干、公式和解析见原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2018/question-12.jpg",
+          "caption": "题面裁切图 q12",
+          "alt": "2018考研数学二第12题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2018/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2018考研数学二答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2018",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2018-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:64653054cd30a9776699ef5c0430969f6f18e40addaf93b2e386f18e2531b844",
+      "answerTextHash": "sha256:ded1a3b951c7ccbbda8406f4d1a4017f454bbbee01c3e315e08cc96734824b5a",
+      "sourceEvidence": {
+        "evidenceId": "math2-2018-q12",
+        "sourceId": "src_a91bd4ebb8ae4c75b320a8a3",
+        "answerSourceId": "src_a91bd4ebb8ae4c75b320a8a3",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math2-2018-paper-answer",
+        "answerEvidenceId": "math2-2018-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:ded1a3b951c7ccbbda8406f4d1a4017f454bbbee01c3e315e08cc96734824b5a"
+      }
+    },
+    {
+      "id": "math2-2018-013",
+      "number": 13,
+      "paperId": "math2-2018",
+      "paperName": "2018考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2018",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2018考研数学二第13题（填空题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "1/4",
+      "explanation": "答案来自本地百度网盘 2018 数学二真题及解析 PDF；完整题干、公式和解析见原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2018/question-13.jpg",
+          "caption": "题面裁切图 q13",
+          "alt": "2018考研数学二第13题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2018/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2018考研数学二答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2018",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2018-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:7110de5ca0d54c9dc3aa39c2ff04b8ee1cf252e27b4d3ddd958863ff063fc624",
+      "answerTextHash": "sha256:d286d32f4c2e307471a66a3061fb3d88936296456cd709bd4a800b7e442fa23f",
+      "sourceEvidence": {
+        "evidenceId": "math2-2018-q13",
+        "sourceId": "src_a91bd4ebb8ae4c75b320a8a3",
+        "answerSourceId": "src_a91bd4ebb8ae4c75b320a8a3",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math2-2018-paper-answer",
+        "answerEvidenceId": "math2-2018-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:d286d32f4c2e307471a66a3061fb3d88936296456cd709bd4a800b7e442fa23f"
+      }
+    },
+    {
+      "id": "math2-2018-014",
+      "number": 14,
+      "paperId": "math2-2018",
+      "paperName": "2018考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2018",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2018考研数学二第14题（填空题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "2",
+      "explanation": "答案来自本地百度网盘 2018 数学二真题及解析 PDF；完整题干、公式和解析见原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2018/question-14.jpg",
+          "caption": "题面裁切图 q14",
+          "alt": "2018考研数学二第14题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2018/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2018考研数学二答案解析 p.6"
+        },
+        {
+          "src": "question-bank/math2-2018/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2018考研数学二答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2018",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2018-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:651d161cd4242472470919c6c3c848822cb982b02bac74bbd708e9ffaf34d198",
+      "answerTextHash": "sha256:312ede49bfb27bd9f96fc6ba3b7e93d627007de52de2f7faf5ed51fbb2a0233e",
+      "sourceEvidence": {
+        "evidenceId": "math2-2018-q14",
+        "sourceId": "src_a91bd4ebb8ae4c75b320a8a3",
+        "answerSourceId": "src_a91bd4ebb8ae4c75b320a8a3",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math2-2018-paper-answer",
+        "answerEvidenceId": "math2-2018-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:312ede49bfb27bd9f96fc6ba3b7e93d627007de52de2f7faf5ed51fbb2a0233e"
+      }
+    },
+    {
+      "id": "math2-2018-015",
+      "number": 15,
+      "paperId": "math2-2018",
+      "paperName": "2018考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2018",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2018考研数学二第15题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "不定积分为 1/2(e^{2x} arctan sqrt(e^x-1)-1/3(e^x-1)^{3/2}-sqrt(e^x-1))+C。",
+      "explanation": "答案来自本地百度网盘 2018 数学二真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2018/question-15.jpg",
+          "caption": "题面裁切图 q15",
+          "alt": "2018考研数学二第15题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2018/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2018考研数学二答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2018",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2018-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:9c696a2ce135ec331c4d2d20e7c1326358b9703bfa2535e27f3f14b5cac0d380",
+      "answerTextHash": "sha256:63741e606b09147fdb00692879183650af13004b5ee6f6f99146c65b319722d4",
+      "sourceEvidence": {
+        "evidenceId": "math2-2018-q15",
+        "sourceId": "src_a91bd4ebb8ae4c75b320a8a3",
+        "answerSourceId": "src_a91bd4ebb8ae4c75b320a8a3",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math2-2018-paper-answer",
+        "answerEvidenceId": "math2-2018-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:63741e606b09147fdb00692879183650af13004b5ee6f6f99146c65b319722d4"
+      }
+    },
+    {
+      "id": "math2-2018-016",
+      "number": 16,
+      "paperId": "math2-2018",
+      "paperName": "2018考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2018",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2018考研数学二第16题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "(I) f(x)=e^{-x}(2ae^x-2a)；(II) a=e/2。",
+      "explanation": "答案来自本地百度网盘 2018 数学二真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2018/question-16-a.jpg",
+          "caption": "题面裁切图 q16-a",
+          "alt": "2018考研数学二第16题题面裁切图"
+        },
+        {
+          "src": "question-bank/math2-2018/question-16-b.jpg",
+          "caption": "题面裁切图 q16-b",
+          "alt": "2018考研数学二第16题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2018/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2018考研数学二答案解析 p.7"
+        },
+        {
+          "src": "question-bank/math2-2018/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2018考研数学二答案解析 p.8"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2018",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2018-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:df58e5a1f19e43378925dc77cb69616306f994f417232706686f22e49361300c",
+      "answerTextHash": "sha256:4203af42f6aaa3f76b68e94e302600623e461bb91a85fa33728fcfa088376034",
+      "sourceEvidence": {
+        "evidenceId": "math2-2018-q16",
+        "sourceId": "src_a91bd4ebb8ae4c75b320a8a3",
+        "answerSourceId": "src_a91bd4ebb8ae4c75b320a8a3",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math2-2018-paper-answer",
+        "answerEvidenceId": "math2-2018-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:4203af42f6aaa3f76b68e94e302600623e461bb91a85fa33728fcfa088376034"
+      }
+    },
+    {
+      "id": "math2-2018-017",
+      "number": 17,
+      "paperId": "math2-2018",
+      "paperName": "2018考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2018",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2018考研数学二第17题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "二重积分值为 3π²+5π。",
+      "explanation": "答案来自本地百度网盘 2018 数学二真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2018/question-17.jpg",
+          "caption": "题面裁切图 q17",
+          "alt": "2018考研数学二第17题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2018/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2018考研数学二答案解析 p.8"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2018",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2018-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:73eb97171046131f66f360fe0a98c907c50bb6f9c7d58b92643605d3cee54e66",
+      "answerTextHash": "sha256:8bdfdf00462732b58d7b8934ba7c343d1231a3ede297c637be46a9bf521ea719",
+      "sourceEvidence": {
+        "evidenceId": "math2-2018-q17",
+        "sourceId": "src_a91bd4ebb8ae4c75b320a8a3",
+        "answerSourceId": "src_a91bd4ebb8ae4c75b320a8a3",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math2-2018-paper-answer",
+        "answerEvidenceId": "math2-2018-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:8bdfdf00462732b58d7b8934ba7c343d1231a3ede297c637be46a9bf521ea719"
+      }
+    },
+    {
+      "id": "math2-2018-018",
+      "number": 18,
+      "paperId": "math2-2018",
+      "paperName": "2018考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2018",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2018考研数学二第18题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "不等式证明见答案原页。",
+      "explanation": "答案来自本地百度网盘 2018 数学二真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2018/question-18.jpg",
+          "caption": "题面裁切图 q18",
+          "alt": "2018考研数学二第18题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2018/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2018考研数学二答案解析 p.8"
+        },
+        {
+          "src": "question-bank/math2-2018/answer-page-09.jpg",
+          "caption": "答案解析 p.9",
+          "alt": "2018考研数学二答案解析 p.9"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2018",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2018-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:479c2f2b2b12a9fbdd18f8cf8ab22fb17ff36fb3e50049de3b2b69bada8f18aa",
+      "answerTextHash": "sha256:a9349619644d00aba120ab7af94a360292de0c705cd68d131b926004d76cb171",
+      "sourceEvidence": {
+        "evidenceId": "math2-2018-q18",
+        "sourceId": "src_a91bd4ebb8ae4c75b320a8a3",
+        "answerSourceId": "src_a91bd4ebb8ae4c75b320a8a3",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math2-2018-paper-answer",
+        "answerEvidenceId": "math2-2018-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:a9349619644d00aba120ab7af94a360292de0c705cd68d131b926004d76cb171"
+      }
+    },
+    {
+      "id": "math2-2018-019",
+      "number": 19,
+      "paperId": "math2-2018",
+      "paperName": "2018考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2018",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2018考研数学二第19题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "存在最小值，最小面积为 1/(π+4+3√3)。",
+      "explanation": "答案来自本地百度网盘 2018 数学二真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2018/question-19.jpg",
+          "caption": "题面裁切图 q19",
+          "alt": "2018考研数学二第19题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2018/answer-page-09.jpg",
+          "caption": "答案解析 p.9",
+          "alt": "2018考研数学二答案解析 p.9"
+        },
+        {
+          "src": "question-bank/math2-2018/answer-page-10.jpg",
+          "caption": "答案解析 p.10",
+          "alt": "2018考研数学二答案解析 p.10"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2018",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2018-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:3cf7f1c3a0c653c2425c56436f9743c156e57d55944013718aafff51749b3155",
+      "answerTextHash": "sha256:0fcc8b555d64c01fdfd9381acdc6df479a56e5a030397666b538189e585276ba",
+      "sourceEvidence": {
+        "evidenceId": "math2-2018-q19",
+        "sourceId": "src_a91bd4ebb8ae4c75b320a8a3",
+        "answerSourceId": "src_a91bd4ebb8ae4c75b320a8a3",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math2-2018-paper-answer",
+        "answerEvidenceId": "math2-2018-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:0fcc8b555d64c01fdfd9381acdc6df479a56e5a030397666b538189e585276ba"
+      }
+    },
+    {
+      "id": "math2-2018-020",
+      "number": 20,
+      "paperId": "math2-2018",
+      "paperName": "2018考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2018",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2018考研数学二第20题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "10",
+      "explanation": "答案来自本地百度网盘 2018 数学二真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2018/question-20.jpg",
+          "caption": "题面裁切图 q20",
+          "alt": "2018考研数学二第20题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2018/answer-page-10.jpg",
+          "caption": "答案解析 p.10",
+          "alt": "2018考研数学二答案解析 p.10"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2018",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2018-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:f37a9da043704d40bd73a4d852bcab1fdb5dcc1e822eacce2baf9ccf2c62e5a8",
+      "answerTextHash": "sha256:86ae4f0118be2f4b766aa294321369f937325508c695cdf9f2635eb8c2f18a83",
+      "sourceEvidence": {
+        "evidenceId": "math2-2018-q20",
+        "sourceId": "src_a91bd4ebb8ae4c75b320a8a3",
+        "answerSourceId": "src_a91bd4ebb8ae4c75b320a8a3",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math2-2018-paper-answer",
+        "answerEvidenceId": "math2-2018-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:86ae4f0118be2f4b766aa294321369f937325508c695cdf9f2635eb8c2f18a83"
+      }
+    },
+    {
+      "id": "math2-2018-021",
+      "number": 21,
+      "paperId": "math2-2018",
+      "paperName": "2018考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2018",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2018考研数学二第21题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "数列收敛，lim x_n=0。",
+      "explanation": "答案来自本地百度网盘 2018 数学二真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2018/question-21.jpg",
+          "caption": "题面裁切图 q21",
+          "alt": "2018考研数学二第21题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2018/answer-page-10.jpg",
+          "caption": "答案解析 p.10",
+          "alt": "2018考研数学二答案解析 p.10"
+        },
+        {
+          "src": "question-bank/math2-2018/answer-page-11.jpg",
+          "caption": "答案解析 p.11",
+          "alt": "2018考研数学二答案解析 p.11"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2018",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2018-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:dc46a76c3449c34451bd1a863ae9508aa1b45b174050a8ab3b2fe87b18111ea9",
+      "answerTextHash": "sha256:46bd39d0bd8e5f884e49a087edc30e908ef5e68938ea30ca2eb2d012b8c853cf",
+      "sourceEvidence": {
+        "evidenceId": "math2-2018-q21",
+        "sourceId": "src_a91bd4ebb8ae4c75b320a8a3",
+        "answerSourceId": "src_a91bd4ebb8ae4c75b320a8a3",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math2-2018-paper-answer",
+        "answerEvidenceId": "math2-2018-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:46bd39d0bd8e5f884e49a087edc30e908ef5e68938ea30ca2eb2d012b8c853cf"
+      }
+    },
+    {
+      "id": "math2-2018-022",
+      "number": 22,
+      "paperId": "math2-2018",
+      "paperName": "2018考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2018",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2018考研数学二第22题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "a=2 时 f=0 有非零解，通解 x=k(2,1,-1)^T；规范形见答案原页。",
+      "explanation": "答案来自本地百度网盘 2018 数学二真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2018/question-22.jpg",
+          "caption": "题面裁切图 q22",
+          "alt": "2018考研数学二第22题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2018/answer-page-11.jpg",
+          "caption": "答案解析 p.11",
+          "alt": "2018考研数学二答案解析 p.11"
+        },
+        {
+          "src": "question-bank/math2-2018/answer-page-12.jpg",
+          "caption": "答案解析 p.12",
+          "alt": "2018考研数学二答案解析 p.12"
+        },
+        {
+          "src": "question-bank/math2-2018/answer-page-13.jpg",
+          "caption": "答案解析 p.13",
+          "alt": "2018考研数学二答案解析 p.13"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2018",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2018-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:9230e56ae321eed4787c97211283ba659da8cd8e5fd978cb00a136d48c256695",
+      "answerTextHash": "sha256:78e4efbda30ed4ee1353d55b322533edf69027896723ecf16245b3d1528459ca",
+      "sourceEvidence": {
+        "evidenceId": "math2-2018-q22",
+        "sourceId": "src_a91bd4ebb8ae4c75b320a8a3",
+        "answerSourceId": "src_a91bd4ebb8ae4c75b320a8a3",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math2-2018-paper-answer",
+        "answerEvidenceId": "math2-2018-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:78e4efbda30ed4ee1353d55b322533edf69027896723ecf16245b3d1528459ca"
+      }
+    },
+    {
+      "id": "math2-2018-023",
+      "number": 23,
+      "paperId": "math2-2018",
+      "paperName": "2018考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2018",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2018考研数学二第23题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "a=2；满足 AP=B 的可逆矩阵 P 见答案原页。",
+      "explanation": "答案来自本地百度网盘 2018 数学二真题及解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2018/question-23.jpg",
+          "caption": "题面裁切图 q23",
+          "alt": "2018考研数学二第23题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2018/answer-page-13.jpg",
+          "caption": "答案解析 p.13",
+          "alt": "2018考研数学二答案解析 p.13"
+        },
+        {
+          "src": "question-bank/math2-2018/answer-page-14.jpg",
+          "caption": "答案解析 p.14",
+          "alt": "2018考研数学二答案解析 p.14"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2018",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2018-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:d1180ac488abb2db1318ed2ad685482e7b16fc161d25a6655cc87c5cb509422e",
+      "answerTextHash": "sha256:ce998b189706372c597a281bae7f582d1f3700688c859b391972f3b84723d536",
+      "sourceEvidence": {
+        "evidenceId": "math2-2018-q23",
+        "sourceId": "src_a91bd4ebb8ae4c75b320a8a3",
+        "answerSourceId": "src_a91bd4ebb8ae4c75b320a8a3",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_answer_page_image",
+        "sourceEvidenceId": "math2-2018-paper-answer",
+        "answerEvidenceId": "math2-2018-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:ce998b189706372c597a281bae7f582d1f3700688c859b391972f3b84723d536"
+      }
+    }
+  ]
+}

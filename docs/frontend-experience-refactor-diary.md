@@ -769,3 +769,12 @@
 - Validation result: `math2-2017.json` has 23 cards, `{single_choice:8, short_answer:15}`, section counts `{选择题:8, 填空题:6, 解答题:9}`, all cards carry `answerEvidenceStatus=matched`, q01 answer is `A`, q04/q06 follow the worked-solution conclusion `C`, q09 answer is `y=x+2`, q14 answer is `-1`, q20 contains `5π/4`, and q23 answer evidence ends at `answer-page-10.jpg`.
 - Crop QA tightened q07/q13/q17/q23 after OCR/visual checks found answer or解析 leakage; the final OCR leakage scan over all question images found no actual `【答案】` / `【解析】` markers. q09 still contains the official instruction phrase `请将答案写在答题纸`, which is not an answer reveal.
 - Release gate result: 2005-2020 public-course `coverageGaps` dropped from 8 to 7, `publishedSlots` rose to 84, `sourceEvidenceGaps` stayed at 1, release backlog reports `blockers=9` and `publicCourseBlockedSlots=7`, and the rebuilt release-priority dry-run now starts at Math II 2018-2020.
+
+### 2026-06-03 Round 81
+
+- Promoted `math2:2018` through the deterministic Math II page-image bank path after release-priority advanced to `2018考研数学二真题.pdf`.
+- Added `scripts/cleaning/build_math2_2018_bank.py`, published `src/config/flashcard-banks/math2-2018.json`, generated 14 answer/evidence pages plus 24 question crop assets under `cdn-assets/question-bank/math2-2018`, registered the bank, and regenerated the compressed practice-bank table.
+- Source audit: `src_a91bd4ebb8ae4c75b320a8a3-2018考研数学二真题.pdf` is a 14-page scanned answer-analysis PDF with no usable text layer; questions and answer analysis are interleaved on the same pages, and all 14 pages are retained as valid answer evidence.
+- Validation result: `math2-2018.json` has 23 cards, `{single_choice:8, short_answer:15}`, section counts `{选择题:8, 填空题:6, 解答题:9}`, all cards carry `answerEvidenceStatus=matched`, q01 answer is `B`, q08 answer is `A`, q14 answer is `2`, q17 contains `3π²+5π`, q20 answer is `10`, q16 is split across `question-16-a/b.jpg`, and q23 answer evidence ends at `answer-page-14.jpg`.
+- Crop QA tightened q17 and q21 after the first OCR leakage scan found visible `【答案】` lines; the final OCR leakage scan over all 24 question images found no answer/analysis markers.
+- Release gate result: 2005-2020 public-course `coverageGaps` dropped from 7 to 6, `publishedSlots` rose to 85, `sourceEvidenceGaps` stayed at 1, release backlog reports `blockers=8` and `publicCourseBlockedSlots=6`, and the rebuilt release-priority dry-run now starts at Math II 2019-2020.

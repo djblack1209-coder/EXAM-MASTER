@@ -833,6 +833,20 @@ const BANK_REGISTRY = [
     sections: paperSections('选择题', '填空题', '解答题')
   },
   {
+    id: 'math2-2018',
+    subject: '数学',
+    subjectKey: 'math',
+    track: 'math2',
+    year: '2018',
+    name: '2018考研数学二真题',
+    description: '8道选择 + 6道填空 + 9道解答题',
+    releaseLabel: '正式题库',
+    caution: '按本地百度网盘 2018 数学二真题及解析 PDF 页图训练；题面使用逐题裁切图避免提前展示答案解析',
+    paperType: 'past_exam',
+    quality: PAPER_QUALITY.READY,
+    sections: paperSections('选择题', '填空题', '解答题')
+  },
+  {
     id: 'math3-2005',
     subject: '数学',
     subjectKey: 'math',

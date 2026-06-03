@@ -1865,6 +1865,78 @@ git commit -m "chore: repair english companion option evidence"
 
 Result: committed after validation on 2026-06-02.
 
+### Task 81: Publish Math II 2018 Page-Image Bank
+
+**Files:**
+- Add: `scripts/cleaning/build_math2_2018_bank.py`
+- Add: `src/config/flashcard-banks/math2-2018.json`
+- Add: `cdn-assets/question-bank/math2-2018/*`
+- Add: `tests/unit/math2-2018-data.spec.js`
+- Modify: `src/config/bank-registry.js`
+- Modify: `src/pages/practice-sub/bank-data-table.js`
+- Modify: `tests/unit/flashcard-bank-registry.spec.js`
+- Modify: `tests/unit/question-bank-year-map.spec.js`
+- Modify: `docs/frontend-experience-refactor-diary.md`
+- Modify: `docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md`
+- Modify: `docs/08C-SCRIPTS-REFERENCE.md`
+- Modify: `docs/12-CHANGELOG.md`
+- Modify: `data/release-blocker-backlog.json`
+
+- [x] **Step 1: Add failing data spec**
+
+Added `tests/unit/math2-2018-data.spec.js` for registration, loadability, 23-card structure, matched answer evidence, and anchors q01/q08/q14/q17/q20/q23.
+
+Initial result:
+```bash
+npm test -- tests/unit/math2-2018-data.spec.js
+```
+
+Failed because `math2-2018` was not registered yet.
+
+- [x] **Step 2: Verify source and build page-image bank**
+
+Used local raw-inbox source:
+
+```text
+data/raw-inbox/src_a91bd4ebb8ae4c75b320a8a3-2018考研数学二真题.pdf
+```
+
+Source audit: 14-page scanned answer-analysis PDF, no usable text layer, questions and answer analysis interleaved on the same pages. Added `build_math2_2018_bank.py` with 23 cards, rendered answer pages, and per-question crops.
+
+- [x] **Step 3: Register and refresh practice data**
+
+Run:
+```bash
+python3 scripts/cleaning/build_math2_2018_bank.py --force-assets
+node scripts/build/generate-compressed-bank-modules.mjs
+```
+
+Result: published `src/config/flashcard-banks/math2-2018.json` plus 38 assets under `cdn-assets/question-bank/math2-2018`.
+
+- [x] **Step 4: Run validation**
+
+Run:
+```bash
+python3 -m py_compile scripts/cleaning/build_math2_2018_bank.py
+npm test -- tests/unit/math2-2018-data.spec.js tests/unit/question-bank-year-map.spec.js tests/unit/flashcard-bank-registry.spec.js
+node scripts/build/question-bank-release-gate.mjs --min-year=2005 --max-year=2020
+node scripts/build/release-blocker-backlog.mjs
+python3 scripts/baidu/cleaning_queue.py
+python3 scripts/baidu/run_cleaning_queue.py --dry-run --limit 12 --source-type official_paper --paper-role main --max-year 2020
+```
+
+Question-image leakage scan:
+```bash
+for p in cdn-assets/question-bank/math2-2018/question-*.jpg; do
+  txt=$(tesseract "$p" stdout -l chi_sim+eng --psm 6 2>/dev/null || true)
+  if printf '%s' "$txt" | rg -q '【答案|答案】|【解析|解析】|故选|选[A-D]|答案[】:]'; then
+    echo "BAD $p"
+  fi
+done
+```
+
+Result: passed on 2026-06-03. q17/q21 crop heights were tightened after the first leakage scan exposed visible `【答案】` lines; the final scan produced no answer-marker hits. `math2-2018.json` has 23 cards, `{single_choice:8, short_answer:15}`, section counts `{选择题:8, 填空题:6, 解答题:9}`, q01=`B`, q08=`A`, q14=`2`, q17 contains `3π²+5π`, q20=`10`, and q23 evidence ends at `answer-page-14.jpg`. The 2005-2020 release gate reports `coverageGaps=6`, `publishedSlots=85`, `sourceEvidenceGaps=1`; release backlog reports `blockers=8` and `publicCourseBlockedSlots=6`. The next main dry-run starts at `2019考研数学二真题.pdf`.
+
 ### Task 80: Publish Math II 2017 Page-Image Bank
 
 **Files:**

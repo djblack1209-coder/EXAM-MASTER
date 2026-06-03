@@ -595,6 +595,15 @@ describe('published flashcard bank registry', () => {
     expect(math22017.cards.find((card) => card.number === 23).answerImages.at(-1).src).toContain(
       'question-bank/math2-2017/answer-page-10.jpg'
     );
+    const math22018 = await loadBankData('math2-2018');
+    expect(math22018.cards).toHaveLength(23);
+    expect(math22018.cards.every((card) => card.answerEvidenceStatus === 'matched')).toBe(true);
+    expect(math22018.cards.find((card) => card.number === 1).answer).toBe('B');
+    expect(math22018.cards.find((card) => card.number === 8).answer).toBe('A');
+    expect(math22018.cards.find((card) => card.number === 17).answer).toContain('3π²+5π');
+    expect(math22018.cards.find((card) => card.number === 23).answerImages.at(-1).src).toContain(
+      'question-bank/math2-2018/answer-page-14.jpg'
+    );
     const math32005 = await loadBankData('math3-2005');
     expect(math32005.cards).toHaveLength(23);
     expect(math32005.cards.every((card) => card.answerEvidenceStatus === 'matched')).toBe(true);
