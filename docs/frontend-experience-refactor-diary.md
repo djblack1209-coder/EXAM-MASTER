@@ -653,3 +653,12 @@
 - Registered `english2-2016`, regenerated the compressed practice-bank table, and updated the question-bank year map so English II now reports `正式 8 · 整理中 0 · 待入库 9`.
 - Release gate result: 2005-2020 public-course `coverageGaps` dropped from 19 to 18, `publishedSlots` rose to 73, `sourceEvidenceGaps` stayed at 1, release backlog reports `blockers=20` and `publicCourseBlockedSlots=18`, and the rebuilt release-priority dry-run now starts at English II 2017 paired candidates and Math III 2016.
 - Product rule: if a historical English source PDF is image-only but its answer-speed companion includes the full paper text layer, use the answer-speed PDF for question/answer matching and preserve the image-only document/original-paper hashes as supporting source evidence.
+
+### 2026-06-03 Round 70
+
+- Promoted `english2:2017` through the formal English II text-layer bank path after verifying the canonical 2017 document-version, original-paper, answer-speed, and detailed-analysis PDFs in ignored `data/raw-inbox/`.
+- Added `scripts/cleaning/build_english2_2017_bank.py`, which builds 48 cards from the 2017 answer-speed PDF text layer, records all four source hashes in `sourceFiles`, cross-checks detailed-analysis anchors including Parkrun, Jenny Radesky, gap year, Max Moritz, Jay Dunwell, and the Fashion Media & Promotion translation passage, and blocks the known promo tail line.
+- Validation result: `english2-2017.json` has 48 cards, all cards carry `answerEvidenceStatus=matched`, q01 answer is `C`, q21 answer is `A`, q30 answer is `A`, Part B answers are `EAGBF`, q46 contains `My dream has always been to work somewhere`, and q48 uses `official_writing_prompt` evidence with the `2013-2015年我国博物馆数量和参观人数` chart prompt including `4165`, `4692`, `6378`, and `7811`.
+- Registered `english2-2017`, regenerated the compressed practice-bank table, and updated the question-bank year map so English II now reports `正式 9 · 整理中 0 · 待入库 8`.
+- Release gate result: 2005-2020 public-course `coverageGaps` dropped from 18 to 17, `publishedSlots` rose to 74, `sourceEvidenceGaps` stayed at 1, release backlog reports `blockers=19` and `publicCourseBlockedSlots=17`, and the rebuilt release-priority dry-run now starts at English II 2018 paired candidates plus Math III 2016.
+- Product rule: English II Part B can be person-to-information matching. Builders should preserve the left-column names and A-G statement options rather than converting the task into a generic subtitle prompt.
