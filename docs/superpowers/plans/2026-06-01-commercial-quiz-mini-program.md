@@ -2233,6 +2233,79 @@ git add data/release-blocker-backlog.json docs/08C-SCRIPTS-REFERENCE.md docs/12-
 git -c core.hooksPath=/dev/null commit -m "chore: publish english2 2014 bank"
 ```
 
+### Task 68: Publish English II 2015 Text-Layer Bank
+
+**Files:**
+- Add: `scripts/cleaning/build_english2_2015_bank.py`
+- Add: `src/config/flashcard-banks/english2-2015.json`
+- Add: `tests/unit/english2-2015-data.spec.js`
+- Modify: `src/config/bank-registry.js`
+- Modify: `src/pages/practice-sub/bank-data-table.js`
+- Modify: `tests/unit/flashcard-bank-registry.spec.js`
+- Modify: `tests/unit/question-bank-year-map.spec.js`
+- Modify: `docs/frontend-experience-refactor-diary.md`
+- Modify: `docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md`
+- Modify: `docs/08C-SCRIPTS-REFERENCE.md`
+- Modify: `docs/12-CHANGELOG.md`
+- Modify: `data/release-blocker-backlog.json`
+
+- [x] **Step 1: Add failing registry coverage**
+
+Added a focused registry/load regression for `english2-2015` expecting 48 cards, matched answer evidence, q01 answer `A`, q21 answer `A`, q30 answer `D`, Part B answers `DEGAC`, q46 translation anchor `Think about driving a route that's very familiar`, q48 `我国某市居民春节假期花销比例` chart prompt, and q48 `official_writing_prompt` evidence.
+
+Initial result:
+```bash
+npm test -- tests/unit/english2-2015-data.spec.js
+```
+
+Failed because `english2-2015` was not registered or compressed yet.
+
+- [x] **Step 2: Verify source and build text-layer bank**
+
+Used canonical local raw-inbox sources:
+
+```text
+data/raw-inbox/src_bc9bdd2b47254ff5fa5bc408-2015.pdf
+data/raw-inbox/src_9861ae9bce681b33f3f0495e-2015年考研英语二真题.pdf
+data/raw-inbox/src_26e806e10a80d41b9831037e-2015年真题及答案速查.pdf
+data/raw-inbox/src_8b13d0b1c2873318eac3e777-2015年真题逐题细解.pdf
+```
+
+Source audit: page counts `24/15/16/40`, with SHA-256 hashes `92a45f0d2055e38e633830c7c021ae0576abf7f0ec4dc603a9fbaa958379b49f`, `4a0958a6693404194a3439df52c86acaa64ee1fa9ba03fb57b4402d1b9dc6f54`, `97ef9ecf0641c24934aa6e4ec63b6debbbf453b3c1cd776e0b7a0f63461177ed`, and `acd007957fa5af8fdaa5a9cffc2767c03b5f92c6bca7b24cff848dae0d630feb`. Added `build_english2_2015_bank.py` with 48 cards, answer-speed text matching, detailed-analysis anchor cross-checks, Old Truths Part B subtitle matching, and prompt-only writing evidence.
+
+- [x] **Step 3: Register and refresh practice data**
+
+Run:
+```bash
+python3 scripts/cleaning/build_english2_2015_bank.py
+node scripts/build/generate-compressed-bank-modules.mjs
+```
+
+Result: published `src/config/flashcard-banks/english2-2015.json`, registered `english2-2015`, and regenerated the compressed practice-bank table.
+
+- [x] **Step 4: Run validation**
+
+Run:
+```bash
+python3 -m py_compile scripts/cleaning/build_english2_2015_bank.py
+npm test -- tests/unit/english2-2015-data.spec.js tests/unit/question-bank-year-map.spec.js tests/unit/flashcard-bank-registry.spec.js
+node scripts/build/question-bank-release-gate.mjs --min-year=2005 --max-year=2020
+node scripts/build/release-blocker-backlog.mjs
+python3 scripts/baidu/cleaning_queue.py
+python3 scripts/baidu/run_cleaning_queue.py --dry-run --limit 12 --source-type official_paper --paper-role main --max-year 2020
+git diff --check
+```
+
+Result: passed on 2026-06-03. The 2005-2020 release gate reports `coverageGaps=19`, `publishedSlots=72`, `sourceEvidenceGaps=1`, and `pendingCoverageBlockers=0`; release backlog reports `blockers=21` and `publicCourseBlockedSlots=19`; English II year-map summary is now `正式 7 · 整理中 0 · 待入库 10`; the rebuilt release-priority dry-run now starts at English II 2016 paired candidates and Math III 2016.
+
+- [x] **Step 5: Commit**
+
+Run:
+```bash
+git add data/release-blocker-backlog.json docs/08C-SCRIPTS-REFERENCE.md docs/12-CHANGELOG.md docs/frontend-experience-refactor-diary.md docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md src/config/bank-registry.js src/pages/practice-sub/bank-data-table.js tests/unit/flashcard-bank-registry.spec.js tests/unit/question-bank-year-map.spec.js tests/unit/english2-2015-data.spec.js scripts/cleaning/build_english2_2015_bank.py src/config/flashcard-banks/english2-2015.json
+git -c core.hooksPath=/dev/null commit -m "chore: publish english2 2015 bank"
+```
+
 ### Task 59: Block Mislabeled Math II 2016 Source
 
 **Files:**

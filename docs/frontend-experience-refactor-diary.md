@@ -635,3 +635,12 @@
 - Registered `english2-2014`, regenerated the compressed practice-bank table, and updated the question-bank year map so English II now reports `正式 6 · 整理中 0 · 待入库 11`.
 - Release gate result: 2005-2020 public-course `coverageGaps` dropped from 21 to 20, `publishedSlots` rose to 71, `sourceEvidenceGaps` stayed at 1, release backlog reports `blockers=22` and `publicCourseBlockedSlots=20`, and the rebuilt release-priority dry-run now starts at English II 2015 paired candidates.
 - Product rule: English II cloze extraction must preserve spacing until blank markers are normalized; 2014 includes ordinary numeric text such as `BMI of 18 to 25`, so blank replacement cannot blindly rewrite every year-like number.
+
+### 2026-06-03 Round 68
+
+- Promoted `english2:2015` through the formal English II text-layer bank path after verifying the canonical 2015 document-version, original-paper, answer-speed, and detailed-analysis PDFs in ignored `data/raw-inbox/`.
+- Added `scripts/cleaning/build_english2_2015_bank.py`, which builds 48 cards from the 2015 answer-speed PDF text layer, records all four source hashes in `sourceFiles`, and cross-checks detailed-analysis anchors including home/work stress, first-generation college students, office speak, Obamacare, Old Truths Part B, and the well-traveled road translation passage.
+- Validation result: `english2-2015.json` has 48 cards, all cards carry `answerEvidenceStatus=matched`, q01 answer is `A`, q21 answer is `A`, q30 answer is `D`, Part B answers are `DEGAC`, q46 contains `Think about driving a route that's very familiar`, and q48 uses `official_writing_prompt` evidence with the `我国某市居民春节假期花销比例` chart prompt.
+- Registered `english2-2015`, regenerated the compressed practice-bank table, and updated the question-bank year map so English II now reports `正式 7 · 整理中 0 · 待入库 10`.
+- Release gate result: 2005-2020 public-course `coverageGaps` dropped from 20 to 19, `publishedSlots` rose to 72, `sourceEvidenceGaps` stayed at 1, release backlog reports `blockers=21` and `publicCourseBlockedSlots=19`, and the rebuilt release-priority dry-run now starts at English II 2016 paired candidates and Math III 2016.
+- Product rule: when an English writing chart is missing from PDF text extraction but visible in the rendered official page, record the chart facts in the prompt evidence instead of deriving them from model essays.
