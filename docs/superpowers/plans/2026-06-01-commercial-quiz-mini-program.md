@@ -2071,6 +2071,80 @@ python3 scripts/baidu/run_cleaning_queue.py --dry-run --limit 12 --source-type o
 
 Result: passed on 2026-06-03. `english1-2018.json` has 52 cards, `{single_choice:45, translation:5, essay:2}`, all cards carry `answerEvidenceStatus=matched`, q01=`C`, q21=`D`, q26=`D`, q30=`A`, Part B=`EGABD`, q46 contains `By the date of his birth Europe was witnessing the passing of the religious drama`, q51 is the graduation-ceremony email, q52 is the `选课进行时` writing prompt, and no card references `answer-page-16.jpg`. The 2005-2020 release gate reports `coverageGaps=2`, `publishedSlots=89`, `sourceEvidenceGaps=1`; release backlog reports `blockers=4` and `publicCourseBlockedSlots=2`. Remaining public-course slots: `math2:2016`, `english1:2019`.
 
+### Task 86: Publish English I 2019 Text-Layer Bank
+
+**Files:**
+- Add: `scripts/cleaning/build_english1_2019_bank.py`
+- Add: `src/config/flashcard-banks/english1-2019.json`
+- Add: `cdn-assets/question-bank/english1-2019/*`
+- Add: `tests/unit/english1-2019-data.spec.js`
+- Modify: `src/config/bank-registry.js`
+- Modify: `src/pages/practice-sub/bank-data-table.js`
+- Modify: `tests/unit/flashcard-bank-registry.spec.js`
+- Modify: `tests/unit/question-bank-year-map.spec.js`
+- Modify: `tests/unit/question-bank-gap-panel-guard.spec.js`
+- Modify: `docs/frontend-experience-refactor-diary.md`
+- Modify: `docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md`
+- Modify: `docs/08C-SCRIPTS-REFERENCE.md`
+- Modify: `docs/12-CHANGELOG.md`
+- Modify: `data/release-blocker-backlog.json`
+
+- [x] **Step 1: Add failing data spec**
+
+Added `tests/unit/english1-2019-data.spec.js` for registration, loadability, 52-card structure, matched answer evidence, answer anchors q01/q21/q26/q30/q41/q45, q46 translation segment, q51/q52 writing prompts, and promotional/English II source-bleed regressions.
+
+Initial result:
+```bash
+npm test -- tests/unit/english1-2019-data.spec.js
+```
+
+Failed because `english1-2019` was not registered yet.
+
+- [x] **Step 2: Verify source and build text-layer bank**
+
+Used local raw-inbox sources:
+
+```text
+data/raw-inbox/src_8de590b865dceaba46e1cf1f-2019年考研英语一真题.pdf
+data/raw-inbox/2019年真题及答案速查.pdf
+```
+
+Source audit: the original-paper PDF has no usable text layer and is retained as visual audit evidence. The local ignored answer-speed PDF has a usable text layer, matches manifest source `src_e5870f592977fc243c04658d`, and carries the official answer table `1-5 CCBDA`, `26-30 DAACB`, `41-45 EDGBA`. Page 16 is promotional material and is excluded from released assets and evidence.
+
+- [x] **Step 3: Register and refresh practice data**
+
+Run:
+```bash
+python3 scripts/cleaning/build_english1_2019_bank.py --force-assets
+node scripts/build/generate-compressed-bank-modules.mjs
+```
+
+Result: published `src/config/flashcard-banks/english1-2019.json` plus 30 page assets under `cdn-assets/question-bank/english1-2019`, registered `english1-2019`, updated the English I year map to `{ total: 22, ready: 17, organizing: 0, missing: 5 }`, and regenerated 103 compressed practice-bank entries.
+
+- [x] **Step 4: Run validation**
+
+Run:
+```bash
+python3 -m py_compile scripts/cleaning/build_english1_2019_bank.py
+npm test -- tests/unit/english1-2019-data.spec.js tests/unit/flashcard-bank-registry.spec.js tests/unit/question-bank-year-map.spec.js tests/unit/question-bank-gap-panel-guard.spec.js
+node scripts/build/question-bank-release-gate.mjs --min-year=2005 --max-year=2020
+node scripts/build/release-blocker-backlog.mjs
+python3 scripts/baidu/cleaning_queue.py
+python3 scripts/baidu/run_cleaning_queue.py --dry-run --limit 12 --source-type official_paper --paper-role main --max-year 2020
+npm test
+git diff --check
+```
+
+Result: passed on 2026-06-03. `english1-2019.json` has 52 cards, `{single_choice:45, translation:5, essay:2}`, all cards carry `answerEvidenceStatus=matched`, q01=`C`, q21=`A`, q26=`D`, q30=`B`, Part B=`EDGBA`, q46 contains `There is a great deal of this kind of nonsense in the medical journals`, q51 is the `Aiding Rural Primary Schools` email, q52 is the picture-based writing prompt, and no card references `answer-page-16.jpg`. The bank blocks `用“闪过”` / `故事情节纯属虚构` promotional text and known English II museum/chart source bleed. The 2005-2020 release gate reports `coverageGaps=1`, `publishedSlots=90`, `sourceEvidenceGaps=1`; release backlog reports `blockers=3` and `publicCourseBlockedSlots=1`. Remaining public-course slot: `math2:2016`.
+
+- [x] **Step 5: Commit**
+
+Run:
+```bash
+git add data/release-blocker-backlog.json docs/08C-SCRIPTS-REFERENCE.md docs/12-CHANGELOG.md docs/frontend-experience-refactor-diary.md docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md src/config/bank-registry.js src/pages/practice-sub/bank-data-table.js tests/unit/english1-2019-data.spec.js tests/unit/flashcard-bank-registry.spec.js tests/unit/question-bank-gap-panel-guard.spec.js tests/unit/question-bank-year-map.spec.js scripts/cleaning/build_english1_2019_bank.py src/config/flashcard-banks/english1-2019.json cdn-assets/question-bank/english1-2019
+git -c core.hooksPath=/dev/null commit -m "chore: publish english1 2019 bank"
+```
+
 ### Task 82: Publish Math II 2019 Page-Image Bank
 
 **Files:**

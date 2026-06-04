@@ -41,8 +41,8 @@ describe('question bank gap panel', () => {
     const wrapper = mountQuestionBank({ tracks: ['english1'] });
     await nextTick();
 
-    expect(wrapper.find('.gap-panel').text()).toContain('整理中 0 · 待入库 6');
-    expect(wrapper.findAll('.gap-item')).toHaveLength(6);
+    expect(wrapper.find('.gap-panel').text()).toContain('整理中 0 · 待入库 5');
+    expect(wrapper.findAll('.gap-item')).toHaveLength(5);
 
     wrapper.unmount();
   });

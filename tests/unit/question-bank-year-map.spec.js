@@ -423,7 +423,7 @@ describe('question bank public-course year map', () => {
     expect(wrapper.text()).toContain('正式');
     expect(wrapper.text()).toContain('0');
     expect(wrapper.text()).toContain('整理中');
-    expect(wrapper.text()).toContain('正式 16 · 整理中 0 · 待入库 6');
+    expect(wrapper.text()).toContain('正式 17 · 整理中 0 · 待入库 5');
 
     wrapper.unmount();
   });
