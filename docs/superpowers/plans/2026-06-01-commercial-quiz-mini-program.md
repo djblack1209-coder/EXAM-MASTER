@@ -2007,6 +2007,70 @@ done
 
 Result: passed on 2026-06-03. `math2-2015.json` has 23 cards, `{single_choice:8, short_answer:15}`, section counts `{选择题:8, 填空题:6, 解答题:9}`, all cards carry `answerEvidenceStatus=matched`, q01=`D`, q02=`B`, q03=`A`, q08=`A`, q09=`48`, q10=`n(n-1)(ln2)^(n-2)`, q14=`21`, q15 contains `a=-1`, q16 contains `8/π`, q20=`30min`, and q23 answer evidence ends at `answer-page-14.jpg`. The final OCR leakage scan produced no answer/analysis/promotion keyword hits in question crops. The 2005-2020 release gate reports `coverageGaps=3`, `publishedSlots=88`, `sourceEvidenceGaps=1`; release backlog reports `blockers=5` and `publicCourseBlockedSlots=3`. Remaining public-course slots: `math2:2016`, `english1:2018`, `english1:2019`.
 
+### Task 85: Publish English I 2018 Text-Layer Bank
+
+**Files:**
+- Add: `scripts/cleaning/build_english1_2018_bank.py`
+- Add: `src/config/flashcard-banks/english1-2018.json`
+- Add: `cdn-assets/question-bank/english1-2018/*`
+- Add: `tests/unit/english1-2018-data.spec.js`
+- Modify: `src/config/bank-registry.js`
+- Modify: `src/pages/practice-sub/bank-data-table.js`
+- Modify: `tests/unit/flashcard-bank-registry.spec.js`
+- Modify: `tests/unit/question-bank-year-map.spec.js`
+- Modify: `docs/frontend-experience-refactor-diary.md`
+- Modify: `docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md`
+- Modify: `docs/08C-SCRIPTS-REFERENCE.md`
+- Modify: `docs/12-CHANGELOG.md`
+- Modify: `data/release-blocker-backlog.json`
+
+- [x] **Step 1: Add failing data spec**
+
+Added `tests/unit/english1-2018-data.spec.js` for registration, loadability, 52-card structure, matched answer evidence, answer anchors q01/q21/q26/q30/q41/q45, q46 translation segment, q51/q52 writing prompts, and the q26 stale answer-pollution regression.
+
+Initial result:
+```bash
+npm test -- tests/unit/english1-2018-data.spec.js
+```
+
+Failed because `english1-2018` was not registered yet.
+
+- [x] **Step 2: Verify source and build text-layer bank**
+
+Used local raw-inbox sources:
+
+```text
+data/raw-inbox/src_65e38afdd4cb892710781e4f-2018年考研英语一真题.pdf
+data/raw-inbox/src_c2b2d9106a7394b9ebf94bb2-2018年真题及答案速查.pdf
+data/raw-inbox/src_7fc9c83e38b149770e57c209-2018考研英语一真题及解析.pdf
+```
+
+Source audit: the answer-speed PDF has a recoverable XRef warning but a usable text layer and official answer table (`1-5 CADBD`, `26-30 DABCA`, `41-45 EGABD`). The original-paper PDF has no usable text layer and is retained as visual audit evidence; the document-version scan is retained as supporting source metadata. The answer-speed PDF page 16 is promotional material and is excluded from released assets and evidence.
+
+- [x] **Step 3: Register and refresh practice data**
+
+Run:
+```bash
+python3 scripts/cleaning/build_english1_2018_bank.py --force-assets
+node scripts/build/generate-compressed-bank-modules.mjs
+```
+
+Result: published `src/config/flashcard-banks/english1-2018.json` plus 30 page assets under `cdn-assets/question-bank/english1-2018`, registered `english1-2018`, updated the English I year map to `{ total: 22, ready: 16, organizing: 0, missing: 6 }`, and regenerated 102 compressed practice-bank entries.
+
+- [x] **Step 4: Run validation**
+
+Run:
+```bash
+python3 -m py_compile scripts/cleaning/build_english1_2018_bank.py
+npm test -- tests/unit/english1-2018-data.spec.js tests/unit/question-bank-year-map.spec.js tests/unit/flashcard-bank-registry.spec.js
+node scripts/build/question-bank-release-gate.mjs --min-year=2005 --max-year=2020
+node scripts/build/release-blocker-backlog.mjs
+python3 scripts/baidu/cleaning_queue.py
+python3 scripts/baidu/run_cleaning_queue.py --dry-run --limit 12 --source-type official_paper --paper-role main --max-year 2020
+```
+
+Result: passed on 2026-06-03. `english1-2018.json` has 52 cards, `{single_choice:45, translation:5, essay:2}`, all cards carry `answerEvidenceStatus=matched`, q01=`C`, q21=`D`, q26=`D`, q30=`A`, Part B=`EGABD`, q46 contains `By the date of his birth Europe was witnessing the passing of the religious drama`, q51 is the graduation-ceremony email, q52 is the `选课进行时` writing prompt, and no card references `answer-page-16.jpg`. The 2005-2020 release gate reports `coverageGaps=2`, `publishedSlots=89`, `sourceEvidenceGaps=1`; release backlog reports `blockers=4` and `publicCourseBlockedSlots=2`. Remaining public-course slots: `math2:2016`, `english1:2019`.
+
 ### Task 82: Publish Math II 2019 Page-Image Bank
 
 **Files:**
