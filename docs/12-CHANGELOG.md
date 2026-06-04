@@ -1,5 +1,12 @@
 # 变更日志
 
+## 2026-06-03 — 2020 数学二逐题裁切题库开放
+
+- 2020 考研数学二从“待入库”推进为正式题库：23 张题卡覆盖 8 道选择、6 道填空和 9 道解答题，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
+- 新增 `build_math2_2020_bank.py`，从本地百度网盘 `2020考研数学二真题.pdf` 生成 `src/config/flashcard-banks/math2-2020.json` 与 `cdn-assets/question-bank/math2-2020` 页图资源；源 PDF 为 16 页扫描版，第 1 页为封面说明，第 2-5 页为题面，第 6-16 页为答案解析，题面使用逐题裁切图，答案页裁除页眉页脚推广。
+- 清洗质量：q05 和 q23 使用跨页题面图，q21/q22/q23 裁剪框经视觉与 OCR 校准；最终 25 张题面图未命中答案/解析/公众号/全年免费分享等泄漏关键词。验收锚点包括 q01=`D`、q02=`C`、q08=`D`、q09=`-1/2`、q10=`2(√2-1)`、q14=`a^4-4a^2`、q21=`y=Cx^(3/2)`。
+- 2005-2020 release gate 刷新后，公共课覆盖缺口降至 4，published slots 升至 87，source evidence gap 保持 1；release backlog 降至 `blockers=6`、`publicCourseBlockedSlots=4`，下一批 release-priority dry-run 转向更早公共课缺口。
+
 ## 2026-06-03 — 2019 数学二逐题裁切题库开放
 
 - 2019 考研数学二从“待入库”推进为正式题库：23 张题卡覆盖 8 道选择、6 道填空和 9 道解答题，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
