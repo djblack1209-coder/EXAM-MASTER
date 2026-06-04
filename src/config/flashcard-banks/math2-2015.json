@@ -1,0 +1,1393 @@
+{
+  "id": "math2-2015",
+  "source": "math2-2015-paper-answer",
+  "paperId": "math2-2015",
+  "paperName": "2015考研数学二真题",
+  "subject": "数学",
+  "subjectKey": "math",
+  "track": "math2",
+  "year": "2015",
+  "quality": "ready",
+  "publicationStatus": "published",
+  "publicationBlockers": [],
+  "sourceEvidencePolicy": "baidu_netdisk_official_paper_pdf_question_crop_trimmed_answer_page_image_v1",
+  "sourceFiles": [
+    {
+      "id": "math2-2015-paper-answer",
+      "role": "paper_answer",
+      "localPath": "data/raw-inbox/src_a37ec1fa555f79f247286bf4-2015考研数学二真题.pdf",
+      "sha256": "sha256:b21fb079d30628c2a541edbd19119aa56def749bd9403caeeb74fbdc3b89c32b",
+      "sourceId": "src_a37ec1fa555f79f247286bf4",
+      "evidenceNote": "The 14-page scanned source interleaves prompts with answer analysis. Published question crops stop before answer labels; answer pages are trimmed to remove recurring page header/footer promotion. For q22, the matrix answer follows the worked derivation on page 13."
+    }
+  ],
+  "assetRoot": "question-bank/math2-2015",
+  "processed_at": "2026-06-04T00:54:57Z",
+  "total_cards": 23,
+  "cards": [
+    {
+      "id": "math2-2015-001",
+      "number": 1,
+      "paperId": "math2-2015",
+      "paperName": "2015考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2015",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2015考研数学二第1题（选择题）。题干、公式和图形以题面裁切图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2015 数学二真题解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2015/question-01.jpg",
+          "caption": "题面裁切图 q01",
+          "alt": "2015考研数学二第01题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2015/answer-page-01.jpg",
+          "caption": "答案解析 p.1",
+          "alt": "2015考研数学二答案解析 p.1"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2015",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2015-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:23144c048badf19a645cc3438b9040654dfc7e1e0c297abde377d246e626465b",
+      "answerTextHash": "sha256:f6335e8977ced096172680deb47d3c197da7774b472b4fe4ce3651e4656f09aa",
+      "sourceEvidence": {
+        "evidenceId": "math2-2015-q01",
+        "sourceId": "src_a37ec1fa555f79f247286bf4",
+        "answerSourceId": "src_a37ec1fa555f79f247286bf4",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_trimmed_answer_page_image",
+        "sourceEvidenceId": "math2-2015-paper-answer",
+        "answerEvidenceId": "math2-2015-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:f6335e8977ced096172680deb47d3c197da7774b472b4fe4ce3651e4656f09aa"
+      }
+    },
+    {
+      "id": "math2-2015-002",
+      "number": 2,
+      "paperId": "math2-2015",
+      "paperName": "2015考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2015",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2015考研数学二第2题（选择题）。题干、公式和图形以题面裁切图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2015 数学二真题解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2015/question-02.jpg",
+          "caption": "题面裁切图 q02",
+          "alt": "2015考研数学二第02题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2015/answer-page-01.jpg",
+          "caption": "答案解析 p.1",
+          "alt": "2015考研数学二答案解析 p.1"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2015",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2015-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:a471d79a49046e8f0c0def56fb2d7d8b1fccb97753e1fc262ddd8ab571e59eef",
+      "answerTextHash": "sha256:eeb8f23963a55373792abcd7f5e7bf152df8a8573bd10989d302f7962035a04f",
+      "sourceEvidence": {
+        "evidenceId": "math2-2015-q02",
+        "sourceId": "src_a37ec1fa555f79f247286bf4",
+        "answerSourceId": "src_a37ec1fa555f79f247286bf4",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_trimmed_answer_page_image",
+        "sourceEvidenceId": "math2-2015-paper-answer",
+        "answerEvidenceId": "math2-2015-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:eeb8f23963a55373792abcd7f5e7bf152df8a8573bd10989d302f7962035a04f"
+      }
+    },
+    {
+      "id": "math2-2015-003",
+      "number": 3,
+      "paperId": "math2-2015",
+      "paperName": "2015考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2015",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2015考研数学二第3题（选择题）。题干、公式和图形以题面裁切图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2015 数学二真题解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2015/question-03.jpg",
+          "caption": "题面裁切图 q03",
+          "alt": "2015考研数学二第03题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2015/answer-page-01.jpg",
+          "caption": "答案解析 p.1",
+          "alt": "2015考研数学二答案解析 p.1"
+        },
+        {
+          "src": "question-bank/math2-2015/answer-page-02.jpg",
+          "caption": "答案解析 p.2",
+          "alt": "2015考研数学二答案解析 p.2"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2015",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2015-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:624d12e0719686397b29cef566be486dfc5b6ffb74c1692f9249bca46c16c207",
+      "answerTextHash": "sha256:6614e99bebb8c2c30f8c6feb22c98f3064a281595e4c733af7a3abbd0641df48",
+      "sourceEvidence": {
+        "evidenceId": "math2-2015-q03",
+        "sourceId": "src_a37ec1fa555f79f247286bf4",
+        "answerSourceId": "src_a37ec1fa555f79f247286bf4",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_trimmed_answer_page_image",
+        "sourceEvidenceId": "math2-2015-paper-answer",
+        "answerEvidenceId": "math2-2015-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:6614e99bebb8c2c30f8c6feb22c98f3064a281595e4c733af7a3abbd0641df48"
+      }
+    },
+    {
+      "id": "math2-2015-004",
+      "number": 4,
+      "paperId": "math2-2015",
+      "paperName": "2015考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2015",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2015考研数学二第4题（选择题）。题干、公式和图形以题面裁切图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2015 数学二真题解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2015/question-04.jpg",
+          "caption": "题面裁切图 q04",
+          "alt": "2015考研数学二第04题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2015/answer-page-02.jpg",
+          "caption": "答案解析 p.2",
+          "alt": "2015考研数学二答案解析 p.2"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2015",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2015-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:072660364985233a9167b2415df0730932bd6c7b794301a141d9fe83bd6432c0",
+      "answerTextHash": "sha256:cad57386346f62bee6aa00d160f80730cc923b804fff53afdd1c61b5181c7a0b",
+      "sourceEvidence": {
+        "evidenceId": "math2-2015-q04",
+        "sourceId": "src_a37ec1fa555f79f247286bf4",
+        "answerSourceId": "src_a37ec1fa555f79f247286bf4",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_trimmed_answer_page_image",
+        "sourceEvidenceId": "math2-2015-paper-answer",
+        "answerEvidenceId": "math2-2015-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:cad57386346f62bee6aa00d160f80730cc923b804fff53afdd1c61b5181c7a0b"
+      }
+    },
+    {
+      "id": "math2-2015-005",
+      "number": 5,
+      "paperId": "math2-2015",
+      "paperName": "2015考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2015",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2015考研数学二第5题（选择题）。题干、公式和图形以题面裁切图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2015 数学二真题解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2015/question-05.jpg",
+          "caption": "题面裁切图 q05",
+          "alt": "2015考研数学二第05题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2015/answer-page-03.jpg",
+          "caption": "答案解析 p.3",
+          "alt": "2015考研数学二答案解析 p.3"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2015",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2015-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:c71630745bdb0dfd8509844616161d4db19f3cec7f51760cd01cce5b2c1feb70",
+      "answerTextHash": "sha256:d637b5249be391a9a0cef957e8d809d0203bcfb6b4872f45e530441f455f7bc1",
+      "sourceEvidence": {
+        "evidenceId": "math2-2015-q05",
+        "sourceId": "src_a37ec1fa555f79f247286bf4",
+        "answerSourceId": "src_a37ec1fa555f79f247286bf4",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_trimmed_answer_page_image",
+        "sourceEvidenceId": "math2-2015-paper-answer",
+        "answerEvidenceId": "math2-2015-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:d637b5249be391a9a0cef957e8d809d0203bcfb6b4872f45e530441f455f7bc1"
+      }
+    },
+    {
+      "id": "math2-2015-006",
+      "number": 6,
+      "paperId": "math2-2015",
+      "paperName": "2015考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2015",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2015考研数学二第6题（选择题）。题干、公式和图形以题面裁切图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2015 数学二真题解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2015/question-06.jpg",
+          "caption": "题面裁切图 q06",
+          "alt": "2015考研数学二第06题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2015/answer-page-03.jpg",
+          "caption": "答案解析 p.3",
+          "alt": "2015考研数学二答案解析 p.3"
+        },
+        {
+          "src": "question-bank/math2-2015/answer-page-04.jpg",
+          "caption": "答案解析 p.4",
+          "alt": "2015考研数学二答案解析 p.4"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2015",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2015-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:f693c7e93ba90d6c9d952bc307917e95c53fe9d0d5d3205b8c3068381aa76bcc",
+      "answerTextHash": "sha256:7d14305f576e4de846f6261cf723b95e1d701bc279f8bd226fc3c61162388065",
+      "sourceEvidence": {
+        "evidenceId": "math2-2015-q06",
+        "sourceId": "src_a37ec1fa555f79f247286bf4",
+        "answerSourceId": "src_a37ec1fa555f79f247286bf4",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_trimmed_answer_page_image",
+        "sourceEvidenceId": "math2-2015-paper-answer",
+        "answerEvidenceId": "math2-2015-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:7d14305f576e4de846f6261cf723b95e1d701bc279f8bd226fc3c61162388065"
+      }
+    },
+    {
+      "id": "math2-2015-007",
+      "number": 7,
+      "paperId": "math2-2015",
+      "paperName": "2015考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2015",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2015考研数学二第7题（选择题）。题干、公式和图形以题面裁切图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2015 数学二真题解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2015/question-07.jpg",
+          "caption": "题面裁切图 q07",
+          "alt": "2015考研数学二第07题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2015/answer-page-04.jpg",
+          "caption": "答案解析 p.4",
+          "alt": "2015考研数学二答案解析 p.4"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2015",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2015-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:f0eba983afcf4e19b4f7fac37c161d0364fe915fead8da57e99d647e7459370a",
+      "answerTextHash": "sha256:f9b62e4efbf2b7603b98d3f2ff418dcbd2c44acaa816fe2c2d633969ac0c75c5",
+      "sourceEvidence": {
+        "evidenceId": "math2-2015-q07",
+        "sourceId": "src_a37ec1fa555f79f247286bf4",
+        "answerSourceId": "src_a37ec1fa555f79f247286bf4",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_trimmed_answer_page_image",
+        "sourceEvidenceId": "math2-2015-paper-answer",
+        "answerEvidenceId": "math2-2015-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:f9b62e4efbf2b7603b98d3f2ff418dcbd2c44acaa816fe2c2d633969ac0c75c5"
+      }
+    },
+    {
+      "id": "math2-2015-008",
+      "number": 8,
+      "paperId": "math2-2015",
+      "paperName": "2015考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2015",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2015考研数学二第8题（选择题）。题干、公式和图形以题面裁切图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2015 数学二真题解析 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2015/question-08.jpg",
+          "caption": "题面裁切图 q08",
+          "alt": "2015考研数学二第08题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2015/answer-page-04.jpg",
+          "caption": "答案解析 p.4",
+          "alt": "2015考研数学二答案解析 p.4"
+        },
+        {
+          "src": "question-bank/math2-2015/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2015考研数学二答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2015",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2015-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:dd7104613811537c80da935dfcee9b321fce2cf07526710fa4b2a0fec029e904",
+      "answerTextHash": "sha256:3b5cdff604cfadec60f8561c30f3d4580e263ad4a1736b2de87ea10fee20ad96",
+      "sourceEvidence": {
+        "evidenceId": "math2-2015-q08",
+        "sourceId": "src_a37ec1fa555f79f247286bf4",
+        "answerSourceId": "src_a37ec1fa555f79f247286bf4",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_trimmed_answer_page_image",
+        "sourceEvidenceId": "math2-2015-paper-answer",
+        "answerEvidenceId": "math2-2015-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:3b5cdff604cfadec60f8561c30f3d4580e263ad4a1736b2de87ea10fee20ad96"
+      }
+    },
+    {
+      "id": "math2-2015-009",
+      "number": 9,
+      "paperId": "math2-2015",
+      "paperName": "2015考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2015",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2015考研数学二第9题（填空题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "48",
+      "explanation": "答案来自本地百度网盘 2015 数学二真题解析 PDF；完整题干、公式和解析见原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2015/question-09.jpg",
+          "caption": "题面裁切图 q09",
+          "alt": "2015考研数学二第09题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2015/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2015考研数学二答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2015",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2015-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:b2f8bac559d4ef71087b059eb53f03066b100e5976703819215b09d0e2e94cd5",
+      "answerTextHash": "sha256:78ef399a842f685ff569929daaee85dd5876a36682521b4c7d7179a4913afe89",
+      "sourceEvidence": {
+        "evidenceId": "math2-2015-q09",
+        "sourceId": "src_a37ec1fa555f79f247286bf4",
+        "answerSourceId": "src_a37ec1fa555f79f247286bf4",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_trimmed_answer_page_image",
+        "sourceEvidenceId": "math2-2015-paper-answer",
+        "answerEvidenceId": "math2-2015-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:78ef399a842f685ff569929daaee85dd5876a36682521b4c7d7179a4913afe89"
+      }
+    },
+    {
+      "id": "math2-2015-010",
+      "number": 10,
+      "paperId": "math2-2015",
+      "paperName": "2015考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2015",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2015考研数学二第10题（填空题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "n(n-1)(ln2)^(n-2)",
+      "explanation": "答案来自本地百度网盘 2015 数学二真题解析 PDF；完整题干、公式和解析见原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2015/question-10.jpg",
+          "caption": "题面裁切图 q10",
+          "alt": "2015考研数学二第10题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2015/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2015考研数学二答案解析 p.5"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2015",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2015-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:99bb8073322a54ad1f73754ec851b7fd6d29fc0752206adf2cf32818f8669cfa",
+      "answerTextHash": "sha256:8bf3874855e81251a5b73edcf7e1adcb0b3b3ef7eb3da0c8a39ee1fa99cd0f1e",
+      "sourceEvidence": {
+        "evidenceId": "math2-2015-q10",
+        "sourceId": "src_a37ec1fa555f79f247286bf4",
+        "answerSourceId": "src_a37ec1fa555f79f247286bf4",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_trimmed_answer_page_image",
+        "sourceEvidenceId": "math2-2015-paper-answer",
+        "answerEvidenceId": "math2-2015-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:8bf3874855e81251a5b73edcf7e1adcb0b3b3ef7eb3da0c8a39ee1fa99cd0f1e"
+      }
+    },
+    {
+      "id": "math2-2015-011",
+      "number": 11,
+      "paperId": "math2-2015",
+      "paperName": "2015考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2015",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2015考研数学二第11题（填空题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "2",
+      "explanation": "答案来自本地百度网盘 2015 数学二真题解析 PDF；完整题干、公式和解析见原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2015/question-11.jpg",
+          "caption": "题面裁切图 q11",
+          "alt": "2015考研数学二第11题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2015/answer-page-05.jpg",
+          "caption": "答案解析 p.5",
+          "alt": "2015考研数学二答案解析 p.5"
+        },
+        {
+          "src": "question-bank/math2-2015/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2015考研数学二答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2015",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2015-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:1a0e445e9dab7e8bbae3199a7fbb820c6016c898105906956313ecf090360f1f",
+      "answerTextHash": "sha256:39df68824f98bb5282685bc014bd03a2d3b4e2c9204597cb6a4ed0b38558e739",
+      "sourceEvidence": {
+        "evidenceId": "math2-2015-q11",
+        "sourceId": "src_a37ec1fa555f79f247286bf4",
+        "answerSourceId": "src_a37ec1fa555f79f247286bf4",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_trimmed_answer_page_image",
+        "sourceEvidenceId": "math2-2015-paper-answer",
+        "answerEvidenceId": "math2-2015-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:39df68824f98bb5282685bc014bd03a2d3b4e2c9204597cb6a4ed0b38558e739"
+      }
+    },
+    {
+      "id": "math2-2015-012",
+      "number": 12,
+      "paperId": "math2-2015",
+      "paperName": "2015考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2015",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2015考研数学二第12题（填空题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "e^(-2x)+2e^x",
+      "explanation": "答案来自本地百度网盘 2015 数学二真题解析 PDF；完整题干、公式和解析见原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2015/question-12.jpg",
+          "caption": "题面裁切图 q12",
+          "alt": "2015考研数学二第12题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2015/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2015考研数学二答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2015",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2015-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:b6c6dae451f5e17b07d2d254bd5f24a4ea26a53f5b66ae52aa7dce50d074eb7e",
+      "answerTextHash": "sha256:1d549aa9951929b630f56021950423f5494d624b737cb5294088cfbf964b890b",
+      "sourceEvidence": {
+        "evidenceId": "math2-2015-q12",
+        "sourceId": "src_a37ec1fa555f79f247286bf4",
+        "answerSourceId": "src_a37ec1fa555f79f247286bf4",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_trimmed_answer_page_image",
+        "sourceEvidenceId": "math2-2015-paper-answer",
+        "answerEvidenceId": "math2-2015-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:1d549aa9951929b630f56021950423f5494d624b737cb5294088cfbf964b890b"
+      }
+    },
+    {
+      "id": "math2-2015-013",
+      "number": 13,
+      "paperId": "math2-2015",
+      "paperName": "2015考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2015",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2015考研数学二第13题（填空题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "-1/3(dx+2dy)",
+      "explanation": "答案来自本地百度网盘 2015 数学二真题解析 PDF；完整题干、公式和解析见原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2015/question-13.jpg",
+          "caption": "题面裁切图 q13",
+          "alt": "2015考研数学二第13题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2015/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2015考研数学二答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2015",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2015-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:8e454e942ecbd978b59a27f56523785bc727aec3d2527867e0e4af744f1d94ef",
+      "answerTextHash": "sha256:36b6b5594740ccf2a0732c626e35775ed3c6d7bac9358e263ada9a2ed1cf3df3",
+      "sourceEvidence": {
+        "evidenceId": "math2-2015-q13",
+        "sourceId": "src_a37ec1fa555f79f247286bf4",
+        "answerSourceId": "src_a37ec1fa555f79f247286bf4",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_trimmed_answer_page_image",
+        "sourceEvidenceId": "math2-2015-paper-answer",
+        "answerEvidenceId": "math2-2015-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:36b6b5594740ccf2a0732c626e35775ed3c6d7bac9358e263ada9a2ed1cf3df3"
+      }
+    },
+    {
+      "id": "math2-2015-014",
+      "number": 14,
+      "paperId": "math2-2015",
+      "paperName": "2015考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2015",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2015考研数学二第14题（填空题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "21",
+      "explanation": "答案来自本地百度网盘 2015 数学二真题解析 PDF；完整题干、公式和解析见原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2015/question-14.jpg",
+          "caption": "题面裁切图 q14",
+          "alt": "2015考研数学二第14题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2015/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2015考研数学二答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2015",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2015-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:c4fa3119221324ac6c5f0895d8fa078c90b11ab5c106b3a2f00f46ffae973ad6",
+      "answerTextHash": "sha256:6a65cfce69fb144103695fb346fec060cf061dadbdb19e54f8a3a2373001ba93",
+      "sourceEvidence": {
+        "evidenceId": "math2-2015-q14",
+        "sourceId": "src_a37ec1fa555f79f247286bf4",
+        "answerSourceId": "src_a37ec1fa555f79f247286bf4",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_trimmed_answer_page_image",
+        "sourceEvidenceId": "math2-2015-paper-answer",
+        "answerEvidenceId": "math2-2015-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:6a65cfce69fb144103695fb346fec060cf061dadbdb19e54f8a3a2373001ba93"
+      }
+    },
+    {
+      "id": "math2-2015-015",
+      "number": 15,
+      "paperId": "math2-2015",
+      "paperName": "2015考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2015",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2015考研数学二第15题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "a=-1,k=-1/3,b=-1/2。",
+      "explanation": "答案来自本地百度网盘 2015 数学二真题解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2015/question-15.jpg",
+          "caption": "题面裁切图 q15",
+          "alt": "2015考研数学二第15题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2015/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2015考研数学二答案解析 p.7"
+        },
+        {
+          "src": "question-bank/math2-2015/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2015考研数学二答案解析 p.8"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2015",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2015-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:212a21f6c3eeab219187a69a17b958acc7551fc837cac602ace7439dcaa6b01e",
+      "answerTextHash": "sha256:0c0f2ca660887892b12d7077e5fed3353711fec982e18ee8764112e57252118a",
+      "sourceEvidence": {
+        "evidenceId": "math2-2015-q15",
+        "sourceId": "src_a37ec1fa555f79f247286bf4",
+        "answerSourceId": "src_a37ec1fa555f79f247286bf4",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_trimmed_answer_page_image",
+        "sourceEvidenceId": "math2-2015-paper-answer",
+        "answerEvidenceId": "math2-2015-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:0c0f2ca660887892b12d7077e5fed3353711fec982e18ee8764112e57252118a"
+      }
+    },
+    {
+      "id": "math2-2015-016",
+      "number": 16,
+      "paperId": "math2-2015",
+      "paperName": "2015考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2015",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2015考研数学二第16题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "A=8/π。",
+      "explanation": "答案来自本地百度网盘 2015 数学二真题解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2015/question-16.jpg",
+          "caption": "题面裁切图 q16",
+          "alt": "2015考研数学二第16题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2015/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2015考研数学二答案解析 p.8"
+        },
+        {
+          "src": "question-bank/math2-2015/answer-page-09.jpg",
+          "caption": "答案解析 p.9",
+          "alt": "2015考研数学二答案解析 p.9"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2015",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2015-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:18e130c6d1c8cc5106bc9c79ae354fece93a94b549d71ccdd3dbbcb407188165",
+      "answerTextHash": "sha256:99dbcbd36d0a6213f9b66c403dba0ae46c405d176b073aeea79f925d0b992037",
+      "sourceEvidence": {
+        "evidenceId": "math2-2015-q16",
+        "sourceId": "src_a37ec1fa555f79f247286bf4",
+        "answerSourceId": "src_a37ec1fa555f79f247286bf4",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_trimmed_answer_page_image",
+        "sourceEvidenceId": "math2-2015-paper-answer",
+        "answerEvidenceId": "math2-2015-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:99dbcbd36d0a6213f9b66c403dba0ae46c405d176b073aeea79f925d0b992037"
+      }
+    },
+    {
+      "id": "math2-2015-017",
+      "number": 17,
+      "paperId": "math2-2015",
+      "paperName": "2015考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2015",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2015考研数学二第17题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "极小值 f(0,-1)=-1。",
+      "explanation": "答案来自本地百度网盘 2015 数学二真题解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2015/question-17.jpg",
+          "caption": "题面裁切图 q17",
+          "alt": "2015考研数学二第17题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2015/answer-page-09.jpg",
+          "caption": "答案解析 p.9",
+          "alt": "2015考研数学二答案解析 p.9"
+        },
+        {
+          "src": "question-bank/math2-2015/answer-page-10.jpg",
+          "caption": "答案解析 p.10",
+          "alt": "2015考研数学二答案解析 p.10"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2015",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2015-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:c4756b302b5e52385460c2634e264c300bcef8eff25a6996db16088c1c6004dc",
+      "answerTextHash": "sha256:50f08d393da6fa7721694583de824df10e2082edc6a37807e58571817a56c848",
+      "sourceEvidence": {
+        "evidenceId": "math2-2015-q17",
+        "sourceId": "src_a37ec1fa555f79f247286bf4",
+        "answerSourceId": "src_a37ec1fa555f79f247286bf4",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_trimmed_answer_page_image",
+        "sourceEvidenceId": "math2-2015-paper-answer",
+        "answerEvidenceId": "math2-2015-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:50f08d393da6fa7721694583de824df10e2082edc6a37807e58571817a56c848"
+      }
+    },
+    {
+      "id": "math2-2015-018",
+      "number": 18,
+      "paperId": "math2-2015",
+      "paperName": "2015考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2015",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2015考研数学二第18题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "二重积分值为 π/4-2/5。",
+      "explanation": "答案来自本地百度网盘 2015 数学二真题解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2015/question-18.jpg",
+          "caption": "题面裁切图 q18",
+          "alt": "2015考研数学二第18题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2015/answer-page-10.jpg",
+          "caption": "答案解析 p.10",
+          "alt": "2015考研数学二答案解析 p.10"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2015",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2015-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:3cdaf547bfdc74f1b0f3afa227cea6c7d3f4180480802a752ac7d8a329d4195d",
+      "answerTextHash": "sha256:fa116a0a69f7dd8ebced3b1ab77fe023ee09d178a34a8c2207bb5b75fef40f42",
+      "sourceEvidence": {
+        "evidenceId": "math2-2015-q18",
+        "sourceId": "src_a37ec1fa555f79f247286bf4",
+        "answerSourceId": "src_a37ec1fa555f79f247286bf4",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_trimmed_answer_page_image",
+        "sourceEvidenceId": "math2-2015-paper-answer",
+        "answerEvidenceId": "math2-2015-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:fa116a0a69f7dd8ebced3b1ab77fe023ee09d178a34a8c2207bb5b75fef40f42"
+      }
+    },
+    {
+      "id": "math2-2015-019",
+      "number": 19,
+      "paperId": "math2-2015",
+      "paperName": "2015考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2015",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2015考研数学二第19题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "f(x) 的零点个数为 2。",
+      "explanation": "答案来自本地百度网盘 2015 数学二真题解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2015/question-19.jpg",
+          "caption": "题面裁切图 q19",
+          "alt": "2015考研数学二第19题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2015/answer-page-10.jpg",
+          "caption": "答案解析 p.10",
+          "alt": "2015考研数学二答案解析 p.10"
+        },
+        {
+          "src": "question-bank/math2-2015/answer-page-11.jpg",
+          "caption": "答案解析 p.11",
+          "alt": "2015考研数学二答案解析 p.11"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2015",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2015-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:995d4b19add2c4321906610eef6b395822ac588c4c60c88eae8e2c04eefc9814",
+      "answerTextHash": "sha256:be47e6c50b10eefe972d4e3097ae8d043de7407a3e11759ed3f4f308dfcd6423",
+      "sourceEvidence": {
+        "evidenceId": "math2-2015-q19",
+        "sourceId": "src_a37ec1fa555f79f247286bf4",
+        "answerSourceId": "src_a37ec1fa555f79f247286bf4",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_trimmed_answer_page_image",
+        "sourceEvidenceId": "math2-2015-paper-answer",
+        "answerEvidenceId": "math2-2015-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:be47e6c50b10eefe972d4e3097ae8d043de7407a3e11759ed3f4f308dfcd6423"
+      }
+    },
+    {
+      "id": "math2-2015-020",
+      "number": 20,
+      "paperId": "math2-2015",
+      "paperName": "2015考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2015",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2015考研数学二第20题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "30min",
+      "explanation": "答案来自本地百度网盘 2015 数学二真题解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2015/question-20.jpg",
+          "caption": "题面裁切图 q20",
+          "alt": "2015考研数学二第20题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2015/answer-page-11.jpg",
+          "caption": "答案解析 p.11",
+          "alt": "2015考研数学二答案解析 p.11"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2015",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2015-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:c1d8fe15c81bf84754f8e46789f546f083b2e90853df7b8f0e030f837c40560e",
+      "answerTextHash": "sha256:33c4f02d3502ece70aea43e865c8e37c90b2d00d5a48d377474fe8f0f9da7836",
+      "sourceEvidence": {
+        "evidenceId": "math2-2015-q20",
+        "sourceId": "src_a37ec1fa555f79f247286bf4",
+        "answerSourceId": "src_a37ec1fa555f79f247286bf4",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_trimmed_answer_page_image",
+        "sourceEvidenceId": "math2-2015-paper-answer",
+        "answerEvidenceId": "math2-2015-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:33c4f02d3502ece70aea43e865c8e37c90b2d00d5a48d377474fe8f0f9da7836"
+      }
+    },
+    {
+      "id": "math2-2015-021",
+      "number": 21,
+      "paperId": "math2-2015",
+      "paperName": "2015考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2015",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2015考研数学二第21题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "切线与 x 轴交点 x0 满足 a<x0<b；完整证明见答案原页。",
+      "explanation": "答案来自本地百度网盘 2015 数学二真题解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2015/question-21.jpg",
+          "caption": "题面裁切图 q21",
+          "alt": "2015考研数学二第21题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2015/answer-page-11.jpg",
+          "caption": "答案解析 p.11",
+          "alt": "2015考研数学二答案解析 p.11"
+        },
+        {
+          "src": "question-bank/math2-2015/answer-page-12.jpg",
+          "caption": "答案解析 p.12",
+          "alt": "2015考研数学二答案解析 p.12"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2015",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2015-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:46a68ed38ec5bd4f0cfe4cf0b508f6bbec863b94efa0f409e8bcb238fc5002bf",
+      "answerTextHash": "sha256:6a312c02f109b49ce443cf92a9e4f6cda99ff47f7922323a675aac559208245a",
+      "sourceEvidence": {
+        "evidenceId": "math2-2015-q21",
+        "sourceId": "src_a37ec1fa555f79f247286bf4",
+        "answerSourceId": "src_a37ec1fa555f79f247286bf4",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_trimmed_answer_page_image",
+        "sourceEvidenceId": "math2-2015-paper-answer",
+        "answerEvidenceId": "math2-2015-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:6a312c02f109b49ce443cf92a9e4f6cda99ff47f7922323a675aac559208245a"
+      }
+    },
+    {
+      "id": "math2-2015-022",
+      "number": 22,
+      "paperId": "math2-2015",
+      "paperName": "2015考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2015",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2015考研数学二第22题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "a=0；X=[[3,1,-2],[1,1,-1],[2,1,-1]]。",
+      "explanation": "答案来自本地百度网盘 2015 数学二真题解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2015/question-22.jpg",
+          "caption": "题面裁切图 q22",
+          "alt": "2015考研数学二第22题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2015/answer-page-12.jpg",
+          "caption": "答案解析 p.12",
+          "alt": "2015考研数学二答案解析 p.12"
+        },
+        {
+          "src": "question-bank/math2-2015/answer-page-13.jpg",
+          "caption": "答案解析 p.13",
+          "alt": "2015考研数学二答案解析 p.13"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2015",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2015-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:389d5a9384e1fcc543382883232620a4c1b368d4705530c60d3ab9db385d83c2",
+      "answerTextHash": "sha256:d33a40a508dc175349f4690777135cf2d6af2a88c559a137d7229f97a14afb4e",
+      "sourceEvidence": {
+        "evidenceId": "math2-2015-q22",
+        "sourceId": "src_a37ec1fa555f79f247286bf4",
+        "answerSourceId": "src_a37ec1fa555f79f247286bf4",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_trimmed_answer_page_image",
+        "sourceEvidenceId": "math2-2015-paper-answer",
+        "answerEvidenceId": "math2-2015-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:d33a40a508dc175349f4690777135cf2d6af2a88c559a137d7229f97a14afb4e"
+      }
+    },
+    {
+      "id": "math2-2015-023",
+      "number": 23,
+      "paperId": "math2-2015",
+      "paperName": "2015考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2015",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2015考研数学二第23题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "a=4,b=5；可取 P=[[2,-3,-1],[1,0,-1],[0,1,1]]，P^(-1)AP=diag(1,1,5)。",
+      "explanation": "答案来自本地百度网盘 2015 数学二真题解析 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2015/question-23.jpg",
+          "caption": "题面裁切图 q23",
+          "alt": "2015考研数学二第23题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2015/answer-page-13.jpg",
+          "caption": "答案解析 p.13",
+          "alt": "2015考研数学二答案解析 p.13"
+        },
+        {
+          "src": "question-bank/math2-2015/answer-page-14.jpg",
+          "caption": "答案解析 p.14",
+          "alt": "2015考研数学二答案解析 p.14"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2015",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2015-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:99ebab040ca8764b2ea0794708b65635637c8dd30b63179d9d697bd5e9878a84",
+      "answerTextHash": "sha256:2a1d86db204a5414f848473ad3fe47a0fa7c1e7a457c2e3e5d72331d8b5dfb7b",
+      "sourceEvidence": {
+        "evidenceId": "math2-2015-q23",
+        "sourceId": "src_a37ec1fa555f79f247286bf4",
+        "answerSourceId": "src_a37ec1fa555f79f247286bf4",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_trimmed_answer_page_image",
+        "sourceEvidenceId": "math2-2015-paper-answer",
+        "answerEvidenceId": "math2-2015-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:2a1d86db204a5414f848473ad3fe47a0fa7c1e7a457c2e3e5d72331d8b5dfb7b"
+      }
+    }
+  ]
+}

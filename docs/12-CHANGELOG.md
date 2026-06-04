@@ -1,5 +1,12 @@
 # 变更日志
 
+## 2026-06-03 — 2015 数学二逐题裁切题库开放
+
+- 2015 考研数学二从“待入库”推进为正式题库：23 张题卡覆盖 8 道选择、6 道填空和 9 道解答题，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
+- 新增 `build_math2_2015_bank.py`，从本地百度网盘 `2015考研数学二真题.pdf` 生成 `src/config/flashcard-banks/math2-2015.json` 与 `cdn-assets/question-bank/math2-2015` 页图资源；源 PDF 为 14 页题答混排扫描版，题面使用逐题裁切图，答案页裁除页眉页脚推广。
+- 清洗质量：q08 在 OCR 泄漏扫描发现 q07 解析尾后收紧裁切框；最终 23 张题面图未命中答案/解析/公众号/推广关键词。q22 答案按第 13 页推导结论记录为 `X=[[3,1,-2],[1,1,-1],[2,1,-1]]`。
+- 2005-2020 release gate 刷新后，公共课覆盖缺口降至 3，published slots 升至 88，source evidence gap 保持 1；release backlog 降至 `blockers=5`、`publicCourseBlockedSlots=3`，剩余公共课槽位为 `math2:2016`、`english1:2018`、`english1:2019`。
+
 ## 2026-06-03 — 2020 数学二逐题裁切题库开放
 
 - 2020 考研数学二从“待入库”推进为正式题库：23 张题卡覆盖 8 道选择、6 道填空和 9 道解答题，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。

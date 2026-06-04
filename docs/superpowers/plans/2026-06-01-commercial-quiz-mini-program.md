@@ -1937,6 +1937,76 @@ done
 
 Result: passed on 2026-06-03. `math2-2020.json` has 23 cards, `{single_choice:8, short_answer:15}`, section counts `{选择题:8, 填空题:6, 解答题:9}`, all cards carry `answerEvidenceStatus=matched`, q01=`D`, q02=`C`, q08=`D`, q09=`-1/2`, q10=`2(√2-1)`, q14=`a^4-4a^2`, q15 contains `y=x/e+1/(2e)`, q21 contains `y=Cx^(3/2)`, and q23 answer evidence ends at `answer-page-16.jpg`. The final OCR leakage scan produced no answer/analysis/promotion keyword hits in question crops. The 2005-2020 release gate reports `coverageGaps=4`, `publishedSlots=87`, `sourceEvidenceGaps=1`; release backlog reports `blockers=6` and `publicCourseBlockedSlots=4`. The next main dry-run starts at older public-course gaps such as `200500.pdf`.
 
+### Task 84: Publish Math II 2015 Page-Image Bank
+
+**Files:**
+- Add: `scripts/cleaning/build_math2_2015_bank.py`
+- Add: `src/config/flashcard-banks/math2-2015.json`
+- Add: `cdn-assets/question-bank/math2-2015/*`
+- Add: `tests/unit/math2-2015-data.spec.js`
+- Modify: `src/config/bank-registry.js`
+- Modify: `src/pages/practice-sub/bank-data-table.js`
+- Modify: `tests/unit/question-bank-year-map.spec.js`
+- Modify: `docs/frontend-experience-refactor-diary.md`
+- Modify: `docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md`
+- Modify: `docs/08C-SCRIPTS-REFERENCE.md`
+- Modify: `docs/12-CHANGELOG.md`
+- Modify: `data/release-blocker-backlog.json`
+
+- [x] **Step 1: Add failing data spec**
+
+Added `tests/unit/math2-2015-data.spec.js` for registration, loadability, 23-card structure, matched answer evidence, and anchors q01/q02/q03/q08/q09/q10/q14/q15/q16/q20/q23.
+
+Initial result:
+```bash
+npm test -- tests/unit/math2-2015-data.spec.js
+```
+
+Failed because `math2-2015` was not registered yet.
+
+- [x] **Step 2: Verify source and build page-image bank**
+
+Source was already present in ignored raw inbox:
+
+```bash
+data/raw-inbox/src_a37ec1fa555f79f247286bf4-2015考研数学二真题.pdf
+```
+
+Source audit: 14-page scanned PDF, no usable text layer, SHA256 `b21fb079d30628c2a541edbd19119aa56def749bd9403caeeb74fbdc3b89c32b`; questions and answer analysis are interleaved. Added `build_math2_2015_bank.py` with 23 cards, 23 question crops, 14 trimmed answer-page images, and a q22 evidence note because the matrix answer follows the page 13 worked derivation.
+
+- [x] **Step 3: Register and refresh practice data**
+
+Run:
+```bash
+python3 scripts/cleaning/build_math2_2015_bank.py --force-assets
+node scripts/build/generate-compressed-bank-modules.mjs
+```
+
+Result: published `src/config/flashcard-banks/math2-2015.json` plus 37 assets under `cdn-assets/question-bank/math2-2015`, registered `math2-2015`, updated the Math II year map to `{ total: 22, ready: 16, organizing: 0, missing: 6 }`, and regenerated 101 compressed practice-bank entries.
+
+- [x] **Step 4: Run validation**
+
+Run:
+```bash
+python3 -m py_compile scripts/cleaning/build_math2_2015_bank.py
+npm test -- tests/unit/math2-2015-data.spec.js tests/unit/question-bank-year-map.spec.js tests/unit/flashcard-bank-registry.spec.js
+node scripts/build/question-bank-release-gate.mjs --min-year=2005 --max-year=2020
+node scripts/build/release-blocker-backlog.mjs
+python3 scripts/baidu/cleaning_queue.py
+python3 scripts/baidu/run_cleaning_queue.py --dry-run --limit 12 --source-type official_paper --paper-role main --max-year 2020
+```
+
+Question-image leakage scan:
+```bash
+for img in cdn-assets/question-bank/math2-2015/question-*.jpg; do
+  base=$(basename "$img" .jpg)
+  tesseract "$img" stdout -l chi_sim+eng --psm 6 2>/dev/null |
+    rg -n '【答案|答案】|【解析|解析】|故选|因此|答案选择|公众号|研途大叔' && echo "LEAK $base" || true
+done
+```
+
+Result: passed on 2026-06-03. `math2-2015.json` has 23 cards, `{single_choice:8, short_answer:15}`, section counts `{选择题:8, 填空题:6, 解答题:9}`, all cards carry `answerEvidenceStatus=matched`, q01=`D`, q02=`B`, q03=`A`, q08=`A`, q09=`48`, q10=`n(n-1)(ln2)^(n-2)`, q14=`21`, q15 contains `a=-1`, q16 contains `8/π`, q20=`30min`, and q23 answer evidence ends at `answer-page-14.jpg`. The final OCR leakage scan produced no answer/analysis/promotion keyword hits in question crops. The 2005-2020 release gate reports `coverageGaps=3`, `publishedSlots=88`, `sourceEvidenceGaps=1`; release backlog reports `blockers=5` and `publicCourseBlockedSlots=3`. Remaining public-course slots: `math2:2016`, `english1:2018`, `english1:2019`.
+
 ### Task 82: Publish Math II 2019 Page-Image Bank
 
 **Files:**
