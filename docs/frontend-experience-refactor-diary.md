@@ -788,3 +788,13 @@
 - Validation result: `math2-2019.json` has 23 cards, `{single_choice:8, short_answer:15}`, section counts `{选择题:8, 填空题:6, 解答题:9}`, all cards carry `answerEvidenceStatus=matched`, q01=`C`, q02=`B`, q08=`C`, q09=`4e^(3/2)`, q10=`3π/2+2`, q14=`-4`, q17 contains `1/2π(e^4-e)`, q20 contains `a=-3/4`, and q23 answer evidence ends at `answer-page-05.jpg`.
 - Added release-audit filtering to `run_cleaning_queue.py` so already published public-course slots are skipped during release-priority dry-runs; `math2:2019` no longer repeats after publication.
 - Release gate result: 2005-2020 public-course `coverageGaps` dropped from 6 to 5, `publishedSlots` rose to 86, `sourceEvidenceGaps` stayed at 1, release backlog reports `blockers=7` and `publicCourseBlockedSlots=5`, and the rebuilt release-priority dry-run now starts at Math II 2020.
+
+### 2026-06-03 Round 83
+
+- Promoted `math2:2020` through the deterministic Math II page-image bank path after release-priority advanced to `2020考研数学二真题.pdf`.
+- Development environment note: CodeGraph remained callable, Poppler/ffmpeg/tesseract were available, and Baidu direct downloads require `.venv-baidu/bin/python` because the system `python3` environment lacks `python-dotenv` for loading `.env`.
+- Added `scripts/cleaning/build_math2_2020_bank.py`, published `src/config/flashcard-banks/math2-2020.json`, generated 25 question crop assets plus 11 trimmed answer-page assets under `cdn-assets/question-bank/math2-2020`, registered the bank, and regenerated the compressed practice-bank table.
+- Source audit: `src_d6fc5e2745b7a1ad6320a099-2020考研数学二真题.pdf` is a 16-page scanned PDF with no usable text layer; page 1 is cover/instructions, pages 2-5 are question pages, and pages 6-16 are answer-analysis pages. Published answer-page assets crop out the recurring `研池大叔`/free-resource header and footer promotion.
+- Validation result: `math2-2020.json` has 23 cards, `{single_choice:8, short_answer:15}`, section counts `{选择题:8, 填空题:6, 解答题:9}`, all cards carry `answerEvidenceStatus=matched`, q01=`D`, q02=`C`, q08=`D`, q09=`-1/2`, q10=`2(√2-1)`, q14=`a^4-4a^2`, q15 contains `y=x/e+1/(2e)`, q21 contains `y=Cx^(3/2)`, and q23 answer evidence ends at `answer-page-16.jpg`.
+- Crop QA split q05 and q23 across two question images and recalibrated q21/q22/q23 after visual/OCR checks; the final OCR leakage scan over all 25 question images found no answer/analysis/promotion keyword hits.
+- Release gate result: 2005-2020 public-course `coverageGaps` dropped from 5 to 4, `publishedSlots` rose to 87, `sourceEvidenceGaps` stayed at 1, release backlog reports `blockers=6` and `publicCourseBlockedSlots=4`, and the rebuilt release-priority dry-run now starts at older public-course gaps such as `200500.pdf`.

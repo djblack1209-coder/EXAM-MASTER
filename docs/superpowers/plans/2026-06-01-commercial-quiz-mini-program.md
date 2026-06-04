@@ -1865,6 +1865,78 @@ git commit -m "chore: repair english companion option evidence"
 
 Result: committed after validation on 2026-06-02.
 
+### Task 83: Publish Math II 2020 Page-Image Bank
+
+**Files:**
+- Add: `scripts/cleaning/build_math2_2020_bank.py`
+- Add: `src/config/flashcard-banks/math2-2020.json`
+- Add: `cdn-assets/question-bank/math2-2020/*`
+- Add: `tests/unit/math2-2020-data.spec.js`
+- Modify: `src/config/bank-registry.js`
+- Modify: `src/pages/practice-sub/bank-data-table.js`
+- Modify: `tests/unit/flashcard-bank-registry.spec.js`
+- Modify: `tests/unit/question-bank-year-map.spec.js`
+- Modify: `docs/frontend-experience-refactor-diary.md`
+- Modify: `docs/superpowers/plans/2026-06-01-commercial-quiz-mini-program.md`
+- Modify: `docs/08C-SCRIPTS-REFERENCE.md`
+- Modify: `docs/12-CHANGELOG.md`
+- Modify: `data/release-blocker-backlog.json`
+
+- [x] **Step 1: Add failing data spec**
+
+Added `tests/unit/math2-2020-data.spec.js` for registration, loadability, 23-card structure, matched answer evidence, and anchors q01/q02/q08/q09/q10/q14/q15/q21/q23.
+
+Initial result:
+```bash
+npm test -- tests/unit/math2-2020-data.spec.js
+```
+
+Failed because `math2-2020` was not registered yet.
+
+- [x] **Step 2: Download, verify source, and build page-image bank**
+
+Downloaded the release-priority source with the Baidu venv because system `python3` does not have `python-dotenv`:
+
+```bash
+.venv-baidu/bin/python scripts/baidu/pan.py download \
+  "/EXAM-MASTER/考研历年真题/03.考研数学/01.考研数学【历年真题】/考研数学真题【真题及解析】（1987-2023）/【完整版】数学二真题答案解析/2020考研数学二真题 .pdf" \
+  "data/raw-inbox/src_d6fc5e2745b7a1ad6320a099-2020考研数学二真题.pdf"
+```
+
+Source audit: 16-page scanned PDF, no usable text layer, SHA256 `81ad094c3fa85df7b1482e72a3c4ed7ccabb0694993a40511c5dac876ec74eaf`; page 1 is cover/instructions, pages 2-5 are questions, and pages 6-16 are answer-analysis pages. Added `build_math2_2020_bank.py` with 23 cards, 25 question crops, and answer-page crops that remove recurring header/footer promotion.
+
+- [x] **Step 3: Register and refresh practice data**
+
+Run:
+```bash
+python3 scripts/cleaning/build_math2_2020_bank.py --force-assets
+node scripts/build/generate-compressed-bank-modules.mjs
+```
+
+Result: published `src/config/flashcard-banks/math2-2020.json` plus 36 assets under `cdn-assets/question-bank/math2-2020`, registered `math2-2020`, and regenerated 100 compressed practice-bank entries.
+
+- [x] **Step 4: Run validation**
+
+Run:
+```bash
+python3 -m py_compile scripts/cleaning/build_math2_2020_bank.py
+npm test -- tests/unit/math2-2020-data.spec.js tests/unit/question-bank-year-map.spec.js tests/unit/flashcard-bank-registry.spec.js
+node scripts/build/question-bank-release-gate.mjs --min-year=2005 --max-year=2020
+node scripts/build/release-blocker-backlog.mjs
+python3 scripts/baidu/cleaning_queue.py
+python3 scripts/baidu/run_cleaning_queue.py --dry-run --limit 12 --source-type official_paper --paper-role main --max-year 2020
+```
+
+Question-image leakage scan:
+```bash
+for p in cdn-assets/question-bank/math2-2020/question-*.jpg; do
+  txt=$(tesseract "$p" stdout -l chi_sim+eng --psm 6 2>/dev/null | tr '\n' ' ')
+  case "$txt" in *答案*|*解析*|*公众号*|*免费分享课程*|*全年免费分享*) echo "LEAK $p :: $txt";; esac
+done
+```
+
+Result: passed on 2026-06-03. `math2-2020.json` has 23 cards, `{single_choice:8, short_answer:15}`, section counts `{选择题:8, 填空题:6, 解答题:9}`, all cards carry `answerEvidenceStatus=matched`, q01=`D`, q02=`C`, q08=`D`, q09=`-1/2`, q10=`2(√2-1)`, q14=`a^4-4a^2`, q15 contains `y=x/e+1/(2e)`, q21 contains `y=Cx^(3/2)`, and q23 answer evidence ends at `answer-page-16.jpg`. The final OCR leakage scan produced no answer/analysis/promotion keyword hits in question crops. The 2005-2020 release gate reports `coverageGaps=4`, `publishedSlots=87`, `sourceEvidenceGaps=1`; release backlog reports `blockers=6` and `publicCourseBlockedSlots=4`. The next main dry-run starts at older public-course gaps such as `200500.pdf`.
+
 ### Task 82: Publish Math II 2019 Page-Image Bank
 
 **Files:**

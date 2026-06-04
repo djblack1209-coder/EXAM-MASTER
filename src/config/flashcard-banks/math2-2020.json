@@ -1,0 +1,1368 @@
+{
+  "id": "math2-2020",
+  "source": "math2-2020-paper-answer",
+  "paperId": "math2-2020",
+  "paperName": "2020考研数学二真题",
+  "subject": "数学",
+  "subjectKey": "math",
+  "track": "math2",
+  "year": "2020",
+  "quality": "ready",
+  "publicationStatus": "published",
+  "publicationBlockers": [],
+  "sourceEvidencePolicy": "baidu_netdisk_official_paper_pdf_question_crop_trimmed_answer_page_image_v1",
+  "sourceFiles": [
+    {
+      "id": "math2-2020-paper-answer",
+      "role": "paper_answer",
+      "localPath": "data/raw-inbox/src_d6fc5e2745b7a1ad6320a099-2020考研数学二真题.pdf",
+      "sha256": "sha256:81ad094c3fa85df7b1482e72a3c4ed7ccabb0694993a40511c5dac876ec74eaf",
+      "sourceId": "src_d6fc5e2745b7a1ad6320a099",
+      "evidenceNote": "The 16-page scanned source has no usable text layer. Page 1 is cover/instructions, pages 2-5 are question pages, and pages 6-16 are answer-analysis pages. Published assets crop out the recurring page header/footer promotion while preserving question and answer evidence."
+    }
+  ],
+  "assetRoot": "question-bank/math2-2020",
+  "processed_at": "2026-06-04T00:27:06Z",
+  "total_cards": 23,
+  "cards": [
+    {
+      "id": "math2-2020-001",
+      "number": 1,
+      "paperId": "math2-2020",
+      "paperName": "2020考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2020",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2020考研数学二第1题（选择题）。题干、公式和图形以题面裁切图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2020 数学二真题 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2020/question-01.jpg",
+          "caption": "题面裁切图 q01",
+          "alt": "2020考研数学二第01题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2020/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2020考研数学二答案解析 p.6"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2020",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:64f4e2800279c34f6ef5ccee9fa5ffd76b4b3be7e8999a0e32b7078d929ae167",
+      "answerTextHash": "sha256:e4a2fe781d79b6ac0d0a57fdf6fcbe5f0bd7d1dfefea384e35b54f195a6a4c7c",
+      "sourceEvidence": {
+        "evidenceId": "math2-2020-q01",
+        "sourceId": "src_d6fc5e2745b7a1ad6320a099",
+        "answerSourceId": "src_d6fc5e2745b7a1ad6320a099",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_trimmed_answer_page_image",
+        "sourceEvidenceId": "math2-2020-paper-answer",
+        "answerEvidenceId": "math2-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:e4a2fe781d79b6ac0d0a57fdf6fcbe5f0bd7d1dfefea384e35b54f195a6a4c7c"
+      }
+    },
+    {
+      "id": "math2-2020-002",
+      "number": 2,
+      "paperId": "math2-2020",
+      "paperName": "2020考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2020",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2020考研数学二第2题（选择题）。题干、公式和图形以题面裁切图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2020 数学二真题 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2020/question-02.jpg",
+          "caption": "题面裁切图 q02",
+          "alt": "2020考研数学二第02题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2020/answer-page-06.jpg",
+          "caption": "答案解析 p.6",
+          "alt": "2020考研数学二答案解析 p.6"
+        },
+        {
+          "src": "question-bank/math2-2020/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2020考研数学二答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2020",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:07517ca551a8095009c00fde004f723558f768ca4b5bc9f6b93a172e6bf35d08",
+      "answerTextHash": "sha256:2888a5bf5d8ce149ab34e927ca4c8695d198ede0d04a3273a45b4a943998e5bc",
+      "sourceEvidence": {
+        "evidenceId": "math2-2020-q02",
+        "sourceId": "src_d6fc5e2745b7a1ad6320a099",
+        "answerSourceId": "src_d6fc5e2745b7a1ad6320a099",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_trimmed_answer_page_image",
+        "sourceEvidenceId": "math2-2020-paper-answer",
+        "answerEvidenceId": "math2-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:2888a5bf5d8ce149ab34e927ca4c8695d198ede0d04a3273a45b4a943998e5bc"
+      }
+    },
+    {
+      "id": "math2-2020-003",
+      "number": 3,
+      "paperId": "math2-2020",
+      "paperName": "2020考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2020",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2020考研数学二第3题（选择题）。题干、公式和图形以题面裁切图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2020 数学二真题 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2020/question-03.jpg",
+          "caption": "题面裁切图 q03",
+          "alt": "2020考研数学二第03题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2020/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2020考研数学二答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2020",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:9f5f402ddf2da870594617179b364fa34ea3ceb0974b510af49f011f0197bc47",
+      "answerTextHash": "sha256:e0379f21e18a4103fb1f2a55b207f44908f3ae98f7b934d91863940d970b293e",
+      "sourceEvidence": {
+        "evidenceId": "math2-2020-q03",
+        "sourceId": "src_d6fc5e2745b7a1ad6320a099",
+        "answerSourceId": "src_d6fc5e2745b7a1ad6320a099",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_trimmed_answer_page_image",
+        "sourceEvidenceId": "math2-2020-paper-answer",
+        "answerEvidenceId": "math2-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:e0379f21e18a4103fb1f2a55b207f44908f3ae98f7b934d91863940d970b293e"
+      }
+    },
+    {
+      "id": "math2-2020-004",
+      "number": 4,
+      "paperId": "math2-2020",
+      "paperName": "2020考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2020",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2020考研数学二第4题（选择题）。题干、公式和图形以题面裁切图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2020 数学二真题 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2020/question-04.jpg",
+          "caption": "题面裁切图 q04",
+          "alt": "2020考研数学二第04题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2020/answer-page-07.jpg",
+          "caption": "答案解析 p.7",
+          "alt": "2020考研数学二答案解析 p.7"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2020",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:89d1d2d2e96084c208be95fcb944ec2d2aae5c8f78865b50adfee98f692df484",
+      "answerTextHash": "sha256:e0379f21e18a4103fb1f2a55b207f44908f3ae98f7b934d91863940d970b293e",
+      "sourceEvidence": {
+        "evidenceId": "math2-2020-q04",
+        "sourceId": "src_d6fc5e2745b7a1ad6320a099",
+        "answerSourceId": "src_d6fc5e2745b7a1ad6320a099",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_trimmed_answer_page_image",
+        "sourceEvidenceId": "math2-2020-paper-answer",
+        "answerEvidenceId": "math2-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:e0379f21e18a4103fb1f2a55b207f44908f3ae98f7b934d91863940d970b293e"
+      }
+    },
+    {
+      "id": "math2-2020-005",
+      "number": 5,
+      "paperId": "math2-2020",
+      "paperName": "2020考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2020",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2020考研数学二第5题（选择题）。题干、公式和图形以题面裁切图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2020 数学二真题 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2020/question-05-a.jpg",
+          "caption": "题面裁切图 q05-a",
+          "alt": "2020考研数学二第05题题面裁切图"
+        },
+        {
+          "src": "question-bank/math2-2020/question-05-b.jpg",
+          "caption": "题面裁切图 q05-b",
+          "alt": "2020考研数学二第05题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2020/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2020考研数学二答案解析 p.8"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2020",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:b5895de162973b51ed3759191c534c0f9e4f1e45cf354beb100e8448fcbb88e0",
+      "answerTextHash": "sha256:f8bd040d50fd537c6444f6e4a9534952595ef9194270a36551f220fe4051e322",
+      "sourceEvidence": {
+        "evidenceId": "math2-2020-q05",
+        "sourceId": "src_d6fc5e2745b7a1ad6320a099",
+        "answerSourceId": "src_d6fc5e2745b7a1ad6320a099",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_trimmed_answer_page_image",
+        "sourceEvidenceId": "math2-2020-paper-answer",
+        "answerEvidenceId": "math2-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:f8bd040d50fd537c6444f6e4a9534952595ef9194270a36551f220fe4051e322"
+      }
+    },
+    {
+      "id": "math2-2020-006",
+      "number": 6,
+      "paperId": "math2-2020",
+      "paperName": "2020考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2020",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2020考研数学二第6题（选择题）。题干、公式和图形以题面裁切图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2020 数学二真题 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2020/question-06.jpg",
+          "caption": "题面裁切图 q06",
+          "alt": "2020考研数学二第06题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2020/answer-page-08.jpg",
+          "caption": "答案解析 p.8",
+          "alt": "2020考研数学二答案解析 p.8"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2020",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:63dc9a530837108640144bd4a3523595109fa2063272b097b7068164f557a1d1",
+      "answerTextHash": "sha256:f8bd040d50fd537c6444f6e4a9534952595ef9194270a36551f220fe4051e322",
+      "sourceEvidence": {
+        "evidenceId": "math2-2020-q06",
+        "sourceId": "src_d6fc5e2745b7a1ad6320a099",
+        "answerSourceId": "src_d6fc5e2745b7a1ad6320a099",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_trimmed_answer_page_image",
+        "sourceEvidenceId": "math2-2020-paper-answer",
+        "answerEvidenceId": "math2-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:f8bd040d50fd537c6444f6e4a9534952595ef9194270a36551f220fe4051e322"
+      }
+    },
+    {
+      "id": "math2-2020-007",
+      "number": 7,
+      "paperId": "math2-2020",
+      "paperName": "2020考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2020",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2020考研数学二第7题（选择题）。题干、公式和图形以题面裁切图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2020 数学二真题 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2020/question-07.jpg",
+          "caption": "题面裁切图 q07",
+          "alt": "2020考研数学二第07题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2020/answer-page-09.jpg",
+          "caption": "答案解析 p.9",
+          "alt": "2020考研数学二答案解析 p.9"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2020",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:2028204e525bf1df7a17f6bde0ca943cac4d4873da9aaec57dcb72585b7ae017",
+      "answerTextHash": "sha256:4a2ac167ff4d753876d921bab07de518e5ac64a172428ef0b658732800220504",
+      "sourceEvidence": {
+        "evidenceId": "math2-2020-q07",
+        "sourceId": "src_d6fc5e2745b7a1ad6320a099",
+        "answerSourceId": "src_d6fc5e2745b7a1ad6320a099",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_trimmed_answer_page_image",
+        "sourceEvidenceId": "math2-2020-paper-answer",
+        "answerEvidenceId": "math2-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:4a2ac167ff4d753876d921bab07de518e5ac64a172428ef0b658732800220504"
+      }
+    },
+    {
+      "id": "math2-2020-008",
+      "number": 8,
+      "paperId": "math2-2020",
+      "paperName": "2020考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2020",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2020考研数学二第8题（选择题）。题干、公式和图形以题面裁切图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2020 数学二真题 PDF；选择题解析见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2020/question-08.jpg",
+          "caption": "题面裁切图 q08",
+          "alt": "2020考研数学二第08题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2020/answer-page-09.jpg",
+          "caption": "答案解析 p.9",
+          "alt": "2020考研数学二答案解析 p.9"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2020",
+        "选择题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:35c036c8dbef73185b016e6e217c0532bf5c3000b06249dd579a792b56fe5b4f",
+      "answerTextHash": "sha256:91b648e99f8276b56d930b37d62fef5912e168052a3c9691b654e1079183fca6",
+      "sourceEvidence": {
+        "evidenceId": "math2-2020-q08",
+        "sourceId": "src_d6fc5e2745b7a1ad6320a099",
+        "answerSourceId": "src_d6fc5e2745b7a1ad6320a099",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_trimmed_answer_page_image",
+        "sourceEvidenceId": "math2-2020-paper-answer",
+        "answerEvidenceId": "math2-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:91b648e99f8276b56d930b37d62fef5912e168052a3c9691b654e1079183fca6"
+      }
+    },
+    {
+      "id": "math2-2020-009",
+      "number": 9,
+      "paperId": "math2-2020",
+      "paperName": "2020考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2020",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2020考研数学二第9题（填空题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "-1/2",
+      "explanation": "答案来自本地百度网盘 2020 数学二真题 PDF；完整题干、公式和解析见原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2020/question-09.jpg",
+          "caption": "题面裁切图 q09",
+          "alt": "2020考研数学二第09题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2020/answer-page-09.jpg",
+          "caption": "答案解析 p.9",
+          "alt": "2020考研数学二答案解析 p.9"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2020",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:c564bc01c1d8829c40d6c2165d6f3d3f4a6818ac85baa5dfe55f8b8fb1046924",
+      "answerTextHash": "sha256:b137dbbfdc2e72a0ee32aeab5517150ccbb785aaed8731b325e829343ba37ad2",
+      "sourceEvidence": {
+        "evidenceId": "math2-2020-q09",
+        "sourceId": "src_d6fc5e2745b7a1ad6320a099",
+        "answerSourceId": "src_d6fc5e2745b7a1ad6320a099",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_trimmed_answer_page_image",
+        "sourceEvidenceId": "math2-2020-paper-answer",
+        "answerEvidenceId": "math2-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:b137dbbfdc2e72a0ee32aeab5517150ccbb785aaed8731b325e829343ba37ad2"
+      }
+    },
+    {
+      "id": "math2-2020-010",
+      "number": 10,
+      "paperId": "math2-2020",
+      "paperName": "2020考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2020",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2020考研数学二第10题（填空题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "2(√2-1)",
+      "explanation": "答案来自本地百度网盘 2020 数学二真题 PDF；完整题干、公式和解析见原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2020/question-10.jpg",
+          "caption": "题面裁切图 q10",
+          "alt": "2020考研数学二第10题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2020/answer-page-10.jpg",
+          "caption": "答案解析 p.10",
+          "alt": "2020考研数学二答案解析 p.10"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2020",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:a02ca73d33961414d6c56d1a9d53fef84ccf37bbe03a02a321cf45d7502ba12e",
+      "answerTextHash": "sha256:d6b6c87d7ffc50e8794b0d154ea83a503ec63b53eada46495c2d39a70ff9a162",
+      "sourceEvidence": {
+        "evidenceId": "math2-2020-q10",
+        "sourceId": "src_d6fc5e2745b7a1ad6320a099",
+        "answerSourceId": "src_d6fc5e2745b7a1ad6320a099",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_trimmed_answer_page_image",
+        "sourceEvidenceId": "math2-2020-paper-answer",
+        "answerEvidenceId": "math2-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:d6b6c87d7ffc50e8794b0d154ea83a503ec63b53eada46495c2d39a70ff9a162"
+      }
+    },
+    {
+      "id": "math2-2020-011",
+      "number": 11,
+      "paperId": "math2-2020",
+      "paperName": "2020考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2020",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2020考研数学二第11题（填空题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "(x-y)dx-dy",
+      "explanation": "答案来自本地百度网盘 2020 数学二真题 PDF；完整题干、公式和解析见原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2020/question-11.jpg",
+          "caption": "题面裁切图 q11",
+          "alt": "2020考研数学二第11题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2020/answer-page-10.jpg",
+          "caption": "答案解析 p.10",
+          "alt": "2020考研数学二答案解析 p.10"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2020",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:6f0ed8719f5dbc5d4c3fe480ccc057a50c69b35591b09f8f6df0c3d68a27d259",
+      "answerTextHash": "sha256:40ba0218a7ee027e2374c73ec927409c1744285cd6b9c4e5afeb32385078cfea",
+      "sourceEvidence": {
+        "evidenceId": "math2-2020-q11",
+        "sourceId": "src_d6fc5e2745b7a1ad6320a099",
+        "answerSourceId": "src_d6fc5e2745b7a1ad6320a099",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_trimmed_answer_page_image",
+        "sourceEvidenceId": "math2-2020-paper-answer",
+        "answerEvidenceId": "math2-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:40ba0218a7ee027e2374c73ec927409c1744285cd6b9c4e5afeb32385078cfea"
+      }
+    },
+    {
+      "id": "math2-2020-012",
+      "number": 12,
+      "paperId": "math2-2020",
+      "paperName": "2020考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2020",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2020考研数学二第12题（填空题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "1/3ρga^3",
+      "explanation": "答案来自本地百度网盘 2020 数学二真题 PDF；完整题干、公式和解析见原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2020/question-12.jpg",
+          "caption": "题面裁切图 q12",
+          "alt": "2020考研数学二第12题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2020/answer-page-10.jpg",
+          "caption": "答案解析 p.10",
+          "alt": "2020考研数学二答案解析 p.10"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2020",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:4126c743f8af56cf79090628c62964faccd67c6285d0b3a6339fbd92a6565334",
+      "answerTextHash": "sha256:19eee4a8cbcb1ee61a207a9d438ab7391c645c88288cca196ca4277bc1b48f3f",
+      "sourceEvidence": {
+        "evidenceId": "math2-2020-q12",
+        "sourceId": "src_d6fc5e2745b7a1ad6320a099",
+        "answerSourceId": "src_d6fc5e2745b7a1ad6320a099",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_trimmed_answer_page_image",
+        "sourceEvidenceId": "math2-2020-paper-answer",
+        "answerEvidenceId": "math2-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:19eee4a8cbcb1ee61a207a9d438ab7391c645c88288cca196ca4277bc1b48f3f"
+      }
+    },
+    {
+      "id": "math2-2020-013",
+      "number": 13,
+      "paperId": "math2-2020",
+      "paperName": "2020考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2020",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2020考研数学二第13题（填空题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "1",
+      "explanation": "答案来自本地百度网盘 2020 数学二真题 PDF；完整题干、公式和解析见原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2020/question-13.jpg",
+          "caption": "题面裁切图 q13",
+          "alt": "2020考研数学二第13题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2020/answer-page-10.jpg",
+          "caption": "答案解析 p.10",
+          "alt": "2020考研数学二答案解析 p.10"
+        },
+        {
+          "src": "question-bank/math2-2020/answer-page-11.jpg",
+          "caption": "答案解析 p.11",
+          "alt": "2020考研数学二答案解析 p.11"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2020",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:65512443fc5462f372d206a6a119ca974d5ea292b7aae789b2a1456e02f417e5",
+      "answerTextHash": "sha256:10c994d8cbe2e3b09b3cadd00ce0cc84e5af0de36f13520a6f13510409d466c7",
+      "sourceEvidence": {
+        "evidenceId": "math2-2020-q13",
+        "sourceId": "src_d6fc5e2745b7a1ad6320a099",
+        "answerSourceId": "src_d6fc5e2745b7a1ad6320a099",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_trimmed_answer_page_image",
+        "sourceEvidenceId": "math2-2020-paper-answer",
+        "answerEvidenceId": "math2-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:10c994d8cbe2e3b09b3cadd00ce0cc84e5af0de36f13520a6f13510409d466c7"
+      }
+    },
+    {
+      "id": "math2-2020-014",
+      "number": 14,
+      "paperId": "math2-2020",
+      "paperName": "2020考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2020",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2020考研数学二第14题（填空题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "a^4-4a^2",
+      "explanation": "答案来自本地百度网盘 2020 数学二真题 PDF；完整题干、公式和解析见原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2020/question-14.jpg",
+          "caption": "题面裁切图 q14",
+          "alt": "2020考研数学二第14题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2020/answer-page-11.jpg",
+          "caption": "答案解析 p.11",
+          "alt": "2020考研数学二答案解析 p.11"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2020",
+        "填空题"
+      ],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:0cc6ec1015138b3f9dca8e12d18b6de4baec069383ec13058b78d75383a96108",
+      "answerTextHash": "sha256:4b3b8732fc061a32f83c018aa07a86b42aca6d6b0e5c3fa53dbe973cc8b1ce69",
+      "sourceEvidence": {
+        "evidenceId": "math2-2020-q14",
+        "sourceId": "src_d6fc5e2745b7a1ad6320a099",
+        "answerSourceId": "src_d6fc5e2745b7a1ad6320a099",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_trimmed_answer_page_image",
+        "sourceEvidenceId": "math2-2020-paper-answer",
+        "answerEvidenceId": "math2-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:4b3b8732fc061a32f83c018aa07a86b42aca6d6b0e5c3fa53dbe973cc8b1ce69"
+      }
+    },
+    {
+      "id": "math2-2020-015",
+      "number": 15,
+      "paperId": "math2-2020",
+      "paperName": "2020考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2020",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2020考研数学二第15题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "斜渐近线方程为 y=x/e+1/(2e)。",
+      "explanation": "答案来自本地百度网盘 2020 数学二真题 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2020/question-15.jpg",
+          "caption": "题面裁切图 q15",
+          "alt": "2020考研数学二第15题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2020/answer-page-11.jpg",
+          "caption": "答案解析 p.11",
+          "alt": "2020考研数学二答案解析 p.11"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2020",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:a2dd4857193a543091dc5f44c18e76c0a3abda41b4a4b85587f90086da8a3954",
+      "answerTextHash": "sha256:5aa2f4b060609546227b0e229ac9b2bb80c0fd0aa0018ec68f4ca39937fd4ac2",
+      "sourceEvidence": {
+        "evidenceId": "math2-2020-q15",
+        "sourceId": "src_d6fc5e2745b7a1ad6320a099",
+        "answerSourceId": "src_d6fc5e2745b7a1ad6320a099",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_trimmed_answer_page_image",
+        "sourceEvidenceId": "math2-2020-paper-answer",
+        "answerEvidenceId": "math2-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:5aa2f4b060609546227b0e229ac9b2bb80c0fd0aa0018ec68f4ca39937fd4ac2"
+      }
+    },
+    {
+      "id": "math2-2020-016",
+      "number": 16,
+      "paperId": "math2-2020",
+      "paperName": "2020考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2020",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2020考研数学二第16题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "g'(x)=∫_0^1 tf'(xt)dt，且 g'(x) 在 x=0 处连续。",
+      "explanation": "答案来自本地百度网盘 2020 数学二真题 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2020/question-16.jpg",
+          "caption": "题面裁切图 q16",
+          "alt": "2020考研数学二第16题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2020/answer-page-11.jpg",
+          "caption": "答案解析 p.11",
+          "alt": "2020考研数学二答案解析 p.11"
+        },
+        {
+          "src": "question-bank/math2-2020/answer-page-12.jpg",
+          "caption": "答案解析 p.12",
+          "alt": "2020考研数学二答案解析 p.12"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2020",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:3d8033d1fc77baf430be14e0c68b232b7e3f53c58986c7449098539001b41c33",
+      "answerTextHash": "sha256:96da66945542aa796a8eb48ad0d0f15b1881268a0fe5561321dffa9199bdc209",
+      "sourceEvidence": {
+        "evidenceId": "math2-2020-q16",
+        "sourceId": "src_d6fc5e2745b7a1ad6320a099",
+        "answerSourceId": "src_d6fc5e2745b7a1ad6320a099",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_trimmed_answer_page_image",
+        "sourceEvidenceId": "math2-2020-paper-answer",
+        "answerEvidenceId": "math2-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:96da66945542aa796a8eb48ad0d0f15b1881268a0fe5561321dffa9199bdc209"
+      }
+    },
+    {
+      "id": "math2-2020-017",
+      "number": 17,
+      "paperId": "math2-2020",
+      "paperName": "2020考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2020",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2020考研数学二第17题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "极值点包括 (0,0) 和 (1/3,-1/3)；完整极值判定见答案原页。",
+      "explanation": "答案来自本地百度网盘 2020 数学二真题 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2020/question-17.jpg",
+          "caption": "题面裁切图 q17",
+          "alt": "2020考研数学二第17题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2020/answer-page-12.jpg",
+          "caption": "答案解析 p.12",
+          "alt": "2020考研数学二答案解析 p.12"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2020",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:b0ada8126aae267450366fc666a4799f5f9d0a56e1befdbb920c8717710abcf8",
+      "answerTextHash": "sha256:997c22f2ea55e56d0a09bf820d7e275b630a0afe275e629cdc7b82c5cb510cde",
+      "sourceEvidence": {
+        "evidenceId": "math2-2020-q17",
+        "sourceId": "src_d6fc5e2745b7a1ad6320a099",
+        "answerSourceId": "src_d6fc5e2745b7a1ad6320a099",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_trimmed_answer_page_image",
+        "sourceEvidenceId": "math2-2020-paper-answer",
+        "answerEvidenceId": "math2-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:997c22f2ea55e56d0a09bf820d7e275b630a0afe275e629cdc7b82c5cb510cde"
+      }
+    },
+    {
+      "id": "math2-2020-018",
+      "number": 18,
+      "paperId": "math2-2020",
+      "paperName": "2020考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2020",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2020考研数学二第18题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "f(x)=x/sqrt(1+x^2)，旋转体体积为 π^2/6。",
+      "explanation": "答案来自本地百度网盘 2020 数学二真题 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2020/question-18.jpg",
+          "caption": "题面裁切图 q18",
+          "alt": "2020考研数学二第18题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2020/answer-page-13.jpg",
+          "caption": "答案解析 p.13",
+          "alt": "2020考研数学二答案解析 p.13"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2020",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:98db80859a42217b474091caa7a2ee637123c1ed45b970e5cf99d4576e997b38",
+      "answerTextHash": "sha256:4474c20c4bd7a11ae48c63ab47dd8f16664156b479d60e5da5eadc3f46c3d1c7",
+      "sourceEvidence": {
+        "evidenceId": "math2-2020-q18",
+        "sourceId": "src_d6fc5e2745b7a1ad6320a099",
+        "answerSourceId": "src_d6fc5e2745b7a1ad6320a099",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_trimmed_answer_page_image",
+        "sourceEvidenceId": "math2-2020-paper-answer",
+        "answerEvidenceId": "math2-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:4474c20c4bd7a11ae48c63ab47dd8f16664156b479d60e5da5eadc3f46c3d1c7"
+      }
+    },
+    {
+      "id": "math2-2020-019",
+      "number": 19,
+      "paperId": "math2-2020",
+      "paperName": "2020考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2020",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2020考研数学二第19题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "二重积分值为 3√2/4+3/4 ln(√2+1)。",
+      "explanation": "答案来自本地百度网盘 2020 数学二真题 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2020/question-19.jpg",
+          "caption": "题面裁切图 q19",
+          "alt": "2020考研数学二第19题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2020/answer-page-13.jpg",
+          "caption": "答案解析 p.13",
+          "alt": "2020考研数学二答案解析 p.13"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2020",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:a42838a1ca8bcde6c7918b4bdc62ad4814d7769c6e3a02054f4d56a348d51a1b",
+      "answerTextHash": "sha256:0f61b4550ee94269b82b0fee2fb9f678e91b18710184c3b62145cab01a4cdd5a",
+      "sourceEvidence": {
+        "evidenceId": "math2-2020-q19",
+        "sourceId": "src_d6fc5e2745b7a1ad6320a099",
+        "answerSourceId": "src_d6fc5e2745b7a1ad6320a099",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_trimmed_answer_page_image",
+        "sourceEvidenceId": "math2-2020-paper-answer",
+        "answerEvidenceId": "math2-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:0f61b4550ee94269b82b0fee2fb9f678e91b18710184c3b62145cab01a4cdd5a"
+      }
+    },
+    {
+      "id": "math2-2020-020",
+      "number": 20,
+      "paperId": "math2-2020",
+      "paperName": "2020考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2020",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2020考研数学二第20题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "存在 ξ∈(1,2) 使 f(ξ)=(2-ξ)e^(ξ^2)；存在 η∈(1,2) 使 f(2)=ln2·ηe^(η^2)。",
+      "explanation": "答案来自本地百度网盘 2020 数学二真题 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2020/question-20.jpg",
+          "caption": "题面裁切图 q20",
+          "alt": "2020考研数学二第20题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2020/answer-page-13.jpg",
+          "caption": "答案解析 p.13",
+          "alt": "2020考研数学二答案解析 p.13"
+        },
+        {
+          "src": "question-bank/math2-2020/answer-page-14.jpg",
+          "caption": "答案解析 p.14",
+          "alt": "2020考研数学二答案解析 p.14"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2020",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:a81501d1d6a70e0aa76218a6cac5d848fe4ecba51977e339e27c74afa8a26f1d",
+      "answerTextHash": "sha256:41c430abe12ff9ee34682841ff9282ce098870ee447deb2c7bf98ba91c9ceed2",
+      "sourceEvidence": {
+        "evidenceId": "math2-2020-q20",
+        "sourceId": "src_d6fc5e2745b7a1ad6320a099",
+        "answerSourceId": "src_d6fc5e2745b7a1ad6320a099",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_trimmed_answer_page_image",
+        "sourceEvidenceId": "math2-2020-paper-answer",
+        "answerEvidenceId": "math2-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:41c430abe12ff9ee34682841ff9282ce098870ee447deb2c7bf98ba91c9ceed2"
+      }
+    },
+    {
+      "id": "math2-2020-021",
+      "number": 21,
+      "paperId": "math2-2020",
+      "paperName": "2020考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2020",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2020考研数学二第21题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "曲线方程为 y=Cx^(3/2)，C>0。",
+      "explanation": "答案来自本地百度网盘 2020 数学二真题 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2020/question-21.jpg",
+          "caption": "题面裁切图 q21",
+          "alt": "2020考研数学二第21题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2020/answer-page-14.jpg",
+          "caption": "答案解析 p.14",
+          "alt": "2020考研数学二答案解析 p.14"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2020",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:644e62f1e65c2f168afedfbcd9f2c27dd9297d9736d0168c6d045e54c52e51a8",
+      "answerTextHash": "sha256:cf1cbe6d7c1d743931d1d2e3615a285cee31b4fb1f368d7afeab3c942189e345",
+      "sourceEvidence": {
+        "evidenceId": "math2-2020-q21",
+        "sourceId": "src_d6fc5e2745b7a1ad6320a099",
+        "answerSourceId": "src_d6fc5e2745b7a1ad6320a099",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_trimmed_answer_page_image",
+        "sourceEvidenceId": "math2-2020-paper-answer",
+        "answerEvidenceId": "math2-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:cf1cbe6d7c1d743931d1d2e3615a285cee31b4fb1f368d7afeab3c942189e345"
+      }
+    },
+    {
+      "id": "math2-2020-022",
+      "number": 22,
+      "paperId": "math2-2020",
+      "paperName": "2020考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2020",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2020考研数学二第22题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "a=-4；可逆矩阵 P 的构造见答案原页。",
+      "explanation": "答案来自本地百度网盘 2020 数学二真题 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2020/question-22.jpg",
+          "caption": "题面裁切图 q22",
+          "alt": "2020考研数学二第22题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2020/answer-page-15.jpg",
+          "caption": "答案解析 p.15",
+          "alt": "2020考研数学二答案解析 p.15"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2020",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:380e5262b9b34874fbfade382020d70e67c8e4bfc46dd9c91937f6fcf4a23d62",
+      "answerTextHash": "sha256:2d2cefca037562e47f18d08d68a2deb8d65724f64207ef152a2a254e9f87444d",
+      "sourceEvidence": {
+        "evidenceId": "math2-2020-q22",
+        "sourceId": "src_d6fc5e2745b7a1ad6320a099",
+        "answerSourceId": "src_d6fc5e2745b7a1ad6320a099",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_trimmed_answer_page_image",
+        "sourceEvidenceId": "math2-2020-paper-answer",
+        "answerEvidenceId": "math2-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:2d2cefca037562e47f18d08d68a2deb8d65724f64207ef152a2a254e9f87444d"
+      }
+    },
+    {
+      "id": "math2-2020-023",
+      "number": 23,
+      "paperId": "math2-2020",
+      "paperName": "2020考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2020",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2020考研数学二第23题（解答题）。题干、公式和图形以题面裁切图为准。",
+      "options": [],
+      "answer": "P 可逆；P^(-1)AP 的矩阵见答案原页，A 的特征值为 2 和 -3，因此 A 可相似对角化。",
+      "explanation": "答案来自本地百度网盘 2020 数学二真题 PDF；完整演算、证明或推导过程见答案原页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2020/question-23-a.jpg",
+          "caption": "题面裁切图 q23-a",
+          "alt": "2020考研数学二第23题题面裁切图"
+        },
+        {
+          "src": "question-bank/math2-2020/question-23-b.jpg",
+          "caption": "题面裁切图 q23-b",
+          "alt": "2020考研数学二第23题题面裁切图"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2020/answer-page-16.jpg",
+          "caption": "答案解析 p.16",
+          "alt": "2020考研数学二答案解析 p.16"
+        }
+      ],
+      "tags": [
+        "math2",
+        "2020",
+        "解答题"
+      ],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2020-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:514083f4201e9cd5408f46dc1c6fb900375874c677142cfab60f402522986b3e",
+      "answerTextHash": "sha256:d22502a783b62b432890fd5d86486c5283d683f529fd90220e1bae4fde9e84c9",
+      "sourceEvidence": {
+        "evidenceId": "math2-2020-q23",
+        "sourceId": "src_d6fc5e2745b7a1ad6320a099",
+        "answerSourceId": "src_d6fc5e2745b7a1ad6320a099",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "question_crop_and_trimmed_answer_page_image",
+        "sourceEvidenceId": "math2-2020-paper-answer",
+        "answerEvidenceId": "math2-2020-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:d22502a783b62b432890fd5d86486c5283d683f529fd90220e1bae4fde9e84c9"
+      }
+    }
+  ]
+}

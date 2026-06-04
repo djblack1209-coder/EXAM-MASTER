@@ -613,6 +613,15 @@ describe('published flashcard bank registry', () => {
     expect(math22019.cards.find((card) => card.number === 23).answerImages.at(-1).src).toContain(
       'question-bank/math2-2019/answer-page-05.jpg'
     );
+    const math22020 = await loadBankData('math2-2020');
+    expect(math22020.cards).toHaveLength(23);
+    expect(math22020.cards.every((card) => card.answerEvidenceStatus === 'matched')).toBe(true);
+    expect(math22020.cards.find((card) => card.number === 1).answer).toBe('D');
+    expect(math22020.cards.find((card) => card.number === 10).answer).toBe('2(√2-1)');
+    expect(math22020.cards.find((card) => card.number === 21).answer).toContain('y=Cx^(3/2)');
+    expect(math22020.cards.find((card) => card.number === 23).answerImages.at(-1).src).toContain(
+      'question-bank/math2-2020/answer-page-16.jpg'
+    );
     const math32005 = await loadBankData('math3-2005');
     expect(math32005.cards).toHaveLength(23);
     expect(math32005.cards.every((card) => card.answerEvidenceStatus === 'matched')).toBe(true);
