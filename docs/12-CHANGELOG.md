@@ -1,5 +1,12 @@
 # 变更日志
 
+## 2026-06-03 — 2019 英语一文本层题库开放
+
+- 2019 考研英语一从“待入库”推进为正式题库：52 张题卡覆盖完形填空、阅读理解、新题型、翻译和写作，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
+- 新增 `build_english1_2019_bank.py`，从本地百度网盘 2019 英语一原卷和答案速查 PDF 生成 `src/config/flashcard-banks/english1-2019.json` 与 `cdn-assets/question-bank/english1-2019` 页图资源；发布题面使用答案速查 PDF 文本层，原卷保留为页图审计源，答案速查第 16 页推广尾页不进入发布资产或证据。
+- 清洗质量：官方答案表按 `1-5 CCBDA`、`26-30 DAACB`、`41-45 EDGBA` 锚定；验收锚点包括 q01=`C`、q21=`A`、q26=`D`、q30=`B`、q46 medical journals 翻译句、q51 `Aiding Rural Primary Schools` 邮件和 q52 看图作文，并拦截 `用“闪过”` 推广尾页与英语二 museum/chart 串源。
+- 2005-2020 release gate 刷新后，公共课覆盖缺口降至 1，published slots 升至 90，source evidence gap 保持 1；release backlog 降至 `blockers=3`、`publicCourseBlockedSlots=1`，剩余公共课槽位为 `math2:2016`，当前候选仍因误标为 2014 内容而阻塞。
+
 ## 2026-06-03 — 2018 英语一文本层题库开放
 
 - 2018 考研英语一从“待入库”推进为正式题库：52 张题卡覆盖完形填空、阅读理解、新题型、翻译和写作，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
