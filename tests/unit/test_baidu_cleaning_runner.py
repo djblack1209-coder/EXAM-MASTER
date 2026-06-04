@@ -618,6 +618,68 @@ class BaiduCleaningRunnerTest(unittest.TestCase):
         self.assertEqual(report["completed"], 0)
         self.assertEqual(report["failed"], 1)
 
+    def test_run_queue_once_skips_published_slots_when_provided(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            published_pdf = Path(tmp) / "raw" / "src_published-2019数学二.pdf"
+            missing_pdf = Path(tmp) / "raw" / "src_missing-2020数学二.pdf"
+            processed = []
+
+            class FakeDownloader:
+                def download(self, remote_path, target_path, overwrite=False):
+                    Path(target_path).parent.mkdir(parents=True, exist_ok=True)
+                    Path(target_path).write_bytes(b"%PDF-1.4")
+
+            def fake_processor(task, local_path):
+                processed.append(task["taskId"])
+                return {
+                    "outputPath": "data/flashcards/math2-2020.json",
+                    "questionCount": 23,
+                    "answerEvidenceStatus": "matched",
+                }
+
+            queue = {
+                "tasks": [
+                    {
+                        "taskId": "published_math2_2019",
+                        "action": "download_and_extract",
+                        "status": "pending",
+                        "attempts": 0,
+                        "priority": 100,
+                        "remotePath": "/EXAM-MASTER/2019数学二.pdf",
+                        "expectedLocalPath": str(published_pdf),
+                        "track": "math2",
+                        "year": 2019,
+                        "releaseBacklogRank": 0,
+                    },
+                    {
+                        "taskId": "missing_math2_2020",
+                        "action": "download_and_extract",
+                        "status": "pending",
+                        "attempts": 0,
+                        "priority": 100,
+                        "remotePath": "/EXAM-MASTER/2020数学二.pdf",
+                        "expectedLocalPath": str(missing_pdf),
+                        "track": "math2",
+                        "year": 2020,
+                        "releaseBacklogRank": 1,
+                    },
+                ]
+            }
+
+            updated, report = run_queue_once(
+                queue,
+                limit=10,
+                now="2026-06-03T00:00:00Z",
+                downloader=FakeDownloader(),
+                processor=fake_processor,
+                published_slots={"math2:2019"},
+            )
+
+        self.assertEqual(processed, ["missing_math2_2020"])
+        self.assertEqual(report["planned"], 1)
+        self.assertEqual(updated["tasks"][0]["status"], "pending")
+        self.assertEqual(updated["tasks"][1]["status"], "completed")
+
     def test_run_queue_once_records_missing_answer_status(self):
         with tempfile.TemporaryDirectory() as tmp:
             local_pdf = Path(tmp) / "raw" / "src_1-2018英语一.pdf"

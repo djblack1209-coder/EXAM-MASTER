@@ -516,6 +516,7 @@ def run_queue_once(
     max_year: int | None = None,
     source_type: str | None = None,
     paper_role: str = "all",
+    published_slots: set[str] | None = None,
     downloader: Any | None = None,
     processor: Callable[[dict[str, Any], Path], dict[str, Any]] | None = None,
 ) -> tuple[dict[str, Any], dict[str, Any]]:
@@ -531,6 +532,7 @@ def run_queue_once(
         max_year=max_year,
         source_type=source_type,
         paper_role=paper_role,
+        published_slots=published_slots,
     )
     active_downloader = downloader
     active_processor = processor or default_processor
