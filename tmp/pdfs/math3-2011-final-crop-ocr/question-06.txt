@@ -1,6 +1,0 @@
-(6) 设 A为4x3征阵， minana是非齐次线性方垢组 。 Ax = B 的 3 个线性无关的解，。 ki ks 为任意常数，则
-Ax =B 的通解为(  )
-mA+m                                  n,n
-(A) erent) =")              (8) att)
-mu AM,         i                        a",
-(C)  err —",) +k (5-4)        (D)  “a mM =) +e (5-4)

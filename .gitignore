@@ -226,3 +226,6 @@ asset-inbox/
 
 # 临时登录二维码 / 审计二维码
 *-wechat-login-qr.png
+
+# Temporary local rendering / PDF inspection artifacts
+tmp/

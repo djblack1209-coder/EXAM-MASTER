@@ -1,8 +1,8 @@
 # 考研大师 — 文档总索引
 
-> 最后更新：2026-05-02
+> 最后更新：2026-06-17
 
-本项目文档统一保存在 `docs/` 下。当前保留 17 个核心文档，删除了 2026 年 5 月前的审计/发布证据、历史归档、文档缓存、分散设计报告和临时清理计划。
+本项目文档统一保存在 `docs/` 下。当前保留 17 个核心文档，删除了 2026 年 5 月前的审计/发布证据、历史归档、文档缓存、分散设计报告和临时清理计划。运行时扫描报告、PDF 渲染页、OCR 探针和 release evidence 不进入 `docs/`；需要复跑时使用脚本在 `data/reports/` 或本地 `tmp/` 生成。
 
 ## 项目定位
 
@@ -41,7 +41,17 @@ tests/unit/          Vitest 单元与安全回归测试
 cdn-assets/          CDN 图片资源
 scripts/             构建、百度网盘、PDF 处理与质量门禁脚本
 data/                题库处理输入/输出数据，不放临时审计报告
+tmp/                 本地 PDF 渲染/OCR/探针缓存，git 忽略，不作为发布证据
 ```
+
+## 当前项目全景
+
+- 代码规模：当前 git 跟踪约 3562 个文件，其中 `src/` 约 390 个、`laf-backend/` 约 182 个、`tests/` 约 186 个、`scripts/` 约 136 个、`cdn-assets/` 约 2586 个。
+- 前端：uni-app + Vue 3 + Pinia，小程序主包和分包按 `src/pages.json` 组织；核心用户链路是首页、公共课题库、刷题/复习、个人中心和设置。
+- 后端：Laf 云函数在 `laf-backend/functions/`，源码审计要求 TS/JS entry 与 YAML/部署配置保持一致，严格门禁命令是 `npm run audit:laf:function-sources -- --strict`。
+- 题库资产：正式公共课题库在 `src/config/flashcard-banks/`，注册表是 `src/config/bank-registry.js`，图片资产在 `cdn-assets/question-bank/`，清洗和构建脚本集中在 `scripts/cleaning/` 与 `scripts/baidu/`。
+- 发布门禁：`data/release-blocker-backlog.json` 当前显示 public release 仍为 blocked；本地可安全闭环的是脚本/文档/仓库冗余清理和可复跑门禁，不能伪造真实手机微信证据、官方题源或答案 matched 证据。
+- 当前 P0 阻塞边界：真实手机微信 evidence 1 项；公共课缺口 14 个槽位；Source Manifest 证据缺口 7 个；`data/flashcards/politics-2023.json` 仍有 38 张卡为 candidate 证据状态。`math2/math3 2021-2022` 有本地 raw PDF 但仍需逐题裁切、答案核验和 registry 注册；2026 槽位需要外部官方题源。
 
 ## 核心文档
 

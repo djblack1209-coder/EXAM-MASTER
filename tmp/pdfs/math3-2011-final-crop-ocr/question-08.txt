@@ -1,5 +1,0 @@
-(8) 设总体 X 服从参数为 和(7 > 0) 的泊松分布， X+ Xz，… ,Xn(n 2) 为来自该总体的简单随机样本，则对
-ae   re      4 os gil   ;
-于统计量 T,=-LD Xi MT, =一一工 Xi +一X,, 有( )
-Nia          n-1 ia     n
-(A) ET> ET,,DT,>DT,    (8) ET,>ET,, DT,<DT,
