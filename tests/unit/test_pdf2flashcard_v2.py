@@ -541,6 +541,35 @@ class Pdf2FlashcardV2Test(unittest.TestCase):
         self.assertEqual(by_number[51]["options"], [])
         self.assertEqual(by_number[52]["type"], "essay")
 
+    def test_process_pdf_normalizes_english2_exam_type_distribution(self):
+        module = load_pdf2flashcard_module()
+        with tempfile.TemporaryDirectory() as tmp:
+            output_dir = Path(tmp) / "flashcards"
+            output_dir.mkdir()
+            parsed_cards = [
+                {"number": 45, "type": "analysis", "question": "Q45", "options": [], "answer": "G"},
+                {"number": 46, "type": "analysis", "question": "Q46", "options": [{"label": "A", "text": "bad"}], "answer": "译文"},
+                {"number": 47, "type": "analysis", "question": "Q47", "options": [{"label": "A", "text": "bad"}], "answer": "写作要求"},
+                {"number": 48, "type": "analysis", "question": "Q48", "options": [{"label": "A", "text": "bad"}], "answer": "写作要求"},
+            ]
+
+            module.OUTPUT_DIR = output_dir
+            module.HASH_DB_PATH = Path(tmp) / "hashes.json"
+            module.ocr_pdf = lambda _path: "英语二真题文本"
+            module.sanitize_text = lambda text: text
+            module.ai_parse_text = lambda _text, _subject, _year: [dict(card) for card in parsed_cards]
+
+            result = module.process_pdf("/tmp/source.pdf", "english2", "2021")
+
+        by_number = {card["number"]: card for card in result["cards"]}
+        self.assertEqual(by_number[45]["type"], "single_choice")
+        self.assertEqual(by_number[46]["type"], "translation")
+        self.assertEqual(by_number[46]["options"], [])
+        self.assertEqual(by_number[47]["type"], "essay")
+        self.assertEqual(by_number[47]["options"], [])
+        self.assertEqual(by_number[48]["type"], "essay")
+        self.assertEqual(by_number[48]["options"], [])
+
     def test_provider_disabled_merges_global_and_local_disable_lists(self):
         module = load_pdf2flashcard_module()
         os.environ["AI_PROVIDER_DISABLED_LIST"] = "iflow"

@@ -3,7 +3,9 @@ import { logger } from '@/utils/logger.js';
 export const HOME_TAB_URL = '/pages/index/index';
 
 function normalizeRoute(route) {
-  return String(route || '').replace(/^\//, '').split('?')[0];
+  return String(route || '')
+    .replace(/^\//, '')
+    .split('?')[0];
 }
 
 export function getCurrentRoute() {

@@ -1,0 +1,1242 @@
+{
+  "id": "math3-2024",
+  "source": "math3-2024-paper-answer",
+  "paperId": "math3-2024",
+  "paperName": "2024考研数学三真题",
+  "subject": "数学",
+  "subjectKey": "math",
+  "track": "math3",
+  "year": "2024",
+  "quality": "ready",
+  "publicationStatus": "published",
+  "publicationBlockers": [],
+  "sourceEvidencePolicy": "baidu_netdisk_official_paper_pdf_inline_answer_page_image_v1",
+  "sourceFiles": [
+    {
+      "id": "math3-2024-paper-answer",
+      "role": "paper_answer",
+      "localPath": "data/raw-inbox/src_d9c2b923d74ae9283b1647f1-2024年数学（三）真题及参考答案.pdf",
+      "sha256": "sha256:26aeb5f9e1a3e62fc395ad8cf22392b4718c7f61f13b87ef2180f2c218d00984",
+      "sourceId": "src_d9c2b923d74ae9283b1647f1"
+    }
+  ],
+  "assetRoot": "question-bank/math3-2024",
+  "processed_at": "2026-06-07T00:51:12Z",
+  "total_cards": 22,
+  "cards": [
+    {
+      "id": "math3-2024-001",
+      "number": 1,
+      "paperId": "math3-2024",
+      "paperName": "2024考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2024",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2024考研数学三第1题（选择题）。题干、公式和图形以原 PDF 页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2024 数学三真题及参考答案 PDF；完整题干和公式见原 PDF 页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2024/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2024考研数学三试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2024/answer-page-01.jpg",
+          "caption": "参考答案页 p.1",
+          "alt": "2024考研数学三参考答案页 p.1"
+        }
+      ],
+      "tags": ["math3", "2024", "选择题"],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2024-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:4d10b51ac7586a4f7d679b982213f35de44389f8d71156fbfda3716552f133cf",
+      "answerTextHash": "sha256:f6335e8977ced096172680deb47d3c197da7774b472b4fe4ce3651e4656f09aa",
+      "sourceEvidence": {
+        "evidenceId": "math3-2024-q01",
+        "sourceId": "src_d9c2b923d74ae9283b1647f1",
+        "answerSourceId": "src_d9c2b923d74ae9283b1647f1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "inline_answer_paper_page_image",
+        "sourceEvidenceId": "math3-2024-paper-answer",
+        "answerEvidenceId": "math3-2024-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:f6335e8977ced096172680deb47d3c197da7774b472b4fe4ce3651e4656f09aa"
+      }
+    },
+    {
+      "id": "math3-2024-002",
+      "number": 2,
+      "paperId": "math3-2024",
+      "paperName": "2024考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2024",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2024考研数学三第2题（选择题）。题干、公式和图形以原 PDF 页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2024 数学三真题及参考答案 PDF；完整题干和公式见原 PDF 页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2024/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2024考研数学三试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2024/answer-page-01.jpg",
+          "caption": "参考答案页 p.1",
+          "alt": "2024考研数学三参考答案页 p.1"
+        }
+      ],
+      "tags": ["math3", "2024", "选择题"],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2024-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:112e85a2db70bfd30bba5412c846c52eb3edfbe9fd1d9a2a4129aa48177744fb",
+      "answerTextHash": "sha256:eeb8f23963a55373792abcd7f5e7bf152df8a8573bd10989d302f7962035a04f",
+      "sourceEvidence": {
+        "evidenceId": "math3-2024-q02",
+        "sourceId": "src_d9c2b923d74ae9283b1647f1",
+        "answerSourceId": "src_d9c2b923d74ae9283b1647f1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "inline_answer_paper_page_image",
+        "sourceEvidenceId": "math3-2024-paper-answer",
+        "answerEvidenceId": "math3-2024-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:eeb8f23963a55373792abcd7f5e7bf152df8a8573bd10989d302f7962035a04f"
+      }
+    },
+    {
+      "id": "math3-2024-003",
+      "number": 3,
+      "paperId": "math3-2024",
+      "paperName": "2024考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2024",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2024考研数学三第3题（选择题）。题干、公式和图形以原 PDF 页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2024 数学三真题及参考答案 PDF；完整题干和公式见原 PDF 页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2024/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2024考研数学三试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2024/answer-page-01.jpg",
+          "caption": "参考答案页 p.1",
+          "alt": "2024考研数学三参考答案页 p.1"
+        }
+      ],
+      "tags": ["math3", "2024", "选择题"],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2024-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:6acddcf036e871dc8ef914c83871987f49e88da645e56af33ab6d051840e1275",
+      "answerTextHash": "sha256:ef6d5489e5a01fec1ec4bb9e6b4266e4057af244337145b922d948050679c07e",
+      "sourceEvidence": {
+        "evidenceId": "math3-2024-q03",
+        "sourceId": "src_d9c2b923d74ae9283b1647f1",
+        "answerSourceId": "src_d9c2b923d74ae9283b1647f1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "inline_answer_paper_page_image",
+        "sourceEvidenceId": "math3-2024-paper-answer",
+        "answerEvidenceId": "math3-2024-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:ef6d5489e5a01fec1ec4bb9e6b4266e4057af244337145b922d948050679c07e"
+      }
+    },
+    {
+      "id": "math3-2024-004",
+      "number": 4,
+      "paperId": "math3-2024",
+      "paperName": "2024考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2024",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2024考研数学三第4题（选择题）。题干、公式和图形以原 PDF 页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2024 数学三真题及参考答案 PDF；完整题干和公式见原 PDF 页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2024/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2024考研数学三试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2024/answer-page-01.jpg",
+          "caption": "参考答案页 p.1",
+          "alt": "2024考研数学三参考答案页 p.1"
+        }
+      ],
+      "tags": ["math3", "2024", "选择题"],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2024-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:62ef787421e6d91f20d53cb1467caddc0a388e7c82a72f4fba93952fb2b64424",
+      "answerTextHash": "sha256:ef6d5489e5a01fec1ec4bb9e6b4266e4057af244337145b922d948050679c07e",
+      "sourceEvidence": {
+        "evidenceId": "math3-2024-q04",
+        "sourceId": "src_d9c2b923d74ae9283b1647f1",
+        "answerSourceId": "src_d9c2b923d74ae9283b1647f1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "inline_answer_paper_page_image",
+        "sourceEvidenceId": "math3-2024-paper-answer",
+        "answerEvidenceId": "math3-2024-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:ef6d5489e5a01fec1ec4bb9e6b4266e4057af244337145b922d948050679c07e"
+      }
+    },
+    {
+      "id": "math3-2024-005",
+      "number": 5,
+      "paperId": "math3-2024",
+      "paperName": "2024考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2024",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2024考研数学三第5题（选择题）。题干、公式和图形以原 PDF 页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2024 数学三真题及参考答案 PDF；完整题干和公式见原 PDF 页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2024/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2024考研数学三试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2024/answer-page-01.jpg",
+          "caption": "参考答案页 p.1",
+          "alt": "2024考研数学三参考答案页 p.1"
+        }
+      ],
+      "tags": ["math3", "2024", "选择题"],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2024-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:7f4ba03cf3ba474f68f11155f29fa3101424b5e32118e4506138daa8a5f5ab15",
+      "answerTextHash": "sha256:01370fce298cb459b7c797138d9e825fda2e23c11e9e9249e65268241d053ce7",
+      "sourceEvidence": {
+        "evidenceId": "math3-2024-q05",
+        "sourceId": "src_d9c2b923d74ae9283b1647f1",
+        "answerSourceId": "src_d9c2b923d74ae9283b1647f1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "inline_answer_paper_page_image",
+        "sourceEvidenceId": "math3-2024-paper-answer",
+        "answerEvidenceId": "math3-2024-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:01370fce298cb459b7c797138d9e825fda2e23c11e9e9249e65268241d053ce7"
+      }
+    },
+    {
+      "id": "math3-2024-006",
+      "number": 6,
+      "paperId": "math3-2024",
+      "paperName": "2024考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2024",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2024考研数学三第6题（选择题）。题干、公式和图形以原 PDF 页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2024 数学三真题及参考答案 PDF；完整题干和公式见原 PDF 页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2024/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2024考研数学三试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2024/answer-page-02.jpg",
+          "caption": "参考答案页 p.2",
+          "alt": "2024考研数学三参考答案页 p.2"
+        }
+      ],
+      "tags": ["math3", "2024", "选择题"],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2024-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:e86525ab64102fb0fa4ab9dbda553cb76464a8a1841730e20b28c5e323fc0e17",
+      "answerTextHash": "sha256:cad57386346f62bee6aa00d160f80730cc923b804fff53afdd1c61b5181c7a0b",
+      "sourceEvidence": {
+        "evidenceId": "math3-2024-q06",
+        "sourceId": "src_d9c2b923d74ae9283b1647f1",
+        "answerSourceId": "src_d9c2b923d74ae9283b1647f1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "inline_answer_paper_page_image",
+        "sourceEvidenceId": "math3-2024-paper-answer",
+        "answerEvidenceId": "math3-2024-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:cad57386346f62bee6aa00d160f80730cc923b804fff53afdd1c61b5181c7a0b"
+      }
+    },
+    {
+      "id": "math3-2024-007",
+      "number": 7,
+      "paperId": "math3-2024",
+      "paperName": "2024考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2024",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2024考研数学三第7题（选择题）。题干、公式和图形以原 PDF 页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2024 数学三真题及参考答案 PDF；完整题干和公式见原 PDF 页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2024/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2024考研数学三试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2024/answer-page-02.jpg",
+          "caption": "参考答案页 p.2",
+          "alt": "2024考研数学三参考答案页 p.2"
+        }
+      ],
+      "tags": ["math3", "2024", "选择题"],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2024-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:9aa62554e0bf541b915bda9c0045b238d020e9b11801971b55670bc6a56c094f",
+      "answerTextHash": "sha256:ea6b7035bde61a0fb21a8d4196db45fb2986b73187d0a84d810bab5409f63f7d",
+      "sourceEvidence": {
+        "evidenceId": "math3-2024-q07",
+        "sourceId": "src_d9c2b923d74ae9283b1647f1",
+        "answerSourceId": "src_d9c2b923d74ae9283b1647f1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "inline_answer_paper_page_image",
+        "sourceEvidenceId": "math3-2024-paper-answer",
+        "answerEvidenceId": "math3-2024-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:ea6b7035bde61a0fb21a8d4196db45fb2986b73187d0a84d810bab5409f63f7d"
+      }
+    },
+    {
+      "id": "math3-2024-008",
+      "number": 8,
+      "paperId": "math3-2024",
+      "paperName": "2024考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2024",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2024考研数学三第8题（选择题）。题干、公式和图形以原 PDF 页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2024 数学三真题及参考答案 PDF；完整题干和公式见原 PDF 页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2024/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2024考研数学三试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2024/answer-page-02.jpg",
+          "caption": "参考答案页 p.2",
+          "alt": "2024考研数学三参考答案页 p.2"
+        }
+      ],
+      "tags": ["math3", "2024", "选择题"],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2024-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:82a8499b489eb1ea8588bce6c71f2ac0e15fb68451651e4d021ee36d066e3d56",
+      "answerTextHash": "sha256:ea6b7035bde61a0fb21a8d4196db45fb2986b73187d0a84d810bab5409f63f7d",
+      "sourceEvidence": {
+        "evidenceId": "math3-2024-q08",
+        "sourceId": "src_d9c2b923d74ae9283b1647f1",
+        "answerSourceId": "src_d9c2b923d74ae9283b1647f1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "inline_answer_paper_page_image",
+        "sourceEvidenceId": "math3-2024-paper-answer",
+        "answerEvidenceId": "math3-2024-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:ea6b7035bde61a0fb21a8d4196db45fb2986b73187d0a84d810bab5409f63f7d"
+      }
+    },
+    {
+      "id": "math3-2024-009",
+      "number": 9,
+      "paperId": "math3-2024",
+      "paperName": "2024考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2024",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2024考研数学三第9题（选择题）。题干、公式和图形以原 PDF 页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2024 数学三真题及参考答案 PDF；完整题干和公式见原 PDF 页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2024/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2024考研数学三试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2024/answer-page-02.jpg",
+          "caption": "参考答案页 p.2",
+          "alt": "2024考研数学三参考答案页 p.2"
+        }
+      ],
+      "tags": ["math3", "2024", "选择题"],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2024-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:675b6272b4e84eeb19b67372770fb94a12b0ded7252f11d69861b46b325d8932",
+      "answerTextHash": "sha256:ea6b7035bde61a0fb21a8d4196db45fb2986b73187d0a84d810bab5409f63f7d",
+      "sourceEvidence": {
+        "evidenceId": "math3-2024-q09",
+        "sourceId": "src_d9c2b923d74ae9283b1647f1",
+        "answerSourceId": "src_d9c2b923d74ae9283b1647f1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "inline_answer_paper_page_image",
+        "sourceEvidenceId": "math3-2024-paper-answer",
+        "answerEvidenceId": "math3-2024-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:ea6b7035bde61a0fb21a8d4196db45fb2986b73187d0a84d810bab5409f63f7d"
+      }
+    },
+    {
+      "id": "math3-2024-010",
+      "number": 10,
+      "paperId": "math3-2024",
+      "paperName": "2024考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2024",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2024考研数学三第10题（选择题）。题干、公式和图形以原 PDF 页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2024 数学三真题及参考答案 PDF；完整题干和公式见原 PDF 页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2024/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2024考研数学三试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2024/answer-page-03.jpg",
+          "caption": "参考答案页 p.3",
+          "alt": "2024考研数学三参考答案页 p.3"
+        }
+      ],
+      "tags": ["math3", "2024", "选择题"],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2024-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:5d118b761d1702a37d5c0fa914f5914615ec1824642f66d04404bc1c8da4dc0e",
+      "answerTextHash": "sha256:d637b5249be391a9a0cef957e8d809d0203bcfb6b4872f45e530441f455f7bc1",
+      "sourceEvidence": {
+        "evidenceId": "math3-2024-q10",
+        "sourceId": "src_d9c2b923d74ae9283b1647f1",
+        "answerSourceId": "src_d9c2b923d74ae9283b1647f1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "inline_answer_paper_page_image",
+        "sourceEvidenceId": "math3-2024-paper-answer",
+        "answerEvidenceId": "math3-2024-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:d637b5249be391a9a0cef957e8d809d0203bcfb6b4872f45e530441f455f7bc1"
+      }
+    },
+    {
+      "id": "math3-2024-011",
+      "number": 11,
+      "paperId": "math3-2024",
+      "paperName": "2024考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2024",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2024考研数学三第11题（填空题）。题干、公式和图形以原 PDF 页图为准。",
+      "options": [],
+      "answer": "3",
+      "explanation": "答案来自本地百度网盘 2024 数学三真题及参考答案 PDF；完整演算、证明或推导过程见原 PDF 页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2024/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2024考研数学三试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2024/answer-page-03.jpg",
+          "caption": "参考答案页 p.3",
+          "alt": "2024考研数学三参考答案页 p.3"
+        }
+      ],
+      "tags": ["math3", "2024", "填空题"],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2024-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:5c813bace3879469c88adfed975cf6e0650d8988965b1116b77e38fd02ac080c",
+      "answerTextHash": "sha256:2a7656195594bba7c9294aac86cd9a138a945a37221474e0ff92c3959f8ee8be",
+      "sourceEvidence": {
+        "evidenceId": "math3-2024-q11",
+        "sourceId": "src_d9c2b923d74ae9283b1647f1",
+        "answerSourceId": "src_d9c2b923d74ae9283b1647f1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "inline_answer_paper_page_image",
+        "sourceEvidenceId": "math3-2024-paper-answer",
+        "answerEvidenceId": "math3-2024-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:2a7656195594bba7c9294aac86cd9a138a945a37221474e0ff92c3959f8ee8be"
+      }
+    },
+    {
+      "id": "math3-2024-012",
+      "number": 12,
+      "paperId": "math3-2024",
+      "paperName": "2024考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2024",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2024考研数学三第12题（填空题）。题干、公式和图形以原 PDF 页图为准。",
+      "options": [],
+      "answer": "1/2 ln 3 - pi/8",
+      "explanation": "答案来自本地百度网盘 2024 数学三真题及参考答案 PDF；完整演算、证明或推导过程见原 PDF 页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2024/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2024考研数学三试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2024/answer-page-03.jpg",
+          "caption": "参考答案页 p.3",
+          "alt": "2024考研数学三参考答案页 p.3"
+        }
+      ],
+      "tags": ["math3", "2024", "填空题"],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2024-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:c5f81b00aaaf255dc2f4663c739cc3a9edb075a36ea61b24d09ac545cdae6b9f",
+      "answerTextHash": "sha256:3d63c094a8d4d648c551220dc5984c7b553c640e835d06dea8090537cf20b064",
+      "sourceEvidence": {
+        "evidenceId": "math3-2024-q12",
+        "sourceId": "src_d9c2b923d74ae9283b1647f1",
+        "answerSourceId": "src_d9c2b923d74ae9283b1647f1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "inline_answer_paper_page_image",
+        "sourceEvidenceId": "math3-2024-paper-answer",
+        "answerEvidenceId": "math3-2024-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:3d63c094a8d4d648c551220dc5984c7b553c640e835d06dea8090537cf20b064"
+      }
+    },
+    {
+      "id": "math3-2024-013",
+      "number": 13,
+      "paperId": "math3-2024",
+      "paperName": "2024考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2024",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2024考研数学三第13题（填空题）。题干、公式和图形以原 PDF 页图为准。",
+      "options": [],
+      "answer": "(1,1)",
+      "explanation": "答案来自本地百度网盘 2024 数学三真题及参考答案 PDF；完整演算、证明或推导过程见原 PDF 页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2024/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2024考研数学三试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2024/answer-page-03.jpg",
+          "caption": "参考答案页 p.3",
+          "alt": "2024考研数学三参考答案页 p.3"
+        }
+      ],
+      "tags": ["math3", "2024", "填空题"],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2024-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:0e31de69f1c744a54ead2d53312f6ad29ce05dc62610f132762e23d9cba6fa63",
+      "answerTextHash": "sha256:9d02acb04b1f24294138a354e2d26df1d82fbb79e44bab38a60586f25ed7e6f2",
+      "sourceEvidence": {
+        "evidenceId": "math3-2024-q13",
+        "sourceId": "src_d9c2b923d74ae9283b1647f1",
+        "answerSourceId": "src_d9c2b923d74ae9283b1647f1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "inline_answer_paper_page_image",
+        "sourceEvidenceId": "math3-2024-paper-answer",
+        "answerEvidenceId": "math3-2024-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:9d02acb04b1f24294138a354e2d26df1d82fbb79e44bab38a60586f25ed7e6f2"
+      }
+    },
+    {
+      "id": "math3-2024-014",
+      "number": 14,
+      "paperId": "math3-2024",
+      "paperName": "2024考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2024",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2024考研数学三第14题（填空题）。题干、公式和图形以原 PDF 页图为准。",
+      "options": [],
+      "answer": "50",
+      "explanation": "答案来自本地百度网盘 2024 数学三真题及参考答案 PDF；完整演算、证明或推导过程见原 PDF 页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2024/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2024考研数学三试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2024/answer-page-03.jpg",
+          "caption": "参考答案页 p.3",
+          "alt": "2024考研数学三参考答案页 p.3"
+        }
+      ],
+      "tags": ["math3", "2024", "填空题"],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2024-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:c05f0f42cba4b703be52271c5d6c3e6837fc1069f601afc58bf43883d8092753",
+      "answerTextHash": "sha256:24da595c7cace60516d855e146a562fc768f9fe608c0ef1599cb0df954b7fee7",
+      "sourceEvidence": {
+        "evidenceId": "math3-2024-q14",
+        "sourceId": "src_d9c2b923d74ae9283b1647f1",
+        "answerSourceId": "src_d9c2b923d74ae9283b1647f1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "inline_answer_paper_page_image",
+        "sourceEvidenceId": "math3-2024-paper-answer",
+        "answerEvidenceId": "math3-2024-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:24da595c7cace60516d855e146a562fc768f9fe608c0ef1599cb0df954b7fee7"
+      }
+    },
+    {
+      "id": "math3-2024-015",
+      "number": 15,
+      "paperId": "math3-2024",
+      "paperName": "2024考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2024",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2024考研数学三第15题（填空题）。题干、公式和图形以原 PDF 页图为准。",
+      "options": [],
+      "answer": "16",
+      "explanation": "答案来自本地百度网盘 2024 数学三真题及参考答案 PDF；完整演算、证明或推导过程见原 PDF 页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2024/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2024考研数学三试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2024/answer-page-03.jpg",
+          "caption": "参考答案页 p.3",
+          "alt": "2024考研数学三参考答案页 p.3"
+        }
+      ],
+      "tags": ["math3", "2024", "填空题"],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2024-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:2b6d6cc5582f65d640b35f663fa7ba7c04b3ae83854e722e8c4d991eb09bed8c",
+      "answerTextHash": "sha256:19a520ce2e1e3a69fa1da2b0959482294744f4c4aff1941760d48caa00586c33",
+      "sourceEvidence": {
+        "evidenceId": "math3-2024-q15",
+        "sourceId": "src_d9c2b923d74ae9283b1647f1",
+        "answerSourceId": "src_d9c2b923d74ae9283b1647f1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "inline_answer_paper_page_image",
+        "sourceEvidenceId": "math3-2024-paper-answer",
+        "answerEvidenceId": "math3-2024-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:19a520ce2e1e3a69fa1da2b0959482294744f4c4aff1941760d48caa00586c33"
+      }
+    },
+    {
+      "id": "math3-2024-016",
+      "number": 16,
+      "paperId": "math3-2024",
+      "paperName": "2024考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2024",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2024考研数学三第16题（填空题）。题干、公式和图形以原 PDF 页图为准。",
+      "options": [],
+      "answer": "2/3",
+      "explanation": "答案来自本地百度网盘 2024 数学三真题及参考答案 PDF；完整演算、证明或推导过程见原 PDF 页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2024/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2024考研数学三试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2024/answer-page-03.jpg",
+          "caption": "参考答案页 p.3",
+          "alt": "2024考研数学三参考答案页 p.3"
+        }
+      ],
+      "tags": ["math3", "2024", "填空题"],
+      "difficulty": 2,
+      "sourceEvidenceId": "math3-2024-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:443484f8259cb6746c89b1d9a66086363e48ed3a0463ac0a8ebe2db3570f1304",
+      "answerTextHash": "sha256:53695b6093594e31ffd4d146a767c38013d9f5f45f70f13b54ee3d0acc1f819d",
+      "sourceEvidence": {
+        "evidenceId": "math3-2024-q16",
+        "sourceId": "src_d9c2b923d74ae9283b1647f1",
+        "answerSourceId": "src_d9c2b923d74ae9283b1647f1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "inline_answer_paper_page_image",
+        "sourceEvidenceId": "math3-2024-paper-answer",
+        "answerEvidenceId": "math3-2024-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:53695b6093594e31ffd4d146a767c38013d9f5f45f70f13b54ee3d0acc1f819d"
+      }
+    },
+    {
+      "id": "math3-2024-017",
+      "number": 17,
+      "paperId": "math3-2024",
+      "paperName": "2024考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2024",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2024考研数学三第17题（解答题）。题干、公式和图形以原 PDF 页图为准。",
+      "options": [],
+      "answer": "8/3 ln 3",
+      "explanation": "答案来自本地百度网盘 2024 数学三真题及参考答案 PDF；完整演算、证明或推导过程见原 PDF 页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2024/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2024考研数学三试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2024/answer-page-03.jpg",
+          "caption": "参考答案页 p.3",
+          "alt": "2024考研数学三参考答案页 p.3"
+        }
+      ],
+      "tags": ["math3", "2024", "解答题"],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2024-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:da6e11b54b2de15cc007c53e45d0f9e4a38890c760a066829654e026129422bb",
+      "answerTextHash": "sha256:45a702fced26ee871d176f1d590467ccd063b785309eedcdcdf576d233500119",
+      "sourceEvidence": {
+        "evidenceId": "math3-2024-q17",
+        "sourceId": "src_d9c2b923d74ae9283b1647f1",
+        "answerSourceId": "src_d9c2b923d74ae9283b1647f1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "inline_answer_paper_page_image",
+        "sourceEvidenceId": "math3-2024-paper-answer",
+        "answerEvidenceId": "math3-2024-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:45a702fced26ee871d176f1d590467ccd063b785309eedcdcdf576d233500119"
+      }
+    },
+    {
+      "id": "math3-2024-018",
+      "number": 18,
+      "paperId": "math3-2024",
+      "paperName": "2024考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2024",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2024考研数学三第18题（解答题）。题干、公式和图形以原 PDF 页图为准。",
+      "options": [],
+      "answer": "-1 - 2ln2",
+      "explanation": "答案来自本地百度网盘 2024 数学三真题及参考答案 PDF；完整演算、证明或推导过程见原 PDF 页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2024/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2024考研数学三试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2024/answer-page-04.jpg",
+          "caption": "参考答案页 p.4",
+          "alt": "2024考研数学三参考答案页 p.4"
+        }
+      ],
+      "tags": ["math3", "2024", "解答题"],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2024-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:5a6e955b54074f9e8031306a30fafb8de1a169c28ac0ba56119cf9beb0c105bc",
+      "answerTextHash": "sha256:0e9288e8e086d5fd790970df7d57f6a6d7f301c8e87d676fbf77b9fc86b562fe",
+      "sourceEvidence": {
+        "evidenceId": "math3-2024-q18",
+        "sourceId": "src_d9c2b923d74ae9283b1647f1",
+        "answerSourceId": "src_d9c2b923d74ae9283b1647f1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "inline_answer_paper_page_image",
+        "sourceEvidenceId": "math3-2024-paper-answer",
+        "answerEvidenceId": "math3-2024-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:0e9288e8e086d5fd790970df7d57f6a6d7f301c8e87d676fbf77b9fc86b562fe"
+      }
+    },
+    {
+      "id": "math3-2024-019",
+      "number": 19,
+      "paperId": "math3-2024",
+      "paperName": "2024考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2024",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2024考研数学三第19题（解答题）。题干、公式和图形以原 PDF 页图为准。",
+      "options": [],
+      "answer": "1/16 ln 2 + 3/64",
+      "explanation": "答案来自本地百度网盘 2024 数学三真题及参考答案 PDF；完整演算、证明或推导过程见原 PDF 页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2024/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2024考研数学三试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2024/answer-page-04.jpg",
+          "caption": "参考答案页 p.4",
+          "alt": "2024考研数学三参考答案页 p.4"
+        }
+      ],
+      "tags": ["math3", "2024", "解答题"],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2024-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:6e7786ab7047a83739c61c12de552ba7c475d5431b34504739b494371015e7dc",
+      "answerTextHash": "sha256:08a05a963448fae6c1ceb129a1dc031e404034de8fac0adf0dd7f62ce6d0c1d1",
+      "sourceEvidence": {
+        "evidenceId": "math3-2024-q19",
+        "sourceId": "src_d9c2b923d74ae9283b1647f1",
+        "answerSourceId": "src_d9c2b923d74ae9283b1647f1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "inline_answer_paper_page_image",
+        "sourceEvidenceId": "math3-2024-paper-answer",
+        "answerEvidenceId": "math3-2024-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:08a05a963448fae6c1ceb129a1dc031e404034de8fac0adf0dd7f62ce6d0c1d1"
+      }
+    },
+    {
+      "id": "math3-2024-020",
+      "number": 20,
+      "paperId": "math3-2024",
+      "paperName": "2024考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2024",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2024考研数学三第20题（解答题）。题干、公式和图形以原 PDF 页图为准。",
+      "options": [],
+      "answer": "证明过程见原 PDF 页图；第(1)问用 x=0 与 x=1 处泰勒展开，第(2)问对第(1)问结果积分。",
+      "explanation": "答案来自本地百度网盘 2024 数学三真题及参考答案 PDF；完整演算、证明或推导过程见原 PDF 页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2024/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2024考研数学三试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2024/answer-page-04.jpg",
+          "caption": "参考答案页 p.4",
+          "alt": "2024考研数学三参考答案页 p.4"
+        }
+      ],
+      "tags": ["math3", "2024", "解答题"],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2024-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:1dcfaec2dd877a5a907e7c9d46eb9c12fa644b7542fc20aba2334d1205621bc9",
+      "answerTextHash": "sha256:fee0f1d4a9547d66e7cff53b380c872fa5825fffe38ddb2cfb52bb8b27c76aa9",
+      "sourceEvidence": {
+        "evidenceId": "math3-2024-q20",
+        "sourceId": "src_d9c2b923d74ae9283b1647f1",
+        "answerSourceId": "src_d9c2b923d74ae9283b1647f1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "inline_answer_paper_page_image",
+        "sourceEvidenceId": "math3-2024-paper-answer",
+        "answerEvidenceId": "math3-2024-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:fee0f1d4a9547d66e7cff53b380c872fa5825fffe38ddb2cfb52bb8b27c76aa9"
+      }
+    },
+    {
+      "id": "math3-2024-021",
+      "number": 21,
+      "paperId": "math3-2024",
+      "paperName": "2024考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2024",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2024考研数学三第21题（解答题）。题干、公式和图形以原 PDF 页图为准。",
+      "options": [],
+      "answer": "第(1)问证明过程见原 PDF 页图；第(2)问 a = 1。",
+      "explanation": "答案来自本地百度网盘 2024 数学三真题及参考答案 PDF；完整演算、证明或推导过程见原 PDF 页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2024/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2024考研数学三试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2024/answer-page-04.jpg",
+          "caption": "参考答案页 p.4",
+          "alt": "2024考研数学三参考答案页 p.4"
+        }
+      ],
+      "tags": ["math3", "2024", "解答题"],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2024-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:a3277eedaf9d22dab405729851f4fc0eac152289c624855a2c91a662077c6d0f",
+      "answerTextHash": "sha256:6a8c7d21e0b8e430f45c5523c8135443c7a5e15c2d29bc5a30d67a509f699136",
+      "sourceEvidence": {
+        "evidenceId": "math3-2024-q21",
+        "sourceId": "src_d9c2b923d74ae9283b1647f1",
+        "answerSourceId": "src_d9c2b923d74ae9283b1647f1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "inline_answer_paper_page_image",
+        "sourceEvidenceId": "math3-2024-paper-answer",
+        "answerEvidenceId": "math3-2024-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:6a8c7d21e0b8e430f45c5523c8135443c7a5e15c2d29bc5a30d67a509f699136"
+      }
+    },
+    {
+      "id": "math3-2024-022",
+      "number": 22,
+      "paperId": "math3-2024",
+      "paperName": "2024考研数学三真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math3",
+      "year": "2024",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2024考研数学三第22题（解答题）。题干、公式和图形以原 PDF 页图为准。",
+      "options": [],
+      "answer": "第(1)问 c=(n+1)/n；第(2)问 c=(n+2)/(n+1)。",
+      "explanation": "答案来自本地百度网盘 2024 数学三真题及参考答案 PDF；完整演算、证明或推导过程见原 PDF 页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math3-2024/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2024考研数学三试卷原页 p.4"
+        },
+        {
+          "src": "question-bank/math3-2024/paper-page-05.jpg",
+          "caption": "试卷原页 p.5",
+          "alt": "2024考研数学三试卷原页 p.5"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math3-2024/answer-page-04.jpg",
+          "caption": "参考答案页 p.4",
+          "alt": "2024考研数学三参考答案页 p.4"
+        },
+        {
+          "src": "question-bank/math3-2024/answer-page-05.jpg",
+          "caption": "参考答案页 p.5",
+          "alt": "2024考研数学三参考答案页 p.5"
+        }
+      ],
+      "tags": ["math3", "2024", "解答题"],
+      "difficulty": 3,
+      "sourceEvidenceId": "math3-2024-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:a352148b43ca2f99844a455804eb0ffc9a4a3d89abc11eb5840d5b40d18e764e",
+      "answerTextHash": "sha256:b60ad846bb290ce702b784842af078b6b81c90e48c5265c2a3fc0ebb7b9d67ce",
+      "sourceEvidence": {
+        "evidenceId": "math3-2024-q22",
+        "sourceId": "src_d9c2b923d74ae9283b1647f1",
+        "answerSourceId": "src_d9c2b923d74ae9283b1647f1",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "inline_answer_paper_page_image",
+        "sourceEvidenceId": "math3-2024-paper-answer",
+        "answerEvidenceId": "math3-2024-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:b60ad846bb290ce702b784842af078b6b81c90e48c5265c2a3fc0ebb7b9d67ce"
+      }
+    }
+  ]
+}

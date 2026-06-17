@@ -26,11 +26,7 @@
   "assetRoot": "question-bank/politics-2013",
   "processed_at": "2026-05-27T03:26:03Z",
   "total_cards": 38,
-  "sections": [
-    "单项选择",
-    "多项选择",
-    "分析题"
-  ],
+  "sections": ["单项选择", "多项选择", "分析题"],
   "cards": [
     {
       "id": "politics-2013-001",
@@ -78,11 +74,7 @@
           "alt": "2013考研政治答案原页 p.1"
         }
       ],
-      "tags": [
-        "politics",
-        "2013",
-        "单项选择"
-      ],
+      "tags": ["politics", "2013", "单项选择"],
       "difficulty": 2,
       "source": "politics-2013-paper-answer",
       "sourceEvidenceId": "politics-2013-paper-answer",
@@ -156,11 +148,7 @@
           "alt": "2013考研政治答案原页 p.1"
         }
       ],
-      "tags": [
-        "politics",
-        "2013",
-        "单项选择"
-      ],
+      "tags": ["politics", "2013", "单项选择"],
       "difficulty": 2,
       "source": "politics-2013-paper-answer",
       "sourceEvidenceId": "politics-2013-paper-answer",
@@ -239,11 +227,7 @@
           "alt": "2013考研政治答案原页 p.2"
         }
       ],
-      "tags": [
-        "politics",
-        "2013",
-        "单项选择"
-      ],
+      "tags": ["politics", "2013", "单项选择"],
       "difficulty": 2,
       "source": "politics-2013-paper-answer",
       "sourceEvidenceId": "politics-2013-paper-answer",
@@ -317,11 +301,7 @@
           "alt": "2013考研政治答案原页 p.2"
         }
       ],
-      "tags": [
-        "politics",
-        "2013",
-        "单项选择"
-      ],
+      "tags": ["politics", "2013", "单项选择"],
       "difficulty": 2,
       "source": "politics-2013-paper-answer",
       "sourceEvidenceId": "politics-2013-paper-answer",
@@ -395,11 +375,7 @@
           "alt": "2013考研政治答案原页 p.2"
         }
       ],
-      "tags": [
-        "politics",
-        "2013",
-        "单项选择"
-      ],
+      "tags": ["politics", "2013", "单项选择"],
       "difficulty": 2,
       "source": "politics-2013-paper-answer",
       "sourceEvidenceId": "politics-2013-paper-answer",
@@ -473,11 +449,7 @@
           "alt": "2013考研政治答案原页 p.2"
         }
       ],
-      "tags": [
-        "politics",
-        "2013",
-        "单项选择"
-      ],
+      "tags": ["politics", "2013", "单项选择"],
       "difficulty": 2,
       "source": "politics-2013-paper-answer",
       "sourceEvidenceId": "politics-2013-paper-answer",
@@ -556,11 +528,7 @@
           "alt": "2013考研政治答案原页 p.3"
         }
       ],
-      "tags": [
-        "politics",
-        "2013",
-        "单项选择"
-      ],
+      "tags": ["politics", "2013", "单项选择"],
       "difficulty": 2,
       "source": "politics-2013-paper-answer",
       "sourceEvidenceId": "politics-2013-paper-answer",
@@ -634,11 +602,7 @@
           "alt": "2013考研政治答案原页 p.3"
         }
       ],
-      "tags": [
-        "politics",
-        "2013",
-        "单项选择"
-      ],
+      "tags": ["politics", "2013", "单项选择"],
       "difficulty": 2,
       "source": "politics-2013-paper-answer",
       "sourceEvidenceId": "politics-2013-paper-answer",
@@ -712,11 +676,7 @@
           "alt": "2013考研政治答案原页 p.3"
         }
       ],
-      "tags": [
-        "politics",
-        "2013",
-        "单项选择"
-      ],
+      "tags": ["politics", "2013", "单项选择"],
       "difficulty": 2,
       "source": "politics-2013-paper-answer",
       "sourceEvidenceId": "politics-2013-paper-answer",
@@ -795,11 +755,7 @@
           "alt": "2013考研政治答案原页 p.4"
         }
       ],
-      "tags": [
-        "politics",
-        "2013",
-        "单项选择"
-      ],
+      "tags": ["politics", "2013", "单项选择"],
       "difficulty": 2,
       "source": "politics-2013-paper-answer",
       "sourceEvidenceId": "politics-2013-paper-answer",
@@ -873,11 +829,7 @@
           "alt": "2013考研政治答案原页 p.4"
         }
       ],
-      "tags": [
-        "politics",
-        "2013",
-        "单项选择"
-      ],
+      "tags": ["politics", "2013", "单项选择"],
       "difficulty": 2,
       "source": "politics-2013-paper-answer",
       "sourceEvidenceId": "politics-2013-paper-answer",
@@ -951,11 +903,7 @@
           "alt": "2013考研政治答案原页 p.4"
         }
       ],
-      "tags": [
-        "politics",
-        "2013",
-        "单项选择"
-      ],
+      "tags": ["politics", "2013", "单项选择"],
       "difficulty": 2,
       "source": "politics-2013-paper-answer",
       "sourceEvidenceId": "politics-2013-paper-answer",
@@ -1034,11 +982,7 @@
           "alt": "2013考研政治答案原页 p.5"
         }
       ],
-      "tags": [
-        "politics",
-        "2013",
-        "单项选择"
-      ],
+      "tags": ["politics", "2013", "单项选择"],
       "difficulty": 2,
       "source": "politics-2013-paper-answer",
       "sourceEvidenceId": "politics-2013-paper-answer",
@@ -1112,11 +1056,7 @@
           "alt": "2013考研政治答案原页 p.5"
         }
       ],
-      "tags": [
-        "politics",
-        "2013",
-        "单项选择"
-      ],
+      "tags": ["politics", "2013", "单项选择"],
       "difficulty": 2,
       "source": "politics-2013-paper-answer",
       "sourceEvidenceId": "politics-2013-paper-answer",
@@ -1190,11 +1130,7 @@
           "alt": "2013考研政治答案原页 p.5"
         }
       ],
-      "tags": [
-        "politics",
-        "2013",
-        "单项选择"
-      ],
+      "tags": ["politics", "2013", "单项选择"],
       "difficulty": 2,
       "source": "politics-2013-paper-answer",
       "sourceEvidenceId": "politics-2013-paper-answer",
@@ -1273,11 +1209,7 @@
           "alt": "2013考研政治答案原页 p.6"
         }
       ],
-      "tags": [
-        "politics",
-        "2013",
-        "单项选择"
-      ],
+      "tags": ["politics", "2013", "单项选择"],
       "difficulty": 2,
       "source": "politics-2013-paper-answer",
       "sourceEvidenceId": "politics-2013-paper-answer",
@@ -1351,11 +1283,7 @@
           "alt": "2013考研政治答案原页 p.6"
         }
       ],
-      "tags": [
-        "politics",
-        "2013",
-        "多项选择"
-      ],
+      "tags": ["politics", "2013", "多项选择"],
       "difficulty": 2,
       "source": "politics-2013-paper-answer",
       "sourceEvidenceId": "politics-2013-paper-answer",
@@ -1429,11 +1357,7 @@
           "alt": "2013考研政治答案原页 p.6"
         }
       ],
-      "tags": [
-        "politics",
-        "2013",
-        "多项选择"
-      ],
+      "tags": ["politics", "2013", "多项选择"],
       "difficulty": 2,
       "source": "politics-2013-paper-answer",
       "sourceEvidenceId": "politics-2013-paper-answer",
@@ -1512,11 +1436,7 @@
           "alt": "2013考研政治答案原页 p.7"
         }
       ],
-      "tags": [
-        "politics",
-        "2013",
-        "多项选择"
-      ],
+      "tags": ["politics", "2013", "多项选择"],
       "difficulty": 2,
       "source": "politics-2013-paper-answer",
       "sourceEvidenceId": "politics-2013-paper-answer",
@@ -1590,11 +1510,7 @@
           "alt": "2013考研政治答案原页 p.7"
         }
       ],
-      "tags": [
-        "politics",
-        "2013",
-        "多项选择"
-      ],
+      "tags": ["politics", "2013", "多项选择"],
       "difficulty": 2,
       "source": "politics-2013-paper-answer",
       "sourceEvidenceId": "politics-2013-paper-answer",
@@ -1668,11 +1584,7 @@
           "alt": "2013考研政治答案原页 p.7"
         }
       ],
-      "tags": [
-        "politics",
-        "2013",
-        "多项选择"
-      ],
+      "tags": ["politics", "2013", "多项选择"],
       "difficulty": 2,
       "source": "politics-2013-paper-answer",
       "sourceEvidenceId": "politics-2013-paper-answer",
@@ -1746,11 +1658,7 @@
           "alt": "2013考研政治答案原页 p.7"
         }
       ],
-      "tags": [
-        "politics",
-        "2013",
-        "多项选择"
-      ],
+      "tags": ["politics", "2013", "多项选择"],
       "difficulty": 2,
       "source": "politics-2013-paper-answer",
       "sourceEvidenceId": "politics-2013-paper-answer",
@@ -1829,11 +1737,7 @@
           "alt": "2013考研政治答案原页 p.8"
         }
       ],
-      "tags": [
-        "politics",
-        "2013",
-        "多项选择"
-      ],
+      "tags": ["politics", "2013", "多项选择"],
       "difficulty": 2,
       "source": "politics-2013-paper-answer",
       "sourceEvidenceId": "politics-2013-paper-answer",
@@ -1907,11 +1811,7 @@
           "alt": "2013考研政治答案原页 p.8"
         }
       ],
-      "tags": [
-        "politics",
-        "2013",
-        "多项选择"
-      ],
+      "tags": ["politics", "2013", "多项选择"],
       "difficulty": 2,
       "source": "politics-2013-paper-answer",
       "sourceEvidenceId": "politics-2013-paper-answer",
@@ -1985,11 +1885,7 @@
           "alt": "2013考研政治答案原页 p.8"
         }
       ],
-      "tags": [
-        "politics",
-        "2013",
-        "多项选择"
-      ],
+      "tags": ["politics", "2013", "多项选择"],
       "difficulty": 2,
       "source": "politics-2013-paper-answer",
       "sourceEvidenceId": "politics-2013-paper-answer",
@@ -2068,11 +1964,7 @@
           "alt": "2013考研政治答案原页 p.9"
         }
       ],
-      "tags": [
-        "politics",
-        "2013",
-        "多项选择"
-      ],
+      "tags": ["politics", "2013", "多项选择"],
       "difficulty": 2,
       "source": "politics-2013-paper-answer",
       "sourceEvidenceId": "politics-2013-paper-answer",
@@ -2146,11 +2038,7 @@
           "alt": "2013考研政治答案原页 p.9"
         }
       ],
-      "tags": [
-        "politics",
-        "2013",
-        "多项选择"
-      ],
+      "tags": ["politics", "2013", "多项选择"],
       "difficulty": 2,
       "source": "politics-2013-paper-answer",
       "sourceEvidenceId": "politics-2013-paper-answer",
@@ -2224,11 +2112,7 @@
           "alt": "2013考研政治答案原页 p.9"
         }
       ],
-      "tags": [
-        "politics",
-        "2013",
-        "多项选择"
-      ],
+      "tags": ["politics", "2013", "多项选择"],
       "difficulty": 2,
       "source": "politics-2013-paper-answer",
       "sourceEvidenceId": "politics-2013-paper-answer",
@@ -2307,11 +2191,7 @@
           "alt": "2013考研政治答案原页 p.10"
         }
       ],
-      "tags": [
-        "politics",
-        "2013",
-        "多项选择"
-      ],
+      "tags": ["politics", "2013", "多项选择"],
       "difficulty": 2,
       "source": "politics-2013-paper-answer",
       "sourceEvidenceId": "politics-2013-paper-answer",
@@ -2385,11 +2265,7 @@
           "alt": "2013考研政治答案原页 p.10"
         }
       ],
-      "tags": [
-        "politics",
-        "2013",
-        "多项选择"
-      ],
+      "tags": ["politics", "2013", "多项选择"],
       "difficulty": 2,
       "source": "politics-2013-paper-answer",
       "sourceEvidenceId": "politics-2013-paper-answer",
@@ -2463,11 +2339,7 @@
           "alt": "2013考研政治答案原页 p.10"
         }
       ],
-      "tags": [
-        "politics",
-        "2013",
-        "多项选择"
-      ],
+      "tags": ["politics", "2013", "多项选择"],
       "difficulty": 2,
       "source": "politics-2013-paper-answer",
       "sourceEvidenceId": "politics-2013-paper-answer",
@@ -2541,11 +2413,7 @@
           "alt": "2013考研政治答案原页 p.10"
         }
       ],
-      "tags": [
-        "politics",
-        "2013",
-        "多项选择"
-      ],
+      "tags": ["politics", "2013", "多项选择"],
       "difficulty": 2,
       "source": "politics-2013-paper-answer",
       "sourceEvidenceId": "politics-2013-paper-answer",
@@ -2624,11 +2492,7 @@
           "alt": "2013考研政治答案原页 p.11"
         }
       ],
-      "tags": [
-        "politics",
-        "2013",
-        "多项选择"
-      ],
+      "tags": ["politics", "2013", "多项选择"],
       "difficulty": 2,
       "source": "politics-2013-paper-answer",
       "sourceEvidenceId": "politics-2013-paper-answer",
@@ -2690,11 +2554,7 @@
           "alt": "2013考研政治答案原页 p.12"
         }
       ],
-      "tags": [
-        "politics",
-        "2013",
-        "分析题"
-      ],
+      "tags": ["politics", "2013", "分析题"],
       "difficulty": 3,
       "source": "politics-2013-paper-answer",
       "sourceEvidenceId": "politics-2013-paper-answer",
@@ -2761,11 +2621,7 @@
           "alt": "2013考研政治答案原页 p.14"
         }
       ],
-      "tags": [
-        "politics",
-        "2013",
-        "分析题"
-      ],
+      "tags": ["politics", "2013", "分析题"],
       "difficulty": 3,
       "source": "politics-2013-paper-answer",
       "sourceEvidenceId": "politics-2013-paper-answer",
@@ -2827,11 +2683,7 @@
           "alt": "2013考研政治答案原页 p.15"
         }
       ],
-      "tags": [
-        "politics",
-        "2013",
-        "分析题"
-      ],
+      "tags": ["politics", "2013", "分析题"],
       "difficulty": 3,
       "source": "politics-2013-paper-answer",
       "sourceEvidenceId": "politics-2013-paper-answer",
@@ -2893,11 +2745,7 @@
           "alt": "2013考研政治答案原页 p.16"
         }
       ],
-      "tags": [
-        "politics",
-        "2013",
-        "分析题"
-      ],
+      "tags": ["politics", "2013", "分析题"],
       "difficulty": 3,
       "source": "politics-2013-paper-answer",
       "sourceEvidenceId": "politics-2013-paper-answer",
@@ -2959,11 +2807,7 @@
           "alt": "2013考研政治答案原页 p.17"
         }
       ],
-      "tags": [
-        "politics",
-        "2013",
-        "分析题"
-      ],
+      "tags": ["politics", "2013", "分析题"],
       "difficulty": 3,
       "source": "politics-2013-paper-answer",
       "sourceEvidenceId": "politics-2013-paper-answer",

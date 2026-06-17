@@ -776,6 +776,129 @@ class BaiduCleaningRunnerTest(unittest.TestCase):
         self.assertEqual(report["completed"], 0)
         self.assertEqual(report["failed"], 1)
 
+    def test_run_queue_once_can_recover_failed_task_when_existing_output_passes_quality(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            local_pdf = Path(tmp) / "raw" / "src_1-2021英语一.pdf"
+            local_pdf.parent.mkdir(parents=True)
+            local_pdf.write_bytes(b"%PDF-1.4")
+
+            def passing_processor(task, local_path):
+                return {
+                    "outputPath": "data/flashcards/english1-2021.json",
+                    "questionCount": 52,
+                    "missingAnswerCount": 0,
+                    "answerEvidenceStatus": "manual_review",
+                    "typeCounts": {"single_choice": 45, "translation": 5, "essay": 2},
+                    "qualityIssues": [],
+                }
+
+            queue = {
+                "tasks": [
+                    {
+                        "taskId": "t_recovered",
+                        "action": "download_and_extract",
+                        "status": "failed",
+                        "attempts": 1,
+                        "priority": 100,
+                        "remotePath": "/EXAM-MASTER/考研历年真题/2021英语一.pdf",
+                        "expectedLocalPath": str(local_pdf),
+                        "subject": "english",
+                        "track": "english1",
+                        "year": 2021,
+                        "lastError": "processor quality gate failed",
+                    }
+                ]
+            }
+
+            updated, report = run_queue_once(
+                queue,
+                limit=1,
+                task_id="t_recovered",
+                now="2026-06-06T00:00:00Z",
+                processor=passing_processor,
+            )
+
+        task = updated["tasks"][0]
+        self.assertEqual(task["status"], "completed")
+        self.assertEqual(task["attempts"], 2)
+        self.assertNotIn("lastError", task)
+        self.assertEqual(task["questionCount"], 52)
+        self.assertEqual(report["completed"], 1)
+        self.assertEqual(report["failed"], 0)
+
+    def test_run_queue_once_reuses_existing_passing_output_without_processor(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            original_project_root = runner.PROJECT_ROOT
+            tmp_root = Path(tmp)
+            local_pdf = tmp_root / "raw" / "src_1-2021英语一.pdf"
+            local_pdf.parent.mkdir(parents=True)
+            local_pdf.write_bytes(b"%PDF-1.4")
+            output_path = tmp_root / "data" / "flashcards" / "english1-2021.json"
+            output_path.parent.mkdir(parents=True)
+            cards = (
+                [
+                    {
+                        "id": f"english1-2021-{index:03d}",
+                        "type": "single_choice",
+                        "answer": "A",
+                        "options": [{"label": label, "text": label} for label in "ABCD"],
+                    }
+                    for index in range(1, 46)
+                ]
+                + [
+                    {"id": f"english1-2021-{index:03d}", "type": "translation", "answer": "译文"}
+                    for index in range(46, 51)
+                ]
+                + [
+                    {"id": f"english1-2021-{index:03d}", "type": "essay", "answer": "写作任务"}
+                    for index in range(51, 53)
+                ]
+            )
+            output_path.write_text(
+                runner.json.dumps({"total_cards": 52, "cards": cards}, ensure_ascii=False),
+                encoding="utf-8",
+            )
+
+            def should_not_run_processor(task, local_path):
+                raise AssertionError("processor should not run when existing output already passes quality gates")
+
+            queue = {
+                "tasks": [
+                    {
+                        "taskId": "t_recovered",
+                        "action": "download_and_extract",
+                        "status": "failed",
+                        "attempts": 1,
+                        "priority": 100,
+                        "remotePath": "/EXAM-MASTER/考研历年真题/2021英语一.pdf",
+                        "expectedLocalPath": str(local_pdf),
+                        "subject": "english",
+                        "track": "english1",
+                        "year": 2021,
+                        "lastError": "processor quality gate failed",
+                    }
+                ]
+            }
+
+            try:
+                runner.PROJECT_ROOT = tmp_root
+                updated, report = run_queue_once(
+                    queue,
+                    limit=1,
+                    task_id="t_recovered",
+                    now="2026-06-06T00:00:00Z",
+                    processor=should_not_run_processor,
+                )
+            finally:
+                runner.PROJECT_ROOT = original_project_root
+
+        task = updated["tasks"][0]
+        self.assertEqual(task["status"], "completed")
+        self.assertEqual(task["questionCount"], 52)
+        self.assertEqual(task["typeCounts"], {"single_choice": 45, "translation": 5, "essay": 2})
+        self.assertEqual(report["completed"], 1)
+        self.assertEqual(report["failed"], 0)
+
     def test_default_processor_uses_track_specific_output_to_avoid_overwrites(self):
         with tempfile.TemporaryDirectory() as tmp:
             original_project_root = runner.PROJECT_ROOT
@@ -809,6 +932,45 @@ class BaiduCleaningRunnerTest(unittest.TestCase):
 
         self.assertEqual(calls[0][0][-2:], ["english1", "2001"])
         self.assertTrue(result["outputPath"].endswith("data/flashcards/english1-2001.json"))
+
+    def test_default_processor_can_use_dedicated_pdf2flashcard_python(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            original_project_root = runner.PROJECT_ROOT
+            original_pdf2flashcard = runner.PDF2FLASHCARD
+            original_subprocess_run = runner.subprocess.run
+            original_python = runner.os.environ.get("PDF2FLASHCARD_PYTHON")
+            tmp_root = Path(tmp)
+            output_dir = tmp_root / "data" / "flashcards"
+            output_dir.mkdir(parents=True)
+            (output_dir / "english1-2021.json").write_text(
+                '{"total_cards":52,"cards":[{"id":"english1-2021-001","type":"single_choice","answer":"A","options":["A","B","C","D"]}]}',
+                encoding="utf-8",
+            )
+            calls = []
+
+            def fake_run(args, cwd, check):
+                calls.append((args, cwd, check))
+
+            try:
+                runner.PROJECT_ROOT = tmp_root
+                runner.PDF2FLASHCARD = tmp_root / "scripts" / "pipeline" / "pdf2flashcard-v2.py"
+                runner.subprocess.run = fake_run
+                runner.os.environ["PDF2FLASHCARD_PYTHON"] = "/opt/project-python/bin/python"
+
+                runner.default_processor(
+                    {"subject": "english", "track": "english1", "year": 2021},
+                    tmp_root / "raw" / "2021.pdf",
+                )
+            finally:
+                runner.PROJECT_ROOT = original_project_root
+                runner.PDF2FLASHCARD = original_pdf2flashcard
+                runner.subprocess.run = original_subprocess_run
+                if original_python is None:
+                    runner.os.environ.pop("PDF2FLASHCARD_PYTHON", None)
+                else:
+                    runner.os.environ["PDF2FLASHCARD_PYTHON"] = original_python
+
+        self.assertEqual(calls[0][0][0], "/opt/project-python/bin/python")
 
     def test_default_processor_counts_known_answer_placeholders_as_missing(self):
         with tempfile.TemporaryDirectory() as tmp:

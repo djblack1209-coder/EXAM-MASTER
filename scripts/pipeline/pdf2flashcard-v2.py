@@ -363,13 +363,22 @@ def normalize_exam_card_type(card: dict, subject: str) -> dict:
         elif 34 <= number <= 38:
             card["type"] = "analysis"
             card["options"] = []
-    elif normalized_subject in {"english1", "english2"}:
+    elif normalized_subject == "english1":
         if 1 <= number <= 45:
             card["type"] = "single_choice"
         elif 46 <= number <= 50:
             card["type"] = "translation"
             card["options"] = []
         elif number in {51, 52}:
+            card["type"] = "essay"
+            card["options"] = []
+    elif normalized_subject == "english2":
+        if 1 <= number <= 45:
+            card["type"] = "single_choice"
+        elif number == 46:
+            card["type"] = "translation"
+            card["options"] = []
+        elif number in {47, 48}:
             card["type"] = "essay"
             card["options"] = []
     return card

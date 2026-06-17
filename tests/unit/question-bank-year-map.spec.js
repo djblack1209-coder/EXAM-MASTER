@@ -36,9 +36,16 @@ describe('question bank public-course year map', () => {
     expect(english2.yearSlots).toHaveLength(17);
     expect(english2.yearSlots[0].year).toBe('2026');
     expect(english2.yearSlots.at(-1).year).toBe('2010');
-    expect(english2.slotSummary).toEqual({ total: 17, ready: 12, organizing: 0, missing: 5 });
+    expect(english2.slotSummary).toEqual({ total: 17, ready: 16, organizing: 0, missing: 1 });
     expect(english2.yearSlots.find((slot) => slot.year === '2025')).toMatchObject({
       bankId: 'english2-2025',
+      status: 'ready',
+      statusLabel: '正式',
+      actionLabel: '开始',
+      clickable: true
+    });
+    expect(english2.yearSlots.find((slot) => slot.year === '2024')).toMatchObject({
+      bankId: 'english2-2024',
       status: 'ready',
       statusLabel: '正式',
       actionLabel: '开始',
@@ -121,6 +128,27 @@ describe('question bank public-course year map', () => {
       actionLabel: '开始',
       clickable: true
     });
+    expect(english2.yearSlots.find((slot) => slot.year === '2021')).toMatchObject({
+      bankId: 'english2-2021',
+      status: 'ready',
+      statusLabel: '正式',
+      actionLabel: '开始',
+      clickable: true
+    });
+    expect(english2.yearSlots.find((slot) => slot.year === '2022')).toMatchObject({
+      bankId: 'english2-2022',
+      status: 'ready',
+      statusLabel: '正式',
+      actionLabel: '开始',
+      clickable: true
+    });
+    expect(english2.yearSlots.find((slot) => slot.year === '2023')).toMatchObject({
+      bankId: 'english2-2023',
+      status: 'ready',
+      statusLabel: '正式',
+      actionLabel: '开始',
+      clickable: true
+    });
 
     const math1 = tracks.find((track) => track.id === 'math1');
     expect(math1.slotSummary).toEqual({ total: 22, ready: 21, organizing: 0, missing: 1 });
@@ -163,9 +191,16 @@ describe('question bank public-course year map', () => {
     }
 
     const math2 = tracks.find((track) => track.id === 'math2');
-    expect(math2.slotSummary).toEqual({ total: 22, ready: 16, organizing: 0, missing: 6 });
+    expect(math2.slotSummary).toEqual({ total: 22, ready: 17, organizing: 0, missing: 5 });
     expect(math2.yearSlots.find((slot) => slot.year === '2025')).toMatchObject({
       bankId: 'math2-2025',
+      status: 'ready',
+      statusLabel: '正式',
+      actionLabel: '开始',
+      clickable: true
+    });
+    expect(math2.yearSlots.find((slot) => slot.year === '2024')).toMatchObject({
+      bankId: 'math2-2024',
       status: 'ready',
       statusLabel: '正式',
       actionLabel: '开始',
@@ -203,9 +238,16 @@ describe('question bank public-course year map', () => {
     }
 
     const math3 = tracks.find((track) => track.id === 'math3');
-    expect(math3.slotSummary).toEqual({ total: 22, ready: 17, organizing: 0, missing: 5 });
+    expect(math3.slotSummary).toEqual({ total: 22, ready: 18, organizing: 0, missing: 4 });
     expect(math3.yearSlots.find((slot) => slot.year === '2025')).toMatchObject({
       bankId: 'math3-2025',
+      status: 'ready',
+      statusLabel: '正式',
+      actionLabel: '开始',
+      clickable: true
+    });
+    expect(math3.yearSlots.find((slot) => slot.year === '2024')).toMatchObject({
+      bankId: 'math3-2024',
       status: 'ready',
       statusLabel: '正式',
       actionLabel: '开始',
@@ -270,7 +312,7 @@ describe('question bank public-course year map', () => {
 
     expect(wrapper.text()).toContain('2025考研英语二真题');
     expect(wrapper.text()).toContain('2010-2026 整卷真题地图');
-    expect(wrapper.text()).toContain('正式 12 · 整理中 0 · 待入库 5');
+    expect(wrapper.text()).toContain('正式 16 · 整理中 0 · 待入库 1');
     expect(wrapper.find('.year-slot.active .slot-year').text()).toBe('2025');
 
     wrapper.unmount();
@@ -423,7 +465,7 @@ describe('question bank public-course year map', () => {
     expect(wrapper.text()).toContain('正式');
     expect(wrapper.text()).toContain('0');
     expect(wrapper.text()).toContain('整理中');
-    expect(wrapper.text()).toContain('正式 17 · 整理中 0 · 待入库 5');
+    expect(wrapper.text()).toContain('正式 21 · 整理中 0 · 待入库 1');
 
     wrapper.unmount();
   });

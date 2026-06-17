@@ -108,6 +108,74 @@ class EnglishAnswerKeyVerifyTest(unittest.TestCase):
         self.assertEqual(manifest_item["answerEvidenceStatus"], "matched")
         self.assertTrue(manifest_item["processing"]["verified"])
 
+    def test_english2_verifier_treats_46_as_translation_and_47_48_as_writing(self):
+        from scripts.baidu.english_answer_key_verify import verify_bank
+
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_dir = Path(tmp)
+            target = tmp_dir / "english2-2021.json"
+            answer_key = tmp_dir / "src_answer-2021年真题及答案速查.txt"
+            answer_key.write_text(
+                "2021年考研英语（二）真题答案速查表\n"
+                "1 - 5 ABCBC  41 ~45 BFDGA\n"
+                "46. 这是一段英语二翻译参考译文。\n",
+                encoding="utf-8",
+            )
+            write_json(
+                target,
+                {
+                    "year": "2021",
+                    "subject": "english2",
+                    "cards": [
+                        {
+                            "id": "english2-2021-045",
+                            "number": 45,
+                            "type": "single_choice",
+                            "question": "Q45",
+                            "answer": "A",
+                            "sourceEvidenceId": "src_question",
+                        },
+                        {
+                            "id": "english2-2021-046",
+                            "number": 46,
+                            "type": "analysis",
+                            "question": "Translate 46",
+                            "answer": "",
+                            "sourceEvidenceId": "src_question",
+                        },
+                        {
+                            "id": "english2-2021-047",
+                            "number": 47,
+                            "type": "analysis",
+                            "question": "Writing Part A",
+                            "answer": "No official answer",
+                            "sourceEvidenceId": "src_question",
+                        },
+                        {
+                            "id": "english2-2021-048",
+                            "number": 48,
+                            "type": "analysis",
+                            "question": "Writing Part B",
+                            "answer": "No official answer",
+                            "sourceEvidenceId": "src_question",
+                        },
+                    ],
+                },
+            )
+
+            report = verify_bank(target, answer_key, write=True, now="2026-05-23T00:00:00Z")
+            payload = json.loads(target.read_text(encoding="utf-8"))
+
+        by_number = {card["number"]: card for card in payload["cards"]}
+        self.assertEqual(report["summary"]["matchedCards"], 2)
+        self.assertEqual(report["summary"]["writingUnverifiedCount"], 2)
+        self.assertEqual(report["summary"]["missingAnswerKeyCount"], 0)
+        self.assertEqual(by_number[46]["type"], "translation")
+        self.assertEqual(by_number[46]["answer"], "这是一段英语二翻译参考译文。")
+        self.assertEqual(by_number[46]["answerEvidenceStatus"], "matched")
+        self.assertNotEqual(by_number[47].get("answerEvidenceStatus"), "matched")
+        self.assertNotEqual(by_number[48].get("answerEvidenceStatus"), "matched")
+
     def test_verifier_records_mismatch_and_repairs_from_source_key(self):
         from scripts.baidu.english_answer_key_verify import verify_bank
 

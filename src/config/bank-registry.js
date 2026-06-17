@@ -51,9 +51,10 @@ function verifiedEnglish1Bank(year) {
 
 // 题库注册表
 const BANK_REGISTRY = [
-  ...[2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020].map(
-    verifiedEnglish1Bank
-  ),
+  ...[
+    2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023,
+    2024
+  ].map(verifiedEnglish1Bank),
   {
     id: 'english1-2001',
     subject: '英语',
@@ -360,8 +361,7 @@ const BANK_REGISTRY = [
     name: '2022考研政治真题',
     description: '16道单选 + 17道多选 + 5道分析题',
     releaseLabel: '正式题库',
-    caution:
-      '按本地百度网盘 2022 政治真题及答案解析 PDF 文本层训练；独立试卷扫描页含答案标记，答题前不展示以免泄题',
+    caution: '按本地百度网盘 2022 政治真题及答案解析 PDF 文本层训练；独立试卷扫描页含答案标记，答题前不展示以免泄题',
     paperType: 'past_exam',
     quality: PAPER_QUALITY.READY,
     sections: paperSections('单项选择', '多项选择', '分析题')
@@ -546,6 +546,62 @@ const BANK_REGISTRY = [
     sections: paperSections('完形填空', '阅读理解', '新题型', '翻译', '写作')
   },
   {
+    id: 'english2-2021',
+    subject: '英语',
+    subjectKey: 'english',
+    track: 'english2',
+    year: '2021',
+    name: '2021考研英语二真题',
+    description: '完形填空 + 阅读理解 + 新题型 + 翻译 + 写作',
+    releaseLabel: '正式题库',
+    caution: '1-46题已按本地百度网盘 2021 英语二答案速查 PDF 匹配；47-48 写作题按原卷写作任务训练，不提供唯一范文答案',
+    paperType: 'past_exam',
+    quality: PAPER_QUALITY.READY,
+    sections: paperSections('完形填空', '阅读理解', '新题型', '翻译', '写作')
+  },
+  {
+    id: 'english2-2022',
+    subject: '英语',
+    subjectKey: 'english',
+    track: 'english2',
+    year: '2022',
+    name: '2022考研英语二真题',
+    description: '完形填空 + 阅读理解 + 新题型 + 翻译 + 写作',
+    releaseLabel: '正式题库',
+    caution: '1-46题已按本地百度网盘 2022 英语二答案速查 PDF 匹配；47-48 写作题按原卷写作任务训练，不提供唯一范文答案',
+    paperType: 'past_exam',
+    quality: PAPER_QUALITY.READY,
+    sections: paperSections('完形填空', '阅读理解', '新题型', '翻译', '写作')
+  },
+  {
+    id: 'english2-2023',
+    subject: '英语',
+    subjectKey: 'english',
+    track: 'english2',
+    year: '2023',
+    name: '2023考研英语二真题',
+    description: '完形填空 + 阅读理解 + 新题型 + 翻译 + 写作',
+    releaseLabel: '正式题库',
+    caution: '1-46题已按本地百度网盘 2023 英语二答案速查 PDF 匹配；47-48 写作题按原卷写作任务训练，不提供唯一范文答案',
+    paperType: 'past_exam',
+    quality: PAPER_QUALITY.READY,
+    sections: paperSections('完形填空', '阅读理解', '新题型', '翻译', '写作')
+  },
+  {
+    id: 'english2-2024',
+    subject: '英语',
+    subjectKey: 'english',
+    track: 'english2',
+    year: '2024',
+    name: '2024考研英语二真题',
+    description: '完形填空 + 阅读理解 + 新题型 + 翻译 + 写作',
+    releaseLabel: '正式题库',
+    caution: '1-46题已按本地百度网盘 2024 英语二真题解析 PDF 匹配；47-48 写作题按原卷写作任务训练，不提供唯一范文答案',
+    paperType: 'past_exam',
+    quality: PAPER_QUALITY.READY,
+    sections: paperSections('完形填空', '阅读理解', '新题型', '翻译', '写作')
+  },
+  {
     id: 'english2-2025',
     subject: '英语',
     subjectKey: 'english',
@@ -583,8 +639,7 @@ const BANK_REGISTRY = [
     name: '2024考研数学一真题',
     description: '10道选择 + 6道填空 + 6道解答题',
     releaseLabel: '正式题库',
-    caution:
-      '按本地百度网盘 2024 数学一真题及参考答案 PDF 页图训练；题面使用逐题裁切图，答案和解析以原 PDF 页图为准',
+    caution: '按本地百度网盘 2024 数学一真题及参考答案 PDF 页图训练；题面使用逐题裁切图，答案和解析以原 PDF 页图为准',
     paperType: 'past_exam',
     quality: PAPER_QUALITY.READY,
     sections: paperSections('选择题', '填空题', '解答题')
@@ -598,8 +653,7 @@ const BANK_REGISTRY = [
     name: '2023考研数学一真题',
     description: '10道选择 + 6道填空 + 6道解答题',
     releaseLabel: '正式题库',
-    caution:
-      '按本地百度网盘 2023 数学一真题答案解析 PDF 页图训练；题面使用逐题裁切图，答案和解析以原 PDF 页图为准',
+    caution: '按本地百度网盘 2023 数学一真题答案解析 PDF 页图训练；题面使用逐题裁切图，答案和解析以原 PDF 页图为准',
     paperType: 'past_exam',
     quality: PAPER_QUALITY.READY,
     sections: paperSections('选择题', '填空题', '解答题')
@@ -613,8 +667,7 @@ const BANK_REGISTRY = [
     name: '2021考研数学一真题',
     description: '10道选择 + 6道填空 + 6道解答题',
     releaseLabel: '正式题库',
-    caution:
-      '按本地百度网盘 2021 数学一真题答案解析 PDF 页图训练；题面使用逐题裁切图，答案和解析以原 PDF 页图为准',
+    caution: '按本地百度网盘 2021 数学一真题答案解析 PDF 页图训练；题面使用逐题裁切图，答案和解析以原 PDF 页图为准',
     paperType: 'past_exam',
     quality: PAPER_QUALITY.READY,
     sections: paperSections('选择题', '填空题', '解答题')
@@ -628,8 +681,7 @@ const BANK_REGISTRY = [
     name: '2022考研数学一真题',
     description: '10道选择 + 6道填空 + 6道解答题',
     releaseLabel: '正式题库',
-    caution:
-      '按本地百度网盘 2022 数学一真题答案解析 PDF 页图训练；题面使用逐题裁切图，答案和解析以原 PDF 页图为准',
+    caution: '按本地百度网盘 2022 数学一真题答案解析 PDF 页图训练；题面使用逐题裁切图，答案和解析以原 PDF 页图为准',
     paperType: 'past_exam',
     quality: PAPER_QUALITY.READY,
     sections: paperSections('选择题', '填空题', '解答题')
@@ -658,8 +710,7 @@ const BANK_REGISTRY = [
     name: `${year}考研数学一真题`,
     description: '8道选择 + 6道填空 + 9道解答题',
     releaseLabel: '正式题库',
-    caution:
-      '按本地百度网盘数学一真题答案解析 PDF 页图训练；题面使用原页或题面裁切图，答案和解析以原 PDF 页图为准',
+    caution: '按本地百度网盘数学一真题答案解析 PDF 页图训练；题面使用原页或题面裁切图，答案和解析以原 PDF 页图为准',
     paperType: 'past_exam',
     quality: PAPER_QUALITY.READY,
     sections: paperSections('选择题', '填空题', '解答题')
@@ -889,6 +940,20 @@ const BANK_REGISTRY = [
     sections: paperSections('选择题', '填空题', '解答题')
   },
   {
+    id: 'math2-2024',
+    subject: '数学',
+    subjectKey: 'math',
+    track: 'math2',
+    year: '2024',
+    name: '2024考研数学二真题',
+    description: '10道选择 + 6道填空 + 6道解答题',
+    releaseLabel: '正式题库',
+    caution: '按本地百度网盘 2024 数学二真题及参考答案 PDF 页图训练；题面和参考答案来自同一源 PDF，已排除推广页',
+    paperType: 'past_exam',
+    quality: PAPER_QUALITY.READY,
+    sections: paperSections('选择题', '填空题', '解答题')
+  },
+  {
     id: 'math3-2005',
     subject: '数学',
     subjectKey: 'math',
@@ -925,8 +990,7 @@ const BANK_REGISTRY = [
     name: '2007考研数学三真题',
     description: '10道选择 + 6道填空 + 8道解答',
     releaseLabel: '正式题库',
-    caution:
-      '按本地百度网盘 2007 数学三真题及解析 PDF 页图训练；第24题题干来自同源解析页文本，答题前不展示含答案页图',
+    caution: '按本地百度网盘 2007 数学三真题及解析 PDF 页图训练；第24题题干来自同源解析页文本，答题前不展示含答案页图',
     paperType: 'past_exam',
     quality: PAPER_QUALITY.READY,
     sections: paperSections('选择题', '填空题', '解答题')
@@ -1052,8 +1116,7 @@ const BANK_REGISTRY = [
     name: '2016考研数学三真题',
     description: '8道选择 + 6道填空 + 9道解答题',
     releaseLabel: '正式题库',
-    caution:
-      '按本地百度网盘 2016 数学三真题及解析 PDF 页图训练；题面使用逐题裁切图并排除 PDF 末尾推广页',
+    caution: '按本地百度网盘 2016 数学三真题及解析 PDF 页图训练；题面使用逐题裁切图并排除 PDF 末尾推广页',
     paperType: 'past_exam',
     quality: PAPER_QUALITY.READY,
     sections: paperSections('填空题', '选择题', '解答题')
@@ -1081,8 +1144,7 @@ const BANK_REGISTRY = [
     name: '2018考研数学三真题',
     description: '8道选择 + 6道填空 + 9道解答题',
     releaseLabel: '正式题库',
-    caution:
-      '按本地百度网盘 2018 数学三真题及解析 PDF 页图训练；题面使用逐题裁切图，答案第 14 页为第 23 题延续',
+    caution: '按本地百度网盘 2018 数学三真题及解析 PDF 页图训练；题面使用逐题裁切图，答案第 14 页为第 23 题延续',
     paperType: 'past_exam',
     quality: PAPER_QUALITY.READY,
     sections: paperSections('选择题', '填空题', '解答题')
@@ -1110,8 +1172,21 @@ const BANK_REGISTRY = [
     name: '2020考研数学三真题',
     description: '8道选择 + 6道填空 + 9道解答题',
     releaseLabel: '正式题库',
-    caution:
-      '按本地百度网盘 2020 数学三真题及解析 PDF 页图训练；题面从试题页逐题裁切，答案解析页 1-13 已核对',
+    caution: '按本地百度网盘 2020 数学三真题及解析 PDF 页图训练；题面从试题页逐题裁切，答案解析页 1-13 已核对',
+    paperType: 'past_exam',
+    quality: PAPER_QUALITY.READY,
+    sections: paperSections('选择题', '填空题', '解答题')
+  },
+  {
+    id: 'math3-2024',
+    subject: '数学',
+    subjectKey: 'math',
+    track: 'math3',
+    year: '2024',
+    name: '2024考研数学三真题',
+    description: '10道选择 + 6道填空 + 6道解答题',
+    releaseLabel: '正式题库',
+    caution: '按本地百度网盘 2024 数学三真题及参考答案 PDF 页图训练；题面和参考答案来自同一源 PDF，已排除推广页',
     paperType: 'past_exam',
     quality: PAPER_QUALITY.READY,
     sections: paperSections('选择题', '填空题', '解答题')

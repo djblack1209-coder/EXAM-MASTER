@@ -175,6 +175,44 @@ class FlashcardQualityTest(unittest.TestCase):
         self.assertTrue(report["releaseReadiness"]["canPromoteToPublic"])
         self.assertEqual(report["summary"]["blockerCount"], 0)
 
+    def test_report_allows_english_gap_fill_questions_with_a_to_h_options(self):
+        from scripts.baidu.flashcard_quality import build_quality_report
+
+        with tempfile.TemporaryDirectory() as tmp:
+            flashcard_dir = Path(tmp)
+            write_bank(
+                flashcard_dir,
+                "english-2023.json",
+                [
+                    {
+                        "id": "english-2023-041",
+                        "type": "single_choice",
+                        "question": "Choose the most suitable paragraph.",
+                        "options": [
+                            {"label": "A", "text": "Option A"},
+                            {"label": "B", "text": "Option B"},
+                            {"label": "C", "text": "Option C"},
+                            {"label": "D", "text": "Option D"},
+                            {"label": "E", "text": "Option E"},
+                            {"label": "F", "text": "Option F"},
+                            {"label": "G", "text": "Option G"},
+                            {"label": "H", "text": "Option H"},
+                        ],
+                        "answer": "F",
+                        "sourceEvidenceId": "src_ev_english_2023_041",
+                        "answerEvidenceStatus": "matched",
+                        "questionTextHash": "sha256:q41",
+                        "answerTextHash": "sha256:a41",
+                        "passage": "Full source passage.",
+                    }
+                ],
+            )
+
+            report = build_quality_report(flashcard_dir)
+
+        self.assertTrue(report["releaseReadiness"]["canPromoteToPublic"])
+        self.assertEqual(report["summary"]["blockerCount"], 0)
+
     def test_report_counts_invalid_choice_options_as_grading_blocker(self):
         from scripts.baidu.flashcard_quality import build_quality_report
 

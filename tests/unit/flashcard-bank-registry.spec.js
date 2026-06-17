@@ -33,7 +33,9 @@ describe('published flashcard bank registry', () => {
         'english1-2017',
         'english1-2018',
         'english1-2019',
-        'english1-2020'
+        'english1-2020',
+        'english1-2023',
+        'english1-2024'
       ])
     );
     expect(banks.map((bank) => bank.id)).toEqual(expect.arrayContaining(['english1-2025']));
@@ -75,6 +77,10 @@ describe('published flashcard bank registry', () => {
         'english2-2018',
         'english2-2019',
         'english2-2020',
+        'english2-2021',
+        'english2-2022',
+        'english2-2023',
+        'english2-2024',
         'english2-2025'
       ])
     );
@@ -471,6 +477,100 @@ describe('published flashcard bank registry', () => {
       '某高校学生手机阅读目的调查'
     );
     expect(english22020.cards.find((card) => card.number === 48).answerEvidence.evidenceRole).toBe(
+      'official_writing_prompt'
+    );
+    const english22021 = await loadBankData('english2-2021');
+    expect(english22021.cards).toHaveLength(48);
+    expect(english22021.cards.every((card) => card.answerEvidenceStatus === 'matched')).toBe(true);
+    expect(english22021.cards.find((card) => card.number === 1).answer).toBe('B');
+    expect(english22021.cards.find((card) => card.number === 21).answer).toBe('B');
+    expect(english22021.cards.find((card) => card.number === 30).answer).toBe('B');
+    expect(english22021.cards.find((card) => card.number === 41).answer).toBe('C');
+    expect(english22021.cards.find((card) => card.number === 45).answer).toBe('B');
+    expect(english22021.cards.find((card) => card.number === 46).targetSegment).toContain(
+      'interacting with strangers actually brings a boost in mood'
+    );
+    expect(english22021.cards.find((card) => card.number === 48).question).toContain(
+      '某市居民体育锻炼方式调查'
+    );
+    expect(english22021.cards.find((card) => card.number === 48).answerEvidence.evidenceRole).toBe(
+      'official_writing_prompt'
+    );
+    const english22022 = await loadBankData('english2-2022');
+    expect(english22022.cards).toHaveLength(48);
+    expect(english22022.cards.every((card) => card.answerEvidenceStatus === 'matched')).toBe(true);
+    expect(english22022.cards.find((card) => card.number === 1).answer).toBe('B');
+    expect(english22022.cards.find((card) => card.number === 21).answer).toBe('D');
+    expect(english22022.cards.find((card) => card.number === 30).answer).toBe('A');
+    expect(english22022.cards.find((card) => card.number === 41).answer).toBe('C');
+    expect(english22022.cards.find((card) => card.number === 45).answer).toBe('B');
+    expect(english22022.cards.find((card) => card.number === 46).targetSegment).toContain(
+      'Unexpected results have two benefits'
+    );
+    expect(english22022.cards.find((card) => card.number === 48).question).toContain(
+      '2018—2020年我国快递业务量变动情况'
+    );
+    expect(english22022.cards.find((card) => card.number === 48).answerEvidence.evidenceRole).toBe(
+      'official_writing_prompt'
+    );
+    const english22023 = await loadBankData('english2-2023');
+    expect(english22023.cards).toHaveLength(48);
+    expect(english22023.cards.every((card) => card.answerEvidenceStatus === 'matched')).toBe(true);
+    expect(english22023.cards.find((card) => card.number === 1).answer).toBe('B');
+    expect(english22023.cards.find((card) => card.number === 21).answer).toBe('A');
+    expect(english22023.cards.find((card) => card.number === 30).answer).toBe('D');
+    expect(english22023.cards.find((card) => card.number === 41).answer).toBe('D');
+    expect(english22023.cards.find((card) => card.number === 45).answer).toBe('G');
+    expect(english22023.cards.find((card) => card.number === 46).targetSegment).toContain(
+      'William Wordsworth became famous for his poems about nature'
+    );
+    expect(english22023.cards.find((card) => card.number === 48).question).toContain(
+      '2012-2021年我国居民健康素养水平'
+    );
+    expect(english22023.cards.find((card) => card.number === 48).answerEvidence.evidenceRole).toBe(
+      'official_writing_prompt'
+    );
+    const english12022 = await loadBankData('english1-2022');
+    expect(english12022.cards).toHaveLength(52);
+    expect(english12022.cards.every((card) => card.answerEvidenceStatus === 'matched')).toBe(true);
+    expect(english12022.cards.find((card) => card.number === 1).answer).toBe('A');
+    expect(english12022.cards.find((card) => card.number === 21).answer).toBe('A');
+    expect(english12022.cards.find((card) => card.number === 40).answer).toBe('C');
+    expect(english12022.cards.find((card) => card.number === 41).answer).toBe('F');
+    expect(english12022.cards.find((card) => card.number === 45).answer).toBe('G');
+    expect(english12022.cards.find((card) => card.number === 46).targetSegment).toContain(
+      'battle between those who made codes'
+    );
+    expect(english12022.cards.find((card) => card.number === 52).answerEvidence.evidenceRole).toBe(
+      'official_writing_prompt'
+    );
+    const english12023 = await loadBankData('english1-2023');
+    expect(english12023.cards).toHaveLength(52);
+    expect(english12023.cards.every((card) => card.answerEvidenceStatus === 'matched')).toBe(true);
+    expect(english12023.cards.find((card) => card.number === 1).answer).toBe('C');
+    expect(english12023.cards.find((card) => card.number === 21).answer).toBe('C');
+    expect(english12023.cards.find((card) => card.number === 40).answer).toBe('D');
+    expect(english12023.cards.find((card) => card.number === 41).answer).toBe('B');
+    expect(english12023.cards.find((card) => card.number === 45).answer).toBe('G');
+    expect(english12023.cards.find((card) => card.number === 46).targetSegment).toContain(
+      'identify the lifestyle choices of customers'
+    );
+    expect(english12023.cards.find((card) => card.number === 52).answerEvidence.evidenceRole).toBe(
+      'official_writing_prompt'
+    );
+    const english12024 = await loadBankData('english1-2024');
+    expect(english12024.cards).toHaveLength(52);
+    expect(english12024.cards.every((card) => card.answerEvidenceStatus === 'matched')).toBe(true);
+    expect(english12024.cards.find((card) => card.number === 1).answer).toBe('D');
+    expect(english12024.cards.find((card) => card.number === 21).answer).toBe('D');
+    expect(english12024.cards.find((card) => card.number === 40).answer).toBe('B');
+    expect(english12024.cards.find((card) => card.number === 41).answer).toBe('E');
+    expect(english12024.cards.find((card) => card.number === 45).answer).toBe('B');
+    expect(english12024.cards.find((card) => card.number === 46).targetSegment).toContain(
+      'They sometimes travel more than sixty miles'
+    );
+    expect(english12024.cards.find((card) => card.number === 52).question).toContain('某市近三年公园数量');
+    expect(english12024.cards.find((card) => card.number === 52).answerEvidence.evidenceRole).toBe(
       'official_writing_prompt'
     );
     const english2005 = await loadBankData('english1-2005');
@@ -930,11 +1030,15 @@ describe('published flashcard bank registry', () => {
     expect(english.tracks[0].banks.some((bank) => bank.id === 'english1-2018')).toBe(true);
     expect(english.tracks[0].banks.some((bank) => bank.id === 'english1-2019')).toBe(true);
     expect(english.tracks[0].banks.some((bank) => bank.id === 'english1-2020')).toBe(true);
+    expect(english.tracks[0].banks.some((bank) => bank.id === 'english1-2021')).toBe(true);
+    expect(english.tracks[0].banks.some((bank) => bank.id === 'english1-2022')).toBe(true);
+    expect(english.tracks[0].banks.some((bank) => bank.id === 'english1-2023')).toBe(true);
+    expect(english.tracks[0].banks.some((bank) => bank.id === 'english1-2024')).toBe(true);
     expect(english.tracks[0].pendingBanks.some((bank) => bank.id === 'english1-2025')).toBe(false);
     expect(english.tracks[0].pendingBanks.some((bank) => bank.id === 'english1-2025-source')).toBe(false);
     expect(english.tracks[0].pendingBanks.some((bank) => bank.id === 'english-2025')).toBe(false);
     expect(english.tracks[0].yearSlots).toHaveLength(22);
-    expect(english.tracks[0].slotSummary).toEqual({ total: 22, ready: 17, organizing: 0, missing: 5 });
+    expect(english.tracks[0].slotSummary).toEqual({ total: 22, ready: 21, organizing: 0, missing: 1 });
     expect(english.tracks[0].yearSlots.find((slot) => slot.year === '2012')).toMatchObject({
       bankId: 'english1-2012',
       status: 'ready',
@@ -983,6 +1087,24 @@ describe('published flashcard bank registry', () => {
       statusLabel: '正式',
       clickable: true
     });
+    expect(english.tracks[0].yearSlots.find((slot) => slot.year === '2022')).toMatchObject({
+      bankId: 'english1-2022',
+      status: 'ready',
+      statusLabel: '正式',
+      clickable: true
+    });
+    expect(english.tracks[0].yearSlots.find((slot) => slot.year === '2023')).toMatchObject({
+      bankId: 'english1-2023',
+      status: 'ready',
+      statusLabel: '正式',
+      clickable: true
+    });
+    expect(english.tracks[0].yearSlots.find((slot) => slot.year === '2024')).toMatchObject({
+      bankId: 'english1-2024',
+      status: 'ready',
+      statusLabel: '正式',
+      clickable: true
+    });
     expect(english.tracks[0].yearSlots.find((slot) => slot.year === '2025')).toMatchObject({
       bankId: 'english1-2025',
       status: 'ready',
@@ -997,12 +1119,13 @@ describe('published flashcard bank registry', () => {
     const math = getPracticeNavigationTree({ tracks: ['math1', 'math2', 'math3'] }).find((item) => item.id === 'math');
     expect(math.tracks.map((track) => track.pendingBanks[0]?.id)).toEqual([
       undefined,
-      'math2-2024-pending-source',
-      'math3-2024-pending-source'
+      'math2-2023-pending-source',
+      'math3-2023-pending-source'
     ]);
     expect(math.tracks[0].banks.some((bank) => bank.id === 'math1-2025')).toBe(true);
     expect(math.tracks[0].banks.some((bank) => bank.id === 'math1-2024')).toBe(true);
     expect(math.tracks[1].banks.some((bank) => bank.id === 'math2-2025')).toBe(true);
+    expect(math.tracks[1].banks.some((bank) => bank.id === 'math2-2024')).toBe(true);
     expect(math.tracks[2].banks.some((bank) => bank.id === 'math3-2025')).toBe(true);
     expect(math.tracks[2].banks.some((bank) => bank.id === 'math3-2005')).toBe(true);
     expect(math.tracks[2].banks.some((bank) => bank.id === 'math3-2006')).toBe(true);
@@ -1017,6 +1140,7 @@ describe('published flashcard bank registry', () => {
     expect(math.tracks[2].banks.some((bank) => bank.id === 'math3-2017')).toBe(true);
     expect(math.tracks[2].banks.some((bank) => bank.id === 'math3-2019')).toBe(true);
     expect(math.tracks[2].banks.some((bank) => bank.id === 'math3-2020')).toBe(true);
+    expect(math.tracks[2].banks.some((bank) => bank.id === 'math3-2024')).toBe(true);
     expect(math.tracks.flatMap((track) => track.pendingBanks.map((bank) => bank.id))).not.toContain('math-2025');
     expect(english.tracks[0].modes.map((mode) => mode.id)).toEqual(['past_exam', 'timed_sprint', 'weakness']);
     expect(english.tracks[0].modes.map((mode) => mode.id)).not.toContain('knowledge_graph');
@@ -1037,13 +1161,13 @@ describe('published flashcard bank registry', () => {
     expect(politics.releaseState).toBe('partial');
 
     const english2 = coverage.tracks.find((item) => item.track === 'english2');
-    expect(english2.publishedYears).toEqual([2025]);
+    expect(english2.publishedYears).toEqual([2024, 2025]);
     expect(english2.pendingYears).toEqual([]);
-    expect(english2.missingYears).toEqual([2024, 2026]);
+    expect(english2.missingYears).toEqual([2026]);
     expect(english2.releaseState).toBe('partial');
 
     const english1 = coverage.tracks.find((item) => item.track === 'english1');
-    expect(english1.publishedYears).toEqual([2025]);
+    expect(english1.publishedYears).toEqual([2024, 2025]);
     expect(english1.pendingYears).toEqual([]);
 
     const math1 = coverage.tracks.find((item) => item.track === 'math1');
@@ -1053,15 +1177,15 @@ describe('published flashcard bank registry', () => {
     expect(math1.releaseState).toBe('partial');
 
     const math2 = coverage.tracks.find((item) => item.track === 'math2');
-    expect(math2.publishedYears).toEqual([2025]);
+    expect(math2.publishedYears).toEqual([2024, 2025]);
     expect(math2.pendingYears).toEqual([]);
-    expect(math2.missingYears).toEqual([2024, 2026]);
+    expect(math2.missingYears).toEqual([2026]);
     expect(math2.releaseState).toBe('partial');
 
     const math3 = coverage.tracks.find((item) => item.track === 'math3');
-    expect(math3.publishedYears).toEqual([2025]);
+    expect(math3.publishedYears).toEqual([2024, 2025]);
     expect(math3.pendingYears).toEqual([]);
-    expect(math3.missingYears).toEqual([2024, 2026]);
+    expect(math3.missingYears).toEqual([2026]);
     expect(math3.releaseState).toBe('partial');
   });
 

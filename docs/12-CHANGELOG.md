@@ -1,5 +1,12 @@
 # 变更日志
 
+## [2026-06-12] Oracle 3055 H5 温备说明
+
+- **Scope**: deploy/docs
+- **Files Changed**: `docs/09-DEPLOYMENT-GUIDE.md`
+- **Summary**: 更新并验证 Oracle 3055 上的 EXAM-MASTER H5 静态温备：服务 `exam-master-h5.service` 监听 `127.0.0.1:18119`，资源上限为 `CPUQuota=20%` 和 `MemoryMax=256M`，最近部署前备份为 `/var/backups/exam-master-h5/20260612T231001Z-predeploy`。该温备只复制 `dist/build/h5`，不复制 Laf/Mongo/腾讯云/微信/百度网盘/AI 密钥，也不公开端口或切换生产流量。
+- **Breaking Changes**: None
+
 ## 2026-06-03 — 2019 英语一文本层题库开放
 
 - 2019 考研英语一从“待入库”推进为正式题库：52 张题卡覆盖完形填空、阅读理解、新题型、翻译和写作，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。

@@ -1,0 +1,270 @@
+{
+  "version": 1,
+  "generatedAt": "2026-06-06T22:09:41Z",
+  "write": false,
+  "summary": {
+    "files": 1,
+    "cards": 52,
+    "matchedCards": 50,
+    "mismatches": 37,
+    "missingAnswerKeys": 0,
+    "writingUnverified": 2,
+    "manifestUpdates": 0
+  },
+  "files": [
+    {
+      "targetFile": "data/flashcards/english1-2021.json",
+      "mirroredConfigFile": "",
+      "answerKeyFile": "data/raw-inbox/src_7d8cc9f5f039ff029da6b72a-2021年真题及答案速查.pdf",
+      "year": 2021,
+      "write": false,
+      "summary": {
+        "cardCount": 52,
+        "matchedCards": 50,
+        "answerChanges": 50,
+        "sourceEvidenceChanges": 50,
+        "mismatchCount": 37,
+        "missingAnswerKeyCount": 0,
+        "writingUnverifiedCount": 2,
+        "manifestUpdates": 0
+      },
+      "mismatches": [
+        {
+          "cardId": "english1-2021-001",
+          "number": 1,
+          "cardAnswer": "B",
+          "answerKey": "C"
+        },
+        {
+          "cardId": "english1-2021-002",
+          "number": 2,
+          "cardAnswer": "B",
+          "answerKey": "D"
+        },
+        {
+          "cardId": "english1-2021-004",
+          "number": 4,
+          "cardAnswer": "D",
+          "answerKey": "B"
+        },
+        {
+          "cardId": "english1-2021-005",
+          "number": 5,
+          "cardAnswer": "D",
+          "answerKey": "A"
+        },
+        {
+          "cardId": "english1-2021-006",
+          "number": 6,
+          "cardAnswer": "B",
+          "answerKey": "A"
+        },
+        {
+          "cardId": "english1-2021-008",
+          "number": 8,
+          "cardAnswer": "C",
+          "answerKey": "B"
+        },
+        {
+          "cardId": "english1-2021-009",
+          "number": 9,
+          "cardAnswer": "B",
+          "answerKey": "A"
+        },
+        {
+          "cardId": "english1-2021-010",
+          "number": 10,
+          "cardAnswer": "B",
+          "answerKey": "C"
+        },
+        {
+          "cardId": "english1-2021-011",
+          "number": 11,
+          "cardAnswer": "A",
+          "answerKey": "D"
+        },
+        {
+          "cardId": "english1-2021-013",
+          "number": 13,
+          "cardAnswer": "A",
+          "answerKey": "C"
+        },
+        {
+          "cardId": "english1-2021-014",
+          "number": 14,
+          "cardAnswer": "A",
+          "answerKey": "D"
+        },
+        {
+          "cardId": "english1-2021-016",
+          "number": 16,
+          "cardAnswer": "A",
+          "answerKey": "B"
+        },
+        {
+          "cardId": "english1-2021-019",
+          "number": 19,
+          "cardAnswer": "C",
+          "answerKey": "A"
+        },
+        {
+          "cardId": "english1-2021-022",
+          "number": 22,
+          "cardAnswer": "B",
+          "answerKey": "A"
+        },
+        {
+          "cardId": "english1-2021-023",
+          "number": 23,
+          "cardAnswer": "C",
+          "answerKey": "B"
+        },
+        {
+          "cardId": "english1-2021-024",
+          "number": 24,
+          "cardAnswer": "B",
+          "answerKey": "D"
+        },
+        {
+          "cardId": "english1-2021-026",
+          "number": 26,
+          "cardAnswer": "D",
+          "answerKey": "B"
+        },
+        {
+          "cardId": "english1-2021-027",
+          "number": 27,
+          "cardAnswer": "A",
+          "answerKey": "D"
+        },
+        {
+          "cardId": "english1-2021-028",
+          "number": 28,
+          "cardAnswer": "B",
+          "answerKey": "C"
+        },
+        {
+          "cardId": "english1-2021-029",
+          "number": 29,
+          "cardAnswer": "D",
+          "answerKey": "C"
+        },
+        {
+          "cardId": "english1-2021-030",
+          "number": 30,
+          "cardAnswer": "B",
+          "answerKey": "A"
+        },
+        {
+          "cardId": "english1-2021-031",
+          "number": 31,
+          "cardAnswer": "C",
+          "answerKey": "D"
+        },
+        {
+          "cardId": "english1-2021-032",
+          "number": 32,
+          "cardAnswer": "C",
+          "answerKey": "A"
+        },
+        {
+          "cardId": "english1-2021-034",
+          "number": 34,
+          "cardAnswer": "A",
+          "answerKey": "D"
+        },
+        {
+          "cardId": "english1-2021-036",
+          "number": 36,
+          "cardAnswer": "C",
+          "answerKey": "B"
+        },
+        {
+          "cardId": "english1-2021-037",
+          "number": 37,
+          "cardAnswer": "B",
+          "answerKey": "A"
+        },
+        {
+          "cardId": "english1-2021-038",
+          "number": 38,
+          "cardAnswer": "B",
+          "answerKey": "A"
+        },
+        {
+          "cardId": "english1-2021-039",
+          "number": 39,
+          "cardAnswer": "D",
+          "answerKey": "C"
+        },
+        {
+          "cardId": "english1-2021-040",
+          "number": 40,
+          "cardAnswer": "A",
+          "answerKey": "D"
+        },
+        {
+          "cardId": "english1-2021-041",
+          "number": 41,
+          "cardAnswer": "G",
+          "answerKey": "F"
+        },
+        {
+          "cardId": "english1-2021-042",
+          "number": 42,
+          "cardAnswer": "C",
+          "answerKey": "B"
+        },
+        {
+          "cardId": "english1-2021-043",
+          "number": 43,
+          "cardAnswer": "E",
+          "answerKey": "G"
+        },
+        {
+          "cardId": "english1-2021-044",
+          "number": 44,
+          "cardAnswer": "B",
+          "answerKey": "C"
+        },
+        {
+          "cardId": "english1-2021-045",
+          "number": 45,
+          "cardAnswer": "D",
+          "answerKey": "E"
+        },
+        {
+          "cardId": "english1-2021-048",
+          "number": 48,
+          "cardAnswer": "A",
+          "answerKey": "20世纪60年代,许多西欧国家接受高等教育的学生人数每5年翻一番,到70年代中期，这些人数在7、8年间或10年间又翻了一番。"
+        },
+        {
+          "cardId": "english1-2021-049",
+          "number": 49,
+          "cardAnswer": "C",
+          "answerKey": "且当新的员工大多是刚刚完成研究生学业的青年男女时 ，他们将在很大程度上界定该学院的学术生活规范。"
+        },
+        {
+          "cardId": "english1-2021-050",
+          "number": 50,
+          "cardAnswer": "A",
+          "answerKey": "高增长率增加了学术创新的机会;同时也弱化了教师和学生在稳定期或缓慢增长期被接纳加入学者群体所需的形式和过程。"
+        }
+      ],
+      "missingAnswerKey": [],
+      "writingUnverified": [
+        {
+          "cardId": "english1-2021-051",
+          "number": 51,
+          "reason": "no_official_answer_key"
+        },
+        {
+          "cardId": "english1-2021-052",
+          "number": 52,
+          "reason": "no_official_answer_key"
+        }
+      ]
+    }
+  ]
+}

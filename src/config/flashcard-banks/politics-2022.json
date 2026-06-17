@@ -35,11 +35,7 @@
   "assetRoot": "question-bank/politics-2022",
   "processed_at": "2026-05-27T07:27:27Z",
   "total_cards": 38,
-  "sections": [
-    "单项选择",
-    "多项选择",
-    "分析题"
-  ],
+  "sections": ["单项选择", "多项选择", "分析题"],
   "cards": [
     {
       "id": "politics-2022-001",
@@ -81,11 +77,7 @@
           "alt": "2022考研政治答案原页 p.1"
         }
       ],
-      "tags": [
-        "politics",
-        "2022",
-        "单项选择"
-      ],
+      "tags": ["politics", "2022", "单项选择"],
       "difficulty": 2,
       "source": "politics-2022-paper-answer",
       "sourceEvidenceId": "politics-2022-paper-answer",
@@ -159,11 +151,7 @@
           "alt": "2022考研政治答案原页 p.2"
         }
       ],
-      "tags": [
-        "politics",
-        "2022",
-        "单项选择"
-      ],
+      "tags": ["politics", "2022", "单项选择"],
       "difficulty": 2,
       "source": "politics-2022-paper-answer",
       "sourceEvidenceId": "politics-2022-paper-answer",
@@ -232,11 +220,7 @@
           "alt": "2022考研政治答案原页 p.2"
         }
       ],
-      "tags": [
-        "politics",
-        "2022",
-        "单项选择"
-      ],
+      "tags": ["politics", "2022", "单项选择"],
       "difficulty": 2,
       "source": "politics-2022-paper-answer",
       "sourceEvidenceId": "politics-2022-paper-answer",
@@ -305,11 +289,7 @@
           "alt": "2022考研政治答案原页 p.3"
         }
       ],
-      "tags": [
-        "politics",
-        "2022",
-        "单项选择"
-      ],
+      "tags": ["politics", "2022", "单项选择"],
       "difficulty": 2,
       "source": "politics-2022-paper-answer",
       "sourceEvidenceId": "politics-2022-paper-answer",
@@ -378,11 +358,7 @@
           "alt": "2022考研政治答案原页 p.3"
         }
       ],
-      "tags": [
-        "politics",
-        "2022",
-        "单项选择"
-      ],
+      "tags": ["politics", "2022", "单项选择"],
       "difficulty": 2,
       "source": "politics-2022-paper-answer",
       "sourceEvidenceId": "politics-2022-paper-answer",
@@ -451,11 +427,7 @@
           "alt": "2022考研政治答案原页 p.4"
         }
       ],
-      "tags": [
-        "politics",
-        "2022",
-        "单项选择"
-      ],
+      "tags": ["politics", "2022", "单项选择"],
       "difficulty": 2,
       "source": "politics-2022-paper-answer",
       "sourceEvidenceId": "politics-2022-paper-answer",
@@ -524,11 +496,7 @@
           "alt": "2022考研政治答案原页 p.4"
         }
       ],
-      "tags": [
-        "politics",
-        "2022",
-        "单项选择"
-      ],
+      "tags": ["politics", "2022", "单项选择"],
       "difficulty": 2,
       "source": "politics-2022-paper-answer",
       "sourceEvidenceId": "politics-2022-paper-answer",
@@ -597,11 +565,7 @@
           "alt": "2022考研政治答案原页 p.5"
         }
       ],
-      "tags": [
-        "politics",
-        "2022",
-        "单项选择"
-      ],
+      "tags": ["politics", "2022", "单项选择"],
       "difficulty": 2,
       "source": "politics-2022-paper-answer",
       "sourceEvidenceId": "politics-2022-paper-answer",
@@ -675,11 +639,7 @@
           "alt": "2022考研政治答案原页 p.6"
         }
       ],
-      "tags": [
-        "politics",
-        "2022",
-        "单项选择"
-      ],
+      "tags": ["politics", "2022", "单项选择"],
       "difficulty": 2,
       "source": "politics-2022-paper-answer",
       "sourceEvidenceId": "politics-2022-paper-answer",
@@ -748,11 +708,7 @@
           "alt": "2022考研政治答案原页 p.6"
         }
       ],
-      "tags": [
-        "politics",
-        "2022",
-        "单项选择"
-      ],
+      "tags": ["politics", "2022", "单项选择"],
       "difficulty": 2,
       "source": "politics-2022-paper-answer",
       "sourceEvidenceId": "politics-2022-paper-answer",
@@ -826,11 +782,7 @@
           "alt": "2022考研政治答案原页 p.7"
         }
       ],
-      "tags": [
-        "politics",
-        "2022",
-        "单项选择"
-      ],
+      "tags": ["politics", "2022", "单项选择"],
       "difficulty": 2,
       "source": "politics-2022-paper-answer",
       "sourceEvidenceId": "politics-2022-paper-answer",
@@ -899,11 +851,7 @@
           "alt": "2022考研政治答案原页 p.7"
         }
       ],
-      "tags": [
-        "politics",
-        "2022",
-        "单项选择"
-      ],
+      "tags": ["politics", "2022", "单项选择"],
       "difficulty": 2,
       "source": "politics-2022-paper-answer",
       "sourceEvidenceId": "politics-2022-paper-answer",
@@ -977,11 +925,7 @@
           "alt": "2022考研政治答案原页 p.8"
         }
       ],
-      "tags": [
-        "politics",
-        "2022",
-        "单项选择"
-      ],
+      "tags": ["politics", "2022", "单项选择"],
       "difficulty": 2,
       "source": "politics-2022-paper-answer",
       "sourceEvidenceId": "politics-2022-paper-answer",
@@ -1050,11 +994,7 @@
           "alt": "2022考研政治答案原页 p.8"
         }
       ],
-      "tags": [
-        "politics",
-        "2022",
-        "单项选择"
-      ],
+      "tags": ["politics", "2022", "单项选择"],
       "difficulty": 2,
       "source": "politics-2022-paper-answer",
       "sourceEvidenceId": "politics-2022-paper-answer",
@@ -1128,11 +1068,7 @@
           "alt": "2022考研政治答案原页 p.9"
         }
       ],
-      "tags": [
-        "politics",
-        "2022",
-        "单项选择"
-      ],
+      "tags": ["politics", "2022", "单项选择"],
       "difficulty": 2,
       "source": "politics-2022-paper-answer",
       "sourceEvidenceId": "politics-2022-paper-answer",
@@ -1201,11 +1137,7 @@
           "alt": "2022考研政治答案原页 p.9"
         }
       ],
-      "tags": [
-        "politics",
-        "2022",
-        "单项选择"
-      ],
+      "tags": ["politics", "2022", "单项选择"],
       "difficulty": 2,
       "source": "politics-2022-paper-answer",
       "sourceEvidenceId": "politics-2022-paper-answer",
@@ -1279,11 +1211,7 @@
           "alt": "2022考研政治答案原页 p.10"
         }
       ],
-      "tags": [
-        "politics",
-        "2022",
-        "多项选择"
-      ],
+      "tags": ["politics", "2022", "多项选择"],
       "difficulty": 2,
       "source": "politics-2022-paper-answer",
       "sourceEvidenceId": "politics-2022-paper-answer",
@@ -1352,11 +1280,7 @@
           "alt": "2022考研政治答案原页 p.10"
         }
       ],
-      "tags": [
-        "politics",
-        "2022",
-        "多项选择"
-      ],
+      "tags": ["politics", "2022", "多项选择"],
       "difficulty": 2,
       "source": "politics-2022-paper-answer",
       "sourceEvidenceId": "politics-2022-paper-answer",
@@ -1425,11 +1349,7 @@
           "alt": "2022考研政治答案原页 p.11"
         }
       ],
-      "tags": [
-        "politics",
-        "2022",
-        "多项选择"
-      ],
+      "tags": ["politics", "2022", "多项选择"],
       "difficulty": 2,
       "source": "politics-2022-paper-answer",
       "sourceEvidenceId": "politics-2022-paper-answer",
@@ -1503,11 +1423,7 @@
           "alt": "2022考研政治答案原页 p.12"
         }
       ],
-      "tags": [
-        "politics",
-        "2022",
-        "多项选择"
-      ],
+      "tags": ["politics", "2022", "多项选择"],
       "difficulty": 2,
       "source": "politics-2022-paper-answer",
       "sourceEvidenceId": "politics-2022-paper-answer",
@@ -1576,11 +1492,7 @@
           "alt": "2022考研政治答案原页 p.12"
         }
       ],
-      "tags": [
-        "politics",
-        "2022",
-        "多项选择"
-      ],
+      "tags": ["politics", "2022", "多项选择"],
       "difficulty": 2,
       "source": "politics-2022-paper-answer",
       "sourceEvidenceId": "politics-2022-paper-answer",
@@ -1649,11 +1561,7 @@
           "alt": "2022考研政治答案原页 p.13"
         }
       ],
-      "tags": [
-        "politics",
-        "2022",
-        "多项选择"
-      ],
+      "tags": ["politics", "2022", "多项选择"],
       "difficulty": 2,
       "source": "politics-2022-paper-answer",
       "sourceEvidenceId": "politics-2022-paper-answer",
@@ -1727,11 +1635,7 @@
           "alt": "2022考研政治答案原页 p.14"
         }
       ],
-      "tags": [
-        "politics",
-        "2022",
-        "多项选择"
-      ],
+      "tags": ["politics", "2022", "多项选择"],
       "difficulty": 2,
       "source": "politics-2022-paper-answer",
       "sourceEvidenceId": "politics-2022-paper-answer",
@@ -1800,11 +1704,7 @@
           "alt": "2022考研政治答案原页 p.14"
         }
       ],
-      "tags": [
-        "politics",
-        "2022",
-        "多项选择"
-      ],
+      "tags": ["politics", "2022", "多项选择"],
       "difficulty": 2,
       "source": "politics-2022-paper-answer",
       "sourceEvidenceId": "politics-2022-paper-answer",
@@ -1873,11 +1773,7 @@
           "alt": "2022考研政治答案原页 p.15"
         }
       ],
-      "tags": [
-        "politics",
-        "2022",
-        "多项选择"
-      ],
+      "tags": ["politics", "2022", "多项选择"],
       "difficulty": 2,
       "source": "politics-2022-paper-answer",
       "sourceEvidenceId": "politics-2022-paper-answer",
@@ -1951,11 +1847,7 @@
           "alt": "2022考研政治答案原页 p.16"
         }
       ],
-      "tags": [
-        "politics",
-        "2022",
-        "多项选择"
-      ],
+      "tags": ["politics", "2022", "多项选择"],
       "difficulty": 2,
       "source": "politics-2022-paper-answer",
       "sourceEvidenceId": "politics-2022-paper-answer",
@@ -2029,11 +1921,7 @@
           "alt": "2022考研政治答案原页 p.17"
         }
       ],
-      "tags": [
-        "politics",
-        "2022",
-        "多项选择"
-      ],
+      "tags": ["politics", "2022", "多项选择"],
       "difficulty": 2,
       "source": "politics-2022-paper-answer",
       "sourceEvidenceId": "politics-2022-paper-answer",
@@ -2102,11 +1990,7 @@
           "alt": "2022考研政治答案原页 p.17"
         }
       ],
-      "tags": [
-        "politics",
-        "2022",
-        "多项选择"
-      ],
+      "tags": ["politics", "2022", "多项选择"],
       "difficulty": 2,
       "source": "politics-2022-paper-answer",
       "sourceEvidenceId": "politics-2022-paper-answer",
@@ -2175,11 +2059,7 @@
           "alt": "2022考研政治答案原页 p.17"
         }
       ],
-      "tags": [
-        "politics",
-        "2022",
-        "多项选择"
-      ],
+      "tags": ["politics", "2022", "多项选择"],
       "difficulty": 2,
       "source": "politics-2022-paper-answer",
       "sourceEvidenceId": "politics-2022-paper-answer",
@@ -2248,11 +2128,7 @@
           "alt": "2022考研政治答案原页 p.18"
         }
       ],
-      "tags": [
-        "politics",
-        "2022",
-        "多项选择"
-      ],
+      "tags": ["politics", "2022", "多项选择"],
       "difficulty": 2,
       "source": "politics-2022-paper-answer",
       "sourceEvidenceId": "politics-2022-paper-answer",
@@ -2326,11 +2202,7 @@
           "alt": "2022考研政治答案原页 p.19"
         }
       ],
-      "tags": [
-        "politics",
-        "2022",
-        "多项选择"
-      ],
+      "tags": ["politics", "2022", "多项选择"],
       "difficulty": 2,
       "source": "politics-2022-paper-answer",
       "sourceEvidenceId": "politics-2022-paper-answer",
@@ -2399,11 +2271,7 @@
           "alt": "2022考研政治答案原页 p.19"
         }
       ],
-      "tags": [
-        "politics",
-        "2022",
-        "多项选择"
-      ],
+      "tags": ["politics", "2022", "多项选择"],
       "difficulty": 2,
       "source": "politics-2022-paper-answer",
       "sourceEvidenceId": "politics-2022-paper-answer",
@@ -2472,11 +2340,7 @@
           "alt": "2022考研政治答案原页 p.19"
         }
       ],
-      "tags": [
-        "politics",
-        "2022",
-        "多项选择"
-      ],
+      "tags": ["politics", "2022", "多项选择"],
       "difficulty": 2,
       "source": "politics-2022-paper-answer",
       "sourceEvidenceId": "politics-2022-paper-answer",
@@ -2533,11 +2397,7 @@
           "alt": "2022考研政治答案原页 p.21"
         }
       ],
-      "tags": [
-        "politics",
-        "2022",
-        "分析题"
-      ],
+      "tags": ["politics", "2022", "分析题"],
       "difficulty": 3,
       "source": "politics-2022-paper-answer",
       "sourceEvidenceId": "politics-2022-paper-answer",
@@ -2599,11 +2459,7 @@
           "alt": "2022考研政治答案原页 p.23"
         }
       ],
-      "tags": [
-        "politics",
-        "2022",
-        "分析题"
-      ],
+      "tags": ["politics", "2022", "分析题"],
       "difficulty": 3,
       "source": "politics-2022-paper-answer",
       "sourceEvidenceId": "politics-2022-paper-answer",
@@ -2665,11 +2521,7 @@
           "alt": "2022考研政治答案原页 p.26"
         }
       ],
-      "tags": [
-        "politics",
-        "2022",
-        "分析题"
-      ],
+      "tags": ["politics", "2022", "分析题"],
       "difficulty": 3,
       "source": "politics-2022-paper-answer",
       "sourceEvidenceId": "politics-2022-paper-answer",
@@ -2731,11 +2583,7 @@
           "alt": "2022考研政治答案原页 p.28"
         }
       ],
-      "tags": [
-        "politics",
-        "2022",
-        "分析题"
-      ],
+      "tags": ["politics", "2022", "分析题"],
       "difficulty": 3,
       "source": "politics-2022-paper-answer",
       "sourceEvidenceId": "politics-2022-paper-answer",
@@ -2797,11 +2645,7 @@
           "alt": "2022考研政治答案原页 p.31"
         }
       ],
-      "tags": [
-        "politics",
-        "2022",
-        "分析题"
-      ],
+      "tags": ["politics", "2022", "分析题"],
       "difficulty": 3,
       "source": "politics-2022-paper-answer",
       "sourceEvidenceId": "politics-2022-paper-answer",

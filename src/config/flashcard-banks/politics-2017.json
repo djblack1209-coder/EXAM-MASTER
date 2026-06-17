@@ -33,11 +33,7 @@
   "assetRoot": "question-bank/politics-2017",
   "processed_at": "2026-05-27T04:36:36Z",
   "total_cards": 38,
-  "sections": [
-    "单项选择",
-    "多项选择",
-    "分析题"
-  ],
+  "sections": ["单项选择", "多项选择", "分析题"],
   "cards": [
     {
       "id": "politics-2017-001",
@@ -85,11 +81,7 @@
           "alt": "2017考研政治答案原页 p.1"
         }
       ],
-      "tags": [
-        "politics",
-        "2017",
-        "单项选择"
-      ],
+      "tags": ["politics", "2017", "单项选择"],
       "difficulty": 2,
       "source": "politics-2017-paper-answer",
       "sourceEvidenceId": "politics-2017-paper-answer",
@@ -164,11 +156,7 @@
           "alt": "2017考研政治答案原页 p.1"
         }
       ],
-      "tags": [
-        "politics",
-        "2017",
-        "单项选择"
-      ],
+      "tags": ["politics", "2017", "单项选择"],
       "difficulty": 2,
       "source": "politics-2017-paper-answer",
       "sourceEvidenceId": "politics-2017-paper-answer",
@@ -243,11 +231,7 @@
           "alt": "2017考研政治答案原页 p.1"
         }
       ],
-      "tags": [
-        "politics",
-        "2017",
-        "单项选择"
-      ],
+      "tags": ["politics", "2017", "单项选择"],
       "difficulty": 2,
       "source": "politics-2017-paper-answer",
       "sourceEvidenceId": "politics-2017-paper-answer",
@@ -322,11 +306,7 @@
           "alt": "2017考研政治答案原页 p.2"
         }
       ],
-      "tags": [
-        "politics",
-        "2017",
-        "单项选择"
-      ],
+      "tags": ["politics", "2017", "单项选择"],
       "difficulty": 2,
       "source": "politics-2017-paper-answer",
       "sourceEvidenceId": "politics-2017-paper-answer",
@@ -401,11 +381,7 @@
           "alt": "2017考研政治答案原页 p.2"
         }
       ],
-      "tags": [
-        "politics",
-        "2017",
-        "单项选择"
-      ],
+      "tags": ["politics", "2017", "单项选择"],
       "difficulty": 2,
       "source": "politics-2017-paper-answer",
       "sourceEvidenceId": "politics-2017-paper-answer",
@@ -485,11 +461,7 @@
           "alt": "2017考研政治答案原页 p.2"
         }
       ],
-      "tags": [
-        "politics",
-        "2017",
-        "单项选择"
-      ],
+      "tags": ["politics", "2017", "单项选择"],
       "difficulty": 2,
       "source": "politics-2017-paper-answer",
       "sourceEvidenceId": "politics-2017-paper-answer",
@@ -564,11 +536,7 @@
           "alt": "2017考研政治答案原页 p.3"
         }
       ],
-      "tags": [
-        "politics",
-        "2017",
-        "单项选择"
-      ],
+      "tags": ["politics", "2017", "单项选择"],
       "difficulty": 2,
       "source": "politics-2017-paper-answer",
       "sourceEvidenceId": "politics-2017-paper-answer",
@@ -643,11 +611,7 @@
           "alt": "2017考研政治答案原页 p.3"
         }
       ],
-      "tags": [
-        "politics",
-        "2017",
-        "单项选择"
-      ],
+      "tags": ["politics", "2017", "单项选择"],
       "difficulty": 2,
       "source": "politics-2017-paper-answer",
       "sourceEvidenceId": "politics-2017-paper-answer",
@@ -722,11 +686,7 @@
           "alt": "2017考研政治答案原页 p.3"
         }
       ],
-      "tags": [
-        "politics",
-        "2017",
-        "单项选择"
-      ],
+      "tags": ["politics", "2017", "单项选择"],
       "difficulty": 2,
       "source": "politics-2017-paper-answer",
       "sourceEvidenceId": "politics-2017-paper-answer",
@@ -801,11 +761,7 @@
           "alt": "2017考研政治答案原页 p.4"
         }
       ],
-      "tags": [
-        "politics",
-        "2017",
-        "单项选择"
-      ],
+      "tags": ["politics", "2017", "单项选择"],
       "difficulty": 2,
       "source": "politics-2017-paper-answer",
       "sourceEvidenceId": "politics-2017-paper-answer",
@@ -885,11 +841,7 @@
           "alt": "2017考研政治答案原页 p.4"
         }
       ],
-      "tags": [
-        "politics",
-        "2017",
-        "单项选择"
-      ],
+      "tags": ["politics", "2017", "单项选择"],
       "difficulty": 2,
       "source": "politics-2017-paper-answer",
       "sourceEvidenceId": "politics-2017-paper-answer",
@@ -964,11 +916,7 @@
           "alt": "2017考研政治答案原页 p.5"
         }
       ],
-      "tags": [
-        "politics",
-        "2017",
-        "单项选择"
-      ],
+      "tags": ["politics", "2017", "单项选择"],
       "difficulty": 2,
       "source": "politics-2017-paper-answer",
       "sourceEvidenceId": "politics-2017-paper-answer",
@@ -1043,11 +991,7 @@
           "alt": "2017考研政治答案原页 p.5"
         }
       ],
-      "tags": [
-        "politics",
-        "2017",
-        "单项选择"
-      ],
+      "tags": ["politics", "2017", "单项选择"],
       "difficulty": 2,
       "source": "politics-2017-paper-answer",
       "sourceEvidenceId": "politics-2017-paper-answer",
@@ -1122,11 +1066,7 @@
           "alt": "2017考研政治答案原页 p.6"
         }
       ],
-      "tags": [
-        "politics",
-        "2017",
-        "单项选择"
-      ],
+      "tags": ["politics", "2017", "单项选择"],
       "difficulty": 2,
       "source": "politics-2017-paper-answer",
       "sourceEvidenceId": "politics-2017-paper-answer",
@@ -1201,11 +1141,7 @@
           "alt": "2017考研政治答案原页 p.6"
         }
       ],
-      "tags": [
-        "politics",
-        "2017",
-        "单项选择"
-      ],
+      "tags": ["politics", "2017", "单项选择"],
       "difficulty": 2,
       "source": "politics-2017-paper-answer",
       "sourceEvidenceId": "politics-2017-paper-answer",
@@ -1285,11 +1221,7 @@
           "alt": "2017考研政治答案原页 p.6"
         }
       ],
-      "tags": [
-        "politics",
-        "2017",
-        "单项选择"
-      ],
+      "tags": ["politics", "2017", "单项选择"],
       "difficulty": 2,
       "source": "politics-2017-paper-answer",
       "sourceEvidenceId": "politics-2017-paper-answer",
@@ -1364,11 +1296,7 @@
           "alt": "2017考研政治答案原页 p.7"
         }
       ],
-      "tags": [
-        "politics",
-        "2017",
-        "多项选择"
-      ],
+      "tags": ["politics", "2017", "多项选择"],
       "difficulty": 2,
       "source": "politics-2017-paper-answer",
       "sourceEvidenceId": "politics-2017-paper-answer",
@@ -1443,11 +1371,7 @@
           "alt": "2017考研政治答案原页 p.7"
         }
       ],
-      "tags": [
-        "politics",
-        "2017",
-        "多项选择"
-      ],
+      "tags": ["politics", "2017", "多项选择"],
       "difficulty": 2,
       "source": "politics-2017-paper-answer",
       "sourceEvidenceId": "politics-2017-paper-answer",
@@ -1522,11 +1446,7 @@
           "alt": "2017考研政治答案原页 p.8"
         }
       ],
-      "tags": [
-        "politics",
-        "2017",
-        "多项选择"
-      ],
+      "tags": ["politics", "2017", "多项选择"],
       "difficulty": 2,
       "source": "politics-2017-paper-answer",
       "sourceEvidenceId": "politics-2017-paper-answer",
@@ -1601,11 +1521,7 @@
           "alt": "2017考研政治答案原页 p.8"
         }
       ],
-      "tags": [
-        "politics",
-        "2017",
-        "多项选择"
-      ],
+      "tags": ["politics", "2017", "多项选择"],
       "difficulty": 2,
       "source": "politics-2017-paper-answer",
       "sourceEvidenceId": "politics-2017-paper-answer",
@@ -1680,11 +1596,7 @@
           "alt": "2017考研政治答案原页 p.9"
         }
       ],
-      "tags": [
-        "politics",
-        "2017",
-        "多项选择"
-      ],
+      "tags": ["politics", "2017", "多项选择"],
       "difficulty": 2,
       "source": "politics-2017-paper-answer",
       "sourceEvidenceId": "politics-2017-paper-answer",
@@ -1759,11 +1671,7 @@
           "alt": "2017考研政治答案原页 p.9"
         }
       ],
-      "tags": [
-        "politics",
-        "2017",
-        "多项选择"
-      ],
+      "tags": ["politics", "2017", "多项选择"],
       "difficulty": 2,
       "source": "politics-2017-paper-answer",
       "sourceEvidenceId": "politics-2017-paper-answer",
@@ -1838,11 +1746,7 @@
           "alt": "2017考研政治答案原页 p.10"
         }
       ],
-      "tags": [
-        "politics",
-        "2017",
-        "多项选择"
-      ],
+      "tags": ["politics", "2017", "多项选择"],
       "difficulty": 2,
       "source": "politics-2017-paper-answer",
       "sourceEvidenceId": "politics-2017-paper-answer",
@@ -1917,11 +1821,7 @@
           "alt": "2017考研政治答案原页 p.10"
         }
       ],
-      "tags": [
-        "politics",
-        "2017",
-        "多项选择"
-      ],
+      "tags": ["politics", "2017", "多项选择"],
       "difficulty": 2,
       "source": "politics-2017-paper-answer",
       "sourceEvidenceId": "politics-2017-paper-answer",
@@ -1996,11 +1896,7 @@
           "alt": "2017考研政治答案原页 p.10"
         }
       ],
-      "tags": [
-        "politics",
-        "2017",
-        "多项选择"
-      ],
+      "tags": ["politics", "2017", "多项选择"],
       "difficulty": 2,
       "source": "politics-2017-paper-answer",
       "sourceEvidenceId": "politics-2017-paper-answer",
@@ -2075,11 +1971,7 @@
           "alt": "2017考研政治答案原页 p.11"
         }
       ],
-      "tags": [
-        "politics",
-        "2017",
-        "多项选择"
-      ],
+      "tags": ["politics", "2017", "多项选择"],
       "difficulty": 2,
       "source": "politics-2017-paper-answer",
       "sourceEvidenceId": "politics-2017-paper-answer",
@@ -2154,11 +2046,7 @@
           "alt": "2017考研政治答案原页 p.11"
         }
       ],
-      "tags": [
-        "politics",
-        "2017",
-        "多项选择"
-      ],
+      "tags": ["politics", "2017", "多项选择"],
       "difficulty": 2,
       "source": "politics-2017-paper-answer",
       "sourceEvidenceId": "politics-2017-paper-answer",
@@ -2233,11 +2121,7 @@
           "alt": "2017考研政治答案原页 p.11"
         }
       ],
-      "tags": [
-        "politics",
-        "2017",
-        "多项选择"
-      ],
+      "tags": ["politics", "2017", "多项选择"],
       "difficulty": 2,
       "source": "politics-2017-paper-answer",
       "sourceEvidenceId": "politics-2017-paper-answer",
@@ -2312,11 +2196,7 @@
           "alt": "2017考研政治答案原页 p.12"
         }
       ],
-      "tags": [
-        "politics",
-        "2017",
-        "多项选择"
-      ],
+      "tags": ["politics", "2017", "多项选择"],
       "difficulty": 2,
       "source": "politics-2017-paper-answer",
       "sourceEvidenceId": "politics-2017-paper-answer",
@@ -2391,11 +2271,7 @@
           "alt": "2017考研政治答案原页 p.12"
         }
       ],
-      "tags": [
-        "politics",
-        "2017",
-        "多项选择"
-      ],
+      "tags": ["politics", "2017", "多项选择"],
       "difficulty": 2,
       "source": "politics-2017-paper-answer",
       "sourceEvidenceId": "politics-2017-paper-answer",
@@ -2470,11 +2346,7 @@
           "alt": "2017考研政治答案原页 p.13"
         }
       ],
-      "tags": [
-        "politics",
-        "2017",
-        "多项选择"
-      ],
+      "tags": ["politics", "2017", "多项选择"],
       "difficulty": 2,
       "source": "politics-2017-paper-answer",
       "sourceEvidenceId": "politics-2017-paper-answer",
@@ -2549,11 +2421,7 @@
           "alt": "2017考研政治答案原页 p.13"
         }
       ],
-      "tags": [
-        "politics",
-        "2017",
-        "多项选择"
-      ],
+      "tags": ["politics", "2017", "多项选择"],
       "difficulty": 2,
       "source": "politics-2017-paper-answer",
       "sourceEvidenceId": "politics-2017-paper-answer",
@@ -2633,11 +2501,7 @@
           "alt": "2017考研政治答案原页 p.13"
         }
       ],
-      "tags": [
-        "politics",
-        "2017",
-        "多项选择"
-      ],
+      "tags": ["politics", "2017", "多项选择"],
       "difficulty": 2,
       "source": "politics-2017-paper-answer",
       "sourceEvidenceId": "politics-2017-paper-answer",
@@ -2705,11 +2569,7 @@
           "alt": "2017考研政治答案原页 p.15"
         }
       ],
-      "tags": [
-        "politics",
-        "2017",
-        "分析题"
-      ],
+      "tags": ["politics", "2017", "分析题"],
       "difficulty": 3,
       "source": "politics-2017-paper-answer",
       "sourceEvidenceId": "politics-2017-paper-answer",
@@ -2777,11 +2637,7 @@
           "alt": "2017考研政治答案原页 p.16"
         }
       ],
-      "tags": [
-        "politics",
-        "2017",
-        "分析题"
-      ],
+      "tags": ["politics", "2017", "分析题"],
       "difficulty": 3,
       "source": "politics-2017-paper-answer",
       "sourceEvidenceId": "politics-2017-paper-answer",
@@ -2849,11 +2705,7 @@
           "alt": "2017考研政治答案原页 p.17"
         }
       ],
-      "tags": [
-        "politics",
-        "2017",
-        "分析题"
-      ],
+      "tags": ["politics", "2017", "分析题"],
       "difficulty": 3,
       "source": "politics-2017-paper-answer",
       "sourceEvidenceId": "politics-2017-paper-answer",
@@ -2921,11 +2773,7 @@
           "alt": "2017考研政治答案原页 p.18"
         }
       ],
-      "tags": [
-        "politics",
-        "2017",
-        "分析题"
-      ],
+      "tags": ["politics", "2017", "分析题"],
       "difficulty": 3,
       "source": "politics-2017-paper-answer",
       "sourceEvidenceId": "politics-2017-paper-answer",
@@ -2993,11 +2841,7 @@
           "alt": "2017考研政治答案原页 p.20"
         }
       ],
-      "tags": [
-        "politics",
-        "2017",
-        "分析题"
-      ],
+      "tags": ["politics", "2017", "分析题"],
       "difficulty": 3,
       "source": "politics-2017-paper-answer",
       "sourceEvidenceId": "politics-2017-paper-answer",

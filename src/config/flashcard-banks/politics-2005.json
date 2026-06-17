@@ -23,12 +23,7 @@
   "assetRoot": "question-bank/politics-2005",
   "processed_at": "2026-05-27T00:27:49Z",
   "total_cards": 37,
-  "sections": [
-    "单项选择",
-    "多项选择",
-    "辨析题",
-    "分析题"
-  ],
+  "sections": ["单项选择", "多项选择", "辨析题", "分析题"],
   "cards": [
     {
       "id": "politics-2005-001",
@@ -76,11 +71,7 @@
           "alt": "2005考研政治答案原页 p.9"
         }
       ],
-      "tags": [
-        "politics",
-        "2005",
-        "单项选择"
-      ],
+      "tags": ["politics", "2005", "单项选择"],
       "difficulty": 2,
       "source": "politics-2005-paper-answer",
       "sourceEvidenceId": "politics-2005-paper-answer",
@@ -154,11 +145,7 @@
           "alt": "2005考研政治答案原页 p.9"
         }
       ],
-      "tags": [
-        "politics",
-        "2005",
-        "单项选择"
-      ],
+      "tags": ["politics", "2005", "单项选择"],
       "difficulty": 2,
       "source": "politics-2005-paper-answer",
       "sourceEvidenceId": "politics-2005-paper-answer",
@@ -232,11 +219,7 @@
           "alt": "2005考研政治答案原页 p.9"
         }
       ],
-      "tags": [
-        "politics",
-        "2005",
-        "单项选择"
-      ],
+      "tags": ["politics", "2005", "单项选择"],
       "difficulty": 2,
       "source": "politics-2005-paper-answer",
       "sourceEvidenceId": "politics-2005-paper-answer",
@@ -310,11 +293,7 @@
           "alt": "2005考研政治答案原页 p.9"
         }
       ],
-      "tags": [
-        "politics",
-        "2005",
-        "单项选择"
-      ],
+      "tags": ["politics", "2005", "单项选择"],
       "difficulty": 2,
       "source": "politics-2005-paper-answer",
       "sourceEvidenceId": "politics-2005-paper-answer",
@@ -388,11 +367,7 @@
           "alt": "2005考研政治答案原页 p.9"
         }
       ],
-      "tags": [
-        "politics",
-        "2005",
-        "单项选择"
-      ],
+      "tags": ["politics", "2005", "单项选择"],
       "difficulty": 2,
       "source": "politics-2005-paper-answer",
       "sourceEvidenceId": "politics-2005-paper-answer",
@@ -466,11 +441,7 @@
           "alt": "2005考研政治答案原页 p.9"
         }
       ],
-      "tags": [
-        "politics",
-        "2005",
-        "单项选择"
-      ],
+      "tags": ["politics", "2005", "单项选择"],
       "difficulty": 2,
       "source": "politics-2005-paper-answer",
       "sourceEvidenceId": "politics-2005-paper-answer",
@@ -544,11 +515,7 @@
           "alt": "2005考研政治答案原页 p.9"
         }
       ],
-      "tags": [
-        "politics",
-        "2005",
-        "单项选择"
-      ],
+      "tags": ["politics", "2005", "单项选择"],
       "difficulty": 2,
       "source": "politics-2005-paper-answer",
       "sourceEvidenceId": "politics-2005-paper-answer",
@@ -622,11 +589,7 @@
           "alt": "2005考研政治答案原页 p.9"
         }
       ],
-      "tags": [
-        "politics",
-        "2005",
-        "单项选择"
-      ],
+      "tags": ["politics", "2005", "单项选择"],
       "difficulty": 2,
       "source": "politics-2005-paper-answer",
       "sourceEvidenceId": "politics-2005-paper-answer",
@@ -700,11 +663,7 @@
           "alt": "2005考研政治答案原页 p.9"
         }
       ],
-      "tags": [
-        "politics",
-        "2005",
-        "单项选择"
-      ],
+      "tags": ["politics", "2005", "单项选择"],
       "difficulty": 2,
       "source": "politics-2005-paper-answer",
       "sourceEvidenceId": "politics-2005-paper-answer",
@@ -778,11 +737,7 @@
           "alt": "2005考研政治答案原页 p.9"
         }
       ],
-      "tags": [
-        "politics",
-        "2005",
-        "单项选择"
-      ],
+      "tags": ["politics", "2005", "单项选择"],
       "difficulty": 2,
       "source": "politics-2005-paper-answer",
       "sourceEvidenceId": "politics-2005-paper-answer",
@@ -856,11 +811,7 @@
           "alt": "2005考研政治答案原页 p.9"
         }
       ],
-      "tags": [
-        "politics",
-        "2005",
-        "单项选择"
-      ],
+      "tags": ["politics", "2005", "单项选择"],
       "difficulty": 2,
       "source": "politics-2005-paper-answer",
       "sourceEvidenceId": "politics-2005-paper-answer",
@@ -934,11 +885,7 @@
           "alt": "2005考研政治答案原页 p.9"
         }
       ],
-      "tags": [
-        "politics",
-        "2005",
-        "单项选择"
-      ],
+      "tags": ["politics", "2005", "单项选择"],
       "difficulty": 2,
       "source": "politics-2005-paper-answer",
       "sourceEvidenceId": "politics-2005-paper-answer",
@@ -1012,11 +959,7 @@
           "alt": "2005考研政治答案原页 p.9"
         }
       ],
-      "tags": [
-        "politics",
-        "2005",
-        "单项选择"
-      ],
+      "tags": ["politics", "2005", "单项选择"],
       "difficulty": 2,
       "source": "politics-2005-paper-answer",
       "sourceEvidenceId": "politics-2005-paper-answer",
@@ -1090,11 +1033,7 @@
           "alt": "2005考研政治答案原页 p.9"
         }
       ],
-      "tags": [
-        "politics",
-        "2005",
-        "单项选择"
-      ],
+      "tags": ["politics", "2005", "单项选择"],
       "difficulty": 2,
       "source": "politics-2005-paper-answer",
       "sourceEvidenceId": "politics-2005-paper-answer",
@@ -1168,11 +1107,7 @@
           "alt": "2005考研政治答案原页 p.9"
         }
       ],
-      "tags": [
-        "politics",
-        "2005",
-        "单项选择"
-      ],
+      "tags": ["politics", "2005", "单项选择"],
       "difficulty": 2,
       "source": "politics-2005-paper-answer",
       "sourceEvidenceId": "politics-2005-paper-answer",
@@ -1246,11 +1181,7 @@
           "alt": "2005考研政治答案原页 p.9"
         }
       ],
-      "tags": [
-        "politics",
-        "2005",
-        "多项选择"
-      ],
+      "tags": ["politics", "2005", "多项选择"],
       "difficulty": 2,
       "source": "politics-2005-paper-answer",
       "sourceEvidenceId": "politics-2005-paper-answer",
@@ -1324,11 +1255,7 @@
           "alt": "2005考研政治答案原页 p.9"
         }
       ],
-      "tags": [
-        "politics",
-        "2005",
-        "多项选择"
-      ],
+      "tags": ["politics", "2005", "多项选择"],
       "difficulty": 2,
       "source": "politics-2005-paper-answer",
       "sourceEvidenceId": "politics-2005-paper-answer",
@@ -1402,11 +1329,7 @@
           "alt": "2005考研政治答案原页 p.9"
         }
       ],
-      "tags": [
-        "politics",
-        "2005",
-        "多项选择"
-      ],
+      "tags": ["politics", "2005", "多项选择"],
       "difficulty": 2,
       "source": "politics-2005-paper-answer",
       "sourceEvidenceId": "politics-2005-paper-answer",
@@ -1480,11 +1403,7 @@
           "alt": "2005考研政治答案原页 p.9"
         }
       ],
-      "tags": [
-        "politics",
-        "2005",
-        "多项选择"
-      ],
+      "tags": ["politics", "2005", "多项选择"],
       "difficulty": 2,
       "source": "politics-2005-paper-answer",
       "sourceEvidenceId": "politics-2005-paper-answer",
@@ -1558,11 +1477,7 @@
           "alt": "2005考研政治答案原页 p.9"
         }
       ],
-      "tags": [
-        "politics",
-        "2005",
-        "多项选择"
-      ],
+      "tags": ["politics", "2005", "多项选择"],
       "difficulty": 2,
       "source": "politics-2005-paper-answer",
       "sourceEvidenceId": "politics-2005-paper-answer",
@@ -1636,11 +1551,7 @@
           "alt": "2005考研政治答案原页 p.9"
         }
       ],
-      "tags": [
-        "politics",
-        "2005",
-        "多项选择"
-      ],
+      "tags": ["politics", "2005", "多项选择"],
       "difficulty": 2,
       "source": "politics-2005-paper-answer",
       "sourceEvidenceId": "politics-2005-paper-answer",
@@ -1714,11 +1625,7 @@
           "alt": "2005考研政治答案原页 p.9"
         }
       ],
-      "tags": [
-        "politics",
-        "2005",
-        "多项选择"
-      ],
+      "tags": ["politics", "2005", "多项选择"],
       "difficulty": 2,
       "source": "politics-2005-paper-answer",
       "sourceEvidenceId": "politics-2005-paper-answer",
@@ -1792,11 +1699,7 @@
           "alt": "2005考研政治答案原页 p.9"
         }
       ],
-      "tags": [
-        "politics",
-        "2005",
-        "多项选择"
-      ],
+      "tags": ["politics", "2005", "多项选择"],
       "difficulty": 2,
       "source": "politics-2005-paper-answer",
       "sourceEvidenceId": "politics-2005-paper-answer",
@@ -1870,11 +1773,7 @@
           "alt": "2005考研政治答案原页 p.9"
         }
       ],
-      "tags": [
-        "politics",
-        "2005",
-        "多项选择"
-      ],
+      "tags": ["politics", "2005", "多项选择"],
       "difficulty": 2,
       "source": "politics-2005-paper-answer",
       "sourceEvidenceId": "politics-2005-paper-answer",
@@ -1948,11 +1847,7 @@
           "alt": "2005考研政治答案原页 p.9"
         }
       ],
-      "tags": [
-        "politics",
-        "2005",
-        "多项选择"
-      ],
+      "tags": ["politics", "2005", "多项选择"],
       "difficulty": 2,
       "source": "politics-2005-paper-answer",
       "sourceEvidenceId": "politics-2005-paper-answer",
@@ -2026,11 +1921,7 @@
           "alt": "2005考研政治答案原页 p.9"
         }
       ],
-      "tags": [
-        "politics",
-        "2005",
-        "多项选择"
-      ],
+      "tags": ["politics", "2005", "多项选择"],
       "difficulty": 2,
       "source": "politics-2005-paper-answer",
       "sourceEvidenceId": "politics-2005-paper-answer",
@@ -2104,11 +1995,7 @@
           "alt": "2005考研政治答案原页 p.9"
         }
       ],
-      "tags": [
-        "politics",
-        "2005",
-        "多项选择"
-      ],
+      "tags": ["politics", "2005", "多项选择"],
       "difficulty": 2,
       "source": "politics-2005-paper-answer",
       "sourceEvidenceId": "politics-2005-paper-answer",
@@ -2182,11 +2069,7 @@
           "alt": "2005考研政治答案原页 p.9"
         }
       ],
-      "tags": [
-        "politics",
-        "2005",
-        "多项选择"
-      ],
+      "tags": ["politics", "2005", "多项选择"],
       "difficulty": 2,
       "source": "politics-2005-paper-answer",
       "sourceEvidenceId": "politics-2005-paper-answer",
@@ -2265,11 +2148,7 @@
           "alt": "2005考研政治答案原页 p.9"
         }
       ],
-      "tags": [
-        "politics",
-        "2005",
-        "多项选择"
-      ],
+      "tags": ["politics", "2005", "多项选择"],
       "difficulty": 2,
       "source": "politics-2005-paper-answer",
       "sourceEvidenceId": "politics-2005-paper-answer",
@@ -2343,11 +2222,7 @@
           "alt": "2005考研政治答案原页 p.9"
         }
       ],
-      "tags": [
-        "politics",
-        "2005",
-        "多项选择"
-      ],
+      "tags": ["politics", "2005", "多项选择"],
       "difficulty": 2,
       "source": "politics-2005-paper-answer",
       "sourceEvidenceId": "politics-2005-paper-answer",
@@ -2404,11 +2279,7 @@
           "alt": "2005考研政治答案原页 p.9"
         }
       ],
-      "tags": [
-        "politics",
-        "2005",
-        "辨析题"
-      ],
+      "tags": ["politics", "2005", "辨析题"],
       "difficulty": 3,
       "source": "politics-2005-paper-answer",
       "sourceEvidenceId": "politics-2005-paper-answer",
@@ -2465,11 +2336,7 @@
           "alt": "2005考研政治答案原页 p.9"
         }
       ],
-      "tags": [
-        "politics",
-        "2005",
-        "辨析题"
-      ],
+      "tags": ["politics", "2005", "辨析题"],
       "difficulty": 3,
       "source": "politics-2005-paper-answer",
       "sourceEvidenceId": "politics-2005-paper-answer",
@@ -2531,11 +2398,7 @@
           "alt": "2005考研政治答案原页 p.10"
         }
       ],
-      "tags": [
-        "politics",
-        "2005",
-        "辨析题"
-      ],
+      "tags": ["politics", "2005", "辨析题"],
       "difficulty": 3,
       "source": "politics-2005-paper-answer",
       "sourceEvidenceId": "politics-2005-paper-answer",
@@ -2592,11 +2455,7 @@
           "alt": "2005考研政治答案原页 p.10"
         }
       ],
-      "tags": [
-        "politics",
-        "2005",
-        "分析题"
-      ],
+      "tags": ["politics", "2005", "分析题"],
       "difficulty": 3,
       "source": "politics-2005-paper-answer",
       "sourceEvidenceId": "politics-2005-paper-answer",
@@ -2653,11 +2512,7 @@
           "alt": "2005考研政治答案原页 p.10"
         }
       ],
-      "tags": [
-        "politics",
-        "2005",
-        "分析题"
-      ],
+      "tags": ["politics", "2005", "分析题"],
       "difficulty": 3,
       "source": "politics-2005-paper-answer",
       "sourceEvidenceId": "politics-2005-paper-answer",
@@ -2719,11 +2574,7 @@
           "alt": "2005考研政治答案原页 p.11"
         }
       ],
-      "tags": [
-        "politics",
-        "2005",
-        "分析题"
-      ],
+      "tags": ["politics", "2005", "分析题"],
       "difficulty": 3,
       "source": "politics-2005-paper-answer",
       "sourceEvidenceId": "politics-2005-paper-answer",
@@ -2795,11 +2646,7 @@
           "alt": "2005考研政治答案原页 p.12"
         }
       ],
-      "tags": [
-        "politics",
-        "2005",
-        "分析题"
-      ],
+      "tags": ["politics", "2005", "分析题"],
       "difficulty": 3,
       "source": "politics-2005-paper-answer",
       "sourceEvidenceId": "politics-2005-paper-answer",

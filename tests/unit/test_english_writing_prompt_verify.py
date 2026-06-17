@@ -109,6 +109,65 @@ class EnglishWritingPromptVerifyTest(unittest.TestCase):
         self.assertEqual(payload["cards"][0]["passage"], payload["cards"][0]["question"])
         self.assertIn("按官方题干完成写作任务", payload["cards"][1]["answer"])
 
+    def test_english2_extracts_official_writing_prompts_47_and_48(self):
+        from scripts.baidu.english_writing_prompt_verify import verify_bank
+
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_dir = Path(tmp)
+            target = tmp_dir / "english2-2021.json"
+            prompt_source = tmp_dir / "2021-english2-paper.txt"
+            prompt_source.write_text(
+                "Section IV Writing\n"
+                "Part A\n"
+                "47. Directions:\n"
+                "Suppose you are organizing an online meeting. Write an email to invite a professor.\n"
+                "You should write about 100 words on the ANSWER SHEET.\n"
+                "Part B\n"
+                "48. Directions:\n"
+                "Write an essay based on the chart below. In your writing, you should\n"
+                "1) interpret the chart, and\n"
+                "2) give your comments.\n",
+                encoding="utf-8",
+            )
+            write_json(
+                target,
+                {
+                    "year": "2021",
+                    "subject": "english2",
+                    "cards": [
+                        {
+                            "id": "english2-2021-047",
+                            "number": 47,
+                            "type": "analysis",
+                            "question": "Write the composition required by the original paper.",
+                            "answer": "参考范文",
+                            "sourceEvidenceId": "src_question",
+                            "sourceEvidence": {"sourceId": "src_question"},
+                        },
+                        {
+                            "id": "english2-2021-048",
+                            "number": 48,
+                            "type": "analysis",
+                            "question": "Write the composition required by the original paper.",
+                            "answer": "参考范文",
+                            "sourceEvidenceId": "src_question",
+                            "sourceEvidence": {"sourceId": "src_question"},
+                        },
+                    ],
+                },
+            )
+
+            report = verify_bank(target, prompt_source=prompt_source, write=True, now="2026-05-26T00:00:00Z")
+            payload = json.loads(target.read_text(encoding="utf-8"))
+
+        self.assertEqual(report["summary"]["verifiedWritingCards"], 2)
+        self.assertIn("online meeting", payload["cards"][0]["question"])
+        self.assertIn("chart", payload["cards"][1]["question"])
+        self.assertEqual(payload["cards"][0]["type"], "essay")
+        self.assertEqual(payload["cards"][1]["type"], "essay")
+        self.assertEqual(payload["cards"][0]["answerEvidence"]["evidenceRole"], "official_writing_prompt")
+        self.assertEqual(payload["cards"][1]["answerEvidenceStatus"], "matched")
+
 
 if __name__ == "__main__":
     unittest.main()

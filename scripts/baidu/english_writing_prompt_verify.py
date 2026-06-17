@@ -23,7 +23,10 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_FLASHCARD_DIR = PROJECT_ROOT / "data" / "flashcards"
 DEFAULT_BANK_DIR = PROJECT_ROOT / "src" / "config" / "flashcard-banks"
 DEFAULT_OUTPUT = PROJECT_ROOT / "data" / "english-writing-prompt-verify-report.json"
-WRITING_NUMBERS = {51, 52}
+WRITING_NUMBERS_BY_SUBJECT = {
+    "english1": {51, 52},
+    "english2": {47, 48},
+}
 
 
 try:
@@ -70,6 +73,29 @@ def load_cards(payload: Any) -> list[dict[str, Any]]:
     return [card for card in (cards or []) if isinstance(card, dict)]
 
 
+def infer_english_subject(payload: Any, path: Path) -> str:
+    candidates = []
+    if isinstance(payload, dict):
+        candidates.extend(
+            [
+                payload.get("subject"),
+                payload.get("track"),
+                payload.get("bankId"),
+                payload.get("id"),
+                payload.get("paperId"),
+            ]
+        )
+    candidates.append(path.stem)
+    joined = " ".join(str(candidate or "").lower() for candidate in candidates)
+    if "english2" in joined or "english-2" in joined or "英语二" in joined or "英语（二）" in joined:
+        return "english2"
+    return "english1"
+
+
+def writing_numbers_for_subject(subject: str) -> set[int]:
+    return WRITING_NUMBERS_BY_SUBJECT.get(subject, WRITING_NUMBERS_BY_SUBJECT["english1"])
+
+
 def card_number(card: dict[str, Any]) -> int | None:
     try:
         return int(float(first_non_empty(card.get("number"), card.get("questionNumber"), card.get("question_no"))))
@@ -84,33 +110,40 @@ def prompt_answer(card: dict[str, Any]) -> str:
     return f"按官方题干完成写作任务：{question}"
 
 
-def extract_writing_prompts(source_text: str) -> dict[int, str]:
+def extract_writing_prompts(source_text: str, writing_numbers: set[int] | None = None) -> dict[int, str]:
     if not source_text:
         return {}
 
     text = source_text.replace("\f", "\n")
     text = re.sub(r"\r\n?", "\n", text)
     prompts: dict[int, str] = {}
-    for number, stop in ((51, r"\n\s*Part\s+B\s*\n"), (52, r"\Z")):
+    numbers = sorted(writing_numbers or WRITING_NUMBERS_BY_SUBJECT["english1"])
+    for index, number in enumerate(numbers):
+        stop_parts = [r"\Z"]
+        if index + 1 < len(numbers):
+            next_number = numbers[index + 1]
+            stop_parts.insert(0, rf"^\s*{next_number}\s*[.．]\s*Directions[:：]")
+            stop_parts.insert(0, r"\n\s*Part\s+B\s*\n")
+        stop = "|".join(stop_parts)
         match = re.search(rf"(?ms)^\s*{number}\s*[.．]\s*Directions[:：]\s*(.+?)(?={stop})", text)
         if not match:
             continue
         prompt = compact(f"{number}. Directions: {match.group(1)}")
-        prompt = re.sub(r"\b\d+\s+2025\s+年全国硕士研究生招生考试（英语一）真题试题\b", "", prompt)
+        prompt = re.sub(r"\b\d+\s+(?:19|20)\d{2}\s+年全国硕士研究生招生考试（英语[一二]）真题试题\b", "", prompt)
         prompt = re.sub(r"\s+\d+\s*$", "", prompt).strip()
         if prompt:
             prompts[number] = prompt
     return prompts
 
 
-def resolve_writing_prompt_path(payload: Any, prompt_source: Path | None) -> Path | None:
+def resolve_writing_prompt_path(payload: Any, prompt_source: Path | None, writing_numbers: set[int]) -> Path | None:
     if prompt_source:
         return prompt_source
 
     source_paths: list[str] = []
     cards = load_cards(payload)
     for card in cards:
-        if card_number(card) not in WRITING_NUMBERS:
+        if card_number(card) not in writing_numbers:
             continue
         source_evidence = card.get("sourceEvidence") if isinstance(card.get("sourceEvidence"), dict) else {}
         source_paths.extend(
@@ -142,15 +175,17 @@ def verify_bank(
     now = now or utc_now()
     payload = read_json(target_path, {})
     cards = load_cards(payload)
-    prompt_source_path = resolve_writing_prompt_path(payload, prompt_source)
-    writing_prompts = extract_writing_prompts(read_source_text(prompt_source_path)) if prompt_source_path else {}
+    english_subject = infer_english_subject(payload, target_path)
+    writing_numbers = writing_numbers_for_subject(english_subject)
+    prompt_source_path = resolve_writing_prompt_path(payload, prompt_source, writing_numbers)
+    writing_prompts = extract_writing_prompts(read_source_text(prompt_source_path), writing_numbers) if prompt_source_path else {}
     changed = False
     verified = 0
     skipped: list[dict[str, Any]] = []
 
     for index, card in enumerate(cards):
         number = card_number(card)
-        if number not in WRITING_NUMBERS:
+        if number not in writing_numbers:
             continue
 
         official_prompt = writing_prompts.get(number)
@@ -236,6 +271,7 @@ def verify_bank(
         "targetFile": relative_path(target_path),
         "mirroredConfigFile": relative_path(mirrored_config_path),
         "promptSourceFile": relative_path(prompt_source_path),
+        "subject": english_subject,
         "write": write,
         "summary": {
             "cardCount": len(cards),

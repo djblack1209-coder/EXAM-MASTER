@@ -34,15 +34,16 @@
       <view class="search-panel">
         <view class="search-box">
           <BaseIcon name="search" :size="28" />
-          <input v-model="keyword" class="search-input" placeholder="搜索院校、科目代码或文件名" confirm-type="search" />
+          <input
+            v-model="keyword"
+            class="search-input"
+            placeholder="搜索院校、科目代码或文件名"
+            confirm-type="search"
+          />
         </view>
         <scroll-view scroll-x class="direction-scroll">
           <view class="direction-row">
-            <view
-              class="direction-chip"
-              :class="{ active: selectedDirection === '' }"
-              @tap="selectDirection('')"
-            >
+            <view class="direction-chip" :class="{ active: selectedDirection === '' }" @tap="selectDirection('')">
               <text>全部</text>
             </view>
             <view

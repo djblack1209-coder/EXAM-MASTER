@@ -423,9 +423,7 @@ onBeforeUnmount(() => {
   overflow: hidden;
   pointer-events: auto;
   border-radius: 999rpx;
-  background:
-    linear-gradient(160deg, rgba(255, 255, 255, 0.88), rgba(240, 255, 228, 0.68)),
-    rgba(255, 255, 255, 0.58);
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.88), rgba(240, 255, 228, 0.68)), rgba(255, 255, 255, 0.58);
   box-shadow:
     0 26rpx 70rpx rgba(13, 71, 36, 0.18),
     0 10rpx 26rpx rgba(13, 71, 36, 0.1),

@@ -16,7 +16,8 @@
         <view class="section">
           <text class="section-title"> 一、服务说明 </text>
           <text class="section-text">
-            Exam Master（以下简称"本应用"）是一款面向考研学生的刷题学习小程序，提供公共课真题练习、错题复习、收藏和学习进度管理等功能。使用本应用即表示您同意本协议的全部条款。
+            Exam
+            Master（以下简称"本应用"）是一款面向考研学生的刷题学习小程序，提供公共课真题练习、错题复习、收藏和学习进度管理等功能。使用本应用即表示您同意本协议的全部条款。
           </text>
           <text class="section-text"> 本应用提供的内容用于学习辅助，不构成考试结果承诺或替代官方考试信息发布。 </text>
         </view>

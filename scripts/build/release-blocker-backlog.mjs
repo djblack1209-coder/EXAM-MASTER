@@ -10,6 +10,7 @@ const DEFAULT_EXTERNAL_AUDIT = path.join(PROJECT_ROOT, 'data/release-external-au
 const DEFAULT_WECHAT_SMOKE = path.join(PROJECT_ROOT, 'data/reports/wechat-devtools-release-smoke.json');
 const DEFAULT_PROFESSIONAL_INDEX = path.join(PROJECT_ROOT, 'src/config/professional-source-index.json');
 const DEFAULT_LOCAL_SOURCE_AUDIT = path.join(PROJECT_ROOT, 'data/raw-inbox/public-course-2025/source-audit.json');
+const DEFAULT_HISTORY_SOURCE_AUDIT_ROOT = path.join(PROJECT_ROOT, 'data/raw-inbox/public-course-history');
 const DEFAULT_OUTPUT = path.join(PROJECT_ROOT, 'data/release-blocker-backlog.json');
 const DEFAULT_MARKDOWN = path.join(PROJECT_ROOT, 'data/reports/release-blocker-backlog.md');
 const TRACK_ORDER = ['politics', 'english1', 'english2', 'math1', 'math2', 'math3'];
@@ -29,7 +30,7 @@ function parseArgs(argv) {
     externalAudit: DEFAULT_EXTERNAL_AUDIT,
     wechatSmoke: DEFAULT_WECHAT_SMOKE,
     professionalIndex: DEFAULT_PROFESSIONAL_INDEX,
-    localSourceAudit: DEFAULT_LOCAL_SOURCE_AUDIT,
+    localSourceAudits: [],
     output: DEFAULT_OUTPUT,
     markdown: DEFAULT_MARKDOWN,
     writeMarkdown: true,
@@ -57,7 +58,7 @@ function parseArgs(argv) {
       options.professionalIndex = path.resolve(nextValue);
       if (inlineValue === undefined) index += 1;
     } else if (key === '--local-source-audit') {
-      options.localSourceAudit = path.resolve(nextValue);
+      options.localSourceAudits.push(path.resolve(nextValue));
       if (inlineValue === undefined) index += 1;
     } else if (key === '--output') {
       options.output = path.resolve(nextValue);
@@ -87,7 +88,7 @@ Options:
   --external-audit <path>      release-external-gate JSON report
   --wechat-smoke <path>        DevTools smoke JSON report
   --professional-index <path>  professional source index JSON report
-  --local-source-audit <path>  local public-course source audit report
+  --local-source-audit <path>  local public-course source audit report; can be passed multiple times
   --output <path>              machine-readable backlog JSON output
   --markdown <path>            human-readable backlog markdown output
   --no-markdown                skip writing the human-readable markdown report
@@ -102,6 +103,62 @@ function existsFile(filePath) {
 function readJson(filePath, fallback = null) {
   if (!filePath || !existsFile(filePath)) return fallback;
   return JSON.parse(fs.readFileSync(filePath, 'utf8'));
+}
+
+function findSourceAuditReports(rootPath) {
+  if (!rootPath || !fs.existsSync(rootPath)) return [];
+
+  const reports = [];
+  const visit = (currentPath) => {
+    const stat = fs.statSync(currentPath);
+    if (stat.isFile()) {
+      if (path.basename(currentPath) === 'source-audit.json') reports.push(currentPath);
+      return;
+    }
+    if (!stat.isDirectory()) return;
+    for (const entry of fs.readdirSync(currentPath)) {
+      visit(path.join(currentPath, entry));
+    }
+  };
+
+  visit(rootPath);
+  return reports.sort((a, b) => a.localeCompare(b));
+}
+
+function defaultLocalSourceAuditPaths() {
+  return unique([
+    DEFAULT_LOCAL_SOURCE_AUDIT,
+    ...findSourceAuditReports(DEFAULT_HISTORY_SOURCE_AUDIT_ROOT)
+  ]).filter(existsFile);
+}
+
+function mergeLocalSourceAudits(reports) {
+  const audits = reports.filter(Boolean);
+  const sources = [];
+  const years = [];
+  const roots = [];
+
+  for (const audit of audits) {
+    if (Array.isArray(audit.sources)) sources.push(...audit.sources);
+    if (Array.isArray(audit.years)) years.push(...audit.years);
+    if (audit.root) roots.push(audit.root);
+    if (audit.scope) roots.push(audit.scope);
+    if (audit.auditRoot) roots.push(audit.auditRoot);
+  }
+
+  if (!sources.length && !years.length && !roots.length) return null;
+
+  return {
+    version: 1,
+    root: roots.join(';'),
+    years: unique(years),
+    sources
+  };
+}
+
+function readLocalSourceAudits(filePaths) {
+  const resolvedPaths = filePaths.length ? filePaths : defaultLocalSourceAuditPaths();
+  return mergeLocalSourceAudits(resolvedPaths.map((filePath) => readJson(filePath)));
 }
 
 function writeText(filePath, content) {
@@ -223,6 +280,29 @@ function sourceCandidateSamples(diagnostics, limit = 3) {
     remotePath: sample.remotePath || '',
     sourceUrl: sample.sourceUrl || ''
   }));
+}
+
+function sourceSampleHasBlocker(sample, blocker) {
+  const riskFlags = Array.isArray(sample?.riskFlags) ? sample.riskFlags : [];
+  const blockReasons = Array.isArray(sample?.blockReasons) ? sample.blockReasons : [];
+  const sourceQualityReason = sample?.sourceQuality?.blockReason ? [sample.sourceQuality.blockReason] : [];
+  return [...riskFlags, ...blockReasons, ...sourceQualityReason].some((value) =>
+    String(value || '').includes(blocker)
+  );
+}
+
+function sourceSamplesHaveBlocker(samples, blocker) {
+  return Array.isArray(samples) && samples.some((sample) => sourceSampleHasBlocker(sample, blocker));
+}
+
+function sourceContentMismatchNextAction(manifestSamples = [], afterEvidenceAction = '') {
+  const sourceIds = unique(
+    (Array.isArray(manifestSamples) ? manifestSamples : [])
+      .filter((sample) => sourceSampleHasBlocker(sample, 'source_content_mismatch'))
+      .map((sample) => sample.sourceId || sample.id || '')
+  );
+  const blockedSourceText = sourceIds.length ? `（当前阻断候选: ${sourceIds.join(', ')}）` : '';
+  return `替换错配题源${blockedSourceText}：新增或同步经视觉核验确认属于对应科目年份的 official_paper 试卷+答案或真题及答案合并 PDF，登记 remotePath、contentHash，并保持原错配源的 source_content_mismatch/manual_review_required 阻断标记；再刷新 Source Manifest。${afterEvidenceAction}`;
 }
 
 function localSourceAuditSampleRank(sample) {
@@ -518,6 +598,7 @@ function sourceManifestRegistrationChecklist(localSourceAudit, manifestSamples =
     .map((sample) => sample.sourceId || sample.id || '')
     .filter(Boolean);
   const blockers = [];
+  const hasSourceContentMismatch = sourceSamplesHaveBlocker(manifestSamples, 'source_content_mismatch');
 
   if (!localSourceAudit || diagnostics.status === 'not_available') {
     blockers.push('local_source_audit_not_available');
@@ -537,6 +618,9 @@ function sourceManifestRegistrationChecklist(localSourceAudit, manifestSamples =
       blockers.push('local_files_have_blockers');
     }
   }
+  if (hasSourceContentMismatch) {
+    blockers.push('manifest_candidate_source_content_mismatch');
+  }
 
   const readyForHumanVerification = blockers.length === 0;
 
@@ -553,11 +637,17 @@ function sourceManifestRegistrationChecklist(localSourceAudit, manifestSamples =
     blockers,
     note: readyForHumanVerification
       ? 'Local paper/answer files are readable and unblocked. Current release gate counts Baidu Netdisk official_paper sources by auto-pairing remotePath plus content hash; verified source registry drafts are optional audit metadata, not a release prerequisite.'
+      : hasSourceContentMismatch
+        ? 'At least one manifest candidate is a known content mismatch. Keep it publish-blocked and add a visually verified replacement source before auto-pairing.'
       : 'Resolve listed local-source blockers before the slot can be treated as an auto-paired official source.'
   };
 }
 
-function sourceEvidenceNextAction(localSourceAudit, afterEvidenceAction = '') {
+function sourceEvidenceNextAction(localSourceAudit, afterEvidenceAction = '', manifestSamples = []) {
+  if (sourceSamplesHaveBlocker(manifestSamples, 'source_content_mismatch')) {
+    return sourceContentMismatchNextAction(manifestSamples, afterEvidenceAction);
+  }
+
   const suffix = afterEvidenceAction || '';
   if (!localSourceAudit || localSourceAudit.status === 'not_available') {
     return `在 Source Manifest 中补齐同槽位 official_paper 试卷+答案或真题及答案合并 PDF，要求有 remotePath、contentHash，且风险标记不阻断发布。${suffix}`;
@@ -744,7 +834,7 @@ function buildCoverageItems(
           year,
           title: `${TRACK_LABELS[trackId] || trackId} ${year} 缺少可发布题库`,
           nextAction: missingSource || localSourceBlocked
-            ? sourceEvidenceNextAction(localSourceAudit, '再进入题卡清洗和 registry 注册。')
+            ? sourceEvidenceNextAction(localSourceAudit, '再进入题卡清洗和 registry 注册。', candidateSamples)
             : '已有可发布题源证据时，完成题卡清洗、答案匹配、证据哈希，再按 registry 规范注册题库。',
           evidence: {
             requiredYears: track.requiredYears || [],
@@ -792,7 +882,7 @@ function buildCoverageItems(
           year,
           title: `${TRACK_LABELS[trackId] || trackId} ${year} 有候选来源但未达到发布标准`,
           nextAction: missingSource || localSourceBlocked
-            ? sourceEvidenceNextAction(localSourceAudit, '再继续题卡清洗和 registry 发布状态核验。')
+            ? sourceEvidenceNextAction(localSourceAudit, '再继续题卡清洗和 registry 发布状态核验。', candidateSamples)
             : '沿用现有清洗队列推进，补齐题目结构、答案 evidence、source evidence 和注册状态；未通过前保持禁用或自用草稿。',
           evidence: {
             requiredYears: track.requiredYears || [],
@@ -847,7 +937,7 @@ function buildSourceEvidenceItems(
           track,
           year,
           title: `${TRACK_LABELS[track] || track} ${year} 缺少可发布官方题源证据`,
-          nextAction: sourceEvidenceNextAction(localSourceAudit),
+          nextAction: sourceEvidenceNextAction(localSourceAudit, '', candidateSamples),
           evidence: {
             presentYears: row.presentYears || [],
             coverageRate: row.coverageRate || 0,
@@ -1826,7 +1916,7 @@ export async function run(argv = process.argv.slice(2)) {
     externalAudit: readJson(options.externalAudit),
     wechatSmoke: readJson(options.wechatSmoke),
     professionalIndex: readJson(options.professionalIndex),
-    localSourceAudit: readJson(options.localSourceAudit)
+    localSourceAudit: readLocalSourceAudits(options.localSourceAudits)
   });
 
   writeText(options.output, `${JSON.stringify(backlog, null, 2)}\n`);

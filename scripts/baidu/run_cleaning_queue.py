@@ -234,11 +234,14 @@ def select_pending_tasks(
 ) -> list[dict[str, Any]]:
     published_slots = published_slots or set()
     should_skip_published_slots = bool(published_slots) and not task_id and not source_id
+    allowed_statuses = {"pending"}
+    if task_id or source_id:
+        allowed_statuses.add("failed")
     tasks = [
         apply_source_quality_overrides(task)
         for task in queue.get("tasks", [])
         if isinstance(task, dict)
-        and task.get("status") == "pending"
+        and task.get("status") in allowed_statuses
         and task.get("action") == "download_and_extract"
         and not source_quality_requires_manual_review(task)
         and (not should_skip_published_slots or slot_key_for_task(task) not in published_slots)
@@ -483,12 +486,13 @@ def should_restore_previous_output(
 def default_processor(task: dict[str, Any], local_path: Path) -> dict[str, Any]:
     subject = output_subject_for_task(task)
     year = str(task.get("year") or "unknown")
-    output_path = PROJECT_ROOT / "data" / "flashcards" / f"{subject}-{year}.json"
+    output_path = output_path_for_task(task)
     previous_bytes = output_path.read_bytes() if output_path.exists() else None
     previous_result = output_result_for_path(task, output_path) if previous_bytes is not None else None
+    pdf2flashcard_python = os.environ.get("PDF2FLASHCARD_PYTHON") or sys.executable
     try:
         subprocess.run(
-            [sys.executable, str(PDF2FLASHCARD), str(local_path), subject, year],
+            [pdf2flashcard_python, str(PDF2FLASHCARD), str(local_path), subject, year],
             cwd=str(PROJECT_ROOT),
             check=True,
         )
@@ -501,6 +505,24 @@ def default_processor(task: dict[str, Any], local_path: Path) -> dict[str, Any]:
     if previous_bytes is not None and should_restore_previous_output(task, previous_result, result):
         output_path.write_bytes(previous_bytes)
 
+    return result
+
+
+def output_path_for_task(task: dict[str, Any]) -> Path:
+    subject = output_subject_for_task(task)
+    year = str(task.get("year") or "unknown")
+    return PROJECT_ROOT / "data" / "flashcards" / f"{subject}-{year}.json"
+
+
+def reusable_existing_output_result(task: dict[str, Any]) -> dict[str, Any] | None:
+    output_path = output_path_for_task(task)
+    if not output_path.exists():
+        return None
+    result = output_result_for_path(task, output_path)
+    if int(result.get("questionCount") or 0) <= 0:
+        return None
+    if result.get("qualityIssues"):
+        return None
     return result
 
 
@@ -565,7 +587,11 @@ def run_queue_once(
                     raise RuntimeError("downloader is not configured")
                 active_downloader.download(task["remotePath"], str(local_path), overwrite=False)
 
-            result = active_processor(task, local_path)
+            result = None
+            if task.get("status") == "failed":
+                result = reusable_existing_output_result(task)
+            if result is None:
+                result = active_processor(task, local_path)
             question_count = int(result.get("questionCount") or 0)
             if question_count <= 0:
                 raise RuntimeError(f"processor produced 0 questions for {task.get('taskId')}")

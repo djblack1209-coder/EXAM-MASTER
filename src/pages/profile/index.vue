@@ -415,8 +415,7 @@ $spacing-section: 24rpx;
 
 .dark-mode .profile-pulse {
   background:
-    radial-gradient(circle at 18% 0%, rgba(0, 224, 255, 0.16) 0, rgba(0, 224, 255, 0) 38%),
-    rgba(16, 19, 26, 0.88);
+    radial-gradient(circle at 18% 0%, rgba(0, 224, 255, 0.16) 0, rgba(0, 224, 255, 0) 38%), rgba(16, 19, 26, 0.88);
 }
 
 .dark-mode .pulse-title,
@@ -534,15 +533,13 @@ $spacing-section: 24rpx;
   align-items: center;
   align-items: flex-start;
   background:
-    linear-gradient(135deg, rgba(255, 255, 255, 0.82) 0%, rgba(234, 251, 226, 0.74) 100%),
-    rgba(255, 255, 255, 0.68);
+    linear-gradient(135deg, rgba(255, 255, 255, 0.82) 0%, rgba(234, 251, 226, 0.74) 100%), rgba(255, 255, 255, 0.68);
   padding: 40rpx $spacing-card;
 }
 
 .dark-mode .app-banner {
   background:
-    radial-gradient(circle at 16% 0%, rgba(0, 224, 255, 0.12) 0, rgba(0, 224, 255, 0) 36%),
-    rgba(34, 37, 45, 0.82);
+    radial-gradient(circle at 16% 0%, rgba(0, 224, 255, 0.12) 0, rgba(0, 224, 255, 0) 36%), rgba(34, 37, 45, 0.82);
 }
 
 .banner-title {

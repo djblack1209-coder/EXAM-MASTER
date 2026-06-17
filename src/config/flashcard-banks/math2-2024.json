@@ -1,0 +1,1232 @@
+{
+  "id": "math2-2024",
+  "source": "math2-2024-paper-answer",
+  "paperId": "math2-2024",
+  "paperName": "2024考研数学二真题",
+  "subject": "数学",
+  "subjectKey": "math",
+  "track": "math2",
+  "year": "2024",
+  "quality": "ready",
+  "publicationStatus": "published",
+  "publicationBlockers": [],
+  "sourceEvidencePolicy": "baidu_netdisk_official_paper_pdf_inline_answer_page_image_v1",
+  "sourceFiles": [
+    {
+      "id": "math2-2024-paper-answer",
+      "role": "paper_answer",
+      "localPath": "data/raw-inbox/src_fd240e348c940376a5a94f7f-2024年数学二真题及参考答案.pdf",
+      "sha256": "sha256:816055fddf8314a65e0e81c52c1fb16f823c72c3996b721d4531b843c8f5c72f",
+      "sourceId": "src_fd240e348c940376a5a94f7f"
+    }
+  ],
+  "assetRoot": "question-bank/math2-2024",
+  "processed_at": "2026-06-07T00:58:51Z",
+  "total_cards": 22,
+  "cards": [
+    {
+      "id": "math2-2024-001",
+      "number": 1,
+      "paperId": "math2-2024",
+      "paperName": "2024考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2024",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2024考研数学二第1题（选择题）。题干、公式和图形以原 PDF 页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2024 数学二真题及参考答案 PDF；完整题干和公式见原 PDF 页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2024/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2024考研数学二试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2024/answer-page-01.jpg",
+          "caption": "参考答案页 p.1",
+          "alt": "2024考研数学二参考答案页 p.1"
+        }
+      ],
+      "tags": ["math2", "2024", "选择题"],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2024-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:f483da06994d7eb23e7ecaac90337b281bc7695a5e0f248440b35c4e2a644912",
+      "answerTextHash": "sha256:01370fce298cb459b7c797138d9e825fda2e23c11e9e9249e65268241d053ce7",
+      "sourceEvidence": {
+        "evidenceId": "math2-2024-q01",
+        "sourceId": "src_fd240e348c940376a5a94f7f",
+        "answerSourceId": "src_fd240e348c940376a5a94f7f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "inline_answer_paper_page_image",
+        "sourceEvidenceId": "math2-2024-paper-answer",
+        "answerEvidenceId": "math2-2024-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:01370fce298cb459b7c797138d9e825fda2e23c11e9e9249e65268241d053ce7"
+      }
+    },
+    {
+      "id": "math2-2024-002",
+      "number": 2,
+      "paperId": "math2-2024",
+      "paperName": "2024考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2024",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2024考研数学二第2题（选择题）。题干、公式和图形以原 PDF 页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2024 数学二真题及参考答案 PDF；完整题干和公式见原 PDF 页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2024/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2024考研数学二试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2024/answer-page-01.jpg",
+          "caption": "参考答案页 p.1",
+          "alt": "2024考研数学二参考答案页 p.1"
+        }
+      ],
+      "tags": ["math2", "2024", "选择题"],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2024-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:7e94a160c8614b1336193b944ce57ed36fa91fed33864eeafcdcbf83a2856d95",
+      "answerTextHash": "sha256:eeb8f23963a55373792abcd7f5e7bf152df8a8573bd10989d302f7962035a04f",
+      "sourceEvidence": {
+        "evidenceId": "math2-2024-q02",
+        "sourceId": "src_fd240e348c940376a5a94f7f",
+        "answerSourceId": "src_fd240e348c940376a5a94f7f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "inline_answer_paper_page_image",
+        "sourceEvidenceId": "math2-2024-paper-answer",
+        "answerEvidenceId": "math2-2024-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:eeb8f23963a55373792abcd7f5e7bf152df8a8573bd10989d302f7962035a04f"
+      }
+    },
+    {
+      "id": "math2-2024-003",
+      "number": 3,
+      "paperId": "math2-2024",
+      "paperName": "2024考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2024",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2024考研数学二第3题（选择题）。题干、公式和图形以原 PDF 页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2024 数学二真题及参考答案 PDF；完整题干和公式见原 PDF 页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2024/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2024考研数学二试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2024/answer-page-01.jpg",
+          "caption": "参考答案页 p.1",
+          "alt": "2024考研数学二参考答案页 p.1"
+        }
+      ],
+      "tags": ["math2", "2024", "选择题"],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2024-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:3401860d445fbbf1ba3c8b912623e668410f48aace705bc96e6cd67cd3a8835c",
+      "answerTextHash": "sha256:f6335e8977ced096172680deb47d3c197da7774b472b4fe4ce3651e4656f09aa",
+      "sourceEvidence": {
+        "evidenceId": "math2-2024-q03",
+        "sourceId": "src_fd240e348c940376a5a94f7f",
+        "answerSourceId": "src_fd240e348c940376a5a94f7f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "inline_answer_paper_page_image",
+        "sourceEvidenceId": "math2-2024-paper-answer",
+        "answerEvidenceId": "math2-2024-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:f6335e8977ced096172680deb47d3c197da7774b472b4fe4ce3651e4656f09aa"
+      }
+    },
+    {
+      "id": "math2-2024-004",
+      "number": 4,
+      "paperId": "math2-2024",
+      "paperName": "2024考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2024",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2024考研数学二第4题（选择题）。题干、公式和图形以原 PDF 页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2024 数学二真题及参考答案 PDF；完整题干和公式见原 PDF 页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2024/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2024考研数学二试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2024/answer-page-01.jpg",
+          "caption": "参考答案页 p.1",
+          "alt": "2024考研数学二参考答案页 p.1"
+        }
+      ],
+      "tags": ["math2", "2024", "选择题"],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2024-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:c224c18033a9368b8be33bb16b99536d2b4eb4a9b1819c5ddb836e6cc9feb692",
+      "answerTextHash": "sha256:f6335e8977ced096172680deb47d3c197da7774b472b4fe4ce3651e4656f09aa",
+      "sourceEvidence": {
+        "evidenceId": "math2-2024-q04",
+        "sourceId": "src_fd240e348c940376a5a94f7f",
+        "answerSourceId": "src_fd240e348c940376a5a94f7f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "inline_answer_paper_page_image",
+        "sourceEvidenceId": "math2-2024-paper-answer",
+        "answerEvidenceId": "math2-2024-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:f6335e8977ced096172680deb47d3c197da7774b472b4fe4ce3651e4656f09aa"
+      }
+    },
+    {
+      "id": "math2-2024-005",
+      "number": 5,
+      "paperId": "math2-2024",
+      "paperName": "2024考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2024",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2024考研数学二第5题（选择题）。题干、公式和图形以原 PDF 页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2024 数学二真题及参考答案 PDF；完整题干和公式见原 PDF 页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2024/paper-page-01.jpg",
+          "caption": "试卷原页 p.1",
+          "alt": "2024考研数学二试卷原页 p.1"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2024/answer-page-01.jpg",
+          "caption": "参考答案页 p.1",
+          "alt": "2024考研数学二参考答案页 p.1"
+        }
+      ],
+      "tags": ["math2", "2024", "选择题"],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2024-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:71d589b7582e4a5ca49bc99c4f7d0ff8bd1a089025ffa71d3db2cc821387a231",
+      "answerTextHash": "sha256:01370fce298cb459b7c797138d9e825fda2e23c11e9e9249e65268241d053ce7",
+      "sourceEvidence": {
+        "evidenceId": "math2-2024-q05",
+        "sourceId": "src_fd240e348c940376a5a94f7f",
+        "answerSourceId": "src_fd240e348c940376a5a94f7f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "inline_answer_paper_page_image",
+        "sourceEvidenceId": "math2-2024-paper-answer",
+        "answerEvidenceId": "math2-2024-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:01370fce298cb459b7c797138d9e825fda2e23c11e9e9249e65268241d053ce7"
+      }
+    },
+    {
+      "id": "math2-2024-006",
+      "number": 6,
+      "paperId": "math2-2024",
+      "paperName": "2024考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2024",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2024考研数学二第6题（选择题）。题干、公式和图形以原 PDF 页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "A",
+      "explanation": "答案来自本地百度网盘 2024 数学二真题及参考答案 PDF；完整题干和公式见原 PDF 页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2024/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2024考研数学二试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2024/answer-page-02.jpg",
+          "caption": "参考答案页 p.2",
+          "alt": "2024考研数学二参考答案页 p.2"
+        }
+      ],
+      "tags": ["math2", "2024", "选择题"],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2024-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:4c356cd78346ec92bc456a00801ea7239b1ae666fc7d509fabda8f0ff938fd2f",
+      "answerTextHash": "sha256:be350ad3c0fc9a7257a73bd05aba736f028d2514441d66b0626e7a78bc85704b",
+      "sourceEvidence": {
+        "evidenceId": "math2-2024-q06",
+        "sourceId": "src_fd240e348c940376a5a94f7f",
+        "answerSourceId": "src_fd240e348c940376a5a94f7f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "inline_answer_paper_page_image",
+        "sourceEvidenceId": "math2-2024-paper-answer",
+        "answerEvidenceId": "math2-2024-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:be350ad3c0fc9a7257a73bd05aba736f028d2514441d66b0626e7a78bc85704b"
+      }
+    },
+    {
+      "id": "math2-2024-007",
+      "number": 7,
+      "paperId": "math2-2024",
+      "paperName": "2024考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2024",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2024考研数学二第7题（选择题）。题干、公式和图形以原 PDF 页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2024 数学二真题及参考答案 PDF；完整题干和公式见原 PDF 页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2024/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2024考研数学二试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2024/answer-page-02.jpg",
+          "caption": "参考答案页 p.2",
+          "alt": "2024考研数学二参考答案页 p.2"
+        }
+      ],
+      "tags": ["math2", "2024", "选择题"],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2024-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:db539096853d25c2dcb9c6db3d13f56e45b395b5748799e6690409e46b6d8988",
+      "answerTextHash": "sha256:ea6b7035bde61a0fb21a8d4196db45fb2986b73187d0a84d810bab5409f63f7d",
+      "sourceEvidence": {
+        "evidenceId": "math2-2024-q07",
+        "sourceId": "src_fd240e348c940376a5a94f7f",
+        "answerSourceId": "src_fd240e348c940376a5a94f7f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "inline_answer_paper_page_image",
+        "sourceEvidenceId": "math2-2024-paper-answer",
+        "answerEvidenceId": "math2-2024-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:ea6b7035bde61a0fb21a8d4196db45fb2986b73187d0a84d810bab5409f63f7d"
+      }
+    },
+    {
+      "id": "math2-2024-008",
+      "number": 8,
+      "paperId": "math2-2024",
+      "paperName": "2024考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2024",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2024考研数学二第8题（选择题）。题干、公式和图形以原 PDF 页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "C",
+      "explanation": "答案来自本地百度网盘 2024 数学二真题及参考答案 PDF；完整题干和公式见原 PDF 页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2024/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2024考研数学二试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2024/answer-page-02.jpg",
+          "caption": "参考答案页 p.2",
+          "alt": "2024考研数学二参考答案页 p.2"
+        }
+      ],
+      "tags": ["math2", "2024", "选择题"],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2024-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:7175aa47d9f60b5f03d66d6e0f3fca4fe2303bd8e3824b3424679738e14108d6",
+      "answerTextHash": "sha256:cad57386346f62bee6aa00d160f80730cc923b804fff53afdd1c61b5181c7a0b",
+      "sourceEvidence": {
+        "evidenceId": "math2-2024-q08",
+        "sourceId": "src_fd240e348c940376a5a94f7f",
+        "answerSourceId": "src_fd240e348c940376a5a94f7f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "inline_answer_paper_page_image",
+        "sourceEvidenceId": "math2-2024-paper-answer",
+        "answerEvidenceId": "math2-2024-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:cad57386346f62bee6aa00d160f80730cc923b804fff53afdd1c61b5181c7a0b"
+      }
+    },
+    {
+      "id": "math2-2024-009",
+      "number": 9,
+      "paperId": "math2-2024",
+      "paperName": "2024考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2024",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2024考研数学二第9题（选择题）。题干、公式和图形以原 PDF 页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "D",
+      "explanation": "答案来自本地百度网盘 2024 数学二真题及参考答案 PDF；完整题干和公式见原 PDF 页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2024/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2024考研数学二试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2024/answer-page-02.jpg",
+          "caption": "参考答案页 p.2",
+          "alt": "2024考研数学二参考答案页 p.2"
+        }
+      ],
+      "tags": ["math2", "2024", "选择题"],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2024-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:1aa8be35cefb2e9a5b96e8f05ac7208fc2359d7efd7f1d10993c9593d2213cd9",
+      "answerTextHash": "sha256:7cd6122ff6ad5f4ed9210d1ae15379380ce2cd5f5ab3a3b9f0756d9b8d6dbe3f",
+      "sourceEvidence": {
+        "evidenceId": "math2-2024-q09",
+        "sourceId": "src_fd240e348c940376a5a94f7f",
+        "answerSourceId": "src_fd240e348c940376a5a94f7f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "inline_answer_paper_page_image",
+        "sourceEvidenceId": "math2-2024-paper-answer",
+        "answerEvidenceId": "math2-2024-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:7cd6122ff6ad5f4ed9210d1ae15379380ce2cd5f5ab3a3b9f0756d9b8d6dbe3f"
+      }
+    },
+    {
+      "id": "math2-2024-010",
+      "number": 10,
+      "paperId": "math2-2024",
+      "paperName": "2024考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2024",
+      "section": "选择题",
+      "type": "single_choice",
+      "question": "2024考研数学二第10题（选择题）。题干、公式和图形以原 PDF 页图为准。",
+      "options": [
+        {
+          "label": "A",
+          "text": "A"
+        },
+        {
+          "label": "B",
+          "text": "B"
+        },
+        {
+          "label": "C",
+          "text": "C"
+        },
+        {
+          "label": "D",
+          "text": "D"
+        }
+      ],
+      "answer": "B",
+      "explanation": "答案来自本地百度网盘 2024 数学二真题及参考答案 PDF；完整题干和公式见原 PDF 页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2024/paper-page-02.jpg",
+          "caption": "试卷原页 p.2",
+          "alt": "2024考研数学二试卷原页 p.2"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2024/answer-page-02.jpg",
+          "caption": "参考答案页 p.2",
+          "alt": "2024考研数学二参考答案页 p.2"
+        }
+      ],
+      "tags": ["math2", "2024", "选择题"],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2024-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:701e6a33aa26ed0465b56567ad61dc15014cf1544475b078a415fbb3d9215168",
+      "answerTextHash": "sha256:ea6b7035bde61a0fb21a8d4196db45fb2986b73187d0a84d810bab5409f63f7d",
+      "sourceEvidence": {
+        "evidenceId": "math2-2024-q10",
+        "sourceId": "src_fd240e348c940376a5a94f7f",
+        "answerSourceId": "src_fd240e348c940376a5a94f7f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "inline_answer_paper_page_image",
+        "sourceEvidenceId": "math2-2024-paper-answer",
+        "answerEvidenceId": "math2-2024-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:ea6b7035bde61a0fb21a8d4196db45fb2986b73187d0a84d810bab5409f63f7d"
+      }
+    },
+    {
+      "id": "math2-2024-011",
+      "number": 11,
+      "paperId": "math2-2024",
+      "paperName": "2024考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2024",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2024考研数学二第11题（填空题）。题干、公式和图形以原 PDF 页图为准。",
+      "options": [],
+      "answer": "(x - 1/2)^2 + y^2 = 1/4",
+      "explanation": "答案来自本地百度网盘 2024 数学二真题及参考答案 PDF；完整演算、证明或推导过程见原 PDF 页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2024/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2024考研数学二试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2024/answer-page-03.jpg",
+          "caption": "参考答案页 p.3",
+          "alt": "2024考研数学二参考答案页 p.3"
+        }
+      ],
+      "tags": ["math2", "2024", "填空题"],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2024-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:9308fd85d11e605d6907e90a0a9ea20c1e9fd1eaf4af1c4ea7fe48c9ee71de0d",
+      "answerTextHash": "sha256:e5867b94063e754d69d854a2bb384037131ddf22434767843cffb2e2f4247e80",
+      "sourceEvidence": {
+        "evidenceId": "math2-2024-q11",
+        "sourceId": "src_fd240e348c940376a5a94f7f",
+        "answerSourceId": "src_fd240e348c940376a5a94f7f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "inline_answer_paper_page_image",
+        "sourceEvidenceId": "math2-2024-paper-answer",
+        "answerEvidenceId": "math2-2024-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:e5867b94063e754d69d854a2bb384037131ddf22434767843cffb2e2f4247e80"
+      }
+    },
+    {
+      "id": "math2-2024-012",
+      "number": 12,
+      "paperId": "math2-2024",
+      "paperName": "2024考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2024",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2024考研数学二第12题（填空题）。题干、公式和图形以原 PDF 页图为准。",
+      "options": [],
+      "answer": "(1,1)",
+      "explanation": "答案来自本地百度网盘 2024 数学二真题及参考答案 PDF；完整演算、证明或推导过程见原 PDF 页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2024/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2024考研数学二试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2024/answer-page-03.jpg",
+          "caption": "参考答案页 p.3",
+          "alt": "2024考研数学二参考答案页 p.3"
+        }
+      ],
+      "tags": ["math2", "2024", "填空题"],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2024-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:529914de90d783f140c0cdf95c81ac92114b278b091ca36d962534cbaf41eef1",
+      "answerTextHash": "sha256:9d02acb04b1f24294138a354e2d26df1d82fbb79e44bab38a60586f25ed7e6f2",
+      "sourceEvidence": {
+        "evidenceId": "math2-2024-q12",
+        "sourceId": "src_fd240e348c940376a5a94f7f",
+        "answerSourceId": "src_fd240e348c940376a5a94f7f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "inline_answer_paper_page_image",
+        "sourceEvidenceId": "math2-2024-paper-answer",
+        "answerEvidenceId": "math2-2024-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:9d02acb04b1f24294138a354e2d26df1d82fbb79e44bab38a60586f25ed7e6f2"
+      }
+    },
+    {
+      "id": "math2-2024-013",
+      "number": 13,
+      "paperId": "math2-2024",
+      "paperName": "2024考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2024",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2024考研数学二第13题（填空题）。题干、公式和图形以原 PDF 页图为准。",
+      "options": [],
+      "answer": "y + pi/4 = arctan(x + y)",
+      "explanation": "答案来自本地百度网盘 2024 数学二真题及参考答案 PDF；完整演算、证明或推导过程见原 PDF 页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2024/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2024考研数学二试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2024/answer-page-03.jpg",
+          "caption": "参考答案页 p.3",
+          "alt": "2024考研数学二参考答案页 p.3"
+        }
+      ],
+      "tags": ["math2", "2024", "填空题"],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2024-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:494fb5a054605673f812ba97a6d72b6b34188ea0370330ceba055ec0f5f1a007",
+      "answerTextHash": "sha256:5ded4814af07c91825a534f1c45b3b6db5add3817e70ca4e1049bb9ac0075ec5",
+      "sourceEvidence": {
+        "evidenceId": "math2-2024-q13",
+        "sourceId": "src_fd240e348c940376a5a94f7f",
+        "answerSourceId": "src_fd240e348c940376a5a94f7f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "inline_answer_paper_page_image",
+        "sourceEvidenceId": "math2-2024-paper-answer",
+        "answerEvidenceId": "math2-2024-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:5ded4814af07c91825a534f1c45b3b6db5add3817e70ca4e1049bb9ac0075ec5"
+      }
+    },
+    {
+      "id": "math2-2024-014",
+      "number": 14,
+      "paperId": "math2-2024",
+      "paperName": "2024考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2024",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2024考研数学二第14题（填空题）。题干、公式和图形以原 PDF 页图为准。",
+      "options": [],
+      "answer": "31e",
+      "explanation": "答案来自本地百度网盘 2024 数学二真题及参考答案 PDF；完整演算、证明或推导过程见原 PDF 页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2024/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2024考研数学二试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2024/answer-page-03.jpg",
+          "caption": "参考答案页 p.3",
+          "alt": "2024考研数学二参考答案页 p.3"
+        }
+      ],
+      "tags": ["math2", "2024", "填空题"],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2024-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:27c1665f3f22e184482695e595bf878fbbb950ae5fefb2ff123f44bd2ae8c4ef",
+      "answerTextHash": "sha256:20522ed49b8f8329e3bc614eede7c96a7f3e2431da3b424a846de72da237d0e8",
+      "sourceEvidence": {
+        "evidenceId": "math2-2024-q14",
+        "sourceId": "src_fd240e348c940376a5a94f7f",
+        "answerSourceId": "src_fd240e348c940376a5a94f7f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "inline_answer_paper_page_image",
+        "sourceEvidenceId": "math2-2024-paper-answer",
+        "answerEvidenceId": "math2-2024-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:20522ed49b8f8329e3bc614eede7c96a7f3e2431da3b424a846de72da237d0e8"
+      }
+    },
+    {
+      "id": "math2-2024-015",
+      "number": 15,
+      "paperId": "math2-2024",
+      "paperName": "2024考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2024",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2024考研数学二第15题（填空题）。题干、公式和图形以原 PDF 页图为准。",
+      "options": [],
+      "answer": "3pi/2",
+      "explanation": "答案来自本地百度网盘 2024 数学二真题及参考答案 PDF；完整演算、证明或推导过程见原 PDF 页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2024/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2024考研数学二试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2024/answer-page-03.jpg",
+          "caption": "参考答案页 p.3",
+          "alt": "2024考研数学二参考答案页 p.3"
+        }
+      ],
+      "tags": ["math2", "2024", "填空题"],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2024-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:0dd6299f8d27561b91ac288d25b9277e41a287a3cfeb24ee71ab8223238b9f19",
+      "answerTextHash": "sha256:f61e4cca7294157712a6d85ab82ee26c4cd0a3ad7e5bb8a2ce4d3f0a7778a4c8",
+      "sourceEvidence": {
+        "evidenceId": "math2-2024-q15",
+        "sourceId": "src_fd240e348c940376a5a94f7f",
+        "answerSourceId": "src_fd240e348c940376a5a94f7f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "inline_answer_paper_page_image",
+        "sourceEvidenceId": "math2-2024-paper-answer",
+        "answerEvidenceId": "math2-2024-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:f61e4cca7294157712a6d85ab82ee26c4cd0a3ad7e5bb8a2ce4d3f0a7778a4c8"
+      }
+    },
+    {
+      "id": "math2-2024-016",
+      "number": 16,
+      "paperId": "math2-2024",
+      "paperName": "2024考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2024",
+      "section": "填空题",
+      "type": "short_answer",
+      "question": "2024考研数学二第16题（填空题）。题干、公式和图形以原 PDF 页图为准。",
+      "options": [],
+      "answer": "-4",
+      "explanation": "答案来自本地百度网盘 2024 数学二真题及参考答案 PDF；完整演算、证明或推导过程见原 PDF 页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2024/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2024考研数学二试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2024/answer-page-03.jpg",
+          "caption": "参考答案页 p.3",
+          "alt": "2024考研数学二参考答案页 p.3"
+        }
+      ],
+      "tags": ["math2", "2024", "填空题"],
+      "difficulty": 2,
+      "sourceEvidenceId": "math2-2024-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:6ffba3fc3ca8c9cfe6bfd66c4e6d0a181747383cc6dd4b427c8b48682acff90e",
+      "answerTextHash": "sha256:0113186639d2176e372bb3fe78eb4d92c970840a29326243ce4cc927651826d4",
+      "sourceEvidence": {
+        "evidenceId": "math2-2024-q16",
+        "sourceId": "src_fd240e348c940376a5a94f7f",
+        "answerSourceId": "src_fd240e348c940376a5a94f7f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "inline_answer_paper_page_image",
+        "sourceEvidenceId": "math2-2024-paper-answer",
+        "answerEvidenceId": "math2-2024-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:0113186639d2176e372bb3fe78eb4d92c970840a29326243ce4cc927651826d4"
+      }
+    },
+    {
+      "id": "math2-2024-017",
+      "number": 17,
+      "paperId": "math2-2024",
+      "paperName": "2024考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2024",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2024考研数学二第17题（解答题）。题干、公式和图形以原 PDF 页图为准。",
+      "options": [],
+      "answer": "8/3 ln 3",
+      "explanation": "答案来自本地百度网盘 2024 数学二真题及参考答案 PDF；完整演算、证明或推导过程见原 PDF 页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2024/paper-page-03.jpg",
+          "caption": "试卷原页 p.3",
+          "alt": "2024考研数学二试卷原页 p.3"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2024/answer-page-03.jpg",
+          "caption": "参考答案页 p.3",
+          "alt": "2024考研数学二参考答案页 p.3"
+        }
+      ],
+      "tags": ["math2", "2024", "解答题"],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2024-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:79d1e25d2309033d9d91332938329a15e918cdc7d22098d6462dae41f0accc1d",
+      "answerTextHash": "sha256:45a702fced26ee871d176f1d590467ccd063b785309eedcdcdf576d233500119",
+      "sourceEvidence": {
+        "evidenceId": "math2-2024-q17",
+        "sourceId": "src_fd240e348c940376a5a94f7f",
+        "answerSourceId": "src_fd240e348c940376a5a94f7f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "inline_answer_paper_page_image",
+        "sourceEvidenceId": "math2-2024-paper-answer",
+        "answerEvidenceId": "math2-2024-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:45a702fced26ee871d176f1d590467ccd063b785309eedcdcdf576d233500119"
+      }
+    },
+    {
+      "id": "math2-2024-018",
+      "number": 18,
+      "paperId": "math2-2024",
+      "paperName": "2024考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2024",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2024考研数学二第18题（解答题）。题干、公式和图形以原 PDF 页图为准。",
+      "options": [],
+      "answer": "第(1)问 y(x)=2x^3；第(2)问积分结果见原 PDF 页图。",
+      "explanation": "答案来自本地百度网盘 2024 数学二真题及参考答案 PDF；完整演算、证明或推导过程见原 PDF 页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2024/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2024考研数学二试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2024/answer-page-04.jpg",
+          "caption": "参考答案页 p.4",
+          "alt": "2024考研数学二参考答案页 p.4"
+        }
+      ],
+      "tags": ["math2", "2024", "解答题"],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2024-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:27d09ca3aef29f41c8ba31d4d85c748226a1b89ed2564f0000506db76e572ddd",
+      "answerTextHash": "sha256:c232e3334d5bfd5289e7b52c1a73bb601d95c5840ca26e859741831f7cbcc619",
+      "sourceEvidence": {
+        "evidenceId": "math2-2024-q18",
+        "sourceId": "src_fd240e348c940376a5a94f7f",
+        "answerSourceId": "src_fd240e348c940376a5a94f7f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "inline_answer_paper_page_image",
+        "sourceEvidenceId": "math2-2024-paper-answer",
+        "answerEvidenceId": "math2-2024-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:c232e3334d5bfd5289e7b52c1a73bb601d95c5840ca26e859741831f7cbcc619"
+      }
+    },
+    {
+      "id": "math2-2024-019",
+      "number": 19,
+      "paperId": "math2-2024",
+      "paperName": "2024考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2024",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2024考研数学二第19题（解答题）。题干、公式和图形以原 PDF 页图为准。",
+      "options": [],
+      "answer": "最大值 V(ln2)=pi ln2/16 + 3pi/64。",
+      "explanation": "答案来自本地百度网盘 2024 数学二真题及参考答案 PDF；完整演算、证明或推导过程见原 PDF 页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2024/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2024考研数学二试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2024/answer-page-04.jpg",
+          "caption": "参考答案页 p.4",
+          "alt": "2024考研数学二参考答案页 p.4"
+        }
+      ],
+      "tags": ["math2", "2024", "解答题"],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2024-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:7f0643fa47437d0130ceb206fe19b6d0f387f5e89aa4bbebfb231dd2be8a6337",
+      "answerTextHash": "sha256:0f74c204b21913d5d10b154925e8abd2c84cdc6bf235a3b7f5a146988b4b8d6d",
+      "sourceEvidence": {
+        "evidenceId": "math2-2024-q19",
+        "sourceId": "src_fd240e348c940376a5a94f7f",
+        "answerSourceId": "src_fd240e348c940376a5a94f7f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "inline_answer_paper_page_image",
+        "sourceEvidenceId": "math2-2024-paper-answer",
+        "answerEvidenceId": "math2-2024-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:0f74c204b21913d5d10b154925e8abd2c84cdc6bf235a3b7f5a146988b4b8d6d"
+      }
+    },
+    {
+      "id": "math2-2024-020",
+      "number": 20,
+      "paperId": "math2-2024",
+      "paperName": "2024考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2024",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2024考研数学二第20题（解答题）。题干、公式和图形以原 PDF 页图为准。",
+      "options": [],
+      "answer": "第(1)问 1/25；第(2)问 f(u,v)=uv/25-(u+1)e^(-u)+v^2/50。",
+      "explanation": "答案来自本地百度网盘 2024 数学二真题及参考答案 PDF；完整演算、证明或推导过程见原 PDF 页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2024/paper-page-04.jpg",
+          "caption": "试卷原页 p.4",
+          "alt": "2024考研数学二试卷原页 p.4"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2024/answer-page-04.jpg",
+          "caption": "参考答案页 p.4",
+          "alt": "2024考研数学二参考答案页 p.4"
+        }
+      ],
+      "tags": ["math2", "2024", "解答题"],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2024-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:6a7552128daa9acf8db5f70883390360377c3c11743afcd6cfe1e98f15b11e00",
+      "answerTextHash": "sha256:6917af2fbdd9fe464971040c3bf95dea1cbcefb85b701b7da98f5741eb87e60d",
+      "sourceEvidence": {
+        "evidenceId": "math2-2024-q20",
+        "sourceId": "src_fd240e348c940376a5a94f7f",
+        "answerSourceId": "src_fd240e348c940376a5a94f7f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "inline_answer_paper_page_image",
+        "sourceEvidenceId": "math2-2024-paper-answer",
+        "answerEvidenceId": "math2-2024-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:6917af2fbdd9fe464971040c3bf95dea1cbcefb85b701b7da98f5741eb87e60d"
+      }
+    },
+    {
+      "id": "math2-2024-021",
+      "number": 21,
+      "paperId": "math2-2024",
+      "paperName": "2024考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2024",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2024考研数学二第21题（解答题）。题干、公式和图形以原 PDF 页图为准。",
+      "options": [],
+      "answer": "证明过程见原 PDF 页图；第(1)问使用泰勒展开，第(2)问对第(1)问结果积分。",
+      "explanation": "答案来自本地百度网盘 2024 数学二真题及参考答案 PDF；完整演算、证明或推导过程见原 PDF 页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2024/paper-page-05.jpg",
+          "caption": "试卷原页 p.5",
+          "alt": "2024考研数学二试卷原页 p.5"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2024/answer-page-05.jpg",
+          "caption": "参考答案页 p.5",
+          "alt": "2024考研数学二参考答案页 p.5"
+        }
+      ],
+      "tags": ["math2", "2024", "解答题"],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2024-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:c9fe059067ff483d83b67d7b2917348efdc14bf3be5fd4079d6ed862ca930e45",
+      "answerTextHash": "sha256:69a20ad0d39ecc12f1b98b6246861b5a08e1f027968e4b11ce53c8b5f724a7c6",
+      "sourceEvidence": {
+        "evidenceId": "math2-2024-q21",
+        "sourceId": "src_fd240e348c940376a5a94f7f",
+        "answerSourceId": "src_fd240e348c940376a5a94f7f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "inline_answer_paper_page_image",
+        "sourceEvidenceId": "math2-2024-paper-answer",
+        "answerEvidenceId": "math2-2024-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:69a20ad0d39ecc12f1b98b6246861b5a08e1f027968e4b11ce53c8b5f724a7c6"
+      }
+    },
+    {
+      "id": "math2-2024-022",
+      "number": 22,
+      "paperId": "math2-2024",
+      "paperName": "2024考研数学二真题",
+      "subject": "数学",
+      "subjectKey": "math",
+      "track": "math2",
+      "year": "2024",
+      "section": "解答题",
+      "type": "short_answer",
+      "question": "2024考研数学二第22题（解答题）。题干、公式和图形以原 PDF 页图为准。",
+      "options": [],
+      "answer": "a = 1, b = 2；正交矩阵 Q 和标准形见原 PDF 页图，f(x1,x2,x3)=6y1^2。",
+      "explanation": "答案来自本地百度网盘 2024 数学二真题及参考答案 PDF；完整演算、证明或推导过程见原 PDF 页图。",
+      "questionImages": [
+        {
+          "src": "question-bank/math2-2024/paper-page-05.jpg",
+          "caption": "试卷原页 p.5",
+          "alt": "2024考研数学二试卷原页 p.5"
+        }
+      ],
+      "answerImages": [
+        {
+          "src": "question-bank/math2-2024/answer-page-05.jpg",
+          "caption": "参考答案页 p.5",
+          "alt": "2024考研数学二参考答案页 p.5"
+        }
+      ],
+      "tags": ["math2", "2024", "解答题"],
+      "difficulty": 3,
+      "sourceEvidenceId": "math2-2024-paper-answer",
+      "answerEvidenceStatus": "matched",
+      "questionTextHash": "sha256:35fc8649dde066e46659b23827dfb67d12070d47026b81ff5298810f2a0aa4e8",
+      "answerTextHash": "sha256:32090843f342affb85c256f362203aa26373dde84bdf36989ab5cc4cd515f434",
+      "sourceEvidence": {
+        "evidenceId": "math2-2024-q22",
+        "sourceId": "src_fd240e348c940376a5a94f7f",
+        "answerSourceId": "src_fd240e348c940376a5a94f7f",
+        "sourceType": "baidu_netdisk_official_paper_pdf_page_image",
+        "evidenceRole": "inline_answer_paper_page_image",
+        "sourceEvidenceId": "math2-2024-paper-answer",
+        "answerEvidenceId": "math2-2024-paper-answer",
+        "answerEvidenceStatus": "matched",
+        "answerTextHash": "sha256:32090843f342affb85c256f362203aa26373dde84bdf36989ab5cc4cd515f434"
+      }
+    }
+  ]
+}

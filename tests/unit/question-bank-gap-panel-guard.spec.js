@@ -3,10 +3,28 @@ import { resolve } from 'node:path';
 import { mount } from '@vue/test-utils';
 import { nextTick } from 'vue';
 import { describe, expect, it } from 'vitest';
+import { getPracticeNavigationTree } from '@/config/bank-registry.js';
 import QuestionBankPage from '@/pages/practice-sub/question-bank.vue';
 import storageService from '@/services/storageService.js';
 
 const source = readFileSync(resolve(process.cwd(), 'src/pages/practice-sub/question-bank.vue'), 'utf8');
+
+function getTrack(profile, trackId) {
+  return getPracticeNavigationTree(profile)
+    .flatMap((subject) => subject.tracks || [])
+    .find((track) => track.id === trackId);
+}
+
+function getGapExpectation(profile, trackId) {
+  const track = getTrack(profile, trackId);
+  const gapSlots = (track?.yearSlots || []).filter((slot) => !slot.clickable);
+  return {
+    organizing: gapSlots.filter((slot) => slot.status === 'organizing').length,
+    missing: gapSlots.filter((slot) => slot.status === 'missing').length,
+    previewCount: Math.min(gapSlots.length, 6),
+    years: gapSlots.map((slot) => slot.year)
+  };
+}
 
 function mountQuestionBank(profile = { tracks: ['politics'] }) {
   storageService.save('exam_profile', profile);
@@ -21,16 +39,19 @@ function mountQuestionBank(profile = { tracks: ['politics'] }) {
 
 describe('question bank gap panel', () => {
   it('shows an understandable gap list for unavailable years in the selected track', async () => {
-    const wrapper = mountQuestionBank();
+    const profile = { tracks: ['politics'] };
+    const expected = getGapExpectation(profile, 'politics');
+    const wrapper = mountQuestionBank(profile);
     await nextTick();
 
     const gapPanel = wrapper.find('.gap-panel');
     expect(gapPanel.exists()).toBe(true);
     expect(gapPanel.text()).toContain('待开放清单');
     expect(gapPanel.text()).toContain('优先展示当前方向最近年份');
-    expect(gapPanel.text()).toContain('整理中 0 · 待入库 2');
-    expect(gapPanel.text()).toContain('2026');
-    expect(gapPanel.text()).toContain('2023');
+    expect(gapPanel.text()).toContain(`整理中 ${expected.organizing} · 待入库 ${expected.missing}`);
+    expect(wrapper.findAll('.gap-item')).toHaveLength(expected.previewCount);
+    expect(gapPanel.text()).toContain(expected.years[0]);
+    expect(gapPanel.text()).toContain(expected.years[1]);
     expect(gapPanel.text()).toContain('资料暂未入库');
     expect(gapPanel.text()).toContain('资料入库后开放');
 
@@ -38,11 +59,16 @@ describe('question bank gap panel', () => {
   });
 
   it('updates the gap summary when switching tracks', async () => {
-    const wrapper = mountQuestionBank({ tracks: ['english1'] });
+    const profile = { tracks: ['english1'] };
+    const expected = getGapExpectation(profile, 'english1');
+    const wrapper = mountQuestionBank(profile);
     await nextTick();
 
-    expect(wrapper.find('.gap-panel').text()).toContain('整理中 0 · 待入库 5');
-    expect(wrapper.findAll('.gap-item')).toHaveLength(5);
+    expect(wrapper.find('.gap-panel').text()).toContain(
+      `整理中 ${expected.organizing} · 待入库 ${expected.missing}`
+    );
+    expect(wrapper.findAll('.gap-item')).toHaveLength(expected.previewCount);
+    expect(wrapper.find('.gap-panel').text()).toContain(expected.years[0]);
 
     wrapper.unmount();
   });

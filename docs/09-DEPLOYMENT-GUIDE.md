@@ -9,6 +9,72 @@
 - 后端分仓迁移步骤见 [09B-BACKEND-MIGRATION-GUIDE.md](./09B-BACKEND-MIGRATION-GUIDE.md)。
 - 发布状态和剩余阻断项以 `npm run release:gate:report`、`data/release-external-audit.json`、本文件和 [11-RELEASE-NOTES.md](./11-RELEASE-NOTES.md) 为准。长期结论写回核心文档，临时证据留在 `data/release-evidence/`。
 
+## 2026-06-12 Oracle 3055 第二服务器 / H5 温备
+
+当前 Oracle 3055 承载 EXAM-MASTER 的 H5 静态温备，用于海外本机回环访问、健康探针、静态资源预热和低风险第二服务器验证。它不是生产切流，不替代腾讯云、Sealos/Laf、MongoDB、微信小程序或真实用户数据链路。
+
+| 项 | 当前值 |
+|---|---|
+| Oracle 服务器 | 3055 / `129.213.33.101` |
+| Oracle 角色 | H5 静态 warm standby |
+| Oracle 服务 | `exam-master-h5.service` |
+| Oracle timer | 无项目专用 timer；由全局 `oracle-project-probe.timer` 和 status aggregator 探测 |
+| Oracle 部署目录 | `/opt/exam-master-h5/current` |
+| Oracle 私有配置 | `/etc/exam-master-h5/oracle-standby.env`（不含 secret） |
+| Oracle 日志目录 | `/var/log/exam-master-h5` |
+| Oracle 备份目录 | `/var/backups/exam-master-h5`（兼容链接到 `/var/backups/exam-master-oracle-h5`） |
+| 本机端口 | `127.0.0.1:18119` |
+| 健康检查 | `http://127.0.0.1:18119/health` |
+| 资源上限 | `CPUQuota=20%`, `MemoryMax=256M` |
+| 部署来源 | 本项目 `dist/build/h5` |
+| VPS-Config 部署脚本 | `/Users/blackdj/Documents/VPS-Config/tools/exam-master-oracle-standby-deploy.sh` |
+| 最近部署 | 2026-06-12 23:11 UTC，远端 predeploy 备份 `20260612T231001Z-predeploy` |
+
+### 边界
+
+- 只复制 `dist/build/h5` 静态目录。
+- 不复制 `data/`、`.env*`、`laf-backend/.env*`、MongoDB 数据、Laf 环境变量、微信密钥、腾讯云密钥、百度网盘 token、smoke token 或 AI provider key。
+- 不公开端口，不改 DNS、Cloudflare、Nginx、腾讯云、Sealos/Laf、微信小程序发布路径。
+- 不改 Merlin Clash、Shadowrocket、小火箭、Clash 客户端可见节点列表，不触碰 Oracle 9036 代理出口业务。
+- 不承担生产写流量；如需海外生产入口，必须另写切流、数据库、登录态、灰度、回滚和法务/备案影响方案。
+
+### 凭证位置
+
+- 腾讯云服务器凭证：本项目 `.env.server`，不进入版本控制。
+- Sealos/Laf 后端环境变量：`laf-backend/.env` 或 Laf 控制台环境变量。
+- Oracle SSH key：本机 `~/.ssh/oci_ashburn_a1_ed25519`。
+- OCI API 配置：本机 `~/.oci/config`。
+- Oracle 服务运行态不保存 EXAM-MASTER 业务密钥。
+
+### 验证与回滚
+
+```bash
+# 在 VPS-Config 项目中执行
+make exam-master-oracle-standby-deploy
+
+# 只做当前 Oracle 温备验证
+tools/exam-master-oracle-standby-deploy.sh verify
+
+# 直接在 Oracle 3055 上验证
+systemctl status exam-master-h5.service --no-pager -l
+curl -fsS http://127.0.0.1:18119/health
+ss -lntup | grep 18119
+df -h /
+free -h
+
+# 如需停用 Oracle H5 温备
+tools/exam-master-oracle-standby-deploy.sh rollback
+
+# 如需恢复最近一次部署前静态目录和 unit
+systemctl stop exam-master-h5.service
+tar -C / -xzf /var/backups/exam-master-h5/20260612T231001Z-predeploy/opt-exam-master-h5-predeploy.tar.gz
+cp -a /var/backups/exam-master-h5/20260612T231001Z-predeploy/exam-master-h5.service /etc/systemd/system/exam-master-h5.service
+systemctl daemon-reload
+systemctl start exam-master-h5.service
+```
+
+最近一次本机验证显示：`/health` 返回 200，`/` 返回 200，`exam-master-h5.service` 为 active，端口只监听 `127.0.0.1:18119`，服务内存约 10MB，根分区仍有约 37GB 可用。Oracle status aggregator 已包含 `18119/health` 和首页探针。私有证据保存在 VPS-Config 的 `credentials/generated/oracle-full-check/`，公开文档只记录结论和凭证位置。
+
 ---
 
 # Exam-Master 部署运维手册

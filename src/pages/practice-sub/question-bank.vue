@@ -79,11 +79,7 @@
             <text class="recommended-meta-value">{{ recommendedLocalState.countText }}</text>
           </view>
         </view>
-        <view
-          class="recommended-action"
-          hover-class="btn-hover"
-          @tap="loadAndStartSlot(recommendedSlot)"
-        >
+        <view class="recommended-action" hover-class="btn-hover" @tap="loadAndStartSlot(recommendedSlot)">
           <text>{{ recommendedActionText }}</text>
           <BaseIcon name="arrow-right" :size="24" />
         </view>

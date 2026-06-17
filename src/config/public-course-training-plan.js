@@ -35,7 +35,14 @@ export const PUBLIC_COURSE_PHASES = [
 ];
 
 const DAY_TEMPLATES = [
-  { day: 1, label: '周一', track: 'english1', mode: 'article_first', minutes: 70, focus: '英语一阅读文章 + 对应选择题' },
+  {
+    day: 1,
+    label: '周一',
+    track: 'english1',
+    mode: 'article_first',
+    minutes: 70,
+    focus: '英语一阅读文章 + 对应选择题'
+  },
   { day: 2, label: '周二', track: 'math1', mode: 'calculation', minutes: 75, focus: '数学一高数/线代演算题' },
   { day: 3, label: '周三', track: 'politics', mode: 'choice_review', minutes: 55, focus: '政治单选/多选 + 易混选项' },
   { day: 4, label: '周四', track: 'english2', mode: 'article_first', minutes: 65, focus: '英语二阅读文章 + 新题型' },

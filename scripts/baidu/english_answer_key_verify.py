@@ -26,8 +26,14 @@ DEFAULT_RAW_INBOX = PROJECT_ROOT / "data" / "raw-inbox"
 DEFAULT_SOURCE_MANIFEST = PROJECT_ROOT / "data" / "source-manifest.json"
 DEFAULT_OUTPUT = PROJECT_ROOT / "data" / "english-answer-key-verify-report.json"
 CHOICE_TYPES = {"single_choice", "multi_choice"}
-TRANSLATION_NUMBERS = set(range(46, 51))
-WRITING_NUMBERS = {51, 52}
+TRANSLATION_NUMBERS_BY_SUBJECT = {
+    "english1": set(range(46, 51)),
+    "english2": {46},
+}
+WRITING_NUMBERS_BY_SUBJECT = {
+    "english1": {51, 52},
+    "english2": {47, 48},
+}
 
 
 try:
@@ -92,6 +98,33 @@ def parse_year(value: Any) -> int | None:
 def year_from_path(path: Path) -> int | None:
     match = re.search(r"(19|20)\d{2}", path.name)
     return int(match.group(0)) if match else None
+
+
+def infer_english_subject(payload: Any, path: Path) -> str:
+    candidates = []
+    if isinstance(payload, dict):
+        candidates.extend(
+            [
+                payload.get("subject"),
+                payload.get("track"),
+                payload.get("bankId"),
+                payload.get("id"),
+                payload.get("paperId"),
+            ]
+        )
+    candidates.append(path.stem)
+    joined = " ".join(str(candidate or "").lower() for candidate in candidates)
+    if "english2" in joined or "english-2" in joined or "英语二" in joined or "英语（二）" in joined:
+        return "english2"
+    return "english1"
+
+
+def translation_numbers_for_subject(subject: str) -> set[int]:
+    return TRANSLATION_NUMBERS_BY_SUBJECT.get(subject, TRANSLATION_NUMBERS_BY_SUBJECT["english1"])
+
+
+def writing_numbers_for_subject(subject: str) -> set[int]:
+    return WRITING_NUMBERS_BY_SUBJECT.get(subject, WRITING_NUMBERS_BY_SUBJECT["english1"])
 
 
 def source_id_from_path(path: Path) -> str:
@@ -310,6 +343,9 @@ def verify_bank(
     year = parse_year(payload.get("year") if isinstance(payload, dict) else None) or year_from_path(target_path)
     if not year:
         raise ValueError(f"Unable to infer year for {target_path}")
+    english_subject = infer_english_subject(payload, target_path)
+    translation_numbers = translation_numbers_for_subject(english_subject)
+    writing_numbers = writing_numbers_for_subject(english_subject)
 
     resolved_answer_key = answer_key_path or find_default_answer_key(year)
     if not resolved_answer_key or not resolved_answer_key.exists():
@@ -333,13 +369,13 @@ def verify_bank(
             missing_answer_key.append({"cardId": current_card_id, "reason": "missing_number"})
             continue
 
-        if number in WRITING_NUMBERS:
+        if number in writing_numbers:
             writing_unverified.append({"cardId": current_card_id, "number": number, "reason": "no_official_answer_key"})
             continue
 
         expected = ""
         method = "local_answer_key_pdf_exact_match"
-        if number in TRANSLATION_NUMBERS:
+        if number in translation_numbers:
             expected = compact(answer_key["numberedAnswers"].get(str(number), ""))
             method = "local_translation_answer_text_match"
         else:
@@ -364,7 +400,7 @@ def verify_bank(
             # The source key is stronger than a candidate answer. Repair the
             # answer, but still record the mismatch for auditability.
 
-        if number in TRANSLATION_NUMBERS and card.get("type") != "translation":
+        if number in translation_numbers and card.get("type") != "translation":
             card["type"] = "translation"
             changed = True
             answer_changes += 1
@@ -429,6 +465,7 @@ def verify_bank(
         "mirroredConfigFile": relative_path(mirrored_config_path) if mirrored_config_path else "",
         "answerKeyFile": relative_path(resolved_answer_key),
         "year": year,
+        "subject": english_subject,
         "write": write,
         "summary": {
             "cardCount": len(cards),

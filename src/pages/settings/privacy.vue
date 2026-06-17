@@ -25,7 +25,9 @@
           <text class="section-title"> 二、我们收集的信息 </text>
           <text class="section-text"> 为了向您提供服务，我们可能会收集以下信息： </text>
           <text class="section-text"> 1. 账号信息：微信昵称、头像，用于创建和展示您的个人资料。 </text>
-          <text class="section-text"> 2. 学习数据：您的刷题记录、错题本、收藏和题库同步状态，用于提供练习、复习和学习进度展示。 </text>
+          <text class="section-text">
+            2. 学习数据：您的刷题记录、错题本、收藏和题库同步状态，用于提供练习、复习和学习进度展示。
+          </text>
           <text class="section-text"> 3. 设备信息：设备型号、操作系统版本、屏幕分辨率，用于适配显示和优化性能。 </text>
         </view>
 
@@ -65,9 +67,7 @@
 
         <view class="section">
           <text class="section-title"> 八、题库与学习数据说明 </text>
-          <text class="section-text">
-            1. 本应用的题库、练习进度、错题和收藏数据用于提供刷题、复习和结果回顾。
-          </text>
+          <text class="section-text"> 1. 本应用的题库、练习进度、错题和收藏数据用于提供刷题、复习和结果回顾。 </text>
           <text class="section-text">
             2. 题目和解析仅供学习参考，不作为考试结果、录取结果或任何具有法律效力的依据。
           </text>

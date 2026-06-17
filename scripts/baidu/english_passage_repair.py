@@ -25,6 +25,10 @@ DEFAULT_OUTPUT = PROJECT_ROOT / "data" / "reports" / "english-passage-repair-rep
 PDF_TEXT_MIN_COMPACT_CHARS = 500
 OCR_LANGUAGE_PREFERENCE = ["zh-Hans", "en-US"]
 CHOICE_LABELS = "ABCDEFG"
+TRANSLATION_NUMBERS_BY_SUBJECT = {
+    "english1": set(range(46, 51)),
+    "english2": {46},
+}
 
 
 def utc_now() -> str:
@@ -50,6 +54,29 @@ def relative_path(path: Path) -> str:
         return str(path.resolve().relative_to(PROJECT_ROOT))
     except ValueError:
         return str(path)
+
+
+def infer_english_subject(payload: Any, path: Path) -> str:
+    candidates = []
+    if isinstance(payload, dict):
+        candidates.extend(
+            [
+                payload.get("subject"),
+                payload.get("track"),
+                payload.get("bankId"),
+                payload.get("id"),
+                payload.get("paperId"),
+            ]
+        )
+    candidates.append(path.stem)
+    joined = " ".join(str(candidate or "").lower() for candidate in candidates)
+    if "english2" in joined or "english-2" in joined or "英语二" in joined or "英语（二）" in joined:
+        return "english2"
+    return "english1"
+
+
+def translation_numbers_for_subject(subject: str) -> set[int]:
+    return TRANSLATION_NUMBERS_BY_SUBJECT.get(subject, TRANSLATION_NUMBERS_BY_SUBJECT["english1"])
 
 
 def extract_pdf_text(path: Path) -> str:
@@ -482,13 +509,19 @@ def extract_english_passages(paper_text: str) -> dict[str, dict[str, Any]]:
         }
 
     part_c = section_between_patterns(cleaned, r"\n\s*Part\s+C\s*\n", r"\n\s*Section\s+(?:III|ID)\s+Writing")
+    if not part_c:
+        part_c = section_between_patterns(
+            cleaned,
+            r"\n\s*Section\s+(?:III|ID)\s+Translation\s*\n",
+            r"\n\s*Section\s+(?:IV|III|ID)\s+Writing",
+        )
     if part_c:
         passages["part-c"] = {"section": "翻译", "passage": compact(strip_leading_directions(part_c))}
 
     return passages
 
 
-def group_for_number(number: int) -> str:
+def group_for_number(number: int, subject: str = "english1") -> str:
     if 1 <= number <= 20:
         return "cloze"
     if 21 <= number <= 25:
@@ -501,7 +534,7 @@ def group_for_number(number: int) -> str:
         return "text4"
     if 41 <= number <= 45:
         return "part-b"
-    if 46 <= number <= 50:
+    if number in translation_numbers_for_subject(subject):
         return "part-c"
     return ""
 
@@ -580,6 +613,9 @@ def build_translation_card(
     if reset_answer:
         card["answer"] = ""
         reset_answer_evidence(card)
+    elif re.fullmatch(r"[A-G]{1,7}", compact(card.get("answer"))):
+        card["answer"] = ""
+        reset_answer_evidence(card)
     return card
 
 
@@ -630,6 +666,8 @@ def repair_english_passages(
     now = now or utc_now()
     payload = read_json(target_path, {})
     cards = payload.get("cards") if isinstance(payload, dict) and isinstance(payload.get("cards"), list) else []
+    english_subject = infer_english_subject(payload, target_path)
+    translation_numbers = translation_numbers_for_subject(english_subject)
     passages = extract_english_passages(extract_pdf_text(source_pdf))
     if (
         passages.get("cloze")
@@ -692,9 +730,13 @@ def repair_english_passages(
     if repair_translation_cards and isinstance(payload, dict) and passages.get("part-c"):
         part_c_info = passages["part-c"]
         segments = parse_translation_segments(part_c_info.get("passage", ""))
-        existing_by_number = {card_number(card): card for card in cards if isinstance(card, dict) and 46 <= card_number(card) <= 50}
+        existing_by_number = {
+            card_number(card): card
+            for card in cards
+            if isinstance(card, dict) and card_number(card) in translation_numbers
+        }
         rebuilt_translation_cards: list[dict[str, Any]] = []
-        for number in range(46, 51):
+        for number in sorted(translation_numbers):
             segment = segments.get(number)
             if not segment:
                 continue
@@ -714,7 +756,9 @@ def repair_english_passages(
 
         if rebuilt_translation_cards:
             non_translation_cards = [
-                card for card in cards if not (isinstance(card, dict) and 46 <= card_number(card) <= 50)
+                card
+                for card in cards
+                if not (isinstance(card, dict) and card_number(card) in translation_numbers)
             ]
             cards = sorted(non_translation_cards + rebuilt_translation_cards, key=card_number)
             payload["cards"] = cards
@@ -723,7 +767,7 @@ def repair_english_passages(
         if not isinstance(card, dict):
             continue
         number = card_number(card)
-        group_id = group_for_number(number)
+        group_id = group_for_number(number, english_subject)
         if not group_id:
             continue
         passage_info = passages.get(group_id)
@@ -749,6 +793,7 @@ def repair_english_passages(
         repaired_cards.append(str(card.get("id") or number))
 
     if write and isinstance(payload, dict):
+        payload["total_cards"] = len(cards)
         payload["passageRepairedAt"] = now
         payload["passageSourceFilePath"] = relative_path(source_pdf)
         write_json(target_path, payload)
@@ -759,6 +804,7 @@ def repair_english_passages(
         "write": write,
         "targetFile": relative_path(target_path),
         "sourcePdf": relative_path(source_pdf),
+        "subject": english_subject,
         "summary": {
             "cardCount": len(cards),
             "passageGroupCount": len(passages),

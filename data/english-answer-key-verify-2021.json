@@ -1,0 +1,47 @@
+{
+  "version": 1,
+  "generatedAt": "2026-06-06T22:22:38Z",
+  "write": true,
+  "summary": {
+    "files": 1,
+    "cards": 52,
+    "matchedCards": 50,
+    "mismatches": 0,
+    "missingAnswerKeys": 0,
+    "writingUnverified": 2,
+    "manifestUpdates": 0
+  },
+  "files": [
+    {
+      "targetFile": "data/flashcards/english1-2021.json",
+      "mirroredConfigFile": "",
+      "answerKeyFile": "data/raw-inbox/src_7d8cc9f5f039ff029da6b72a-2021年真题及答案速查.pdf",
+      "year": 2021,
+      "write": true,
+      "summary": {
+        "cardCount": 52,
+        "matchedCards": 50,
+        "answerChanges": 50,
+        "sourceEvidenceChanges": 0,
+        "mismatchCount": 0,
+        "missingAnswerKeyCount": 0,
+        "writingUnverifiedCount": 2,
+        "manifestUpdates": 0
+      },
+      "mismatches": [],
+      "missingAnswerKey": [],
+      "writingUnverified": [
+        {
+          "cardId": "english1-2021-051",
+          "number": 51,
+          "reason": "no_official_answer_key"
+        },
+        {
+          "cardId": "english1-2021-052",
+          "number": 52,
+          "reason": "no_official_answer_key"
+        }
+      ]
+    }
+  ]
+}

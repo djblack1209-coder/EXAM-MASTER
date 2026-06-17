@@ -366,6 +366,87 @@ Section III Writing
         self.assertEqual(repaired[0]["targetSegment"], "First translation segment.")
         self.assertIn("Part C intro", repaired[1]["passage"])
 
+    def test_rebuild_translation_updates_total_cards_and_clears_stale_answers(self):
+        from scripts.baidu import english_passage_repair
+
+        paper_text = """
+Section I Use of English
+Cloze body.
+1. A. one B. two C. three D. four
+
+Section II Reading Comprehension
+PartA
+Text 1
+Text one paragraph.
+21. Question
+Text 2
+Text two paragraph.
+26. Question
+Text 3
+Text three paragraph.
+31. Question
+Text 4
+Text four paragraph.
+36. Question
+
+Part B
+Part B body. [A] One
+[B] Two
+[C] Three
+[D] Four
+[E] Five
+[F] Six
+[G] Seven
+
+Part C
+Directions:
+Read carefully. (10 points)
+Part C intro. (46) First translation segment. (47) Second translation segment.
+
+Section III Writing
+"""
+
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_dir = Path(tmp)
+            target = tmp_dir / "english1-2021.json"
+            source = tmp_dir / "paper.pdf"
+            write_json(
+                target,
+                {
+                    "id": "english1-2021",
+                    "year": 2021,
+                    "subject": "english1",
+                    "total_cards": 1,
+                    "cards": [
+                        {
+                            "id": "english1-2021-046",
+                            "number": 46,
+                            "type": "translation",
+                            "answer": "A",
+                        }
+                    ],
+                },
+            )
+            source.write_text("placeholder", encoding="utf-8")
+            original_extract = english_passage_repair.extract_pdf_text
+            try:
+                english_passage_repair.extract_pdf_text = lambda _path: paper_text
+                english_passage_repair.repair_english_passages(
+                    target,
+                    source,
+                    write=True,
+                    repair_translation_cards=True,
+                    reset_translation_answers=True,
+                )
+            finally:
+                english_passage_repair.extract_pdf_text = original_extract
+            payload = json.loads(target.read_text(encoding="utf-8"))
+
+        self.assertEqual(payload["total_cards"], 2)
+        self.assertEqual([card["number"] for card in payload["cards"]], [46, 47])
+        self.assertEqual(payload["cards"][0]["answer"], "")
+        self.assertEqual(payload["cards"][1]["answer"], "")
+
     def test_rebuilds_translation_card_when_ocr_misses_closing_parenthesis(self):
         from scripts.baidu import english_passage_repair
 
@@ -429,6 +510,73 @@ Section III Writing
         self.assertEqual(report["summary"]["translationSegmentCount"], 2)
         self.assertEqual([card["number"] for card in repaired], [46, 47])
         self.assertEqual(repaired[0]["targetSegment"], "Allen's first marked sentence.")
+
+    def test_english2_rebuilds_only_question_46_as_translation(self):
+        from scripts.baidu import english_passage_repair
+
+        paper_text = """
+Section I Use of English
+Cloze body.
+1. A. one B. two C. three D. four
+
+Section II Reading Comprehension
+PartA
+Text 1
+Text one paragraph.
+21. Question
+Text 2
+Text two paragraph.
+26. Question
+Text 3
+Text three paragraph.
+31. Question
+Text 4
+Text four paragraph.
+36. Question
+
+Part B
+Part B body. [A] One
+[B] Two
+[C] Three
+[D] Four
+[E] Five
+[F] Six
+[G] Seven
+
+Part C
+Directions:
+Read carefully. (10 points)
+Part C intro. (46) English II translation segment. (47) Writing starts here. (48) More writing.
+
+Section III Writing
+"""
+
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_dir = Path(tmp)
+            target = tmp_dir / "english2-2021.json"
+            source = tmp_dir / "paper.pdf"
+            write_json(target, {"id": "english2-2021", "year": 2021, "subject": "english2", "cards": []})
+            source.write_text("placeholder", encoding="utf-8")
+            original_extract = english_passage_repair.extract_pdf_text
+            try:
+                english_passage_repair.extract_pdf_text = lambda _path: paper_text
+                report = english_passage_repair.repair_english_passages(
+                    target,
+                    source,
+                    write=True,
+                    repair_translation_cards=True,
+                    reset_translation_answers=True,
+                )
+            finally:
+                english_passage_repair.extract_pdf_text = original_extract
+            payload = json.loads(target.read_text(encoding="utf-8"))
+
+        self.assertEqual(report["summary"]["translationSegmentCount"], 3)
+        self.assertEqual(report["summary"]["translationRebuiltCount"], 1)
+        self.assertEqual(payload["total_cards"], 1)
+        self.assertEqual([card["number"] for card in payload["cards"]], [46])
+        self.assertEqual(payload["cards"][0]["type"], "translation")
+        self.assertEqual(payload["cards"][0]["targetSegment"], "English II translation segment.")
 
     def test_rebuilds_missing_part_b_cards_from_source_options(self):
         from scripts.baidu import english_passage_repair

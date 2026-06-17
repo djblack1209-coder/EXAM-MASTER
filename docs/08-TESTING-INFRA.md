@@ -131,12 +131,15 @@ EXAM-MASTER has a comprehensive multi-layer testing setup:
 
 ```bash
 npm test                          # Run all unit tests
+npm run test:baidu:pipeline       # Run Baidu/Python pipeline tests with .venv-baidu
 npm run test:watch               # Watch mode
 npm run test:coverage            # With coverage report
 npx vitest run tests/unit/api.spec.js  # Run single test
 ```
 
 `npm test` runs Vitest directly. Do not pass Jest-only flags such as `--runInBand`; Vitest 4 rejects unknown options. For a narrower regression, run specific files with `npx vitest run <file...>`.
+
+`npm run test:baidu:pipeline` uses `.venv-baidu/bin/python` instead of the system `python3`, so Baidu OCR/PDF/OpenAI dependencies are tested from the project-managed Python runtime.
 
 ---
 

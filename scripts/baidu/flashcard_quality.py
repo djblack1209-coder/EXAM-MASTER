@@ -114,7 +114,7 @@ def expected_option_labels(card: dict[str, Any]) -> list[str]:
     if not isinstance(options, list) or not options:
         return []
     option_count = len(options)
-    if option_count < 4 or option_count > 7:
+    if option_count < 4 or option_count > 8:
         return []
     return [chr(ord("A") + index) for index in range(option_count)]
 
