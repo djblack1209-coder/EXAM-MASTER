@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "generatedAt": "2026-06-06T22:22:38Z",
+  "write": true,
+  "summary": {
+    "files": 1,
+    "verifiedWritingCards": 2,
+    "skippedWritingCards": 0
+  },
+  "files": [
+    {
+      "targetFile": "data/flashcards/english1-2021.json",
+      "mirroredConfigFile": "",
+      "promptSourceFile": "data/raw-inbox/src_89ed2d3a984d00084541829d-2021年考研英语一真题.pdf",
+      "write": true,
+      "summary": {
+        "cardCount": 52,
+        "verifiedWritingCards": 2,
+        "skippedWritingCards": 0,
+        "changed": true
+      },
+      "skipped": []
+    }
+  ]
+}

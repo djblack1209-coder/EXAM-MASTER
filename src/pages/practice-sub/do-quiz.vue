@@ -903,7 +903,8 @@ export default {
         this.currentQuestion.keyPoint ||
         this.currentQuestion.key_point ||
         '';
-      const detail = explicitDetail || (this.resultStatus === 'correct' ? this.aiComment || this.currentQuestion.desc || '' : '');
+      const detail =
+        explicitDetail || (this.resultStatus === 'correct' ? this.aiComment || this.currentQuestion.desc || '' : '');
 
       if (!title && !detail) return null;
       return {
@@ -1022,7 +1023,6 @@ export default {
         questionCount: this.questions.length,
         mode: this.isAdaptiveMode ? 'adaptive' : 'normal'
       });
-
     }, 16);
   },
   onShow() {
@@ -2478,8 +2478,7 @@ export default {
 .combo-feedback.level-3,
 .combo-feedback.level-4 {
   border-color: rgba(117, 221, 255, 0.34);
-  background:
-    linear-gradient(135deg, rgba(159, 232, 112, 0.94) 0%, rgba(117, 221, 255, 0.94) 100%);
+  background: linear-gradient(135deg, rgba(159, 232, 112, 0.94) 0%, rgba(117, 221, 255, 0.94) 100%);
 }
 
 .dark-mode .combo-feedback {
@@ -2494,8 +2493,7 @@ export default {
 .dark-mode .combo-feedback.level-3,
 .dark-mode .combo-feedback.level-4 {
   background:
-    linear-gradient(135deg, rgba(14, 165, 233, 0.86) 0%, rgba(34, 211, 238, 0.82) 100%),
-    rgba(20, 24, 32, 0.94);
+    linear-gradient(135deg, rgba(14, 165, 233, 0.86) 0%, rgba(34, 211, 238, 0.82) 100%), rgba(20, 24, 32, 0.94);
 }
 
 .dark-mode .combo-title {
@@ -4402,5 +4400,4 @@ export default {
   animation: celebrateStars 2s ease-in-out infinite;
   pointer-events: none;
 }
-
 </style>

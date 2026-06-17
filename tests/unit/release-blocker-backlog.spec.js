@@ -60,6 +60,154 @@ describe('release blocker backlog', () => {
     }
   });
 
+  it('merges repeated local source audit reports for the same backlog run', async () => {
+    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'exam-master-release-backlog-local-sources-'));
+    const questionAuditPath = path.join(tempDir, 'question-bank-release-audit.json');
+    const flashcardQualityPath = path.join(tempDir, 'flashcard-quality-report.json');
+    const externalAuditPath = path.join(tempDir, 'release-external-audit.json');
+    const wechatSmokePath = path.join(tempDir, 'wechat-devtools-release-smoke.json');
+    const englishAuditPath = path.join(tempDir, 'english1-2025-source-audit.json');
+    const politicsAuditPath = path.join(tempDir, 'politics-2023-source-audit.json');
+    const outputPath = path.join(tempDir, 'release-blocker-backlog.json');
+
+    try {
+      fs.writeFileSync(
+        questionAuditPath,
+        JSON.stringify({
+          summary: {
+            requiredSlots: 2,
+            publishedSlots: 0,
+            pendingSlots: 0,
+            coverageGapCount: 2,
+            sourceManifestCoverageGapCount: 0
+          },
+          releaseReadiness: { canPublish: false },
+          coverage: {
+            tracks: [
+              {
+                track: 'english1',
+                requiredYears: [2025],
+                publishedYears: [],
+                pendingYears: [],
+                missingYears: [2025]
+              },
+              {
+                track: 'politics',
+                requiredYears: [2023],
+                publishedYears: [],
+                pendingYears: [],
+                missingYears: [2023]
+              }
+            ]
+          },
+          sourceEvidence: {
+            coverage: {
+              english1: { presentYears: [2025], missingYears: [], coverageRate: 1 },
+              politics: { presentYears: [2023], missingYears: [], coverageRate: 1 }
+            }
+          }
+        })
+      );
+      fs.writeFileSync(
+        flashcardQualityPath,
+        JSON.stringify({ releaseReadiness: { canPromoteToPublic: true }, summary: {}, files: [] })
+      );
+      fs.writeFileSync(
+        externalAuditPath,
+        JSON.stringify({ releaseReadiness: { canPublish: true }, summary: {}, sections: {} })
+      );
+      fs.writeFileSync(wechatSmokePath, JSON.stringify({ status: 'passed' }));
+      fs.writeFileSync(
+        englishAuditPath,
+        JSON.stringify({
+          sources: [
+            {
+              id: 'english1-2025-paper',
+              track: 'english1',
+              year: '2025',
+              role: 'paper',
+              localPath: 'data/raw-inbox/public-course-2025/english1/2025-english1-paper.pdf',
+              sha256: 'sha256:english-paper',
+              textLayer: 'usable',
+              quality: 'needs_cleaning',
+              blockers: []
+            },
+            {
+              id: 'english1-2025-answer',
+              track: 'english1',
+              year: '2025',
+              role: 'answer',
+              localPath: 'data/raw-inbox/public-course-2025/english1/2025-english1-answer.pdf',
+              sha256: 'sha256:english-answer',
+              textLayer: 'usable',
+              quality: 'needs_cleaning',
+              blockers: []
+            }
+          ]
+        })
+      );
+      fs.writeFileSync(
+        politicsAuditPath,
+        JSON.stringify({
+          sources: [
+            {
+              id: 'politics-2023-paper',
+              track: 'politics',
+              year: '2023',
+              role: 'paper',
+              localPath: 'data/raw-inbox/public-course-history/politics/2023/2023-politics-paper.pdf',
+              sha256: 'sha256:politics-paper',
+              textLayer: 'usable',
+              quality: 'needs_cleaning',
+              blockers: []
+            },
+            {
+              id: 'politics-2023-paper-answer',
+              track: 'politics',
+              year: '2023',
+              role: 'paper_answer',
+              localPath: 'data/raw-inbox/public-course-history/politics/2023/2023-politics-paper-answer.pdf',
+              sha256: 'sha256:politics-answer',
+              textLayer: 'usable',
+              quality: 'needs_cleaning',
+              blockers: ['missing_answer_markers:10,11']
+            }
+          ]
+        })
+      );
+
+      const exitCode = await run([
+        '--question-audit',
+        questionAuditPath,
+        '--flashcard-quality',
+        flashcardQualityPath,
+        '--external-audit',
+        externalAuditPath,
+        '--wechat-smoke',
+        wechatSmokePath,
+        '--local-source-audit',
+        englishAuditPath,
+        '--local-source-audit',
+        politicsAuditPath,
+        '--output',
+        outputPath,
+        '--no-markdown'
+      ]);
+
+      const backlog = JSON.parse(fs.readFileSync(outputPath, 'utf8'));
+      const englishSlot = backlog.publicCourseSlotBacklog.find((slot) => slot.slotKey === 'english1:2025');
+      const politicsSlot = backlog.publicCourseSlotBacklog.find((slot) => slot.slotKey === 'politics:2023');
+
+      expect(exitCode).toBe(0);
+      expect(englishSlot.localSourceAuditStatus).toBe('present');
+      expect(englishSlot.localSourceAuditSummary).toContain('companions=paper+answer可读');
+      expect(politicsSlot.localSourceAuditStatus).toBe('present');
+      expect(politicsSlot.nextAction).toContain('已有可读试卷，但答案文件仍有 1 个阻塞');
+    } finally {
+      fs.rmSync(tempDir, { recursive: true, force: true });
+    }
+  });
+
   it('blocks explicitly when required audit inputs are missing instead of reporting empty public-course coverage', () => {
     const backlog = buildReleaseBlockerBacklog({
       questionAudit: null,
@@ -563,6 +711,9 @@ describe('release blocker backlog', () => {
       ]
     });
     expect(slot.sourceCandidateSummary).toContain('source_content_mismatch');
+    expect(slot.nextAction).toContain('替换错配题源');
+    expect(slot.nextAction).toContain('经视觉核验');
+    expect(slot.sourceManifestRegistrationChecklist.blockers).toContain('manifest_candidate_source_content_mismatch');
     expect(slot.sourceManifestRegistrationChecklist.requiredManifestFields).toContain(
       'riskFlags excludes answer_missing,brand_leak,copyright_review_required,ad_or_promo,manual_review_required,source_content_mismatch'
     );

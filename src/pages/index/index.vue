@@ -25,7 +25,11 @@
           <view class="shell-state-copy">
             <text class="shell-state-title">{{ pageError ? '学习数据暂未同步' : '正在同步学习轨迹' }}</text>
             <text class="shell-state-desc">
-              {{ pageError ? '已保留本地默认视图，可以重试或直接继续刷题。' : '正在读取今日进度、题库资产和最近训练记录。' }}
+              {{
+                pageError
+                  ? '已保留本地默认视图，可以重试或直接继续刷题。'
+                  : '正在读取今日进度、题库资产和最近训练记录。'
+              }}
             </text>
           </view>
           <view v-if="pageError" class="shell-state-action" hover-class="btn-hover" @tap="retryLoadData">

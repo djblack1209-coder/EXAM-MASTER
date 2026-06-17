@@ -45,6 +45,16 @@ describe('release scripts', () => {
     expect(packageJson.scripts['release:gate']).toContain('npm run baidu:flashcards:quality:release');
   });
 
+  it('exposes a reproducible Baidu Python pipeline test entrypoint', () => {
+    const pipelineScript = packageJson.scripts['test:baidu:pipeline'];
+
+    expect(pipelineScript).toBeTypeOf('string');
+    expect(pipelineScript).toContain('.venv-baidu/bin/python -m unittest');
+    expect(pipelineScript).toContain('tests.unit.test_pdf2flashcard_v2');
+    expect(pipelineScript).toContain('tests.unit.test_baidu_cleaning_runner');
+    expect(pipelineScript).toContain('tests.unit.test_flashcard_quality');
+  });
+
   it('generates a release blocker backlog in report and blocking gate modes', () => {
     expect(packageJson.scripts['audit:release:backlog']).toContain('scripts/build/release-blocker-backlog.mjs');
     expect(packageJson.scripts['audit:release:backlog:release']).toContain('--fail-on-blockers');

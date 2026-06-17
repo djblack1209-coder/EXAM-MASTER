@@ -184,7 +184,9 @@ export function normalizeQuizQuestion(question, index = 0, options = {}) {
 
 export function getQuizOptionLabel(question, index) {
   const option = question?.options?.[index] || '';
-  const match = String(option).trim().match(/^([A-Z])[\s.。:：、-]/i);
+  const match = String(option)
+    .trim()
+    .match(/^([A-Z])[\s.。:：、-]/i);
   return match ? match[1].toUpperCase() : OPTION_LABELS[index] || 'A';
 }
 
