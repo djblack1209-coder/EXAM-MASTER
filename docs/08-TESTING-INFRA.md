@@ -1,6 +1,6 @@
 # Testing Infrastructure
 
-> Auto-generated: 2026-03-22 | Last updated: 2026-03-26 (Round 51 全量测试绿灯)
+> Auto-generated: 2026-03-22 | Last updated: 2026-06-17 (release gate baseline refresh)
 >
 > **Round 51 变更 (全量绿灯)**:
 >
@@ -157,6 +157,19 @@ npm run audit:secrets:tracked         # Secret scanning
 npm run deps:audit:prod               # Dependency vulnerabilities
 npm run audit:mp-main-usage           # MP main package size
 ```
+
+当前 release-blocker triage 的最小复核链：
+
+```bash
+npm run audit:secrets:tracked
+npm run audit:laf:function-sources -- --strict
+npm run audit:question-bank:report
+npm run baidu:flashcards:quality
+npm run audit:release:backlog
+npx vitest run tests/unit/audit-tracked-secrets-script.spec.js tests/unit/release-blocker-backlog.spec.js tests/unit/question-bank-release-gate.spec.js tests/unit/politics-2023-data.spec.js tests/unit/release-scripts.spec.js
+```
+
+这些命令只证明脚本、题库门禁和当前报告可复跑；它们不会替代真实手机微信 evidence、外部官方题源下载/登记、逐题视觉裁切核验或人工答案证据确认。若修改了前端交互、公共组件、Store、Service 或 Laf 云函数，还必须按 `docs/10-DEV-RULES.md` 选择对应功能区验证。
 
 ---
 

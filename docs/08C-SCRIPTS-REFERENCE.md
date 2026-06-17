@@ -1,6 +1,6 @@
 # Scripts Reference
 
-Last updated: 2026-06-02
+Last updated: 2026-06-17
 
 ## Core quality gates
 
@@ -36,7 +36,7 @@ Notes:
 
 ## Project audit scripts
 
-- `npm run audit:deep-scan`: deep project scan report.
+- `npm run audit:deep-scan`: deep project scan report. The generated `PROJECT_DEEP_SCAN_REPORT.md` belongs under `data/reports/`; do not commit one-off copies under `docs/reports/`.
 - `npm run audit:ui-quality`: UI quality gate report.
 - `npm run audit:mp-main-usage`: mini-program main-package usage audit.
 - `npm run deps:audit`: npm dependency audit (full tree, non-blocking). If the npm registry is unreachable, treat the result as not verified rather than as zero vulnerabilities.
@@ -201,3 +201,5 @@ Runtime-generated reports are written to `data/reports/` and are git-ignored.
 - Playwright e2e: `e2e-regression-results.*`, `e2e-regression-html/`, `e2e-compat-results.*`, `e2e-compat-html/`
 - Maestro: `maestro-preflight.md`, `maestro-results.xml`, `maestro-web-smoke*.xml`
 - Vitest snapshots: `vitest-results*.json`
+
+Local PDF rendering, OCR, crop probes, and inspection images are written under `tmp/` by builder and audit scripts. `tmp/` is git-ignored and must stay disposable; promotion-ready assets belong in `cdn-assets/question-bank/`, while source PDFs and operator inputs belong in the appropriate ignored `data/raw-inbox` or evidence paths.

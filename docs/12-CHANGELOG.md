@@ -1,5 +1,12 @@
 # 变更日志
 
+## 2026-06-17 — 发布阻塞复核与仓库生成物清理
+
+- 以 `613bf5bf chore: baseline current workspace` 作为当前工作区基线后复跑 release triage：`audit:laf:function-sources -- --strict` 通过，`audit:question-bank:report` 仍显示 `canPublish=false`、覆盖缺口 14 个、Source Manifest evidence gap 7 个，`audit:release:backlog` 仍为 blocked，`baidu:flashcards:quality` 仍阻止 `politics-2023` 的 38 张 candidate 证据卡进入公开发布。
+- 当前 P0 不允许本地伪闭环：真实手机微信 evidence 需真实设备记录；`politics:2023` 需补齐或替换完整答案源；`math2:2016` 需替换已确认错配的题源；2026 公共课槽位需外部官方题源；`math2/math3 2021-2022` 有本地 PDF 但仍需逐题裁切、答案核验和 registry 注册。
+- 清理误入库的本地 PDF 渲染/OCR/探针缓存：`tmp/` 从 git 跟踪中移除并加入 `.gitignore`。正式发布页图仍保留在 `cdn-assets/question-bank/`，原始/候选题源仍按现有策略保留在 ignored `data/raw-inbox/`。
+- 删除过期的 `docs/reports/PROJECT_DEEP_SCAN_REPORT.md` 副本；深度扫描报告改回由 `npm run audit:deep-scan` 生成到 `data/reports/`，避免核心文档与运行时报告分叉。
+
 ## [2026-06-12] Oracle 3055 H5 温备说明
 
 - **Scope**: deploy/docs
