@@ -855,3 +855,10 @@ db.currentOp({"secs_running": {$gt: 5}})
 - Sealos 仅保留人工确认后的冷恢复边界；旧 `failover-test.sh` 已确认无生产调用者并保持删除，不恢复自动故障切换。
 - 百度网盘客户端上传任务已完成；`Carven's Macbook Air` 远端分类目录已读回，七个项目目录可见。该事实不等于远端下载、解密、哈希或恢复演练完成。
 - 没有实体 WeChat 设备；本次只完成服务器/公开入口和 API 读回，不声称完成真实微信链路。
+
+## 2026-08-22 P1/P2 生产与备份收口
+
+- `exam.245334.xyz/` 返回 HTTP 200；`api.245334.xyz/health-check` 返回 HTTP 200、`code=0`、`status=ok`。
+- 百度网盘客户端上传任务已完成；`Carven's Macbook Air` 下七个项目分类目录已读回。该结果与本次中央/OpenEverything/SONIC 加密归档抽样读回共同证明归档可下载、可校验、可解密、可读取，但没有把它扩大为 EXAM-MASTER 完整远端生产恢复演练。
+- Sealos 仅保留人工确认后的冷恢复边界；旧 `failover-test.sh` 已确认无生产调用者并保持删除，不恢复自动故障切换。
+- 没有实体 WeChat 设备；服务器、公开入口和 API 读回不等于微信实体链路验证。
