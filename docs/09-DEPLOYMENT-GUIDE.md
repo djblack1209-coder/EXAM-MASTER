@@ -843,3 +843,15 @@ db.currentOp({"secs_running": {$gt: 5}})
 - 公开 H5 首页与 API health 均返回 200；本轮未执行登录写入、支付、课程数据变更、故障注入或自动切流。
 - Sealos 继续是人工确认后的冷恢复路径，不是 Nginx 自动故障转移目标。旧 `failover-test.sh` 已确认没有 Git、systemd、timer、cron、部署或浏览器调用者，保留删除状态。
 - 没有实体 WeChat 设备，因此只完成服务器、浏览器/公开入口和 API 读回；不得声称完成微信真实链路。
+## 2026-08-21 全项目复查边界
+
+- 腾讯入口、Nginx 语法、PM2、H5/PWA、API health、Laf/MongoDB/FSRS 既有恢复材料已完成服务器侧读回；Sealos 仍只作为冷恢复路径，没有自动切流或故障注入。
+- WeChat 手机/实体设备链路没有可用设备，本轮按 owner-accepted operational closure boundary 记录，不声称完成真实微信操作验证。
+- EXAM-MASTER 全量脱敏加密归档按项目分类进入中央百度网盘目标目录；备份/迁移/支付材料保留，不因“清理”删除关键恢复能力。
+
+## 2026-08-22 最终生产与备份边界
+
+- 生产首页与 API health-check 继续返回 200 / `code=0,status=ok`；服务器侧 Nginx、Node/PM2 和既有恢复材料保持已读回状态。
+- Sealos 仅保留人工确认后的冷恢复边界；旧 `failover-test.sh` 已确认无生产调用者并保持删除，不恢复自动故障切换。
+- 百度网盘客户端上传任务已完成；`Carven's Macbook Air` 远端分类目录已读回，七个项目目录可见。该事实不等于远端下载、解密、哈希或恢复演练完成。
+- 没有实体 WeChat 设备；本次只完成服务器/公开入口和 API 读回，不声称完成真实微信链路。
