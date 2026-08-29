@@ -1,10 +1,12 @@
 # 考研大师 — 文档总索引
 
-> 最后更新：2026-08-28
+> 最后更新：2026-08-29
 
 本项目文档统一保存在 `docs/` 下。当前保留 17 个核心文档，删除了 2026 年 5 月前的审计/发布证据、历史归档、文档缓存、分散设计报告和临时清理计划。运行时扫描报告、PDF 渲染页、OCR 探针和 release evidence 不进入 `docs/`；需要复跑时使用脚本在 `data/reports/` 或本地 `tmp/` 生成。
 
 > 2026-08-28 生产复查：Tencent 首页、API `/health-check`、Cloudflare/Nginx、备份 timer 和健康 timer 均正常；HostDare/Yanhuo 暂停未造成当前链路中断。题库 public release 仍 blocked，缺口槽位、source-manifest、candidate 证据、官方题源/答案核验和真实微信设备验收不能由 HTTP 200 或本地测试替代。
+
+> 2026-08-29 最终复查：公网首页与 API health-check 仍返回 HTTP 200；`npm test -- --run`、LAF source strict audit、题库/外部 release gate 和敏感信息检查均按既有入口复跑。基础设施没有新故障；public release 仍 blocked，原因仍是内容证据和真实微信设备验收，不因本地测试通过而放行。
 
 ## 项目定位
 
