@@ -4,6 +4,8 @@
 
 ## 当前文档拆分
 
+> **2026-08-29 生产路径边界：**腾讯云是唯一现役生产路径。本文中的 Sealos/Laf/Kubernetes 命令只保留作人工批准的冷恢复材料；不作为 Nginx、CI 或自动故障转移目标。`scripts/build/live-cloud-smoke.mjs` 已拒绝退休 Sealos 默认地址，运行 smoke 前必须显式提供当前目标；冷恢复必须显式设置 `SMOKE_ALLOW_LEGACY_SEALOS=true`。
+
 - 本文件保留全仓部署、运维和应急响应总览。
 - 当前 Sealos/Laf 后端云函数部署、发布后 smoke 和平台现象见 [09A-LAF-BACKEND-DEPLOYMENT.md](./09A-LAF-BACKEND-DEPLOYMENT.md)。
 - 后端分仓迁移步骤见 [09B-BACKEND-MIGRATION-GUIDE.md](./09B-BACKEND-MIGRATION-GUIDE.md)。

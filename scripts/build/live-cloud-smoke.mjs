@@ -93,12 +93,25 @@ function loadEnvFiles(filePaths) {
 const OPTIONS = parseArgs(process.argv.slice(2));
 const RELEASE_ENV = OPTIONS.useEnvFiles ? { ...loadEnvFiles(OPTIONS.envFiles), ...process.env } : { ...process.env };
 
-const BASE_URL = (
-  RELEASE_ENV.SMOKE_BASE_URL ||
-  RELEASE_ENV.LAF_API_URL ||
-  RELEASE_ENV.VITE_API_BASE_URL ||
-  'https://nf98ia8qnt.sealosbja.site'
-).replace(/\/$/, '');
+const BASE_URL_SOURCE =
+  RELEASE_ENV.SMOKE_BASE_URL || RELEASE_ENV.LAF_API_URL || RELEASE_ENV.VITE_API_BASE_URL || '';
+const ALLOW_LEGACY_SEALOS = String(RELEASE_ENV.SMOKE_ALLOW_LEGACY_SEALOS || '').toLowerCase() === 'true';
+
+if (!BASE_URL_SOURCE) {
+  console.error(
+    'Cloud smoke requires an explicit SMOKE_BASE_URL (or LAF_API_URL/VITE_API_BASE_URL); refusing to use a retired default.'
+  );
+  process.exit(2);
+}
+
+if (/sealosbja\.site/i.test(BASE_URL_SOURCE) && !ALLOW_LEGACY_SEALOS) {
+  console.error(
+    'Cloud smoke target is the retired Sealos host. Set SMOKE_BASE_URL to the current production entry, or explicitly opt in with SMOKE_ALLOW_LEGACY_SEALOS=true for cold recovery only.'
+  );
+  process.exit(2);
+}
+
+const BASE_URL = BASE_URL_SOURCE.replace(/\/$/, '');
 
 const RETRIES = Number(RELEASE_ENV.SMOKE_RETRIES || 8);
 const RETRY_DELAY_MS = Number(RELEASE_ENV.SMOKE_RETRY_DELAY_MS || 1000);

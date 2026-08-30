@@ -178,9 +178,11 @@ jobs:
     name: Deploy to Production
     runs-on: ubuntu-latest
     needs: [lint-and-test, security-scan]
-    if: github.ref == 'refs/heads/main' && vars.DEPLOY_ENABLED == 'true'
+    # Tencent is the live production path. This Kubernetes job is retained only
+    # for an explicitly approved Sealos cold-recovery exercise.
+    if: github.ref == 'refs/heads/main' && vars.DEPLOY_ENABLED == 'true' && vars.PRODUCTION_PLATFORM == 'sealos-cold-recovery'
     environment:
-      name: production
+      name: production-cold-recovery
       url: https://nf98ia8qnt.sealosbja.site
     steps:
       - name: Checkout code
