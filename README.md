@@ -44,6 +44,19 @@ npm run dev:mp-weixin
 npm test
 ```
 
+## 🏗️ 基础设施
+
+**前端托管:** 腾讯云 2GB (exam.245334.xyz)  
+**后端API:** Laf云函数 (api.245334.xyz)  
+**代理服务:** sing-box 1.14.0  
+**内核:** Linux BBR v3 优化  
+**网络:** Cloudflare Tunnel + CDN优选(陕西电信)  
+
+**架构优势:**
+- Serverless后端自动扩容
+- BBR3降低API延迟
+- CDN优选提升用户体验
+
 ### 构建生产版本
 
 ```bash
