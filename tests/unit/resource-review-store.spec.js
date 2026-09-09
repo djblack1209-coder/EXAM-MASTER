@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { browseQuestions, getQuestionBankRandom, getQuestionBankStats } from '@/services/api/domains/practice.api.js';
 import { createPinia, setActivePinia } from 'pinia';
 
 vi.mock('@/services/api/domains/practice.api.js', () => ({
@@ -49,6 +50,37 @@ describe('resource and review stores', () => {
     expect(questions.data.list).toHaveLength(1);
     expect(questions.data.list[0]._id).toBe('q1');
     expect(random.data).toHaveLength(1);
+    expect(random.data[0].category).toBe('数学');
+  });
+
+  it('treats HTTP 200 application auth failures as failed remote calls and falls back locally', async () => {
+    browseQuestions.mockResolvedValueOnce({
+      code: 401,
+      success: false,
+      message: '缺少认证 token，请重新登录'
+    });
+    getQuestionBankRandom.mockResolvedValueOnce({
+      code: 401,
+      success: false,
+      message: '缺少认证 token，请重新登录'
+    });
+    getQuestionBankStats.mockResolvedValueOnce({
+      code: 401,
+      success: false,
+      message: '缺少认证 token，请重新登录'
+    });
+
+    const { useReviewStore } = await import('@/stores/modules/review.js');
+    const store = useReviewStore();
+
+    const stats = await store.fetchQuestionBankStats();
+    const questions = await store.browseQuestions({ category: '英语', page: 1, pageSize: 20 });
+    const random = await store.fetchQuestionBankRandom({ category: '数学', count: 1 });
+
+    expect(stats).toMatchObject({ success: true, source: 'local' });
+    expect(questions).toMatchObject({ success: true, source: 'local' });
+    expect(random).toMatchObject({ success: true, source: 'local' });
+    expect(questions.data.list[0]._id).toBe('q1');
     expect(random.data[0].category).toBe('数学');
   });
 
