@@ -11,10 +11,17 @@ Last updated: 2026-06-17
 - `npm run test:qa:full-regression`: delivery-grade chain gate (lint/format/laf strict/build/tests/e2e/maestro/secrets/prod-audit/mp-usage).
 - `npm run test:qa:full-regression:clean`: wrapper gate, auto-runs under Node 20.17.0 and ensures Playwright Chromium.
 
-## App 构建
+## App 构建与移动端检查
 
-- `npm run app:build:android`: 构建 Android APK
-- `npm run app:build:ios`: 构建 iOS IPA
+- `npm run build:app`: 生成 `dist/build/app/` 的 uni-app App 资源；APK/IPA 打包和设备验收另行完成。
+- `npm run audit:app:artifacts`: 检查 App 入口文件、静态资源路径和服务端密钥标识泄漏。
+- `npm run audit:mobile:inventory`: 从 `src/pages.json` 和 `src/pages/` 刷新 `data/mobile-module-inventory.json`，区分已注册路由与未注册历史页面。
+- `npm run audit:mobile:h5-viewports`: 检查 H5 构建在 4 种手机视口、8 个入口下的控制台错误和横向溢出；截图写入忽略目录 `output/mobile-viewport-smoke/`。首次运行需要 `npx playwright install chromium`。
+- `npm run audit:mobile:baseline`: 依次执行 App 构建、App 产物检查、模块清单生成、H5 构建和视口检查。
+
+移动端状态契约在 `src/services/mobile-shell-contract.js`，对应测试为 `tests/unit/mobile-*.spec.js`。契约测试与 H5 视口检查不能证明真实后端、登录或设备业务路径通过。
+
+历史页面包括资料、计划、收藏、学习详情、扩展练习、专业课索引和通用 404，准确路径以生成清单为准。重新注册前需具备服务或 Store 契约、空白/加载/错误/离线状态、App/H5 手机视口证据和页面数据契约测试。不要将页面内组件计为独立页面。
 
 ## Laf backend safety gates
 
