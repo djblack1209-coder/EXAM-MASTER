@@ -1,5 +1,17 @@
 # 变更日志
 
+## 2026-09-13 — AI 应用作品展示与本地演示完善
+
+- **范围**：GitHub 展示、文档、H5 示例、学习计划日期、许可元数据。
+- README 新增品牌封面、实际 H5 截图、源码导览、真实 CI 徽章、启动步骤与能力边界；重写产品定位与三分钟讲解，更新架构/前端/测试文档，新增问题反馈模板。`docs/assets/` 为精选展示资源，临时验证产物在 `tmp/github-showcase/`。
+- 刷题中心在 H5 开发环境且未加载题库时显示示例入口；复用原有 `demo-bank.js`，题目显示「示例」并保持 `publishableOfficial: false`。修正一道歧义数学示例；正式发布门禁不变。
+- 将本地统计生成的「AI 推荐」更名为「学习建议」。学习计划日期改用本地日历格式，并修正测试夹具的 UTC 偏移问题，增加晚间、清晨和夏令时用例。
+- 按维护者本轮决定，暂不新增开源许可，将根包及锁文件的项目许可标记由 MIT 改为 `UNLICENSED`；第三方依赖原许可保持不变。`.env.example` 调整为实际客户端公开变量，服务端密钥不进入前端模板。
+- **本地验证**：`npm run lint`、`npm test`（164 文件 / 1252 用例）、H5 与微信构建、主包引用/预算检查、微信产物检查通过；纽约与上海时区的本地学习用例通过；Python PDF 管线及 flashcard 质量检查 29 用例通过；文档路径、Issue YAML、`git diff --check` 和跟踪文件密钥模式审计通过。
+- **浏览器验证**：390 × 844 H5 示例完成 3 题，2 对 1 错与 67% 正确率一致，解析可见；正式 H5 构建的示例按钮数量为 0，相关页面未记录 JavaScript 错误。
+- **未验证/阻塞**：真实 AI 请求、生产数据恢复、微信真机。当前 `proxy-ai` / `proxy-ai-stream` 只有 YAML 元数据，缺少对应 TS/JS 入口；题库报告 `canPublish=false`，覆盖缺口 14、来源证据缺口 7。source strict audit 与本地测试均不能解除这些限制。
+- **兼容性**：没有改变正式题库的发布条件、后端 API 或生产部署配置。
+
 ## 2026-06-17 — 发布阻塞复核与仓库生成物清理
 
 - 以 `613bf5bf chore: baseline current workspace` 作为当前工作区基线后复跑 release triage：`audit:laf:function-sources -- --strict` 通过，`audit:question-bank:report` 仍显示 `canPublish=false`、覆盖缺口 14 个、Source Manifest evidence gap 7 个，`audit:release:backlog` 仍为 blocked，`baidu:flashcards:quality` 仍阻止 `politics-2023` 的 38 张 candidate 证据卡进入公开发布。

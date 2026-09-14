@@ -45,6 +45,18 @@
         </view>
       </view>
 
+      <!-- #ifdef H5 -->
+      <view v-if="guestDemoEnabled && !hasBank" class="section">
+        <view class="card demo-entry">
+          <text class="section-title">先体验 3 道示例题</text>
+          <text class="section-hint">无需登录，体验答题、判分与解析。示例内容仅用于功能演示。</text>
+          <button class="demo-start" :loading="startingDemo" :disabled="startingDemo" @tap="startDemo">
+            开始本地演示
+          </button>
+        </view>
+      </view>
+      <!-- #endif -->
+
       <view class="section">
         <view class="section-head navigator-head">
           <view>
@@ -235,6 +247,7 @@ import { storageService } from '@/services/storageService.js';
 import { safeNavigateTo } from '@/utils/safe-navigate';
 import { logger } from '@/utils/logger.js';
 import { toast } from '@/utils/toast.js';
+import { isGuestDemoEnabled, startGuestDemoPractice } from '@/utils/practice/demo-bank.js';
 
 export default {
   components: { CustomTabbar },
@@ -272,6 +285,8 @@ export default {
       statusBarHeight: 44,
       tabBarHeight: 90,
       loadingBankId: null,
+      guestDemoEnabled: isGuestDemoEnabled(),
+      startingDemo: false,
       isDark: false,
       selectedSubjectKey: '',
       selectedTrackId: '',
@@ -448,6 +463,16 @@ export default {
   },
 
   methods: {
+    async startDemo() {
+      if (this.startingDemo || this.hasBank || !this.guestDemoEnabled) return;
+      this.startingDemo = true;
+      try {
+        await startGuestDemoPractice();
+      } finally {
+        this.startingDemo = false;
+      }
+    },
+
     async _invokeDynamicMethod(methodName, args = [], options = {}) {
       const { silent = false } = options;
       let cached = this.dynamicMethodsCache?.[methodName];
@@ -594,6 +619,22 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.demo-entry {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+.demo-start {
+  width: 100%;
+  margin: 0;
+  border-radius: 20rpx;
+  background: var(--accent-color, #2563eb);
+  color: #fff;
+  font-size: 28rpx;
+  font-weight: 600;
+}
+
 $primary: #9fe870;
 $primary-light: #eafbe2;
 $primary-deep: #163300;

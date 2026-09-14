@@ -17,6 +17,14 @@
 
 用户可见页面必须使用产品语言，不暴露后台整理、证据、脚本、发布、OCR、哈希等工程流程词。相关守卫测试为 `tests/unit/frontend-copy-guard.spec.js`。
 
+## H5 本地演示（2026-09-13）
+
+- 开发模式下，刷题中心在没有加载题库时提供「开始本地演示」。复用 `src/utils/practice/demo-bank.js`，加载 3 道明确标注的示例题；已有题库时不显示入口。
+- 正常生产构建关闭示例入口。构建期常量与运行期环境条件同时成立才允许加载，`guest_demo` 和 `publishableOfficial: false` 保留在题目/题库来源中。
+- 答题页显示「示例」标记；结果页的规则与统计推荐称为「学习建议」，不作为在线 AI 推理展示。
+- 本地计划使用本地日历日期生成，避免 UTC 格式化让晚间或清晨的计划偏移一天。
+- 验证入口：`tests/unit/guest-demo-boundary.spec.js`、`tests/unit/offline-business-closure.spec.js`；截图见 README，演示路径不代表登录、云端保存或微信实机验收。
+
 ## 平台 UI 边界
 
 - 微信小程序是当前轻量发布面，真实注册路由以 `src/pages.json` 为准；未注册的 `.vue` 页面只能视为 App/H5 或历史功能资产，不能算作小程序已上线页面。

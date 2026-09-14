@@ -126,7 +126,7 @@
     "AI学习"
   ],
   "author": "Exam-Master Team",
-  "license": "MIT",
+  "license": "UNLICENSED",
   "packageManager": "npm@10.8.2",
   "browserslist": [
     "Android >= 5",

@@ -16,6 +16,26 @@
 > - `tests/setup.js` 新增 `JWT_SECRET`/`PASSWORD_SALT` 环境变量配置
 > - integration 测试 mock 策略：直接突变 `aiService.request` 而非 mock `_request-core.js`
 
+## 公开作品的验证入口（2026-09-13）
+
+上方 Round 记录为历史结果。当前测试数量与通过情况以实际执行和 GitHub Actions 为准，不写入固定通过率徽章。
+
+```bash
+npm test -- tests/unit/ai-provider-pool.spec.js tests/unit/guest-demo-boundary.spec.js tests/unit/offline-business-closure.spec.js
+TZ=America/New_York npm test -- tests/unit/offline-business-closure.spec.js
+TZ=Asia/Shanghai npm test -- tests/unit/offline-business-closure.spec.js
+```
+
+演示边界测试验证：生产条件拒绝加载、构建期开关不能被运行期开关绕过、示例来源不可作为正式题库。日期测试覆盖本地晚间、清晨与夏令时边界。
+
+Python 管线与质量检查可在现有 `.venv-baidu` 环境运行：
+
+```bash
+.venv-baidu/bin/python -m unittest tests.unit.test_pdf2flashcard_v2 tests.unit.test_flashcard_quality
+```
+
+上述用例使用隔离数据和替代服务，不进行真实模型付费调用。本地 H5 截图验证示例答题流程；生产、真实 AI 和微信设备需要独立验收。
+
 ## Overview
 
 EXAM-MASTER has a comprehensive multi-layer testing setup:
