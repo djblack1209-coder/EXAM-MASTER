@@ -2,90 +2,32 @@
 
 > Last updated: 2026-04-23 | AI-SOP Version: 1.1
 
-## High-Level Architecture Diagram
+## 当前架构入口（2026-09-13）
 
-```
-┌───────────────────────────────────────────────────────────────────┐
-│                        CLIENT (uni-app Vue 3)                      │
-│                                                                    │
-│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐          │
-│  │  Pages    │  │Components│  │  Stores  │  │Composable│          │
-│  │ (45 pgs) │  │ (31 vue) │  │ (Pinia)  │  │ (hooks)  │          │
-│  └────┬─────┘  └────┬─────┘  └────┬─────┘  └────┬─────┘          │
-│       │              │             │              │                │
-│       └──────────────┴─────────────┴──────────────┘                │
-│                              │                                     │
-│  ┌───────────────────────────┴───────────────────────────┐        │
-│  │              Service Layer                             │        │
-│  │  ┌──────────┐  ┌──────────┐  ┌──────────────┐        │        │
-│  │  │lafService│  │fsrs-svc  │  │knowledge-eng │        │        │
-│  │  │(API fac.)│  │(schedule)│  │(graph+FSRS)  │        │        │
-│  │  └────┬─────┘  └──────────┘  └──────────────┘        │        │
-│  │       │                                                │        │
-│  │  ┌────┴─────────────────────────────────────────┐     │        │
-│  │  │  api/domains/ (15 domain service files)       │     │        │
-│  │  │  ai | auth | practice | school | fav | social │     │        │
-│  │  │  group | invite | resource | smart-study      │     │        │
-│  │  │  stats | study | tools | user | _request-core │     │        │
-│  │  └────┬─────────────────────────────────────────┘     │        │
-│  │       │  ┌────────────────────────────┐                │        │
-│  │       ├──┤ api/domains/_request-core  │                │        │
-│  │       │  │ (retry, cache, sign, dedup)│                │        │
-│  │       │  └────────────────────────────┘                │        │
-│  └───────┴───────────────────────────────────────────────┘        │
-│                              │                                     │
-│                   uni.request (HTTP POST)                          │
-└──────────────────────────────┬────────────────────────────────────┘
-                               │ HTTPS
-                               ▼
-┌───────────────────────────────────────────────────────────────────┐
-│              BACKEND (Laf Cloud on Sealos)                        │
-│                                                                    │
-│  ┌─────────────────────────────────────────────────────────┐      │
-│  │              Cloud Functions (TypeScript)                │      │
-│  │                                                          │      │
-│  │  ┌─────────┐ ┌──────────┐ ┌────────────┐ ┌──────────┐ │      │
-│  │  │proxy-ai │ │pk-battle │ │answer-sub. │ │login     │ │      │
-│  │  │(AI hub) │ │(ELO+anti)│ │(FSRS upd.) │ │(JWT auth)│ │      │
-│  │  └─────────┘ └──────────┘ └────────────┘ └──────────┘ │      │
-│  │  ┌──────────┐ ┌──────────┐ ┌────────────┐             │      │
-│  │  │anki-imp. │ │lesson-gen│ │agent-orch. │  ...30 more │      │
-│  │  └──────────┘ └──────────┘ └────────────┘             │      │
-│  │                                                          │      │
-│  │  ┌─────────────── _shared/ ──────────────────────┐     │      │
-│  │  │ auth.ts          auth-middleware.ts            │     │      │
-│  │  │ api-response.ts  validator.ts                  │     │      │
-│  │  │ fsrs-scheduler.ts                              │     │      │
-│  │  │ perf-monitor.ts                                │     │      │
-│  │  │ embedding.ts     generation-pipeline.ts        │     │      │
-│  │  │ agents/ (teacher, student, examiner)           │     │      │
-│  │  │ orchestration/state-machine.ts                 │     │      │
-│  │  │ ai-providers/provider-factory.ts               │     │      │
-│  │  │ services/ (agent.service, fsrs.service)        │     │      │
-│  │  └───────────────────────────────────────────────┘     │      │
-│  └─────────────────────────────────────────────────────────┘      │
-│                              │                                     │
-│                              ▼                                     │
-│  ┌─────────────────────────────────────────────────────────┐      │
-│  │                    MongoDB (19 collections)              │      │
-│  │  users | questions | practice_records | mistake_book     │      │
-│  │  favorites | friends | pk_records | study_plans          │      │
-│  │  learning_goals | goal_progress | learning_progress      │      │
-│  │  learning_resources | resource_favorites                 │      │
-│  │  groups | group_members | group_resources                │      │
-│  │  achievements | idempotency_records                      │      │
-│  └─────────────────────────────────────────────────────────┘      │
-│                                                                    │
-│  ┌────────────────────┐  ┌────────────────────────────┐          │
-│  │ AI Provider Pool   │  │ External Services           │          │
-│  │ (10+ LLM APIs via  │  │ - Sealos Object Storage    │          │
-│  │  provider-factory)  │  │ - Email (Tencent Cloud)    │          │
-│  └────────────────────┘  │ - WeChat Open Platform      │          │
-│                           └────────────────────────────────┘      │
-└───────────────────────────────────────────────────────────────────┘
+本节按当前源码核对。后续自动生成的模块清单和旧架构说明保留为历史参考，页数、部署平台、接口列表与运行状态应以实际代码及本次验收为准。
+
+```mermaid
+flowchart TB
+  PDF[PDF 资料] --> PIPE[Python 分批结构化 / 缓存 / 调用额度]
+  PIPE --> GATE[来源与答案证据检查]
+  GATE --> BANK[题库注册与加载]
+  BANK --> UI[Vue 页面与组件]
+  UI --> STORE[Pinia Store]
+  STORE --> SERVICE[模块化 Service]
+  SERVICE --> LOCAL[本地记录 / FSRS 状态]
+  SERVICE -. HTTP .-> API[TypeScript 后端函数]
+  API --> AUTH[鉴权 / 限流 / 参数校验]
+  AUTH --> DB[MongoDB]
+  API -. 入口待补齐 .-> AI[AI provider 工厂]
 ```
 
----
+- 前端 API 按 `src/services/api/domains/` 定位。`src/services/lafService.js` 是历史兼容层，不重新接入生产调用。
+- `src/stores/modules/study-engine.js` 聚合本地学习记录，生成统计与学习建议，不调用模型；`src/services/fsrs-service.js` 使用 `ts-fsrs` 进行复习调度。
+- 资料处理位于 `scripts/pipeline/pdf2flashcard-v2.py`；`scripts/baidu/flashcard_quality.py` 和 `answer_evidence_repair.py` 负责质量与候选证据边界。
+- `laf-backend/functions/_shared/ai-providers/provider-factory.ts` 提供 AI 供应商抽象。当前 `proxy-ai` / `proxy-ai-stream` 仅有 YAML 元数据，缺少对应 TS/JS 入口，不能据此认定端到端在线 AI 可用。
+- `laf-backend/standalone/server.ts` 是独立后端适配入口；生产数据、部署状态与真实业务另行验证，不从此图推导上线状态。
+
+完整用户路径、可复现演示和当前限制见 [README](../README.md)。
 
 ## Frontend Architecture
 

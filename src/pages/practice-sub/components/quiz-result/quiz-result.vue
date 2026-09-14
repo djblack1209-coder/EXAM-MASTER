@@ -88,9 +88,9 @@
           <text class="motivational-text">{{ motivationalText }}</text>
         </view>
 
-        <!-- AI 推荐下一步 -->
+        <!-- 本地学习记录生成的建议 -->
         <view v-if="nextSteps.length > 0 || loadingNextSteps" class="next-steps glass-card">
-          <text class="section-title">AI 推荐下一步</text>
+          <text class="section-title">下一步学习建议</text>
           <view v-if="loadingNextSteps" class="next-steps-loading">
             <text class="loading-text">分析中...</text>
           </view>
@@ -230,7 +230,7 @@ function onXpCoinsEnd() {
   showXpCoins.value = false;
 }
 
-// --- AI 推荐下一步 ---
+// --- 基于本地记录的学习建议 ---
 const nextSteps = ref([]);
 const loadingNextSteps = ref(false);
 
@@ -275,14 +275,14 @@ async function loadNextSteps() {
       });
     }
 
-    // 规则4：尝试调用后端获取更智能的推荐（静默降级）
+    // 规则4：从本地学习引擎读取掌握度，不调用模型。
     try {
       const result = await studyEngineStore.analyzeMastery();
       if (result?.data?.summary?.weakestPoint) {
         const weak = result.data.summary;
         steps.unshift({
           icon: 'sparkle',
-          title: `AI建议: 攻克${weak.weakestPoint}`,
+          title: `薄弱点: 攻克${weak.weakestPoint}`,
           subtitle: `${weak.weakCount}个薄弱点待突破，平均掌握度${weak.avgMastery}%`,
           action: 'ai-plan',
           priority: 'urgent'
@@ -342,7 +342,7 @@ watch(
           displayAccuracy.value = v;
         });
       }, 300);
-      // 异步加载 AI 推荐下一步
+      // 异步加载本地学习建议
       loadNextSteps();
     }
   },

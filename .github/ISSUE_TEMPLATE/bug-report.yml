@@ -1,0 +1,32 @@
+name: 问题反馈 / Bug report
+description: 帮助定位一个可复现的问题
+title: "[Bug] "
+body:
+  - type: markdown
+    attributes:
+      value: "感谢反馈。请勿附带账号、密钥、私人资料或未经授权的完整题库。"
+  - type: textarea
+    id: environment
+    attributes:
+      label: 运行环境
+      description: 提交版本、系统、Node 版本及 H5 / 微信开发者工具 / 真机。
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: 复现步骤
+      placeholder: "1. 打开…\n2. 点击…\n3. 出现…"
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: 预期结果与实际结果
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: 脱敏日志或截图
+      description: 如涉及某道题，仅提供题目标识与问题描述，不上传整份资料。

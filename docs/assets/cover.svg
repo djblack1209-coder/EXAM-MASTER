@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="640" viewBox="0 0 1280 640" role="img" aria-labelledby="title desc">
+<title id="title">EXAM-MASTER — 从资料到复习，把 AI 接入学习闭环</title>
+<desc id="desc">公开作品展示。Vue 3、TypeScript、Python、FSRS。资料处理、证据核验、答题反馈、间隔复习四个环节。</desc>
+<defs>
+  <linearGradient id="bg" x2="1" y2="1"><stop stop-color="#112d27"/><stop offset="1" stop-color="#071b19"/></linearGradient>
+  <linearGradient id="accent"><stop stop-color="#bdff86"/><stop offset="1" stop-color="#70e0dd"/></linearGradient>
+  <pattern id="grid" width="48" height="48" patternUnits="userSpaceOnUse"><path d="M48 0H0V48" fill="none" stroke="#b7eace" stroke-opacity=".05"/></pattern>
+</defs>
+<rect width="1280" height="640" rx="24" fill="url(#bg)"/>
+<rect width="1280" height="640" rx="24" fill="url(#grid)"/>
+<circle cx="1200" cy="45" r="250" fill="#69e8b1" opacity=".035"/>
+<g font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Arial,PingFang SC,Microsoft YaHei,sans-serif">
+  <rect x="64" y="58" width="44" height="44" rx="12" fill="url(#accent)"/>
+  <path d="M76 72h20M76 80h15M76 88h20" stroke="#103428" stroke-width="3" fill="none"/>
+  <text x="124" y="88" font-size="26" font-weight="750" fill="#f0fff2" letter-spacing="1">EXAM-MASTER</text>
+  <text x="1216" y="86" text-anchor="end" font-size="13" letter-spacing="2" fill="#afc8bb">AI APPLICATION / PUBLIC PORTFOLIO</text>
+  <text x="64" y="204" font-size="14" letter-spacing="3" fill="#bcff90">LEARNING, WITH EVIDENCE.</text>
+  <text x="60" y="277" font-size="60" font-weight="750" fill="#f0fff2">从资料到复习</text>
+  <text x="60" y="352" font-size="60" font-weight="750" fill="url(#accent)">把 AI 接入学习闭环</text>
+  <text x="64" y="411" font-size="21" fill="#b4cbbf">资料结构化 · 答案证据核验 · 自适应复习</text>
+  <g font-size="15" fill="#daefdf" text-anchor="middle">
+    <rect x="64" y="461" width="96" height="36" rx="18" fill="#213e34"/><text x="112" y="485">Vue 3</text>
+    <rect x="170" y="461" width="122" height="36" rx="18" fill="#213e34"/><text x="231" y="485">TypeScript</text>
+    <rect x="302" y="461" width="104" height="36" rx="18" fill="#213e34"/><text x="354" y="485">Python</text>
+    <rect x="416" y="461" width="90" height="36" rx="18" fill="#213e34"/><text x="461" y="485">FSRS</text>
+  </g>
+  <g transform="translate(760 164)">
+    <path d="M25 38v238" stroke="#68aa8b" stroke-width="2"/>
+    <g fill="#122f27" stroke="#385b49"><rect width="454" height="72" rx="16"/><rect y="94" width="454" height="72" rx="16"/><rect y="188" width="454" height="72" rx="16"/><rect y="282" width="454" height="72" rx="16"/></g>
+    <g fill="#bbff90" font-size="16" font-weight="700"><text x="22" y="43">01</text><text x="22" y="137">02</text><text x="22" y="231">03</text><text x="22" y="325">04</text></g>
+    <g fill="#efffe9" font-size="21" font-weight="650"><text x="68" y="32">资料结构化</text><text x="68" y="126">证据核验</text><text x="68" y="220">答题反馈</text><text x="68" y="314">间隔复习</text></g>
+    <g fill="#a2bdac" font-size="13"><text x="68" y="55">PDF → JSON · 缓存与调用额度</text><text x="68" y="149">题源、题干、答案一致性检查</text><text x="68" y="243">判分、解析与本地学习记录</text><text x="68" y="337">FSRS 调度 · 回到下一次练习</text></g>
+    <g fill="#74d7b0" font-size="22"><text x="410" y="44">↗</text><text x="410" y="138">✓</text><text x="410" y="232">↗</text><text x="410" y="326">↻</text></g>
+  </g>
+  <path d="M64 552H1216" stroke="#395347"/>
+  <text x="64" y="589" font-size="14" fill="#9fb9ab">可复现的本地体验 / 可追溯的工程实践</text>
+  <text x="1216" y="589" text-anchor="end" font-size="14" fill="#9fb9ab">BUILD · VERIFY · LEARN</text>
+</g>
+</svg>

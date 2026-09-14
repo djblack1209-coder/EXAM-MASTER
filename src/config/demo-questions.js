@@ -16,16 +16,11 @@ export const DEMO_QUESTIONS = [
   },
   {
     id: 'demo_2',
-    question: '下列关于函数极限的说法，正确的是？',
-    options: [
-      'A. 函数极限存在则函数必连续',
-      'B. 函数连续则极限必存在',
-      'C. 极限存在则左右极限必相等',
-      'D. 左右极限存在则极限必存在'
-    ],
+    question: '当 x 趋近于 1 时，(x² − 1) / (x − 1) 的极限是？',
+    options: ['A. 0', 'B. 1', 'C. 2', 'D. 不存在'],
     answer: 'C',
     category: '数学',
-    explanation: '函数极限存在的充要条件是左极限和右极限都存在且相等。'
+    explanation: '当 x ≠ 1 时，(x² − 1) / (x − 1) = x + 1，所以 x 趋近于 1 时极限为 2。'
   },
   {
     id: 'demo_3',

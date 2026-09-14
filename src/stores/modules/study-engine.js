@@ -41,7 +41,8 @@ function readArray(key) {
 }
 
 function formatDate(date) {
-  return new Date(date).toISOString().slice(0, 10);
+  const local = new Date(date);
+  return `${local.getFullYear()}-${String(local.getMonth() + 1).padStart(2, '0')}-${String(local.getDate()).padStart(2, '0')}`;
 }
 
 function addDays(date, days) {
@@ -420,10 +421,14 @@ export const useStudyEngineStore = defineStore('study-engine', {
       const now = new Date();
       // Count calendar preparation days; the exam day's final hour adds no day.
       const examDay = new Date(examTimestamp);
-      const daysRemaining = Math.max(1, Math.round((
-        Date.UTC(examDay.getFullYear(), examDay.getMonth(), examDay.getDate()) -
-        Date.UTC(now.getFullYear(), now.getMonth(), now.getDate())
-      ) / DAY_MS));
+      const daysRemaining = Math.max(
+        1,
+        Math.round(
+          (Date.UTC(examDay.getFullYear(), examDay.getMonth(), examDay.getDate()) -
+            Date.UTC(now.getFullYear(), now.getMonth(), now.getDate())) /
+            DAY_MS
+        )
+      );
       const dailyMinutes = Math.max(30, Math.min(720, Math.round(Number(dailyHours || 4) * 60)));
       const masteryResult = await this.analyzeMastery();
       const mastery = masteryResult.data.mastery || [];

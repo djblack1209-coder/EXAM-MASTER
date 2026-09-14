@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createPinia, setActivePinia } from 'pinia';
 import { storageService } from '@/services/storageService.js';
 import { useFavoriteStore } from '@/stores/modules/favorite.js';
@@ -18,12 +18,15 @@ const question = {
 };
 
 function dateAfter(days) {
-  const date = new Date(Date.now() + days * 86400000);
-  return date.toISOString().slice(0, 10);
+  const date = new Date();
+  date.setDate(date.getDate() + days);
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
 }
 
 describe('offline business closure', () => {
   beforeEach(() => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date(2026, 8, 13, 23, 30));
     setActivePinia(createPinia());
     uni.clearStorageSync();
     questionFavoriteManager.isInitialized = false;
@@ -47,6 +50,20 @@ describe('offline business closure', () => {
       ],
       true
     );
+  });
+
+  afterEach(() => vi.useRealTimers());
+
+  it.each([
+    [2026, 8, 13, 23, 30],
+    [2026, 8, 13, 0, 30],
+    [2026, 2, 7, 23, 30],
+    [2026, 9, 31, 23, 30]
+  ])('keeps plan dates on local calendar days at %j', async (...parts) => {
+    vi.setSystemTime(new Date(...parts));
+    const engine = useStudyEngineStore();
+    const result = await engine.generateStudyPlan(dateAfter(3), 1);
+    expect(result.data.plans.map((plan) => plan.date)).toEqual([dateAfter(0), dateAfter(1), dateAfter(2)]);
   });
 
   it('keeps question favorites usable without a backend', async () => {

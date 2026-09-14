@@ -1,12 +1,12 @@
 # 考研大师 — 文档总索引
 
-> 最后更新：2026-08-29
+> 最后更新：2026-09-13
 
-本项目文档统一保存在 `docs/` 下。当前保留 17 个核心文档，删除了 2026 年 5 月前的审计/发布证据、历史归档、文档缓存、分散设计报告和临时清理计划。运行时扫描报告、PDF 渲染页、OCR 探针和 release evidence 不进入 `docs/`；需要复跑时使用脚本在 `data/reports/` 或本地 `tmp/` 生成。
+项目概览、本地演示和实际界面见 [README](../README.md)；面向 AI 应用开发岗位的源码导览与讲解顺序见 [产品定位](01-PRODUCT-VISION.md)。
 
-> 2026-08-28 生产复查：Tencent 首页、API `/health-check`、Cloudflare/Nginx、备份 timer 和健康 timer 均正常；HostDare/Yanhuo 暂停未造成当前链路中断。题库 public release 仍 blocked，缺口槽位、source-manifest、candidate 证据、官方题源/答案核验和真实微信设备验收不能由 HTTP 200 或本地测试替代。
+核心文档统一保存在 `docs/`。`docs/assets/` 仅保留经挑选的 README 截图、封面和分享预览图；临时验证输出继续使用已忽略的 `tmp/`、`data/reports/` 等目录。
 
-> 2026-08-29 最终复查：公网首页与 API health-check 仍返回 HTTP 200；`npm test -- --run`、LAF source strict audit、题库/外部 release gate 和敏感信息检查均按既有入口复跑。基础设施没有新故障；public release 仍 blocked，原因仍是内容证据和真实微信设备验收，不因本地测试通过而放行。
+当前公开题库发布仍阻塞：本轮报告显示 14 个覆盖缺口、7 个来源证据缺口。真实后端、在线 AI 和微信实机尚未重新验收；历史 HTTP 200 与本地构建不能作为当前线上业务证据。验证结果记录在 [变更日志](12-CHANGELOG.md)。
 
 ## 项目定位
 
@@ -26,7 +26,7 @@
 ## 快速开始
 
 ```bash
-npm install --legacy-peer-deps
+npm ci
 npm run dev:h5
 npm run dev:mp-weixin
 npm test
@@ -50,12 +50,11 @@ tmp/                 本地 PDF 渲染/OCR/探针缓存，git 忽略，不作为
 
 ## 当前项目全景
 
-- 代码规模：当前 git 跟踪约 3562 个文件，其中 `src/` 约 390 个、`laf-backend/` 约 182 个、`tests/` 约 186 个、`scripts/` 约 136 个、`cdn-assets/` 约 2586 个。
-- 前端：uni-app + Vue 3 + Pinia，小程序主包和分包按 `src/pages.json` 组织；核心用户链路是首页、公共课题库、刷题/复习、个人中心和设置。
-- 后端：Laf 云函数在 `laf-backend/functions/`，源码审计要求 TS/JS entry 与 YAML/部署配置保持一致，严格门禁命令是 `npm run audit:laf:function-sources -- --strict`。
-- 题库资产：正式公共课题库在 `src/config/flashcard-banks/`，注册表是 `src/config/bank-registry.js`，图片资产在 `cdn-assets/question-bank/`，清洗和构建脚本集中在 `scripts/cleaning/` 与 `scripts/baidu/`。
-- 发布门禁：`data/release-blocker-backlog.json` 当前显示 public release 仍为 blocked；本地可安全闭环的是脚本/文档/仓库冗余清理和可复跑门禁，不能伪造真实手机微信证据、官方题源或答案 matched 证据。
-- 当前 P0 阻塞边界：真实手机微信 evidence 1 项；公共课缺口 14 个槽位；Source Manifest 证据缺口 7 个；`data/flashcards/politics-2023.json` 仍有 38 张卡为 candidate 证据状态。`math2/math3 2021-2022` 有本地 raw PDF 但仍需逐题裁切、答案核验和 registry 注册；2026 槽位需要外部官方题源。
+- 前端：Vue 3 / uni-app、Pinia，页面与分包按 `src/pages.json` 组织；核心路径为首页、公共课题库、刷题与复习、个人中心。
+- 后端：源码位于 `laf-backend/functions/`，独立运行入口位于 `laf-backend/standalone/`。Laf source strict audit 检查现有入口，不代表所有 YAML 描述的接口均已实现或线上可用。
+- 资料管线：`scripts/pipeline/` 负责 PDF 处理；`scripts/baidu/` 负责来源、答案证据和中间产物检查。真实资料的授权和正确性需独立确认。
+- 题库：`src/config/bank-registry.js` 管理注册和状态，题目与图片位于 `src/config/flashcard-banks/`、`cdn-assets/question-bank/`。当前发布报告仍阻塞，不使用示例替换真实缺口。
+- 公开作品：README 提供无账号本地演示、实际截图、源码链接与限制说明；固定评测集、AI 代理入口、生产数据恢复和微信实机仍是后续验收项。
 
 ## 核心文档
 

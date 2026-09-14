@@ -109,7 +109,7 @@
         >
           <view class="q-header">
             <view class="q-tag">
-              {{ questionTypeLabel }}
+              {{ currentQuestion.source === 'guest_demo' ? '示例 · ' : '' }}{{ questionTypeLabel }}
             </view>
             <view class="q-actions">
               <!-- 笔记按钮 -->
