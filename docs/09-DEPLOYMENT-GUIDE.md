@@ -238,6 +238,10 @@ kubectl rollout undo deployment/exam-master-backend -n exam-master --to-revision
 
 ### 5.1 备份策略
 
+以下调度表是部署设计，不是现役备份成功的证明。2026-09-17 只读复核中，腾讯已知的
+本机 MongoDB 数据目录、项目备份目录和本节脚本默认 full/incremental 目录均未找到恢复数据。
+仍需确认其他已授权存储上的真实数据源，不能安装空库或导入样例后宣布题库恢复。
+
 | 备份类型 | 频率 | 保留时间 | 存储位置 |
 |----------|------|----------|----------|
 | 全量备份 | 每日 03:00 | 30 天 | 本地 + OSS |
@@ -261,13 +265,20 @@ kubectl rollout undo deployment/exam-master-backend -n exam-master --to-revision
 
 ```bash
 # 全量恢复
-./deploy/scripts/restore-mongodb.sh full exam-master-full-20260127_030000.tar.gz
+./deploy/scripts/restore-mongodb.sh full exam-master-full-20260127_030000.archive
 
 # 时间点恢复
 ./deploy/scripts/restore-mongodb.sh point-in-time \
-  exam-master-full-20260127_030000.tar.gz \
+  exam-master-full-20260127_030000.archive \
   "2026-01-27 05:00:00"
 ```
+
+当前备份脚本输出 `mongodump --archive --gzip` 原生归档；恢复入口使用对应的
+`mongorestore --archive --gzip`，并保留经过路径检查的历史单根 BSON tar.gz 支持。
+同名 SHA-256 文件必须存在并匹配所选备份，恢复目标必须显式提供 `MONGODB_URI`。
+`list` 不需要数据库工具、不连接数据库，也不创建日志或备份目录。
+恢复命令会覆盖数据；上例不是对生产的直接执行授权。独立回滚、真实备份来源、版本兼容、
+增量/oplog 血缘和已认证题库查询仍须分别验证；本轮只修复本地恢复入口，没有恢复生产数据库。
 
 ---
 
@@ -710,11 +721,11 @@ kubectl rollout status deployment/exam-master-backend -n exam-master
 ./deploy/scripts/restore-mongodb.sh list
 
 # 执行恢复
-./deploy/scripts/restore-mongodb.sh full exam-master-full-20260127_030000.tar.gz
+./deploy/scripts/restore-mongodb.sh full exam-master-full-20260127_030000.archive
 
 # 时间点恢复
 ./deploy/scripts/restore-mongodb.sh point-in-time \
-  exam-master-full-20260127_030000.tar.gz \
+  exam-master-full-20260127_030000.archive \
   "2026-01-27 05:00:00"
 ```
 

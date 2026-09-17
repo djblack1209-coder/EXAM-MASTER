@@ -5,10 +5,11 @@
 # ============================================
 
 set -euo pipefail
+umask 077
 
 # ==================== 配置 ====================
 BACKUP_DIR="${BACKUP_DIR:-/data/backups/mongodb}"
-MONGODB_URI="${MONGODB_URI:-mongodb://localhost:27017/exam-master}"
+MONGODB_URI="${MONGODB_URI:-}"
 RESTORE_TYPE="${1:-full}"  # full, point-in-time
 BACKUP_FILE="${2:-}"       # 备份文件名
 TARGET_TIME="${3:-}"       # 目标恢复时间点（可选）
@@ -41,17 +42,26 @@ confirm() {
 check_dependencies() {
     log "检查依赖..."
     command -v mongorestore >/dev/null 2>&1 || error "mongorestore 未安装"
-    command -v tar >/dev/null 2>&1 || error "tar 未安装"
+    command -v mongosh >/dev/null 2>&1 || error "mongosh 未安装"
+    command -v python3 >/dev/null 2>&1 || error "python3 未安装"
 }
 
 # 列出可用备份
 list_backups() {
-    log "可用的全量备份:"
-    ls -la "${BACKUP_DIR}/full/"*.tar.gz 2>/dev/null || log "  无全量备份"
-    
-    log ""
-    log "可用的增量备份:"
-    ls -la "${BACKUP_DIR}/incremental/"*.archive 2>/dev/null || log "  无增量备份"
+    local file found=0
+    printf '可用的全量备份（原生 archive / 历史 tar.gz）:\n'
+    for file in "${BACKUP_DIR}/full/"*.archive "${BACKUP_DIR}/full/"*.tar.gz; do
+        [[ -f "$file" ]] || continue
+        printf '%s\n' "$file"; found=1
+    done
+    [[ "$found" -eq 1 ]] || printf '  无全量备份\n'
+    printf '\n可用的增量备份:\n'
+    found=0
+    for file in "${BACKUP_DIR}/incremental/"*.archive; do
+        [[ -f "$file" ]] || continue
+        printf '%s\n' "$file"; found=1
+    done
+    [[ "$found" -eq 1 ]] || printf '  无增量备份\n'
 }
 
 # 验证备份文件
@@ -64,17 +74,35 @@ verify_backup() {
         error "备份文件不存在: ${backup_path}"
     fi
     
-    # 检查校验和
-    if [[ -f "${backup_path}.sha256" ]]; then
-        cd "$(dirname "${backup_path}")"
-        if sha256sum -c "$(basename "${backup_path}").sha256" 2>/dev/null; then
-            log "备份文件校验通过"
-        else
-            error "备份文件校验失败"
-        fi
-    else
-        log "警告: 未找到校验和文件，跳过验证"
+    # Bind the checksum to this exact input without changing cwd. Missing
+    # checksums and checksums for a different filename must fail closed.
+    if ! python3 - "$backup_path" <<'PY'
+import hashlib
+from pathlib import Path
+import re
+import sys
+
+try:
+    path = Path(sys.argv[1])
+    checksum = Path(str(path) + '.sha256')
+    if path.is_symlink() or checksum.is_symlink() or not path.is_file() or not checksum.is_file():
+        raise ValueError('missing regular backup/checksum')
+    match = re.fullmatch(r'([0-9a-fA-F]{64}) [ *](.+)', checksum.read_text().strip())
+    if match is None or match[2] != path.name or path.stat().st_size == 0:
+        raise ValueError('checksum does not identify the backup')
+    digest = hashlib.sha256()
+    with path.open('rb') as stream:
+        for chunk in iter(lambda: stream.read(1024 * 1024), b''):
+            digest.update(chunk)
+    if digest.hexdigest() != match[1].lower():
+        raise ValueError('backup checksum differs')
+except (OSError, ValueError):
+    raise SystemExit(1)
+PY
+    then
+        error "备份或同名 SHA-256 校验文件缺失、不匹配或不是普通文件"
     fi
+    log "备份文件校验通过"
 }
 
 # 全量恢复
@@ -94,17 +122,66 @@ full_restore() {
     verify_backup "$backup_path"
     
     log "开始全量恢复: ${backup_path}"
+
+    # backup-mongodb.sh produces a gzip-compressed mongodump archive, not tar.
+    if [[ "$backup_path" == *.archive ]]; then
+        confirm "警告: 此操作将覆盖现有数据库。是否继续?"
+        mongorestore --uri="${MONGODB_URI}" --drop --gzip \
+            --stopOnError --archive="$backup_path" 2>&1 | tee -a "$LOG_FILE"
+        log "全量恢复完成"
+        return
+    fi
+    [[ "$backup_path" == *.tar.gz ]] || error "不支持的全量备份格式"
     
     # 创建临时目录
-    local temp_dir=$(mktemp -d)
-    trap "rm -rf ${temp_dir}" EXIT
+    local temp_dir
+    temp_dir=$(mktemp -d) || error "无法创建隔离恢复目录"
+    RESTORE_TEMP_DIR="$temp_dir"
+    trap 'rm -rf -- "${RESTORE_TEMP_DIR:-}"' EXIT
     
     # 解压备份
     log "解压备份文件..."
-    tar -xzf "$backup_path" -C "$temp_dir"
-    
-    # 获取解压后的目录名
-    local restore_dir=$(ls "$temp_dir")
+    local restore_dir
+    restore_dir=$(python3 - "$backup_path" "$temp_dir" <<'PY'
+from pathlib import Path, PurePosixPath
+import shutil
+import sys
+import tarfile
+
+try:
+    destination = Path(sys.argv[2])
+    with tarfile.open(sys.argv[1], 'r:gz') as archive:
+        members = archive.getmembers()
+        names = set()
+        roots = set()
+        bson_found = False
+        for member in members:
+            name = PurePosixPath(member.name)
+            if (not name.parts or name.is_absolute() or '..' in name.parts
+                    or any(ord(c) < 32 for c in member.name)
+                    or not (member.isfile() or member.isdir()) or name in names):
+                raise ValueError('unsafe or duplicate archive member')
+            names.add(name)
+            roots.add(name.parts[0])
+            bson_found |= member.isfile() and member.name.endswith(('.bson', '.bson.gz'))
+        if len(roots) != 1 or not bson_found:
+            raise ValueError('expected one BSON dump root')
+        for member in members:
+            target = destination / member.name
+            if member.isdir():
+                target.mkdir(parents=True, exist_ok=True, mode=0o700)
+            else:
+                target.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
+                with archive.extractfile(member) as source, target.open('xb') as output:
+                    shutil.copyfileobj(source, output)
+                target.chmod(0o600)
+                if target.stat().st_size != member.size:
+                    raise ValueError('incomplete archive member')
+        print(next(iter(roots)))
+except (OSError, ValueError, tarfile.TarError):
+    raise SystemExit(1)
+PY
+    ) || error "历史备份不是单根 BSON 归档或包含不安全成员"
     
     # 确认恢复操作
     confirm "警告: 此操作将覆盖现有数据库。是否继续?"
@@ -115,6 +192,7 @@ full_restore() {
         --uri="${MONGODB_URI}" \
         --drop \
         --gzip \
+        --stopOnError \
         "${temp_dir}/${restore_dir}" \
         2>&1 | tee -a "$LOG_FILE"
     
@@ -193,6 +271,7 @@ point_in_time_restore() {
 # 恢复前检查
 pre_restore_check() {
     log "执行恢复前检查..."
+    [[ -n "$MONGODB_URI" ]] || error "必须显式设置 MONGODB_URI，禁止默认连接本地数据库"
     
     # 检查 MongoDB 连接
     if ! mongosh "${MONGODB_URI}" --eval "db.adminCommand('ping')" >/dev/null 2>&1; then
@@ -213,12 +292,14 @@ post_restore_verify() {
     log "执行恢复后验证..."
     
     # 检查集合数量
-    local collections=$(mongosh "${MONGODB_URI}" --quiet --eval "db.getCollectionNames().length")
+    local collections users questions
+    collections=$(mongosh "${MONGODB_URI}" --quiet --eval "db.getCollectionNames().length") || error "恢复后集合检查失败"
     log "恢复后集合数量: ${collections}"
     
     # 检查文档数量
-    local users=$(mongosh "${MONGODB_URI}" --quiet --eval "db.users.countDocuments()")
-    local questions=$(mongosh "${MONGODB_URI}" --quiet --eval "db.questions.countDocuments()")
+    users=$(mongosh "${MONGODB_URI}" --quiet --eval "db.users.countDocuments()") || error "恢复后用户集合检查失败"
+    questions=$(mongosh "${MONGODB_URI}" --quiet --eval "db.questions.countDocuments()") || error "恢复后题目集合检查失败"
+    [[ "$collections" =~ ^[0-9]+$ && "$users" =~ ^[0-9]+$ && "$questions" =~ ^[0-9]+$ ]] || error "恢复后集合统计不是有效计数"
     
     log "用户数量: ${users}"
     log "题目数量: ${questions}"
@@ -242,19 +323,27 @@ Exam-Master MongoDB 恢复脚本
 
 示例:
     $0 list
-    $0 full exam-master-full-20260127_030000.tar.gz
+    $0 full exam-master-full-20260127_030000.archive
     $0 incremental exam-master-incr-20260127_040000.archive
-    $0 point-in-time exam-master-full-20260127_030000.tar.gz "2026-01-27 05:00:00"
+    $0 point-in-time exam-master-full-20260127_030000.archive "2026-01-27 05:00:00"
 
 环境变量:
     BACKUP_DIR      备份目录 (默认: /data/backups/mongodb)
-    MONGODB_URI     MongoDB 连接字符串
+    MONGODB_URI     MongoDB 连接字符串（写入前必须显式设置）
+
+全量恢复支持原生 .archive 与历史单根 BSON .tar.gz，必须附带同名 .sha256。
+此脚本不提供独立生产自动回滚；生产恢复仍须所属运维事务及真实业务验收。
 EOF
 }
 
 # ==================== 主流程 ====================
 
 main() {
+    # Metadata discovery needs neither database tools nor log/directory writes.
+    case "$RESTORE_TYPE" in
+        list) list_backups; return ;;
+        help|--help|-h) show_help; return ;;
+    esac
     mkdir -p "${BACKUP_DIR}/logs"
     
     log "=========================================="
