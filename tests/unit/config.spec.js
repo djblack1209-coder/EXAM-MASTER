@@ -58,10 +58,26 @@ describe('config/index.js', () => {
     it('包含所有必要的顶级配置节', async () => {
       const { default: config } = await import('@/config/index.js');
       const requiredKeys = [
-        'env', 'isDev', 'isProd', 'wx', 'qq', 'api', 'ai',
-        'app', 'storage', 'upload', 'features', 'debug',
-        'audit', 'monitor', 'cdn', 'websocket', 'deepLink',
-        'network', 'retry', '_source'
+        'env',
+        'isDev',
+        'isProd',
+        'wx',
+        'qq',
+        'api',
+        'ai',
+        'app',
+        'storage',
+        'upload',
+        'features',
+        'debug',
+        'audit',
+        'monitor',
+        'cdn',
+        'websocket',
+        'deepLink',
+        'network',
+        'retry',
+        '_source'
       ];
       requiredKeys.forEach((key) => {
         expect(config).toHaveProperty(key);

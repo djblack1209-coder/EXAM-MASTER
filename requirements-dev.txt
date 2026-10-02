@@ -1,0 +1,3 @@
+# 固定规范工具版本，Dependabot 按周提供更新 PR。
+ruff==0.15.8
+pytest==8.4.2

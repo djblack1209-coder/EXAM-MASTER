@@ -1,3 +1,4 @@
+import { BRAND } from './brand.js';
 import { logger } from '@/utils/logger.js';
 
 /**
@@ -280,7 +281,7 @@ const config = {
     /**
      * 应用名称
      */
-    name: getEnv('VITE_APP_NAME', 'Exam-Master'),
+    name: getEnv('VITE_APP_NAME', BRAND.name),
 
     /**
      * 应用版本

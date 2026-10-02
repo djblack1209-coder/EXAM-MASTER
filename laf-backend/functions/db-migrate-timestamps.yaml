@@ -1,5 +1,5 @@
 name: db-migrate-timestamps
-desc: ""
+desc: ''
 methods:
   - GET
   - POST

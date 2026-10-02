@@ -33,9 +33,9 @@
 
 import cloud from '@lafjs/cloud';
 import crypto from 'crypto';
-import { perfMonitor } from './_shared/perf-monitor';
-import { createLogger, checkRateLimitDistributed } from './_shared/api-response';
-import { verifyJWT as verifySharedJWT } from './_shared/auth';
+import { perfMonitor } from './_shared/perf-monitor.js';
+import { createLogger, checkRateLimitDistributed } from './_shared/api-response.js';
+import { verifyJWT as verifySharedJWT } from './_shared/auth.js';
 const logger = createLogger('[Login]');
 
 // ==================== 环境变量配置 ====================

@@ -15,6 +15,7 @@ describe('登录页生产入口', () => {
 
   it('登录页品牌图不再引用旧吉祥物资源', () => {
     expect(source).not.toMatch(/mascot-owl|login-mascot|getAssetUrl\('illustrations', 'mascot/i);
-    expect(source).toContain("getAssetUrl('images', 'logo')");
+    expect(source).toContain(':src="BRAND.icon"');
+    expect(source).toContain("from '@/config/brand.js'");
   });
 });

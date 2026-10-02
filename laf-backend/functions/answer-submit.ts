@@ -29,8 +29,8 @@ import {
   wrapResponse,
   logger,
   checkRateLimitDistributed
-} from './_shared/api-response';
-import { requireAuth, isAuthError } from './_shared/auth-middleware';
+} from './_shared/api-response.js';
+import { requireAuth, isAuthError } from './_shared/auth-middleware.js';
 import {
   createNewCard,
   scheduleReviewFSRS,
@@ -40,10 +40,10 @@ import {
   type ReviewLogRecord,
   type FSRSScheduleResult,
   type ReviewRating
-} from './_shared/fsrs-scheduler';
+} from './_shared/fsrs-scheduler.js';
 // 幂等性模块可用但当前未启用 — 答案提交通过 DB upsert 天然幂等
 // 如需请求级去重（如弱网重试场景），取消以下注释：
-// import { checkIdempotency, markCompleted as markIdempotencyCompleted } from './_shared/idempotency';
+// import { checkIdempotency, markCompleted as markIdempotencyCompleted } from './_shared/idempotency.js';
 
 const db = cloud.database();
 const _ = db.command;
@@ -171,10 +171,10 @@ export default async function (ctx) {
     // 2. 路由处理
     if (action === 'submit') {
       const result = await handleSubmit(userId, idempotencyKey, data, requestId);
-      return wrapResponse(result as unknown as import('./_shared/api-response').ApiResponse, requestId, startTime);
+      return wrapResponse(result as unknown as import('./_shared/api-response.js').ApiResponse, requestId, startTime);
     } else if (action === 'getRecords') {
       const result = await handleGetRecords(userId, data, requestId);
-      return wrapResponse(result as unknown as import('./_shared/api-response').ApiResponse, requestId, startTime);
+      return wrapResponse(result as unknown as import('./_shared/api-response.js').ApiResponse, requestId, startTime);
     } else {
       return wrapResponse(badRequest(`不支持的操作: ${action}`), requestId, startTime);
     }

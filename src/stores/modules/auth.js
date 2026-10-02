@@ -140,8 +140,8 @@ export const useAuthStore = defineStore('auth', () => {
    * 登出
    */
   const logout = () => {
-    // ✅ 用户隔离：清理当前用户的隔离数据（必须在清除 userId 之前调用）
-    storageService.clearUserData();
+    // 清理会话缓存，学习事实留在账户隔离键中；删除由用户另行确认。
+    storageService.clearUserData(undefined, { preserveLearning: true });
     token.value = '';
     isLogin.value = false;
 

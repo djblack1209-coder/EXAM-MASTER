@@ -1,5 +1,15 @@
 <template>
-  <view :class="['study-detail-page', themeClass]">
+  <LearningShell v-if="!showLegacy" active="study-detail" title="学习足迹">
+    <view class="records-introduction">
+      <text class="records-title">看见进步，也看清依据。</text
+      ><text class="records-description">每个数字都能回到一次作答。理解需要检验，进步不止一种样子。</text>
+    </view>
+    <LearningOverview :initial-expanded="true" :show-navigation="false" view="study-detail" />
+    <view class="legacy-entry">
+      <button class="quiet-button" role="button" tabindex="0" @tap="toggleLegacy">查看历史记录（旧口径）</button>
+    </view>
+  </LearningShell>
+  <view v-else :class="['study-detail-page', themeClass]">
     <!-- 透明导航栏 -->
     <view class="transparent-navbar" :class="{ 'navbar-solid': scrolled }">
       <view class="navbar-content">
@@ -28,147 +38,148 @@
       @scroll="handleScroll"
       @refresherrefresh="onPullRefresh"
     >
-      <!-- 骨架屏加载状态 -->
-      <view v-if="isLoading" class="skeleton-container">
-        <view class="skeleton-header">
-          <view class="skeleton-title skeleton-animate" />
-          <view class="skeleton-subtitle skeleton-animate" />
-        </view>
-        <view class="skeleton-cards">
-          <view v-for="i in 3" :key="i" class="skeleton-card skeleton-animate" />
-        </view>
-        <view class="skeleton-section">
-          <view class="skeleton-section-title skeleton-animate" />
-          <view class="skeleton-chart skeleton-animate" />
-        </view>
-      </view>
-
-      <!-- 实际内容 -->
-      <template v-else>
-        <!-- 空状态：新用户无学习记录 -->
-        <view v-if="studyTime === 0 && completionRate === 0 && abilityRank === '-'" class="empty-state-container">
-          <view class="page-header">
-            <text class="page-title"> 学习详情 </text>
-            <text class="page-subtitle"> 查看您的学习数据和进度 </text>
+      <LearningOverview :initial-expanded="true" />
+      <button size="mini" @tap="toggleLegacy">
+        {{ showLegacy ? '收起历史视图' : '查看历史记录（旧口径）' }}
+      </button>
+      <template v-if="showLegacy">
+        <!-- 骨架屏加载状态 -->
+        <view v-if="isLoading" class="skeleton-container">
+          <view class="skeleton-header">
+            <view class="skeleton-title skeleton-animate" />
+            <view class="skeleton-subtitle skeleton-animate" />
           </view>
-          <view class="empty-state-card">
-            <!-- 学习旅程空状态插图 -->
-            <image
-              class="empty-illustration"
-              src="./static/illustrations/empty-journey.png"
-              mode="aspectFit"
-              lazy-load
-            />
-            <text class="empty-title">还没有学习记录</text>
-            <text class="empty-desc">完成第一次练习后，这里将展示你的学习数据、热力图和能力分析</text>
-            <button class="empty-action-btn" @tap="goToPractice">开始学习</button>
+          <view class="skeleton-cards">
+            <view v-for="i in 3" :key="i" class="skeleton-card skeleton-animate" />
+          </view>
+          <view class="skeleton-section">
+            <view class="skeleton-section-title skeleton-animate" />
+            <view class="skeleton-chart skeleton-animate" />
           </view>
         </view>
 
-        <!-- 有数据时展示完整内容 -->
+        <!-- 实际内容 -->
         <template v-else>
-          <!-- 页面标题 -->
-          <view class="page-header">
-            <text class="page-title"> 学习详情 </text>
-            <text class="page-subtitle"> 查看您的学习数据和进度 </text>
-          </view>
-
-          <!-- AI 学习洞察 — 一句人话总结数据背后的含义 -->
-          <view v-if="aiInsight" class="ai-insight-card">
-            <view class="insight-header">
-              <BaseIcon name="sparkle" :size="20" class="insight-icon" />
-              <text class="insight-label">AI 学习洞察</text>
+          <!-- 空状态：新用户无学习记录 -->
+          <view v-if="studyTime === 0 && completionRate === 0 && abilityRank === '-'" class="empty-state-container">
+            <view class="page-header">
+              <text class="page-title"> 学习详情 </text>
+              <text class="page-subtitle"> 查看您的学习数据和进度 </text>
             </view>
-            <text class="insight-text">{{ aiInsight }}</text>
-            <view v-if="aiWeakPoints.length > 0" class="insight-weak">
-              <text class="insight-weak-label">建议重点攻克:</text>
-              <view class="insight-tags">
-                <text v-for="wp in aiWeakPoints" :key="wp" class="insight-tag">{{ wp }}</text>
-              </view>
+            <view class="empty-state-card">
+              <!-- 学习旅程空状态插图 -->
+              <BaseIcon class="empty-illustration" name="book" :size="100" />
+              <text class="empty-title">还没有学习记录</text>
+              <text class="empty-desc">完成第一次练习后，这里将展示你的学习数据、热力图和能力分析</text>
+              <button class="empty-action-btn" @tap="goToPractice">开始学习</button>
             </view>
           </view>
 
-          <!-- 学习概况卡片 -->
-          <view class="overview-cards">
-            <!-- 学习时长卡片 -->
-            <view class="stat-card">
-              <image class="stat-icon" src="./static/study.png" alt="" mode="aspectFit" />
-              <view class="stat-content">
-                <text class="stat-value">
-                  {{ studyTime }}
-                </text>
-                <text class="stat-label"> 学习时长（分钟） </text>
-              </view>
+          <!-- 有数据时展示完整内容 -->
+          <template v-else>
+            <!-- 页面标题 -->
+            <view class="page-header">
+              <text class="page-title"> 学习详情 </text>
+              <text class="page-subtitle"> 查看您的学习数据和进度 </text>
             </view>
 
-            <!-- 完成率卡片 -->
-            <view class="stat-card">
-              <image class="stat-icon" src="./static/stack-of-books.png" alt="" mode="aspectFit" />
-              <view class="stat-content">
-                <text class="stat-value"> {{ completionRate }}% </text>
-                <text class="stat-label"> 完成率 </text>
+            <!-- AI 学习洞察 — 一句人话总结数据背后的含义 -->
+            <view v-if="aiInsight" class="ai-insight-card">
+              <view class="insight-header">
+                <BaseIcon name="sparkle" :size="20" class="insight-icon" />
+                <text class="insight-label">AI 学习洞察</text>
+              </view>
+              <text class="insight-text">{{ aiInsight }}</text>
+              <view v-if="aiWeakPoints.length > 0" class="insight-weak">
+                <text class="insight-weak-label">建议重点攻克:</text>
+                <view class="insight-tags">
+                  <text v-for="wp in aiWeakPoints" :key="wp" class="insight-tag">{{ wp }}</text>
+                </view>
               </view>
             </view>
 
-            <!-- 能力评级卡片 -->
-            <view class="stat-card">
-              <BaseIcon name="chart-bar" :size="52" class="stat-icon" />
-              <view class="stat-content">
-                <text class="stat-value">
-                  {{ abilityRank }}
-                </text>
-                <text class="stat-label"> 能力评级 </text>
+            <!-- 学习概况卡片 -->
+            <view class="overview-cards">
+              <!-- 学习时长卡片 -->
+              <view class="stat-card">
+                <BaseIcon class="stat-icon" name="calendar" :size="40" />
+                <view class="stat-content">
+                  <text class="stat-value">
+                    {{ studyTime }}
+                  </text>
+                  <text class="stat-label"> 学习时长（分钟） </text>
+                </view>
+              </view>
+
+              <!-- 完成率卡片 -->
+              <view class="stat-card">
+                <BaseIcon class="stat-icon" name="book" :size="40" />
+                <view class="stat-content">
+                  <text class="stat-value"> {{ completionRate }}% </text>
+                  <text class="stat-label"> 完成率 </text>
+                </view>
+              </view>
+
+              <!-- 能力评级卡片 -->
+              <view class="stat-card">
+                <BaseIcon name="chart-bar" :size="52" class="stat-icon" />
+                <view class="stat-content">
+                  <text class="stat-value">
+                    {{ abilityRank }}
+                  </text>
+                  <text class="stat-label"> 能力评级 </text>
+                </view>
               </view>
             </view>
-          </view>
 
-          <!-- 学习热力图 -->
-          <view class="heatmap-section">
-            <view class="section-header">
-              <text class="section-title"> 学习热力图 </text>
-              <text class="section-subtitle"> 过去一年的学习活跃度 </text>
+            <!-- 学习热力图 -->
+            <view class="heatmap-section">
+              <view class="section-header">
+                <text class="section-title"> 学习热力图 </text>
+                <text class="section-subtitle"> 过去一年的学习活跃度 </text>
+              </view>
+
+              <view class="heatmap-container">
+                <StudyHeatmap :study-data="studyRecordData" :weeks="26" @day-tap="handleDayTap" />
+              </view>
             </view>
 
-            <view class="heatmap-container">
-              <StudyHeatmap :study-data="studyRecordData" :weeks="26" @day-tap="handleDayTap" />
-            </view>
-          </view>
+            <!-- 能力雷达图 -->
+            <view class="radar-section">
+              <view class="section-header">
+                <text class="section-title"> 能力雷达 </text>
+                <text class="section-subtitle"> 各知识点掌握度分析 </text>
+              </view>
 
-          <!-- 能力雷达图 -->
-          <view class="radar-section">
-            <view class="section-header">
-              <text class="section-title"> 能力雷达 </text>
-              <text class="section-subtitle"> 各知识点掌握度分析 </text>
-            </view>
-
-            <view class="radar-container">
-              <AbilityRadar :mastery-data="knowledgeMastery" />
-            </view>
-          </view>
-
-          <!-- FSRS 记忆模型优化 -->
-          <view class="fsrs-section">
-            <view class="section-header">
-              <text class="section-title"> 智能记忆 </text>
-              <text class="section-subtitle"> 个性化间隔重复参数 </text>
-            </view>
-            <FSRSOptimizer />
-          </view>
-
-          <!-- 学习趋势图表 -->
-          <view class="chart-section">
-            <view class="section-header">
-              <text class="section-title"> 学习趋势 </text>
-              <text class="section-subtitle"> 最近学习时长变化 </text>
+              <view class="radar-container">
+                <AbilityRadar :mastery-data="knowledgeMastery" />
+              </view>
             </view>
 
-            <view class="chart-container">
-              <StudyTrendChart :study-data="studyRecordData" @range-change="handleRangeChange" />
+            <!-- FSRS 记忆模型优化 -->
+            <view class="fsrs-section">
+              <view class="section-header">
+                <text class="section-title"> 智能记忆 </text>
+                <text class="section-subtitle"> 个性化间隔重复参数 </text>
+              </view>
+              <FSRSOptimizer />
             </view>
-          </view>
 
-          <!-- 底部间距 -->
-          <view class="bottom-spacer" />
+            <!-- 学习趋势图表 -->
+            <view class="chart-section">
+              <view class="section-header">
+                <text class="section-title"> 学习趋势 </text>
+                <text class="section-subtitle"> 最近学习时长变化 </text>
+              </view>
+
+              <view class="chart-container">
+                <StudyTrendChart :study-data="studyRecordData" @range-change="handleRangeChange" />
+              </view>
+            </view>
+
+            <!-- 底部间距 -->
+            <view class="bottom-spacer" />
+          </template>
         </template>
       </template>
     </scroll-view>
@@ -176,7 +187,17 @@
 </template>
 
 <script setup>
+import LearningOverview from '@/components/business/learning/learning-overview.vue';
+import LearningShell from '@/components/business/learning/learning-shell.vue';
+import { useConversationLearningStore } from '@/stores/modules/conversation-learning.js';
+
 import { ref, computed } from 'vue';
+const learning = useConversationLearningStore();
+const showLegacy = ref(false);
+function toggleLegacy() {
+  showLegacy.value = !showLegacy.value;
+  if (showLegacy.value) loadStudyData(true);
+}
 import { onLoad, onUnload } from '@dcloudio/uni-app';
 import { toast } from '@/utils/toast.js';
 import { useThemeStore } from '@/stores';
@@ -281,6 +302,9 @@ async function onPullRefresh() {
  * AI 学习洞察 — 调用后端掌握度分析，生成一句话诊断
  */
 async function loadAIInsight() {
+  if (!showLegacy.value) {
+    return;
+  }
   try {
     const result = await studyEngineStore.analyzeMastery();
     if (!result?.data?.summary) return;
@@ -339,6 +363,11 @@ function toggleTheme() {
 
 /** 加载学习数据（优先后端，降级本地） */
 async function loadStudyData() {
+  learning.refresh();
+  if (!showLegacy.value) {
+    isLoading.value = false;
+    return;
+  }
   isLoading.value = true;
   try {
     // 尝试从后端获取统计概览

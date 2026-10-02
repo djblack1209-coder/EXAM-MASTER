@@ -3,20 +3,27 @@
   "private": true,
   "type": "module",
   "dependencies": {
-    "ai-agent-team": "^2.0.1",
     "cors": "^2.8.5",
     "express": "^4.21.0",
-    "jszip": "^3.10.1",
     "mongodb": "^6.12.0",
-    "multer": "^1.4.5-lts.1",
-    "sql.js": "^1.14.1",
-    "ts-fsrs": "^5.2.3"
+    "multer": "^2.4.0",
+    "nodemailer": "^10.0.13"
   },
   "devDependencies": {
-    "typescript": "^5.7.0",
-    "@types/node": "^22.10.0",
-    "@types/express": "^5.0.0",
     "@types/cors": "^2.8.17",
-    "@types/multer": "^1.4.12"
-  }
+    "@types/express": "^4.17.25",
+    "@types/multer": "^2.3.0",
+    "@types/node": "^22.10.0",
+    "typescript": "^5.7.0"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.build.json --noEmit",
+    "build": "tsc -p tsconfig.build.json && node package-runtime.mjs",
+    "start": "node dist/standalone/server.js"
+  },
+  "engines": {
+    "node": ">=22.22.3",
+    "npm": ">=10.8.2"
+  },
+  "packageManager": "npm@10.8.2"
 }

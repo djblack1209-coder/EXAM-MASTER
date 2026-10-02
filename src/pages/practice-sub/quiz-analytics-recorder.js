@@ -14,6 +14,7 @@ import { logger } from '@/utils/logger.js';
 import { recordSmartAnswer } from './utils/smart-question-picker.js';
 import { recordAnswer as recordAnalyticsAnswer } from './utils/learning-analytics.js';
 // H026 FIX: 通过 API domain 层调用，不再直接导入 _request-core.js
+import { recordQuizLearningAttempt } from '@/services/learning/quiz-learning-bridge.js';
 import { submitAnswer } from '@/services/api/domains/practice.api.js';
 
 /**
@@ -35,7 +36,8 @@ export async function recordAnswerToAnalytics({
   userChoice,
   questionTimeLimit,
   getOptionLabel,
-  sessionId
+  sessionId,
+  attemptId
 }) {
   if (!currentQuestion) return null;
 
@@ -46,6 +48,18 @@ export async function recordAnswerToAnalytics({
     isCorrect,
     timeSpent
   };
+
+  try {
+    recordQuizLearningAttempt({
+      currentQuestion,
+      sessionId,
+      attemptId,
+      userAnswer: String(getOptionLabel(userChoice))
+    });
+    uni.$emit('conversationLearningUpdated');
+  } catch (_error) {
+    logger.warn('[quiz-analytics] 对话学习记录写入失败，旧版答题记录仍保留');
+  }
 
   // 记录到智能组题模块（懒加载）
   try {

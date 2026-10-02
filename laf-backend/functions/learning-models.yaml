@@ -1,0 +1,5 @@
+name: learning-models
+desc: 学习模型配置与用量，需 JWT，真实收费关闭
+methods:
+  - POST
+tags: []

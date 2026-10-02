@@ -10,6 +10,7 @@ set -euo pipefail
 BACKUP_DIR="${BACKUP_DIR:-/data/backups/mongodb}"
 RETENTION_DAYS="${RETENTION_DAYS:-30}"
 MONGODB_URI="${MONGODB_URI:-mongodb://localhost:27017/exam-master}"
+MONGODB_DATABASE="${MONGODB_DATABASE:-exam-master}"
 BACKUP_TYPE="${1:-full}"  # full 或 incremental
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
 DATE=$(date +%Y%m%d)
@@ -86,6 +87,8 @@ full_backup() {
     # 执行备份
     mongodump \
         --uri="${MONGODB_URI}" \
+        --db="${MONGODB_DATABASE}" \
+        --excludeCollection=learning_model_keys \
         --archive="${backup_path}" \
         --gzip \
         2>&1 | tee -a "$LOG_FILE" >&2
@@ -99,6 +102,8 @@ full_backup() {
 
 # 增量备份（基于 oplog）
 incremental_backup() {
+    # oplog 含保险库写入，不能作为普通备份导出；专门的密钥灾备另行授权。
+    error "普通 oplog 备份可能包含模型密钥，当前禁用；请使用排除保险库的 full 备份"
     local backup_name="exam-master-incr-${TIMESTAMP}"
     local backup_path="${BACKUP_DIR}/incremental/${backup_name}.archive"
     

@@ -18,17 +18,12 @@
 
     <!-- Logo区域 -->
     <view class="logo-section">
-      <image
-        class="login-logo-mark"
-        :src="getAssetUrl('images', 'logo')"
-        mode="aspectFit"
-        alt="EXAM-MASTER brand mark"
-      />
+      <image class="login-logo-mark" :src="BRAND.icon" mode="aspectFit" :alt="BRAND.name" />
       <view class="app-name-row">
-        <text class="brand-exam">EXAM</text>
-        <text class="brand-master">-MASTER</text>
+        <text class="brand-exam">{{ BRAND.chinese }}</text>
+        <text class="brand-master">{{ BRAND.english }}</text>
       </view>
-      <text class="app-slogan">真题训练、错题复习、间隔复习，一条路径完成</text>
+      <text class="app-slogan">从一个问题开始，在对话中理解、练习和复习</text>
       <view class="login-proof-row">
         <text class="proof-chip">公共课题库</text>
         <text class="proof-chip">限时刷题</text>
@@ -266,6 +261,7 @@
 </template>
 
 <script setup>
+import { BRAND } from '@/config/brand.js';
 import { modal } from '@/utils/modal.js';
 import { toast } from '@/utils/toast.js';
 import { ref, computed, onMounted, onUnmounted } from 'vue';
@@ -283,7 +279,6 @@ import PrivacyPopup from '@/components/common/privacy-popup.vue';
 import { getStatusBarHeight, getCapsuleSafeRight } from '@/utils/core/system.js';
 import { getRetryCooldownSeconds, normalizeEmailAddress, resolveEmailAuthErrorMessage } from './email-auth-utils.js';
 // 静态资源 CDN 映射（大图已迁出主包）
-import { getAssetUrl } from '@/config/static-assets.js';
 
 // 主题状态
 const isDark = ref(false);

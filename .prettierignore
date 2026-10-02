@@ -4,7 +4,17 @@ uni_modules
 .hbuilderx
 laf-backend/node_modules
 logs
-deploy
 vps-optimizer
 coverage
 *.min.js
+
+# Generated, vendored and immutable evidence
+tmp/
+output/
+data/
+cdn-assets/
+**/node_modules/
+**/dist/
+laf-backend/functions/_shared/ts-fsrs-bundle.ts
+package-lock.json
+**/package-lock.json

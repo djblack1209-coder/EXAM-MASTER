@@ -132,7 +132,6 @@ describe('quiz session contract', () => {
     ]);
   });
 
-
   it('normalizes choice questions and checks answers by stable option labels', () => {
     const question = normalizeQuizQuestion(
       {
@@ -297,7 +296,9 @@ describe('quiz session contract', () => {
       hasNextRecommendation: true
     });
 
-    expect(content).toBe('本次完成 4 题，正确率 50%\n1 道错题已加入复习计划，约 45 分钟后首次复习\n\nAI 已根据薄弱点为你准备了下一组练习');
+    expect(content).toBe(
+      '本次完成 4 题，正确率 50%\n1 道错题已加入复习计划，约 45 分钟后首次复习\n\nAI 已根据薄弱点为你准备了下一组练习'
+    );
   });
 
   it('uses diagnosis states when building completion content', () => {

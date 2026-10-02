@@ -1,0 +1,5 @@
+name: learning-subscriptions
+desc: 仅开发沙箱订阅，生产收费关闭，JWT及回调签名
+methods:
+  - POST
+tags: []

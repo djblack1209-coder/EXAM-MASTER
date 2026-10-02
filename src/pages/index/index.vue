@@ -1,12 +1,15 @@
 <template>
-  <view class="page" :class="{ 'dark-mode': isDark }">
+  <LearningLanding v-if="!showLegacyDashboard" @legacy="openLegacyDashboard">
+    <PrivacyPopup />
+  </LearningLanding>
+  <view v-else class="page" :class="{ 'dark-mode': isDark }">
     <!-- 微信隐私保护弹窗 -->
     <PrivacyPopup />
 
     <!-- 自定义导航栏 -->
     <view class="nav-bar" :style="{ paddingTop: statusBarHeight + 'px' }">
       <view class="nav-content">
-        <text class="nav-title">EXAM-MASTER</text>
+        <text class="nav-title">{{ BRAND.name }}</text>
         <text class="nav-status">{{ navStatusText }}</text>
       </view>
     </view>
@@ -41,15 +44,17 @@
         </view>
       </view>
 
+      <button class="dashboard-return" @tap="showLegacyDashboard = false">返回学习空间</button>
+      <LearningOverview />
       <!-- 品牌冲击首屏 -->
       <view class="section hero-section">
         <view class="hero-panel">
           <view class="hero-topline">
-            <text class="hero-kicker">公共课训练台</text>
+            <text class="hero-kicker">对话式学习</text>
             <text class="hero-state">{{ masteryStateText }}</text>
           </view>
           <text class="hero-title">{{ greeting }}，进入今天的备考主线</text>
-          <text class="hero-subtitle">把真题、错题和复习节奏压缩成一条可执行路径。</text>
+          <text class="hero-subtitle">提出目标，在对话中讲解、练习和复习；也可继续原有真题练习。</text>
 
           <view class="dashboard-tabs">
             <view
@@ -90,7 +95,7 @@
                 <text class="paper-title">近年真题整卷进度</text>
               </view>
               <view class="paper-score">
-                <text class="paper-score-value">{{ totalQuestions }}</text>
+                <text class="paper-score-value">{{ displayTotalQuestions }}</text>
                 <text class="paper-score-label">已练题</text>
               </view>
             </view>
@@ -134,8 +139,8 @@
           </view>
 
           <view class="hero-action-row">
-            <view class="hero-primary" hover-class="btn-hover" @tap="goToPractice">
-              <text class="hero-primary-text">{{ isNewUser ? '开始第一次刷题' : '继续刷题' }}</text>
+            <view class="hero-primary" hover-class="btn-hover" @tap="goLearning">
+              <text class="hero-primary-text">开始对话学习</text>
             </view>
             <text class="hero-note">{{ todayMomentumText }}</text>
           </view>
@@ -153,7 +158,7 @@
             <view class="progress-bar">
               <view class="progress-fill" :style="{ width: todayProgressPercent + '%' }" />
             </view>
-            <text class="progress-text">{{ todayCount }} / {{ dailyGoal }}</text>
+            <text class="progress-text">{{ displayTodayCount }} / {{ displayDailyGoal }}</text>
           </view>
         </view>
       </view>
@@ -162,13 +167,13 @@
       <view class="section stats-row">
         <view class="stat-card">
           <text class="stat-kicker">累计</text>
-          <text class="stat-value">{{ totalQuestions }}</text>
-          <text class="stat-label">累计做题</text>
+          <text class="stat-value">{{ displayTotalQuestions }}</text>
+          <text class="stat-label">累计有效作答</text>
         </view>
         <view class="stat-card">
           <text class="stat-kicker">正确率</text>
-          <text class="stat-value">{{ accuracy }}%</text>
-          <text class="stat-label">正确率</text>
+          <text class="stat-value">{{ displayAccuracy }}%</text>
+          <text class="stat-label">全部可靠作答的正确率</text>
         </view>
       </view>
 
@@ -201,6 +206,10 @@
 </template>
 
 <script>
+import { BRAND } from '@/config/brand.js';
+import LearningOverview from '@/components/business/learning/learning-overview.vue';
+import LearningLanding from '@/components/business/learning/learning-landing.vue';
+
 import CustomTabbar from '@/components/layout/custom-tabbar/custom-tabbar.vue';
 import PrivacyPopup from '@/components/common/privacy-popup.vue';
 import { useStudyStore } from '@/stores/modules/study';
@@ -208,13 +217,21 @@ import { useUserStore } from '@/stores/modules/user';
 import { storageService } from '@/services/storageService.js';
 import { logger } from '@/utils/logger.js';
 import { safeNavigateTo } from '@/utils/safe-navigate';
+import { useConversationLearningStore } from '@/stores/modules/conversation-learning.js';
 import { getPracticeNavigationTree } from '@/config/bank-registry.js';
 
 export default {
-  components: { CustomTabbar, PrivacyPopup },
+  components: {
+    LearningOverview,
+    LearningLanding,
+    CustomTabbar,
+    PrivacyPopup
+  },
 
   data() {
     return {
+      BRAND,
+      showLegacyDashboard: false,
       // 布局
       statusBarHeight: 44,
       tabBarHeight: 90,
@@ -242,6 +259,29 @@ export default {
   },
 
   computed: {
+    sharedLearning() {
+      return useConversationLearningStore();
+    },
+    hasSharedLearning() {
+      return this.sharedLearning.state.attempts.length || this.sharedLearning.state.plans.length;
+    },
+    displayTodayCount() {
+      return this.hasSharedLearning ? this.sharedLearning.summary.tasks.numerator : this.todayCount;
+    },
+    displayDailyGoal() {
+      return this.hasSharedLearning ? this.sharedLearning.summary.tasks.denominator : this.dailyGoal;
+    },
+    displayTotalQuestions() {
+      return this.hasSharedLearning ? this.sharedLearning.summary.totalReliableAnswers : this.totalQuestions;
+    },
+    displayAccuracy() {
+      const s = this.sharedLearning.summary;
+      return this.hasSharedLearning
+        ? s.totalReliableAnswers
+          ? ((100 * s.reliableCorrectAnswers) / s.totalReliableAnswers).toFixed(1)
+          : '尚无样本'
+        : this.accuracy;
+    },
     greeting() {
       const h = new Date().getHours();
       if (h < 6) return '夜深了';
@@ -252,8 +292,8 @@ export default {
     },
 
     todayProgressPercent() {
-      if (this.dailyGoal <= 0) return 0;
-      return Math.min(100, Math.round((this.todayCount / this.dailyGoal) * 100));
+      if (this.displayDailyGoal <= 0) return 0;
+      return Math.min(100, Math.round((this.displayTodayCount / this.displayDailyGoal) * 100));
     },
 
     isNewUser() {
@@ -267,7 +307,7 @@ export default {
     },
 
     remainingToday() {
-      return Math.max(0, this.dailyGoal - this.todayCount);
+      return Math.max(0, this.displayDailyGoal - this.displayTodayCount);
     },
 
     masteryStateText() {
@@ -286,7 +326,7 @@ export default {
     focusPanelTitle() {
       if (this.activeDashboardTab === 'bank') return '先确认可训练真题年份';
       if (this.activeDashboardTab === 'review') return '先处理错题与间隔复习队列';
-      if (this.isNewUser) return '从第一组公共课真题开始';
+      if (this.isNewUser) return '从当前目标开始学习';
       return '继续推进今日训练窗口';
     },
 
@@ -294,7 +334,7 @@ export default {
       return [
         { label: '剩余题量', value: this.remainingToday },
         { label: '连续天数', value: `${this.streakDays}d` },
-        { label: '正确率', value: `${this.accuracy}%` }
+        { label: '可靠正确率', value: `${this.displayAccuracy}%` }
       ];
     },
 
@@ -307,15 +347,16 @@ export default {
   onLoad() {
     this.syncTheme();
     this.initLayout();
-    this.loadData();
+    if (this.showLegacyDashboard) this.loadData();
     uni.$on('themeUpdate', this.syncTheme);
     uni.$on('updateTheme', this.syncTheme);
   },
 
   onShow() {
     this.syncTheme();
+    this.sharedLearning.refresh();
     // 每次切回首页刷新统计
-    if (this._loaded) {
+    if (this.showLegacyDashboard && this._loaded) {
       this.loadData();
     }
   },
@@ -328,12 +369,19 @@ export default {
   // 微信分享
   onShareAppMessage() {
     return {
-      title: 'EXAM-MASTER — 智能助力，一战成硕',
+      title: BRAND.title,
       path: '/pages/index/index'
     };
   },
 
   methods: {
+    openLegacyDashboard() {
+      this.showLegacyDashboard = true;
+      this.loadData();
+    },
+    goLearning() {
+      safeNavigateTo('/pages/learning/index');
+    },
     initLayout() {
       try {
         const info = uni.getWindowInfo();

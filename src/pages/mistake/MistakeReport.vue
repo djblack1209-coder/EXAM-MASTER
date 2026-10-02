@@ -52,7 +52,7 @@
           <!-- E010: 文本降级模式（Canvas 不可用时） -->
           <view v-else-if="reportTextContent" class="report-text-fallback">
             <view class="report-text-header">
-              <text class="report-text-title"> Exam Master </text>
+              <text class="report-text-title">{{ BRAND.name }}</text>
               <text class="report-text-subtitle"> 智能诊断报告 </text>
             </view>
             <view class="report-text-userinfo">
@@ -87,6 +87,7 @@
 </template>
 
 <script setup>
+import { BRAND } from '@/config/brand.js';
 import { ref, computed, nextTick, getCurrentInstance, onBeforeUnmount } from 'vue';
 import { modal } from '@/utils/modal.js';
 import { toast } from '@/utils/toast.js';
@@ -323,7 +324,7 @@ function drawReport(aiSummary) {
       drawReportBackground(ctx, 750, 1334, theme, props.isDark);
 
       // ✅ F011: 使用 drawLabel 消除重复的文本绘制模式
-      drawLabel(ctx, 'Exam Master', 50, 150, { fontSize: 48, color: theme.titleColor });
+      drawLabel(ctx, BRAND.name, 50, 150, { fontSize: 48, color: theme.titleColor });
       drawLabel(ctx, '智能诊断报告', 50, 200, { fontSize: 28, color: theme.subText });
 
       drawCard(ctx, 50, 250, 650, 180, 30, theme.cardBg, props.isDark);

@@ -10,7 +10,7 @@
  */
 
 import crypto from 'crypto';
-import { IS_PRODUCTION, createLogger } from './api-response';
+import { IS_PRODUCTION, createLogger } from './api-response.js';
 
 const logger = createLogger('[RequestGuard]');
 

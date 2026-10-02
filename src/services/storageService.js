@@ -24,6 +24,7 @@
  */
 
 import { logger } from '@/utils/logger.js';
+import { readStoredHistory } from '../../laf-backend/functions/_shared/learning-history.js';
 import {
   addMistake as apiAddMistake,
   getMistakes as apiGetMistakes,
@@ -72,6 +73,13 @@ function createUniCompat() {
 
   return {
     getStorageSync(key) {
+      // Learning roots and their revocation markers must observe other windows.
+      if (typeof localStorage !== 'undefined' && /(?:^|_)conversation_learning_v1(?:_|$)/.test(key)) {
+        const current = readLocal(key);
+        if (current === undefined) memoryStore.delete(key);
+        else memoryStore.set(key, current);
+        return current === undefined ? '' : current;
+      }
       if (memoryStore.has(key)) return memoryStore.get(key);
       const localValue = readLocal(key);
       if (localValue !== undefined) {
@@ -137,17 +145,24 @@ const globalRef = typeof globalThis !== 'undefined' ? globalThis : {};
 const uniCompat = createUniCompat();
 
 function getRuntimeUni() {
+  // uni 编译器会重写 wx.getStorageSync 静态访问；H5 的微信 JS-SDK 并非存储运行时。
+  // 按完整接口检查候选，使用动态属性以免把导入的函数误当作 SDK 能力。
+  const supportsStorage = (candidate) =>
+    candidate &&
+    ['getStorageSync', 'setStorageSync', 'removeStorageSync'].every(
+      (method) => typeof Reflect.get(candidate, method) === 'function'
+    );
   const runtimeUni = globalRef['uni'];
-  if (runtimeUni && typeof runtimeUni.getStorageSync === 'function') {
+  if (supportsStorage(runtimeUni)) {
     return runtimeUni;
   }
 
   const runtimeWx = globalRef['wx'];
-  if (runtimeWx && typeof runtimeWx.getStorageSync === 'function') {
+  if (supportsStorage(runtimeWx)) {
     return runtimeWx;
   }
 
-  if (typeof wx !== 'undefined' && wx && typeof wx.getStorageSync === 'function') {
+  if (typeof wx !== 'undefined' && supportsStorage(wx)) {
     return wx;
   }
 
@@ -285,6 +300,20 @@ function resolveKey(key) {
 // 高频写入场景（如练习状态保存）使用防抖，减少 I/O 操作
 const _pendingWrites = new Map(); // key -> { value, timer }
 const DEBOUNCE_DELAY = 500; // 防抖延迟 500ms
+const isOwnedLearningKey = (key) => key === 'conversation_learning_v1' || key.startsWith('conversation_learning_v1_');
+const isDurableLearningKey = (key) =>
+  isOwnedLearningKey(key) ||
+  key.startsWith('fsrs_card_') ||
+  [
+    'mistake_book',
+    'studyProgress',
+    'EXAM_STUDY_PROGRESS',
+    'study_engine_state_v1',
+    'imported_files',
+    'imported_files_backup',
+    'fsrs_user_params',
+    'v30_bank'
+  ].includes(key);
 
 function clearPendingWrites() {
   _pendingWrites.forEach(({ timer }) => {
@@ -528,6 +557,8 @@ class StorageService {
       const value = uni.getStorageSync(rk);
       // uni.getStorageSync 在 key 不存在时返回空字符串，需要判断
       if (value === '' || value === null || value === undefined) {
+        // 新学习事实显式绑定 owner，不从游客命名空间回退或自动迁移。
+        if (isOwnedLearningKey(key)) return defaultValue;
         // 回退：读取无前缀的旧数据（用户隔离迁移期间）
         if (rk !== key) {
           const legacyValue = uni.getStorageSync(key);
@@ -693,6 +724,8 @@ class StorageService {
     try {
       const allKeys = uni.getStorageInfoSync().keys || [];
       for (const rawKey of allKeys) {
+        // 对话事实有显式 owner；不能把游客或其他人的记录静默搬到登录账户。
+        if (isOwnedLearningKey(rawKey)) continue;
         // 跳过已有前缀的、全局的、加密前缀的
         if (rawKey.startsWith('u_')) continue;
         if (isUnscopedKey(rawKey)) continue;
@@ -742,14 +775,16 @@ class StorageService {
   }
 
   /**
-   * 登出时清理当前用户的所有隔离数据
+   * 清理当前用户隔离数据；登出可保留学习事实，显式删除仍可全量清理。
    * 保留全局 key 和其他用户的数据
    * @param {string} [uid] - 要清理的 userId，默认当前用户
    * @returns {number} 清理的 key 数量
    */
-  clearUserData(uid) {
+  clearUserData(uid, { preserveLearning = false } = {}) {
     const userId = uid || getUserId();
     if (!userId) return 0;
+    if (preserveLearning && userId === getUserId()) this.flushPendingWrites();
+    clearPendingWrites();
 
     let cleared = 0;
     try {
@@ -758,6 +793,8 @@ class StorageService {
       const allKeys = uni.getStorageInfoSync().keys || [];
       for (const key of allKeys) {
         if (key.startsWith(prefix) || key.startsWith(encPrefix)) {
+          const ownedKey = key.slice(key.startsWith(encPrefix) ? encPrefix.length : prefix.length);
+          if (preserveLearning && isDurableLearningKey(ownedKey)) continue;
           try {
             uni.removeStorageSync(key);
             cleared++;
@@ -773,6 +810,14 @@ class StorageService {
       logger.error('[StorageService] 清理用户数据失败:', error);
     }
     return cleared;
+  }
+
+  // 只用于用户明确确认的访客迁移，不开放任意账户的原始键读取。
+  getGuestLearningSnapshot() {
+    const value = uni.getStorageSync('conversation_learning_v1');
+    return value && typeof value === 'object'
+      ? JSON.parse(JSON.stringify(readStoredHistory(value, (key) => uni.getStorageSync(key), 'guest')))
+      : null;
   }
 
   /**

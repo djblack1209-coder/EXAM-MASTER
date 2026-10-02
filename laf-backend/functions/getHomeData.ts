@@ -13,7 +13,13 @@
  */
 
 import cloud from '@lafjs/cloud';
-import { success, serverError, generateRequestId, createLogger, checkRateLimitDistributed } from './_shared/api-response';
+import {
+  success,
+  serverError,
+  generateRequestId,
+  createLogger,
+  checkRateLimitDistributed
+} from './_shared/api-response.js';
 
 const db = cloud.database();
 const logger = createLogger('[GetHomeData]');
@@ -71,14 +77,25 @@ export default async function (_ctx) {
 
     // 并行查询金句和公告，减少响应时间
     const [quotesResult, announcementsResult] = await Promise.all([
-      db.collection('home_quotes').where({ active: true }).limit(30).get().catch((_e) => {
-        logger.info(`[${requestId}] 金句集合不可用，使用默认数据`);
-        return { data: [] };
-      }),
-      db.collection('announcements').where({ active: true }).orderBy('created_at', 'desc').limit(5).get().catch((_e) => {
-        // 公告集合不存在，返回空数组
-        return { data: [] };
-      })
+      db
+        .collection('home_quotes')
+        .where({ active: true })
+        .limit(30)
+        .get()
+        .catch((_e) => {
+          logger.info(`[${requestId}] 金句集合不可用，使用默认数据`);
+          return { data: [] };
+        }),
+      db
+        .collection('announcements')
+        .where({ active: true })
+        .orderBy('created_at', 'desc')
+        .limit(5)
+        .get()
+        .catch((_e) => {
+          // 公告集合不存在，返回空数组
+          return { data: [] };
+        })
     ]);
 
     if (quotesResult.data && quotesResult.data.length > 0) {

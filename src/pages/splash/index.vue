@@ -4,14 +4,16 @@
     <view class="splash-main">
       <!-- Logo：圆角方形裁切容器 -->
       <view class="logo-clip">
-        <image class="logo-img" src="/static/images/logo.png" alt="Exam Master" mode="aspectFit" />
+        <image class="logo-img" src="/static/images/logo.png" :alt="BRAND.name" mode="aspectFit" />
       </view>
 
       <!-- 品牌名：双色增强品牌辨识度 -->
-      <text class="brand-name"><text class="brand-exam">Exam</text> <text class="brand-master">Master</text></text>
+      <text class="brand-name">
+        <text class="brand-exam">{{ BRAND.chinese }}</text> <text class="brand-master">{{ BRAND.english }}</text>
+      </text>
 
       <!-- 品牌副标题 -->
-      <text class="brand-slogan">AI 助力，一战成硕</text>
+      <text class="brand-slogan">从提问，走向理解</text>
     </view>
 
     <!-- 加载进度暗示：三个脉动圆点 -->
@@ -23,7 +25,7 @@
 
     <!-- 底部版权 -->
     <view class="splash-footer">
-      <text class="copyright">Exam-Master Team</text>
+      <text class="copyright">Wenli Team</text>
     </view>
 
     <view v-if="showManualEntry" class="manual-entry" hover-class="btn-hover" @tap="openHomeTab">
@@ -34,6 +36,7 @@
 </template>
 
 <script setup>
+import { BRAND } from '@/config/brand.js';
 import { onMounted, onBeforeUnmount, ref } from 'vue';
 import { logger } from '@/utils/logger.js';
 import { initTheme, onThemeUpdate, offThemeUpdate } from '@/composables/useTheme';

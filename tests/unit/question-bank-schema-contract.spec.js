@@ -32,7 +32,9 @@ describe('question bank knowledge schema contracts', () => {
     expect(nodeSchema.properties.level.enum).toEqual(['subject', 'track', 'module', 'topic', 'micro_point']);
     expect(indexNames(nodeSchema)).toEqual(expect.arrayContaining(['idx_node_id', 'idx_parent', 'idx_tracks_level']));
 
-    expect(edgeSchema.required).toEqual(expect.arrayContaining(['edge_id', 'source_node_id', 'target_node_id', 'relation']));
+    expect(edgeSchema.required).toEqual(
+      expect.arrayContaining(['edge_id', 'source_node_id', 'target_node_id', 'relation'])
+    );
     expect(edgeSchema.properties.relation.enum).toEqual(
       expect.arrayContaining(['contains', 'prerequisite', 'confusable_with'])
     );
@@ -49,6 +51,8 @@ describe('question bank knowledge schema contracts', () => {
 
     expect(stateSchema.required).toEqual(expect.arrayContaining(['user_id', 'node_id', 'attempts', 'color_state']));
     expect(stateSchema.properties.color_state.enum).toEqual(['unknown', 'primed', 'strong', 'watch', 'weak']);
-    expect(indexNames(stateSchema)).toEqual(expect.arrayContaining(['idx_user_node', 'idx_user_color', 'idx_user_updated']));
+    expect(indexNames(stateSchema)).toEqual(
+      expect.arrayContaining(['idx_user_node', 'idx_user_color', 'idx_user_updated'])
+    );
   });
 });

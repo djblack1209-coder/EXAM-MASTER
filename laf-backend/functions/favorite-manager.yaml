@@ -1,5 +1,5 @@
 name: favorite-manager
-desc: ""
+desc: ''
 methods:
   - GET
   - POST

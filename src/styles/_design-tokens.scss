@@ -136,9 +136,7 @@ $mobile-shadow-lift: 0 28rpx 76rpx rgba(11, 49, 27, 0.2);
 }
 
 @mixin em-mobile-topbar {
-  background:
-    linear-gradient(180deg, rgba(193, 244, 147, 0.86), rgba(229, 255, 214, 0.68)),
-    rgba(255, 255, 255, 0.36);
+  background: linear-gradient(180deg, rgba(193, 244, 147, 0.86), rgba(229, 255, 214, 0.68)), rgba(255, 255, 255, 0.36);
   box-shadow: 0 1rpx 0 rgba(18, 64, 30, 0.07);
   backdrop-filter: blur(18px) saturate(135%);
   -webkit-backdrop-filter: blur(18px) saturate(135%);
@@ -148,9 +146,7 @@ $mobile-shadow-lift: 0 28rpx 76rpx rgba(11, 49, 27, 0.2);
   box-sizing: border-box;
   padding: $padding;
   border-radius: $radius;
-  background:
-    linear-gradient(145deg, rgba(255, 255, 255, 0.82), rgba(240, 255, 228, 0.68)),
-    rgba(255, 255, 255, 0.72);
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.82), rgba(240, 255, 228, 0.68)), rgba(255, 255, 255, 0.72);
   box-shadow:
     $mobile-shadow-soft,
     inset 0 1rpx 0 rgba(255, 255, 255, 0.84),

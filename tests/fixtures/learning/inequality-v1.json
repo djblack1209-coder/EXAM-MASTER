@@ -1,0 +1,200 @@
+{
+  "version": "inequality-v1",
+  "provenance": "人工独立给出一次不等式阈值、乘负数反向、开闭边界、常数真假和区间并集答案；期望不从题目工具或模型生成。",
+  "claims": "仅覆盖完整实数域的一元一次有理系数不等式与有界精确区间答案；不证明一般有理式/二次/整数域/复数域或全学科教学效果。",
+  "cases": [
+    {
+      "id": "negative-direction",
+      "goal": "解不等式 -2*x+6>0",
+      "answer": "x<3",
+      "status": "reliable",
+      "outcome": "correct"
+    },
+    {
+      "id": "negative-wrong-direction",
+      "goal": "解不等式 -2*x+6>0",
+      "answer": "x>3",
+      "status": "reliable",
+      "outcome": "wrong"
+    },
+    { "id": "open-boundary", "goal": "解不等式 -2*x+6>0", "answer": "x≤3", "status": "reliable", "outcome": "wrong" },
+    {
+      "id": "interval-equivalence",
+      "goal": "解不等式 -2*x+6>0",
+      "answer": "(-∞,3)",
+      "status": "reliable",
+      "outcome": "correct"
+    },
+    {
+      "id": "reversed-answer",
+      "goal": "解不等式 -2*x+6>0",
+      "answer": "3>x",
+      "status": "reliable",
+      "outcome": "correct"
+    },
+    {
+      "id": "fraction-threshold",
+      "goal": "解不等式 3*x≥1",
+      "answer": "[1/3,+∞)",
+      "status": "reliable",
+      "outcome": "correct"
+    },
+    {
+      "id": "rounded-threshold",
+      "goal": "解不等式 3*x≥1",
+      "answer": "x≥0.333333333",
+      "status": "reliable",
+      "outcome": "wrong"
+    },
+    {
+      "id": "negative-fraction",
+      "goal": "解不等式 -4*x≤1",
+      "answer": "x≥-1/4",
+      "status": "reliable",
+      "outcome": "correct"
+    },
+    {
+      "id": "decimal-fraction",
+      "goal": "解不等式 0.3*x<0.1",
+      "answer": "x<1/3",
+      "status": "reliable",
+      "outcome": "correct"
+    },
+    {
+      "id": "constant-denominator",
+      "goal": "解不等式 (x+1)/2≤3",
+      "answer": "(-∞,5]",
+      "status": "reliable",
+      "outcome": "correct"
+    },
+    {
+      "id": "negative-denominator",
+      "goal": "解不等式 x/(-2)<3",
+      "answer": "x>-6",
+      "status": "reliable",
+      "outcome": "correct"
+    },
+    { "id": "both-sides", "goal": "解不等式 2*x+1≥x-2", "answer": "x≥-3", "status": "reliable", "outcome": "correct" },
+    {
+      "id": "zero-coefficient-false",
+      "goal": "解不等式 2*x+1<2*x",
+      "answer": "无解",
+      "status": "reliable",
+      "outcome": "correct"
+    },
+    {
+      "id": "zero-coefficient-true",
+      "goal": "解不等式 2*x+1≤2*x+1",
+      "answer": "任意实数",
+      "status": "reliable",
+      "outcome": "correct"
+    },
+    {
+      "id": "zero-coefficient-strict",
+      "goal": "解不等式 x<x",
+      "answer": "∅",
+      "status": "reliable",
+      "outcome": "correct"
+    },
+    { "id": "constant-true", "goal": "解不等式 0<2", "answer": "(-∞,∞)", "status": "reliable", "outcome": "correct" },
+    { "id": "empty-open-point", "goal": "解不等式 x<x", "answer": "(3,3)", "status": "reliable", "outcome": "correct" },
+    {
+      "id": "nonempty-point-wrong",
+      "goal": "解不等式 x<x",
+      "answer": "[3,3]",
+      "status": "reliable",
+      "outcome": "wrong"
+    },
+    {
+      "id": "equivalent-union",
+      "goal": "解不等式 x<3",
+      "answer": "(-∞,1)∪[1,3)",
+      "status": "reliable",
+      "outcome": "correct"
+    },
+    { "id": "union-gap", "goal": "解不等式 x<3", "answer": "(-∞,1)∪(1,3)", "status": "reliable", "outcome": "wrong" },
+    {
+      "id": "duplicate-reordered",
+      "goal": "解不等式 x≤3",
+      "answer": "[1,3]∪(-∞,1]∪(-∞,0)",
+      "status": "reliable",
+      "outcome": "correct"
+    },
+    {
+      "id": "union-point-closed",
+      "goal": "解不等式 x≤3",
+      "answer": "(-∞,3)∪[3,3]",
+      "status": "reliable",
+      "outcome": "correct"
+    },
+    {
+      "id": "incomplete-interval",
+      "goal": "解不等式 x<3",
+      "answer": "0<x<3",
+      "status": "reliable",
+      "outcome": "wrong"
+    },
+    {
+      "id": "latex-notation",
+      "goal": "解不等式 x\\geq 1/2",
+      "answer": "x\\in [0.5,\\infty)",
+      "status": "reliable",
+      "outcome": "correct"
+    },
+    {
+      "id": "negative-infinity-closed",
+      "goal": "解不等式 x<3",
+      "answer": "[-∞,3)",
+      "status": "pending",
+      "outcome": null
+    },
+    {
+      "id": "positive-infinity-closed",
+      "goal": "解不等式 x≥3",
+      "answer": "[3,∞]",
+      "status": "pending",
+      "outcome": null
+    },
+    { "id": "reversed-interval", "goal": "解不等式 x<3", "answer": "(4,3)", "status": "pending", "outcome": null },
+    { "id": "symbolic-boundary", "goal": "解不等式 x<3", "answer": "x<sqrt(2)", "status": "pending", "outcome": null },
+    { "id": "variable-denominator", "goal": "解不等式 1/x>0", "answer": "x>0", "status": "pending", "outcome": null },
+    {
+      "id": "cancelled-domain-hole",
+      "goal": "解不等式 x/x>0",
+      "answer": "任意实数",
+      "status": "pending",
+      "outcome": null
+    },
+    {
+      "id": "quadratic-not-claimed",
+      "goal": "解不等式 x^2<4",
+      "answer": "-2<x<2",
+      "status": "pending",
+      "outcome": null
+    },
+    { "id": "chained-question", "goal": "解不等式 0<x<3", "answer": "(0,3)", "status": "pending", "outcome": null },
+    {
+      "id": "untrusted-code",
+      "goal": "解不等式 x<3",
+      "answer": "process.exit(0)",
+      "status": "pending",
+      "outcome": null
+    },
+    { "id": "zero-denominator", "goal": "解不等式 x/0>1", "answer": "无解", "status": "pending", "outcome": null },
+    {
+      "id": "critical-condition",
+      "goal": "解不等式 -2*x+6>0",
+      "answer": "x<3",
+      "uncertainties": [{ "field": "负号", "resolved": false }],
+      "status": "pending",
+      "outcome": null
+    },
+    {
+      "id": "late-domain-invention",
+      "goal": "解不等式 x<3",
+      "answer": "x<3，x≠1",
+      "status": "pending",
+      "outcome": null
+    }
+  ]
+}

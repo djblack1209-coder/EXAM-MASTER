@@ -1,324 +1,65 @@
-# Module Index
+# 源码导航
 
-> Last updated: 2026-04-23 | AI-SOP Version: 1.1
->
-> Use this file to quickly locate relevant files when fixing bugs or adding features.
-> Pattern: **When you need to fix: [problem]** → Look at: [files]
+Mac 资料 OCR：`scripts/native/apple-vision.m` 为真实 Vision/CoreML CPU 适配；`scripts/build/build-apple-vision.mjs` 仅编译，`scripts/build/verify-apple-vision.mjs` 与 `tests/native/apple-vision/` 做合成自检。Python 私人解析器显式选引擎；Service 复核能力/回执，Store 保存当前选择和逐片段提取事件，页面逐次许可/校对。移动原生 OCR 桥未接。
 
----
+App文件链路：[文件宿主](../src/services/learning/app-material.js)、[Java文件内核](../nativeplugins/Wenli-Connector/android/src/cn/wenli/connector/MaterialFiles.java)、[ContentResolver源](../nativeplugins/Wenli-Connector/android/src/cn/wenli/connector/AndroidMaterialSource.java)、[Foundation文件内核](../nativeplugins/Wenli-Connector/ios/src/WenliMaterialFiles.m)、[页面/Store专项](../tests/unit/learning-app-material.spec.js)和[真实文件校验](../scripts/build/verify-app-material.mjs)。沿原私人资料合同，不新建数据集合，装配/设备边界见[09B](09B-APP-CONNECTOR.md)。
 
-## Authentication & Login
+App连接器：[宿主桥](../src/services/learning/app-connector.js)、[Java内核](../nativeplugins/Wenli-Connector/android/src/cn/wenli/connector/ConnectorTransport.java)、[Foundation内核](../nativeplugins/Wenli-Connector/ios/src/WenliConnectorTransport.m)、[JS专项](../tests/unit/learning-app-connector.spec.js)、[回环校验](../scripts/build/verify-app-connector.mjs)与[SDK编译](../scripts/build/build-app-connector.mjs)。源码/装配/设备分别验收，配置见[09B](09B-APP-CONNECTOR.md)。
 
-### User can't login
+条件先修：[蕴含与任意精确有理反例检验](../laf-backend/functions/_shared/learning-condition-probe.js)、[原答候选关联](../laf-backend/functions/_shared/learning-prerequisite.js)、[38项人工独立期望](../tests/fixtures/learning/condition-diagnosis-v1.json)、[45项专项](../tests/unit/learning-condition-diagnosis.spec.js)。复用原Store、reducer、计划、教学与原题变式，不增加诊断服务或能力百分比。
 
-- **Login page**: `src/pages/login/index.vue`
-- **WeChat callback**: `src/pages/login/wechat-callback.vue`
-- **QQ callback**: `src/pages/login/qq-callback.vue`
-- **Auth store**: `src/stores/modules/auth.js`
-- **Login guard util**: `src/utils/auth/loginGuard.js`
-- **Token refresh**: `src/utils/auth/token-refresh-plugin.js`
-- **Backend login function**: `laf-backend/functions/login.yaml`
-- **Backend auth middleware**: `laf-backend/functions/_shared/auth-middleware.ts`
-- **Backend JWT logic**: `laf-backend/functions/_shared/auth.ts`
-- **Silent login in App.vue**: `src/App.vue` → `performSilentLogin()`
+条件充分性：[版本化条件关系](../laf-backend/functions/_shared/learning-condition.js)复用[有界分数/完整零点分段](../laf-backend/functions/_shared/learning-algebra.js)，共享reducer/Store/教学/备份/同步沿原入口。[人工固定集](../tests/fixtures/learning/condition-v1.json)与[方向/数域/反例/一致性专项](../tests/unit/learning-condition.spec.js)不依赖模型自评，不新增服务或数据库集合。
 
-### Onboarding / 新用户引导
+微信原生连接器复用[受限传输](../src/services/learning/local-connector.js)与[资料解析/文件选择](../src/services/learning/material-connector.js)，对话页挂载已有[隐私弹窗](../src/components/common/privacy-popup.vue)。[微信专项](../tests/unit/learning-weixin-connector.spec.js)覆盖SDK/平台、重定向、容量/编码、取消、归属和逐次文件许可；不新增后端服务或数据集合。
 
-- **新用户引导页**: `src/pages/login/onboarding.vue` (1068 行，首次登录后的学科选择 + 目标设定引导流程)
+| 责任                     | 当前入口                                                                                                                                                                                                         |
+| ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 显示品牌                 | [brand.js](../src/config/brand.js)、[矢量资产](../src/static/brand/)                                                                                                                                             |
+| 页面注册 / 平台          | [pages.json](../src/pages.json)、[manifest.json](../src/manifest.json)                                                                                                                                           |
+| 首页 / 对话              | [learning-landing](../src/components/business/learning/learning-landing.vue)、[对话页](../src/pages/learning/index.vue)                                                                                          |
+| 共用导航 / 概览 / 节奏   | [learning 组件](../src/components/business/learning/)                                                                                                                                                            |
+| 连续学习状态             | [conversation-learning Store](../src/stores/modules/conversation-learning.js)                                                                                                                                    |
+| 事实 / 判分 / 汇总       | [共享 reducer](../laf-backend/functions/_shared/learning-domain.js)                                                                                                                                              |
+| 本地记录 / 恢复          | [repository](../src/services/learning/learning-repository.js)、[backup](../src/services/learning/learning-backup.js)                                                                                             |
+| 工具 / 教学              | [learning-tools](../src/services/learning/learning-tools.js)、[rhythm](../src/services/learning/learning-rhythm.js)                                                                                              |
+| 私人资料                 | [material-intake](../src/services/learning/material-intake.js)、[连接器](../src/services/learning/material-connector.js)、[解析器](../scripts/pipeline/private-material-parser.py)                               |
+| 客户端 API               | [learning.api](../src/services/api/domains/learning.api.js)、[API 目录](../src/services/api/)                                                                                                                    |
+| 模型 / 用量 / 密钥       | [learning-models](../laf-backend/functions/learning-models.ts)、[provider](../laf-backend/functions/_shared/ai-providers/learning-provider.ts)、[预算账户](../laf-backend/functions/_shared/learning-account.ts) |
+| 代理 / 同步 / 订阅       | [proxy-ai](../laf-backend/functions/proxy-ai.ts)、[learning-sync](../laf-backend/functions/learning-sync.ts)、[learning-subscriptions](../laf-backend/functions/learning-subscriptions.ts)                       |
+| 旧学习 / FSRS / 答题幂等 | [study-engine](../src/stores/modules/study-engine.js)、[fsrs-service](../src/services/fsrs-service.js)、[answer-submit](../laf-backend/functions/answer-submit.ts)                                               |
+| 来源与质量               | [answer_evidence_repair](../scripts/baidu/answer_evidence_repair.py)、[flashcard_quality](../scripts/baidu/flashcard_quality.py)、[题库门禁](../scripts/build/question-bank-release-gate.mjs)                    |
+| 独立后端                 | [standalone](../laf-backend/standalone/)、[Mongo 适配](../laf-backend/standalone/cloud-shim.ts)                                                                                                                  |
+| 验收 / 评测              | [tests/unit](../tests/unit/)、[固定质量集](../tests/fixtures/learning/quality-v1.json)、[评测器](../scripts/build/evaluate-learning.mjs)                                                                         |
+| 维护扫描 / 依赖          | [repository-health](../scripts/build/repository-health.mjs)、[Dependabot](../.github/dependabot.yml)                                                                                                             |
 
-### Token expired / 401 errors
+生成报告、截图、恢复快照放 tmp/，不混入产品源码。第三方 uni_modules 保留原结构与许可，项目库公开状态不能代替第三方内容授权。
 
-- **Auth failure handler**: `src/App.vue` → `initApiErrorInterceptor()`
-- **Auth store logout**: `src/stores/modules/auth.js`
+对话停止/教法恢复：[事件派生方法](../laf-backend/functions/_shared/learning-strategy.js)、[边界专项](../tests/unit/learning-strategy-boundary.spec.js)。先修诊断：[受限小题与关联](../laf-backend/functions/_shared/learning-prerequisite.js)、[独立作答/更正/删除专项](../tests/unit/learning-prerequisite.spec.js)；沿用Store、共享reducer、计划及既有变式，不另建教学或诊断服务。
 
----
+连续性增量：账户生命周期在 [auth](../src/stores/modules/auth.js) 与 [storageService](../src/services/storageService.js)；访客计划合并在 backup/repository 与共享 reducer；冲突归档、取消、采用云端在 [learning-sync](../src/services/learning/learning-sync.js)。
 
-## Quiz / Practice
+本地模型：[Node 连接器](../scripts/build/local-model-connector.mjs)、[客户端连接器](../src/services/learning/local-connector.js)。PWA 导航边界：[cache-policy](../scripts/build/pwa-cache-policy.mjs)。验证：[连续性测试](../tests/unit/learning-continuity.spec.js)、[连接器测试](../tests/unit/local-model-connector.spec.js)、[资料 Store 测试](../tests/unit/learning-material-store.spec.js)、[实际 HTTP 验证](../scripts/build/verify-backend-http.mjs)。
 
-### Quiz not loading or behaving incorrectly
+对话有效复习准入：[conversation-review](../src/services/learning/conversation-review.js)；教学交付、帮助保留和挑战回归：[learning-teaching](../tests/unit/learning-teaching.spec.js)。
 
-- **Quiz engine page**: `src/pages/practice-sub/do-quiz.vue` (3131 lines)
-- **Practice hub**: `src/pages/practice/index.vue` (1955 lines)
-- **Quiz progress bar**: `src/pages/practice-sub/components/quiz-progress/quiz-progress.vue`
-- **Answer sheet**: `src/pages/practice-sub/components/answer-sheet/answer-sheet.vue`
-- **Quiz result**: `src/pages/practice-sub/components/quiz-result/quiz-result.vue` (全屏结果页，含AI推荐下一步+个性化点评，由do-quiz.vue集成)
-- **Quiz auto-save**: `src/composables/useQuizAutoSave.js`
-- **Question normalizer**: `src/utils/practice/question-normalizer.js`
-- **Draft detector**: `src/utils/practice/draft-detector.js`
+教学后的事实观察与持续用户教法保护：[共享只读观察](../laf-backend/functions/_shared/learning-teaching-observation.js)、[专项](../tests/unit/learning-teaching-observation.spec.js)。原Store、progress工具和统计视图复用该函数，不建设独立画像服务或模型统计。
 
-### FSRS scheduling / spaced repetition issues
+资料删除：[专项测试](../tests/unit/learning-material-deletion.spec.js)；共享 reducer/repository、资料连接器与 Store 复用既有模块，不另建删除服务。
 
-- **FSRS service (frontend)**: `src/services/fsrs-service.js` (640 lines, singleton scheduler)
-- **FSRS optimizer client**: `src/pages/practice-sub/services/fsrs-optimizer-client.js`
-- **FSRS optimizer page**: `src/pages/study-detail/FSRSOptimizer.vue`
-- **Smart review page**: `src/pages/practice-sub/smart-review.vue`
-- **Backend FSRS scheduler**: `laf-backend/functions/_shared/fsrs-scheduler.ts`
-- **Backend FSRS service**: `laf-backend/functions/_shared/services/fsrs.service.ts`
-- **Backend FSRS optimizer**: `laf-backend/functions/fsrs-optimizer.ts`
+主观评分合同：[learning-rubric](../laf-backend/functions/_shared/learning-rubric.js)、[专项测试](../tests/unit/learning-rubric.spec.js)、[独立合同集](../tests/fixtures/learning/rubric-v1.json)。共享 reducer 执行，页面/Store 仅编辑维度与展示实际结果，不另建评分服务。
 
-### Practice modes / AI generation
+主观原答定位v2：[范围/疑义/重试专项](../tests/unit/learning-rubric-evidence.spec.js)、[独立范围与攻击集](../tests/fixtures/learning/rubric-evidence-v2.json)。复用同一learning-rubric/reducer，宿主assess 1.2指定v2；模型不能降级合同。旧v1重放冻结，页面与统计读取派生范围和附近原文，Store共享完整受限疑义。
 
-- **Practice modes modal**: `src/components/business/practice/PracticeModesModal.vue`
-- **AI generation overlay**: `src/components/business/practice/AiGenerationOverlay.vue`
-- **Generation progress**: `src/components/business/practice/GenerationProgressBar.vue`
-- **Backend generation pipeline**: `laf-backend/functions/_shared/generation/generation-pipeline.ts`
+精确代数合同：[learning-algebra](../laf-backend/functions/_shared/learning-algebra.js)、[专项测试](../tests/unit/learning-algebra.spec.js)、[独立固定集](../tests/fixtures/learning/algebra-v1.json)。共享 reducer 重新建立依据，目标入口、材料题目、判分、教学与变式复用同一工具。
 
-### Answer submission / backend
+有界长历史：[纯JS分页与备份](../laf-backend/functions/_shared/learning-history.js)、[本机物理存储](../src/services/learning/history-storage.js)、[服务端压缩与分页响应](../laf-backend/functions/_shared/learning-history-server.ts)。既有backup/repository/sync负责分批重放、归属/版本和生命周期，不另建历史服务。验证：[客户端16项](../tests/unit/learning-history.spec.js)、[服务端4项](../tests/unit/learning-history-server.spec.ts)、[真实Mongo](../tests/unit/learning-mongo-integration.spec.ts)、[自产大历史夹具](../tests/fixtures/learning/history-fixture.js)；夹具不进入公共题库。
 
-- **Backend answer submit**: `laf-backend/functions/answer-submit.yaml`
-- **Backend question bank**: `laf-backend/functions/question-bank.yaml`
+流式闭环：[UTF8/SSE与预览脱敏](../laf-backend/functions/_shared/learning-stream-codec.js)、[执行取消生命周期](../laf-backend/functions/_shared/learning-model-runtime.ts)、[客户端H5/微信适配](../src/services/learning/learning-stream.js)、[共享模型任务](../laf-backend/functions/proxy-ai.ts)、[流式端点](../laf-backend/functions/proxy-ai-stream.ts)。专项：[协议/客户端](../tests/unit/learning-stream.spec.ts)、[Store/重开恢复](../tests/unit/learning-stream-store.spec.js)、[运行取消](../tests/unit/learning-stream-runtime.spec.ts)、[端点/账本](../tests/unit/learning-endpoints.spec.ts)。
 
-### Sprint mode / 冲刺模式
+有界批次重放继续使用共享reducer，500操作硬上限、隔离副本/失败不可提交；恢复与服务端同步分别沿用20/100操作分段。验证见[重放一致性/容量边界](../tests/unit/learning-replay-batch.spec.js)，不创建另一套统计计算。
 
-- **冲刺模式页面**: `src/pages/practice-sub/sprint-mode.vue` (1041 行，限时刷题 + 倒计时 + 连击机制)
+模型结果资源：[learning-model-resources](../laf-backend/functions/_shared/learning-model-resources.ts) 被现有account/proxy/model查询调用；[资源与成本专项](../tests/unit/learning-model-resources.spec.ts)、[真实Mongo](../tests/unit/learning-mongo-integration.spec.ts)验证过期、容量、并发及账单保全。构建工具的窄CJS/ESM适配在[scripts/compat/file-type](../scripts/compat/file-type/index.cjs)，只支持已核实的Jimp fromBuffer；[真实图片/QR/WS兼容测试](../tests/unit/toolchain-compatibility.spec.js)验证实际安装版本。
 
-### Error clusters / 错题聚类
+页图辅助解读：[共享角色/来源/图片资源合同](../laf-backend/functions/_shared/learning-vision.js)；沿用provider、proxy-ai、Store与对话页，不新增独立服务。验证：[图片边界与输出](../tests/unit/learning-vision.spec.js)、[对话/恢复/删除](../tests/unit/learning-vision-store.spec.js)、[端点](../tests/unit/learning-endpoints.spec.ts)。
 
-- **错题聚类分析页**: `src/pages/practice-sub/error-clusters.vue` (1355 行，按知识点聚合错题 + 薄弱分析)
-
----
-
-## Knowledge Graph
-
-### Knowledge graph not rendering
-
-- **Knowledge graph page**: `src/pages/knowledge-graph/index.vue` (1961 行)
-- **Knowledge engine**: `src/pages/knowledge-graph/knowledge-engine.js` (684 行)
-
-### Mastery / 掌握度总览
-
-- **掌握度总览页**: `src/pages/knowledge-graph/mastery.vue` (1441 行，知识点掌握度可视化 + 复习建议)
-
----
-
-## AI Chat / Classroom
-
-### Chat not working
-
-- **Chat page**: `src/pages/chat/chat.vue` (2024 行)
-- **Backend AI proxy**: `laf-backend/functions/proxy-ai.ts`
-- **Backend AI provider factory**: `laf-backend/functions/_shared/ai-providers/provider-factory.ts`
-
-### AI Classroom issues
-
-- **Classroom page**: `src/pages/ai-classroom/classroom.vue`
-- **Classroom index**: `src/pages/ai-classroom/index.vue`
-- **Backend agent orchestrator**: `laf-backend/functions/agent-orchestrator.ts`
-- **Backend lesson generator**: `laf-backend/functions/lesson-generator.ts`
-- **Agent types**: `laf-backend/functions/_shared/agents/agent-types.ts`
-- **Teacher agent**: `laf-backend/functions/_shared/agents/teacher-agent.ts`
-- **Student agent**: `laf-backend/functions/_shared/agents/student-agent.ts`
-- **Examiner agent**: `laf-backend/functions/_shared/agents/examiner-agent.ts`
-- **State machine**: `laf-backend/functions/_shared/orchestration/state-machine.ts`
-- **Agent service**: `laf-backend/functions/_shared/services/agent.service.ts`
-
----
-
-## PK Battle / Ranking
-
-### PK Battle issues
-
-- **PK Battle page**: `src/pages/practice-sub/pk-battle.vue` (3327 lines)
-- **Backend PK service**: `laf-backend/functions/pk-battle.ts`
-- **Backend rank center**: `laf-backend/functions/rank-center.yaml`
-- **Rank page**: `src/pages/practice-sub/rank.vue`
-
----
-
-## Home Page / Dashboard
-
-### Home page rendering issues
-
-- **Home page**: `src/pages/index/index.vue` (2310 lines)
-- **AI Daily Briefing**: `src/components/business/index/AIDailyBriefing.vue` (AI学习助手，首页核心AI入口)
-- **Welcome banner**: `src/components/business/index/WelcomeBanner.vue`
-- **Stats grid**: `src/components/business/index/StatsGrid.vue`
-- **Study heatmap**: `src/components/business/index/StudyHeatmap.vue`
-- **Daily goal ring**: `src/components/business/index/DailyGoalRing.vue`
-- **Study time card**: `src/components/business/index/StudyTimeCard.vue`
-- **Activity list**: `src/components/business/index/ActivityList.vue`
-- **Header bar**: `src/components/business/index/IndexHeaderBar.vue`
-- **Formula modal**: `src/components/business/index/FormulaModal.vue`
-- **Recommendations composable**: `src/composables/useRecommendations.js`
-
-### Charts not displaying
-
-- **Study trend (detail)**: `src/pages/study-detail/StudyTrendChart.vue`
-- **Ability radar (detail)**: `src/pages/study-detail/AbilityRadar.vue`
-- **ECharts dependency**: `echarts` + `uni-echarts` packages
-
----
-
-## Mistake Book / Favorites
-
-### Mistake book issues
-
-- **Mistake book page**: `src/pages/mistake/index.vue` (含知识点聚类视图 + 一键针对训练)
-- **Mistake card**: `src/pages/mistake/MistakeCard.vue`
-- **Mistake report**: `src/pages/mistake/MistakeReport.vue`
-- **Stats card**: `src/pages/mistake/StatsCard.vue`
-- **Backend mistake manager**: `laf-backend/functions/mistake-manager.ts`
-- **Backend error clustering**: `laf-backend/functions/smart-study-engine.ts` (action: error_clustering)
-- **Frontend API**: `src/services/api/domains/study.api.js` → `getErrorClusters()`
-
-### Favorites issues
-
-- **Favorites page**: `src/pages/favorite/index.vue`
-- **Question favorite util**: `src/utils/favorite/question-favorite.js`
-- **Backend favorite manager**: `laf-backend/functions/favorite-manager.ts`
-
----
-
-## School / 择校
-
-### School search / detail issues
-
-- **School search page**: `src/pages/school/index.vue` (2396 lines)
-- **School detail page**: `src/pages/school-sub/detail.vue`
-- **AI consult page**: `src/pages/school-sub/ai-consult.vue`
-- **School store**: `src/stores/modules/school.js`
-- **Backend school query**: `laf-backend/functions/school-query.ts`
-- **Backend school crawler**: `laf-backend/functions/school-crawler-api.ts`
-- **School data**: `laf-backend/data/schools/`
-
----
-
-## Social Features
-
-### Friend list / social issues
-
-- **Friend list**: `src/pages/social/friend-list.vue`
-- **Friend profile**: `src/pages/social/friend-profile.vue`
-- **Settings friends entry**: `src/pages/settings/FriendsEntryCard.vue`
-- **User store (friends)**: `src/stores/modules/user.js`
-- **Backend social service**: `laf-backend/functions/social-service.ts`
-- **Backend AI friend memory**: `laf-backend/functions/ai-friend-memory.yaml`
-
----
-
-## Settings / Profile
-
-### Settings page issues
-
-- **Settings page**: `src/pages/settings/index.vue` (2132 lines)
-- **Profile page**: `src/pages/profile/index.vue` (1907 lines)
-- **Privacy page**: `src/pages/settings/privacy.vue`
-- **Terms page**: `src/pages/settings/terms.vue`
-- **Theme selector**: `src/pages/settings/ThemeSelectorModal.vue`
-- **AI tutor list**: `src/pages/settings/AITutorList.vue`
-- **AI chat modal**: `src/pages/settings/AIChatModal.vue`
-- **Invite modal**: `src/pages/settings/InviteModal.vue`
-- **Poster modal**: `src/pages/settings/PosterModal.vue`
-- **Logout button**: `src/pages/settings/LogoutButton.vue`
-- **Profile store**: `src/stores/modules/profile.js`
-
----
-
-## Theme / Styling
-
-### Theme not switching properly
-
-- **Theme engine**: `src/design/theme-engine.js`
-- **Theme store**: `src/stores/modules/theme.js`
-- **Theme composable**: `src/composables/useTheme.js`
-- **App.vue theme init**: `src/App.vue` → `initThemeSystem()` / `switchTheme()`
-- **Design tokens**: `src/styles/_design-tokens.scss`
-- **Dark mode vars**: `src/styles/_dark-mode-vars.scss`
-- **Wot theme mapping**: `src/styles/_wot-theme.scss`
-
----
-
-## Data Import / Export
-
-### Anki import/export issues
-
-- **Import data page**: `src/pages/practice-sub/import-data.vue` (2851 lines)
-- **File manager page**: `src/pages/practice-sub/file-manager.vue`
-- **Backend Anki import**: `laf-backend/functions/anki-import.ts`
-- **Backend Anki export**: `laf-backend/functions/anki-export.ts`
-- **Backend material manager**: `laf-backend/functions/material-manager.ts`
-
----
-
-## Tools (Traffic Acquisition)
-
-### Photo search / ID photo / Doc convert issues
-
-- **Photo search page**: `src/pages/tools/photo-search.vue`
-- **Doc convert page**: `src/pages/tools/doc-convert.vue`
-- **ID photo page**: `src/pages/tools/id-photo.vue`
-- **Backend photo-bg**: `laf-backend/functions/photo-bg.ts`
-- **Backend ID photo**: `laf-backend/functions/id-photo-segment-base64.ts`
-- **Backend doc convert**: `laf-backend/functions/doc-convert.yaml`
-- **Image base64 util**: `src/utils/helpers/image-base64.js`
-
-### Focus timer / 专注计时
-
-- **专注计时页**: `src/pages/tools/focus-timer.vue` (568 行，番茄钟 + 学习时长统计)
-
----
-
-## Study Plan / Goals
-
-### Study plan issues
-
-- **Plan index**: `src/pages/plan/index.vue` (含AI自适应7天计划，接入generate_plan API)
-- **Plan create**: `src/pages/plan/create.vue`
-- **Todo store**: `src/stores/modules/todo.js`
-- **Todo composable**: `src/composables/useTodo.js`
-- **Learning goal util**: `src/utils/learning/learning-goal.js`
-- **Backend learning goal**: `laf-backend/functions/learning-goal.ts`
-
-### Adaptive plan / 自适应学习计划
-
-- **自适应计划页**: `src/pages/plan/adaptive.vue` (1240 行，AI 根据学习数据动态调整每日计划)
-
----
-
-## Study Stats / Detail
-
-### Stats not showing
-
-- **Study detail page**: `src/pages/study-detail/index.vue` (含AI学习洞察卡片)
-- **Study trend chart**: `src/pages/study-detail/StudyTrendChart.vue`
-- **Ability radar**: `src/pages/study-detail/AbilityRadar.vue`
-- **Study store**: `src/stores/modules/study.js`
-- **Learning trajectory store**: `src/stores/modules/learning-trajectory-store.js`
-- **Gamification store**: `src/stores/modules/gamification.js`
-- **Learning analytics**: `src/pages/practice-sub/utils/learning-analytics.js`
-- **Backend study stats**: `laf-backend/functions/study-stats.ts`
-- **Backend user stats**: `laf-backend/functions/user-stats.ts`
-
----
-
-## Error Handling / Network
-
-### Global error handling
-
-- **Error handler**: `src/utils/error/global-error-handler.js`
-- **Logger**: `src/utils/logger.js`
-- **Network monitor**: `src/utils/core/network-monitor.js`
-- **Offline queue**: `src/utils/core/offline-queue.js`
-- **Offline cache service**: `src/pages/practice-sub/services/offline-cache-service.js`
-- **Offline indicator**: `src/components/common/offline-indicator.vue`
-
----
-
-## Build / Configuration
-
-### Build failures
-
-- **Vite config**: `vite.config.js`
-- **Vitest config**: `vitest.config.js`
-- **ESLint config**: `eslint.config.js`
-- **Manifest**: `src/manifest.json`
-- **Pages config**: `pages.json`
-- **Environment vars**: `.env`, `.env.development`, `.env.production`
-- **Build scripts**: `scripts/build/`
-
-
----
-
-## Infrastructure / Scripts
-
-- **Scripts 统一位置**: 所有脚本文件统一存放在根目录 `scripts/` 下。`laf-backend/scripts/` 下原有的 `crawlers`、`data-sync`、`test` 冗余副本已于 2026-03-26 清理（D015 已解决）。
+一次不等式复用[learning-algebra](../laf-backend/functions/_shared/learning-algebra.js)与已有[数轴组件](../src/components/business/learning/number-line.vue)，没有新增运行依赖。[独立区间/方向固定集](../tests/fixtures/learning/inequality-v1.json)、[对话/图形/恢复专项](../tests/unit/learning-inequality.spec.js)和[evaluate-learning](../scripts/build/evaluate-learning.mjs)核对新合同；角色/来源、公共发布和模型预算门禁保持。

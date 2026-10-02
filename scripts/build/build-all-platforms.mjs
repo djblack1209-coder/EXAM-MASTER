@@ -1,96 +1,55 @@
 #!/usr/bin/env node
-/**
- * EXAM-MASTER 四端构建脚本
- *
- * 用法:
- *   node scripts/build/build-all-platforms.mjs          # 构建所有平台
- *   node scripts/build/build-all-platforms.mjs --mac     # 仅 macOS
- *   node scripts/build/build-all-platforms.mjs --win     # 仅 Windows
- *   node scripts/build/build-all-platforms.mjs --android # 仅 Android
- *   node scripts/build/build-all-platforms.mjs --h5      # 仅 H5/PWA
- *   node scripts/build/build-all-platforms.mjs --mp      # 仅微信小程序
- */
+/** 构建已有平台入口；未实现的安装包明确失败，不安装依赖。 */
+import { execFileSync } from 'node:child_process';
+import { existsSync, readFileSync } from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-import { execSync } from 'child_process';
-import { existsSync } from 'fs';
-import { join, dirname } from 'path';
-import { fileURLToPath } from 'url';
+const ROOT = path.resolve(fileURLToPath(import.meta.url), '../../..');
+const PLATFORMS = [
+  { flag: '--h5', name: '网页', script: 'build:h5' },
+  { flag: '--mac', name: 'macOS 安装包', script: 'electron:build:mac' },
+  { flag: '--win', name: 'Windows 安装包', script: 'electron:build:win' },
+  { flag: '--mp', name: '微信小程序', script: 'build:mp-weixin' },
+  { flag: '--android', name: 'Android 安装包', script: 'app:build:android' },
+  { flag: '--ios', name: 'iOS 安装包', script: 'app:build:ios' }
+];
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const ROOT = join(__dirname, '..', '..');
-
-const args = process.argv.slice(2);
-const buildAll = args.length === 0;
-
-const PLATFORMS = {
-  h5: { flag: '--h5', name: 'H5/PWA', cmd: 'npm run build:h5' },
-  mp: { flag: '--mp', name: '微信小程序', cmd: 'npm run build:mp-weixin' },
-  mac: { flag: '--mac', name: 'macOS (DMG)', cmd: 'npm run electron:build:mac' },
-  win: { flag: '--win', name: 'Windows (EXE)', cmd: 'npm run electron:build:win' },
-  android: { flag: '--android', name: 'Android (APK)', cmd: 'npm run app:build:android' },
-  ios: { flag: '--ios', name: 'iOS (IPA)', cmd: 'npm run app:build:ios' }
-};
-
-function log(msg) {
-  console.log(`\n${'='.repeat(60)}`);
-  console.log(`  ${msg}`);
-  console.log('='.repeat(60));
-}
-
-function run(cmd) {
-  try {
-    execSync(cmd, { cwd: ROOT, stdio: 'inherit' });
-    return true;
-  } catch (e) {
-    console.error(`\n❌ 构建失败: ${cmd}`);
-    return false;
+export function buildPlatforms(args, { root = ROOT, run = execFileSync } = {}) {
+  const { scripts } = JSON.parse(readFileSync(path.join(root, 'package.json'), 'utf8'));
+  if (args.some((arg) => !PLATFORMS.some((platform) => platform.flag === arg))) {
+    console.error('未知平台；可用参数：' + PLATFORMS.map((platform) => platform.flag).join(' '));
+    return 1;
   }
-}
-
-// 检查环境
-log('检查构建环境');
-console.log(`  Node: ${process.version}`);
-console.log(`  Platform: ${process.platform} ${process.arch}`);
-console.log(`  Project: ${ROOT}`);
-
-// 检查 node_modules
-if (!existsSync(join(ROOT, 'node_modules'))) {
-  log('安装依赖...');
-  run('npm install');
-}
-
-const results = [];
-
-for (const [key, platform] of Object.entries(PLATFORMS)) {
-  if (!buildAll && !args.includes(platform.flag)) continue;
-
-  // iOS 只能在 macOS 上构建
-  if (key === 'ios' && process.platform !== 'darwin') {
-    console.log(`\n⚠️  跳过 ${platform.name} — 需要 macOS + Xcode`);
-    results.push({ name: platform.name, status: 'skipped' });
-    continue;
+  const selected = PLATFORMS.filter((platform) =>
+    args.length ? args.includes(platform.flag) : Boolean(scripts[platform.script])
+  );
+  // 完整预检后再构建，避免选择了尚未实现的平台却生成部分产物。
+  if (!selected.length || selected.some((platform) => !scripts[platform.script])) {
+    console.error('所选平台尚未提供安装包构建入口。');
+    return 1;
   }
-
-  // Electron 需要对应平台或交叉编译
-  if (key === 'win' && process.platform === 'darwin') {
-    console.log(`\n⚠️  在 macOS 上构建 Windows 版本需要 Wine（可能较慢）`);
+  if (!existsSync(path.join(root, 'node_modules'))) {
+    console.error('依赖未就绪；请按项目约定准备后再构建。');
+    return 1;
   }
-
-  log(`构建 ${platform.name}...`);
-  const ok = run(platform.cmd);
-  results.push({ name: platform.name, status: ok ? 'success' : 'failed' });
+  let failed = false;
+  for (const platform of selected) {
+    console.log(`构建 ${platform.name}`);
+    try {
+      run(process.platform === 'win32' ? 'npm.cmd' : 'npm', ['run', platform.script], {
+        cwd: root,
+        stdio: 'inherit'
+      });
+      console.log(`${platform.name}：构建通过，设备或安装验收另行进行。`);
+    } catch {
+      failed = true;
+      console.error(`${platform.name}：构建失败。`);
+    }
+  }
+  return failed ? 1 : 0;
 }
 
-// 汇总
-log('构建结果汇总');
-for (const r of results) {
-  const icon = r.status === 'success' ? '✅' : r.status === 'skipped' ? '⏭️' : '❌';
-  console.log(`  ${icon} ${r.name}: ${r.status}`);
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  process.exitCode = buildPlatforms(process.argv.slice(2));
 }
-
-if (existsSync(join(ROOT, 'release'))) {
-  console.log(`\n📦 安装包位置: ${join(ROOT, 'release')}`);
-}
-
-console.log(`\n📱 H5 构建位置: ${join(ROOT, 'dist', 'build', 'h5')}`);
-console.log(`📱 小程序构建位置: ${join(ROOT, 'dist', 'build', 'mp-weixin')}`);

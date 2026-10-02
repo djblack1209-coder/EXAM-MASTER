@@ -17,7 +17,9 @@ class VerifiedSourceRegistryTest(unittest.TestCase):
             tmp_path = Path(tmp)
             source_path = tmp_path / "official-2024-english2.pdf"
             source_path.write_bytes(b"official exam source bytes")
-            expected_sha256 = "sha256:8d7319b7cf458388f4b4dc207a88c02d6a505458161eb273d75eaa8a56fde9ca"
+            expected_sha256 = (
+                "sha256:8d7319b7cf458388f4b4dc207a88c02d6a505458161eb273d75eaa8a56fde9ca"
+            )
             registry_path = tmp_path / "verified-source-registry.json"
             registry_path.write_text(
                 json.dumps(
@@ -129,7 +131,9 @@ class VerifiedSourceRegistryTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             tmp_path = Path(tmp)
             source_path = tmp_path / "2022-math-syllabus.html"
-            source_path.write_text("<html><title>2022 math syllabus</title></html>", encoding="utf-8")
+            source_path.write_text(
+                "<html><title>2022 math syllabus</title></html>", encoding="utf-8"
+            )
             registry_path = tmp_path / "verified-source-registry.json"
             registry_path.write_text(
                 json.dumps(
@@ -162,7 +166,9 @@ class VerifiedSourceRegistryTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             tmp_path = Path(tmp)
             source_path = tmp_path / "2012-politics-question-paper.html"
-            source_path.write_text("<html><title>2012 politics paper</title></html>", encoding="utf-8")
+            source_path.write_text(
+                "<html><title>2012 politics paper</title></html>", encoding="utf-8"
+            )
             registry_path = tmp_path / "verified-source-registry.json"
             registry_path.write_text(
                 json.dumps(
@@ -213,7 +219,11 @@ class VerifiedSourceRegistryTest(unittest.TestCase):
                                 "evidenceNote": "DRAFT: human must verify answer file before registration.",
                                 "draftStatus": "requires_human_verification",
                                 "humanFieldStatus": "requires_human_input",
-                                "missingHumanFields": ["sourceUrl", "verifiedBy", "evidenceNote"],
+                                "missingHumanFields": [
+                                    "sourceUrl",
+                                    "verifiedBy",
+                                    "evidenceNote",
+                                ],
                             }
                         ],
                     },

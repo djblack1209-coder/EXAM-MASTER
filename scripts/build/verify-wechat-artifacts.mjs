@@ -1,9 +1,6 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import {
-  formatForbiddenClientSecretFindings,
-  scanForbiddenClientSecrets
-} from './wechat-artifact-secret-scan.mjs';
+import { formatForbiddenClientSecretFindings, scanForbiddenClientSecrets } from './wechat-artifact-secret-scan.mjs';
 
 const outputRoot = resolve(process.cwd(), 'dist/build/mp-weixin');
 

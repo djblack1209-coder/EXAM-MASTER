@@ -15,7 +15,7 @@ module.exports = {
   apps: [
     {
       name: 'exam-master',
-      script: './standalone/server.js',
+      script: './dist/standalone/server.js',
       cwd: '/opt/apps/exam-master/backend',
       instances: 1, // 2核2G服务器用单实例（避免内存竞争）
       exec_mode: 'fork',
@@ -25,7 +25,7 @@ module.exports = {
       env: {
         NODE_ENV: 'production',
         PORT: 3001,
-        HOST: '0.0.0.0'
+        HOST: '127.0.0.1'
       },
 
       // 日志
@@ -44,7 +44,7 @@ module.exports = {
       watch: false,
 
       // 优雅关闭
-      kill_timeout: 8000,    // 给进程 8 秒优雅关闭（含 MongoDB 连接释放）
+      kill_timeout: 8000, // 给进程 8 秒优雅关闭（含 MongoDB 连接释放）
       listen_timeout: 10000,
       shutdown_with_message: true
     }

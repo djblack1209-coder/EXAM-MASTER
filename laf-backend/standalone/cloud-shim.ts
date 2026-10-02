@@ -34,23 +34,38 @@ const DB_NAME = process.env.DB_NAME || 'exam-master';
 
 let _client: MongoClient | null = null;
 let _db: Db | null = null;
+let _connecting: Promise<Db> | null = null;
 
 async function getDb(): Promise<Db> {
   if (_db) return _db;
-  _client = new MongoClient(RESOLVED_MONGODB_URI, {
-    maxPoolSize: 10,
-    minPoolSize: 2,
-    maxIdleTimeMS: 60000,
-    serverSelectionTimeoutMS: 5000,
-    connectTimeoutMS: 10000
-  });
-  await _client.connect();
-  _db = _client.db(DB_NAME);
-  console.log(`[cloud-shim] MongoDB connected: ${DB_NAME}`);
-  return _db;
+  if (!_connecting) {
+    _connecting = (async () => {
+      const client = new MongoClient(RESOLVED_MONGODB_URI, {
+        maxPoolSize: 10,
+        minPoolSize: 2,
+        maxIdleTimeMS: 60000,
+        serverSelectionTimeoutMS: 5000,
+        connectTimeoutMS: 10000
+      });
+      try {
+        await client.connect();
+        _client = client;
+        _db = client.db(DB_NAME);
+        console.log(`[cloud-shim] MongoDB connected: ${DB_NAME}`);
+        return _db;
+      } catch (error) {
+        await client.close();
+        throw error;
+      } finally {
+        _connecting = null;
+      }
+    })();
+  }
+  return _connecting;
 }
 
 export async function closeDb(): Promise<void> {
+  if (_connecting) await _connecting.catch(() => undefined);
   if (_client) {
     await _client.close();
     _client = null;
@@ -67,6 +82,7 @@ interface OpValue {
   [OP_SYMBOL]: true;
   $op: string;
   $val: any;
+  and?: (other: OpValue) => OpValue;
 }
 
 function makeOp(op: string, val: any): OpValue {
@@ -402,6 +418,34 @@ class CollectionWrapper {
     return new QueryBuilder(this.col, query);
   }
 
+  field(projection: Record<string, any> | string[]) {
+    return this.where({}).field(projection);
+  }
+
+  limit(n: number) {
+    return this.where({}).limit(n);
+  }
+
+  skip(n: number) {
+    return this.where({}).skip(n);
+  }
+
+  orderBy(field: string, direction: 'asc' | 'desc') {
+    return this.where({}).orderBy(field, direction);
+  }
+
+  count() {
+    return this.where({}).count();
+  }
+
+  get() {
+    return this.where({}).get();
+  }
+
+  createIndex(keys: Parameters<Collection['createIndex']>[0], options?: Parameters<Collection['createIndex']>[1]) {
+    return this.col.createIndex(keys, options);
+  }
+
   doc(id: string) {
     return new DocRef(this.col, id);
   }
@@ -451,7 +495,19 @@ class DatabaseWrapper {
     };
     // 返回一个代理对象，所有方法都是异步的
     return new Proxy({} as CollectionWrapper, {
-      get: (_target, prop) => {
+      get: (_target, prop, receiver) => {
+        if (['field', 'limit', 'skip', 'orderBy'].includes(String(prop))) {
+          return (...args: any[]) => Reflect.get(receiver, 'where')({})[prop](...args);
+        }
+        if (prop === 'createIndex') {
+          return async (
+            keys: Parameters<Collection['createIndex']>[0],
+            options?: Parameters<Collection['createIndex']>[1]
+          ) => {
+            const col = await getCol();
+            return col.createIndex(keys, options);
+          };
+        }
         if (prop === 'where') {
           return (query: Record<string, any>) => {
             const builder = {
@@ -733,13 +789,6 @@ fetchWithShortcuts.patch = (url, data?, config = {}) => cloudFetch({ ...config, 
 // 使用 AsyncLocalStorage 隔离每个请求的 response 对象，避免并发竞态
 const responseStorage = new AsyncLocalStorage<http.ServerResponse>();
 
-export function setCurrentResponse(res: http.ServerResponse) {
-  // 向后兼容：仍然保留全局引用作为最后的 fallback
-  _fallbackRes = res;
-}
-
-let _fallbackRes: http.ServerResponse | null = null;
-
 export function runWithResponse<T>(res: http.ServerResponse, fn: () => T): T {
   return responseStorage.run(res, fn);
 }
@@ -750,7 +799,7 @@ const cloud = {
   storage,
   get res() {
     // 优先从 AsyncLocalStorage 获取当前请求的 response
-    return responseStorage.getStore() || _fallbackRes;
+    return responseStorage.getStore();
   }
 };
 

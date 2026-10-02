@@ -12,7 +12,7 @@
     {
       "path": "pages/splash/index",
       "style": {
-        "navigationBarTitleText": "EXAM-MASTER",
+        "navigationBarTitleText": "问理 Wenli",
         "navigationStyle": "custom",
         "navigationBarBackgroundColor": "#F5F7FA"
       }
@@ -126,6 +126,45 @@
           }
         }
       ]
+    },
+    {
+      "root": "pages/learning",
+      "pages": [
+        {
+          "path": "index",
+          "style": {
+            "navigationStyle": "custom",
+            "navigationBarTitleText": "对话学习",
+            "navigationBarBackgroundColor": "#F5F7FA"
+          }
+        }
+      ]
+    },
+    {
+      "root": "pages/plan",
+      "pages": [
+        {
+          "path": "index",
+          "style": {
+            "navigationBarTitleText": "学习计划",
+            "navigationStyle": "custom",
+            "navigationBarBackgroundColor": "#F5F7FA"
+          }
+        }
+      ]
+    },
+    {
+      "root": "pages/study-detail",
+      "pages": [
+        {
+          "path": "index",
+          "style": {
+            "navigationBarTitleText": "学习统计",
+            "navigationStyle": "custom",
+            "navigationBarBackgroundColor": "#F5F7FA"
+          }
+        }
+      ]
     }
   ],
   "preloadRule": {
@@ -136,13 +175,12 @@
   },
   "globalStyle": {
     "navigationBarTextStyle": "black",
-    "navigationBarTitleText": "EXAM-MASTER",
+    "navigationBarTitleText": "问理 Wenli",
     "navigationBarBackgroundColor": "#F5F7FA",
     "backgroundColor": "#F5F7FA",
     "backgroundTextStyle": "dark",
     "enablePullDownRefresh": false
   },
-
   "uniIdRouter": {},
   "tabBar": {
     "custom": true,

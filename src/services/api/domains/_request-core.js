@@ -240,8 +240,8 @@ const deepClone = typeof structuredClone === 'function' ? structuredClone : (obj
 
 const pendingRequests = new Map();
 
-export function getRequestKey(url, data) {
-  return url + '|' + JSON.stringify(data || {});
+export function getRequestKey(url, data, options = {}) {
+  return _getAuthCacheScope(options) + '|' + url + '|' + JSON.stringify(data || {});
 }
 
 /**
@@ -285,9 +285,23 @@ function _stopCacheCleanup() {
   }
 }
 _startCacheCleanup();
+let _authGeneration = 0;
+let _authIdentity = null;
+function _invalidateAuthRequests() {
+  _authGeneration++;
+  _cache.clear();
+  for (const entry of pendingRequests.values()) {
+    if (entry.authenticated) entry.abort();
+  }
+}
+uni.$on('user:logout', _invalidateAuthRequests);
 // HMR dispose — 防止热重载时 setInterval 累积
 if (import.meta.hot) {
-  import.meta.hot.dispose(() => _stopCacheCleanup());
+  import.meta.hot.dispose(() => {
+    _stopCacheCleanup();
+    _invalidateAuthRequests();
+    uni.$off('user:logout', _invalidateAuthRequests);
+  });
 }
 
 function _cacheKey(path, data, scope = 'public') {
@@ -298,13 +312,18 @@ function _getAuthCacheScope(options = {}) {
   if (options.skipAuth) return 'public';
   try {
     const userId = getUserId();
-    if (userId) return `uid:${userId}`;
     const token = getToken();
-    if (token) return `token:${token.slice(-12)}`;
+    if (!_authIdentity || _authIdentity.userId !== userId || _authIdentity.token !== token) {
+      _authIdentity = { userId, token };
+      _authGeneration++;
+      _cache.clear();
+    }
+    // 密钥只参与内存中的身份比较，不进入请求标识、缓存键或日志。
+    return `uid:${userId || 'anon'}:generation:${_authGeneration}`;
   } catch (_e) {
     // ignore
   }
-  return 'anon';
+  return `anon:generation:${_authGeneration}`;
 }
 
 function _getCache(key) {
@@ -378,9 +397,24 @@ function _checkRateLimit(path) {
  * @throws {ApiResponse} 请求失败时抛出标准化错误对象
  */
 export async function request(path, data = {}, options = {}) {
+  const authScope = _getAuthCacheScope(options);
+  let cancelled = false;
+  let activeTask = null;
+  let rejectActive = null;
+  const assertActive = () => {
+    if (cancelled) throw { message: '请求已取消', retryable: false, errorType: 'cancelled' };
+    if (!options.skipAuth && authScope !== _getAuthCacheScope(options)) {
+      throw { message: '账户已变化，请重新操作', retryable: false, errorType: 'account_changed' };
+    }
+  };
   // 网络连通性预检 — 离线时快速失败
   if (!options.skipNetworkCheck) {
     const isOnline = await _checkNetwork();
+    try {
+      assertActive();
+    } catch (error) {
+      throw normalizeError(error, `请求 ${path}`);
+    }
     if (!isOnline) {
       throw normalizeError(
         { message: '当前无网络连接，请检查网络设置后重试', code: -2, errorType: 'offline' },
@@ -403,7 +437,7 @@ export async function request(path, data = {}, options = {}) {
   // 请求去重 + 缓存（仅对只读 action 生效）
   const action = data && data.action;
   const isCacheable = !options.skipCache && action && CACHEABLE_ACTIONS.has(action);
-  const cacheScope = isCacheable ? _getAuthCacheScope(options) : null;
+  const cacheScope = isCacheable ? authScope : null;
   const cKey = isCacheable ? _cacheKey(path, data, cacheScope) : null;
 
   if (isCacheable) {
@@ -459,15 +493,23 @@ export async function request(path, data = {}, options = {}) {
           logger.warn(`[LafService] 🔄 第 ${attempt} 次重试: ${path}`);
           await delay(attempt - 1);
         }
+        assertActive();
 
         const result = await new Promise((resolve, reject) => {
-          uni.request({
+          rejectActive = reject;
+          activeTask = uni.request({
             url: getActiveBaseUrl() + path,
             method: 'POST',
             data: requestData,
             header: headers,
             timeout: options.timeout || config.api.timeout,
             success: (res) => {
+              try {
+                assertActive();
+              } catch (error) {
+                reject(error);
+                return;
+              }
               if (res.statusCode === 200) {
                 let responseData = res.data;
                 if (typeof responseData === 'string') {
@@ -519,6 +561,12 @@ export async function request(path, data = {}, options = {}) {
               }
             },
             fail: (err) => {
+              try {
+                assertActive();
+              } catch (error) {
+                reject(error);
+                return;
+              }
               markPrimaryFail();
               let errorMsg = '网络请求失败';
               const errMsg = err.errMsg || '';
@@ -533,6 +581,9 @@ export async function request(path, data = {}, options = {}) {
             }
           });
         });
+        activeTask = null;
+        rejectActive = null;
+        assertActive();
 
         const _apiDuration = Date.now() - timestamp;
         perfMonitor.trackApi(path, _apiDuration, 200);
@@ -554,40 +605,40 @@ export async function request(path, data = {}, options = {}) {
   };
 
   // 执行请求，支持 inflight 去重 + 缓存写入
-  const requestKey = getRequestKey(path, data);
-
-  if (isCacheable) {
-    const promise = doRequest()
-      .then((result) => {
-        _setCache(cKey, result, action);
-        _inflight.delete(cKey);
-        pendingRequests.delete(requestKey);
-        return result;
-      })
-      .catch((err) => {
-        _inflight.delete(cKey);
-        pendingRequests.delete(requestKey);
-        throw err;
-      });
-    _inflight.set(cKey, promise);
-    pendingRequests.set(requestKey, { promise, abort: null });
-    return promise;
-  }
+  const requestKey = authScope + '|' + path + '|' + JSON.stringify(data || {});
 
   // 非缓存请求也做去重
   if (pendingRequests.has(requestKey)) {
     return pendingRequests.get(requestKey).promise.then((r) => deepClone(r));
   }
 
+  const entry = {
+    authenticated: !options.skipAuth,
+    abort: () => {
+      cancelled = true;
+      // 即使平台没有取消回调，也立即拒收本次结果。
+      rejectActive?.({ message: '请求已取消', retryable: false, errorType: 'cancelled' });
+      activeTask?.abort?.();
+      if (isCacheable) _inflight.delete(cKey);
+    }
+  };
   const promise = doRequest()
     .then((result) => {
-      pendingRequests.delete(requestKey);
+      assertActive();
+      if (isCacheable) _setCache(cKey, result, action);
       return result;
     })
-    .catch((err) => {
-      pendingRequests.delete(requestKey);
-      throw err;
+    .catch((error) => {
+      throw error.success === false ? error : normalizeError(error, `请求 ${path}`);
+    })
+    .finally(() => {
+      if (pendingRequests.get(requestKey) === entry) pendingRequests.delete(requestKey);
+      if (isCacheable && _inflight.get(cKey) === promise) _inflight.delete(cKey);
+      activeTask = null;
+      rejectActive = null;
     });
-  pendingRequests.set(requestKey, { promise, abort: null });
+  entry.promise = promise;
+  pendingRequests.set(requestKey, entry);
+  if (isCacheable) _inflight.set(cKey, promise);
   return promise;
 }

@@ -1,0 +1,12 @@
+// 显示品牌与兼容标识分开：改名不迁移账户、存储键、应用 ID 或题源路径。
+export const BRAND = Object.freeze({
+  english: 'Wenli',
+  chinese: '问理',
+  name: 'Wenli · 问理',
+  title: '问理 Wenli · 对话学习空间',
+  description: '从一个问题开始，在对话中理解、练习和复习。',
+  mark: '/static/brand/mark.svg',
+  markOnDark: '/static/brand/mark-light.svg',
+  icon: '/static/images/logo.png',
+  themeColor: '#433f35'
+});

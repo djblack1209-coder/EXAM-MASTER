@@ -1,5 +1,5 @@
 name: account-delete
-desc: ""
+desc: ''
 methods:
   - GET
   - POST

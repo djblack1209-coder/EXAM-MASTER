@@ -1,5 +1,5 @@
 name: answer-submit
-desc: ""
+desc: ''
 methods:
   - GET
   - POST

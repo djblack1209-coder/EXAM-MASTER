@@ -22,8 +22,9 @@
  */
 
 import cloud from '@lafjs/cloud';
+import type { FunctionContext } from '../types/cloud-functions.js';
 import fs from 'fs';
-import { requireAuth, isAuthError } from './_shared/auth-middleware';
+import { requireAuth, isAuthError } from './_shared/auth-middleware.js';
 import {
   logger,
   success,
@@ -32,7 +33,7 @@ import {
   tooManyRequests,
   generateRequestId,
   checkRateLimitDistributed
-} from './_shared/api-response';
+} from './_shared/api-response.js';
 
 const db = cloud.database();
 
