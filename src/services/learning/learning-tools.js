@@ -1,4 +1,11 @@
-import { assert, questionKey, knowledgeScope, summarizeLearning, effectiveGrade } from './learning-domain.js';
+import {
+  assert,
+  questionKey,
+  knowledgeScope,
+  summarizeLearning,
+  effectiveGrade,
+  learningTaskContext
+} from './learning-domain.js';
 import { algebraTeaching } from '../../../laf-backend/functions/_shared/learning-algebra.js';
 import { conditionTeaching } from '../../../laf-backend/functions/_shared/learning-condition.js';
 import { conditionProbeTeaching } from '../../../laf-backend/functions/_shared/learning-condition-probe.js';
@@ -82,6 +89,7 @@ export function executeLearningTool(repository, call, context) {
       const state = repository.read();
       result = {
         ...summarizeLearning(state),
+        task: learningTaskContext(state, context.conversationId),
         teaching: observeTeaching(state, { conversationId: context.conversationId })
       };
     } else if (call.name === 'method' && lockedMethod)
@@ -287,6 +295,35 @@ export function nextStrategy(state, attempt) {
 }
 
 export function localTeaching(question, method, level = 1) {
+  if (question?.materialExercise && question.validation?.evidenceId === 'material-objective-v1') {
+    if (['check', 'review'].includes(method))
+      return {
+        method,
+        helped: false,
+        content: '请按所给资料独立作答。字面校验只依据该文本，不证明完整阅读理解或官方等级。'
+      };
+    if (!['explain', 'hint', 'steps', 'prerequisite'].includes(method)) return null;
+    const { from, to } = question.validation.inputs;
+    const kind = question.materialExercise.kind;
+    const hint =
+      kind === 'literal'
+        ? `定位字段“${from.key}”，逐字引用其冒号后的值；不要用自己的推测替换原文。`
+        : kind === 'difference'
+          ? '先区分比较期与基期，再用比较期减基期；结果可为负数。'
+          : '先求现期减基期，再除以基期，最后换成百分数；不要把增量直接当增长率。';
+    const calculation =
+      kind === 'literal'
+        ? `所给文本中“${from.key}”对应“${from.value}”。`
+        : kind === 'difference'
+          ? `所给文本中的增量为 ${to.value} - ${from.value} = ${question.validation.answer}。`
+          : `所给文本中的增长率为 (${to.value} - ${from.value}) / ${from.value} × 100%。须带百分号。`;
+    return {
+      method,
+      helped: true,
+      level: method === 'hint' ? Math.min(3, level) : 3,
+      content: `${hint}${method === 'hint' && level < 3 ? '' : calculation}这里只核验该文本中的字面或数值关系；错答不自动诊断为某种认知缺陷。请再用不同字段独立复测。`
+    };
+  }
   const probe = conditionProbeTeaching(question, method, level);
   if (probe) return probe;
   const condition = conditionTeaching(question, method, level);

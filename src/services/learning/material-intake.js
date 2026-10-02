@@ -112,6 +112,8 @@ export function correctMaterialQuestion(question, patch, reason) {
     source: question.source
   };
   if (patch.prompt.trim() !== question.prompt) delete corrected.rubricRevisionOf;
+  // 人工编辑之后沿普通候选题处理，不能继续沿用原字段练习的可执行合同。
+  delete corrected.materialExercise;
   return corrected;
 }
 export function parserCapability(platform) {

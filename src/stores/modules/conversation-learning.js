@@ -21,7 +21,11 @@ import {
   effectiveGrade,
   assert,
   operationFingerprint,
-  normalizeRubric
+  normalizeRubric,
+  normalizeLearningTask,
+  learningTaskContext,
+  createMaterialObjectiveQuestion,
+  createMaterialObjectiveVariant
 } from '@/services/learning/learning-domain.js';
 import {
   userDirective,
@@ -161,6 +165,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     state.value.questions.find((q) => questionKey(q) === active.value?.activeQuestionKey)
   );
   const summary = computed(() => summarizeLearning(state.value));
+  const taskContext = computed(() => learningTaskContext(state.value, selectedConversationId.value));
   const canDiagnose = computed(() =>
     Boolean(
       activeQuestion.value &&
@@ -257,9 +262,9 @@ export const useConversationLearningStore = defineStore('conversation-learning',
       id
     );
   }
-  function start(goal) {
+  function start(goal, task) {
     error.value = '';
-    const conversation = commit('conversation.start', { goal });
+    const conversation = commit('conversation.start', { goal, ...(task ? { task: normalizeLearningTask(task) } : {}) });
     selectedConversationId.value = conversation.id;
     notice(
       '可以直接提出目标开始。基础、困难、时间和表达偏好可以边学边补充或跳过。网络调用须显式选择模型并同意共享当前上下文；当前连接状态以模型面板为准。'
@@ -544,6 +549,8 @@ export const useConversationLearningStore = defineStore('conversation-learning',
       learningContext: {
         owner,
         goal: active.value.goal,
+        task: active.value.task || normalizeLearningTask(),
+        capabilities: taskContext.value,
         profile: state.value.profile.slice(-6).map(({ field, value, source, scope, evidenceIds }) => ({
           field,
           value: value.slice(0, 400),
@@ -704,7 +711,10 @@ export const useConversationLearningStore = defineStore('conversation-learning',
         'model_reply'
       );
     } else commit('message.add', { conversationId, role: 'assistant', content: safeMessage }, `${id}:reply`);
-    if (data.question) {
+    if (
+      data.question &&
+      (!requestedQuestionKey || ['variant', 'challenge'].includes(request.lockedMethod || activeStrategy.value.method))
+    ) {
       addQuestion({
         ...data.question,
         id: `${id}_q`,
@@ -1256,6 +1266,15 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     assert(material, 'NOT_FOUND', '资料不存在');
     return addQuestion(questionFromMaterial(material, input, learningId('private_q')));
   }
+  function structureObjective(materialId, input) {
+    idleRecords();
+    assert(active.value && !active.value.stopped, 'PRECONDITION', '请先开始或明确继续学习任务');
+    const material = state.value.materials.find((m) => m.id === materialId);
+    return addQuestion(
+      createMaterialObjectiveQuestion(learningId('material_q'), material, input),
+      'independent_correct'
+    );
+  }
   function correctQuestion(q, patch, reason) {
     return addQuestion(correctMaterialQuestion(q, patch, reason));
   }
@@ -1304,6 +1323,8 @@ export const useConversationLearningStore = defineStore('conversation-learning',
       : activeQuestion.value;
     assert(original, 'PRECONDITION', '请先选择原题');
     const variantId = learningId('variant');
+    const materialVariant = createMaterialObjectiveVariant(variantId, original, state.value);
+    if (materialVariant) return addQuestion(materialVariant, 'independent_correct');
     const algebra =
       createConditionVariant(variantId, original) ||
       createPrerequisiteVariant(variantId, original, activeQuestion.value) ||
@@ -1524,6 +1545,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     active,
     activeQuestion,
     summary,
+    taskContext,
     teachingProgress,
     currentPlan,
     selectedConversationId,
@@ -1572,6 +1594,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     deleteMaterial,
     retryOriginalDeletion,
     structureQuestion,
+    structureObjective,
     correctQuestion,
     setRubric,
     correctAssessment,

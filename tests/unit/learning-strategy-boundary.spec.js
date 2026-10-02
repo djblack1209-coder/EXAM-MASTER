@@ -161,7 +161,10 @@ describe('对话停止与持久教法边界', () => {
     store.modelId = 'fixture';
     store.selectedMode = 'cloud';
     store.sharingAllowed = true;
-    api.generate.mockResolvedValue({ success: true, data: { message: '本轮教学夹具', tools: [] } });
+    api.generate.mockResolvedValue({
+      success: true,
+      data: { message: '本轮教学夹具', tools: [], question: { prompt: '模型擅自的新题', options: [] } }
+    });
     await store.send('请继续说明', { id: 'bound-model' });
     expect(api.generate.mock.calls[0][0].learningContext.strategy).toMatchObject({
       method: 'explain',
@@ -169,6 +172,9 @@ describe('对话停止与持久教法边界', () => {
       source: 'self_report'
     });
     expect(store.state.events.find((e) => e.id === 'bound-model:request').data.lockedMethod).toBe('explain');
+    expect(questionKey(store.activeQuestion)).toBe(key);
+    expect(store.state.questions.some((question) => question.prompt === '模型擅自的新题')).toBe(false);
+    expect(store.active.messages.at(-1).content).toBe('本轮教学夹具');
     await store.send('停止');
     const count = store.state.attempts.length;
     await store.send('20');

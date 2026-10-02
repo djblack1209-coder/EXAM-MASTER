@@ -195,6 +195,34 @@
       </view>
       <view v-if="!learning.active" class="goal-panel">
         <text class="section-title">从你想学的开始</text>
+        <view class="button-row" aria-label="学习方向">
+          <button
+            v-for="(label, track) in LEARNING_TRACKS"
+            :key="track"
+            role="button"
+            tabindex="0"
+            size="mini"
+            :data-test="'task-track-' + track"
+            :aria-pressed="taskTrack === track"
+            @tap="taskTrack = track"
+          >
+            {{ label }}
+          </button>
+        </view>
+        <input
+          v-model="taskStage"
+          class="field"
+          maxlength="100"
+          aria-label="年级或学习阶段"
+          placeholder="年级或学习阶段（可跳过）"
+        />
+        <input
+          v-model="taskEdition"
+          class="field"
+          maxlength="100"
+          aria-label="教材或考试版本"
+          placeholder="教材或考试版本（可跳过，不会自动猜测）"
+        />
         <textarea
           v-model="goal"
           class="field"
@@ -224,6 +252,10 @@
         </text>
       </view>
       <view v-if="learning.active" class="session-progress" aria-live="polite">
+        <text data-test="task-status"
+          >{{ learning.taskContext?.label || '通用学习' }} · {{ learning.taskContext?.stage || '阶段未指定' }} ·
+          {{ learning.taskContext?.edition || '版本未指定' }} · {{ taskEvaluationLabel }}</text
+        >
         <text>今日任务 {{ learning.summary.tasks.numerator }}/{{ learning.summary.tasks.denominator }}</text>
         <text>有效作答 {{ learning.summary.validAnswers }} 次</text>
         <text>错题 {{ learning.summary.mistakes.length }} · 待核对 {{ learning.summary.pending }}</text>
@@ -1006,6 +1038,48 @@
               class="source-preview"
             />
             <text class="subtle">{{ selectedSegment?.content.slice(0, 300) }}</text>
+            <view class="form" data-test="material-objective">
+              <text class="subtle"
+                >一行一个“字段：值”的文字资料，可做字面定位、增量或增长率练习。校验只依据所给文本，不代表官方评分或资料真实性。</text
+              >
+              <view class="button-row">
+                <button
+                  v-for="(label, kind) in objectiveKinds"
+                  :key="kind"
+                  role="button"
+                  tabindex="0"
+                  size="mini"
+                  :data-test="'objective-kind-' + kind"
+                  :aria-pressed="objectiveKind === kind"
+                  @tap="objectiveKind = kind"
+                >
+                  {{ label }}
+                </button>
+              </view>
+              <input
+                v-model="objectiveFrom"
+                class="field"
+                aria-label="所查字段或基期字段"
+                placeholder="所查字段 / 基期字段，须与原文一致"
+              />
+              <input
+                v-if="objectiveKind !== 'literal'"
+                v-model="objectiveTo"
+                class="field"
+                aria-label="现期字段"
+                placeholder="现期字段，须与原文一致"
+              />
+              <button
+                role="button"
+                tabindex="0"
+                size="mini"
+                data-test="start-objective"
+                :disabled="learning.busy || !objectiveFrom.trim()"
+                @tap="structureObjective"
+              >
+                开始可校验练习
+              </button>
+            </view>
             <textarea v-model="privatePrompt" class="field" placeholder="确认题干，保留公式和关键条件"></textarea>
             <input v-model="privateAnswer" placeholder="参考答案候选（可空），不会自动升级为核验依据" />
             <input v-model="importedUserAnswer" placeholder="纸面用户作答（可空），与参考答案分开保存" />
@@ -1050,6 +1124,7 @@ import { learningRhythms, currentRhythm } from '@/services/learning/learning-rhy
 import LearningOverview from '@/components/business/learning/learning-overview.vue';
 import NumberLine from '@/components/business/learning/number-line.vue';
 import { structureMaterialCandidate } from '@/services/learning/material-intake.js';
+import { LEARNING_TRACKS } from '@/services/learning/learning-domain.js';
 import { learningClientPlatform, WEIXIN_CONNECTOR_ORIGIN } from '@/services/learning/local-connector.js';
 import { chooseWeixinMaterialFile, readWeixinMaterialFile } from '@/services/learning/material-connector.js';
 import { APP_CONNECTOR_ORIGIN } from '@/services/learning/app-connector.js';
@@ -1157,6 +1232,21 @@ onMounted(() => {
 });
 onUnmounted(() => unbindKeyboard());
 const goal = ref('');
+const taskTrack = ref('general'),
+  taskStage = ref(''),
+  taskEdition = ref('');
+const objectiveKind = ref('literal'),
+  objectiveFrom = ref(''),
+  objectiveTo = ref('');
+const objectiveKinds = { literal: '字面信息定位', difference: '增量计算', growth_percent: '增长率计算' };
+const taskEvaluationLabel = computed(
+  () =>
+    ({
+      independent_rule: '已有独立校验依据',
+      ai_assisted_only: '仅提供辅助反馈',
+      pending_reference: '等待独立校验依据'
+    })[learning.taskContext?.evaluation] || '等待独立校验依据'
+);
 const draft = ref('');
 const feedback = ref('');
 const showConnections = ref(false);
@@ -1348,7 +1438,9 @@ async function run(action) {
   }
 }
 function start() {
-  return run(() => learning.start(goal.value));
+  return run(() =>
+    learning.start(goal.value, { track: taskTrack.value, stage: taskStage.value, edition: taskEdition.value })
+  );
 }
 function newConversation() {
   learning.selectedConversationId = null;
@@ -1678,6 +1770,8 @@ function selectMaterial(material) {
   selectSegment(material.segments[0]);
 }
 function selectSegment(segment) {
+  objectiveFrom.value = '';
+  objectiveTo.value = '';
   selectedSegment.value = segment;
   privateCandidate.value = structureMaterialCandidate(segment);
   privatePrompt.value = privateCandidate.value.prompt;
@@ -1975,6 +2069,23 @@ function structurePrivateQuestion() {
       uncertainties: privateConditionsConfirmed.value ? [] : privateCandidate.value.uncertainties
     });
     feedback.value = '题干、纸面作答与参考候选已分别保存，未核验内容不自动判错。';
+  });
+}
+function structureObjective() {
+  return run(() => {
+    if (!learning.active)
+      learning.start('根据私人资料完成可校验练习', {
+        track: taskTrack.value,
+        stage: taskStage.value,
+        edition: taskEdition.value
+      });
+    learning.structureObjective(selectedMaterial.value.id, {
+      segmentId: selectedSegment.value.id,
+      kind: objectiveKind.value,
+      from: objectiveFrom.value.trim(),
+      to: objectiveTo.value.trim()
+    });
+    feedback.value = '练习已关联资料与提取版本；先独立作答，需要时再请求提示，随后使用不同字段复测。';
   });
 }
 function saveFoundation() {

@@ -26,6 +26,69 @@ beforeEach(() => {
   setActivePinia(createPinia());
 });
 describe('私人资料和实际 Store 纵向闭环', () => {
+  it('资料分析从真实 Store 形成错题、提示修正、不同字段复测、复习与可恢复任务事实', async () => {
+    const store = useConversationLearningStore();
+    try {
+      store.start('理解所给资料的增长率', { track: 'civil', edition: '用户提供的合成资料' });
+      const material = store.importText('2024: 80\n2025: 100\n2026: 150');
+      const materialId = material.materialId || store.state.materials[0].id;
+      store.structureObjective(materialId, {
+        segmentId: store.state.materials[0].segments[0].id,
+        kind: 'growth_percent',
+        from: '2024',
+        to: '2025'
+      });
+      expect(store.taskContext).toMatchObject({ track: 'civil', evaluation: 'independent_rule', rule: 'number' });
+      const first = store.submit('20%', true, 'civil-first');
+      expect(first.grade.outcome).toBe('wrong');
+      expect(store.summary.mistakes).toHaveLength(1);
+      expect(store.summary.tasks.numerator).toBe(0);
+      await store.send('直接讲解');
+      const revision = store.submit('25%', true, 'civil-revision');
+      expect(revision.hints.length).toBeGreaterThan(0);
+      expect(store.summary.tasks.numerator).toBe(0);
+      store.generateVariant();
+      expect(store.activeQuestion.materialExercise).toMatchObject({ from: '2025', to: '2026' });
+      expect(store.submit('50%', true, 'civil-independent')).toMatchObject({
+        kind: 'variant',
+        hints: [],
+        grade: { outcome: 'correct' }
+      });
+      expect(store.summary.tasks).toMatchObject({ numerator: 1, denominator: 2 });
+      expect(store.state.reviews).toHaveLength(2);
+      const exported = store.exportData();
+      expect(exported).toContain('learning-task-v1');
+      expect(exported).toContain('material-objective-v1');
+      const preview = store.previewRestore(exported);
+      store.restoreData(exported, preview);
+      expect(store.state.conversations[0].task.track).toBe('civil');
+      expect(store.activeQuestion.validation.evidenceId).toBe('material-objective-v1');
+    } finally {
+      store.$dispose();
+    }
+  });
+  it('英语字面定位与资料修改后的候选反馈保持边界，不把同意或改题升级为可靠判分', () => {
+    const store = useConversationLearningStore();
+    try {
+      store.start('按所给文本定位信息', { track: 'ielts' });
+      store.importText('Departure city: Bristol\nArrival city: Oxford\nTravel day: Monday');
+      const material = store.state.materials[0];
+      store.structureObjective(material.id, {
+        segmentId: material.segments[0].id,
+        kind: 'literal',
+        from: 'Departure city'
+      });
+      expect(store.submit('Bristol', true, 'literal-first').grade.outcome).toBe('correct');
+      const question = store.activeQuestion;
+      store.correctQuestion(question, { prompt: question.prompt + '\n解释旅行目的' }, '用户改变了题目含义');
+      expect(store.activeQuestion.materialExercise).toBeUndefined();
+      expect(store.taskContext.evaluation).toBe('pending_reference');
+      expect(store.submit('Bristol', true, 'changed-question').grade.status).toBe('pending');
+      expect(store.summary.first.denominator).toBe(1);
+    } finally {
+      store.$dispose();
+    }
+  });
   it('未可靠判分的明确作答继续请求辅助评估，模型判断不能增加可靠首答或错题', async () => {
     uni.setStorageSync('EXAM_USER_ID', 'assist-owner');
     uni.setStorageSync('EXAM_TOKEN', 'isolated-placeholder-token');

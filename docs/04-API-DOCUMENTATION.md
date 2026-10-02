@@ -1,5 +1,17 @@
 # API 与工具合同
 
+## 学习方向与私人资料客观练习（2026-10-01）
+
+`conversation.start` 可选 `task={contract:"learning-task-v1",track,stage,edition}`。track仅接受general/primary/junior/senior/postgraduate/civil/ielts/toefl；stage/edition由用户填写、每项最多100字符，空白为null，不猜课程或考试版本。旧无task事件继续兼容。`learningTaskContext`从当前题目派生来源与independent_rule/ai_assisted_only/pending_reference；课程覆盖和官方评分始终unverified。`progress`工具只读同一上下文。云端/本地模型上下文沿原预算、共享许可与白名单，不发送未知能力字段；无效任务在上游请求与费用预留前拒绝。
+
+`material-objective-v1` 仅用于已保存私人资料的明确 `key: value` 文本字段，支持literal（字面引用）、difference（增量）、growth_percent（增长率）。片段最多2000字符/20个唯一字段，字段键80/值300字符；拒绝未校对疑义、非正文角色和答案/批注字段。数量仅支持九位以内整数，增长率须正基期/非负现期，作答须带%。题干仅包含本题选定字段，不把下一复测字段一并送给模型。
+
+题目绑定materialId/segmentId/页码/位置/提取版本与事件；`question.add`按实际保存原文重建规则，不采纳调用方的validation、改写题干/来源或评分维度。原事件中的validation清空，备份/真实同步均由原资料重建；未知或已删除原文不能恢复可靠判分。人工编辑题干清除旧资料练习合同，回到普通待校验题，避免规则与题目错配。
+
+不同字段/字段对的变式复用原来源，找不到新字段则不生成；原答、帮助后修正、独立变式和复习分别记录，计划要求independent_correct。字面匹配不证明阅读理解/官方等级；合法数学材料沿既有精确数学规则，不因方向名称扩大校验能力。删除资料同时清除关联任务阶段/版本元信息，原隐私与停止/教法边界保留。
+
+当前题目的模型讲解、提示和检查不接受模型擅自新增题目；明确variant/challenge或没有当前题目时才接纳待核对候选。云端在结果结算/缓存前过滤，客户端也保护本地或历史缓存回执；模型候选始终validation=null，不升级判分权威。
+
 `wenli-upload-maintenance-v1` 沿受保护POST `/parse` 增加 `preview-upload-maintenance` 与 `compact-upload-receipts`，健康能力含稳定storageId和当前generation。预览只含登记计数/批次/指纹；明确确认提交原storageId、原generation、previewFingerprint和同operationId。服务端先持久封存原批次，再逐项清理已关闭登记，原件和未确认登记保留，回执 originalsDeleted 必须为0。中断/丢回执沿原动作恢复，不重复换代；旧批次prepare/正文拒绝，非登记查询不得声称已删除原件。并发变化要求重预览，不静默自动维护。
 
 定位导出与恢复使用现有 `wenli-upload-locator-v1`，只含同账户无正文七字段登记；不含令牌、原件、路径或状态权威。用户明确保存/放弃恢复并再次确认后可仅移除本机待办，零远端调用、不宣称远端删除。恢复需同账户、当前生命周期与容量，零自动重传；重新授权原存储后才能核对或恢复原件。
