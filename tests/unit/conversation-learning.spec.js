@@ -6,7 +6,12 @@ import {
   gradeAnswer,
   classifyResponse,
   normalizePrivateSyncOperation,
-  dayKey
+  dayKey,
+  LEARNING_TRACKS,
+  normalizeLearningTask,
+  learningTaskContext,
+  createMaterialObjectiveQuestion,
+  createMaterialObjectiveVariant
 } from '@/services/learning/learning-domain.js';
 import {
   userDirective,
@@ -17,6 +22,7 @@ import {
 import { createLearningRepository, LEARNING_KEY } from '@/services/learning/learning-repository.js';
 import { createLearningWriteLease } from '@/services/learning/learning-write-lease.js';
 import { synchronizeLearning } from '@/services/learning/learning-sync.js';
+import { parsePastedMaterial } from '@/services/learning/material-intake.js';
 const q = (id, answer = '4') => ({
   id,
   version: 1,
@@ -47,6 +53,108 @@ beforeEach(() => {
 });
 
 describe('对话学习的事实、统计与纠错', () => {
+  it('七个方向与通用任务独立保存，旧对话不猜年级、考试版本或官方能力', () => {
+    for (const track of Object.keys(LEARNING_TRACKS)) {
+      const c = apply('conversation.start', {
+        goal: '同一任务',
+        task: { track, stage: '明确填写的阶段', edition: '版本未核对' }
+      });
+      expect(learningTaskContext(state, c.id)).toMatchObject({
+        track,
+        stage: '明确填写的阶段',
+        edition: '版本未核对',
+        evaluation: 'pending_reference',
+        curriculumCoverage: 'unverified',
+        officialScore: 'unverified'
+      });
+    }
+    start();
+    expect(learningTaskContext(state, 'c1')).toMatchObject({ track: 'general', stage: null, edition: null });
+    for (const invalid of [
+      { track: 'invented' },
+      { track: 'primary', officialScore: 9 },
+      { stage: 6 },
+      { contract: 'v9' }
+    ])
+      expect(() => normalizeLearningTask(invalid)).toThrow();
+  });
+  it('资料规则由原文重建，伪造答案、题干、版本与批注区域不能提升校验权限', () => {
+    start();
+    apply(
+      'material.add',
+      { material: parsePastedMaterial('2024: 80\n2025: 100\n2026: 150', 'source') },
+      'source-import'
+    );
+    const material = state.materials[0];
+    const input = { segmentId: 'source_1', kind: 'growth_percent', from: '2024', to: '2025' };
+    const q = createMaterialObjectiveQuestion('growth', material, input);
+    expect(q.prompt).not.toContain('2026: 150');
+    const sync = normalizePrivateSyncOperation({
+      id: 'new-q',
+      type: 'question.add',
+      data: { question: { ...q, validation: { ...q.validation, answer: '999' } } }
+    });
+    expect(sync.data.question.validation).toBeNull();
+    apply(sync.type, sync.data, sync.id);
+    expect(gradeAnswer(state.questions.at(-1), '25%')).toMatchObject({ status: 'reliable', outcome: 'correct' });
+    expect(gradeAnswer(state.questions.at(-1), '25')).toMatchObject({ status: 'pending' });
+    for (const bad of [
+      { ...q, id: 'bad-prompt', prompt: q.prompt + '额外条件' },
+      { ...q, id: 'bad-version', source: { ...q.source, extractionEventId: 'invented' } },
+      { ...q, id: 'bad-rubric', rubric: { id: 'invented' } }
+    ])
+      expect(() => apply('question.add', { question: bad })).toThrow();
+    expect(() =>
+      createMaterialObjectiveQuestion('wrong', parsePastedMaterial('Answer: 25', 'answer-zone'), {
+        segmentId: 'answer-zone_1',
+        kind: 'literal',
+        from: 'Answer'
+      })
+    ).toThrow();
+    expect(() =>
+      createMaterialObjectiveQuestion('duplicate', parsePastedMaterial('year: 80\nyear: 100', 'duplicate'), {
+        segmentId: 'duplicate_1',
+        kind: 'literal',
+        from: 'year'
+      })
+    ).toThrow();
+  });
+  it('字面阅读原答与不同字段复测分开，模糊消息先澄清，来源删除后无法恢复旧题', () => {
+    apply(
+      'conversation.start',
+      { goal: '按资料学习', task: { track: 'toefl', edition: 'PRIVATE_TASK_METADATA' } },
+      'c1'
+    );
+    apply('material.add', {
+      material: parsePastedMaterial('Departure city: Bristol\nArrival city: Oxford\nTravel day: Monday', 'reading')
+    });
+    const question = createMaterialObjectiveQuestion('reading-q', state.materials[0], {
+      segmentId: 'reading_1',
+      kind: 'literal',
+      from: 'Departure city'
+    });
+    focus(question);
+    expect(answer('Bristol', 'ambiguous-reading').clarification).toBe(true);
+    expect(answer('我的答案是London', 'reading-wrong').grade.outcome).toBe('wrong');
+    apply('hint.add', { conversationId: 'c1', content: '定位冒号后的原文' });
+    expect(answer('我的答案是Bristol', 'reading-revision').hints).toHaveLength(1);
+    const variant = createMaterialObjectiveVariant('reading-variant', state.questions[0], state);
+    expect(variant.parentQuestionKey).toBe('reading-q@1');
+    expect(variant.materialExercise.from).toBe('Arrival city');
+    focus(variant);
+    expect(answer('我的答案是Oxford', 'reading-independent')).toMatchObject({
+      kind: 'variant',
+      hints: [],
+      grade: { outcome: 'correct' }
+    });
+    const preview = apply('material.delete', {
+      materialId: 'reading',
+      questionKeys: ['reading-q@1', 'reading-variant@1']
+    });
+    expect(preview.deleted).not.toBe(false);
+    expect(JSON.stringify(state)).not.toContain('PRIVATE_TASK_METADATA');
+    expect(() => apply('question.add', { question: { ...question, id: 'late' } })).toThrow();
+  });
   it('10 任务 6 完成；6 次首答 2 错；聊天、重试、重做不改变口径', () => {
     start();
     const tasks = Array.from({ length: 10 }, (_, i) => ({

@@ -4,6 +4,10 @@ import { readFileSync, writeFileSync, mkdirSync, existsSync, chmodSync } from 'n
 import { dirname, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { isIP } from 'node:net';
+import {
+  normalizeLearningTask,
+  learningCapabilitiesData
+} from '../../laf-backend/functions/_shared/learning-domain.js';
 
 export const CONNECTOR_VERSION = 'local-text-1.0';
 const fail = (code, status = 422) => {
@@ -181,8 +185,16 @@ export function createLocalModelConnector({
       )
         fail('CONTEXT_LIMIT', 413);
       const context = input.learningContext || {};
+      let task;
+      try {
+        task = normalizeLearningTask(context.task);
+      } catch {
+        fail('TASK_INVALID');
+      }
       const safeContext = {
         goal: context.goal,
+        task,
+        capabilities: learningCapabilitiesData(context.capabilities),
         strategy: context.strategy,
         profile: context.profile,
         question: context.question,

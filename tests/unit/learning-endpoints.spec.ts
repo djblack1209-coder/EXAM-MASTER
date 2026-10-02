@@ -272,6 +272,12 @@ it('发送完整 JSON 背景和原答末尾，不向模型发送账户标识或�
       messages: [{ role: 'user', content: '请评价我的作答' }],
       learningContext: {
         owner: 'u1',
+        task: { track: 'toefl', stage: '自述阶段', edition: '未验证版本' },
+        capabilities: {
+          evaluation: 'ai_assisted_only',
+          officialScore: 'verified',
+          apiKey: 'UNTRUSTED_CAPABILITY_SECRET'
+        },
         question: { prompt: 'TEST_ONLY', rubric: { criteria: ['TEST_ONLY_CRITERIA'] } },
         attempt: { answer },
         apiKey: 'UNTRUSTED_UNKNOWN_FIELD'
@@ -285,6 +291,59 @@ it('发送完整 JSON 背景和原答末尾，不向模型发送账户标识或�
   expect(JSON.parse(json).attempt.answer).toBe(answer);
   expect(system).not.toContain('UNTRUSTED_UNKNOWN_FIELD');
   expect(JSON.parse(json).owner).toBeUndefined();
+  expect(JSON.parse(json).task).toMatchObject({ track: 'toefl', stage: '自述阶段', edition: '未验证版本' });
+  expect(JSON.parse(json).capabilities.officialScore).toBe('unverified');
+  expect(system).not.toContain('UNTRUSTED_CAPABILITY_SECRET');
+});
+it('非法学习任务在调用和费用预留前拒绝', async () => {
+  const result = await ai(
+    context({
+      requestId: 'invalid-task',
+      modelId: 'missing-model',
+      shareConsent: true,
+      messages: [{ role: 'user', content: '合成任务' }],
+      learningContext: { task: { track: 'invented' } }
+    })
+  );
+  expect(result.success).toBe(false);
+  expect(callLearningProvider).not.toHaveBeenCalled();
+  expect(mock.rows.size).toBe(0);
+});
+it('当前题讲解拦截擅自新题，明确变式仍返回待核对候选并幂等缓存', async () => {
+  await models(
+    context({
+      action: 'save',
+      shareConsent: true,
+      profile: {
+        id: 'boundary-model',
+        model: 'explicit-test-id',
+        apiKey: 'fixture-boundary-key',
+        endpoint: 'https://provider.example/chat'
+      }
+    })
+  );
+  for (const method of ['explain', 'variant']) {
+    vi.mocked(callLearningProvider).mockResolvedValueOnce({
+      content: JSON.stringify({ message: '实际讲解内容', tools: [], question: { prompt: '模型候选题', options: [] } }),
+      actualModel: 'explicit-test-id',
+      usage: { prompt_tokens: 15, completion_tokens: 12 },
+      durationMs: 1
+    });
+    const body = {
+      requestId: `boundary-${method}`,
+      modelId: 'boundary-model',
+      shareConsent: true,
+      messages: [{ role: 'user', content: method }],
+      learningContext: { question: { questionKey: 'source@1' }, strategy: { method } }
+    };
+    const result = await ai(context(body));
+    expect(result.success).toBe(true);
+    expect(result.data.message).toBe('实际讲解内容');
+    if (method === 'explain') expect(result.data.question).toBeNull();
+    else expect(result.data.question).toMatchObject({ prompt: '模型候选题', validation: null });
+    expect((await ai(context(body))).data.question).toEqual(result.data.question);
+  }
+  expect(callLearningProvider).toHaveBeenCalledTimes(2);
 });
 it('连接测试调用真实预算链，幂等复用且不进入学习事实；列表状态来自调用记录', async () => {
   await models(

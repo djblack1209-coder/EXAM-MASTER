@@ -25,7 +25,11 @@ const input = (id = 'request-1') => ({
   modelId: 'isolated-model',
   shareConsent: true,
   messages: [{ role: 'user', content: '仅隔离 HTTP 验证' }],
-  learningContext: { goal: '合成任务' }
+  learningContext: {
+    goal: '合成任务',
+    task: { track: 'junior', stage: '初中', edition: null },
+    capabilities: { evaluation: 'pending_reference', officialScore: 'verified', secret: 'UNTRUSTED_CAPABILITY_SECRET' }
+  }
 });
 const request = (base, body = input(), headers = {}) =>
   fetch(`${base}/chat`, {
@@ -88,6 +92,10 @@ describe('真实本机 HTTP 连接器与隔离上游', () => {
     expect(calls).toBe(1);
     expect(received[0].headers.authorization).toBeUndefined();
     expect(received[0].payload).toMatchObject({ model: 'isolated-model', stream: false, max_tokens: 512 });
+    const background = received[0].payload.messages[0].content;
+    expect(background).toContain('learning-task-v1');
+    expect(background).toContain('unverified');
+    expect(background).not.toContain('UNTRUSTED_CAPABILITY_SECRET');
     expect((await request(base, { ...input(), messages: [{ role: 'user', content: '变更' }] })).status).toBe(409);
     expect((await request(base, input('another'))).status).toBe(429);
     expect(calls).toBe(1);

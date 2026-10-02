@@ -45,8 +45,8 @@ function safeFilePath(root, requestPath) {
   return relativeToRoot && !relativeToRoot.startsWith('..') ? filePath : path.join(root, 'index.html');
 }
 
-function serveStatic(root) {
-  return new Promise((resolve) => {
+export function serveStatic(root, port = 0) {
+  return new Promise((resolve, reject) => {
     const server = http.createServer((req, res) => {
       const url = new URL(req.url || '/', 'http://127.0.0.1');
       const filePath = safeFilePath(root, url.pathname);
@@ -59,7 +59,8 @@ function serveStatic(root) {
       fs.createReadStream(filePath).pipe(res);
     });
 
-    server.listen(0, '127.0.0.1', () => {
+    server.once('error', reject);
+    server.listen(port, '127.0.0.1', () => {
       resolve({ server, port: server.address().port });
     });
   });

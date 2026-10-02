@@ -4,7 +4,9 @@
 
 全平台构建入口只运行package.json实际声明的目标；缺桌面/手机安装包命令、未知参数或构建失败均非零退出，依赖缺失不自动安装。网页/小程序构建与实际安装/设备验收分开。已有网页检查在浏览器启动失败或关闭报错时仍关闭服务；后端/真实模型检查只停止自己的进程，限时升级终止并核对退出信号。微信检查已补连接后的超时关闭/断开，启动前第三方隐藏进程仍需后续专用设备验收，未据此声称全路径收尾已通过。
 
-真实模型现有验证入口可指定 --provider gemini/zai/zhipu/groq 与 --output tmp/唯一目录；固定隔离Mongo、本机端口、合成任务、单入口最多3次请求，无平台收费/生产权限。私有目录只解析数据节点，不执行文档，不输出密钥。未核实价格继续pending；真实失败单列，不自动重试或切换付费入口。
+真实模型现有验证入口 `node scripts/build/verify-learning-live.mjs` 可指定 --provider gemini/zai/zhipu/groq 与 --output tmp/唯一目录；固定隔离Mongo（LEARNING_TEST_MONGO_URI必须为mongodb://127.0.0.1:27189/exam_learning_isolated）、后端4383、合成任务，无平台收费/生产权限。默认算术验收最多3次请求；--suite含实际网页/四个材料方向/另一型号，最多8次；--tasks仅补验指定postgraduate/civil/ielts/toefl/alternate，每项最多1次，web须单独选择且最多1次，不与--suite混用。alternate限已核对Groq型号，不自动换入口或重试。网页使用最新H5产物/4212/独占浏览器，只连接本次隔离后端；finally关闭自己的浏览器、服务和后端，异常/信号同样收尾。调用方负责finally停止自己启动的隔离Mongo，并删除自己的唯一输出目录/测试凭据/数据库；不读取或删除其他测试目录。
+
+私有目录只解析数据节点，不执行文档，不输出密钥。未核实价格继续pending；真实失败单列，不用模型互评代替独立判分。当前多型号只证明明确选择后的宿主规则/受限工具工作，不证明供应商语义或完整考试能力。
 
 新增 `build:apple:vision` → `node scripts/build/build-apple-vision.mjs --build-only`：真实macOS14以上SDK本机编译到唯一忽略目录，记录源码/二进制SHA；不下载、安装、部署。`test:apple:vision` → `node scripts/build/verify-apple-vision.mjs`：独立本机合成OCR/回环HTTP自检，首次合成模型初始化最多45秒，后续12秒；不读取真实资料/生产配置，不调用模型或收费。报告保留，自己的夹具/二进制清理。编译和自检产生临时产物，程序与SDK不具备时明确失败。
 

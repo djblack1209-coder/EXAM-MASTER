@@ -47,6 +47,90 @@ export class LearningError extends Error {
 export function assert(condition, code, message) {
   if (!condition) throw new LearningError(code, message);
 }
+export const LEARNING_TRACKS = Object.freeze({
+  general: '通用学习',
+  primary: '小学',
+  junior: '初中',
+  senior: '高中',
+  postgraduate: '考研',
+  civil: '考公',
+  ielts: '雅思',
+  toefl: '托福'
+});
+// 方向与版本由用户明确填写；空白保留，不从目标或模型回复猜教材、考纲与官方等级。
+export function normalizeLearningTask(input = {}) {
+  assert(input && typeof input === 'object' && !Array.isArray(input), 'INVALID_INPUT', '学习任务格式不合法');
+  assert(
+    Object.keys(input).every((k) => ['contract', 'track', 'stage', 'edition'].includes(k)),
+    'INVALID_INPUT',
+    '学习任务包含未知字段'
+  );
+  assert(!input.contract || input.contract === 'learning-task-v1', 'SCHEMA_VERSION', '学习任务版本不支持');
+  const track = input.track || 'general';
+  assert(Object.prototype.hasOwnProperty.call(LEARNING_TRACKS, track), 'INVALID_INPUT', '学习方向不支持');
+  const optional = (value) => {
+    assert(
+      value === undefined || value === null || (typeof value === 'string' && value.length <= 100),
+      'INVALID_INPUT',
+      '年级或考试版本过长'
+    );
+    return value?.trim() || null;
+  };
+  return { contract: 'learning-task-v1', track, stage: optional(input.stage), edition: optional(input.edition) };
+}
+export function learningTaskContext(state, conversationId) {
+  const session = state.conversations.find((c) => c.id === conversationId);
+  const task = normalizeLearningTask(session?.task);
+  const question = state.questions.find((q) => questionKey(q) === session?.activeQuestionKey);
+  const pending = !question || question.uncertainties?.some((u) => !u.resolved);
+  const rule = question?.validation;
+  const independent =
+    !pending &&
+    rule?.evidenceId &&
+    ['executable', 'human_reviewed'].includes(rule.authority) &&
+    [
+      'choice',
+      'number',
+      'number_set',
+      'algebra',
+      'condition_relation',
+      'condition_implication',
+      'source_text'
+    ].includes(rule.type);
+  return {
+    ...task,
+    label: LEARNING_TRACKS[task.track],
+    questionKey: question ? questionKey(question) : null,
+    material: question?.source?.materialId ? 'linked' : 'not_linked',
+    evaluation: independent ? 'independent_rule' : question?.rubric ? 'ai_assisted_only' : 'pending_reference',
+    rule: independent ? rule.type : null,
+    source: question?.source || null,
+    curriculumCoverage: 'unverified',
+    officialScore: 'unverified'
+  };
+}
+export function learningCapabilitiesData(input) {
+  if (!input || typeof input !== 'object' || Array.isArray(input)) return undefined;
+  return {
+    evaluation: ['independent_rule', 'ai_assisted_only', 'pending_reference'].includes(input.evaluation)
+      ? input.evaluation
+      : 'pending_reference',
+    rule: [
+      'choice',
+      'number',
+      'number_set',
+      'algebra',
+      'condition_relation',
+      'condition_implication',
+      'source_text'
+    ].includes(input.rule)
+      ? input.rule
+      : null,
+    material: input.material === 'linked' ? 'linked' : 'not_linked',
+    curriculumCoverage: 'unverified',
+    officialScore: 'unverified'
+  };
+}
 export function dayKey(time, timezone) {
   const parts = new Intl.DateTimeFormat('en-CA', {
     timeZone: timezone,
@@ -296,6 +380,7 @@ function redactMaterial(state, data, deletionId, at) {
   for (const c of state.conversations)
     if (conversations.has(c.id)) {
       c.goal = '关联资料已删除的对话';
+      delete c.task;
       c.messages = [];
       c.activeQuestionKey = null;
       c.pendingHints = [];
@@ -418,6 +503,151 @@ export function parseNumberSet(raw) {
   const values = parts.map((part) => parseNumberAnswer(part));
   return values.some((v) => v === null) ? null : [...new Set(values)].sort((a, b) => a - b);
 }
+// 只验所给文本中的字面字段与有界数值关系，不把资料内容或考试评分语义认定为真实。
+export function materialObjectiveFields(segment) {
+  assert(
+    segment && typeof segment.content === 'string' && segment.content.length <= 2000,
+    'CAPABILITY_UNAVAILABLE',
+    '此练习需要不超过2000字的文字片段'
+  );
+  assert(
+    !segment.reviewRequired &&
+      segment.status !== 'failed' &&
+      !segment.uncertainties?.some((u) => !u.resolved) &&
+      (!segment.role || segment.role === 'source_text'),
+    'CAPABILITY_UNAVAILABLE',
+    '资料区域或提取仍有疑义，请先核对原件'
+  );
+  const fields = segment.content
+    .split(/\r?\n/)
+    .map((line) => {
+      const match = /^([^：:\n]{1,80})[：:]\s*(.{1,300})$/u.exec(line.trim());
+      return match ? { key: match[1].trim(), value: match[2].trim() } : null;
+    })
+    .filter(Boolean);
+  assert(
+    fields.length > 0 && fields.length <= 20 && new Set(fields.map((f) => f.key)).size === fields.length,
+    'CAPABILITY_UNAVAILABLE',
+    '需要一行一个“字段：值”，字段不可重复，最多20项'
+  );
+  assert(
+    !fields.some((f) => /答案|解析|批注|作答|\b(?:answer|solution|annotation)\b/iu.test(f.key)),
+    'CAPABILITY_UNAVAILABLE',
+    '答案、作答或批注区域不能自动用作独立校验资料'
+  );
+  return fields;
+}
+export function createMaterialObjectiveQuestion(id, material, input, parent = null) {
+  const segment = material?.segments.find((s) => s.id === input?.segmentId);
+  const fields = materialObjectiveFields(segment);
+  const kind = input.kind;
+  assert(['literal', 'difference', 'growth_percent'].includes(kind), 'INVALID_INPUT', '资料练习类型不支持');
+  const from = fields.find((f) => f.key === input.from);
+  const to = fields.find((f) => f.key === input.to);
+  assert(from && (kind === 'literal' || (to && to.key !== from.key)), 'INVALID_INPUT', '请指定资料中存在的不同字段');
+  const numeric = (field) => {
+    assert(
+      /^[+-]?\d{1,9}$/.test(field.value),
+      'CAPABILITY_UNAVAILABLE',
+      '当前资料分析仅支持九位以内整数，不猜单位或舍入'
+    );
+    return Number(field.value);
+  };
+  let instruction, validation;
+  if (kind === 'literal') {
+    instruction = `字段“${from.key}”的值是什么？直接引用所给文本，不作推断。`;
+    validation = { type: 'source_text', answer: from.value, inputs: { from } };
+  } else {
+    const a = numeric(from),
+      b = numeric(to);
+    if (kind === 'growth_percent') assert(a > 0 && b >= 0, 'CAPABILITY_UNAVAILABLE', '增长率需要正基期和非负现期');
+    instruction =
+      kind === 'difference'
+        ? `“${to.key}”相对“${from.key}”增加多少？允许负数，直接填写数值。`
+        : `“${to.key}”相对“${from.key}”的增长率是多少？填写百分数，保留精确分数也可以，须带%。`;
+    validation = {
+      type: 'number',
+      answer: kind === 'difference' ? String(b - a) : `${(b - a) * 100}/${a}`,
+      inputs: { from, to },
+      ...(kind === 'growth_percent' ? { unit: '%' } : {})
+    };
+  }
+  const exercise = { contract: 'material-objective-v1', kind, from: from.key, to: kind === 'literal' ? null : to.key };
+  const excerpt = (kind === 'literal' ? [from] : [from, to]).map((field) => `${field.key}: ${field.value}`).join('\n');
+  return {
+    id,
+    version: 1,
+    scope: 'private',
+    prompt: `根据所给资料完成练习：\n${excerpt}\n\n${instruction}`,
+    answerType: validation.type,
+    subject: kind === 'literal' ? '阅读' : '数量与资料分析',
+    knowledgePoint: kind === 'literal' ? '字面信息定位' : kind === 'difference' ? '增量计算' : '增长率计算',
+    source: {
+      kind: 'private_material',
+      materialId: material.id,
+      segmentId: segment.id,
+      page: segment.page,
+      location: segment.location,
+      extractionVersion: segment.extractionVersion || material.extractionVersion,
+      extractionEventId: segment.extractionEventId || null
+    },
+    materialExercise: exercise,
+    validation: { ...validation, authority: 'executable', evidenceId: 'material-objective-v1' },
+    uncertainties: [],
+    publishable: false,
+    ...(parent ? { parentQuestionKey: questionKey(parent), variantChange: '使用原资料中的不同字段独立复测' } : {})
+  };
+}
+function normalizeMaterialObjective(question, state) {
+  const exercise = question.materialExercise;
+  assert(
+    exercise?.contract === 'material-objective-v1' &&
+      Object.keys(exercise).every((k) => ['contract', 'kind', 'from', 'to'].includes(k)),
+    'INVALID_INPUT',
+    '资料练习合同不合法'
+  );
+  const material = state.materials.find((m) => m.id === question.source?.materialId);
+  const derived = createMaterialObjectiveQuestion(question.id, material, {
+    ...exercise,
+    segmentId: question.source?.segmentId
+  });
+  assert(
+    question.prompt === derived.prompt &&
+      operationFingerprint(question.source) === operationFingerprint(derived.source),
+    'SOURCE_MISMATCH',
+    '题目与资料原文或提取版本不一致，未采纳模型或客户端答案'
+  );
+  assert(
+    question.scope === 'private' && !question.rubric && !question.options?.length,
+    'INVALID_INPUT',
+    '资料规则不能替代其他题型或发布公共题库'
+  );
+  for (const key of ['validation', 'answerType', 'subject', 'knowledgePoint']) question[key] = derived[key];
+}
+export function createMaterialObjectiveVariant(id, parent, state) {
+  if (!parent?.materialExercise) return null;
+  normalizeMaterialObjective((parent = clone(parent)), state);
+  const material = state.materials.find((m) => m.id === parent.source.materialId);
+  const fields = materialObjectiveFields(material.segments.find((s) => s.id === parent.source.segmentId));
+  const exercise = parent.materialExercise;
+  const next = fields.find(
+    (f) =>
+      ![exercise.from, exercise.to].includes(f.key) &&
+      (exercise.kind === 'literal' ? f.value !== parent.validation.answer : /^[+-]?\d{1,9}$/.test(f.value))
+  );
+  assert(next, 'CAPABILITY_UNAVAILABLE', '资料中没有不同字段可作独立复测；不会重复原题冒充新检验');
+  return createMaterialObjectiveQuestion(
+    id,
+    material,
+    {
+      segmentId: parent.source.segmentId,
+      kind: exercise.kind,
+      from: exercise.kind === 'literal' ? next.key : exercise.to,
+      to: exercise.kind === 'literal' ? null : next.key
+    },
+    parent
+  );
+}
 export function gradeAnswer(question, answer) {
   if (question.uncertainties?.some((item) => !item.resolved)) {
     return { status: 'pending', outcome: null, basis: 'critical_input_uncertain' };
@@ -434,7 +664,13 @@ export function gradeAnswer(question, answer) {
     return { status: 'pending', outcome: null, basis: 'no_independent_reference' };
   }
   let correct;
-  if (rule.type === 'choice') {
+  if (rule.type === 'source_text') {
+    if (question.materialExercise?.contract !== 'material-objective-v1' || question.materialExercise.kind !== 'literal')
+      return { status: 'pending', outcome: null, basis: 'no_independent_reference' };
+    correct =
+      answer.trim() === rule.answer ||
+      answer.trim().replace(/^(?:我的答案是|我的答案[：:]|答案是)\s*/u, '') === rule.answer;
+  } else if (rule.type === 'choice') {
     const match = /^(?:我(?:选|选择)|选择|答案[是为：:]?)?\s*([A-H](?:[、,\s]*[A-H])*)[。.]?$/i.exec(answer.trim());
     if (!match) return { status: 'pending', outcome: null, basis: 'ambiguous_answer' };
     const normalize = (value) => [...new Set(value.toUpperCase().match(/[A-H]/g) || [])].sort().join('');
@@ -518,6 +754,8 @@ export function classifyResponse(raw, question) {
     return parseNumberAnswer(value, question.validation?.unit || '') !== null ? 'answer' : 'clarify';
   if ((question.validation?.type || question.answerType) === 'number_set')
     return parseNumberSet(value) !== null ? 'answer' : 'clarify';
+  if ((question.validation?.type || question.answerType) === 'source_text')
+    return /^(?:我的答案是|我的答案[：:]|答案是)/u.test(value) ? 'answer' : 'clarify';
   if (/^(?:我的答案是|我的答案[：:]|答案是|我认为)/.test(value)) return 'answer';
   return 'clarify';
 }
@@ -591,6 +829,12 @@ export function summarizeLearning(state, time = Date.now(), options = {}) {
 // 每个修改具有稳定 opId。所有修改先在副本中完成，再由 repository 原子保存。
 function reduceLearningOperation(original, operation, owned = false, budget = null) {
   assert(original.version === LEARNING_VERSION, 'SCHEMA_VERSION', '学习数据版本不支持');
+  // 字段题操作不保存可伪造的答案；每次新重放从之前已导入的资料重建，重复操作沿原收据返回。
+  if (operation.type === 'question.add' && operation.data?.question?.materialExercise)
+    operation = {
+      ...operation,
+      data: { ...operation.data, question: { ...operation.data.question, validation: null } }
+    };
   const opId = text(operation.id, 160);
   const previousEvent = original.events.find((event) => event.id === opId);
   if (previousEvent) {
@@ -632,6 +876,7 @@ function reduceLearningOperation(original, operation, owned = false, budget = nu
         pendingHints: [],
         stopped: false
       };
+      if (data.task !== undefined) conversation.task = normalizeLearningTask(data.task);
       state.conversations.push(conversation);
       result = conversation;
       break;
@@ -723,6 +968,7 @@ function reduceLearningOperation(original, operation, owned = false, budget = nu
       normalizeAlgebraQuestion(q);
       normalizeConditionQuestion(q);
       normalizeConditionProbe(q);
+      if (q.materialExercise) normalizeMaterialObjective(q, state);
       assert(
         validPrerequisiteQuestion(q, state),
         'INVALID_INPUT',
