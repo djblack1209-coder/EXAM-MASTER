@@ -19,9 +19,11 @@
 依赖：pip install requests python-dotenv
 """
 
-import os, sys, json, time, re
+import os
+import sys
+import json
+import time
 from pathlib import Path
-from typing import Optional
 
 try:
     import requests
@@ -31,8 +33,10 @@ except ModuleNotFoundError:  # pragma: no cover - exercised by import-only unit 
 try:
     from dotenv import load_dotenv
 except ModuleNotFoundError:  # pragma: no cover - optional until CLI/API calls need .env loading.
+
     def load_dotenv(*_args, **_kwargs):
         return False
+
 
 # ============================================================
 # 配置
@@ -79,11 +83,11 @@ def format_size(size_bytes: int) -> str:
     if size_bytes < 1024:
         return f"{size_bytes}B"
     elif size_bytes < 1024**2:
-        return f"{size_bytes/1024:.1f}KB"
+        return f"{size_bytes / 1024:.1f}KB"
     elif size_bytes < 1024**3:
-        return f"{size_bytes/1024**2:.1f}MB"
+        return f"{size_bytes / 1024**2:.1f}MB"
     else:
-        return f"{size_bytes/1024**3:.2f}GB"
+        return f"{size_bytes / 1024**3:.2f}GB"
 
 
 def format_time(timestamp: int) -> str:
@@ -95,6 +99,7 @@ def format_time(timestamp: int) -> str:
 # API 封装
 # ============================================================
 
+
 class BaiduPan:
     """百度网盘 API 封装"""
 
@@ -103,7 +108,15 @@ class BaiduPan:
         self.session = requests.Session() if requests else None
         self.allow_full_path = allow_full_path
 
-    def _get(self, url: str, params: dict, timeout: int = 15, *, max_retries: int = 6, sleep_fn=time.sleep) -> dict:
+    def _get(
+        self,
+        url: str,
+        params: dict,
+        timeout: int = 15,
+        *,
+        max_retries: int = 6,
+        sleep_fn=time.sleep,
+    ) -> dict:
         """通用 GET 请求"""
         if self.session is None:
             raise RuntimeError("requests is required for Baidu Pan API calls")
@@ -116,16 +129,23 @@ class BaiduPan:
 
             errmsg = data.get("errmsg", f"errno={data.get('errno')}")
             errmsg_lower = str(errmsg).lower()
-            is_frequency_limit = any(marker in errmsg_lower for marker in ("frequency", "freq", "too many"))
+            is_frequency_limit = any(
+                marker in errmsg_lower for marker in ("frequency", "freq", "too many")
+            )
             if not is_frequency_limit or attempt >= max_retries:
                 raise Exception(f"API 错误：{errmsg}")
 
-            sleep_fn(min(60, 5 * (2 ** attempt)))
+            sleep_fn(min(60, 5 * (2**attempt)))
 
         raise Exception("API 错误：request failed after retries")
 
-    def list_files(self, dir_path: str = "", recursive: bool = False,
-                   order: str = "name", limit: int = 1000) -> list:
+    def list_files(
+        self,
+        dir_path: str = "",
+        recursive: bool = False,
+        order: str = "name",
+        limit: int = 1000,
+    ) -> list:
         """
         列出目录下的文件
 
@@ -152,9 +172,14 @@ class BaiduPan:
             )
             return data.get("list", [])
 
-    def list_all_files(self, dir_path: str = "", order: str = "time",
-                       limit: int = 1000, mtime: int = 0,
-                       ctime: int = 0) -> list:
+    def list_all_files(
+        self,
+        dir_path: str = "",
+        order: str = "time",
+        limit: int = 1000,
+        mtime: int = 0,
+        ctime: int = 0,
+    ) -> list:
         """
         递归列出目录下文件，自动处理分页游标。
 
@@ -194,8 +219,7 @@ class BaiduPan:
 
         return results
 
-    def search(self, keyword: str, dir_path: str = "",
-               recursion: bool = True) -> list:
+    def search(self, keyword: str, dir_path: str = "", recursion: bool = True) -> list:
         """
         搜索文件
 
@@ -242,8 +266,7 @@ class BaiduPan:
             raise Exception(f"文件不存在: fs_id={fs_id}")
         return files[0].get("dlink", "")
 
-    def download(self, remote_path: str, local_path: str = None,
-                 overwrite: bool = False) -> str:
+    def download(self, remote_path: str, local_path: str = None, overwrite: bool = False) -> str:
         """
         下载文件
 
@@ -317,7 +340,11 @@ class BaiduPan:
                 downloaded += len(chunk)
                 if file_size > 1024**2:  # 大于1MB才显示进度
                     pct = downloaded / file_size * 100 if file_size else 0
-                    print(f"\r  进度: {format_size(downloaded)} / {format_size(file_size)} ({pct:.0f}%)", end="", flush=True)
+                    print(
+                        f"\r  进度: {format_size(downloaded)} / {format_size(file_size)} ({pct:.0f}%)",
+                        end="",
+                        flush=True,
+                    )
 
         if file_size > 1024**2:
             print()  # 换行
@@ -325,8 +352,9 @@ class BaiduPan:
         print(f"  保存: {local_path}")
         return local_path
 
-    def download_pdfs(self, dir_path: str = "", local_dir: str = None,
-                      overwrite: bool = False) -> list:
+    def download_pdfs(
+        self, dir_path: str = "", local_dir: str = None, overwrite: bool = False
+    ) -> list:
         """
         批量下载目录下所有 PDF 文件
 
@@ -348,7 +376,7 @@ class BaiduPan:
         pdf_files = [f for f in files if f.get("server_filename", "").lower().endswith(".pdf")]
 
         if not pdf_files:
-            print(f"  未找到 PDF 文件")
+            print("  未找到 PDF 文件")
             return []
 
         print(f"  找到 {len(pdf_files)} 个 PDF 文件")
@@ -357,24 +385,24 @@ class BaiduPan:
         for i, f in enumerate(pdf_files):
             fname = f["server_filename"]
             size = f.get("size", 0)
-            print(f"\n[{i+1}/{len(pdf_files)}] {fname} ({format_size(size)})")
+            print(f"\n[{i + 1}/{len(pdf_files)}] {fname} ({format_size(size)})")
 
             # 过滤小文件（<50KB 大概率是广告单页）
             if size < 50 * 1024:
-                print(f"  跳过（<50KB，疑似广告）")
+                print("  跳过（<50KB，疑似广告）")
                 continue
 
             # 过滤广告文件名
             ad_keywords = ["报名", "咨询", "加群", "优惠", "客服", "答疑"]
             if any(kw in fname for kw in ad_keywords):
-                print(f"  跳过（文件名含广告关键词）")
+                print("  跳过（文件名含广告关键词）")
                 continue
 
             try:
                 local_path = os.path.join(local_dir, fname)
                 info = self.file_info([f["fs_id"]])
                 if not info or not info[0].get("dlink"):
-                    print(f"  跳过（无法获取下载链接）")
+                    print("  跳过（无法获取下载链接）")
                     continue
 
                 dlink = info[0]["dlink"]
@@ -383,7 +411,7 @@ class BaiduPan:
                 if os.path.exists(local_path) and not overwrite:
                     existing_size = os.path.getsize(local_path)
                     if existing_size == size:
-                        print(f"  跳过（已存在）")
+                        print("  跳过（已存在）")
                         downloaded.append(local_path)
                         continue
 
@@ -466,7 +494,9 @@ def main():
                 path = arg
                 break
 
-        print(f"\n{'递归列出' if recursive else '列出'}: {normalize_path(path, allow_full_path=allow_full_path)}")
+        print(
+            f"\n{'递归列出' if recursive else '列出'}: {normalize_path(path, allow_full_path=allow_full_path)}"
+        )
         files = pan.list_files(path, recursive=recursive)
         print_file_list(files, show_path=recursive)
 
@@ -518,7 +548,7 @@ def main():
 
         f = target[0]
         info = pan.file_info([f["fs_id"]])[0]
-        print(f"\n文件信息:")
+        print("\n文件信息:")
         print(f"  路径: {info.get('path', path)}")
         print(f"  大小: {format_size(info.get('size', 0))}")
         print(f"  MD5:  {info.get('md5', 'N/A')}")

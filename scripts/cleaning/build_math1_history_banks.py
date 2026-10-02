@@ -51,7 +51,9 @@ def pages_for_ranges(*ranges: tuple[int, int, int]) -> dict[int, list[int]]:
     return pages
 
 
-def sequential_question_crops(page_counts: dict[int, int]) -> dict[int, list[int | str]]:
+def sequential_question_crops(
+    page_counts: dict[int, int],
+) -> dict[int, list[int | str]]:
     pages: dict[int, list[int | str]] = {}
     number = 1
     for page, count in page_counts.items():
@@ -98,7 +100,9 @@ def question_refs(*refs: str) -> list[int | str]:
 
 
 def math1_2005_answers() -> dict[int, str]:
-    answers = generic_answers(2005, {7: "C", 8: "A", 9: "B", 10: "D", 11: "B", 12: "C", 13: "B", 14: "D"})
+    answers = generic_answers(
+        2005, {7: "C", 8: "A", 9: "B", 10: "D", 11: "B", 12: "C", 13: "B", 14: "D"}
+    )
     answers.update(
         {
             1: "y = 1/2 x - 1/4",
@@ -124,7 +128,18 @@ def math1_2005_answers() -> dict[int, str]:
 def math1_2007_answers() -> dict[int, str]:
     answers = generic_answers(
         2007,
-        {1: "B", 2: "D", 3: "C", 4: "D", 5: "D", 6: "B", 7: "A", 8: "B", 9: "C", 10: "A"},
+        {
+            1: "B",
+            2: "D",
+            3: "C",
+            4: "D",
+            5: "D",
+            6: "B",
+            7: "A",
+            8: "B",
+            9: "C",
+            10: "A",
+        },
         card_count=24,
         choice_end=10,
         fill_end=16,
@@ -234,7 +249,18 @@ def math1_2020_answers() -> dict[int, str]:
 def math1_2021_answers() -> dict[int, str]:
     answers = generic_answers(
         2021,
-        {1: "D", 2: "C", 3: "A", 4: "B", 5: "B", 6: "A", 7: "C", 8: "D", 9: "C", 10: "B"},
+        {
+            1: "D",
+            2: "C",
+            3: "A",
+            4: "B",
+            5: "B",
+            6: "A",
+            7: "C",
+            8: "D",
+            9: "C",
+            10: "B",
+        },
         card_count=22,
         choice_end=10,
         fill_end=16,
@@ -288,7 +314,18 @@ def math1_2022_answers() -> dict[int, str]:
 def math1_2023_answers() -> dict[int, str]:
     answers = generic_answers(
         2023,
-        {1: "B", 2: "C", 3: "C", 4: "A", 5: "B", 6: "D", 7: "D", 8: "C", 9: "D", 10: "A"},
+        {
+            1: "B",
+            2: "C",
+            3: "C",
+            4: "A",
+            5: "B",
+            6: "D",
+            7: "D",
+            8: "C",
+            9: "D",
+            10: "A",
+        },
         card_count=22,
         choice_end=10,
         fill_end=16,
@@ -315,7 +352,18 @@ def math1_2023_answers() -> dict[int, str]:
 def math1_2024_answers() -> dict[int, str]:
     answers = generic_answers(
         2024,
-        {1: "C", 2: "A", 3: "A", 4: "B", 5: "B", 6: "D", 7: "A", 8: "B", 9: "D", 10: "D"},
+        {
+            1: "C",
+            2: "A",
+            3: "A",
+            4: "B",
+            5: "B",
+            6: "D",
+            7: "A",
+            8: "B",
+            9: "D",
+            10: "D",
+        },
         card_count=22,
         choice_end=10,
         fill_end=16,
@@ -485,7 +533,9 @@ SPECS: dict[int, SourceSpec] = {
             22: [16, 17, 18],
             23: [18],
         },
-        answers=generic_answers(2006, {7: "A", 8: "C", 9: "D", 10: "D", 11: "A", 12: "B", 13: "C", 14: "A"}),
+        answers=generic_answers(
+            2006, {7: "A", 8: "C", 9: "D", 10: "D", 11: "A", 12: "B", 13: "C", 14: "A"}
+        ),
         question_crop_boxes={
             "q01": (1, 135, 180),
             "q02": (1, 760, 82),
@@ -668,46 +718,68 @@ SPECS: dict[int, SourceSpec] = {
             22: [18],
             23: [19],
         },
-        answers=generic_answers(2009, {1: "A", 2: "A", 3: "D", 4: "C", 5: "B", 6: "B", 7: "C", 8: "C"}),
+        answers=generic_answers(
+            2009, {1: "A", 2: "A", 3: "D", 4: "C", 5: "B", 6: "B", 7: "C", 8: "C"}
+        ),
     ),
     2010: SourceSpec(
         year=2010,
         file_name="src_b3e24571a6135f06d1988818-2010数一标准答案及解析.pdf",
         source_id="src_b3e24571a6135f06d1988818",
-        question_pages=sequential_question_crops({1: 3, 2: 3, 3: 3, 4: 2, 5: 2, 6: 1, 7: 2, 8: 2, 9: 2, 10: 1, 11: 1, 12: 1}),
-        answer_pages=per_page_answer_pages({1: 3, 2: 3, 3: 3, 4: 2, 5: 2, 6: 1, 7: 2, 8: 2, 9: 2, 10: 1, 11: 1, 12: 1}),
+        question_pages=sequential_question_crops(
+            {1: 3, 2: 3, 3: 3, 4: 2, 5: 2, 6: 1, 7: 2, 8: 2, 9: 2, 10: 1, 11: 1, 12: 1}
+        ),
+        answer_pages=per_page_answer_pages(
+            {1: 3, 2: 3, 3: 3, 4: 2, 5: 2, 6: 1, 7: 2, 8: 2, 9: 2, 10: 1, 11: 1, 12: 1}
+        ),
         answers=generic_answers(2010),
     ),
     2011: SourceSpec(
         year=2011,
         file_name="src_478718437ac46f25dd795a67-2011数一考研真题及答案.pdf",
         source_id="src_478718437ac46f25dd795a67",
-        question_pages=sequential_question_crops({1: 3, 2: 3, 3: 3, 4: 2, 5: 3, 6: 1, 7: 2, 8: 2, 9: 1, 10: 1, 11: 1, 12: 1}),
-        answer_pages=per_page_answer_pages({1: 3, 2: 3, 3: 3, 4: 2, 5: 3, 6: 1, 7: 2, 8: 2, 9: 1, 10: 1, 11: 1, 12: 1}),
+        question_pages=sequential_question_crops(
+            {1: 3, 2: 3, 3: 3, 4: 2, 5: 3, 6: 1, 7: 2, 8: 2, 9: 1, 10: 1, 11: 1, 12: 1}
+        ),
+        answer_pages=per_page_answer_pages(
+            {1: 3, 2: 3, 3: 3, 4: 2, 5: 3, 6: 1, 7: 2, 8: 2, 9: 1, 10: 1, 11: 1, 12: 1}
+        ),
         answers=generic_answers(2011),
     ),
     2012: SourceSpec(
         year=2012,
         file_name="src_a445976117f3531be88a1ce5-2012数一真题及参考答案.pdf",
         source_id="src_a445976117f3531be88a1ce5",
-        question_pages=sequential_question_crops({1: 2, 2: 2, 3: 3, 4: 2, 5: 2, 6: 2, 7: 2, 8: 1, 9: 2, 10: 2, 11: 3}),
-        answer_pages=per_page_answer_pages({1: 2, 2: 2, 3: 3, 4: 2, 5: 2, 6: 2, 7: 2, 8: 1, 9: 2, 10: 2, 11: 3}),
+        question_pages=sequential_question_crops(
+            {1: 2, 2: 2, 3: 3, 4: 2, 5: 2, 6: 2, 7: 2, 8: 1, 9: 2, 10: 2, 11: 3}
+        ),
+        answer_pages=per_page_answer_pages(
+            {1: 2, 2: 2, 3: 3, 4: 2, 5: 2, 6: 2, 7: 2, 8: 1, 9: 2, 10: 2, 11: 3}
+        ),
         answers=generic_answers(2012),
     ),
     2013: SourceSpec(
         year=2013,
         file_name="src_2f89f14b41d6bdb38f193cbc-2013数一考研真题及答案.pdf",
         source_id="src_2f89f14b41d6bdb38f193cbc",
-        question_pages=sequential_question_crops({1: 2, 2: 2, 3: 2, 4: 2, 5: 2, 6: 2, 7: 2, 8: 1, 9: 2, 10: 2, 11: 2, 12: 2}),
-        answer_pages=per_page_answer_pages({1: 2, 2: 2, 3: 2, 4: 2, 5: 2, 6: 2, 7: 2, 8: 1, 9: 2, 10: 2, 11: 2, 12: 2}),
+        question_pages=sequential_question_crops(
+            {1: 2, 2: 2, 3: 2, 4: 2, 5: 2, 6: 2, 7: 2, 8: 1, 9: 2, 10: 2, 11: 2, 12: 2}
+        ),
+        answer_pages=per_page_answer_pages(
+            {1: 2, 2: 2, 3: 2, 4: 2, 5: 2, 6: 2, 7: 2, 8: 1, 9: 2, 10: 2, 11: 2, 12: 2}
+        ),
         answers=generic_answers(2013),
     ),
     2014: SourceSpec(
         year=2014,
         file_name="src_b80ef3ade03a332b3d41ae2a-2014数一考研真题及答案.pdf",
         source_id="src_b80ef3ade03a332b3d41ae2a",
-        question_pages=sequential_question_crops({1: 3, 2: 2, 3: 3, 4: 1, 5: 3, 6: 2, 7: 2, 8: 1, 9: 2, 10: 1, 11: 2, 12: 1}),
-        answer_pages=per_page_answer_pages({1: 3, 2: 2, 3: 3, 4: 1, 5: 3, 6: 2, 7: 2, 8: 1, 9: 2, 10: 1, 11: 2, 12: 1}),
+        question_pages=sequential_question_crops(
+            {1: 3, 2: 2, 3: 3, 4: 1, 5: 3, 6: 2, 7: 2, 8: 1, 9: 2, 10: 1, 11: 2, 12: 1}
+        ),
+        answer_pages=per_page_answer_pages(
+            {1: 3, 2: 2, 3: 3, 4: 1, 5: 3, 6: 2, 7: 2, 8: 1, 9: 2, 10: 1, 11: 2, 12: 1}
+        ),
         answers=generic_answers(2014, {1: "D", 2: "A", 3: "B", 4: "B", 5: "D"}),
     ),
     2015: SourceSpec(
@@ -730,9 +802,13 @@ SPECS: dict[int, SourceSpec] = {
         year=2017,
         file_name="src_1816f558544a3040d6e189dc-2017数一考研真题及答案.pdf",
         source_id="src_1816f558544a3040d6e189dc",
-        question_pages=sequential_question_crops({1: 3, 2: 3, 3: 4, 4: 3, 5: 3, 6: 3, 7: 2, 8: 1, 9: 1}),
+        question_pages=sequential_question_crops(
+            {1: 3, 2: 3, 3: 4, 4: 3, 5: 3, 6: 3, 7: 2, 8: 1, 9: 1}
+        ),
         answer_pages=per_page_answer_pages({1: 3, 2: 3, 3: 4, 4: 3, 5: 3, 6: 3, 7: 2, 8: 1, 9: 1}),
-        answers=generic_answers(2017, {1: "A", 2: "C", 3: "D", 4: "C", 5: "A", 6: "A", 7: "C", 8: "D"}),
+        answers=generic_answers(
+            2017, {1: "A", 2: "C", 3: "D", 4: "C", 5: "A", 6: "A", 7: "C", 8: "D"}
+        ),
     ),
     2018: SourceSpec(
         year=2018,
@@ -1360,7 +1436,18 @@ def render_pdf_assets(
     render_dir.mkdir(parents=True, exist_ok=True)
 
     output_prefix = render_dir / prefix
-    run(["pdftoppm", "-r", "130", "-jpeg", "-jpegopt", "quality=70", str(pdf), str(output_prefix)])
+    run(
+        [
+            "pdftoppm",
+            "-r",
+            "130",
+            "-jpeg",
+            "-jpegopt",
+            "quality=70",
+            str(pdf),
+            str(output_prefix),
+        ]
+    )
     for rendered in sorted(render_dir.glob(f"{prefix}-*.jpg"), key=rendered_page_number):
         page = rendered_page_number(rendered)
         if page_count is not None and page > page_count:
@@ -1397,7 +1484,16 @@ def image_height(image_path: Path) -> int:
 
 def ocr_lines(page_image: Path) -> list[dict[str, Any]]:
     output = subprocess.check_output(
-        ["tesseract", str(page_image), "stdout", "-l", "chi_sim+eng", "--psm", "6", "tsv"],
+        [
+            "tesseract",
+            str(page_image),
+            "stdout",
+            "-l",
+            "chi_sim+eng",
+            "--psm",
+            "6",
+            "tsv",
+        ],
         cwd=PROJECT_ROOT,
         stderr=subprocess.DEVNULL,
         text=True,
@@ -1495,7 +1591,9 @@ def detect_question_crop_boxes(page_image: Path, numbers: list[int]) -> dict[int
     for index, number in enumerate(sorted_numbers):
         detected_start = starts[number]
         start = max(0, detected_start - (90 if index == 0 else 24))
-        next_start = starts.get(sorted_numbers[index + 1]) if index + 1 < len(sorted_numbers) else None
+        next_start = (
+            starts.get(sorted_numbers[index + 1]) if index + 1 < len(sorted_numbers) else None
+        )
         answer_candidates = [
             int(line["top"])
             for line in lines
@@ -1613,7 +1711,9 @@ def image_ref(spec: SourceSpec, kind: str, page: int | str, *, caption: str) -> 
         file_name = f"{kind}-{page:02d}.jpg"
     elif str(page).startswith("q"):
         suffix = str(page)[1:]
-        file_name = f"question-{int(suffix):02d}.jpg" if suffix.isdigit() else f"question-{suffix}.jpg"
+        file_name = (
+            f"question-{int(suffix):02d}.jpg" if suffix.isdigit() else f"question-{suffix}.jpg"
+        )
     else:
         file_name = f"{kind}-{page}.jpg"
     return {
@@ -1684,9 +1784,13 @@ def question_anchor(spec: SourceSpec, number: int) -> str:
 def explanation_for(spec: SourceSpec, number: int) -> str:
     section = section_for(spec, number)
     if section == "选择题":
-        return f"答案来自本地百度网盘 {spec.year} 数学一真题答案解析 PDF；选择题完整解析见答案原页图。"
+        return (
+            f"答案来自本地百度网盘 {spec.year} 数学一真题答案解析 PDF；选择题完整解析见答案原页图。"
+        )
     if section == "填空题":
-        return f"答案来自本地百度网盘 {spec.year} 数学一真题答案解析 PDF；填空题完整解析见答案原页图。"
+        return (
+            f"答案来自本地百度网盘 {spec.year} 数学一真题答案解析 PDF；填空题完整解析见答案原页图。"
+        )
     return f"答案来自本地百度网盘 {spec.year} 数学一真题答案解析 PDF；完整演算、证明或推导过程见答案原页图。"
 
 
@@ -1720,7 +1824,8 @@ def build_card(spec: SourceSpec, number: int) -> dict[str, Any]:
         for ref in spec.question_pages[number]
     ]
     answer_images = [
-        image_ref(spec, "answer-page", page, caption=f"答案解析 p.{page}") for page in spec.answer_pages[number]
+        image_ref(spec, "answer-page", page, caption=f"答案解析 p.{page}")
+        for page in spec.answer_pages[number]
     ]
 
     return {
@@ -1765,11 +1870,19 @@ def validate_cards(spec: SourceSpec, cards: list[dict[str, Any]], *, asset_dir: 
     for expected_number, card in enumerate(cards, start=1):
         if card.get("number") != expected_number:
             issues.append(f"card {expected_number}: number={card.get('number')}")
-        for field in ["question", "answer", "sourceEvidenceId", "questionTextHash", "answerTextHash"]:
+        for field in [
+            "question",
+            "answer",
+            "sourceEvidenceId",
+            "questionTextHash",
+            "answerTextHash",
+        ]:
             if not str(card.get(field) or "").strip():
                 issues.append(f"card {expected_number}: missing {field}")
         if card.get("answerEvidenceStatus") != "matched":
-            issues.append(f"card {expected_number}: answerEvidenceStatus={card.get('answerEvidenceStatus')}")
+            issues.append(
+                f"card {expected_number}: answerEvidenceStatus={card.get('answerEvidenceStatus')}"
+            )
         if not card.get("questionImages"):
             issues.append(f"card {expected_number}: missing question images")
         if not card.get("answerImages"):

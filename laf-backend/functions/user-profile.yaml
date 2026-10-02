@@ -1,5 +1,5 @@
 name: user-profile
-desc: ""
+desc: ''
 methods:
   - GET
   - POST

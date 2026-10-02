@@ -35,7 +35,7 @@ describe('E2E 页面按钮交互 & 数据展示准确性', () => {
   // ==================== 首页 Dashboard ====================
 
   describe('首页 Dashboard', () => {
-    it('StatsGrid 数据展示 → 4项统计准确', () => {
+    it('首页 Store 派生统计 → 4项数据准确', () => {
       studyStore.studyProgress = {
         totalQuestions: 256,
         correctCount: 198,
@@ -119,7 +119,7 @@ describe('E2E 页面按钮交互 & 数据展示准确性', () => {
       expect(url).toContain('import-data');
     });
 
-    it('LearningStatsCard 数据展示准确', () => {
+    it('练习 Store 统计数据准确', () => {
       const todayQuestions = 15;
       const todayGoal = 30;
       const currentStreak = 7;

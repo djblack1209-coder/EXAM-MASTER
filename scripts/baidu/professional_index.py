@@ -18,7 +18,9 @@ DEFAULT_DATA_OUTPUT = PROJECT_ROOT / "data" / "professional-source-index.json"
 DEFAULT_MINI_OUTPUT = PROJECT_ROOT / "src" / "config" / "professional-source-index.json"
 DEFAULT_MINI_LIMIT = 600
 
-SCHOOL_PATTERN = re.compile(r"(?P<school>[\u4e00-\u9fa5A-Za-z0-9（）()·]{2,40}?(?:大学|学院|研究院|学校))")
+SCHOOL_PATTERN = re.compile(
+    r"(?P<school>[\u4e00-\u9fa5A-Za-z0-9（）()·]{2,40}?(?:大学|学院|研究院|学校))"
+)
 COURSE_CODE_PATTERN = re.compile(r"(?<!\d)(?P<code>[1-9]\d{2,3})(?!\d)")
 ANSWER_HINT_RE = re.compile(r"答案|解析|详解|详析|参考答案", re.I)
 INSTITUTION_NAME_RE = re.compile(
@@ -160,7 +162,9 @@ def duplicate_key(item: dict) -> str:
         ]
     )
     normalized = re.sub(r"[\s_、，,。.\-—【】\[\]()（）《》<>]+", "", text.lower())
-    normalized = re.sub(r"(真题|试题|试卷|答案|解析|详解|汇编|历年|考研|硕士|研究生)+", "", normalized)
+    normalized = re.sub(
+        r"(真题|试题|试卷|答案|解析|详解|汇编|历年|考研|硕士|研究生)+", "", normalized
+    )
     return f"text:{stable_hash(normalized)[:20]}"
 
 
@@ -207,8 +211,12 @@ def compute_priority(item: dict) -> tuple[int, str, str]:
 
 
 def normalize_item(item: dict) -> dict:
-    remote_path = safe_text(item.get("remotePath") or item.get("sourceUrl") or item.get("provenanceUrl"))
-    display_name = safe_text(item.get("safeDisplayName") or item.get("fileName") or Path(remote_path).name)
+    remote_path = safe_text(
+        item.get("remotePath") or item.get("sourceUrl") or item.get("provenanceUrl")
+    )
+    display_name = safe_text(
+        item.get("safeDisplayName") or item.get("fileName") or Path(remote_path).name
+    )
     source_id = safe_text(item.get("sourceId") or item.get("id") or item.get("canonicalKey"))
     text_for_infer = f"{remote_path} {display_name}"
     risk_flags = item.get("riskFlags") if isinstance(item.get("riskFlags"), list) else []
@@ -236,7 +244,9 @@ def normalize_item(item: dict) -> dict:
             or "copyright_review_required" in risk_flags
             or safe_text(item.get("sourceType")) == "institution_candidate"
         ),
-        "publishBlocked": bool(legal_review.get("publishBlocked") or "copyright_review_required" in risk_flags),
+        "publishBlocked": bool(
+            legal_review.get("publishBlocked") or "copyright_review_required" in risk_flags
+        ),
     }
     priority_score, priority_tier, priority_label = compute_priority(normalized)
     normalized.update(
@@ -245,7 +255,9 @@ def normalize_item(item: dict) -> dict:
             "priorityTier": priority_tier,
             "priorityLabel": priority_label,
             "duplicateKey": duplicate_key(normalized),
-            "cleaningStatus": "review_required" if normalized["copyrightReviewRequired"] else "triage_ready",
+            "cleaningStatus": "review_required"
+            if normalized["copyrightReviewRequired"]
+            else "triage_ready",
         }
     )
     return normalized
@@ -331,11 +343,15 @@ def build_index(manifest_path: Path, mini_limit: int) -> tuple[dict, dict]:
         "summary": {
             "totalSources": len(items),
             "eligibleIndexSources": len(eligible_items),
-            "officialPaperSources": sum(1 for item in eligible_items if item["sourceType"] == "official_paper"),
+            "officialPaperSources": sum(
+                1 for item in eligible_items if item["sourceType"] == "official_paper"
+            ),
             "institutionCandidateSources": sum(
                 1 for item in eligible_items if item["sourceType"] == "institution_candidate"
             ),
-            "reviewRequiredSources": sum(1 for item in eligible_items if item["copyrightReviewRequired"]),
+            "reviewRequiredSources": sum(
+                1 for item in eligible_items if item["copyrightReviewRequired"]
+            ),
             "duplicateGroupCount": duplicate_group_count,
             "directionCount": len(direction_counts),
             "schoolCount": len(school_counts),
@@ -348,9 +364,14 @@ def build_index(manifest_path: Path, mini_limit: int) -> tuple[dict, dict]:
             {
                 "name": direction,
                 "count": count,
-                "priorityCounts": dict(Counter(i["priorityTier"] for i in grouped[direction]).most_common()),
+                "priorityCounts": dict(
+                    Counter(i["priorityTier"] for i in grouped[direction]).most_common()
+                ),
                 "sampleSchools": [
-                    school for school, _count in Counter(i["school"] for i in grouped[direction]).most_common(8)
+                    school
+                    for school, _count in Counter(
+                        i["school"] for i in grouped[direction]
+                    ).most_common(8)
                 ],
             }
             for direction, count in direction_counts.most_common()

@@ -7,7 +7,7 @@ import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
 import storageService from '@/services/storageService.js';
 import { logger } from '@/utils/logger.js';
-import { applyTheme } from '@/design/theme-engine.js';
+import { applyTheme } from '@/design/theme-runtime.js';
 
 export const useThemeStore = defineStore('theme', () => {
   // 主题类型：'wise' | 'bitget'

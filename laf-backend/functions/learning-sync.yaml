@@ -1,0 +1,5 @@
+name: learning-sync
+desc: JWT用户隔离的学习操作同步，服务端重算
+methods:
+  - POST
+tags: []

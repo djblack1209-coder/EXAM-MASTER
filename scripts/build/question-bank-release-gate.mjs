@@ -268,13 +268,9 @@ function sourceHash(item) {
 function sourceQualityOverrideForItem(item) {
   const sourceId = String(item?.sourceId || item?.id || '').trim();
   const location = sourceLocation(item) || '';
-  const hashes = [
-    item?.contentHash,
-    item?.sha256,
-    item?.fileSha256,
-    item?.sourceHash,
-    item?.hash
-  ].map((value) => String(value || '').trim());
+  const hashes = [item?.contentHash, item?.sha256, item?.fileSha256, item?.sourceHash, item?.hash].map((value) =>
+    String(value || '').trim()
+  );
 
   return (
     KNOWN_SOURCE_QUALITY_OVERRIDES.find(
@@ -400,10 +396,7 @@ function manifestSourceBlockReasons(item) {
 
   const qualityOverride = sourceQualityOverrideForItem(item);
   const riskFlags = [
-    ...new Set([
-      ...(Array.isArray(item?.riskFlags) ? item.riskFlags : []),
-      ...(qualityOverride?.riskFlags || [])
-    ])
+    ...new Set([...(Array.isArray(item?.riskFlags) ? item.riskFlags : []), ...(qualityOverride?.riskFlags || [])])
   ];
   const blockedFlags = riskFlags.filter((flag) => BLOCKING_SOURCE_RISK_FLAGS.has(flag)).sort();
   if (blockedFlags.length) reasons.push(`riskFlags=${blockedFlags.join(',')}`);
@@ -448,10 +441,7 @@ function sourceCandidateSample(item, analysis) {
     autoPairEligible: analysis.autoPairEligible === true,
     answerEvidenceStatus: item.answerEvidenceStatus || '',
     riskFlags: [
-      ...new Set([
-        ...(Array.isArray(item.riskFlags) ? item.riskFlags : []),
-        ...(qualityOverride?.riskFlags || [])
-      ])
+      ...new Set([...(Array.isArray(item.riskFlags) ? item.riskFlags : []), ...(qualityOverride?.riskFlags || [])])
     ].sort(),
     publishBlocked: item.legalReview?.publishBlocked === true || analysis.sourceQualityBlocked === true,
     blockReasons: analysis.blockReasons || [],
@@ -561,20 +551,6 @@ function buildCandidateDiagnostics(items, tracks, requiredYearsByTrack) {
   }
 
   return diagnostics;
-}
-
-function emptyCandidateDiagnostics() {
-  return {
-    candidateCount: 0,
-    officialPaperCandidateCount: 0,
-    publishBlockedCandidateCount: 0,
-    autoPairEligibleCandidateCount: 0,
-    paperCandidateCount: 0,
-    answerCandidateCount: 0,
-    combinedCandidateCount: 0,
-    blockReasons: {},
-    sampleCandidates: []
-  };
 }
 
 function slotHasAutoPairedOfficialSource(items, track, year) {

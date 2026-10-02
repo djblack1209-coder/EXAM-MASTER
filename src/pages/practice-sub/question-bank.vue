@@ -12,7 +12,7 @@
 
     <scroll-view class="scroll-body" scroll-y :style="{ paddingTop: statusBarHeight + 44 + 'px' }">
       <view class="paper-hero">
-        <text class="hero-kicker">Exam Master</text>
+        <text class="hero-kicker">{{ BRAND.name }}</text>
         <text class="hero-title">按年份刷真题</text>
         <text class="hero-desc">选择科目和年份后进入整卷训练。英语卷先读完整文章，再做对应题目。</text>
         <view class="hero-metrics">
@@ -251,6 +251,7 @@
 </template>
 
 <script setup>
+import { BRAND } from '@/config/brand.js';
 import { computed, ref, onMounted, onBeforeUnmount } from 'vue';
 import { safeNavigateBack, safeNavigateTo } from '@/utils/safe-navigate';
 import { getPracticeNavigationTree } from '@/config/bank-registry.js';

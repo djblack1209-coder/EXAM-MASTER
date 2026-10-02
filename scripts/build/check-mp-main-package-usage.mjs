@@ -4,11 +4,10 @@ import { fileURLToPath } from 'node:url';
 
 const projectRoot = process.cwd();
 const buildRoot = path.join(projectRoot, 'dist', 'build', 'mp-weixin');
-const appJsonPath = path.join(buildRoot, 'app.json');
+
 const mediaExtensions = new Set(['.png', '.jpg', '.jpeg', '.gif', '.webp', '.svg', '.mp3', '.wav', '.aac', '.m4a']);
-const sourceExtensions = new Set(['.js', '.json', '.wxml', '.wxss', '.wxs']);
 const wechatMediaBudgetBytes = 200 * 1024;
-const wechatMainPackageSourceBudgetBytes = 4 * 1024 * 1024;
+const wechatMainPackageSourceBudgetBytes = 2 * 1024 * 1024;
 
 function getMainPageFiles(rootDir = buildRoot) {
   const currentAppJsonPath = path.join(rootDir, 'app.json');
@@ -82,17 +81,6 @@ function isInsideSubPackage(relativePath, subPackageRoots) {
   return subPackageRoots.some((root) => relativePath === root || relativePath.startsWith(`${root}/`));
 }
 
-function getMainPackageSourceFiles(rootDir = buildRoot) {
-  const subPackageRoots = getSubPackageRoots(rootDir);
-  return walkFiles(rootDir)
-    .map((filePath) => ({
-      filePath,
-      relativePath: path.relative(rootDir, filePath).split(path.sep).join('/')
-    }))
-    .filter((item) => sourceExtensions.has(path.extname(item.relativePath).toLowerCase()))
-    .filter((item) => !isInsideSubPackage(item.relativePath, subPackageRoots));
-}
-
 function assertWechatMediaBudget() {
   const mediaFiles = walkFiles(buildRoot).filter((filePath) =>
     mediaExtensions.has(path.extname(filePath).toLowerCase())
@@ -121,7 +109,11 @@ function assertWechatMediaBudget() {
 }
 
 export function assertMainPackageSourceBudget(rootDir = buildRoot) {
-  const mainFiles = getMainPackageSourceFiles(rootDir);
+  // 项目约定的2MB覆盖主包全部文件，不能只计算源码后遗漏媒体。
+  const roots = getSubPackageRoots(rootDir);
+  const mainFiles = walkFiles(rootDir)
+    .map((filePath) => ({ filePath, relativePath: path.relative(rootDir, filePath).split(path.sep).join('/') }))
+    .filter((item) => !isInsideSubPackage(item.relativePath, roots));
   const totalBytes = mainFiles.reduce((sum, item) => sum + fs.statSync(item.filePath).size, 0);
 
   if (totalBytes > wechatMainPackageSourceBudgetBytes) {

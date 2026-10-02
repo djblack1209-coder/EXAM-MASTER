@@ -114,7 +114,12 @@ def infer_english_subject(payload: Any, path: Path) -> str:
         )
     candidates.append(path.stem)
     joined = " ".join(str(candidate or "").lower() for candidate in candidates)
-    if "english2" in joined or "english-2" in joined or "英语二" in joined or "英语（二）" in joined:
+    if (
+        "english2" in joined
+        or "english-2" in joined
+        or "英语二" in joined
+        or "英语（二）" in joined
+    ):
         return "english2"
     return "english1"
 
@@ -135,7 +140,9 @@ def source_id_from_path(path: Path) -> str:
 def load_cards(payload: Any) -> list[dict[str, Any]]:
     if not isinstance(payload, dict):
         return []
-    cards = payload.get("cards") if isinstance(payload.get("cards"), list) else payload.get("questions")
+    cards = (
+        payload.get("cards") if isinstance(payload.get("cards"), list) else payload.get("questions")
+    )
     return [card for card in (cards or []) if isinstance(card, dict)]
 
 
@@ -149,14 +156,19 @@ def card_number(card: dict[str, Any]) -> int | None:
 
 
 def card_id(card: dict[str, Any], index: int) -> str:
-    return first_non_empty(card.get("id"), card.get("questionId"), card.get("question_id"), card.get("number")) or (
-        f"card-{index + 1}"
-    )
+    return first_non_empty(
+        card.get("id"),
+        card.get("questionId"),
+        card.get("question_id"),
+        card.get("number"),
+    ) or (f"card-{index + 1}")
 
 
 def answer_for_compare(answer: Any, card_type: str, expected: str) -> str:
     if re.fullmatch(r"[A-G]{1,7}", compact(expected).upper() or ""):
-        return normalize_answer(answer, "multi_choice" if len(compact(expected)) > 1 else "single_choice")
+        return normalize_answer(
+            answer, "multi_choice" if len(compact(expected)) > 1 else "single_choice"
+        )
     if card_type in CHOICE_TYPES:
         return normalize_answer(answer, card_type)
     return compact(answer)
@@ -194,14 +206,18 @@ def parse_inline_answer_key(text: str) -> dict[str, str]:
     return answers
 
 
-def parse_translation_reference_text(text: str, *, min_number: int = 46, max_number: int = 50) -> dict[str, str]:
+def parse_translation_reference_text(
+    text: str, *, min_number: int = 46, max_number: int = 50
+) -> dict[str, str]:
     answers: dict[str, str] = {}
     if not text:
         return answers
 
     normalized = text.replace("\f", "\n")
     normalized = re.sub(r"\r\n?", "\n", normalized)
-    number_pattern = rf"(?:{min_number}|{min_number + 1}|{min_number + 2}|{min_number + 3}|{max_number})"
+    number_pattern = (
+        rf"(?:{min_number}|{min_number + 1}|{min_number + 2}|{min_number + 3}|{max_number})"
+    )
     pattern = re.compile(
         rf"(?ms)^\s*\(?\s*({number_pattern})\s*\)?(?=[\s.．、])[\s\S]*?【\s*参考译文\s*】\s*(.+?)(?=^\s*\(?\s*{number_pattern}\s*\)?(?=[\s.．、])|\n\s*Section\s+III|\n\s*Part\s+[AB]|\Z)"
     )
@@ -211,7 +227,11 @@ def parse_translation_reference_text(text: str, *, min_number: int = 46, max_num
             continue
         answer = compact(match.group(2))
         answer = re.sub(r"\b\d+\s+2025\s+年全国硕士研究生招生考试（英语一）参考答案\s*", "", answer)
-        answer = re.sub(r"(?<=[\u4e00-\u9fff，。；、：“”‘’（）《》])\s+(?=[\u4e00-\u9fff])", "", answer)
+        answer = re.sub(
+            r"(?<=[\u4e00-\u9fff，。；、：“”‘’（）《》])\s+(?=[\u4e00-\u9fff])",
+            "",
+            answer,
+        )
         if answer:
             answers[str(number)] = answer
 
@@ -221,7 +241,10 @@ def parse_translation_reference_text(text: str, *, min_number: int = 46, max_num
 def build_answer_key(path: Path) -> dict[str, Any]:
     text = read_source_text(path)
     choices = {**parse_inline_answer_key(text), **parse_answer_key_ranges(text)}
-    numbered = {**parse_translation_reference_text(text), **parse_numbered_answer_text(text)}
+    numbered = {
+        **parse_translation_reference_text(text),
+        **parse_numbered_answer_text(text),
+    }
     return {
         "path": path,
         "sourceId": source_id_from_answer_key(path),
@@ -241,10 +264,18 @@ def materialize_source_evidence(
     changed = False
     question_hash = hash_text(first_non_empty(card.get("question"), card.get("stem")))
 
-    if source_id and first_non_empty(card.get("sourceEvidenceId"), card.get("source_evidence_id")) != source_id:
+    if (
+        source_id
+        and first_non_empty(card.get("sourceEvidenceId"), card.get("source_evidence_id"))
+        != source_id
+    ):
         card["sourceEvidenceId"] = source_id
         changed = True
-    if question_hash and first_non_empty(card.get("questionTextHash"), card.get("question_text_hash")) != question_hash:
+    if (
+        question_hash
+        and first_non_empty(card.get("questionTextHash"), card.get("question_text_hash"))
+        != question_hash
+    ):
         card["questionTextHash"] = question_hash
         changed = True
 
@@ -269,7 +300,9 @@ def materialize_source_evidence(
 def dominant_question_source_id(cards: list[dict[str, Any]]) -> str:
     counts: dict[str, int] = {}
     for card in cards:
-        source_id = first_non_empty(card.get("sourceEvidenceId"), card.get("sourceEvidence", {}).get("sourceId"))
+        source_id = first_non_empty(
+            card.get("sourceEvidenceId"), card.get("sourceEvidence", {}).get("sourceId")
+        )
         if source_id:
             counts[source_id] = counts.get(source_id, 0) + 1
     if not counts:
@@ -298,7 +331,10 @@ def materialize_answer_evidence(
         card["answerTextHash"] = answer_hash
         changed = True
 
-    if first_non_empty(card.get("answerEvidenceStatus"), card.get("answer_evidence_status")) != "matched":
+    if (
+        first_non_empty(card.get("answerEvidenceStatus"), card.get("answer_evidence_status"))
+        != "matched"
+    ):
         card["answerEvidenceStatus"] = "matched"
         changed = True
 
@@ -340,7 +376,9 @@ def verify_bank(
     original = read_json(target_path, {})
     payload = copy.deepcopy(original)
     cards = load_cards(payload)
-    year = parse_year(payload.get("year") if isinstance(payload, dict) else None) or year_from_path(target_path)
+    year = parse_year(payload.get("year") if isinstance(payload, dict) else None) or year_from_path(
+        target_path
+    )
     if not year:
         raise ValueError(f"Unable to infer year for {target_path}")
     english_subject = infer_english_subject(payload, target_path)
@@ -349,7 +387,9 @@ def verify_bank(
 
     resolved_answer_key = answer_key_path or find_default_answer_key(year)
     if not resolved_answer_key or not resolved_answer_key.exists():
-        raise FileNotFoundError(f"Answer key source not found for year={year}: {resolved_answer_key}")
+        raise FileNotFoundError(
+            f"Answer key source not found for year={year}: {resolved_answer_key}"
+        )
 
     answer_key = build_answer_key(resolved_answer_key)
     answer_source_id = answer_key["sourceId"]
@@ -370,7 +410,13 @@ def verify_bank(
             continue
 
         if number in writing_numbers:
-            writing_unverified.append({"cardId": current_card_id, "number": number, "reason": "no_official_answer_key"})
+            writing_unverified.append(
+                {
+                    "cardId": current_card_id,
+                    "number": number,
+                    "reason": "no_official_answer_key",
+                }
+            )
             continue
 
         expected = ""
@@ -382,7 +428,13 @@ def verify_bank(
             expected = compact(answer_key["choiceAnswers"].get(str(number), ""))
 
         if not expected:
-            missing_answer_key.append({"cardId": current_card_id, "number": number, "reason": "not_found_in_answer_key"})
+            missing_answer_key.append(
+                {
+                    "cardId": current_card_id,
+                    "number": number,
+                    "reason": "not_found_in_answer_key",
+                }
+            )
             continue
 
         card_type = str(card.get("type") or "")
@@ -410,7 +462,9 @@ def verify_bank(
             card.get("sourceEvidence", {}).get("sourceId"),
             fallback_question_source_id,
         )
-        if materialize_source_evidence(card, source_id=question_source_id, answer_key=answer_key, now=now):
+        if materialize_source_evidence(
+            card, source_id=question_source_id, answer_key=answer_key, now=now
+        ):
             changed = True
             source_evidence_changes += 1
 
@@ -451,8 +505,12 @@ def verify_bank(
                 item["answerTextHash"] = answer_key["answerKeyTextHash"]
                 item["verifiedAt"] = now
                 item["verifiedBy"] = "english_answer_key_verify"
-                item["evidenceNote"] = "Local answer-key source parsed and matched to flashcard answers."
-                processing = item.get("processing") if isinstance(item.get("processing"), dict) else {}
+                item["evidenceNote"] = (
+                    "Local answer-key source parsed and matched to flashcard answers."
+                )
+                processing = (
+                    item.get("processing") if isinstance(item.get("processing"), dict) else {}
+                )
                 processing["verified"] = True
                 item["processing"] = processing
                 manifest_updates += 1
@@ -499,7 +557,9 @@ def parse_years(value: str) -> list[int]:
 
 
 def run(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Verify English I flashcards against local answer-key PDFs/text.")
+    parser = argparse.ArgumentParser(
+        description="Verify English I flashcards against local answer-key PDFs/text."
+    )
     parser.add_argument("--target", type=Path, action="append", default=[])
     parser.add_argument("--answer-key", type=Path, action="append", default=[])
     parser.add_argument("--years", default="2005-2012")
@@ -512,9 +572,13 @@ def run(argv: list[str] | None = None) -> int:
 
     targets = args.target
     if not targets:
-        targets = [DEFAULT_FLASHCARD_DIR / f"english1-{year}.json" for year in parse_years(args.years)]
+        targets = [
+            DEFAULT_FLASHCARD_DIR / f"english1-{year}.json" for year in parse_years(args.years)
+        ]
 
-    answer_keys_by_year = {year_from_path(path): path for path in args.answer_key if year_from_path(path)}
+    answer_keys_by_year = {
+        year_from_path(path): path for path in args.answer_key if year_from_path(path)
+    }
     reports = []
     for target in targets:
         target_year = year_from_path(target)

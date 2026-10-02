@@ -108,13 +108,13 @@ WRITING_PROMPTS = {
     ),
     52: (
         "Write an essay of 160-200 words based on the pictures themed "
-        "\"有书\"与\"读书\". Describe the pictures briefly, interpret the "
+        '"有书"与"读书". Describe the pictures briefly, interpret the '
         "meaning, and give your comments."
     ),
 }
 
 PART_B_OPTIONS = {
-    "A": "The first published sketch, \"A Dinner at Poplar Walk,\" brought tears to Dickens's eyes when he discovered it in The Monthly Magazine.",
+    "A": 'The first published sketch, "A Dinner at Poplar Walk," brought tears to Dickens\'s eyes when he discovered it in The Monthly Magazine.',
     "B": "The runaway success of The Pickwick Papers secured Dickens's fame.",
     "C": "Soon after Sketches by Boz appeared, a publishing firm approached Dickens to write a story in monthly installments.",
     "D": "Charles Dickens is probably the best-known English novelist of the 19th century.",
@@ -163,7 +163,15 @@ def compact(text: Any) -> str:
     return re.sub(r"\s+", " ", str(text or "")).strip()
 
 
-def render_pdf_assets(pdf: Path, prefix: str, *, asset_dir: Path, force: bool, first_page: int, last_page: int) -> None:
+def render_pdf_assets(
+    pdf: Path,
+    prefix: str,
+    *,
+    asset_dir: Path,
+    force: bool,
+    first_page: int,
+    last_page: int,
+) -> None:
     if not pdf.exists():
         raise FileNotFoundError(pdf)
     asset_dir.mkdir(parents=True, exist_ok=True)
@@ -237,13 +245,19 @@ def build_passages(asset_dir: Path) -> dict[str, str]:
     del asset_dir
     text = extract_pdf_text(ANSWER_SPEED)
     passages = {
-        "cloze": section_between(text, r"Section\s+I\s+Use\s+of\s+English.*?\(10 points\)", r"\n\s*1\.\s*A\."),
+        "cloze": section_between(
+            text, r"Section\s+I\s+Use\s+of\s+English.*?\(10 points\)", r"\n\s*1\.\s*A\."
+        ),
         "text1": section_between(text, r"\n\s*Text\s*1\s*\n", r"\n\s*21\."),
         "text2": section_between(text, r"\n\s*Text\s*2\s*\n", r"\n\s*26\."),
         "text3": section_between(text, r"\n\s*Text\s*3\s*\n", r"\n\s*31\."),
         "text4": section_between(text, r"\n\s*Text\s*4\s*\n", r"\n\s*36\."),
         "part-b": section_between(text, r"\n\s*Part\s+B\s*\n", r"\n\s*Part\s+C\s*\n"),
-        "part-c": section_between(text, r"\n\s*Part\s+C\s*\n.*?\(10 points\)", r"\n\s*Section\s+H?I+\s+Writing"),
+        "part-c": section_between(
+            text,
+            r"\n\s*Part\s+C\s*\n.*?\(10 points\)",
+            r"\n\s*Section\s+H?I+\s+Writing",
+        ),
         "writing": section_between(text, r"\n\s*Section\s+H?I+\s+Writing", r"2017年考研英语"),
     }
     missing = [key for key, value in passages.items() if not value]
@@ -390,8 +404,14 @@ def build_card(number: int, passages: dict[str, str]) -> dict[str, Any]:
     question = question_for(number)
     options = options_for(number)
     answer = answer_for(number)
-    question_images = [image_ref("paper-page", page, caption=f"试卷原页 p.{page}") for page in QUESTION_PAGES[number]]
-    answer_images = [image_ref("answer-page", page, caption=f"答案速查 p.{page}") for page in ANSWER_PAGES[number]]
+    question_images = [
+        image_ref("paper-page", page, caption=f"试卷原页 p.{page}")
+        for page in QUESTION_PAGES[number]
+    ]
+    answer_images = [
+        image_ref("answer-page", page, caption=f"答案速查 p.{page}")
+        for page in ANSWER_PAGES[number]
+    ]
     question_hash = sha256_text(
         json.dumps(
             {
@@ -405,7 +425,11 @@ def build_card(number: int, passages: dict[str, str]) -> dict[str, Any]:
         )
     )
     answer_hash = sha256_text(
-        json.dumps({"answer": answer, "answerPages": ANSWER_PAGES[number]}, ensure_ascii=False, sort_keys=True)
+        json.dumps(
+            {"answer": answer, "answerPages": ANSWER_PAGES[number]},
+            ensure_ascii=False,
+            sort_keys=True,
+        )
     )
 
     card = {
@@ -468,8 +492,22 @@ def validate_cards(cards: list[dict[str, Any]]) -> None:
 
 
 def build_payload(*, asset_dir: Path, force_assets: bool) -> dict[str, Any]:
-    render_pdf_assets(ORIGINAL_PAPER, "paper-page", asset_dir=asset_dir, force=force_assets, first_page=1, last_page=15)
-    render_pdf_assets(ANSWER_SPEED, "answer-page", asset_dir=asset_dir, force=force_assets, first_page=1, last_page=16)
+    render_pdf_assets(
+        ORIGINAL_PAPER,
+        "paper-page",
+        asset_dir=asset_dir,
+        force=force_assets,
+        first_page=1,
+        last_page=15,
+    )
+    render_pdf_assets(
+        ANSWER_SPEED,
+        "answer-page",
+        asset_dir=asset_dir,
+        force=force_assets,
+        first_page=1,
+        last_page=16,
+    )
     passages = build_passages(asset_dir)
     cards = [build_card(number, passages) for number in range(1, 53)]
     validate_cards(cards)

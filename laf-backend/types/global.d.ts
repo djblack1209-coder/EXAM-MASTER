@@ -13,20 +13,6 @@ declare module '@lafjs/cloud' {
   export default cloud;
 }
 
-// 云函数上下文类型
-interface FunctionContext {
-  body?: Record<string, any>;
-  headers?: Record<string, string>;
-  method?: string;
-  query?: Record<string, string>;
-  params?: Record<string, string>;
-  user?: { userId: string };
-  request?: any;
-  response?: any;
-  socket?: any;
-  files?: any[];
-}
-
 // 外部依赖类型声明（避免 TS2307）
 declare module 'nodemailer' {
   const nodemailer: any;

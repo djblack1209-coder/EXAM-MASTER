@@ -165,7 +165,9 @@ def run(cmd: list[str]) -> None:
     subprocess.run(cmd, cwd=PROJECT_ROOT, check=True)
 
 
-def render_pdf_assets(pdf: Path, prefix: str, *, asset_dir: Path, force: bool, pages: set[int]) -> None:
+def render_pdf_assets(
+    pdf: Path, prefix: str, *, asset_dir: Path, force: bool, pages: set[int]
+) -> None:
     if not pdf.exists():
         raise FileNotFoundError(pdf)
     asset_dir.mkdir(parents=True, exist_ok=True)
@@ -181,7 +183,18 @@ def render_pdf_assets(pdf: Path, prefix: str, *, asset_dir: Path, force: bool, p
         item.unlink()
 
     output_prefix = TMP_RENDER_DIR / prefix
-    run(["pdftoppm", "-r", "130", "-jpeg", "-jpegopt", "quality=70", str(pdf), str(output_prefix)])
+    run(
+        [
+            "pdftoppm",
+            "-r",
+            "130",
+            "-jpeg",
+            "-jpegopt",
+            "quality=70",
+            str(pdf),
+            str(output_prefix),
+        ]
+    )
 
     for source_page, target_index in sorted(pages_map(prefix).items()):
         if target_index not in pages:
@@ -268,7 +281,9 @@ def answer_for(number: int) -> str:
 
 
 def question_anchor(number: int) -> str:
-    return f"2020考研数学三第{number}题（{section_for(number)}）。题干、公式和图形以题面裁切图为准。"
+    return (
+        f"2020考研数学三第{number}题（{section_for(number)}）。题干、公式和图形以题面裁切图为准。"
+    )
 
 
 def explanation_for(number: int) -> str:
@@ -361,7 +376,9 @@ def validate_cards(cards: list[dict[str, Any]], *, asset_dir: Path) -> None:
             if relative and not (asset_dir / relative).exists():
                 issues.append(f"card {expected_number}: missing asset {relative}")
             if relative.startswith("paper-page"):
-                issues.append(f"card {expected_number}: paper-page referenced as review evidence {relative}")
+                issues.append(
+                    f"card {expected_number}: paper-page referenced as review evidence {relative}"
+                )
         if card_type == "single_choice":
             labels = [option.get("label") for option in card.get("options", [])]
             if labels != ["A", "B", "C", "D"]:
@@ -379,8 +396,20 @@ def validate_cards(cards: list[dict[str, Any]], *, asset_dir: Path) -> None:
 
 
 def build_payload(*, asset_dir: Path, force_assets: bool) -> dict[str, Any]:
-    render_pdf_assets(PAPER_ANSWER, "paper-page", asset_dir=asset_dir, force=force_assets, pages=set(range(1, 6)))
-    render_pdf_assets(PAPER_ANSWER, "answer-page", asset_dir=asset_dir, force=force_assets, pages=set(range(1, 14)))
+    render_pdf_assets(
+        PAPER_ANSWER,
+        "paper-page",
+        asset_dir=asset_dir,
+        force=force_assets,
+        pages=set(range(1, 6)),
+    )
+    render_pdf_assets(
+        PAPER_ANSWER,
+        "answer-page",
+        asset_dir=asset_dir,
+        force=force_assets,
+        pages=set(range(1, 14)),
+    )
     crop_question_assets(asset_dir=asset_dir, force=force_assets)
     cards = [build_card(number) for number in range(1, 24)]
     validate_cards(cards, asset_dir=asset_dir)

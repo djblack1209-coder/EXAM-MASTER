@@ -36,7 +36,12 @@ class BaiduCleaningQueueTest(unittest.TestCase):
             ]
         }
         first = build_cleaning_queue(manifest, now="2026-04-30T00:00:00Z")
-        completed_task = dict(first["tasks"][0], status="completed", attempts=1, completedAt="2026-04-30T01:00:00Z")
+        completed_task = dict(
+            first["tasks"][0],
+            status="completed",
+            attempts=1,
+            completedAt="2026-04-30T01:00:00Z",
+        )
         second = build_cleaning_queue(
             manifest,
             previous_queue={"tasks": [completed_task]},
@@ -46,7 +51,16 @@ class BaiduCleaningQueueTest(unittest.TestCase):
         self.assertEqual(second["tasks"][0]["status"], "completed")
         self.assertEqual(second["tasks"][0]["attempts"], 1)
 
-        changed_manifest = {"items": [dict(manifest["items"][0], fingerprint="fp_v2", size=210_000, contentHash="md5:v2")]}
+        changed_manifest = {
+            "items": [
+                dict(
+                    manifest["items"][0],
+                    fingerprint="fp_v2",
+                    size=210_000,
+                    contentHash="md5:v2",
+                )
+            ]
+        }
         changed = build_cleaning_queue(
             changed_manifest,
             previous_queue=second,
@@ -128,7 +142,9 @@ class BaiduCleaningQueueTest(unittest.TestCase):
         self.assertEqual(actions["src_group_file_index"], "transfer_or_direct_download")
         self.assertEqual(queue["summary"]["manualReviewTasks"], 1)
         self.assertEqual(queue["summary"]["transferTasks"], 2)
-        group_file_task = next(task for task in queue["tasks"] if task["sourceId"] == "src_group_file_index")
+        group_file_task = next(
+            task for task in queue["tasks"] if task["sourceId"] == "src_group_file_index"
+        )
         self.assertEqual(group_file_task["examCycle"], 2027)
         self.assertEqual(group_file_task["courseCategory"], "public_course")
         self.assertEqual(group_file_task["institutionKey"], "某机构A")

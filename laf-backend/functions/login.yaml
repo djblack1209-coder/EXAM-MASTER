@@ -1,5 +1,5 @@
 name: login
-desc: ""
+desc: ''
 methods:
   - GET
   - POST

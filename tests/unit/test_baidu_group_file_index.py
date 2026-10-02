@@ -20,7 +20,11 @@ from scripts.baidu.group_file_index import (  # noqa: E402
 
 def test_group_file_index_normalizes_json_records_and_requires_approval_for_documents():
     raw_items = [
-        {"fileName": "2027考研课程【此文件夹自动更新-无需保存】", "type": "folder", "sharer": "13800138000"},
+        {
+            "fileName": "2027考研课程【此文件夹自动更新-无需保存】",
+            "type": "folder",
+            "sharer": "13800138000",
+        },
         {
             "fileName": "2018年考研英语一真题.pdf",
             "path": "/群文件/英语/2018年考研英语一真题.pdf",
@@ -77,17 +81,26 @@ def test_group_file_index_buckets_2027_exam_by_category_and_institution():
     public_item = by_name["2027英语一阅读讲义.pdf"]
     professional_item = by_name["2027计算机408冲刺讲义.pdf"]
 
-    assert index["summary"]["courseCategoryCounts"] == {"public_course": 1, "professional_course": 1}
+    assert index["summary"]["courseCategoryCounts"] == {
+        "public_course": 1,
+        "professional_course": 1,
+    }
     assert index["summary"]["examCycleCounts"] == {"2027": 2}
     assert public_item["examCycle"] == 2027
     assert public_item["collectionRoot"] == "2027考研"
     assert public_item["courseCategory"] == "public_course"
     assert public_item["institutionKey"] == "某机构A"
-    assert public_item["targetDirectory"] == "/apps/考研大师/raw-pdf/2027考研/public-course/某机构A/english1/2027"
+    assert (
+        public_item["targetDirectory"]
+        == "/apps/考研大师/raw-pdf/2027考研/public-course/某机构A/english1/2027"
+    )
     assert professional_item["courseCategory"] == "professional_course"
     assert professional_item["institutionKey"] == "某机构B"
     assert professional_item["direction"] == "计算机408"
-    assert professional_item["targetDirectory"] == "/apps/考研大师/raw-pdf/2027考研/professional-course/某机构B/计算机408/2027"
+    assert (
+        professional_item["targetDirectory"]
+        == "/apps/考研大师/raw-pdf/2027考研/professional-course/某机构B/计算机408/2027"
+    )
 
 
 def test_group_file_index_parses_accessibility_text_exports():
@@ -102,7 +115,10 @@ def test_group_file_index_parses_accessibility_text_exports():
         """
     )
 
-    assert [record["fileName"] for record in records] == ["2025年考研政治真题及答案.pdf", "课程视频.mp4"]
+    assert [record["fileName"] for record in records] == [
+        "2025年考研政治真题及答案.pdf",
+        "课程视频.mp4",
+    ]
     assert records[0]["sharer"] == "李雷"
     assert records[0]["shareTime"] == "2026-05-21"
 
@@ -112,7 +128,13 @@ def test_group_file_index_extracts_computer_use_snapshot_text():
 
     records = extract_json_items(payload)
 
-    assert records == [{"fileName": "2024年数学一真题.pdf", "sourceLine": "链接 2024年数学一真题.pdf", "sharer": "张三"}]
+    assert records == [
+        {
+            "fileName": "2024年数学一真题.pdf",
+            "sourceLine": "链接 2024年数学一真题.pdf",
+            "sharer": "张三",
+        }
+    ]
 
 
 def test_group_file_index_exports_source_manifest_handoff_shape():
@@ -124,7 +146,11 @@ def test_group_file_index_exports_source_manifest_handoff_shape():
                 "size": 320_000,
                 "server_mtime": 1710000000,
             },
-            {"fileName": "广告二维码.pdf", "path": "/群文件/广告二维码.pdf", "size": 220_000},
+            {
+                "fileName": "广告二维码.pdf",
+                "path": "/群文件/广告二维码.pdf",
+                "size": 220_000,
+            },
         ],
         group_name="必定上岸27考研159",
         dest_root=DEFAULT_DEST_ROOT,
@@ -143,7 +169,7 @@ def test_group_file_index_exports_source_manifest_handoff_shape():
         "source": "group_file_index",
         "source_label": "必定上岸27考研159",
         "groupName": "必定上岸27考研159",
-        "examCycle": None,
+        "examCycle": 2027,
         "collectionRoot": "",
         "courseCategory": "public_course",
         "institutionName": "",

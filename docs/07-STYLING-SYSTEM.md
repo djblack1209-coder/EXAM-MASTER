@@ -1,207 +1,70 @@
-# Styling System
+---
+name: Wenli · 问理
+description: 连续对话学习的安静阅读空间
+colors:
+  ink: '#f8f5ee'
+  muted: '#e1ddd2'
+  paper: '#f3f0e8'
+  paper-ink: '#3f4234'
+  sage: '#d9dfbe'
+  brand: '#433f35'
+  glass: 'rgba(65, 60, 52, 0.78)'
+typography:
+  body:
+    fontFamily: 'Helvetica Neue, PingFang SC, Microsoft YaHei, sans-serif'
+    fontSize: '14px'
+    lineHeight: 1.65
+rounded:
+  frame: '28px'
+  panel: '24px'
+  control: '12px'
+spacing:
+  panel: '24px'
+  mobile-panel: '20px'
+---
 
-> Auto-generated: 2026-03-22
+# 品牌与视觉系统
 
-## Architecture Overview
+## Overview
 
-EXAM-MASTER uses a layered styling system:
+工作品牌 **Wenli · 问理**，中文两字、英文五字母，表达从提问到理解。原创 W 标志由两段连续曲线与下方落点组成；线条对应持续学习路径，落点对应一次有依据的检验。不是复制其他产品图形，也不限制为考研。
 
-```
-Layer 1: CSS Custom Properties (runtime, in App.vue :root)
-Layer 2: SCSS Design Tokens (build-time, auto-injected via Vite)
-Layer 3: Theme Presets (Wise green / Bitget dark)
-Layer 4: Component Scoped Styles (<style lang="scss" scoped>)
-Layer 5: Utility Classes (global in App.vue)
-```
+采用已安装 [Impeccable 开源设计技能](https://github.com/pbakaus/impeccable)，其工具/指导为 Apache-2.0；本项目原创 Logo 不因使用该技能自动更改整个项目的 UNLICENSED 许可。公开名称检索只用于排除明显同类重名，不代表商标、域名或商店名称可注册。
 
-## File Inventory
+用户已确定 Reading Library / Mood Tracker 的阅读和节奏方向。保留暖石、鼠尾草和自然光玻璃空间，不新增访谈或另建演示项目。产品事实在 01，设计事实在本文，不另建根级重复文档；当前环境无可用设计子代理，由同一任务完成源码与渲染复核。
 
-### Core Design System
+## Colors
 
-| File           | Path                              | Purpose                                                                                |
-| -------------- | --------------------------------- | -------------------------------------------------------------------------------------- |
-| Design Tokens  | `src/styles/_design-tokens.scss`  | Core SCSS variables (colors, spacing, typography) — auto-injected into every component |
-| Dark Mode Vars | `src/styles/_dark-mode-vars.scss` | `@mixin dark-mode-vars` — all CSS variable overrides for dark mode                     |
+前景使用暖白，次级文字为同色系暖灰；明亮主操作使用纸色与深色文字；鼠尾草仅用于真实任务进度，不表示精确掌握率。品牌使用深暖石色。值来自 learning-space.css 与 brand.js，主题改变不切换 Logo 语义。
 
-### Theme Files
+## Typography
 
-| File         | Path                         | Purpose                                                                           |
-| ------------ | ---------------------------- | --------------------------------------------------------------------------------- |
-| Wot Theme    | `src/styles/_wot-theme.scss` | wot-design-uni component library theme overrides                                  |
-| Theme Engine | `src/design/theme-engine.js` | Runtime theme switching (JS: `applyTheme()`, `getCurrentTheme()`, `watchTheme()`) |
+沿用当前系统字体栈；不下载未授权字体。正文 14px / 1.65，品牌中文 19px / 500、英文 13px / 400。首页标题桌面 42px、手机 34px；对话标题依现有断点收缩。正文 measure 以当前消息 68ch 为准。
 
-### Design System Utilities
+## Layout
 
-| File              | Path                                | Purpose                                 |
-| ----------------- | ----------------------------------- | --------------------------------------- |
-| Button Animations | `src/styles/button-animations.scss` | Global button press feedback animations |
+最大外框 1320px，左目录 236px、1100px 下为 216px，900px 下折叠目录，520px 下继续收紧。桌面边距 36px 40px，手机预留 dock 与安全区；微信读取状态栏/胶囊位置并有失败回退。
 
-### Global Styles (App.vue)
+## Elevation & Depth
 
-`src/App.vue` contains ~570 lines of global styles including:
+使用本地 learning-room.webp 的静态自然光背景，文字承载层先保证不透明底色，再按支持情况使用 blur。减少透明度/提高对比度时关闭图片和模糊；无能力的平台退回实色。背景来源 sidecar 不是完整商业授权证明。
 
-- CSS custom property definitions (`:root` and `page`)
-- Dark mode overrides (`@media prefers-color-scheme: dark` + `.dark` class)
-- Apple Glass effects (`.apple-glass`, `.apple-glass-card`, `.apple-group-card`, `.apple-glass-pill`)
-- Utility classes (`.card`, `.glass-card`, `.btn`, `.btn-primary`, `.btn-secondary`)
-- Text color utilities (`.text-main`, `.text-sub`, `.text-primary`, `.text-success`, etc.)
-- Background utilities (`.bg-page`, `.bg-card`)
-- Performance utilities (`.will-change-transform`, `.gpu-accelerated`)
-- Click feedback states (`.clickable:active`, `.card-hover:active`, etc.)
-- Dark mode smooth transitions
-- driver.js onboarding style overrides
+## Shapes
 
-## Color System
+标志源文件在 src/static/brand/：mark.svg、mark-light.svg、icon.svg、icon-maskable.svg。普通标志至少 16px，留白不小于线宽；深色面使用浅色版。应用图标与 PWA 192/512 PNG 由原始 SVG 栅格化，maskable 图形位于安全区域。不要拉伸、旋转或为每个页面重画一套 Logo。
 
-### Light Mode (Default - Wise Green)
+## Components
 
-| Variable               | Value     | Usage                         |
-| ---------------------- | --------- | ----------------------------- |
-| `--background`         | `#b8eb89` | Page background (fresh green) |
-| `--foreground`         | `#10281a` | Main text (dark green-black)  |
-| `--card`               | `#eaf9d5` | Card background (light green) |
-| `--primary`            | `#0f5f34` | Brand color (deep green)      |
-| `--primary-foreground` | `#ffffff` | Brand text (white)            |
-| `--muted`              | `#d0ecad` | Muted background              |
-| `--muted-foreground`   | `#35533f` | Muted text                    |
-| `--border`             | `#98cd6f` | Border color (grass green)    |
-| `--success`            | `#10b981` | Success state                 |
-| `--warning`            | `#f59e0b` | Warning state                 |
-| `--danger`             | `#ef4444` | Error/danger state            |
-| `--info`               | `#3b82f6` | Info state                    |
+共享 Shell 用本地浅色 SVG 标志，登录/启动与 PWA 用本地 PNG，避免 CDN 保留旧品牌。按钮的加载、禁用、错误与键盘焦点保持明确；恢复备份采用就地面板，只有实际合并和撤销需要保护性确认。
 
-### Dark Mode
+## Do's and Don'ts
 
-Applied via `@mixin dark-mode-vars` in `_dark-mode-vars.scss`:
+- 使用 brand.js 的显示品牌；编译期页面/manifest 的副本由测试检查。
+- 阅读和练习优先；指标须来自有效记录。
+- 保留已建立的玻璃阅读语言，同时提供实色退后和减少动效。
+- 不修改存储键、应用 ID、数据库名或题源路径来追随显示改名。
+- 不把源代码、构建、模型、设备和公开发布合并为一个通过标签。
 
-- Triggered by `@media (prefers-color-scheme: dark)` or `.dark` / `.dark-mode` class
-- Inverts to dark backgrounds (`#0b0b0f`, `#161622`) with muted color palette
-- Images get `opacity: 0.9; filter: brightness(0.9)` treatment
+既有辅助字号、个别小按钮和全局按压效果仍需设备可访问性评估，未提升为新组件的质量标准。
 
-## Design Token System
-
-### Spacing Scale
-
-| Token           | Value |
-| --------------- | ----- |
-| `--spacing-xs`  | 4px   |
-| `--spacing-sm`  | 8px   |
-| `--spacing-md`  | 16px  |
-| `--spacing-lg`  | 20px  |
-| `--spacing-xl`  | 24px  |
-| `--spacing-2xl` | 32px  |
-| `--spacing-3xl` | 40px  |
-
-### Border Radius Scale
-
-| Token           | Value  |
-| --------------- | ------ |
-| `--radius-xs`   | 4px    |
-| `--radius-sm`   | 8px    |
-| `--radius-md`   | 16px   |
-| `--radius-lg`   | 24px   |
-| `--radius-xl`   | 32px   |
-| `--radius-full` | 9999px |
-
-### Shadow Scale
-
-| Token         | Value                             |
-| ------------- | --------------------------------- |
-| `--shadow-sm` | `0 1px 3px rgba(17,17,26,0.04)`   |
-| `--shadow-md` | `0 4px 14px rgba(17,17,26,0.07)`  |
-| `--shadow-lg` | `0 10px 24px rgba(17,17,26,0.12)` |
-| `--shadow-xl` | `0 18px 38px rgba(17,17,26,0.16)` |
-
-### Typography
-
-| Token                     | Value |
-| ------------------------- | ----- |
-| `--font-weight-regular`   | 400   |
-| `--font-weight-medium`    | 500   |
-| `--font-weight-semibold`  | 600   |
-| `--font-weight-bold`      | 700   |
-| `--font-weight-extrabold` | 800   |
-
-### Transitions
-
-| Token                 | Value                                    |
-| --------------------- | ---------------------------------------- |
-| `--transition-fast`   | 0.15s                                    |
-| `--transition-normal` | 0.3s                                     |
-| `--transition-slow`   | 0.5s                                     |
-| `--ease-default`      | `cubic-bezier(0.4, 0, 0.2, 1)`           |
-| `--ease-bounce`       | `cubic-bezier(0.68, -0.55, 0.265, 1.55)` |
-
-## Vite Integration
-
-Design tokens are auto-injected via `vite.config.js`:
-
-```js
-css: {
-  preprocessorOptions: {
-    scss: {
-      additionalData: `
-        @use "src/styles/_design-tokens.scss" as *;
-        $env-mode: "${mode}";
-        $is-production: ${isProduction};
-      `;
-    }
-  }
-}
-```
-
-This means every `.vue` file with `<style lang="scss">` automatically has access to all design token variables without importing.
-
-## Theme Switching Flow
-
-1. User toggles theme in Settings page
-2. `ThemeSelectorModal.vue` calls `useThemeStore().setThemeType(type)`
-3. Store emits `themeTypeUpdate` event
-4. `App.vue` listens and calls `switchTheme(mode)`
-5. `theme-engine.js` → `applyTheme()`:
-   - Adds/removes `.dark` class on `page` element
-   - Updates `data-theme` attribute
-   - Saves to `uni.setStorageSync('theme_mode')`
-6. CSS custom properties cascade handles the rest
-7. Navigation bar color updated via `uni.setNavigationBarColor()`
-
-## Component Library (wot-design-uni)
-
-- Base UI components from [wot-design-uni](https://wot-design-uni.cn/) v1.14.0
-- Themed via `src/styles/_wot-theme.scss` (CSS variable overrides)
-- Components used: wd-button, wd-input, wd-toast, wd-picker, wd-popup, wd-cell, wd-icon, etc.
-- Imported from `wot-design-uni/components/common/abstracts/variable.scss` for base variables
-
-## UI Quality Metrics
-
-The project maintains UI quality through an automated gate check (`npm run audit:ui-quality`). As of 2026-03-23, the score is **97/100**.
-
-**Passing Checks (242):**
-
-- Most Vue components successfully implement error handling and are GPU-accelerated.
-- Loading states are implemented in 26 components.
-- Error handlers are implemented in 154 components.
-- 68 components are GPU-accelerated.
-
-**Current Warnings (7):**
-
-- Missing user prompts in error catch blocks:
-  - `src/components/base/base-icon/base-icon.vue`
-  - `src/components/business/index/WelcomeBanner.vue`
-  - `src/pages/practice-sub/question-bank.vue`
-  - `src/pages/settings/InviteModal.vue`
-- Missing loading states for asynchronous operations:
-  - `src/pages/study-detail/FSRSOptimizer.vue`
-
-## Current Design Baseline
-
-The retired mini-program and mobile design reports are consolidated here as long-term styling policy. The product direction is mature, commercial, and task-first:
-
-- Use Wise-style green as the brand/action color, with white, mint, deep green, and small amounts of calm blue for status and sync states.
-- Keep the first screen useful: users should be able to continue study, start practice, import resources, or inspect the next review task without reading marketing copy.
-- Use glass and soft material effects only for navigation, floating actions, or primary surfaces. Repeated list rows and dense data should stay compact and readable.
-- Prefer vector/icon components for functional recognition. Generated PNGs are limited to brand, onboarding, empty state, sharing, and milestone scenes.
-- Preserve mature learning-product tone: no emoji-as-icons, childish mascot, owl, graduation cap, rocket, trophy, coin, fire, fantasy AI orb, or decorative purple-blue glow.
-- Keep page structure stable on mobile: no nested cards, no text overflow, no layout shift when timers, feedback, or loading states update.
-
-Mini-program remains the lightweight entry product. iOS, Android, and H5 mobile shells are the full product surface and must share the same resource intake, question-bank release gate, quiz, FSRS, mistake, and knowledge-graph contracts.
+2026-09-30 实际 H5 已检查桌面与手机宽度的品牌、共享指标、目录和 dock，手机页面无横向溢出。Impeccable 单次静态扫描报告一项系统字体过度常见的风格提示；保留当前跨端中文系统字体，不将其当成功能缺陷或静默更换字体。截图与检测原文在 tmp/rebrand-rebuild/；本轮不据此宣称真机可访问性通过。

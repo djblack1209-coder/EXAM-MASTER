@@ -1,5 +1,15 @@
 <template>
-  <view :class="['container', { 'dark-mode': isDark }]">
+  <LearningShell v-if="!showLegacy" active="mistake" title="错题与复习">
+    <view class="records-introduction">
+      <text class="records-title">把难点留下，把理解带走。</text
+      ><text class="records-description">在对话里发现的错题，会自动留在这里。回到原题，带着依据继续学。</text>
+    </view>
+    <LearningOverview :initial-expanded="true" :show-navigation="false" view="mistake" />
+    <view class="legacy-entry">
+      <button class="quiet-button" role="button" tabindex="0" @tap="toggleLegacy">查看历史记录（旧口径）</button>
+    </view>
+  </LearningShell>
+  <view v-else :class="['container', { 'dark-mode': isDark }]">
     <view class="aurora-bg" />
 
     <!-- 骨架屏 -->
@@ -27,160 +37,166 @@
       @scrolltolower="loadMore"
       @refresherrefresh="onPullRefresh"
     >
-      <!-- 统计卡片区域 -->
-      <view v-if="mistakes.length > 0" class="stats-grid">
-        <StatsCard title="错题总数" :value="mistakes.length" icon="note" :is-dark="isDark" />
-        <StatsCard
-          title="待复习"
-          :value="pendingReviewCount"
-          icon="refresh"
-          change="需要巩固"
-          change-type="neutral"
-          :is-dark="isDark"
-        />
-      </view>
-
-      <!-- ✅ P1: 重练模式提示 -->
-      <view v-if="isReviewMode && mistakes.length > 0" class="review-mode-banner">
-        <BaseIcon name="refresh" :size="40" class="review-icon" />
-        <view class="review-info">
-          <text class="review-title"> 错题重练模式 </text>
-          <text class="review-desc"> {{ filteredReviewMistakes.length }} 道待重练 </text>
+      <LearningOverview :initial-expanded="true" />
+      <button size="mini" @tap="toggleLegacy">
+        {{ showLegacy ? '收起历史视图' : '查看历史记录（旧口径）' }}
+      </button>
+      <template v-if="showLegacy">
+        <!-- 统计卡片区域 -->
+        <view v-if="mistakes.length > 0" class="stats-grid">
+          <StatsCard title="错题总数" :value="mistakes.length" icon="note" :is-dark="isDark" />
+          <StatsCard
+            title="待复习"
+            :value="pendingReviewCount"
+            icon="refresh"
+            change="需要巩固"
+            change-type="neutral"
+            :is-dark="isDark"
+          />
         </view>
-        <button class="start-review-btn" @tap="startSequentialReview">开始重练</button>
-      </view>
 
-      <!-- 错题筛选栏 -->
-      <view v-if="mistakes.length > 0" class="review-filter-bar">
-        <scroll-view scroll-x :show-scrollbar="false" class="filter-scroll">
-          <view :class="['filter-chip', { active: reviewFilter === 'all' }]" @tap="reviewFilter = 'all'">
-            <text class="filter-text"> 全部 </text>
+        <!-- ✅ P1: 重练模式提示 -->
+        <view v-if="isReviewMode && mistakes.length > 0" class="review-mode-banner">
+          <BaseIcon name="refresh" :size="40" class="review-icon" />
+          <view class="review-info">
+            <text class="review-title"> 错题重练模式 </text>
+            <text class="review-desc"> {{ filteredReviewMistakes.length }} 道待重练 </text>
           </view>
-          <view :class="['filter-chip', { active: reviewFilter === 'high_freq' }]" @tap="reviewFilter = 'high_freq'">
-            <text class="filter-text"> 高频错题 </text>
-          </view>
-          <view :class="['filter-chip', { active: reviewFilter === 'recent' }]" @tap="reviewFilter = 'recent'">
-            <text class="filter-text"> 最近错题 </text>
+          <button class="start-review-btn" @tap="startSequentialReview">开始重练</button>
+        </view>
+
+        <!-- 错题筛选栏 -->
+        <view v-if="mistakes.length > 0" class="review-filter-bar">
+          <scroll-view scroll-x :show-scrollbar="false" class="filter-scroll">
+            <view :class="['filter-chip', { active: reviewFilter === 'all' }]" @tap="reviewFilter = 'all'">
+              <text class="filter-text"> 全部 </text>
+            </view>
+            <view :class="['filter-chip', { active: reviewFilter === 'high_freq' }]" @tap="reviewFilter = 'high_freq'">
+              <text class="filter-text"> 高频错题 </text>
+            </view>
+            <view :class="['filter-chip', { active: reviewFilter === 'recent' }]" @tap="reviewFilter = 'recent'">
+              <text class="filter-text"> 最近错题 </text>
+            </view>
+            <view
+              :class="['filter-chip cluster-chip', { active: reviewFilter === 'cluster' }]"
+              @tap="switchToClusterView"
+            >
+              <text class="filter-text"> 知识点聚类 </text>
+            </view>
+            <view
+              v-for="cat in mistakeCategories"
+              :key="cat"
+              :class="['filter-chip', { active: reviewFilter === 'cat_' + cat }]"
+              @tap="reviewFilter = 'cat_' + cat"
+            >
+              <text class="filter-text"> {{ cat }} </text>
+            </view>
+          </scroll-view>
+        </view>
+
+        <!-- 模式切换 - 优化布局 -->
+        <view v-if="mistakes.length > 0" class="mode-switch glass-card ds-flex ds-gap-xs">
+          <view
+            :class="['mode-item', 'ds-flex-center', 'ds-touchable', { active: mode === 'quiz' }]"
+            @tap="switchMode('quiz')"
+          >
+            <text class="ds-text-sm ds-font-medium"> 刷题模式 </text>
           </view>
           <view
-            :class="['filter-chip cluster-chip', { active: reviewFilter === 'cluster' }]"
-            @tap="switchToClusterView"
+            :class="['mode-item', 'ds-flex-center', 'ds-touchable', { active: mode === 'recite' }]"
+            @tap="switchMode('recite')"
           >
-            <text class="filter-text"> 知识点聚类 </text>
+            <text class="ds-text-sm ds-font-medium"> 背诵模式 </text>
           </view>
-          <view
-            v-for="cat in mistakeCategories"
-            :key="cat"
-            :class="['filter-chip', { active: reviewFilter === 'cat_' + cat }]"
-            @tap="reviewFilter = 'cat_' + cat"
-          >
-            <text class="filter-text"> {{ cat }} </text>
+        </view>
+
+        <!-- 空状态 - 优化样式 -->
+        <view v-if="mistakes.length === 0 && !isInitLoading" class="empty-box ds-flex-col ds-flex-center">
+          <BaseIcon name="celebrate" :size="160" class="empty-icon" />
+          <text class="empty-title ds-text-lg ds-font-bold"> 暂无历史错题 </text>
+          <text class="empty-text ds-text-sm"> 这里尚未记录旧版练习错题，不代表已经掌握。 </text>
+          <text class="empty-hint ds-text-xs"> 刷题过程中答错的题目会自动收录到这里 </text>
+          <view class="go-practice-btn ds-touchable" @tap="goBack">
+            <BaseIcon name="pen" :size="28" /><text>去刷题</text>
           </view>
-        </scroll-view>
-      </view>
+        </view>
 
-      <!-- 模式切换 - 优化布局 -->
-      <view v-if="mistakes.length > 0" class="mode-switch glass-card ds-flex ds-gap-xs">
-        <view
-          :class="['mode-item', 'ds-flex-center', 'ds-touchable', { active: mode === 'quiz' }]"
-          @tap="switchMode('quiz')"
-        >
-          <text class="ds-text-sm ds-font-medium"> 刷题模式 </text>
-        </view>
-        <view
-          :class="['mode-item', 'ds-flex-center', 'ds-touchable', { active: mode === 'recite' }]"
-          @tap="switchMode('recite')"
-        >
-          <text class="ds-text-sm ds-font-medium"> 背诵模式 </text>
-        </view>
-      </view>
-
-      <!-- 空状态 - 优化样式 -->
-      <view v-if="mistakes.length === 0 && !isInitLoading" class="empty-box ds-flex-col ds-flex-center">
-        <BaseIcon name="celebrate" :size="160" class="empty-icon" />
-        <text class="empty-title ds-text-lg ds-font-bold"> 太厉害了！ </text>
-        <text class="empty-text ds-text-sm"> 暂时没有错题，继续保持这个状态！ </text>
-        <text class="empty-hint ds-text-xs"> 刷题过程中答错的题目会自动收录到这里 </text>
-        <view class="go-practice-btn ds-touchable" @tap="goBack">
-          <BaseIcon name="pen" :size="28" /><text>去刷题</text>
-        </view>
-      </view>
-
-      <!-- 知识点聚类视图（AI 分析模式） -->
-      <view v-if="reviewFilter === 'cluster'" class="cluster-view">
-        <view v-if="clusterLoading" class="cluster-loading">
-          <view v-for="i in 3" :key="i" class="loading-dot" />
-          <text class="cluster-loading-text">AI 正在分析错题模式...</text>
-        </view>
-        <view v-else-if="errorClusters.length === 0" class="cluster-empty">
-          <text class="cluster-empty-text">暂无足够数据生成聚类分析</text>
-        </view>
-        <view v-else>
-          <view v-for="cluster in errorClusters" :key="cluster.clusterId" class="cluster-card glass-card">
-            <view class="cluster-header">
-              <view class="cluster-badge" :class="[cluster.severity]">
-                <text class="cluster-badge-text">
-                  {{ cluster.severity === 'high' ? '高频' : cluster.severity === 'medium' ? '中频' : '低频' }}
+        <!-- 知识点聚类视图（AI 分析模式） -->
+        <view v-if="reviewFilter === 'cluster'" class="cluster-view">
+          <view v-if="clusterLoading" class="cluster-loading">
+            <view v-for="i in 3" :key="i" class="loading-dot" />
+            <text class="cluster-loading-text">AI 正在分析错题模式...</text>
+          </view>
+          <view v-else-if="errorClusters.length === 0" class="cluster-empty">
+            <text class="cluster-empty-text">暂无足够数据生成聚类分析</text>
+          </view>
+          <view v-else>
+            <view v-for="cluster in errorClusters" :key="cluster.clusterId" class="cluster-card glass-card">
+              <view class="cluster-header">
+                <view class="cluster-badge" :class="[cluster.severity]">
+                  <text class="cluster-badge-text">
+                    {{ cluster.severity === 'high' ? '高频' : cluster.severity === 'medium' ? '中频' : '低频' }}
+                  </text>
+                </view>
+                <text class="cluster-type">{{ cluster.errorTypeName }}</text>
+                <text class="cluster-count">{{ cluster.questionCount }}题</text>
+              </view>
+              <view v-if="cluster.knowledgePoints && cluster.knowledgePoints.length > 0" class="cluster-kps">
+                <text v-for="kp in cluster.knowledgePoints" :key="kp" class="kp-tag">{{ kp }}</text>
+              </view>
+              <text class="cluster-suggestion">{{ cluster.suggestion }}</text>
+              <view class="cluster-trend">
+                <text :class="['trend-text', cluster.trend]">
+                  {{
+                    cluster.trend === 'increasing'
+                      ? '↑ 近期增多'
+                      : cluster.trend === 'decreasing'
+                        ? '↓ 逐渐减少'
+                        : '— 保持稳定'
+                  }}
                 </text>
               </view>
-              <text class="cluster-type">{{ cluster.errorTypeName }}</text>
-              <text class="cluster-count">{{ cluster.questionCount }}题</text>
-            </view>
-            <view v-if="cluster.knowledgePoints && cluster.knowledgePoints.length > 0" class="cluster-kps">
-              <text v-for="kp in cluster.knowledgePoints" :key="kp" class="kp-tag">{{ kp }}</text>
-            </view>
-            <text class="cluster-suggestion">{{ cluster.suggestion }}</text>
-            <view class="cluster-trend">
-              <text :class="['trend-text', cluster.trend]">
+              <button class="train-btn" @tap="startClusterTraining(cluster)">
+                针对训练
                 {{
-                  cluster.trend === 'increasing'
-                    ? '↑ 近期增多'
-                    : cluster.trend === 'decreasing'
-                      ? '↓ 逐渐减少'
-                      : '— 保持稳定'
+                  cluster.knowledgePoints && cluster.knowledgePoints[0]
+                    ? cluster.knowledgePoints[0]
+                    : cluster.errorTypeName
                 }}
-              </text>
+              </button>
             </view>
-            <button class="train-btn" @tap="startClusterTraining(cluster)">
-              针对训练
-              {{
-                cluster.knowledgePoints && cluster.knowledgePoints[0]
-                  ? cluster.knowledgePoints[0]
-                  : cluster.errorTypeName
-              }}
-            </button>
           </view>
         </view>
-      </view>
 
-      <!-- 错题列表 (F007: 限制DOM节点数量，最多渲染 maxDomItems 条) -->
-      <template v-if="reviewFilter !== 'cluster'">
-        <MistakeCard
-          v-for="(item, index) in displayedMistakes"
-          :key="item.id || item._id || index"
-          :item="item"
-          :index="index"
-          :mode="mode"
-          :mistakes="mistakes"
-          @remove="removeMistake"
-        />
+        <!-- 错题列表 (F007: 限制DOM节点数量，最多渲染 maxDomItems 条) -->
+        <template v-if="reviewFilter !== 'cluster'">
+          <MistakeCard
+            v-for="(item, index) in displayedMistakes"
+            :key="item.id || item._id || index"
+            :item="item"
+            :index="index"
+            :mode="mode"
+            :mistakes="mistakes"
+            @remove="removeMistake"
+          />
+        </template>
+
+        <!-- 一键清空按钮（显示在列表最底部） - 优化样式 -->
+        <view v-if="mistakes.length > 0 && !isLoading && reviewFilter !== 'cluster'" class="clear-all-section">
+          <button
+            class="clear-all-btn ds-flex ds-flex-center ds-gap-xs ds-touchable"
+            :disabled="isClearing"
+            @tap="clearAllMistakes"
+          >
+            <BaseIcon name="delete" :size="36" class="clear-all-icon" />
+            <text class="clear-all-text ds-text-sm ds-font-semibold">
+              {{ isClearing ? '清空中...' : '清空所有错题' }}
+            </text>
+          </button>
+        </view>
+
+        <view class="safe-area" />
       </template>
-
-      <!-- 一键清空按钮（显示在列表最底部） - 优化样式 -->
-      <view v-if="mistakes.length > 0 && !isLoading && reviewFilter !== 'cluster'" class="clear-all-section">
-        <button
-          class="clear-all-btn ds-flex ds-flex-center ds-gap-xs ds-touchable"
-          :disabled="isClearing"
-          @tap="clearAllMistakes"
-        >
-          <BaseIcon name="delete" :size="36" class="clear-all-icon" />
-          <text class="clear-all-text ds-text-sm ds-font-semibold">
-            {{ isClearing ? '清空中...' : '清空所有错题' }}
-          </text>
-        </button>
-      </view>
-
-      <view class="safe-area" />
     </scroll-view>
 
     <!-- 智能诊断报告组件 - ✅ 2.3: 仅在有错题时渲染，避免空数据时的无效组件挂载 -->
@@ -192,7 +208,17 @@
 </template>
 
 <script setup>
+import LearningOverview from '@/components/business/learning/learning-overview.vue';
+import LearningShell from '@/components/business/learning/learning-shell.vue';
+import { useConversationLearningStore } from '@/stores/modules/conversation-learning.js';
+
 import { ref, computed } from 'vue';
+const learning = useConversationLearningStore();
+const showLegacy = ref(false);
+function toggleLegacy() {
+  showLegacy.value = !showLegacy.value;
+  if (showLegacy.value) loadData(true);
+}
 import { onLoad, onShow, onUnload } from '@dcloudio/uni-app';
 import { modal } from '@/utils/modal.js';
 import { toast } from '@/utils/toast.js';
@@ -349,6 +375,11 @@ async function syncPendingMistakes() {
  * @param {boolean} [reset=false] - 是否重置到第一页重新加载
  */
 async function loadData(reset = false) {
+  learning.refresh();
+  if (!showLegacy.value) {
+    isInitLoading.value = false;
+    return;
+  }
   if (isLoading.value) {
     logger.log('[mistake-book] ⏸️ 加载中，跳过重复请求');
     return;
@@ -759,6 +790,11 @@ onLoad((options) => {
 });
 
 onShow(() => {
+  learning.refresh();
+  if (!showLegacy.value) {
+    isInitLoading.value = false;
+    return;
+  }
   loadData(true); // 重置并重新加载
   loadUserInfo();
   // 自动同步待同步的错题

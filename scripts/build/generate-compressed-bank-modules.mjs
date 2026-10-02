@@ -24,11 +24,7 @@ function bankIdFromFile(fileName) {
 
 function buildBankEntrySource(bankId, compressedBase64) {
   const chunks = splitBase64(compressedBase64);
-  return [
-    `  '${bankId}': [`,
-    chunks.map((chunk) => `  '${chunk}'`).join(',\n'),
-    "  ].join('')"
-  ].join('\n');
+  return [`  '${bankId}': [`, chunks.map((chunk) => `    '${chunk}'`).join(',\n'), "  ].join('')"].join('\n');
 }
 
 function buildTableSource(entries) {

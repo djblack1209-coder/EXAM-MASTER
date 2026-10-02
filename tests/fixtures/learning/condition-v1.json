@@ -1,0 +1,244 @@
+{
+  "version": "condition-v1",
+  "provenance": "人工按完整成立集的双向包含给出分类，反例独立给定；不是由题目生成器或模型输出充当期望。",
+  "claims": "一元有理式与显式共同数域/排除条件的有限充分必要判定，分子/分母/限制最多二次且零点均可精确为有理数；不证明任意命题、图形或全学科效果。",
+  "cases": [
+    {
+      "id": "sufficient",
+      "goal": "判断条件 x>2 是 x>0 的什么条件",
+      "answer": "充分不必要条件",
+      "status": "reliable",
+      "outcome": "correct",
+      "relation": "sufficient",
+      "counterexamples": [null, "1"]
+    },
+    {
+      "id": "necessary",
+      "goal": "判断条件 x>0 是 x>2 的什么条件",
+      "answer": "必要不充分条件",
+      "status": "reliable",
+      "outcome": "correct",
+      "relation": "necessary",
+      "counterexamples": ["1", null]
+    },
+    {
+      "id": "equivalent",
+      "goal": "判断条件 2*x>4 是 x>2 的什么条件",
+      "answer": "充要条件",
+      "status": "reliable",
+      "outcome": "correct",
+      "relation": "equivalent"
+    },
+    {
+      "id": "neither",
+      "goal": "判断条件 x>0 是 x<2 的什么条件",
+      "answer": "既不充分也不必要条件",
+      "status": "reliable",
+      "outcome": "correct",
+      "relation": "neither"
+    },
+    {
+      "id": "wrong-direction",
+      "goal": "判断条件 x>2 是 x>0 的什么条件",
+      "answer": "必要不充分",
+      "status": "reliable",
+      "outcome": "wrong",
+      "relation": "sufficient"
+    },
+    {
+      "id": "boundary",
+      "goal": "判断条件 x>0 是 x>=0 的什么条件",
+      "answer": "充分不必要",
+      "status": "reliable",
+      "outcome": "correct",
+      "relation": "sufficient",
+      "counterexamples": [null, "0"]
+    },
+    {
+      "id": "equality-two-roots",
+      "goal": "判断条件 x^2=4 是 x=2 的什么条件",
+      "answer": "必要不充分条件",
+      "status": "reliable",
+      "outcome": "correct",
+      "relation": "necessary",
+      "counterexamples": ["-2", null]
+    },
+    {
+      "id": "positive-domain",
+      "goal": "正数范围；判断条件 x^2=4 是 x=2 的什么条件",
+      "answer": "充要",
+      "status": "reliable",
+      "outcome": "correct",
+      "relation": "equivalent"
+    },
+    {
+      "id": "integer-domain",
+      "goal": "整数范围；判断条件 x>0.5 是 x>=1 的什么条件",
+      "answer": "充要条件",
+      "status": "reliable",
+      "outcome": "correct",
+      "relation": "equivalent"
+    },
+    {
+      "id": "integer-empty-cell",
+      "goal": "整数范围；判断条件 x=0.5 是 0=1 的什么条件",
+      "answer": "充要条件",
+      "status": "reliable",
+      "outcome": "correct",
+      "relation": "equivalent"
+    },
+    {
+      "id": "quadratic-interval",
+      "goal": "判断条件 x^2<4 是 x<2 的什么条件",
+      "answer": "充分不必要",
+      "status": "reliable",
+      "outcome": "correct",
+      "relation": "sufficient"
+    },
+    {
+      "id": "double-root",
+      "goal": "判断条件 x^2>=0 是 x^2!=0 的什么条件",
+      "answer": "必要不充分",
+      "status": "reliable",
+      "outcome": "correct",
+      "relation": "necessary",
+      "counterexamples": ["0", null]
+    },
+    {
+      "id": "negative-discriminant",
+      "goal": "判断条件 x^2+1>0 是 1=1 的什么条件",
+      "answer": "充要条件",
+      "status": "reliable",
+      "outcome": "correct",
+      "relation": "equivalent"
+    },
+    {
+      "id": "empty-premise",
+      "goal": "判断条件 0=1 是 x>0 的什么条件",
+      "answer": "充分不必要",
+      "status": "reliable",
+      "outcome": "correct",
+      "relation": "sufficient"
+    },
+    {
+      "id": "empty-consequence",
+      "goal": "判断条件 x>0 是 0=1 的什么条件",
+      "answer": "必要不充分",
+      "status": "reliable",
+      "outcome": "correct",
+      "relation": "necessary"
+    },
+    {
+      "id": "rational-domain",
+      "goal": "实数范围，x≠1；判断条件 1/(x-1)>0 是 x>1 的什么条件",
+      "answer": "充要条件",
+      "status": "reliable",
+      "outcome": "correct",
+      "relation": "equivalent"
+    },
+    {
+      "id": "zero-times-denominator",
+      "goal": "实数范围，x≠0；判断条件 0*(1/x)=0 是 x!=0 的什么条件",
+      "answer": "充要条件",
+      "status": "reliable",
+      "outcome": "correct",
+      "relation": "equivalent"
+    },
+    {
+      "id": "positive-common-domain",
+      "goal": "正数范围；判断条件 x/x=1 是 x>0 的什么条件",
+      "answer": "充要条件",
+      "status": "reliable",
+      "outcome": "correct",
+      "relation": "equivalent"
+    },
+    {
+      "id": "rational-two-poles",
+      "goal": "实数范围，x≠-1、1；判断条件 1/(x^2-1)>0 是 x^2>1 的什么条件",
+      "answer": "充要条件",
+      "status": "reliable",
+      "outcome": "correct",
+      "relation": "equivalent"
+    },
+    {
+      "id": "integer-pole-outside",
+      "goal": "整数范围；判断条件 1/(2*x-1)>0 是 x>=1 的什么条件",
+      "answer": "充要条件",
+      "status": "reliable",
+      "outcome": "correct",
+      "relation": "equivalent"
+    },
+    {
+      "id": "exact-decimal",
+      "goal": "判断条件 0.3*x>0.1 是 3*x>1 的什么条件",
+      "answer": "充要条件",
+      "status": "reliable",
+      "outcome": "correct",
+      "relation": "equivalent"
+    },
+    {
+      "id": "ambiguous-answer",
+      "goal": "判断条件 x>2 是 x>0 的什么条件",
+      "answer": "充分条件",
+      "status": "pending",
+      "outcome": null
+    },
+    {
+      "id": "missing-common-domain",
+      "goal": "判断条件 x/x=1 是 x!=0 的什么条件",
+      "answer": "充要条件",
+      "status": "pending",
+      "outcome": null
+    },
+    {
+      "id": "cancelled-pole-not-forgotten",
+      "goal": "判断条件 0*(1/x)=0 是 0=0 的什么条件",
+      "answer": "充要条件",
+      "status": "pending",
+      "outcome": null
+    },
+    {
+      "id": "irrational-roots",
+      "goal": "判断条件 x^2<2 是 x<2 的什么条件",
+      "answer": "充分不必要",
+      "status": "pending",
+      "outcome": null
+    },
+    {
+      "id": "higher-degree",
+      "goal": "判断条件 x^3>0 是 x>0 的什么条件",
+      "answer": "充要条件",
+      "status": "pending",
+      "outcome": null
+    },
+    {
+      "id": "conjunction",
+      "goal": "判断条件 x>0且x<2 是 x<2 的什么条件",
+      "answer": "充分不必要",
+      "status": "pending",
+      "outcome": null
+    },
+    {
+      "id": "attack",
+      "goal": "判断条件 require(1)=1 是 1=1 的什么条件",
+      "answer": "充要条件",
+      "status": "pending",
+      "outcome": null
+    },
+    {
+      "id": "uncertain-input",
+      "goal": "判断条件 x>2 是 x>0 的什么条件",
+      "answer": "充分不必要",
+      "status": "pending",
+      "outcome": null,
+      "uncertainties": [{ "resolved": false, "field": "条件", "reason": "原页符号待校对" }]
+    },
+    {
+      "id": "resource",
+      "goal": "判断条件 999999999^6*x>0 是 x>0 的什么条件",
+      "answer": "充要条件",
+      "status": "pending",
+      "outcome": null
+    }
+  ]
+}

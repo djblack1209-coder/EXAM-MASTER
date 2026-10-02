@@ -11,20 +11,27 @@
 
     <scroll-view scroll-y class="content-scroll">
       <view class="content-section">
-        <text class="update-date"> 更新日期：2026年2月18日 </text>
+        <text class="update-date"> 更新日期：2026年9月29日 · 本地候选，真实收费关闭 </text>
 
         <view class="section">
           <text class="section-title"> 一、服务说明 </text>
           <text class="section-text">
             Exam
-            Master（以下简称"本应用"）是一款面向考研学生的刷题学习小程序，提供公共课真题练习、错题复习、收藏和学习进度管理等功能。使用本应用即表示您同意本协议的全部条款。
+            Master（以下简称"本应用"）以对话为主要学习入口，提供讲解、作答记录、复习和计划视图，并保留公共课真题练习、错题复习、收藏和学习进度管理。公开版本的运营主体、适用规则和各端支付条款仍需审核。
           </text>
           <text class="section-text"> 本应用提供的内容用于学习辅助，不构成考试结果承诺或替代官方考试信息发布。 </text>
+          <text class="section-text">
+            核心学习工具免费，错题、基础统计和学习计划不以平台模型会员为条件。
+            可选订阅购买模型服务，价格、周期、周额度及结转尚未确定，当前仅开发沙箱且不产生实际收费。使用自带 API
+            不扣平台额度，上游费用由用户承担；本地资源有公开的大小和任务预算限制。
+          </text>
         </view>
 
         <view class="section">
           <text class="section-title"> 二、账号注册与使用 </text>
-          <text class="section-text"> 1. 您通过微信授权登录即可使用本应用。 </text>
+          <text class="section-text">
+            1. 本地学习无需账号；云同步及受保护接口需有效登录，模型调用需明确连接与数据共享授权。
+          </text>
           <text class="section-text"> 2. 您应妥善保管自己的账号信息，因账号保管不善导致的损失由您自行承担。 </text>
           <text class="section-text"> 3. 您不得将账号转让、出借给他人使用。 </text>
         </view>
@@ -41,7 +48,7 @@
         <view class="section">
           <text class="section-title"> 四、知识产权 </text>
           <text class="section-text">
-            本应用中的所有内容，包括但不限于文字、图片、软件、界面设计等，均受知识产权法律保护。未经授权，您不得复制、修改、传播本应用中的任何内容。
+            平台软件、第三方组件、题库与用户资料分别按各自授权使用。上传私人资料不表示将其转让给平台或同意公开；题目来源的内容可访问不代表可以自由商用。用户需持有相应使用权限。
           </text>
         </view>
 

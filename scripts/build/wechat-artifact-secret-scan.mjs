@@ -14,17 +14,7 @@ const DEFAULT_FORBIDDEN_CLIENT_TOKENS = [
   'SMTP_PASS'
 ];
 
-const SCANNED_EXTENSIONS = new Set([
-  '.js',
-  '.json',
-  '.wxml',
-  '.wxss',
-  '.wxs',
-  '.map',
-  '.txt',
-  '.html',
-  '.css'
-]);
+const SCANNED_EXTENSIONS = new Set(['.js', '.json', '.wxml', '.wxss', '.wxs', '.map', '.txt', '.html', '.css']);
 
 function hasScannedExtension(filePath) {
   const dotIndex = filePath.lastIndexOf('.');

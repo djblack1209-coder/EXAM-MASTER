@@ -182,7 +182,15 @@ def compact(text: Any) -> str:
     return re.sub(r"\s+", " ", str(text or "")).strip()
 
 
-def render_pdf_assets(pdf: Path, prefix: str, *, asset_dir: Path, force: bool, first_page: int, last_page: int) -> None:
+def render_pdf_assets(
+    pdf: Path,
+    prefix: str,
+    *,
+    asset_dir: Path,
+    force: bool,
+    first_page: int,
+    last_page: int,
+) -> None:
     if not pdf.exists():
         raise FileNotFoundError(pdf)
     asset_dir.mkdir(parents=True, exist_ok=True)
@@ -275,13 +283,19 @@ def passage_segments(text: str) -> list[str]:
 
 def extract_passages(text: str) -> dict[str, str]:
     return {
-        "cloze": section_between(text, r"Section\s+I\s+Use\s+of\s+English.*?\(10 points\)", r"\n\s*1\.\s+A\."),
+        "cloze": section_between(
+            text, r"Section\s+I\s+Use\s+of\s+English.*?\(10 points\)", r"\n\s*1\.\s+A\."
+        ),
         "text1": section_between(text, r"\n\s*Text\s*1\s*\n", r"\n\s*21\."),
         "text2": section_between(text, r"\n\s*Text\s*2\s*\n", r"\n\s*26\."),
         "text3": section_between(text, r"\n\s*Text\s*3\s*\n", r"\n\s*31\."),
         "text4": section_between(text, r"\n\s*Text\s*4\s*\n", r"\n\s*36\."),
         "part-b": section_between(text, r"\n\s*Part\s+B\s*\n.*?\(10 points\)", r"\n\s*A\."),
-        "part-c": section_between(text, r"\n\s*Part\s+C\s*\n.*?\(10 points\)", r"\n\s*Section\s+H?I+\s+Writing"),
+        "part-c": section_between(
+            text,
+            r"\n\s*Part\s+C\s*\n.*?\(10 points\)",
+            r"\n\s*Section\s+H?I+\s+Writing",
+        ),
         "writing": section_between(text, r"\n\s*Section\s+H?I+\s+Writing", r"2013年考研英语"),
     }
 
@@ -402,9 +416,7 @@ def build_card(number: int, passages: dict[str, str]) -> dict[str, Any]:
     question_images = [
         image_ref(page, caption=f"试卷原页 p.{page}") for page in QUESTION_PAGES[number]
     ]
-    answer_images = [
-        image_ref(page, caption=f"答案速查 p.{page}") for page in ANSWER_PAGES[number]
-    ]
+    answer_images = [image_ref(page, caption=f"答案速查 p.{page}") for page in ANSWER_PAGES[number]]
     question_hash = sha256_text(
         json.dumps(
             {
@@ -464,10 +476,21 @@ def build_card(number: int, passages: dict[str, str]) -> dict[str, Any]:
 
 
 def build_payload(*, asset_dir: Path, force_assets: bool) -> dict[str, Any]:
-    render_pdf_assets(PAPER_ANSWER, "paper-page", asset_dir=asset_dir, force=force_assets, first_page=1, last_page=15)
+    render_pdf_assets(
+        PAPER_ANSWER,
+        "paper-page",
+        asset_dir=asset_dir,
+        force=force_assets,
+        first_page=1,
+        last_page=15,
+    )
     text = extract_pdf_text(PAPER_ANSWER)
     passages = extract_passages(text)
-    missing = [key for key in ["cloze", "text1", "text2", "text3", "text4", "part-b", "part-c"] if not passages.get(key)]
+    missing = [
+        key
+        for key in ["cloze", "text1", "text2", "text3", "text4", "part-b", "part-c"]
+        if not passages.get(key)
+    ]
     if missing:
         raise RuntimeError(f"Missing expected passage groups: {', '.join(missing)}")
 

@@ -29,7 +29,18 @@ DEFAULT_QUEUE_OUTPUT = PROJECT_ROOT / "data" / "group-transfer-queue.json"
 DEFAULT_SOURCE_EXPORT = PROJECT_ROOT / "data" / "group-file-source-export.json"
 DEFAULT_DEST_ROOT = "/apps/考研大师/raw-pdf"
 PUBLIC_TRACKS = {"politics", "english1", "english2", "math1", "math2", "math3"}
-INDEXABLE_EXTENSIONS = {".pdf", ".doc", ".docx", ".txt", ".md", ".json", ".html", ".htm", ".ppt", ".pptx"}
+INDEXABLE_EXTENSIONS = {
+    ".pdf",
+    ".doc",
+    ".docx",
+    ".txt",
+    ".md",
+    ".json",
+    ".html",
+    ".htm",
+    ".ppt",
+    ".pptx",
+}
 TEXT_DATE_RE = re.compile(r"(?<!\d)(?:20)?\d{2}[-/.]\d{1,2}[-/.]\d{1,2}(?!\d)")
 EXAM_CYCLE_RE = re.compile(r"(?<!\d)((?:20)?\d{2})\s*考研")
 PUBLIC_CATEGORY_RE = re.compile(r"公共课|政治|英语|数学|英一|英二|数一|数二|数三")
@@ -38,7 +49,9 @@ COURSE_CATEGORY_DIRS = {
     "public_course": "public-course",
     "professional_course": "professional-course",
 }
-TRACK_COMPONENT_RE = re.compile(r"公共课|专业课|政治|英语|数学|英一|英二|数一|数二|数三|101|201|204|301|302|303")
+TRACK_COMPONENT_RE = re.compile(
+    r"公共课|专业课|政治|英语|数学|英一|英二|数一|数二|数三|101|201|204|301|302|303"
+)
 
 
 try:
@@ -238,7 +251,9 @@ def infer_collection_root(components: list[str]) -> str:
 
 
 def infer_course_category(raw: dict[str, Any], *, text: str, subject: str, track: str) -> str:
-    explicit = safe_text(raw.get("courseCategory") or raw.get("course_category") or raw.get("category"))
+    explicit = safe_text(
+        raw.get("courseCategory") or raw.get("course_category") or raw.get("category")
+    )
     aliases = {
         "public": "public_course",
         "public_course": "public_course",
@@ -251,12 +266,18 @@ def infer_course_category(raw: dict[str, Any], *, text: str, subject: str, track
         return aliases[explicit]
     if PROFESSIONAL_CATEGORY_RE.search(text):
         return "professional_course"
-    if PUBLIC_CATEGORY_RE.search(text) or track in PUBLIC_TRACKS or subject in {"politics", "english", "math"}:
+    if (
+        PUBLIC_CATEGORY_RE.search(text)
+        or track in PUBLIC_TRACKS
+        or subject in {"politics", "english", "math"}
+    ):
         return "public_course"
     return "unknown"
 
 
-def infer_institution_name(raw: dict[str, Any], *, components: list[str], course_category: str) -> str:
+def infer_institution_name(
+    raw: dict[str, Any], *, components: list[str], course_category: str
+) -> str:
     explicit = safe_text(
         raw.get("institutionName")
         or raw.get("institution")
@@ -283,7 +304,13 @@ def infer_institution_name(raw: dict[str, Any], *, components: list[str], course
     return ""
 
 
-def infer_direction(raw: dict[str, Any], *, components: list[str], course_category: str, institution_name: str) -> str:
+def infer_direction(
+    raw: dict[str, Any],
+    *,
+    components: list[str],
+    course_category: str,
+    institution_name: str,
+) -> str:
     explicit = safe_text(raw.get("direction") or raw.get("major") or raw.get("discipline"))
     if explicit:
         return explicit
@@ -317,16 +344,22 @@ def transfer_destination(record: dict[str, Any], dest_root: str) -> str:
         institution = safe_text(record.get("institutionKey")) or "unbucketed"
         category_dir = COURSE_CATEGORY_DIRS[course_category]
         if course_category == "public_course":
-            track_dir = track if track in PUBLIC_TRACKS else safe_text(record.get("subject")) or "unknown"
+            track_dir = (
+                track if track in PUBLIC_TRACKS else safe_text(record.get("subject")) or "unknown"
+            )
             return f"{root}/{safe_path_component(collection_root)}/{category_dir}/{institution}/{track_dir}/{year}"
 
-        direction = safe_text(record.get("direction")) or safe_text(record.get("subject")) or "professional"
+        direction = (
+            safe_text(record.get("direction")) or safe_text(record.get("subject")) or "professional"
+        )
         return f"{root}/{safe_path_component(collection_root)}/{category_dir}/{institution}/{safe_path_component(direction)}/{year}"
 
     if track in PUBLIC_TRACKS:
         return f"{root}/{track}/{year}"
 
-    direction = safe_text(record.get("direction")) or safe_text(record.get("subject")) or "professional"
+    direction = (
+        safe_text(record.get("direction")) or safe_text(record.get("subject")) or "professional"
+    )
     return f"{root}/professional/{safe_path_component(direction)}/{year}"
 
 
@@ -342,7 +375,9 @@ def decision_for_record(record: dict[str, Any]) -> str:
     return "approval_required_transfer"
 
 
-def normalize_record(raw: dict[str, Any], *, group_name: str, dest_root: str, now: str) -> dict[str, Any]:
+def normalize_record(
+    raw: dict[str, Any], *, group_name: str, dest_root: str, now: str
+) -> dict[str, Any]:
     file_name = pick_text(raw, "fileName", "server_filename", "filename", "name", "title")
     remote_path = pick_text(raw, "remotePath", "path", "groupPath", "server_path")
     if not file_name and remote_path:
@@ -362,7 +397,12 @@ def normalize_record(raw: dict[str, Any], *, group_name: str, dest_root: str, no
     if directory:
         subject = guess_subject(source_text)
         track = guess_track(source_text, subject)
-        source_type, eligible, risk_flags, priority = ("folder", False, ["folder_requires_expansion"], 10)
+        source_type, eligible, risk_flags, priority = (
+            "folder",
+            False,
+            ["folder_requires_expansion"],
+            10,
+        )
         safe_display_name = file_name
         brand_sanitized = False
         year = normalize_year(raw.get("year"), source_text, file_name)
@@ -376,7 +416,9 @@ def normalize_record(raw: dict[str, Any], *, group_name: str, dest_root: str, no
     exam_cycle = infer_exam_cycle(raw, group_name=group_name, components=components)
     collection_root = infer_collection_root(components)
     course_category = infer_course_category(raw, text=source_text, subject=subject, track=track)
-    institution_name = infer_institution_name(raw, components=components, course_category=course_category)
+    institution_name = infer_institution_name(
+        raw, components=components, course_category=course_category
+    )
     institution_key = safe_path_component(institution_name) if institution_name else ""
     direction = infer_direction(
         raw,
@@ -418,13 +460,24 @@ def normalize_record(raw: dict[str, Any], *, group_name: str, dest_root: str, no
     }
     record["decision"] = decision_for_record(record)
     record["approvalRequired"] = record["decision"] == "approval_required_transfer"
-    record["targetDirectory"] = transfer_destination(record, dest_root) if record["approvalRequired"] else ""
+    record["targetDirectory"] = (
+        transfer_destination(record, dest_root) if record["approvalRequired"] else ""
+    )
     return record
 
 
-def build_index(raw_items: list[dict[str, Any]], *, group_name: str, dest_root: str, now: str | None = None) -> dict[str, Any]:
+def build_index(
+    raw_items: list[dict[str, Any]],
+    *,
+    group_name: str,
+    dest_root: str,
+    now: str | None = None,
+) -> dict[str, Any]:
     now = now or utc_now()
-    records = [normalize_record(item, group_name=group_name, dest_root=dest_root, now=now) for item in raw_items]
+    records = [
+        normalize_record(item, group_name=group_name, dest_root=dest_root, now=now)
+        for item in raw_items
+    ]
     decisions = Counter(record["decision"] for record in records)
     source_types = Counter(record["sourceType"] for record in records)
     tracks = Counter(record["track"] or record["subject"] or "unknown" for record in records)
@@ -482,7 +535,8 @@ def build_transfer_queue(index: dict[str, Any], *, dest_root: str) -> dict[str, 
                 "sourceType": item["sourceType"],
                 "priority": item["priority"],
                 "riskFlags": item["riskFlags"],
-                "targetDirectory": item.get("targetDirectory") or transfer_destination(item, dest_root),
+                "targetDirectory": item.get("targetDirectory")
+                or transfer_destination(item, dest_root),
                 "notes": "Requires action-time confirmation before any Baidu cloud transfer/download.",
             }
         )
@@ -547,12 +601,25 @@ def build_source_export(index: dict[str, Any]) -> dict[str, Any]:
 
 def run_self_test() -> None:
     raw = [
-        {"fileName": "2027考研课程【此文件夹自动更新-无需保存】", "type": "folder", "sharer": "131*****601"},
-        {"fileName": "2018年考研英语一真题.pdf", "path": "/群文件/英语/2018年考研英语一真题.pdf", "size": 220_000},
+        {
+            "fileName": "2027考研课程【此文件夹自动更新-无需保存】",
+            "type": "folder",
+            "sharer": "131*****601",
+        },
+        {
+            "fileName": "2018年考研英语一真题.pdf",
+            "path": "/群文件/英语/2018年考研英语一真题.pdf",
+            "size": 220_000,
+        },
         {"fileName": "扫码加群.pdf", "path": "/群文件/扫码加群.pdf", "size": 220_000},
         {"fileName": "课程视频.mp4", "path": "/群文件/课程视频.mp4", "size": 5_000_000},
     ]
-    index = build_index(raw, group_name="必定上岸27考研159", dest_root=DEFAULT_DEST_ROOT, now="2026-05-22T00:00:00Z")
+    index = build_index(
+        raw,
+        group_name="必定上岸27考研159",
+        dest_root=DEFAULT_DEST_ROOT,
+        now="2026-05-22T00:00:00Z",
+    )
     queue = build_transfer_queue(index, dest_root=DEFAULT_DEST_ROOT)
     assert index["summary"]["totalRecords"] == 4
     assert index["summary"]["folderRecords"] == 1
@@ -563,7 +630,9 @@ def run_self_test() -> None:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Build a read-only Baidu group-file index and transfer queue.")
+    parser = argparse.ArgumentParser(
+        description="Build a read-only Baidu group-file index and transfer queue."
+    )
     parser.add_argument("--input", type=Path, default=DEFAULT_INPUT)
     parser.add_argument("--group-name", default="必定上岸27考研159")
     parser.add_argument("--index-output", type=Path, default=DEFAULT_INDEX_OUTPUT)

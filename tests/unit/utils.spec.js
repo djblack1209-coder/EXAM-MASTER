@@ -208,7 +208,7 @@ describe('工具函数测试', () => {
   describe('防抖函数', () => {
     const debounce = (fn, delay) => {
       let timer = null;
-      return function(...args) {
+      return function (...args) {
         if (timer) clearTimeout(timer);
         timer = setTimeout(() => {
           fn.apply(this, args);
@@ -250,7 +250,7 @@ describe('工具函数测试', () => {
   describe('节流函数', () => {
     const throttle = (fn, delay) => {
       let lastTime = 0;
-      return function(...args) {
+      return function (...args) {
         const now = Date.now();
         if (now - lastTime >= delay) {
           lastTime = now;
@@ -313,7 +313,10 @@ describe('验证函数测试', () => {
     isEmail: (str) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(str),
     isPhone: (str) => /^1[3-9]\d{9}$/.test(str),
     isUrl: (str) => /^https?:\/\/.+/.test(str),
-    isEmpty: (val) => val === null || val === undefined || val === '' ||
+    isEmpty: (val) =>
+      val === null ||
+      val === undefined ||
+      val === '' ||
       (Array.isArray(val) && val.length === 0) ||
       (typeof val === 'object' && Object.keys(val).length === 0)
   };

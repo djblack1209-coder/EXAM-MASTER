@@ -1,777 +1,187 @@
-# 变更日志
+# 重要变更
 
-## 2026-09-14 — 移动端分支归并与本地冗余清理
+## 2026-10-01：交接偿债、原件维护收口与免费模型真实验收
 
-- 合入移动端状态契约、App 产物检查、手机视口检查与确定性模块清单；保留主分支已有微信 DevTools smoke 和发布阻塞脚本。
-- 按当前页面刷新模块清单，补入未注册的专业课索引；移动端说明收进 `08C-SCRIPTS-REFERENCE.md`，避免独立文档重复维护。
-- 本地清理仅针对可重建产物、重复工作树依赖、失效环境与缓存；题源 PDF、来源证据、正式资源和未提交改动保留。
-- 已验证相关 7 个测试文件、20 个测试，以及 App/H5 构建和 App 产物检查。生产部署与微信实机验收不在本次范围内。
+修复通用API跨账户去重/迟到401/重试及空取消句柄，隔离凭据代次并保留原限流/鉴权。多平台入口只调用已声明能力，缺目标/构建失败非零退出、缺依赖不自动安装；网页及后端检查补异常/信号/有界收尾，微信连接后超时关闭已接，启动前与真机仍待验。
 
-## 2026-09-13 — AI 应用作品展示与本地演示完善
+真实网页发现定位确认勾选失效，改为标准复选组值事件并覆盖撤销/二次确认。复用既有登记整理/无正文定位协议，Python32、相关JS唯一56、真实H5合成PDF15项通过；本批临时浏览器/服务/原件/下载/隔离数据库清理。三端/后端构建及微信产物通过，未替代真机或桌面安装。
 
-- **范围**：GitHub 展示、文档、H5 示例、学习计划日期、许可元数据。
-- README 新增品牌封面、实际 H5 截图、源码导览、真实 CI 徽章、启动步骤与能力边界；重写产品定位与三分钟讲解，更新架构/前端/测试文档，新增问题反馈模板。`docs/assets/` 为精选展示资源，临时验证产物在 `tmp/github-showcase/`。
-- 刷题中心在 H5 开发环境且未加载题库时显示示例入口；复用原有 `demo-bank.js`，题目显示「示例」并保持 `publishableOfficial: false`。修正一道歧义数学示例；正式发布门禁不变。
-- 将本地统计生成的「AI 推荐」更名为「学习建议」。学习计划日期改用本地日历格式，并修正测试夹具的 UTC 偏移问题，增加晚间、清晨和夏令时用例。
-- 按维护者本轮决定，暂不新增开源许可，将根包及锁文件的项目许可标记由 MIT 改为 `UNLICENSED`；第三方依赖原许可保持不变。`.env.example` 调整为实际客户端公开变量，服务端密钥不进入前端模板。
-- **本地验证**：`npm run lint`、`npm test`（164 文件 / 1252 用例）、H5 与微信构建、主包引用/预算检查、微信产物检查通过；纽约与上海时区的本地学习用例通过；Python PDF 管线及 flashcard 质量检查 29 用例通过；文档路径、Issue YAML、`git diff --check` 和跟踪文件密钥模式审计通过。
-- **浏览器验证**：390 × 844 H5 示例完成 3 题，2 对 1 错与 67% 正确率一致，解析可见；正式 H5 构建的示例按钮数量为 0，相关页面未记录 JavaScript 错误。
-- **未验证/阻塞**：真实 AI 请求、生产数据恢复、微信真机。当前 `proxy-ai` / `proxy-ai-stream` 只有 YAML 元数据，缺少对应 TS/JS 入口；题库报告 `canPublish=false`，覆盖缺口 14、来源证据缺口 7。source strict audit 与本地测试均不能解除这些限制。
-- **兼容性**：没有改变正式题库的发布条件、后端 API 或生产部署配置。
+沿私有免费目录进行6次合成验收请求：Groq教学/真实工具/幂等/提示首答保护/同步/用量8项通过，Gemini调用失败、Z.ai限流、智谱连接通过但教学超时。保留未知成本pending，不安排人工核对、不把主观语义/长期效果自动标成可靠。客户确认七个优先方向、网页→桌面→微信→手机与功能优先/视觉待选；开源调研与接续规划见13。无新增依赖、收费、生产写入或发布；原暂存与main保全，本地交接版本另存。
 
-## 2026-06-17 — 发布阻塞复核与仓库生成物清理
+2026-10-01：补齐私人解析器“原件已收到但客户端首批回执丢失”的无正文登记及明确处理。复现首回执无fileId与旧查询absent不可清待办；增加受保护parse元信息动作、原存储身份、客户端待办七字段/20上限、解析器write-ahead及原子原件写入/512上限、closed墓碑和共享保留。恢复只用原fileId及登记OCR许可，事实保存失败保留；页面逐次核对/恢复/取消，记录清除保留定位元信息，刷新零重传/令牌持久化。JS28专项/215相关/全量2061通过6跳过，Python31/流水线60、真实H5合成PDF10项；三端/后端构建与分项产物审计见 `tmp/material-upload-delivery/delivery-report.json`。无新依赖/费用/收费/生产操作，13条暂存保全；关闭登记长期维护和真实移动/供应商/公共库/生产仍待验。
 
-- 以 `613bf5bf chore: baseline current workspace` 作为当前工作区基线后复跑 release triage：`audit:laf:function-sources -- --strict` 通过，`audit:question-bank:report` 仍显示 `canPublish=false`、覆盖缺口 14 个、Source Manifest evidence gap 7 个，`audit:release:backlog` 仍为 blocked，`baidu:flashcards:quality` 仍阻止 `politics-2023` 的 38 张 candidate 证据卡进入公开发布。
-- 当前 P0 不允许本地伪闭环：真实手机微信 evidence 需真实设备记录；`politics:2023` 需补齐或替换完整答案源；`math2:2016` 需替换已确认错配的题源；2026 公共课槽位需外部官方题源；`math2/math3 2021-2022` 有本地 PDF 但仍需逐题裁切、答案核验和 registry 注册。
-- 清理误入库的本地 PDF 渲染/OCR/探针缓存：`tmp/` 从 git 跟踪中移除并加入 `.gitignore`。正式发布页图仍保留在 `cdn-assets/question-bank/`，原始/候选题源仍按现有策略保留在 ignored `data/raw-inbox/`。
-- 删除过期的 `docs/reports/PROJECT_DEEP_SCAN_REPORT.md` 副本；深度扫描报告改回由 `npm run audit:deep-scan` 生成到 `data/reports/`，避免核心文档与运行时报告分叉。
+2026-10-01：补齐跨窗口资料生命周期：账户隔离共享撤销标记、H5 Storage刷新/监听释放、只读上下文不读整份正文、正文前现有写入权门禁。H5兼容学习存储读取其他窗口最新根/标记；资料动作首次初始化保持本窗口记录身份，删除/恢复/同步替换等先换代再写事实，标记失败不改事实；后续事实保存失败也不会复活旧许可。无正文元信息不入导出/同步，完整账户清理仍移除。零新增费用/收费/部署，13条既有暂存保全；证据在 `tmp/material-crosswindow-delivery/delivery-report.json`。
 
-## [2026-06-12] Oracle 3055 H5 温备说明
+2026-10-01：修复H5/微信资料文件动作对同账户删除/恢复失效不足，资料健康与解析回执绑定单调授权代次，固定动作连接快照并取消旧解析。H5主动中止Reader、重复回调只采用一次；微信无原生取消句柄时拒收迟到正文。App确认/读取复用同一代次，令牌/连接换回原值也不恢复旧许可，主动取消在途原生读取；既有仅元信息选择/隐藏返回行为保留。普通学习更新继续，无新增集合、费用、收费、部署或门禁放宽。证据在 `tmp/material-lifecycle-delivery/delivery-report.json`，保全既有工作树和13条暂存。
 
-- **Scope**: deploy/docs
-- **Files Changed**: `docs/09-DEPLOYMENT-GUIDE.md`
-- **Summary**: 更新并验证 Oracle 3055 上的 EXAM-MASTER H5 静态温备：服务 `exam-master-h5.service` 监听 `127.0.0.1:18119`，资源上限为 `CPUQuota=20%` 和 `MemoryMax=256M`，最近部署前备份为 `/var/backups/exam-master-h5/20260612T231001Z-predeploy`。该温备只复制 `dist/build/h5`，不复制 Laf/Mongo/腾讯云/微信/百度网盘/AI 密钥，也不公开端口或切换生产流量。
-- **Breaking Changes**: None
+2026-10-01：接入Mac私人解析器可选Apple Vision（CPU、准确模式、原始候选不启用语言纠错）；真实SDK/CoreText合成/Poppler/HTTP与页面功能验证。保留10MiB/24MP/12秒识别及512KiB方向规范预览，角色/公式条件待校对。用户显式选择与逐次许可、续页/失败重试及解析器目标复核；混合批次来源取片段版本，旧提取事件保留；失败新图片副本回滚，不删除旧原件。未新增依赖、实际费用、收费或生产发布，13条暂存保全。完整证据见 `tmp/apple-ocr-delivery/delivery-report.json`；iOS/Android原生OCR桥和真机仍待验。
 
-## 2026-06-03 — 2019 英语一文本层题库开放
+## 2026-10-01：App系统文件与逐次解析
 
-- 2019 考研英语一从“待入库”推进为正式题库：52 张题卡覆盖完形填空、阅读理解、新题型、翻译和写作，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
-- 新增 `build_english1_2019_bank.py`，从本地百度网盘 2019 英语一原卷和答案速查 PDF 生成 `src/config/flashcard-banks/english1-2019.json` 与 `cdn-assets/question-bank/english1-2019` 页图资源；发布题面使用答案速查 PDF 文本层，原卷保留为页图审计源，答案速查第 16 页推广尾页不进入发布资产或证据。
-- 清洗质量：官方答案表按 `1-5 CCBDA`、`26-30 DAACB`、`41-45 EDGBA` 锚定；验收锚点包括 q01=`C`、q21=`A`、q26=`D`、q30=`B`、q46 medical journals 翻译句、q51 `Aiding Rural Primary Schools` 邮件和 q52 看图作文，并拦截 `用“闪过”` 推广尾页与英语二 museum/chart 串源。
-- 2005-2020 release gate 刷新后，公共课覆盖缺口降至 1，published slots 升至 90，source evidence gap 保持 1；release backlog 降至 `blockers=3`、`publicCourseBlockedSlots=1`，剩余公共课槽位为 `math2:2016`，当前候选仍因误标为 2014 内容而阻塞。
+- 加入系统选择/临时句柄、确认后有界读取与取消释放源码，Android ContentResolver/CancellationSignal、iOS NSFileCoordinator/安全作用域，10 MiB与单次回执保护，JS不接任意路径。
+- 接通App模型/资料控件及选择预览、确认/取消；隐藏仍清令牌，返回须重授权。复现同账户清除记录后旧文件仍可返回的两项失败，以实际账户/记录生命周期修复；普通作答不使文件失效。
+- 页面/服务/Store相关109项、最终全量1924通过/6跳过；实际文件57项、网络/TLS29项和Android SDK内核/ContentResolver源编译/dex通过。H5真实两页PDF取消/确认/页图/刷新与三端构建分别验收。
+- 完整DCloud/iPhoneOS SDK装配仍exit2、系统选择器/移动安全作用域/真机未验收；保留来源、预算、幂等、私人范围及删除门禁。无新依赖/费用/收费/部署，13条暂存路径保全，功能优先、视觉后置。详细证据见11、09B和tmp/app-material-delivery。
 
-## 2026-06-03 — 2018 英语一文本层题库开放
+## 2026-10-01：App受保护原生连接器源码
 
-- 2018 考研英语一从“待入库”推进为正式题库：52 张题卡覆盖完形填空、阅读理解、新题型、翻译和写作，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
-- 新增 `build_english1_2018_bank.py`，从本地百度网盘 2018 英语一原卷、答案速查和文档版扫描 PDF 生成 `src/config/flashcard-banks/english1-2018.json` 与 `cdn-assets/question-bank/english1-2018` 页图资源；发布题面使用答案速查 PDF 文本层，原卷保留为页图审计源，答案速查第 16 页推广尾页不进入发布资产或证据。
-- 清洗质量：官方答案表按 `1-5 CADBD`、`26-30 DABCA`、`41-45 EGABD` 锚定，修复旧清洗草稿里 q26 把 Text 2 段落写成答案的问题；验收锚点包括 q01=`C`、q21=`D`、q26=`D`、q30=`A`、q46 Shakespeare 宗教戏剧句、q51 graduation ceremony 邮件和 q52 `选课进行时` 写作题。
-- 2005-2020 release gate 刷新后，公共课覆盖缺口降至 2，published slots 升至 89，source evidence gap 保持 1；release backlog 降至 `blockers=4`、`publicCourseBlockedSlots=2`，剩余公共课槽位为 `math2:2016`、`english1:2019`。
+- 收尾核实本机已有Android SDK33/36；用真实SDK33/官方lambda编译支持通过内核编译，已有D8 36通过min-api21 dex生成。旧D8内部失败日志保留，不下载或变更工具配置；仍不代表完整DCloud模块、API21设备或插件装配。
 
-## 2026-06-03 — 2015 数学二逐题裁切题库开放
+- 复现已具备保护模块的App仍被平台入口拒绝；新增专用宿主及Java HttpURLConnection/Foundation NSURLSession内核，固定路径/精确来源、令牌/授权、重定向拒绝、严格UTF8、容量/硬时限及取消/关闭单次回调。活动任务最多四项，Java等待队列有界，桥异常/非法JSON固定错误码。
+- 文本、健康、已有原件续解析/匹配删除沿原服务；实际Store回复成功才记推理状态，不采纳文本自封工具/判分。业务requestId保留，原生transport id仅本请求取消；不新增文件权限、云代理、数据集合或自动回退。
+- 新App27项、相关86项，最终全量1881通过/6默认跳过；固定质量210/210，真实JDK/Foundation回环HTTP/TLS29项及三端前端/后端通过。两次夹具问题与修正日志保留；内核/合成JS桥不冒充实际移动SDK/设备。
+- 新build-only SDK编译入口在缺DCloud/iPhoneOS SDK时退出2，不生成插件、不修改manifest/下载/云打包；实际二进制装配、App文件选择/视觉/流式、供应商/设备、公共题库和受保护生产仍逐项待验。合同见09B、证据见11及tmp/app-connector-delivery。无新依赖/费用/收费/部署，13条暂存路径保全，完整目标持续进行、视觉后置。
 
-- 2015 考研数学二从“待入库”推进为正式题库：23 张题卡覆盖 8 道选择、6 道填空和 9 道解答题，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
-- 新增 `build_math2_2015_bank.py`，从本地百度网盘 `2015考研数学二真题.pdf` 生成 `src/config/flashcard-banks/math2-2015.json` 与 `cdn-assets/question-bank/math2-2015` 页图资源；源 PDF 为 14 页题答混排扫描版，题面使用逐题裁切图，答案页裁除页眉页脚推广。
-- 清洗质量：q08 在 OCR 泄漏扫描发现 q07 解析尾后收紧裁切框；最终 23 张题面图未命中答案/解析/公众号/推广关键词。q22 答案按第 13 页推导结论记录为 `X=[[3,1,-2],[1,1,-1],[2,1,-1]]`。
-- 2005-2020 release gate 刷新后，公共课覆盖缺口降至 3，published slots 升至 88，source evidence gap 保持 1；release backlog 降至 `blockers=5`、`publicCourseBlockedSlots=3`，剩余公共课槽位为 `math2:2016`、`english1:2018`、`english1:2019`。
+## 2026-10-01：条件原答先修与精确反例
 
-## 2026-06-03 — 2020 数学二逐题裁切题库开放
+- 复现可靠条件错答无法进入先修；新增prerequisite-condition-v1，以完整原答分类和独立双向成立集差异选择候选方向，旧v1/v2冻结。新建拒绝陈旧/待核对/已正确依据与伪造方向/权限，更正引用转待核对，保存旧事实和任务分母。
+- 新safe-condition-implication-v1检查完整蕴含或任意共同数域内精确P真Q假反例；同真/同假/反向、排除值、非整数或非正数拒绝，模糊声明/注入/未知及资源越界待核对。连分数比较避开交叉乘法精度与BigInt设备要求，不扩大解析上限。
+- 复用原页面、Store、reducer、教学、计划与条件反向变式；帮助正确不冒充独立完成，后续原题检验保留完整表达式/数域/排除值。同步/恢复重建规则，资料删除级联清除小题/反例/变式和相关正文。
+- 新38项人工固定期望与45项专项，质量210/210、84人工复核；最终全量1854通过/6默认跳过。实际JWT/HTTP/Mongo 10项、H5 8项及三端/后端通过；详细证据见11及tmp/condition-diagnosis-delivery。无新增依赖、费用、收费或生产部署，暂存区保全，视觉后置与完整目标保持。
 
-- 2020 考研数学二从“待入库”推进为正式题库：23 张题卡覆盖 8 道选择、6 道填空和 9 道解答题，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
-- 新增 `build_math2_2020_bank.py`，从本地百度网盘 `2020考研数学二真题.pdf` 生成 `src/config/flashcard-banks/math2-2020.json` 与 `cdn-assets/question-bank/math2-2020` 页图资源；源 PDF 为 16 页扫描版，第 1 页为封面说明，第 2-5 页为题面，第 6-16 页为答案解析，题面使用逐题裁切图，答案页裁除页眉页脚推广。
-- 清洗质量：q05 和 q23 使用跨页题面图，q21/q22/q23 裁剪框经视觉与 OCR 校准；最终 25 张题面图未命中答案/解析/公众号/全年免费分享等泄漏关键词。验收锚点包括 q01=`D`、q02=`C`、q08=`D`、q09=`-1/2`、q10=`2(√2-1)`、q14=`a^4-4a^2`、q21=`y=Cx^(3/2)`。
-- 2005-2020 release gate 刷新后，公共课覆盖缺口降至 4，published slots 升至 87，source evidence gap 保持 1；release backlog 降至 `blockers=6`、`publicCourseBlockedSlots=4`，下一批 release-priority dry-run 转向更早公共课缺口。
+## 2026-10-01：主观原答定位与评分重试
 
-## 2026-06-03 — 2019 数学二逐题裁切题库开放
+- 当前assess 1.2宿主指定subjective-rubric-v2，重复原文须唯一扩展或精确半开范围；位置、出现序号和附近原文从完整原答重建。拒绝错位、代理对截断、同范围重复、伪造附近正文/权限及新模型降级；原文真实不证明语义分值。
+- 未校对疑义时所有维度未定分，Store共享完整field/reason/critical/resolved投影，继续沿上下文硬上限与授权预算。对话/统计显示原答位置；旧v1事件和升级前已经执行的合法工具重试保留原评分/1.1收据。
+- 全量复现工具重试重新计算收据耗时导致同ID冲突，现复用原成功收据，缺收据只补齐；同ID改内容仍拒绝。新增42项专项、28项人工固定期望，总质量172/172、75人工复核，最终全量1809通过/6默认跳过。
+- 实际本机JWT/HTTP/Mongo 9项、H5 8项和三端/后端通过，详见11及tmp/rubric-evidence-delivery。人工隔离意见不代表实际模型推理；无新依赖、模型费用、收费或生产发布，13条暂存路径保全，完整目标与视觉后置边界保持。
 
-- 2019 考研数学二从“待入库”推进为正式题库：23 张题卡覆盖 8 道选择、6 道填空和 9 道解答题，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
-- 新增 `build_math2_2019_bank.py`，从本地百度网盘 `2019考研数学二真题.pdf` 生成 `src/config/flashcard-banks/math2-2019.json` 与 `cdn-assets/question-bank/math2-2019` 页图资源；源 PDF 为 5 页扫描版，1-4 页为题面，第 5 页为参考答案，题面使用逐题裁切图，答案页裁除 q23 之后的推广尾部。
-- 清洗质量：答案页视觉核对 q09=`4e^(3/2)`、q10=`3π/2+2`、q11=`yf(y^2/x)`、q12=`1/2 ln3`、q18=`43√2/120`、q20=`a=-3/4,b=3/4`；题面 OCR 泄漏扫描未命中答案/解析/推广关键词，q09 源图自带浅灰水印但不含答案。
-- `run_cleaning_queue.py` 新增 release audit 已发布槽位过滤，避免 dry-run 在 `math2:2019` 发布后继续重复计划旧 pending 下载任务。
-- 2005-2020 release gate 刷新后，公共课覆盖缺口降至 5，published slots 升至 86，source evidence gap 保持 1；release backlog 降至 `blockers=7`、`publicCourseBlockedSlots=5`，下一批 release-priority dry-run 首位为数学二 2020。
+## 2026-10-01：条件充分性与独立方向检验
 
-## 2026-06-03 — 2018 数学二逐题裁切题库开放
+- 接入P⇒Q/Q⇒P的充分/必要/充要/都不成立分类；复用精确分数、全部有理零点/分母/原限制分段与共同实数/整数/正数域，不以随机试值作为证明。原条件无定义且未显式共域排除时待核对，复杂命题/无理零点/资源越界继续降级。
+- 目标直接创建任务，完整分类自动记录；双向教学/精确反例、低层提示、交换P/Q的独立变式、首答/帮助/计划/恢复沿既有合同。分类与反例在导入/同步/判分重建，原来源与公共库门禁保留；资料删除及争议更正覆盖。
+- 新30项人工期望加入固定质量集144/144、47人工复核；新增40项专项，最终全量1767项通过/6默认跳过。真实本机JWT/HTTP/Mongo 7项与H5实际操作8项通过，显式同步后的题目/三次原答/帮助与服务端事实一致；三端产物及收尾见11及tmp/condition-delivery，不代表供应商、设备或一般逻辑/全学科效果。
+- 没有新依赖、模型消费、收费或生产发布；13条暂存路径和旧工作树继续保全，UI视觉优化后置。
 
-- 2018 考研数学二从“待入库”推进为正式题库：23 张题卡覆盖 8 道选择、6 道填空和 9 道解答题，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
-- 新增 `build_math2_2018_bank.py`，从本地百度网盘 `2018考研数学二真题.pdf` 生成 `src/config/flashcard-banks/math2-2018.json` 与 `cdn-assets/question-bank/math2-2018` 页图资源；源 PDF 为 14 页题答混排扫描版，题面使用逐题裁切图，q16 跨页拆为 `question-16-a/b.jpg`，第 14 页作为 q23 答案延续证据保留。
-- 清洗质量：q17/q21 裁剪框在首次 OCR 泄漏扫描后收紧，最终 24 张题面图无 `【答案】` / `【解析】` 泄漏；验收锚点包括 q01=`B`、q08=`A`、q14=`2`、q17=`3π²+5π`、q20=`10`。
-- 2005-2020 release gate 刷新后，公共课覆盖缺口降至 6，published slots 升至 85，source evidence gap 保持 1；release backlog 降至 `blockers=8`、`publicCourseBlockedSlots=6`，下一批 release-priority dry-run 从数学二 2019-2020 开始。
+## 2026-10-01：微信原生连接器与资料逐次授权
 
-## 2026-06-03 — 2017 数学二逐题裁切题库开放
+- 复用现有文本/资料连接器，接微信原生RequestTask的manual重定向、响应头/分块、UTF8与硬容量/时间预算。SDK3.2.2以上且手机/开发者工具具备能力才请求；PC、旧SDK和App先拒绝，不把H5 fetch当原生实现。
+- 资料选择复用微信隐私流程，对话页挂载已有弹窗并补齐按钮标识/卸载拒绝。逐次确认后核对文件类型/大小与修改时间、有限读取Base64，归属/连接变化、大小/编码变化不发送。解析、继续、取消与匹配原件删除沿原合同。
+- 新增21项原生边界与页面/隐私专项，最终全量1727项通过、6默认跳过；真实HTTP形状桥9项与H5实际操作、三端构建另见11及tmp/weixin-connector-delivery。桥接不代表微信SDK/真机，真实本地模型/合法域名/HTTPS与设备仍待验。
+- H5实际发送复现Store云绑定被本地服务正确拒绝；客户端按既有合同投影并移除背景owner，保留服务端未知字段、鉴权和预算门禁。
+- 未新增依赖、LAN监听、真实供应商消费、收费或生产部署，13条暂存路径继续保全；公共库来源与答案门禁保持，视觉优化后置。
 
-- 2017 考研数学二从“待入库”推进为正式题库：23 张题卡覆盖 8 道选择、6 道填空和 9 道解答题，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
-- 新增 `build_math2_2017_bank.py`，从本地百度网盘 `2017考研数学二真题.pdf` 生成 `src/config/flashcard-banks/math2-2017.json` 与 `cdn-assets/question-bank/math2-2017` 页图资源；源 PDF 为 11 页题答混排扫描版，题面使用逐题裁切图，q06 跨页拆为 `question-06-a/b.jpg`，第 11 页推广尾页不进入发布证据。
-- 清洗质量：源 PDF 的部分选择题答案栏与解析结论不一致，发布答案按同页解析结论核对；题面裁切经 OCR/视觉检查收紧，最终无实际 `【答案】` / `【解析】` 泄漏，q09 仅保留官方题型说明里的“请将答案写在答题纸”。
-- 2005-2020 release gate 刷新后，公共课覆盖缺口降至 7，published slots 升至 84，source evidence gap 保持 1；release backlog 降至 `blockers=9`、`publicCourseBlockedSlots=7`，下一批 release-priority dry-run 从数学二 2018-2020 开始。
+## 2026-10-01：原答差异诊断v2与方程完整检验
 
-## 2026-06-03 — 2020 英语一文本层题库开放
+- 新建先修按独立原答差异选择符号/进位、不等式方向/临界值/端点、方程完整解集/原定义域及化简等价小题；可靠partial保留为部分正确，不计错题，待核对/攻击/冲突依据继续拒绝。
+- 新诊断要求最新作答仍可靠受阻，已补全或待核对时不借旧答案建议新诊断；历史诊断与原答保留。方程诊断后的原题独立变式保留原数域、排除值和全部解要求；小题/提示后成功不能替代原题检验。v1题干/理由冻结，备份/同步重放、更正撤销和隐私删除兼容。
+- 新26项人工固定期望纳入质量报告，共114项；35项新增专项含独立判分、备份/同步、更正/伪造依据与数域检验。最终全量1706项通过、6默认跳过，具体命令、本机及构建结果见11和tmp/diagnosis-evidence-delivery。
+- 沿用鉴权/预算/幂等和公共库门禁，无新依赖、真实供应商费用、收费或生产部署。完整目标持续进行，视觉优化后置。
 
-- 2020 考研英语一从“待入库”推进为正式题库：52 张题卡覆盖完形填空、阅读理解、新题型、翻译和写作，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
-- 新增 `build_english1_2020_bank.py`，从本地百度网盘 2020 英语一原卷、答案速查、逐题细解和文档版扫描 PDF 生成 `src/config/flashcard-banks/english1-2020.json` 与 `cdn-assets/question-bank/english1-2020` 页图资源；发布题面使用干净答案速查 PDF 文本层和页图，原卷因含推广页眉保留为 audit source，逐题细解保留为答案支持证据。
-- 验收点：总卡数 52，全部 `answerEvidenceStatus=matched`，q01/q21/q30/q41/q45 分别为 `C/C/D/C/D`，q46 命中 `With the Church's teachings and ways of thinking`，q51 为 singing contest notice，q52 为“习惯”看图作文，并拦截 2020 英语二 `手机阅读目的调查` / failure 翻译串源。
-- 2005-2020 release gate 刷新后，公共课覆盖缺口降至 8，published slots 升至 83，source evidence gap 保持 1；release backlog 降至 `blockers=10`、`publicCourseBlockedSlots=8`，下一批 release-priority dry-run 转向数学二 2017-2020。
+## 2026-10-01：对话停止/教法边界与先修诊断
 
-## 2026-06-03 — 2020 数学三逐题裁切题库开放
+- 修复全局停止抑制其他对话；教法、难度和理由从各对话已有事件恢复，模型背景与方法锁使用同一派生。导航不解除停止，加入明确恢复自动教法和继续当前任务；恢复自动不提交答案、调用模型或清除帮助。
+- 接入有可靠错答依据的整数加法/乘法符号与一次不等式先修小题，独立知识范围、原题/错答关联、无帮助完成条件；提示后正确分开，随后用原题变式独立检验。更正撤销诊断关联，原资料删除级联覆盖小题及变式。
+- 沿用现有工作树、事件v1、鉴权/预算/幂等和题库门禁，无新依赖/真实费用/收费/生产部署。当前验证与失败重跑证据见11及tmp/strategy-boundary-delivery，完整目标保持进行中，视觉优化后置。
 
-- 2020 考研数学三从“待入库”推进为正式题库：23 张题卡覆盖 8 道选择、6 道填空和 9 道解答题，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
-- 新增 `build_math3_2020_bank.py`，从本地百度网盘 `2020年考研数学三真题及解析.pdf` 生成 `src/config/flashcard-banks/math3-2020.json` 与 `cdn-assets/question-bank/math3-2020` 页图资源；源 PDF 为 18 页扫描版，1-5 页为试卷题面、6-18 页为答案解析，题面从试题页逐题裁切，q06 拆为跨页题面图，OCR/视觉检查未发现题面答案解析泄漏。
-- 2005-2020 release gate 刷新后，公共课覆盖缺口降至 9，published slots 升至 82，source evidence gap 保持 1；release backlog 降至 `blockers=11`、`publicCourseBlockedSlots=9`，下一批 release-priority dry-run 从 `2020年考研英语一真题.pdf` 开始。
+## 2026-10-01：教学后续观察与持续用户教法保护
 
-## 2026-06-03 — 2019 数学三逐题裁切题库开放
+- 复用教学、尝试和有效调度事实，新增只读teaching-followup-v1；同对话/题关系/实际收据关联，区分提示正确、重做、独立变式、到期复测与待核对，不用模型自评证明效果。
+- 两次错答先补先修，实际交付后继续受阻换成拆步/换例/类比；用户指定方法和节奏优先保留，下一轮模型工具受持续方法锁约束，更正撤销旧自动策略但不覆盖用户选择。
+- 统计页可回原教学/作答，恢复保留历史身份，原首答/任务分母不变；完整目标与UI视觉优化暂停的边界保持。
+- 最终全量1655项通过/6项跳过、专项93项、本机HTTP/Mongo6项和实际H5同步/刷新通过；三端/独立后端构建与产物审计通过。首轮新增专项失败及修复证据在tmp/strategy-delivery，未产生真实供应商费用、收费或生产变更。独立固定质量合同仍88项，不将教学规则观察当广学科效果证明。
 
-- 2019 考研数学三从“待入库”推进为正式题库：23 张题卡覆盖 8 道选择、6 道填空和 9 道解答题，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
-- 新增 `build_math3_2019_bank.py`，从本地百度网盘 `2019年考研数学三真题及解析.pdf` 生成 `src/config/flashcard-banks/math3-2019.json` 与 `cdn-assets/question-bank/math3-2019` 页图资源；源 PDF 为 12 页题答混排扫描版，题面使用逐题裁切图，q04 和 q22 使用跨页/分段题面图，q23 答案证据延续到第 12 页，OCR/视觉检查未发现题面答案解析泄漏。
-- 2005-2020 release gate 刷新后，公共课覆盖缺口降至 10，published slots 升至 81，source evidence gap 保持 1；release backlog 降至 `blockers=12`、`publicCourseBlockedSlots=10`，下一批 release-priority dry-run 从 `2020年考研数学三真题及解析.pdf` 开始。
+## 2026-10-01：一次不等式解集与实际教学检验
 
-## 2026-06-03 — 2018 数学三逐题裁切题库开放
+- 复用有界精确代数/原宿主入口，新增有理系数一次不等式、常数真假和开闭区间/并集判分；新合同ID，规则从题干重新建立，来源/公共门禁保留。
+- 无模型即可目标→聊天答题→错题/计划/提示→实际解集数轴→提示修正→负倍缩放与左右对调变式→待复测；原首答、帮助、备份/同步和争议更正共用事实。
+- 固定集扩36项、全体合同88项；方向/区间/资源/攻击/实际图形与连续学习专项、Python Fraction次级差分、本机Mongo/HTTP及H5同步分级留证。范围外保留pending，不称一般代数/所有学科可靠。无新依赖、收费或模型消费。完整验收见11；目标进行中、视觉优化暂停。
+- 最终全量1641通过/6跳过；首轮用户文案门禁失败已纠正，保留失败日志和改字前浏览器证据。三端/后端与本机HTTP6项通过，真实供应商/设备/公开发布分级未通过。
 
-- 2018 考研数学三从“待入库”推进为正式题库：23 张题卡覆盖 8 道选择、6 道填空和 9 道解答题，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
-- 新增 `build_math3_2018_bank.py`，从本地百度网盘 `2018年考研数学三真题及解析.pdf` 生成 `src/config/flashcard-banks/math3-2018.json` 与 `cdn-assets/question-bank/math3-2018` 页图资源；源 PDF 为 14 页题答混排扫描版，题面使用逐题裁切图，q08 跨页题面拆为 `question-08-a/b.jpg`，第 14 页确认是 q23 答案延续而非推广页，OCR/视觉检查未发现题面答案解析泄漏。
-- 2005-2020 release gate 刷新后，公共课覆盖缺口降至 11，published slots 升至 80，source evidence gap 保持 1；release backlog 降至 `blockers=13`、`publicCourseBlockedSlots=11`，下一批 release-priority dry-run 从 `2019年考研数学三真题及解析.pdf` 开始。
+## 2026-10-01：原页图辅助解读（功能优先）
 
-## 2026-06-03 — 2017 数学三逐题裁切题库开放
+- 从仅声明视觉能力改为H5/BYOK/非流式显式路径；逐次授权、单张内嵌PNG/JPEG、来源/提取版本和资源校验，共用鉴权/SSRF/预算/幂等。
+- 角色/区域/疑义均为待校对候选，不执行判分/计划/建题；原对话保存、帮助标记、重开只读恢复、兼容备份与资料删除。
+- 图片价格未核验保持pending，BYOK不扣平台权益；普通文本/图片连接状态分开。不自动转平台消费、流式或其他供应商。
+- 代码已实现，隔离及本机HTTP/TLS/Mongo/H5证据逐项记录于tmp/vision-delivery；真实供应商、手写含图、费用和设备待验收。功能清单扩至21项，完整目标仍进行中，视觉优化暂停。
+- 当前全量1598通过/6跳过、本机HTTP/TLS/Mongo7项及H5闭环、三端构建/产物、27入口/格式/lint/文档核对通过；历史专项负载超时、初始夹具/API构建失败与当前成功分开记录。无真实供应商调用、收费或生产写入。
 
-- 2017 考研数学三从“待入库”推进为正式题库：23 张题卡覆盖 8 道选择、6 道填空和 9 道解答题，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
-- 新增 `build_math3_2017_bank.py`，从本地百度网盘 `2017年考研数学三真题及解析.pdf` 生成 `src/config/flashcard-banks/math3-2017.json` 与 `cdn-assets/question-bank/math3-2017` 页图资源；源 PDF 为 9 页题答混排扫描版，题面使用逐题裁切图，q23 跨页题面拆为 `question-23-a/b.jpg`，OCR/视觉检查未发现题面答案解析泄漏。
-- 2005-2020 release gate 刷新后，公共课覆盖缺口降至 12，published slots 升至 79，source evidence gap 保持 1；release backlog 降至 `blockers=14`、`publicCourseBlockedSlots=12`，下一批 release-priority dry-run 从 `2018年考研数学三真题及解析.pdf` 开始。
+## 2026-09-30 模型恢复资源与开发工具链增量
 
-## 2026-06-03 — 2016 数学三逐题裁切题库开放
+原调用恢复增加服务端可配置时长/条数/UTF8容量、访问时CAS维护和410不可恢复状态；缓存淘汰不删除幂等/费用事实或已保存对话、不自动生成/扣量。正常usage完整有界保存，异常大账单保留已知数值/摘要并待复核；未知计费不按零。无效配置与账户安全容量在上游前拒绝。页面用量展示同一真实资源状态，有限本地学习不受缓存/会员门禁。
 
-- 2016 考研数学三从“待入库”推进为正式题库：23 张题卡覆盖 6 道填空、8 道选择和 9 道解答题，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
-- 新增 `build_math3_2016_bank.py`，从本地百度网盘 `2016年考研数学三真题及解析.pdf` 生成 `src/config/flashcard-banks/math3-2016.json` 与 `cdn-assets/question-bank/math3-2016` 页图资源；源 PDF 为 24 页扫描版，1-4 页为试卷题面、5-19 页为答案解析、20-24 页为推广噪声，题面使用逐题裁切图并遮挡 q11 源页上印出的答案标记。
-- 2005-2020 release gate 刷新后，公共课覆盖缺口降至 13，source evidence gap 保持 1；release backlog 降至 `blockers=15`、`publicCourseBlockedSlots=13`，下一批 release-priority dry-run 从 `2017年考研数学三真题及解析.pdf` 开始。
+兼容升级开发依赖，补齐Jimp整族与CJS/ESM窄适配，保留框架版本、许可证和自动审查PR。锁链接残留及新版本ZIP风险均由最小安装/实际依赖测试定位修正，不以初次安装零风险摘要作为最终证明。资源/端点/实际依赖/Mongo回归及H5操作分别记录在tmp/resource-delivery，完整验证见11；没有真实供应商费用、收费或生产部署。完整目标继续，下一批视觉角色/疑义/费用及更广教学质量，视觉设计优化暂停。
 
-## 2026-06-03 — 2020 英语二文本层题库开放
+## 2026-09-30 流式教学与请求恢复增量
 
-- 2020 考研英语二从“待入库”推进为正式题库：48 张题卡覆盖完形填空、阅读理解、新题型、翻译和写作，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
-- 新增 `build_english2_2020_bank.py`，从本地百度网盘 2020 英语二文档版、原卷、答案速查和逐题细解 PDF 生成 `src/config/flashcard-banks/english2-2020.json`；Part B 按 `Five Ways to Win Over Everyone in the Office` A-G 小标题选择题训练，写作题按官方 prompt 训练，不提供唯一范文答案，并拦截公众号页眉、PDF 页脚、推广页和 OCR 噪声。
-- 2005-2020 release gate 刷新后，公共课覆盖缺口降至 14，source evidence gap 保持 1；英语二年份地图显示 `正式 12 · 整理中 0 · 待入库 5`。
+复用原模型任务和账本：新增有界UTF8/SSE codec、每请求取消执行器、流式端点与H5/微信分块适配；预览不进入事实，完整输出后才调用原工具。新增model.request意图、随机绑定、同账户只读result查询与重开恢复；导入历史不可授权执行，授权/题目/生命周期变化拒绝迟到结果。成本区分not_called和pending，取消/背压/截断不伪造成功；配置身份和流式连接状态分别报告。移除独立后端全局response回退。没有新运行依赖、微服务、商业默认权益、生产部署或真实费用。
 
-## 2026-06-03 — 2019 英语二文本层题库开放
+测试、构建、浏览器、本机TLS/Mongo与公开门禁证据在tmp/stream-delivery和11；首次桌面高负载回归及重跑均留证据，不用本机夹具替代供应商/设备验收。
 
-- 2019 考研英语二从“待入库”推进为正式题库：48 张题卡覆盖完形填空、阅读理解、新题型、翻译和写作，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
-- 新增 `build_english2_2019_bank.py`，从本地百度网盘 2019 英语二文档版、原卷、答案速查和逐题细解 PDF 生成 `src/config/flashcard-banks/english2-2019.json`；Part B 按 Ryan Hooper/Adam Bailey/Tracey Hampson/Aaron Norris/Julie Gumer A-G 信息匹配训练，写作题按官方 prompt 训练，不提供唯一范文答案，并拦截 PDF 页脚/OCR 噪声。
-- 2005-2020 release gate 刷新后，公共课覆盖缺口降至 15，source evidence gap 保持 1；英语二年份地图显示 `正式 11 · 整理中 0 · 待入库 6`。
+高负载回归进一步定位到逐消息复制与全量序列化的开销，已增加共享reducer的有界隔离重放批次：每批只复制一次，消息追加使用精确JSON长度增量；其他操作仍完整计算，逐操作守容量/幂等/业务边界，任一失败后不能提交批次。普通单次写入仍先复制，恢复/同步最终只在原原子入口保存。未放宽2秒普通恢复校验、120秒长历史预算、600万字符/2万操作或服务端CAS约束。专项对比纯reducer结果、输入不变、失败整批拒绝和容量边界；历史夹具/隔离HTTP适配使用同一批次实现。
 
-## 2026-06-03 — 2018 英语二文本层题库开放
+- 补齐成本账私人教学缓存清除、已预留取消、410只读/重播、资料墓碑与失败重试；保留费用/权益/密钥/跨账户隔离，客户端要求完整删除回执。无账户不为删除创建新成本文档；新专项覆盖并发结算和重复资料补传。
+- 安全门禁重新发现Babel与CSS选择器上游漏洞，兼容覆盖原大版本并同步锁文件；实际攻击输入/合法输入验证，生产依赖零漏洞。全依赖22项开发工具链风险保留，未破坏性降级uni-app。
 
-- 2018 考研英语二从“待入库”推进为正式题库：48 张题卡覆盖完形填空、阅读理解、新题型、翻译和写作，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
-- 新增 `build_english2_2018_bank.py`，从本地百度网盘 2018 英语二文档版、原卷、答案速查和逐题细解 PDF 生成 `src/config/flashcard-banks/english2-2018.json`；Part B 按 `Five ways to make conversation with anyone` A-G 小标题选择题训练，写作题按官方 prompt 训练，不提供唯一范文答案，并拦截 PDF 页脚/OCR 噪声。
-- 2005-2020 release gate 刷新后，公共课覆盖缺口降至 16，source evidence gap 保持 1；英语二年份地图显示 `正式 10 · 整理中 0 · 待入库 7`。
+- 本批最终全量1549通过/5默认跳过，实际Mongo5/5、HTTP13/13、TLS9/9、后端27/27及三端构建/产物通过；微信主包882492字节。release:gate在公共题库失败exit2，真实供应商/收费/生产写入0。最终报告及未完成清单见11。
 
-## 2026-06-03 — 2017 英语二文本层题库开放
+## 2026-09-30：有界长历史与真实同步闭环
 
-- 2017 考研英语二从“待入库”推进为正式题库：48 张题卡覆盖完形填空、阅读理解、新题型、翻译和写作，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
-- 新增 `build_english2_2017_bank.py`，从本地百度网盘 2017 英语二文档版、原卷、答案速查和逐题细解 PDF 生成 `src/config/flashcard-banks/english2-2017.json`；Part B 按 Jay Dunwell/Jason Stenquist/Birgit Klohs/Rob Spohr/Julie Parks A-G 信息匹配训练，写作题按官方 prompt 训练，不提供唯一范文答案，并拦截已知 OCR/推广噪声。
-- 2005-2020 release gate 刷新后，公共课覆盖缺口降至 17，source evidence gap 保持 1；英语二年份地图显示 `正式 9 · 整理中 0 · 待入库 8`。
+- 保持逻辑v1与旧raw，新增不可变本机分页/manifest、共享恢复副本、归属校验与无正文清理日志；只读窗口不清理活动写者，隐私删除覆盖退役分页。
+- 大旧备份与分页包、较大访客记录每批最多20操作/140万字符核验；120秒/取消/源指纹/版本/生命周期，全部验证后才合并，旧答案权威与隐私门禁不放宽。
+- 复用Node内置gzip和Mongo单文档CAS；固定revision/generation最多3页读取、push紧凑确认后重读事实，重复和pull不增加revision。鉴权/限流保持，无新运行依赖。
+- 对话仅挂载50条，旧窗口发送仍保留阅读位置。真实H5600→603消息/626操作，备份校验/同步/重开/错题/统计及空状态恢复保持7作答、6/10任务、2/6首答；实际浏览器配额失败保留旧事实，修正隔离入口重复占用后通过。
+- 全量1511通过/4跳过；真实隔离Mongo4/4、HTTP13/13；三端构建/产物和27/27原生后端通过。质量52/52合同、21人工项，公共题源/资料门禁仍阻塞。性能观测、版本与证据见11和`tmp/history-delivery/`。
+- 目标继续进行，功能清单扩至19项，UI视觉优化暂停；本轮未提交、推送、部署、收费或新增模型消费，临时服务和隔离数据库已清理。
 
-## 2026-06-03 — 2016 英语二文本层题库开放
+## 2026-09-30：继续推进精确代数与定义域闭环
 
-- 2016 考研英语二从“待入库”推进为正式题库：48 张题卡覆盖完形填空、阅读理解、新题型、翻译和写作，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
-- 新增 `build_english2_2016_bank.py`，从本地百度网盘 2016 英语二文档版、原卷、答案速查和逐题细解 PDF 生成 `src/config/flashcard-banks/english2-2016.json`；Part B 按 Act Your Shoe Size A-G 小标题选择题训练，写作题按官方 prompt 训练，不提供唯一范文答案，并拦截已知 OCR/推广噪声。
-- 2005-2020 release gate 刷新后，公共课覆盖缺口降至 18，source evidence gap 保持 1；英语二年份地图显示 `正式 8 · 整理中 0 · 待入库 9`。
+- 增加自研有界分数/多项式/有理式解析，完整题干重新建立独立规则，模型参考答案/伪造规则不决定判分。保留来源与公共发布门禁。
+- 目标直接创建符号题；聊天答案核验恒等、定义域及全部解，漏条件待核对；提示修正、任务方向/数域变式、错题/计划/复习与旧统计口径贯通。范围外如实pending，不执行代码、不新增资源或云消费。
+- 新增32项人工独立固定集，精确分数差分核对、专项/全量测试及本机Mongo/HTTP/H5验证分级报告。仍有流式/视觉、长历史、通用质量和设备缺口，目标保持进行中；UI视觉优化暂停。证据见11及 tmp/algebra-delivery/。
 
-## 2026-06-03 — 2015 英语二文本层题库开放
+## 2026-09-30：继续推进主观评分维度与原答证据
 
-- 2015 考研英语二从“待入库”推进为正式题库：48 张题卡覆盖完形填空、阅读理解、新题型、翻译和写作，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
-- 新增 `build_english2_2015_bank.py`，从本地百度网盘 2015 英语二文档版、原卷、答案速查和逐题细解 PDF 生成 `src/config/flashcard-banks/english2-2015.json`；Part B 按 Old Truths A-G 小标题选择题训练，写作题按官方 prompt 训练，不提供唯一范文答案。
-- 2005-2020 release gate 刷新后，公共课覆盖缺口降至 19，source evidence gap 保持 1；英语二年份地图显示 `正式 7 · 整理中 0 · 待入库 10`。
+- 增加版本化主观评分合同及可选编辑入口，维度/要求/分值/候选来源明确；编辑保留旧题、作答、帮助与计划，重复修订不制造新首答。
+- assess 1.1 校验全部维度、半分、总分、绑定原答引用和关键条件；模型一致不升级可靠判分，辅助意见不进入错题率或FSRS。对话/统计共用已保存记录。
+- 云端完整JSON背景和绑定原答不再按字符截坏；12,000字符上限在调用/预留前拒绝，不发送账户标识或未知配置。沿用预算/授权，不新增真实模型消费。
+- 独立固定合同集新增6项主观/等价措辞/部分正确/歧义/引用/攻击样例；语义评分效果仍待真实模型与人工核对。验证见11与 tmp/rubric-delivery/；UI视觉优化暂停。
 
-## 2026-06-03 — 2014 英语二文本层题库开放
+## 2026-09-30：继续推进资料隐私删除
 
-- 2014 考研英语二从“待入库”推进为正式题库：48 张题卡覆盖完形填空、阅读理解、新题型、翻译和写作，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
-- 新增 `build_english2_2014_bank.py`，从本地百度网盘 2014 英语二文档版、原卷、答案速查和逐题细解 PDF 生成 `src/config/flashcard-banks/english2-2014.json`；Part B 按 Land Art A-G 信息匹配训练，写作题按官方 prompt 训练，不提供唯一范文答案。
-- 2005-2020 release gate 刷新后，公共课覆盖缺口降至 20，source evidence gap 保持 1；英语二年份地图显示 `正式 6 · 整理中 0 · 待入库 11`。
+- 接入范围预览与确认，清理原文、提取/页图、关联题目/变式、关联对话正文/作答、复习及判断；其他对话事实保留，计划分母不减少；被删除任务标明不再执行，移除无效执行按钮。
+- 原事件脱敏、隐私恢复日志、陈旧请求和旧快照墓碑防复活；同步先传墓碑，同资料多设备删除及连续多资料删除可重放。
+- 解析器删除不再吞掉磁盘失败；真实匹配回执、原目标授权、取消/忙碌/失败待办和重试。原件定位不含令牌；不同解析器同文件各自保存，备份原件回执只作历史。
+- 兼容旧重复资料别名及其题源，稳定区分不同解析器原件；待办仅阻塞同目标同文件，不暂停其他资料。同步删除后编辑区也清空，页面取消与确认由实际组件测试覆盖。
+- 沿用UI，仅加入必要功能入口；继续保留完整交付目标和外部门禁。验证与证据见11及 `tmp/material-deletion/`。
 
-## 2026-06-03 — 2013 英语二文本层题库开放
+## 2026-09-30：继续推进教学事实与有效复习
 
-- 2013 考研英语二从“待入库”推进为正式题库：48 张题卡覆盖完形填空、阅读理解、新题型、翻译和写作，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
-- 新增 `build_english2_2013_bank.py`，从本地百度网盘 2013 英语二文档版、原卷、答案速查和逐题细解 PDF 生成 `src/config/flashcard-banks/english2-2013.json`；Part B 按 A-G 小标题选择题训练，写作题按官方 prompt 训练，不提供唯一范文答案。
-- 2005-2020 release gate 刷新后，公共课覆盖缺口降至 21，source evidence gap 保持 1；英语二年份地图显示 `正式 5 · 整理中 0 · 待入库 12`。
+- 修正部分正确被显示为判对；固定概览单列次数。缺知识点时仅形成当前题目判断，原题重做不升级为独立完成。
+- 原子保存已交付教学、题目、方法、帮助和收据；帮助按题暂存，导航/跨对话/刷新不擦除。普通模型回复保守标记帮助；请求期间切换题目拒绝迟到结果。备份重放保留帮助，执行收据仅是历史。
+- 复用数轴，实际运行分层提示/例题/类比/分步与先修补充；“太简单了”建立独立验题的组合挑战；变式绑定原题，不随目标变更错配。
+- FSRS准入版本化，首次可靠检验与到期显式复测才推进；即时重做、提示修正和提前复测不增长间隔。误判撤销后无效旧日期不阻挡新安排，剩余提示修正可重建复习，仍不视为独立掌握。
+- 继续保持完整交付目标，逐项核对需求和代码/真实/设备/公开发布层级；功能优先，UI优化暂缓。执行证据在 `tmp/teaching-delivery/`，验证结果见11。无新增云模型消费、收费或生产操作。
 
-## 2026-06-03 — 2012 英语二文本层题库开放
+## 2026-09-30：功能交付候选与连续性闭环
 
-- 2012 考研英语二从“待入库”推进为正式题库：48 张题卡覆盖完形填空、阅读理解、新题型、翻译和写作，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
-- 新增 `build_english2_2012_bank.py`，从本地百度网盘 2012 英语二文档版、原卷、答案速查和逐题细解 PDF 生成 `src/config/flashcard-banks/english2-2012.json`；Part B 按 Petrarch/Machiavelli/Samuel Smiles/Thomas Carlyle/Marx and Engels 信息匹配训练，写作题按官方 prompt 训练，不提供唯一范文答案。
-- 2005-2020 release gate 刷新后，公共课覆盖缺口降至 22，source evidence gap 保持 1；英语二年份地图显示 `正式 4 · 整理中 0 · 待入库 13`。
+- 退出登录先落盘后清理身份，保留分用户学习与旧 FSRS/错题/导入记录；账户切换使旧模型、解析和同步响应失效。
+- 访客预览→确认迁移→原始事件重算→同日计划完整并集；重复操作不重计，访客原件与恢复前副本保留。
+- 同步取消、双方冲突归档/导出、重新拉取后采用云端、恢复本机、归档清理及云端副本删除。拒绝不同内容覆盖与晚到旧响应。
+- 新增受限 Node 本地文本模型连接器；固定数值私网目标、型号、精确来源、鉴权、响应与会话预算、超时/幂等。Python 解析器旧弱模型转发返回 410。真实本地推理待服务，不下载模型。
+- 资料连接与模型解耦，健康检查、明确识别许可、取消不上传、分段进度/重试、提取版本与题源事件关联；拒绝任意外部页图。扩展有限单位换算与带定义域的数值解集，保持争议/主观项待复核。
+- 修复 PWA 应用壳吞掉独立路径，保留私人缓存隔离；沿用现有样式，按用户要求暂缓 UI/UX 优化。
+- 最终单元 1,397 通过/3 跳过，Python 33 通过，固定质量合同 14/14；三端及原生后端构建通过。公共题源/资料门禁仍阻塞，未部署、推送、收费或新增真实云模型调用。完整功能与实际证据见 11、tmp/function-delivery/。
 
-## 2026-06-03 — 2011 英语二文本层题库开放
+## 2026-09-30：本地磁盘空间维护
 
-- 2011 考研英语二从“待入库”推进为正式题库：48 张题卡覆盖完形填空、阅读理解、新题型、翻译和写作，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
-- 新增 `build_english2_2011_bank.py`，从本地百度网盘 2011 英语二文档版、原卷、答案速查和逐题细解 PDF 生成 `src/config/flashcard-banks/english2-2011.json`；Part B 按 A-G 信息匹配训练，写作题按官方 prompt 训练，不提供唯一范文答案。
-- 2005-2020 release gate 刷新后，公共课覆盖缺口降至 23，source evidence gap 保持 1；英语二年份地图显示 `正式 3 · 整理中 0 · 待入库 14`。
+- 清理当前三端/后端编译产物、6 份临时 H5 构建及工具/自产字节码缓存，共 20,370 个文件；项目已分配空间减少约 1.02 GB，测量窗口内可用空间净增加约 1.01 GB。
+- 原始资料、题源、代码、Git、依赖环境、恢复快照与验收日志/截图保留；清理期间源码哈希、工作树状态及暂存区核对一致，未停止用户服务。
+- 补充构建目录重建与维护说明，pytest 缓存加入根级忽略规则。历史构建记录和当前产物存在状态分开；本轮未重建产物或调用外部模型。
+- 实际前后计量与删除清单在 tmp/disk-cleanup-20260930/，维护规则见 09，当前产物状态见 11。
 
-## 2026-06-03 — 2010 英语二文本层题库开放
+## 2026-09-30：问理品牌与文档重建
 
-- 2010 考研英语二从“待入库”推进为正式题库：48 张题卡覆盖完形填空、阅读理解、新题型、翻译和写作，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
-- 新增 `build_english2_2010_bank.py`，从本地百度网盘 2010 英语二原卷、答案速查和逐题细解 PDF 生成 `src/config/flashcard-banks/english2-2010.json`；写作题按官方 prompt 训练，不提供唯一范文答案。
-- 2005-2020 release gate 刷新后，公共课覆盖缺口降至 24，source evidence gap 保持 1；英语二年份地图显示 `正式 2 · 整理中 0 · 待入库 15`。
+- Wenli · 问理工作品牌与原创几何 W 标志落地，共享学习导航、登录、启动、分享和 PWA 更新；旧应用/账户/存储/题源技术标识保留。
+- 项目自产文档整套移除后按源码重新创建，文档索引统一导航；清理旧展示资产，第三方说明/许可、学习资料与题源保留。清理前 19 份说明与 6 个资产、418 项既有工作树状态已快照，不修改 Git 暂存区。
+- 新增备份预览→同账户合并→事实重算→恢复前副本→撤销的完整路径。导出同时展示完整 JSON，下载受限仍可查看和保存。校验不可信 JSON，限制资源，防跨用户与敏感配置导入、幂等冲突、并发旧预览；人工参考与未独立验证复习不从备份提升为可靠事实。
+- 移除未使用的 157 行收藏客户端包装，保留实际收藏、后端与动态注册组件；补齐 H5 自定义构建目录的 PWA/公共资源复制，避免隔离产物缺少清理脚本。模板格式统一由 Prettier 管理，消除重复 ESLint 换行规则冲突。
+- 测试/构建/浏览器与文档前后扫描证据在 tmp/rebrand-rebuild/，结果见 11。无新增真实模型调用、支付、部署或依赖版本更新。
 
-## 2026-06-02 — 2014 数学三逐题裁切题库开放
+## 保留的前序里程碑
 
-- 2014 考研数学三从“待入库”推进为正式题库：23 张题卡覆盖 8 道选择、6 道填空和 9 道解答题，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
-- 新增 `build_math3_2014_bank.py`，从本地百度网盘 `2014年考研数学三真题及解析.pdf` 生成 `src/config/flashcard-banks/math3-2014.json` 与 `cdn-assets/question-bank/math3-2014` 页图资源；源 PDF 为 13 页题答混排扫描版，题面使用逐题裁切图并经 OCR/视觉检查移除答案解析泄漏。
-- 2005-2020 release gate 刷新后，公共课覆盖缺口降至 25，source evidence gap 保持 1；`math3:2014` 不再作为 2020 目标覆盖缺口进入发布 backlog。
+- A—E 渐进改造建立共享学习事实、对话主流程、资料校对、受限教学工具、FSRS、provider/预算/保险库、同步/订阅沙箱、跨端构建和固定评测。
+- 桌面 free-api 文档经受限提取接入明确配置，有限 Gemini BYOK 真实结构化对话通过；Z.ai / 智谱实测限流，未知上游成本保持待结算，平台扣量为零。
+- Mongo 并发初次连接修复、完整后端 ESM 构建、PWA 私人缓存隔离与依赖审查自动化已有本地证据。公网题库质量、生产恢复和实机门禁持续保留。
 
-## 2026-06-02 — 2015 数学三逐题裁切题库开放
-
-- 2015 考研数学三从“待入库”推进为正式题库：23 张题卡覆盖 8 道选择、6 道填空和 9 道解答题，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
-- 新增 `build_math3_2015_bank.py`，从本地百度网盘 `2015年考研数学三真题及解析.pdf` 生成 `src/config/flashcard-banks/math3-2015.json` 与 `cdn-assets/question-bank/math3-2015` 页图资源；源 PDF 为题答混排扫描版，题面使用逐题裁切图并经 OCR/视觉检查移除答案解析泄漏。
-- 2005-2020 release gate 刷新后，公共课覆盖缺口从 27 降至 26，已发布槽位增至 65，source evidence gap 保持 1；题库年份地图改为按当前轨道显示真实年份范围，英语二显示 2010-2026。
-
-## 2026-06-02 — 英语二公共课覆盖起始年修正
-
-- 公共课发布覆盖矩阵新增按轨道起始年策略：英语二从 2010 年首届真实考试开始计入覆盖，不再把 2005-2009 作为 release blocker。
-- `question-bank-release-gate` 的 Source Manifest 证据覆盖复用同一 per-track required-year 策略，避免 registry coverage 已排除的年份仍在 source evidence 中报缺口。
-- 2005-2020 真实审计口径校准后，公共课 required slots 为 91，已发布 64，真实覆盖缺口为 27，source evidence gap 为 1；下一步继续补英语一 2018-2020、英语二 2010-2020、数学二 2015-2020、数学三 2014-2020。
-
-## 2026-06-02 — 数学二 2016 错配题源发布拦截
-
-- 核验 `2016考研数学二真题.pdf` 后确认该源标题标为 2016，但首页题干与已发布 `math2-2014` 真题一致，且后续页混有同页解析与广告页；该源不得作为 `math2:2016` 可发布题源。
-- 新增 `scripts/baidu/source_quality.py`，并将 `source_content_mismatch` / `manual_review_required` 阻断接入 Source Manifest、manifest quality、候选覆盖、清洗队列、清洗 runner、question-bank release gate 和 release backlog。
-- 刷新发布报告后，`math2:2016` 从 `publishable_source_present` 改为 `missing_publishable_official_source`；公共课覆盖缺口保持 55，发布 backlog 阻塞从 67 变为 68，source evidence gaps 为 12，下一批自动清洗从 `2015年考研数学三真题及解析.pdf` 开始。
-
-## 2026-06-02 — 2024 数学一新结构逐题裁切题库开放
-
-- 2024 考研数学一从“待入库”推进为正式题库：22 张题卡覆盖 10 道选择、6 道填空和 6 道解答题，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
-- 扩展 `build_math1_history_banks.py`，从本地百度网盘 `2024年数学一真题及参考答案.pdf` 生成 `src/config/flashcard-banks/math1-2024.json` 与 `cdn-assets/question-bank/math1-2024` 页图资源；题面使用逐题手工裁切，q04 的答案证据跨页到第 2 页，最终广告页不进入发布资产。
-- 题库导航中数学一 2024 年槽位从“待入库”变为可点击“正式”，公共课正式开放数从 76 套增至 77 套，公共课覆盖缺口从 56 个降至 55 个，发布 backlog 阻塞从 68 个降至 67 个；来源限制同步记录：该源为真题及参考答案合版 PDF，题面可发布性依赖裁切和 OCR 泄漏扫描。
-
-## 2026-06-02 — 2023 数学一新结构逐题裁切题库开放
-
-- 2023 考研数学一从“待入库”推进为正式题库：22 张题卡覆盖 10 道选择、6 道填空和 6 道解答题，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
-- 扩展 `build_math1_history_banks.py`，从本地百度网盘 `2023-数一真题答案解析 .pdf` 生成 `src/config/flashcard-banks/math1-2023.json` 与 `cdn-assets/question-bank/math1-2023` 页图资源；题面使用逐题手工裁切，q07/q09/q20/q22 使用跨页多图，q22b 经视觉检查后调窄裁切边界以移除下一页解析边缘。
-- 题库导航中数学一 2023 年槽位从“待入库”变为可点击“正式”，公共课正式开放数从 75 套增至 76 套，公共课覆盖缺口从 57 个降至 56 个，发布 backlog 阻塞从 69 个降至 68 个；来源限制同步记录：该源为答案解析版 PDF，题面可发布性依赖裁切和 OCR 泄漏扫描。
-
-## 2026-06-02 — 数学历史题源年份识别修复
-
-- 修复 Source Manifest 对 1980s 数学历史文件的年份推断：`1987数一真题、标准答案及解析.pdf`、`1988...`、`1989...` 不再被父目录 `1987-2023` 误归入 2023 年槽位。
-- `source_manifest.py` 的合法来源年份范围放宽为 1980-2035，并让文件名中的明确年份优先刷新旧 manifest 中残留的派生 `year`。
-- 刷新 release gate/backlog/cleaning queue 后，发布指标保持 `coverageGaps=57`、`blockers=69`、`publicCourseBlockedSlots=57`，但 release-priority dry-run 已改为从真正的 `2023数一真题答案解析.pdf` 开始。
-
-## 2026-06-02 — 2022 数学一新结构逐题裁切题库开放
-
-- 2022 考研数学一从“待入库”推进为正式题库：22 张题卡覆盖 10 道选择、6 道填空和 6 道解答题，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
-- 扩展 `build_math1_history_banks.py`，从本地百度网盘 `2022-数一真题答案解析 .pdf` 生成 `src/config/flashcard-banks/math1-2022.json` 与 `cdn-assets/question-bank/math1-2022` 页图资源；题面使用逐题手工裁切，q13 使用两段裁切图，q04/q06/q08/q12/q13/q18/q19/q20/q21/q22 经 OCR/视觉检查后调窄裁切边界。
-- 题库导航中数学一 2022 年槽位从“待入库”变为可点击“正式”，公共课正式开放数从 74 套增至 75 套，公共课覆盖缺口从 58 个降至 57 个，发布 backlog 阻塞从 70 个降至 69 个；来源限制同步记录：该源为答案解析版 PDF，题面可发布性依赖裁切和 OCR 泄漏扫描。
-
-## 2026-06-02 — 2021 数学一新结构逐题裁切题库开放
-
-- 2021 考研数学一从“待入库”推进为正式题库：22 张题卡覆盖 10 道选择、6 道填空和 6 道解答题，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
-- 扩展 `build_math1_history_banks.py`，从本地百度网盘 `2021-数一真题答案解析 .pdf` 生成 `src/config/flashcard-banks/math1-2021.json` 与 `cdn-assets/question-bank/math1-2021` 页图资源；题面使用逐题手工裁切，q09/q22 使用跨页多图，q05/q09a/q20/q21 经 OCR/视觉检查后调窄裁切边界。
-- 题库导航中数学一 2021 年槽位从“待入库”变为可点击“正式”，公共课正式开放数从 73 套增至 74 套，公共课覆盖缺口从 59 个降至 58 个，发布 backlog 阻塞从 71 个降至 70 个；来源限制同步记录：该源为答案解析版 PDF，题面可发布性依赖裁切和 OCR 泄漏扫描。
-
-## 2026-06-02 — 2020 数学一逐题裁切题库开放
-
-- 2020 考研数学一从“待入库”推进为正式题库：23 张题卡覆盖 8 道选择、6 道填空和 9 道解答题，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
-- 扩展 `build_math1_history_banks.py`，从本地百度网盘 `2020-数一真题答案解析 .pdf` 生成 `src/config/flashcard-banks/math1-2020.json` 与 `cdn-assets/question-bank/math1-2020` 页图资源；题面使用逐题手工裁切，q08 使用跨页多图，q10/q14/q15/q16/q23 经视觉检查后调窄裁切边界。
-- 题库导航中数学一 2020 年槽位从“待入库”变为可点击“正式”，公共课正式开放数从 72 套增至 73 套，公共课覆盖缺口从 60 个降至 59 个，发布 backlog 阻塞从 72 个降至 71 个；来源限制同步记录：该源为答案解析版 PDF，题面可发布性依赖裁切和 OCR 泄漏扫描。
-
-## 2026-06-02 — 2019 数学一逐题裁切题库开放
-
-- 2019 考研数学一从“待入库”推进为正式题库：23 张题卡覆盖 8 道选择、6 道填空和 9 道解答题，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
-- 扩展 `build_math1_history_banks.py`，从本地百度网盘 `2019-数一真题及答案解析 .pdf` 生成 `src/config/flashcard-banks/math1-2019.json` 与 `cdn-assets/question-bank/math1-2019` 页图资源；题面使用逐题手工裁切，q04/q06/q13 使用跨页多图，q18/q22 经视觉检查后调窄/放宽裁切边界。
-- 题库导航中数学一 2019 年槽位从“待入库”变为可点击“正式”，公共课正式开放数从 71 套增至 72 套，公共课覆盖缺口从 61 个降至 60 个，发布 backlog 阻塞从 73 个降至 72 个；来源限制同步记录：该源为答案解析版 PDF，题面可发布性依赖裁切和 OCR 泄漏扫描。
-
-## 2026-06-02 — 2018 数学一逐题裁切题库开放
-
-- 2018 考研数学一从“待入库”推进为正式题库：23 张题卡覆盖 8 道选择、6 道填空和 9 道解答题，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
-- 扩展 `build_math1_history_banks.py`，从本地百度网盘 `2018-数一考研真题及答案 .pdf` 生成 `src/config/flashcard-banks/math1-2018.json` 与 `cdn-assets/question-bank/math1-2018` 页图资源；题面使用逐题手工裁切，q05 使用跨页多图，q16 用白底遮罩隐藏同一行的 `【解析】` 起点。
-- 题库导航中数学一 2018 年槽位从“待入库”变为可点击“正式”，公共课正式开放数从 70 套增至 71 套，公共课覆盖缺口从 62 个降至 61 个，发布 backlog 阻塞从 74 个降至 73 个；来源限制同步记录：该源为答案解析版 PDF，题面可发布性依赖裁切/遮罩和 OCR 泄漏扫描。
-
-## 2026-06-02 — 2007 数学一特殊结构题库开放
-
-- 2007 考研数学一从“待入库”推进为正式题库：24 张题卡覆盖 10 道选择、6 道填空和 8 道解答题，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
-- 扩展 `build_math1_history_banks.py`，从本地百度网盘 `2007数一标准答案及解析.pdf` 生成 `src/config/flashcard-banks/math1-2007.json` 与 `cdn-assets/question-bank/math1-2007` 页图资源；q09/q24 使用多图裁切，选择题答案括号用白底遮罩隐藏。
-- 题库导航中数学一 2007 年槽位从“待入库”变为可点击“正式”，公共课正式开放数从 69 套增至 70 套，公共课覆盖缺口从 63 个降至 62 个，发布 backlog 阻塞从 75 个降至 74 个；来源限制同步记录：该源为答案解析版 PDF，填空题原页已内嵌答案，后续若拿到独立空白试卷应替换题面证据。
-
-## 2026-06-02 — 政治 2023 答案源完整性门禁
-
-- 本地公共课 source audit 支持指定历史题源目录：可用 `--root data/raw-inbox/public-course-history/politics/2023 --audit-output /tmp/politics-2023-source-audit.json --skip-draft` 审计单个槽位，不再局限 2025 草稿目录。
-- 新增政治答案源编号完整性检查：对 `answer` / `paper_answer` PDF 的 `【答案】` / `【答案要点】` 标记做 1-38 覆盖检查；2023 政治答案解析源被标记为 `missing_answer_markers:10,11`，不得从 candidate evidence 直接升级为 publishable matched evidence。
-- 发布 backlog 会把已加载本地 source audit 中的 answer companion blocker 显示为 `blocked_before_auto_pair` / `local_answer_file_blocked`，即使 Source Manifest 里已有同槽位候选来源，也会优先要求补齐或替换完整答案源后再自动配对。
-
-## 2026-06-02 — 2005 数学一遮罩裁切题库开放
-
-- 2005 考研数学一从“待入库”推进为正式题库：23 张题卡覆盖 6 道填空、8 道选择和 9 道解答题，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
-- 扩展 `build_math1_history_banks.py`，从本地百度网盘 `2005数一标准答案及解析.pdf` 生成 `src/config/flashcard-banks/math1-2005.json` 与 `cdn-assets/question-bank/math1-2005` 页图资源；选择题题面使用宽裁切加白底遮罩隐藏答案括号，避免答题前展示同页解析。
-- 题库导航中数学一 2005 年槽位从“待入库”变为可点击“正式”，公共课正式开放数从 68 套增至 69 套，公共课覆盖缺口从 64 个降至 63 个；来源限制同步记录：该源为答案解析版 PDF，填空题原页已内嵌答案，后续若拿到独立空白试卷应替换题面证据。
-
-## 2026-06-02 — 2006 数学一逐题裁切题库开放
-
-- 2006 考研数学一从“待入库”推进为正式题库：23 张题卡覆盖 6 道填空、8 道选择和 9 道解答题，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
-- 扩展 `build_math1_history_banks.py`，从本地百度网盘 `2006数一标准答案及解析.pdf` 生成 `src/config/flashcard-banks/math1-2006.json` 与 `cdn-assets/question-bank/math1-2006` 页图资源；题面使用逐题手工裁切图，避免答题前展示同页答案或解析。
-- 题库导航中数学一 2006 年槽位从“待入库”变为可点击“正式”，公共课正式开放数从 67 套增至 68 套，公共课覆盖缺口从 65 个降至 64 个；发布门禁同步识别同年 `数一/二/三标准答案及解析` PDF 为 `paper_answer` 来源证据，`math1:2006` 不再出现在发布 backlog 中。
-
-## 2026-05-29 — 2012 数学三逐题裁切题库开放
-
-- 2012 考研数学三从“待入库”推进为正式题库：23 张题卡覆盖 8 道选择、6 道填空和 9 道解答题，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
-- 新增 `build_math3_2012_bank.py`，从本地百度网盘 2012 数学三真题及解析 PDF 生成题库与 `cdn-assets/question-bank/math3-2012` 页图资源；源 PDF 为逐题题答混排，因此题面使用逐题裁切图，答题前不展示答案或详解。
-- 题库导航中数学三 2012 年槽位从“待入库”变为可点击“正式”，公共课正式发布数从 51 套增至 52 套，公共课缺失槽位从 81 个降至 80 个。
-
-## 2026-05-29 — 2011 数学三逐题裁切题库开放
-
-- 2011 考研数学三从“待入库”推进为正式题库：23 张题卡覆盖 8 道选择、6 道填空和 9 道解答题，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
-- 新增 `build_math3_2011_bank.py`，从本地百度网盘 2011 数学三真题及解析 PDF 生成题库与 `cdn-assets/question-bank/math3-2011` 页图资源；源 PDF 为逐题题答混排，因此题面使用逐题裁切图，答题前不展示答案或详解。
-- 题库导航中数学三 2011 年槽位从“待入库”变为可点击“正式”，公共课正式发布数从 50 套增至 51 套，公共课缺失槽位从 82 个降至 81 个。
-
-## 2026-05-28 — 2010 数学三 PDF 页图题库开放
-
-- 2010 考研数学三从“待入库”推进为正式题库：23 张题卡覆盖 8 道选择、6 道填空和 9 道解答题，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
-- 新增 `build_math3_2010_bank.py`，从本地百度网盘 2010 数学三真题及解析 PDF 生成题库与 `cdn-assets/question-bank/math3-2010` 页图资源；第 3 页题面使用裁切图，答题前不展示同页下半部解析内容。
-- 题库导航中数学三 2010 年槽位从“待入库”变为可点击“正式”，公共课正式发布数从 49 套增至 50 套，公共课缺失槽位从 83 个降至 82 个。
-
-## 2026-05-27 — 2009 数学三 PDF 页图题库开放
-
-- 2009 考研数学三从“待入库”推进为正式题库：23 张题卡覆盖 8 道选择、6 道填空和 9 道解答题，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
-- 新增 `build_math3_2009_bank.py`，从本地百度网盘 2009 数学三真题及解析 PDF 生成题库与 `cdn-assets/question-bank/math3-2009` 页图资源；公式、图形、证明和演算过程以 PDF 原页图为准，OCR 只用于辅助确认答案键和页码。
-- 题库导航中数学三 2009 年槽位从“待入库”变为可点击“正式”，公共课正式发布数从 48 套增至 49 套，公共课缺失槽位从 84 个降至 83 个。
-
-## 2026-05-27 — 2008 数学三 PDF 页图题库开放
-
-- 2008 考研数学三从“待入库”推进为正式题库：23 张题卡覆盖 8 道选择、6 道填空和 9 道解答题，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
-- 新增 `build_math3_2008_bank.py`，从本地百度网盘 2008 数学三真题及解析 PDF 生成题库与 `cdn-assets/question-bank/math3-2008` 页图资源；公式、图形、证明和演算过程以 PDF 原页图为准，OCR 只用于辅助确认答案键和页码。
-- 题库导航中数学三 2008 年槽位从“待入库”变为可点击“正式”，公共课正式发布数从 47 套增至 48 套，公共课缺失槽位从 85 个降至 84 个。
-
-## 2026-05-27 — 2013 数学二 PDF 页图题库开放
-
-- 2013 考研数学二从“待入库”推进为正式题库：23 张题卡覆盖 8 道选择、6 道填空和 9 道解答题，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
-- 新增 `build_math2_2013_bank.py`，从本地百度网盘 2013 数学二真题及解析 PDF 生成题库与 `cdn-assets/question-bank/math2-2013` 页图资源；公式、图形、证明和演算过程以 PDF 原页图为准，OCR 只用于辅助确认答案键和页码。
-- 题库导航中数学二 2013 年槽位从“待入库”变为可点击“正式”，公共课正式发布数从 46 套增至 47 套，公共课缺失槽位从 86 个降至 85 个。
-
-## 2026-05-27 — 2012 数学二 PDF 页图题库开放
-
-- 2012 考研数学二从“待入库”推进为正式题库：23 张题卡覆盖 8 道选择、6 道填空和 9 道解答题，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
-- 新增 `build_math2_2012_bank.py`，从本地百度网盘 2012 数学二真题及解析 PDF 生成题库与 `cdn-assets/question-bank/math2-2012` 页图资源；公式、图形、证明和演算过程以 PDF 原页图为准，OCR 只用于辅助确认答案键和页码。
-- 题库导航中数学二 2012 年槽位从“待入库”变为可点击“正式”，公共课正式发布数从 45 套增至 46 套，公共课缺失槽位从 87 个降至 86 个。
-
-## 2026-05-27 — 2010 数学二 PDF 页图题库开放
-
-- 2010 考研数学二从“待入库”推进为正式题库：23 张题卡覆盖 8 道选择、6 道填空和 9 道解答题，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
-- 新增 `build_math2_2010_bank.py`，从本地百度网盘 2010 数学二真题及解析 PDF 生成题库与 `cdn-assets/question-bank/math2-2010` 页图资源；公式、图形、证明和演算过程以 PDF 原页图为准，OCR 只用于辅助确认答案键和页码。
-- 题库导航中数学二 2010 年槽位从“待入库”变为可点击“正式”，公共课正式发布数从 44 套增至 45 套，公共课缺失槽位从 88 个降至 87 个。
-
-## 2026-05-27 — 2009 数学二 PDF 页图题库开放
-
-- 2009 考研数学二从“待入库”推进为正式题库：23 张题卡覆盖 8 道选择、6 道填空和 9 道解答题，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
-- 新增 `build_math2_2009_bank.py`，从本地百度网盘 2009 数学二真题及解析 PDF 生成题库与 `cdn-assets/question-bank/math2-2009` 页图资源；公式、图形、证明和演算过程以 PDF 原页图为准，OCR 只用于辅助确认答案键和页码。
-- 题库导航中数学二 2009 年槽位从“待入库”变为可点击“正式”，公共课正式发布数从 43 套增至 44 套，公共课缺失槽位从 89 个降至 88 个。
-
-## 2026-05-27 — 2008 数学二 PDF 页图题库开放
-
-- 2008 考研数学二从“待入库”推进为正式题库：23 张题卡覆盖 8 道选择、6 道填空和 9 道解答题，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
-- 新增 `build_math2_2008_bank.py`，从本地百度网盘 2008 数学二真题及解析 PDF 生成题库与 `cdn-assets/question-bank/math2-2008` 页图资源；公式、图形、证明和演算过程以 PDF 原页图为准，OCR 只用于辅助确认答案键和页码。
-- 题库导航中数学二 2008 年槽位从“待入库”变为可点击“正式”，公共课正式发布数从 42 套增至 43 套，公共课缺失槽位从 90 个降至 89 个。
-
-## 2026-05-27 — 2007 数学二 PDF 页图题库开放
-
-- 2007 考研数学二从“待入库”推进为正式题库：24 张题卡覆盖 10 道选择、6 道填空和 8 道解答题，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
-- 新增 `build_math2_2007_bank.py`，从本地百度网盘 2007 数学二真题及解析 PDF 生成题库与 `cdn-assets/question-bank/math2-2007` 页图资源；公式、图形、证明和演算过程以 PDF 原页图为准，OCR 只用于辅助确认答案键和页码。
-- 题库导航中数学二 2007 年槽位从“待入库”变为可点击“正式”，公共课正式发布数从 41 套增至 42 套，公共课缺失槽位从 91 个降至 90 个。
-
-## 2026-05-27 — 2006 数学二 PDF 页图题库开放
-
-- 2006 考研数学二从“待入库”推进为正式题库：23 张题卡覆盖 6 道填空、8 道选择和 9 道解答题，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
-- 新增 `build_math2_2006_bank.py`，从本地百度网盘 2006 数学二真题及解析 PDF 生成题库与 `cdn-assets/question-bank/math2-2006` 页图资源；公式、图形、证明和演算过程以 PDF 原页图为准，OCR 只用于辅助确认答案键和页码。
-- 题库导航中数学二 2006 年槽位从“待入库”变为可点击“正式”，公共课正式发布数从 40 套增至 41 套，公共课缺失槽位从 92 个降至 91 个。
-
-## 2026-05-27 — 2015 英语一 PDF 页图题库开放
-
-- 2015 考研英语一从“待入库”推进为正式题库：52 张题卡覆盖完形填空、阅读理解、新题型、翻译和写作，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
-- 新增 `build_english1_2015_bank.py`，从本地百度网盘 2015 英语一真题、答案速查和逐题细解 PDF 生成题库与 `cdn-assets/question-bank/english1-2015` 页图资源；原卷扫描页作为题面证据，答案速查表和逐题细解作为答案证据。
-- 题库导航中英语一 2015 年槽位从“待入库”变为可点击“正式”，公共课正式发布数从 39 套增至 40 套，公共课缺失槽位从 93 个降至 92 个。
-
-## 2026-05-27 — 2005 数学二 PDF 页图题库开放
-
-- 2005 考研数学二从“待入库”推进为正式题库：23 张题卡覆盖 6 道填空、8 道选择和 9 道解答题，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
-- 新增 `build_math2_2005_bank.py`，从本地百度网盘 2005 数学二真题及解析 PDF 生成题库与 `cdn-assets/question-bank/math2-2005` 页图资源；公式、图形、证明和演算过程以 PDF 原页图为准，OCR 只用于辅助确认答案键和页码。
-- 题库导航中数学二 2005 年槽位从“待入库”变为可点击“正式”，公共课正式发布数从 38 套增至 39 套，公共课缺失槽位从 94 个降至 93 个。
-
-## 2026-05-27 — 2007 数学三 PDF 页图题库开放
-
-- 2007 考研数学三从“待入库”推进为正式题库：24 张题卡覆盖 10 道选择、6 道填空和 8 道解答题，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
-- 新增 `build_math3_2007_bank.py`，从本地百度网盘 2007 数学三真题及解析 PDF 生成题库与 `cdn-assets/question-bank/math3-2007` 页图资源；第 24 题题干来自同源解析页文本，答题前不展示含答案页图，避免泄题。
-- 题库导航中数学三 2007 年槽位从“待入库”变为可点击“正式”，公共课正式发布数从 37 套增至 38 套，公共课缺失槽位从 95 个降至 94 个。
-
-## 2026-05-27 — 2006 数学三 PDF 页图题库开放
-
-- 2006 考研数学三从“待入库”推进为正式题库：23 张题卡覆盖 6 道填空、8 道选择和 9 道解答题，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
-- 新增 `build_math3_2006_bank.py`，从本地百度网盘 2006 数学三真题及解析 PDF 生成题库与 `cdn-assets/question-bank/math3-2006` 页图资源；公式、证明与演算过程以 PDF 原页图为准，OCR 只用于辅助确认答案键和页码。
-- 题库导航中数学三 2006 年槽位从“待入库”变为可点击“正式”，公共课正式发布数从 36 套增至 37 套，公共课缺失槽位从 96 个降至 95 个。
-
-## 2026-05-27 — 2005 数学三 PDF 页图题库开放
-
-- 2005 考研数学三从“待入库”推进为正式题库：23 张题卡覆盖 6 道填空、8 道选择和 9 道解答题，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
-- 新增 `build_math3_2005_bank.py`，从本地百度网盘 2005 数学三真题及解析 PDF 生成题库与 `cdn-assets/question-bank/math3-2005` 页图资源；公式、证明与演算过程以 PDF 原页图为准，OCR 只用于辅助确认答案键和页码。
-- 题库导航中数学三 2005 年槽位从“待入库”变为可点击“正式”，公共课正式发布数从 35 套增至 36 套，公共课缺失槽位从 97 个降至 96 个。
-
-## 2026-05-27 — 2022 政治文本题面题库开放
-
-- 2022 考研政治从“待入库”推进为正式题库：38 张题卡覆盖 16 道单选、17 道多选和 5 道分析题，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
-- 新增 `build_politics_2022_bank.py`，从本地百度网盘 2022 政治真题及答案解析 PDF 文本层生成干净题干、选项、答案和解析，并生成 `cdn-assets/question-bank/politics-2022` 答案页图资源。
-- 独立 2022 政治试卷扫描 PDF 页面内嵌选择题答案标记，题库保留该 PDF 为来源证据但答题前不展示，避免用户在作答前看到答案；题库导航中政治 2022 年槽位从“待入库”变为可点击“正式”，政治正式开放数从 19 套增至 20 套。
-
-## 2026-05-27 — 2021 政治 PDF 页图题库开放
-
-- 2021 考研政治从“待入库”推进为正式题库：38 张题卡覆盖 16 道单选、17 道多选和 5 道分析题，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
-- 新增 `build_politics_2021_bank.py`，从本地百度网盘 2021 政治真题 PDF 和扫描版真题及解析 PDF 生成题库与 `cdn-assets/question-bank/politics-2021` 页图资源；选择题答案来自答案 PDF 第 1-14 页逐题解析，分析题答案要点按答案第 14-20 页关联。
-- 2021 答案 PDF 有若干题选项顺序不同于独立试卷 PDF，生成器已按选项内容把答案映射回试卷原页字母；题库导航中政治 2021 年槽位从“待入库”变为可点击“正式”，政治正式开放数从 18 套增至 19 套。
-
-## 2026-05-26 — 2020 政治 PDF 页图题库开放
-
-- 2020 考研政治从“待入库”推进为正式题库：38 张题卡覆盖 16 道单选、17 道多选和 5 道分析题，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
-- 新增 `build_politics_2020_bank.py`，从本地百度网盘 2020 政治真题 PDF 和扫描版真题及参考答案 PDF 生成题库与 `cdn-assets/question-bank/politics-2020` 页图资源；选择题答案来自答案 PDF 第 2-13 页逐题解析，分析题答案要点按答案第 13-16 页关联。
-- 题库导航中政治 2020 年槽位从“待入库”变为可点击“正式”，政治正式开放数从 17 套增至 18 套。
-
-## 2026-05-26 — 2019 政治 PDF 页图题库开放
-
-- 2019 考研政治从“待入库”推进为正式题库：38 张题卡覆盖 16 道单选、17 道多选和 5 道分析题，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
-- 新增 `build_politics_2019_bank.py`，从本地百度网盘 2019 政治真题 PDF 和扫描版真题及参考答案 PDF 生成题库与 `cdn-assets/question-bank/politics-2019` 页图资源；选择题答案来自答案 PDF 第 1-16 页逐题解析，分析题答案要点按答案第 17-22 页关联。
-- 2019 答案 PDF 有若干题选项顺序不同于独立试卷 PDF，生成器已按选项内容把答案映射回试卷原页字母；第 29 题答案行与解析结论冲突，题库按解析结论映射并在证据说明中记录。
-- 题库导航中政治 2019 年槽位从“待入库”变为可点击“正式”，政治正式开放数从 16 套增至 17 套。
-
-## 2026-05-26 — 2018 政治 PDF 页图题库开放
-
-- 2018 考研政治从“待入库”推进为正式题库：38 张题卡覆盖 16 道单选、17 道多选和 5 道分析题，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
-- 新增 `build_politics_2018_bank.py`，从本地百度网盘 2018 政治真题 PDF 和扫描版真题及参考答案 PDF 生成题库与 `cdn-assets/question-bank/politics-2018` 页图资源；选择题答案来自答案 PDF 第 1-13 页逐题解析，分析题答案要点按答案第 13-17 页关联。
-- 2018 答案 PDF 有若干题选项顺序不同于独立试卷 PDF，生成器已按选项内容把答案映射回试卷原页字母，避免做题页判题答案与用户看到的试卷页图错位。
-- 题库导航中政治 2018 年槽位从“待入库”变为可点击“正式”，政治正式开放数从 15 套增至 16 套。
-
-## 2026-05-26 — 2017 政治 PDF 页图题库开放
-
-- 2017 考研政治从“待入库”推进为正式题库：38 张题卡覆盖 16 道单选、17 道多选和 5 道分析题，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
-- 新增 `build_politics_2017_bank.py`，从本地百度网盘 2017 政治真题 PDF 和扫描版真题及参考答案 PDF 生成题库与 `cdn-assets/question-bank/politics-2017` 页图资源；选择题答案来自答案 PDF 第 1-13 页逐题解析，分析题答案要点按答案第 14-20 页关联。
-- 题库导航中政治 2017 年槽位从“待入库”变为可点击“正式”，政治正式开放数从 14 套增至 15 套。
-
-## 2026-05-26 — 2016 政治 PDF 页图题库开放
-
-- 2016 考研政治从“待入库”推进为正式题库：38 张题卡覆盖 16 道单选、17 道多选和 5 道分析题，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
-- 新增 `build_politics_2016_bank.py`，从本地百度网盘 2016 政治真题 PDF 和扫描版真题及参考答案 PDF 生成题库与 `cdn-assets/question-bank/politics-2016` 页图资源；选择题答案来自答案 PDF 第 14-16 页可见答案键，分析题答案要点按答案第 16-19 页关联。
-- 第 21 题答案页可见答案键为 `CD`，但同页解析文字存在 A/C 方向的不一致表述；题库保留 PDF 答案键并记录证据说明，避免在无新来源时改写原始资料。
-- 题库导航中政治 2016 年槽位从“待入库”变为可点击“正式”，政治正式开放数从 13 套增至 14 套。
-
-## 2026-05-26 — 2015 政治 PDF 页图题库开放
-
-- 2015 考研政治从“待入库”推进为正式题库：38 张题卡覆盖 16 道单选、17 道多选和 5 道分析题，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
-- 新增 `build_politics_2015_bank.py`，从本地百度网盘 2015 政治真题 PDF 和扫描版真题及参考答案 PDF 生成题库与 `cdn-assets/question-bank/politics-2015` 页图资源；选择题答案来自答案 PDF 第 17 页标准答案键，分析题答案要点按答案第 17-20 页关联。
-- 题库导航中政治 2015 年槽位从“待入库”变为可点击“正式”，政治正式开放数从 12 套增至 13 套。
-
-## 2026-05-26 — 2013 政治 PDF 页图题库开放
-
-- 2013 考研政治从“待入库”推进为正式题库：38 张题卡覆盖 16 道单选、17 道多选和 5 道分析题，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
-- 新增 `build_politics_2013_bank.py`，从本地百度网盘 2013 政治真题及参考答案 PDF 生成题库与 `cdn-assets/question-bank/politics-2013` 页图资源；因单独试卷 PDF 与合并答案 PDF 至少存在第 1 题选项顺序差异，本题库统一以合并 PDF 作为同源题面和答案证据。
-- 题库导航中政治 2013 年槽位从“待入库”变为可点击“正式”，政治正式开放数从 11 套增至 12 套。
-
-## 2026-05-26 — 2025 数学三 PDF 页图题库开放
-
-- 2025 考研数学三从“整理中”推进为正式题库：22 张题卡覆盖选择题、填空题和解答题，并具备题干、答案、`sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
-- 新增 `build_math3_2025_bank.py`，从本地百度网盘数学三真题及答案 PDF 和参考答案 PDF 生成题库与 `cdn-assets/question-bank/math3-2025` 页图资源；公式、证明与演算过程以 PDF 原页图为准，OCR 只用于辅助读取紧凑答案。
-- 题库导航中数学三 2025 年槽位从“整理中”变为可点击“正式”，公共课发布 backlog 的 pending 覆盖阻塞从 1 降为 0。
-
-## 2026-05-26 — 2014 政治 PDF 页图题库开放
-
-- 2014 考研政治从“待入库”推进为正式题库：38 张题卡覆盖 16 道单选、17 道多选和 5 道分析题，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
-- 新增 `build_politics_2014_bank.py`，从本地百度网盘 2014 政治真题 PDF 和扫描版真题及参考答案 PDF 生成题库与 `cdn-assets/question-bank/politics-2014` 页图资源；选择题答案来自答案 PDF 第 11 页标准答案键，分析题答案要点按答案第 11-12 页关联。
-- 题库导航中政治 2014 年槽位从“待入库”变为可点击“正式”，政治正式开放数从 10 套增至 11 套。
-
-## 2026-05-26 — 2012 政治 PDF 页图题库开放
-
-- 2012 考研政治从“待入库”推进为正式题库：38 张题卡覆盖 16 道单选、17 道多选和 5 道分析题，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
-- 新增 `build_politics_2012_bank.py`，从本地百度网盘 2012 政治真题 PDF 和扫描版真题及参考答案 PDF 生成题库与 `cdn-assets/question-bank/politics-2012` 页图资源；OCR 仅用于定位答案键页，发布证据仍以 PDF 页图为准。
-- 题库导航中政治 2012 年槽位从“待入库”变为可点击“正式”，政治正式开放数从 9 套增至 10 套。
-
-## 2026-05-26 — 2011 政治 PDF 页图题库开放
-
-- 2011 考研政治从“待入库”推进为正式题库：38 张题卡覆盖 16 道单选、17 道多选和 5 道分析题，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
-- 新增 `build_politics_2011_bank.py`，从本地百度网盘 2011 政治真题 PDF 和真题及参考答案 PDF 生成题库与 `cdn-assets/question-bank/politics-2011` 页图资源；选择题答案来自答案 PDF 第 10 页，分析题答案要点按答案第 10-11 页关联。
-- 题库导航中政治 2011 年槽位从“待入库”变为可点击“正式”，政治正式开放数从 8 套增至 9 套。
-
-## 2026-05-26 — 2009 政治 PDF 页图题库开放
-
-- 2009 考研政治从“待入库”推进为正式题库：38 张题卡覆盖 16 道单选、17 道多选和 5 道分析/选做题，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
-- 新增 `build_politics_2009_bank.py`，从百度网盘下载到本地 raw-inbox 的 2009 政治真题及参考答案 PDF 生成题库与 `cdn-assets/question-bank/politics-2009` 页图资源；选择题答案来自原 PDF 内嵌答案标记，分析题答案要点按原 PDF 页图关联。
-- 题库导航中政治 2009 年槽位从“待入库”变为可点击“正式”，政治正式开放数从 6 套增至 7 套。
-
-## 2026-05-26 — 2008 政治 PDF 页图题库开放
-
-- 2008 考研政治从“待入库”推进为正式题库：38 张题卡覆盖 16 道单选、17 道多选和 5 道分析/选做题，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
-- 新增 `build_politics_2008_bank.py`，从百度网盘下载到本地 raw-inbox 的 2008 政治真题及参考答案 PDF 生成题库与 `cdn-assets/question-bank/politics-2008` 页图资源；选择题答案来自参考答案页，分析题答案要点按原 PDF 页图关联。
-- 题库导航中政治 2008 年槽位从“待入库”变为可点击“正式”，政治正式开放数从 5 套增至 6 套。
-
-## 2026-05-26 — 2007 政治 PDF 页图题库开放
-
-- 2007 考研政治从“待入库”推进为正式题库：38 张题卡覆盖 16 道单选、17 道多选和 5 道分析/选做题，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
-- 新增 `build_politics_2007_bank.py`，从百度网盘下载到本地 raw-inbox 的 2007 政治真题及参考答案 PDF 生成题库与 `cdn-assets/question-bank/politics-2007` 页图资源；该 PDF 选择题答案内嵌在题面页，分析题答案要点跨页，题库以原 PDF 页图作为证据。
-- 题库导航中政治 2007 年槽位从“待入库”变为可点击“正式”，政治正式开放数从 4 套增至 5 套。
-
-## 2026-05-26 — 2006 政治 PDF 页图题库开放
-
-- 2006 考研政治从“待入库”推进为正式题库：38 张题卡覆盖 16 道单选、17 道多选和 5 道分析/选做题，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
-- 新增 `build_politics_2006_bank.py`，从本地百度网盘 2006 政治真题及参考答案 PDF 生成题库与 `cdn-assets/question-bank/politics-2006` 页图资源；该 PDF 无可用文本层，题干和答案以原 PDF 页图为准，答案键经本地 OCR/渲染页确认。
-- 题库导航中政治 2006 年槽位从“待入库”变为可点击“正式”，政治正式开放数从 3 套增至 4 套。
-
-## 2026-05-26 — 2014 英语一 PDF 页图题库开放
-
-- 2014 考研英语一从“待入库”推进为正式题库：52 张题卡覆盖完形填空、阅读理解、新题型、翻译和写作，并补齐篇章材料、`sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
-- 新增 `build_english1_2014_bank.py`，从本地百度网盘原始扫描真题、答案速查表和逐题细解 PDF 生成题库与 `cdn-assets/question-bank/english1-2014` 页图资源。
-- 针对 2014 Text 3 的来源错配风险，题库使用原始扫描真题页图作为题面证据，并用逐题细解确认 Fundamental Physics Prize 文章与 `31-35 DBBAA`、`36-40 ACCDB`、`41-45 CFGDB` 答案键一致。
-
-## 2026-05-26 — 2005 政治 PDF 页图题库开放
-
-- 2005 考研政治从“待入库”推进为正式题库：37 张题卡覆盖 15 道单选、15 道多选、3 道辨析题和 4 道分析/选做题，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
-- 新增 `build_politics_2005_bank.py`，从本地百度网盘 2005 政治试题及参考答案 PDF 生成题库与 `cdn-assets/question-bank/politics-2005` 页图资源；该 PDF 无可用文本层，题干和答案以原 PDF 页图为准，答案键经本地 OCR/渲染页确认。
-- 题库导航中政治 2005 年槽位从“待入库”变为可点击“正式”。
-
-## 2026-05-26 — 2024/2025 政治 PDF 题库开放
-
-- 2025 考研政治从“整理中”推进为正式题库：38 张题卡覆盖 16 道单选、17 道多选、5 道分析题，并补齐 `sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
-- 2024 考研政治从旧 35 题手工稿重建为 38 题正式题库：脚本从本地百度网盘 PDF 文本层解析题号、选项、答案和解析，过滤推广页文本后写入正式题库。
-- 新增 `build_politics_2025_bank.py` 和 `build_politics_2024_bank.py`，让政治题库发布过程可复跑、可校验；题库导航中政治 2024/2025 年槽位从“整理中”变为可点击“正式”。
-
-## 2026-05-26 — 2025 数学二 PDF 页图题库开放
-
-- 2025 考研数学二从“整理中”推进为正式题库：22 张题卡覆盖选择题、填空题和解答题，并具备题干、答案、`sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
-- 通过本地 `.venv-baidu` 百度网盘授权运行时下载数学二“正在更新”参考答案 PDF，补齐原本本地答案 PDF 只覆盖 1-16 题的问题；原始 PDF 保留在忽略的 `data/raw-inbox/`，不进入 Git。
-- 新增 `build_math2_2025_bank.py`，从本地百度网盘数学二试卷 PDF 和参考答案 PDF 生成题库与 `cdn-assets/question-bank/math2-2025` 页图资源；公式、证明与演算过程以 PDF 原页图为准。
-
-## 2026-05-26 — 2025 数学一 PDF 页图题库开放
-
-- 2025 考研数学一从“整理中”推进为正式题库：22 张题卡覆盖选择题、填空题和解答题，并具备题干、答案、`sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
-- 新增 `build_math1_2025_bank.py`，从本地百度网盘数学一试卷/答案 PDF 生成题库和 `cdn-assets/question-bank/math1-2025` 页图资源；公式、证明与演算过程以 PDF 原页图为准，避免不可靠 OCR 污染题库。
-- 刷题页和题卡适配器支持 `questionImages` / `answerImages`，数学题可直接展示试卷原页和答案原页；小程序/App 生产环境通过 `VITE_CDN_URL` 加载大图，避免主包体积膨胀。
-
-## 2026-05-26 — 2025 英语二正式题库开放
-
-- 2025 考研英语二从“整理中”推进为正式题库：48 张题卡覆盖完形填空、阅读理解、新题型、翻译和写作，并具备题干、答案、篇章/材料、`sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
-- 新增 `build_english2_2025_bank.py`，从本地百度网盘英语二试卷、参考答案、版本一图表页和逐题细解 PDF/OCR 生成题库；Text 1/Text 4 使用逐题细解补齐部分答案 PDF 缺失项。
-- 英语二写作题按官方题干和图表任务训练，不声明唯一官方范文答案；题库导航中英语二 2025 年槽位从“整理中”变为可点击“正式”。
-
-## 2026-05-26 — 2025 英语一正式题库开放
-
-- 2025 考研英语一从“整理中”推进为正式题库：52 张题卡全部具备题干、答案、篇章/材料、`sourceEvidenceId`、`answerEvidenceStatus=matched`、题干哈希和答案哈希。
-- `english_answer_key_verify.py` 支持解析 2025 答案 PDF 的逐题 `【答案】[B]` 格式和 46-50 翻译参考译文，自动清理 PDF 页眉页码噪声。
-- `english_writing_prompt_verify.py` 支持从原卷 PDF 抽取 51/52 写作题官方题干；写作题按“官方写作任务”匹配证据，不声明唯一范文答案。
-- 题库导航中英语一正式开放数从 8 套增至 9 套，2025 英语一不再出现在整理中列表；公共课整体仍有 117 个覆盖缺口、6 个整理中阻塞和 15 个来源缺口。
-
-## 2026-05-26 — Baidu 网盘公共课来源证据自动配对
-
-- 题库发布门禁新增 `baidu_netdisk_official_paper_auto_pair_v1` 来源政策：同一公共课槽位只要在 Source Manifest 中有无风险、带路径和哈希的 Baidu 网盘 `official_paper` 试卷+答案，或“真题及答案”合并 PDF，即可计入来源证据。
-- `discovered` 官方试卷候选不再因为缺少人工 `sourceUrl`、`verifiedBy`、`evidenceNote` 被一刀切阻塞；answer-only、partial answer、答题卡、机构资料、广告资料、缺哈希和法务阻塞仍然不能满足来源覆盖。
-- 发布 backlog 不再把可读 paper/answer 本地文件推入人工注册队列，改为提示进入题卡清洗、答案匹配、证据哈希和 registry 发布状态核验。
-
-## 2026-05-26 — 公共课题库文件目录清理
-
-- 删除未注册、无练习链路引用的泛化假题库 `english-2025.json` 和 `math-2025.json`，避免与六条公共课轨道的正式题库状态混淆。
-- 题库发布门禁新增 `bankFileInventory`：检查 `src/config/flashcard-banks/*.json` 与 `bank-registry.js` 是否一一对应，未注册 JSON 和已注册但缺文件都会成为发布阻塞。
-- 发布 backlog 新增 `bank_file_inventory` 工作流，优先提示题库文件/注册表不一致，防止维护者把目录里的草稿 JSON 误判为可发布题库。
-
-## 2026-05-26 — 公共课题库可见状态收敛
-
-- 公共课题库入口取消“自练草稿”作为用户可点击状态，只有 `quality=ready` 且正式发布的题库可进入整卷练习。
-- 政治 2024/2025、英语一 2025 从可加载草稿降级为“整理中”，继续保留在年份地图和发布 backlog 中，避免用户误以为草稿题库已经可商用发布。
-- 题库页统计从“正式/自练/待完善”改为“正式/整理中/待入库”，小程序用户只看到可信开放状态。
-- 前端参考手册补充平台 UI 边界：微信小程序以 `src/pages.json` 注册路由为准，App/H5 完整产品 UI 需要单独构建和验证。
-
-## 2026-05-14 — 小程序主链路、题库目录与音频反馈收敛
-
-- 小程序前端链路收敛为“首页查看进度或进入题库 → 选择科目与年份 → 开始刷题”，首页和刷题中心不再展示后台整理流程。
-- 题库目录按英语一、英语二、政治、数学一、数学二、数学三组织近年真题；未开放年份统一展示为“即将开放/资料完善中”，不进入训练流。
-- 英语选择题继续要求篇章材料可见，缺少原文材料的试卷只展示开放状态，不伪装为可练整卷。
-- 神经知识图谱相关前端入口继续下架，刷题中心和结果页聚焦整卷训练、错题复习与下一组练习。
-- `quiz-sound.js` 收敛为统一音频反馈服务：点击、答对、答错、连击、翻卡、完成整卷、升级成就均有独立短音型，H5 使用 Web Audio，小程序降级为轻震动或静默，并尊重 `quiz_sound_enabled`。
-- 新增前端文案守卫与音频反馈单元测试，防止工程流程词重新出现在用户可见页面。
-
-## 2026-05-02 — 文档收敛与冗余清理
-
-- 项目长期文档收敛为 `docs/` 下 17 个核心 Markdown，删除 2026 年 5 月前审计报告、历史归档、文档缓存、发布证据模板和分散设计报告。
-- 根目录、`laf-backend/` 和历史归档目录不再保留项目说明文档；入口说明、文档规则、设计基线、部署证据口径合并进现有核心文档。
-- 运行报告和发布外部证据改为写入 `data/reports/`、`data/release-evidence/` 等忽略目录，不再污染核心文档集。
-
-## 2026-04-28 — 题库清洗、速度评分/ELO 与知识链路闭环
-
-- 题库 Source Manifest 增加安全展示名、规范键和法务风险标记，机构/老师/广告相关内容默认进入审查队列。
-- 题库质量报告增加清洗计划和发布就绪状态，明确公共课覆盖缺口、答案证据缺失和发布阻断项。
-- 新增 `src/utils/quiz-elo.js`，落地速度评分、用户 ELO、题目 ELO、题目排序和本地状态持久化。
-- 答题页在作答后同步速度分、ELO 和知识节点状态；分析记录不再重复增加已答题数，避免进度和正确率被污染。
-- 答题结果卡新增知识点链路跳转，用户可从本题定位回刷题中心的焦点知识节点，并启动节点强化训练。
-- 刷题中心焦点知识卡补齐轨道选择与玻璃卡片样式，支持英语一/英语二、数学一/二/三等公共课轨道的自动聚焦。
-- 客户端配置停止读取 `VITE_OBFUSCATION_KEY` / `VITE_REQUEST_SIGN_SALT`，避免小程序包带出伪秘密；后端保留 `REQUEST_SIGN_SALT`。
-
-## 2026-04-28 — 敏感信息泄露审计与仓库清理
-
-- 完成当前工作树、已跟踪文件、Git 全历史、忽略文件、构建产物和本地 agent 工作树的敏感信息扫描。
-- 曾新增敏感信息泄露审计报告，记录脱敏扫描结果、历史泄露风险、轮换清单和历史清洗方案；2026-05-02 文档收敛后不再保留独立审计报告。
-- `.gitignore` 默认忽略 `.env*`，仅放行明确示例文件，并新增 `.claude/` 本地运行状态忽略。
-- `scripts/build/audit-tracked-secrets.sh` 扩展高危密钥模式并改为脱敏输出，避免 CI 日志二次泄露。
-- 清理 `dist/`、`unpackage/`、`.claude/worktrees/`、`asset-inbox/` 等本地冗余产物。
-- 部署文档中的 curl 鉴权示例改为 `AUTH_HEADER` 变量，避免示例 token 触发或诱发泄露。
-- 使用 `git filter-repo` 清洗 Git 历史并强推 `origin/main` 与历史标签；本地和远端镜像 `gitleaks` 复扫均为 0 条历史命中。
-
-## 2026-04-28 — 首页知识图谱、引导页与多级题库导航
-
-- 底部悬浮导航综合色调从大面积绿色调整为中性玻璃白底，绿色仅保留为品牌定位和行动强调。
-- 首页首屏接入轻量知识神经图谱，展示掌握率、强弱节点和公共课知识节点状态。
-- 恢复并重做 `pages/login/onboarding` 新手引导，支持选择公共课版本和每日训练强度，并写入后续导航配置。
-- Splash 启动逻辑恢复首启引导：未完成引导进入 onboarding，完成后进入首页。
-- 刷题中心升级为“科目 > 版本轨道 > 训练模式 > 题库”的多级导航，并展示未发布题库清洗队列。
-- 学习轨迹 Store 增加本地持久化，答题后的知识节点状态可被首页继续读取。
-
-## 2026-04-28 — 品牌首屏与增长体验优化
-
-- 首页左上角品牌从“考研大师”改为 `EXAM-MASTER`，启动页和全局页面标题同步更新。
-- 首页首屏升级为深绿品牌工作台，前置今日完成率、剩余题数、连续学习和继续刷题入口。
-- 刷题中心新增训练中枢首屏，展示已加载题库、可训练题量、完成进度，并强化限时训练入口。
-- 登录页清理旧吉祥物语义，品牌统一为 `EXAM-MASTER`，新增“公共课题库 / 限时刷题 / FSRS复习”可信标签。
-- 个人页改为学习资产面板，承接错题、复习间隔和知识神经图谱的长期价值。
-- 曾新增小程序视觉增长优化报告；2026-05-02 文档收敛后，长期设计结论并入 `docs/07-STYLING-SYSTEM.md`。
-
-## 2026-04-27 — 关键流程 Bug 修复 (Phase 5)
-
-### BUG1 [CRITICAL] useFlashcardBank.js 存储键不一致
-
-- **根因**: useFlashcardBank.js 使用内联 storageService（直接 `uni.getStorageSync('v30_bank')`），而 useBankStatus.js / do-quiz.vue 使用真实 storageService（用户隔离键 `u_${userId}_v30_bank`）。题库写入位置与读取位置不同，导致"点加载进不去刷题页面"。
-- **修复**: 重写 useFlashcardBank.js，import 真实 `storageService`，通过 adapter 传给 flashcard-adapter.js。
-
-### BUG2 [HIGH] loadedBankIds 无响应式更新
-
-- **根因**: `loadedBankIds` 是 computed 但内部无 ref 依赖，加载后按钮状态不会从"加载"变为"已加载"。
-- **修复**: 引入 `_loadedSet = ref(new Set(...))` 作为 computed 数据源，加载成功后 `_loadedSet.value = new Set(loaded)` 触发响应式更新。
-
-### BUG3 [MED] goSmartReview 路由参数不匹配
-
-- **根因**: practice/index.vue `goSmartReview()` 传 `mode=review`，但 do-quiz.vue 期望 `mode=smart_review`。
-- **修复**: `safeNavigateTo('/pages/practice-sub/do-quiz?mode=smart_review')`
-
-### BUG4 [LOW] do-quiz.vue `this.mode` 未声明
-
-- **根因**: `loadQuestions()` 检查 `this.mode === 'temp_bank'` 但 `data()` 中未声明 `mode`，onLoad 也未从 query 赋值。
-- **修复**: `data()` 添加 `mode: ''`，onLoad 中 `this.mode = query.mode || ''`。
-
-### 构建验证
-
-- 四项修复后构建成功，总体积不变（1.5MB，主包 589KB）
-
-## 2026-04-27 — 生产提审就绪 (Phase 4)
-
-### 审核阻塞项修复 (6项)
-
-- **B1** custom-tabbar 去掉「择校」Tab（4→3 tabs），与 pages.json 三页 MVP 规格对齐
-- **B2** 删除 school.png/school-active.png 图标 + static-assets.js 移除 school 映射
-- **B3** pages[0] 从 splash 改为 index/index —— 首屏即内容，不再空白转场（微信审核要求）
-- **B4** splash 页移除 onboarding 死链接（页面不存在），直接跳首页
-- **B5** manifest.json 移除 camera/writePhotosAlbum 权限声明（MVP 不使用）；postbuild 脚本同步清理
-- **B6** manifest.json name 改为「考研大师」；版本号重置为 1.0.0（首次提审）
-
-### 体验关键修复 (4项)
-
-- **C1** globalStyle 全面切换为浅色主题（backgroundColor #F5F7FA，navigationBarTextStyle black）——消除页面切换暗色闪烁
-- **C2** do-quiz + question-bank 加入公开路由白名单——未登录用户也能刷题（微信审核禁止强制登录才能使用）
-- **C5** privacy.vue + terms.vue 导航栏/卡片样式从 em3d 暗色系切换为白底绿边框浅色主题
-- 隐私政策内容移除相机/麦克风/剪贴板相关条款（MVP 不涉及）
-
-### 健壮性与合规 (5项)
-
-- **I2** postbuild inject-mp-weixin-privacy.mjs 不再注入 scope.camera/scope.writePhotosAlbum
-- **I3+I4** practice 页题库加载：per-bank loading 状态（不再全局锁）+ 加载失败 showToast 提示
-- **I7** 所有页面 navigationBarBackgroundColor 从 #1A1A1A 统一为 #F5F7FA；globalStyle title 中文化
-- **I9** E2E 测试登录按钮已确认 release 环境不显示（isNonReleaseEnv 守卫）
-- **N3** App.vue onLaunch 调用 FSRS restoreUserParams()——冷启动恢复间隔重复参数
-
-### 构建验证
-
-- 总体积 1.5MB（无变化），pages[0] = index/index
-- app.json: permission 为空、requiredPrivateInfos 为空、**usePrivacyCheck** = true
-- project.config.json: projectname = 考研大师, appid = wxd634d50ad63e14ed, libVersion = 2.32.3
-- school 图标已从构建产物中移除
-
-## 2026-04-27 — 经典闪卡模式 + FSRS 自评 (Phase 3)
-
-- do-quiz.vue 新增经典闪卡交互模式：翻转查看答案 + FSRS 四级自评（忘了/模糊/记得/简单）
-- 分析题(analysis)和闪卡(flashcard)类型自动进入闪卡模式，不再显示 ABCD 选项
-- FSRS 真正发挥作用：四级评分直接驱动间隔重复调度，按钮显示下次复习时间预览
-- flashcard-adapter.js 修复：分析题答案不再被截断为单字母，保留完整参考答案文本
-- flashcard-adapter.js 修复：type 字段保留原始值(single_choice/multi_choice/analysis)，不再强制映射为"单选"
-- do-quiz.vue 题型标签中文化：single_choice→单选题、multi_choice→多选题、analysis→分析题、flashcard→闪卡
-- do-quiz.vue 两处题目加载逻辑补充 q.explanation 字段映射（之前只有 q.desc/q.description/q.analysis）
-- 闪卡翻转动画：淡入+上移+缩放，答案卡片左侧绿色边框标识
-- 评分 ≥ 3（记得/简单）触发正确音效和游戏化反馈
-- 暗色模式完整适配
-- 构建体积不变：1.5MB
-
-## 2026-04-27 — 多科目题库扩充 (Phase 2.5)
-
-- 题库从 1 个扩充到 4 个，闪卡总量从 38 张增至 153 张（+303%）
-- 新增英语-2025题库（40张）：阅读理解10 + 完形填空8 + 词汇12 + 新题型2 + 翻译5 + 写作2 + 习语1
-- 新增数学-2025题库（40张）：高等数学12 + 线性代数8 + 概率统计8 + 解答题12
-- 新增政治-2024题库（35张）：马原6 + 毛中特10 + 史纲4 + 思修4 + 多选题6 + 分析题5
-- bank-registry.js 注册全部4个题库，均使用动态 import 懒加载
-- 构建验证通过：总体积 1.5MB（+100KB 纯题库数据），主包仍在微信限制内
-- 题目覆盖考研核心三大公共课：政治/英语/数学，支持 single_choice/multi_choice/analysis 三种题型
-
-## 2026-04-27 — 微信小程序极简版重构 (Phase 1)
-
-- 3页面UI全部重写（首页/刷题/我的），代码量 6,213行 → 830行（-87%）
-- 构建产物总体积 3.4MB → 1.4MB（-59%），主包 1,644KB → 824KB（-50%）
-- pages.json 路由精简：22个子包页面 → 4个（do-quiz, question-bank, privacy, terms）
-- 移除4个重依赖：markdown-it / katex / @traptitech/markdown-it-katex / canvas-confetti
-- 清理16张未使用图片（icons 11张 + practice-sub 5张）+ 4张 onboarding 插画（712KB）
-- 删除 onboarding.vue / qq-callback.vue 等6个孤立页面文件
-- 为6个已删除 store 和3个已删除 service 创建 MVP stub（保持构建兼容）
-- useMarkdownRenderer 替换为纯文本 passthrough stub
-- canvas-confetti 引用从 do-quiz.vue / quiz-animation.js / useGamificationEffects.js 移除
-- 首页：问候语 + 今日进度 + 累计统计 + 最近学习，纯本地数据源
-- 刷题页：题库列表 + 加载 + 开始刷题/智能复习，复用 useFlashcardBank/useBankStatus
-- 我的页：头像统计 + 菜单 + APP引流横幅 + 退出登录
-- 统一绿色主题 #00B86B，纯CSS无图片依赖，符合 14-MP-UI-REDESIGN-SPEC.md 设计规范
-
-## 2026-04-27 — 百度网盘 API 技术验证 (Phase 0A)
-
-- 完成百度网盘开放平台 API 全面技术验证（详见 `15-BAIDU-API-VALIDATION.md`）
-- 确认 API 可用：文件列表、搜索、dlink 下载（有效期 8h）、上传
-- 确认目录沙箱：第三方应用只能访问 `/apps/考研大师/`（符合隐私隔离需求）
-- 关键结论：百度网盘不能直接当用户端 CDN（需独立 OAuth），只作为管理员存储后端
-- 用户端数据源确认为 Laf 云数据库或 APP 内置 JSON（加工后闪卡每科仅几十 KB）
-- 测试阶段配额：10 用户 / 10 次/小时（管理员自用足够）
-- 识别阻塞项：需手动注册百度开放平台应用获取 AppKey
-
-## 2026-04-27 — 百度网盘工具链搭建 (Phase 2)
-
-- 百度开放平台应用已注册（AppID: 121923947），凭据安全存储于 .env（已 gitignore）
-- `scripts/baidu/auth.py` — OAuth 授权工具，支持设备码/授权码/刷新三种模式
-  - 设备码模式（推荐）：终端显示链接→浏览器扫码→自动轮询获取 token
-  - 授权码模式：oob 回调→粘贴 code→换 token
-  - Token 自动写入 .env 的 BAIDU_ACCESS_TOKEN/BAIDU_REFRESH_TOKEN
-  - `--status` 查看用户信息 + 网盘容量 + token 状态
-- `scripts/baidu/pan.py` — 网盘文件操作工具（ls/search/download/mkdir/info）
-  - BaiduPan 类封装全部 API（文件列表/递归列表/搜索/文件详情/dlink 下载）
-  - `download-pdfs` 批量下载：自动过滤广告文件 (<50KB / 文件名含广告词)
-  - 断点续传 + 大小校验跳过已下载文件
-- `scripts/baidu/pipeline.py` — 端到端管线编排（网盘 PDF → 闪卡 JSON）
-  - 自动扫描 /apps/考研大师/raw-pdf/ 下新增 PDF
-  - 文件名→科目/年份 智能推测（正则匹配）
-  - 广告过滤 + 已处理记录（.processed-pdfs.json 避免重复）
-  - 串联 pdf2flashcard-v2.py AI 加工 → data/flashcards/ 输出
-  - `--dry-run` 预览 / `--reprocess` 重新处理 / `--dir` 指定子目录
-- .env.example 新增百度网盘配置模板
-- .gitignore 新增 data/raw-pdf/ / data/.processed-pdfs.json / data/pipeline-report.json
-
-## 2026-04-27 — AI加工管线 v2
-
-- 新增 `scripts/pipeline/pdf2flashcard-v2.py` — AI增强版PDF→闪卡管线
-- 用 LLM (OpenAI-compatible API) 替代纯正则做题目结构化解析
-- AI 自动分离题干/选项/答案/解析，自动区分单选/多选/分析题
-- 支持多 LLM 后端：OpenAI / DeepSeek / 智谱 (通过环境变量配置)
-- 分批处理 + 重试机制，避免超出上下文窗口和 rate limit
-- 自动质量报告：检查答案完整性、选项数量、题型分布
-- 保留 v1 脚本 `pdf2flashcard.py` 作为纯本地/离线备用方案
-
-## 2026-04-27 — 政治闪卡数据修复 (Phase 0C)
-
-- 修复 `data/flashcards/政治-2025.json` 全部数据质量问题
-- 43张卡片 → 38张（合并5对分析题的题目+参考答案）
-- 填充全部 answer 字段（之前全部为空）
-- 分离混入选项中的解析文本到 explanation 字段
-- 修正 explanation 字段（之前内容与题目不匹配）
-- 删除6张卡片的多余/重复选项（5选项→4选项）
-- 清除20+处 OCR 伪影（页码、水印标记等）
-- 区分题型：single_choice(16) / multi_choice(17) / analysis(5)
-- 修复脚本保存为 `scripts/fix-politics-2025.py`
-
-## 2026-04-25 — 文档体系重构
-
-- 将 90 个分散文档整理为 15 个编号文档
-- 创建产品战略文档 `01-PRODUCT-VISION.md`
-- 合并 SOP 8 文件 → `10-DEV-RULES.md`
-- 合并部署文档 5 文件 → `09-DEPLOYMENT-GUIDE.md`
-- 合并前端参考 4 文件 → `06-FRONTEND-REFERENCE.md`
-- 合并发布记录 → `11-RELEASE-NOTES.md`
-- 保留文档重命名编号（02-08）
-- 清理旧目录结构
-- 建立统一编号体系和总索引
-
-## 2026-04-25 — 产品战略转型
-
-- 从"什么都做的考研小程序"转型为"基于百度网盘的考研闪卡刷题工具"
-- 确定三平台策略：iOS/Android(主力) + 微信小程序(轻量入口)
-- 确定百度网盘作为免费存储/CDN的技术方案
-- 确定baidu-autosave自动转存方案
-- 明确版权保护策略：只展示加工后闪卡，不暴露原始PDF
+历史详细文档和日志不继续复制进核心体系；需要追溯时查本机快照、Git 历史与脱敏执行证据。

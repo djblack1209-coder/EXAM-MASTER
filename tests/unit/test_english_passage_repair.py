@@ -110,7 +110,9 @@ Section III Writing
         self.assertEqual(repaired[5]["options"][0]["label"], "A")
         self.assertIn("Part B material", repaired[5]["passage"])
 
-    def test_extracts_scanned_style_fullwidth_choice_markers_and_strips_watermarks(self):
+    def test_extracts_scanned_style_fullwidth_choice_markers_and_strips_watermarks(
+        self,
+    ):
         from scripts.baidu import english_passage_repair
 
         paper_text = """
@@ -169,11 +171,17 @@ Section III Writing
 
         passages = english_passage_repair.extract_english_passages(paper_text)
 
-        self.assertEqual(set(passages.keys()), {"cloze", "text1", "text2", "text3", "text4", "part-b", "part-c"})
+        self.assertEqual(
+            set(passages.keys()),
+            {"cloze", "text1", "text2", "text3", "text4", "part-b", "part-c"},
+        )
         self.assertEqual(passages["cloze"]["passage"], "Cloze body.")
         self.assertEqual(passages["text1"]["passage"], "Text one paragraph.")
         self.assertEqual(passages["part-b"]["passage"], "Part B article body. （41）")
-        self.assertEqual([option["label"] for option in passages["part-b"]["options"]], list("ABCDEFG"))
+        self.assertEqual(
+            [option["label"] for option in passages["part-b"]["options"]],
+            list("ABCDEFG"),
+        )
 
     def test_extracts_part_b_heading_options_with_dot_labels(self):
         from scripts.baidu import english_passage_repair
@@ -223,8 +231,13 @@ Section III Writing
         passages = english_passage_repair.extract_english_passages(paper_text)
 
         self.assertLess(len(passages["cloze"]["passage"]), 80)
-        self.assertEqual([option["label"] for option in passages["part-b"]["options"]], list("ABCDEFG"))
-        self.assertEqual(passages["part-b"]["options"][0]["text"], "Set a Good Example for Your Kids")
+        self.assertEqual(
+            [option["label"] for option in passages["part-b"]["options"]],
+            list("ABCDEFG"),
+        )
+        self.assertEqual(
+            passages["part-b"]["options"][0]["text"], "Set a Good Example for Your Kids"
+        )
         self.assertIn("How Can a Parent Help?", passages["part-b"]["passage"])
         self.assertNotIn("Set a Good Example", passages["part-b"]["passage"])
 
@@ -341,7 +354,15 @@ Section III Writing
             tmp_dir = Path(tmp)
             target = tmp_dir / "english1-2005.json"
             source = tmp_dir / "paper.pdf"
-            write_json(target, {"id": "english1-2005", "year": 2005, "subject": "english1", "cards": []})
+            write_json(
+                target,
+                {
+                    "id": "english1-2005",
+                    "year": 2005,
+                    "subject": "english1",
+                    "cards": [],
+                },
+            )
             source.write_text("placeholder", encoding="utf-8")
             original_extract = english_passage_repair.extract_pdf_text
             try:
@@ -491,7 +512,15 @@ Section III Writing
             tmp_dir = Path(tmp)
             target = tmp_dir / "english1-2011.json"
             source = tmp_dir / "paper.pdf"
-            write_json(target, {"id": "english1-2011", "year": 2011, "subject": "english1", "cards": []})
+            write_json(
+                target,
+                {
+                    "id": "english1-2011",
+                    "year": 2011,
+                    "subject": "english1",
+                    "cards": [],
+                },
+            )
             source.write_text("placeholder", encoding="utf-8")
             original_extract = english_passage_repair.extract_pdf_text
             try:
@@ -555,7 +584,15 @@ Section III Writing
             tmp_dir = Path(tmp)
             target = tmp_dir / "english2-2021.json"
             source = tmp_dir / "paper.pdf"
-            write_json(target, {"id": "english2-2021", "year": 2021, "subject": "english2", "cards": []})
+            write_json(
+                target,
+                {
+                    "id": "english2-2021",
+                    "year": 2021,
+                    "subject": "english2",
+                    "cards": [],
+                },
+            )
             source.write_text("placeholder", encoding="utf-8")
             original_extract = english_passage_repair.extract_pdf_text
             try:

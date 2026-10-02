@@ -1,176 +1,37 @@
-# Laf 后端部署指南
+# 后端运行合同
 
-> **2026-08-29 状态：**Sealos/Laf 仅是人工批准的冷恢复路径，不是现役生产入口，也不参与自动切流。当前生产请使用腾讯云入口；本文保留历史部署步骤，运行 smoke 必须显式指定目标。
+私人资料解析器可选 Mac Apple Vision：先 `npm run test:apple:vision` 做公开合成自检，再 `npm run build:apple:vision`（仅编译），把返回的绝对 `binary` 路径显式配置为 `MATERIAL_APPLE_VISION_BIN`；其他令牌/精确Origin/loopback监听/临时存储合同不变。要求真实macOS14以上及对应Apple SDK，CPU配置必须由API支持；不使用自动硬件回退。系统模型首次编译可能超过资料12秒期限，健康检查不代表完成初始化；先合成自检，真实文件超时则明确重试/校对，不放宽预算。子进程只继承PATH/TMPDIR，正文走有界stdin，固定错误码不记录资料/密钥。此二进制在解析器Mac运行，不能填充DCloud移动插件验收。
 
-更新时间: 2026-02-28
-应用 ID: `nf98ia8qnt`
-调用域名: `https://nf98ia8qnt.sealosbja.site`
+Laf 函数与独立后端共享业务源码。standalone/server.ts 提供 Express 路由；standalone/cloud-shim.ts 适配隔离 Mongo/存储。生产必须明确 ALLOWED_ORIGINS，不能继承旧域名或开发来源。上传、JSON 与请求时间均有预算限制。
 
----
+TypeScript 使用 Node16 模块解析，运行仍要求 Node >=22.22.3。构建完整入口，noEmitOnError 保留；package-runtime.mjs 将 @lafjs/cloud 改为本地适配，并复制未改写的 FSRS CommonJS bundle 与 YAML。原生 ESM 检查不能只靠测试转译器。
 
-## 1. 当前部署基线
-
-- 已部署云函数: `40`（业务函数 35 + `_shared` 5）
-- `question-bank` 最新修复已上线（含 JWT 鉴权逻辑修复）
-- 关键函数均已可调用（见“验证结果”）
-- 函数入口采用 **TS-only** 策略（`laf-backend/functions/*.ts`），不再维护同名 `.js` 入口
-
-交付状态以本文件、`09-DEPLOYMENT-GUIDE.md`、`11-RELEASE-NOTES.md` 和当前 CI/smoke 输出为准。本文件只维护 Laf 后端部署与验证操作。
-
-## 1.1 后端目录与本地启动
-
-`laf-backend/` 是考研备考小程序后端云函数服务，基于 Laf Cloud：
-
-```text
-laf-backend/
-  functions/          云函数入口，TS-only
-  functions/_shared/  函数间共享模块
-  database-schema/    MongoDB collection schema
-  triggers/           数据库触发器
-  types/              TypeScript 类型
-  utils/              日志、校验、幂等工具
+```sh
+npm run typecheck:backend
+npm run build:backend
+npm run audit:backend:runtime
 ```
 
-运行时要求 Node.js >= 18.20，推荐 20.17 LTS。首次本地维护：
+最后一项审计本地产物，不等于部署。npm run start --prefix laf-backend/standalone 会使用环境连接真实数据库和服务，运行前必须指定隔离/授权目标。
 
-```bash
-cd laf-backend
-npm install
-npm i -g laf-cli
-laf login
-laf init <appid>
-cp .env.example .env
-```
+learning_states / learning_accounts / learning_model_keys 为私有集合，服务端用户授权、索引和禁止客户端直连策略必须在真实环境验证。密钥保险库与账户集合分离，AES-GCM 绑定用户/配置，日志不含密钥；持有保险库主密钥的运营者能解密，不是端到端保密。
 
-环境变量只维护在 `.env`、Laf 控制台或团队密钥管理工具，不写入文档、提交信息或运行报告。
+Mongo 初次并发初始化复用同一连接 Promise；失败关闭并释放，生命周期测试与隔离运行证据见 11。真实生产恢复、真实账户登录、SMTP、设备和外部模型分别验收，不能由本机合成身份代替。
 
----
+## 本机文本模型连接器
 
-## 2. 常用命令
+运行 npm run dev:local-model 前明确 LOCAL_MODEL_IDS（逗号分隔真实型号）与固定 LOCAL_MODEL_TARGET（默认 http://127.0.0.1:11434/v1/chat/completions）。仅数值本机/私网地址允许；显式云型号不允许。模型服务的真实推理未通过，不能从 health 成功推断推理可用。接口按 [Ollama 官方兼容协议](https://docs.ollama.com/api/openai-compatibility)的文本子集实现，兼容其他服务须逐项验证。
 
-在目录 `laf-backend/` 执行：
+LOCAL_CONNECTOR_PORT 默认 8766，LOCAL_CONNECTOR_ORIGINS 默认 http://127.0.0.1:4204（逗号分隔精确来源），必须与当前 H5 来源完全一致。LOCAL_CONNECTOR_TOKEN 至少 32 字符；未设置则创建仅本人可读的 tmp/local-model-connector/token，终端只提示文件路径，不打印令牌。连接器只绑定 127.0.0.1，前端配置 http://127.0.0.1:8766/chat，令牌只保存在当前内存。可选 LOCAL_MODEL_API_KEY 仅交给固定本机上游，不把连接器令牌转发。微信代码可直连已授权可达目标，但手机localhost是手机自身；需已有可信HTTPS网关或符合微信域名规则的地址转发到此环回服务，并完整保留来源、Bearer、固定上游/型号及硬预算。微信端来源标识固定为https://wenli-weixin.invalid，服务端必须显式加入LOCAL_CONNECTOR_ORIGINS；不能把这项配置当作真实设备已验证。未开放LAN监听、不修改域名校验。现有App客户端仍拒绝此路径。
 
-```bash
-# 查看当前云端函数清单
-/Users/blackdj/.npm-global/bin/laf func list
+LOCAL_CONNECTOR_MAX_CALLS 默认 20（最多 100）；CLI 固定输出 512 token、25 秒超时、最多 2 并发及 10 次/分钟。服务构造函数可在硬上限内配置输出/超时供隔离验证，CLI 不读取额外同名环境变量。健康检查不产生推理；/chat 相同 requestId 同内容复用包含失败的执行结果，次数用尽须停止。进程重启是新的会话预算，不能据此声称跨进程持久计费。不开任意代码执行、工具/视觉/流式能力。固定本机服务是否再次转发云端由用户核对，不承诺仅因地址私有就绝不离开设备。
 
-# 发布单个函数
-/Users/blackdj/.npm-global/bin/laf func push <function-name>
+## 本机资料解析器
 
-# 发布全部函数
-/Users/blackdj/.npm-global/bin/laf func push
-```
+运行 .venv-baidu/bin/python scripts/pipeline/private-material-parser.py，明确 MATERIAL_CONNECTOR_TOKEN（至少 32 字符）和 MATERIAL_CONNECTOR_ORIGIN。MATERIAL_CONNECTOR_PORT 默认 8765，仍只绑定127.0.0.1；前端独立配置 /parse。微信连接同样需要受保护可达地址与精确MATERIAL_CONNECTOR_ORIGIN=https://wenli-weixin.invalid，现有H5来源独立设置，不能自动扩大为通配。可选 MATERIAL_CONNECTOR_STORAGE 保存原件供继续处理/删除，未指定使用进程临时目录并在正常退出清理。POST /health 仅检查鉴权及现有程序，不能证明手写/中文识别质量。PDF 文本优先，扫描文字识别必须用户勾选；系统已有 pdftotext/pdftoppm/Tesseract 的有限路径通过，不安装或下载模型。旧 /chat 返回 410。
 
-在仓库根目录执行（线上 smoke）：
+资料原件删除需连接器/delete；本机范围确认后只向已授权原解析器发送匹配fileId。回执未到或失败保留无正文待办，重试单独确认，不把设备记录删除说成所有外部原件或运营备份已消失。当前能力/证据见[14](14-MODEL-PRIVACY-COST.md)。
 
-```bash
-# 公开接口 smoke（默认重试 8 次）
-npm run test:cloud:smoke
+大learning_states由Node内置gzip保存，逻辑上限600万UTF-16字符/2万操作，压缩8MiB/解压2400万字节；旧raw兼容，单文档CAS和用户隔离保持。页面读取仍经同一鉴权/限流入口，不新增对外无授权文件服务。原生后端27/27入口加载及固定Mongo大历史已验证；Laf云实际部署/运行与设备尚未验证。旧版本程序不支持新封装，生产回退须先具备独立数据前态，详见[09B](09B-BACKEND-MIGRATION-GUIDE.md)。
 
-# 带真实账号鉴权 smoke（可选）
-SMOKE_EMAIL="<email>" SMOKE_PASSWORD="<password>" npm run test:cloud:smoke
-
-# Laf 函数源码一致性审计（建议发布前执行 strict）
-npm run audit:laf:function-sources -- --strict
-```
-
----
-
-## 3. 发布后最小验证清单
-
-### 3.1 基础可用性
-
-```bash
-curl -sS "https://nf98ia8qnt.sealosbja.site/health-check"
-```
-
-预期包含: `{"code":0,"status":"ok"}`
-
-### 3.2 关键业务验证
-
-1. 登录签发 token（邮箱登录）
-
-```bash
-curl -sS "https://nf98ia8qnt.sealosbja.site/login" \
-  -H "Content-Type: application/json" \
-  -d '{"type":"email","email":"<email>","password":"<password>"}'
-```
-
-2. 携带 token 调用受保护接口（以 `doc-convert` 为例）
-
-```bash
-AUTH_HEADER='Bearer <admin-token>'
-curl -sS "https://nf98ia8qnt.sealosbja.site/doc-convert" \
-  -H "Content-Type: application/json" \
-  -H "Authorization: ${AUTH_HEADER}" \
-  -d '{"action":"get_types"}'
-```
-
-3. `question-bank` 鉴权分支验证
-
-```bash
-# 公共 action（无 token）
-curl -sS "https://nf98ia8qnt.sealosbja.site/question-bank" \
-  -H "Content-Type: application/json" \
-  -d '{"action":"random","data":{"count":1}}'
-
-# 非法 token
-AUTH_HEADER='Bearer <invalid-token>'
-curl -sS "https://nf98ia8qnt.sealosbja.site/question-bank" \
-  -H "Content-Type: application/json" \
-  -H "Authorization: ${AUTH_HEADER}" \
-  -d '{"action":"random"}'
-```
-
----
-
-## 4. 已完成的线上验证（摘要）
-
-- `proxy-ai` `health_check` 正常
-- `npm run test:cloud:smoke` 可复用脚本已落地（含 `Function Not Found` 重试策略）
-- `question-bank` 修复后鉴权行为符合预期（401/403/400 分支正常）
-- `login`（email/password）可签发 JWT
-- `login` 已新增 `type=qq` 分支（H5/App/QQ小程序）
-- `doc-convert`、`user-profile`、`favorite-manager`、`mistake-manager` 的带 token 调用通过
-- `group-service`、`material-manager`、`study-stats`、`ai-friend-memory`、`school-query(get_favorites)` 的带 token 调用通过
-- `id-photo-segment-base64`、`photo-bg` 基础链路可调用
-- `send-email-code` 在 Gmail SMTP 配置后线上返回 `code:0`
-
----
-
-## 5. 已知平台现象
-
-- Sealos 网关偶发首次请求 `Function Not Found`
-- 同一请求重试后通常恢复正常
-
-建议：
-
-- 验证脚本统一增加 2-3 次短间隔重试
-- 关键监控以连续失败率为准，不以单次失败判定故障
-
----
-
-## 6. 仍需补齐项
-
-- QQ OAuth 仍需在 QQ 平台后台确认回调域与上线审核
-- 前端端到端（真机/浏览器）全流程回归尚未完成
-- 生产环境备份恢复演练需在外部工单或临时运行记录中保留证据，完成后只把长期结论写回本文件或 `09-DEPLOYMENT-GUIDE.md`
-
----
-
-## 7. 管理员密钥说明
-
-- 管理员接口依赖环境变量 `ADMIN_SECRET`（如 `school-query sync_from_chsi`、`db-create-indexes`）
-- 查看位置：Sealos/Laf 控制台 -> 当前应用 -> Environment Variables
-- 若未配置，建议生成高强度随机值后写入 `ADMIN_SECRET`，并同步到团队密钥管理工具
-
----
-
-## 8. 安全与文档规范
-
-- 不要在文档中记录 PAT、API Key、Secret 明文
-- 仅在 `.env` / 平台环境变量中维护密钥
-- 每次发布后更新：
-  - 本文件（部署基线、验证命令、已知平台现象变化）
-  - `docs/09-DEPLOYMENT-GUIDE.md`（运维流程变化）
-  - `docs/11-RELEASE-NOTES.md`（正式版本变化）
+流式部署仍需真实环境另验：独立Express有每请求AsyncLocalStorage响应与本机TLS/HTTP证据；Laf托管response接口、网关缓冲/超时、HTTP断流及跨实例取消尚未实测。本轮只改本地源码与构建，不部署。Nginx/Laf须保持认证、来源、上游白名单/固定DNS/TLS及账本预算；只有完整结构经校验才向客户端返回成功收据。不能把代理配置存在当流式公开可用。当前App无可靠分块路径时主动非流式，不静默消费。

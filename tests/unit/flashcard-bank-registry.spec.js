@@ -1,15 +1,13 @@
 import { describe, expect, it } from 'vitest';
-import {
-  buildPublicCourseCoverage,
-  getAvailableBanks,
-  getPracticeNavigationTree
-} from '@/config/bank-registry.js';
+import { buildPublicCourseCoverage, getAvailableBanks, getPracticeNavigationTree } from '@/config/bank-registry.js';
 import { COMPRESSED_BANK_DATA_BY_ID } from '@/pages/practice-sub/bank-data-table.js';
 import { loadBankData } from '@/pages/practice-sub/bank-data-loader.js';
 
 describe('published flashcard bank registry', () => {
   it('backs every published bank with generated compressed data in the practice subpackage', () => {
-    const publishedIds = getAvailableBanks().map((bank) => bank.id).sort();
+    const publishedIds = getAvailableBanks()
+      .map((bank) => bank.id)
+      .sort();
 
     expect(Object.keys(COMPRESSED_BANK_DATA_BY_ID).sort()).toEqual(publishedIds);
     expect(COMPRESSED_BANK_DATA_BY_ID['english1-2000']).toBeUndefined();
@@ -355,9 +353,7 @@ describe('published flashcard bank registry', () => {
     expect(english22013.cards.find((card) => card.number === 30).answer).toBe('D');
     expect(english22013.cards.find((card) => card.number === 41).answer).toBe('F');
     expect(english22013.cards.find((card) => card.number === 45).answer).toBe('D');
-    expect(english22013.cards.find((card) => card.number === 46).targetSegment).toContain(
-      'Hair opened on Broadway'
-    );
+    expect(english22013.cards.find((card) => card.number === 46).targetSegment).toContain('Hair opened on Broadway');
     expect(english22013.cards.find((card) => card.number === 48).question).toContain('某高校学生兼职情况');
     expect(english22013.cards.find((card) => card.number === 48).answerEvidence.evidenceRole).toBe(
       'official_writing_prompt'
@@ -390,9 +386,7 @@ describe('published flashcard bank registry', () => {
     expect(english22015.cards.find((card) => card.number === 46).targetSegment).toContain(
       "Think about driving a route that's very familiar"
     );
-    expect(english22015.cards.find((card) => card.number === 48).question).toContain(
-      '我国某市居民春节假期花销比例'
-    );
+    expect(english22015.cards.find((card) => card.number === 48).question).toContain('我国某市居民春节假期花销比例');
     expect(english22015.cards.find((card) => card.number === 48).answerEvidence.evidenceRole).toBe(
       'official_writing_prompt'
     );
@@ -473,9 +467,7 @@ describe('published flashcard bank registry', () => {
     expect(english22020.cards.find((card) => card.number === 46).targetSegment).toContain(
       "It's almost impossible to go through life without experiencing some kind of failure"
     );
-    expect(english22020.cards.find((card) => card.number === 48).question).toContain(
-      '某高校学生手机阅读目的调查'
-    );
+    expect(english22020.cards.find((card) => card.number === 48).question).toContain('某高校学生手机阅读目的调查');
     expect(english22020.cards.find((card) => card.number === 48).answerEvidence.evidenceRole).toBe(
       'official_writing_prompt'
     );
@@ -490,9 +482,7 @@ describe('published flashcard bank registry', () => {
     expect(english22021.cards.find((card) => card.number === 46).targetSegment).toContain(
       'interacting with strangers actually brings a boost in mood'
     );
-    expect(english22021.cards.find((card) => card.number === 48).question).toContain(
-      '某市居民体育锻炼方式调查'
-    );
+    expect(english22021.cards.find((card) => card.number === 48).question).toContain('某市居民体育锻炼方式调查');
     expect(english22021.cards.find((card) => card.number === 48).answerEvidence.evidenceRole).toBe(
       'official_writing_prompt'
     );
@@ -524,9 +514,7 @@ describe('published flashcard bank registry', () => {
     expect(english22023.cards.find((card) => card.number === 46).targetSegment).toContain(
       'William Wordsworth became famous for his poems about nature'
     );
-    expect(english22023.cards.find((card) => card.number === 48).question).toContain(
-      '2012-2021年我国居民健康素养水平'
-    );
+    expect(english22023.cards.find((card) => card.number === 48).question).toContain('2012-2021年我国居民健康素养水平');
     expect(english22023.cards.find((card) => card.number === 48).answerEvidence.evidenceRole).toBe(
       'official_writing_prompt'
     );
@@ -648,9 +636,7 @@ describe('published flashcard bank registry', () => {
     expect(english2019.cards.find((card) => card.number === 41).answer).toBe('E');
     expect(english2019.cards.find((card) => card.number === 45).answer).toBe('A');
     expect(english2019.cards.find((card) => card.number === 46).targetSegment).toContain('medical journals');
-    expect(english2019.cards.find((card) => card.number === 51).question).toContain(
-      'Aiding Rural Primary Schools'
-    );
+    expect(english2019.cards.find((card) => card.number === 51).question).toContain('Aiding Rural Primary Schools');
     expect(english2019.cards.find((card) => card.number === 52).answerEvidence.evidenceRole).toBe(
       'official_writing_prompt'
     );
@@ -662,9 +648,7 @@ describe('published flashcard bank registry', () => {
     expect(english2020.cards.find((card) => card.number === 30).answer).toBe('D');
     expect(english2020.cards.find((card) => card.number === 41).answer).toBe('C');
     expect(english2020.cards.find((card) => card.number === 45).answer).toBe('D');
-    expect(english2020.cards.find((card) => card.number === 46).targetSegment).toContain(
-      "With the Church's teachings"
-    );
+    expect(english2020.cards.find((card) => card.number === 46).targetSegment).toContain("With the Church's teachings");
     expect(english2020.cards.find((card) => card.number === 51).question).toContain('upcoming singing contest');
     expect(english2020.cards.find((card) => card.number === 52).question).toContain('习惯');
     expect(english2020.cards.find((card) => card.number === 52).answerEvidence.evidenceRole).toBe(
@@ -885,8 +869,8 @@ describe('published flashcard bank registry', () => {
     expect(politics.tracks[0].pendingBanks.some((bank) => bank.year === '2025')).toBe(false);
     expect(politics.tracks[0].pendingBanks.some((bank) => bank.year === '2024')).toBe(false);
     expect(politics.tracks[0].coverage.publishedYears).toEqual([
-      2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022,
-      2024, 2025
+      2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2024,
+      2025
     ]);
     expect(politics.tracks[0].coverage.pendingYears).toEqual([]);
     expect(politics.tracks[0].pendingBanks.map((bank) => Number(bank.year))).toEqual([2023]);
@@ -1205,19 +1189,7 @@ describe('published flashcard bank registry', () => {
     expect(english2.requiredYears[0]).toBe(2010);
     expect(english2.requiredYears.at(-1)).toBe(2020);
     expect(english2.requiredYears).not.toContain(2009);
-    expect(english2.publishedYears).toEqual([
-      2010,
-      2011,
-      2012,
-      2013,
-      2014,
-      2015,
-      2016,
-      2017,
-      2018,
-      2019,
-      2020
-    ]);
+    expect(english2.publishedYears).toEqual([2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020]);
     expect(coverage.summary.requiredSlots).toBe(11);
   });
 });

@@ -124,7 +124,14 @@ def run(cmd: list[str]) -> None:
     subprocess.run(cmd, cwd=PROJECT_ROOT, check=True)
 
 
-def render_pdf_assets(pdf: Path, prefix: str, *, asset_dir: Path, force: bool, pages: set[int] | None = None) -> None:
+def render_pdf_assets(
+    pdf: Path,
+    prefix: str,
+    *,
+    asset_dir: Path,
+    force: bool,
+    pages: set[int] | None = None,
+) -> None:
     if not pdf.exists():
         raise FileNotFoundError(pdf)
     asset_dir.mkdir(parents=True, exist_ok=True)
@@ -140,7 +147,18 @@ def render_pdf_assets(pdf: Path, prefix: str, *, asset_dir: Path, force: bool, p
         item.unlink()
 
     output_prefix = TMP_RENDER_DIR / prefix
-    run(["pdftoppm", "-r", "130", "-jpeg", "-jpegopt", "quality=70", str(pdf), str(output_prefix)])
+    run(
+        [
+            "pdftoppm",
+            "-r",
+            "130",
+            "-jpeg",
+            "-jpegopt",
+            "quality=70",
+            str(pdf),
+            str(output_prefix),
+        ]
+    )
 
     for rendered in sorted(TMP_RENDER_DIR.glob(f"{prefix}-*.jpg")):
         page = int(rendered.stem.split("-")[-1])
@@ -187,7 +205,9 @@ def question_anchor(number: int) -> str:
             "2007考研数学三第24题（解答题）。设总体 X 的概率密度含未知参数 theta，样本均值为 Xbar；"
             "求 theta 的矩估计量，并判断 4Xbar^2 是否为 theta^2 的无偏估计量。"
         )
-    return f"2007考研数学三第{number}题（{section_for(number)}）。题干、公式和图形以试卷原页图为准。"
+    return (
+        f"2007考研数学三第{number}题（{section_for(number)}）。题干、公式和图形以试卷原页图为准。"
+    )
 
 
 def explanation_for(number: int) -> str:
@@ -230,10 +250,12 @@ def build_card(number: int) -> dict[str, Any]:
     )
 
     question_images = [
-        image_ref("paper-page", page, caption=f"试卷原页 p.{page}") for page in QUESTION_PAGES[number]
+        image_ref("paper-page", page, caption=f"试卷原页 p.{page}")
+        for page in QUESTION_PAGES[number]
     ]
     answer_images = [
-        image_ref("answer-page", page, caption=f"答案解析 p.{page}") for page in ANSWER_PAGES[number]
+        image_ref("answer-page", page, caption=f"答案解析 p.{page}")
+        for page in ANSWER_PAGES[number]
     ]
 
     return {
@@ -264,8 +286,20 @@ def build_card(number: int) -> dict[str, Any]:
 
 
 def build_payload(*, asset_dir: Path, force_assets: bool) -> dict[str, Any]:
-    render_pdf_assets(PAPER_ANSWER, "paper-page", asset_dir=asset_dir, force=force_assets, pages=set(range(1, 5)))
-    render_pdf_assets(PAPER_ANSWER, "answer-page", asset_dir=asset_dir, force=force_assets, pages=set(range(4, 14)))
+    render_pdf_assets(
+        PAPER_ANSWER,
+        "paper-page",
+        asset_dir=asset_dir,
+        force=force_assets,
+        pages=set(range(1, 5)),
+    )
+    render_pdf_assets(
+        PAPER_ANSWER,
+        "answer-page",
+        asset_dir=asset_dir,
+        force=force_assets,
+        pages=set(range(4, 14)),
+    )
     cards = [build_card(number) for number in range(1, 25)]
 
     return {

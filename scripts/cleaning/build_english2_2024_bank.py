@@ -90,7 +90,7 @@ def compact(value: Any) -> str:
         "ideal to start": "idea to start",
         "You can them find": "You can then find",
         "parents at those": "parents and those",
-        "Diane Coyle, an economist at Cambridge University, argues that the digital economy requires new ways of thinking about progress\"": (
+        'Diane Coyle, an economist at Cambridge University, argues that the digital economy requires new ways of thinking about progress"': (
             "Diane Coyle, an economist at Cambridge University, argues that the digital economy requires new ways of thinking about progress."
         ),
         "by things getting better.the": "by things getting better, the",
@@ -122,7 +122,7 @@ def compact(value: Any) -> str:
         "serious commitment": "serious commitment",
         "a conventional one is an advantage": "instead of a conventional one is an advantage",
         "Katie Kelley admissions": "Katie Kelley, admissions",
-        "Use \"Li Ming\" instead": 'Use "Li Ming" instead',
+        'Use "Li Ming" instead': 'Use "Li Ming" instead',
         "ANSWER SHEET.": "ANSWER SHEET.",
         "；": ";",
     }
@@ -166,7 +166,9 @@ def require_sources() -> None:
     paths = [ORIGINAL_PAPER, PAPER_ANSWER, DETAILED_ANALYSIS]
     missing = [relative(path) for path in paths if not path.exists()]
     if missing:
-        raise FileNotFoundError("Missing required English II 2024 source PDFs: " + ", ".join(missing))
+        raise FileNotFoundError(
+            "Missing required English II 2024 source PDFs: " + ", ".join(missing)
+        )
 
 
 def text_between(text: str, start: str, end: str) -> str:
@@ -202,7 +204,9 @@ def option_list(options: dict[str, str]) -> list[dict[str, str]]:
 def split_labeled_options(text: str, labels: str = "ABCD") -> dict[str, str]:
     normalized = compact(text)
     label_pattern = "".join(labels)
-    matches = list(re.finditer(rf"(?<![A-Za-z])\[?\s*([{label_pattern}])\s*[\.,・\]]\s*", normalized))
+    matches = list(
+        re.finditer(rf"(?<![A-Za-z])\[?\s*([{label_pattern}])\s*[\.,・\]]\s*", normalized)
+    )
     if len(matches) < len(labels):
         raise ValueError(f"Expected labels {labels}, found {len(matches)} in: {normalized[:220]}")
     matches = matches[-len(labels) :]
@@ -213,7 +217,13 @@ def split_labeled_options(text: str, labels: str = "ABCD") -> dict[str, str]:
     return options
 
 
-def find_numbered_block(text: str, number: int, next_number: int | None = None, *, end_anchor: str | None = None) -> str:
+def find_numbered_block(
+    text: str,
+    number: int,
+    next_number: int | None = None,
+    *,
+    end_anchor: str | None = None,
+) -> str:
     start_match = re.search(rf"(?m)^[\s\f]*{number}\.\s*", text)
     if not start_match:
         raise ValueError(f"Missing numbered block {number}")
@@ -263,7 +273,10 @@ def extract_cloze_passage(text: str) -> str:
         ("it's 14 possible", "it is (14) possible"),
         ("any 15 in your calendar", "any (15) in your calendar"),
         ("social 16 .", "social (16)."),
-        ("could all be 17 of poor social health", "could all be (17) of poor social health"),
+        (
+            "could all be 17 of poor social health",
+            "could all be (17) of poor social health",
+        ),
         ("you 18 some time", "you (18) some time"),
         ("you're 19 for socialising", "you are (19) for socialising"),
         ("relax, 20 and recover", "relax, (20) and recover"),
@@ -288,15 +301,23 @@ def extract_passages(text: str) -> dict[str, str]:
         "text2": cleaned_block(text_between(text, "Text 2", "26. It can learned")),
         "text3": cleaned_block(text_between(text, "Text 3", "31. According")),
         "text4": cleaned_block(text_between(text, "Text 4", "36. The research")),
-        "part-b": cleaned_block(text_between(text, "High school students eager", "41. Sue Rextord")),
+        "part-b": cleaned_block(
+            text_between(text, "High school students eager", "41. Sue Rextord")
+        ),
     }
     passages["part-b"] = "High school students eager" + passages["part-b"]
     return passages
 
 
 def extract_translation_text(text: str) -> str:
-    block = text_between(text, "With the smell of coffee and fresh bread floating in the air", "【参考译文】")
-    return compact("With the smell of coffee and fresh bread floating in the air" + cleaned_block(block))
+    block = text_between(
+        text,
+        "With the smell of coffee and fresh bread floating in the air",
+        "【参考译文】",
+    )
+    return compact(
+        "With the smell of coffee and fresh bread floating in the air" + cleaned_block(block)
+    )
 
 
 def extract_translation_answer(text: str) -> str:
@@ -379,8 +400,12 @@ def attach_evidence(
 ) -> dict[str, Any]:
     question_source = source_path(question_source_id)
     answer_source = source_path(answer_source_id)
-    question_hash = hash_text(json.dumps(question_hash_payload(card), ensure_ascii=False, sort_keys=True))
-    answer_hash = hash_text(json.dumps(answer_hash_payload(card, answer_role), ensure_ascii=False, sort_keys=True))
+    question_hash = hash_text(
+        json.dumps(question_hash_payload(card), ensure_ascii=False, sort_keys=True)
+    )
+    answer_hash = hash_text(
+        json.dumps(answer_hash_payload(card, answer_role), ensure_ascii=False, sort_keys=True)
+    )
 
     card["sourceEvidenceId"] = question_source_id
     card["sourceEvidence"] = {
@@ -418,7 +443,15 @@ def attach_evidence(
     return card
 
 
-def base_card(number: int, *, card_type: str, section: str, group_id: str, question: str, answer: str) -> dict[str, Any]:
+def base_card(
+    number: int,
+    *,
+    card_type: str,
+    section: str,
+    group_id: str,
+    question: str,
+    answer: str,
+) -> dict[str, Any]:
     return {
         "id": f"english2-2024-{number:03d}",
         "paperId": "english2-2024",
@@ -472,7 +505,9 @@ def build_bank(now: str | None = None) -> dict[str, Any]:
     for number in range(21, 41):
         group_id = group_for(number)
         section = SECTION_BY_GROUP[group_id]
-        block = find_numbered_block(text, number, number + 1 if number < 40 else None, end_anchor="【参考答案】")
+        block = find_numbered_block(
+            text, number, number + 1 if number < 40 else None, end_anchor="【参考答案】"
+        )
         question, options = parse_choice_question(block, number)
         card = base_card(
             number,
@@ -615,7 +650,10 @@ def build_bank(now: str | None = None) -> dict[str, Any]:
                 SOURCE_IDS["original_paper"],
                 SOURCE_IDS["detailed_analysis"],
             ],
-            "answerSources": [SOURCE_IDS["paper_answer"], SOURCE_IDS["detailed_analysis"]],
+            "answerSources": [
+                SOURCE_IDS["paper_answer"],
+                SOURCE_IDS["detailed_analysis"],
+            ],
             "policy": "local_baidu_2024_english2_pdf_text_layer_match_with_page_image_audit",
         },
         "cards": cards,
@@ -626,33 +664,66 @@ def validate_cards(cards: list[dict[str, Any]], material: dict[str, Any], text: 
     issues: list[str] = []
     if len(cards) != 48:
         issues.append(f"card count {len(cards)} != 48")
-    if "Your social life is defined" not in material["cloze_passage"] or "social burnout" not in material["cloze_passage"]:
+    if (
+        "Your social life is defined" not in material["cloze_passage"]
+        or "social burnout" not in material["cloze_passage"]
+    ):
         issues.append("cloze passage missing social-life anchors")
     for number in range(1, 21):
         if f"({number})" not in material["cloze_passage"]:
             issues.append(f"cloze passage missing blank marker ({number})")
-    if "Cogs and Monsters" not in material["passages"]["text1"] or "Diane Coyle" not in material["passages"]["text1"]:
+    if (
+        "Cogs and Monsters" not in material["passages"]["text1"]
+        or "Diane Coyle" not in material["passages"]["text1"]
+    ):
         issues.append("Text 1 passage missing digital-economy anchors")
-    if "future construction crisis" not in material["passages"]["text2"] or "Confor" not in material["passages"]["text2"]:
+    if (
+        "future construction crisis" not in material["passages"]["text2"]
+        or "Confor" not in material["passages"]["text2"]
+    ):
         issues.append("Text 2 passage missing timber anchors")
-    if "unsafe aging drivers" not in material["passages"]["text3"] or "Elizabeth Dugan" not in material["passages"]["text3"]:
+    if (
+        "unsafe aging drivers" not in material["passages"]["text3"]
+        or "Elizabeth Dugan" not in material["passages"]["text3"]
+    ):
         issues.append("Text 3 passage missing aging-driver anchors")
-    if "health apps" not in material["passages"]["text4"] or "Flo Health" not in material["passages"]["text4"]:
+    if (
+        "health apps" not in material["passages"]["text4"]
+        or "Flo Health" not in material["passages"]["text4"]
+    ):
         issues.append("Text 4 passage missing health-app anchors")
-    if "High school students eager" not in material["passages"]["part-b"] or "Sue Rexford" not in material["passages"]["part-b"]:
+    if (
+        "High school students eager" not in material["passages"]["part-b"]
+        or "Sue Rexford" not in material["passages"]["part-b"]
+    ):
         issues.append("Part B passage missing extracurricular anchors")
-    if "With the smell of coffee and fresh bread floating in the air" not in material["translation_text"]:
+    if (
+        "With the smell of coffee and fresh bread floating in the air"
+        not in material["translation_text"]
+    ):
         issues.append("translation text missing farmers-market English anchor")
     if "农贸市场" not in material["translation_answer"]:
         issues.append("translation answer missing farmers-market Chinese anchor")
     if "old hoses in an ancient town" not in material["writing_prompts"][47]:
         issues.append("writing prompt 47 missing source-text old-hoses anchor")
-    if "某高校劳动实践课学生主要收获调查" not in material["writing_prompts"][48] or "91.3%" not in material["writing_prompts"][48]:
+    if (
+        "某高校劳动实践课学生主要收获调查" not in material["writing_prompts"][48]
+        or "91.3%" not in material["writing_prompts"][48]
+    ):
         issues.append("writing prompt 48 missing labor-practice chart anchor")
     if "CBADA" not in text or "41-45：CEAGB" not in text:
         issues.append("answer table anchors missing")
 
-    forbidden_noise = ["公众号", "研池大叔", "免费分享", "Section ID", "Section 0", "Rextord", "Harherson", "Josoph"]
+    forbidden_noise = [
+        "公众号",
+        "研池大叔",
+        "免费分享",
+        "Section ID",
+        "Section 0",
+        "Rextord",
+        "Harherson",
+        "Josoph",
+    ]
     for expected_number, card in enumerate(cards, start=1):
         if card.get("number") != expected_number:
             issues.append(f"card {expected_number}: number={card.get('number')}")

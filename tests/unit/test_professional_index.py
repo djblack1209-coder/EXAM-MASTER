@@ -62,8 +62,14 @@ def test_professional_index_builds_compact_index(tmp_path):
                         "sourceType": "institution_candidate",
                         "status": "discovered",
                         "eligible": True,
-                        "riskFlags": ["institution_candidate", "copyright_review_required"],
-                        "legalReview": {"copyrightReviewRequired": True, "publishBlocked": True},
+                        "riskFlags": [
+                            "institution_candidate",
+                            "copyright_review_required",
+                        ],
+                        "legalReview": {
+                            "copyrightReviewRequired": True,
+                            "publishBlocked": True,
+                        },
                     },
                     {
                         "sourceId": "src_dup",
@@ -111,14 +117,21 @@ def test_professional_index_builds_compact_index(tmp_path):
     assert payload["summary"]["embeddedItems"] == 1
     assert payload["items"][0]["school"] == "北京大学"
     assert payload["items"][0]["courseCode"] == "431"
-    assert payload["items"][0]["direction"] in {"金融", "经济金融", "管理学", "其他专业"}
+    assert payload["items"][0]["direction"] in {
+        "金融",
+        "经济金融",
+        "管理学",
+        "其他专业",
+    }
     assert payload["items"][0]["priorityTier"] == "T0"
     assert payload["items"][0]["duplicateGroupSize"] == 2
     assert payload["items"][0]["duplicateRank"] == 1
     assert {direction["name"] for direction in payload["directions"]} >= {"公共英语"}
 
     full_payload = json.loads(output.read_text(encoding="utf-8"))
-    institution_item = next(item for item in full_payload["items"] if item["sourceId"] == "src_institution")
+    institution_item = next(
+        item for item in full_payload["items"] if item["sourceId"] == "src_institution"
+    )
     assert institution_item["sourceInstitution"] == "新东方"
     assert institution_item["priorityTier"] == "T2"
     assert institution_item["cleaningStatus"] == "review_required"

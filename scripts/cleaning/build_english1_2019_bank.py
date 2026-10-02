@@ -105,7 +105,7 @@ WRITING_PROMPTS = {
     51: (
         'Suppose you are working for the "Aiding Rural Primary Schools" project of '
         "your university. Write an email to answer the inquiry from an international "
-        "student volunteer, specifying the details of the project. Use \"Li Ming\" instead."
+        'student volunteer, specifying the details of the project. Use "Li Ming" instead.'
     ),
     52: (
         "Write an essay of 160-200 words based on the picture below. In the picture, "
@@ -178,7 +178,7 @@ def compact(text: Any) -> str:
         "states5": "states'",
         "uShort-termism": '"Short-termism',
         "ushort-termism": '"short-termism',
-        "short-termism. \"": 'short-termism."',
+        'short-termism. "': 'short-termism."',
         "M long-termismn": '"long-termism"',
         "Al": "AI",
         "Modem Prometheus": "Modern Prometheus",
@@ -196,7 +196,15 @@ def compact(text: Any) -> str:
     return value
 
 
-def render_pdf_assets(pdf: Path, prefix: str, *, asset_dir: Path, force: bool, first_page: int, last_page: int) -> None:
+def render_pdf_assets(
+    pdf: Path,
+    prefix: str,
+    *,
+    asset_dir: Path,
+    force: bool,
+    first_page: int,
+    last_page: int,
+) -> None:
     if not pdf.exists():
         raise FileNotFoundError(pdf)
     asset_dir.mkdir(parents=True, exist_ok=True)
@@ -270,13 +278,19 @@ def build_passages(asset_dir: Path) -> dict[str, str]:
     del asset_dir
     text = extract_pdf_text(ANSWER_SPEED)
     passages = {
-        "cloze": section_between(text, r"Section\s+I\s+Use\s+of\s+English.*?\(10 points\)", r"\n\s*1\.\s*A\."),
+        "cloze": section_between(
+            text, r"Section\s+I\s+Use\s+of\s+English.*?\(10 points\)", r"\n\s*1\.\s*A\."
+        ),
         "text1": section_between(text, r"\n\s*Text\s*1\s*\n", r"\n\s*21\."),
         "text2": section_between(text, r"\n\s*Text\s*2\s*\n", r"\n\s*26\."),
         "text3": section_between(text, r"\n\s*Text\s*3\s*\n", r"\n\s*31\."),
         "text4": section_between(text, r"\n\s*Text\s*4\s*\n", r"\n\s*36\."),
         "part-b": section_between(text, r"\n\s*Part\s+B\s*\n", r"\n\s*Part\s+C\s*\n"),
-        "part-c": section_between(text, r"\n\s*Part\s+C\s*\n.*?\(10 points\)", r"\n\s*Section\s+H?I+\s+Writing"),
+        "part-c": section_between(
+            text,
+            r"\n\s*Part\s+C\s*\n.*?\(10 points\)",
+            r"\n\s*Section\s+H?I+\s+Writing",
+        ),
         "writing": section_between(text, r"\n\s*Section\s+H?I+\s+Writing", r"2019年考研英语"),
     }
     missing = [key for key, value in passages.items() if not value]
@@ -299,7 +313,9 @@ def build_passages(asset_dir: Path) -> dict[str, str]:
 
     for forbidden in ["用“闪过”", "故事情节纯属虚构", "Museums", "手机阅读目的调查"]:
         if forbidden in json.dumps(passages, ensure_ascii=False):
-            raise RuntimeError(f"Promotional or cross-source text leaked into passages: {forbidden}")
+            raise RuntimeError(
+                f"Promotional or cross-source text leaked into passages: {forbidden}"
+            )
     return passages
 
 
@@ -435,8 +451,14 @@ def build_card(number: int, passages: dict[str, str]) -> dict[str, Any]:
     question = question_for(number)
     options = options_for(number)
     answer = answer_for(number)
-    question_images = [image_ref("paper-page", page, caption=f"试卷原页 p.{page}") for page in QUESTION_PAGES[number]]
-    answer_images = [image_ref("answer-page", page, caption=f"答案速查 p.{page}") for page in ANSWER_PAGES[number]]
+    question_images = [
+        image_ref("paper-page", page, caption=f"试卷原页 p.{page}")
+        for page in QUESTION_PAGES[number]
+    ]
+    answer_images = [
+        image_ref("answer-page", page, caption=f"答案速查 p.{page}")
+        for page in ANSWER_PAGES[number]
+    ]
     question_hash = sha256_text(
         json.dumps(
             {
@@ -450,7 +472,11 @@ def build_card(number: int, passages: dict[str, str]) -> dict[str, Any]:
         )
     )
     answer_hash = sha256_text(
-        json.dumps({"answer": answer, "answerPages": ANSWER_PAGES[number]}, ensure_ascii=False, sort_keys=True)
+        json.dumps(
+            {"answer": answer, "answerPages": ANSWER_PAGES[number]},
+            ensure_ascii=False,
+            sort_keys=True,
+        )
     )
 
     card = {
@@ -508,21 +534,35 @@ def validate_cards(cards: list[dict[str, Any]]) -> None:
     expected_answers = {1: "C", 21: "A", 26: "D", 30: "B", 41: "E", 45: "A"}
     for number, answer in expected_answers.items():
         if cards[number - 1].get("answer") != answer:
-            issues.append(f"card {number}: answer={cards[number - 1].get('answer')} expected {answer}")
+            issues.append(
+                f"card {number}: answer={cards[number - 1].get('answer')} expected {answer}"
+            )
     if "grade forgiveness" not in cards[25].get("passage", "").lower():
         issues.append("Text 2 evidence mismatch for question 26")
     if "frankenstein" not in cards[30].get("passage", "").lower():
         issues.append("Text 3 evidence mismatch for question 31")
-    if "dale carnegie" not in cards[40].get("passage", "").lower() or cards[42].get("answer") != "G":
+    if (
+        "dale carnegie" not in cards[40].get("passage", "").lower()
+        or cards[42].get("answer") != "G"
+    ):
         issues.append("Part B evidence mismatch for question 43")
-    if "there is a great deal of this kind of nonsense" not in cards[45].get("targetSegment", "").lower():
+    if (
+        "there is a great deal of this kind of nonsense"
+        not in cards[45].get("targetSegment", "").lower()
+    ):
         issues.append("Part C evidence mismatch for question 46")
     if "Aiding Rural Primary Schools" not in cards[50].get("question", ""):
         issues.append("writing Part A prompt missing Aiding Rural Primary Schools marker")
     if "picture below" not in cards[51].get("question", ""):
         issues.append("writing Part B prompt missing official picture marker")
     payload_text = json.dumps(cards, ensure_ascii=False)
-    for forbidden in ["用“闪过”", "故事情节纯属虚构", "Museums", "手机阅读目的调查", "failure"]:
+    for forbidden in [
+        "用“闪过”",
+        "故事情节纯属虚构",
+        "Museums",
+        "手机阅读目的调查",
+        "failure",
+    ]:
         if forbidden in payload_text:
             issues.append(f"unexpected source bleed detected: {forbidden}")
     if issues:
@@ -530,8 +570,22 @@ def validate_cards(cards: list[dict[str, Any]]) -> None:
 
 
 def build_payload(*, asset_dir: Path, force_assets: bool) -> dict[str, Any]:
-    render_pdf_assets(ORIGINAL_PAPER, "paper-page", asset_dir=asset_dir, force=force_assets, first_page=1, last_page=15)
-    render_pdf_assets(ANSWER_SPEED, "answer-page", asset_dir=asset_dir, force=force_assets, first_page=1, last_page=15)
+    render_pdf_assets(
+        ORIGINAL_PAPER,
+        "paper-page",
+        asset_dir=asset_dir,
+        force=force_assets,
+        first_page=1,
+        last_page=15,
+    )
+    render_pdf_assets(
+        ANSWER_SPEED,
+        "answer-page",
+        asset_dir=asset_dir,
+        force=force_assets,
+        first_page=1,
+        last_page=15,
+    )
     passages = build_passages(asset_dir)
     cards = [build_card(number, passages) for number in range(1, 53)]
     validate_cards(cards)

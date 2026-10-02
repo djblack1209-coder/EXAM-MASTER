@@ -158,7 +158,9 @@ def require_sources() -> None:
     paths = [ORIGINAL_PAPER, DOCUMENT_VERSION, PAPER_ANSWER]
     missing = [relative(path) for path in paths if not path.exists()]
     if missing:
-        raise FileNotFoundError("Missing required English II 2022 source PDFs: " + ", ".join(missing))
+        raise FileNotFoundError(
+            "Missing required English II 2022 source PDFs: " + ", ".join(missing)
+        )
 
 
 def text_between(text: str, start: str, end: str) -> str:
@@ -210,7 +212,13 @@ def split_labeled_options(text: str, labels: str = "ABCD") -> dict[str, str]:
     return options
 
 
-def find_numbered_block(text: str, number: int, next_number: int | None = None, *, end_anchor: str | None = None) -> str:
+def find_numbered_block(
+    text: str,
+    number: int,
+    next_number: int | None = None,
+    *,
+    end_anchor: str | None = None,
+) -> str:
     start_match = re.search(rf"(?m)^\s*{number}\.\s+", text)
     if not start_match:
         raise ValueError(f"Missing numbered block {number}")
@@ -271,9 +279,15 @@ def extract_cloze_options(text: str) -> dict[int, dict[str, str]]:
 
 def extract_passages(text: str) -> dict[str, str]:
     passages = {
-        "text1": cleaned_block(text_between(text, "Text 1", "21. The climate-friendly eggs are produced")),
-        "text2": cleaned_block(text_between(text, "Text 2", "26. The survey conducted by Harris Poll")),
-        "text3": cleaned_block(text_between(text, "Text 3", "31. It can be learned from the first two paragraphs")),
+        "text1": cleaned_block(
+            text_between(text, "Text 1", "21. The climate-friendly eggs are produced")
+        ),
+        "text2": cleaned_block(
+            text_between(text, "Text 2", "26. The survey conducted by Harris Poll")
+        ),
+        "text3": cleaned_block(
+            text_between(text, "Text 3", "31. It can be learned from the first two paragraphs")
+        ),
         "text4": cleaned_block(text_between(text, "Text 4", "36. Scientists generally believe")),
         "part-b": cleaned_block(text_between(text, "How to Get Active Again", "Section DI")),
     }
@@ -292,9 +306,13 @@ def extract_translation_answer(text: str) -> str:
 
 
 def extract_writing_prompts(text: str) -> dict[int, str]:
-    writing_section = text_between(text, "Section IV        Writing", "2022年考研英语（二）真题答案速查表")
+    writing_section = text_between(
+        text, "Section IV        Writing", "2022年考研英语（二）真题答案速查表"
+    )
     prompt47 = cleaned_block(text_between(writing_section, "47. Directions:", "Part B"))
-    prompt48 = cleaned_block(text_between(writing_section, "48. Directions:", "英语（二）试题.14.（共15页）"))
+    prompt48 = cleaned_block(
+        text_between(writing_section, "48. Directions:", "英语（二）试题.14.（共15页）")
+    )
     return {
         47: "47. Directions: " + prompt47,
         48: "48. Directions: " + prompt48 + " " + WRITING_CHART_48,
@@ -365,8 +383,12 @@ def attach_evidence(
 ) -> dict[str, Any]:
     question_source = source_path(question_source_id)
     answer_source = source_path(answer_source_id)
-    question_hash = hash_text(json.dumps(question_hash_payload(card), ensure_ascii=False, sort_keys=True))
-    answer_hash = hash_text(json.dumps(answer_hash_payload(card, answer_role), ensure_ascii=False, sort_keys=True))
+    question_hash = hash_text(
+        json.dumps(question_hash_payload(card), ensure_ascii=False, sort_keys=True)
+    )
+    answer_hash = hash_text(
+        json.dumps(answer_hash_payload(card, answer_role), ensure_ascii=False, sort_keys=True)
+    )
 
     card["sourceEvidenceId"] = question_source_id
     card["sourceEvidence"] = {
@@ -400,7 +422,15 @@ def attach_evidence(
     return card
 
 
-def base_card(number: int, *, card_type: str, section: str, group_id: str, question: str, answer: str) -> dict[str, Any]:
+def base_card(
+    number: int,
+    *,
+    card_type: str,
+    section: str,
+    group_id: str,
+    question: str,
+    answer: str,
+) -> dict[str, Any]:
     return {
         "id": f"english2-2022-{number:03d}",
         "paperId": "english2-2022",
@@ -454,7 +484,9 @@ def build_bank(now: str | None = None) -> dict[str, Any]:
     for number in range(21, 41):
         group_id = group_for(number)
         section = SECTION_BY_GROUP[group_id]
-        block = find_numbered_block(text, number, number + 1 if number < 40 else None, end_anchor="Part B")
+        block = find_numbered_block(
+            text, number, number + 1 if number < 40 else None, end_anchor="Part B"
+        )
         question, options = parse_choice_question(block, number)
         card = base_card(
             number,
@@ -490,7 +522,9 @@ def build_bank(now: str | None = None) -> dict[str, Any]:
         card["passage"] = material["passages"]["part-b"]
         card["material"] = material["passages"]["part-b"]
         card["options"] = option_list(PART_B_OPTIONS)
-        card["explanation"] = "答案已按本地百度网盘 2022 英语二答案速查表匹配；Part B 按 A-G 小标题训练。"
+        card["explanation"] = (
+            "答案已按本地百度网盘 2022 英语二答案速查表匹配；Part B 按 A-G 小标题训练。"
+        )
         cards.append(
             attach_evidence(
                 card,
@@ -605,20 +639,38 @@ def validate_cards(cards: list[dict[str, Any]], material: dict[str, Any], text: 
     issues: list[str] = []
     if len(cards) != 48:
         issues.append(f"card count {len(cards)} != 48")
-    if "Harlan Coben" not in material["cloze_passage"] or "writing is a (1) job" not in material["cloze_passage"]:
+    if (
+        "Harlan Coben" not in material["cloze_passage"]
+        or "writing is a (1) job" not in material["cloze_passage"]
+    ):
         issues.append("cloze passage missing Harlan Coben anchors")
     for number in range(1, 21):
         if f"({number})" not in material["cloze_passage"]:
             issues.append(f"cloze passage missing blank marker ({number})")
-    if "climate friendly eggs" not in material["passages"]["text1"] or "Larry Brown" not in material["passages"]["text1"]:
+    if (
+        "climate friendly eggs" not in material["passages"]["text1"]
+        or "Larry Brown" not in material["passages"]["text1"]
+    ):
         issues.append("Text 1 passage missing climate-friendly egg anchors")
-    if "unretirees" not in material["passages"]["text2"] or "TD Ameritrade" not in material["passages"]["text2"]:
+    if (
+        "unretirees" not in material["passages"]["text2"]
+        or "TD Ameritrade" not in material["passages"]["text2"]
+    ):
         issues.append("Text 2 passage missing unretirement anchors")
-    if "dark patterns" not in material["passages"]["text3"] or "California Consumer Privacy Act" not in material["passages"]["text3"]:
+    if (
+        "dark patterns" not in material["passages"]["text3"]
+        or "California Consumer Privacy Act" not in material["passages"]["text3"]
+    ):
         issues.append("Text 3 passage missing dark-pattern anchors")
-    if "ethics classes" not in material["passages"]["text4"] or "Schwitzgebel" not in material["passages"]["text4"]:
+    if (
+        "ethics classes" not in material["passages"]["text4"]
+        or "Schwitzgebel" not in material["passages"]["text4"]
+    ):
         issues.append("Text 4 passage missing ethics-class anchors")
-    if "How to Get Active Again" not in material["passages"]["part-b"] or "Mary Yoke" not in material["passages"]["part-b"]:
+    if (
+        "How to Get Active Again" not in material["passages"]["part-b"]
+        or "Mary Yoke" not in material["passages"]["part-b"]
+    ):
         issues.append("Part B passage missing get-active anchors")
     if "Unexpected results have two benefits" not in material["translation_text"]:
         issues.append("translation text missing unexpected-results anchor")
@@ -626,12 +678,24 @@ def validate_cards(cards: list[dict[str, Any]], material: dict[str, Any], text: 
         issues.append("translation answer missing creative-problem-solving anchor")
     if "campus food festival" not in material["writing_prompts"][47]:
         issues.append("writing prompt 47 missing campus food festival anchor")
-    if "2018—2020年我国快递业务量变动情况" not in material["writing_prompts"][48] or "2020年83" not in material["writing_prompts"][48]:
+    if (
+        "2018—2020年我国快递业务量变动情况" not in material["writing_prompts"][48]
+        or "2020年83" not in material["writing_prompts"][48]
+    ):
         issues.append("writing prompt 48 missing express-delivery chart anchor")
     if "BBADC" not in text or "CEAFB" not in text:
         issues.append("answer-speed table anchors missing")
 
-    forbidden_noise = ["公众号", "研池大叔", "Section DI", "Section ID", "Ifs ", "ifs ", "202许", "呈觌"]
+    forbidden_noise = [
+        "公众号",
+        "研池大叔",
+        "Section DI",
+        "Section ID",
+        "Ifs ",
+        "ifs ",
+        "202许",
+        "呈觌",
+    ]
     for expected_number, card in enumerate(cards, start=1):
         if card.get("number") != expected_number:
             issues.append(f"card {expected_number}: number={card.get('number')}")
@@ -687,7 +751,11 @@ def display_path(path: Path) -> str:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
-    parser.add_argument("--flashcard-output", type=Path, default=PROJECT_ROOT / "data" / "flashcards" / "english2-2022.json")
+    parser.add_argument(
+        "--flashcard-output",
+        type=Path,
+        default=PROJECT_ROOT / "data" / "flashcards" / "english2-2022.json",
+    )
     args = parser.parse_args(argv)
     bank = build_bank()
     write_json(args.output, bank)

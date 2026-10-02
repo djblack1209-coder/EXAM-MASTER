@@ -8,7 +8,7 @@
     </view>
 
     <view class="brand-line">
-      <text class="brand">EXAM-MASTER</text>
+      <text class="brand">{{ BRAND.name }}</text>
       <text class="step-count">{{ step + 1 }} / 4</text>
     </view>
 
@@ -93,13 +93,14 @@
         <text>上一步</text>
       </view>
       <view class="primary-btn" hover-class="btn-hover" @tap="nextOrComplete">
-        <text>{{ step === 3 ? '进入 EXAM-MASTER' : '继续' }}</text>
+        <text>{{ step === 3 ? `进入${BRAND.chinese}` : '继续' }}</text>
       </view>
     </view>
   </view>
 </template>
 
 <script setup>
+import { BRAND } from '@/config/brand.js';
 import { computed, ref } from 'vue';
 import { storageService } from '@/services/storageService.js';
 import { openHomeTab } from '@/utils/home-navigation.js';

@@ -126,7 +126,10 @@ class Math1HistoryBanksTest(unittest.TestCase):
         self.assertEqual(spec.answer_pages[22], [5])
         self.assertEqual(spec.rendered_page_count, 5)
         self.assertEqual(spec.source_id, "src_a98e37e10d544ea2a7f1791b")
-        self.assertEqual(spec.file_name, "src_a98e37e10d544ea2a7f1791b-2024年数学一真题及参考答案.pdf")
+        self.assertEqual(
+            spec.file_name,
+            "src_a98e37e10d544ea2a7f1791b-2024年数学一真题及参考答案.pdf",
+        )
 
     def test_2007_uses_24_card_10_choice_structure(self):
         spec = builder.SPECS[2007]

@@ -46,7 +46,11 @@ class BaiduPanPathTest(unittest.TestCase):
             ]
         )
 
-        data = pan._get("https://example.invalid", {"method": "list"}, sleep_fn=lambda _seconds: None)
+        data = pan._get(
+            "https://example.invalid",
+            {"method": "list"},
+            sleep_fn=lambda _seconds: None,
+        )
 
         self.assertEqual(data["list"][0]["server_filename"], "ok.pdf")
         self.assertEqual(pan.session.calls, 2)

@@ -11,7 +11,7 @@
 
     <scroll-view scroll-y class="content-scroll">
       <view class="content-section">
-        <text class="update-date"> 更新日期：2026年2月18日 </text>
+        <text class="update-date"> 更新日期：2026年9月29日 · 本地候选说明，公开发布前需审核 </text>
 
         <view class="section">
           <text class="section-title"> 一、引言 </text>
@@ -24,10 +24,13 @@
         <view class="section">
           <text class="section-title"> 二、我们收集的信息 </text>
           <text class="section-text"> 为了向您提供服务，我们可能会收集以下信息： </text>
-          <text class="section-text"> 1. 账号信息：微信昵称、头像，用于创建和展示您的个人资料。 </text>
+          <text class="section-text">
+            1. 选择账号服务时使用登录资料。本地学习可以不登录；微信昵称、头像仅用于您选择的账号展示。
+          </text>
           <text class="section-text">
             2. 学习数据：您的刷题记录、错题本、收藏和题库同步状态，用于提供练习、复习和学习进度展示。
           </text>
+          <text class="section-text"> 对话、私人材料片段、页图、作答和计划按所选模式保存，不默认进入公共题库。 </text>
           <text class="section-text"> 3. 设备信息：设备型号、操作系统版本、屏幕分辨率，用于适配显示和优化性能。 </text>
         </view>
 
@@ -42,14 +45,22 @@
         <view class="section">
           <text class="section-title"> 四、信息的存储与保护 </text>
           <text class="section-text">
-            您的数据存储在安全的云服务器上，我们采用加密传输和访问控制等技术手段保护您的信息安全。我们不会将您的个人信息出售、出租或以其他方式提供给第三方。
+            本地模式使用当前设备的普通本地存储，包含恢复副本，不承诺系统级加密。
+            只有明确选择云同步或模型并同意共享，相关记录或当前任务必要上下文才发送至所选服务；
+            本机解析的原件、页图与识别留在本机。不会因本地能力不足静默上传整份资料。
+          </text>
+          <text class="section-text">
+            自带 API
+            的密钥由项目后端单独加密保存，服务端运维具备解密能力，不是端到端加密。普通学习导出不含密钥。本地连接令牌仅本次页面持有，离开页面后需重新连接。上游模型处理规则需按所选供应商核对。
           </text>
         </view>
 
         <view class="section">
           <text class="section-title"> 五、您的权利 </text>
           <text class="section-text">
-            您有权查看、修改您的个人资料信息。您可以在"设置"页面中管理您的账号信息。如需注销账号，您可以在"设置"页面中直接申请注销，注销后将有7天冷静期，期间可撤销申请。冷静期结束后，您的账号及所有相关数据将被永久删除。
+            您可以查看、纠正和导出学习记录，删除本地新学习记录会覆盖相应恢复副本，
+            但不会同时删除旧记录、云副本或本机解析原件；这些范围需分别处理。 账号注销流程保留7天冷静期，期间可撤销申请。
+            生产备份保留周期、清除范围和必要留存尚需部署验收，不宣称即时删除全部副本。
           </text>
         </view>
 

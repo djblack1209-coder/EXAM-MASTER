@@ -32,8 +32,6 @@ describe('English I 2024 published bank data', () => {
     );
     expect(bank.cards.find((card) => card.number === 52).question).toContain('某市近三年公园数量');
     expect(bank.cards.find((card) => card.number === 52).question).toContain('2022年670座');
-    expect(bank.cards.find((card) => card.number === 52).answerEvidence.evidenceRole).toBe(
-      'official_writing_prompt'
-    );
+    expect(bank.cards.find((card) => card.number === 52).answerEvidence.evidenceRole).toBe('official_writing_prompt');
   });
 });

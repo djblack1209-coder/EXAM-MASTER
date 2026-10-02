@@ -1,0 +1,90 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: '04:00'
+      timezone: Etc/UTC
+    open-pull-requests-limit: 5
+    cooldown:
+      default-days: 7
+    versioning-strategy: increase
+    commit-message:
+      prefix: chore
+      include: scope
+    groups:
+      uni-framework:
+        patterns: ['@dcloudio/*', '@vitejs/*', 'vue', 'pinia', 'vite', 'vite-plugin-*']
+        update-types: [minor, patch]
+      testing:
+        patterns: ['vitest', '@vitest/*', '@vue/test-utils', 'happy-dom']
+        update-types: [minor, patch]
+      tooling:
+        patterns: ['*']
+        exclude-patterns:
+          [
+            '@dcloudio/*',
+            '@vitejs/*',
+            'vue',
+            'pinia',
+            'vite',
+            'vite-plugin-*',
+            'vitest',
+            '@vitest/*',
+            '@vue/test-utils',
+            'happy-dom'
+          ]
+        update-types: [minor, patch]
+  - package-ecosystem: npm
+    directories: ['/laf-backend', '/laf-backend/standalone']
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    cooldown:
+      default-days: 7
+    groups:
+      backend-compatible:
+        patterns: ['*']
+        update-types: [minor, patch]
+    commit-message:
+      prefix: chore
+      include: scope
+  - package-ecosystem: pip
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 3
+    cooldown:
+      default-days: 7
+    groups:
+      material-tools:
+        patterns: ['*']
+        update-types: [minor, patch]
+    commit-message:
+      prefix: chore
+      include: scope
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 3
+    groups:
+      workflow-actions:
+        patterns: ['*']
+    commit-message:
+      prefix: chore
+      include: scope
+  - package-ecosystem: docker
+    directory: /deploy/tencent
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: chore
+      include: scope

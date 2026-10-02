@@ -15,11 +15,14 @@ describe('H5 deployment entrypoint', () => {
     calls = join(root, 'calls');
     env = { HOME: root, PATH: `${root}/bin:/usr/bin:/bin`, CALLS: calls };
     for (const command of ['npm', 'ssh', 'scp', 'rsync', 'curl', 'sudo', 'systemctl']) {
-      writeFileSync(join(root, 'bin', command), '#!/bin/bash\necho "${0##*/}:$PWD:$*" >> "$CALLS"\nexit 99\n', { mode: 0o755 });
+      writeFileSync(join(root, 'bin', command), '#!/bin/bash\necho "${0##*/}:$PWD:$*" >> "$CALLS"\nexit 99\n', {
+        mode: 0o755
+      });
     }
   });
   afterEach(() => rmSync(root, { recursive: true, force: true }));
-  const run = (...args) => spawnSync('/bin/bash', [script, ...args], { cwd: '/', env, encoding: 'utf8', timeout: 5000 });
+  const run = (...args) =>
+    spawnSync('/bin/bash', [script, ...args], { cwd: '/', env, encoding: 'utf8', timeout: 5000 });
 
   it('blocks default deployment before any build or remote command', () => {
     expect(run().status).toBe(78);
@@ -47,7 +50,10 @@ describe('H5 deployment entrypoint', () => {
     expect(run('--build-only').status).not.toBe(0);
   });
   it('builds from the project root and checks the candidate without remote calls', () => {
-    writeFileSync(join(root, 'bin/npm'), '#!/bin/bash\necho "npm:$PWD:$*" >> "$CALLS"\nmkdir -p dist/build/h5\necho fixture > dist/build/h5/index.html\n');
+    writeFileSync(
+      join(root, 'bin/npm'),
+      '#!/bin/bash\necho "npm:$PWD:$*" >> "$CALLS"\nmkdir -p dist/build/h5\necho fixture > dist/build/h5/index.html\n'
+    );
     const result = run('--build-only');
     expect(result.status).toBe(0);
     expect(readFileSync(calls, 'utf8').trim()).toBe(`npm:${root}:run build:h5`);

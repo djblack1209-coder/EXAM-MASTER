@@ -18,8 +18,9 @@
         <text>。如你同意，请点击"同意"开始使用。</text>
       </view>
       <view class="privacy-actions">
-        <button class="privacy-btn privacy-btn-reject" @tap="handleReject">拒绝</button>
+        <button id="reject-btn" class="privacy-btn privacy-btn-reject" @tap="handleReject">拒绝</button>
         <button
+          id="agree-btn"
           class="privacy-btn privacy-btn-agree"
           open-type="agreePrivacyAuthorization"
           @agreeprivacyauthorization="handleAgree"
@@ -42,7 +43,7 @@ let _privacyHandler = null;
 
 // #ifdef MP-WEIXIN
 onMounted(() => {
-  if (wx.onNeedPrivacyAuthorization) {
+  if (typeof wx !== 'undefined' && wx.onNeedPrivacyAuthorization) {
     _privacyHandler = (resolve) => {
       resolvePrivacyAuthorization = resolve;
       // 获取隐私协议名称
@@ -64,7 +65,8 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
-  if (wx.offNeedPrivacyAuthorization && _privacyHandler) {
+  handleReject();
+  if (typeof wx !== 'undefined' && wx.offNeedPrivacyAuthorization && _privacyHandler) {
     wx.offNeedPrivacyAuthorization(_privacyHandler);
     _privacyHandler = null;
   }

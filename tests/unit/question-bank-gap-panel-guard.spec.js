@@ -64,9 +64,7 @@ describe('question bank gap panel', () => {
     const wrapper = mountQuestionBank(profile);
     await nextTick();
 
-    expect(wrapper.find('.gap-panel').text()).toContain(
-      `整理中 ${expected.organizing} · 待入库 ${expected.missing}`
-    );
+    expect(wrapper.find('.gap-panel').text()).toContain(`整理中 ${expected.organizing} · 待入库 ${expected.missing}`);
     expect(wrapper.findAll('.gap-item')).toHaveLength(expected.previewCount);
     expect(wrapper.find('.gap-panel').text()).toContain(expected.years[0]);
 

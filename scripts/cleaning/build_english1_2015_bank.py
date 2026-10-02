@@ -163,7 +163,15 @@ def compact(text: Any) -> str:
     return re.sub(r"\s+", " ", str(text or "")).strip()
 
 
-def render_pdf_assets(pdf: Path, prefix: str, *, asset_dir: Path, force: bool, first_page: int, last_page: int) -> None:
+def render_pdf_assets(
+    pdf: Path,
+    prefix: str,
+    *,
+    asset_dir: Path,
+    force: bool,
+    first_page: int,
+    last_page: int,
+) -> None:
     if not pdf.exists():
         raise FileNotFoundError(pdf)
     asset_dir.mkdir(parents=True, exist_ok=True)
@@ -209,7 +217,10 @@ def image_ref(prefix: str, page: int, *, caption: str) -> dict[str, str]:
 
 def ocr_page(asset_dir: Path, page: int) -> str:
     image = asset_dir / f"paper-page-{page:02d}.jpg"
-    result = run(["tesseract", str(image), "stdout", "-l", "eng+chi_sim", "--psm", "6"], capture=True)
+    result = run(
+        ["tesseract", str(image), "stdout", "-l", "eng+chi_sim", "--psm", "6"],
+        capture=True,
+    )
     return compact(result.stdout if result else "")
 
 
@@ -229,7 +240,9 @@ def build_passages(asset_dir: Path) -> dict[str, str]:
     if missing:
         raise RuntimeError(f"Missing OCR passage groups: {', '.join(missing)}")
     if "statistical" not in passages["text3"].lower():
-        raise RuntimeError("2015 Text 3 OCR did not contain the expected statistical-review article")
+        raise RuntimeError(
+            "2015 Text 3 OCR did not contain the expected statistical-review article"
+        )
     if "reading proceed" not in passages["part-b"].lower():
         raise RuntimeError("2015 Part B OCR did not contain the expected reading-proceed passage")
     return passages
@@ -367,8 +380,14 @@ def build_card(number: int, passages: dict[str, str]) -> dict[str, Any]:
     question = question_for(number)
     options = options_for(number)
     answer = answer_for(number)
-    question_images = [image_ref("paper-page", page, caption=f"试卷原页 p.{page}") for page in QUESTION_PAGES[number]]
-    answer_images = [image_ref("answer-page", page, caption=f"答案速查 p.{page}") for page in ANSWER_PAGES[number]]
+    question_images = [
+        image_ref("paper-page", page, caption=f"试卷原页 p.{page}")
+        for page in QUESTION_PAGES[number]
+    ]
+    answer_images = [
+        image_ref("answer-page", page, caption=f"答案速查 p.{page}")
+        for page in ANSWER_PAGES[number]
+    ]
     question_hash = sha256_text(
         json.dumps(
             {
@@ -382,7 +401,11 @@ def build_card(number: int, passages: dict[str, str]) -> dict[str, Any]:
         )
     )
     answer_hash = sha256_text(
-        json.dumps({"answer": answer, "answerPages": ANSWER_PAGES[number]}, ensure_ascii=False, sort_keys=True)
+        json.dumps(
+            {"answer": answer, "answerPages": ANSWER_PAGES[number]},
+            ensure_ascii=False,
+            sort_keys=True,
+        )
     )
 
     card = {
@@ -445,8 +468,22 @@ def validate_cards(cards: list[dict[str, Any]]) -> None:
 
 
 def build_payload(*, asset_dir: Path, force_assets: bool) -> dict[str, Any]:
-    render_pdf_assets(ORIGINAL_PAPER, "paper-page", asset_dir=asset_dir, force=force_assets, first_page=1, last_page=15)
-    render_pdf_assets(ANSWER_SPEED, "answer-page", asset_dir=asset_dir, force=force_assets, first_page=1, last_page=16)
+    render_pdf_assets(
+        ORIGINAL_PAPER,
+        "paper-page",
+        asset_dir=asset_dir,
+        force=force_assets,
+        first_page=1,
+        last_page=15,
+    )
+    render_pdf_assets(
+        ANSWER_SPEED,
+        "answer-page",
+        asset_dir=asset_dir,
+        force=force_assets,
+        first_page=1,
+        last_page=16,
+    )
     passages = build_passages(asset_dir)
     cards = [build_card(number, passages) for number in range(1, 53)]
     validate_cards(cards)

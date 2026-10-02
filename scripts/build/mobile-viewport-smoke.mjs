@@ -82,10 +82,11 @@ async function runSmoke() {
 
   const { chromium } = await import('playwright');
   const { server, port } = await serveStatic(H5_ROOT);
-  const browser = await chromium.launch();
+  let browser;
   const failures = [];
 
   try {
+    browser = await chromium.launch();
     for (const viewport of MOBILE_VIEWPORTS) {
       for (const route of MOBILE_SMOKE_ROUTES) {
         const page = await browser.newPage({ viewport });
@@ -118,15 +119,21 @@ async function runSmoke() {
       }
     }
   } finally {
-    await browser.close();
-    await closeServer(server);
+    try {
+      await browser?.close();
+    } finally {
+      server.closeAllConnections?.();
+      await closeServer(server);
+    }
   }
 
   if (failures.length > 0) {
     console.error(`[mobile-viewport-smoke] FAIL\n${JSON.stringify(failures, null, 2)}`);
     process.exit(1);
   }
-  console.log(`[mobile-viewport-smoke] OK: ${MOBILE_VIEWPORTS.length} viewports x ${MOBILE_SMOKE_ROUTES.length} routes`);
+  console.log(
+    `[mobile-viewport-smoke] OK: ${MOBILE_VIEWPORTS.length} viewports x ${MOBILE_SMOKE_ROUTES.length} routes`
+  );
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {

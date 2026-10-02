@@ -390,10 +390,10 @@ READING_ANSWERS = {
 }
 
 PART_B_PARAGRAPHS = {
-    "A": "Peters likes to photograph butterflies in a landscape, celebrating the beauty of their surroundings as well as the insects themselves. His pictures of a Glanville fritillary rising from the sea-pinks beside the chalk cliffs of Compton Bay on the Isle of Wight are particularly glorious. These take-off shots are even more challenging because they require a wide-angle lens, which means he must be less than 2cm from the butterfly. It's incredibly difficult to get that close to a skittish sun-warmed insect. Unlike some photographers, who \"cheat\" by keeping insects in a fridge to slow them down, Peters refuses to tamper with wild butterflies.",
-    "B": "Peters' signature shot is a butterfly \"take-off\", showing the multiple wing-beats of one butterfly in one frame as it lifts off from a flower. How does he capture it? Technology helps. A typical digital SLR camera shoots 20 frames a second. He uses a high-speed OM System which shoots 120 frames a second.",
+    "A": 'Peters likes to photograph butterflies in a landscape, celebrating the beauty of their surroundings as well as the insects themselves. His pictures of a Glanville fritillary rising from the sea-pinks beside the chalk cliffs of Compton Bay on the Isle of Wight are particularly glorious. These take-off shots are even more challenging because they require a wide-angle lens, which means he must be less than 2cm from the butterfly. It\'s incredibly difficult to get that close to a skittish sun-warmed insect. Unlike some photographers, who "cheat" by keeping insects in a fridge to slow them down, Peters refuses to tamper with wild butterflies.',
+    "B": 'Peters\' signature shot is a butterfly "take-off", showing the multiple wing-beats of one butterfly in one frame as it lifts off from a flower. How does he capture it? Technology helps. A typical digital SLR camera shoots 20 frames a second. He uses a high-speed OM System which shoots 120 frames a second.',
     "C": "Britain has relatively few butterfly species compared with mainland Europe and 80% are in decline, mostly because intensive chemical farming has reduced many species to tiny fragments of habitat and small nature reserves. Global heating is benefiting some species but others are too isolated to find suitable new habitat, and gardening habits-paving over gardens and using pesticides-aren't helping either. Butterflies may not pollinate as many plants as wild bees and hoverflies, but because British butterflies are the best-studied group of insects in the world, they are an extremely useful indicator of the wider declines in flying insects.",
-    "D": "Five years ago, at summer's end, Andrew Fusek Peters was diagnosed with bowel cancer. \"I was waiting for surgery, feeling really ill, sitting in my garden. It was amazing weather and there were painted lady butterflies everywhere,\" he says. \"They were a symbol of fragile life, of hope and defiance, and something appealed to my soul.\"",
+    "D": 'Five years ago, at summer\'s end, Andrew Fusek Peters was diagnosed with bowel cancer. "I was waiting for surgery, feeling really ill, sitting in my garden. It was amazing weather and there were painted lady butterflies everywhere," he says. "They were a symbol of fragile life, of hope and defiance, and something appealed to my soul."',
     "E": "That makes it sound easy, and artificial, but Peters insists it is still a massive challenge. He typically takes between 10,000 and 20,000 shots to get one butterfly take-off sequence in focus. At such high shutter speeds, the depth of field is tiny, and as butterflies do not fly in a straight line they swiftly flutter out of focus. As well as thousands of attempts, it takes patience and field craft to anticipate a butterfly's likely flight-line-and catch it-in focus.",
     "F": "So what's the appeal of a long, sweaty day in pursuit of an elusive, fast-moving wild animal? \"It just feels bloody brilliant,\" says Peters. \"If I've had a full day of good encounters with butterflies, met interesting butterfly people and I've got some good shots, that becomes a vault in my spiritual bank. It's a happy feeling.\"",
     "G": "A children's author and poet who had become a keen amateur photographer, Peters watched the butterflies and idly wondered if he could capture them in flight. It swiftly become an obsession as he recovered from a successful operation to remove the cancer. In recent summers, he has travelled the length and breadth of Britain to photograph all 58 native species of butterfly. Now the fruits of those summers have seen published in a beautiful new book.",
@@ -577,7 +577,9 @@ def option_list(options: dict[str, str]) -> list[dict[str, str]]:
     return [{"label": label, "text": text} for label, text in options.items()]
 
 
-def add_evidence(card: dict[str, Any], source_id: str, source_path: Path, answer_source_path: Path) -> dict[str, Any]:
+def add_evidence(
+    card: dict[str, Any], source_id: str, source_path: Path, answer_source_path: Path
+) -> dict[str, Any]:
     card["sourceEvidenceId"] = source_id
     card["sourceEvidence"] = source_evidence(source_id, source_path)
     card["questionTextHash"] = card_hash(card["question"])
@@ -595,26 +597,26 @@ def build_english1_draft() -> dict[str, Any]:
     cards: list[dict[str, Any]] = []
 
     for number in range(1, 21):
-      card = {
-          "id": f"english1-2025-{number:03d}",
-          "paperId": "english1-2025",
-          "paperName": "2025考研英语一真题",
-          "subject": "英语",
-          "track": "english1",
-          "year": "2025",
-          "number": number,
-          "type": "single_choice",
-          "section": "完形填空",
-          "groupId": "cloze",
-          "question": f"Choose the best option for blank {number}.",
-          "passage": SECTION_I_PASSAGE,
-          "options": option_list(SECTION_I_OPTIONS[number]),
-          "answer": SECTION_I_ANSWERS[number],
-          "explanation": "待复核答案解析",
-          "source": "2025-english1-paper.pdf",
-          "tags": ["english1", "2025真题", "完形填空"],
-      }
-      cards.append(add_evidence(card, "english1-2025-paper", ENGLISH1_PAPER, ENGLISH1_ANSWER))
+        card = {
+            "id": f"english1-2025-{number:03d}",
+            "paperId": "english1-2025",
+            "paperName": "2025考研英语一真题",
+            "subject": "英语",
+            "track": "english1",
+            "year": "2025",
+            "number": number,
+            "type": "single_choice",
+            "section": "完形填空",
+            "groupId": "cloze",
+            "question": f"Choose the best option for blank {number}.",
+            "passage": SECTION_I_PASSAGE,
+            "options": option_list(SECTION_I_OPTIONS[number]),
+            "answer": SECTION_I_ANSWERS[number],
+            "explanation": "待复核答案解析",
+            "source": "2025-english1-paper.pdf",
+            "tags": ["english1", "2025真题", "完形填空"],
+        }
+        cards.append(add_evidence(card, "english1-2025-paper", ENGLISH1_PAPER, ENGLISH1_ANSWER))
 
     for number in range(21, 41):
         question = READING_QUESTIONS[number]
@@ -733,7 +735,11 @@ def audit_sources(raw_root: Path = RAW_ROOT) -> dict[str, Any]:
         page_count = pdf_page_count(path)
         text_layer = "usable" if text_chars >= 300 else "missing_or_sparse"
         quality = "needs_cleaning"
-        if meta.get("track") == "english1" and meta.get("role") in {"paper", "answer"} and text_layer == "usable":
+        if (
+            meta.get("track") == "english1"
+            and meta.get("role") in {"paper", "answer"}
+            and text_layer == "usable"
+        ):
             quality = "needs_review"
         elif meta.get("track") == "english2" and meta.get("role") == "answer":
             quality = "needs_passage"
@@ -745,7 +751,11 @@ def audit_sources(raw_root: Path = RAW_ROOT) -> dict[str, Any]:
             blockers.append("no usable text layer")
         if meta.get("knownIssue"):
             blockers.append(meta["knownIssue"])
-        if meta.get("track") == "politics" and meta.get("role") in {"answer", "paper_answer"} and text_layer == "usable":
+        if (
+            meta.get("track") == "politics"
+            and meta.get("role") in {"answer", "paper_answer"}
+            and text_layer == "usable"
+        ):
             blockers.extend(politics_answer_marker_blockers(pdf_text(path)))
 
         sources.append(
@@ -793,7 +803,9 @@ def display_path(path: Path) -> str:
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Audit public-course PDFs and build review-only 2025 drafts.")
+    parser = argparse.ArgumentParser(
+        description="Audit public-course PDFs and build review-only 2025 drafts."
+    )
     parser.add_argument("--root", type=Path, default=RAW_ROOT)
     parser.add_argument("--audit-output", type=Path)
     parser.add_argument("--draft-output", type=Path, default=DEFAULT_DRAFT_OUTPUT)

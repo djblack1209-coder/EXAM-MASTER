@@ -121,9 +121,15 @@ def relative(path: Path) -> str:
 
 
 def require_sources() -> None:
-    missing = [relative(path) for path in [PAPER_ANSWER, DETAILED_ANALYSIS, ORIGINAL_PAPER] if not path.exists()]
+    missing = [
+        relative(path)
+        for path in [PAPER_ANSWER, DETAILED_ANALYSIS, ORIGINAL_PAPER]
+        if not path.exists()
+    ]
     if missing:
-        raise FileNotFoundError("Missing required English I 2022 source PDFs: " + ", ".join(missing))
+        raise FileNotFoundError(
+            "Missing required English I 2022 source PDFs: " + ", ".join(missing)
+        )
 
 
 def run_pdftotext(path: Path) -> str:
@@ -166,7 +172,13 @@ def option_list(options: dict[str, str]) -> list[dict[str, str]]:
 
 
 def split_labeled_options(text: str, labels: str = "ABCD") -> dict[str, str]:
-    normalized = compact(text).replace("[A]", "A.").replace("[B]", "B.").replace("[C]", "C.").replace("[D]", "D.")
+    normalized = (
+        compact(text)
+        .replace("[A]", "A.")
+        .replace("[B]", "B.")
+        .replace("[C]", "C.")
+        .replace("[D]", "D.")
+    )
     normalized = normalized.replace("[E]", "E.").replace("[F]", "F.").replace("[G]", "G.")
     matches = list(re.finditer(rf"(?<![A-Za-z])([{labels}])\s*[\.,・\]]\s*", normalized))
     if len(matches) < len(labels):
@@ -179,7 +191,13 @@ def split_labeled_options(text: str, labels: str = "ABCD") -> dict[str, str]:
     return options
 
 
-def find_numbered_block(text: str, number: int, next_number: int | None = None, *, end_anchor: str | None = None) -> str:
+def find_numbered_block(
+    text: str,
+    number: int,
+    next_number: int | None = None,
+    *,
+    end_anchor: str | None = None,
+) -> str:
     start_match = re.search(rf"(?m)^\s*{number}\.\s+", text)
     if not start_match:
         raise ValueError(f"Missing numbered block {number}")
@@ -192,7 +210,9 @@ def find_numbered_block(text: str, number: int, next_number: int | None = None, 
         end_index = text.find(end_anchor, start_match.end())
         if end_index >= 0:
             end_indexes.append(end_index)
-    return text[start_match.start() : min(end_indexes)] if end_indexes else text[start_match.start() :]
+    return (
+        text[start_match.start() : min(end_indexes)] if end_indexes else text[start_match.start() :]
+    )
 
 
 def parse_choice_question(block: str, number: int) -> tuple[str, dict[str, str]]:
@@ -207,7 +227,11 @@ def parse_choice_question(block: str, number: int) -> tuple[str, dict[str, str]]
 
 
 def extract_cloze_passage(text: str) -> str:
-    block = text_between(text, "mark A, B, C or D on the ANSWER SHEET. (10 points)", "英语（一）试题・1.（共15页）")
+    block = text_between(
+        text,
+        "mark A, B, C or D on the ANSWER SHEET. (10 points)",
+        "英语（一）试题・1.（共15页）",
+    )
     block = cleaned_block(block)
     block = re.sub(r"\s]\s+around", " (1) around", block, count=1)
     for number in range(2, 21):
@@ -218,7 +242,9 @@ def extract_cloze_passage(text: str) -> str:
 def extract_cloze_options(text: str) -> dict[int, dict[str, str]]:
     option_text = text_between(text, "英语（一）试题・1.（共15页）", "Section R")
     return {
-        number: split_labeled_options(find_numbered_block(option_text, number, number + 1 if number < 20 else None))
+        number: split_labeled_options(
+            find_numbered_block(option_text, number, number + 1 if number < 20 else None)
+        )
         for number in range(1, 21)
     }
 
@@ -228,7 +254,9 @@ def extract_passages(text: str) -> dict[str, str]:
         "text1": cleaned_block(text_between(text, "Text 1", "21. According to Paragraph 1")),
         "text2": cleaned_block(text_between(text, "Text 2", "26. The author suggests")),
         "text3": cleaned_block(text_between(text, "Text 3", "31. According to paragraph 1")),
-        "text4": cleaned_block(text_between(text, "Text 4", "36. The personal grievance provisions")),
+        "text4": cleaned_block(
+            text_between(text, "Text 4", "36. The personal grievance provisions")
+        ),
         "part-b": cleaned_block(text_between(text, "Part B\nDirections:", "Part C")),
         "part-c": cleaned_block(text_between(text, "Between 1807 and 1814", "Section in")),
     }
@@ -239,7 +267,9 @@ def extract_passages(text: str) -> dict[str, str]:
 def extract_writing_prompts(text: str) -> dict[int, str]:
     writing = text_between(text, "Section in       Writing", "英语（一）试题.15.（共15页）")
     prompt51 = cleaned_block(text_between(writing, "51. Directions:", "PartB"))
-    prompt52 = cleaned_block(text_between(writing, "52. Directions:", "英语（一）试题・14.（共15页）"))
+    prompt52 = cleaned_block(
+        text_between(writing, "52. Directions:", "英语（一）试题・14.（共15页）")
+    )
     return {
         51: "51. Directions: " + prompt51,
         52: "52. Directions: " + prompt52,
@@ -274,9 +304,27 @@ def source_path(source_id: str) -> Path:
     raise KeyError(source_id)
 
 
-def attach_evidence(card: dict[str, Any], *, answer_role: str = "official_answer_key") -> dict[str, Any]:
-    question_hash = hash_text(json.dumps({"question": card["question"], "passage": card.get("passage"), "options": card.get("options", [])}, ensure_ascii=False, sort_keys=True))
-    answer_hash = hash_text(json.dumps({"answer": card["answer"], "role": answer_role}, ensure_ascii=False, sort_keys=True))
+def attach_evidence(
+    card: dict[str, Any], *, answer_role: str = "official_answer_key"
+) -> dict[str, Any]:
+    question_hash = hash_text(
+        json.dumps(
+            {
+                "question": card["question"],
+                "passage": card.get("passage"),
+                "options": card.get("options", []),
+            },
+            ensure_ascii=False,
+            sort_keys=True,
+        )
+    )
+    answer_hash = hash_text(
+        json.dumps(
+            {"answer": card["answer"], "role": answer_role},
+            ensure_ascii=False,
+            sort_keys=True,
+        )
+    )
     now = card.pop("_now")
     card["sourceEvidenceId"] = "english1-2022-paper-answer"
     card["sourceEvidence"] = {
@@ -314,7 +362,9 @@ def attach_evidence(card: dict[str, Any], *, answer_role: str = "official_answer
     return card
 
 
-def base_card(number: int, *, card_type: str, question: str, answer: str, now: str) -> dict[str, Any]:
+def base_card(
+    number: int, *, card_type: str, question: str, answer: str, now: str
+) -> dict[str, Any]:
     group_id = group_for(number)
     section = SECTION_BY_GROUP[group_id]
     return {
@@ -362,9 +412,17 @@ def build_bank(now: str | None = None) -> dict[str, Any]:
 
     for number in range(21, 41):
         group_id = group_for(number)
-        block = find_numbered_block(text, number, number + 1 if number < 40 else None, end_anchor="Part B")
+        block = find_numbered_block(
+            text, number, number + 1 if number < 40 else None, end_anchor="Part B"
+        )
         question, options = parse_choice_question(block, number)
-        card = base_card(number, card_type="single_choice", question=question, answer=CHOICE_ANSWERS[number], now=now)
+        card = base_card(
+            number,
+            card_type="single_choice",
+            question=question,
+            answer=CHOICE_ANSWERS[number],
+            now=now,
+        )
         card["passage"] = passages[group_id]
         card["options"] = option_list(options)
         card["explanation"] = "答案已按本地百度网盘 2022 英语一答案速查表匹配。"
@@ -381,7 +439,9 @@ def build_bank(now: str | None = None) -> dict[str, Any]:
         card["passage"] = passages["part-b"]
         card["material"] = passages["part-b"]
         card["options"] = option_list(PART_B_OPTIONS)
-        card["explanation"] = "答案已按本地百度网盘 2022 英语一答案速查表匹配；Part B 按 A-G 陈述训练。"
+        card["explanation"] = (
+            "答案已按本地百度网盘 2022 英语一答案速查表匹配；Part B 按 A-G 陈述训练。"
+        )
         cards.append(attach_evidence(card))
 
     for number in range(46, 51):
@@ -425,9 +485,27 @@ def build_bank(now: str | None = None) -> dict[str, Any]:
         "publicationBlockers": [],
         "sourceEvidencePolicy": "baidu_netdisk_official_answer_speed_text_layer_with_original_paper_audit_v1",
         "sourceFiles": [
-            {"id": "english1-2022-paper-answer", "sourceId": SOURCE_IDS["paper_answer"], "role": "paper_answer", "localPath": relative(PAPER_ANSWER), "sha256": sha256_file(PAPER_ANSWER)},
-            {"id": "english1-2022-original-paper", "sourceId": SOURCE_IDS["original_paper"], "role": "paper", "localPath": relative(ORIGINAL_PAPER), "sha256": sha256_file(ORIGINAL_PAPER)},
-            {"id": "english1-2022-detailed-analysis", "sourceId": SOURCE_IDS["detailed_analysis"], "role": "answer_analysis", "localPath": relative(DETAILED_ANALYSIS), "sha256": sha256_file(DETAILED_ANALYSIS)},
+            {
+                "id": "english1-2022-paper-answer",
+                "sourceId": SOURCE_IDS["paper_answer"],
+                "role": "paper_answer",
+                "localPath": relative(PAPER_ANSWER),
+                "sha256": sha256_file(PAPER_ANSWER),
+            },
+            {
+                "id": "english1-2022-original-paper",
+                "sourceId": SOURCE_IDS["original_paper"],
+                "role": "paper",
+                "localPath": relative(ORIGINAL_PAPER),
+                "sha256": sha256_file(ORIGINAL_PAPER),
+            },
+            {
+                "id": "english1-2022-detailed-analysis",
+                "sourceId": SOURCE_IDS["detailed_analysis"],
+                "role": "answer_analysis",
+                "localPath": relative(DETAILED_ANALYSIS),
+                "sha256": sha256_file(DETAILED_ANALYSIS),
+            },
         ],
         "processed_at": now,
         "total_cards": len(cards),

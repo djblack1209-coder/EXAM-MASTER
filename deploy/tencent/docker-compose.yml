@@ -13,7 +13,7 @@ services:
     container_name: exam-master-backend
     restart: unless-stopped
     ports:
-      - "127.0.0.1:3001:3000"  # 仅本机访问，Nginx 代理
+      - '127.0.0.1:3001:3000' # 仅本机访问，Nginx 代理
     env_file:
       - ../../laf-backend/.env
     environment:
@@ -44,7 +44,7 @@ services:
     restart: unless-stopped
     # 不暴露外部端口，仅容器网络内可访问
     expose:
-      - "27017"
+      - '27017'
     environment:
       - MONGO_INITDB_ROOT_USERNAME=admin
       - MONGO_INITDB_ROOT_PASSWORD=${MONGO_ROOT_PASSWORD:?Set MONGO_ROOT_PASSWORD in .env}
@@ -60,7 +60,7 @@ services:
         --quiet
         --logpath /dev/null
     healthcheck:
-      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      test: ['CMD', 'mongosh', '--eval', "db.adminCommand('ping')"]
       interval: 30s
       timeout: 10s
       retries: 5

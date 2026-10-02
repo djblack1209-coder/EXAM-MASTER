@@ -1,5 +1,5 @@
 name: send-email-code
-desc: ""
+desc: ''
 methods:
   - GET
   - POST

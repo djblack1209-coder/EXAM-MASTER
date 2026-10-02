@@ -1,7 +1,7 @@
 {
-  "name": "EXAM-MASTER",
+  "name": "问理 Wenli",
   "appid": "__UNI__8601AE2",
-  "description": "考研备考小程序 - 智能助力，一战成硕",
+  "description": "从一个问题开始，在对话中理解、练习和复习。",
   "versionName": "1.0.0",
   "versionCode": "100",
   "transformPx": false,
@@ -88,7 +88,7 @@
   },
   "vueVersion": "3",
   "h5": {
-    "title": "Exam Master - 考研备考助手",
+    "title": "问理 Wenli · 对话学习空间",
     "router": {
       "mode": "hash",
       "base": "/"

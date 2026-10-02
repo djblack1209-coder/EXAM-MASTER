@@ -12,10 +12,7 @@ import { resolve } from 'path';
 
 // 已知的分包副本对照表：[源文件, 副本文件]
 const DUPLICATE_PAIRS = [
-  [
-    'src/pages/practice-sub/utils/mistake-fsrs-scheduler.js',
-    'src/pages/study-detail/utils/mistake-fsrs-scheduler.js'
-  ]
+  ['src/pages/practice-sub/utils/mistake-fsrs-scheduler.js', 'src/pages/study-detail/utils/mistake-fsrs-scheduler.js']
 ];
 
 let hasIssue = false;
@@ -35,14 +32,20 @@ for (const [src, dup] of DUPLICATE_PAIRS) {
 
   // 读取文件，忽略注释行中的来源标记后比较
   const srcContent = readFileSync(srcPath, 'utf8')
-    .split('\n').filter(l => !l.includes('分包副本') && !l.includes('subpackage copy')).join('\n').trim();
+    .split('\n')
+    .filter((l) => !l.includes('分包副本') && !l.includes('subpackage copy'))
+    .join('\n')
+    .trim();
   const dupContent = readFileSync(dupPath, 'utf8')
-    .split('\n').filter(l => !l.includes('分包副本') && !l.includes('subpackage copy')).join('\n').trim();
+    .split('\n')
+    .filter((l) => !l.includes('分包副本') && !l.includes('subpackage copy'))
+    .join('\n')
+    .trim();
 
   if (srcContent === dupContent) {
-    console.log(`✅ 同步: ${src.replace('src/pages/','')} ↔ ${dup.replace('src/pages/','')}`);
+    console.log(`✅ 同步: ${src.replace('src/pages/', '')} ↔ ${dup.replace('src/pages/', '')}`);
   } else {
-    console.log(`❌ 不同步: ${src.replace('src/pages/','')} ↔ ${dup.replace('src/pages/','')}`);
+    console.log(`❌ 不同步: ${src.replace('src/pages/', '')} ↔ ${dup.replace('src/pages/', '')}`);
     hasIssue = true;
   }
 }

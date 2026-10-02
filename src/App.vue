@@ -1,7 +1,7 @@
 <script>
 import { toast } from '@/utils/toast.js';
 import { useUserStore } from '@/stores';
-import { applyTheme, getCurrentTheme, watchTheme } from '@/design/theme-engine.js';
+import { applyTheme, getCurrentTheme, watchTheme } from '@/design/theme-runtime.js';
 // ✅ 检查点 5.1: 导入分析服务
 import { analytics } from '@/utils/analytics/event-bus-analytics.js';
 // ✅ 检查点 5.2: 导入增强错误处理器
@@ -69,6 +69,10 @@ export default {
       const PUBLIC_PAGES = [
         '/pages/splash/index',
         '/pages/index/index',
+        '/pages/learning/index',
+        '/pages/mistake/index',
+        '/pages/plan/index',
+        '/pages/study-detail/index',
         '/pages/login/index',
         '/pages/login/onboarding',
         '/pages/login/wechat-callback',
@@ -283,6 +287,7 @@ export default {
 @use './styles/_dark-mode-vars.scss' as *;
 /* 3D 立体设计系统 — uiverse.io 风格原子组件 */
 @use './styles/_em3d-design-system.scss';
+@import './components/business/learning/learning-space.css';
 /* wot-design-uni 基础变量 */
 @import 'wot-design-uni/components/common/abstracts/variable.scss';
 

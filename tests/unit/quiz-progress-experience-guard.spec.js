@@ -13,7 +13,7 @@ describe('quiz progress experience guard', () => {
     expect(source).toContain('class="progress-percent"');
     expect(source).toContain('{{ progressPercent }}%');
     expect(source).toContain('class="progress-meter-thumb"');
-    expect(source).toContain(":style=\"{ left: progressPercent + '%' }\"");
+    expect(source).toContain(':style="{ left: progressPercent + \'%\' }"');
     expect(source).toContain('transition: left 280ms cubic-bezier(0.16, 1, 0.3, 1)');
   });
 

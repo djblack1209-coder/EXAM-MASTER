@@ -93,8 +93,7 @@ function loadEnvFiles(filePaths) {
 const OPTIONS = parseArgs(process.argv.slice(2));
 const RELEASE_ENV = OPTIONS.useEnvFiles ? { ...loadEnvFiles(OPTIONS.envFiles), ...process.env } : { ...process.env };
 
-const BASE_URL_SOURCE =
-  RELEASE_ENV.SMOKE_BASE_URL || RELEASE_ENV.LAF_API_URL || RELEASE_ENV.VITE_API_BASE_URL || '';
+const BASE_URL_SOURCE = RELEASE_ENV.SMOKE_BASE_URL || RELEASE_ENV.LAF_API_URL || RELEASE_ENV.VITE_API_BASE_URL || '';
 const ALLOW_LEGACY_SEALOS = String(RELEASE_ENV.SMOKE_ALLOW_LEGACY_SEALOS || '').toLowerCase() === 'true';
 
 if (!BASE_URL_SOURCE) {

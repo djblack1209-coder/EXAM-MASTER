@@ -72,7 +72,11 @@ def relative_path(path: Path) -> str:
 
 def load_cards(payload: Any) -> list[dict[str, Any]]:
     if isinstance(payload, dict):
-        cards = payload.get("cards") if isinstance(payload.get("cards"), list) else payload.get("questions")
+        cards = (
+            payload.get("cards")
+            if isinstance(payload.get("cards"), list)
+            else payload.get("questions")
+        )
         return [card for card in (cards or []) if isinstance(card, dict)]
     if isinstance(payload, list):
         return [card for card in payload if isinstance(card, dict)]
@@ -106,7 +110,9 @@ def safe_int(value: Any, fallback: int = 0) -> int:
 
 
 def queue_output_task_rank(task: dict[str, Any]) -> tuple[int, int, int, int, int]:
-    quality_issues = task.get("qualityIssues") if isinstance(task.get("qualityIssues"), list) else []
+    quality_issues = (
+        task.get("qualityIssues") if isinstance(task.get("qualityIssues"), list) else []
+    )
     status_score = 1 if str(task.get("status") or "") == "completed" else 0
     return (
         safe_int(task.get("questionCount")),
@@ -117,16 +123,25 @@ def queue_output_task_rank(task: dict[str, Any]) -> tuple[int, int, int, int, in
     )
 
 
-def choose_better_queue_output_task(current: dict[str, Any] | None, candidate: dict[str, Any]) -> dict[str, Any]:
+def choose_better_queue_output_task(
+    current: dict[str, Any] | None, candidate: dict[str, Any]
+) -> dict[str, Any]:
     if not current:
         return candidate
-    return candidate if queue_output_task_rank(candidate) > queue_output_task_rank(current) else current
+    return (
+        candidate
+        if queue_output_task_rank(candidate) > queue_output_task_rank(current)
+        else current
+    )
 
 
 def card_id(card: dict[str, Any], index: int) -> str:
-    return first_non_empty(card.get("id"), card.get("questionId"), card.get("question_id"), card.get("number")) or (
-        f"card-{index + 1}"
-    )
+    return first_non_empty(
+        card.get("id"),
+        card.get("questionId"),
+        card.get("question_id"),
+        card.get("number"),
+    ) or (f"card-{index + 1}")
 
 
 def card_year(card: dict[str, Any], payload: Any) -> str:
@@ -222,7 +237,9 @@ def clean_source_option_text(text: str) -> str:
 
 
 def parse_labeled_source_options(text: str) -> list[dict[str, str]]:
-    raw_matches = list(OPTION_MARK_PATTERN.finditer(text or "")) + list(DOTTED_OPTION_MARK_PATTERN.finditer(text or ""))
+    raw_matches = list(OPTION_MARK_PATTERN.finditer(text or "")) + list(
+        DOTTED_OPTION_MARK_PATTERN.finditer(text or "")
+    )
     matches = sorted(raw_matches, key=lambda item: item.start())
     options: list[dict[str, str]] = []
     seen_labels: set[str] = set()
@@ -231,7 +248,7 @@ def parse_labeled_source_options(text: str) -> list[dict[str, str]]:
         if not label or label in seen_labels:
             continue
         end = matches[index + 1].start() if index + 1 < len(matches) else len(text)
-        option_text = clean_source_option_text(text[match.end():end])
+        option_text = clean_source_option_text(text[match.end() : end])
         if not option_text:
             continue
         options.append({"label": label, "text": option_text})
@@ -250,8 +267,10 @@ def parse_numbered_choice_options(text: str) -> dict[str, list[dict[str, str]]]:
         number = int(match.group(1))
         if number < 1 or number > 80:
             continue
-        end = question_matches[index + 1].start() if index + 1 < len(question_matches) else len(text)
-        block = text[match.start():end]
+        end = (
+            question_matches[index + 1].start() if index + 1 < len(question_matches) else len(text)
+        )
+        block = text[match.start() : end]
         options = parse_labeled_source_options(block)
         if len(options) >= MIN_CHOICE_OPTION_COUNT:
             options_by_number[str(number)] = options
@@ -355,7 +374,9 @@ def update_queue_repair_status(
         if not output_path or resolved_path_key(output_path) != target_key:
             continue
         task["missingAnswerCount"] = missing_answer_count
-        task["answerEvidenceStatus"] = "candidate_repaired" if missing_answer_count == 0 else "missing_answers"
+        task["answerEvidenceStatus"] = (
+            "candidate_repaired" if missing_answer_count == 0 else "missing_answers"
+        )
         task["answerEvidenceRepairedAt"] = now
         task["updatedAt"] = now
         changed = True
@@ -379,7 +400,9 @@ def source_id_from_payload(payload: Any) -> str:
     explicit_source_id = first_non_empty(payload.get("sourceId"), payload.get("source_id"))
     if explicit_source_id:
         return explicit_source_id
-    source = first_non_empty(payload.get("source"), payload.get("sourcePath"), payload.get("fileName"))
+    source = first_non_empty(
+        payload.get("source"), payload.get("sourcePath"), payload.get("fileName")
+    )
     match = re.search(r"(src_[A-Za-z0-9]+)", source)
     return match.group(1) if match else ""
 
@@ -391,7 +414,9 @@ def queue_task_for_path(path: Path, output_task_map: dict[str, dict[str, Any]]) 
         return output_task_map.get(str(path), {})
 
 
-def load_source_manifest(source_manifest_path: Path | None) -> dict[str, dict[str, Any]]:
+def load_source_manifest(
+    source_manifest_path: Path | None,
+) -> dict[str, dict[str, Any]]:
     payload = read_json(source_manifest_path, {}) if source_manifest_path else {}
     items = payload.get("items") if isinstance(payload, dict) else []
     return {
@@ -401,13 +426,19 @@ def load_source_manifest(source_manifest_path: Path | None) -> dict[str, dict[st
     }
 
 
-def source_evidence_snapshot(source_id: str, source_manifest: dict[str, dict[str, Any]]) -> dict[str, Any]:
+def source_evidence_snapshot(
+    source_id: str, source_manifest: dict[str, dict[str, Any]]
+) -> dict[str, Any]:
     item = source_manifest.get(source_id, {})
     return {
         "sourceId": source_id,
         "sourceType": item.get("sourceType", ""),
-        "contentHash": first_non_empty(item.get("contentHash"), item.get("sha256"), item.get("fileSha256")),
-        "remotePath": first_non_empty(item.get("remotePath"), item.get("sourceUrl"), item.get("provenanceUrl")),
+        "contentHash": first_non_empty(
+            item.get("contentHash"), item.get("sha256"), item.get("fileSha256")
+        ),
+        "remotePath": first_non_empty(
+            item.get("remotePath"), item.get("sourceUrl"), item.get("provenanceUrl")
+        ),
     }
 
 
@@ -422,10 +453,14 @@ def materialize_question_evidence(
 
     changed = False
     question_hash = hash_text(first_non_empty(card.get("question"), card.get("stem")))
-    if source_id and not first_non_empty(card.get("sourceEvidenceId"), card.get("source_evidence_id")):
+    if source_id and not first_non_empty(
+        card.get("sourceEvidenceId"), card.get("source_evidence_id")
+    ):
         card["sourceEvidenceId"] = source_id
         changed = True
-    if question_hash and not first_non_empty(card.get("questionTextHash"), card.get("question_text_hash")):
+    if question_hash and not first_non_empty(
+        card.get("questionTextHash"), card.get("question_text_hash")
+    ):
         card["questionTextHash"] = question_hash
         changed = True
 
@@ -438,7 +473,9 @@ def materialize_question_evidence(
         "sourceType": first_non_empty(evidence.get("sourceType"), snapshot.get("sourceType")),
         "contentHash": first_non_empty(evidence.get("contentHash"), snapshot.get("contentHash")),
         "remotePath": first_non_empty(evidence.get("remotePath"), snapshot.get("remotePath")),
-        "questionTextHash": first_non_empty(evidence.get("questionTextHash"), card.get("questionTextHash")),
+        "questionTextHash": first_non_empty(
+            evidence.get("questionTextHash"), card.get("questionTextHash")
+        ),
         "status": first_non_empty(evidence.get("status"), "candidate"),
         "method": first_non_empty(evidence.get("method"), "cleaned_question_text_hash"),
     }
@@ -459,7 +496,9 @@ def materialize_existing_answer_evidence(card: dict[str, Any]) -> bool:
 
     changed = False
     answer_hash = hash_text(answer)
-    if answer_hash and not first_non_empty(card.get("answerTextHash"), card.get("answer_text_hash")):
+    if answer_hash and not first_non_empty(
+        card.get("answerTextHash"), card.get("answer_text_hash")
+    ):
         card["answerTextHash"] = answer_hash
         changed = True
     if not first_non_empty(card.get("answerEvidenceStatus"), card.get("answer_evidence_status")):
@@ -513,7 +552,9 @@ def extract_pdf_text_with_apple_ocr(path: Path) -> str:
             image_path = Path(f"/tmp/answer-evidence-repair-ocr-{os.getpid()}-{index}.png")
             pix.save(str(image_path))
             try:
-                anns = ocrmac.OCR(str(image_path), language_preference=["zh-Hans", "en-US"]).recognize()
+                anns = ocrmac.OCR(
+                    str(image_path), language_preference=["zh-Hans", "en-US"]
+                ).recognize()
                 sorted_anns = sorted(anns, key=lambda item: (1 - item[2][1], item[2][0]))
                 page_text = "\n".join(item[0] for item in sorted_anns if str(item[0]).strip())
                 text_parts.append(f"\n--- PAGE {index + 1} ---\n{page_text}\n")
@@ -527,17 +568,23 @@ def extract_pdf_text_with_apple_ocr(path: Path) -> str:
     elapsed = time.time() - start
     text = "\n".join(text_parts)
     if text:
-        print(f"  OCR completed: {path.name} pages={len(text_parts)} seconds={elapsed:.1f} chars={len(text)}")
+        print(
+            f"  OCR completed: {path.name} pages={len(text_parts)} seconds={elapsed:.1f} chars={len(text)}"
+        )
     return text
 
 
-def resolve_companion_source_path(task: dict[str, Any], companion_path: Path, payload: Any) -> Path | None:
+def resolve_companion_source_path(
+    task: dict[str, Any], companion_path: Path, payload: Any
+) -> Path | None:
     candidates = [
         first_non_empty(task.get("localPath")),
         first_non_empty(task.get("expectedLocalPath")),
     ]
     if isinstance(payload, dict):
-        source_name = first_non_empty(payload.get("source"), payload.get("sourcePath"), payload.get("fileName"))
+        source_name = first_non_empty(
+            payload.get("source"), payload.get("sourcePath"), payload.get("fileName")
+        )
         if source_name:
             source_path = Path(source_name)
             candidates.extend(
@@ -567,7 +614,9 @@ def read_source_text(path: Path) -> str:
         return ""
 
 
-def read_companion_source_text(task: dict[str, Any], companion_path: Path, payload: Any) -> tuple[str, Path | None]:
+def read_companion_source_text(
+    task: dict[str, Any], companion_path: Path, payload: Any
+) -> tuple[str, Path | None]:
     path = resolve_companion_source_path(task, companion_path, payload)
     if not path:
         return "", None
@@ -576,7 +625,9 @@ def read_companion_source_text(task: dict[str, Any], companion_path: Path, paylo
 
 def parse_answer_key_ranges(text: str) -> dict[str, str]:
     candidates: dict[str, str] = {}
-    for match in re.finditer(r"(?<!\d)(\d{1,3})\s*[-~～]\s*(\d{1,3})\s*([A-Ga-g](?:\s*[A-Ga-g]){0,20})", text):
+    for match in re.finditer(
+        r"(?<!\d)(\d{1,3})\s*[-~～]\s*(\d{1,3})\s*([A-Ga-g](?:\s*[A-Ga-g]){0,20})", text
+    ):
         start = int(match.group(1))
         end = int(match.group(2))
         if end < start or end - start > 20:
@@ -592,7 +643,9 @@ def parse_answer_key_ranges(text: str) -> dict[str, str]:
 
 def parse_answer_key_range_groups(text: str) -> dict[str, str]:
     groups: dict[str, str] = {}
-    for match in re.finditer(r"(?<!\d)(\d{1,3})\s*[-~～]\s*(\d{1,3})\s*([A-Ga-g](?:\s*[A-Ga-g]){0,20})", text):
+    for match in re.finditer(
+        r"(?<!\d)(\d{1,3})\s*[-~～]\s*(\d{1,3})\s*([A-Ga-g](?:\s*[A-Ga-g]){0,20})", text
+    ):
         start = int(match.group(1))
         end = int(match.group(2))
         if end < start or end - start > 20:
@@ -613,7 +666,9 @@ def compact_numbered_answer_text(text: str) -> str:
     return normalize_text(text)
 
 
-def parse_numbered_answer_text(text: str, *, min_number: int = 46, max_number: int = 80) -> dict[str, str]:
+def parse_numbered_answer_text(
+    text: str, *, min_number: int = 46, max_number: int = 80
+) -> dict[str, str]:
     answers: dict[str, str] = {}
     if not text:
         return answers
@@ -644,7 +699,9 @@ def parse_numbered_answer_text(text: str, *, min_number: int = 46, max_number: i
     return answers
 
 
-def parse_numbered_answer_point_sections(text: str, *, min_number: int = 1, max_number: int = 120) -> dict[str, str]:
+def parse_numbered_answer_point_sections(
+    text: str, *, min_number: int = 1, max_number: int = 120
+) -> dict[str, str]:
     answers: dict[str, str] = {}
     if not text:
         return answers
@@ -669,7 +726,9 @@ def candidate_priority(item: dict[str, Any]) -> int:
     return ANSWER_CANDIDATE_METHOD_PRIORITY.get(str(item.get("method") or ""), 0)
 
 
-def resolve_answer_candidate_bucket(items: list[dict[str, Any]]) -> tuple[dict[str, Any] | None, list[dict[str, Any]]]:
+def resolve_answer_candidate_bucket(
+    items: list[dict[str, Any]],
+) -> tuple[dict[str, Any] | None, list[dict[str, Any]]]:
     answers = {item["answer"] for item in items}
     if len(answers) == 1:
         return items[0], []
@@ -680,7 +739,11 @@ def resolve_answer_candidate_bucket(items: list[dict[str, Any]]) -> tuple[dict[s
     if top_priority > 0 and len(top_answers) == 1:
         chosen = dict(ranked[0])
         chosen["conflictCandidates"] = items
-        chosen["conflictResolution"] = "preferred_original_answer_key" if top_priority >= 30 else "preferred_candidate_priority"
+        chosen["conflictResolution"] = (
+            "preferred_original_answer_key"
+            if top_priority >= 30
+            else "preferred_candidate_priority"
+        )
         return chosen, []
 
     return None, items
@@ -690,7 +753,9 @@ def option_signature(options: list[dict[str, str]]) -> tuple[tuple[str, str], ..
     return tuple((option["label"], option["text"]) for option in options)
 
 
-def resolve_option_candidate_bucket(items: list[dict[str, Any]]) -> tuple[dict[str, Any] | None, list[dict[str, Any]]]:
+def resolve_option_candidate_bucket(
+    items: list[dict[str, Any]],
+) -> tuple[dict[str, Any] | None, list[dict[str, Any]]]:
     signatures = {option_signature(item["options"]) for item in items}
     if len(signatures) == 1:
         return items[0], []
@@ -706,7 +771,9 @@ def collect_option_candidates(
     stats = {"structuredOptionCandidates": 0}
     for companion_path in companion_paths:
         payload = read_json(companion_path, {})
-        source_id = source_id_for_path(companion_path, output_source_map) or source_id_from_payload(payload)
+        source_id = source_id_for_path(companion_path, output_source_map) or source_id_from_payload(
+            payload
+        )
         for index, card in enumerate(load_cards(payload)):
             if str(card.get("type") or "") not in CHOICE_TYPES:
                 continue
@@ -783,7 +850,9 @@ def collect_companion_source_option_candidates(
         task = queue_task_for_path(companion_path, output_task_map or {})
         source_text, source_path = read_companion_source_text(task, companion_path, payload)
         year = first_non_empty(payload.get("year"), task.get("year"))
-        source_id = source_id_for_path(companion_path, output_source_map) or source_id_from_payload(payload)
+        source_id = source_id_for_path(companion_path, output_source_map) or source_id_from_payload(
+            payload
+        )
         source_candidates, source_stats = collect_source_option_candidates(
             source_text,
             year=year,
@@ -822,7 +891,9 @@ def collect_answer_candidates(
     }
     for companion_path in companion_paths:
         payload = read_json(companion_path, {})
-        source_id = source_id_for_path(companion_path, output_source_map) or source_id_from_payload(payload)
+        source_id = source_id_for_path(companion_path, output_source_map) or source_id_from_payload(
+            payload
+        )
         task = queue_task_for_path(companion_path, output_task_map or {})
         for index, card in enumerate(load_cards(payload)):
             year = card_year(card, payload)
@@ -845,9 +916,13 @@ def collect_answer_candidates(
             )
             stats["structuredCandidates"] += 1
 
-        year = first_non_empty(payload.get("year") if isinstance(payload, dict) else "", task.get("year"))
+        year = first_non_empty(
+            payload.get("year") if isinstance(payload, dict) else "", task.get("year")
+        )
         if year:
-            answer_key_text, answer_key_path = read_companion_source_text(task, companion_path, payload)
+            answer_key_text, answer_key_path = read_companion_source_text(
+                task, companion_path, payload
+            )
             for number, answer in parse_answer_key_ranges(answer_key_text).items():
                 key = answer_key(year, number)
                 buckets.setdefault(key, []).append(
@@ -931,8 +1006,13 @@ def repair_bank(
     source_manifest = load_source_manifest(source_manifest_path)
     target_source_id = source_id_for_path(target_path, output_source_map)
     target_task = queue_task_for_path(target_path, output_task_map)
-    target_source_text, target_source_path = read_companion_source_text(target_task, target_path, payload)
-    target_year = first_non_empty(payload.get("year") if isinstance(payload, dict) else "", target_task.get("year"))
+    target_source_text, target_source_path = read_companion_source_text(
+        target_task, target_path, payload
+    )
+    target_year = first_non_empty(
+        payload.get("year") if isinstance(payload, dict) else "",
+        target_task.get("year"),
+    )
     answer_candidates, answer_conflicts, candidate_stats = collect_answer_candidates(
         companion_paths,
         output_source_map=output_source_map,
@@ -942,12 +1022,14 @@ def repair_bank(
         companion_paths,
         output_source_map=output_source_map,
     )
-    companion_source_option_candidates, companion_source_option_conflicts, companion_source_option_stats = (
-        collect_companion_source_option_candidates(
-            companion_paths,
-            output_source_map=output_source_map,
-            output_task_map=output_task_map,
-        )
+    (
+        companion_source_option_candidates,
+        companion_source_option_conflicts,
+        companion_source_option_stats,
+    ) = collect_companion_source_option_candidates(
+        companion_paths,
+        output_source_map=output_source_map,
+        output_task_map=output_task_map,
     )
     source_option_candidates, source_option_stats = collect_source_option_candidates(
         target_source_text,
@@ -964,7 +1046,9 @@ def repair_bank(
     skipped_no_candidate = 0
 
     for index, card in enumerate(cards):
-        if materialize_question_evidence(card, source_id=target_source_id, source_manifest=source_manifest):
+        if materialize_question_evidence(
+            card, source_id=target_source_id, source_manifest=source_manifest
+        ):
             question_evidence_count += 1
 
         if materialize_existing_answer_evidence(card):
@@ -977,7 +1061,9 @@ def repair_bank(
 
         if has_incomplete_choice_options(card) and key:
             if key in option_conflicts or key in companion_source_option_conflicts:
-                conflicts = option_conflicts.get(key) or companion_source_option_conflicts.get(key) or []
+                conflicts = (
+                    option_conflicts.get(key) or companion_source_option_conflicts.get(key) or []
+                )
                 details.append(
                     {
                         "cardId": current_id,
@@ -993,7 +1079,9 @@ def repair_bank(
                     or companion_source_option_candidates.get(key)
                 )
                 if option_candidate:
-                    option_method = option_candidate.get("method") or "year_number_companion_cleaned_json"
+                    option_method = (
+                        option_candidate.get("method") or "year_number_companion_cleaned_json"
+                    )
                     option_note = (
                         "Candidate options repaired from target source text; not publishable until verified."
                         if option_method == "target_source_option_text"
@@ -1038,7 +1126,9 @@ def repair_bank(
 
         card_type = str(card.get("type") or "")
         range_key = answer_range_key(year, number) if year and number else ""
-        if key in answer_conflicts or (card_type not in CHOICE_TYPES and range_key in answer_conflicts):
+        if key in answer_conflicts or (
+            card_type not in CHOICE_TYPES and range_key in answer_conflicts
+        ):
             conflict_key = key if key in answer_conflicts else range_key
             conflict_candidates = answer_conflicts[conflict_key]
             details.append(
@@ -1112,7 +1202,9 @@ def repair_bank(
             "structuredCandidates": candidate_stats["structuredCandidates"],
             "structuredOptionCandidates": option_candidate_stats["structuredOptionCandidates"],
             "sourceOptionCandidates": source_option_stats["sourceOptionCandidates"],
-            "companionSourceOptionCandidates": companion_source_option_stats["companionSourceOptionCandidates"],
+            "companionSourceOptionCandidates": companion_source_option_stats[
+                "companionSourceOptionCandidates"
+            ],
             "answerKeyTextCandidates": candidate_stats["answerKeyTextCandidates"],
             "answerKeyGroupCandidates": candidate_stats["answerKeyGroupCandidates"],
             "numberedAnswerTextCandidates": candidate_stats["numberedAnswerTextCandidates"],
@@ -1156,8 +1248,12 @@ def repair_bank(
 
 
 def run(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Repair missing flashcard answers from companion cleaned files.")
-    parser.add_argument("--target", type=Path, required=True, help="Target flashcard JSON to repair.")
+    parser = argparse.ArgumentParser(
+        description="Repair missing flashcard answers from companion cleaned files."
+    )
+    parser.add_argument(
+        "--target", type=Path, required=True, help="Target flashcard JSON to repair."
+    )
     parser.add_argument(
         "--companion",
         type=Path,
@@ -1168,7 +1264,11 @@ def run(argv: list[str] | None = None) -> int:
     parser.add_argument("--queue", type=Path, default=DEFAULT_QUEUE)
     parser.add_argument("--source-manifest", type=Path, default=DEFAULT_SOURCE_MANIFEST)
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
-    parser.add_argument("--write", action="store_true", help="Write repairs to --target. Without this, report only.")
+    parser.add_argument(
+        "--write",
+        action="store_true",
+        help="Write repairs to --target. Without this, report only.",
+    )
     parser.add_argument(
         "--mark-companions-supporting",
         action="store_true",

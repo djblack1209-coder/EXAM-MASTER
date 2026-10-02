@@ -247,7 +247,9 @@ class FlashcardQualityTest(unittest.TestCase):
         self.assertEqual(report["summary"]["gradingBlockerCount"], 1)
         self.assertIn("options=A-D-or-A-G", report["files"][0]["blockedCards"][0]["missingFields"])
 
-    def test_report_blocks_draft_publication_status_even_when_cards_are_structured(self):
+    def test_report_blocks_draft_publication_status_even_when_cards_are_structured(
+        self,
+    ):
         from scripts.baidu.flashcard_quality import build_quality_report
 
         with tempfile.TemporaryDirectory() as tmp:
@@ -276,7 +278,10 @@ class FlashcardQualityTest(unittest.TestCase):
             )
             payload = json.loads(path.read_text(encoding="utf-8"))
             payload["publicationStatus"] = "draft"
-            path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+            path.write_text(
+                json.dumps(payload, ensure_ascii=False, indent=2) + "\n",
+                encoding="utf-8",
+            )
 
             report = build_quality_report(flashcard_dir)
 
@@ -328,7 +333,10 @@ class FlashcardQualityTest(unittest.TestCase):
             )
             support_payload = json.loads(support_path.read_text(encoding="utf-8"))
             support_payload["supportingEvidenceOnly"] = True
-            support_path.write_text(json.dumps(support_payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+            support_path.write_text(
+                json.dumps(support_payload, ensure_ascii=False, indent=2) + "\n",
+                encoding="utf-8",
+            )
 
             report = build_quality_report(flashcard_dir)
 
@@ -364,7 +372,10 @@ class FlashcardQualityTest(unittest.TestCase):
             payload_path = flashcard_dir / "english1-2001.json"
             payload = json.loads(payload_path.read_text(encoding="utf-8"))
             payload["year"] = "2001"
-            payload_path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+            payload_path.write_text(
+                json.dumps(payload, ensure_ascii=False, indent=2) + "\n",
+                encoding="utf-8",
+            )
 
             report = build_quality_report(flashcard_dir)
 

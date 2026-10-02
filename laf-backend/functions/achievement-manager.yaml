@@ -1,5 +1,5 @@
 name: achievement-manager
-desc: ""
+desc: ''
 methods:
   - GET
   - POST

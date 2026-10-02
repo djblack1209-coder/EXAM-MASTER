@@ -2,7 +2,7 @@
  * FSRS 间隔重复调度器
  * 替代手写 SM-2 算法，使用 ts-fsrs (FSRS v6) 实现更精准的复习调度
  */
-import type { Card, FSRSBundleExports, FSRSParameters, Grade, RecordLogItem } from './ts-fsrs-bundle-types';
+import type { Card, FSRSBundleExports, FSRSParameters, Grade, RecordLogItem } from './ts-fsrs-bundle-types.js';
 
 const { createEmptyCard, generatorParameters, fsrs, Rating, State } = require('./ts-fsrs-bundle') as FSRSBundleExports;
 

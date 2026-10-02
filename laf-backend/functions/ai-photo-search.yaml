@@ -1,5 +1,5 @@
 name: ai-photo-search
-desc: ""
+desc: ''
 methods:
   - GET
   - POST

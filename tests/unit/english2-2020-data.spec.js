@@ -32,8 +32,6 @@ describe('English II 2020 published bank data', () => {
     expect(bank.cards.find((card) => card.number === 48).question).toContain('21.3%');
     expect(bank.cards.find((card) => card.number === 48).question).toContain('17.0%');
     expect(bank.cards.find((card) => card.number === 48).question).toContain('2.2%');
-    expect(bank.cards.find((card) => card.number === 48).answerEvidence.evidenceRole).toBe(
-      'official_writing_prompt'
-    );
+    expect(bank.cards.find((card) => card.number === 48).answerEvidence.evidenceRole).toBe('official_writing_prompt');
   });
 });

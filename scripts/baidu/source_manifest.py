@@ -100,11 +100,26 @@ SUBJECT_RULES = [
 ]
 
 TRACK_RULES = [
-    ("english1", re.compile(r"英语\s*[（(]?\s*一\s*[）)]?|英一|(?<!\d)201(?![\d-])", re.I)),
-    ("english2", re.compile(r"英语\s*[（(]?\s*二\s*[）)]?|英二|(?<!\d)204(?![\d-])", re.I)),
-    ("math1", re.compile(r"数学\s*[（(]?\s*一\s*[）)]?|数一|(?<!\d)301(?![\d-])", re.I)),
-    ("math2", re.compile(r"数学\s*[（(]?\s*二\s*[）)]?|数二|(?<!\d)302(?![\d-])", re.I)),
-    ("math3", re.compile(r"数学\s*[（(]?\s*三\s*[）)]?|数三|(?<!\d)303(?![\d-])", re.I)),
+    (
+        "english1",
+        re.compile(r"英语\s*[（(]?\s*一\s*[）)]?|英一|(?<!\d)201(?![\d-])", re.I),
+    ),
+    (
+        "english2",
+        re.compile(r"英语\s*[（(]?\s*二\s*[）)]?|英二|(?<!\d)204(?![\d-])", re.I),
+    ),
+    (
+        "math1",
+        re.compile(r"数学\s*[（(]?\s*一\s*[）)]?|数一|(?<!\d)301(?![\d-])", re.I),
+    ),
+    (
+        "math2",
+        re.compile(r"数学\s*[（(]?\s*二\s*[）)]?|数二|(?<!\d)302(?![\d-])", re.I),
+    ),
+    (
+        "math3",
+        re.compile(r"数学\s*[（(]?\s*三\s*[）)]?|数三|(?<!\d)303(?![\d-])", re.I),
+    ),
     ("politics", re.compile(r"政治|(?<!\d)101(?![\d-])", re.I)),
 ]
 
@@ -278,10 +293,13 @@ def sanitize_display_name(file_name: str, subject: str, source_type: str) -> tup
     return f"{stem}{extension}", stem != original
 
 
-def build_legal_review(risk_flags: list[str], *, brand_sanitized: bool, source_type: str) -> dict[str, Any]:
+def build_legal_review(
+    risk_flags: list[str], *, brand_sanitized: bool, source_type: str
+) -> dict[str, Any]:
     return {
         "brandSanitized": brand_sanitized or "brand_leak" in risk_flags,
-        "copyrightReviewRequired": "copyright_review_required" in risk_flags or source_type == "institution_candidate",
+        "copyrightReviewRequired": "copyright_review_required" in risk_flags
+        or source_type == "institution_candidate",
         "adRejected": source_type == "ad" or "ad_or_promo" in risk_flags,
         "publishBlocked": bool(
             set(risk_flags)
@@ -315,7 +333,9 @@ def human_field_value(raw: dict[str, Any], field: str) -> str:
 
 
 def missing_human_verification_fields(raw: dict[str, Any], *, requested_status: str) -> list[str]:
-    missing_fields = set(list_text_values(raw.get("missingHumanFields") or raw.get("missing_human_fields")))
+    missing_fields = set(
+        list_text_values(raw.get("missingHumanFields") or raw.get("missing_human_fields"))
+    )
     draft_status = pick_text(raw, "draftStatus", "draft_status")
     human_field_status = pick_text(raw, "humanFieldStatus", "human_field_status")
     requires_human_input = (
@@ -359,10 +379,14 @@ def normalize_record(
         or raw.get("updatedAt")
     )
     remote_id = pick_text(raw, "fs_id", "fsId", "remoteId", "id", "shareId")
-    content_hash = pick_text(raw, "sha256", "fileSha256", "sourceHash", "md5", "contentHash", "hash")
+    content_hash = pick_text(
+        raw, "sha256", "fileSha256", "sourceHash", "md5", "contentHash", "hash"
+    )
     text_for_rules = f"{remote_path}/{file_name}"
     subject = pick_text(raw, "subject", "courseSubject") or guess_subject(text_for_rules)
-    track = pick_text(raw, "track", "courseTrack", "examTrack") or guess_track(text_for_rules, subject)
+    track = pick_text(raw, "track", "courseTrack", "examTrack") or guess_track(
+        text_for_rules, subject
+    )
     year = normalize_year(raw.get("year"), text_for_rules, file_name)
     source_type, eligible, risk_flags, priority = classify_source(text_for_rules, extension, size)
     explicit_source_type = pick_text(raw, "sourceType", "source_type")
@@ -406,12 +430,20 @@ def normalize_record(
         risk_flags.append(HUMAN_VERIFICATION_REQUIRED_FLAG)
 
     status = "discovered" if eligible else "rejected"
-    if requested_status in {"verified", "published"} and eligible and not human_verification_required:
+    if (
+        requested_status in {"verified", "published"}
+        and eligible
+        and not human_verification_required
+    ):
         status = requested_status
     elif requested_status in {"discovered", "missing", "rejected"}:
         status = requested_status if eligible else "rejected"
-    identity = sha256_text(f"{provider}|{source_channel}|{remote_id or remote_path}|{remote_path}|{file_name}")
-    fingerprint = sha256_text(f"{provider}|{source_channel}|{remote_id}|{remote_path}|{size}|{mtime}|{content_hash}")
+    identity = sha256_text(
+        f"{provider}|{source_channel}|{remote_id or remote_path}|{remote_path}|{file_name}"
+    )
+    fingerprint = sha256_text(
+        f"{provider}|{source_channel}|{remote_id}|{remote_path}|{size}|{mtime}|{content_hash}"
+    )
     canonical_track = track if track != "unknown" else subject
     canonical_year = str(year) if year else "unknown"
 
@@ -458,7 +490,9 @@ def normalize_record(
         "priority": priority,
         "status": status,
         "riskFlags": sorted(set(risk_flags)),
-        "legalReview": build_legal_review(risk_flags, brand_sanitized=brand_sanitized, source_type=source_type),
+        "legalReview": build_legal_review(
+            risk_flags, brand_sanitized=brand_sanitized, source_type=source_type
+        ),
         "firstSeenAt": now,
         "lastSeenAt": now,
         "changedAt": now,
@@ -474,7 +508,11 @@ def normalize_record(
         record["draftStatus"] = draft_status
     if human_field_status:
         record["humanFieldStatus"] = human_field_status
-    if missing_human_fields or raw.get("missingHumanFields") is not None or raw.get("missing_human_fields") is not None:
+    if (
+        missing_human_fields
+        or raw.get("missingHumanFields") is not None
+        or raw.get("missing_human_fields") is not None
+    ):
         record["missingHumanFields"] = missing_human_fields
 
     return apply_source_quality_overrides(record)
@@ -488,10 +526,19 @@ def load_manifest(path: Path) -> dict[str, Any]:
     return payload
 
 
-def merge_manifest(existing: dict[str, Any], discovered: list[dict[str, Any]], now: str) -> tuple[dict[str, Any], dict[str, int]]:
+def merge_manifest(
+    existing: dict[str, Any], discovered: list[dict[str, Any]], now: str
+) -> tuple[dict[str, Any], dict[str, int]]:
     by_id = {item["sourceId"]: item for item in existing.get("items", []) if item.get("sourceId")}
     seen_ids: set[str] = set()
-    summary = {"new": 0, "changed": 0, "unchanged": 0, "missing": 0, "eligible": 0, "rejected": 0}
+    summary = {
+        "new": 0,
+        "changed": 0,
+        "unchanged": 0,
+        "missing": 0,
+        "eligible": 0,
+        "rejected": 0,
+    }
 
     def refreshed_status(old_status: str | None, new_status: str) -> str:
         if old_status in {"verified", "published"}:
@@ -524,12 +571,14 @@ def merge_manifest(existing: dict[str, Any], discovered: list[dict[str, Any]], n
                 preserved_status = old.get("status", item["status"])
                 old.update(item)
                 old.pop("missingSince", None)
-                old.update({
-                    "firstSeenAt": preserved_first_seen,
-                    "lastSeenAt": now,
-                    "processing": preserved_processing,
-                    "status": refreshed_status(preserved_status, item["status"]),
-                })
+                old.update(
+                    {
+                        "firstSeenAt": preserved_first_seen,
+                        "lastSeenAt": now,
+                        "processing": preserved_processing,
+                        "status": refreshed_status(preserved_status, item["status"]),
+                    }
+                )
                 summary["unchanged"] += 1
 
     for source_id, item in by_id.items():
@@ -541,7 +590,12 @@ def merge_manifest(existing: dict[str, Any], discovered: list[dict[str, Any]], n
 
     items = sorted(
         by_id.values(),
-        key=lambda row: (-int(row.get("priority", 0)), str(row.get("subject", "")), str(row.get("track", "")), str(row.get("fileName", ""))),
+        key=lambda row: (
+            -int(row.get("priority", 0)),
+            str(row.get("subject", "")),
+            str(row.get("track", "")),
+            str(row.get("fileName", "")),
+        ),
     )
     summary["eligible"] = sum(1 for item in items if item.get("eligible"))
     summary["rejected"] = sum(1 for item in items if not item.get("eligible"))
@@ -575,9 +629,27 @@ def build_manifest_from_payload(
 def run_self_test() -> None:
     now = "2026-04-28T00:00:00Z"
     raw = [
-        {"fs_id": 1, "path": "/apps/考研大师/raw-pdf/英语一/2018英语一真题.pdf", "server_filename": "2018英语一真题.pdf", "size": 200000, "server_mtime": 1},
-        {"fs_id": 2, "path": "/apps/考研大师/raw-pdf/数学/张宇强化讲义.pdf", "server_filename": "张宇强化讲义.pdf", "size": 300000, "server_mtime": 2},
-        {"fs_id": 3, "path": "/apps/考研大师/raw-pdf/扫码加群.pdf", "server_filename": "扫码加群.pdf", "size": 10000, "server_mtime": 3},
+        {
+            "fs_id": 1,
+            "path": "/apps/考研大师/raw-pdf/英语一/2018英语一真题.pdf",
+            "server_filename": "2018英语一真题.pdf",
+            "size": 200000,
+            "server_mtime": 1,
+        },
+        {
+            "fs_id": 2,
+            "path": "/apps/考研大师/raw-pdf/数学/张宇强化讲义.pdf",
+            "server_filename": "张宇强化讲义.pdf",
+            "size": 300000,
+            "server_mtime": 2,
+        },
+        {
+            "fs_id": 3,
+            "path": "/apps/考研大师/raw-pdf/扫码加群.pdf",
+            "server_filename": "扫码加群.pdf",
+            "size": 10000,
+            "server_mtime": 3,
+        },
         {
             "fs_id": 4,
             "path": "/verified-sources/official-2024-paper.pdf",
@@ -634,12 +706,17 @@ def run_self_test() -> None:
             "evidenceNote": "Human verified as question-paper-only evidence; answer evidence is absent.",
         },
     ]
-    discovered = [normalize_record(item, provider="baidu_pan", source_channel="self_test", now=now) for item in raw]
+    discovered = [
+        normalize_record(item, provider="baidu_pan", source_channel="self_test", now=now)
+        for item in raw
+    ]
     merged, summary = merge_manifest({"version": 1, "items": []}, discovered, now)
     items = merged["items"]
     assert summary["new"] == 6
     assert summary["eligible"] == 5
-    assert any(item["sourceType"] == "official_paper" and item["track"] == "english1" for item in items)
+    assert any(
+        item["sourceType"] == "official_paper" and item["track"] == "english1" for item in items
+    )
     verified = next(item for item in items if item["track"] == "english2")
     assert verified["contentHash"] == "sha256:official-paper-hash"
     assert verified["sourceUrl"] == "https://example.edu.cn/2024-english2.pdf"
@@ -651,7 +728,9 @@ def run_self_test() -> None:
     assert syllabus["track"] == "math1"
     assert syllabus["contentHash"] == "sha256:official-syllabus-hash"
     assert syllabus["status"] == "verified"
-    question_source = next(item for item in items if item["sourceType"] == "official_question_paper")
+    question_source = next(
+        item for item in items if item["sourceType"] == "official_question_paper"
+    )
     assert question_source["track"] == "politics"
     assert question_source["contentHash"] == "sha256:official-question-source-hash"
     assert "answer_missing" in question_source["riskFlags"]
@@ -690,10 +769,7 @@ def main() -> None:
         existing_path=args.existing,
     )
 
-    print(
-        "[source-manifest] "
-        + " ".join(f"{key}={value}" for key, value in summary.items())
-    )
+    print("[source-manifest] " + " ".join(f"{key}={value}" for key, value in summary.items()))
     if args.dry_run:
         print("[source-manifest] dry-run, manifest not written")
         return

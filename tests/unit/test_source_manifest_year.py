@@ -185,7 +185,9 @@ class SourceManifestYearTest(unittest.TestCase):
         self.assertEqual(item["status"], "discovered")
         self.assertNotIn("missingSince", item)
 
-    def test_manifest_blocks_human_verification_drafts_even_when_status_requests_verified(self):
+    def test_manifest_blocks_human_verification_drafts_even_when_status_requests_verified(
+        self,
+    ):
         item = normalize_record(
             {
                 "fs_id": 8,

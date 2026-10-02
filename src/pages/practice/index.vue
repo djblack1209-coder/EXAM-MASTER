@@ -237,6 +237,7 @@
 </template>
 
 <script>
+import { BRAND } from '@/config/brand.js';
 import CustomTabbar from '@/components/layout/custom-tabbar/custom-tabbar.vue';
 import { useFlashcardBank } from '@/composables/useFlashcardBank.js';
 import { useBankStatus } from '@/composables/useBankStatus.js';
@@ -315,7 +316,7 @@ export default {
     },
 
     practiceHeroKicker() {
-      return 'Exam Master';
+      return BRAND.name;
     },
 
     practiceHeroTitle() {
@@ -457,7 +458,7 @@ export default {
 
   onShareAppMessage() {
     return {
-      title: 'EXAM-MASTER — 刷题中心',
+      title: `${BRAND.name} — 练习`,
       path: '/pages/practice/index'
     };
   },

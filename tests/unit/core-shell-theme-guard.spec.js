@@ -8,7 +8,7 @@ const CORE_THEME_PAGES = [
   {
     file: 'src/pages/index/index.vue',
     required: [
-      ":class=\"{ 'dark-mode': isDark }\"",
+      ':class="{ \'dark-mode\': isDark }"',
       "uni.$on('themeUpdate'",
       "uni.$on('updateTheme'",
       "uni.$off('themeUpdate'",
@@ -21,7 +21,7 @@ const CORE_THEME_PAGES = [
   {
     file: 'src/pages/practice/index.vue',
     required: [
-      ":class=\"{ 'dark-mode': isDark }\"",
+      ':class="{ \'dark-mode\': isDark }"',
       "uni.$on('themeUpdate'",
       "uni.$on('updateTheme'",
       "uni.$off('themeUpdate'",
@@ -34,7 +34,7 @@ const CORE_THEME_PAGES = [
   {
     file: 'src/pages/profile/index.vue',
     required: [
-      ":class=\"{ 'dark-mode': isDark }\"",
+      ':class="{ \'dark-mode\': isDark }"',
       "uni.$on('themeUpdate'",
       "uni.$on('updateTheme'",
       "uni.$off('themeUpdate'",
@@ -47,7 +47,7 @@ const CORE_THEME_PAGES = [
   {
     file: 'src/pages/settings/index.vue',
     required: [
-      ":class=\"{ 'dark-mode': isDark }\"",
+      ':class="{ \'dark-mode\': isDark }"',
       "uni.$on('themeUpdate'",
       "uni.$on('updateTheme'",
       "uni.$off('themeUpdate'",

@@ -10,12 +10,7 @@ import {
 describe('session feedback', () => {
   it('calculates the active correct streak from the answer tail', () => {
     expect(
-      calculateCorrectStreak([
-        { isCorrect: true },
-        { isCorrect: false },
-        { isCorrect: true },
-        { isCorrect: true }
-      ])
+      calculateCorrectStreak([{ isCorrect: true }, { isCorrect: false }, { isCorrect: true }, { isCorrect: true }])
     ).toBe(2);
   });
 

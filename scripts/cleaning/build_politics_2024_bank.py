@@ -20,7 +20,14 @@ from typing import Any
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
-SOURCE_PDF = PROJECT_ROOT / "data" / "raw-inbox" / "public-course-2025" / "politics" / "2024-politics-paper-answer.pdf"
+SOURCE_PDF = (
+    PROJECT_ROOT
+    / "data"
+    / "raw-inbox"
+    / "public-course-2025"
+    / "politics"
+    / "2024-politics-paper-answer.pdf"
+)
 DEFAULT_OUTPUT = PROJECT_ROOT / "src" / "config" / "flashcard-banks" / "politics-2024.json"
 
 PAPER_ID = "politics-2024"
@@ -58,7 +65,9 @@ def write_json(path: Path, payload: dict[str, Any]) -> None:
 def extract_pdf_text(pdf: Path) -> str:
     if not pdf.exists():
         raise FileNotFoundError(pdf)
-    with tempfile.NamedTemporaryFile(prefix="politics-2024-", suffix=".txt", delete=False) as temp_file:
+    with tempfile.NamedTemporaryFile(
+        prefix="politics-2024-", suffix=".txt", delete=False
+    ) as temp_file:
         temp_path = Path(temp_file.name)
     try:
         subprocess.run(["pdftotext", str(pdf), str(temp_path)], cwd=PROJECT_ROOT, check=True)
@@ -89,7 +98,9 @@ def split_blocks(lines: list[str]) -> list[tuple[int, list[str]]]:
             starts.append((int(match.group(1)), index))
 
     if [number for number, _ in starts] != list(range(1, 39)):
-        raise ValueError(f"unexpected 2024 politics question starts: {[number for number, _ in starts]}")
+        raise ValueError(
+            f"unexpected 2024 politics question starts: {[number for number, _ in starts]}"
+        )
 
     blocks: list[tuple[int, list[str]]] = []
     for offset, (number, start) in enumerate(starts):
@@ -203,7 +214,9 @@ def build_choice_card(number: int, block: list[str]) -> dict[str, Any]:
         "sourceEvidenceId": SOURCE_EVIDENCE_ID,
         "answerEvidenceStatus": "matched",
     }
-    question_hash = sha256_text(f"{card['question']}|{json.dumps(options, ensure_ascii=False, sort_keys=True)}")
+    question_hash = sha256_text(
+        f"{card['question']}|{json.dumps(options, ensure_ascii=False, sort_keys=True)}"
+    )
     answer_hash = sha256_text(f"{answer}|{explanation}")
     card["questionTextHash"] = question_hash
     card["answerTextHash"] = answer_hash
@@ -220,7 +233,10 @@ def build_analysis_card(number: int, block: list[str]) -> dict[str, Any]:
     question = join_text([strip_number(block[0]), *block[1:answer_index]])
     answer_lines = block[explanation_index + 1 :]
     if answer_lines and answer_lines[0].startswith("【解析】"):
-        answer_lines = [answer_lines[0].replace("【解析】", "", 1).strip(), *answer_lines[1:]]
+        answer_lines = [
+            answer_lines[0].replace("【解析】", "", 1).strip(),
+            *answer_lines[1:],
+        ]
     answer = join_text(answer_lines)
     if not answer:
         answer = "参考答案解析见本地百度网盘 2024 考研政治真题及答案 PDF。"

@@ -177,9 +177,15 @@ def relative(path: Path) -> str:
 
 
 def require_sources() -> None:
-    missing = [relative(path) for path in [ORIGINAL_PAPER, PAPER_ANSWER, DETAILED_ANALYSIS] if not path.exists()]
+    missing = [
+        relative(path)
+        for path in [ORIGINAL_PAPER, PAPER_ANSWER, DETAILED_ANALYSIS]
+        if not path.exists()
+    ]
     if missing:
-        raise FileNotFoundError("Missing required English I 2024 source PDFs: " + ", ".join(missing))
+        raise FileNotFoundError(
+            "Missing required English I 2024 source PDFs: " + ", ".join(missing)
+        )
 
 
 def run_pdftotext(path: Path) -> str:
@@ -237,7 +243,13 @@ def split_labeled_options(text: str, labels: str = "ABCD") -> dict[str, str]:
     return options
 
 
-def find_numbered_block(text: str, number: int, next_number: int | None = None, *, end_anchor: str | None = None) -> str:
+def find_numbered_block(
+    text: str,
+    number: int,
+    next_number: int | None = None,
+    *,
+    end_anchor: str | None = None,
+) -> str:
     start_match = re.search(rf"(?m)^[\s\f]*{number}\.\s*", text)
     if not start_match:
         raise ValueError(f"Missing numbered block {number}")
@@ -250,7 +262,9 @@ def find_numbered_block(text: str, number: int, next_number: int | None = None, 
         end_index = text.find(end_anchor, start_match.end())
         if end_index >= 0:
             end_indexes.append(end_index)
-    return text[start_match.start() : min(end_indexes)] if end_indexes else text[start_match.start() :]
+    return (
+        text[start_match.start() : min(end_indexes)] if end_indexes else text[start_match.start() :]
+    )
 
 
 def parse_choice_question(block: str, number: int) -> tuple[str, dict[str, str]]:
@@ -275,7 +289,9 @@ def extract_cloze_passage(text: str) -> str:
 def extract_cloze_options(text: str) -> dict[int, dict[str, str]]:
     option_text = "1. [A] Though" + text_between(text, "1. [A] Though", "答案：")
     return {
-        number: split_labeled_options(find_numbered_block(option_text, number, number + 1 if number < 20 else None))
+        number: split_labeled_options(
+            find_numbered_block(option_text, number, number + 1 if number < 20 else None)
+        )
         for number in range(1, 21)
     }
 
@@ -354,9 +370,15 @@ def answer_hash_payload(card: dict[str, Any], answer_role: str) -> dict[str, Any
     return {"answer": card.get("answer"), "role": answer_role}
 
 
-def attach_evidence(card: dict[str, Any], *, answer_role: str = "official_answer_key") -> dict[str, Any]:
-    question_hash = hash_text(json.dumps(question_hash_payload(card), ensure_ascii=False, sort_keys=True))
-    answer_hash = hash_text(json.dumps(answer_hash_payload(card, answer_role), ensure_ascii=False, sort_keys=True))
+def attach_evidence(
+    card: dict[str, Any], *, answer_role: str = "official_answer_key"
+) -> dict[str, Any]:
+    question_hash = hash_text(
+        json.dumps(question_hash_payload(card), ensure_ascii=False, sort_keys=True)
+    )
+    answer_hash = hash_text(
+        json.dumps(answer_hash_payload(card, answer_role), ensure_ascii=False, sort_keys=True)
+    )
     now = card.pop("_now")
     card["sourceEvidenceId"] = SOURCE_IDS["paper_answer"]
     card["sourceEvidence"] = {
@@ -394,7 +416,9 @@ def attach_evidence(card: dict[str, Any], *, answer_role: str = "official_answer
     return card
 
 
-def base_card(number: int, *, card_type: str, question: str, answer: str, now: str) -> dict[str, Any]:
+def base_card(
+    number: int, *, card_type: str, question: str, answer: str, now: str
+) -> dict[str, Any]:
     group_id = group_for(number)
     section = SECTION_BY_GROUP[group_id]
     return {
@@ -449,7 +473,13 @@ def build_bank(now: str | None = None) -> dict[str, Any]:
             end_anchor=QUESTION_GROUP_END_ANCHORS.get(number),
         )
         question, options = parse_choice_question(block, number)
-        card = base_card(number, card_type="single_choice", question=question, answer=CHOICE_ANSWERS[number], now=now)
+        card = base_card(
+            number,
+            card_type="single_choice",
+            question=question,
+            answer=CHOICE_ANSWERS[number],
+            now=now,
+        )
         card["passage"] = passages[group_id]
         card["options"] = option_list(options)
         card["explanation"] = "答案已按本地百度网盘 2024 英语一真题解析 PDF 参考答案匹配。"
@@ -541,7 +571,10 @@ def build_bank(now: str | None = None) -> dict[str, Any]:
                 SOURCE_IDS["original_paper"],
                 SOURCE_IDS["detailed_analysis"],
             ],
-            "answerSources": [SOURCE_IDS["paper_answer"], SOURCE_IDS["detailed_analysis"]],
+            "answerSources": [
+                SOURCE_IDS["paper_answer"],
+                SOURCE_IDS["detailed_analysis"],
+            ],
             "policy": "local_baidu_2024_english1_pdf_text_layer_match_with_page_image_audit",
         },
         "cards": cards,

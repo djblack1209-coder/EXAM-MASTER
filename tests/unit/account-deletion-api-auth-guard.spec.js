@@ -21,11 +21,7 @@ describe('account deletion api auth guard', () => {
   it('blocks account deletion actions when no auth credential is present', async () => {
     const api = await import('@/services/api/domains/user.api.js');
 
-    const actions = [
-      api.requestAccountDeletion(),
-      api.cancelAccountDeletion(),
-      api.getAccountDeletionStatus()
-    ];
+    const actions = [api.requestAccountDeletion(), api.cancelAccountDeletion(), api.getAccountDeletionStatus()];
 
     const results = await Promise.all(actions);
 

@@ -206,19 +206,7 @@ describe('question bank public-course year map', () => {
       actionLabel: '开始',
       clickable: true
     });
-    for (const year of [
-      '2005',
-      '2006',
-      '2007',
-      '2008',
-      '2009',
-      '2010',
-      '2011',
-      '2012',
-      '2013',
-      '2014',
-      '2015'
-    ]) {
+    for (const year of ['2005', '2006', '2007', '2008', '2009', '2010', '2011', '2012', '2013', '2014', '2015']) {
       expect(math2.yearSlots.find((slot) => slot.year === year)).toMatchObject({
         bankId: `math2-${year}`,
         status: 'ready',

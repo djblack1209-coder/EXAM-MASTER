@@ -59,7 +59,10 @@ class BaiduGroupSyncShareLinkTest(unittest.TestCase):
         result = validate_registry(registry)
 
         self.assertEqual(result["errors"], ["duplicate link id: lnk_dup"])
-        self.assertEqual(result["warnings"], ["link lnk_dup has no subject/year; files will transfer to inbox"])
+        self.assertEqual(
+            result["warnings"],
+            ["link lnk_dup has no subject/year; files will transfer to inbox"],
+        )
 
     def test_transfer_files_retries_rate_limited_batch(self):
         class FakeResponse:
@@ -103,15 +106,35 @@ class BaiduGroupSyncShareLinkTest(unittest.TestCase):
     def test_flatten_share_tree_recursively_expands_shared_folders(self):
         root_files = [
             {"fs_id": 10, "server_filename": "英语", "path": "/英语", "isdir": 1},
-            {"fs_id": 11, "server_filename": "根目录说明.pdf", "path": "/根目录说明.pdf", "size": 80_000},
+            {
+                "fs_id": 11,
+                "server_filename": "根目录说明.pdf",
+                "path": "/根目录说明.pdf",
+                "size": 80_000,
+            },
         ]
         children = {
             "/英语": [
-                {"fs_id": 12, "server_filename": "2018英语一真题.pdf", "path": "/英语/2018英语一真题.pdf", "size": 220_000},
-                {"fs_id": 13, "server_filename": "答案", "path": "/英语/答案", "isdir": 1},
+                {
+                    "fs_id": 12,
+                    "server_filename": "2018英语一真题.pdf",
+                    "path": "/英语/2018英语一真题.pdf",
+                    "size": 220_000,
+                },
+                {
+                    "fs_id": 13,
+                    "server_filename": "答案",
+                    "path": "/英语/答案",
+                    "isdir": 1,
+                },
             ],
             "/英语/答案": [
-                {"fs_id": 14, "server_filename": "2018英语一答案.pdf", "path": "/英语/答案/2018英语一答案.pdf", "size": 120_000},
+                {
+                    "fs_id": 14,
+                    "server_filename": "2018英语一答案.pdf",
+                    "path": "/英语/答案/2018英语一答案.pdf",
+                    "size": 120_000,
+                },
             ],
         }
 
@@ -192,8 +215,16 @@ class BaiduGroupSyncShareLinkTest(unittest.TestCase):
                     "uk": "uk-1",
                     "sekey": "sek",
                     "files": [
-                        {"fs_id": 1001, "server_filename": "2018英语一真题.pdf", "size": 220_000},
-                        {"fs_id": 1002, "server_filename": "扫码加群.pdf", "size": 220_000},
+                        {
+                            "fs_id": 1001,
+                            "server_filename": "2018英语一真题.pdf",
+                            "size": 220_000,
+                        },
+                        {
+                            "fs_id": 1002,
+                            "server_filename": "扫码加群.pdf",
+                            "size": 220_000,
+                        },
                     ],
                 }
 
@@ -288,7 +319,10 @@ class BaiduGroupSyncShareLinkTest(unittest.TestCase):
             state = json.loads(state_path.read_text(encoding="utf-8"))
             self.assertEqual(state["done"]["lnk_math_2025"]["fs_ids"], ["2001"])
             export = json.loads(export_path.read_text(encoding="utf-8"))
-            self.assertEqual(export["files"][0]["path"], "/apps/考研大师/raw-pdf/math/2025/2025数学一强化讲义.pdf")
+            self.assertEqual(
+                export["files"][0]["path"],
+                "/apps/考研大师/raw-pdf/math/2025/2025数学一强化讲义.pdf",
+            )
             self.assertEqual(export["files"][0]["link_id"], "lnk_math_2025")
             self.assertEqual(incremental_exports, [export_path])
 

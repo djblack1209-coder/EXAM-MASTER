@@ -1,5 +1,5 @@
 name: health-check
-desc: ""
+desc: ''
 methods:
   - GET
   - POST

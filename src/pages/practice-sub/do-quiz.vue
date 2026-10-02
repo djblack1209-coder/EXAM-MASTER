@@ -2246,7 +2246,8 @@ export default {
         userChoice: this.userChoice,
         questionTimeLimit: this.questionTimeLimit,
         getOptionLabel: (idx) => this.getOptionLabel(idx),
-        sessionId: this.sessionId
+        sessionId: this.sessionId,
+        attemptId: `${this.sessionId}:answer:${this.currentIndex}:${this.currentQuestion.id}`
       });
 
       // 答题进度已在 selectOption 中写入；这里仅回填分析状态，避免进度翻倍。

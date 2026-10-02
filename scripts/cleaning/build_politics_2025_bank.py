@@ -20,7 +20,14 @@ from typing import Any
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_INPUT = PROJECT_ROOT / "src" / "config" / "flashcard-banks" / "politics-2025.json"
 DEFAULT_OUTPUT = DEFAULT_INPUT
-SOURCE_PDF = PROJECT_ROOT / "data" / "raw-inbox" / "public-course-2025" / "politics" / "2025-politics-paper-answer-v2.pdf"
+SOURCE_PDF = (
+    PROJECT_ROOT
+    / "data"
+    / "raw-inbox"
+    / "public-course-2025"
+    / "politics"
+    / "2025-politics-paper-answer-v2.pdf"
+)
 
 PAPER_ID = "politics-2025"
 SOURCE_EVIDENCE_ID = "politics-2025-paper-answer-v2"
@@ -62,7 +69,11 @@ def normalized_option_text(card: dict[str, Any]) -> str:
     options = card.get("options")
     if not isinstance(options, list):
         return ""
-    return "|".join(f"{item.get('label', '')}:{item.get('text', '')}" for item in options if isinstance(item, dict))
+    return "|".join(
+        f"{item.get('label', '')}:{item.get('text', '')}"
+        for item in options
+        if isinstance(item, dict)
+    )
 
 
 def validate_cards(cards: list[dict[str, Any]]) -> None:
@@ -89,7 +100,11 @@ def validate_cards(cards: list[dict[str, Any]]) -> None:
             issues.append(f"card {index}: missing answer")
         if card_type in {"single_choice", "multi_choice"}:
             options = card.get("options")
-            labels = [str(item.get("label") or "").strip() for item in options or [] if isinstance(item, dict)]
+            labels = [
+                str(item.get("label") or "").strip()
+                for item in options or []
+                if isinstance(item, dict)
+            ]
             if labels != ["A", "B", "C", "D"]:
                 issues.append(f"card {index}: invalid option labels {labels}")
 
@@ -105,7 +120,13 @@ def validate_cards(cards: list[dict[str, Any]]) -> None:
 def enrich_card(card: dict[str, Any]) -> dict[str, Any]:
     number = int(card["number"])
     card_type = str(card.get("type") or "")
-    section = "单项选择" if card_type == "single_choice" else "多项选择" if card_type == "multi_choice" else "分析题"
+    section = (
+        "单项选择"
+        if card_type == "single_choice"
+        else "多项选择"
+        if card_type == "multi_choice"
+        else "分析题"
+    )
     question_hash = sha256_text(f"{card.get('question', '')}|{normalized_option_text(card)}")
     answer_hash = sha256_text(f"{card.get('answer', '')}|{card.get('explanation', '')}")
 

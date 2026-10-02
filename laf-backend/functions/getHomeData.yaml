@@ -1,5 +1,5 @@
 name: getHomeData
-desc: ""
+desc: ''
 methods:
   - GET
   - POST

@@ -29,13 +29,9 @@ describe('English I 2018 published bank data', () => {
     );
     expect(bank.cards.find((card) => card.number === 51).question).toContain('graduation ceremony');
     expect(bank.cards.find((card) => card.number === 52).question).toContain('选课进行时');
-    expect(bank.cards.find((card) => card.number === 52).answerEvidence.evidenceRole).toBe(
-      'official_writing_prompt'
-    );
+    expect(bank.cards.find((card) => card.number === 52).answerEvidence.evidenceRole).toBe('official_writing_prompt');
     expect(JSON.stringify(bank)).not.toContain('手机阅读目的调查');
     expect(JSON.stringify(bank)).not.toContain('failure');
-    expect(bank.cards.find((card) => card.number === 26).answer).not.toContain(
-      'A new survey by Harvard University'
-    );
+    expect(bank.cards.find((card) => card.number === 26).answer).not.toContain('A new survey by Harvard University');
   });
 });

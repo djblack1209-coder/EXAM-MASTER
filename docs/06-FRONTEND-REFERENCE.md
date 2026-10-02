@@ -1,583 +1,78 @@
-# 前端参考手册
+# 前端与平台
 
-> 合并自旧前端模块说明文档
+资料面板新增“导入回执待核对”：只显示编号尾部、字节数和授权目标，逐次“核对原件状态 / 恢复已收原件 / 取消登记并核对原件”。三个动作均先明确许可、检查当前账户/记录生命周期/资料授权/写租约及原存储身份。刷新保留无正文定位待办、清会话令牌，零自动重发或恢复。查询不读取原件正文；恢复仅fileId并沿原识别许可，候选仍须校对；关闭如实区分原件已删与已有/共享保留。原存储暂未找到仍保留待办，明确关闭阻止晚到正文。已关联保存资料不能从此快捷删除，沿既有资料删除范围预览。
 
----
+H5/微信导入与App确认读取的授权上下文继续传至Store，准备登记等待期间再次复核后才发送正文，不因refresh完成其他隐私写入而重新授予旧文件许可。新解析器支持预登记；旧未声明恢复能力的连接器仍旧路径，页面明确提示不支持丢失回执恢复。此增量实际H5验收不代表微信/App SDK/设备；未新增视觉改版。
 
-## 当前小程序主链路
+H5同账户其他窗口的学习根/共享撤销标记/隐私待办Storage事件刷新当前事实，撤销选择、确认、Reader或旧解析；Store卸载移除监听，其他账户事件不刷新。H5/微信选择动作与App读取确认开始前，以及Store发送前检查现有写入租约；只读窗口拒绝正文动作，关闭写入窗口后可重新取得租约、重新选择与确认。上下文读取不再依赖重放整个学习正文或在只读窗口完成隐私写入。H5兼容存储的学习根/标记使用实时localStorage读取，避免会话缓存遮蔽其他窗口变更。无Web Locks时继续现有仅单窗口提示，不宣称并发写入安全。
 
-> Last updated: 2026-05-14
+H5与微信资料动作使用当前账户、记录生命周期及资料授权代次：删除/恢复/换授权后，旧选中文件或确认回调不得读取或发送。H5正在读取时主动abort Reader，重复选择/确认/load只接纳一次；重新选择不会被旧cancel回调撤销。微信SDK无读取取消句柄时，在隐私许可、选择、确认、元信息和正文回调处拒收迟到结果，不宣称立刻终止SDK I/O。App确认/读取改为同一单调代次并主动取消原生读取；仅元信息选择的隐藏返回例外保留。普通学习更新不使许可失效，失败后可以重新选择。
 
-当前小程序面向考研公共课刷题，主链路固定为：
+资料识别勾选后可明确选“解析器上的 Tesseract”或“解析器 Mac 上的 Apple Vision”；Apple需当前健康能力通过，程序存在不表示准确。发送确认显示执行位置/引擎，选择在本次文件动作内固定，取消不上传。续页和失败页重试沿资料原选择，不随新的UI选项漂移；改解析器Origin拒绝续传原件标识。识别候选与页图并列，关键条件仍需局部校对；公式/单位/答案候选不自动升级。页面代码跨端构建通过与移动SDK、原生OCR桥、设备分别记录。
 
-1. 打开小程序，在首页查看今日进度、连续学习和已加载真题。
-2. 从首页继续刷题，或进入刷题中心查看真题目录。
-3. 在题库页按政治、英语一、英语二、数学一、数学二、数学三选择年份试卷。
-4. 可练试卷进入整卷练习；即将开放的年份只展示状态，不进入训练流。
+App资料流程：系统选择PDF/PNG/JPEG→展示元信息（正文未读）→当前解析器授权→逐次确认文件/origin/OCR→有界读取→私人片段。取消、隐藏、换账户、清除/恢复记录或连接变化终止旧动作。系统选择导致隐藏时令牌照常清空，返回须重授权；临时元信息可保留，不自动上传。只添加功能控件，未开展视觉优化。
 
-用户可见页面必须使用产品语言，不暴露后台整理、证据、脚本、发布、OCR、哈希等工程流程词。相关守卫测试为 `tests/unit/frontend-copy-guard.spec.js`。
+App新增专用原生宿主与Java/Foundation内核，健康/文本/已有原件续解析/删除沿原服务。必须匹配装配保护合同；当前缺实际移动SDK、二进制装配和设备验收，缺模块零请求。[09B](09B-APP-CONNECTOR.md)区分代码/本机内核与移动运行，文件选择/逐次确认源码与功能控件已接，视觉/流式未开放。
 
-## H5 本地演示（2026-09-13）
+条件题可靠错答已接原“开始先修诊断”入口。候选理由区分充分/必要方向，基础小题要求“成立”或“反例x=整数或分数”；不将“不成立”、猜测或单个同真例子当完整答案。低层提示只说明方向，三级/讲解可给精确例子并保存帮助；提示后正确不完成独立任务。随后“独立检验原题”保留原完整条件、数域及排除值并交换P/Q。原答、小题、帮助与独立变式沿回看/统计/刷新/导出/恢复及显式同步追溯；复用原页面入口和样式，视觉优化后置。
 
-- 开发模式下，刷题中心在没有加载题库时提供「开始本地演示」。复用 `src/utils/practice/demo-bank.js`，加载 3 道明确标注的示例题；已有题库时不显示入口。
-- 正常生产构建关闭示例入口。构建期常量与运行期环境条件同时成立才允许加载，`guest_demo` 和 `publishableOfficial: false` 保留在题目/题库来源中。
-- 答题页显示「示例」标记；结果页的规则与统计推荐称为「学习建议」，不作为在线 AI 推理展示。
-- 本地计划使用本地日历日期生成，避免 UTC 格式化让晚间或清晨的计划偏移一天。
-- 验证入口：`tests/unit/guest-demo-boundary.spec.js`、`tests/unit/offline-business-closure.spec.js`；截图见 README，演示路径不代表登录、云端保存或微信实机验收。
+当前主观辅助评分在对话和统计中显示原答引用、具体位置、同文出现序号及附近原文；重复文字须明确范围或扩展为唯一原文。v2位置从绑定原答重建，旧v1仅显示历史引用和未定位提示。未校对疑义共享给所选模型时保留全部field/reason/critical/resolved，评分维度保持未定分；明确共享、预算、取消和题目/账户变化保护沿原合同。原答位置真实不证明分值或语义判断正确，不升级可靠错题、掌握或FSRS。
 
-## 平台 UI 边界
+可直接在目标输入“判断条件 x>2 是 x>0 的什么条件”；答完整“充分不必要条件/必要不充分条件/充要条件/既不充分也不必要条件”。指定共同数域如“正数范围；判断条件 x^2=4 是 x=2 的什么条件”，指定共同排除如“实数范围，x≠1；判断条件 1/(x-1)>0 是 x>1 的什么条件”。页面显示能力/待核对边界，直接讲解展示两向检查与精确反例，低层提示不泄露分类；独立变式交换P/Q而保留数域。半个分类先澄清，未校对或超能力作答可保存但不计可靠错题。没有新增集合图形渲染或视觉改版。
 
-- 微信小程序是当前轻量发布面，真实注册路由以 `src/pages.json` 为准；未注册的 `.vue` 页面只能视为 App/H5 或历史功能资产，不能算作小程序已上线页面。
-- App/H5 是完整产品方向，可复用更多页面和交互代码，但必须单独经过对应平台构建、路由注册和真机/浏览器验证后才能认定完成。
+微信模型/资料连接入口已接原生RequestTask受限传输，需基础库3.2.2以上、iOS/Android或开发者工具与分块能力；旧SDK、PC及未装配保护模块的App在发令牌前拒绝。文件选择先微信隐私授权，发送前再次确认当前解析器及识别许可；随后核对文件元信息并读取最多10MB，账户/连接变化失效。页面复用已有隐私弹窗，卸载时拒绝待决授权。健康检查不发送资料、不证明推理或识别质量；微信实际域名/HTTPS、网络、隐私与设备待验。
 
-## 题库与音频反馈
+## 入口
 
-- `src/config/bank-registry.js` 是公共课真题目录入口，负责按科目轨道、年份、正式/整理中/待入库状态生成 2005-2026 六轨道槽位和导航树。
-- `src/pages/practice-sub/question-bank.vue` 是用户选择整卷试卷的主入口；页面必须展示 132 个公共课槽位的年份地图，只有正式题库可进入训练，整理中和待入库槽位只展示可信状态。英语选择题必须有篇章材料，缺材料的试卷不得开放训练。
-- `src/pages/practice-sub/do-quiz.vue` 负责整卷练习、篇章材料展示、闪卡翻转、FSRS 自评和完成弹窗。
-- `src/pages/practice-sub/utils/quiz-sound.js` 是统一音频反馈服务：点击、答对、答错、连击、翻卡、完成整卷、升级成就均通过该模块触发；H5 使用 Web Audio，小程序不可用时降级为轻震动或静默。
+每个对话恢复自己的教法、理由和停止状态；导航题目不会解除停止，页面提供明确“继续当前任务”和“恢复自动教法”按钮及同名自然语言指令。恢复自动仅改变教法控制，不执行模型或作答。可靠错答或受支持的部分正确可进入先修候选小题：v2按实际原答差异区分整数进位/符号、不等式边界/方向/临界值、方程解集/原定义域和化简等价；理由说明有限检查而非确定认知错因。显示独立/提示后/待核对状态、返回原题和独立检验入口；方程检验继续要求原数域内全部解，部分正确不转成错题。基础小题与原题变式分别记事实，不将诊断通过显示为整科掌握。旧v1保留，此批复用原样式，视觉优化仍后置。
 
-## 一、组件清单
+首页默认 learning-landing → 对话 learning/index；错题、计划和统计入口使用 learning-shell 的同一 Store。独立练习通过 quiz-learning-bridge 汇入连续事实。旧首页可兼容展开，不同时挂载双套导航。模型设置、私人资料、目标与记录隐私面板服务当前对话。
 
-> Auto-generated: 2026-03-22 | Last updated: 2026-03-25 (Round 39 AI助手化)
+展开统计依据可查看最近六段“教学后的作答观察”，分别显示可靠/待定后续、提示正确、独立变式和到期复测，返回原题/原对话。该视图来自共享事实派生，无额外打卡或录入，不以精确百分比宣称教法有效。恢复的旧交付带历史标记。用户明确教法/节奏持续保留；自动换法只依据本对话可靠表现及实际教学，并实际交付受限工具内容。此批沿用原样式，仅新增功能视图。
 
-### Base Components (`src/components/base/`)
+桌面左侧目录和最近学习，手机折叠目录与四项 dock；支持搜索、Escape、焦点恢复、对话续学、浅/深色和减少动效。指标持续但克制展示，分子/分母可查看；错误如实显示，不用每条消息庆祝或收费弹窗。
 
-Primitive UI building blocks with no business logic.
+备份路径：记录与隐私 → 导出或恢复备份 → 查看/粘贴同账户 JSON → 校验预览 → 确认合并 → 查看同一错题/计划/统计；可撤销最近一次写入。导出同时展示完整 JSON，供下载受限的宿主查看和保存。读取与校验在设备进行，没有自动上传或密钥恢复。当前通用入口是粘贴，尚未增加全端文件选择器。
 
-| Component      | File                                  | Purpose                                                                                                                                                   |
-| -------------- | ------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| BaseCard       | `base-card/base-card.vue`             | Generic card container with border, shadow, radius                                                                                                        |
-| BaseEmpty      | `base-empty/base-empty.vue`           | Empty state display with icon and message                                                                                                                 |
-| BaseIcon       | `base-icon/base-icon.vue`             | **(Round 35k)** SVG icon component — 86 icons (74 base + 12 Lucide-style), 35 aliases. Globally registered in main.js. Supports dark mode theme switching |
-| BaseSkeleton   | `base-skeleton/base-skeleton.vue`     | Generic loading skeleton placeholder                                                                                                                      |
-| SchoolSkeleton | `school-skeleton/school-skeleton.vue` | School list item loading skeleton                                                                                                                         |
+登录后可预览并确认接管访客记录，退出保留原账户本机记录。同步冲突提供双方导出、采用重新核对的云端副本、恢复本机副本和显式清除归档；同步可取消。云端副本删除与本机删除分别确认，后续主动同步可重新上传。
 
-### Business Components (`src/components/business/`)
+资料解析独立于模型连接：输入本机解析器地址/临时令牌→鉴权健康检查→选择 PDF/图片→明确确认解析。取消确认不上传；文字识别默认不授权。分段进度、取消后续、继续处理、页图和局部角色校对共用资料记录；相同批次去重，变化提取保留历史。配置和文件选择中切换账户使旧动作失效。
 
-Domain-specific components organized by feature area.
+## 能力矩阵
 
-#### Index (Home Page) Components (`business/index/`)
+| 能力                | H5                                                    | 微信                                            | App                                                                   |
+| ------------------- | ----------------------------------------------------- | ----------------------------------------------- | --------------------------------------------------------------------- |
+| 页面与共享状态      | 可构建，有本地浏览器证据                              | 可构建，分包/产物审计                           | 已配置目标可构建                                                      |
+| BYOK 文本结构化工具 | Gemini 有限真实路径；其他模型按配置能力               | 未完成真机网络/鉴权                             | 未完成真机网络/鉴权                                                   |
+| 备份导出            | JSON 可见内容已验证；文件下载待宿主验证               | 剪贴板代码路径，待设备                          | 剪贴板代码路径，待设备                                                |
+| 备份恢复            | 本地粘贴/校验/确认                                    | 同源实现，待设备                                | 同源实现，待设备                                                      |
+| PDF/印刷图解析      | 鉴权/分段/页图与本机有限路径通过                      | 原生权限/文件/分段代码及隔离HTTP通过，待真机    | 系统选择/逐次确认/续解析/删除源码与本机内核通过；完整SDK装配/设备待验 |
+| Apple OCR           | 未实现                                                | 不可直接调用 Apple 原生 API                     | 原生桥接未实现                                                        |
+| 本地模型            | Node 鉴权/预算/幂等 HTTP 隔离通过；真实推理待模型服务 | 原生文本代码及隔离HTTP通过，桌面可达性/真机待验 | 专用文本模块源码与本机内核通过；装配/推理/设备待验                    |
+| 流式教学            | H5与独立后端本机隔离闭环，真实供应商待验              | 原生chunk隔离路径，真机待验                     | 当前App明确未开放                                                     |
 
-| Component       | File                  | Purpose                                                                                                   |
-| --------------- | --------------------- | --------------------------------------------------------------------------------------------------------- |
-| AIDailyBriefing | `AIDailyBriefing.vue` | **(Round 39)** AI每日简报 — 智能任务调度+个性化建议+一键开始最优先任务。基于FSRS/倒计时/错题/进度本地计算 |
-| DailyGoalRing   | `DailyGoalRing.vue`   | Circular progress ring for daily goal tracking                                                            |
-| StatsGrid       | `StatsGrid.vue`       | Grid of key learning statistics                                                                           |
-| StudyHeatmap    | `StudyHeatmap.vue`    | GitHub-style contribution heatmap for study days                                                          |
-| WelcomeBanner   | `WelcomeBanner.vue`   | Personalized welcome banner with greeting                                                                 |
-| StudyTimeCard   | `StudyTimeCard.vue`   | Today's study time display card                                                                           |
-| ActivityList    | `ActivityList.vue`    | Recent learning activity feed                                                                             |
-| IndexHeaderBar  | `IndexHeaderBar.vue`  | Home page custom navigation header                                                                        |
-| FormulaModal    | `FormulaModal.vue`    | Mathematical formula reference modal                                                                      |
+视觉、站外通知和真实支付仍未验收；不因流式协议接入提升其他能力。构建通过与设备通过分开。微信主包全文件 2 MB、媒体 200 KB 继续执行；较大依赖和题库留分包，H5 manualChunks 不推导到微信。页面注册、应用 ID 和权限以 src/pages.json / src/manifest.json 为准。
 
-#### Practice Components (`business/practice/`)
+本轮仅添加完成业务所需的配置、确认和状态控件，沿用现有样式。视觉、版式和动效优化暂停，待用户审阅[功能清单](11-RELEASE-NOTES.md)后决定。
 
-| Component             | File                        | Purpose                                         |
-| --------------------- | --------------------------- | ----------------------------------------------- |
-| GenerationProgressBar | `GenerationProgressBar.vue` | AI question generation progress indicator       |
-| PauseBanner           | `PauseBanner.vue`           | Quiz pause state banner                         |
-| QuizManageModal       | `QuizManageModal.vue`       | Quiz bank management modal                      |
-| GoalSettingModal      | `GoalSettingModal.vue`      | Daily practice goal setting                     |
-| AchievementModal      | `AchievementModal.vue`      | Achievement unlocked celebration modal          |
-| PracticeModesModal    | `PracticeModesModal.vue`    | Practice mode selection (normal, speed, review) |
-| SpeedReadyModal       | `SpeedReadyModal.vue`       | Speed mode countdown ready screen               |
-| AiGenerationOverlay   | `AiGenerationOverlay.vue`   | Full-screen AI generation loading overlay       |
-| LearningStatsCard     | `LearningStatsCard.vue`     | Compact learning statistics display             |
+教学功能增量沿用现有数轴组件，只在当前题目有实际图形交付且任务未停止时显示；策略标签本身不代表已显示图形。部分正确在固定概览单列，计入可靠首答分母但不计为完整判错或判对。帮助经历跨入口保留，详细状态以记录为准，旧消息不代表当前状态。
 
-### Chart Components (`src/components/charts/`)
+资料行提供“预览并删除资料”；范围包括关联对话全部正文/作答、本机副本、题目/变式和计划影响，确认前核对用户/版本。原件删除待确认在资料面板持续显示，重试单独确认；状态来自真实记录，不由旧聊天消息代替。选中资料编辑区在清理后清空；云端需主动同步墓碑。当前沿用既有布局，未启动新的视觉优化。
 
-ECharts-based data visualization components. **v2 (Round 13)**: 搬运 ECharts 官方最佳实践配置。
+主观题功能增量沿用现有表单：可选评分维度编辑，保存生成新版本，历史计划/帮助保留；对话与统计展开真实辅助总分、分维反馈及原答引用。明确显示待核对，不将辅助分值混入可靠错题率或掌握。H5操作、三端构建与真实模型语义评分分别验收；纯文本本地连接器不执行评分工具。未开展视觉或动效重设计。
 
-| Component  | File             | Purpose                                                                                |
-| ---------- | ---------------- | -------------------------------------------------------------------------------------- |
-| StudyTrend | `StudyTrend.vue` | **v2**: 学习趋势图 — dataZoom 横向滚动 + areaStyle 渐变 + markLine 均值 + HTML tooltip |
+符号学习增量：目标直接创建有界代数任务，不要求API配置或资料。对话明确作答自动保存、可靠判错进入共享错题；缺定义域只请求关键补充，不误记错题。分层提示、直接讲解和任务方向/数域变式复用原界面；显示精确工具范围与待核对状态，不伪造函数图形。H5实际操作与微信/App构建分别验收，尚无新真机证据；未进行视觉优化。
 
-### Common Components (`src/components/common/`)
+长历史功能：当前对话一次挂载50条，提供更早/更新/最新/当前题相关对话；有questionKey关联的消息定位实际窗口，缺关联历史不伪造消息。阅读较早窗口时发送新消息保留阅读位置，最新窗口随消息增长。大备份和访客预览分批核验，展示进度并可取消；同步展示阶段和请求数，超限/断网保留本机，确认已同步以实际完整服务端事实为准。
 
-Cross-cutting UI components used across multiple pages.
+H5已用622个合成操作/600消息验证读取与写入、626操作备份预览、真实本机同步、刷新及错题/统计入口；原作答7次，计划6/10和首答2/6保持。微信/App共用代码、构建/产物通过，长历史设备容量和运行尚未实测。浏览器容量不足路径已实际出现且报告保存失败；没有因此放宽设备配额或宣称所有长历史都能写入。沿用现有视觉，仅增加功能控件。
 
-| Component           | File                      | Purpose                                                               |
-| ------------------- | ------------------------- | --------------------------------------------------------------------- |
-| CustomModal         | `CustomModal.vue`         | Reusable modal dialog with slot content                               |
-| EmptyState          | `EmptyState.vue`          | Empty state with illustration and CTA                                 |
-| share-modal         | `share-modal.vue`         | Social sharing modal (WeChat, QQ, poster)                             |
-| ResumePracticeModal | `ResumePracticeModal.vue` | "Resume where you left off" prompt                                    |
-| offline-indicator   | `offline-indicator.vue`   | Network offline status banner (6 pages)                               |
-| ErrorBoundary       | `ErrorBoundary.vue`       | Catches render errors, shows recovery UI (global registered, 5 pages) |
-| privacy-popup       | `privacy-popup.vue`       | Privacy agreement popup (first launch)                                |
-
-### Layout Components (`src/components/layout/`)
-
-| Component     | File                              | Purpose                                 |
-| ------------- | --------------------------------- | --------------------------------------- |
-| custom-tabbar | `custom-tabbar/custom-tabbar.vue` | Custom bottom tab bar (replaces native) |
-
-### 组件统计
-
-- **Total shared components**: ~32
-- **Base**: 5 primitives
-- **Business**: 18 domain-specific components (across 2 domains)
-- **Charts**: 1 ECharts wrapper
-- **Common**: 7 cross-cutting components
-- **Layout**: 1 tab bar
-
-#### New in Round 13-15
-
-| Component  | File                    | Change                          |
-| ---------- | ----------------------- | ------------------------------- |
-| StudyTrend | `charts/StudyTrend.vue` | v2: dataZoom+areaStyle+markLine |
-
----
-
-## 二、页面路由
-
-> Auto-generated: 2026-03-22 | Last updated: 2026-03-26 (Round 53 架构重构)
->
-> **Round 53 变更**:
->
-> - **D001 service 层重构**：删除 6 个 `.service.js` 文件 (-10,085 行)，`lafService.js` 改为聚合 8 个 `.api.js`
-> - **H005 Store 层归位**：31 处 `lafService.xxx()` → Store action（classroomStore 8处, toolsStore 6处, reviewStore 17处）
-> - **D004/D009 清理**：废弃 `getApiKey()` 删除，4 个 mixin 迁移为 composable，`src/mixins/` 目录删除
-
-### Main Package (tabBar)
-
-| Page          | Path                           | Lines | Title        | Key Features                                                                               |
-| ------------- | ------------------------------ | ----- | ------------ | ------------------------------------------------------------------------------------------ |
-| Splash        | `src/pages/splash/index.vue`   | 562   | Exam Master  | Brand animation, auto-redirect                                                             |
-| Home          | `src/pages/index/index.vue`    | 2310  | (custom nav) | ECharts, FSRS review, heatmap, knowledge bubbles, daily quote, stats grid, recommendations |
-| Practice Hub  | `src/pages/practice/index.vue` | 1955  | 智能刷题     | Quiz config panel, Anki import, AI generation, practice modes, learning stats              |
-| School Search | `src/pages/school/index.vue`   | 2396  | 择校分析     | Province filter, school list, hot schools, search input                                    |
-| Profile       | `src/pages/profile/index.vue`  | 1907  | 个人中心     | User stats, VIP status, settings entry, gamification display                               |
-
-### Sub-Package: practice-sub
-
-| Page               | Path                                          | Lines | Title      | Key Features                                                                                     |
-| ------------------ | --------------------------------------------- | ----- | ---------- | ------------------------------------------------------------------------------------------------ |
-| Quiz Engine        | `src/pages/practice-sub/do-quiz.vue`          | 1774  | 刷题进行中 | R43拆分: script -87%，逻辑提取到5个composable (useQuizState/Timer/Submit/Navigation/FSRS)        |
-| PK Battle          | `src/pages/practice-sub/pk-battle.vue`        | 1959  | PK 对战    | R45拆分: script -92%，逻辑提取到4个mixin (pkMatching/Gameplay/Result/Share)                      |
-| Ranking            | `src/pages/practice-sub/rank.vue`             | 1758  | 学霸排行榜 | Leaderboard, weekly/monthly/all-time, user rank card                                             |
-| Import Data        | `src/pages/practice-sub/import-data.vue`      | 2851  | 资料导入   | Anki .apkg import, file upload, format conversion, progress tracking                             |
-| File Manager       | `src/pages/practice-sub/file-manager.vue`     | 624   | 文件管理   | Uploaded files list, delete, preview                                                             |
-| Mock Exam          | `src/pages/practice-sub/mock-exam.vue`        | ~1600 | 模拟考试   | **[ENHANCED]** 计时压力感(warning/danger) + 实时IRT分数预测 + 每题用时 + 分科统计 + 离线三层降级 |
-| Smart Review       | `src/pages/practice-sub/smart-review.vue`     | 950   | 智能复习   | FSRS-driven due cards, retrievability sorting                                                    |
-| Question Bank      | `src/pages/practice-sub/question-bank.vue`    | 487   | 考研题库   | Browse question bank, filter by subject/chapter                                                  |
-| Diagnosis Report   | `src/pages/practice-sub/diagnosis-report.vue` | 1035  | 学习诊断   | AI analysis, weak points, improvement plan                                                       |
-| **Error Clusters** | `src/pages/practice-sub/error-clusters.vue`   | ~215  | 错题归因   | **[NEW]** 错题按error_type×category聚类，趋势分析，severity分级                                  |
-| **Sprint Mode**    | `src/pages/practice-sub/sprint-mode.vue`      | ~225  | 冲刺模式   | **[NEW]** ROI优先级排序，考试倒计时，战略放弃建议                                                |
+## 流式教学功能控件
 
-### Sub-Package: login
-
-| Page            | Path                                  | Lines | Title    | Key Features                                            |
-| --------------- | ------------------------------------- | ----- | -------- | ------------------------------------------------------- |
-| Login           | `src/pages/login/index.vue`           | 1890  | 登录     | Email + code, WeChat login, QQ login, privacy agreement |
-| WeChat Callback | `src/pages/login/wechat-callback.vue` | 366   | 微信登录 | OAuth callback handler                                  |
-| QQ Callback     | `src/pages/login/qq-callback.vue`     | 499   | QQ登录   | OAuth callback handler                                  |
-
-### Sub-Package: settings
-
-| Page             | Path                             | Lines | Title    | Key Features                                                 |
-| ---------------- | -------------------------------- | ----- | -------- | ------------------------------------------------------------ |
-| Settings         | `src/pages/settings/index.vue`   | 2132  | 系统设置 | Theme switch, account mgmt, about, feedback, AI tutor config |
-| Privacy Policy   | `src/pages/settings/privacy.vue` | 229   | 隐私政策 | Static content                                               |
-| Terms of Service | `src/pages/settings/terms.vue`   | 231   | 用户协议 | Static content                                               |
-
-### Sub-Package: social
-
-| Page           | Path                                  | Lines | Title    | Key Features                              |
-| -------------- | ------------------------------------- | ----- | -------- | ----------------------------------------- |
-| Friend List    | `src/pages/social/friend-list.vue`    | 1513  | 我的好友 | Friend list, add friend, search, requests |
-| Friend Profile | `src/pages/social/friend-profile.vue` | 867   | 好友资料 | Friend stats, AI chat, study comparison   |
-
-### Sub-Package: chat
-
-| Page    | Path                      | Lines | Title    | Key Features                                                     |
-| ------- | ------------------------- | ----- | -------- | ---------------------------------------------------------------- |
-| AI Chat | `src/pages/chat/chat.vue` | 2024  | 智能对话 | Streaming SSE chat, Markdown rendering, KaTeX, code highlighting |
-
-### Sub-Package: mistake
-
-| Page         | Path                          | Lines | Title  | Key Features                                            |
-| ------------ | ----------------------------- | ----- | ------ | ------------------------------------------------------- |
-| Mistake Book | `src/pages/mistake/index.vue` | 1161  | 错题本 | Error collection, filter by subject/type, stats, export |
-
-### Sub-Package: favorite
-
-| Page      | Path                           | Lines | Title    | Key Features                           |
-| --------- | ------------------------------ | ----- | -------- | -------------------------------------- |
-| Favorites | `src/pages/favorite/index.vue` | 1339  | 我的收藏 | Saved questions, folders, quick access |
-
-### Sub-Package: plan
-
-| Page              | Path                          | Lines | Title        | Key Features                                      |
-| ----------------- | ----------------------------- | ----- | ------------ | ------------------------------------------------- |
-| Plan List         | `src/pages/plan/index.vue`    | 1184  | 我的学习计划 | Plan overview, progress tracking, daily tasks     |
-| Create Plan       | `src/pages/plan/create.vue`   | 759   | 创建学习计划 | Plan wizard, goal setting, schedule configuration |
-| **Adaptive Plan** | `src/pages/plan/adaptive.vue` | ~235  | 智能学习计划 | **[NEW]** AI自适应7天计划，阶段划分，每日任务卡片 |
-
-### Sub-Package: study-detail
-
-| Page         | Path                               | Lines | Title    | Key Features                                        |
-| ------------ | ---------------------------------- | ----- | -------- | --------------------------------------------------- |
-| Study Detail | `src/pages/study-detail/index.vue` | 707   | 学习详情 | Detailed stats, trend chart, heatmap, ability radar |
-
-### Sub-Package: tools
-
-| Page         | Path                               | Lines | Title      | Key Features                                     |
-| ------------ | ---------------------------------- | ----- | ---------- | ------------------------------------------------ |
-| Photo Search | `src/pages/tools/photo-search.vue` | 1796  | 拍照搜题   | Camera/gallery input, OCR, AI answer generation  |
-| Doc Convert  | `src/pages/tools/doc-convert.vue`  | 1510  | 文档转换   | File format conversion (PDF, DOCX, etc.)         |
-| ID Photo     | `src/pages/tools/id-photo.vue`     | 1479  | 证件照制作 | Background removal, color change, size selection |
-
-### Sub-Package: knowledge-graph
-
-| Page                 | Path                                    | Lines | Title      | Key Features                                            |
-| -------------------- | --------------------------------------- | ----- | ---------- | ------------------------------------------------------- |
-| Knowledge Graph      | `src/pages/knowledge-graph/index.vue`   | 1961  | 知识图谱   | Force-directed graph, node interaction, mastery display |
-| **Mastery Overview** | `src/pages/knowledge-graph/mastery.vue` | ~220  | 掌握度全景 | **[NEW]** 各知识点掌握度可视化，科目分组，趋势指示      |
-
-### Sub-Package: ai-classroom
-
-| Page               | Path                                   | Lines | Title   | Key Features                                             |
-| ------------------ | -------------------------------------- | ----- | ------- | -------------------------------------------------------- |
-| AI Classroom Index | `src/pages/ai-classroom/index.vue`     | 544   | AI 课堂 | Lesson selection, subject browser (R18: 修复 timer leak) |
-| AI Classroom       | `src/pages/ai-classroom/classroom.vue` | 751   | AI 课堂 | Interactive lesson, teacher/student/examiner agents      |
-
-### Sub-Package: school-sub
-
-| Page          | Path                                  | Lines | Title    | Key Features                             |
-| ------------- | ------------------------------------- | ----- | -------- | ---------------------------------------- |
-| School Detail | `src/pages/school-sub/detail.vue`     | 1417  | 院校详情 | Score lines, major info, admission stats |
-| AI Consult    | `src/pages/school-sub/ai-consult.vue` | —     | —        | AI school counseling                     |
-
-### Sub-Package: login (含 onboarding)
-
-| Page       | Path                             | Lines | Title    | Key Features                |
-| ---------- | -------------------------------- | ----- | -------- | --------------------------- |
-| Onboarding | `src/pages/login/onboarding.vue` | —     | 新手引导 | Feature tour with driver.js |
-
-### Page-Local Components
-
-Some pages have co-located components in their directories:
-
-| Component          | Path                                                                  | Parent Page     |
-| ------------------ | --------------------------------------------------------------------- | --------------- |
-| quiz-progress      | `src/pages/practice-sub/components/quiz-progress/quiz-progress.vue`   | do-quiz         |
-| answer-sheet       | `src/pages/practice-sub/components/answer-sheet/answer-sheet.vue`     | do-quiz         |
-| quiz-result        | `src/pages/practice-sub/components/quiz-result/quiz-result.vue`       | do-quiz         |
-| TutorFeedbackCard  | `src/pages/practice-sub/components/quiz-result/TutorFeedbackCard.vue` | quiz-result     |
-| MemoryStatsRow     | `src/pages/practice-sub/components/quiz-result/MemoryStatsRow.vue`    | quiz-result     |
-| xp-toast           | `src/pages/practice-sub/components/xp-toast/xp-toast.vue`             | do-quiz         |
-| base-loading       | `src/pages/practice-sub/components/base-loading/base-loading.vue`     | do-quiz         |
-| RichText           | `src/pages/practice-sub/components/RichText.vue`                      | do-quiz         |
-| EnhancedProgress   | `src/pages/practice-sub/EnhancedProgress.vue`                         | do-quiz         |
-| knowledge-graph.js | `src/pages/knowledge-graph/knowledge-graph.js`                        | knowledge-graph |
-| plan-skeleton      | `src/pages/plan/components/plan-skeleton/plan-skeleton.vue`           | plan            |
-| mistake-skeleton   | `src/pages/mistake/components/mistake-skeleton/mistake-skeleton.vue`  | mistake         |
-| MistakeCard        | `src/pages/mistake/MistakeCard.vue`                                   | mistake         |
-| MistakeReport      | `src/pages/mistake/MistakeReport.vue`                                 | mistake         |
-| StatsCard          | `src/pages/mistake/StatsCard.vue`                                     | mistake         |
-| FSRSOptimizer      | `src/pages/study-detail/FSRSOptimizer.vue`                            | study-detail    |
-| StudyTrendChart    | `src/pages/study-detail/StudyTrendChart.vue`                          | study-detail    |
-| AbilityRadar       | `src/pages/study-detail/AbilityRadar.vue`                             | study-detail    |
-| ThemeSelectorModal | `src/pages/settings/ThemeSelectorModal.vue`                           | settings        |
-| AITutorList        | `src/pages/settings/AITutorList.vue`                                  | settings        |
-| AIChatModal        | `src/pages/settings/AIChatModal.vue`                                  | settings        |
-| InviteModal        | `src/pages/settings/InviteModal.vue`                                  | settings        |
-| PosterModal        | `src/pages/settings/PosterModal.vue`                                  | settings        |
-| FriendsEntryCard   | `src/pages/settings/FriendsEntryCard.vue`                             | settings        |
-| LogoutButton       | `src/pages/settings/LogoutButton.vue`                                 | settings        |
-
-### 页面统计
-
-- **Total pages**: 36
-- **Total page lines**: ~49,870
-- **Largest page**: pk-battle.vue (3327 lines)
-- **Heaviest sub-package**: practice-sub (9 pages, ~15,639 lines)
-
----
-
-## 三、状态管理
-
-> Auto-generated: 2026-03-22
->
-> All stores use Pinia `defineStore()` with setup function syntax (Composition API).
-> Entry point: `src/stores/index.js` re-exports all stores.
-
-### Store Architecture
-
-The user store is a **facade pattern** that composes 4 sub-stores:
-
-```
-useUserStore (facade)
-├── useAuthStore      → token, isLogin, login(), logout(), silentLogin()
-├── useProfileStore   → userInfo, planProgress, updateProfile()
-├── useVipStore       → vipStatus, vipLevel, isVip, vipDaysLeft
-└── useInviteStore    → inviteCode, inviteCount, inviteRewards
-```
-
-### Store Modules
-
-#### useUserStore (Facade)
-
-| Property | Path                                                                        | Purpose                                         |
-| -------- | --------------------------------------------------------------------------- | ----------------------------------------------- |
-| File     | `src/stores/modules/user.js`                                                | Composes auth + profile + vip + invite + social |
-| State    | `token`, `isLogin`, `userInfo`, `vipStatus`, `inviteCode`, `friendsList`    | Unified access                                  |
-| Actions  | `login()`, `logout()`, `silentLogin()`, `fetchFriends()`, `updateProfile()` | Delegates to sub-stores                         |
-
-#### useAuthStore
-
-| Property | Path                                                               | Purpose                  |
-| -------- | ------------------------------------------------------------------ | ------------------------ |
-| File     | `src/stores/modules/auth.js`                                       | Authentication state     |
-| State    | `token` (ref), `isLogin` (computed)                                | JWT token & login status |
-| Actions  | `setToken()`, `clearToken()`, `syncLoginStatus()`, `silentLogin()` | Token management         |
-
-#### useProfileStore
-
-| Property | Path                                                    | Purpose                     |
-| -------- | ------------------------------------------------------- | --------------------------- |
-| File     | `src/stores/modules/profile.js`                         | User profile data           |
-| State    | `userInfo` (ref), `planProgress` (ref)                  | Profile & learning progress |
-| Actions  | `setUserInfo()`, `updateProfile()`, `loadFromStorage()` | Profile management          |
-
-#### useVipStore (已移除)
-
-> VIP 功能已整体移除。相关状态已合并到 useUserStore facade 中，独立的 vip.js 文件已删除。
-
-#### useInviteStore
-
-| Property | Path                                         | Purpose                  |
-| -------- | -------------------------------------------- | ------------------------ |
-| File     | `src/stores/modules/invite.js`               | Invite & referral system |
-| State    | `inviteCode`, `inviteCount`, `inviteRewards` | Invite tracking          |
-| Computed | `totalInviteRewards`                         | Sum of rewards           |
-
-#### useStudyStore
-
-| Property    | Path                                                                                                                                                 | Purpose                 |
-| ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------- |
-| File        | `src/stores/modules/study.js`                                                                                                                        | Aggregate study metrics |
-| State       | `studyProgress` (totalQuestions, completedQuestions, correctQuestions, studyDays, studyMinutes, lastStudyDate), `currentQuestion`, `questionHistory` | Learning metrics        |
-| Computed    | `completionRate`, `accuracyRate`                                                                                                                     | Derived metrics         |
-| Actions     | `recordAnswer()`, `loadProgress()`, `saveProgress()`, `resetProgress()`                                                                              | Metric updates          |
-| Persistence | Via `storageService`, key configured in `APP_CONFIG`                                                                                                 | Local storage           |
-
-#### useGamificationStore
-
-| Property    | Path                                                                                             | Purpose                   |
-| ----------- | ------------------------------------------------------------------------------------------------ | ------------------------- |
-| File        | `src/stores/modules/gamification.js`                                                             | XP, streaks, achievements |
-| State       | `xp`, `level`, `streakDays`, `achievements`, `dailyChallenges`                                   | Gamification data         |
-| Constants   | `XP_REWARDS` (CORRECT_ANSWER: 10, STREAK_BONUS: 5, PERFECT_SCORE: 50, FIRST_PRACTICE: 20)        | XP values                 |
-| Constants   | `STREAK_MILESTONES` [3, 7, 14, 30, 60, 100, 365]                                                 | Streak milestones         |
-| Constants   | `ACHIEVEMENT_DEFS` (first_blood, streak_3/7/14/30, etc.)                                         | Achievement definitions   |
-| Actions     | `awardXP()`, `recordCorrectAnswer()`, `recordMistake()`, `checkAchievements()`, `updateStreak()` | Gamification logic        |
-| Persistence | Key: `gamification_state`                                                                        | Local storage             |
-
-#### useThemeStore
-
-| Property | Path                                                                       | Purpose             |
-| -------- | -------------------------------------------------------------------------- | ------------------- |
-| File     | `src/stores/modules/theme.js`                                              | Theme management    |
-| State    | `themeType` ('wise' or 'bitget'), `isDark` (boolean)                       | Theme settings      |
-| Actions  | `setThemeType()`, `setDarkMode()`, `initFromStorage()`, `getThemeTokens()` | Theme switching     |
-| Events   | Emits `themeTypeUpdate` via uni.$emit                                      | Global notification |
-
-#### useAppStore (已移除)
-
-> App 运行时上下文 store 已移除。系统信息和网络状态现由各 composable 局部管理。
-
-#### useSchoolStore
-
-| Property    | Path                                                           | Purpose                            |
-| ----------- | -------------------------------------------------------------- | ---------------------------------- |
-| File        | `src/stores/modules/school.js`                                 | School selection                   |
-| State       | `info` (ref: Object)                                           | Selected school/major/target score |
-| Computed    | `hasPlan` (boolean)                                            | Whether user has set school target |
-| Actions     | `setInfo()`, `loadFromStorage()`, `saveToStorage()`, `clear()` | School selection management        |
-| Persistence | Key: `school_selection_info`                                   | Local storage                      |
-
-#### useTodoStore
-
-| Property    | Path                                                                         | Purpose               |
-| ----------- | ---------------------------------------------------------------------------- | --------------------- |
-| File        | `src/stores/modules/todo.js`                                                 | Daily task management |
-| State       | `tasks` (array of {id, title, done, priority, tag, tagColor})                | Task list             |
-| Actions     | `addTask()`, `removeTask()`, `toggleTask()`, `reorderTasks()`, `loadTasks()` | CRUD operations       |
-| Persistence | Key: `my_tasks`                                                              | Local storage         |
-| Default     | Creates 3 default tasks on first load                                        | Pre-seeded content    |
-
-#### useLearningTrajectoryStore
-
-| Property    | Path                                                                                              | Purpose                      |
-| ----------- | ------------------------------------------------------------------------------------------------- | ---------------------------- |
-| File        | `src/stores/modules/learning-trajectory-store.js`                                                 | Fine-grained learning events |
-| State       | `trajectory` (event array), `knowledgeMastery` (per-point scores), `sessions` (learning sessions) | Event stream                 |
-| Event Types | `BUBBLE_CLICK`, `ANSWER_QUESTION`, `REVIEW_CARD`, `START_SESSION`, `END_SESSION`                  | Trajectory events            |
-| Actions     | `addTrajectory()`, `updateMastery()`, `startSession()`, `endSession()`, `getStats()`              | Event recording              |
-| Persistence | Keys: `learning_trajectory`, `knowledge_mastery`, `learning_sessions`                             | Local storage                |
-
-### Store Dependencies
-
-```
-useUserStore → useAuthStore, useProfileStore, useVipStore, useInviteStore
-useStudyStore → storageService, APP_CONFIG
-useGamificationStore → storageService
-useLearningTrajectoryStore → storageService
-useThemeStore → storageService
-useSchoolStore → storageService
-useTodoStore → storageService
-useAppStore → (no external deps)
-```
-
-### Store 汇总
-
-| Store               | Key Responsibility         | Persistence                  |
-| ------------------- | -------------------------- | ---------------------------- |
-| user                | Auth + profile facade      | Via sub-stores               |
-| auth                | JWT token, login status    | `EXAM_TOKEN`, `EXAM_USER_ID` |
-| profile             | User profile data          | `userInfo`                   |
-| vip                 | VIP membership             | Via profile                  |
-| invite              | Referral system            | Via profile                  |
-| study               | Aggregate learning metrics | APP_CONFIG key               |
-| gamification        | XP, streaks, achievements  | `gamification_state`         |
-| theme               | Theme type + dark mode     | `theme_type`, `theme_mode`   |
-| app                 | Device info, network       | In-memory only               |
-| school              | Target school selection    | `school_selection_info`      |
-| todo                | Daily task list            | `my_tasks`                   |
-| learning-trajectory | Fine-grained event stream  | `learning_trajectory`        |
-
----
-
-## 四、服务层
-
-> Auto-generated: 2026-03-22 | Last updated: 2026-03-25 (Round 41 全维度审计重构)
-
-### API Layer
-
-#### Core Request Infrastructure
-
-| File              | Path                                        | Lines | Purpose                                                      |
-| ----------------- | ------------------------------------------- | ----- | ------------------------------------------------------------ |
-| \_request-core.js | `src/services/api/domains/_request-core.js` | 592   | **请求基础设施**: 签名、重试、缓存、限流、去重、双服务器切换 |
-
-**Key features of the request layer:**
-
-- Automatic retry with exponential backoff
-- Response caching (SWR pattern)
-- Request deduplication (same URL + params)
-- FNV-1a request signing (anti-tamper)
-- Network connectivity pre-check
-- Frontend rate limiting
-- Auth token injection (Bearer)
-- Standardized error normalization
-
-#### Domain Services (Round 41 按领域拆分)
-
-| File              | Path                                        | Lines | Domain                                     |
-| ----------------- | ------------------------------------------- | ----- | ------------------------------------------ |
-| \_request-core.js | `src/services/api/domains/_request-core.js` | 592   | 请求基础设施                               |
-| auth.api.js       | `src/services/api/domains/auth.api.js`      | 65    | 登录、邮箱验证码                           |
-| school.api.js     | `src/services/api/domains/school.api.js`    | 99    | 院校查询、热门院校、省份列表               |
-| ai.api.js         | `src/services/api/domains/ai.api.js`        | 662   | AI 代理、流式聊天、诊断、拍照搜题、AI 课堂 |
-| practice.api.js   | `src/services/api/domains/practice.api.js`  | 253   | 题库、答题提交、错题、收藏、FSRS           |
-| social.api.js     | `src/services/api/domains/social.api.js`    | 116   | 好友系统、排行榜、邀请奖励                 |
-| user.api.js       | `src/services/api/domains/user.api.js`      | 307   | 用户档案、账号注销、统计、学习目标、成就   |
-| tools.api.js      | `src/services/api/domains/tools.api.js`     | 85    | 去背景、语音识别/合成、音色列表            |
-| study.api.js      | `src/services/api/domains/study.api.js`     | 159   | 学习统计、学习资源、首页数据               |
-
-#### Service Facade
-
-| File          | Path                         | Lines | Purpose                                                             |
-| ------------- | ---------------------------- | ----- | ------------------------------------------------------------------- |
-| lafService.js | `src/services/lafService.js` | 55    | Facade: merges all 6 domain services + tool APIs into single export |
-
-**Usage pattern:**
-
-```js
-import { lafService } from '@/services/lafService.js';
-const result = await lafService.proxyAI(messages, options);
-const schools = await lafService.getSchoolList(params);
-```
-
-### Core Services
-
-#### FSRS Service
-
-| File            | Path                           | Lines | Purpose                                        |
-| --------------- | ------------------------------ | ----- | ---------------------------------------------- |
-| fsrs-service.js | `src/services/fsrs-service.js` | 640   | FSRS-5 spaced repetition scheduler (singleton) |
-
-**Key exports:**
-
-- `scheduleCard(questionId, rating)` — Schedule next review
-- `createNewCard(questionId)` — Initialize FSRS state for new question
-- `getDueCards(allCards)` — Get cards due for review, sorted by retrievability
-- `getReviewStats(questionIds)` — Get aggregate review statistics
-- `updateUserParams(params)` — Hot-swap personalized FSRS parameters
-
-**Constants:**
-
-- FSRS-5 default weights: 21 parameters
-- Target retention: 90%
-- Storage key pattern: `fsrs_card_{questionId}`
-
-#### Knowledge Engine
-
-| File                | Path                                            | Lines | Purpose                              |
-| ------------------- | ----------------------------------------------- | ----- | ------------------------------------ |
-| knowledge-engine.js | `src/pages/knowledge-graph/knowledge-engine.js` | —     | Knowledge graph x FSRS fusion engine |
-
-**Key exports:**
-
-- `calculateMastery(knowledgePoint)` — Weighted mastery (40% FSRS retrievability + 60% accuracy)
-- `getLearningPath(subject)` — Topological sort of knowledge points based on prerequisites
-- `getGraphData(subject)` — Nodes/edges data for force-directed graph visualization
-- `isPrerequisiteMet(knowledgePoint)` — Check if prerequisites mastered (>70%)
-
-**Prerequisite DAG:** Defines dependencies between 考研 knowledge points (e.g., probability depends on calculus).
-
-#### Storage Service
-
-| File              | Path                             | Lines | Purpose                           |
-| ----------------- | -------------------------------- | ----- | --------------------------------- |
-| storageService.js | `src/services/storageService.js` | ~200  | Unified local storage abstraction |
-
-**Key exports:**
-
-- `save(key, value, sync)` — Save to uni storage
-- `get(key, defaultValue)` — Read from uni storage
-- `remove(key, sync)` — Delete from storage
-- `clear(sync, options)` — Clear all storage
-- `getUserId()` — Get current user ID from storage
-- `getStorageInfo()` — Get storage usage stats
-
-#### Stream Service (已移除)
-
-> SSE 流式服务已移除，AI 聊天打字效果现由 `src/composables/useTypewriter.js` 纯前端实现。
-
-### Utility Services
-
-| File                     | Path                                                       | Purpose                                                                                             |
-| ------------------------ | ---------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
-| toast.js                 | `src/utils/toast.js`                                       | **(Round 14)** 中心化 Toast：success/error/info/warning/loading/hide                                |
-| auth-storage.js          | `src/services/auth-storage.js`                             | Auth token persistence (R18: 修复 `uni.getItem` → `localStorage.getItem`)                           |
-| checkin-streak.js        | `src/services/checkin-streak.js`                           | Daily check-in streak calculation                                                                   |
-| streak-recovery.js       | `src/services/streak-recovery.js`                          | Streak recovery (freeze, skip) logic                                                                |
-| fsrs-optimizer-client.js | `src/pages/practice-sub/services/fsrs-optimizer-client.js` | Client for cloud FSRS parameter optimization                                                        |
-| offline-cache-service.js | `src/pages/practice-sub/services/offline-cache-service.js` | Offline data caching + answer queue + sync; exports `saveOfflineAnswer`, `checkOfflineAvailability` |
-| subscribe-message.js     | `src/services/subscribe-message.js`                        | WeChat subscription message API                                                                     |
-
-### Composables (Vue 3 Hooks)
-
-| File                     | Path                                       | Purpose                                 |
-| ------------------------ | ------------------------------------------ | --------------------------------------- |
-| useQuizAutoSave.js       | `src/composables/useQuizAutoSave.js`       | Auto-save quiz progress with debouncing |
-| useNavigation.js         | `src/composables/useNavigation.js`         | Safe uni-app page navigation            |
-| useTodo.js               | `src/composables/useTodo.js`               | Todo list CRUD tied to todo store       |
-| usePracticeNavigation.js | `src/composables/usePracticeNavigation.js` | Practice-specific navigation logic      |
-| useRecommendations.js    | `src/composables/useRecommendations.js`    | AI-powered learning recommendations     |
-| useLearningStyle.js      | `src/composables/useLearningStyle.js`      | Adaptive learning style detection       |
-| useTheme.js              | `src/composables/useTheme.js`              | Theme switching reactive hook           |
+模型面板只在当前云模型声明流式且终端可用时允许勾选；用户主动选择，默认关闭。切换模式/型号取消在途任务、清空预览并重新确认共享。预览为独立纯文本区域“接收中/尚未校验/未执行工具”，不会创建聊天教学记录、错题、提示、计划或掌握判断。完结后清空，固定概览读取真实执行状态。取消立即清空临时区域；断流不自动重试或换模型。
+
+未确认的请求可重开后“读取本次已完成结果”，仅查询原服务端结果；重新选择原模型/共享授权，学习上下文变化则拒绝执行旧工具。导入的历史意图不可恢复执行。网络与账本故障如实显示，不伪造AI完成。沿用现有视觉与动效，本批没有重设计。
+
+页图解读功能控件沿用当前设计：BYOK配置显式声明图片协议，当前题目有匹配提取事件的原页图时可发起辅助解读；逐次确认整页及当前上下文将经后端到所选供应商、上游可能计费。H5非流式代码接入；微信/App、本地文本连接器及平台图像费用路径当前明确不可用，不自动改用云端。普通文本连接不能代替图片状态；图片结果在当前对话标注角色与局部疑义，仍待校对，不直接判错。真实模型/手写含图质量与设备待验收，视觉优化继续暂停。
+
+一次不等式属于功能扩展：所有端沿用目标、聊天作答、提示、变式、错题与统计入口，本地可执行有限检验无需API/会员。数轴组件增加半直线开闭点、全体/空集、可访问描述，精确标签与示意位置分开；没有视觉设计优化。H5真实操作与微信/App构建分级报告，布局构建成功不当作设备验收。

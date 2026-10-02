@@ -1,0 +1,253 @@
+{
+  "version": "prerequisite-diagnosis-v2",
+  "provenance": "人工固定原答差异、候选小题和独立精确答案；逐项验当前原题判分与诊断，不用生成器输出充当期望值。",
+  "claims": "有限整数/代数错答与可靠部分正确的候选诊断；不证明教学因果、主观语义、所有错因或长期掌握。待核对和解析攻击必须拒绝诊断。",
+  "cases": [
+    {
+      "id": "addition-carry",
+      "goal": "27 + 18",
+      "answer": "35",
+      "status": "reliable",
+      "outcome": "wrong",
+      "topic": "addition-carry",
+      "prompt": "计算 8 + 7。",
+      "diagnosticAnswer": "15"
+    },
+    {
+      "id": "addition-unclassified",
+      "goal": "12 + 8",
+      "answer": "19",
+      "status": "reliable",
+      "outcome": "wrong",
+      "topic": "basic-addition",
+      "prompt": "计算 2 + 3。",
+      "diagnosticAnswer": "5"
+    },
+    {
+      "id": "opposite-sign-absolute-sum",
+      "goal": "-12 + 8",
+      "answer": "20",
+      "status": "reliable",
+      "outcome": "wrong",
+      "topic": "signed-addition",
+      "prompt": "计算 -5 + 3。",
+      "diagnosticAnswer": "-2"
+    },
+    {
+      "id": "same-negative-sum",
+      "goal": "-12 + -8",
+      "answer": "20",
+      "status": "reliable",
+      "outcome": "wrong",
+      "topic": "signed-addition",
+      "prompt": "计算 -2 + -3。",
+      "diagnosticAnswer": "-5"
+    },
+    {
+      "id": "one-negative-product",
+      "goal": "-12 × 8",
+      "answer": "96",
+      "status": "reliable",
+      "outcome": "wrong",
+      "topic": "signed-product",
+      "prompt": "计算 -2 × 3。",
+      "diagnosticAnswer": "-6"
+    },
+    {
+      "id": "two-negative-product",
+      "goal": "-12 × -8",
+      "answer": "-96",
+      "status": "reliable",
+      "outcome": "wrong",
+      "topic": "signed-product",
+      "prompt": "计算 -2 × -3。",
+      "diagnosticAnswer": "6"
+    },
+    {
+      "id": "inequality-reversed",
+      "goal": "解不等式 -2*x+6>0",
+      "answer": "x>3",
+      "status": "reliable",
+      "outcome": "wrong",
+      "topic": "negative-inequality",
+      "prompt": "在实数范围内解不等式 -x>0，写出完整解集。",
+      "diagnosticAnswer": "x<0"
+    },
+    {
+      "id": "inequality-open-boundary",
+      "goal": "解不等式 -2*x+6>0",
+      "answer": "x<=3",
+      "status": "reliable",
+      "outcome": "wrong",
+      "topic": "inequality-boundary",
+      "prompt": "在实数范围内解不等式 x-2>0，写出完整解集。",
+      "diagnosticAnswer": "x>2"
+    },
+    {
+      "id": "inequality-closed-boundary",
+      "goal": "解不等式 2*x-6>=0",
+      "answer": "(3,+∞)",
+      "status": "reliable",
+      "outcome": "wrong",
+      "topic": "inequality-boundary",
+      "prompt": "在实数范围内解不等式 x-2>=0，写出完整解集。",
+      "diagnosticAnswer": "[2,+∞)"
+    },
+    {
+      "id": "inequality-threshold",
+      "goal": "解不等式 -2*x+6>0",
+      "answer": "x<4",
+      "status": "reliable",
+      "outcome": "wrong",
+      "topic": "inequality-threshold",
+      "prompt": "在实数范围内解不等式 2*x+4>0，写出完整解集。",
+      "diagnosticAnswer": "x>-2"
+    },
+    {
+      "id": "inequality-multiple-differences",
+      "goal": "解不等式 -2*x+6>0",
+      "answer": "x>=4",
+      "status": "reliable",
+      "outcome": "wrong",
+      "topic": "inequality-solution-set",
+      "prompt": "在实数范围内解不等式 -2*x+4>=0，写出完整解集。",
+      "diagnosticAnswer": "x<=2"
+    },
+    {
+      "id": "inequality-whole-line",
+      "goal": "解不等式 x-x>0",
+      "answer": "任意实数",
+      "status": "reliable",
+      "outcome": "wrong",
+      "topic": "inequality-solution-set",
+      "prompt": "在实数范围内解不等式 -2*x+4>=0，写出完整解集。",
+      "diagnosticAnswer": "(-∞,2]"
+    },
+    {
+      "id": "equation-omitted-root",
+      "goal": "解方程 x^2=4",
+      "answer": "2",
+      "status": "reliable",
+      "outcome": "partial",
+      "topic": "equation-completeness",
+      "prompt": "在实数范围内解方程 x^2=1，写出全部精确解。",
+      "diagnosticAnswer": "{-1,1}"
+    },
+    {
+      "id": "equation-domain-candidate",
+      "goal": "解方程 (x^2-4)/(x-2)=0",
+      "answer": "{-2,2}",
+      "status": "reliable",
+      "outcome": "wrong",
+      "topic": "equation-domain",
+      "prompt": "在实数范围内解方程 (x^2-1)/(x-1)=0，写出全部精确解。",
+      "diagnosticAnswer": "-1"
+    },
+    {
+      "id": "equation-substitution",
+      "goal": "解方程 3*x+2=8",
+      "answer": "3",
+      "status": "reliable",
+      "outcome": "wrong",
+      "topic": "equation-substitution",
+      "prompt": "在实数范围内解方程 2*x+3=7，写出全部精确解。",
+      "diagnosticAnswer": "2"
+    },
+    {
+      "id": "equivalence-domain",
+      "goal": "化简 (x^2-4)/(x-2)",
+      "answer": "x+3；x≠2",
+      "status": "reliable",
+      "outcome": "wrong",
+      "topic": "equivalence-domain",
+      "prompt": "在实数范围内化简 (x^2-1)/(x-1)，并保留定义域。",
+      "diagnosticAnswer": "x+1；x≠1"
+    },
+    {
+      "id": "equivalence-distribution",
+      "goal": "化简 3*(x+2)",
+      "answer": "3*x+2",
+      "status": "reliable",
+      "outcome": "wrong",
+      "topic": "equivalence-distribution",
+      "prompt": "在实数范围内化简 2*(x+1)，并保留定义域。",
+      "diagnosticAnswer": "2*x+2"
+    },
+    {
+      "id": "pending-domain-omission",
+      "goal": "化简 (x^2-4)/(x-2)",
+      "answer": "x+2",
+      "status": "pending",
+      "outcome": null,
+      "topic": null
+    },
+    {
+      "id": "pending-original-repeated",
+      "goal": "化简 3*(x+2)",
+      "answer": "3*(x+2)",
+      "status": "pending",
+      "outcome": null,
+      "topic": null
+    },
+    {
+      "id": "pending-executable-injection",
+      "goal": "解方程 x^2=4",
+      "answer": "globalThis.process.exit()",
+      "status": "pending",
+      "outcome": null,
+      "topic": null
+    },
+    {
+      "id": "pending-ambiguous-boundary",
+      "goal": "解不等式 -2*x+6>0",
+      "answer": "也许x<3",
+      "status": "pending",
+      "outcome": null,
+      "topic": null
+    },
+    {
+      "id": "pending-variable-denominator",
+      "goal": "解不等式 1/x>0",
+      "answer": "x<0",
+      "status": "pending",
+      "outcome": null,
+      "topic": null
+    },
+    {
+      "id": "correct-equivalent-interval",
+      "goal": "解不等式 -2*x+6>0",
+      "answer": "(-∞,6/2)",
+      "status": "reliable",
+      "outcome": "correct",
+      "topic": null
+    },
+    {
+      "id": "correct-all-roots",
+      "goal": "解方程 x^2=4",
+      "answer": "±2",
+      "status": "reliable",
+      "outcome": "correct",
+      "topic": null
+    },
+    {
+      "id": "equation-positive-domain",
+      "goal": "正数解方程 x^2=4",
+      "answer": "-2",
+      "status": "reliable",
+      "outcome": "wrong",
+      "topic": "equation-substitution",
+      "prompt": "在实数范围内解方程 2*x+3=7，写出全部精确解。",
+      "diagnosticAnswer": "2"
+    },
+    {
+      "id": "equation-integer-incomplete",
+      "goal": "整数解方程 x^2=4",
+      "answer": "2",
+      "status": "reliable",
+      "outcome": "partial",
+      "topic": "equation-completeness",
+      "prompt": "在实数范围内解方程 x^2=1，写出全部精确解。",
+      "diagnosticAnswer": "{-1,1}"
+    }
+  ]
+}

@@ -3,6 +3,12 @@ import path from 'node:path';
 
 const PWA_ICON_FILENAMES = ['icon-192x192.png', 'icon-512x512-maskable.png', 'icon-512x512.png'];
 
+export function copyPwaRuntimeAssets({ sourceFile, outDir }) {
+  if (!sourceFile || !outDir || !fs.existsSync(sourceFile)) throw new Error('PWA cache cleanup source is required');
+  fs.mkdirSync(outDir, { recursive: true });
+  fs.copyFileSync(sourceFile, path.join(outDir, 'sw-cache-cleanup.js'));
+}
+
 export function copyPwaIconAssets({ sourceDir, outDir }) {
   if (!sourceDir || !outDir || !fs.existsSync(sourceDir)) return [];
 

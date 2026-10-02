@@ -330,9 +330,7 @@ describe('收藏模块 API', () => {
       code: 0,
       success: true,
       data: {
-        favorites: [
-          { _id: 'fav_001', question_id: 'q_001', question_content: '题目1' }
-        ],
+        favorites: [{ _id: 'fav_001', question_id: 'q_001', question_content: '题目1' }],
         total: 10
       }
     };
@@ -533,9 +531,7 @@ describe('学习小组 API', () => {
       code: 0,
       success: true,
       data: {
-        groups: [
-          { _id: 'group_001', name: '清华计算机考研群', member_count: 25 }
-        ],
+        groups: [{ _id: 'group_001', name: '清华计算机考研群', member_count: 25 }],
         total: 5
       }
     };

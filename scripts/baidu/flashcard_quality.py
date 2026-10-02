@@ -21,9 +21,23 @@ from typing import Any
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_FLASHCARD_DIR = PROJECT_ROOT / "data" / "flashcards"
 DEFAULT_OUTPUT = PROJECT_ROOT / "data" / "flashcard-quality-report.json"
-VALID_TYPES = {"single_choice", "multi_choice", "analysis", "short_answer", "essay", "translation", "cloze"}
+VALID_TYPES = {
+    "single_choice",
+    "multi_choice",
+    "analysis",
+    "short_answer",
+    "essay",
+    "translation",
+    "cloze",
+}
 CHOICE_TYPES = {"single_choice", "multi_choice"}
-PUBLICATION_BLOCKED_QUALITY = {"draft", "needs_review", "needs_passage", "needs_cleaning", "source_missing"}
+PUBLICATION_BLOCKED_QUALITY = {
+    "draft",
+    "needs_review",
+    "needs_passage",
+    "needs_cleaning",
+    "source_missing",
+}
 ENGLISH_SUBJECT_HINTS = {"english", "英语"}
 ANSWER_PLACEHOLDERS = {
     "完整的参考答案全文",
@@ -62,12 +76,20 @@ def answer_evidence_status(card: dict[str, Any]) -> str:
 
 
 def source_evidence_id(card: dict[str, Any]) -> str:
-    source_evidence = card.get("sourceEvidence") if isinstance(card.get("sourceEvidence"), dict) else {}
-    return first_non_empty(card.get("sourceEvidenceId"), card.get("source_evidence_id"), source_evidence.get("evidenceId"))
+    source_evidence = (
+        card.get("sourceEvidence") if isinstance(card.get("sourceEvidence"), dict) else {}
+    )
+    return first_non_empty(
+        card.get("sourceEvidenceId"),
+        card.get("source_evidence_id"),
+        source_evidence.get("evidenceId"),
+    )
 
 
 def question_text_hash(card: dict[str, Any]) -> str:
-    source_evidence = card.get("sourceEvidence") if isinstance(card.get("sourceEvidence"), dict) else {}
+    source_evidence = (
+        card.get("sourceEvidence") if isinstance(card.get("sourceEvidence"), dict) else {}
+    )
     return first_non_empty(
         card.get("questionTextHash"),
         card.get("question_text_hash"),
@@ -76,7 +98,9 @@ def question_text_hash(card: dict[str, Any]) -> str:
 
 
 def answer_text_hash(card: dict[str, Any]) -> str:
-    source_evidence = card.get("sourceEvidence") if isinstance(card.get("sourceEvidence"), dict) else {}
+    source_evidence = (
+        card.get("sourceEvidence") if isinstance(card.get("sourceEvidence"), dict) else {}
+    )
     return first_non_empty(
         card.get("answerTextHash"),
         card.get("answer_text_hash"),
@@ -90,9 +114,12 @@ def has_usable_answer(card: dict[str, Any]) -> bool:
 
 
 def card_id(card: dict[str, Any], index: int) -> str:
-    return first_non_empty(card.get("id"), card.get("questionId"), card.get("question_id"), card.get("number")) or (
-        f"card-{index + 1}"
-    )
+    return first_non_empty(
+        card.get("id"),
+        card.get("questionId"),
+        card.get("question_id"),
+        card.get("number"),
+    ) or (f"card-{index + 1}")
 
 
 def option_labels(card: dict[str, Any]) -> list[str]:
@@ -120,17 +147,41 @@ def expected_option_labels(card: dict[str, Any]) -> list[str]:
 
 
 def has_passage_material(card: dict[str, Any]) -> bool:
-    return bool(first_non_empty(card.get("passage"), card.get("context"), card.get("material"), card.get("article")))
+    return bool(
+        first_non_empty(
+            card.get("passage"),
+            card.get("context"),
+            card.get("material"),
+            card.get("article"),
+        )
+    )
 
 
 def is_english_payload(payload: Any, path: Path) -> bool:
     values: list[Any] = [path.stem]
     if isinstance(payload, dict):
-        values.extend([payload.get("subject"), payload.get("subjectKey"), payload.get("track"), payload.get("paperId")])
-    return any(str(value or "").strip().lower() in ENGLISH_SUBJECT_HINTS or "english" in str(value or "").lower() for value in values)
+        values.extend(
+            [
+                payload.get("subject"),
+                payload.get("subjectKey"),
+                payload.get("track"),
+                payload.get("paperId"),
+            ]
+        )
+    return any(
+        str(value or "").strip().lower() in ENGLISH_SUBJECT_HINTS
+        or "english" in str(value or "").lower()
+        for value in values
+    )
 
 
-def audit_card(card: dict[str, Any], index: int, seen_ids: set[str], *, requires_passage: bool = False) -> dict[str, Any]:
+def audit_card(
+    card: dict[str, Any],
+    index: int,
+    seen_ids: set[str],
+    *,
+    requires_passage: bool = False,
+) -> dict[str, Any]:
     missing_fields: list[str] = []
     current_id = card_id(card, index)
     card_type = str(card.get("type") or "").strip()
@@ -149,7 +200,11 @@ def audit_card(card: dict[str, Any], index: int, seen_ids: set[str], *, requires
         expected_labels = expected_option_labels(card)
         if not expected_labels or sorted(option_labels(card)) != expected_labels:
             missing_fields.append("options=A-D-or-A-G")
-    if requires_passage and card_type not in {"analysis", "essay", "translation", "short_answer"} and not has_passage_material(card):
+    if (
+        requires_passage
+        and card_type not in {"analysis", "essay", "translation", "short_answer"}
+        and not has_passage_material(card)
+    ):
         missing_fields.append("passage")
     if not source_evidence_id(card):
         missing_fields.append("sourceEvidenceId")
@@ -168,7 +223,11 @@ def audit_card(card: dict[str, Any], index: int, seen_ids: set[str], *, requires
 
 def load_cards(payload: Any) -> list[dict[str, Any]]:
     if isinstance(payload, dict):
-        cards = payload.get("cards") if isinstance(payload.get("cards"), list) else payload.get("questions")
+        cards = (
+            payload.get("cards")
+            if isinstance(payload.get("cards"), list)
+            else payload.get("questions")
+        )
         return [card for card in (cards or []) if isinstance(card, dict)]
     if isinstance(payload, list):
         return [card for card in payload if isinstance(card, dict)]
@@ -247,14 +306,24 @@ def audit_flashcard_file(path: Path, payload: Any | None = None) -> dict[str, An
         1
         for blocked in blocked_cards
         if any(
-                field in {"question", "answer", "options=A-D", "options=A-D-or-A-G", "type", "uniqueId"}
-                or field == "passage"
-                for field in blocked["missingFields"]
-            )
+            field
+            in {
+                "question",
+                "answer",
+                "options=A-D",
+                "options=A-D-or-A-G",
+                "type",
+                "uniqueId",
+            }
+            or field == "passage"
+            for field in blocked["missingFields"]
+        )
     )
 
     return {
-        "filePath": str(path.relative_to(PROJECT_ROOT) if path.is_relative_to(PROJECT_ROOT) else path),
+        "filePath": str(
+            path.relative_to(PROJECT_ROOT) if path.is_relative_to(PROJECT_ROOT) else path
+        ),
         "status": "blocked" if blocked_cards or publication_blockers else "passed",
         "publicationStatus": status,
         "publicationBlockers": publication_blockers,
@@ -284,7 +353,11 @@ def build_quality_report(
         if skip_reason:
             skipped_files.append(
                 {
-                    "filePath": str(path.relative_to(PROJECT_ROOT) if path.is_relative_to(PROJECT_ROOT) else path),
+                    "filePath": str(
+                        path.relative_to(PROJECT_ROOT)
+                        if path.is_relative_to(PROJECT_ROOT)
+                        else path
+                    ),
                     "reason": skip_reason,
                 }
             )
@@ -293,7 +366,11 @@ def build_quality_report(
         if skip_reason:
             skipped_files.append(
                 {
-                    "filePath": str(path.relative_to(PROJECT_ROOT) if path.is_relative_to(PROJECT_ROOT) else path),
+                    "filePath": str(
+                        path.relative_to(PROJECT_ROOT)
+                        if path.is_relative_to(PROJECT_ROOT)
+                        else path
+                    ),
                     "reason": skip_reason,
                 }
             )
@@ -303,7 +380,9 @@ def build_quality_report(
     source_evidence_blocker_count = sum(item["sourceEvidenceBlockerCount"] for item in file_reports)
     grading_blocker_count = sum(item["gradingBlockerCount"] for item in file_reports)
     blocker_count = sum(len(item["blockedCards"]) for item in file_reports)
-    publication_blocker_count = sum(len(item.get("publicationBlockers", [])) for item in file_reports)
+    publication_blocker_count = sum(
+        len(item.get("publicationBlockers", [])) for item in file_reports
+    )
 
     return {
         "version": 1,
@@ -313,7 +392,9 @@ def build_quality_report(
             "maxYear": max_year,
         },
         "flashcardDir": str(
-            flashcard_dir.relative_to(PROJECT_ROOT) if flashcard_dir.is_relative_to(PROJECT_ROOT) else flashcard_dir
+            flashcard_dir.relative_to(PROJECT_ROOT)
+            if flashcard_dir.is_relative_to(PROJECT_ROOT)
+            else flashcard_dir
         ),
         "summary": {
             "fileCount": len(file_reports),
@@ -391,7 +472,9 @@ def run_self_test() -> None:
         ],
     }
 
-    passed = audit_flashcard_file(PROJECT_ROOT / "data/flashcards/english1-2025-self-test.json", passing_payload)
+    passed = audit_flashcard_file(
+        PROJECT_ROOT / "data/flashcards/english1-2025-self-test.json", passing_payload
+    )
     assert passed["status"] == "passed"
     assert passed["cardCount"] == 2
     assert passed["blockedCards"] == []
@@ -432,7 +515,10 @@ def run_self_test() -> None:
             },
         ],
     }
-    blocked = audit_flashcard_file(PROJECT_ROOT / "data/flashcards/english1-2025-blocked-self-test.json", blocked_payload)
+    blocked = audit_flashcard_file(
+        PROJECT_ROOT / "data/flashcards/english1-2025-blocked-self-test.json",
+        blocked_payload,
+    )
     assert blocked["status"] == "blocked"
     assert blocked["missingAnswerCount"] == 1
     assert blocked["sourceEvidenceBlockerCount"] == 1
@@ -450,7 +536,11 @@ def run_self_test() -> None:
     assert blocked["blockedCards"][1]["missingFields"] == ["uniqueId"]
 
     support_payload = {"supportingEvidenceOnly": True, "cards": [{"id": "support"}]}
-    outside_scope_payload = {"paperId": "english1-2030", "year": 2030, "cards": [{"id": "future"}]}
+    outside_scope_payload = {
+        "paperId": "english1-2030",
+        "year": 2030,
+        "cards": [{"id": "future"}],
+    }
     with tempfile.TemporaryDirectory(prefix="exam-master-flashcard-quality-") as temp_dir:
         flashcard_dir = Path(temp_dir)
         write_json(flashcard_dir / "english1-2025.json", passing_payload)
@@ -461,12 +551,17 @@ def run_self_test() -> None:
     assert report["summary"]["fileCount"] == 1
     assert report["summary"]["skippedFileCount"] == 2
     assert report["releaseReadiness"]["canPromoteToPublic"] is True
-    assert {item["reason"] for item in report["skippedFiles"]} == {"supportingEvidenceOnly", "outsideReleaseYear:2030"}
+    assert {item["reason"] for item in report["skippedFiles"]} == {
+        "supportingEvidenceOnly",
+        "outsideReleaseYear:2030",
+    }
     print("[flashcard-quality] self-test passed")
 
 
 def run(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Audit cleaned flashcard JSON files before public promotion.")
+    parser = argparse.ArgumentParser(
+        description="Audit cleaned flashcard JSON files before public promotion."
+    )
     parser.add_argument("--flashcard-dir", type=Path, default=DEFAULT_FLASHCARD_DIR)
     parser.add_argument("--min-year", type=int, default=2005)
     parser.add_argument("--max-year", type=int, default=2026)
@@ -482,7 +577,9 @@ def run(argv: list[str] | None = None) -> int:
     if args.min_year > args.max_year:
         raise SystemExit("--min-year must be <= --max-year")
 
-    report = build_quality_report(args.flashcard_dir, min_year=args.min_year, max_year=args.max_year)
+    report = build_quality_report(
+        args.flashcard_dir, min_year=args.min_year, max_year=args.max_year
+    )
     write_json(args.output, report)
     print(
         "[flashcard-quality] "
@@ -493,7 +590,9 @@ def run(argv: list[str] | None = None) -> int:
         f"report={args.output}"
     )
 
-    return 2 if args.fail_on_blockers and not report["releaseReadiness"]["canPromoteToPublic"] else 0
+    return (
+        2 if args.fail_on_blockers and not report["releaseReadiness"]["canPromoteToPublic"] else 0
+    )
 
 
 if __name__ == "__main__":

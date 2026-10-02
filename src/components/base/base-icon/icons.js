@@ -7,6 +7,9 @@ import { SVG_DATA } from './svg-data.js';
 
 // 主包页面使用的核心图标（内联 data URI，消除文件依赖）
 const INLINE = {
+  chat: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"%3E%3Cpath d="M21 11.5a8.4 8.4 0 0 1-.9 3.8A8.5 8.5 0 0 1 12.5 20a8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8A8.5 8.5 0 0 1 8.7 3.9 8.4 8.4 0 0 1 12.5 3h.5a8.5 8.5 0 0 1 8 8v.5Z"/%3E%3C/svg%3E',
+  menu: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" viewBox="0 0 24 24"%3E%3Cpath d="M4 6h16M4 12h16M4 18h16"/%3E%3C/svg%3E',
+
   check:
     'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"%3E%3Cpath d="M20 6 9 17l-5-5"/%3E%3C/svg%3E',
   cross:

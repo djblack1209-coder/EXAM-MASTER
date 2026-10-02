@@ -1,9 +1,12 @@
 # ============================================
 # Exam-Master 前端 CI/CD 流水线
 # 触发条件：push 到 main/develop，PR 到 main
-# 注意：后端 CI/CD 已迁移至独立仓库
+# 后端源码仍在本仓库；生产部署与本地质量检查分别验收。
 # ============================================
-name: Frontend CI/CD Pipeline
+name: Project Quality and Builds
+
+permissions:
+  contents: read
 
 on:
   push:
@@ -25,7 +28,7 @@ concurrency:
 
 env:
   REGISTRY: ghcr.io
-  NODE_VERSION: '20.19.0'
+  NODE_VERSION: '22.22.3'
   LAF_SOURCE_AUDIT_STRICT: 'true'
 
 jobs:
@@ -51,7 +54,7 @@ jobs:
           node -e "const c=require('node:crypto'); if (typeof c.hash !== 'function') { console.error('crypto.hash is unavailable, require Node.js >= 20.12'); process.exit(1); }"
 
       - name: Install dependencies
-        run: npm ci --ignore-scripts || npm install --ignore-scripts
+        run: npm ci --ignore-scripts
 
       - name: Run Laf source audit
         run: |
@@ -65,6 +68,32 @@ jobs:
       - name: Run ESLint
         run: npm run lint
         timeout-minutes: 5
+
+      - name: Verify formatting and repository references
+        run: |
+          npm run format:check
+          npm run audit:repository
+          npm run audit:subpkg-sync
+
+      - name: Verify scripts and tests
+        run: npm run lint:tooling
+
+      - name: Verify standalone backend
+        run: |
+          npm ci --ignore-scripts --prefix laf-backend/standalone
+          npm run typecheck:backend
+          npm run build:backend
+          npm run audit:backend:runtime
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Verify Python code
+        run: |
+          python -m pip install -r requirements-dev.txt
+          npm run lint:python
 
       - name: Run tests
         run: npm test
@@ -99,8 +128,7 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies for audit
-        run: npm install --ignore-scripts
-        continue-on-error: true
+        run: npm ci --ignore-scripts
 
       # npm audit: 记录 critical 漏洞为 warning（不阻断但可见）
       - name: Run npm audit

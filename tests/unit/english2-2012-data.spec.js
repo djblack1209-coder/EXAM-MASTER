@@ -24,8 +24,6 @@ describe('English II 2012 published bank data', () => {
     expect(bank.cards.find((card) => card.number === 46).targetSegment).toContain('brain drain');
     expect(bank.cards.find((card) => card.number === 46).targetSegment).toContain('developing countries');
     expect(bank.cards.find((card) => card.number === 48).question).toContain('某公司员工工作满意度调查');
-    expect(bank.cards.find((card) => card.number === 48).answerEvidence.evidenceRole).toBe(
-      'official_writing_prompt'
-    );
+    expect(bank.cards.find((card) => card.number === 48).answerEvidence.evidenceRole).toBe('official_writing_prompt');
   });
 });

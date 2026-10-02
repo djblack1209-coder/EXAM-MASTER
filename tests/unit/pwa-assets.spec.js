@@ -3,9 +3,22 @@ import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { describe, expect, it } from 'vitest';
 
-import { copyPwaIconAssets } from '../../scripts/build/pwa-assets.mjs';
+import { copyPwaIconAssets, copyPwaRuntimeAssets } from '../../scripts/build/pwa-assets.mjs';
 
 describe('pwa assets', () => {
+  it('ships the SW cleanup dependency and fails closed if it is missing', () => {
+    const root = mkdtempSync(join(tmpdir(), 'exam-pwa-runtime-'));
+    try {
+      const sourceFile = join(root, 'cleanup.js');
+      const outDir = join(root, 'build');
+      expect(() => copyPwaRuntimeAssets({ sourceFile, outDir })).toThrow();
+      writeFileSync(sourceFile, 'self.addEventListener("activate", () => {});');
+      copyPwaRuntimeAssets({ sourceFile, outDir });
+      expect(readFileSync(join(outDir, 'sw-cache-cleanup.js'), 'utf8')).toBe(readFileSync(sourceFile, 'utf8'));
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
+  });
   it('declares the standard installable web app meta tag before H5 build', () => {
     const html = readFileSync('index.html', 'utf8');
 
@@ -26,11 +39,7 @@ describe('pwa assets', () => {
 
       const copied = copyPwaIconAssets({ sourceDir, outDir });
 
-      expect(copied).toEqual([
-        'icon-192x192.png',
-        'icon-512x512-maskable.png',
-        'icon-512x512.png'
-      ]);
+      expect(copied).toEqual(['icon-192x192.png', 'icon-512x512-maskable.png', 'icon-512x512.png']);
       expect(existsSync(join(outDir, 'static/pwa-icons/icon-192x192.png'))).toBe(true);
       expect(existsSync(join(outDir, 'static/pwa-icons/icon-512x512.png'))).toBe(true);
       expect(existsSync(join(outDir, 'static/pwa-icons/icon-512x512-maskable.png'))).toBe(true);

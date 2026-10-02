@@ -49,7 +49,12 @@ class PublicCourseCandidateCoverageTest(unittest.TestCase):
             ]
         }
 
-        report = analyze_candidate_coverage(manifest, tracks=["math1"], years=[2010, 2011], source_channel="netdisk_full_path")
+        report = analyze_candidate_coverage(
+            manifest,
+            tracks=["math1"],
+            years=[2010, 2011],
+            source_channel="netdisk_full_path",
+        )
         row = report["matrix"]["math1"]["2010"]
 
         self.assertEqual(report["summary"]["math1"]["presentYears"], [2010])

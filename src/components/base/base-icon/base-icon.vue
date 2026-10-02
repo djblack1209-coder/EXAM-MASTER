@@ -1,6 +1,11 @@
 <template>
   <view class="base-icon" :style="wrapperStyle">
+    <!-- #ifdef H5 -->
+    <img v-if="iconSrc" class="base-icon__img" :src="iconSrc" alt="" draggable="false" />
+    <!-- #endif -->
+    <!-- #ifndef H5 -->
     <image v-if="iconSrc" class="base-icon__img" :src="iconSrc" alt="" mode="aspectFit" />
+    <!-- #endif -->
   </view>
 </template>
 

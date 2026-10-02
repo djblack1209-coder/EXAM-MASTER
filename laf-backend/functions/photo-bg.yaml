@@ -1,5 +1,5 @@
 name: photo-bg
-desc: ""
+desc: ''
 methods:
   - GET
   - POST

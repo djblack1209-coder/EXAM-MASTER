@@ -16,7 +16,7 @@
  */
 
 import cloud from '@lafjs/cloud';
-import { requireAuth, isAuthError } from './_shared/auth-middleware';
+import { requireAuth, isAuthError } from './_shared/auth-middleware.js';
 import {
   success,
   badRequest,
@@ -25,8 +25,8 @@ import {
   generateRequestId,
   checkRateLimitDistributed,
   createLogger
-} from './_shared/api-response';
-import { retrievability } from './_shared/fsrs-scheduler';
+} from './_shared/api-response.js';
+import { retrievability } from './_shared/fsrs-scheduler.js';
 // ✅ 深度纠正提示词（内联，原 prompts/deep-correction.ts 已清理）
 function buildDeepCorrectionSystemPrompt(): string {
   return '你是一位考研辅导专家。用户在某个知识点上反复出错，请分析根因并给出矫正方案。要求：1）根因一句话概括（为什么错）2）矫正建议一段话（正确的理解方式和关键区别）。直接输出JSON，不要markdown。格式：{"rootCause":"...","correction":"..."}';
@@ -550,7 +550,7 @@ async function deepCorrection(userId: string, knowledgePoint?: string): Promise<
     let correction = '';
 
     try {
-      const { getProvider } = await import('./_shared/ai-providers/provider-factory.js');
+      const { getBudgetedLegacyProvider: getProvider } = await import('./_shared/ai-providers/learning-provider.js');
       const provider = getProvider();
       const messages: Array<{ role: 'system' | 'user' | 'assistant'; content: string }> = [
         {

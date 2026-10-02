@@ -20,7 +20,7 @@ vi.mock('@/services/storageService.js', () => ({
 describe('[Audit] Theme Token Correctness', () => {
   let tokens;
   beforeEach(async () => {
-    const mod = await import('@/design/theme-engine.js');
+    const mod = await import('@/design/theme-runtime.js');
     tokens = mod.tokens;
   });
 
@@ -80,7 +80,7 @@ describe('[Audit] Theme Token Correctness', () => {
 describe('[Audit] Dark Mode Font Weight Bump', () => {
   let tokens;
   beforeEach(async () => {
-    const mod = await import('@/design/theme-engine.js');
+    const mod = await import('@/design/theme-runtime.js');
     tokens = mod.tokens;
   });
 
@@ -116,7 +116,7 @@ describe('[Audit] Dark Mode Font Weight Bump', () => {
 describe('[Audit] Dark Mode Shadow & Glow', () => {
   let tokens;
   beforeEach(async () => {
-    const mod = await import('@/design/theme-engine.js');
+    const mod = await import('@/design/theme-runtime.js');
     tokens = mod.tokens;
   });
 
@@ -151,7 +151,7 @@ describe('[Audit] Dark Mode Shadow & Glow', () => {
 describe('[Audit] Dark Mode Animation Timing', () => {
   let tokens;
   beforeEach(async () => {
-    const mod = await import('@/design/theme-engine.js');
+    const mod = await import('@/design/theme-runtime.js');
     tokens = mod.tokens;
   });
 
@@ -183,7 +183,7 @@ describe('[Audit] Dark Mode Animation Timing', () => {
 describe('[Audit] Cross-Mode Consistency', () => {
   let tokens;
   beforeEach(async () => {
-    const mod = await import('@/design/theme-engine.js');
+    const mod = await import('@/design/theme-runtime.js');
     tokens = mod.tokens;
   });
 
@@ -244,7 +244,7 @@ describe('[Audit] applyTheme DOM Injection', () => {
 
   beforeEach(async () => {
     vi.resetModules();
-    const mod = await import('@/design/theme-engine.js');
+    const mod = await import('@/design/theme-runtime.js');
     applyTheme = mod.applyTheme;
     tokens = mod.tokens;
     const existing = document.getElementById('v0-animations');
@@ -329,7 +329,7 @@ describe('[Audit] getCurrentTheme Fallback', () => {
 
   beforeEach(async () => {
     vi.resetModules();
-    const mod = await import('@/design/theme-engine.js');
+    const mod = await import('@/design/theme-runtime.js');
     getCurrentTheme = mod.getCurrentTheme;
     window.localStorage.clear();
   });
@@ -385,7 +385,7 @@ describe('[Audit] applyTheme DOM Rendering', () => {
     vi.resetModules();
     document.documentElement.style.cssText = '';
     window.localStorage.clear();
-    const mod = await import('@/design/theme-engine.js');
+    const mod = await import('@/design/theme-runtime.js');
     applyTheme = mod.applyTheme;
   });
 
@@ -421,7 +421,7 @@ describe('[Audit] v0Animations Content', () => {
   let v0Animations;
 
   beforeEach(async () => {
-    const mod = await import('@/design/theme-engine.js');
+    const mod = await import('@/design/theme-runtime.js');
     v0Animations = mod.v0Animations;
   });
 

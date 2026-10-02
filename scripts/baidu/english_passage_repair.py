@@ -70,7 +70,12 @@ def infer_english_subject(payload: Any, path: Path) -> str:
         )
     candidates.append(path.stem)
     joined = " ".join(str(candidate or "").lower() for candidate in candidates)
-    if "english2" in joined or "english-2" in joined or "英语二" in joined or "英语（二）" in joined:
+    if (
+        "english2" in joined
+        or "english-2" in joined
+        or "英语二" in joined
+        or "英语（二）" in joined
+    ):
         return "english2"
     return "english1"
 
@@ -136,8 +141,12 @@ def ocr_pdf_with_apple_vision(path: Path) -> str:
                         str(image_path),
                         language_preference=OCR_LANGUAGE_PREFERENCE,
                     ).recognize()
-                    sorted_annotations = sorted(annotations, key=lambda row: (1 - row[2][1], row[2][0]))
-                    page_text = "\n".join(row[0] for row in sorted_annotations if str(row[0]).strip())
+                    sorted_annotations = sorted(
+                        annotations, key=lambda row: (1 - row[2][1], row[2][0])
+                    )
+                    page_text = "\n".join(
+                        row[0] for row in sorted_annotations if str(row[0]).strip()
+                    )
                     text_parts.append(f"\n--- PAGE {index + 1} ---\n{page_text}\n")
                 finally:
                     image_path.unlink(missing_ok=True)
@@ -158,7 +167,12 @@ def clean_text(text: str) -> str:
         .replace("｣", "]")
     )
     text = re.sub(r"^\s*---\s*PAGE\s+\d+\s*---\s*$", "", text, flags=re.MULTILINE | re.IGNORECASE)
-    text = re.sub(r"^.*(?:微信|QQ|公众号|二维码|扫码|全年免费分享|研池大叔).*$", "", text, flags=re.MULTILINE)
+    text = re.sub(
+        r"^.*(?:微信|QQ|公众号|二维码|扫码|全年免费分享|研池大叔).*$",
+        "",
+        text,
+        flags=re.MULTILINE,
+    )
     text = re.sub(r"英语[（(]?\s*[一二]\s*[）)]?试题\.\s*\d+\s*\.\s*[（(]共\d+页[）)]", "", text)
     text = re.sub(r"^\s*[（(]共\s*\d+\s*页[）)]\s*$", "", text, flags=re.MULTILINE)
     text = re.sub(r"^\s*英语试题\s*[,.，。]?\s*\d*\s*[,.，。]?\s*$", "", text, flags=re.MULTILINE)
@@ -174,7 +188,11 @@ def compact(text: str) -> str:
 
 def clean_inline_artifact_text(text: str) -> str:
     text = compact(text)
-    text = re.sub(r"\s*英语[（(]?\s*[一二]?\s*[）)]?试题\s*[,.，。]?\s*\d*\s*[,.，。]?\s*$", "", text)
+    text = re.sub(
+        r"\s*英语[（(]?\s*[一二]?\s*[）)]?试题\s*[,.，。]?\s*\d*\s*[,.，。]?\s*$",
+        "",
+        text,
+    )
     text = re.sub(r"\s*[.。]?\s*\d+\s*[.。]\s*[（(]\s*共\s*\d+\s*页\s*[）)]\s*$", "", text)
     text = re.sub(r"\s*[（(]\s*共\s*\d+\s*页\s*[）)]\s*$", "", text)
     return text.strip()
@@ -198,7 +216,10 @@ def refresh_question_hash(card: dict[str, Any]) -> bool:
         changed = True
 
     source_evidence = card.get("sourceEvidence")
-    if isinstance(source_evidence, dict) and source_evidence.get("questionTextHash") != question_hash:
+    if (
+        isinstance(source_evidence, dict)
+        and source_evidence.get("questionTextHash") != question_hash
+    ):
         source_evidence["questionTextHash"] = question_hash
         changed = True
 
@@ -209,7 +230,9 @@ def first_match(text: str, pattern: str, start: int = 0) -> re.Match[str] | None
     return re.search(pattern, text[start:], flags=re.IGNORECASE | re.MULTILINE)
 
 
-def section_between_patterns(text: str, start_pattern: str, end_pattern: str | None, *, start: int = 0) -> str:
+def section_between_patterns(
+    text: str, start_pattern: str, end_pattern: str | None, *, start: int = 0
+) -> str:
     start_match = first_match(text, start_pattern, start)
     if not start_match:
         return ""
@@ -288,7 +311,11 @@ def parse_cloze_options(options_text: str) -> dict[int, list[dict[str, str]]]:
         if number < 1 or number > 20:
             continue
         start = match.end()
-        end = number_matches[index + 1].start() if index + 1 < len(number_matches) else len(options_text)
+        end = (
+            number_matches[index + 1].start()
+            if index + 1 < len(number_matches)
+            else len(options_text)
+        )
         chunk = options_text[start:end]
         label_matches = list(
             re.finditer(
@@ -301,13 +328,19 @@ def parse_cloze_options(options_text: str) -> dict[int, list[dict[str, str]]]:
         for label_index, label_match in enumerate(label_matches):
             label = (label_match.group(1) or label_match.group(2) or "").upper()
             label_start = label_match.end()
-            label_end = label_matches[label_index + 1].start() if label_index + 1 < len(label_matches) else len(chunk)
+            label_end = (
+                label_matches[label_index + 1].start()
+                if label_index + 1 < len(label_matches)
+                else len(chunk)
+            )
             text = compact(chunk[label_start:label_end])
             text = re.sub(r"^[J\]\s]+", "", text).strip()
             if label in "ABCD" and text:
                 parsed[label] = text
         if set(parsed) == set("ABCD"):
-            options_by_number[number] = [{"label": label, "text": parsed[label]} for label in "ABCD"]
+            options_by_number[number] = [
+                {"label": label, "text": parsed[label]} for label in "ABCD"
+            ]
     return options_by_number
 
 
@@ -331,9 +364,12 @@ def parse_labelled_option_segments(text: str) -> dict[str, str]:
     return parsed
 
 
-def row_groups_from_ocr_annotations(annotations: list[Any], *, y_tolerance: float = 0.009) -> list[list[Any]]:
+def row_groups_from_ocr_annotations(
+    annotations: list[Any], *, y_tolerance: float = 0.009
+) -> list[list[Any]]:
     positioned = [
-        row for row in annotations
+        row
+        for row in annotations
         if isinstance(row, (tuple, list))
         and len(row) >= 3
         and isinstance(row[2], (tuple, list))
@@ -359,7 +395,9 @@ def row_groups_from_ocr_annotations(annotations: list[Any], *, y_tolerance: floa
     return groups
 
 
-def extract_cloze_options_from_pdf_geometry(source_pdf: Path) -> dict[int, list[dict[str, str]]]:
+def extract_cloze_options_from_pdf_geometry(
+    source_pdf: Path,
+) -> dict[int, list[dict[str, str]]]:
     if source_pdf.suffix.lower() != ".pdf":
         return {}
     try:
@@ -389,7 +427,11 @@ def extract_cloze_options_from_pdf_geometry(source_pdf: Path) -> dict[int, list[
                     row_text = compact(" ".join(str(item[0]).strip() for item in group))
                     if not row_text:
                         continue
-                    if re.search(r"Section\s+II\s+Reading\s+Comprehension", row_text, flags=re.IGNORECASE):
+                    if re.search(
+                        r"Section\s+II\s+Reading\s+Comprehension",
+                        row_text,
+                        flags=re.IGNORECASE,
+                    ):
                         return {
                             number: [{"label": label, "text": values[label]} for label in "ABCD"]
                             for number, values in sorted(options_by_number.items())
@@ -508,7 +550,9 @@ def extract_english_passages(paper_text: str) -> dict[str, dict[str, Any]]:
             "options": parse_ag_options(part_b),
         }
 
-    part_c = section_between_patterns(cleaned, r"\n\s*Part\s+C\s*\n", r"\n\s*Section\s+(?:III|ID)\s+Writing")
+    part_c = section_between_patterns(
+        cleaned, r"\n\s*Part\s+C\s*\n", r"\n\s*Section\s+(?:III|ID)\s+Writing"
+    )
     if not part_c:
         part_c = section_between_patterns(
             cleaned,
@@ -516,7 +560,10 @@ def extract_english_passages(paper_text: str) -> dict[str, dict[str, Any]]:
             r"\n\s*Section\s+(?:IV|III|ID)\s+Writing",
         )
     if part_c:
-        passages["part-c"] = {"section": "翻译", "passage": compact(strip_leading_directions(part_c))}
+        passages["part-c"] = {
+            "section": "翻译",
+            "passage": compact(strip_leading_directions(part_c)),
+        }
 
     return passages
 
@@ -548,7 +595,12 @@ def card_number(card: dict[str, Any]) -> int:
 
 
 def reset_answer_evidence(card: dict[str, Any]) -> None:
-    for key in ["answerEvidenceStatus", "answerEvidenceSourceId", "answerTextHash", "answerEvidence"]:
+    for key in [
+        "answerEvidenceStatus",
+        "answerEvidenceSourceId",
+        "answerTextHash",
+        "answerEvidence",
+    ]:
         card.pop(key, None)
 
 
@@ -665,7 +717,11 @@ def repair_english_passages(
 ) -> dict[str, Any]:
     now = now or utc_now()
     payload = read_json(target_path, {})
-    cards = payload.get("cards") if isinstance(payload, dict) and isinstance(payload.get("cards"), list) else []
+    cards = (
+        payload.get("cards")
+        if isinstance(payload, dict) and isinstance(payload.get("cards"), list)
+        else []
+    )
     english_subject = infer_english_subject(payload, target_path)
     translation_numbers = translation_numbers_for_subject(english_subject)
     passages = extract_english_passages(extract_pdf_text(source_pdf))
@@ -685,8 +741,16 @@ def repair_english_passages(
 
     if repair_cloze_cards and isinstance(payload, dict) and passages.get("cloze"):
         cloze_info = passages["cloze"]
-        options_by_number = cloze_info.get("optionsByNumber") if isinstance(cloze_info.get("optionsByNumber"), dict) else {}
-        existing_by_number = {card_number(card): card for card in cards if isinstance(card, dict) and 1 <= card_number(card) <= 20}
+        options_by_number = (
+            cloze_info.get("optionsByNumber")
+            if isinstance(cloze_info.get("optionsByNumber"), dict)
+            else {}
+        )
+        existing_by_number = {
+            card_number(card): card
+            for card in cards
+            if isinstance(card, dict) and 1 <= card_number(card) <= 20
+        }
         rebuilt_cloze_cards: list[dict[str, Any]] = []
         for number in range(1, 21):
             if number not in options_by_number:
@@ -705,13 +769,25 @@ def repair_english_passages(
                 cloze_added_count += 1
 
         if rebuilt_cloze_cards:
-            non_cloze_cards = [card for card in cards if not (isinstance(card, dict) and 1 <= card_number(card) <= 20)]
+            non_cloze_cards = [
+                card
+                for card in cards
+                if not (isinstance(card, dict) and 1 <= card_number(card) <= 20)
+            ]
             cards = sorted(rebuilt_cloze_cards + non_cloze_cards, key=card_number)
             payload["cards"] = cards
 
-    if repair_part_b_cards and isinstance(payload, dict) and passages.get("part-b", {}).get("options"):
+    if (
+        repair_part_b_cards
+        and isinstance(payload, dict)
+        and passages.get("part-b", {}).get("options")
+    ):
         part_b_info = passages["part-b"]
-        existing_by_number = {card_number(card): card for card in cards if isinstance(card, dict) and 41 <= card_number(card) <= 45}
+        existing_by_number = {
+            card_number(card): card
+            for card in cards
+            if isinstance(card, dict) and 41 <= card_number(card) <= 45
+        }
         rebuilt_part_b_cards: list[dict[str, Any]] = []
         for number in range(41, 46):
             rebuilt_part_b_cards.append(
@@ -723,7 +799,9 @@ def repair_english_passages(
                     reset_answer=reset_part_b_answers,
                 )
             )
-        non_part_b_cards = [card for card in cards if not (isinstance(card, dict) and 41 <= card_number(card) <= 45)]
+        non_part_b_cards = [
+            card for card in cards if not (isinstance(card, dict) and 41 <= card_number(card) <= 45)
+        ]
         cards = sorted(non_part_b_cards + rebuilt_part_b_cards, key=card_number)
         payload["cards"] = cards
 
@@ -810,10 +888,14 @@ def repair_english_passages(
             "passageGroupCount": len(passages),
             "repairedCardCount": len(repaired_cards),
             "missingGroupCount": len(missing_groups),
-            "clozeOptionNumberCount": len(passages.get("cloze", {}).get("optionsByNumber", {}) or {}),
+            "clozeOptionNumberCount": len(
+                passages.get("cloze", {}).get("optionsByNumber", {}) or {}
+            ),
             "clozeRebuiltCount": cloze_rebuilt_count,
             "clozeAddedCount": cloze_added_count,
-            "translationSegmentCount": len(parse_translation_segments(passages.get("part-c", {}).get("passage", ""))),
+            "translationSegmentCount": len(
+                parse_translation_segments(passages.get("part-c", {}).get("passage", ""))
+            ),
             "translationRebuiltCount": translation_rebuilt_count,
             "translationAddedCount": translation_added_count,
         },
@@ -832,7 +914,9 @@ def repair_english_passages(
 
 
 def run(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Repair English flashcards with source passage material.")
+    parser = argparse.ArgumentParser(
+        description="Repair English flashcards with source passage material."
+    )
     parser.add_argument("--target", type=Path, required=True)
     parser.add_argument("--source-pdf", type=Path, required=True)
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)

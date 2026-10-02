@@ -28,12 +28,8 @@ describe('English II 2023 published bank data', () => {
     );
     expect(bank.cards.find((card) => card.number === 46).answer).toContain('华兹华斯');
     expect(bank.cards.find((card) => card.number === 47).question).toContain('art exhibition and a robot show');
-    expect(bank.cards.find((card) => card.number === 48).question).toContain(
-      '2012-2021年我国居民健康素养水平'
-    );
+    expect(bank.cards.find((card) => card.number === 48).question).toContain('2012-2021年我国居民健康素养水平');
     expect(bank.cards.find((card) => card.number === 48).question).toContain('25.40%');
-    expect(bank.cards.find((card) => card.number === 48).answerEvidence.evidenceRole).toBe(
-      'official_writing_prompt'
-    );
+    expect(bank.cards.find((card) => card.number === 48).answerEvidence.evidenceRole).toBe('official_writing_prompt');
   });
 });
