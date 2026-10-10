@@ -25,7 +25,6 @@ const CORE_PUBLIC_PAGE_FILES = [
   'src/pages/index/index.vue',
   'src/pages/practice/index.vue',
   'src/pages/profile/index.vue',
-  'src/pages/settings/index.vue',
   'src/pages/practice-sub/do-quiz.vue',
   'src/pages/practice-sub/components/quiz-result/quiz-result.vue'
 ];

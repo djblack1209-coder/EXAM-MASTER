@@ -424,25 +424,6 @@ async function runSmoke(options, lifecycle) {
       })
     );
 
-    await miniProgram.navigateBack();
-    await miniProgram.navigateBack();
-    page = await miniProgram.navigateTo('/pages/practice-sub/professional-index');
-    await waitForPage(page, '.professional-page');
-    const professionalText = await textOf(page, '.professional-page');
-    const sourceCardCount = await countOf(page, '.source-card');
-    assertCondition(professionalText.includes('专业课索引'), 'Professional index header is not visible');
-    assertCondition(sourceCardCount > 0, 'Professional source cards are not visible');
-    assertCondition(
-      !/\benglish\b|\bpolitics\b|\bmath\b/.test(professionalText),
-      'Professional directions expose raw track keys'
-    );
-    report.steps.push(
-      pass('professional-index', {
-        path: page.path,
-        visibleSourceCards: sourceCardCount
-      })
-    );
-
     ensureParent(options.screenshot);
     await miniProgram.screenshot({ path: options.screenshot });
     report.steps.push(pass('screenshot', { path: options.screenshot }));

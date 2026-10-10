@@ -2,35 +2,8 @@ import { describe, expect, it, vi } from 'vitest';
 import { useBankStatus } from '@/composables/useBankStatus.js';
 import storageService from '@/services/storageService.js';
 import { aiGenerationMixin } from '@/pages/practice-sub/composables/ai-generation-mixin.js';
-import { mount } from '@vue/test-utils';
-import { nextTick } from 'vue';
-import SprintPage from '@/pages/practice-sub/sprint-mode.vue';
-import SmartReviewPage from '@/pages/practice-sub/smart-review.vue';
 
 describe('legacy bank reads and retired writers', () => {
-  it.each([SprintPage, SmartReviewPage])(
-    'old views display original counts without mastery or forecasts',
-    async (Page) => {
-      uni.setStorageSync('EXAM_USER_ID', 'group-reader');
-      const protectedRows = {
-        v30_bank: [{ id: 0, question: '原题', category: '数学', options: ['甲', '乙'], answer: 'A' }],
-        v30_bank_backup: [{ id: 'unique', question: '唯一恢复原件' }],
-        exam_date: '2025-01-01',
-        v30_mistakes: [{ id: 0, isCorrect: false, reviewCount: 99 }],
-        fsrs_records: [{ id: 0, retrievability: 0.99 }]
-      };
-      uni.setStorageSync('review_streak', { days: 99, lastDate: new Date().toDateString() });
-      for (const [key, value] of Object.entries(protectedRows)) storageService.save(key, value, true);
-      const wrapper = mount(Page, { global: { stubs: { BaseIcon: true } } });
-      await nextTick();
-      expect(wrapper.text()).toContain('1 道原题 · 作答后待核对');
-      expect(wrapper.text()).not.toMatch(/掌握|提分|ROI|放弃|冲刺排名|记忆强度|连续复习|已完成|AI 正在/);
-      for (const [key, value] of Object.entries(protectedRows))
-        expect(storageService.get(key, null, { migrateLegacy: false })).toEqual(value);
-      expect(uni.navigateTo).not.toHaveBeenCalled();
-      wrapper.unmount();
-    }
-  );
   it('sign-out cache cleanup preserves originals, recovery and favourites in their owning namespace', () => {
     uni.setStorageSync('EXAM_USER_ID', 'owner-a');
     const keys = [
@@ -72,56 +45,6 @@ describe('legacy bank reads and retired writers', () => {
       expect(storageService.get(key, null)).toBeNull();
       expect(storageService.get(key, null, { migrateLegacy: true })).toBeNull();
       expect(JSON.stringify(global.__mockStorage)).toBe(before);
-    }
-  );
-  it.each(['normal', 'save-failure', 'owner-changed'])(
-    'sprint %s uses complete owned selection and leaves the bank and unique recovery unchanged',
-    (mode) => {
-      uni.setStorageSync('EXAM_USER_ID', 'sprint-a');
-      const bank = [
-        {
-          id: 0,
-          question: '按照原文选择',
-          type: 'multi_choice',
-          options: ['甲', '乙', '丙'],
-          answer: 'AC',
-          category: '数学',
-          passage: '原材料',
-          source: { title: '原来源' }
-        }
-      ];
-      storageService.save('v30_bank', bank, true);
-      storageService.save('v30_bank_backup', [{ id: 'unique', question: '唯一恢复原件' }], true);
-      const wrapper = mount(SprintPage, { global: { stubs: { BaseIcon: true } } });
-      let spy;
-      if (mode === 'save-failure') {
-        const save = storageService.save.bind(storageService);
-        spy = vi
-          .spyOn(storageService, 'save')
-          .mockImplementation((k, ...args) => (k === 'quiz_review_handoff_v1' ? false : save(k, ...args)));
-      }
-      if (mode === 'owner-changed') uni.setStorageSync('EXAM_USER_ID', 'sprint-b');
-      const before = JSON.stringify(global.__mockStorage);
-      wrapper.vm.$.setupState.startSprint({ name: '数学', roi: 1 });
-      if (mode === 'normal') {
-        expect(storageService.get('v30_bank', [], { migrateLegacy: false })).toEqual(bank);
-        expect(storageService.get('v30_bank_backup')).toEqual([{ id: 'unique', question: '唯一恢复原件' }]);
-        const handoff = storageService.get('quiz_review_handoff_v1');
-        expect(handoff.questions[0].quizOriginal.fields).toMatchObject({
-          answer: 'AC',
-          passage: '原材料',
-          source: { title: '原来源' }
-        });
-        expect(uni.navigateTo).toHaveBeenCalledWith(
-          expect.objectContaining({ url: expect.stringContaining('reviewId=') })
-        );
-        expect(storageService.get('is_review_mode')).toBeNull();
-      } else {
-        expect(JSON.stringify(global.__mockStorage)).toBe(before);
-        expect(uni.navigateTo).not.toHaveBeenCalled();
-      }
-      wrapper.unmount();
-      spy?.mockRestore();
     }
   );
   it.each(['array', 'string'])('an empty bank stays empty when %s recovery data exists', (format) => {

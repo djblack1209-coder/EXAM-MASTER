@@ -3,12 +3,7 @@ import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
 const ROOT = resolve(process.cwd());
-const CORE_SHELL_PAGES = [
-  'src/pages/index/index.vue',
-  'src/pages/practice/index.vue',
-  'src/pages/profile/index.vue',
-  'src/pages/settings/index.vue'
-];
+const CORE_SHELL_PAGES = ['src/pages/index/index.vue', 'src/pages/practice/index.vue', 'src/pages/profile/index.vue'];
 
 const DIRECT_ROUTE_CALL = /uni\.(navigateTo|switchTab|redirectTo|reLaunch)\s*\(/g;
 

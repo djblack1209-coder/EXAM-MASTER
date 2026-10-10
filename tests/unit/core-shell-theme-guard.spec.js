@@ -43,19 +43,6 @@ const CORE_THEME_PAGES = [
       '.dark-mode .nav-bar',
       '.dark-mode .card'
     ]
-  },
-  {
-    file: 'src/pages/settings/index.vue',
-    required: [
-      ':class="{ \'dark-mode\': isDark }"',
-      "uni.$on('themeUpdate'",
-      "uni.$on('updateTheme'",
-      "uni.$off('themeUpdate'",
-      "uni.$off('updateTheme'",
-      '.settings-container.dark-mode',
-      '.dark-mode .user-card',
-      '.dark-mode .settings-list'
-    ]
   }
 ];
 

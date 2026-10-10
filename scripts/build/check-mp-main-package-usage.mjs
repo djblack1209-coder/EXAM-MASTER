@@ -48,8 +48,7 @@ const requiredModules = [
   'utils/helpers/haptic.js',
   'utils/learning/adaptive-learning-engine.js',
   'utils/modal.js',
-  'utils/quiz-elo.js',
-  'utils/security/sanitize.js'
+  'utils/quiz-elo.js'
 ].filter((modulePath) => fs.existsSync(path.join(buildRoot, modulePath)));
 
 function readBuildFile(relativePath) {

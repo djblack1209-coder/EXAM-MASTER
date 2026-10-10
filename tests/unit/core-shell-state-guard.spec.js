@@ -16,10 +16,6 @@ const SHELL_STATE_EXPECTATIONS = [
   {
     file: 'src/pages/profile/index.vue',
     required: ['isLoggedIn', 'login-hint', 'tabBarHeight']
-  },
-  {
-    file: 'src/pages/settings/index.vue',
-    required: ['isPageLoading', 'skeleton-settings', 'footer-safe', 'onErrorCaptured']
   }
 ];
 

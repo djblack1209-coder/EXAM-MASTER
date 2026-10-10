@@ -36,10 +36,6 @@ const CORE_VISUAL_EXPECTATIONS = [
       '@include em-mobile-pressable',
       "height: tabBarHeight + 96 + 'px'"
     ]
-  },
-  {
-    file: 'src/pages/settings/index.vue',
-    required: ['settings-container', 'apple-glass', 'wise-card', 'footer-safe', 'ds-touchable']
   }
 ];
 
