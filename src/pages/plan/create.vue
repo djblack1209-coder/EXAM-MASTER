@@ -19,9 +19,7 @@
           mode="aspectFit"
           style="margin-bottom: 12rpx"
         />
-        <text class="hero-eyebrow"> Plan Setup </text>
         <text class="hero-title"> 给这段备考设定一个稳定的节奏 </text>
-        <text class="hero-subtitle"> 名称、目标、提醒和优先级都会影响后续的智能建议。 </text>
       </view>
 
       <view v-if="isPageLoading" class="form-card skeleton-card">
@@ -34,8 +32,6 @@
 
       <view v-else class="form-card">
         <view class="form-group">
-          <text class="group-eyebrow"> Basics </text>
-
           <view class="form-item">
             <text class="form-label"> 计划名称 </text>
             <input
@@ -61,8 +57,6 @@
         </view>
 
         <view class="form-group">
-          <text class="group-eyebrow"> Schedule </text>
-
           <view class="form-item">
             <text class="form-label"> 开始日期 </text>
             <view class="picker-row" @tap="showStartDatePicker">
@@ -129,8 +123,6 @@
         </view>
 
         <view class="form-group">
-          <text class="group-eyebrow"> Focus </text>
-
           <view class="form-item">
             <text class="form-label"> 计划分类 </text>
             <view class="pill-grid category-grid">

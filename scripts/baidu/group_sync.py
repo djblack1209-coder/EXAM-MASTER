@@ -86,7 +86,9 @@ def normalize_registry(payload: Any) -> dict[str, Any]:
 
         missing = [key for key in ("id", "url", "pwd") if not str(link.get(key) or "").strip()]
         if missing:
-            raise ValueError(f"registry link #{index + 1} missing required field(s): {', '.join(missing)}")
+            raise ValueError(
+                f"registry link #{index + 1} missing required field(s): {', '.join(missing)}"
+            )
 
         normalized.append({**link, "id": str(link["id"]).strip()})
 
@@ -112,7 +114,9 @@ def validate_registry(payload: Any) -> dict[str, list[str]]:
         seen_ids.add(link_id)
 
         if not str(link.get("subject") or "").strip() or not str(link.get("year") or "").strip():
-            result["warnings"].append(f"link {link_id} has no subject/year; files will transfer to inbox")
+            result["warnings"].append(
+                f"link {link_id} has no subject/year; files will transfer to inbox"
+            )
 
     for link_id in sorted(duplicate_ids):
         result["errors"].append(f"duplicate link id: {link_id}")
@@ -121,7 +125,13 @@ def validate_registry(payload: Any) -> dict[str, list[str]]:
 
 
 def get_file_name(item: dict[str, Any]) -> str:
-    return str(item.get("server_filename") or item.get("fileName") or item.get("filename") or item.get("name") or "")
+    return str(
+        item.get("server_filename")
+        or item.get("fileName")
+        or item.get("filename")
+        or item.get("name")
+        or ""
+    )
 
 
 def flatten_share_tree(
@@ -155,13 +165,17 @@ def flatten_share_tree(
     return flattened
 
 
-def filter_share_files(files: list[dict[str, Any]], filter_cfg: dict[str, Any] | None = None) -> list[dict[str, Any]]:
+def filter_share_files(
+    files: list[dict[str, Any]], filter_cfg: dict[str, Any] | None = None
+) -> list[dict[str, Any]]:
     """Return share-link files that are worth transferring into the resource pipeline."""
 
     cfg = filter_cfg or {}
     extensions = {str(ext).lower() for ext in cfg.get("extensions", DEFAULT_EXTENSIONS)}
     min_size = int(cfg.get("min_size_kb", 50) or 0) * 1024
-    exclude_keywords = [str(keyword) for keyword in cfg.get("exclude_keywords", DEFAULT_EXCLUDE_KEYWORDS)]
+    exclude_keywords = [
+        str(keyword) for keyword in cfg.get("exclude_keywords", DEFAULT_EXCLUDE_KEYWORDS)
+    ]
 
     selected: list[dict[str, Any]] = []
     for item in files:
@@ -267,7 +281,15 @@ def append_report_row(report: dict[str, Any], row: dict[str, Any]) -> None:
     report["links"].append(row)
     summary = report["summary"]
     summary["links"] += 1
-    for key in ("total_files", "eligible", "new", "transferred", "failed", "skipped", "errors"):
+    for key in (
+        "total_files",
+        "eligible",
+        "new",
+        "transferred",
+        "failed",
+        "skipped",
+        "errors",
+    ):
         summary[key] += int(row.get(key) or 0)
 
 
@@ -320,7 +342,9 @@ def sync_sharelinks(
             share_info = resolve(str(link["url"]), str(link.get("pwd") or ""))
             all_files = share_info.get("files", [])
             candidates = filter_share_files(all_files, link.get("filter"))
-            done_ids = set(str(value) for value in state["done"].get(link["id"], {}).get("fs_ids", []))
+            done_ids = set(
+                str(value) for value in state["done"].get(link["id"], {}).get("fs_ids", [])
+            )
             new_files = [item for item in candidates if str(get_file_id(item)) not in done_ids]
 
             row["total_files"] = len(all_files)
@@ -522,7 +546,10 @@ def transfer_files(
                     "web": "1",
                     "access_token": token,
                 },
-                data={"filelist": json.dumps(batch, ensure_ascii=False), "path": dest_path},
+                data={
+                    "filelist": json.dumps(batch, ensure_ascii=False),
+                    "path": dest_path,
+                },
                 headers=headers,
                 timeout=30,
             )
@@ -558,7 +585,13 @@ def run_self_test() -> None:
     assert [item["fs_id"] for item in selected] == [1]
     records = build_group_export_records(
         selected,
-        {"id": "self", "label": "self", "subject": "english", "track": "english1", "year": 2018},
+        {
+            "id": "self",
+            "label": "self",
+            "subject": "english",
+            "track": "english1",
+            "year": 2018,
+        },
         "/apps/考研大师/raw-pdf/english/2018",
     )
     assert records[0]["path"].endswith("/2018英语一真题.pdf")
@@ -566,7 +599,9 @@ def run_self_test() -> None:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Sync Baidu Pan share links into EXAM-MASTER Source Manifest.")
+    parser = argparse.ArgumentParser(
+        description="Sync Baidu Pan share links into EXAM-MASTER Source Manifest."
+    )
     parser.add_argument("--mode", choices=["sharelink", "cookie", "both"], default="sharelink")
     parser.add_argument("--registry", type=Path, default=DEFAULT_REGISTRY)
     parser.add_argument("--state", type=Path, default=DEFAULT_STATE)
@@ -596,7 +631,9 @@ def main() -> None:
         return
 
     if args.mode != "sharelink":
-        raise SystemExit("Only --mode=sharelink is implemented. Cookie/group direct APIs remain optional future collectors.")
+        raise SystemExit(
+            "Only --mode=sharelink is implemented. Cookie/group direct APIs remain optional future collectors."
+        )
 
     records = sync_sharelinks(
         registry_path=args.registry,

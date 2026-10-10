@@ -176,7 +176,14 @@ def run(cmd: list[str]) -> None:
     subprocess.run(cmd, cwd=PROJECT_ROOT, check=True)
 
 
-def render_pdf_assets(pdf: Path, prefix: str, *, asset_dir: Path, force: bool, pages: set[int] | None = None) -> None:
+def render_pdf_assets(
+    pdf: Path,
+    prefix: str,
+    *,
+    asset_dir: Path,
+    force: bool,
+    pages: set[int] | None = None,
+) -> None:
     if not pdf.exists():
         raise FileNotFoundError(pdf)
     asset_dir.mkdir(parents=True, exist_ok=True)
@@ -192,7 +199,18 @@ def render_pdf_assets(pdf: Path, prefix: str, *, asset_dir: Path, force: bool, p
         item.unlink()
 
     output_prefix = TMP_RENDER_DIR / prefix
-    run(["pdftoppm", "-r", "130", "-jpeg", "-jpegopt", "quality=70", str(pdf), str(output_prefix)])
+    run(
+        [
+            "pdftoppm",
+            "-r",
+            "130",
+            "-jpeg",
+            "-jpegopt",
+            "quality=70",
+            str(pdf),
+            str(output_prefix),
+        ]
+    )
 
     for rendered in sorted(TMP_RENDER_DIR.glob(f"{prefix}-*.jpg")):
         page = int(rendered.stem.split("-")[-1])
@@ -209,7 +227,9 @@ def scale(value: int) -> int:
 def crop_filter(crop_id: str, y_offset: int, height: int) -> str:
     filters = [f"crop=iw:{scale(height)}:0:{scale(y_offset)}"]
     for x, y, width, mask_height in QUESTION_MASKS.get(crop_id, []):
-        filters.append(f"drawbox=x={scale(x)}:y={scale(y)}:w={scale(width)}:h={scale(mask_height)}:color=white:t=fill")
+        filters.append(
+            f"drawbox=x={scale(x)}:y={scale(y)}:w={scale(width)}:h={scale(mask_height)}:color=white:t=fill"
+        )
     return ",".join(filters)
 
 
@@ -280,7 +300,9 @@ def answer_for(number: int) -> str:
 
 
 def question_anchor(number: int) -> str:
-    return f"2016考研数学三第{number}题（{section_for(number)}）。题干、公式和图形以题面裁切图为准。"
+    return (
+        f"2016考研数学三第{number}题（{section_for(number)}）。题干、公式和图形以题面裁切图为准。"
+    )
 
 
 def explanation_for(number: int) -> str:
@@ -391,7 +413,13 @@ def validate_cards(cards: list[dict[str, Any]], *, asset_dir: Path) -> None:
 
 
 def build_payload(*, asset_dir: Path, force_assets: bool) -> dict[str, Any]:
-    render_pdf_assets(PAPER_ANSWER, "answer-page", asset_dir=asset_dir, force=force_assets, pages=set(range(1, 20)))
+    render_pdf_assets(
+        PAPER_ANSWER,
+        "answer-page",
+        asset_dir=asset_dir,
+        force=force_assets,
+        pages=set(range(1, 20)),
+    )
     crop_question_assets(asset_dir=asset_dir, force=force_assets)
     cards = [build_card(number) for number in range(1, 24)]
     validate_cards(cards, asset_dir=asset_dir)

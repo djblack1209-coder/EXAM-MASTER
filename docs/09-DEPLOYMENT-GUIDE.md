@@ -1,877 +1,113 @@
-# 部署与运维指南
-
-> 合并自 deploy/docs/ 和 laf-backend/ 中的部署文档
-
-## 当前文档拆分
-
-> **2026-08-29 生产路径边界：**腾讯云是唯一现役生产路径。本文中的 Sealos/Laf/Kubernetes 命令只保留作人工批准的冷恢复材料；不作为 Nginx、CI 或自动故障转移目标。`scripts/build/live-cloud-smoke.mjs` 已拒绝退休 Sealos 默认地址，运行 smoke 前必须显式提供当前目标；冷恢复必须显式设置 `SMOKE_ALLOW_LEGACY_SEALOS=true`。
-
-- 本文件保留全仓部署、运维和应急响应总览。
-- 当前 Sealos/Laf 后端云函数部署、发布后 smoke 和平台现象见 [09A-LAF-BACKEND-DEPLOYMENT.md](./09A-LAF-BACKEND-DEPLOYMENT.md)。
-- 后端分仓迁移步骤见 [09B-BACKEND-MIGRATION-GUIDE.md](./09B-BACKEND-MIGRATION-GUIDE.md)。
-- 发布状态和剩余阻断项以 `npm run release:gate:report`、`data/release-external-audit.json`、本文件和 [11-RELEASE-NOTES.md](./11-RELEASE-NOTES.md) 为准。长期结论写回核心文档，临时证据留在 `data/release-evidence/`。
-
-## 2026-08-07 当前生产基线
-
-- 腾讯云是唯一现役生产主机：H5/PWA 由 Nginx 的本地 8080 服务提供，API 由本地 3001 服务提供。
-- `exam.245334.xyz` 是用户入口，`api.245334.xyz` 只承载 API；两者经 Cloudflare Tunnel 进入同一台主机。
-- `exam-master-health.timer` 每五分钟执行公网业务健康检查。
-- Sealos 环境已暂停并返回 503，只能作为未来经人工确认后的冷恢复目标，不是 Nginx 自动故障转移目标。
-- Oracle 3055 / ARM-2 已退役，旧 `exam-master-h5.service` 和 18119 端口只是历史记录，不得在 Oracle Singapore 上重建。
-- 故障恢复依赖已校验备份、产品部署脚本和公网业务探针；新的付费备机或重新启用 Sealos 必须人工拍板。
-
----
-
-# Exam-Master 部署运维手册
-
-> 版本: v1.0.0 | 更新日期: 2026-01-27 | 维护者: DevOps Team
-
----
-
-## 一、系统架构
-
-### 1.1 整体架构图
-
-```
-                                    ┌─────────────────────────────────────────────────────────────┐
-                                    │                        用户端                                │
-                                    │  ┌─────────────────┐         ┌─────────────────┐           │
-                                    │  │   微信小程序     │         │      H5 端      │           │
-                                    │  │  (uni-app)      │         │   (uni-app)     │           │
-                                    │  └────────┬────────┘         └────────┬────────┘           │
-                                    └───────────┼────────────────────────────┼───────────────────┘
-                                                │                            │
-                                                ▼                            ▼
-┌───────────────────────────────────────────────────────────────────────────────────────────────────┐
-│                                         Sealos 云平台                                              │
-│  ┌─────────────────────────────────────────────────────────────────────────────────────────────┐  │
-│  │                              Kubernetes Cluster (exam-master namespace)                      │  │
-│  │                                                                                              │  │
-│  │   ┌──────────────────┐     ┌──────────────────────────────────────────────────────────┐    │  │
-│  │   │  Nginx Ingress   │────▶│                    Service Mesh                          │    │  │
-│  │   │  (SSL/WAF/限流)   │     │  ┌────────────────┐    ┌────────────────┐               │    │  │
-│  │   └──────────────────┘     │  │   Frontend     │    │    Backend     │               │    │  │
-│  │                            │  │   (Nginx)      │    │   (Node.js)    │               │    │  │
-│  │                            │  │   Replicas: 2  │    │   Replicas: 2  │               │    │  │
-│  │                            │  │   HPA: 2-5     │    │   HPA: 2-10    │               │    │  │
-│  │                            │  └────────────────┘    └───────┬────────┘               │    │  │
-│  │                            └────────────────────────────────┼────────────────────────┘    │  │
-│  │                                                             │                             │  │
-│  │   ┌─────────────────────────────────────────────────────────┼─────────────────────────┐  │  │
-│  │   │                           数据层                         │                         │  │  │
-│  │   │   ┌────────────────┐    ┌────────────────┐    ┌────────┴───────┐                 │  │  │
-│  │   │   │    MongoDB     │    │     Redis      │    │   ConfigMap    │                 │  │  │
-│  │   │   │  (ReplicaSet)  │    │   (Cluster)    │    │    Secrets     │                 │  │  │
-│  │   │   └────────────────┘    └────────────────┘    └────────────────┘                 │  │  │
-│  │   └───────────────────────────────────────────────────────────────────────────────────┘  │  │
-│  │                                                                                          │  │
-│  │   ┌───────────────────────────────────────────────────────────────────────────────────┐  │  │
-│  │   │                           监控层                                                   │  │  │
-│  │   │   ┌────────────────┐    ┌────────────────┐    ┌────────────────┐                 │  │  │
-│  │   │   │   Prometheus   │───▶│    Grafana     │    │  AlertManager  │                 │  │  │
-│  │   │   │   (指标采集)    │    │   (可视化)     │    │    (告警)      │                 │  │  │
-│  │   │   └────────────────┘    └────────────────┘    └────────────────┘                 │  │  │
-│  │   └───────────────────────────────────────────────────────────────────────────────────┘  │  │
-│  └──────────────────────────────────────────────────────────────────────────────────────────┘  │
-└───────────────────────────────────────────────────────────────────────────────────────────────────┘
-                                                │
-                                                ▼
-                              ┌─────────────────────────────────────┐
-                              │           外部服务                   │
-                              │  ┌───────────┐    ┌───────────┐    │
-                              │  │ 智谱 AI   │    │ 腾讯云 BDA │    │
-                              │  │ GLM-4-Plus│    │ (人像分割) │    │
-                              │  └───────────┘    └───────────┘    │
-                              └─────────────────────────────────────┘
-```
-
-### 1.2 CI/CD 流水线
-
-```
-┌─────────┐    ┌─────────┐    ┌─────────┐    ┌─────────┐    ┌─────────┐    ┌─────────┐
-│  Push   │───▶│  Lint   │───▶│  Test   │───▶│ Security│───▶│  Build  │───▶│ Deploy  │
-│  Code   │    │  Check  │    │  Unit   │    │  Scan   │    │  Image  │    │ Staging │
-└─────────┘    └─────────┘    └─────────┘    └─────────┘    └─────────┘    └────┬────┘
-                                                                                │
-                                                                                ▼
-                                                                         ┌─────────────┐
-                                                                         │   Canary    │
-                                                                         │  (5% 流量)   │
-                                                                         └──────┬──────┘
-                                                                                │ 10分钟观察
-                                                                                ▼
-                                                                         ┌─────────────┐
-                                                                         │  Full Deploy│
-                                                                         │  (100% 流量) │
-                                                                         └─────────────┘
-```
+# 构建与部署边界
 
----
+## 本机桌面核验候选（2026-10-05）
 
-## 二、环境信息
+最新 v3 桌面前端和 macOS Tauri App 已在原接续忽略目录隔离构建、实际恢复/导出/原答阅读及停止后重开通过。使用独立应用标识、应用目录、WebKit UUID，保留原 CSP、七项本机命令及导航限制；配置宏问题仅以临时源码副本中的一行官方存储 API 适配。候选最低系统声明为 macOS 14，实际宿主为 27.0.1；原正式配置仍为 macOS 12。CLI 跳过开发者签名，二进制只观测到链接器 adhoc 签名、无 Team ID，未公证或安装到正式位置。正式 App/DMG、依赖与原配置保持；真实授权、Windows、移动 SDK/设备和受保护发布分别验收。[底层命令与隔离](08C-SCRIPTS-REFERENCE.md)、[实际证据](12-CHANGELOG.md)。
 
-### 2.1 生产环境
+## 微信、QQ 登录的客户操作
 
-| 项目 | 值 |
-|------|-----|
-| 集群地址 | Sealos (sealosbja) |
-| 命名空间 | exam-master |
-| API 域名 | nf98ia8qnt.sealosbja.site |
-| 镜像仓库 | ghcr.io/exam-master |
-| 监控地址 | grafana.exam-master.example.com |
+现有服务器的 QQ、小程序微信、公众号微信配置字段已存在；本轮只核实存在性，应用类型、审核状态和可用回调尚未验收。先按实际入口选择应用，不能把不同类型的 AppID 相互替换。
 
-### 2.2 资源配置
+需要人工办理的逐页入口、材料与填写方法、私有配置交回方式及外部助手提示词集中在[15 人工操作指南](15-MANUAL-SETUP-GUIDE.md)。先复用已有应用；扫码、验证码、证件、协议和付款由客户接管，工程侧继续配置、受保护迁移和验收。
 
-| 组件 | CPU Request | CPU Limit | Memory Request | Memory Limit | Replicas |
-|------|-------------|-----------|----------------|--------------|----------|
-| Backend | 100m | 500m | 256Mi | 512Mi | 2-10 |
-| Frontend | 50m | 200m | 64Mi | 128Mi | 2-5 |
-| MongoDB | 500m | 2000m | 1Gi | 4Gi | 3 |
-| Redis | 100m | 500m | 256Mi | 512Mi | 3 |
+| 使用入口           | 客户需要的应用             | 当前产品接入与用户操作                                                                       |
+| ------------------ | -------------------------- | -------------------------------------------------------------------------------------------- |
+| 网页 QQ            | QQ 互联网站应用            | 同意协议后点 QQ，授权后返回网页；注册回调与服务端必须一致                                    |
+| 微信内网页         | 有网页授权权限的公众号     | 在微信浏览器打开，点微信并授权；当前为公众号 OAuth                                           |
+| 微信小程序         | 微信公众平台小程序         | 打开问理小程序，按界面登录；当前用小程序 code2session                                        |
+| 普通浏览器微信扫码 | 微信开放平台网站应用       | 本地分支与网页回调验证通过；应用审核、配置与真实扫码仍待完成                                 |
+| iOS/Android App    | 各开放平台的移动应用       | 微信一次性授权码/服务端分支已完成本地验证；原生装配与真实授权待验                            |
+| Mac/Windows 桌面   | 已审核的网站应用与正式回调 | 本地接续默认关闭；Mac 系统浏览器打开、取消和合成成功领取已有实操，Windows 与真实平台授权待验 |
 
----
+### QQ 网站应用
 
-## 三、部署指南
+1. 到 [QQ 互联](https://connect.qq.com/)登录开发者账号，完成平台要求的开发者资料和审核，在应用管理创建或核对**网站应用**。网站、备案材料和审核按当前后台要求填写，移动应用是另一种类型。[官方申请说明](https://wiki.connect.qq.com/__trashed-2)。
+2. 确定实际问理网页域名，回调示例为 `https://你的问理域名/oauth/qq.html`，必须能公开访问、没有 `#`、端口或 localhost，协议、主机和路径完全一致。示例不是已开通的线上入口。[官方回调规则](https://wiki.connect.qq.com/回调地址常见问题及修改方法)。
+3. 在 QQ 互联登记完整回调。前端配置公开 `VITE_QQ_APP_ID`；显式 `VITE_QQ_REDIRECT_URI` 必须是同源的上述地址，未配置时用当前网页来源的 `/oauth/qq.html`。后端沿受保护环境保存 `QQ_APPID`、`QQ_SECRET`、`QQ_REDIRECT_URI`，AppKey/Secret 不进入前端或聊天。
+4. 服务器取得 token 后还核对 QQ 回执的 client_id 等于该网站 AppID；错应用凭证不会写入账户。
+5. 受保护发布时一并发布 `public/oauth/` 的构建产物，核对实际来源、后端主机白名单及精确跨域许可。生效后从产品入口验证授权、返回、退出再登录及取消；失败页可重试不等于真实登录通过。
 
-### 3.1 前置条件
+### QQ 移动应用与小程序
 
-```bash
-# 安装必要工具
-brew install kubectl helm docker
+1. **移动应用**：在 QQ 互联创建或核对已审核移动应用，iOS Bundle ID/链接与 Android 包名/签名对应实际问理安装包；在 App 的 QQ OAuth SDK 配置填写这个公开 AppID，服务端受保护配置填写同一 `QQ_MOBILE_APPID`。不能使用网站或 DCloud 示例应用身份。
+2. 当前 App 代码只将 SDK token 发给问理服务器；服务器核对 QQ 返回的 client_id/openid 后才登录。客户无需粘贴 token，网站 AppKey 不写入 App；匹配 SDK 装配与真实授权仍待验。[QQ 官方身份回执](https://wiki.connect.qq.com/获取用户openid_oauth2-0)。DCloud QQ 专页本次抓取超时，不能据此宣称平台装配已完成。
+3. **QQ 小程序**：核对 QQ 小程序平台登记的 AppID/Secret 与实际客户端配置，受保护后端分别保存 `QQ_MINI_APPID/QQ_MINI_SECRET`，合法域名与隐私能力依实际平台核对。两个新字段均空时兼容旧 QQ 配置，填写新配置须成对填写，不能混合不同应用密钥。
+4. 上线前通过受保护索引迁移，核对移动/小程序独立身份唯一索引和旧记录归属；完成对应安装环境后验证授权/取消、返回、重复登录、退出与账户切换。当前合成回执与本机数据库验证不能代替真实 QQ、手机或生产验收。Mac 的系统浏览器接续与合成成功领取已实操，Windows 和真实授权仍须独立验收。[迁移前提](05-DATABASE-SCHEMAS.md)。
 
-# 配置 kubectl
-mkdir -p ~/.kube
-# 将 kubeconfig 内容写入 ~/.kube/config
+### 微信网页与小程序
 
-# 验证连接
-kubectl cluster-info
-kubectl get nodes
-```
+1. **微信内网页**：进入持有公众号的微信公众平台，核对账号有网页授权权限，配置正式网页授权域名，按平台验证文件校验域名。当前完整回调示例为 `https://你的问理域名/oauth/wechat.html`；域名字段和完整 URL 的填法以对应后台要求为准。
+2. 前端公众号公开 ID 为 `VITE_WX_GZH_APP_ID`，后端为 `WX_GZH_APPID`、`WX_GZH_SECRET`；当前请求 `snsapi_userinfo`，在微信浏览器验收授权与返回。公众号 AppID 不用小程序 AppID 代替。
+3. **微信小程序**：核对小程序 AppID、管理员及隐私说明；客户端 `manifest.json` 的 `mp-weixin.appid` 和公开 `VITE_WX_APP_ID` 对应小程序，后端为 `WX_APPID`、`WX_SECRET`。配置实际 HTTPS request/upload/download 合法域名与资料选择相关隐私说明；游客模拟不验证真实登录、合法域名、隐私弹窗或手机网络。
+4. 普通浏览器扫码已在本地接入独立开放平台**网站应用**的 `qrconnect/snsapi_login`；前端公开字段为 `VITE_WX_WEB_APP_ID/VITE_WX_WEB_REDIRECT_URI`，服务端私有字段为 `WX_WEB_APPID/WX_WEB_SECRET`。完整回调同样为 `/oauth/wechat.html`，发起上下文绑定网站模式，不接受回调改模式。缺网站配置拒绝，不借公众号或移动配置；应用申请与审核见[15](15-MANUAL-SETUP-GUIDE.md)。
+5. 网站身份第九项约束和桌面短期保留索引已在腾讯私有空主库受保护地接受，前批八项回执保留，实际限定回退与独立后检通过，详见[09A](09A-LAF-BACKEND-DEPLOYMENT.md)。公网尚未切换；工程侧取得实际已审核网站应用后继续配置、发布与业务验收。当前本地产物没有正式 API 配置，不能直接当线上可用包。
 
-### 3.2 首次部署
+### 微信移动应用
 
-```bash
-# 1. 创建命名空间
-kubectl apply -f deploy/k8s/namespace.yaml
+1. 在微信开放平台创建或核对**移动应用**，提交并通过平台审核；iOS Bundle ID、Universal Link 和 Android 包名/签名须与实际安装包一致。DCloud 标准运行基座使用其示例应用身份，不能当作问理应用授权验收。
+2. 在问理的 App 微信 SDK 配置中填已审核移动应用的公开 AppID 和适用的链接信息；不把 AppSecret 放入客户端或安装包。前后端须对应同一移动应用，不能借用公众号或小程序 ID。
+3. 后端受保护配置独立注入 `WX_MOBILE_APPID`、`WX_MOBILE_SECRET`，上线前在原管理员迁移入口核对移动身份唯一索引。当前源码走“只获取授权码 → 问理服务器换码 → 问理账户”，不要求客户人工核对模型答案。[DCloud 官方流程](https://uniapp.dcloud.net.cn/tutorial/app-oauth-weixin.html)。
+4. 完成匹配 SDK 的原生装配及受保护后端升级后，再从实际安装 App 验证授权/取消、返回、重复登录、退出与切换账户。服务器缺移动配置会明确拒绝，当前本地检查不等于真实授权通过；最新腾讯候选已包含移动、网站与桌面增量，受保护准备通过，公网仍未切换。
 
-# 2. 创建 RBAC 配置
-kubectl apply -f deploy/k8s/rbac.yaml
+微信官方网页授权文档本次浏览器访问被安全策略拒绝，未读取其正文；上述字段及接入范围依据当前实现，账号资格、审核与费用仍需在实际后台核实。本轮未注册、接受平台协议或购买资源。
 
-# 3. 创建 ConfigMap 和 Secrets
-kubectl apply -f deploy/k8s/configmap.yaml
-kubectl apply -f deploy/k8s/secrets.yaml
+### 桌面系统浏览器接续
 
-# 4. 部署应用
-kubectl apply -f deploy/k8s/deployment.yaml
-kubectl apply -f deploy/k8s/service.yaml
-kubectl apply -f deploy/k8s/ingress.yaml
-kubectl apply -f deploy/k8s/hpa.yaml
+桌面 QQ 与微信沿上述网站应用，不另申请桌面应用身份。工程侧在受保护配置中核对正式回调、精确网页/桌面来源及现有私有 JWT 签名配置，完成九项身份和短期授权记录的限定迁移后，才开启默认关闭的 `DESKTOP_OAUTH_ENABLED`。微信桌面分支另需与前端一致的 `WX_WEB_REDIRECT_URI`。缺少任何前提时保留邮箱登录提示，不借其他应用类型或开放通配来源。
 
-# 5. 验证部署
-kubectl get all -n exam-master
-kubectl rollout status deployment/exam-master-backend -n exam-master
-```
+授权在系统浏览器完成，浏览器只收到完成提示，账户登录结果由原桌面窗口一次领取；授权码、令牌和用户资料不放进返回链接。离开登录页或改变账户时取消本次接续，之后回到页面也不能接收旧结果。游客从“同步记录”进入登录后，仍须再次选择同步并确认授权，登录本身不自动同步或迁入游客材料。接口与保留合同见[04](04-API-DOCUMENTATION.md)、[05](05-DATABASE-SCHEMAS.md)。
 
-### 3.3 更新部署
+本机独立窗口已实际打开系统浏览器并取消旧会话；本轮重建的当前源码另完成合成成功回调、原窗口领取和返回学习页，原窗口回到前台，随后同步仍显示明确授权提示，取消后零同步请求。浏览器与原生窗口的实际请求来源分别成立；使用无效测试平台应用和本地合成身份，没有真实 QQ/微信换码。前批取景服务报错仍保留为失败记录，本轮成功实操见[分项回执](../tmp/visual-build-20261001/desktop-success-20261003/acceptance-report.json)。原正式 Mac 包、Windows 和真实 QQ/微信继续另验。
 
-```bash
-# 方式一：通过 CI/CD 自动部署（推荐）
-git push origin main
+## 本机跨平台模拟安排
 
-# 方式二：手动更新镜像
-kubectl set image deployment/exam-master-backend \
-  backend=ghcr.io/exam-master/exam-master-backend:v1.0.1 \
-  -n exam-master
+客户已授权完整 Xcode 与 iOS 模拟器准备，并自行接受 Apple 许可。Xcode 27.0 和 iOS 27.0 runtime 已安装，本轮独立 iPhone 模拟器实际启动；Xcode 27 使用 [Device Hub](https://developer.apple.com/documentation/xcode/device-hub)管理模拟设备。全局命令行工具选择保持不变，编译时显式指定 Xcode。
 
-# 验证更新
-kubectl rollout status deployment/exam-master-backend -n exam-master
-```
+现有 DCloud 编译器为 `3.0.0-alpha-5000820260420001`，应配套官方 5.08 离线 SDK，不混用不同版本的 Libs/Bundles/inc。官方[下载页](https://nativesupport.dcloud.net.cn/AppDocs/download/ios.html)所列历史百度网盘入口被浏览器安全策略拒绝，本轮不换工具或浏览器绕过；客户取得 SDK 后提供本机解压目录，再配置 AppKey 与原生插件工程。`build:app` 和 iOS Safari 学习页均不能代替原生装配、系统文件选择与网络验收。[DCloud iOS 离线打包说明](https://nativesupport.dcloud.net.cn/AppDocs/usesdk/ios)。后续电脑操作使用普通窗口，不进入全屏。
 
-### 3.4 回滚部署
+Mac 当前 arm64 Tauri 包已实际安装、作答、提示修正、独立变式和退出恢复，尚未开发者签名、公证。微信产物和包体通过，游客模式使用本轮独立副本，不运行会清理客户项目存储的旧 smoke。Windows 与 Android 原生/实体手机按客户后续环境安排验收；网页视口不代替设备。最新分项见[13](13-DEVELOPMENT-PLAN.md)。
 
-```bash
-# 查看历史版本
-kubectl rollout history deployment/exam-master-backend -n exam-master
+## 本地构建
 
-# 回滚到上一版本
-kubectl rollout undo deployment/exam-master-backend -n exam-master
+H5：npm run build:h5 → dist/build/h5；微信：npm run build:mp-weixin → dist/build/mp-weixin；已配置 App：npm run build:app → dist/build/app。产物检查分别使用 audit:wechat:artifacts / audit:app:artifacts，微信主包检查见 08C。构建不上传、不创建付费资源、不改变生产数据库。
 
-# 回滚到指定版本
-kubectl rollout undo deployment/exam-master-backend -n exam-master --to-revision=2
-```
+独立后端：npm ci --prefix laf-backend/standalone（先审查锁与生命周期），npm run typecheck:backend，npm run build:backend。运行入口和要求见[09A](09A-LAF-BACKEND-DEPLOYMENT.md)。环境示例只解释字段，不保存真实密钥。
 
----
+## 磁盘空间与产物清理
 
-## 四、监控告警
+同日成功返回实操完成后，按记录关闭自产应用、服务与唯一授权标签，移除本轮独立 Rust target、验收包及前端，共 8,695 个常规文件 / 3,685,453,824 已分配字节（约 3.69 GB），隔离存储随包清理。清理前没有目标缓存活跃句柄；正式 App/DMG/裸二进制和十三项原暂存修改核对保持，依赖、模型、当前正式产物与恢复证据保留，零全屏操作。[本轮清理](../tmp/visual-build-20261001/desktop-success-20261003/cleanup.json)。
 
-### 4.1 监控指标
+同日桌面授权批次完成后，再移除本轮独立 Rust target 的 8,118 文件 / 5,697,658,880 已分配字节（约 5.70 GB）。该目录仅为本轮自建编译缓存；实际应用/服务已经退出，Git 无跟踪、无活跃文件句柄，正式 Mac App/DMG/裸二进制与暂存区核对不变。当前 dist、依赖、模型和恢复证据继续保留。[桌面批次清理回执](../tmp/visual-build-20261001/desktop-oauth-20261003/cleanup.json)。
 
-| 指标类型 | 指标名称 | 告警阈值 | 说明 |
-|----------|----------|----------|------|
-| 业务指标 | QPS | - | 每秒请求数 |
-| 业务指标 | 错误率 | >1% (P1), >5% (P0) | 5xx 错误占比 |
-| 业务指标 | P95 延迟 | >2s (P1) | 95 分位响应时间 |
-| 资源指标 | CPU 使用率 | >80% (P1) | 容器 CPU 使用率 |
-| 资源指标 | 内存使用率 | >85% (P1) | 容器内存使用率 |
-| 资源指标 | 磁盘使用率 | >85% (P2) | 节点磁盘使用率 |
+2026-10-03 按客户最新授权清理问理 Rust debug/release 的 `.fingerprint/build/deps/incremental` 旧中间缓存，共 4,147,822,592 已分配字节；本轮隔离 H5 临时产物另清理 331,284,480 字节，合计约 4.48 GB。先检查 Git 跟踪与活跃文件句柄；其他项目的编译进程/缓存保持。现有 Mac App/DMG/裸二进制的清理前后哈希相同，当前各端 dist、依赖、模型、恢复材料和证据保留。后续原生构建会重新生成已清中间库，APFS 可用空间变化不承诺等于这项计量。[本轮清理回执](../tmp/visual-build-20261001/website-resume-20261003/cleanup.json)。
 
-### 4.2 告警通知
+2026-09-30 空间维护清理了根级 dist、独立后端 dist、6 份临时 H5 构建，以及 ESLint、Ruff、pytest 和自产 Python 字节码缓存。共移除 20,370 个生成文件；按 du 的已分配块计量，项目从约 4.72 GiB 降至 3.78 GiB，减少 1,016,385,536 字节（约 1.02 GB）。同一测量窗口内磁盘可用空间净增加 1,008,762,880 字节；文件系统快照和其他应用也会影响这一数字，硬链接计量只算一次。
 
-| 级别 | 通知方式 | 响应时间 |
-|------|----------|----------|
-| P0 | 电话 + 短信 + 企业微信 | 5 分钟 |
-| P1 | 短信 + 企业微信 | 15 分钟 |
-| P2 | 邮件 + 企业微信 | 30 分钟 |
+原始资料、题源/质量数据、源码、Git 历史、依赖环境、恢复前快照、验收日志与截图保留。清理记录在本机 tmp/disk-cleanup-20260930/report.json；删除前核对目标无 Git 跟踪文件且未被进程打开，删除后核对源码哈希、工作树状态和暂存区一致。
 
-### 4.3 Grafana 大盘
+| 已清理的产物                | 再次使用时的操作                                                           |
+| --------------------------- | -------------------------------------------------------------------------- |
+| dist/build/h5               | npm run build:h5                                                           |
+| dist/build/mp-weixin        | npm run build:mp-weixin，然后做包体与产物审计                              |
+| dist/build/app              | npm run build:app，然后 npm run audit:app:artifacts                        |
+| laf-backend/standalone/dist | npm run build:backend；本地后端启动前重建                                  |
+| tmp 中的历史/隔离 H5 输出   | 保留历史日志与截图；当前版本按需要重新构建，历史版本须使用对应源码与锁文件 |
+| 工具与 Python 字节码缓存    | 对应工具下次运行会自动生成                                                 |
 
-访问地址：`http://localhost:3001` (本地) 或 `https://grafana.exam-master.example.com` (生产)
+仅开发 H5 可使用 npm run dev:h5。上述清理是前序维护记录；本轮功能交付已重建一套 H5/微信/App/后端输出，未复制多套历史构建。本批流式H5验收使用127.0.0.1:4231/api及本机隔离后端/TLS夹具；验收后只保留一套当前构建，不保留私有测试JWT或TLS私钥。最终发布门禁构建显式关闭mock/debug、清空API/fallback，真实云smoke目标设为不可连接协议防止误触授权范围。没有配置真实服务端的本地产物不能部署或宣称在线AI可用；设备/部署前必须用授权环境重建并验收对应产物。
 
-主要大盘：
-- Exam-Master 监控大盘：服务概览、资源使用、API 性能
-- MongoDB 监控大盘：连接数、查询性能、复制延迟
-- Node 监控大盘：节点资源使用情况
+日常按需生成单个平台输出，临时预览结束后及时清理对应构建目录。清理范围先查 Git 跟踪和活跃进程，再确认可重建性；tmp 整体包含恢复快照与证据，不直接整体删除。data/raw-inbox、题库、原始材料、配置和密钥不作为缓存处理。安装环境仍保留，避免空间维护使离线开发和解析失效。
 
----
+## 生产前置
 
-## 五、备份恢复
+客户已按 [09A](09A-LAF-BACKEND-DEPLOYMENT.md)授权腾讯后端升级及新建私有账户/学习库，不新增付费资源；公共题库继续保留发布门禁。私有库准备已接受，旧生产入口尚未切换。每次部署仍须读取 VPS-Config 当前运行合同，记录目标、前态、可信恢复源和可恢复备份；生产应用必须原子且受保护，有独立回滚及真实业务后检。外部浏览器可达性仍缺证据。--build-only 仅构建，不能证明生产恢复，拒绝未保护写入的部署策略保持。
 
-### 5.1 备份策略
+公共发布执行现有 release:gate，保留来源质量、资源预算、依赖安全、外部/微信设备及真实云端验收。首页/health 的 HTTP 200 不能代替题库与学习业务。旧库不合格不强制停用私人学习，但私人入口不能绕过旧库公开门禁。
 
-以下调度表是部署设计，不是现役备份成功的证明。2026-09-17 只读复核中，腾讯已知的
-本机 MongoDB 数据目录、项目备份目录和本节脚本默认 full/incremental 目录均未找到恢复数据。
-仍需确认其他已授权存储上的真实数据源，不能安装空库或导入样例后宣布题库恢复。
+对公开 AI、未成年人、隐私、内容标识、素材授权与各端支付规则，实际发布前核对当时官方要求并留下证据；BYOK 或上游资质不能替代应用自身验收。品牌名/域名/商店名称与授权也需单独确认，不在本轮注册或购买。
 
-| 备份类型 | 频率 | 保留时间 | 存储位置 |
-|----------|------|----------|----------|
-| 全量备份 | 每日 03:00 | 30 天 | 本地 + OSS |
-| 增量备份 | 每小时 | 7 天 | 本地 |
-| 跨地域备份 | 每日 | 30 天 | 异地 OSS |
+本轮临时Mongo/HTTP/TLS及浏览器页面均属隔离验收，结束后停止并清理自产数据库/临时TLS私钥，只保留脱敏报告/脚本/截图。全量重放在共享reducer有界副本内完成，不通过提高产品预算掩盖超时。现有Dependabot按周提出依赖更新，保持锁文件/分包/许可证与测试门禁，不执行无人审查的破坏性升级。
 
-### 5.2 备份命令
+本批release:gate初次在生产依赖安全审计发现Babel/选择器解析器漏洞；未执行audit fix --force或破坏性框架回退。package.json按原大版本覆盖Babel7.29.7、选择器6.1.3/7.1.3，锁文件同步；专项防护及三端构建验证兼容，生产审计恢复零漏洞。依据：[Babel补丁说明](https://github.com/babel/babel/releases/tag/v7.29.6)、[选择器6.1.3](https://github.com/postcss/postcss-selector-parser/releases/tag/6.1.3)、[选择器7.1.3](https://github.com/postcss/postcss-selector-parser/releases/tag/7.1.3)。仍保留全依赖开发工具链审计的22项风险，需逐项兼容处理，不能以自动更新等同已安全。
 
-```bash
-# 手动执行全量备份
-./deploy/scripts/backup-mongodb.sh full
-
-# 手动执行增量备份
-./deploy/scripts/backup-mongodb.sh incremental
-
-# 列出可用备份
-./deploy/scripts/restore-mongodb.sh list
-```
-
-### 5.3 恢复命令
-
-```bash
-# 全量恢复
-./deploy/scripts/restore-mongodb.sh full exam-master-full-20260127_030000.archive
-
-# 时间点恢复
-./deploy/scripts/restore-mongodb.sh point-in-time \
-  exam-master-full-20260127_030000.archive \
-  "2026-01-27 05:00:00"
-```
-
-当前备份脚本输出 `mongodump --archive --gzip` 原生归档；恢复入口使用对应的
-`mongorestore --archive --gzip`，并保留经过路径检查的历史单根 BSON tar.gz 支持。
-同名 SHA-256 文件必须存在并匹配所选备份，恢复目标必须显式提供 `MONGODB_URI`。
-`list` 不需要数据库工具、不连接数据库，也不创建日志或备份目录。
-恢复命令会覆盖数据；上例不是对生产的直接执行授权。独立回滚、真实备份来源、版本兼容、
-增量/oplog 血缘和已认证题库查询仍须分别验证；本轮只修复本地恢复入口，没有恢复生产数据库。
-
----
-
-## 六、安全配置
-
-### 6.1 安全基线
-
-| 项目 | 要求 | 状态 |
-|------|------|------|
-| 容器运行用户 | 非 root | ✅ |
-| 镜像漏洞扫描 | High 级别必须修复 | ✅ |
-| 网络策略 | 最小化开放端口 | ✅ |
-| Secret 管理 | 使用 K8s Secrets | ✅ |
-| SSL/TLS | 强制 HTTPS | ✅ |
-| WAF | 启用基础防护 | ✅ |
-
-### 6.2 安全扫描
-
-```bash
-# 运行依赖漏洞扫描
-npm audit
-
-# 运行容器镜像扫描
-trivy image exam-master-backend:latest
-
-# 查看安全扫描报告
-# GitHub Actions 自动生成，查看 Security 标签页
-```
-
----
-
-## 七、常用命令
-
-### 7.1 日常运维
-
-```bash
-# 查看所有资源
-kubectl get all -n exam-master
-
-# 查看 Pod 日志
-kubectl logs -f deployment/exam-master-backend -n exam-master --tail=100
-
-# 进入 Pod 调试
-kubectl exec -it <pod-name> -n exam-master -- /bin/sh
-
-# 查看资源使用
-kubectl top pods -n exam-master
-
-# 查看事件
-kubectl get events -n exam-master --sort-by='.lastTimestamp'
-```
-
-### 7.2 扩缩容
-
-```bash
-# 手动扩容
-kubectl scale deployment exam-master-backend -n exam-master --replicas=5
-
-# 查看 HPA 状态
-kubectl get hpa -n exam-master
-
-# 调整 HPA 配置
-kubectl patch hpa exam-master-backend-hpa -n exam-master \
-  -p '{"spec":{"maxReplicas":15}}'
-```
-
-### 7.3 配置更新
-
-```bash
-# 更新 ConfigMap
-kubectl edit configmap exam-master-config -n exam-master
-
-# 更新 Secret
-kubectl edit secret exam-master-secrets -n exam-master
-
-# 重启 Pod 以应用新配置
-kubectl rollout restart deployment/exam-master-backend -n exam-master
-```
-
----
-
-## 八、依赖清单
-
-### 8.1 外部服务依赖
-
-| 服务 | 用途 | 地址 | 备注 |
-|------|------|------|------|
-| 智谱 AI | AI 对话/出题 | api.zhipuai.cn | GLM-4-Plus |
-| 腾讯云 BDA | 人像分割 | bda.tencentcloudapi.com | |
-| 微信开放平台 | 小程序登录 | api.weixin.qq.com | |
-
-### 8.2 内部服务依赖
-
-| 服务 | 版本 | 用途 |
-|------|------|------|
-| MongoDB | 7.0 | 主数据库 |
-| Redis | 7.x | 缓存/会话 |
-| Nginx | 1.25 | 反向代理 |
-| Node.js | 20.x | 后端运行时 |
-
----
-
-## 九、联系方式
-
-| 角色 | 职责 | 联系方式 |
-|------|------|----------|
-| 技术负责人 | 技术决策、架构设计 | |
-| DevOps | 部署运维、监控告警 | |
-| DBA | 数据库管理、备份恢复 | |
-| 安全负责人 | 安全审计、漏洞修复 | |
-
----
-
-*最后更新: 2026-01-27 | 维护者: DevOps Team*
-
----
-# smart-study-engine Sealos Laf 部署指南
-
-> 将智能学习引擎云函数部署到 Sealos Laf 备用环境
-
-## 背景
-
-- 函数文件: `laf-backend/functions/smart-study-engine.ts` (1071 行)
-- 4 个核心 action: `analyze_mastery` | `error_clustering` | `sprint_priority` | `generate_plan`
-- 依赖: FSRS 算法、requireAuth 鉴权、checkRateLimitDistributed 分布式限流
-- 当前状态: 仅在腾讯云主服务器运行，Sealos 备用环境缺失此函数
-- 影响: AIDailyBriefing 功能在 Sealos 故障转移时退化为纯本地规则
-
-## 部署步骤
-
-### 1. 打开 Sealos Laf 控制台
-
-访问: https://nf98ia8qnt.sealosbja.site  
-登录后进入「云函数」管理页面
-
-### 2. 创建新云函数
-
-1. 点击「+ 新建云函数」
-2. 函数名称: `smart-study-engine`
-3. 请求方法: `POST`
-4. 描述: `智能学习引擎 - 自适应学习计划/知识图谱分析/间隔重复调度`
-
-### 3. 粘贴代码
-
-1. 打开本地文件 `laf-backend/functions/smart-study-engine.ts`
-2. 全选复制，粘贴到 Laf 编辑器中
-3. **注意**: 函数开头的 `import` 语句中引用的公共模块 (`requireAuth`, `checkRateLimitDistributed` 等) 必须已在 Laf 上部署
-
-### 4. 检查依赖模块
-
-确保以下公共模块已部署到 Sealos:
-
-| 模块 | 用途 | 状态 |
-|------|------|------|
-| `requireAuth` | 用户鉴权 | 应该已有 |
-| `checkRateLimitDistributed` | 分布式限流 | 应该已有 |
-| FSRS 相关 | 间隔重复算法 | 检查 `ts-fsrs` 是否在 Laf 依赖中 |
-
-如果 `ts-fsrs` 未安装:
-1. 进入 Laf 控制台的「依赖管理」
-2. 搜索并安装 `ts-fsrs`
-
-### 5. 发布并测试
-
-1. 点击「发布」按钮部署函数
-2. 在 Laf 控制台的「日志」面板中观察是否有错误
-3. 使用以下 curl 命令测试:
-
-```bash
-# 替换 YOUR_TOKEN 为有效的用户 token
-AUTH_HEADER='Bearer <admin-token>'
-curl -X POST https://nf98ia8qnt.sealosbja.site/smart-study-engine \
-  -H "Content-Type: application/json" \
-  -H "Authorization: ${AUTH_HEADER}" \
-  -d '{"action": "analyze_mastery", "params": {"subjectId": "test"}}'
-```
-
-预期返回: `{"code": 0, "data": {...}}` 或 `{"code": 401, ...}`（token 无效时）
-
-### 6. 验证故障转移
-
-部署后，AIDailyBriefing 在主服务器故障时会自动切换到 Sealos，此时应能调用 smart-study-engine 获取个性化学习建议，而非退化到纯本地规则。
-
-## 注意事项
-
-- 代码中的 MongoDB 集合名称（如 `answers`, `questions`）在 Sealos Laf 中需与主服务器保持一致
-- 函数内置了限流机制（60秒内3次），确保 Laf 的 Redis/内存限流配置正常
-- FSRS 参数使用了默认值，与主服务器一致，无需额外配置
-
----
-# Exam-Master 应急响应手册
-
-> 版本: v1.0.0 | 更新日期: 2026-01-27 | 维护者: DevOps Team
-
----
-
-## 一、告警分级与响应时效
-
-| 级别 | 定义 | 响应时间 | 通知方式 | 示例 |
-|------|------|----------|----------|------|
-| **P0** | 服务完全不可用 | 5 分钟内 | 电话 + 短信 + 企业微信 | 服务宕机、数据库不可用 |
-| **P1** | 服务严重降级 | 15 分钟内 | 短信 + 企业微信 | 错误率 >1%、延迟 >2s |
-| **P2** | 服务轻微异常 | 30 分钟内 | 邮件 + 企业微信 | CPU >80%、磁盘 >85% |
-| **P3** | 预警/优化建议 | 4 小时内 | 邮件 | 证书即将过期、资源利用率低 |
-
----
-
-## 二、On-Call 轮值制度
-
-### 2.1 轮值安排
-- 轮值周期：每周一 10:00 交接
-- 轮值人员：至少 2 人（主 + 备）
-- 交接内容：未解决问题、待观察事项、本周变更计划
-
-### 2.2 On-Call 职责
-1. 7×24 小时响应告警
-2. 初步定位问题并执行应急处理
-3. 必要时升级至相关负责人
-4. 记录故障处理过程和根因分析
-
-### 2.3 升级路径
-```
-On-Call 工程师 → 技术负责人 → CTO → CEO
-     5分钟          15分钟      30分钟
-```
-
----
-
-## 三、常见故障处理
-
-### 3.1 服务不可用 (ServiceDown)
-
-**症状**: 健康检查失败，用户无法访问
-
-**排查步骤**:
-```bash
-# 1. 检查 Pod 状态
-kubectl get pods -n exam-master -o wide
-
-# 2. 查看 Pod 事件
-kubectl describe pod <pod-name> -n exam-master
-
-# 3. 查看容器日志
-kubectl logs -f <pod-name> -n exam-master --tail=100
-
-# 4. 检查 Service 和 Endpoints
-kubectl get svc,ep -n exam-master
-
-# 5. 检查 Ingress
-kubectl describe ingress -n exam-master
-```
-
-**处理方案**:
-| 原因 | 处理方式 |
-|------|----------|
-| Pod CrashLoopBackOff | 查看日志定位错误，修复后重新部署 |
-| ImagePullBackOff | 检查镜像地址和拉取凭证 |
-| Pending (资源不足) | 扩容节点或调整资源请求 |
-| Ingress 配置错误 | 检查并修复 Ingress 规则 |
-
----
-
-### 3.2 Pod OOMKilled
-
-**症状**: Pod 因内存不足被终止
-
-**排查步骤**:
-```bash
-# 1. 确认 OOM 事件
-kubectl describe pod <pod-name> -n exam-master | grep -A5 "Last State"
-
-# 2. 查看内存使用历史
-kubectl top pods -n exam-master
-
-# 3. 查看 Prometheus 内存指标
-# 访问 Grafana 监控大盘
-```
-
-**处理方案**:
-```bash
-# 临时方案：增加内存限制
-kubectl patch deployment exam-master-backend -n exam-master \
-  -p '{"spec":{"template":{"spec":{"containers":[{"name":"backend","resources":{"limits":{"memory":"1Gi"}}}]}}}}'
-
-# 长期方案：优化代码内存使用，添加内存泄漏检测
-```
-
-**预防措施**:
-- 设置合理的内存 requests 和 limits
-- 配置 HPA 自动扩缩容
-- 定期进行内存泄漏检测
-
----
-
-### 3.3 数据库主从切换
-
-**症状**: MongoDB 主节点不可用
-
-**排查步骤**:
-```bash
-# 1. 检查 MongoDB 副本集状态
-kubectl exec -it mongodb-0 -n exam-master -- mongosh --eval "rs.status()"
-
-# 2. 查看主节点
-kubectl exec -it mongodb-0 -n exam-master -- mongosh --eval "rs.isMaster()"
-
-# 3. 检查连接数
-kubectl exec -it mongodb-0 -n exam-master -- mongosh --eval "db.serverStatus().connections"
-```
-
-**处理方案**:
-```bash
-# 手动触发主从切换（如需要）
-kubectl exec -it mongodb-0 -n exam-master -- mongosh --eval "rs.stepDown()"
-
-# 检查应用连接字符串是否使用副本集模式
-# mongodb://mongodb-0,mongodb-1,mongodb-2/exam-master?replicaSet=rs0
-```
-
----
-
-### 3.4 流量突增
-
-**症状**: QPS 异常升高，响应延迟增加
-
-**排查步骤**:
-```bash
-# 1. 查看当前 QPS
-kubectl exec -n exam-master deploy/prometheus -- \
-  promtool query instant 'sum(rate(http_requests_total{namespace="exam-master"}[1m]))'
-
-# 2. 查看 HPA 状态
-kubectl get hpa -n exam-master
-
-# 3. 查看 Pod 资源使用
-kubectl top pods -n exam-master
-```
-
-**处理方案**:
-```bash
-# 1. 手动扩容
-kubectl scale deployment exam-master-backend -n exam-master --replicas=10
-
-# 2. 调整 HPA 配置
-kubectl patch hpa exam-master-backend-hpa -n exam-master \
-  -p '{"spec":{"maxReplicas":20}}'
-
-# 3. 启用限流（如果是恶意流量）
-# 修改 Ingress 限流配置
-kubectl annotate ingress exam-master-ingress -n exam-master \
-  nginx.ingress.kubernetes.io/limit-rps="50" --overwrite
-```
-
----
-
-### 3.5 504 Gateway Timeout
-
-**症状**: 请求超时，返回 504 错误
-
-**排查步骤**:
-```bash
-# 1. 检查后端服务响应时间
-kubectl logs -f <pod-name> -n exam-master | grep -i "response time"
-
-# 2. 检查 Ingress 超时配置
-kubectl describe ingress exam-master-ingress -n exam-master
-
-# 3. 检查上游服务（AI API）响应时间
-```
-
-**处理方案**:
-```bash
-# 1. 增加 Ingress 超时时间
-kubectl annotate ingress exam-master-ingress -n exam-master \
-  nginx.ingress.kubernetes.io/proxy-read-timeout="120" --overwrite
-
-# 2. 优化慢接口
-# 检查 AI 调用是否需要异步处理
-
-# 3. 添加请求超时熔断
-```
-
----
-
-### 3.6 证书过期
-
-**症状**: HTTPS 访问失败，浏览器提示证书错误
-
-**排查步骤**:
-```bash
-# 1. 检查证书有效期
-kubectl get secret exam-master-tls -n exam-master -o jsonpath='{.data.tls\.crt}' | \
-  base64 -d | openssl x509 -noout -dates
-
-# 2. 检查 cert-manager 状态
-kubectl get certificate -n exam-master
-kubectl describe certificate exam-master-tls -n exam-master
-```
-
-**处理方案**:
-```bash
-# 1. 手动触发证书续期
-kubectl delete certificate exam-master-tls -n exam-master
-# cert-manager 会自动重新申请
-
-# 2. 检查 cert-manager 日志
-kubectl logs -n cert-manager deploy/cert-manager
-
-# 3. 临时方案：手动更新证书
-kubectl create secret tls exam-master-tls \
-  --cert=path/to/tls.crt \
-  --key=path/to/tls.key \
-  -n exam-master --dry-run=client -o yaml | kubectl apply -f -
-```
-
----
-
-## 四、回滚操作
-
-### 4.1 应用回滚
-
-```bash
-# 查看部署历史
-kubectl rollout history deployment/exam-master-backend -n exam-master
-
-# 回滚到上一版本
-kubectl rollout undo deployment/exam-master-backend -n exam-master
-
-# 回滚到指定版本
-kubectl rollout undo deployment/exam-master-backend -n exam-master --to-revision=2
-
-# 验证回滚状态
-kubectl rollout status deployment/exam-master-backend -n exam-master
-```
-
-### 4.2 数据库回滚
-
-```bash
-# 列出可用备份
-./deploy/scripts/restore-mongodb.sh list
-
-# 执行恢复
-./deploy/scripts/restore-mongodb.sh full exam-master-full-20260127_030000.archive
-
-# 时间点恢复
-./deploy/scripts/restore-mongodb.sh point-in-time \
-  exam-master-full-20260127_030000.archive \
-  "2026-01-27 05:00:00"
-```
-
-### 4.3 配置回滚
-
-```bash
-# 使用 GitOps 回滚（ArgoCD）
-argocd app rollback exam-master --revision <revision>
-
-# 或手动回滚 ConfigMap
-kubectl rollout undo deployment/exam-master-backend -n exam-master
-```
-
----
-
-## 五、故障复盘模板
-
-### 5.1 复盘报告模板
-
-```markdown
-# 故障复盘报告
-
-## 基本信息
-- 故障时间：YYYY-MM-DD HH:MM - HH:MM
-- 影响范围：
-- 故障级别：P0/P1/P2
-- 值班人员：
-
-## 故障时间线
-| 时间 | 事件 | 操作人 |
-|------|------|--------|
-| HH:MM | 收到告警 | |
-| HH:MM | 开始排查 | |
-| HH:MM | 定位原因 | |
-| HH:MM | 执行修复 | |
-| HH:MM | 服务恢复 | |
-
-## 根因分析
-### 直接原因
-
-### 根本原因
-
-## 影响评估
-- 影响用户数：
-- 影响时长：
-- 业务损失：
-
-## 改进措施
-| 措施 | 负责人 | 完成时间 |
-|------|--------|----------|
-| | | |
-
-## 经验教训
-
-```
-
----
-
-## 六、常用命令速查
-
-### 6.1 Kubernetes 命令
-
-```bash
-# 查看所有资源
-kubectl get all -n exam-master
-
-# 查看 Pod 日志
-kubectl logs -f <pod-name> -n exam-master --tail=100
-
-# 进入 Pod 调试
-kubectl exec -it <pod-name> -n exam-master -- /bin/sh
-
-# 查看资源使用
-kubectl top pods -n exam-master
-kubectl top nodes
-
-# 查看事件
-kubectl get events -n exam-master --sort-by='.lastTimestamp'
-
-# 强制删除 Pod
-kubectl delete pod <pod-name> -n exam-master --force --grace-period=0
-```
-
-### 6.2 监控命令
-
-```bash
-# 查看 Prometheus 告警
-kubectl exec -n exam-master deploy/prometheus -- \
-  promtool query instant 'ALERTS{alertstate="firing"}'
-
-# 查看错误率
-kubectl exec -n exam-master deploy/prometheus -- \
-  promtool query instant 'sum(rate(http_requests_total{status=~"5.."}[5m])) / sum(rate(http_requests_total[5m])) * 100'
-```
-
-### 6.3 数据库命令
-
-```bash
-# 连接 MongoDB
-kubectl exec -it mongodb-0 -n exam-master -- mongosh
-
-# 查看数据库状态
-db.serverStatus()
-
-# 查看慢查询
-db.currentOp({"secs_running": {$gt: 5}})
-```
-
----
-
-## 七、联系方式
-
-| 角色 | 姓名 | 电话 | 企业微信 |
-|------|------|------|----------|
-| 技术负责人 | | | |
-| DBA | | | |
-| 安全负责人 | | | |
-| 产品负责人 | | | |
-
----
-
-*最后更新: 2026-01-27 | 下次审核: 2026-04-27*
-
-
-## 2026-08-21 最终生产复查
-
-- Tencent Nginx 为 active，`nginx -t` 成功；本地 Node/PM2 有 2 个在线进程，health-check 返回 200。
-- 公开 H5 首页与 API health 均返回 200；本轮未执行登录写入、支付、课程数据变更、故障注入或自动切流。
-- Sealos 继续是人工确认后的冷恢复路径，不是 Nginx 自动故障转移目标。旧 `failover-test.sh` 已确认没有 Git、systemd、timer、cron、部署或浏览器调用者，保留删除状态。
-- 没有实体 WeChat 设备，因此只完成服务器、浏览器/公开入口和 API 读回；不得声称完成微信真实链路。
-## 2026-08-21 全项目复查边界
-
-- 腾讯入口、Nginx 语法、PM2、H5/PWA、API health、Laf/MongoDB/FSRS 既有恢复材料已完成服务器侧读回；Sealos 仍只作为冷恢复路径，没有自动切流或故障注入。
-- WeChat 手机/实体设备链路没有可用设备，本轮按 owner-accepted operational closure boundary 记录，不声称完成真实微信操作验证。
-- EXAM-MASTER 全量脱敏加密归档按项目分类进入中央百度网盘目标目录；备份/迁移/支付材料保留，不因“清理”删除关键恢复能力。
-
-## 2026-08-22 最终生产与备份边界
-
-- 生产首页与 API health-check 继续返回 200 / `code=0,status=ok`；服务器侧 Nginx、Node/PM2 和既有恢复材料保持已读回状态。
-- Sealos 仅保留人工确认后的冷恢复边界；旧 `failover-test.sh` 已确认无生产调用者并保持删除，不恢复自动故障切换。
-- 百度网盘客户端上传任务已完成；`Carven's Macbook Air` 远端分类目录已读回，七个项目目录可见。该事实不等于远端下载、解密、哈希或恢复演练完成。
-- 没有实体 WeChat 设备；本次只完成服务器/公开入口和 API 读回，不声称完成真实微信链路。
-
-## 2026-08-22 P1/P2 生产与备份收口
-
-- `exam.245334.xyz/` 返回 HTTP 200；`api.245334.xyz/health-check` 返回 HTTP 200、`code=0`、`status=ok`。
-- 百度网盘客户端上传任务已完成；`Carven's Macbook Air` 下七个项目分类目录已读回。该结果与本次中央/OpenEverything/SONIC 加密归档抽样读回共同证明归档可下载、可校验、可解密、可读取，但没有把它扩大为 EXAM-MASTER 完整远端生产恢复演练。
-- Sealos 仅保留人工确认后的冷恢复边界；旧 `failover-test.sh` 已确认无生产调用者并保持删除，不恢复自动故障切换。
-- 没有实体 WeChat 设备；服务器、公开入口和 API 读回不等于微信实体链路验证。
+本轮继续完成开发工具链安全升级与窄接口适配，最终全依赖审计、依赖树和三端结果见[11](11-RELEASE-NOTES.md)/tmp/resource-delivery；上文22项风险为前序快照。部署前新增核对LEARNING_MODEL_RESULT_CACHE，配置非法时保持调用拒绝，不设置无限保留；默认访问清理不等于后台物理删除。恢复及账单新字段为可选兼容，旧正文按原时间限制；生产容量、账单归档、备份保留和后台清理仍需运营验收，不由本轮部署。npm ci需保留scripts/compat/file-type源码与根别名，原后端生产安装不依赖这一开发适配。

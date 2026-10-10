@@ -1,10 +1,10 @@
 name: 问题反馈 / Bug report
 description: 帮助定位一个可复现的问题
-title: "[Bug] "
+title: '[Bug] '
 body:
   - type: markdown
     attributes:
-      value: "感谢反馈。请勿附带账号、密钥、私人资料或未经授权的完整题库。"
+      value: '感谢反馈。请勿附带账号、密钥、私人资料或未经授权的完整题库。'
   - type: textarea
     id: environment
     attributes:

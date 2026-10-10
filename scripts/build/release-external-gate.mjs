@@ -390,7 +390,13 @@ function registryFromFile(filePath) {
 
 function validateSourceManifest(payload) {
   const items = Array.isArray(payload?.items) ? payload.items : [];
-  const validSourceChannels = new Set(['app_dir', 'sharelink', 'group_service', 'group_file_index', 'netdisk_full_path']);
+  const validSourceChannels = new Set([
+    'app_dir',
+    'sharelink',
+    'group_service',
+    'group_file_index',
+    'netdisk_full_path'
+  ]);
   const validSources = items.filter((item) => {
     if (item?.provider !== 'baidu_pan') return false;
     if (!validSourceChannels.has(String(item?.sourceChannel || ''))) return false;
@@ -432,16 +438,16 @@ function checkBaiduSync(env, options) {
   const registrySource = hasValidSourceManifest
     ? 'source_manifest'
     : hasValidRegistry
-    ? registryEnv
-      ? 'env'
-      : 'file'
-    : registryEnv
-      ? 'env'
-      : registryFile
-        ? 'file'
-        : hasValidSourceManifest
-          ? 'source_manifest'
-          : 'missing';
+      ? registryEnv
+        ? 'env'
+        : 'file'
+      : registryEnv
+        ? 'env'
+        : registryFile
+          ? 'file'
+          : hasValidSourceManifest
+            ? 'source_manifest'
+            : 'missing';
 
   if (registry?.status === 'invalid_json') {
     blockers.push({

@@ -1,69 +1,18 @@
-# Exam-Master 工具函数文档
+# 工具与兼容模块
 
-> 目录: `src/utils/`
-> 按功能域分类，所有模块均为 ES Module
-> Last updated: 2026-03-29 (Round 39)
+| 模块                                 | 用途与边界                                              |
+| ------------------------------------ | ------------------------------------------------------- |
+| auth-storage / storageService        | 分用户存储与身份读取；不能改名打断旧数据                |
+| learning-write-lease                 | H5 单写者租约；不支持 Web Locks 的端明确显示能力范围    |
+| learning-backup                      | 同账户受限恢复，不执行代码、不接纳导入判分权威          |
+| learning-sync                        | 明确授权上传，重连幂等、内容冲突和生命周期检查          |
+| local-connector / material-connector | 模型/资料两类连接路径，目标、鉴权和授权来源分别验证     |
+| safe-navigate / home-navigation      | 已注册页面路由与统一首页；不从模型文本构造任意导航      |
+| keyboard-controls                    | H5 学习键盘交互，不推断微信辅助技术通过                 |
+| logger                               | 记录有限诊断，不打印密钥、原始资料或完整私人聊天        |
+| fsrs-service                         | 有效复习的调度职责，不等于整个学科掌握模型              |
+| static-assets / pwa-cache-policy     | 公共静态资源与缓存范围；用户数据/API 不进入公共离线缓存 |
 
----
+工具实现集中 src/services/learning/ 与 src/utils/；[模块索引](03-MODULE-INDEX.md)提供关键入口。使用现有模块，避免增加功能相同的包装层。无静态入边的模块先检查动态注册、easycom、条件编译和测试，不能自动删。
 
-## 一、核心工具 (`core/`)
-
-| 文件                 | 导出           | 说明                                                                           |
-| -------------------- | -------------- | ------------------------------------------------------------------------------ |
-| `index.js`           | 聚合导出       | 核心工具统一入口                                                               |
-| `date.js`            | 日期格式化工具 | `formatDate()`, `getRelativeTime()`, `isToday()` 等                            |
-| `system.js`          | 系统信息       | `getSystemInfo()`, `getStatusBarHeight()`, `isIPhoneX()`                       |
-| `performance.js`     | 性能监控       | `measureTime()`, `reportPerformance()`                                         |
-| `network-monitor.js` | 网络状态监控   | `NetworkMonitor` 类：在线/离线检测，ping 检测（URL 从 `config/index.js` 读取） |
-| `offline-queue.js`   | 离线请求队列   | 网络恢复后自动重发排队请求                                                     |
-
-## 二、认证工具 (`auth/`)
-
-| 文件                      | 说明                                                                                        |
-| ------------------------- | ------------------------------------------------------------------------------------------- |
-| `loginGuard.js`           | 登录守卫：`checkLogin()` 检查登录状态，`restoreUserInfo()` 恢复用户信息，未登录时跳转登录页 |
-| `token-refresh-plugin.js` | Token 自动刷新：`isTokenExpiringSoon()` 检测即将过期，自动刷新 token，失败时清除登录态      |
-
-## 三、学习工具 (`learning/`)
-
-| 文件                          | 说明                                                                                                |
-| ----------------------------- | --------------------------------------------------------------------------------------------------- |
-| `learning-goal.js`            | 学习目标管理：`init()` 初始化（含后端同步）、`updateProgress()` 更新进度、`getGoals()` 获取目标列表 |
-| `adaptive-learning-engine.js` | 自适应学习引擎：根据用户答题数据动态调整题目难度和推荐策略                                          |
-
-## 四、练习工具 (`practice/`)
-
-| 文件                | 说明                           |
-| ------------------- | ------------------------------ |
-| `draft-detector.js` | 草稿检测：检测未完成的练习会话 |
-
-## 五、分析工具 (`analytics/`)
-
-| 文件                     | 说明                                                     |
-| ------------------------ | -------------------------------------------------------- |
-| `learning-analytics.js`  | 学习分析：成就系统（含后端同步）、学习数据统计、能力评估 |
-| `event-bus-analytics.js` | 事件总线分析：用户行为事件追踪                           |
-
-## 六、辅助工具 (`helpers/`)
-
-| 文件                           | 说明                                   |
-| ------------------------------ | -------------------------------------- |
-| `haptic.js`                    | 触觉反馈：震动反馈封装                 |
-| `quote-interaction-handler.js` | 金句交互：每日金句的展示和分享逻辑     |
-| `permission-handler.js`        | 权限处理：相机/相册/位置等权限请求封装 |
-| `todo-store-patch.js`          | 待办存储补丁                           |
-
-## 七、错误处理 (`error/`)
-
-| 文件                      | 说明                                                      |
-| ------------------------- | --------------------------------------------------------- |
-| `global-error-handler.js` | 全局错误处理：未捕获异常、Promise rejection、Vue 错误边界 |
-
-## 八、根目录工具
-
-| 文件               | 说明                                                                                 |
-| ------------------ | ------------------------------------------------------------------------------------ |
-| `logger.js`        | 日志工具：`logger.log()`, `logger.warn()`, `logger.error()`，生产环境自动静默        |
-| `formatters.js`    | 格式化工具：`formatRelativeTime(timestamp)` 相对时间、`getInitials(name)` 姓名首字母 |
-| `safe-navigate.js` | 安全导航：统一页面跳转封装，防止重复跳转、处理 tabBar 页面                           |
-| `throttle.js`      | 节流函数：`throttle(fn, delay)`                                                      |
+新引入组件须记录问题、相对现有优势、所选版本官方资料、许可证、维护状态、资源/跨端成本和安全验证。当前 Logo 是原创几何 SVG，没有新增产品运行依赖；离线栅格化使用已安装工作区 sharp，不修改依赖锁。

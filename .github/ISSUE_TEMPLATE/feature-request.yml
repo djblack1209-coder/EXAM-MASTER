@@ -1,6 +1,6 @@
 name: 讨论改进 / Feature discussion
 description: 讨论使用场景、AI 工作流或工程取舍
-title: "[Idea] "
+title: '[Idea] '
 body:
   - type: textarea
     id: problem

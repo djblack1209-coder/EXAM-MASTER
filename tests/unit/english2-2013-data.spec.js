@@ -25,8 +25,6 @@ describe('English II 2013 published bank data', () => {
     expect(bank.cards.find((card) => card.number === 45).answer).toBe('D');
     expect(bank.cards.find((card) => card.number === 46).targetSegment).toContain('Hair opened on Broadway');
     expect(bank.cards.find((card) => card.number === 48).question).toContain('某高校学生兼职情况');
-    expect(bank.cards.find((card) => card.number === 48).answerEvidence.evidenceRole).toBe(
-      'official_writing_prompt'
-    );
+    expect(bank.cards.find((card) => card.number === 48).answerEvidence.evidenceRole).toBe('official_writing_prompt');
   });
 });

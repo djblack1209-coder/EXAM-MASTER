@@ -12,24 +12,24 @@
 
       <!-- 统计摘要 -->
       <view class="sheet-summary">
-        <text class="summary-text">已答 {{ answeredCount }}/{{ questions.length }}</text>
+        <text class="summary-text">已记录 {{ answeredCount }}/{{ questions.length }}</text>
         <text class="summary-divider">·</text>
         <text
           class="summary-text"
           :class="{ 'accuracy-good': accuracy >= 60, 'accuracy-bad': accuracy < 60 && gradedCount > 0 }"
         >
-          正确率 {{ accuracy }}%
+          {{ gradedCount ? `正确率 ${accuracy}%` : '暂未判分' }}
         </text>
         <text class="summary-divider">·</text>
         <text class="summary-text summary-muted">剩 {{ remainingCount }}</text>
       </view>
 
       <view class="sheet-insight-row">
-        <view class="insight-pill correct">
+        <view v-if="gradedCount" class="insight-pill correct">
           <text class="insight-value">{{ correctCount }}</text>
           <text class="insight-label">正确</text>
         </view>
-        <view class="insight-pill wrong">
+        <view v-if="gradedCount" class="insight-pill wrong">
           <text class="insight-value">{{ wrongCount }}</text>
           <text class="insight-label">错误</text>
         </view>
@@ -37,6 +37,17 @@
           <text class="insight-value">{{ reviewedCount }}</text>
           <text class="insight-label">已复习</text>
         </view>
+        <view v-if="pendingCount" class="insight-pill reviewed">
+          <text class="insight-value">{{ pendingCount }}</text>
+          <text class="insight-label">待核对</text>
+        </view>
+      </view>
+
+      <view v-if="legacyCount || unclassifiedCount" class="sheet-insight-row">
+        <text v-if="legacyCount" class="summary-text"
+          >旧记录 {{ legacyCount }}（旧判对 {{ legacyCorrectCount }} / 旧判错 {{ legacyWrongCount }}）</text
+        >
+        <text v-if="unclassifiedCount" class="summary-text">判分依据不明 {{ unclassifiedCount }}</text>
       </view>
 
       <!-- 题号网格 -->
@@ -62,16 +73,20 @@
           <text class="legend-label">当前</text>
         </view>
         <view class="legend-item">
-          <view class="legend-dot dot-correct" />
-          <text class="legend-label">正确</text>
+          <view class="legend-dot dot-reviewed" />
+          <text class="legend-label">旧记录</text>
         </view>
         <view class="legend-item">
-          <view class="legend-dot dot-wrong" />
-          <text class="legend-label">错误</text>
+          <view class="legend-dot dot-reviewed" />
+          <text class="legend-label">依据不明</text>
         </view>
         <view class="legend-item">
           <view class="legend-dot dot-reviewed" />
           <text class="legend-label">已复习</text>
+        </view>
+        <view v-if="pendingCount" class="legend-item">
+          <view class="legend-dot dot-reviewed" />
+          <text class="legend-label">待核对</text>
         </view>
         <view class="legend-item">
           <view class="legend-dot dot-unanswered" />
@@ -84,6 +99,7 @@
 
 <script setup>
 import { computed } from 'vue';
+import { getQuizAnswerRecordOutcome } from '@/services/quiz-session-contract.js';
 
 const props = defineProps({
   visible: { type: Boolean, default: false },
@@ -101,7 +117,7 @@ const answeredMap = computed(() => {
   props.answeredQuestions.forEach((item) => {
     const index = Number(item?.index);
     if (!Number.isFinite(index) || index < 0 || index >= props.questions.length) return;
-    map[index] = item.isCorrect === true ? 'correct' : item.isCorrect === false ? 'wrong' : 'reviewed';
+    map[index] = getQuizAnswerRecordOutcome(item);
   });
   return map;
 });
@@ -110,6 +126,17 @@ const answeredCount = computed(() => Object.keys(answeredMap.value).length);
 const correctCount = computed(() => Object.values(answeredMap.value).filter((status) => status === 'correct').length);
 const wrongCount = computed(() => Object.values(answeredMap.value).filter((status) => status === 'wrong').length);
 const reviewedCount = computed(() => Object.values(answeredMap.value).filter((status) => status === 'reviewed').length);
+const pendingCount = computed(() => Object.values(answeredMap.value).filter((status) => status === 'pending').length);
+const legacyCorrectCount = computed(
+  () => Object.values(answeredMap.value).filter((status) => status === 'legacy_correct').length
+);
+const legacyWrongCount = computed(
+  () => Object.values(answeredMap.value).filter((status) => status === 'legacy_wrong').length
+);
+const legacyCount = computed(() => legacyCorrectCount.value + legacyWrongCount.value);
+const unclassifiedCount = computed(
+  () => Object.values(answeredMap.value).filter((status) => status === 'unclassified').length
+);
 const gradedCount = computed(() => correctCount.value + wrongCount.value);
 const remainingCount = computed(() => Math.max(0, props.questions.length - answeredCount.value));
 
@@ -323,6 +350,7 @@ function handleJump(idx) {
   color: var(--text-inverse);
 }
 
+.cell-pending .cell-num,
 .cell-reviewed .cell-num {
   background: rgba(15, 95, 52, 0.14);
   color: var(--primary, #0f5f34);
@@ -433,6 +461,7 @@ function handleJump(idx) {
   color: rgba(117, 221, 255, 0.86);
 }
 
+.dark-mode .cell-pending .cell-num,
 .dark-mode .cell-reviewed .cell-num {
   background: rgba(117, 221, 255, 0.12);
   color: rgba(117, 221, 255, 0.92);

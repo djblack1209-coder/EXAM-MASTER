@@ -169,7 +169,15 @@ def compact(text: Any) -> str:
     return re.sub(r"\s+", " ", str(text or "")).strip()
 
 
-def render_pdf_assets(pdf: Path, prefix: str, *, asset_dir: Path, force: bool, first_page: int, last_page: int) -> None:
+def render_pdf_assets(
+    pdf: Path,
+    prefix: str,
+    *,
+    asset_dir: Path,
+    force: bool,
+    first_page: int,
+    last_page: int,
+) -> None:
     if not pdf.exists():
         raise FileNotFoundError(pdf)
     asset_dir.mkdir(parents=True, exist_ok=True)
@@ -239,7 +247,9 @@ def build_passages(asset_dir: Path) -> dict[str, str]:
     if missing:
         raise RuntimeError(f"Missing OCR passage groups: {', '.join(missing)}")
     if "Fundamental Physics Prize" not in passages["text3"]:
-        raise RuntimeError("2014 Text 3 OCR did not contain the expected Fundamental Physics Prize article")
+        raise RuntimeError(
+            "2014 Text 3 OCR did not contain the expected Fundamental Physics Prize article"
+        )
     return passages
 
 
@@ -376,10 +386,12 @@ def build_card(number: int, passages: dict[str, str]) -> dict[str, Any]:
     options = options_for(number)
     answer = answer_for(number)
     question_images = [
-        image_ref("paper-page", page, caption=f"试卷原页 p.{page}") for page in QUESTION_PAGES[number]
+        image_ref("paper-page", page, caption=f"试卷原页 p.{page}")
+        for page in QUESTION_PAGES[number]
     ]
     answer_images = [
-        image_ref("answer-page", page, caption=f"答案速查 p.{page}") for page in ANSWER_PAGES[number]
+        image_ref("answer-page", page, caption=f"答案速查 p.{page}")
+        for page in ANSWER_PAGES[number]
     ]
     question_hash = sha256_text(
         json.dumps(
@@ -459,8 +471,22 @@ def validate_cards(cards: list[dict[str, Any]]) -> None:
 
 
 def build_payload(*, asset_dir: Path, force_assets: bool) -> dict[str, Any]:
-    render_pdf_assets(ORIGINAL_PAPER, "paper-page", asset_dir=asset_dir, force=force_assets, first_page=1, last_page=15)
-    render_pdf_assets(ANSWER_SPEED, "answer-page", asset_dir=asset_dir, force=force_assets, first_page=1, last_page=16)
+    render_pdf_assets(
+        ORIGINAL_PAPER,
+        "paper-page",
+        asset_dir=asset_dir,
+        force=force_assets,
+        first_page=1,
+        last_page=15,
+    )
+    render_pdf_assets(
+        ANSWER_SPEED,
+        "answer-page",
+        asset_dir=asset_dir,
+        force=force_assets,
+        first_page=1,
+        last_page=16,
+    )
     passages = build_passages(asset_dir)
     cards = [build_card(number, passages) for number in range(1, 53)]
     validate_cards(cards)

@@ -52,8 +52,25 @@ function normalizeStringValue(value) {
 
 function safeGetStorageSync(key) {
   try {
-    if (typeof uni !== 'undefined' && typeof uni.getStorageSync === 'function') {
-      return uni.getStorageSync(key);
+    // 与 storageService 使用同一个完整存储运行时。静态 uni 访问会被编译器
+    // 改写成另一套 H5 读取函数，导致兼容存储中的已登录账户被读成访客。
+    const supportsStorage = (candidate) =>
+      candidate &&
+      ['getStorageSync', 'setStorageSync', 'removeStorageSync'].every(
+        (method) => typeof Reflect.get(candidate, method) === 'function'
+      );
+    const globalRef = typeof globalThis !== 'undefined' ? globalThis : {};
+    const runtimeUni = globalRef['uni'];
+    const runtimeWx = globalRef['wx'];
+    const runtime = supportsStorage(runtimeUni)
+      ? runtimeUni
+      : supportsStorage(runtimeWx)
+        ? runtimeWx
+        : typeof wx !== 'undefined' && supportsStorage(wx)
+          ? wx
+          : null;
+    if (runtime) {
+      return Reflect.get(runtime, 'getStorageSync').call(runtime, key);
     }
   } catch (_e) {
     // ignore

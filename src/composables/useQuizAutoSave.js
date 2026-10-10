@@ -11,7 +11,9 @@
  */
 
 import storageService from '@/services/storageService.js';
+import { getUserId, getToken } from '@/services/auth-storage.js';
 import { logger } from '@/utils/logger.js';
+import { isValidQuizSessionId, isValidQuizAttemptId } from '@/services/quiz-session-contract.js';
 
 const QUIZ_PROGRESS_KEY = 'EXAM_QUIZ_PROGRESS';
 const QUIZ_PROGRESS_TIMESTAMP_KEY = 'EXAM_QUIZ_PROGRESS_TIME';
@@ -21,24 +23,32 @@ let saveDebounceTimer = null;
 const DEBOUNCE_DELAY = 500;
 
 export function saveQuizProgress(progress, immediate = false, context = null) {
-  if (immediate) {
-    return doSaveProgress(progress, context);
+  if (saveDebounceTimer) clearTimeout(saveDebounceTimer);
+  saveDebounceTimer = null;
+  const owner = getUserId() || '',
+    token = getToken() || '';
+  const current = () => (getUserId() || '') === owner && (getToken() || '') === token;
+  let snapshot, frozenContext;
+  try {
+    snapshot = JSON.parse(JSON.stringify(progress));
+    frozenContext = context ? JSON.parse(JSON.stringify(context)) : null;
+  } catch {
+    return false;
   }
-
-  if (saveDebounceTimer) {
-    clearTimeout(saveDebounceTimer);
-  }
-
+  if (immediate) return current() && doSaveProgress(snapshot, frozenContext);
   saveDebounceTimer = setTimeout(() => {
-    doSaveProgress(progress, context);
     saveDebounceTimer = null;
+    if (current()) doSaveProgress(snapshot, frozenContext);
   }, DEBOUNCE_DELAY);
-
   return true;
 }
 
 function doSaveProgress(progress, context = null) {
   try {
+    if (progress.sessionId !== undefined && progress.sessionId !== '' && !isValidQuizSessionId(progress.sessionId)) {
+      logger.warn('[QuizAutoSave] 会话标识无效，原记录已保留');
+      return false;
+    }
     const normalizedContext = normalizeProgressContext(context);
     const data = {
       currentIndex: progress.currentIndex || 0,
@@ -51,11 +61,15 @@ function doSaveProgress(progress, context = null) {
       context: normalizedContext,
       contextKey: normalizedContext ? buildProgressContextKey(normalizedContext) : '',
       savedAt: Date.now(),
-      version: '1.1.0'
+      version: '1.2.0'
     };
+    if (progress.sessionId) data.sessionId = progress.sessionId;
+    if (progress.questionTiming) data.questionTiming = { ...progress.questionTiming };
+    if (!isValidProgressData(data)) return false;
 
-    storageService.save(QUIZ_PROGRESS_KEY, data);
-    storageService.save(QUIZ_PROGRESS_TIMESTAMP_KEY, Date.now().toString());
+    if (storageService.save(QUIZ_PROGRESS_KEY, data, true) !== true) return false;
+    const saved = storageService.get(QUIZ_PROGRESS_KEY, null, { migrateLegacy: false, throwOnError: true });
+    if (JSON.stringify(saved) !== JSON.stringify(data)) return false;
 
     logger.log('[QuizAutoSave] 进度已保存:', {
       currentIndex: data.currentIndex,
@@ -73,31 +87,17 @@ function doSaveProgress(progress, context = null) {
 
 export function loadQuizProgress(context = null) {
   try {
-    const dataRaw = storageService.get(QUIZ_PROGRESS_KEY);
-    const timestampStr = storageService.get(QUIZ_PROGRESS_TIMESTAMP_KEY);
-
-    if (!dataRaw || !timestampStr) {
-      logger.log('[QuizAutoSave] 无保存的进度');
-      return null;
-    }
-
-    const timestamp = Number(timestampStr);
-    if (!Number.isFinite(timestamp)) {
-      logger.warn('[QuizAutoSave] 进度时间戳无效，清除损坏数据');
-      clearQuizProgress();
-      return null;
-    }
-
-    if (Date.now() - timestamp > PROGRESS_EXPIRE_TIME) {
-      logger.log('[QuizAutoSave] 进度已过期，清除');
-      clearQuizProgress();
-      return null;
-    }
-
+    const dataRaw = storageService.get(QUIZ_PROGRESS_KEY, null, { migrateLegacy: false, throwOnError: true });
+    if (!dataRaw) return null;
     const data = typeof dataRaw === 'string' ? JSON.parse(dataRaw) : dataRaw;
+    const timestamp =
+      data?.version === '1.2.0'
+        ? data.savedAt
+        : Number(storageService.get(QUIZ_PROGRESS_TIMESTAMP_KEY, null, { migrateLegacy: false, throwOnError: true }));
+    if (!Number.isFinite(timestamp) || timestamp <= 0 || Date.now() - timestamp > PROGRESS_EXPIRE_TIME) return null;
+
     if (!isValidProgressData(data)) {
-      logger.warn('[QuizAutoSave] 进度数据结构无效，清除损坏数据');
-      clearQuizProgress();
+      logger.warn('[QuizAutoSave] 进度数据结构无效，保留记录');
       return null;
     }
 
@@ -113,19 +113,15 @@ export function loadQuizProgress(context = null) {
     });
 
     return data;
-  } catch (error) {
-    logger.error('[QuizAutoSave] 加载进度失败:', error);
-    try {
-      storageService.remove(QUIZ_PROGRESS_KEY);
-      storageService.remove(QUIZ_PROGRESS_TIMESTAMP_KEY);
-    } catch (_error) {
-      // ignore
-    }
+  } catch {
+    logger.warn('[QuizAutoSave] 记录无法读取，原记录已保留');
     return null;
   }
 }
 
 export function clearQuizProgress() {
+  if (saveDebounceTimer) clearTimeout(saveDebounceTimer);
+  saveDebounceTimer = null;
   try {
     storageService.remove(QUIZ_PROGRESS_KEY);
     storageService.remove(QUIZ_PROGRESS_TIMESTAMP_KEY);
@@ -139,7 +135,61 @@ export function clearQuizProgress() {
 
 export function hasUnfinishedProgress(context = null) {
   const progress = loadQuizProgress(context);
-  return progress !== null && progress.currentIndex > 0;
+  return (
+    progress !== null &&
+    !isQuizProgressComplete(progress) &&
+    (progress.currentIndex > 0 || progress.answeredQuestions.length > 0)
+  );
+}
+
+export function isQuizProgressComplete(progress) {
+  const questions = progress?.questions;
+  if (!Array.isArray(questions) || questions.length === 0) return false;
+  const answered = new Set();
+  for (const record of progress.answeredQuestions || []) {
+    if (record?.source === 'reference_view' || record?.userChoice === 'flashcard_flip') continue;
+    if (
+      Number.isInteger(record?.index) &&
+      record.index >= 0 &&
+      record.index < questions.length &&
+      (questions[record.index]?.id ?? questions[record.index]?._id) != null &&
+      String(record.questionId ?? '') === String(questions[record.index]?.id ?? questions[record.index]?._id ?? '')
+    )
+      answered.add(record.index);
+  }
+  return answered.size === questions.length;
+}
+
+export function getRecoverableQuizProgress() {
+  const progress = loadQuizProgress();
+  if (!progress || !Array.isArray(progress.questions) || !progress.questions.length) return null;
+  const questions = progress.questions;
+  if (progress.currentIndex >= questions.length || isQuizProgressComplete(progress)) return null;
+  if (
+    questions.some((q) => {
+      const id = q?.id ?? q?._id;
+      const text = q?.question || q?.title;
+      return (
+        !['string', 'number'].includes(typeof id) ||
+        (typeof id === 'number' && !Number.isFinite(id)) ||
+        !String(id).trim() ||
+        typeof text !== 'string' ||
+        !text.trim()
+      );
+    })
+  )
+    return null;
+  if (
+    progress.answeredQuestions.some(
+      (record) =>
+        !Number.isInteger(record?.index) ||
+        record.index < 0 ||
+        record.index >= questions.length ||
+        String(record.questionId ?? '') !== String(questions[record.index].id ?? questions[record.index]._id)
+    )
+  )
+    return null;
+  return progress.currentIndex > 0 || progress.answeredQuestions.length > 0 ? progress : null;
 }
 
 export function getProgressSummary(context = null) {
@@ -178,11 +228,27 @@ function formatSeconds(seconds) {
 
 function isValidProgressData(data) {
   if (!data || typeof data !== 'object') return false;
-  if (typeof data.currentIndex !== 'number') return false;
-  if (typeof data.seconds !== 'number') return false;
+  if (!Number.isInteger(data.currentIndex) || data.currentIndex < 0) return false;
+  if (typeof data.seconds !== 'number' || !Number.isFinite(data.seconds) || data.seconds < 0) return false;
   if (!Array.isArray(data.answeredQuestions)) return false;
+  if (
+    data.answeredQuestions.some((record) => record?.attemptId !== undefined && !isValidQuizAttemptId(record.attemptId))
+  )
+    return false;
   if (typeof data.hasAnswered !== 'boolean') return false;
   if (data.questions !== undefined && !Array.isArray(data.questions)) return false;
+  if (data.sessionId !== undefined && !isValidQuizSessionId(data.sessionId)) return false;
+  if (data.questionTiming) {
+    const timing = data.questionTiming;
+    if (
+      timing.index !== data.currentIndex ||
+      timing.questionId !== data.questions?.[timing.index]?.id ||
+      !Number.isFinite(timing.elapsedMs) ||
+      timing.elapsedMs < 0 ||
+      timing.elapsedMs > 86400000
+    )
+      return false;
+  }
   return true;
 }
 
@@ -199,9 +265,10 @@ function normalizeProgressContext(context) {
   copyString('mode');
   copyString('paperId');
   copyString('questionBankFingerprint');
+  copyString('handoffId');
 
   if (Array.isArray(context.questionIds)) {
-    normalized.questionIds = context.questionIds.map((id) => String(id || '')).filter(Boolean);
+    normalized.questionIds = context.questionIds.map((id) => String(id ?? '')).filter(Boolean);
   }
 
   return Object.keys(normalized).length > 0 ? normalized : null;
@@ -214,7 +281,8 @@ function buildProgressContextKey(context) {
     mode: normalized.mode || '',
     paperId: normalized.paperId || '',
     questionBankFingerprint: normalized.questionBankFingerprint || '',
-    questionIds: normalized.questionIds || []
+    questionIds: normalized.questionIds || [],
+    ...(normalized.handoffId ? { handoffId: normalized.handoffId } : {})
   });
 }
 

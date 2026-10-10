@@ -1,5 +1,5 @@
 name: id-photo-segment-base64
-desc: ""
+desc: ''
 methods:
   - GET
   - POST

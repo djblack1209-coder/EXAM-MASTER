@@ -144,7 +144,6 @@
         <view class="setting-item ds-flex ds-flex-between">
           <view class="setting-info">
             <text class="setting-title ds-text-sm ds-font-medium"> 深色模式 </text>
-            <text class="setting-desc ds-text-xs"> 护眼模式，夜间更舒适 </text>
           </view>
           <em3d-switch id="e2e-settings-dark-switch" :model-value="isDark" @change="toggleDark3d" />
         </view>
@@ -152,7 +151,6 @@
         <view class="setting-item ds-flex ds-flex-between">
           <view class="setting-info">
             <text class="setting-title ds-text-sm ds-font-medium"> 答题音效 </text>
-            <text class="setting-desc ds-text-xs"> 点击、答对、答错和完成练习的声音反馈 </text>
           </view>
           <em3d-switch id="e2e-settings-sound-switch" :model-value="soundEnabled" @change="toggleSoundFeedback" />
         </view>
@@ -160,7 +158,6 @@
         <view class="setting-item ds-flex ds-flex-between">
           <view class="setting-info">
             <text class="setting-title ds-text-sm ds-font-medium"> 震动反馈 </text>
-            <text class="setting-desc ds-text-xs"> 答题、切换和完成动作的触觉反馈 </text>
           </view>
           <em3d-switch id="e2e-settings-haptic-switch" :model-value="hapticEnabled" @change="toggleHapticFeedback" />
         </view>
@@ -177,7 +174,6 @@
             </view>
             <view>
               <text class="setting-title ds-text-sm ds-font-medium"> 安全与隐私 </text>
-              <text class="setting-desc ds-text-xs"> 查看隐私政策、用户协议与账号注销说明 </text>
             </view>
           </view>
           <BaseIcon name="arrow-right" :size="24" />
@@ -190,7 +186,6 @@
         >
           <view class="setting-info">
             <text class="setting-title ds-text-sm ds-font-medium"> 用户协议 </text>
-            <text class="setting-desc ds-text-xs"> 了解刷题服务范围和使用规则 </text>
           </view>
           <BaseIcon name="arrow-right" :size="24" />
         </view>
@@ -203,7 +198,6 @@
         >
           <view class="setting-info">
             <text class="setting-title ds-text-sm ds-font-medium"> 清除缓存数据 </text>
-            <text class="setting-desc ds-text-xs"> 释放存储空间 </text>
           </view>
           <text class="cache-size ds-text-xs">
             {{ cacheSize }}
@@ -234,7 +228,6 @@
       </view>
       <!-- 正常状态：显示注销按钮 -->
       <view v-else id="e2e-settings-delete-account" class="delete-account-btn ds-touchable" @tap="handleDeleteAccount">
-        <text class="delete-account-eyebrow"> 账号安全 </text>
         <text class="delete-account-desc"> 注销后将进入冷静期，期间可撤销，逾期后账号与学习数据将永久删除。 </text>
         <text class="delete-account-text"> 注销账号 </text>
       </view>
@@ -1005,16 +998,19 @@ const onAvatarError = (e) => {
   position: relative;
   z-index: 1;
   background-color: var(--em3d-card-bg);
-  border: 2rpx solid var(--em3d-border);
+
+  border: 0;
+
   border-radius: 24px;
   padding: 20px;
   margin-bottom: 20px;
-  box-shadow:
-    0 8rpx 0 var(--em3d-border-shadow),
-    0 16rpx 40rpx rgba(0, 0, 0, 0.15);
+
+  box-shadow: var(--yozi-shadow);
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
+
+  background: var(--yozi-reading);
 }
 
 /* 添加光晕效果 */
@@ -1267,12 +1263,13 @@ const onAvatarError = (e) => {
 
 /* 深色模式下的用户卡片（Bitget风格） */
 .dark-mode .user-card.wise-card {
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, transparent 38%),
-    linear-gradient(160deg, rgba(18, 24, 34, 0.84) 0%, rgba(13, 17, 24, 0.92) 100%);
-  box-shadow:
-    0 8rpx 0 var(--em3d-border-shadow),
-    0 16rpx 40rpx rgba(0, 0, 0, 0.15);
+  background: var(--yozi-reading);
+
+  box-shadow: var(--yozi-shadow);
+
+  border: 0;
+
+  border-radius: 24px;
 }
 
 .dark-mode .user-card.wise-card::before {
@@ -1314,6 +1311,14 @@ const onAvatarError = (e) => {
 
 .dark-mode .settings-list {
   border-color: rgba(255, 255, 255, 0.1);
+
+  background: var(--yozi-reading);
+
+  border: 0;
+
+  border-radius: 24px;
+
+  box-shadow: var(--yozi-shadow);
 }
 
 .dark-mode .setting-item {
@@ -1381,10 +1386,15 @@ const onAvatarError = (e) => {
 /* 设置选项列表 */
 .settings-list {
   background-color: transparent;
-  border: 2rpx solid rgba(255, 255, 255, 0.38);
-  border-radius: 16px;
+
+  border: 0;
+
+  border-radius: 24px;
   overflow: hidden;
-  box-shadow: 0 var(--em3d-depth-sm) 0 var(--em3d-border-shadow);
+
+  box-shadow: var(--yozi-shadow);
+
+  background: var(--yozi-reading);
 }
 
 .setting-item {

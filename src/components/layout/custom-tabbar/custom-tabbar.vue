@@ -1,8 +1,8 @@
 <template>
-  <view class="tabbar-position-wrapper">
+  <view ref="keyboardRoot" class="tabbar-position-wrapper" role="navigation" aria-label="主要导航">
     <view
       class="tabbar-capsule"
-      :class="{ 'dark-mode': isDarkMode, dragging: isDragging }"
+      :class="{ 'dark-mode': isDarkMode, dragging: isDragging, 'reduce-motion': reducedMotion }"
       :style="capsuleStyle"
       @touchstart="handleTouchStart"
       @touchmove.stop="handleTouchMove"
@@ -17,6 +17,11 @@
         :id="`e2e-tabbar-${item.path.split('/')[2]}`"
         :key="item.path"
         class="tab-item"
+        role="button"
+        tabindex="0"
+        data-learning-toggle="true"
+        :aria-label="item.text"
+        :aria-current="resolvedActiveIndex === index ? 'page' : undefined"
         :class="{
           active: visualActiveIndex === index,
           pressing: pressedIndex === index
@@ -35,6 +40,7 @@
 
 <script setup>
 import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue';
+import { onShow } from '@dcloudio/uni-app';
 import { storageService } from '@/services/storageService.js';
 import { logger } from '@/utils/logger.js';
 import config from '@/config/index.js';
@@ -42,6 +48,9 @@ import { safeNavigateTo } from '@/utils/safe-navigate';
 import { getWindowInfo } from '@/utils/core/system.js';
 import { getAssetUrl } from '@/config/static-assets.js';
 import { vibrateLight } from '@/utils/helpers/haptic.js';
+import { useThemeStore } from '@/stores/modules/theme.js';
+import { bindLearningKeyboard } from '@/services/learning/keyboard-controls.js';
+import { bindBusinessMotion } from '@/design/business-motion.js';
 
 const SWIPE_THRESHOLD = 28;
 const MAX_DRAG_OFFSET = 96;
@@ -98,9 +107,9 @@ const props = defineProps({
   activeIndex: { type: Number, default: -1 },
   isDark: { type: Boolean, default: false }
 });
+const themeStore = useThemeStore();
 
 const mistakeDot = ref(false);
-const resolvedTheme = ref('light');
 const currentRoute = ref('');
 const safeAreaBottom = ref(0);
 const optimisticIndex = ref(null);
@@ -108,6 +117,10 @@ const pressedIndex = ref(null);
 const touchStartX = ref(0);
 const dragOffset = ref(0);
 const isDragging = ref(false);
+const keyboardRoot = ref(null);
+const reducedMotion = ref(true);
+let releaseKeyboard = () => undefined;
+let releaseMotion = () => undefined;
 
 const tabList = computed(() => {
   const allTabs = [
@@ -159,7 +172,7 @@ const visualActiveIndex = computed(() => {
   return Math.max(0, Math.min(idx, tabList.value.length - 1));
 });
 
-const isDarkMode = computed(() => props.isDark || resolvedTheme.value === 'dark');
+const isDarkMode = computed(() => props.isDark || themeStore.isDark);
 
 const capsuleStyle = computed(() => {
   if (safeAreaBottom.value > 0) {
@@ -292,11 +305,9 @@ function checkMistakeStatus() {
 }
 
 function syncTheme(mode) {
-  if (mode === 'dark' || mode === 'light') {
-    resolvedTheme.value = mode;
-    return;
+  if (['dark', 'light'].includes(mode) && themeStore.isDark !== (mode === 'dark')) {
+    themeStore.setDarkMode(mode === 'dark');
   }
-  resolvedTheme.value = storageService.get('theme_mode', 'light') === 'dark' ? 'dark' : 'light';
 }
 
 let _switchTabTimer = null;
@@ -363,7 +374,18 @@ function switchTab(path, index) {
   }, NAVIGATION_DELAY);
 }
 
+onShow(() => {
+  // Tab pages are cached, so a previous pending highlight can survive navigation.
+  optimisticIndex.value = null;
+  pressedIndex.value = null;
+  detectCurrentRoute();
+});
+
 onMounted(() => {
+  releaseKeyboard = bindLearningKeyboard(keyboardRoot.value);
+  releaseMotion = bindBusinessMotion((reduced) => {
+    reducedMotion.value = reduced;
+  });
   checkMistakeStatus();
   detectCurrentRoute();
   syncTheme();
@@ -378,6 +400,8 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
+  releaseKeyboard();
+  releaseMotion();
   if (_switchTabTimer) {
     clearTimeout(_switchTabTimer);
     _switchTabTimer = null;
@@ -423,12 +447,12 @@ onBeforeUnmount(() => {
   overflow: hidden;
   pointer-events: auto;
   border-radius: 999rpx;
-  background: linear-gradient(160deg, rgba(255, 255, 255, 0.88), rgba(240, 255, 228, 0.68)), rgba(255, 255, 255, 0.58);
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.88), rgba(238, 231, 247, 0.68)), rgba(255, 255, 255, 0.58);
   box-shadow:
-    0 26rpx 70rpx rgba(13, 71, 36, 0.18),
-    0 10rpx 26rpx rgba(13, 71, 36, 0.1),
+    0 26rpx 70rpx rgba(51, 40, 66, 0.18),
+    0 10rpx 26rpx rgba(51, 40, 66, 0.1),
     inset 0 1rpx 0 rgba(255, 255, 255, 0.9),
-    inset 0 -1rpx 0 rgba(18, 64, 30, 0.06);
+    inset 0 -1rpx 0 rgba(51, 40, 66, 0.06);
   backdrop-filter: blur(20px) saturate(132%);
   -webkit-backdrop-filter: blur(20px) saturate(132%);
   touch-action: pan-x;
@@ -442,7 +466,7 @@ onBeforeUnmount(() => {
 }
 
 .tabbar-capsule.dark-mode {
-  background: linear-gradient(145deg, rgba(37, 52, 42, 0.92), rgba(18, 38, 24, 0.84)), rgba(20, 33, 23, 0.9);
+  background: linear-gradient(145deg, rgba(45, 37, 63, 0.92), rgba(33, 26, 46, 0.84)), rgba(33, 26, 46, 0.9);
   box-shadow:
     0 28rpx 70rpx rgba(0, 0, 0, 0.34),
     inset 0 1rpx 0 rgba(255, 255, 255, 0.1),
@@ -471,11 +495,11 @@ onBeforeUnmount(() => {
   border-radius: 999rpx;
   background:
     radial-gradient(circle at 30% 16%, rgba(255, 255, 255, 0.92), transparent 34%),
-    linear-gradient(135deg, #f7ffe9 0%, #d9ffc1 48%, #b7f7e1 100%);
+    linear-gradient(135deg, #f4effb 0%, #dcc8f3 48%, #bcb2ea 100%);
   box-shadow:
-    0 14rpx 32rpx rgba(13, 71, 36, 0.15),
+    0 14rpx 32rpx rgba(51, 40, 66, 0.15),
     inset 0 1rpx 0 rgba(255, 255, 255, 0.82),
-    inset 0 -2rpx 4rpx rgba(18, 64, 30, 0.07);
+    inset 0 -2rpx 4rpx rgba(51, 40, 66, 0.07);
   pointer-events: none;
   transition-property: transform, opacity;
   transition-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -489,8 +513,8 @@ onBeforeUnmount(() => {
   left: 34rpx;
   height: 7rpx;
   border-radius: 999rpx;
-  background: #18552f;
-  box-shadow: 0 6rpx 16rpx rgba(24, 85, 47, 0.24);
+  background: #785bbc;
+  box-shadow: 0 6rpx 16rpx rgba(120, 91, 188, 0.24);
 }
 
 .tab-item {
@@ -534,7 +558,7 @@ onBeforeUnmount(() => {
   width: 48rpx;
   height: 48rpx;
   opacity: 0.66;
-  filter: saturate(0.72);
+  filter: brightness(0) saturate(100%);
   transform: translate3d(0, 0, 0) scale(1);
   transition-property: transform, opacity, filter;
   transition-duration: 240ms;
@@ -543,14 +567,14 @@ onBeforeUnmount(() => {
 
 .tab-item.active .tab-icon {
   opacity: 1;
-  filter: saturate(0.92);
+  filter: brightness(0) saturate(100%);
   transform: translate3d(0, -3rpx, 0) scale(1.14);
 }
 
 .tab-label {
   max-width: 92rpx;
   overflow: hidden;
-  color: rgba(20, 33, 23, 0.58);
+  color: rgba(51, 40, 66, 0.68);
   font-size: 23rpx;
   font-weight: 650;
   line-height: 1.14;
@@ -563,16 +587,16 @@ onBeforeUnmount(() => {
 }
 
 .tab-item.active .tab-label {
-  color: #142017;
+  color: #332842;
   transform: translate3d(0, -1rpx, 0);
 }
 
 .dark-mode .tab-label {
-  color: rgba(241, 248, 238, 0.6);
+  color: rgba(248, 244, 255, 0.72);
 }
 
 .dark-mode .tab-item.active .tab-label {
-  color: #f5ffe9;
+  color: #332842;
 }
 
 .dark-mode .tab-icon {
@@ -580,7 +604,7 @@ onBeforeUnmount(() => {
 }
 
 .dark-mode .tab-item.active .tab-icon {
-  filter: brightness(0) invert(1) opacity(1);
+  filter: brightness(0) opacity(1);
 }
 
 .red-dot {
@@ -596,6 +620,42 @@ onBeforeUnmount(() => {
 }
 
 .dark-mode .red-dot {
-  border-color: rgba(20, 33, 23, 0.92);
+  border-color: rgba(33, 26, 46, 0.92);
+}
+.tab-item:focus-visible {
+  outline: 2px solid #785bbc;
+  outline-offset: -2px;
+}
+.dark-mode .tab-item:focus-visible {
+  outline-color: #c9b1ee;
+}
+.tab-item.active .tab-label {
+  font-weight: 700;
+}
+.tabbar-capsule.reduce-motion,
+.tabbar-capsule.reduce-motion .tabbar-glider,
+.tabbar-capsule.reduce-motion .tab-item,
+.tabbar-capsule.reduce-motion .tab-icon,
+.tabbar-capsule.reduce-motion .tab-label {
+  animation: none !important;
+  transition: none !important;
+}
+.tabbar-capsule.reduce-motion .tab-item,
+.tabbar-capsule.reduce-motion .tab-label {
+  transform: none !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  .tabbar-capsule,
+  .tabbar-glider,
+  .tab-item,
+  .tab-icon,
+  .tab-label {
+    animation: none !important;
+    transition: none !important;
+  }
+  .tab-item,
+  .tab-label {
+    transform: none !important;
+  }
 }
 </style>

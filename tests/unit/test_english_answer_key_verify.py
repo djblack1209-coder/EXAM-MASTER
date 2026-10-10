@@ -15,7 +15,9 @@ def write_json(path: Path, payload: dict) -> None:
 
 
 class EnglishAnswerKeyVerifyTest(unittest.TestCase):
-    def test_verifier_promotes_exact_answer_key_matches_but_leaves_writing_unverified(self):
+    def test_verifier_promotes_exact_answer_key_matches_but_leaves_writing_unverified(
+        self,
+    ):
         from scripts.baidu.english_answer_key_verify import verify_bank
 
         with tempfile.TemporaryDirectory() as tmp:
@@ -183,7 +185,9 @@ class EnglishAnswerKeyVerifyTest(unittest.TestCase):
             tmp_dir = Path(tmp)
             target = tmp_dir / "english1-2010.json"
             answer_key = tmp_dir / "src_answer-2010年真题及答案速查.txt"
-            answer_key.write_text("2010年考研英语（一）真题答案速查表\n1 - 5 ABCBC\n", encoding="utf-8")
+            answer_key.write_text(
+                "2010年考研英语（一）真题答案速查表\n1 - 5 ABCBC\n", encoding="utf-8"
+            )
             write_json(
                 target,
                 {
@@ -217,7 +221,9 @@ class EnglishAnswerKeyVerifyTest(unittest.TestCase):
             tmp_dir = Path(tmp)
             target = tmp_dir / "english1-2010.json"
             answer_key = tmp_dir / "src_answer-2010年真题及答案速查.txt"
-            answer_key.write_text("2010年考研英语（一）真题答案速查表\n1 - 5 ABCBC\n", encoding="utf-8")
+            answer_key.write_text(
+                "2010年考研英语（一）真题答案速查表\n1 - 5 ABCBC\n", encoding="utf-8"
+            )
             write_json(
                 target,
                 {

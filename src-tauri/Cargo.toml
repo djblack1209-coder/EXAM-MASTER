@@ -1,0 +1,26 @@
+[package]
+name = "wenli-desktop"
+version = "2.2.0"
+description = "Wenli conversation learning desktop host"
+edition = "2021"
+rust-version = "1.90"
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+tauri-plugin-dialog = "2"
+tauri-plugin-opener = "2"
+tauri-plugin-single-instance = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+getrandom = "0.3"
+sha2 = "0.10"
+tempfile = "3"
+uuid = { version = "1", features = ["v4"] }
+
+# macOS 27 rejects stripped proc-macro dylibs with a misaligned LINKEDIT pool.
+# Build dependencies are compile-time only; keep their symbols loadable.
+[profile.release.build-override]
+strip = "none"

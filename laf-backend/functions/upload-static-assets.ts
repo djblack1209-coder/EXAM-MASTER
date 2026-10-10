@@ -50,7 +50,7 @@ export default async function (ctx: any) {
     }
   }
 
-  const successCount = results.filter(r => r.ok).length;
+  const successCount = results.filter((r) => r.ok).length;
   return {
     code: 0,
     message: `上传完成: ${successCount}/${files.length} 成功`,

@@ -30,12 +30,8 @@ describe('English II 2024 published bank data', () => {
     expect(bank.cards.find((card) => card.number === 47).question).toContain(
       'the protection of old hoses in an ancient town'
     );
-    expect(bank.cards.find((card) => card.number === 48).question).toContain(
-      '某高校劳动实践课学生主要收获调查'
-    );
+    expect(bank.cards.find((card) => card.number === 48).question).toContain('某高校劳动实践课学生主要收获调查');
     expect(bank.cards.find((card) => card.number === 48).question).toContain('91.3%');
-    expect(bank.cards.find((card) => card.number === 48).answerEvidence.evidenceRole).toBe(
-      'official_writing_prompt'
-    );
+    expect(bank.cards.find((card) => card.number === 48).answerEvidence.evidenceRole).toBe('official_writing_prompt');
   });
 });

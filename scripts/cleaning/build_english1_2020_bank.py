@@ -110,7 +110,7 @@ WRITING_PROMPTS = {
         "in about 100 words. Do not use your own name in the notice."
     ),
     52: (
-        "Write an essay of 160-200 words based on the pictures themed \"习惯\". "
+        'Write an essay of 160-200 words based on the pictures themed "习惯". '
         "Describe the pictures briefly, interpret the implied meaning, and give your comments."
     ),
 }
@@ -169,7 +169,15 @@ def compact(text: Any) -> str:
     return re.sub(r"\s+", " ", str(text or "")).strip()
 
 
-def render_pdf_assets(pdf: Path, prefix: str, *, asset_dir: Path, force: bool, first_page: int, last_page: int) -> None:
+def render_pdf_assets(
+    pdf: Path,
+    prefix: str,
+    *,
+    asset_dir: Path,
+    force: bool,
+    first_page: int,
+    last_page: int,
+) -> None:
     if not pdf.exists():
         raise FileNotFoundError(pdf)
     asset_dir.mkdir(parents=True, exist_ok=True)
@@ -243,32 +251,51 @@ def build_passages(asset_dir: Path) -> dict[str, str]:
     del asset_dir
     text = extract_pdf_text(ANSWER_SPEED)
     passages = {
-        "cloze": section_between(text, r"Section\s+I\s+Use\s+of\s+English.*?\(10 points\)", r"\n\s*1\.\s*A\."),
+        "cloze": section_between(
+            text, r"Section\s+I\s+Use\s+of\s+English.*?\(10 points\)", r"\n\s*1\.\s*A\."
+        ),
         "text1": section_between(text, r"\n\s*Text\s*1\s*\n", r"\n\s*21\."),
         "text2": section_between(text, r"\n\s*Text\s*2\s*\n", r"\n\s*26\."),
         "text3": section_between(text, r"\n\s*Text\s*3\s*\n", r"\n\s*31\."),
         "text4": section_between(text, r"\n\s*Text\s*4\s*\n", r"\n\s*36\."),
         "part-b": section_between(text, r"\n\s*Part\s+B\s*\n", r"\n\s*Part\s+C\s*\n"),
-        "part-c": section_between(text, r"\n\s*Part\s+C\s*\n.*?\(10 points\)", r"\n\s*Section\s+m\s+Writing"),
+        "part-c": section_between(
+            text, r"\n\s*Part\s+C\s*\n.*?\(10 points\)", r"\n\s*Section\s+m\s+Writing"
+        ),
         "writing": section_between(text, r"\n\s*Section\s+m\s+Writing", r"2020年考研英语"),
     }
     missing = [key for key, value in passages.items() if not value]
     if missing:
         raise RuntimeError(f"Missing PDF text passage groups: {', '.join(missing)}")
     if "town of culture" not in passages["text1"].lower():
-        raise RuntimeError("2020 Text 1 text layer did not contain the expected town-of-culture article")
+        raise RuntimeError(
+            "2020 Text 1 text layer did not contain the expected town-of-culture article"
+        )
     if "sci-hub" not in passages["text2"].lower():
-        raise RuntimeError("2020 Text 2 text layer did not contain the expected scientific publishing article")
+        raise RuntimeError(
+            "2020 Text 2 text layer did not contain the expected scientific publishing article"
+        )
     if "gender parity" not in passages["text3"].lower():
-        raise RuntimeError("2020 Text 3 text layer did not contain the expected gender-parity article")
+        raise RuntimeError(
+            "2020 Text 3 text layer did not contain the expected gender-parity article"
+        )
     if "digital services tax" not in passages["text4"].lower():
-        raise RuntimeError("2020 Text 4 text layer did not contain the expected digital-tax article")
+        raise RuntimeError(
+            "2020 Text 4 text layer did not contain the expected digital-tax article"
+        )
     if "eye-tracking" not in passages["part-b"].lower():
-        raise RuntimeError("2020 Part B text layer did not contain the expected eye-contact passage")
+        raise RuntimeError(
+            "2020 Part B text layer did not contain the expected eye-contact passage"
+        )
     part_c = passages["part-c"].lower()
     if "renaissance" not in part_c or "sapere aude" not in part_c:
-        raise RuntimeError("2020 Part C text layer did not contain the expected Renaissance translation passage")
-    if "upcoming singing contest" not in passages["writing"].lower() or "习惯" not in passages["writing"]:
+        raise RuntimeError(
+            "2020 Part C text layer did not contain the expected Renaissance translation passage"
+        )
+    if (
+        "upcoming singing contest" not in passages["writing"].lower()
+        or "习惯" not in passages["writing"]
+    ):
         raise RuntimeError("2020 Writing text layer did not contain both official writing prompts")
     return passages
 
@@ -407,8 +434,14 @@ def build_card(number: int, passages: dict[str, str]) -> dict[str, Any]:
     question = question_for(number)
     options = options_for(number)
     answer = answer_for(number)
-    question_images = [image_ref("paper-page", page, caption=f"试卷原页 p.{page}") for page in QUESTION_PAGES[number]]
-    answer_images = [image_ref("answer-page", page, caption=f"答案证据 p.{page}") for page in ANSWER_PAGES[number]]
+    question_images = [
+        image_ref("paper-page", page, caption=f"试卷原页 p.{page}")
+        for page in QUESTION_PAGES[number]
+    ]
+    answer_images = [
+        image_ref("answer-page", page, caption=f"答案证据 p.{page}")
+        for page in ANSWER_PAGES[number]
+    ]
     question_hash = sha256_text(
         json.dumps(
             {
@@ -422,7 +455,11 @@ def build_card(number: int, passages: dict[str, str]) -> dict[str, Any]:
         )
     )
     answer_hash = sha256_text(
-        json.dumps({"answer": answer, "answerPages": ANSWER_PAGES[number]}, ensure_ascii=False, sort_keys=True)
+        json.dumps(
+            {"answer": answer, "answerPages": ANSWER_PAGES[number]},
+            ensure_ascii=False,
+            sort_keys=True,
+        )
     )
 
     card = {
@@ -479,12 +516,17 @@ def validate_cards(cards: list[dict[str, Any]]) -> None:
     expected_answers = {1: "C", 21: "C", 30: "D", 41: "C", 45: "D"}
     for number, answer in expected_answers.items():
         if cards[number - 1].get("answer") != answer:
-            issues.append(f"card {number}: answer={cards[number - 1].get('answer')} expected {answer}")
+            issues.append(
+                f"card {number}: answer={cards[number - 1].get('answer')} expected {answer}"
+            )
     if "sci-hub" not in cards[25]["passage"].lower() or cards[29]["answer"] != "D":
         issues.append("Text 2 evidence mismatch for question 30")
     if "eye-tracking" not in cards[42]["passage"].lower() or cards[42]["answer"] != "G":
         issues.append("Part B evidence mismatch for question 43")
-    if "with the church's teachings and ways of thinking" not in cards[45].get("targetSegment", "").lower():
+    if (
+        "with the church's teachings and ways of thinking"
+        not in cards[45].get("targetSegment", "").lower()
+    ):
         issues.append("Part C evidence mismatch for question 46")
     payload_text = json.dumps(cards, ensure_ascii=False)
     for forbidden in ["手机阅读目的调查", "failure"]:
@@ -495,8 +537,22 @@ def validate_cards(cards: list[dict[str, Any]]) -> None:
 
 
 def build_payload(*, asset_dir: Path, force_assets: bool) -> dict[str, Any]:
-    render_pdf_assets(ANSWER_SPEED, "paper-page", asset_dir=asset_dir, force=force_assets, first_page=1, last_page=15)
-    render_pdf_assets(ANSWER_SPEED, "answer-page", asset_dir=asset_dir, force=force_assets, first_page=1, last_page=16)
+    render_pdf_assets(
+        ANSWER_SPEED,
+        "paper-page",
+        asset_dir=asset_dir,
+        force=force_assets,
+        first_page=1,
+        last_page=15,
+    )
+    render_pdf_assets(
+        ANSWER_SPEED,
+        "answer-page",
+        asset_dir=asset_dir,
+        force=force_assets,
+        first_page=1,
+        last_page=16,
+    )
     passages = build_passages(asset_dir)
     cards = [build_card(number, passages) for number in range(1, 53)]
     validate_cards(cards)

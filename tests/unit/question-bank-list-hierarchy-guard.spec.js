@@ -46,7 +46,7 @@ describe('question bank list hierarchy', () => {
     expect(wrapper.find('.recommended-panel').text()).toContain(expected.recommendedSlot.name);
     expect(wrapper.find('.paper-list-head').exists()).toBe(true);
     expect(wrapper.find('.paper-list-head').text()).toContain('更多可练整卷');
-    expect(wrapper.find('.paper-list-head').text()).toContain('推荐卷之外的正式年份');
+    expect(wrapper.find('.paper-list-head').text()).toContain('更多可练整卷');
     expect(wrapper.find('.paper-list-head').text()).toContain(`${expected.secondaryBanks.length} 卷`);
     expect(wrapper.findAll('.paper-card')).toHaveLength(expected.secondaryBanks.length);
     expect(wrapper.find('.paper-list').text()).not.toContain(expected.recommendedSlot.name);
@@ -77,7 +77,7 @@ describe('question bank list hierarchy', () => {
     expect(source).toContain('secondaryReadyBanks');
     expect(source).toContain('paper-list-head');
     expect(source).toContain('更多可练整卷');
-    expect(source).toContain('推荐卷之外的正式年份');
+    expect(source).toContain('更多可练整卷');
     expect(source).toContain('v-else-if="!recommendedSlot"');
     expect(source).toContain('.dark-mode .paper-list-title');
     expect(source).toContain('.dark-mode .paper-list-sub');

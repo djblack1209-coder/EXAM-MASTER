@@ -26,7 +26,12 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_MANIFEST = PROJECT_ROOT / "data" / "source-manifest.json"
 DEFAULT_OUTPUT = PROJECT_ROOT / "data" / "public-course-netdisk-candidate-coverage.json"
 PUBLIC_TRACKS = ["politics", "english1", "english2", "math1", "math2", "math3"]
-CANDIDATE_SOURCE_TYPES = {"official_paper", "official_question_paper", "institution_candidate", "unknown_document"}
+CANDIDATE_SOURCE_TYPES = {
+    "official_paper",
+    "official_question_paper",
+    "institution_candidate",
+    "unknown_document",
+}
 ANSWER_RE = re.compile(r"答案|解析|参考答案|answer", re.I)
 BLOCKING_RISK_FLAGS = {
     "brand_leak",
@@ -74,7 +79,9 @@ def as_int(value: Any) -> int | None:
 
 
 def item_text(item: dict[str, Any]) -> str:
-    return f"{item.get('fileName', '')} {item.get('safeDisplayName', '')} {item.get('remotePath', '')}"
+    return (
+        f"{item.get('fileName', '')} {item.get('safeDisplayName', '')} {item.get('remotePath', '')}"
+    )
 
 
 def is_candidate_item(item: dict[str, Any], *, track: str, year: int, source_channel: str) -> bool:
@@ -197,7 +204,9 @@ def analyze_candidate_coverage(
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Build raw public-course candidate coverage from Source Manifest.")
+    parser = argparse.ArgumentParser(
+        description="Build raw public-course candidate coverage from Source Manifest."
+    )
     parser.add_argument("--manifest", type=Path, default=DEFAULT_MANIFEST)
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
     parser.add_argument("--source-channel", default="netdisk_full_path")

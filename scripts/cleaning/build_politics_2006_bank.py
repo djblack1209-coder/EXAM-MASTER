@@ -140,7 +140,18 @@ def render_pdf_assets(pdf: Path, *, asset_dir: Path, force: bool) -> None:
         item.unlink()
 
     output_prefix = TMP_RENDER_DIR / "paper-page"
-    run(["pdftoppm", "-r", "160", "-jpeg", "-jpegopt", "quality=76", str(pdf), str(output_prefix)])
+    run(
+        [
+            "pdftoppm",
+            "-r",
+            "160",
+            "-jpeg",
+            "-jpegopt",
+            "quality=76",
+            str(pdf),
+            str(output_prefix),
+        ]
+    )
 
     for rendered in sorted(TMP_RENDER_DIR.glob("paper-page-*.jpg")):
         page = int(rendered.stem.split("-")[-1])
@@ -227,11 +238,17 @@ def build_card(number: int) -> dict[str, Any]:
     question = question_anchor(number)
     answer = answer_for(number)
     options = options_for(number)
-    question_images = [image_ref(page, caption=f"试卷原页 p.{page}") for page in QUESTION_PAGES[number]]
+    question_images = [
+        image_ref(page, caption=f"试卷原页 p.{page}") for page in QUESTION_PAGES[number]
+    ]
     answer_images = [image_ref(page, caption=f"答案原页 p.{page}") for page in ANSWER_PAGES[number]]
     question_hash = sha256_text(
         json.dumps(
-            {"question": question, "options": options, "questionPages": QUESTION_PAGES[number]},
+            {
+                "question": question,
+                "options": options,
+                "questionPages": QUESTION_PAGES[number],
+            },
             ensure_ascii=False,
             sort_keys=True,
         )

@@ -32,7 +32,11 @@ WRITING_NUMBERS_BY_SUBJECT = {
 try:
     from answer_evidence_repair import first_non_empty, hash_text, read_source_text  # type: ignore
 except ModuleNotFoundError:  # pragma: no cover
-    from scripts.baidu.answer_evidence_repair import first_non_empty, hash_text, read_source_text  # type: ignore
+    from scripts.baidu.answer_evidence_repair import (
+        first_non_empty,
+        hash_text,
+        read_source_text,
+    )  # type: ignore
 
 
 def utc_now() -> str:
@@ -69,7 +73,9 @@ def compact(value: Any) -> str:
 def load_cards(payload: Any) -> list[dict[str, Any]]:
     if not isinstance(payload, dict):
         return []
-    cards = payload.get("cards") if isinstance(payload.get("cards"), list) else payload.get("questions")
+    cards = (
+        payload.get("cards") if isinstance(payload.get("cards"), list) else payload.get("questions")
+    )
     return [card for card in (cards or []) if isinstance(card, dict)]
 
 
@@ -87,7 +93,12 @@ def infer_english_subject(payload: Any, path: Path) -> str:
         )
     candidates.append(path.stem)
     joined = " ".join(str(candidate or "").lower() for candidate in candidates)
-    if "english2" in joined or "english-2" in joined or "英语二" in joined or "英语（二）" in joined:
+    if (
+        "english2" in joined
+        or "english-2" in joined
+        or "英语二" in joined
+        or "英语（二）" in joined
+    ):
         return "english2"
     return "english1"
 
@@ -98,7 +109,15 @@ def writing_numbers_for_subject(subject: str) -> set[int]:
 
 def card_number(card: dict[str, Any]) -> int | None:
     try:
-        return int(float(first_non_empty(card.get("number"), card.get("questionNumber"), card.get("question_no"))))
+        return int(
+            float(
+                first_non_empty(
+                    card.get("number"),
+                    card.get("questionNumber"),
+                    card.get("question_no"),
+                )
+            )
+        )
     except (TypeError, ValueError):
         return None
 
@@ -110,7 +129,9 @@ def prompt_answer(card: dict[str, Any]) -> str:
     return f"按官方题干完成写作任务：{question}"
 
 
-def extract_writing_prompts(source_text: str, writing_numbers: set[int] | None = None) -> dict[int, str]:
+def extract_writing_prompts(
+    source_text: str, writing_numbers: set[int] | None = None
+) -> dict[int, str]:
     if not source_text:
         return {}
 
@@ -129,14 +150,20 @@ def extract_writing_prompts(source_text: str, writing_numbers: set[int] | None =
         if not match:
             continue
         prompt = compact(f"{number}. Directions: {match.group(1)}")
-        prompt = re.sub(r"\b\d+\s+(?:19|20)\d{2}\s+年全国硕士研究生招生考试（英语[一二]）真题试题\b", "", prompt)
+        prompt = re.sub(
+            r"\b\d+\s+(?:19|20)\d{2}\s+年全国硕士研究生招生考试（英语[一二]）真题试题\b",
+            "",
+            prompt,
+        )
         prompt = re.sub(r"\s+\d+\s*$", "", prompt).strip()
         if prompt:
             prompts[number] = prompt
     return prompts
 
 
-def resolve_writing_prompt_path(payload: Any, prompt_source: Path | None, writing_numbers: set[int]) -> Path | None:
+def resolve_writing_prompt_path(
+    payload: Any, prompt_source: Path | None, writing_numbers: set[int]
+) -> Path | None:
     if prompt_source:
         return prompt_source
 
@@ -145,7 +172,9 @@ def resolve_writing_prompt_path(payload: Any, prompt_source: Path | None, writin
     for card in cards:
         if card_number(card) not in writing_numbers:
             continue
-        source_evidence = card.get("sourceEvidence") if isinstance(card.get("sourceEvidence"), dict) else {}
+        source_evidence = (
+            card.get("sourceEvidence") if isinstance(card.get("sourceEvidence"), dict) else {}
+        )
         source_paths.extend(
             [
                 first_non_empty(source_evidence.get("sourceFilePath")),
@@ -178,7 +207,11 @@ def verify_bank(
     english_subject = infer_english_subject(payload, target_path)
     writing_numbers = writing_numbers_for_subject(english_subject)
     prompt_source_path = resolve_writing_prompt_path(payload, prompt_source, writing_numbers)
-    writing_prompts = extract_writing_prompts(read_source_text(prompt_source_path), writing_numbers) if prompt_source_path else {}
+    writing_prompts = (
+        extract_writing_prompts(read_source_text(prompt_source_path), writing_numbers)
+        if prompt_source_path
+        else {}
+    )
     changed = False
     verified = 0
     skipped: list[dict[str, Any]] = []
@@ -197,9 +230,16 @@ def verify_bank(
             changed = True
 
         answer = prompt_answer(card)
-        source_id = first_non_empty(card.get("sourceEvidenceId"), card.get("sourceEvidence", {}).get("sourceId"))
+        source_id = first_non_empty(
+            card.get("sourceEvidenceId"), card.get("sourceEvidence", {}).get("sourceId")
+        )
         if not answer or not source_id:
-            skipped.append({"cardId": first_non_empty(card.get("id"), f"card-{index + 1}"), "number": number})
+            skipped.append(
+                {
+                    "cardId": first_non_empty(card.get("id"), f"card-{index + 1}"),
+                    "number": number,
+                }
+            )
             continue
 
         if card.get("type") != "essay":
@@ -222,7 +262,9 @@ def verify_bank(
                 card[key] = value
                 changed = True
 
-        source_evidence = card.get("sourceEvidence") if isinstance(card.get("sourceEvidence"), dict) else {}
+        source_evidence = (
+            card.get("sourceEvidence") if isinstance(card.get("sourceEvidence"), dict) else {}
+        )
         next_source_evidence = {
             **source_evidence,
             "evidenceId": first_non_empty(source_evidence.get("evidenceId"), source_id),
@@ -237,7 +279,9 @@ def verify_bank(
             card["sourceEvidence"] = next_source_evidence
             changed = True
 
-        answer_evidence = card.get("answerEvidence") if isinstance(card.get("answerEvidence"), dict) else {}
+        answer_evidence = (
+            card.get("answerEvidence") if isinstance(card.get("answerEvidence"), dict) else {}
+        )
         next_answer_evidence = {
             **answer_evidence,
             "status": "matched",
@@ -307,9 +351,16 @@ def run(argv: list[str] | None = None) -> int:
     parser.add_argument("--sync-config", action="store_true")
     args = parser.parse_args(argv)
 
-    targets = args.target or [DEFAULT_FLASHCARD_DIR / f"english1-{year}.json" for year in parse_years(args.years)]
+    targets = args.target or [
+        DEFAULT_FLASHCARD_DIR / f"english1-{year}.json" for year in parse_years(args.years)
+    ]
     files = [
-        verify_bank(target, prompt_source=args.prompt_source, write=args.write, sync_config=args.sync_config)
+        verify_bank(
+            target,
+            prompt_source=args.prompt_source,
+            write=args.write,
+            sync_config=args.sync_config,
+        )
         for target in targets
     ]
     report = {

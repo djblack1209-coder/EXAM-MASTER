@@ -1,5 +1,5 @@
 name: voice-service
-desc: ""
+desc: ''
 methods:
   - GET
   - POST

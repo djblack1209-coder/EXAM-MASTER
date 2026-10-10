@@ -29,9 +29,7 @@ describe('English I 2019 published bank data', () => {
     );
     expect(bank.cards.find((card) => card.number === 51).question).toContain('Aiding Rural Primary Schools');
     expect(bank.cards.find((card) => card.number === 52).question).toContain('picture below');
-    expect(bank.cards.find((card) => card.number === 52).answerEvidence.evidenceRole).toBe(
-      'official_writing_prompt'
-    );
+    expect(bank.cards.find((card) => card.number === 52).answerEvidence.evidenceRole).toBe('official_writing_prompt');
     expect(JSON.stringify(bank)).not.toContain('用“闪过”');
     expect(JSON.stringify(bank)).not.toContain('故事情节纯属虚构');
     expect(JSON.stringify(bank)).not.toContain('Museums');

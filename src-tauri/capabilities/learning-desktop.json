@@ -1,0 +1,20 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "learning-desktop",
+  "description": "仅打包的主学习窗口可逐次选择学习 JSON 或 PDF/图片；资料正文须明确确认后读取。通过受限系统浏览器完成授权，不开放任意路径或命令。",
+  "windows": ["main"],
+  "local": true,
+  "platforms": ["macOS", "windows"],
+  "permissions": [
+    "allow-choose-learning-save",
+    "allow-write-learning-selection",
+    "allow-discard-learning-selection",
+    "allow-read-learning-backup",
+    "allow-choose-learning-material",
+    "allow-read-learning-material",
+    "allow-discard-learning-material",
+    "allow-create-desktop-oauth-proof",
+    "allow-open-desktop-oauth",
+    "allow-focus-desktop-after-oauth"
+  ]
+}

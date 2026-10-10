@@ -70,9 +70,7 @@ PART_B_OPTIONS = {
     "G": "Ask for help",
 }
 
-WRITING_CHART_48 = (
-    "Chart: 某高校学生旅游目的调查（欣赏风景 37%；缓解压力 33%；其他 15%；广交朋友 9%；培养独立能力 6%）."
-)
+WRITING_CHART_48 = "Chart: 某高校学生旅游目的调查（欣赏风景 37%；缓解压力 33%；其他 15%；广交朋友 9%；培养独立能力 6%）."
 
 
 def utc_now() -> str:
@@ -132,14 +130,14 @@ def compact(value: Any) -> str:
         "uCarry a book": '"Carry a book',
         "uempty bottles,,": '"empty bottles"',
         "“ making time": '"making time',
-        "time. \"": 'time."',
+        'time. "': 'time."',
         "grownup is that there9 s": "grownup is that there's",
         "they*re": "they're",
         "uHappiness": '"Happiness',
         "happiness. v": 'happiness."',
         "u younger": '"younger',
         "process,,": 'process,"',
-        "sentiment. \"": 'sentiment."',
+        'sentiment. "': 'sentiment."',
         "you911": "you'll",
         "you511": "you'll",
         "brain­scan": "brain-scan",
@@ -196,7 +194,9 @@ def require_sources() -> None:
     paths = [DOCUMENT_VERSION, ORIGINAL_PAPER, PAPER_ANSWER, DETAILED_ANALYSIS]
     missing = [relative(path) for path in paths if not path.exists()]
     if missing:
-        raise FileNotFoundError("Missing required English II 2016 source PDFs: " + ", ".join(missing))
+        raise FileNotFoundError(
+            "Missing required English II 2016 source PDFs: " + ", ".join(missing)
+        )
 
 
 def text_between(text: str, start: str, end: str) -> str:
@@ -281,7 +281,9 @@ def extract_cloze_passage(text: str) -> str:
 
 
 def extract_cloze_options(text: str) -> dict[int, dict[str, str]]:
-    option_text = text_between(text, "英语（二）试题.1.（共14页）", "Section U        Reading Comprehension")
+    option_text = text_between(
+        text, "英语（二）试题.1.（共14页）", "Section U        Reading Comprehension"
+    )
     options: dict[int, dict[str, str]] = {}
     for number in range(1, 21):
         match = re.search(rf"(?m)^\s*{number}\.\s+(.+)$", option_text)
@@ -297,13 +299,21 @@ def extract_passages(text: str) -> dict[str, str]:
         "text2": cleaned_block(text_between(text, "Text 2", "26. The major reason")),
         "text3": cleaned_block(text_between(text, "Text 3", "31. The usual time-management")),
         "text4": cleaned_block(text_between(text, "Text 4", "36. One cross-generation")),
-        "part-b": cleaned_block(text_between(text, "Act Your Shoe Size, Not Your Age", "Section HI")),
+        "part-b": cleaned_block(
+            text_between(text, "Act Your Shoe Size, Not Your Age", "Section HI")
+        ),
     }
-    passages["part-b"] = f'Act Your Shoe Size, Not Your Age {passages["part-b"]}'
+    passages["part-b"] = f"Act Your Shoe Size, Not Your Age {passages['part-b']}"
     return passages
 
 
-def find_numbered_block(text: str, number: int, next_number: int | None = None, *, end_anchor: str | None = None) -> str:
+def find_numbered_block(
+    text: str,
+    number: int,
+    next_number: int | None = None,
+    *,
+    end_anchor: str | None = None,
+) -> str:
     start_match = re.search(rf"(?m)^\s*{number}\.\s+", text)
     if not start_match:
         raise ValueError(f"Missing numbered block {number}")
@@ -347,14 +357,23 @@ def extract_translation_text(text: str) -> str:
 
 
 def extract_translation_answer(text: str) -> str:
-    block = text_between(text, "超市的设计旨在吸引顾客在店里停留尽可能长的时间", "英语（二）试题.14.（共14页）")
+    block = text_between(
+        text,
+        "超市的设计旨在吸引顾客在店里停留尽可能长的时间",
+        "英语（二）试题.14.（共14页）",
+    )
     return cleaned_block("超市的设计旨在吸引顾客在店里停留尽可能长的时间" + block)
 
 
 def extract_writing_prompts(text: str) -> dict[int, str]:
     prompt47 = cleaned_block(text_between(text, "47. Directions:", "英语(二)试题.13.(共14页)"))
-    prompt48 = cleaned_block(text_between(text, "48. Directions:", "2016年考研英语（二）真题答案速查表"))
-    return {47: "47. Directions: " + prompt47, 48: "48. Directions: " + prompt48 + " " + WRITING_CHART_48}
+    prompt48 = cleaned_block(
+        text_between(text, "48. Directions:", "2016年考研英语（二）真题答案速查表")
+    )
+    return {
+        47: "47. Directions: " + prompt47,
+        48: "48. Directions: " + prompt48 + " " + WRITING_CHART_48,
+    }
 
 
 def question_hash_payload(card: dict[str, Any]) -> dict[str, Any]:
@@ -382,8 +401,12 @@ def attach_evidence(
 ) -> dict[str, Any]:
     question_source = source_path(question_source_id)
     answer_source = source_path(answer_source_id)
-    question_hash = hash_text(json.dumps(question_hash_payload(card), ensure_ascii=False, sort_keys=True))
-    answer_hash = hash_text(json.dumps(answer_hash_payload(card, answer_role), ensure_ascii=False, sort_keys=True))
+    question_hash = hash_text(
+        json.dumps(question_hash_payload(card), ensure_ascii=False, sort_keys=True)
+    )
+    answer_hash = hash_text(
+        json.dumps(answer_hash_payload(card, answer_role), ensure_ascii=False, sort_keys=True)
+    )
 
     card["sourceEvidenceId"] = question_source_id
     card["sourceEvidence"] = {
@@ -417,7 +440,15 @@ def attach_evidence(
     return card
 
 
-def base_card(number: int, *, card_type: str, section: str, group_id: str, question: str, answer: str) -> dict[str, Any]:
+def base_card(
+    number: int,
+    *,
+    card_type: str,
+    section: str,
+    group_id: str,
+    question: str,
+    answer: str,
+) -> dict[str, Any]:
     return {
         "id": f"english2-2016-{number:03d}",
         "paperId": "english2-2016",
@@ -486,7 +517,9 @@ def build_bank(now: str | None = None) -> dict[str, Any]:
         )
         card["passage"] = material["cloze_passage"]
         card["options"] = option_list(material["cloze_options"][number])
-        card["explanation"] = "答案已按本地百度网盘 2016 英语二真题答案速查表匹配，并用逐题细解 PDF 复核。"
+        card["explanation"] = (
+            "答案已按本地百度网盘 2016 英语二真题答案速查表匹配，并用逐题细解 PDF 复核。"
+        )
         cards.append(
             attach_evidence(
                 card,
@@ -501,7 +534,9 @@ def build_bank(now: str | None = None) -> dict[str, Any]:
     for number in range(21, 41):
         group_id = group_for(number)
         section = SECTION_BY_GROUP[group_id]
-        block = find_numbered_block(text, number, number + 1 if number < 40 else None, end_anchor="Part B")
+        block = find_numbered_block(
+            text, number, number + 1 if number < 40 else None, end_anchor="Part B"
+        )
         question, options = parse_choice_question(block, number)
         card = base_card(
             number,
@@ -513,7 +548,9 @@ def build_bank(now: str | None = None) -> dict[str, Any]:
         )
         card["passage"] = material["passages"][group_id]
         card["options"] = option_list(options)
-        card["explanation"] = "答案已按本地百度网盘 2016 英语二答案速查表匹配，并用逐题细解 PDF 阅读解析复核。"
+        card["explanation"] = (
+            "答案已按本地百度网盘 2016 英语二答案速查表匹配，并用逐题细解 PDF 阅读解析复核。"
+        )
         cards.append(
             attach_evidence(
                 card,
@@ -537,7 +574,9 @@ def build_bank(now: str | None = None) -> dict[str, Any]:
         card["passage"] = material["passages"]["part-b"]
         card["material"] = material["passages"]["part-b"]
         card["options"] = option_list(PART_B_OPTIONS)
-        card["explanation"] = "答案已按本地百度网盘 2016 英语二答案速查表匹配；Part B 按 A-G 标题匹配题训练。"
+        card["explanation"] = (
+            "答案已按本地百度网盘 2016 英语二答案速查表匹配；Part B 按 A-G 标题匹配题训练。"
+        )
         cards.append(
             attach_evidence(
                 card,
@@ -559,7 +598,9 @@ def build_bank(now: str | None = None) -> dict[str, Any]:
     )
     translation["passage"] = material["translation_text"]
     translation["targetSegment"] = material["translation_text"]
-    translation["explanation"] = "参考译文已按本地百度网盘 2016 英语二答案速查 PDF 匹配，并与逐题细解 PDF 英汉对照复核。"
+    translation["explanation"] = (
+        "参考译文已按本地百度网盘 2016 英语二答案速查 PDF 匹配，并与逐题细解 PDF 英汉对照复核。"
+    )
     cards.append(
         attach_evidence(
             translation,
@@ -643,36 +684,68 @@ def build_bank(now: str | None = None) -> dict[str, Any]:
         "total_cards": len(cards),
         "sections": ["完形填空", "阅读理解", "新题型", "翻译", "写作"],
         "sourceEvidenceSummary": {
-            "questionSources": [SOURCE_IDS["paper_answer"], SOURCE_IDS["original_paper"], SOURCE_IDS["document_version"]],
-            "answerSources": [SOURCE_IDS["paper_answer"], SOURCE_IDS["detailed_analysis"]],
+            "questionSources": [
+                SOURCE_IDS["paper_answer"],
+                SOURCE_IDS["original_paper"],
+                SOURCE_IDS["document_version"],
+            ],
+            "answerSources": [
+                SOURCE_IDS["paper_answer"],
+                SOURCE_IDS["detailed_analysis"],
+            ],
             "policy": "local_baidu_pdf_text_answer_speed_and_detailed_analysis_match",
         },
         "cards": cards,
     }
 
 
-def validate_cards(cards: list[dict[str, Any]], material: dict[str, Any], text: str, detail_text: str) -> None:
+def validate_cards(
+    cards: list[dict[str, Any]], material: dict[str, Any], text: str, detail_text: str
+) -> None:
     issues: list[str] = []
     if len(cards) != 48:
         issues.append(f"card count {len(cards)} != 48")
-    if "Happy people work differently" not in material["cloze_passage"] or "R&D more than the average" not in material["cloze_passage"]:
+    if (
+        "Happy people work differently" not in material["cloze_passage"]
+        or "R&D more than the average" not in material["cloze_passage"]
+    ):
         issues.append("cloze passage missing happiness/R&D anchors")
     for number in range(1, 21):
         if f"({number})" not in material["cloze_passage"]:
             issues.append(f"cloze passage missing blank marker ({number})")
-    if "Tom Cortina" not in material["passages"]["text1"] or "Flatiron School" not in material["passages"]["text1"]:
+    if (
+        "Tom Cortina" not in material["passages"]["text1"]
+        or "Flatiron School" not in material["passages"]["text1"]
+    ):
         issues.append("Text 1 passage missing Cortina/Flatiron anchors")
-    if "lesser prairie chicken" not in material["passages"]["text2"] or "Jay Lininger" not in material["passages"]["text2"]:
+    if (
+        "lesser prairie chicken" not in material["passages"]["text2"]
+        or "Jay Lininger" not in material["passages"]["text2"]
+    ):
         issues.append("Text 2 passage missing prairie chicken/Lininger anchors")
-    if "Sacred Time" not in material["passages"]["text3"] or "Deep reading" not in material["passages"]["text3"]:
+    if (
+        "Sacred Time" not in material["passages"]["text3"]
+        or "Deep reading" not in material["passages"]["text3"]
+    ):
         issues.append("Text 3 passage missing Sacred Time/deep reading anchors")
-    if "Pete Schneider" not in material["passages"]["text4"] or "Great Recession" not in material["passages"]["text4"]:
+    if (
+        "Pete Schneider" not in material["passages"]["text4"]
+        or "Great Recession" not in material["passages"]["text4"]
+    ):
         issues.append("Text 4 passage missing Schneider/Great Recession anchors")
-    if "Act Your Shoe Size, Not Your Age" not in material["passages"]["part-b"] or "Express your emotions" not in json.dumps(PART_B_OPTIONS):
+    if "Act Your Shoe Size, Not Your Age" not in material["passages"][
+        "part-b"
+    ] or "Express your emotions" not in json.dumps(PART_B_OPTIONS):
         issues.append("Part B passage/options missing shoe-size/emotions anchors")
-    if "The supermarket is designed to lure customers" not in material["translation_text"] or "Food Marketing Institute" not in material["translation_text"]:
+    if (
+        "The supermarket is designed to lure customers" not in material["translation_text"]
+        or "Food Marketing Institute" not in material["translation_text"]
+    ):
         issues.append("translation text missing supermarket/Food Marketing Institute anchors")
-    if "某高校学生旅游目的调查" not in material["writing_prompts"][48] or "欣赏风景 37%" not in material["writing_prompts"][48]:
+    if (
+        "某高校学生旅游目的调查" not in material["writing_prompts"][48]
+        or "欣赏风景 37%" not in material["writing_prompts"][48]
+    ):
         issues.append("writing prompt 48 missing travel purpose chart anchor")
     if "CBDCD" not in text or "CEABD" not in text:
         issues.append("answer-speed table anchors missing")

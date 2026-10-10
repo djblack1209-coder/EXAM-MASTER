@@ -65,7 +65,10 @@ def compact(value: Any) -> str:
     text = str(value or "")
     text = text.replace("\u3000", " ")
     text = text.replace("uSustainabilityM", '"Sustainability"')
-    text = text.replace("uspending of any sort became deeply unfashionableM", '"spending of any sort became deeply unfashionable"')
+    text = text.replace(
+        "uspending of any sort became deeply unfashionableM",
+        '"spending of any sort became deeply unfashionable"',
+    )
     text = text.replace("4<", '"')
     text = text.replace(",,", '"')
     text = text.replace("H       Reading", "II       Reading")
@@ -116,9 +119,15 @@ def run_pdftotext(path: Path) -> str:
 
 
 def require_sources() -> None:
-    missing = [relative(path) for path in [ORIGINAL_PAPER, PAPER_ANSWER, DETAILED_ANALYSIS] if not path.exists()]
+    missing = [
+        relative(path)
+        for path in [ORIGINAL_PAPER, PAPER_ANSWER, DETAILED_ANALYSIS]
+        if not path.exists()
+    ]
     if missing:
-        raise FileNotFoundError("Missing required English II 2010 source PDFs: " + ", ".join(missing))
+        raise FileNotFoundError(
+            "Missing required English II 2010 source PDFs: " + ", ".join(missing)
+        )
 
 
 def text_between(text: str, start: str, end: str) -> str:
@@ -179,7 +188,9 @@ def extract_cloze_passage(text: str) -> str:
         "Read the following text. Choose the best word(s) for each numbered blank and mark",
         "英语（二）试题.1.（共14页）",
     )
-    block = re.sub(r"^A,B,C or D on ANSWER SHEET 1\. \(10 points\)", "", cleaned_block(block)).strip()
+    block = re.sub(
+        r"^A,B,C or D on ANSWER SHEET 1\. \(10 points\)", "", cleaned_block(block)
+    ).strip()
     block = block.replace("epidemic ] by", "epidemic (1) by")
     for number in range(2, 21):
         block = re.sub(rf"\s+{number}\s+", f" ({number}) ", block, count=1)
@@ -203,13 +214,21 @@ def extract_passages(text: str) -> dict[str, str]:
         "text2": cleaned_block(text_between(text, "Text 2", "26. What is most wives")),
         "text3": cleaned_block(text_between(text, "Text 3", "31. According to Dr. Curtis")),
         "text4": cleaned_block(text_between(text, "Text 4", "36. From the principles")),
-        "part-b": cleaned_block(text_between(text, "Copying Birds May Save Aircraft Fuel", "41. Findings")),
+        "part-b": cleaned_block(
+            text_between(text, "Copying Birds May Save Aircraft Fuel", "41. Findings")
+        ),
     }
     passages["part-b"] = f"Copying Birds May Save Aircraft Fuel. {passages['part-b']}"
     return passages
 
 
-def find_numbered_block(text: str, number: int, next_number: int | None = None, *, end_anchor: str | None = None) -> str:
+def find_numbered_block(
+    text: str,
+    number: int,
+    next_number: int | None = None,
+    *,
+    end_anchor: str | None = None,
+) -> str:
     start_match = re.search(rf"(?m)^\s*{number}\.\s+", text)
     if not start_match:
         raise ValueError(f"Missing numbered block {number}")
@@ -267,7 +286,9 @@ def extract_translation_answer(text: str) -> str:
 
 def extract_writing_prompts(text: str) -> dict[int, str]:
     prompt47 = cleaned_block(text_between(text, "47. Directions:", "英语（二）试题.13.（共14页）"))
-    prompt48 = cleaned_block(text_between(text, "48. Directions:", "2010年考研英语（二）真题答案速查表"))
+    prompt48 = cleaned_block(
+        text_between(text, "48. Directions:", "2010年考研英语（二）真题答案速查表")
+    )
     prompt47 = "47. Directions: " + prompt47
     prompt48 = "48. Directions: " + prompt48 + " " + WRITING_PROMPT_48_CHART_NOTE
     return {47: prompt47, 48: prompt48}
@@ -298,8 +319,12 @@ def attach_evidence(
 ) -> dict[str, Any]:
     question_source = source_path(question_source_id)
     answer_source = source_path(answer_source_id)
-    question_hash = hash_text(json.dumps(question_hash_payload(card), ensure_ascii=False, sort_keys=True))
-    answer_hash = hash_text(json.dumps(answer_hash_payload(card, answer_role), ensure_ascii=False, sort_keys=True))
+    question_hash = hash_text(
+        json.dumps(question_hash_payload(card), ensure_ascii=False, sort_keys=True)
+    )
+    answer_hash = hash_text(
+        json.dumps(answer_hash_payload(card, answer_role), ensure_ascii=False, sort_keys=True)
+    )
 
     card["sourceEvidenceId"] = question_source_id
     card["sourceEvidence"] = {
@@ -333,7 +358,15 @@ def attach_evidence(
     return card
 
 
-def base_card(number: int, *, card_type: str, section: str, group_id: str, question: str, answer: str) -> dict[str, Any]:
+def base_card(
+    number: int,
+    *,
+    card_type: str,
+    section: str,
+    group_id: str,
+    question: str,
+    answer: str,
+) -> dict[str, Any]:
     return {
         "id": f"english2-2010-{number:03d}",
         "paperId": "english2-2010",
@@ -402,7 +435,9 @@ def build_bank(now: str | None = None) -> dict[str, Any]:
         )
         card["passage"] = material["cloze_passage"]
         card["options"] = option_list(material["cloze_options"][number])
-        card["explanation"] = "答案已按本地百度网盘 2010 英语二真题答案速查表匹配，并用逐题细解 PDF 复核。"
+        card["explanation"] = (
+            "答案已按本地百度网盘 2010 英语二真题答案速查表匹配，并用逐题细解 PDF 复核。"
+        )
         cards.append(
             attach_evidence(
                 card,
@@ -417,7 +452,9 @@ def build_bank(now: str | None = None) -> dict[str, Any]:
     for number in range(21, 41):
         group_id = group_for(number)
         section = SECTION_BY_GROUP[group_id]
-        block = find_numbered_block(text, number, number + 1 if number < 40 else None, end_anchor="Part B")
+        block = find_numbered_block(
+            text, number, number + 1 if number < 40 else None, end_anchor="Part B"
+        )
         question, options = parse_choice_question(block, number)
         card = base_card(
             number,
@@ -429,7 +466,9 @@ def build_bank(now: str | None = None) -> dict[str, Any]:
         )
         card["passage"] = material["passages"][group_id]
         card["options"] = option_list(options)
-        card["explanation"] = "答案已按本地百度网盘 2010 英语二答案速查表匹配，并用逐题细解 PDF 阅读解析复核。"
+        card["explanation"] = (
+            "答案已按本地百度网盘 2010 英语二答案速查表匹配，并用逐题细解 PDF 阅读解析复核。"
+        )
         cards.append(
             attach_evidence(
                 card,
@@ -442,7 +481,9 @@ def build_bank(now: str | None = None) -> dict[str, Any]:
         )
 
     for number in range(41, 46):
-        block = find_numbered_block(text, number, number + 1 if number < 45 else None, end_anchor="Section HI")
+        block = find_numbered_block(
+            text, number, number + 1 if number < 45 else None, end_anchor="Section HI"
+        )
         statement = parse_statement(block, number)
         card = base_card(
             number,
@@ -454,7 +495,9 @@ def build_bank(now: str | None = None) -> dict[str, Any]:
         )
         card["passage"] = material["passages"]["part-b"]
         card["options"] = option_list({"T": "True", "F": "False"})
-        card["explanation"] = "答案已按本地百度网盘 2010 英语二答案速查表匹配；T/F 判断题按原卷 Part B 规则训练。"
+        card["explanation"] = (
+            "答案已按本地百度网盘 2010 英语二答案速查表匹配；T/F 判断题按原卷 Part B 规则训练。"
+        )
         cards.append(
             attach_evidence(
                 card,
@@ -476,7 +519,9 @@ def build_bank(now: str | None = None) -> dict[str, Any]:
     )
     translation["passage"] = material["translation_text"]
     translation["targetSegment"] = material["translation_text"]
-    translation["explanation"] = "参考译文已按本地百度网盘 2010 英语二答案速查 PDF 匹配，并与逐题细解 PDF 英汉对照复核。"
+    translation["explanation"] = (
+        "参考译文已按本地百度网盘 2010 英语二答案速查 PDF 匹配，并与逐题细解 PDF 英汉对照复核。"
+    )
     cards.append(
         attach_evidence(
             translation,
@@ -553,15 +598,23 @@ def build_bank(now: str | None = None) -> dict[str, Any]:
         "total_cards": len(cards),
         "sections": ["完形填空", "阅读理解", "新题型", "翻译", "写作"],
         "sourceEvidenceSummary": {
-            "questionSources": [SOURCE_IDS["paper_answer"], SOURCE_IDS["original_paper"]],
-            "answerSources": [SOURCE_IDS["paper_answer"], SOURCE_IDS["detailed_analysis"]],
+            "questionSources": [
+                SOURCE_IDS["paper_answer"],
+                SOURCE_IDS["original_paper"],
+            ],
+            "answerSources": [
+                SOURCE_IDS["paper_answer"],
+                SOURCE_IDS["detailed_analysis"],
+            ],
             "policy": "local_baidu_pdf_text_answer_speed_and_detailed_analysis_match",
         },
         "cards": cards,
     }
 
 
-def validate_cards(cards: list[dict[str, Any]], material: dict[str, Any], text: str, detail_text: str) -> None:
+def validate_cards(
+    cards: list[dict[str, Any]], material: dict[str, Any], text: str, detail_text: str
+) -> None:
     issues: list[str] = []
     if len(cards) != 48:
         issues.append(f"card count {len(cards)} != 48")
@@ -575,7 +628,16 @@ def validate_cards(cards: list[dict[str, Any]], material: dict[str, Any], text: 
         issues.append("answer-speed table anchors missing")
     if "答案解析" not in detail_text or "Ted Ning" not in detail_text:
         issues.append("detailed-analysis evidence anchors missing")
-    forbidden_noise = ["author5s", "auction houses5", "Christie5s", "consumers5", "you911", "canq)aigns", "air^traffic", "Zhang Wei”"]
+    forbidden_noise = [
+        "author5s",
+        "auction houses5",
+        "Christie5s",
+        "consumers5",
+        "you911",
+        "canq)aigns",
+        "air^traffic",
+        "Zhang Wei”",
+    ]
 
     for expected_number, card in enumerate(cards, start=1):
         if card.get("number") != expected_number:

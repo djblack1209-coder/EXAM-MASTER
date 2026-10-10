@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-focus-desktop-after-oauth"
+description = "Enables the focus_desktop_after_oauth command without any pre-configured scope."
+commands.allow = ["focus_desktop_after_oauth"]
+
+[[permission]]
+identifier = "deny-focus-desktop-after-oauth"
+description = "Denies the focus_desktop_after_oauth command without any pre-configured scope."
+commands.deny = ["focus_desktop_after_oauth"]

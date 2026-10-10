@@ -11,12 +11,58 @@ vi.mock('@/utils/logger.js', () => ({
 }));
 
 import PracticePage from '@/pages/practice/index.vue';
+import storageService from '@/services/storageService.js';
+import { saveQuizProgress } from '@/composables/useQuizAutoSave.js';
 
 describe('practice 动态方法加载', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     global.__mockStorage = {};
     uni.loadSubPackage = undefined;
+  });
+
+  it('continues the saved complete session rather than starting a newly picked group', () => {
+    const questions = Array.from({ length: 38 }, (_, i) => ({ id: `saved-${i}`, question: `原第${i + 1}题` }));
+    saveQuizProgress({ questions, currentIndex: 17, seconds: 418, hasAnswered: false, answeredQuestions: [] }, true, {
+      mode: 'smart_review',
+      paperId: 'politics-2024',
+      questionBankFingerprint: 'original'
+    });
+    const before = JSON.stringify(storageService.get('EXAM_QUIZ_PROGRESS'));
+    PracticePage.methods.goDoQuiz.call({ hasBank: true, refreshBankStatus: vi.fn() }, { resume: true });
+    expect(uni.navigateTo).toHaveBeenCalledWith(
+      expect.objectContaining({ url: '/pages/practice-sub/do-quiz?resume=true' })
+    );
+    expect(JSON.stringify(storageService.get('EXAM_QUIZ_PROGRESS'))).toBe(before);
+  });
+
+  it('keeps explicit start separate from continuation, and can continue a complete snapshot after the bank is unavailable', () => {
+    saveQuizProgress(
+      {
+        questions: [
+          { id: 'a', question: '原题一' },
+          { id: 'b', question: '原题二' }
+        ],
+        currentIndex: 1,
+        seconds: 30,
+        hasAnswered: false,
+        answeredQuestions: []
+      },
+      true
+    );
+    PracticePage.methods.goDoQuiz.call({ hasBank: true, refreshBankStatus: vi.fn() });
+    expect(uni.navigateTo.mock.calls.at(-1)[0].url).toBe('/pages/practice-sub/do-quiz');
+    PracticePage.methods.goDoQuiz.call({ hasBank: false, refreshBankStatus: vi.fn() }, { resume: true });
+    expect(uni.navigateTo.mock.calls.at(-1)[0].url).toBe('/pages/practice-sub/do-quiz?resume=true');
+  });
+
+  it('starts a new ordinary group when there is no recoverable snapshot, keeping the bad cache intact', () => {
+    storageService.save('EXAM_QUIZ_PROGRESS', '{bad');
+    storageService.save('EXAM_QUIZ_PROGRESS_TIME', String(Date.now()));
+    const before = JSON.stringify(global.__mockStorage);
+    PracticePage.methods.goDoQuiz.call({ hasBank: true, refreshBankStatus: vi.fn() }, { resume: true });
+    expect(uni.navigateTo.mock.calls.at(-1)[0].url).toBe('/pages/practice-sub/do-quiz');
+    expect(JSON.stringify(global.__mockStorage)).toBe(before);
   });
 
   it('_invokeDynamicMethod 应优先调用已缓存方法', async () => {

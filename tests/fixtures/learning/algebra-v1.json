@@ -1,0 +1,124 @@
+{
+  "version": "algebra-v1",
+  "provenance": "人工选定恒等式与精确解：二项式展开、分母非零条件、二次方程因式分解及分数运算；期望独立于题目生成器和模型。",
+  "claims": "仅覆盖 safe-algebra-v1 的有限表达与安全降级，不证明全学科、最简形式或长期学习效果。",
+  "cases": [
+    { "id": "binomial", "goal": "化简 (x+1)^2", "answer": "1+2*x+x^2", "status": "reliable", "outcome": "correct" },
+    { "id": "binomial-wrong", "goal": "化简 (x+1)^2", "answer": "x^2+1", "status": "reliable", "outcome": "wrong" },
+    { "id": "signed-power", "goal": "化简 -x^2", "answer": "-(x*x)", "status": "reliable", "outcome": "correct" },
+    { "id": "signed-power-wrong", "goal": "化简 -x^2", "answer": "(-x)^2", "status": "reliable", "outcome": "wrong" },
+    { "id": "exact-decimal", "goal": "化简 0.3*x", "answer": "3*x/10", "status": "reliable", "outcome": "correct" },
+    {
+      "id": "exact-decimal-near",
+      "goal": "化简 0.3*x",
+      "answer": "0.300000001*x",
+      "status": "reliable",
+      "outcome": "wrong"
+    },
+    {
+      "id": "fraction-notation",
+      "goal": "化简 \\frac{x+1}{2}",
+      "answer": "x/2+1/2",
+      "status": "reliable",
+      "outcome": "correct"
+    },
+    {
+      "id": "domain-retained",
+      "goal": "化简 (x^2-1)/(x-1)",
+      "answer": "x+1，x≠1",
+      "status": "reliable",
+      "outcome": "correct"
+    },
+    { "id": "domain-missing", "goal": "化简 (x^2-1)/(x-1)", "answer": "x+1", "status": "pending", "outcome": null },
+    {
+      "id": "domain-invented",
+      "goal": "化简 (x^2-1)/(x-1)",
+      "answer": "x+1，x≠2",
+      "status": "reliable",
+      "outcome": "wrong"
+    },
+    {
+      "id": "zero-times-undefined",
+      "goal": "化简 0*(1/x)",
+      "answer": "0，x≠0",
+      "status": "reliable",
+      "outcome": "correct"
+    },
+    { "id": "negative-exponent", "goal": "化简 x^-1", "answer": "1/x", "status": "reliable", "outcome": "correct" },
+    { "id": "linear-fraction", "goal": "解方程 2*x=1", "answer": "0.5", "status": "reliable", "outcome": "correct" },
+    {
+      "id": "quadratic-set",
+      "goal": "解方程 x^2-5x+6=0",
+      "answer": "3或x=2",
+      "status": "reliable",
+      "outcome": "correct"
+    },
+    { "id": "partial-set", "goal": "解方程 x^2-5x+6=0", "answer": "2", "status": "reliable", "outcome": "partial" },
+    {
+      "id": "duplicate-set",
+      "goal": "解方程 x^2-5x+6=0",
+      "answer": "{2,3,2}",
+      "status": "reliable",
+      "outcome": "correct"
+    },
+    { "id": "plus-minus", "goal": "解方程 x^2=4", "answer": "±2", "status": "reliable", "outcome": "correct" },
+    { "id": "repeated-root", "goal": "解方程 x^2-2*x+1=0", "answer": "1", "status": "reliable", "outcome": "correct" },
+    {
+      "id": "extraneous-root",
+      "goal": "解方程 (x^2-1)/(x-1)=0",
+      "answer": "{-1,1}",
+      "status": "reliable",
+      "outcome": "wrong"
+    },
+    {
+      "id": "valid-rational-root",
+      "goal": "解方程 (x^2-1)/(x-1)=0",
+      "answer": "-1",
+      "status": "reliable",
+      "outcome": "correct"
+    },
+    {
+      "id": "integer-domain",
+      "goal": "整数解方程 2*x=1",
+      "answer": "无解",
+      "status": "reliable",
+      "outcome": "correct"
+    },
+    { "id": "positive-domain", "goal": "正数解方程 x^2=4", "answer": "2", "status": "reliable", "outcome": "correct" },
+    { "id": "empty-real-set", "goal": "解方程 x^2+1=0", "answer": "{}", "status": "reliable", "outcome": "correct" },
+    {
+      "id": "identity-domain",
+      "goal": "解方程 x/x=1",
+      "answer": "任意实数，x≠0",
+      "status": "reliable",
+      "outcome": "correct"
+    },
+    {
+      "id": "identity-missing-domain",
+      "goal": "解方程 x/x=1",
+      "answer": "任意实数",
+      "status": "pending",
+      "outcome": null
+    },
+    { "id": "irrational-roots", "goal": "解方程 x^2=2", "answer": "±1.414", "status": "pending", "outcome": null },
+    { "id": "copy-original", "goal": "化简 (x+1)^2", "answer": "(x+1)^2", "status": "pending", "outcome": null },
+    { "id": "huge-exponent", "goal": "化简 x^1000000", "answer": "0", "status": "pending", "outcome": null },
+    { "id": "division-zero", "goal": "化简 1/0", "answer": "0", "status": "pending", "outcome": null },
+    {
+      "id": "untrusted-code",
+      "goal": "化简 (x+1)^2",
+      "answer": "globalThis.process.exit(0)",
+      "status": "pending",
+      "outcome": null
+    },
+    { "id": "unknown-function", "goal": "化简 sin(x)", "answer": "0", "status": "pending", "outcome": null },
+    {
+      "id": "critical-ocr",
+      "goal": "解方程 x^2=4",
+      "answer": "2",
+      "uncertainties": [{ "field": "负号", "resolved": false }],
+      "status": "pending",
+      "outcome": null
+    }
+  ]
+}

@@ -8,15 +8,10 @@ import {
 } from '@/pages/practice-sub/utils/session-feedback.js';
 
 describe('session feedback', () => {
-  it('calculates the active correct streak from the answer tail', () => {
+  it('does not promote old boolean tails into a current reliable streak', () => {
     expect(
-      calculateCorrectStreak([
-        { isCorrect: true },
-        { isCorrect: false },
-        { isCorrect: true },
-        { isCorrect: true }
-      ])
-    ).toBe(2);
+      calculateCorrectStreak([{ isCorrect: true }, { isCorrect: false }, { isCorrect: true }, { isCorrect: true }])
+    ).toBe(0);
   });
 
   it('resets streak when the latest answer is wrong', () => {

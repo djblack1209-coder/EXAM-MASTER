@@ -1,0 +1,432 @@
+{
+  "id": "d65391d438b4d29f33ebc8c3dfe1393c970818676afa6e56e066a67198b6e332",
+  "fingerprint": "d65391d438b4d29f33ebc8c3dfe1393c970818676afa6e56e066a67198b6e332",
+  "name": "structure-fixture.pdf",
+  "kind": "pdf",
+  "scope": "private",
+  "publishable": false,
+  "original": {
+    "connectorFileId": "d65391d438b4d29f33ebc8c3dfe1393c970818676afa6e56e066a67198b6e332",
+    "sha256": "d65391d438b4d29f33ebc8c3dfe1393c970818676afa6e56e066a67198b6e332",
+    "byteLength": 4357
+  },
+  "segments": [
+    {
+      "id": "page-2",
+      "page": 2,
+      "content": "资料结构核验：表格与公式\n表1 三组路程记录\n组别\t向东 / 米\t向西 / 米\t路程 / 米\n甲\t120\t80\t200\n乙\t60\t60\t120\n丙\t90\t0\t90\n问题：哪一组回到起点？请用表格中的两列作出解释。\n函数条件：分母不能为零。\nh(x) = (x 2 - 1) / (x - 1), x != 1\n图形说明：图中箭头表示运动方向，不是文本顺序。\n向东 120 米\n向西 80 米\nYozi original synthetic test | page 2",
+      "words": [
+        {
+          "text": "资料结构核验：表格与公式",
+          "bbox": [40.0, 35.73400000000004, 256.0, 53.78069946808512],
+          "role": "unassigned",
+          "confidence": null
+        },
+        {
+          "text": "表1 三组路程记录",
+          "bbox": [40.0, 87.68200000000002, 150.264, 101.71832180851061],
+          "role": "unassigned",
+          "confidence": null
+        },
+        {
+          "text": "组别",
+          "bbox": [52.0, 151.15599999999995, 76.0, 163.1871329787234],
+          "role": "unassigned",
+          "confidence": null
+        },
+        {
+          "text": "向东 / 米",
+          "bbox": [152.0, 151.15599999999995, 196.97600000000003, 163.1871329787234],
+          "role": "unassigned",
+          "confidence": null
+        },
+        {
+          "text": "向西 / 米",
+          "bbox": [287.0, 151.15599999999995, 331.97599999999994, 163.1871329787234],
+          "role": "unassigned",
+          "confidence": null
+        },
+        {
+          "text": "路程 / 米",
+          "bbox": [417.0, 151.15599999999995, 461.97599999999994, 163.1871329787234],
+          "role": "unassigned",
+          "confidence": null
+        },
+        {
+          "text": "甲",
+          "bbox": [52.0, 196.15599999999995, 64.0, 208.1871329787234],
+          "role": "unassigned",
+          "confidence": null
+        },
+        {
+          "text": "120",
+          "bbox": [152.0, 196.15599999999995, 168.63200000000003, 208.1871329787234],
+          "role": "unassigned",
+          "confidence": null
+        },
+        {
+          "text": "80",
+          "bbox": [287.0, 196.15599999999995, 298.08799999999997, 208.1871329787234],
+          "role": "unassigned",
+          "confidence": null
+        },
+        {
+          "text": "200",
+          "bbox": [417.0, 196.15599999999995, 433.63199999999995, 208.1871329787234],
+          "role": "unassigned",
+          "confidence": null
+        },
+        {
+          "text": "乙",
+          "bbox": [52.0, 241.15599999999995, 64.0, 253.1871329787234],
+          "role": "unassigned",
+          "confidence": null
+        },
+        {
+          "text": "60",
+          "bbox": [152.0, 241.15599999999995, 163.08800000000002, 253.1871329787234],
+          "role": "unassigned",
+          "confidence": null
+        },
+        {
+          "text": "60",
+          "bbox": [287.0, 241.15599999999995, 298.08799999999997, 253.1871329787234],
+          "role": "unassigned",
+          "confidence": null
+        },
+        {
+          "text": "120",
+          "bbox": [417.0, 241.15599999999995, 433.63199999999995, 253.1871329787234],
+          "role": "unassigned",
+          "confidence": null
+        },
+        {
+          "text": "丙",
+          "bbox": [52.0, 286.15599999999995, 64.0, 298.1871329787234],
+          "role": "unassigned",
+          "confidence": null
+        },
+        {
+          "text": "90",
+          "bbox": [152.0, 286.15599999999995, 163.08800000000002, 298.1871329787234],
+          "role": "unassigned",
+          "confidence": null
+        },
+        {
+          "text": "0",
+          "bbox": [287.0, 286.15599999999995, 292.544, 298.1871329787234],
+          "role": "unassigned",
+          "confidence": null
+        },
+        {
+          "text": "90",
+          "bbox": [417.0, 286.15599999999995, 428.08799999999997, 298.1871329787234],
+          "role": "unassigned",
+          "confidence": null
+        },
+        {
+          "text": "问题：哪一组回到起点？请用表格中的两列作出解释。",
+          "bbox": [40.0, 348.156, 328.0, 360.1871329787234],
+          "role": "unassigned",
+          "confidence": null
+        },
+        {
+          "text": "函数条件：分母不能为零。",
+          "bbox": [40.0, 403.156, 184.0, 415.1871329787234],
+          "role": "unassigned",
+          "confidence": null
+        },
+        {
+          "text": "h(x) = (x 2 - 1) / (x - 1), x != 1",
+          "bbox": [40.0, 434.538, 234.32599999999994, 449.898],
+          "role": "unassigned",
+          "confidence": null
+        },
+        {
+          "text": "图形说明：图中箭头表示运动方向，不是文本顺序。",
+          "bbox": [40.0, 488.156, 316.0, 500.1871329787234],
+          "role": "unassigned",
+          "confidence": null
+        },
+        {
+          "text": "向东 120 米",
+          "bbox": [118.0, 533.156, 175.60000000000005, 545.1871329787234],
+          "role": "unassigned",
+          "confidence": null
+        },
+        {
+          "text": "向西 80 米",
+          "bbox": [160.0, 613.156, 212.05600000000004, 625.1871329787234],
+          "role": "unassigned",
+          "confidence": null
+        },
+        {
+          "text": "Yozi original synthetic test | page 2",
+          "bbox": [40.0, 813.538, 178.90600000000003, 821.863],
+          "role": "unassigned",
+          "confidence": null
+        }
+      ],
+      "blocks": [
+        {
+          "id": "#/texts/0",
+          "kind": "section_header",
+          "page": 2,
+          "bbox": [40.0, 35.73400000000004, 256.0, 53.78069946808512],
+          "text": "资料结构核验：表格与公式",
+          "rawText": "资料结构核验：表格与公式",
+          "reviewRequired": true
+        },
+        {
+          "id": "#/texts/1",
+          "kind": "section_header",
+          "page": 2,
+          "bbox": [40.0, 87.68200000000002, 150.264, 101.71832180851061],
+          "text": "表1 三组路程记录",
+          "rawText": "表1 三组路程记录",
+          "reviewRequired": true
+        },
+        {
+          "id": "#/tables/0",
+          "kind": "table",
+          "page": 2,
+          "bbox": [39.02115249633789, 130.47406005859375, 555.745849609375, 312.6239929199219],
+          "text": "",
+          "rawText": "",
+          "reviewRequired": true,
+          "rows": 4,
+          "columns": 4,
+          "cells": [
+            {
+              "row": 0,
+              "rowSpan": 1,
+              "column": 0,
+              "columnSpan": 1,
+              "text": "组别",
+              "bbox": [52.0, 151.15599999999995, 76.0, 163.1871329787234]
+            },
+            {
+              "row": 0,
+              "rowSpan": 1,
+              "column": 1,
+              "columnSpan": 1,
+              "text": "向东 / 米",
+              "bbox": [152.0, 151.15599999999995, 196.97600000000003, 163.1871329787234]
+            },
+            {
+              "row": 0,
+              "rowSpan": 1,
+              "column": 2,
+              "columnSpan": 1,
+              "text": "向西 / 米",
+              "bbox": [287.0, 151.15599999999995, 331.97599999999994, 163.1871329787234]
+            },
+            {
+              "row": 0,
+              "rowSpan": 1,
+              "column": 3,
+              "columnSpan": 1,
+              "text": "路程 / 米",
+              "bbox": [417.0, 151.15599999999995, 461.97599999999994, 163.1871329787234]
+            },
+            {
+              "row": 1,
+              "rowSpan": 1,
+              "column": 0,
+              "columnSpan": 1,
+              "text": "甲",
+              "bbox": [52.0, 196.15599999999995, 64.0, 208.1871329787234]
+            },
+            {
+              "row": 1,
+              "rowSpan": 1,
+              "column": 1,
+              "columnSpan": 1,
+              "text": "120",
+              "bbox": [152.0, 196.15599999999995, 168.63200000000003, 208.1871329787234]
+            },
+            {
+              "row": 1,
+              "rowSpan": 1,
+              "column": 2,
+              "columnSpan": 1,
+              "text": "80",
+              "bbox": [287.0, 196.15599999999995, 298.08799999999997, 208.1871329787234]
+            },
+            {
+              "row": 1,
+              "rowSpan": 1,
+              "column": 3,
+              "columnSpan": 1,
+              "text": "200",
+              "bbox": [417.0, 196.15599999999995, 433.63199999999995, 208.1871329787234]
+            },
+            {
+              "row": 2,
+              "rowSpan": 1,
+              "column": 0,
+              "columnSpan": 1,
+              "text": "乙",
+              "bbox": [52.0, 241.15599999999995, 64.0, 253.1871329787234]
+            },
+            {
+              "row": 2,
+              "rowSpan": 1,
+              "column": 1,
+              "columnSpan": 1,
+              "text": "60",
+              "bbox": [152.0, 241.15599999999995, 163.08800000000002, 253.1871329787234]
+            },
+            {
+              "row": 2,
+              "rowSpan": 1,
+              "column": 2,
+              "columnSpan": 1,
+              "text": "60",
+              "bbox": [287.0, 241.15599999999995, 298.08799999999997, 253.1871329787234]
+            },
+            {
+              "row": 2,
+              "rowSpan": 1,
+              "column": 3,
+              "columnSpan": 1,
+              "text": "120",
+              "bbox": [417.0, 241.15599999999995, 433.63199999999995, 253.1871329787234]
+            },
+            {
+              "row": 3,
+              "rowSpan": 1,
+              "column": 0,
+              "columnSpan": 1,
+              "text": "丙",
+              "bbox": [52.0, 286.15599999999995, 64.0, 298.1871329787234]
+            },
+            {
+              "row": 3,
+              "rowSpan": 1,
+              "column": 1,
+              "columnSpan": 1,
+              "text": "90",
+              "bbox": [152.0, 286.15599999999995, 163.08800000000002, 298.1871329787234]
+            },
+            {
+              "row": 3,
+              "rowSpan": 1,
+              "column": 2,
+              "columnSpan": 1,
+              "text": "0",
+              "bbox": [287.0, 286.15599999999995, 292.544, 298.1871329787234]
+            },
+            {
+              "row": 3,
+              "rowSpan": 1,
+              "column": 3,
+              "columnSpan": 1,
+              "text": "90",
+              "bbox": [417.0, 286.15599999999995, 428.08799999999997, 298.1871329787234]
+            }
+          ]
+        },
+        {
+          "id": "#/texts/2",
+          "kind": "text",
+          "page": 2,
+          "bbox": [40.0, 348.156, 328.0, 360.1871329787234],
+          "text": "问题：哪一组回到起点？请用表格中的两列作出解释。",
+          "rawText": "问题：哪一组回到起点？请用表格中的两列作出解释。",
+          "reviewRequired": true
+        },
+        {
+          "id": "#/texts/3",
+          "kind": "text",
+          "page": 2,
+          "bbox": [40.0, 403.156, 184.0, 415.1871329787234],
+          "text": "函数条件：分母不能为零。",
+          "rawText": "函数条件：分母不能为零。",
+          "reviewRequired": true
+        },
+        {
+          "id": "#/texts/4",
+          "kind": "formula",
+          "page": 2,
+          "bbox": [40.0, 434.538, 234.32599999999994, 449.898],
+          "text": "",
+          "rawText": "h(x) = (x 2 - 1) / (x - 1), x != 1",
+          "reviewRequired": true
+        },
+        {
+          "id": "#/texts/5",
+          "kind": "text",
+          "page": 2,
+          "bbox": [40.0, 488.156, 316.0, 500.1871329787234],
+          "text": "图形说明：图中箭头表示运动方向，不是文本顺序。",
+          "rawText": "图形说明：图中箭头表示运动方向，不是文本顺序。",
+          "reviewRequired": true
+        },
+        {
+          "id": "#/pictures/0",
+          "kind": "picture",
+          "page": 2,
+          "bbox": [79.47779083251953, 531.9439697265625, 270.6709289550781, 624.2651977539062],
+          "text": "",
+          "rawText": "",
+          "reviewRequired": true
+        },
+        {
+          "id": "#/texts/6",
+          "kind": "caption",
+          "page": 2,
+          "bbox": [118.0, 533.156, 175.60000000000005, 545.1871329787234],
+          "text": "向东 120 米",
+          "rawText": "向东 120 米",
+          "reviewRequired": true
+        },
+        {
+          "id": "#/texts/7",
+          "kind": "caption",
+          "page": 2,
+          "bbox": [160.0, 613.156, 212.05600000000004, 625.1871329787234],
+          "text": "向西 80 米",
+          "rawText": "向西 80 米",
+          "reviewRequired": true
+        },
+        {
+          "id": "#/texts/8",
+          "kind": "page_footer",
+          "page": 2,
+          "bbox": [40.0, 813.538, 178.90600000000003, 821.863],
+          "text": "Yozi original synthetic test | page 2",
+          "rawText": "Yozi original synthetic test | page 2",
+          "reviewRequired": true
+        }
+      ],
+      "role": "unassigned",
+      "location": {
+        "page": 2
+      },
+      "dimensions": {
+        "width": 595.0,
+        "height": 842.0
+      },
+      "coordinateSpace": "pdf_points_top_left",
+      "reviewRequired": true,
+      "method": "docling_structure",
+      "extractionVersion": "yozi-docling-page-v1",
+      "recognitionStatus": "text_candidate",
+      "uncertainties": ["版面与行列关系为候选；公式、上下标、单位和图形条件需按原页核对"],
+      "preview": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9Wl6cYQAAAAASUVORK5CYII=",
+      "sourceSha256": "d65391d438b4d29f33ebc8c3dfe1393c970818676afa6e56e066a67198b6e332",
+      "gradingAuthority": false
+    }
+  ],
+  "totalPages": 2,
+  "nextPage": null,
+  "dataFlow": "authorized_local_connector",
+  "extraCloudCost": 0,
+  "extractionVersion": "yozi-docling-page-v1",
+  "recognitionEngine": "docling",
+  "recognitionAllowed": false,
+  "gradingAuthority": false,
+  "status": "ready",
+  "corrections": []
+}

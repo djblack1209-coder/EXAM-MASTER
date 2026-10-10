@@ -24,9 +24,9 @@ describe('Math III 2024 published bank data', () => {
       sourceId: 'src_d9c2b923d74ae9283b1647f1'
     });
     expect(bank.cards.every((card) => card.answerEvidenceStatus === 'matched')).toBe(true);
-    expect(bank.cards.every((card) => card.sourceEvidence.sourceType === 'baidu_netdisk_official_paper_pdf_page_image')).toBe(
-      true
-    );
+    expect(
+      bank.cards.every((card) => card.sourceEvidence.sourceType === 'baidu_netdisk_official_paper_pdf_page_image')
+    ).toBe(true);
 
     expect(bank.cards.find((card) => card.number === 1).answer).toBe('D');
     expect(bank.cards.find((card) => card.number === 4).answer).toBe('A');

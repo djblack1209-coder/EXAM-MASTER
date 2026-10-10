@@ -1,0 +1,43 @@
+{
+  "name": "Wenli 受保护连接器",
+  "id": "Wenli-Connector",
+  "version": "1.0.0",
+  "description": "原生拒绝重定向、系统TLS、输出字节上限、严格UTF8与取消；无模型推理或文件权限",
+  "_dp_type": "nativeplugin",
+  "_dp_nativeplugin": {
+    "android": {
+      "plugins": [
+        {
+          "type": "module",
+          "name": "Wenli-Connector",
+          "class": "cn.wenli.connector.WenliConnectorModule"
+        }
+      ],
+      "integrateType": "jar",
+      "compileOptions": {
+        "sourceCompatibility": "1.8",
+        "targetCompatibility": "1.8"
+      },
+      "minSdkVersion": 21,
+      "permissions": []
+    },
+    "ios": {
+      "plugins": [
+        {
+          "type": "module",
+          "name": "Wenli-Connector",
+          "class": "WenliConnectorModule"
+        }
+      ],
+      "integrateType": "library",
+      "frameworks": [
+        "Foundation.framework",
+        "UIKit.framework"
+      ],
+      "deploymentTarget": "11.0",
+      "validArchitectures": [
+        "arm64"
+      ]
+    }
+  }
+}

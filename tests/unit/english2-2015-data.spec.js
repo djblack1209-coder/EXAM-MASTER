@@ -26,12 +26,8 @@ describe('English II 2015 published bank data', () => {
     expect(bank.cards.find((card) => card.number === 46).targetSegment).toContain(
       "Think about driving a route that's very familiar"
     );
-    expect(bank.cards.find((card) => card.number === 48).question).toContain(
-      '我国某市居民春节假期花销比例'
-    );
+    expect(bank.cards.find((card) => card.number === 48).question).toContain('我国某市居民春节假期花销比例');
     expect(bank.cards.find((card) => card.number === 48).question).toContain('新年礼物 40%');
-    expect(bank.cards.find((card) => card.number === 48).answerEvidence.evidenceRole).toBe(
-      'official_writing_prompt'
-    );
+    expect(bank.cards.find((card) => card.number === 48).answerEvidence.evidenceRole).toBe('official_writing_prompt');
   });
 });

@@ -130,7 +130,9 @@ ANSWER_PAGES = {
 
 QUESTION_START_RE = re.compile(r"(?m)^\s*(\d{1,2})\.\s*")
 ANSWER_LINE_RE = re.compile(r"【(?:正确答案|答案)】\s*([A-D]+)")
-OPTION_START_RE = re.compile(r"(?:(?<=^)|(?<=[\n\s（(]))([A-D])\s*(?:[.．、]|(?=\s*[\u4e00-\u9fff]))", re.M)
+OPTION_START_RE = re.compile(
+    r"(?:(?<=^)|(?<=[\n\s（(]))([A-D])\s*(?:[.．、]|(?=\s*[\u4e00-\u9fff]))", re.M
+)
 
 
 def utc_now() -> str:
@@ -156,7 +158,9 @@ def run_cmd(cmd: list[str]) -> None:
 def extract_pdf_text(pdf: Path) -> str:
     if not pdf.exists():
         raise FileNotFoundError(pdf)
-    with tempfile.NamedTemporaryFile(prefix="politics-2022-", suffix=".txt", delete=False) as temp_file:
+    with tempfile.NamedTemporaryFile(
+        prefix="politics-2022-", suffix=".txt", delete=False
+    ) as temp_file:
         temp_path = Path(temp_file.name)
     try:
         run_cmd(["pdftotext", "-layout", str(pdf), str(temp_path)])
@@ -179,10 +183,25 @@ def render_answer_assets(*, asset_dir: Path, force: bool) -> None:
         item.unlink()
 
     output_prefix = render_dir / "page"
-    run_cmd(["pdftoppm", "-r", "160", "-jpeg", "-jpegopt", "quality=76", str(SOURCE_ANSWER_PDF), str(output_prefix)])
-    rendered_pages = sorted(render_dir.glob("page-*.jpg"), key=lambda path: int(path.stem.split("-")[-1]))
+    run_cmd(
+        [
+            "pdftoppm",
+            "-r",
+            "160",
+            "-jpeg",
+            "-jpegopt",
+            "quality=76",
+            str(SOURCE_ANSWER_PDF),
+            str(output_prefix),
+        ]
+    )
+    rendered_pages = sorted(
+        render_dir.glob("page-*.jpg"), key=lambda path: int(path.stem.split("-")[-1])
+    )
     if len(rendered_pages) != 31:
-        raise ValueError(f"{SOURCE_ANSWER_PDF.name}: rendered {len(rendered_pages)} pages, expected 31")
+        raise ValueError(
+            f"{SOURCE_ANSWER_PDF.name}: rendered {len(rendered_pages)} pages, expected 31"
+        )
     for index, rendered in enumerate(rendered_pages, start=1):
         shutil.copyfile(rendered, asset_dir / f"answer-page-{index:02d}.jpg")
 
@@ -199,7 +218,9 @@ def clean_option_text(value: str) -> str:
 
 def split_blocks(text: str) -> dict[int, str]:
     normalized = text.replace("\x0c", "\n")
-    starts = [(int(match.group(1)), match.start()) for match in QUESTION_START_RE.finditer(normalized)]
+    starts = [
+        (int(match.group(1)), match.start()) for match in QUESTION_START_RE.finditer(normalized)
+    ]
     starts = [(number, start) for number, start in starts if 1 <= number <= 38]
     numbers = [number for number, _ in starts]
     if numbers != list(range(1, 39)):
@@ -230,8 +251,17 @@ def extract_options(question_part: str) -> tuple[str, list[dict[str, str]]]:
     stem = question_part[: typed_matches[0].start()]
     options: list[dict[str, str]] = []
     for index, match in enumerate(typed_matches):
-        end = typed_matches[index + 1].start() if index + 1 < len(typed_matches) else len(question_part)
-        options.append({"label": match.group(1), "text": clean_option_text(question_part[match.end() : end])})
+        end = (
+            typed_matches[index + 1].start()
+            if index + 1 < len(typed_matches)
+            else len(question_part)
+        )
+        options.append(
+            {
+                "label": match.group(1),
+                "text": clean_option_text(question_part[match.end() : end]),
+            }
+        )
     return clean_text(stem), options
 
 
@@ -244,7 +274,9 @@ def split_answer_line(block: str, number: int) -> tuple[str, str, str]:
     explanation = block[marker.end() :]
     explanation = re.sub(r"^\s*【答案解析】", "", explanation)
     explanation = re.sub(r"^\s*【解析】", "", explanation)
-    explanation = clean_text(explanation) or "答案来自本地百度网盘 2022 考研政治真题及答案解析 PDF。"
+    explanation = (
+        clean_text(explanation) or "答案来自本地百度网盘 2022 考研政治真题及答案解析 PDF。"
+    )
     return question_part, answer, explanation
 
 
@@ -317,15 +349,24 @@ def answer_evidence(number: int, answer_hash: str) -> dict[str, str]:
 def build_choice_card(number: int, block: str) -> dict[str, Any]:
     question_part, answer, explanation = split_answer_line(block, number)
     if EXPECTED_ANSWERS[number] != answer:
-        raise ValueError(f"question {number}: answer {answer} != expected {EXPECTED_ANSWERS[number]}")
+        raise ValueError(
+            f"question {number}: answer {answer} != expected {EXPECTED_ANSWERS[number]}"
+        )
     question_text, options = extract_options(question_part)
     question = strip_question_number(question_text, number)
     answer_pages = ANSWER_PAGES[number]
     question_hash = sha256_text(
-        json.dumps({"question": question, "options": options}, ensure_ascii=False, sort_keys=True)
+        json.dumps(
+            {"question": question, "options": options},
+            ensure_ascii=False,
+            sort_keys=True,
+        )
     )
     answer_hash = sha256_text(
-        json.dumps({"answer": answer, "answerPages": answer_pages, "explanation": explanation}, ensure_ascii=False)
+        json.dumps(
+            {"answer": answer, "answerPages": answer_pages, "explanation": explanation},
+            ensure_ascii=False,
+        )
     )
 
     return {
@@ -361,7 +402,9 @@ def build_analysis_card(number: int, block: str) -> dict[str, Any]:
     question, answer = split_analysis_answer(block, number)
     answer_pages = ANSWER_PAGES[number]
     question_hash = sha256_text(question)
-    answer_hash = sha256_text(json.dumps({"answer": answer, "answerPages": answer_pages}, ensure_ascii=False))
+    answer_hash = sha256_text(
+        json.dumps({"answer": answer, "answerPages": answer_pages}, ensure_ascii=False)
+    )
 
     return {
         "id": f"{PAPER_ID}-{number:03d}",
@@ -409,7 +452,9 @@ def validate_cards(cards: list[dict[str, Any]]) -> None:
             if labels != ["A", "B", "C", "D"]:
                 issues.append(f"card {expected_number}: invalid options {labels}")
         if card.get("questionImages"):
-            issues.append(f"card {expected_number}: questionImages must be empty to avoid pre-answer leakage")
+            issues.append(
+                f"card {expected_number}: questionImages must be empty to avoid pre-answer leakage"
+            )
         if not card.get("answerImages"):
             issues.append(f"card {expected_number}: missing answer page images")
 
@@ -426,7 +471,9 @@ def build_payload(*, asset_dir: Path, force_assets: bool) -> dict[str, Any]:
     render_answer_assets(asset_dir=asset_dir, force=force_assets)
     blocks = split_blocks(extract_pdf_text(SOURCE_ANSWER_PDF))
     cards = [
-        build_choice_card(number, blocks[number]) if number <= 33 else build_analysis_card(number, blocks[number])
+        build_choice_card(number, blocks[number])
+        if number <= 33
+        else build_analysis_card(number, blocks[number])
         for number in range(1, 39)
     ]
     validate_cards(cards)

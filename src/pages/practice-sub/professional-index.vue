@@ -12,9 +12,7 @@
 
     <scroll-view class="scroll-body" scroll-y :style="{ paddingTop: statusBarHeight + 44 + 'px' }">
       <view class="hero">
-        <text class="hero-kicker">Index only</text>
         <text class="hero-title">专业课资料总索引</text>
-        <text class="hero-desc">先按优先级定位真题与机构候选，再逐步整理为题卡。</text>
         <view class="metric-row">
           <view class="metric">
             <text class="metric-value">{{ summary.eligibleIndexSources }}</text>

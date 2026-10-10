@@ -1,7 +1,7 @@
 <script>
 import { toast } from '@/utils/toast.js';
 import { useUserStore } from '@/stores';
-import { applyTheme, getCurrentTheme, watchTheme } from '@/design/theme-engine.js';
+import { applyTheme, getCurrentTheme, watchTheme } from '@/design/theme-runtime.js';
 // ✅ 检查点 5.1: 导入分析服务
 import { analytics } from '@/utils/analytics/event-bus-analytics.js';
 // ✅ 检查点 5.2: 导入增强错误处理器
@@ -12,6 +12,7 @@ import { safeNavigateTo } from '@/utils/safe-navigate.js';
 import { NAV_BAR_COLORS } from '@/composables/useTheme.js';
 import { useThemeStore } from '@/stores/modules/theme.js';
 import { restoreUserParams as restoreFsrsParams } from '@/services/fsrs-service.js';
+import { storageService } from '@/services/storageService.js';
 
 export default {
   onLaunch() {
@@ -49,10 +50,8 @@ export default {
     globalErrorHandler.report('Unhandled Promise Rejection', event.reason);
   },
   onShow() {
-    // 每次显示时同步主题
-    const currentTheme = getCurrentTheme();
-    this.globalData.currentTheme = currentTheme;
-    applyTheme(currentTheme);
+    // 重开时同时恢复共享状态、页面颜色和原生导航栏。
+    this.switchTheme(getCurrentTheme());
   },
   onHide() {
     // 应用进入后台 — uni-app 生命周期钩子
@@ -69,6 +68,10 @@ export default {
       const PUBLIC_PAGES = [
         '/pages/splash/index',
         '/pages/index/index',
+        '/pages/learning/index',
+        '/pages/mistake/index',
+        '/pages/plan/index',
+        '/pages/study-detail/index',
         '/pages/login/index',
         '/pages/login/onboarding',
         '/pages/login/wechat-callback',
@@ -118,15 +121,14 @@ export default {
      */
     initThemeSystem() {
       // 读取保存的主题或使用系统主题
-      const savedTheme = uni.getStorageSync('theme_mode');
-      const currentTheme = savedTheme || getCurrentTheme();
+      const currentTheme = getCurrentTheme();
 
       this.globalData.currentTheme = currentTheme;
       this.globalData.isDarkMode = currentTheme === 'dark';
 
       // 同步 store 状态（store 的 setDarkMode 会自动调用 applyTheme）
       try {
-        const themeStore = useThemeStore();
+        const themeStore = useThemeStore(this.$pinia);
         themeStore.setDarkMode(currentTheme === 'dark');
       } catch (_e) {
         // store 未初始化时降级直接渲染
@@ -136,7 +138,7 @@ export default {
       // 监听系统主题变化
       watchTheme((theme) => {
         // 如果用户没有手动设置主题，则跟随系统
-        const userSetTheme = uni.getStorageSync('theme_mode');
+        const userSetTheme = storageService.get('theme_mode', null);
         if (!userSetTheme) {
           this.switchTheme(theme);
         }
@@ -159,12 +161,12 @@ export default {
 
       // 委托 store 完成：持久化 + DOM 渲染 + 事件通知
       try {
-        const themeStore = useThemeStore();
+        const themeStore = useThemeStore(this.$pinia);
         themeStore.setDarkMode(isDark);
       } catch (_e) {
         // store 未初始化时降级（仅在极早期启动阶段可能发生）
         applyTheme(theme);
-        uni.setStorageSync('theme_mode', theme);
+        storageService.save('theme_mode', theme);
         uni.$emit('themeUpdate', theme);
       }
 
@@ -283,33 +285,98 @@ export default {
 @use './styles/_dark-mode-vars.scss' as *;
 /* 3D 立体设计系统 — uiverse.io 风格原子组件 */
 @use './styles/_em3d-design-system.scss';
+@import './components/business/learning/learning-space.css';
 /* wot-design-uni 基础变量 */
 @import 'wot-design-uni/components/common/abstracts/variable.scss';
+/* #ifdef H5 */
+@font-face {
+  font-family: 'DM Sans';
+  src: url('/public/fonts/DMSans-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: Epilogue;
+  src: url('/public/fonts/Epilogue-Black.woff2') format('woff2');
+  font-weight: 900;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'DMS';
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url(/public/fonts/FutureDMSans-400.woff2) format('woff2');
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC,
+    U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'DMS';
+  font-style: normal;
+  font-weight: 500;
+  font-display: block;
+  src: url(/public/fonts/FutureDMSans-500.woff2) format('woff2');
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC,
+    U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Playfair Display';
+  font-style: italic;
+  font-weight: 400;
+  font-display: block;
+  src: url(/public/fonts/PlayfairDisplay-italic-400.woff2) format('woff2');
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC,
+    U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Playfair Display';
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url(/public/fonts/PlayfairDisplay-normal-400.woff2) format('woff2');
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC,
+    U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url(/public/fonts/Poppins-normal-400.woff2) format('woff2');
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC,
+    U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* #endif */
 
 /* ============================================
    EXAM-MASTER 全局配色系统 v4.0
-    亮色: Wise-Light (蓝色金融科技风格)
-    暗色: Bitget-Dark (赛博朋克风格) → _dark-mode-vars.scss
+    亮色: Playful Light (浅紫学习风格)
+    暗色: Yozi AI Dark (紫色阅读风格) → _dark-mode-vars.scss
     ============================================ */
 
 /* ============================================
    核心颜色变量定义
    ============================================ */
 
-/* 浅色模式（默认） - Wise-Light 金融科技风格：灰蓝底 + 柔和蓝强调 */
+/* 浅色模式（默认） - Playful Light 浅紫学习风格 */
 :root,
 page {
-  /* ====== 核心变量（灰蓝底 + 白色卡片 + 蓝色强调色） ====== */
-  --background: #f5f7fa; /* 页面背景：淡灰蓝（Wise 金融风格） */
-  --foreground: #1a1d1f; /* 主文字：近黑（高对比可读） */
-  --card: #ffffff; /* 卡片背景：纯白（与灰蓝底拉开层次） */
-  --card-foreground: #1a1d1f; /* 卡片文字 */
-  --primary: #4a90e2; /* 品牌主色：柔和蓝（仅用于按钮/图标强调） */
+  /* ====== 核心变量（浅紫底 + 白色卡片 + 蓝色强调色） ====== */
+  --background: #eae8fc; /* 紫蓝材质底色 */
+  --foreground: #080909; /* 主文字：近黑（高对比可读） */
+  --card: var(--yozi-reading); /* 厚磨砂内容面 */
+  --card-foreground: #080909; /* 卡片文字 */
+  --primary: #785bbc; /* 品牌主色：紫色（仅用于按钮/图标强调） */
   --primary-foreground: #ffffff; /* 品牌主色文字：白色 */
-  --muted: #e8eef4; /* 弱化背景：浅灰蓝 */
-  --muted-foreground: #6b7280; /* 弱化文字：中性灰 */
-  --border: #e2e8f0; /* 边框：浅灰（实色，更清晰） */
-  --brand: #4a90e2; /* 品牌色：柔和蓝 */
+  --muted: #eeeaf6; /* 弱化背景：浅紫灰 */
+  --muted-foreground: #62576d; /* 紫色次要文字 */
+  --border: #dbd5e6; /* 边框：浅灰（实色，更清晰） */
+  --brand: #785bbc; /* 品牌色：紫色 */
   --brand-glow: color-mix(in srgb, var(--primary) 18%, transparent); /* 品牌光晕 */
   --glass-bg: rgba(255, 255, 255, 0.72); /* 毛玻璃背景：白色透明 */
   --glass-border: rgba(255, 255, 255, 0.82); /* 毛玻璃边框 */
@@ -317,7 +384,7 @@ page {
   /* ====== 语义化别名（方便使用） ====== */
   --bg-page: var(--background);
   --bg-card: var(--card);
-  --bg-secondary: #e8eef4; /* 二级背景：浅灰蓝 */
+  --bg-secondary: #eeeaf6; /* 二级背景：浅紫灰 */
   --bg-glass: var(--glass-bg);
   --text-main: var(--foreground);
   --text-primary: var(--foreground);
@@ -327,27 +394,27 @@ page {
   --primary-light: color-mix(in srgb, var(--primary) 8%, transparent);
   --success-light: color-mix(in srgb, var(--success) 12%, transparent);
   --warning-light: color-mix(in srgb, var(--warning) 12%, transparent);
-  --gradient-primary: linear-gradient(135deg, #5a9fe8 0%, #4a90e2 50%, #3a7bd5 100%);
-  --page-gradient-top: #f5f7fa;
-  --page-gradient-mid: #eef2f7;
-  --page-gradient-bottom: #e8edf3;
+  --gradient-primary: linear-gradient(135deg, #9b7cc9 0%, #785bbc 50%, #65429e 100%);
+  --page-gradient-top: #f0eefa;
+  --page-gradient-mid: #f3effa;
+  --page-gradient-bottom: #eee7f7;
 
   /* ====== 扩展功能色 ====== */
   --success: #34d399; /* 翡翠绿 */
   --warning: #f59e0b; /* 琥珀橙 */
   --danger: #ef4444; /* 红色 */
-  --info: #4a90e2; /* 主蓝（与品牌色统一） */
-  --wise-blue: #4a90e2; /* Wise 蓝（替代原 wise-green） */
-  --wise-blue-dark: #3a7bd5; /* Wise 蓝深色态 */
-  --wise-green: #4a90e2; /* 兼容别名：映射到 wise-blue，旧组件不受影响 */
-  --wise-green-dark: #3a7bd5; /* 兼容别名 */
+  --info: #785bbc; /* 主蓝（与品牌色统一） */
+  --wise-blue: #785bbc; /* Wise 蓝（替代原 wise-green） */
+  --wise-blue-dark: #65429e; /* Wise 蓝深色态 */
+  --wise-green: #785bbc; /* 兼容别名：映射到 wise-blue，旧组件不受影响 */
+  --wise-green-dark: #65429e; /* 兼容别名 */
 
   /* ====== 兼容变量桥接（解决旧页面/组件变量不一致） ====== */
-  --brand-color: #4a90e2;
-  --brand-hover: #5a9fe8;
-  --brand-active: #3a7bd5;
+  --brand-color: #785bbc;
+  --brand-hover: #9b7cc9;
+  --brand-active: #65429e;
   --color-primary: var(--brand-color);
-  --color-primary-dark: #2e6bbf;
+  --color-primary-dark: #573686;
   --text-tertiary: #9ca3af; /* 三级灰 */
   --text-inverse: #ffffff;
   --text-primary-foreground: var(--primary-foreground);
@@ -371,23 +438,23 @@ page {
   --shadow-danger: 0 10rpx 30rpx rgba(239, 68, 68, 0.16);
   --bg-body: var(--bg-page);
   --card-bg: var(--bg-card);
-  --bg-tertiary: #dde3ea; /* 三级背景：冷灰蓝 */
+  --bg-tertiary: #e4ddef; /* 三级背景：冷紫灰 */
   --accent-warm: #f59e0b;
   --accent-cool: #5ac8fa;
-  --accent-energy: #4a90e2;
+  --accent-energy: #785bbc;
   --skeleton-bg: rgba(0, 0, 0, 0.04);
   --skeleton-line: rgba(0, 0, 0, 0.06);
   --skeleton-highlight: rgba(255, 255, 255, 0.96);
   --brand-tint: color-mix(in srgb, var(--primary) 8%, transparent);
   --brand-tint-strong: color-mix(in srgb, var(--primary) 16%, transparent);
   --brand-tint-subtle: color-mix(in srgb, var(--primary) 4%, transparent);
-  --shadow-brand-sm: 0 8rpx 18rpx rgba(74, 144, 226, 0.12);
-  --shadow-brand: 0 12rpx 28rpx rgba(74, 144, 226, 0.18);
-  --shadow-brand-strong: 0 16rpx 34rpx rgba(74, 144, 226, 0.24);
+  --shadow-brand-sm: 0 8rpx 18rpx rgba(120, 91, 188, 0.12);
+  --shadow-brand: 0 12rpx 28rpx rgba(120, 91, 188, 0.18);
+  --shadow-brand-strong: 0 16rpx 34rpx rgba(120, 91, 188, 0.24);
   --cta-primary-bg: var(--gradient-primary);
   --cta-primary-text: #ffffff;
   --cta-primary-border: transparent;
-  --cta-primary-shadow: 0 12rpx 28rpx rgba(74, 144, 226, 0.22);
+  --cta-primary-shadow: 0 12rpx 28rpx rgba(120, 91, 188, 0.22);
   /* [已迁移] Apple Glass 变量已被 em3d 设计系统替代，保留 icon-highlight 供个别组件使用 */
   --icon-highlight: 0 4px 20px rgba(0, 0, 0, 0.06), 0 0 0 0.5px rgba(0, 0, 0, 0.04);
 
@@ -450,19 +517,57 @@ page {
   --ds-transition-base: 250ms ease-out;
 }
 
-/* 深色模式 - Bitget-Dark 赛博朋克风格（系统偏好） */
+/* 深色模式 - Yozi AI Dark 紫色阅读风格（系统偏好） */
 @media (prefers-color-scheme: dark) {
+  /* #ifdef H5 */
+  :root:not([data-theme]),
+  :root:not([data-theme]) page
+  /* #endif */
+  /* #ifndef H5 */
   :root,
-  page {
+  page
+  /* #endif */ {
     @include dark-mode-vars;
   }
 }
 
-/* 手动深色模式类（支持用户切换） */
+/* 显式主题与学习空间共用深色材质。 */
+:root[data-theme='dark'],
+.space-dark,
 .dark,
 .dark-mode,
 .page-dark {
   @include dark-mode-vars;
+}
+
+/* Resolve material fallbacks after every light/dark variant, including direct token users. */
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+  :root,
+  page,
+  :root:not([data-theme='light']),
+  :root[data-theme='dark'],
+  .space-dark,
+  .dark,
+  .dark-mode,
+  .page-dark {
+    --yozi-glass: var(--yozi-solid);
+    --yozi-reading: var(--yozi-solid);
+    --yozi-floating: var(--yozi-solid);
+  }
+}
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  :root,
+  page,
+  :root:not([data-theme='light']),
+  :root[data-theme='dark'],
+  .space-dark,
+  .dark,
+  .dark-mode,
+  .page-dark {
+    --yozi-glass: var(--yozi-solid);
+    --yozi-reading: var(--yozi-solid);
+    --yozi-floating: var(--yozi-solid);
+  }
 }
 
 /* ============================================
@@ -484,7 +589,12 @@ page {
 
 /* 深色模式下图片亮度调整 */
 @media (prefers-color-scheme: dark) {
-  image {
+  /* #ifdef H5 */
+  :root:not([data-theme='light']) image
+  /* #endif */
+  /* #ifndef H5 */
+  image
+  /* #endif */ {
     opacity: 0.9;
     filter: brightness(0.9);
   }
@@ -508,82 +618,70 @@ scroll-view {
    全局工具类 (使用语义化变量)
    ============================================ */
 
-/* 卡片组件（新拟物化风格：双向阴影凸起效果） */
-.card {
-  background-color: var(--em3d-card-bg);
-  border: none;
-  border-radius: var(--em3d-radius-lg);
-  padding: var(--spacing-md);
-  color: var(--em3d-text-1);
-  box-shadow: var(--neu-shadow-md);
-  transition: var(--em3d-ease-press);
-}
-
-/* 毛玻璃卡片 → 新拟物化卡片（保留类名兼容） */
-.glass-card {
-  background-color: var(--em3d-card-bg);
-  border: none;
-  border-radius: var(--em3d-radius-lg);
-  padding: var(--spacing-md);
-  color: var(--em3d-text-1);
-  box-shadow: var(--neu-shadow-md);
-  transition: var(--em3d-ease-press);
-}
-
-.apple-glass,
+/* Existing card names share one frosted material. Nested groups do not add blur. */
+.card,
+.glass-card,
 .apple-glass-card,
-.apple-glass-pill,
 .apple-group-card {
-  position: relative;
-  isolation: isolate;
-  overflow: hidden;
+  background: var(--yozi-reading);
+  border: 0;
+  border-radius: 24px;
+  color: var(--text-main);
+  box-shadow: var(--yozi-shadow);
 }
-
-/* Apple Glass 导航 → 新拟物化导航 */
-.apple-glass {
-  background-color: var(--em3d-bg);
-  border: none;
-  box-shadow: var(--neu-shadow-md);
+.card,
+.glass-card {
+  padding: var(--spacing-md);
 }
-
-/* Apple Glass Card → 新拟物化卡片（全站 200+ 处使用） */
-.apple-glass-card {
-  background-color: var(--em3d-bg);
-  border: none;
-  box-shadow: var(--neu-shadow-md);
-}
-
-/* Apple Group Card → 新拟物化内嵌卡片 */
-.apple-group-card {
-  background-color: var(--em3d-bg);
-  border: none;
-  box-shadow: var(--neu-shadow-sm);
-}
-
-/* Apple Glass Pill → 新拟物化胶囊 */
+.apple-glass,
 .apple-glass-pill {
-  background-color: var(--em3d-bg);
-  border: none;
-  box-shadow: var(--neu-shadow-sm);
+  background: var(--yozi-glass);
+  border: 0;
+  box-shadow: var(--yozi-shadow);
+  backdrop-filter: blur(24px) saturate(1.2);
+  -webkit-backdrop-filter: blur(24px) saturate(1.2);
 }
-
-/* CTA 按钮 → 新拟物化主按钮 */
 .apple-cta {
-  min-height: 88rpx;
-  border-radius: 999rpx;
-  background-color: var(--em3d-primary);
-  color: var(--em3d-text-inv);
-  border: none;
-  box-shadow:
-    6rpx 6rpx 12rpx var(--em3d-primary-shadow),
-    -3rpx -3rpx 8rpx rgba(255, 255, 255, 0.15);
-  transition: var(--em3d-ease-press);
+  min-height: 44px;
+  border-radius: 12px;
+  background: var(--yozi-button);
+  color: var(--yozi-button-ink);
+  border: 0;
+  box-shadow: var(--yozi-button-shadow);
+  transition:
+    box-shadow 180ms ease,
+    transform 180ms ease;
 }
-
-.apple-cta:active {
+.apple-cta:active:not([disabled]) {
+  transform: translateY(2px);
   box-shadow:
-    inset 4rpx 4rpx 8rpx var(--em3d-primary-shadow),
-    inset -2rpx -2rpx 6rpx rgba(255, 255, 255, 0.1);
+    inset 0 2px 4px rgba(30, 15, 65, 0.16),
+    0 2px 0 var(--yozi-button-edge);
+  transition-duration: 100ms;
+}
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+  .card,
+  .glass-card,
+  .apple-glass,
+  .apple-glass-card,
+  .apple-glass-pill,
+  .apple-group-card {
+    background: var(--yozi-solid);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .apple-glass,
+  .apple-glass-pill {
+    background: var(--yozi-solid);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .apple-cta {
+    transition: none !important;
+    transform: none !important;
+  }
 }
 
 /* 按钮基础样式（新拟物化风格：胶囊圆角 + 双向阴影） */

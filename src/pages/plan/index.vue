@@ -1,5 +1,11 @@
 <template>
-  <view :class="['container', { 'dark-mode': isDark }]">
+  <LearningShell v-if="!showLegacy" active="plan" title="学习计划">
+    <LearningOverview :initial-expanded="true" :show-navigation="false" view="plan" />
+    <view class="legacy-entry">
+      <button class="quiet-button" role="button" tabindex="0" @tap="toggleLegacy">历史题库记录</button>
+    </view>
+  </LearningShell>
+  <view v-else :class="['container', { 'dark-mode': isDark }]">
     <view class="aurora-bg" />
 
     <!-- 骨架屏 -->
@@ -21,7 +27,7 @@
       <view class="nav-content" :style="{ paddingRight: capsuleSafeRight + 'px' }">
         <view class="nav-back" @tap="goBack"><BaseIcon name="arrow-left" :size="32" /></view>
         <text class="nav-title"> 学习计划 </text>
-        <view class="nav-add" @tap="createPlan">
+        <view class="nav-add" @tap="showLegacy ? createPlan() : safeNavigateTo('/pages/learning/index')">
           <text class="nav-add-text"> + </text>
         </view>
       </view>
@@ -36,217 +42,228 @@
       :refresher-triggered="isRefreshing"
       @refresherrefresh="onPullRefresh"
     >
-      <view class="hero-card">
-        <text class="hero-eyebrow"> Planning Center </text>
-        <text class="hero-title"> 把备考安排成清晰的一周节奏 </text>
-        <text class="hero-subtitle"> 管理每日时长、提醒和任务进度，保持轻盈但持续的推进感。 </text>
-        <view class="hero-actions">
-          <view class="hero-cta" @tap="createPlan">
-            <text class="hero-cta-text"> 新建计划 </text>
-          </view>
-        </view>
-      </view>
-
-      <view v-if="intelligentReminders.length > 0" class="reminder-card">
-        <view class="section-heading">
-          <text class="section-eyebrow"> Smart Reminders </text>
-          <view class="section-title-row">
-            <BaseIcon name="robot" :size="30" class="reminder-icon" />
-            <text class="section-title"> 智能提醒 </text>
-          </view>
-        </view>
-        <view class="reminder-list">
-          <view
-            v-for="(reminder, index) in intelligentReminders"
-            :key="index"
-            class="reminder-item"
-            :class="reminder.priority"
-          >
-            <text class="reminder-message">
-              {{ reminder.message }}
-            </text>
-            <text class="reminder-time">
-              {{ reminder.time }}
-            </text>
-          </view>
-        </view>
-      </view>
-
-      <!-- AI 自适应学习计划 -->
-      <view v-if="aiPlan || aiPlanLoading" class="ai-plan-section">
-        <view class="section-heading">
-          <text class="section-eyebrow">AI Adaptive Plan</text>
-          <view class="section-title-row">
-            <text class="section-title">AI 自适应计划</text>
-          </view>
-        </view>
-
-        <view v-if="aiPlanLoading" class="ai-plan-loading">
-          <text class="ai-plan-loading-text">AI 正在分析你的学习数据，生成个性化计划...</text>
-        </view>
-
-        <view v-else-if="aiPlan && aiPlan.days" class="ai-plan-days">
-          <view v-if="aiPlan.phase" class="ai-plan-phase">
-            <text class="phase-text">当前阶段：{{ aiPlan.phase }}</text>
-          </view>
-          <view
-            v-for="(day, idx) in aiPlan.days"
-            :key="idx"
-            class="ai-day-card"
-            :class="{ today: idx === 0 }"
-            @tap="startAIPlanDay(day)"
-          >
-            <view class="day-header">
-              <text class="day-label">{{ idx === 0 ? '今天' : `第${idx + 1}天` }}</text>
-              <text v-if="day.focusSubject" class="day-focus">{{ day.focusSubject }}</text>
+      <LearningOverview :initial-expanded="true" />
+      <button size="mini" @tap="toggleLegacy">
+        {{ showLegacy ? '收起历史视图' : '历史题库记录' }}
+      </button>
+      <template v-if="showLegacy">
+        <view class="hero-card">
+          <text class="hero-title"> 把备考安排成清晰的一周节奏 </text>
+          <view class="hero-actions">
+            <view class="hero-cta" @tap="createPlan">
+              <text class="hero-cta-text"> 新建计划 </text>
             </view>
-            <view v-if="day.tasks" class="day-tasks">
-              <view v-for="(task, ti) in day.tasks.slice(0, 3)" :key="ti" class="day-task-item">
-                <text class="task-dot" :class="[task.type === 'review' ? 'review' : 'practice']" />
-                <text class="task-name">{{ task.name || task.knowledgePoint }}</text>
-                <text v-if="task.minutes" class="task-time">{{ task.minutes }}分钟</text>
+          </view>
+        </view>
+
+        <view v-if="intelligentReminders.length > 0" class="reminder-card">
+          <view class="section-heading">
+            <view class="section-title-row">
+              <BaseIcon name="robot" :size="30" class="reminder-icon" />
+              <text class="section-title"> 智能提醒 </text>
+            </view>
+          </view>
+          <view class="reminder-list">
+            <view
+              v-for="(reminder, index) in intelligentReminders"
+              :key="index"
+              class="reminder-item"
+              :class="reminder.priority"
+            >
+              <text class="reminder-message">
+                {{ reminder.message }}
+              </text>
+              <text class="reminder-time">
+                {{ reminder.time }}
+              </text>
+            </view>
+          </view>
+        </view>
+
+        <!-- AI 自适应学习计划 -->
+        <view v-if="aiPlan || aiPlanLoading" class="ai-plan-section">
+          <view class="section-heading">
+            <view class="section-title-row">
+              <text class="section-title">AI 自适应计划</text>
+            </view>
+          </view>
+
+          <view v-if="aiPlanLoading" class="ai-plan-loading">
+            <text class="ai-plan-loading-text">AI 正在分析你的学习数据，生成个性化计划...</text>
+          </view>
+
+          <view v-else-if="aiPlan && aiPlan.days" class="ai-plan-days">
+            <view v-if="aiPlan.phase" class="ai-plan-phase">
+              <text class="phase-text">当前阶段：{{ aiPlan.phase }}</text>
+            </view>
+            <view
+              v-for="(day, idx) in aiPlan.days"
+              :key="idx"
+              class="ai-day-card"
+              :class="{ today: idx === 0 }"
+              @tap="startAIPlanDay(day)"
+            >
+              <view class="day-header">
+                <text class="day-label">{{ idx === 0 ? '今天' : `第${idx + 1}天` }}</text>
+                <text v-if="day.focusSubject" class="day-focus">{{ day.focusSubject }}</text>
+              </view>
+              <view v-if="day.tasks" class="day-tasks">
+                <view v-for="(task, ti) in day.tasks.slice(0, 3)" :key="ti" class="day-task-item">
+                  <text class="task-dot" :class="[task.type === 'review' ? 'review' : 'practice']" />
+                  <text class="task-name">{{ task.name || task.knowledgePoint }}</text>
+                  <text v-if="task.minutes" class="task-time">{{ task.minutes }}分钟</text>
+                </view>
+              </view>
+              <view v-if="idx === 0" class="day-cta">
+                <text class="day-cta-text">开始今日任务</text>
               </view>
             </view>
-            <view v-if="idx === 0" class="day-cta">
-              <text class="day-cta-text">开始今日任务</text>
-            </view>
           </view>
         </view>
-      </view>
 
-      <BaseEmpty
-        v-if="plans.length === 0"
-        icon="calendar"
-        title="还没有学习计划"
-        desc="创建一个学习计划，让备考更有条理！"
-        :show-button="true"
-        button-text="创建学习计划"
-        :is-dark="isDark"
-        @action="createPlan"
-      />
+        <BaseEmpty
+          v-if="plans.length === 0"
+          icon="calendar"
+          title="还没有学习计划"
+          desc="创建一个学习计划，让备考更有条理！"
+          :show-button="true"
+          button-text="创建学习计划"
+          :is-dark="isDark"
+          @action="createPlan"
+        />
 
-      <view v-if="plans.length > 0" class="section-heading plans-heading">
-        <text class="section-eyebrow"> Your Plans </text>
-        <text class="section-title"> 当前进行中的计划 </text>
-      </view>
+        <view v-if="plans.length > 0" class="section-heading plans-heading">
+          <text class="section-title"> 当前进行中的计划 </text>
+        </view>
 
-      <view v-for="(plan, index) in plans" :key="plan.id || index" class="plan-card">
-        <view class="plan-header">
-          <text class="plan-name">
-            {{ plan.name }}
-          </text>
-          <view class="plan-badge" :class="plan.status">
-            <text class="plan-badge-text">
-              {{ getStatusText(plan.status) }}
+        <view v-for="(plan, index) in plans" :key="plan.id || index" class="plan-card">
+          <view class="plan-header">
+            <text class="plan-name">
+              {{ plan.name }}
             </text>
-          </view>
-        </view>
-
-        <text class="plan-goal">
-          {{ plan.goal }}
-        </text>
-
-        <view v-if="plan.analytics" class="plan-analytics">
-          <view class="analytics-row">
-            <view class="analytics-item">
-              <text class="analytics-label"> 完成率 </text>
-              <text class="analytics-value"> {{ plan.analytics.completionRate }}% </text>
-            </view>
-            <view class="analytics-item">
-              <text class="analytics-label"> 趋势 </text>
-              <text class="analytics-value" :class="getTrendClass(plan.analytics.progressTrend.trend)">
-                {{ plan.analytics.progressTrend.trend > 0 ? '+' : '' }}{{ plan.analytics.progressTrend.trend }}%
+            <view class="plan-badge" :class="plan.status">
+              <text class="plan-badge-text">
+                {{ getStatusText(plan.status) }}
               </text>
             </view>
-            <view class="analytics-item">
-              <text class="analytics-label"> 预计完成 </text>
-              <text class="analytics-value"> {{ plan.analytics.progressTrend.projected }}% </text>
-            </view>
           </view>
 
-          <view
-            v-if="plan.analytics.recommendedAdjustments && plan.analytics.recommendedAdjustments.length > 0"
-            class="adjustments-section"
-          >
-            <text class="adjustments-title"> 智能建议 </text>
+          <text class="plan-goal">
+            {{ plan.goal }}
+          </text>
+
+          <view v-if="plan.analytics" class="plan-analytics">
+            <view class="analytics-row">
+              <view class="analytics-item">
+                <text class="analytics-label"> 完成率 </text>
+                <text class="analytics-value"> {{ plan.analytics.completionRate }}% </text>
+              </view>
+              <view class="analytics-item">
+                <text class="analytics-label"> 趋势 </text>
+                <text class="analytics-value" :class="getTrendClass(plan.analytics.progressTrend.trend)">
+                  {{ plan.analytics.progressTrend.trend > 0 ? '+' : '' }}{{ plan.analytics.progressTrend.trend }}%
+                </text>
+              </view>
+              <view class="analytics-item">
+                <text class="analytics-label"> 预计完成 </text>
+                <text class="analytics-value"> {{ plan.analytics.progressTrend.projected }}% </text>
+              </view>
+            </view>
+
             <view
-              v-for="(adjustment, adjIndex) in plan.analytics.recommendedAdjustments"
-              :key="adjIndex"
-              class="adjustment-item"
-              :class="adjustment.priority"
+              v-if="plan.analytics.recommendedAdjustments && plan.analytics.recommendedAdjustments.length > 0"
+              class="adjustments-section"
             >
-              <text class="adjustment-message">
-                {{ adjustment.message }}
+              <text class="adjustments-title"> 智能建议 </text>
+              <view
+                v-for="(adjustment, adjIndex) in plan.analytics.recommendedAdjustments"
+                :key="adjIndex"
+                class="adjustment-item"
+                :class="adjustment.priority"
+              >
+                <text class="adjustment-message">
+                  {{ adjustment.message }}
+                </text>
+              </view>
+            </view>
+          </view>
+
+          <view class="plan-meta-grid">
+            <view class="meta-item">
+              <text class="meta-label"> 开始日期 </text>
+              <text class="meta-value">
+                {{ plan.startDate }}
+              </text>
+            </view>
+            <view class="meta-item">
+              <text class="meta-label"> 结束日期 </text>
+              <text class="meta-value">
+                {{ plan.endDate }}
+              </text>
+            </view>
+            <view class="meta-item">
+              <text class="meta-label"> 每日时长 </text>
+              <text class="meta-value">
+                {{ plan.dailyDuration }}
+              </text>
+            </view>
+            <view class="meta-item">
+              <text class="meta-label"> 提醒时间 </text>
+              <text class="meta-value">
+                {{ plan.reminderTime }}
               </text>
             </view>
           </view>
-        </view>
 
-        <view class="plan-meta-grid">
-          <view class="meta-item">
-            <text class="meta-label"> 开始日期 </text>
-            <text class="meta-value">
-              {{ plan.startDate }}
+          <view v-if="plan.tasks && plan.tasks.length > 0" class="task-stats">
+            <text class="task-stats-label"> 任务进度 </text>
+            <view class="task-progress-bar">
+              <view class="task-progress-fill" :style="{ width: (plan.progress || 0) + '%' }" />
+            </view>
+            <text class="task-stats-text">
+              {{ plan.tasks ? plan.tasks.reduce((n, t) => n + (t.completed ? 1 : 0), 0) : 0 }}/{{
+                plan.tasks ? plan.tasks.length : 0
+              }}
+              个任务
             </text>
           </view>
-          <view class="meta-item">
-            <text class="meta-label"> 结束日期 </text>
-            <text class="meta-value">
-              {{ plan.endDate }}
-            </text>
-          </view>
-          <view class="meta-item">
-            <text class="meta-label"> 每日时长 </text>
-            <text class="meta-value">
-              {{ plan.dailyDuration }}
-            </text>
-          </view>
-          <view class="meta-item">
-            <text class="meta-label"> 提醒时间 </text>
-            <text class="meta-value">
-              {{ plan.reminderTime }}
-            </text>
-          </view>
-        </view>
 
-        <view v-if="plan.tasks && plan.tasks.length > 0" class="task-stats">
-          <text class="task-stats-label"> 任务进度 </text>
-          <view class="task-progress-bar">
-            <view class="task-progress-fill" :style="{ width: (plan.progress || 0) + '%' }" />
+          <view class="plan-footer">
+            <view class="category-tag" :class="plan.category">
+              <text class="tag-text">
+                {{ plan.category }}
+              </text>
+            </view>
+            <view class="priority-tag" :class="plan.priority">
+              <text class="tag-text">
+                {{ getPriorityText(plan.priority) }}
+              </text>
+            </view>
           </view>
-          <text class="task-stats-text">
-            {{ plan.tasks ? plan.tasks.reduce((n, t) => n + (t.completed ? 1 : 0), 0) : 0 }}/{{
-              plan.tasks ? plan.tasks.length : 0
-            }}
-            个任务
-          </text>
-        </view>
 
-        <view class="plan-footer">
-          <view class="category-tag" :class="plan.category">
-            <text class="tag-text">
-              {{ plan.category }}
-            </text>
-          </view>
-          <view class="priority-tag" :class="plan.priority">
-            <text class="tag-text">
-              {{ getPriorityText(plan.priority) }}
-            </text>
+          <view class="plan-actions">
+            <text class="action-btn cta" @tap="viewPlanDetail(plan)"> 查看详情 </text>
+            <text class="action-btn" @tap="adjustPlan(plan.id)"> 智能调整 </text>
+            <text class="action-btn danger" @tap="deletePlan(plan.id || index)"> 删除 </text>
           </view>
         </view>
-
-        <view class="plan-actions">
-          <text class="action-btn cta" @tap="viewPlanDetail(plan)"> 查看详情 </text>
-          <text class="action-btn" @tap="adjustPlan(plan.id)"> 智能调整 </text>
-          <text class="action-btn danger" @tap="deletePlan(plan.id || index)"> 删除 </text>
-        </view>
-      </view>
+      </template>
     </scroll-view>
   </view>
 </template>
 
 <script setup>
+import LearningOverview from '@/components/business/learning/learning-overview.vue';
+import LearningShell from '@/components/business/learning/learning-shell.vue';
+import { useConversationLearningStore } from '@/stores/modules/conversation-learning.js';
+
 import { ref } from 'vue';
+const learning = useConversationLearningStore();
+const showLegacy = ref(false);
+function toggleLegacy() {
+  showLegacy.value = !showLegacy.value;
+  if (showLegacy.value) loadPlans(true);
+}
 import { onLoad, onShow, onUnload } from '@dcloudio/uni-app';
 import { modal } from '@/utils/modal.js';
 import { toast } from '@/utils/toast.js';
@@ -301,6 +318,11 @@ onUnload(() => {
 });
 
 onShow(() => {
+  learning.refresh();
+  if (!showLegacy.value) {
+    isLoading.value = false;
+    return;
+  }
   loadPlans();
   loadIntelligentReminders();
   loadAIPlan();
@@ -387,6 +409,7 @@ function startAIPlanDay(day) {
 
 /** 创建计划 */
 function createPlan() {
+  if (learning.state.plans.length || learning.state.attempts.length) return safeNavigateTo('/pages/learning/index');
   requireLogin(() => safeNavigateTo('/pages/practice/index'), { message: '请先登录后创建计划' });
 }
 
@@ -504,12 +527,8 @@ function deletePlan(planId) {
 .container {
   min-height: 100%;
   min-height: 100vh;
-  background: linear-gradient(
-    180deg,
-    var(--page-gradient-top) 0%,
-    var(--page-gradient-mid) 52%,
-    var(--page-gradient-bottom) 100%
-  );
+
+  background: var(--yozi-background);
   position: relative;
   overflow: hidden;
   transition: background 0.3s;
@@ -535,9 +554,9 @@ function deletePlan(planId) {
   left: 0;
   width: 100%;
   z-index: 100;
-  background-color: var(--em3d-card-bg);
-  border-bottom: 2rpx solid var(--em3d-border);
-  box-shadow: 0 var(--em3d-depth-sm) 0 var(--em3d-border-shadow);
+
+  border-bottom: 0;
+  @include em-mobile-topbar;
 }
 
 .nav-content {
@@ -550,21 +569,38 @@ function deletePlan(planId) {
 
 .nav-back,
 .nav-add {
-  width: 72rpx;
-  height: 72rpx;
+  width: 44px;
+
+  height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.62);
-  border: 2rpx solid rgba(255, 255, 255, 0.46);
-  box-shadow: 0 var(--em3d-depth-sm) 0 var(--em3d-border-shadow);
+
+  border-radius: 12px;
+
+  background: var(--yozi-glass);
+
+  border: 0;
+
+  box-shadow: var(--yozi-control-shadow);
 }
 
 .nav-back {
   font-size: 36rpx;
   color: var(--text-main);
   font-weight: 700;
+
+  width: 44px;
+
+  height: 44px;
+
+  border-radius: 12px;
+
+  background: var(--yozi-glass);
+
+  border: 0;
+
+  box-shadow: var(--yozi-control-shadow);
 }
 
 .nav-title {
@@ -594,14 +630,27 @@ function deletePlan(planId) {
 .plan-card {
   margin-bottom: 30rpx;
   padding: 30rpx;
-  border-radius: 32rpx;
+
+  border-radius: 24px;
   background-color: var(--em3d-card-bg);
-  border: 2rpx solid var(--em3d-border);
-  box-shadow: 0 var(--em3d-depth-md) 0 var(--em3d-border-shadow);
+
+  border: 0;
+
+  box-shadow: var(--yozi-shadow);
+
+  background: var(--yozi-reading);
 }
 
 .hero-card {
   padding: 36rpx 32rpx;
+
+  background: var(--yozi-reading);
+
+  border: 0;
+
+  border-radius: 24px;
+
+  box-shadow: var(--yozi-shadow);
 }
 
 .hero-eyebrow,
@@ -640,21 +689,27 @@ function deletePlan(planId) {
   justify-content: center;
   min-width: 200rpx;
   padding: 22rpx 34rpx;
-  border-radius: 999rpx;
-  background: #58cc02;
+
   border: none;
-  box-shadow: 0 8rpx 0 #46a302;
+
+  @include em-mobile-primary-action;
 }
 
 .hero-cta:active {
-  transform: translateY(4rpx);
-  box-shadow: 0 4rpx 0 #46a302;
+  transform: translateY(2px);
+
+  box-shadow:
+    inset 0 2px 4px rgba(30, 15, 65, 0.16),
+    0 2px 0 var(--yozi-button-edge);
+
+  transition-duration: 100ms;
 }
 
 .hero-cta-text {
   font-size: 26rpx;
   font-weight: 800;
-  color: var(--text-inverse);
+
+  color: var(--yozi-button-ink);
 }
 
 .section-heading {
@@ -956,15 +1011,19 @@ function deletePlan(planId) {
 }
 
 .action-btn.cta {
-  background: #58cc02;
-  color: var(--text-inverse);
   border-color: transparent;
-  box-shadow: 0 8rpx 0 #46a302;
+
+  @include em-mobile-primary-action;
 }
 
 .action-btn.cta:active {
-  transform: translateY(4rpx);
-  box-shadow: 0 4rpx 0 #46a302;
+  transform: translateY(2px);
+
+  box-shadow:
+    inset 0 2px 4px rgba(30, 15, 65, 0.16),
+    0 2px 0 var(--yozi-button-edge);
+
+  transition-duration: 100ms;
 }
 
 .action-btn.danger {
@@ -976,8 +1035,14 @@ function deletePlan(planId) {
 .nav-back:active,
 .nav-add:active,
 .hero-cta:active {
-  transform: scale(0.97);
+  transform: translateY(2px);
   opacity: 0.88;
+
+  box-shadow:
+    inset 0 2px 4px rgba(30, 15, 65, 0.16),
+    0 2px 0 var(--yozi-button-edge);
+
+  transition-duration: 100ms;
 }
 
 .container.dark-mode .aurora-bg {
@@ -1002,16 +1067,24 @@ function deletePlan(planId) {
 }
 
 .container.dark-mode .action-btn.cta {
-  background: var(--cta-primary-bg);
+  background: var(--yozi-button);
   border-color: var(--cta-primary-border);
+
+  border: 0;
+
+  box-shadow: var(--yozi-button-shadow);
 }
 
 .container.dark-mode .hero-card,
 .container.dark-mode .reminder-card,
 .container.dark-mode .plan-card {
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, transparent 42%),
-    linear-gradient(160deg, rgba(18, 20, 28, 0.92) 0%, rgba(10, 12, 18, 0.88) 100%);
+  background: var(--yozi-reading);
+
+  border: 0;
+
+  border-radius: 24px;
+
+  box-shadow: var(--yozi-shadow);
 }
 
 .skeleton-fade-leave-active {
@@ -1043,12 +1116,15 @@ function deletePlan(planId) {
   font-weight: 600;
 }
 .ai-day-card {
-  background: var(--bg-card);
-  border: 2rpx solid rgba(0, 0, 0, 0.04);
-  border-radius: 24rpx;
+  background: var(--yozi-reading);
+
+  border: 0;
+
+  border-radius: 24px;
   padding: 16px;
   margin-bottom: 12px;
-  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
+
+  box-shadow: var(--yozi-shadow);
 }
 .ai-day-card.today {
   border-color: #58cc02;

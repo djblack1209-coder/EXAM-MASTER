@@ -7,7 +7,7 @@
       <text class="nav-back" @tap="goBack">
         <BaseIcon name="arrow-left" :size="36" />
       </text>
-      <text class="nav-title">错题归因矩阵</text>
+      <text class="nav-title">历史错题分组</text>
       <view class="nav-right" />
     </view>
 
@@ -37,38 +37,38 @@
           <view class="hero-row">
             <view class="hero-stat">
               <text class="hero-val danger-text">{{ summaryData.totalMistakes }}</text>
-              <text class="hero-lbl">累计错题</text>
+              <text class="hero-lbl">旧条目</text>
             </view>
             <view class="hero-divider" />
             <view class="hero-stat">
-              <text class="hero-val warning-text">{{ summaryData.highSeverity }}</text>
-              <text class="hero-lbl">高危聚类</text>
+              <text class="hero-val warning-text">{{ summaryData.reviewableCount }}</text>
+              <text class="hero-lbl">可重练</text>
             </view>
             <view class="hero-divider" />
             <view class="hero-stat">
               <text class="hero-val">{{ activeSubjects.length }}</text>
-              <text class="hero-lbl">涉及学科</text>
+              <text class="hero-lbl">分类</text>
             </view>
           </view>
-          <view v-if="summaryData.topErrorType" class="hero-tip">
+          <view class="hero-tip">
             <view class="tip-dot" />
-            <text class="tip-text">最高频错因：{{ summaryData.topErrorType }}</text>
+            <text class="tip-text">按旧标签整理，判定依据待核对。</text>
           </view>
         </view>
 
-        <!-- 严重程度图例 -->
+        <!-- 条目数量图例 -->
         <view class="legend-bar">
           <view class="legend-item">
             <view class="legend-swatch sev-high" />
-            <text class="legend-text">高危≥10</text>
+            <text class="legend-text">≥10条</text>
           </view>
           <view class="legend-item">
             <view class="legend-swatch sev-medium" />
-            <text class="legend-text">中危5-9</text>
+            <text class="legend-text">5–9条</text>
           </view>
           <view class="legend-item">
             <view class="legend-swatch sev-low" />
-            <text class="legend-text">低危1-4</text>
+            <text class="legend-text">1–4条</text>
           </view>
           <view class="legend-item">
             <view class="legend-swatch sev-empty" />
@@ -82,7 +82,7 @@
             <!-- 表头行：左上角 + 各错因列标题 -->
             <view class="m-row m-header">
               <view class="m-cell m-corner">
-                <text class="m-corner-text">学科＼错因</text>
+                <text class="m-corner-text">分类＼旧标签</text>
               </view>
               <view v-for="et in activeErrorTypes" :key="et.key" class="m-cell m-col-hd">
                 <text class="m-col-text">{{ et.short }}</text>
@@ -102,6 +102,12 @@
                   'sev-' + getCellSeverity(et.key, subj),
                   { 'm-selected': isSelected(et.key, subj) }
                 ]"
+                role="button"
+                :tabindex="getCellCount(et.key, subj) ? 0 : -1"
+                :aria-disabled="!getCellCount(et.key, subj)"
+                :aria-label="`${subj}，旧标签${et.label}，${getCellCount(et.key, subj)}条`"
+                @keydown.enter.prevent="selectCell(et.key, subj)"
+                @keydown.space.prevent="selectCell(et.key, subj)"
                 @tap="selectCell(et.key, subj)"
               >
                 <text v-if="getCellCount(et.key, subj) > 0" class="m-count">
@@ -112,7 +118,7 @@
           </view>
         </scroll-view>
 
-        <!-- ==================== 趋势分析展开面板 ==================== -->
+        <!-- ==================== 原记录展开面板 ==================== -->
         <view v-if="selected" class="trend-panel glass-card" :class="'accent-' + selected.severity">
           <!-- 标题行 -->
           <view class="tp-header">
@@ -121,42 +127,28 @@
               <text class="tp-sep">×</text>
               <text class="tp-subj">{{ selected.subject }}</text>
             </view>
-            <view class="tp-close" @tap="selected = null">
+            <view
+              class="tp-close"
+              role="button"
+              tabindex="0"
+              aria-label="收起旧条目"
+              @keydown.enter.prevent="selected = null"
+              @keydown.space.prevent="selected = null"
+              @tap="selected = null"
+            >
               <BaseIcon name="close" :size="24" />
             </view>
           </view>
 
-          <!-- 三项统计 -->
+          <!-- 条目统计 -->
           <view class="tp-stats">
             <view class="tp-stat">
               <text class="tp-stat-val">{{ selected.count }}</text>
-              <text class="tp-stat-lbl">错题数</text>
+              <text class="tp-stat-lbl">条目数</text>
             </view>
             <view class="tp-stat">
-              <text :class="['tp-stat-val', 'dir-' + selected.trend]">{{ trendLabel(selected.trend) }}</text>
-              <text class="tp-stat-lbl">趋势</text>
-            </view>
-            <view class="tp-stat">
-              <text class="tp-stat-val">{{ severityLabel(selected.severity) }}</text>
-              <text class="tp-stat-lbl">级别</text>
-            </view>
-          </view>
-
-          <!-- 近7天趋势柱状图（纯CSS，无第三方依赖） -->
-          <view class="chart-section">
-            <text class="chart-title">近 7 日趋势</text>
-            <view class="bar-chart">
-              <view v-for="(val, i) in selected.trendData" :key="i" class="bar-col">
-                <view class="bar-track">
-                  <view
-                    class="bar-fill"
-                    :class="'sev-' + barSeverity(val)"
-                    :style="{ height: barHeight(val, selected.trendMax) }"
-                  />
-                </view>
-                <text class="bar-val">{{ val }}</text>
-                <text class="bar-day">{{ dayLabels[i] }}</text>
-              </view>
+              <text class="tp-stat-val">{{ selected.cluster.reviewableCount }}</text>
+              <text class="tp-stat-lbl">可重练</text>
             </view>
           </view>
 
@@ -165,45 +157,28 @@
             v-if="selected.cluster && selected.cluster.examples && selected.cluster.examples.length"
             class="ex-section"
           >
-            <text class="ex-title">典型错题</text>
+            <text class="ex-title">旧条目示例</text>
             <view v-for="(ex, i) in selected.cluster.examples.slice(0, 3)" :key="i" class="ex-item">
-              <text class="ex-q">{{ i + 1 }}. {{ ex.questionContent }}</text>
+              <text class="ex-q">{{ i + 1 }}. {{ ex.questionContent || '原题未保存' }}</text>
               <view class="ex-ans">
-                <text class="ex-yours">你选: {{ ex.userAnswer }}</text>
-                <text class="ex-right">正确: {{ ex.correctAnswer }}</text>
+                <text class="ex-yours">旧原答: {{ ex.userAnswer || '未保存' }}</text>
+                <text class="ex-right">原参考: {{ ex.referenceAnswer || '未保存' }}</text>
               </view>
             </view>
           </view>
 
-          <!-- AI 建议 -->
-          <view v-if="selected.cluster && selected.cluster.suggestion" class="suggestion-box">
-            <BaseIcon name="sparkle" :size="28" />
-            <text class="suggestion-text">{{ selected.cluster.suggestion }}</text>
-          </view>
-
-          <!-- 一键针对训练（高危）/ 查看同类题（中低危） -->
           <WdButton
-            v-if="selected.severity === 'high'"
-            type="error"
-            block
-            custom-style="margin-top: 28rpx; border-radius: 999rpx; font-weight: 700;"
-            @click="startTargetedTraining"
-          >
-            一键针对训练
-          </WdButton>
-          <WdButton
-            v-else
             block
             plain
-            custom-style="margin-top: 28rpx; border-radius: 999rpx;"
+            :disabled="!selected.cluster.reviewableCount"
+            custom-style="margin-top: 28rpx; border-radius: 999rpx; min-height: 44px;"
             @click="goQuiz(selected.cluster)"
+            >重练完整条目</WdButton
           >
-            查看同类题
-          </WdButton>
         </view>
 
-        <!-- ==================== 按严重度分组的卡片列表 ==================== -->
-        <view v-for="group in severityGroups" :key="group.key" class="section">
+        <!-- ==================== 按条目数量分组的卡片列表 ==================== -->
+        <view v-for="group in countGroups" :key="group.key" class="section">
           <view class="section-header">
             <view class="section-dot" :class="'dot-' + group.key" />
             <text class="section-title">{{ group.label }}</text>
@@ -219,24 +194,21 @@
           >
             <view class="cluster-header">
               <text class="cluster-name">{{ cluster.errorTypeName }}</text>
-              <text class="cluster-trend" :class="'trend-' + normalizeTrend(cluster.trend)">
-                <BaseIcon :name="trendIcon(cluster.trend)" :size="28" />
-              </text>
             </view>
             <view class="cluster-meta">
-              <text class="cluster-count">{{ cluster.questionCount }} 题</text>
+              <text class="cluster-count">{{ cluster.questionCount }} 条 · 可重练 {{ cluster.reviewableCount }}</text>
             </view>
             <view v-if="cluster.knowledgePoints && cluster.knowledgePoints.length" class="kp-tags">
               <text v-for="kp in cluster.knowledgePoints.slice(0, 4)" :key="kp" class="kp-tag">{{ kp }}</text>
             </view>
-            <text v-if="cluster.suggestion" class="cluster-suggestion">{{ cluster.suggestion }}</text>
             <WdButton
               size="small"
+              :disabled="!cluster.reviewableCount"
               plain
-              custom-style="margin-top: 20rpx; border-radius: 999rpx;"
+              custom-style="margin-top: 20rpx; border-radius: 999rpx; min-height: 44px;"
               @click="goQuiz(cluster)"
             >
-              查看同类题
+              重练完整条目
             </WdButton>
           </view>
         </view>
@@ -245,8 +217,8 @@
       <!-- ==================== 空状态 ==================== -->
       <view v-else class="empty-state">
         <BaseIcon name="sparkle" :size="96" />
-        <text class="empty-title">暂无错题聚类</text>
-        <text class="empty-sub">多做几套题后，AI 会自动分析错题模式</text>
+        <text class="empty-title">暂无历史分组</text>
+        <text class="empty-sub">还没有可分组的旧条目</text>
       </view>
 
       <view class="bottom-safe" />
@@ -265,7 +237,7 @@ import { useStudyEngineStore } from '@/stores/modules/study-engine';
 import { initTheme } from '@/composables/useTheme.js';
 import { logger } from '@/utils/logger.js';
 import { getStatusBarHeight } from '@/utils/core/system.js';
-import { storageService } from '@/services/storageService.js';
+import { getUserId } from '@/services/auth-storage.js';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 
 // ==================== 常量定义 ====================
@@ -293,7 +265,8 @@ const loading = ref(true);
 const isRefreshing = ref(false);
 const statusBarHeight = ref(0);
 const clusters = ref([]);
-const summaryData = ref({ totalMistakes: 0, highSeverity: 0, topErrorType: '' });
+const loadedOwnerId = ref(null);
+const summaryData = ref({ totalMistakes: 0, reviewableCount: 0 });
 const selected = ref(null); // 当前选中的矩阵格子
 
 // ==================== 计算属性 ====================
@@ -325,54 +298,28 @@ const cellMap = computed(() => {
       map[key] = { count: 0, cluster: c, severity: 'empty' };
     }
     map[key].count += c.questionCount || 0;
-    // 取最高严重度
-    if (severityRank(c.severity) > severityRank(map[key].severity)) {
-      map[key].severity = c.severity;
-      map[key].cluster = c;
-    }
-  });
-  // 重新计算每个格子的 severity（基于累计数量）
-  Object.values(map).forEach((cell) => {
-    cell.severity = countToSeverity(cell.count);
+    map[key].severity = countToSeverity(map[key].count);
   });
   return map;
 });
 
 /** 按严重度分组（用于下方卡片列表） */
-const severityGroups = computed(() => {
+const countGroups = computed(() => {
   const groups = [
-    { key: 'high', label: '高频错误', items: [] },
-    { key: 'medium', label: '中频错误', items: [] },
-    { key: 'low', label: '低频错误', items: [] }
+    { key: 'high', label: '10条及以上', items: [] },
+    { key: 'medium', label: '5–9条', items: [] },
+    { key: 'low', label: '1–4条', items: [] }
   ];
   const idx = { high: 0, medium: 1, low: 2 };
   clusters.value.forEach((c) => {
-    const i = idx[c.severity] ?? 2;
+    const i = idx[c.countBand] ?? 2;
     groups[i].items.push(c);
   });
   return groups.filter((g) => g.items.length > 0);
 });
 
-/** 近7天日期标签 */
-const dayLabels = computed(() => {
-  const labels = [];
-  const now = new Date();
-  for (let i = 6; i >= 0; i--) {
-    const d = new Date(now);
-    d.setDate(d.getDate() - i);
-    labels.push(`${d.getMonth() + 1}/${d.getDate()}`);
-  }
-  return labels;
-});
-
-// ==================== 工具函数 ====================
-
 /** 从 cluster 中提取学科名称 */
 function extractSubject(cluster) {
-  // 优先从 clusterId 解析（格式："errorType::subject"）
-  if (cluster.clusterId && cluster.clusterId.includes('::')) {
-    return cluster.clusterId.split('::')[1];
-  }
   // 降级：取第一个知识点
   if (cluster.knowledgePoints && cluster.knowledgePoints.length > 0) {
     return cluster.knowledgePoints[0];
@@ -386,11 +333,6 @@ function countToSeverity(count) {
   if (count >= 5) return 'medium';
   if (count >= 1) return 'low';
   return 'empty';
-}
-
-/** 严重度排序权重 */
-function severityRank(sev) {
-  return { high: 3, medium: 2, low: 1, empty: 0 }[sev] || 0;
 }
 
 /** 获取矩阵格子的错题数量 */
@@ -415,73 +357,6 @@ function truncate(str, maxLen) {
   return str.length > maxLen ? str.slice(0, maxLen) + '…' : str;
 }
 
-/** 趋势方向标准化（兼容 up/increasing 等不同格式） */
-function normalizeTrend(trend) {
-  if (trend === 'up' || trend === 'increasing') return 'up';
-  if (trend === 'down' || trend === 'decreasing') return 'down';
-  return 'flat';
-}
-
-/** 趋势图标 */
-function trendIcon(trend) {
-  const dir = normalizeTrend(trend);
-  if (dir === 'up') return 'trend-up';
-  if (dir === 'down') return 'trend-down';
-  return 'arrow-right';
-}
-
-/** 趋势文字标签 */
-function trendLabel(trend) {
-  const dir = normalizeTrend(trend);
-  if (dir === 'up') return '↑ 增多';
-  if (dir === 'down') return '↓ 减少';
-  return '— 稳定';
-}
-
-/** 严重程度中文标签 */
-function severityLabel(sev) {
-  return { high: '高危', medium: '中危', low: '低危' }[sev] || '低危';
-}
-
-/** 根据数量确定柱状条颜色等级 */
-function barSeverity(val) {
-  return countToSeverity(val);
-}
-
-/** 计算柱状条高度百分比 */
-function barHeight(val, max) {
-  if (!max || max <= 0) return '4rpx'; // 最小高度
-  const pct = Math.max(4, Math.round((val / max) * 100));
-  return pct + '%';
-}
-
-/**
- * 生成近7天近似趋势数据
- * 后端只返回 trend 方向，此处根据总数+方向生成合理的每日分布
- */
-function generateDailyTrend(totalCount, trend) {
-  const days = 7;
-  const dir = normalizeTrend(trend);
-  const base = Math.max(1, Math.ceil(totalCount / days));
-  const result = [];
-  for (let i = 0; i < days; i++) {
-    let val;
-    if (dir === 'up') {
-      // 递增趋势：起始低，结尾高
-      val = Math.max(0, Math.round(base * (0.3 + i * 0.18)));
-    } else if (dir === 'down') {
-      // 递减趋势：起始高，结尾低
-      val = Math.max(0, Math.round(base * (1.4 - i * 0.15)));
-    } else {
-      // 稳定趋势：在均值附近小幅波动（使用固定种子避免每次渲染变化）
-      const jitter = ((i * 7 + 3) % 5) - 2; // 确定性伪随机：-2, -1, 0, 1, 2
-      val = Math.max(0, base + jitter);
-    }
-    result.push(val);
-  }
-  return result;
-}
-
 // ==================== 交互方法 ====================
 
 /** 点击矩阵格子 → 展开趋势分析面板 */
@@ -497,8 +372,6 @@ function selectCell(errorType, subject) {
 
   const cell = cellMap.value[`${errorType}::${subject}`];
   const cluster = cell?.cluster || null;
-  const trend = cluster?.trend || 'stable';
-  const trendData = generateDailyTrend(count, trend);
 
   selected.value = {
     errorType,
@@ -506,102 +379,39 @@ function selectCell(errorType, subject) {
     typeName: ERROR_TYPE_MAP[errorType] || errorType,
     count,
     severity: countToSeverity(count),
-    trend: normalizeTrend(trend),
-    trendData,
-    trendMax: Math.max(...trendData, 1),
     cluster
   };
 }
 
-/** 查看同类题（中低危，跳转 do-quiz） */
+/** 仅把当前账户完整旧条目交给答题页，不替换题库或回滚副本。 */
 function goQuiz(cluster) {
-  if (!cluster) return;
-  safeNavigateTo(
-    `/pages/practice-sub/do-quiz?mode=error_cluster&errorType=${encodeURIComponent(cluster.errorType || cluster.errorTypeName)}`
-  );
-}
-
-/** 一键针对训练（高危，从本地错题本筛选 → 临时替换题库 → 跳转 do-quiz） */
-async function startTargetedTraining() {
-  if (!selected.value) return;
-  toast.loading('生成训练题…');
-
-  try {
-    const matchSubject = selected.value.subject;
-    const matchErrorType = selected.value.errorType;
-    const clusterKPs = selected.value.cluster?.knowledgePoints || [];
-
-    // 从本地错题本筛选同类错题
-    const allMistakes = storageService.get('mistake_book', []);
-    const matched = allMistakes.filter((m) => {
-      const cat = m.category || m.knowledge_point || m.subject || '';
-      return cat === matchSubject || clusterKPs.includes(cat);
-    });
-
-    if (matched.length === 0) {
-      toast.hide();
-      toast.info('暂无可练习的同类错题');
-      return;
-    }
-
-    // 格式化为练习题（与 mistake/index.vue 的 startClusterTraining 保持一致）
-    const questions = matched
-      .map((m, i) => ({
-        id: m.id || m._id || `train_${i}_${Date.now()}`,
-        question: m.question || m.question_content || m.title || `题目 ${i + 1}`,
-        options:
-          Array.isArray(m.options) && m.options.length >= 2
-            ? m.options
-            : m.choices || ['A. 选项A', 'B. 选项B', 'C. 选项C', 'D. 选项D'],
-        answer: ((m.answer || m.correct_answer || m.correctAnswer || 'A') + '').charAt(0).toUpperCase(),
-        desc: m.desc || m.analysis || m.explanation || '暂无解析',
-        category: m.category || matchSubject,
-        type: m.type || '单选',
-        difficulty: m.difficulty || 2,
-        isReview: true
-      }))
-      .filter((q) => q.question && q.options.length >= 2);
-
-    if (questions.length === 0) {
-      toast.hide();
-      toast.info('错题数据格式异常');
-      return;
-    }
-
-    // 备份原题库 → 临时替换 → 跳转
-    const currentBank = storageService.get('v30_bank', []);
-    if (currentBank.length > 0) {
-      storageService.save('v30_bank_backup', currentBank);
-    }
-    storageService.save('v30_bank', questions);
-    storageService.save('is_review_mode', true);
-
-    toast.hide();
-    logger.log(`[ErrorClusters] 针对训练启动: ${matchErrorType}×${matchSubject}, ${questions.length} 题`);
-    safeNavigateTo('/pages/practice-sub/do-quiz?mode=error_cluster');
-  } catch (e) {
-    logger.error('[ErrorClusters] 训练启动失败:', e);
-    toast.hide();
-    toast.info('训练启动失败，请稍后重试');
+  if (!cluster?.reviewableCount) return;
+  const result = studyEngineStore.prepareLegacyReview({
+    clusterId: cluster.clusterId,
+    expectedOwnerId: loadedOwnerId.value
+  });
+  if (!result.success) {
+    toast.info(result.message || '重练入口未准备好');
+    return;
   }
+  if (result.skipped || result.deferred) toast.info(`本次重练${result.count}条，其余原记录已保留`);
+  safeNavigateTo(result.url);
 }
 
 // ==================== 数据加载 ====================
 
 async function loadData() {
   loading.value = true;
+  const ownerId = getUserId() || '';
   try {
     const result = await studyEngineStore.getErrorClusters();
+    if ((getUserId() || '') !== ownerId) return;
     if (result?.success !== false && result?.data) {
+      loadedOwnerId.value = ownerId;
       clusters.value = result.data.clusters || [];
       summaryData.value = {
-        totalMistakes: result.data.summary?.totalMistakes || result.data.totalMistakes || 0,
-        highSeverity: result.data.summary?.highSeverity || 0,
-        topErrorType:
-          result.data.summary?.topErrorType ||
-          (clusters.value.length > 0
-            ? clusters.value.reduce((a, b) => (a.questionCount > b.questionCount ? a : b)).errorTypeName
-            : '')
+        totalMistakes: result.data.summary?.totalMistakes || 0,
+        reviewableCount: result.data.summary?.reviewableCount || 0
       };
     }
   } catch (e) {
@@ -633,6 +443,17 @@ onMounted(() => {
 
 <style scoped>
 /* ==================== 页面容器 ==================== */
+.m-data[role='button'],
+.tp-close {
+  min-width: 44px;
+  min-height: 44px;
+}
+.m-data:focus-visible,
+.tp-close:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
 .page {
   min-height: 100vh;
   background: var(--background);

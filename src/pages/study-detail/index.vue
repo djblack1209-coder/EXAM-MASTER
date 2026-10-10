@@ -1,5 +1,11 @@
 <template>
-  <view :class="['study-detail-page', themeClass]">
+  <LearningShell v-if="!showLegacy" active="study-detail" title="学习足迹">
+    <LearningOverview :initial-expanded="true" :show-navigation="false" view="study-detail" />
+    <view class="legacy-entry">
+      <button class="quiet-button" role="button" tabindex="0" @tap="toggleLegacy">历史题库记录</button>
+    </view>
+  </LearningShell>
+  <view v-else :class="['study-detail-page', themeClass]">
     <!-- 透明导航栏 -->
     <view class="transparent-navbar" :class="{ 'navbar-solid': scrolled }">
       <view class="navbar-content">
@@ -28,147 +34,131 @@
       @scroll="handleScroll"
       @refresherrefresh="onPullRefresh"
     >
-      <!-- 骨架屏加载状态 -->
-      <view v-if="isLoading" class="skeleton-container">
-        <view class="skeleton-header">
-          <view class="skeleton-title skeleton-animate" />
-          <view class="skeleton-subtitle skeleton-animate" />
-        </view>
-        <view class="skeleton-cards">
-          <view v-for="i in 3" :key="i" class="skeleton-card skeleton-animate" />
-        </view>
-        <view class="skeleton-section">
-          <view class="skeleton-section-title skeleton-animate" />
-          <view class="skeleton-chart skeleton-animate" />
-        </view>
-      </view>
-
-      <!-- 实际内容 -->
-      <template v-else>
-        <!-- 空状态：新用户无学习记录 -->
-        <view v-if="studyTime === 0 && completionRate === 0 && abilityRank === '-'" class="empty-state-container">
-          <view class="page-header">
-            <text class="page-title"> 学习详情 </text>
-            <text class="page-subtitle"> 查看您的学习数据和进度 </text>
+      <LearningOverview :initial-expanded="true" />
+      <button size="mini" @tap="toggleLegacy">
+        {{ showLegacy ? '收起历史视图' : '历史题库记录' }}
+      </button>
+      <template v-if="showLegacy">
+        <!-- 骨架屏加载状态 -->
+        <view v-if="isLoading" class="skeleton-container">
+          <view class="skeleton-header">
+            <view class="skeleton-title skeleton-animate" />
+            <view class="skeleton-subtitle skeleton-animate" />
           </view>
-          <view class="empty-state-card">
-            <!-- 学习旅程空状态插图 -->
-            <image
-              class="empty-illustration"
-              src="./static/illustrations/empty-journey.png"
-              mode="aspectFit"
-              lazy-load
-            />
-            <text class="empty-title">还没有学习记录</text>
-            <text class="empty-desc">完成第一次练习后，这里将展示你的学习数据、热力图和能力分析</text>
-            <button class="empty-action-btn" @tap="goToPractice">开始学习</button>
+          <view class="skeleton-cards">
+            <view v-for="i in 3" :key="i" class="skeleton-card skeleton-animate" />
+          </view>
+          <view class="skeleton-section">
+            <view class="skeleton-section-title skeleton-animate" />
+            <view class="skeleton-chart skeleton-animate" />
           </view>
         </view>
 
-        <!-- 有数据时展示完整内容 -->
+        <!-- 实际内容 -->
         <template v-else>
-          <!-- 页面标题 -->
-          <view class="page-header">
-            <text class="page-title"> 学习详情 </text>
-            <text class="page-subtitle"> 查看您的学习数据和进度 </text>
+          <!-- 空状态：新用户无学习记录 -->
+          <view
+            v-if="studyTime === 0 && historicalCount === 0 && legacySummary.answeredCount === 0"
+            class="empty-state-container"
+          >
+            <view class="page-header">
+              <text class="page-title"> 学习详情 </text>
+            </view>
+            <view class="empty-state-card">
+              <!-- 学习旅程空状态插图 -->
+              <BaseIcon class="empty-illustration" name="book" :size="100" />
+              <text class="empty-title">还没有学习记录</text>
+              <text class="empty-desc">这里保留历史题库记录；当前学习依据在上方查看。</text>
+              <button class="empty-action-btn" @tap="goToPractice">开始学习</button>
+            </view>
           </view>
 
-          <!-- AI 学习洞察 — 一句人话总结数据背后的含义 -->
-          <view v-if="aiInsight" class="ai-insight-card">
-            <view class="insight-header">
-              <BaseIcon name="sparkle" :size="20" class="insight-icon" />
-              <text class="insight-label">AI 学习洞察</text>
+          <!-- 有数据时展示完整内容 -->
+          <template v-else>
+            <!-- 页面标题 -->
+            <view class="page-header">
+              <text class="page-title"> 学习详情 </text>
             </view>
-            <text class="insight-text">{{ aiInsight }}</text>
-            <view v-if="aiWeakPoints.length > 0" class="insight-weak">
-              <text class="insight-weak-label">建议重点攻克:</text>
-              <view class="insight-tags">
-                <text v-for="wp in aiWeakPoints" :key="wp" class="insight-tag">{{ wp }}</text>
+
+            <view class="ai-insight-card">
+              <text>历史题库记录不代表当前能力。</text>
+              <text v-if="legacySummary.legacyGradedCount"
+                >本机逐题旧判对 {{ legacySummary.legacyCorrectCount }} / {{ legacySummary.legacyGradedCount }}（{{
+                  legacySummary.legacyAccuracy
+                }}%）</text
+              >
+              <text v-else>暂无可分类的旧判定</text>
+              <text v-if="legacySummary.pendingCount">待核对 {{ legacySummary.pendingCount }}</text>
+              <text v-if="legacySummary.unclassifiedCount">依据不明 {{ legacySummary.unclassifiedCount }}</text>
+            </view>
+
+            <!-- 学习概况卡片 -->
+            <view class="overview-cards">
+              <!-- 学习时长卡片 -->
+              <view class="stat-card">
+                <BaseIcon class="stat-icon" name="calendar" :size="40" />
+                <view class="stat-content">
+                  <text class="stat-value">
+                    {{ studyTime }}
+                  </text>
+                  <text class="stat-label"> 历史学习时长（分钟） </text>
+                </view>
+              </view>
+
+              <!-- 已记录的自评复习 -->
+              <view class="stat-card">
+                <BaseIcon class="stat-icon" name="book" :size="40" />
+                <view class="stat-content">
+                  <text class="stat-value"> {{ legacySummary.reviewedCount }} </text>
+                  <text class="stat-label"> 本机自评复习 </text>
+                </view>
+              </view>
+
+              <!-- 历史累计数量 -->
+              <view class="stat-card">
+                <BaseIcon name="chart-bar" :size="52" class="stat-icon" />
+                <view class="stat-content">
+                  <text class="stat-value">
+                    {{ historicalCount }}
+                  </text>
+                  <text class="stat-label"> 历史累计作答 </text>
+                </view>
               </view>
             </view>
-          </view>
 
-          <!-- 学习概况卡片 -->
-          <view class="overview-cards">
-            <!-- 学习时长卡片 -->
-            <view class="stat-card">
-              <image class="stat-icon" src="./static/study.png" alt="" mode="aspectFit" />
-              <view class="stat-content">
-                <text class="stat-value">
-                  {{ studyTime }}
-                </text>
-                <text class="stat-label"> 学习时长（分钟） </text>
+            <!-- 学习热力图 -->
+            <view class="heatmap-section">
+              <view class="section-header">
+                <text class="section-title"> 学习热力图 </text>
+              </view>
+
+              <view class="heatmap-container">
+                <StudyHeatmap :study-data="studyRecordData" :weeks="26" @day-tap="handleDayTap" />
               </view>
             </view>
 
-            <!-- 完成率卡片 -->
-            <view class="stat-card">
-              <image class="stat-icon" src="./static/stack-of-books.png" alt="" mode="aspectFit" />
-              <view class="stat-content">
-                <text class="stat-value"> {{ completionRate }}% </text>
-                <text class="stat-label"> 完成率 </text>
+            <!-- FSRS 记忆模型优化 -->
+            <view class="fsrs-section">
+              <view class="section-header">
+                <text class="section-title"> 智能记忆 </text>
+              </view>
+              <FSRSOptimizer />
+            </view>
+
+            <!-- 学习趋势图表 -->
+            <view class="chart-section">
+              <view class="section-header">
+                <text class="section-title"> 学习趋势 </text>
+              </view>
+
+              <view class="chart-container">
+                <StudyTrendChart :study-data="studyRecordData" @range-change="handleRangeChange" />
               </view>
             </view>
 
-            <!-- 能力评级卡片 -->
-            <view class="stat-card">
-              <BaseIcon name="chart-bar" :size="52" class="stat-icon" />
-              <view class="stat-content">
-                <text class="stat-value">
-                  {{ abilityRank }}
-                </text>
-                <text class="stat-label"> 能力评级 </text>
-              </view>
-            </view>
-          </view>
-
-          <!-- 学习热力图 -->
-          <view class="heatmap-section">
-            <view class="section-header">
-              <text class="section-title"> 学习热力图 </text>
-              <text class="section-subtitle"> 过去一年的学习活跃度 </text>
-            </view>
-
-            <view class="heatmap-container">
-              <StudyHeatmap :study-data="studyRecordData" :weeks="26" @day-tap="handleDayTap" />
-            </view>
-          </view>
-
-          <!-- 能力雷达图 -->
-          <view class="radar-section">
-            <view class="section-header">
-              <text class="section-title"> 能力雷达 </text>
-              <text class="section-subtitle"> 各知识点掌握度分析 </text>
-            </view>
-
-            <view class="radar-container">
-              <AbilityRadar :mastery-data="knowledgeMastery" />
-            </view>
-          </view>
-
-          <!-- FSRS 记忆模型优化 -->
-          <view class="fsrs-section">
-            <view class="section-header">
-              <text class="section-title"> 智能记忆 </text>
-              <text class="section-subtitle"> 个性化间隔重复参数 </text>
-            </view>
-            <FSRSOptimizer />
-          </view>
-
-          <!-- 学习趋势图表 -->
-          <view class="chart-section">
-            <view class="section-header">
-              <text class="section-title"> 学习趋势 </text>
-              <text class="section-subtitle"> 最近学习时长变化 </text>
-            </view>
-
-            <view class="chart-container">
-              <StudyTrendChart :study-data="studyRecordData" @range-change="handleRangeChange" />
-            </view>
-          </view>
-
-          <!-- 底部间距 -->
-          <view class="bottom-spacer" />
+            <!-- 底部间距 -->
+            <view class="bottom-spacer" />
+          </template>
         </template>
       </template>
     </scroll-view>
@@ -176,7 +166,17 @@
 </template>
 
 <script setup>
+import LearningOverview from '@/components/business/learning/learning-overview.vue';
+import LearningShell from '@/components/business/learning/learning-shell.vue';
+import { useConversationLearningStore } from '@/stores/modules/conversation-learning.js';
+
 import { ref, computed } from 'vue';
+const learning = useConversationLearningStore();
+const showLegacy = ref(false);
+function toggleLegacy() {
+  showLegacy.value = !showLegacy.value;
+  if (showLegacy.value) loadStudyData(true);
+}
 import { onLoad, onUnload } from '@dcloudio/uni-app';
 import { toast } from '@/utils/toast.js';
 import { useThemeStore } from '@/stores';
@@ -187,13 +187,12 @@ import { logger } from '@/utils/logger.js';
 // 图表组件
 import StudyHeatmap from '@/components/business/index/StudyHeatmap.vue';
 import StudyTrendChart from './StudyTrendChart.vue';
-import AbilityRadar from './AbilityRadar.vue';
 import FSRSOptimizer from './FSRSOptimizer.vue';
 // ✅ F019: 统一使用 storageService
 import storageService from '@/services/storageService.js';
 import { getNavBarHeight } from '@/utils/core/system.js';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
-import { useStudyEngineStore } from '@/stores/modules/study-engine.js';
+import { summarizeQuizProgress } from '@/services/quiz-session-contract.js';
 import { useStatsStore } from '@/stores/modules/stats.js';
 
 defineOptions({ name: 'StudyDetail' });
@@ -201,7 +200,6 @@ defineOptions({ name: 'StudyDetail' });
 // Store 实例
 const themeStore = useThemeStore();
 const studyStore = useStudyStore();
-const studyEngineStore = useStudyEngineStore();
 const statsStore = useStatsStore();
 
 // 非响应式实例属性（事件回调引用，用于解绑）
@@ -218,18 +216,11 @@ const isLoading = ref(true);
 
 // 学习数据
 const studyTime = ref(0);
-const completionRate = ref(0);
-const abilityRank = ref('-');
+const historicalCount = ref(0);
+const legacySummary = ref(summarizeQuizProgress());
 
 // 热力图和趋势图数据
 const studyRecordData = ref({}); // { 'YYYY-MM-DD': minutes }
-
-// 能力雷达图数据
-const knowledgeMastery = ref(null); // { [id]: { mastery, practiceCount, correctCount } }
-
-// AI 洞察数据
-const aiInsight = ref('');
-const aiWeakPoints = ref([]);
 
 // === 计算属性 ===
 
@@ -254,8 +245,6 @@ onLoad(() => {
 
   // 加载学习数据
   loadStudyData();
-  // 异步加载 AI 洞察（不阻塞页面）
-  loadAIInsight();
 });
 
 onUnload(() => {
@@ -270,50 +259,10 @@ async function onPullRefresh() {
   isRefreshing.value = true;
   try {
     await loadStudyData();
-    loadAIInsight(); // 刷新时也更新 AI 洞察
   } catch (_e) {
     /* 静默处理 */
   }
   isRefreshing.value = false;
-}
-
-/**
- * AI 学习洞察 — 调用后端掌握度分析，生成一句话诊断
- */
-async function loadAIInsight() {
-  try {
-    const result = await studyEngineStore.analyzeMastery();
-    if (!result?.data?.summary) return;
-
-    const s = result.data.summary;
-    const mastery = result.data.mastery || [];
-
-    // 提取薄弱点列表
-    aiWeakPoints.value = mastery
-      .filter((k) => k.isWeak)
-      .slice(0, 3)
-      .map((k) => k.knowledgePoint);
-
-    // 生成一句话洞察
-    if (s.weakCount === 0 && s.avgMastery >= 80) {
-      aiInsight.value = `各知识点平均掌握度${s.avgMastery}%，整体状态良好！保持当前节奏即可。`;
-    } else if (s.weakCount > 0 && s.avgMastery >= 60) {
-      aiInsight.value = `平均掌握度${s.avgMastery}%，但仍有${s.weakCount}个薄弱点需要突破。建议集中攻克以下知识点，ROI最高。`;
-    } else if (s.weakCount > 0) {
-      aiInsight.value = `当前${s.weakCount}个知识点掌握度不足60%，平均${s.avgMastery}%。建议先从基础最薄弱的开始，逐个击破。`;
-    } else {
-      aiInsight.value = `已分析${s.totalKnowledgePoints}个知识点，其中${s.masteredCount}个已掌握。继续保持！`;
-    }
-
-    // 增加趋势洞察
-    const declining = mastery.filter((k) => k.recentTrend === 'declining');
-    if (declining.length > 0) {
-      aiInsight.value += ` 注意：「${declining[0].knowledgePoint}」近期表现在下滑，建议及时复习。`;
-    }
-  } catch (err) {
-    // 静默降级，不影响页面
-    logger.warn('[study-detail] AI 洞察加载失败:', err);
-  }
 }
 
 /** 处理滚动事件 */
@@ -337,50 +286,27 @@ function toggleTheme() {
   themeStore.toggleTheme();
 }
 
-/** 加载学习数据（优先后端，降级本地） */
+/** 旧聚合只展示历史数量和时长；可追溯学习状态由上方核心视图提供。 */
 async function loadStudyData() {
+  learning.refresh();
+  if (!showLegacy.value) {
+    isLoading.value = false;
+    return;
+  }
   isLoading.value = true;
   try {
-    // 尝试从后端获取统计概览
+    loadLegacyAnswerSummary();
     const overview = await statsStore.fetchOverview();
     if (overview && overview.totalQuestions > 0) {
-      // 后端数据可用：使用服务器端统计
       studyTime.value = overview.totalStudyMinutes || overview.today?.studyMinutes || 0;
-      const totalQ = overview.totalQuestions || 0;
-      const correctQ = overview.correctQuestions || 0;
-      completionRate.value = totalQ > 0 ? overview.accuracy : 0;
-
-      // 能力评级基于后端综合数据
-      const accuracy = totalQ > 0 ? (correctQ / totalQ) * 100 : 0;
-      const volumeScore = Math.min(Math.log10(totalQ + 1) / Math.log10(51), 1) * 100;
-      const compositeScore = accuracy * 0.6 + volumeScore * 0.4;
-      if (compositeScore >= 85) abilityRank.value = 'S';
-      else if (compositeScore >= 72) abilityRank.value = 'A';
-      else if (compositeScore >= 58) abilityRank.value = 'B';
-      else if (compositeScore >= 42) abilityRank.value = 'C';
-      else abilityRank.value = 'D';
-
-      // 尝试加载每日趋势数据（用于热力图）
-      _loadDailyFromBackend();
-    } else {
-      // 后端无数据或未登录，降级到本地存储
-      _loadStatsFromLocal();
-    }
-
-    // 加载知识点掌握度数据（用于能力雷达图）
-    knowledgeMastery.value = storageService.get('knowledge_mastery', null);
-
-    logger.log('[StudyDetail] 加载学习数据:', {
-      studyTime: studyTime.value,
-      completionRate: completionRate.value,
-      abilityRank: abilityRank.value
-    });
+      historicalCount.value = overview.totalQuestions;
+      await _loadDailyFromBackend();
+    } else _loadStatsFromLocal();
   } catch (error) {
-    logger.error('[StudyDetail] 加载学习数据失败:', error);
-    toast.error('学习数据加载失败');
+    logger.error('[StudyDetail] 历史记录加载失败:', error);
+    toast.error('历史记录加载失败');
     studyTime.value = 0;
-    completionRate.value = 0;
-    abilityRank.value = '-';
+    historicalCount.value = 0;
     studyRecordData.value = {};
   } finally {
     isLoading.value = false;
@@ -395,7 +321,7 @@ async function _loadDailyFromBackend() {
       const records = {};
       for (const day of result.stats) {
         if (day.studyMinutes > 0 || day.questions > 0) {
-          records[day.date] = day.studyMinutes || day.questions;
+          if (day.studyMinutes > 0) records[day.date] = day.studyMinutes;
         }
       }
       studyRecordData.value = records;
@@ -407,75 +333,22 @@ async function _loadDailyFromBackend() {
   loadDailyStudyRecords();
 }
 
-/** 从本地存储加载统计数据（降级路径） */
+function loadLegacyAnswerSummary() {
+  studyStore.restoreProgress();
+  const history = Array.isArray(studyStore.questionHistory) ? studyStore.questionHistory : [];
+  legacySummary.value = summarizeQuizProgress({
+    answeredQuestions: history.map((item, index) => ({ ...item, index }))
+  });
+}
+
+/** 保留历史统计，次数不折算学习分钟或能力。 */
 function _loadStatsFromLocal() {
-  // 获取今日学习时长
   const savedDate = storageService.get('study_date');
   const today = new Date().toISOString().split('T')[0];
-  if (savedDate === today) {
-    studyTime.value = storageService.get('today_study_time', 0);
-  } else {
-    studyTime.value = 0;
-  }
-
-  // 获取完成率（从题库和学习记录计算）
-  const questionBank = storageService.get('v30_bank', []);
+  studyTime.value = savedDate === today ? storageService.get('today_study_time', 0) : 0;
   const studyRecord = storageService.get('study_record', {});
-  const totalQuestions = questionBank.length;
-  const completedQuestions = studyRecord.totalAnswered || 0;
-
-  if (totalQuestions > 0) {
-    completionRate.value = Math.round((completedQuestions / totalQuestions) * 100);
-  } else {
-    completionRate.value = 0;
-  }
-
-  // ✅ [P1重构] 能力评级 — 综合题量+正确率+一致性，不再只看正确率
-  const correctCount = studyRecord.correctCount || 0;
-  const totalAnswered = studyRecord.totalAnswered || 0;
-  if (totalAnswered > 0) {
-    const accuracy = (correctCount / totalAnswered) * 100;
-
-    // 题量权重：答题越多，评级越可信（对数增长，50题满分）
-    const volumeScore = Math.min(Math.log10(totalAnswered + 1) / Math.log10(51), 1) * 100;
-
-    // 一致性权重：最近10次答题的正确率波动（从study_stats推算）
-    let consistencyScore = 70; // 默认中等一致性
-    try {
-      const recentHistory = studyStore?.questionHistory || [];
-      if (recentHistory.length >= 5) {
-        const recent = recentHistory.slice(-10);
-        const recentAcc = (recent.filter((r) => r.isCorrect).length / recent.length) * 100;
-        // 一致性 = 100 - |整体正确率 - 近期正确率| 的差距
-        consistencyScore = Math.max(0, 100 - Math.abs(accuracy - recentAcc) * 2);
-      }
-    } catch (_e) {
-      /* 使用默认值 */
-    }
-
-    // 综合评分：正确率50% + 题量30% + 一致性20%
-    const compositeScore = accuracy * 0.5 + volumeScore * 0.3 + consistencyScore * 0.2;
-
-    if (compositeScore >= 85) {
-      abilityRank.value = 'S';
-    } else if (compositeScore >= 72) {
-      abilityRank.value = 'A';
-    } else if (compositeScore >= 58) {
-      abilityRank.value = 'B';
-    } else if (compositeScore >= 42) {
-      abilityRank.value = 'C';
-    } else {
-      abilityRank.value = 'D';
-    }
-  } else {
-    abilityRank.value = '-';
-  }
-
-  // 加载每日学习记录数据（用于热力图和趋势图）
+  historicalCount.value = Number(studyRecord.totalAnswered || 0);
   loadDailyStudyRecords();
-
-  // 加载知识点掌握度数据（用于能力雷达图）
-  knowledgeMastery.value = storageService.get('knowledge_mastery', null);
 }
 
 /** 加载每日学习记录 */
@@ -543,9 +416,8 @@ function handleRangeChange(range) {
 }
 
 .navbar-solid {
-  background: var(--bg-card);
-  border-bottom: 2rpx solid rgba(0, 0, 0, 0.04);
-  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
+  border-bottom: 0;
+  @include em-mobile-topbar;
 }
 
 .navbar-content {
@@ -630,10 +502,14 @@ function handleRangeChange(range) {
 .ai-insight-card {
   margin: 0 32rpx 24rpx;
   padding: 28rpx;
-  border-radius: 28rpx;
-  background: var(--bg-card);
-  border: 2rpx solid rgba(0, 0, 0, 0.04);
-  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
+
+  border-radius: 24px;
+
+  background: var(--yozi-reading);
+
+  border: 0;
+
+  box-shadow: var(--yozi-shadow);
   position: relative;
   overflow: hidden;
 }
@@ -717,10 +593,14 @@ function handleRangeChange(range) {
   display: flex;
   align-items: center;
   padding: 32rpx;
-  background: var(--bg-card);
-  border: 2rpx solid rgba(0, 0, 0, 0.04);
-  border-radius: 28rpx;
-  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
+
+  background: var(--yozi-reading);
+
+  border: 0;
+
+  border-radius: 24px;
+
+  box-shadow: var(--yozi-shadow);
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
@@ -877,10 +757,14 @@ function handleRangeChange(range) {
   align-items: center;
   padding: 80rpx 40rpx;
   margin-top: 40rpx;
-  background: var(--bg-card);
-  border-radius: 28rpx;
-  border: 2rpx solid rgba(0, 0, 0, 0.04);
-  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
+
+  background: var(--yozi-reading);
+
+  border-radius: 24px;
+
+  border: 0;
+
+  box-shadow: var(--yozi-shadow);
 }
 
 .empty-state-card .empty-icon {
@@ -912,14 +796,13 @@ function handleRangeChange(range) {
 }
 
 .empty-action-btn {
-  background: #58cc02;
-  color: var(--text-inverse);
   border: none;
-  border-radius: 999rpx;
+
   padding: 20rpx 60rpx;
   font-size: 30rpx;
   font-weight: 700;
-  box-shadow: 0 8rpx 0 #46a302;
+
+  @include em-mobile-primary-action;
 }
 
 .empty-action-btn::after {

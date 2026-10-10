@@ -1,0 +1,11 @@
+Clay by DiceBear, licensed under CC0 1.0.
+https://creativecommons.org/publicdomain/zero/1.0/
+
+Source: https://www.dicebear.com/styles/clay/
+Official preview: https://api.dicebear.com/10.x/clay/svg?seed=Anouk
+Retrieved: 2026-10-03
+SVG SHA256: 65ae1c206e89c646722dfc008ef3d03bbe9416e2e1f0a34eaa923660c1a23c24
+PNG SHA256: 9059d0236a1af976a136df0d034e7a2cc0117d39fcf628b53bd59d4d425522c9
+
+The selected official preview was rasterized to 128x128 PNG for cross-platform image support.
+No user identifiers are sent to DiceBear at runtime. This notice applies only to avatar-clay.png.

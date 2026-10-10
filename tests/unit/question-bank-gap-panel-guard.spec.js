@@ -47,7 +47,7 @@ describe('question bank gap panel', () => {
     const gapPanel = wrapper.find('.gap-panel');
     expect(gapPanel.exists()).toBe(true);
     expect(gapPanel.text()).toContain('待开放清单');
-    expect(gapPanel.text()).toContain('优先展示当前方向最近年份');
+    expect(gapPanel.text()).not.toContain('优先展示当前方向最近年份');
     expect(gapPanel.text()).toContain(`整理中 ${expected.organizing} · 待入库 ${expected.missing}`);
     expect(wrapper.findAll('.gap-item')).toHaveLength(expected.previewCount);
     expect(gapPanel.text()).toContain(expected.years[0]);
@@ -64,9 +64,7 @@ describe('question bank gap panel', () => {
     const wrapper = mountQuestionBank(profile);
     await nextTick();
 
-    expect(wrapper.find('.gap-panel').text()).toContain(
-      `整理中 ${expected.organizing} · 待入库 ${expected.missing}`
-    );
+    expect(wrapper.find('.gap-panel').text()).toContain(`整理中 ${expected.organizing} · 待入库 ${expected.missing}`);
     expect(wrapper.findAll('.gap-item')).toHaveLength(expected.previewCount);
     expect(wrapper.find('.gap-panel').text()).toContain(expected.years[0]);
 

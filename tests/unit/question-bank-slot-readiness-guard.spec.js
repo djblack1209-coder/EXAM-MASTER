@@ -10,9 +10,10 @@ const source = readFileSync(resolve(process.cwd(), 'src/pages/practice-sub/quest
 
 describe('question bank slot readiness detail', () => {
   it('keeps selected year slots explicit about status and next action', () => {
-    expect(source).toContain('slot-readiness-panel');
-    expect(source).toContain('当前状态');
-    expect(source).toContain('下一步');
+    const template = source.split('<script setup>')[0];
+    expect(template).not.toContain('slot-readiness-panel');
+    expect(template).toContain('selectedYearSlot.statusLabel');
+    expect(template).toContain('selectedYearSlot.disabledReason');
     expect(source).toContain('buildYearSlotReadiness');
     expect(source).toContain('selectedYearSlotReadiness');
     expect(source).toContain('slot-action-disabled');
@@ -45,8 +46,8 @@ describe('question bank slot readiness detail', () => {
     await nextTick();
 
     expect(wrapper.find('.year-slot.active .slot-year').text()).toBe('2026');
-    expect(wrapper.find('.slot-readiness-panel').exists()).toBe(true);
-    expect(wrapper.find('.slot-readiness-panel').classes()).toContain('status-missing');
+    expect(wrapper.find('.slot-readiness-panel').exists()).toBe(false);
+    expect(wrapper.find('.slot-caution').text()).toBe('资料入库后开放');
     expect(wrapper.text()).toContain('资料暂未入库');
     expect(wrapper.text()).toContain('资料入库后开放');
     expect(wrapper.text()).toContain('待入库后开放');

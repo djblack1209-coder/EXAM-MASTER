@@ -23,12 +23,8 @@ describe('English II 2014 published bank data', () => {
     expect(bank.cards.find((card) => card.number === 30).answer).toBe('D');
     expect(bank.cards.find((card) => card.number === 41).answer).toBe('D');
     expect(bank.cards.find((card) => card.number === 45).answer).toBe('A');
-    expect(bank.cards.find((card) => card.number === 46).targetSegment).toContain(
-      'Most people would define optimism'
-    );
+    expect(bank.cards.find((card) => card.number === 46).targetSegment).toContain('Most people would define optimism');
     expect(bank.cards.find((card) => card.number === 48).question).toContain('20年间中国城镇人口与乡村人口变化图');
-    expect(bank.cards.find((card) => card.number === 48).answerEvidence.evidenceRole).toBe(
-      'official_writing_prompt'
-    );
+    expect(bank.cards.find((card) => card.number === 48).answerEvidence.evidenceRole).toBe('official_writing_prompt');
   });
 });

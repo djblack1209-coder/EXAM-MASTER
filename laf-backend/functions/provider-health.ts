@@ -17,19 +17,24 @@
  * @module functions/provider-health
  */
 
-import { checkAllProviderBalances } from './_shared/ai-providers/provider-factory';
+import { configuredModels } from './proxy-ai.js';
 
 export default async function (ctx: any) {
   // 管理员令牌校验（防止普通用户调用）
   const adminToken = process.env.WORKER_AUTH_TOKEN;
-  const requestToken = ctx.headers?.['x-admin-token'] || ctx.query?.token;
+  const requestToken = ctx.headers?.['x-admin-token'];
 
   if (!adminToken || requestToken !== adminToken) {
     return { code: 403, message: '需要管理员权限' };
   }
 
   try {
-    const balances = await checkAllProviderBalances();
+    const balances = configuredModels().map((model) => ({
+      provider: model.provider,
+      model: model.model,
+      status: 'warning',
+      message: '连接与余额尚未实际验证'
+    }));
 
     // 汇总统计
     const summary = {

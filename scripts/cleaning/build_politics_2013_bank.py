@@ -201,9 +201,23 @@ def render_pdf_assets(pdf: Path, *, asset_dir: Path, force: bool) -> None:
         item.unlink()
 
     output_prefix = TMP_RENDER_DIR / "paper-page"
-    run(["pdftoppm", "-r", "160", "-jpeg", "-jpegopt", "quality=76", str(pdf), str(output_prefix)])
+    run(
+        [
+            "pdftoppm",
+            "-r",
+            "160",
+            "-jpeg",
+            "-jpegopt",
+            "quality=76",
+            str(pdf),
+            str(output_prefix),
+        ]
+    )
 
-    rendered_pages = sorted(TMP_RENDER_DIR.glob("paper-page-*.jpg"), key=lambda path: int(path.stem.split("-")[-1]))
+    rendered_pages = sorted(
+        TMP_RENDER_DIR.glob("paper-page-*.jpg"),
+        key=lambda path: int(path.stem.split("-")[-1]),
+    )
     if len(rendered_pages) != 18:
         raise ValueError(f"{pdf.name}: rendered {len(rendered_pages)} pages, expected 18")
     for rendered in rendered_pages:
@@ -277,7 +291,9 @@ def evidence(number: int, question_hash: str, answer_hash: str) -> dict[str, str
 def answer_evidence(number: int, answer_hash: str) -> dict[str, str]:
     return {
         "status": "matched",
-        "evidenceRole": "official_inline_answer_key" if number <= 33 else "official_reference_answer",
+        "evidenceRole": "official_inline_answer_key"
+        if number <= 33
+        else "official_reference_answer",
         "sourceId": SOURCE_MANIFEST_ID,
         "sourceFilePath": str(SOURCE_PDF.relative_to(PROJECT_ROOT)),
         "answerTextHash": answer_hash,
@@ -291,11 +307,17 @@ def build_card(number: int) -> dict[str, Any]:
     question = question_anchor(number)
     answer = answer_for(number)
     options = options_for(number)
-    question_images = [image_ref(page, caption=f"试卷原页 p.{page}") for page in QUESTION_PAGES[number]]
+    question_images = [
+        image_ref(page, caption=f"试卷原页 p.{page}") for page in QUESTION_PAGES[number]
+    ]
     answer_images = [image_ref(page, caption=f"答案原页 p.{page}") for page in ANSWER_PAGES[number]]
     question_hash = sha256_text(
         json.dumps(
-            {"question": question, "options": options, "questionPages": QUESTION_PAGES[number]},
+            {
+                "question": question,
+                "options": options,
+                "questionPages": QUESTION_PAGES[number],
+            },
             ensure_ascii=False,
             sort_keys=True,
         )

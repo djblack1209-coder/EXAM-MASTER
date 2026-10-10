@@ -27,16 +27,12 @@ describe('English II 2018 published bank data', () => {
       'A fifth grader gets a homework assignment to select his future career path'
     );
     expect(bank.cards.find((card) => card.number === 46).targetSegment).not.toContain('英语（二）试题');
-    expect(bank.cards.find((card) => card.number === 48).question).toContain(
-      '2017年某市消费者选择餐厅时的关注因素'
-    );
+    expect(bank.cards.find((card) => card.number === 48).question).toContain('2017年某市消费者选择餐厅时的关注因素');
     expect(bank.cards.find((card) => card.number === 48).question).toContain('特色36.3%');
     expect(bank.cards.find((card) => card.number === 48).question).toContain('服务26.8%');
     expect(bank.cards.find((card) => card.number === 48).question).toContain('环境23.8%');
     expect(bank.cards.find((card) => card.number === 48).question).toContain('价格8.4%');
     expect(bank.cards.find((card) => card.number === 48).question).toContain('其他4.7%');
-    expect(bank.cards.find((card) => card.number === 48).answerEvidence.evidenceRole).toBe(
-      'official_writing_prompt'
-    );
+    expect(bank.cards.find((card) => card.number === 48).answerEvidence.evidenceRole).toBe('official_writing_prompt');
   });
 });

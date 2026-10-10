@@ -394,7 +394,7 @@ export const aiGenerationMixin = {
         const uniqueQs = deduplicateQuestions(validQs, old);
         if (uniqueQs.length > 0) {
           this._consecutiveFailures = 0; // 成功生成，重置连续失败计数
-          this._saveQuestionBank([...old, ...uniqueQs], uniqueQs.length);
+          return this._saveQuestionBank([...old, ...uniqueQs], uniqueQs.length);
         } else {
           logger.log('[practice] 所有题目均为重复，跳过保存');
           this._consecutiveFailures++;
@@ -464,32 +464,8 @@ export const aiGenerationMixin = {
     },
 
     clearAll() {
-      uni.showModal({
-        title: '危险操作',
-        content: '确定清空所有题库吗？此操作不可恢复！\n\n建议：清空前请确保已备份数据。',
-        confirmColor: '#FF3B30',
-        success: (res) => {
-          if (res.confirm) {
-            try {
-              const currentBank = storageService.get('v30_bank', []);
-              if (currentBank.length > 0) {
-                const backup = JSON.stringify(currentBank);
-                storageService.save('v30_bank_backup_before_clear', backup);
-                logger.log('[刷题中心] [存档] 清空前已创建备份:', currentBank.length, '道题');
-              }
-            } catch (backupErr) {
-              logger.warn('[刷题中心] [警告] 创建备份失败:', backupErr);
-            }
-
-            storageService.remove('v30_bank');
-            this.refreshBankStatus();
-            this.isLooping = false;
-            this.isPaused = false;
-
-            toast.success('已清空题库');
-          }
-        }
-      });
+      toast.info('旧题库整理入口暂不可用，原资料已保留');
+      return { success: false, code: 'EXPLICIT_MAINTENANCE_REQUIRED' };
     },
 
     pauseGeneration() {
@@ -529,20 +505,8 @@ export const aiGenerationMixin = {
     },
 
     clearQuizBank() {
-      uni.showModal({
-        title: '确认清空',
-        content: '确定要清空所有题库吗？此操作不可恢复。',
-        confirmColor: '#FF3B30',
-        success: (res) => {
-          if (res.confirm) {
-            storageService.remove('v30_bank');
-            storageService.remove('v30_user_answers');
-            this.refreshBankStatus();
-            this.showQuizManageModal = false;
-            toast.success('已清空题库');
-          }
-        }
-      });
+      toast.info('旧题库整理入口暂不可用，原资料已保留');
+      return { success: false, code: 'EXPLICIT_MAINTENANCE_REQUIRED' };
     },
 
     startProgressTimer() {
@@ -572,54 +536,14 @@ export const aiGenerationMixin = {
     },
 
     // ==================== 题库持久化与备份 ====================
-    _saveQuestionBank(merged, newCount) {
-      try {
-        const backup = JSON.stringify(merged);
-        storageService.save('v30_bank_backup', backup);
-        logger.log('[practice] [存档] 已创建题库备份:', merged.length, '道题');
-      } catch (backupErr) {
-        logger.warn('[practice] [警告] 备份失败（不影响主流程）:', backupErr);
-      }
-
-      storageService.save('v30_bank', merged);
-
-      const saved = storageService.get('v30_bank', []);
-      const isSuccess = saved.length === merged.length;
-      logger.log('[practice] [勾] 保存验证:', {
-        savedCount: saved.length,
-        expectedCount: merged.length,
-        match: isSuccess
-      });
-
-      if (!isSuccess) {
-        this._restoreFromBackup();
-      }
-
-      this.refreshBankStatus();
-      this.updateGenerationProgress();
-      logger.log(`[practice] 成功生成 ${newCount} 道题目（共 ${merged.length} 题）`);
-
-      this.generatedCount++;
-      this.readOffset += this.chunkSize;
-
-      if (this.generatedCount === 1) {
-        this.showMask = false;
-        this.showSpeedModal = true;
-      }
+    _saveQuestionBank() {
+      toast.info('请从学习页开始新的练习，现有题库已保留');
+      return { success: false, code: 'RETIRED_LEGACY_GENERATION' };
     },
 
     _restoreFromBackup() {
-      logger.error('[practice] [叉] 保存验证失败！尝试从备份恢复...');
-      try {
-        const backup = storageService.get('v30_bank_backup');
-        if (backup) {
-          const restored = JSON.parse(backup);
-          storageService.save('v30_bank', restored);
-          logger.log('[practice] [恢复] 已从备份恢复数据');
-        }
-      } catch (restoreErr) {
-        logger.error('[practice] [叉] 恢复备份失败:', restoreErr);
-      }
+      toast.info('旧题库整理入口暂不可用，原资料已保留');
+      return { success: false, code: 'EXPLICIT_MAINTENANCE_REQUIRED' };
     },
 
     _handleJsonParseError(content) {
@@ -635,7 +559,7 @@ export const aiGenerationMixin = {
               if (uniqueQs.length > 0) {
                 this._consecutiveFailures = 0; // 二次解析成功，重置
                 const merged = [...old, ...uniqueQs];
-                this._saveQuestionBank(merged, uniqueQs.length);
+                if (this._saveQuestionBank(merged, uniqueQs.length)?.success !== true) return;
                 logger.log(`[practice] 二次解析成功，生成 ${uniqueQs.length} 道题目`);
                 return;
               }

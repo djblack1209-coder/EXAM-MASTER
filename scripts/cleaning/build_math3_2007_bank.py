@@ -14,6 +14,7 @@ import hashlib
 import json
 import shutil
 import subprocess
+import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -73,7 +74,7 @@ QUESTION_PAGES = {
     16: [3],
     **{number: [3] for number in range(17, 24)},
     23: [3, 4],
-    24: [],
+    24: ["12-question-crop", "13-question-crop"],
 }
 
 ANSWER_PAGES = {
@@ -124,7 +125,14 @@ def run(cmd: list[str]) -> None:
     subprocess.run(cmd, cwd=PROJECT_ROOT, check=True)
 
 
-def render_pdf_assets(pdf: Path, prefix: str, *, asset_dir: Path, force: bool, pages: set[int] | None = None) -> None:
+def render_pdf_assets(
+    pdf: Path,
+    prefix: str,
+    *,
+    asset_dir: Path,
+    force: bool,
+    pages: set[int] | None = None,
+) -> None:
     if not pdf.exists():
         raise FileNotFoundError(pdf)
     asset_dir.mkdir(parents=True, exist_ok=True)
@@ -140,7 +148,18 @@ def render_pdf_assets(pdf: Path, prefix: str, *, asset_dir: Path, force: bool, p
         item.unlink()
 
     output_prefix = TMP_RENDER_DIR / prefix
-    run(["pdftoppm", "-r", "130", "-jpeg", "-jpegopt", "quality=70", str(pdf), str(output_prefix)])
+    run(
+        [
+            "pdftoppm",
+            "-r",
+            "130",
+            "-jpeg",
+            "-jpegopt",
+            "quality=70",
+            str(pdf),
+            str(output_prefix),
+        ]
+    )
 
     for rendered in sorted(TMP_RENDER_DIR.glob(f"{prefix}-*.jpg")):
         page = int(rendered.stem.split("-")[-1])
@@ -150,8 +169,8 @@ def render_pdf_assets(pdf: Path, prefix: str, *, asset_dir: Path, force: bool, p
         shutil.copyfile(rendered, target)
 
 
-def image_ref(kind: str, page: int, *, caption: str) -> dict[str, str]:
-    file_name = f"{kind}-{page:02d}.jpg"
+def image_ref(kind: str, page: int | str, *, caption: str) -> dict[str, str]:
+    file_name = f"{kind}-{page:02d}.jpg" if isinstance(page, int) else f"{kind}-{page}.jpg"
     return {
         "src": f"question-bank/math3-2007/{file_name}",
         "caption": caption,
@@ -183,11 +202,10 @@ def answer_for(number: int) -> str:
 
 def question_anchor(number: int) -> str:
     if number == 24:
-        return (
-            "2007考研数学三第24题（解答题）。设总体 X 的概率密度含未知参数 theta，样本均值为 Xbar；"
-            "求 theta 的矩估计量，并判断 4Xbar^2 是否为 theta^2 的无偏估计量。"
-        )
-    return f"2007考研数学三第{number}题（{section_for(number)}）。题干、公式和图形以试卷原页图为准。"
+        return "2007考研数学三第24题（解答题）。完整概率密度、样本条件与两项要求见题面裁切图。"
+    return (
+        f"2007考研数学三第{number}题（{section_for(number)}）。题干、公式和图形以试卷原页图为准。"
+    )
 
 
 def explanation_for(number: int) -> str:
@@ -230,10 +248,12 @@ def build_card(number: int) -> dict[str, Any]:
     )
 
     question_images = [
-        image_ref("paper-page", page, caption=f"试卷原页 p.{page}") for page in QUESTION_PAGES[number]
+        image_ref("paper-page", page, caption=f"试卷原页 p.{page}")
+        for page in QUESTION_PAGES[number]
     ]
     answer_images = [
-        image_ref("answer-page", page, caption=f"答案解析 p.{page}") for page in ANSWER_PAGES[number]
+        image_ref("answer-page", page, caption=f"答案解析 p.{page}")
+        for page in ANSWER_PAGES[number]
     ]
 
     return {
@@ -263,10 +283,52 @@ def build_card(number: int) -> dict[str, Any]:
     }
 
 
+def render_question_24_crops(asset_dir: Path) -> None:
+    import fitz
+
+    asset_dir.mkdir(parents=True, exist_ok=True)
+    # PDF coordinates retain the full density/sample and task statements;
+    # headers, watermarks in margins and the following analysis are outside.
+    rectangles = {12: (25, 600, 570, 779), 13: (55, 60, 560, 113)}
+    with fitz.open(PAPER_ANSWER) as document:
+        for page, bounds in rectangles.items():
+            target = asset_dir / f"paper-page-{page}-question-crop.jpg"
+            pixmap = document[page - 1].get_pixmap(matrix=fitz.Matrix(2, 2), clip=fitz.Rect(bounds))
+            with tempfile.NamedTemporaryFile(
+                dir=asset_dir, prefix=".question-crop-", suffix=".jpg", delete=False
+            ) as handle:
+                temporary = Path(handle.name)
+            try:
+                pixmap.save(temporary, jpg_quality=85)
+                if temporary.stat().st_size > 200 * 1024:
+                    raise ValueError("Question crop exceeds media limit")
+                shutil.copyfile(temporary, target)
+            finally:
+                temporary.unlink(missing_ok=True)
+
+
 def build_payload(*, asset_dir: Path, force_assets: bool) -> dict[str, Any]:
-    render_pdf_assets(PAPER_ANSWER, "paper-page", asset_dir=asset_dir, force=force_assets, pages=set(range(1, 5)))
-    render_pdf_assets(PAPER_ANSWER, "answer-page", asset_dir=asset_dir, force=force_assets, pages=set(range(4, 14)))
+    render_pdf_assets(
+        PAPER_ANSWER,
+        "paper-page",
+        asset_dir=asset_dir,
+        force=force_assets,
+        pages=set(range(1, 5)),
+    )
+    render_pdf_assets(
+        PAPER_ANSWER,
+        "answer-page",
+        asset_dir=asset_dir,
+        force=force_assets,
+        pages=set(range(4, 14)),
+    )
+    render_question_24_crops(asset_dir)
     cards = [build_card(number) for number in range(1, 25)]
+    final_card = cards[-1]
+    final_card["sourceEvidence"]["questionAssetHashes"] = {
+        image["src"]: sha256_file(asset_dir / Path(image["src"]).name)
+        for image in final_card["questionImages"]
+    }
 
     return {
         "id": "math3-2007",

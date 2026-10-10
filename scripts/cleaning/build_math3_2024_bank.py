@@ -21,7 +21,12 @@ from typing import Any
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
-SOURCE_PDF = PROJECT_ROOT / "data" / "raw-inbox" / "src_d9c2b923d74ae9283b1647f1-2024年数学（三）真题及参考答案.pdf"
+SOURCE_PDF = (
+    PROJECT_ROOT
+    / "data"
+    / "raw-inbox"
+    / "src_d9c2b923d74ae9283b1647f1-2024年数学（三）真题及参考答案.pdf"
+)
 DEFAULT_OUTPUT = PROJECT_ROOT / "src" / "config" / "flashcard-banks" / "math3-2024.json"
 DEFAULT_ASSET_DIR = PROJECT_ROOT / "cdn-assets" / "question-bank" / "math3-2024"
 TMP_RENDER_DIR = PROJECT_ROOT / "tmp" / "pdfs" / "math3-2024-release-assets"
@@ -164,7 +169,9 @@ def answer_for(number: int) -> str:
 
 
 def question_anchor(number: int) -> str:
-    return f"2024考研数学三第{number}题（{section_for(number)}）。题干、公式和图形以原 PDF 页图为准。"
+    return (
+        f"2024考研数学三第{number}题（{section_for(number)}）。题干、公式和图形以原 PDF 页图为准。"
+    )
 
 
 def explanation_for(number: int) -> str:
@@ -205,10 +212,12 @@ def build_card(number: int) -> dict[str, Any]:
     )
 
     question_images = [
-        image_ref("paper-page", page, caption=f"试卷原页 p.{page}") for page in QUESTION_PAGES[number]
+        image_ref("paper-page", page, caption=f"试卷原页 p.{page}")
+        for page in QUESTION_PAGES[number]
     ]
     answer_images = [
-        image_ref("answer-page", page, caption=f"参考答案页 p.{page}") for page in ANSWER_PAGES[number]
+        image_ref("answer-page", page, caption=f"参考答案页 p.{page}")
+        for page in ANSWER_PAGES[number]
     ]
 
     return {

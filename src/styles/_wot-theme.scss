@@ -1,4 +1,26 @@
-/* Inject Exam-Master theme into wot-design-uni */
+/* Yozi AI materials shared by existing Wot and custom components. */
+:root,
+page {
+  --yozi-background:
+    radial-gradient(ellipse at 8% 4%, #d5c8f7 0%, transparent 50%),
+    radial-gradient(ellipse at 96% 38%, #c4ddfa 0%, transparent 48%), linear-gradient(155deg, #eeebfc, #e2eafb);
+  --yozi-glass: rgba(239, 238, 255, 0.62);
+  --yozi-reading: rgba(246, 243, 255, 0.86);
+  --yozi-floating: rgba(245, 243, 255, 0.78);
+  --yozi-solid: #f0edfc;
+  --yozi-highlight: rgba(255, 255, 255, 0.9);
+  --yozi-edge: rgba(129, 104, 177, 0.22);
+  --yozi-shadow: 0 12px 32px rgba(74, 55, 124, 0.12), inset 0 1px 0 var(--yozi-highlight);
+  --yozi-button: linear-gradient(180deg, #8060bf, #6545a4);
+  --yozi-button-edge: #503483;
+  --yozi-button-ink: #ffffff;
+  --yozi-button-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.4), inset 0 -2px 0 rgba(51, 27, 91, 0.16), 0 4px 0 var(--yozi-button-edge),
+    0 8px 14px rgba(66, 42, 110, 0.18);
+  --yozi-control-shadow:
+    inset 0 1px 0 var(--yozi-highlight), 0 2px 0 rgba(105, 85, 153, 0.2), 0 5px 12px rgba(74, 55, 124, 0.08);
+}
+
 page {
   /* Primary brand colors mapped to Wot */
   --wot-color-theme: var(--primary);
@@ -13,10 +35,10 @@ page {
   --wot-button-primary-color: var(--primary-foreground);
 
   /* Popup / Modal */
-  --wot-popup-bg: var(--bg-elevated);
+  --wot-popup-bg: var(--yozi-floating);
 
   /* Inputs — 通透浅灰底色 + 舒适内边距 + 大圆角 */
-  --wot-input-bg: var(--muted);
+  --wot-input-bg: var(--yozi-reading);
   --wot-input-padding: 28rpx;
   --wot-input-border-radius: var(--radius-md, 16px);
   --wot-input-font-size: 30rpx;
@@ -25,6 +47,44 @@ page {
 /* Dark mode overrides for wot-design */
 .dark-mode,
 .page-dark {
-  --wot-popup-bg: var(--bg-elevated);
-  --wot-input-bg: var(--muted);
+  --wot-popup-bg: var(--yozi-floating);
+  --wot-input-bg: var(--yozi-reading);
+}
+
+.wd-popup {
+  backdrop-filter: blur(24px) saturate(1.2);
+  -webkit-backdrop-filter: blur(24px) saturate(1.2);
+}
+.wd-button.is-primary:not(.is-plain):not(.is-text) {
+  min-height: 44px;
+  background: var(--yozi-button);
+  color: var(--yozi-button-ink);
+  box-shadow: var(--yozi-button-shadow);
+  border-radius: 12px;
+  transition:
+    box-shadow 180ms ease,
+    transform 180ms ease;
+}
+.wd-button.is-primary:not(.is-plain):not(.is-text):active:not(.is-disabled) {
+  transform: translateY(2px);
+  box-shadow:
+    inset 0 2px 4px rgba(30, 15, 65, 0.16),
+    0 2px 0 var(--yozi-button-edge);
+  transition-duration: 100ms;
+}
+.wd-button:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+  .wd-popup {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .wd-button {
+    transition: none !important;
+    transform: none !important;
+  }
 }

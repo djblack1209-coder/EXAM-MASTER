@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 import fs from 'node:fs';
+import { createHash } from 'node:crypto';
+import { spawnSync } from 'node:child_process';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
@@ -92,6 +94,262 @@ function answerHash(card) {
   return firstNonEmpty(card.answerTextHash, card.answer_text_hash, card.sourceEvidence?.answerTextHash) || '';
 }
 
+// Frozen profiles from the existing source builders; callers cannot select a codec.
+const LEGACY_CONTENT_HASH_GROUPS = {
+  english_material: [
+    'english1-2024',
+    'english2-2010',
+    'english2-2011',
+    'english2-2012',
+    'english2-2013',
+    'english2-2014',
+    'english2-2015',
+    'english2-2016',
+    'english2-2017',
+    'english2-2018',
+    'english2-2019',
+    'english2-2020',
+    'english2-2021',
+    'english2-2022',
+    'english2-2023',
+    'english2-2024'
+  ],
+  english_pages: [
+    'english1-2013',
+    'english1-2014',
+    'english1-2015',
+    'english1-2016',
+    'english1-2017',
+    'english1-2018',
+    'english1-2019',
+    'english1-2020'
+  ],
+  english_text: ['english1-2022', 'english1-2023'],
+  math_crops: [
+    'math2-2015',
+    'math2-2017',
+    'math2-2018',
+    'math2-2019',
+    'math2-2020',
+    'math3-2011',
+    'math3-2012',
+    'math3-2013',
+    'math3-2014',
+    'math3-2015',
+    'math3-2016',
+    'math3-2017',
+    'math3-2018',
+    'math3-2019',
+    'math3-2020'
+  ],
+  math_history: [
+    'math1-2005',
+    'math1-2006',
+    'math1-2007',
+    'math1-2008',
+    'math1-2009',
+    'math1-2010',
+    'math1-2011',
+    'math1-2012',
+    'math1-2013',
+    'math1-2014',
+    'math1-2015',
+    'math1-2016',
+    'math1-2017',
+    'math1-2018',
+    'math1-2019',
+    'math1-2020',
+    'math1-2021',
+    'math1-2022',
+    'math1-2023',
+    'math1-2024'
+  ],
+  math_pages: [
+    'math2-2005',
+    'math2-2006',
+    'math2-2007',
+    'math2-2008',
+    'math2-2009',
+    'math2-2010',
+    'math2-2011',
+    'math2-2012',
+    'math2-2013',
+    'math2-2014',
+    'math2-2024',
+    'math2-2025',
+    'math3-2005',
+    'math3-2006',
+    'math3-2007',
+    'math3-2008',
+    'math3-2009',
+    'math3-2010',
+    'math3-2024',
+    'math3-2025'
+  ],
+  math_pages_detail: ['math1-2025'],
+  politics_2022: ['politics-2022'],
+  politics_2024: ['politics-2024'],
+  politics_2025: ['politics-2025'],
+  politics_pages: [
+    'politics-2005',
+    'politics-2006',
+    'politics-2007',
+    'politics-2008',
+    'politics-2009',
+    'politics-2010',
+    'politics-2011',
+    'politics-2012',
+    'politics-2013',
+    'politics-2014',
+    'politics-2015',
+    'politics-2016',
+    'politics-2017',
+    'politics-2018',
+    'politics-2019',
+    'politics-2020',
+    'politics-2021'
+  ]
+};
+const LEGACY_CONTENT_HASH_PROFILES = new Map(
+  Object.entries(LEGACY_CONTENT_HASH_GROUPS).flatMap(([kind, ids]) => ids.map((id) => [id, kind]))
+);
+
+// Match the Python cleaning pipeline's Unicode whitespace rule, including
+// U+0085/U+001C..U+001F and excluding U+FEFF (unlike JavaScript's \s).
+function cleanedText(value) {
+  if (typeof value !== 'string') return '';
+  return value
+    .replace(/[\u0009-\u000d\u001c-\u0020\u0085\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000]+/g, ' ')
+    .replace(/^ +| +$/g, '');
+}
+
+function cleanedTextHash(value) {
+  const text = cleanedText(value);
+  return text ? `sha256:${createHash('sha256').update(text, 'utf8').digest('hex')}` : '';
+}
+
+function pythonJson(value, sorted = true) {
+  if (Array.isArray(value)) return `[${value.map((item) => pythonJson(item, sorted)).join(', ')}]`;
+  if (value && typeof value === 'object') {
+    const keys = Object.keys(value);
+    if (sorted) keys.sort();
+    return `{${keys.map((key) => `${JSON.stringify(key)}: ${pythonJson(value[key], sorted)}`).join(', ')}}`;
+  }
+  if (value === undefined || (typeof value === 'number' && !Number.isFinite(value))) throw new Error('Invalid payload');
+  return JSON.stringify(value);
+}
+
+function imageReferences(images, bankId, mode = 'pages', allowQuestionCrop = false, allowEmpty = false) {
+  if (!Array.isArray(images) || (!images.length && !allowEmpty) || images.length > 64)
+    throw new Error('Missing page binding');
+  return images.map((image) => {
+    const prefix = `question-bank/${bankId}/`;
+    if (typeof image?.src !== 'string' || !image.src.startsWith(prefix)) throw new Error('Wrong bank image');
+    const name = image.src.slice(prefix.length);
+    const page = name.match(/^(?:paper|answer)-page-(\d{1,3})\.jpg$/);
+    if (page && mode !== 'crops' && Number(page[1]) > 0) return Number(page[1]);
+    const maskedPage = name.match(/^paper-page-(\d{1,3})-question-crop\.jpg$/);
+    if (maskedPage && allowQuestionCrop && mode === 'pages' && Number(maskedPage[1]) > 0)
+      return `${maskedPage[1]}-question-crop`;
+    const crop = name.match(/^question-(\d{2}(?:[a-z]|-[a-z0-9]+)?)\.jpg$/);
+    if (crop && mode === 'crops') return crop[1];
+    if (crop && mode === 'history') return `q${crop[1]}`;
+    throw new Error('Unknown page reference');
+  });
+}
+
+function cardContentHashes(card, bankId, normalizedDigest = (text) => cleanedTextHash(text)) {
+  const kind = LEGACY_CONTENT_HASH_PROFILES.get(bankId);
+  if (!kind)
+    return {
+      questionTextHash: cleanedTextHash(card.question || card.stem || ''),
+      answerTextHash: cleanedTextHash(card.answer)
+    };
+  try {
+    if (card.paperId !== bankId || typeof card.question !== 'string' || typeof card.answer !== 'string')
+      throw new Error('Wrong content identity');
+    const value = (key, fallback = null) => (Object.hasOwn(card, key) ? card[key] : fallback);
+    const digest = (text, normalized = false) =>
+      normalized ? normalizedDigest(text, bankId) : `sha256:${createHash('sha256').update(text, 'utf8').digest('hex')}`;
+    const json = (payload, normalized = false, sorted = true) => digest(pythonJson(payload, sorted), normalized);
+    const refs = (key, mode) =>
+      imageReferences(
+        card[key],
+        bankId,
+        mode,
+        key === 'questionImages' && kind.startsWith('math_'),
+        key === 'questionImages' && kind === 'politics_pages'
+      );
+    const pyList = (list) =>
+      `[${list.map((item) => (typeof item === 'number' ? String(item) : `'${item}'`)).join(', ')}]`;
+    let question;
+    let answer;
+    if (kind.startsWith('math_')) {
+      if (
+        Array.isArray(card.options) &&
+        card.options.some((option) => !['A', 'B', 'C', 'D'].includes(option.label) || option.text !== option.label)
+      )
+        throw new Error('Changed image-choice labels');
+      const mode = kind === 'math_crops' ? 'crops' : kind === 'math_history' ? 'history' : 'pages';
+      const label = kind === 'math_crops' ? 'crops' : kind === 'math_history' ? 'question-pages' : 'pages';
+      question = digest(`${card.question}|${label}:${pyList(refs('questionImages', mode))}`);
+      if (kind === 'math_pages_detail') {
+        const speed = card.answerImages?.filter((image) => image.caption?.startsWith('答案速查'));
+        const detail = card.answerImages?.filter((image) => image.caption?.startsWith('答案解析'));
+        if (!speed || !detail || speed.length + detail.length !== card.answerImages.length)
+          throw new Error('Missing answer roles');
+        answer = digest(
+          `${card.answer}|answer-pages:${pyList(imageReferences(speed, bankId))}|detail-pages:${pyList(imageReferences(detail, bankId))}`
+        );
+      } else answer = digest(`${card.answer}|answer-pages:${pyList(refs('answerImages'))}`);
+    } else if (kind === 'english_pages' || kind === 'politics_pages') {
+      const payload = { question: card.question, options: value('options', []), questionPages: refs('questionImages') };
+      if (kind === 'english_pages') payload.passage = value('passage', '');
+      question = json(payload);
+      answer = json({ answer: card.answer, answerPages: refs('answerImages') });
+    } else if (kind === 'english_material' || kind === 'english_text') {
+      const payload = { question: card.question, passage: value('passage'), options: value('options', []) };
+      if (kind === 'english_material') payload.material = value('material', '');
+      const role = card.answerEvidence?.evidenceRole;
+      if (typeof role !== 'string' || !role) throw new Error('Missing answer role');
+      question = json(payload, true);
+      answer = json({ answer: card.answer, role }, true);
+    } else if (kind === 'politics_2022') {
+      const choice = ['single_choice', 'multi_choice'].includes(card.type);
+      question = choice ? json({ question: card.question, options: value('options', []) }) : digest(card.question);
+      const payload = { answer: card.answer, answerPages: refs('answerImages') };
+      if (choice) payload.explanation = value('explanation', '');
+      answer = json(payload, false, false);
+    } else if (kind === 'politics_2024') {
+      const choice = ['single_choice', 'multi_choice'].includes(card.type);
+      question = choice ? digest(`${card.question}|${pythonJson(value('options', []))}`) : digest(card.question);
+      answer = choice ? digest(`${card.answer}|${value('explanation', '')}`) : digest(card.answer);
+    } else if (kind === 'politics_2025') {
+      const options = value('options', []);
+      if (!Array.isArray(options) || options.some((option) => !option || typeof option !== 'object'))
+        throw new Error('Invalid choices');
+      question = digest(
+        `${card.question}|${options.map((option) => `${option.label ?? ''}:${option.text ?? ''}`).join('|')}`
+      );
+      answer = digest(`${card.answer}|${value('explanation', '')}`);
+    } else throw new Error('Unknown content contract');
+    return { questionTextHash: question, answerTextHash: answer };
+  } catch {
+    return { questionTextHash: null, answerTextHash: null };
+  }
+}
+
+function declaredTextHashesMatch(card, field, expected) {
+  const snakeField = field === 'questionTextHash' ? 'question_text_hash' : 'answer_text_hash';
+  const values = [
+    card[field],
+    card[snakeField],
+    card.sourceEvidence?.[field],
+    field === 'answerTextHash' ? card.answerEvidence?.[field] : null
+  ].filter((value) => value !== undefined && value !== null && cleanedText(String(value)) !== '');
+  return expected !== null && values.every((value) => typeof value === 'string' && cleanedText(value) === expected);
+}
+
 function isEvidenceOnlyType(type) {
   return ['analysis', 'flashcard', 'translation', 'essay', 'short_answer'].includes(type);
 }
@@ -104,8 +362,167 @@ function cardId(card, index) {
   return firstNonEmpty(card.id, card.questionId, card.question_id, card.number) || `card-${index + 1}`;
 }
 
-function auditCardEvidence(card, index, bank = {}) {
+const CLOZE_SOURCE_BANKS = new Set(['english1-2006', 'english1-2007', 'english1-2010']);
+
+function clozeSourceProofMatches(card, bankId) {
+  const idNumber = Number(
+    String(card.id || '')
+      .split('-')
+      .at(-1)
+  );
+  const section =
+    (bankId === 'english1-2007' &&
+      ((card.number >= 46 && card.number <= 50) || (idNumber >= 46 && idNumber <= 50) || card.groupId === 'part-c')) ||
+    (bankId === 'english1-2010' &&
+      ((card.number >= 41 && card.number <= 50) ||
+        (idNumber >= 41 && idNumber <= 50) ||
+        ['part-b', 'part-c'].includes(card.groupId)));
+  if (
+    !section &&
+    (!CLOZE_SOURCE_BANKS.has(bankId) ||
+      !(
+        card.number <= 20 ||
+        (idNumber >= 1 && idNumber <= 20) ||
+        card.groupId === 'cloze' ||
+        /完形填空第/.test(card.question || '')
+      ))
+  )
+    return true;
+  try {
+    const proof = card.sourceEvidence?.questionProof;
+    const keys = ['contract', 'bankId', 'sourceId', 'sourceFilePath', 'sourceFileSha256', 'sourceType', 'contentHash'];
+    if (!proof || Object.keys(proof).length !== keys.length || keys.some((key) => !Object.hasOwn(proof, key)))
+      return false;
+    if (
+      proof.contract !== (section ? 'english-section-source-v1' : 'cloze-source-v1') ||
+      proof.bankId !== bankId ||
+      proof.sourceType !== 'paper_answer_pdf'
+    )
+      return false;
+    if (
+      !Number.isInteger(card.number) ||
+      (section && (card.number < (bankId === 'english1-2007' ? 46 : 41) || card.number > 50)) ||
+      (!section && (card.number < 1 || card.number > 20)) ||
+      card.id !== `${bankId}-${String(card.number).padStart(3, '0')}`
+    )
+      return false;
+    const prompt = !section
+      ? `完形填空第 ${card.number} 空：阅读全文后选择最合适的选项。`
+      : card.number >= 46
+        ? `翻译第 ${card.number} 处画线句：请先阅读 Part C 全文，再翻译该标注片段。`
+        : `新题型第 ${card.number} 空：请先阅读完整文章，再从 A-G 中选择最合适的段落。`;
+    if (card.question !== prompt) return false;
+    if (
+      !section &&
+      JSON.stringify(Array.from(String(card.passage || '').matchAll(/\[(\d+)\]/g), (m) => m[1])) !==
+        JSON.stringify(Array.from({ length: 20 }, (_, i) => String(i + 1)))
+    )
+      return false;
+    const sourceProfile =
+      bankId === 'english1-2006'
+        ? ['src_9ec7d1d38e6f1d22108b63ac', 'sha256:0bf28e07ed34cbc33af0b79f620ac31c8897e91859a70748c3a55de3e5e9e9d4']
+        : bankId === 'english1-2007'
+          ? ['src_e148ece4fffe3713d05b40f8', 'sha256:44d08043b1e76a0fe935d1d46ffc3ccfeec36bff3e73091a55246975c6dc6a53']
+          : ['src_bff66c7d8434bb36d89117d9', 'sha256:75eb0f30f453a0c518b2731ba33894f59af2dd808d227168762ebf919bdd5bbc'];
+    if (proof.sourceId !== sourceProfile[0] || proof.sourceFileSha256 !== sourceProfile[1]) return false;
+    if (section) {
+      const profile =
+        bankId === 'english1-2007'
+          ? ['src_e148ece4fffe3713d05b40f8', 'sha256:44d08043b1e76a0fe935d1d46ffc3ccfeec36bff3e73091a55246975c6dc6a53']
+          : ['src_bff66c7d8434bb36d89117d9', 'sha256:75eb0f30f453a0c518b2731ba33894f59af2dd808d227168762ebf919bdd5bbc'];
+      if (proof.sourceId !== profile[0] || proof.sourceFileSha256 !== profile[1]) return false;
+      if (card.number >= 46) {
+        if (
+          card.type !== 'translation' ||
+          card.targetSegmentNumber !== card.number ||
+          !card.targetSegment ||
+          !card.passage?.includes(card.targetSegment) ||
+          /Writing|[\u4e00-\u9fff]/.test(card.passage)
+        )
+          return false;
+      } else if (
+        JSON.stringify(card.fixedSequence) !== JSON.stringify(['41', '42', '43', '44', 'E', '45']) ||
+        JSON.stringify(card.fixedParagraphs) !== '["E"]' ||
+        card.options?.length !== 7
+      )
+        return false;
+    }
+    if (!/^src_[a-f0-9]{24}$/.test(proof.sourceId) || !/^sha256:[a-f0-9]{64}$/.test(proof.sourceFileSha256))
+      return false;
+    const prefix = 'data/raw-inbox/';
+    if (
+      typeof proof.sourceFilePath !== 'string' ||
+      !proof.sourceFilePath.startsWith(`${prefix}${proof.sourceId}-`) ||
+      !proof.sourceFilePath.endsWith('.pdf')
+    )
+      return false;
+    const name = proof.sourceFilePath.slice(prefix.length);
+    if (name.includes('/') || name.includes('\\') || !name.includes(bankId.split('-')[1])) return false;
+    const file = path.join(PROJECT_ROOT, proof.sourceFilePath);
+    const stat = fs.lstatSync(file);
+    if (!stat.isFile() || stat.isSymbolicLink() || stat.size > 16 * 1024 * 1024 || fs.realpathSync(file) !== file)
+      return false;
+    const bytes = fs.readFileSync(file);
+    const after = fs.statSync(file);
+    if (
+      bytes.subarray(0, 5).toString() !== '%PDF-' ||
+      after.ino !== stat.ino ||
+      after.size !== stat.size ||
+      after.mtimeMs !== stat.mtimeMs
+    )
+      return false;
+    if (`sha256:${createHash('sha256').update(bytes).digest('hex')}` !== proof.sourceFileSha256) return false;
+    const payload = {};
+    const fields = [
+      'id',
+      'number',
+      'question',
+      'passage',
+      'context',
+      'material',
+      'options',
+      'passageSegments',
+      'answer'
+    ];
+    if (section) fields.push('targetSegment', 'targetSegmentNumber', 'fixedSequence', 'fixedParagraphs');
+    for (const key of fields) payload[key] = card[key] ?? null;
+    for (const key of keys.filter((key) => key !== 'contentHash')) payload[key] = proof[key];
+    return cleanedTextHash(pythonJson(payload)) === proof.contentHash;
+  } catch {
+    return false;
+  }
+}
+
+function restoredQuestionAssetsMatch(card, bankId) {
+  if (bankId !== 'math3-2007' || card.number !== 24) return true;
+  try {
+    const names = [12, 13].map((page) => `question-bank/${bankId}/paper-page-${page}-question-crop.jpg`);
+    const hashes = card.sourceEvidence?.questionAssetHashes;
+    if (!hashes || Object.keys(hashes).length !== 2 || card.questionImages?.length !== 2) return false;
+    for (let index = 0; index < 2; index += 1) {
+      const name = names[index];
+      if (card.questionImages[index]?.src !== name || !/^sha256:[a-f0-9]{64}$/.test(hashes[name])) return false;
+      const file = path.join(PROJECT_ROOT, 'cdn-assets', name);
+      const stat = fs.lstatSync(file);
+      if (!stat.isFile() || stat.isSymbolicLink() || fs.realpathSync(file) !== file || stat.size > 200 * 1024)
+        return false;
+      const bytes = fs.readFileSync(file);
+      if (
+        bytes[0] !== 0xff ||
+        bytes[1] !== 0xd8 ||
+        `sha256:${createHash('sha256').update(bytes).digest('hex')}` !== hashes[name]
+      )
+        return false;
+    }
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function auditCardEvidence(card, index, bank = {}, normalizedDigest) {
   const missingFields = [];
+  const hashes = cardContentHashes(card, bank.id, normalizedDigest);
 
   if (!String(card.question || card.stem || '').trim()) missingFields.push('question');
   if (!String(card.answer || '').trim()) missingFields.push('answer');
@@ -116,6 +533,17 @@ function auditCardEvidence(card, index, bank = {}) {
   if (answerEvidenceStatus(card) !== 'matched') missingFields.push('answerEvidenceStatus=matched');
   if (!questionHash(card)) missingFields.push('questionTextHash');
   if (!answerHash(card)) missingFields.push('answerTextHash');
+  if (!declaredTextHashesMatch(card, 'questionTextHash', hashes.questionTextHash)) {
+    missingFields.push('questionTextHash=content_mismatch');
+  }
+  if (!declaredTextHashesMatch(card, 'answerTextHash', hashes.answerTextHash)) {
+    missingFields.push('answerTextHash=content_mismatch');
+  }
+  if (!clozeSourceProofMatches(card, bank.id)) missingFields.push('questionTextHash=source_payload_mismatch');
+  if (!restoredQuestionAssetsMatch(card, bank.id)) missingFields.push('questionTextHash=asset_payload_mismatch');
+  // Registered politics sources provide publisher references only;
+  // changing or stripping candidate flags must not grant public scoring authority.
+  if (bank.id === 'politics-2023') missingFields.push('answerTextHash=reference_only_authority');
 
   return {
     cardId: String(cardId(card, index)),
@@ -174,6 +602,51 @@ function auditPublishedBanks({ banks, bankDir }) {
   let answerEvidenceBlockerCount = 0;
   let gradingBlockerCount = 0;
 
+  const loaded = new Map();
+  const requests = new Map();
+  const digestKey = (text, bankId) => `${bankId}:${createHash('sha256').update(text).digest('hex')}`;
+  for (const bank of banks.filter(isReleaseBank)) {
+    try {
+      const data = loadPublishedBank(bank, bankDir);
+      loaded.set(bank.id, data);
+      for (const card of data.cards)
+        cardContentHashes(card, bank.id, (text, bankId) => {
+          requests.set(digestKey(text, bankId), { bankId, text });
+          return '';
+        });
+    } catch (error) {
+      loaded.set(bank.id, { error });
+    }
+  }
+  const hashes = new Map();
+  if (requests.size) {
+    const input = JSON.stringify([...requests.values()]);
+    if (requests.size > 2048 || Buffer.byteLength(input) > 8 * 1024 * 1024)
+      throw new Error('Content digest batch exceeds limit');
+    const localPython = path.join(PROJECT_ROOT, '.venv-baidu/bin/python');
+    const python = fs.existsSync(localPython) ? localPython : 'python3';
+    const result = spawnSync(
+      python,
+      [path.join(PROJECT_ROOT, 'scripts/baidu/flashcard_quality.py'), '--legacy-hash-batch'],
+      {
+        input,
+        encoding: 'utf8',
+        timeout: 10000,
+        maxBuffer: 1024 * 1024
+      }
+    );
+    if (result.status !== 0) throw new Error('Registered content digest runtime unavailable');
+    const values = JSON.parse(result.stdout);
+    if (
+      !Array.isArray(values) ||
+      values.length !== requests.size ||
+      values.some((value) => !/^sha256:[a-f0-9]{64}$/.test(value))
+    )
+      throw new Error('Invalid registered digest receipt');
+    [...requests.keys()].forEach((key, index) => hashes.set(key, values[index]));
+  }
+  const normalizedDigest = (text, bankId) => hashes.get(digestKey(text, bankId)) ?? null;
+
   for (const bank of banks.filter(isReleaseBank)) {
     const bankReport = {
       bankId: bank.id,
@@ -185,7 +658,9 @@ function auditPublishedBanks({ banks, bankDir }) {
     };
 
     try {
-      const { cards } = loadPublishedBank(bank, bankDir);
+      const data = loaded.get(bank.id);
+      if (data.error) throw data.error;
+      const { cards } = data;
       cardCount += cards.length;
 
       if (!cards.length) {
@@ -193,7 +668,7 @@ function auditPublishedBanks({ banks, bankDir }) {
       }
 
       cards.forEach((card, index) => {
-        const cardReport = auditCardEvidence(card, index, bank);
+        const cardReport = auditCardEvidence(card, index, bank, normalizedDigest);
         if (cardReport.missingFields.length) {
           bankReport.blockedCards.push(cardReport);
           if (cardReport.missingFields.some((field) => ['question', 'answer', 'cards'].includes(field))) {
@@ -203,8 +678,11 @@ function auditPublishedBanks({ banks, bankDir }) {
             gradingBlockerCount += 1;
           }
           if (
-            cardReport.missingFields.some((field) =>
-              ['sourceEvidenceId', 'answerEvidenceStatus=matched', 'questionTextHash', 'answerTextHash'].includes(field)
+            cardReport.missingFields.some(
+              (field) =>
+                ['sourceEvidenceId', 'answerEvidenceStatus=matched'].includes(field) ||
+                field.startsWith('questionTextHash') ||
+                field.startsWith('answerTextHash')
             )
           ) {
             answerEvidenceBlockerCount += 1;
@@ -268,13 +746,9 @@ function sourceHash(item) {
 function sourceQualityOverrideForItem(item) {
   const sourceId = String(item?.sourceId || item?.id || '').trim();
   const location = sourceLocation(item) || '';
-  const hashes = [
-    item?.contentHash,
-    item?.sha256,
-    item?.fileSha256,
-    item?.sourceHash,
-    item?.hash
-  ].map((value) => String(value || '').trim());
+  const hashes = [item?.contentHash, item?.sha256, item?.fileSha256, item?.sourceHash, item?.hash].map((value) =>
+    String(value || '').trim()
+  );
 
   return (
     KNOWN_SOURCE_QUALITY_OVERRIDES.find(
@@ -400,10 +874,7 @@ function manifestSourceBlockReasons(item) {
 
   const qualityOverride = sourceQualityOverrideForItem(item);
   const riskFlags = [
-    ...new Set([
-      ...(Array.isArray(item?.riskFlags) ? item.riskFlags : []),
-      ...(qualityOverride?.riskFlags || [])
-    ])
+    ...new Set([...(Array.isArray(item?.riskFlags) ? item.riskFlags : []), ...(qualityOverride?.riskFlags || [])])
   ];
   const blockedFlags = riskFlags.filter((flag) => BLOCKING_SOURCE_RISK_FLAGS.has(flag)).sort();
   if (blockedFlags.length) reasons.push(`riskFlags=${blockedFlags.join(',')}`);
@@ -448,10 +919,7 @@ function sourceCandidateSample(item, analysis) {
     autoPairEligible: analysis.autoPairEligible === true,
     answerEvidenceStatus: item.answerEvidenceStatus || '',
     riskFlags: [
-      ...new Set([
-        ...(Array.isArray(item.riskFlags) ? item.riskFlags : []),
-        ...(qualityOverride?.riskFlags || [])
-      ])
+      ...new Set([...(Array.isArray(item.riskFlags) ? item.riskFlags : []), ...(qualityOverride?.riskFlags || [])])
     ].sort(),
     publishBlocked: item.legalReview?.publishBlocked === true || analysis.sourceQualityBlocked === true,
     blockReasons: analysis.blockReasons || [],
@@ -561,20 +1029,6 @@ function buildCandidateDiagnostics(items, tracks, requiredYearsByTrack) {
   }
 
   return diagnostics;
-}
-
-function emptyCandidateDiagnostics() {
-  return {
-    candidateCount: 0,
-    officialPaperCandidateCount: 0,
-    publishBlockedCandidateCount: 0,
-    autoPairEligibleCandidateCount: 0,
-    paperCandidateCount: 0,
-    answerCandidateCount: 0,
-    combinedCandidateCount: 0,
-    blockReasons: {},
-    sampleCandidates: []
-  };
 }
 
 function slotHasAutoPairedOfficialSource(items, track, year) {

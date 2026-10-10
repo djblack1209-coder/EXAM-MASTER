@@ -14,17 +14,34 @@ function makeBuildRoot() {
 }
 
 describe('mp-weixin main package usage audit', () => {
-  it('blocks a main package larger than the WeChat 4MB upload limit', () => {
+  it('blocks a main package larger than the project 2MB budget', () => {
     const buildRoot = makeBuildRoot();
     try {
       fs.writeFileSync(path.join(buildRoot, 'app.json'), JSON.stringify({ pages: ['pages/index/index'] }));
       fs.mkdirSync(path.join(buildRoot, 'pages/index'), { recursive: true });
-      fs.writeFileSync(path.join(buildRoot, 'app.js'), 'a'.repeat(4 * 1024 * 1024));
+      fs.writeFileSync(path.join(buildRoot, 'app.js'), 'a'.repeat(2 * 1024 * 1024));
       fs.writeFileSync(path.join(buildRoot, 'pages/index/index.js'), 'b'.repeat(8));
 
       expect(() => assertMainPackageSourceBudget(buildRoot)).toThrow('主包源码体积');
     } finally {
       fs.rmSync(buildRoot, { recursive: true, force: true });
+    }
+  });
+  it('includes media in the 2MB main budget and excludes subpackages', () => {
+    const root = makeBuildRoot();
+    try {
+      fs.writeFileSync(
+        path.join(root, 'app.json'),
+        JSON.stringify({ pages: [], subPackages: [{ root: 'pages/learning', pages: ['index'] }] })
+      );
+      fs.mkdirSync(path.join(root, 'pages/learning'), { recursive: true });
+      fs.writeFileSync(path.join(root, 'pages/learning/large.js'), 'x'.repeat(3 * 1024 * 1024));
+      fs.writeFileSync(path.join(root, 'app.js'), 'x'.repeat(1024 * 1024));
+      expect(() => assertMainPackageSourceBudget(root)).not.toThrow();
+      fs.writeFileSync(path.join(root, 'image.png'), Buffer.alloc(1024 * 1024));
+      expect(() => assertMainPackageSourceBudget(root)).toThrow('主包源码体积');
+    } finally {
+      fs.rmSync(root, { recursive: true, force: true });
     }
   });
 
@@ -68,7 +85,10 @@ describe('mp-weixin main package usage audit', () => {
     const buildRoot = makeBuildRoot();
     try {
       fs.mkdirSync(path.join(buildRoot, 'pages/practice-sub/flashcard-banks'), { recursive: true });
-      fs.writeFileSync(path.join(buildRoot, 'pages/practice-sub/flashcard-banks/english1-2011.js'), 'export default {}');
+      fs.writeFileSync(
+        path.join(buildRoot, 'pages/practice-sub/flashcard-banks/english1-2011.js'),
+        'export default {}'
+      );
 
       expect(() => assertNoFlashcardBanksInMainPackage(buildRoot)).not.toThrow();
     } finally {

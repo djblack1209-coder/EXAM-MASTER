@@ -1,8 +1,8 @@
 <template>
-  <view :class="['qb-page', { 'dark-mode': isDark }]">
+  <view ref="keyboardRoot" :class="['qb-page', { 'dark-mode': isDark }]">
     <view class="navbar">
       <view class="navbar-inner" :style="{ paddingTop: statusBarHeight + 'px' }">
-        <view class="nav-back" @tap="goBack">
+        <view class="nav-back" aria-label="返回" role="button" tabindex="0" data-learning-toggle @tap="goBack">
           <BaseIcon name="arrow-left" :size="32" />
         </view>
         <text class="nav-title">真题库</text>
@@ -12,9 +12,7 @@
 
     <scroll-view class="scroll-body" scroll-y :style="{ paddingTop: statusBarHeight + 44 + 'px' }">
       <view class="paper-hero">
-        <text class="hero-kicker">Exam Master</text>
         <text class="hero-title">按年份刷真题</text>
-        <text class="hero-desc">选择科目和年份后进入整卷训练。英语卷先读完整文章，再做对应题目。</text>
         <view class="hero-metrics">
           <view class="hero-metric">
             <text class="metric-value">{{ readyCount }}</text>
@@ -36,6 +34,9 @@
           v-for="subject in navigationTree"
           :key="subject.id"
           class="subject-tab"
+          role="button"
+          tabindex="0"
+          data-learning-toggle
           :class="{ active: selectedSubject?.id === subject.id }"
           @tap="selectSubject(subject.id)"
         >
@@ -48,6 +49,9 @@
           v-for="track in selectedSubject?.tracks || []"
           :key="track.id"
           class="track-pill"
+          role="button"
+          tabindex="0"
+          data-learning-toggle
           :class="{ active: selectedTrack?.id === track.id }"
           @tap="selectTrack(track.id)"
         >
@@ -59,11 +63,9 @@
       <view v-if="recommendedSlot" class="recommended-panel">
         <view class="recommended-copy">
           <view class="recommended-kicker-row">
-            <text class="recommended-kicker">推荐开练</text>
             <text class="recommended-pill">{{ recommendedLocalState.label }}</text>
           </view>
           <text class="recommended-title">{{ recommendedSlot.name }}</text>
-          <text class="recommended-desc">{{ recommendedSlotRecommendation }}</text>
         </view>
         <view class="recommended-meta-row">
           <view class="recommended-meta-item">
@@ -79,7 +81,14 @@
             <text class="recommended-meta-value">{{ recommendedLocalState.countText }}</text>
           </view>
         </view>
-        <view class="recommended-action" hover-class="btn-hover" @tap="loadAndStartSlot(recommendedSlot)">
+        <view
+          class="recommended-action"
+          role="button"
+          tabindex="0"
+          data-learning-toggle
+          hover-class="btn-hover"
+          @tap="loadAndStartSlot(recommendedSlot)"
+        >
           <text>{{ recommendedActionText }}</text>
           <BaseIcon name="arrow-right" :size="24" />
         </view>
@@ -88,7 +97,7 @@
       <view class="section-head">
         <view>
           <text class="section-title">{{ selectedTrack?.label || '公共课' }}</text>
-          <text class="section-hint">{{ selectedYearRangeText }} 整卷真题地图</text>
+          <text class="section-meta">{{ selectedYearRangeText }}</text>
         </view>
         <text class="section-meta">{{ selectedTrackSlotText }}</text>
       </view>
@@ -98,6 +107,9 @@
           v-for="slot in selectedYearSlots"
           :key="slot.id"
           class="year-slot"
+          role="button"
+          tabindex="0"
+          data-learning-toggle
           :class="[`status-${slot.status}`, { active: selectedYearSlot?.id === slot.id }]"
           @tap="selectYearSlot(slot)"
         >
@@ -117,8 +129,7 @@
           </view>
         </view>
         <text class="slot-desc">{{ selectedYearSlot.description }}</text>
-        <text v-if="selectedYearSlot.caution" class="slot-caution">{{ selectedYearSlot.caution }}</text>
-        <text v-else class="slot-caution">{{ selectedYearSlot.disabledReason }}</text>
+        <text v-if="!selectedYearSlot.clickable" class="slot-caution">{{ selectedYearSlot.disabledReason }}</text>
         <view v-if="selectedYearSlot.clickable" class="local-sync-strip">
           <view class="local-sync-item">
             <text class="local-sync-label">本地状态</text>
@@ -129,26 +140,15 @@
             <text class="local-sync-value">{{ getPaperLocalState(selectedYearSlot).countText }}</text>
           </view>
         </view>
-        <view class="slot-readiness-panel" :class="`status-${selectedYearSlot.status}`">
-          <view class="slot-readiness-item">
-            <view class="readiness-label-row">
-              <view class="readiness-dot" :class="`status-${selectedYearSlot.status}`" />
-              <text class="readiness-label">当前状态</text>
-            </view>
-            <text class="readiness-value">{{ selectedYearSlotReadiness.current }}</text>
-          </view>
-          <view class="slot-readiness-divider" />
-          <view class="slot-readiness-item">
-            <text class="readiness-label">下一步</text>
-            <text class="readiness-value">{{ selectedYearSlotReadiness.next }}</text>
-          </view>
-        </view>
         <view v-if="selectedYearSlot.sections?.length" class="paper-section-row slot-sections">
           <text v-for="section in selectedYearSlot.sections" :key="section" class="paper-section">{{ section }}</text>
         </view>
         <view
           v-if="selectedYearSlot.clickable"
           class="paper-btn primary slot-action"
+          role="button"
+          tabindex="0"
+          data-learning-toggle
           hover-class="btn-hover"
           @tap="loadAndStartSlot(selectedYearSlot)"
         >
@@ -163,7 +163,6 @@
         <view class="paper-list-head">
           <view>
             <text class="paper-list-title">更多可练整卷</text>
-            <text class="paper-list-sub">推荐卷之外的正式年份</text>
           </view>
           <text class="paper-list-count">{{ secondaryReadyBanks.length }} 卷</text>
         </view>
@@ -173,8 +172,7 @@
             <view class="paper-copy">
               <text class="paper-name">{{ paper.name }}</text>
               <text v-if="paper.releaseLabel" class="paper-release-label">{{ paper.releaseLabel }}</text>
-              <text class="paper-desc">{{ paper.description }}</text>
-              <text v-if="paper.caution" class="paper-caution">{{ paper.caution }}</text>
+
               <view class="paper-local-row">
                 <text class="paper-local-pill" :class="{ synced: getPaperLocalState(paper).isSynced }">
                   {{ getPaperLocalState(paper).label }}
@@ -190,12 +188,23 @@
             <view
               v-if="!isBankLoaded(paper.id)"
               class="paper-btn primary"
+              role="button"
+              tabindex="0"
+              data-learning-toggle
               hover-class="btn-hover"
               @tap="loadAndStartPaper(paper)"
             >
               <text>{{ loadingBankId === paper.id ? '加载中' : '开始' }}</text>
             </view>
-            <view v-else class="paper-btn secondary" hover-class="btn-hover" @tap="refreshAndStartPaper(paper)">
+            <view
+              v-else
+              class="paper-btn secondary"
+              role="button"
+              tabindex="0"
+              data-learning-toggle
+              hover-class="btn-hover"
+              @tap="refreshAndStartPaper(paper)"
+            >
               <text>继续</text>
             </view>
           </view>
@@ -205,13 +214,11 @@
       <view v-else-if="!recommendedSlot" class="empty-state">
         <BaseIcon name="book" :size="56" />
         <text class="empty-text">该方向暂无可练整卷</text>
-        <text class="empty-sub">资料和答案说明完善后，会按年份开放整卷练习。</text>
       </view>
 
       <view v-if="selectedPendingBanks.length > 0" class="pending-panel">
         <view class="pending-head">
           <text class="pending-title">整理中</text>
-          <text class="pending-sub">验证通过后开放</text>
         </view>
         <view v-for="paper in selectedPendingBanks" :key="paper.id" class="pending-item">
           <view class="pending-copy">
@@ -226,7 +233,6 @@
         <view class="gap-head">
           <view>
             <text class="gap-title">待开放清单</text>
-            <text class="gap-sub">优先展示当前方向最近年份</text>
           </view>
           <text class="gap-count">{{ selectedGapSummary }}</text>
         </view>
@@ -252,21 +258,30 @@
 
 <script setup>
 import { computed, ref, onMounted, onBeforeUnmount } from 'vue';
+import { bindLearningKeyboard } from '@/services/learning/keyboard-controls.js';
 import { safeNavigateBack, safeNavigateTo } from '@/utils/safe-navigate';
 import { getPracticeNavigationTree } from '@/config/bank-registry.js';
 import { loadBankData } from './bank-data-loader.js';
 import { importFlashcardsToBank } from '@/utils/flashcard-adapter.js';
 import { getStatusBarHeight } from '@/utils/core/system.js';
 import storageService from '@/services/storageService.js';
+import { getUserId, getToken } from '@/services/auth-storage.js';
 import { toast } from '@/utils/toast.js';
 import { logger } from '@/utils/logger.js';
 
+const keyboardRoot = ref(null);
+let unbindKeyboard = () => undefined;
+
 const isDark = ref(storageService.get('theme_mode', 'light') === 'dark');
+const pageOwner = getUserId() || '';
+const pageToken = getToken() || '';
+const ownerMatches = () => (getUserId() || '') === pageOwner && (getToken() || '') === pageToken;
 const _themeHandler = (mode) => {
   isDark.value = mode === 'dark';
 };
 uni.$on('themeUpdate', _themeHandler);
 onBeforeUnmount(() => {
+  unbindKeyboard();
   uni.$off('themeUpdate', _themeHandler);
 });
 
@@ -274,7 +289,7 @@ const statusBarHeight = ref(getStatusBarHeight());
 const loadingBankId = ref('');
 const selectedSubjectKey = ref('');
 const selectedTrackId = ref('');
-const loadedBankIds = ref(new Set(storageService.get('loaded_flashcard_banks', []) || []));
+const loadedBankIds = ref(new Set(readLocalArray('loaded_flashcard_banks')));
 const navigationTree = computed(() => getPracticeNavigationTree(storageService.get('exam_profile', null) || {}));
 const allTracks = computed(() => navigationTree.value.flatMap((subject) => subject.tracks || []));
 const readyCount = computed(() => allTracks.value.reduce((sum, track) => sum + (track.slotSummary?.ready || 0), 0));
@@ -320,13 +335,6 @@ const secondaryReadyBanks = computed(() => {
   return selectedReadyBanks.value.filter((paper) => paper.id !== recommendedBankId);
 });
 const recommendedLocalState = computed(() => getPaperLocalState(recommendedSlot.value));
-const recommendedSlotRecommendation = computed(() => {
-  if (!recommendedSlot.value) return '';
-  if (recommendedLocalState.value.isSynced) {
-    return '当前方向最近可练整卷已在本地，可直接继续训练。';
-  }
-  return '当前方向最近可练整卷，点击后会先同步题目再进入训练。';
-});
 const recommendedActionText = computed(() => {
   if (!recommendedSlot.value) return '暂不可开始';
   if (loadingBankId.value === recommendedSlot.value.bankId) return '加载中';
@@ -417,9 +425,19 @@ function isBankLoaded(bankId) {
   return loadedBankIds.value.has(bankId);
 }
 
+function readLocalArray(key) {
+  if (!ownerMatches()) return [];
+  try {
+    const value = storageService.get(key, [], { migrateLegacy: false, throwOnError: true });
+    return Array.isArray(value) ? value : [];
+  } catch (_error) {
+    return [];
+  }
+}
+
 function buildLocalPaperStats() {
   const stats = {};
-  const bank = storageService.get('v30_bank', []) || [];
+  const bank = readLocalArray('v30_bank');
   for (const item of bank) {
     const paperId = item?.paperId || '';
     if (!paperId) continue;
@@ -499,6 +517,10 @@ function buildGapNextStep(slot) {
 }
 
 async function loadPaper(paper) {
+  if (!ownerMatches()) {
+    toast.info('账户已变化，请返回题库重新选择');
+    return null;
+  }
   if (!paper?.id) {
     toast.error('试卷信息缺失');
     return null;
@@ -508,19 +530,27 @@ async function loadPaper(paper) {
   loadingBankId.value = paper.id;
   try {
     const data = await loadBankData(paper.id);
+    if (!ownerMatches()) {
+      toast.info('账户已变化，请返回题库重新选择');
+      return null;
+    }
     const adapter = {
-      get: (key) => storageService.get(key, []),
-      set: (key, value) => storageService.save(key, value)
+      get: (key) => {
+        if (!ownerMatches()) throw new Error('CONTEXT_CHANGED');
+        return storageService.get(key, [], { migrateLegacy: false, throwOnError: true });
+      },
+      set: (key, value) => ownerMatches() && storageService.save(key, value, true) === true
     };
     const result = importFlashcardsToBank(data, adapter, {
       paperId: paper.id,
       paperName: paper.name,
       subject: paper.subject
     });
-    const loaded = storageService.get('loaded_flashcard_banks', []) || [];
+    if (!ownerMatches()) return null;
+    const loaded = [...storageService.get('loaded_flashcard_banks', [], { migrateLegacy: false, throwOnError: true })];
     if (!loaded.includes(paper.id)) {
       loaded.push(paper.id);
-      storageService.save('loaded_flashcard_banks', loaded);
+      if (!storageService.save('loaded_flashcard_banks', loaded, true)) throw new Error('SAVE_FAILED');
     }
     loadedBankIds.value = new Set(loaded);
     refreshLocalPaperStats();
@@ -548,46 +578,61 @@ async function refreshAndStartPaper(paper) {
 
 function getPaperQuestionIds(paper) {
   if (!paper?.id) return [];
-  const bank = storageService.get('v30_bank', []);
-  return bank
-    .filter((q) => q.paperId === paper.id || (q.source === paper.source && q.year === paper.year))
-    .map((q) => q.id || q._id)
-    .filter(Boolean);
-}
-
-function buildPracticeUrl(paper, ids) {
-  const encodedPaperId = encodeURIComponent(paper.id);
-  if (ids.length > 0) {
-    return `/pages/practice-sub/do-quiz?mode=smart_review&paperId=${encodedPaperId}`;
-  }
-  return `/pages/practice-sub/do-quiz?paperId=${encodedPaperId}`;
+  const bank = storageService.get('v30_bank', [], { migrateLegacy: false, throwOnError: true });
+  if (!Array.isArray(bank)) return [];
+  return bank.filter((q) => q?.paperId === paper.id).map((q) => q.id ?? q._id);
 }
 
 function startLoadedPaper(paper, loadResult) {
-  if (!loadResult) return false;
-
-  const ids = getPaperQuestionIds(paper);
-  if (ids.length === 0) {
-    toast.error('本卷暂无可练题目');
+  if (!loadResult || !ownerMatches()) return false;
+  try {
+    const ids = getPaperQuestionIds(paper);
+    if (ids.length === 0) {
+      toast.error('本卷暂无可练题目');
+      return false;
+    }
+    const result = storageService.prepareQuizReview({ ids, expectedOwner: pageOwner, paperId: paper.id });
+    if (!result.success || !ownerMatches()) {
+      toast.error('本卷原题未确认保存，请重试');
+      return false;
+    }
+    safeNavigateTo(result.url);
+    return true;
+  } catch (_error) {
+    toast.error('本卷原题暂不可读取，请重试');
     return false;
   }
-
-  storageService.save('smart_review_ids', ids);
-  safeNavigateTo(buildPracticeUrl(paper, ids));
-  return true;
 }
 
 onMounted(() => {
+  unbindKeyboard = bindLearningKeyboard(keyboardRoot.value);
   ensureSelection();
   selectBank(getCurrentRouteBankId());
 });
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+.qb-page [role='button'] {
+  min-height: 44px;
+  touch-action: manipulation;
+}
+.qb-page [role='button']:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+.qb-page.dark-mode {
+  --muted-foreground: #d2c8e5;
+}
+
 .qb-page {
+  --muted-foreground: #62576d;
   min-height: 100vh;
-  background: #f5f5f7;
+
+  background: var(--yozi-background);
   color: #1d1d1f;
+
+  font-family: 'DM Sans', 'PingFang SC', 'Microsoft YaHei', sans-serif;
 }
 .navbar {
   position: fixed;
@@ -595,9 +640,10 @@ onMounted(() => {
   left: 0;
   right: 0;
   z-index: 100;
-  background: rgba(245, 245, 247, 0.9);
+
   border-bottom: 1rpx solid rgba(0, 0, 0, 0.06);
-  box-shadow: none;
+
+  @include em-mobile-topbar;
 }
 .navbar-inner {
   display: flex;
@@ -606,7 +652,7 @@ onMounted(() => {
   padding: 0 16px;
 }
 .nav-back {
-  width: 40px;
+  width: 44px;
   color: var(--text-primary);
 }
 .nav-title {
@@ -625,15 +671,20 @@ onMounted(() => {
 .paper-hero {
   margin: 24rpx;
   padding: 34rpx 32rpx;
-  border-radius: 30rpx;
-  background: #ffffff;
-  border: 1rpx solid rgba(0, 0, 0, 0.06);
-  box-shadow: 0 18rpx 48rpx rgba(15, 23, 42, 0.08);
+
+  border-radius: 24px;
+
+  background: var(--yozi-reading);
+
+  border: 0;
+
+  box-shadow: var(--yozi-shadow);
 }
 .hero-kicker {
   display: block;
-  color: #8e8e93;
-  font-size: 18rpx;
+  color: var(--muted-foreground);
+  font-size: 12px;
+  font-size: max(12px, 18rpx);
   font-weight: 900;
   letter-spacing: 0;
 }
@@ -649,7 +700,8 @@ onMounted(() => {
   display: block;
   margin-top: 14rpx;
   color: #5f6672;
-  font-size: 25rpx;
+  font-size: 12px;
+  font-size: max(12px, 25rpx);
   line-height: 1.5;
 }
 .hero-metrics {
@@ -676,8 +728,9 @@ onMounted(() => {
 .metric-label {
   display: block;
   margin-top: 8rpx;
-  color: #8e8e93;
-  font-size: 21rpx;
+  color: var(--muted-foreground);
+  font-size: 12px;
+  font-size: max(12px, 21rpx);
   font-weight: 750;
 }
 .subject-tabs,
@@ -691,14 +744,20 @@ onMounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 58rpx;
+
+  min-height: 44px;
   padding: 0 24rpx;
-  border-radius: 999rpx;
-  background: #ffffff;
+
+  border-radius: 12px;
+
+  background: var(--yozi-glass);
   color: #5f6672;
-  font-size: 24rpx;
+  font-size: 12px;
+  font-size: max(12px, 24rpx);
   font-weight: 800;
   border: 1rpx solid rgba(0, 0, 0, 0.06);
+
+  box-shadow: var(--yozi-control-shadow);
 }
 .subject-tab + .subject-tab,
 .track-pill + .track-pill {
@@ -717,10 +776,14 @@ onMounted(() => {
 .recommended-panel {
   margin: 24rpx 24rpx 6rpx;
   padding: 28rpx 24rpx;
-  border-radius: 24rpx;
-  background: #ffffff;
-  border: 1rpx solid rgba(31, 122, 77, 0.1);
-  box-shadow: 0 16rpx 38rpx rgba(15, 23, 42, 0.07);
+
+  border-radius: 24px;
+
+  background: var(--yozi-reading);
+
+  border: 0;
+
+  box-shadow: var(--yozi-shadow);
 }
 .recommended-kicker-row {
   display: flex;
@@ -729,7 +792,8 @@ onMounted(() => {
 }
 .recommended-kicker {
   color: #1f7a4d;
-  font-size: 20rpx;
+  font-size: 12px;
+  font-size: max(12px, 20rpx);
   font-weight: 900;
 }
 .recommended-pill {
@@ -737,7 +801,8 @@ onMounted(() => {
   border-radius: 999rpx;
   background: rgba(31, 122, 77, 0.1);
   color: #1f7a4d;
-  font-size: 20rpx;
+  font-size: 12px;
+  font-size: max(12px, 20rpx);
   font-weight: 850;
 }
 .recommended-title {
@@ -752,7 +817,8 @@ onMounted(() => {
   display: block;
   margin-top: 10rpx;
   color: #5f6672;
-  font-size: 23rpx;
+  font-size: 12px;
+  font-size: max(12px, 23rpx);
   line-height: 1.45;
 }
 .recommended-meta-row {
@@ -773,15 +839,17 @@ onMounted(() => {
 }
 .recommended-meta-label {
   display: block;
-  color: #8e8e93;
-  font-size: 18rpx;
+  color: var(--muted-foreground);
+  font-size: 12px;
+  font-size: max(12px, 18rpx);
   font-weight: 900;
 }
 .recommended-meta-value {
   display: block;
   margin-top: 8rpx;
   color: #1d1d1f;
-  font-size: 24rpx;
+  font-size: 12px;
+  font-size: max(12px, 24rpx);
   font-weight: 900;
   line-height: 1.2;
 }
@@ -791,11 +859,12 @@ onMounted(() => {
   justify-content: center;
   min-height: 76rpx;
   margin-top: 22rpx;
-  border-radius: 16rpx;
-  background: #1d1d1f;
-  color: #ffffff;
-  font-size: 25rpx;
+
+  font-size: 12px;
+  font-size: max(12px, 25rpx);
   font-weight: 900;
+
+  @include em-mobile-primary-action;
 }
 .recommended-action text {
   margin-right: 8rpx;
@@ -815,8 +884,9 @@ onMounted(() => {
 .section-hint,
 .section-meta {
   display: block;
-  color: #8e8e93;
-  font-size: 23rpx;
+  color: var(--muted-foreground);
+  font-size: 12px;
+  font-size: max(12px, 23rpx);
   margin-top: 8rpx;
 }
 .section-meta {
@@ -834,12 +904,17 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  min-height: 92rpx;
+
+  min-height: 44px;
   padding: 12rpx 8rpx;
-  border-radius: 18rpx;
-  background: #ffffff;
+
+  border-radius: 12px;
+
+  background: var(--yozi-glass);
   border: 1rpx solid rgba(0, 0, 0, 0.06);
   text-align: center;
+
+  box-shadow: var(--yozi-control-shadow);
 }
 .year-slot.active {
   border-color: rgba(29, 29, 31, 0.62);
@@ -858,7 +933,8 @@ onMounted(() => {
 .slot-year {
   display: block;
   color: #1d1d1f;
-  font-size: 27rpx;
+  font-size: 12px;
+  font-size: max(12px, 27rpx);
   font-weight: 900;
   line-height: 1;
 }
@@ -866,7 +942,8 @@ onMounted(() => {
   display: block;
   margin-top: 9rpx;
   color: #5f6672;
-  font-size: 18rpx;
+  font-size: 12px;
+  font-size: max(12px, 18rpx);
   font-weight: 850;
   white-space: nowrap;
 }
@@ -879,10 +956,14 @@ onMounted(() => {
 .slot-detail {
   margin: 18rpx 24rpx 28rpx;
   padding: 28rpx 24rpx;
-  border-radius: 24rpx;
-  background: #ffffff;
-  border: 1rpx solid rgba(0, 0, 0, 0.06);
-  box-shadow: 0 10rpx 28rpx rgba(15, 23, 42, 0.06);
+
+  border-radius: 24px;
+
+  background: var(--yozi-reading);
+
+  border: 0;
+
+  box-shadow: var(--yozi-shadow);
 }
 .slot-detail-head {
   display: flex;
@@ -896,8 +977,9 @@ onMounted(() => {
 }
 .slot-kicker {
   display: block;
-  color: #8e8e93;
-  font-size: 20rpx;
+  color: var(--muted-foreground);
+  font-size: 12px;
+  font-size: max(12px, 20rpx);
   font-weight: 900;
 }
 .slot-title {
@@ -914,7 +996,8 @@ onMounted(() => {
   border-radius: 999rpx;
   background: #f2f3f5;
   color: #5f6672;
-  font-size: 21rpx;
+  font-size: 12px;
+  font-size: max(12px, 21rpx);
   font-weight: 900;
 }
 .slot-badge.status-ready {
@@ -929,14 +1012,16 @@ onMounted(() => {
   display: block;
   margin-top: 14rpx;
   color: #5f6672;
-  font-size: 24rpx;
+  font-size: 12px;
+  font-size: max(12px, 24rpx);
   line-height: 1.45;
 }
 .slot-caution {
   display: block;
   margin-top: 10rpx;
-  color: #8e8e93;
-  font-size: 22rpx;
+  color: var(--muted-foreground);
+  font-size: 12px;
+  font-size: max(12px, 22rpx);
   line-height: 1.45;
 }
 .local-sync-strip {
@@ -958,15 +1043,17 @@ onMounted(() => {
 }
 .local-sync-label {
   display: block;
-  color: #8e8e93;
-  font-size: 19rpx;
+  color: var(--muted-foreground);
+  font-size: 12px;
+  font-size: max(12px, 19rpx);
   font-weight: 900;
 }
 .local-sync-value {
   display: block;
   margin-top: 8rpx;
   color: #1d1d1f;
-  font-size: 24rpx;
+  font-size: 12px;
+  font-size: max(12px, 24rpx);
   font-weight: 860;
   line-height: 1.25;
 }
@@ -1014,8 +1101,9 @@ onMounted(() => {
 }
 .readiness-label {
   display: block;
-  color: #8e8e93;
-  font-size: 19rpx;
+  color: var(--muted-foreground);
+  font-size: 12px;
+  font-size: max(12px, 19rpx);
   font-weight: 900;
   line-height: 1.2;
 }
@@ -1023,7 +1111,8 @@ onMounted(() => {
   display: block;
   margin-top: 9rpx;
   color: #1d1d1f;
-  font-size: 23rpx;
+  font-size: 12px;
+  font-size: max(12px, 23rpx);
   font-weight: 760;
   line-height: 1.35;
 }
@@ -1045,15 +1134,17 @@ onMounted(() => {
 .paper-list-title {
   display: block;
   color: #1d1d1f;
-  font-size: 28rpx;
+  font-size: 12px;
+  font-size: max(12px, 28rpx);
   font-weight: 900;
 }
 .paper-list-sub,
 .paper-list-count {
   display: block;
   margin-top: 6rpx;
-  color: #8e8e93;
-  font-size: 21rpx;
+  color: var(--muted-foreground);
+  font-size: 12px;
+  font-size: max(12px, 21rpx);
   font-weight: 760;
 }
 .paper-list-count {
@@ -1064,10 +1155,14 @@ onMounted(() => {
 .paper-card {
   padding: 28rpx 24rpx;
   margin-bottom: 18rpx;
-  border-radius: 24rpx;
-  background: #ffffff;
-  border: 1rpx solid rgba(0, 0, 0, 0.06);
-  box-shadow: 0 10rpx 28rpx rgba(15, 23, 42, 0.06);
+
+  border-radius: 24px;
+
+  background: var(--yozi-reading);
+
+  border: 0;
+
+  box-shadow: var(--yozi-shadow);
 }
 .paper-main {
   display: flex;
@@ -1098,21 +1193,24 @@ onMounted(() => {
   border-radius: 999rpx;
   background: rgba(31, 122, 77, 0.1);
   color: #1f7a4d;
-  font-size: 20rpx;
+  font-size: 12px;
+  font-size: max(12px, 20rpx);
   font-weight: 850;
 }
 .paper-desc {
   display: block;
   margin-top: 8rpx;
   color: #5f6672;
-  font-size: 23rpx;
+  font-size: 12px;
+  font-size: max(12px, 23rpx);
   line-height: 1.45;
 }
 .paper-caution {
   display: block;
   margin-top: 8rpx;
-  color: #8e8e93;
-  font-size: 22rpx;
+  color: var(--muted-foreground);
+  font-size: 12px;
+  font-size: max(12px, 22rpx);
   line-height: 1.45;
 }
 .paper-local-row {
@@ -1127,8 +1225,9 @@ onMounted(() => {
   padding: 5rpx 12rpx;
   border-radius: 999rpx;
   background: #eef0f3;
-  color: #8e8e93;
-  font-size: 20rpx;
+  color: var(--muted-foreground);
+  font-size: 12px;
+  font-size: max(12px, 20rpx);
   font-weight: 850;
 }
 .paper-local-pill.synced {
@@ -1138,7 +1237,8 @@ onMounted(() => {
 .paper-local-count {
   margin-bottom: 8rpx;
   color: #5f6672;
-  font-size: 21rpx;
+  font-size: 12px;
+  font-size: max(12px, 21rpx);
   font-weight: 760;
 }
 .paper-section-row {
@@ -1153,7 +1253,8 @@ onMounted(() => {
   border-radius: 999rpx;
   background: #f2f3f5;
   color: #5f6672;
-  font-size: 20rpx;
+  font-size: 12px;
+  font-size: max(12px, 20rpx);
   font-weight: 750;
 }
 .paper-actions {
@@ -1165,20 +1266,27 @@ onMounted(() => {
   justify-content: center;
   min-height: 72rpx;
   border-radius: 16rpx;
-  font-size: 25rpx;
+  font-size: 12px;
+  font-size: max(12px, 25rpx);
   font-weight: 900;
 }
 .paper-btn.primary {
-  background: #1d1d1f;
-  color: #fff;
+  @include em-mobile-primary-action;
 }
 .paper-btn.secondary {
-  background: #e8f4ee;
-  color: #1f7a4d;
+  background: var(--yozi-glass);
+
+  color: var(--text-main);
+
+  border-radius: 12px;
+
+  min-height: 44px;
+
+  box-shadow: var(--yozi-control-shadow);
 }
 .paper-btn.muted {
   background: #eef0f3;
-  color: #8e8e93;
+  color: var(--muted-foreground);
 }
 .slot-action-disabled {
   border: 1rpx solid rgba(0, 0, 0, 0.04);
@@ -1186,9 +1294,14 @@ onMounted(() => {
 .pending-panel {
   margin: 30rpx 24rpx 0;
   padding: 26rpx 24rpx;
-  border-radius: 24rpx;
-  background: #ffffff;
-  border: 1rpx solid rgba(0, 0, 0, 0.06);
+
+  border-radius: 24px;
+
+  background: var(--yozi-reading);
+
+  border: 0;
+
+  box-shadow: var(--yozi-shadow);
 }
 .pending-head {
   display: flex;
@@ -1198,12 +1311,14 @@ onMounted(() => {
 }
 .pending-title {
   color: #1d1d1f;
-  font-size: 28rpx;
+  font-size: 12px;
+  font-size: max(12px, 28rpx);
   font-weight: 900;
 }
 .pending-sub {
-  color: #8e8e93;
-  font-size: 21rpx;
+  color: var(--muted-foreground);
+  font-size: 12px;
+  font-size: max(12px, 21rpx);
 }
 .pending-item {
   display: flex;
@@ -1220,28 +1335,35 @@ onMounted(() => {
 .pending-name {
   display: block;
   color: #1d1d1f;
-  font-size: 25rpx;
+  font-size: 12px;
+  font-size: max(12px, 25rpx);
   font-weight: 820;
 }
 .pending-reason {
   display: block;
   margin-top: 6rpx;
-  color: #8e8e93;
-  font-size: 22rpx;
+  color: var(--muted-foreground);
+  font-size: 12px;
+  font-size: max(12px, 22rpx);
   line-height: 1.35;
 }
 .pending-year {
   color: #1d1d1f;
-  font-size: 26rpx;
+  font-size: 12px;
+  font-size: max(12px, 26rpx);
   font-weight: 900;
 }
 .gap-panel {
   margin: 30rpx 24rpx 0;
   padding: 26rpx 24rpx;
-  border-radius: 24rpx;
-  background: #ffffff;
-  border: 1rpx solid rgba(0, 0, 0, 0.06);
-  box-shadow: 0 10rpx 28rpx rgba(15, 23, 42, 0.04);
+
+  border-radius: 24px;
+
+  background: var(--yozi-reading);
+
+  border: 0;
+
+  box-shadow: var(--yozi-shadow);
 }
 .gap-head {
   display: flex;
@@ -1252,15 +1374,17 @@ onMounted(() => {
 .gap-title {
   display: block;
   color: #1d1d1f;
-  font-size: 28rpx;
+  font-size: 12px;
+  font-size: max(12px, 28rpx);
   font-weight: 900;
 }
 .gap-sub,
 .gap-count {
   display: block;
   margin-top: 6rpx;
-  color: #8e8e93;
-  font-size: 21rpx;
+  color: var(--muted-foreground);
+  font-size: 12px;
+  font-size: max(12px, 21rpx);
   font-weight: 760;
 }
 .gap-count {
@@ -1284,7 +1408,8 @@ onMounted(() => {
 .gap-year {
   display: block;
   color: #1d1d1f;
-  font-size: 28rpx;
+  font-size: 12px;
+  font-size: max(12px, 28rpx);
   font-weight: 900;
   line-height: 1;
 }
@@ -1294,8 +1419,9 @@ onMounted(() => {
   padding: 4rpx 10rpx;
   border-radius: 999rpx;
   background: #eef0f3;
-  color: #8e8e93;
-  font-size: 18rpx;
+  color: var(--muted-foreground);
+  font-size: 12px;
+  font-size: max(12px, 18rpx);
   font-weight: 850;
 }
 .gap-item.status-organizing .gap-status {
@@ -1310,7 +1436,8 @@ onMounted(() => {
 .gap-name {
   display: block;
   color: #1d1d1f;
-  font-size: 24rpx;
+  font-size: 12px;
+  font-size: max(12px, 24rpx);
   font-weight: 820;
   line-height: 1.35;
 }
@@ -1318,8 +1445,9 @@ onMounted(() => {
 .gap-next {
   display: block;
   margin-top: 7rpx;
-  color: #8e8e93;
-  font-size: 21rpx;
+  color: var(--muted-foreground);
+  font-size: 12px;
+  font-size: max(12px, 21rpx);
   line-height: 1.4;
 }
 .gap-next {
@@ -1328,10 +1456,16 @@ onMounted(() => {
 .empty-state {
   margin: 34rpx 24rpx;
   padding: 56rpx 32rpx;
-  border-radius: 24rpx;
-  background: #ffffff;
+
+  border-radius: 24px;
+
+  background: var(--yozi-reading);
   text-align: center;
-  color: #8e8e93;
+  color: var(--muted-foreground);
+
+  border: 0;
+
+  box-shadow: var(--yozi-shadow);
 }
 .empty-text {
   display: block;
@@ -1343,19 +1477,23 @@ onMounted(() => {
 .empty-sub {
   display: block;
   margin-top: 10rpx;
-  color: #8e8e93;
-  font-size: 24rpx;
+  color: var(--muted-foreground);
+  font-size: 12px;
+  font-size: max(12px, 24rpx);
   line-height: 1.45;
 }
 .bottom-spacer {
   height: 120rpx;
 }
 .dark-mode {
-  background: #1a1c23;
+  background: var(--yozi-background);
+
+  font-family: 'DM Sans', 'PingFang SC', 'Microsoft YaHei', sans-serif;
 }
 .dark-mode .navbar {
-  background: rgba(26, 28, 35, 0.92);
   border-bottom-color: rgba(255, 255, 255, 0.08);
+
+  @include em-mobile-topbar;
 }
 .dark-mode .nav-title,
 .dark-mode .hero-title,
@@ -1388,9 +1526,12 @@ onMounted(() => {
 .dark-mode .pending-panel,
 .dark-mode .gap-panel,
 .dark-mode .empty-state {
-  background: #20242d;
+  background: var(--yozi-reading);
   border-color: rgba(255, 255, 255, 0.08);
-  box-shadow: 0 18rpx 48rpx rgba(0, 0, 0, 0.22);
+
+  box-shadow: var(--yozi-shadow);
+
+  border: 0;
 }
 .dark-mode .hero-metric,
 .dark-mode .year-slot,
@@ -1399,7 +1540,7 @@ onMounted(() => {
 .dark-mode .paper-section,
 .dark-mode .paper-local-pill,
 .dark-mode .paper-btn.muted {
-  background: #292e39;
+  background: var(--muted);
   border-color: rgba(255, 255, 255, 0.07);
 }
 .dark-mode .year-slot.active {
@@ -1418,16 +1559,21 @@ onMounted(() => {
 }
 .dark-mode .year-slot.status-missing,
 .dark-mode .slot-readiness-panel {
-  background: #242933;
+  background: var(--muted);
   border-color: rgba(255, 255, 255, 0.07);
 }
 .dark-mode .subject-tab.active,
 .dark-mode .track-pill.active,
 .dark-mode .recommended-action,
 .dark-mode .paper-btn.primary {
-  background: #5392ff;
-  color: #061121;
+  background: var(--yozi-button);
+
+  color: var(--yozi-button-ink);
   border-color: #5392ff;
+
+  box-shadow: var(--yozi-button-shadow);
+
+  border: 0;
 }
 .dark-mode .paper-btn.secondary {
   background: rgba(35, 134, 91, 0.18);

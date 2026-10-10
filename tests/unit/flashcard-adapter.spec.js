@@ -1,8 +1,121 @@
 import { describe, expect, it } from 'vitest';
 
 import { adaptCard, importFlashcardsToBank } from '@/utils/flashcard-adapter.js';
+import { prepareQuizQuestion, createSinglePracticeHandoff } from '@/services/quiz-session-contract.js';
 
 describe('flashcard adapter', () => {
+  it('captures object options, numeric reference, reading, media and provenance before display formatting', () => {
+    const raw = {
+      id: 0,
+      question: '按照完整原材料选择。',
+      options: [
+        { label: 'A', text: '甲', page: 2 },
+        { label: 'B', text: '乙', page: 3 }
+      ],
+      answer: 1,
+      type: 'single_choice',
+      passage: '完整原材料',
+      audio: { transcript: '原音频文字' },
+      source: { title: '原来源', page: 4 },
+      sourceLicense: { status: 'unknown' },
+      question_version: 9,
+      questionImages: [{ src: 'question-bank/paper/page.png', caption: '原页', crop: [1, 2, 3, 4] }]
+    };
+    const before = JSON.stringify(raw),
+      card = adaptCard(raw);
+    expect(card.answer).toBe('B');
+    expect(card.options).toEqual(['甲', '乙']);
+    const { id: _id, ...fields } = raw;
+    expect(card.quizOriginal.fields).toMatchObject(fields);
+    expect(card.quizOriginal.fields).not.toHaveProperty('id');
+    expect(card.quizOriginal.id).toBe(0);
+    expect(JSON.stringify(raw)).toBe(before);
+    const prepared = prepareQuizQuestion(card);
+    expect(prepared).not.toBeNull();
+    expect(createSinglePracticeHandoff(prepared, 'owner').question.quizOriginal).toEqual(card.quizOriginal);
+  });
+  it.each(['missing-answer', 'wrong-label', 'duplicate-id', 'credentials'])(
+    'preflights all cards and refuses %s without mutating a bank or writing',
+    (damage) => {
+      const cards = [
+        { id: 0, question: '原题正文', options: ['甲', '乙'], answer: 'B' },
+        { id: 'two', question: '第二题正文', options: ['甲', '乙'], answer: 'A' }
+      ];
+      if (damage === 'missing-answer') delete cards[1].answer;
+      if (damage === 'wrong-label')
+        cards[1].options = [
+          { label: 'B', text: '甲' },
+          { label: 'A', text: '乙' }
+        ];
+      if (damage === 'duplicate-id') cards[1].id = 0;
+      if (damage === 'credentials') cards[1].source = { api_key: 'synthetic-only' };
+      const old = [{ id: 'keep', question: '原有题目', options: ['甲', '乙'], answer: 'A' }];
+      const before = JSON.stringify(old),
+        writes = [];
+      const storage = {
+        get: () => old,
+        set: (...args) => {
+          writes.push(args);
+          return true;
+        }
+      };
+      expect(() => importFlashcardsToBank({ cards }, storage)).toThrow();
+      expect(JSON.stringify(old)).toBe(before);
+      expect(writes).toEqual([]);
+    }
+  );
+  it('preserves explicit parent import context without inventing question source, answer or id', () => {
+    const raw = { id: 'card', question: '原题', options: ['甲', '乙'], answer: 'A' };
+    const context = {
+      paperId: 'parent-paper',
+      source: { title: '父级资料' },
+      sourceLicense: '父级许可待核对',
+      year: '2025'
+    };
+    const card = adaptCard(raw, context);
+    expect(card.quizOriginal.fields.importContext).toEqual(context);
+    expect(card.quizOriginal.fields.source).toBeUndefined();
+    expect(card.paperId).toBe('parent-paper');
+    expect(prepareQuizQuestion(card)).not.toBeNull();
+  });
+  it.each(['other-paper', 'duplicate-existing'])('does not overwrite %s records when ids collide', (damage) => {
+    const old = [{ id: 0, paperId: 'old-paper', question: '原题', options: ['甲', '乙'], answer: 'A' }];
+    if (damage === 'duplicate-existing') old.push({ ...old[0] });
+    const before = JSON.stringify(old),
+      writes = [];
+    const storage = {
+      get: () => old,
+      set: (...args) => {
+        writes.push(args);
+        return true;
+      }
+    };
+    expect(() =>
+      importFlashcardsToBank({ cards: [{ id: 0, question: '新题', options: ['甲', '乙'], answer: 'B' }] }, storage, {
+        paperId: damage === 'other-paper' ? 'new-paper' : 'old-paper'
+      })
+    ).toThrow('SOURCE_ID_CONFLICT');
+    expect(JSON.stringify(old)).toBe(before);
+    expect(writes).toEqual([]);
+  });
+  it('does not mutate the stored bank through a returned reference when saving fails', () => {
+    const old = [{ id: 'same', question: '保留原题', options: ['甲', '乙'], answer: 'B' }];
+    const before = JSON.stringify(old);
+    const storage = { get: () => old, set: () => false };
+    expect(() => importFlashcardsToBank({ cards: [{ ...old[0], question: '替换的新题' }] }, storage)).toThrow(
+      'BANK_SAVE_FAILED'
+    );
+    expect(JSON.stringify(old)).toBe(before);
+  });
+  it('does not return an import success when the persisted readback differs', () => {
+    const storage = { get: () => [], set: () => true };
+    expect(() =>
+      importFlashcardsToBank(
+        { cards: [{ id: 0, question: '完整新题正文', options: ['甲', '乙'], answer: 'B' }] },
+        storage
+      )
+    ).toThrow('BANK_SAVE_UNCONFIRMED');
+  });
   it('preserves complete multi-choice answers when importing flashcards', () => {
     const card = adaptCard({
       id: 'politics-2025-017',
@@ -146,13 +259,13 @@ describe('flashcard adapter', () => {
     expect(card.options).toEqual([]);
     expect(card.questionImages).toEqual([
       expect.objectContaining({
-        src: '/static/question-bank/math1-2025/paper-page-04.jpg',
+        src: 'question-bank/math1-2025/paper-page-04.jpg',
         caption: '试卷原页 p.4'
       })
     ]);
     expect(card.answerImages).toEqual([
       expect.objectContaining({
-        src: '/static/question-bank/math1-2025/answer-page-10.jpg'
+        src: 'question-bank/math1-2025/answer-page-10.jpg'
       })
     ]);
   });
@@ -174,6 +287,7 @@ describe('flashcard adapter', () => {
       get: (key) => state[key] || [],
       set: (key, value) => {
         state[key] = value;
+        return true;
       }
     };
 

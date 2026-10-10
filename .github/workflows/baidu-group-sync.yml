@@ -71,10 +71,10 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v5.6.0
         with:
-          python-version: '3.11'
+          python-version: '3.12'
 
       - name: Install Python dependencies
-        run: python -m pip install --upgrade requests python-dotenv
+        run: python -m pip install -r requirements-baidu.txt
 
       - name: Materialize local link registry
         env:
@@ -142,10 +142,10 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v5.6.0
         with:
-          python-version: '3.11'
+          python-version: '3.12'
 
       - name: Install Python dependencies
-        run: python -m pip install --upgrade requests python-dotenv
+        run: python -m pip install -r requirements-baidu.txt
 
       - name: Run full-path incremental scan
         env:

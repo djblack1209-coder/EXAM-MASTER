@@ -40,32 +40,38 @@ function collectFiles(dir, base = dir) {
 }
 
 async function uploadBatch(files) {
-  const payload = JSON.stringify({ files: files.map(f => ({ path: f.path, data: f.data })) });
-  
+  const payload = JSON.stringify({ files: files.map((f) => ({ path: f.path, data: f.data })) });
+
   return new Promise((resolve, reject) => {
     const url = new URL(`${API_BASE}/upload-static-assets`);
     const isHttps = url.protocol === 'https:';
     const reqFn = isHttps ? request : httpRequest;
-    
-    const req = reqFn({
-      hostname: url.hostname,
-      port: url.port || (isHttps ? 443 : 80),
-      path: url.pathname,
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Admin-Token': ADMIN_TOKEN,
-        'Content-Length': Buffer.byteLength(payload)
+
+    const req = reqFn(
+      {
+        hostname: url.hostname,
+        port: url.port || (isHttps ? 443 : 80),
+        path: url.pathname,
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Admin-Token': ADMIN_TOKEN,
+          'Content-Length': Buffer.byteLength(payload)
+        },
+        timeout: 60000
       },
-      timeout: 60000
-    }, (res) => {
-      let body = '';
-      res.on('data', chunk => body += chunk);
-      res.on('end', () => {
-        try { resolve(JSON.parse(body)); } 
-        catch { resolve({ error: body.substring(0, 200) }); }
-      });
-    });
+      (res) => {
+        let body = '';
+        res.on('data', (chunk) => (body += chunk));
+        res.on('end', () => {
+          try {
+            resolve(JSON.parse(body));
+          } catch {
+            resolve({ error: body.substring(0, 200) });
+          }
+        });
+      }
+    );
     req.on('error', reject);
     req.write(payload);
     req.end();
@@ -75,14 +81,16 @@ async function uploadBatch(files) {
 async function main() {
   console.log('收集 cdn-assets 文件...');
   const allFiles = collectFiles(CDN_DIR);
-  console.log(`共 ${allFiles.length} 个文件, 总大小 ${Math.round(allFiles.reduce((s,f) => s+f.size, 0)/1024)}KB\n`);
+  console.log(
+    `共 ${allFiles.length} 个文件, 总大小 ${Math.round(allFiles.reduce((s, f) => s + f.size, 0) / 1024)}KB\n`
+  );
 
   // 分批上传
   for (let i = 0; i < allFiles.length; i += BATCH_SIZE) {
     const batch = allFiles.slice(i, i + BATCH_SIZE);
-    const names = batch.map(f => f.path).join(', ');
-    process.stdout.write(`[${i+1}-${Math.min(i+BATCH_SIZE, allFiles.length)}/${allFiles.length}] ${names}... `);
-    
+    const names = batch.map((f) => f.path).join(', ');
+    process.stdout.write(`[${i + 1}-${Math.min(i + BATCH_SIZE, allFiles.length)}/${allFiles.length}] ${names}... `);
+
     try {
       const result = await uploadBatch(batch);
       if (result.code === 0) {

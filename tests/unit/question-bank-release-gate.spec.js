@@ -2,9 +2,23 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
-import { describe, expect, it } from 'vitest';
+import { createHash } from 'node:crypto';
+import { afterEach, describe, expect, it } from 'vitest';
 
 const SCRIPT = path.resolve(process.cwd(), 'scripts/build/question-bank-release-gate.mjs');
+const ownedTempDirs = [];
+
+function tempDir(prefix) {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), prefix));
+  ownedTempDirs.push(dir);
+  return dir;
+}
+
+afterEach(() => {
+  for (const dir of ownedTempDirs.splice(0)) fs.rmSync(dir, { recursive: true });
+});
+
+const textDigest = (text) => `sha256:${createHash('sha256').update(text).digest('hex')}`;
 
 function runGate(args = []) {
   return spawnSync(process.execPath, [SCRIPT, ...args], {
@@ -14,21 +28,295 @@ function runGate(args = []) {
 }
 
 function tempReportPath() {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'exam-master-qb-gate-'));
+  const dir = tempDir('exam-master-qb-gate-');
   return path.join(dir, 'report.json');
 }
 
 function tempManifestPath(items = []) {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'exam-master-qb-manifest-'));
+  const dir = tempDir('exam-master-qb-manifest-');
   const manifest = path.join(dir, 'source-manifest.json');
   fs.writeFileSync(manifest, JSON.stringify({ version: 1, updatedAt: '2026-04-29T00:00:00Z', items }, null, 2));
   return manifest;
 }
 
+async function reportForCard(card, bankId = 'math1-2099') {
+  const { buildQuestionBankReleaseReport } = await import('../../scripts/build/question-bank-release-gate.mjs');
+  const bankDir = tempDir('exam-master-qb-digest-');
+  fs.writeFileSync(path.join(bankDir, `${bankId}.json`), JSON.stringify({ cards: [card] }));
+  return buildQuestionBankReleaseReport({
+    minYear: 2099,
+    maxYear: 2099,
+    tracks: ['math1'],
+    sourceManifest: tempManifestPath(),
+    bankDir,
+    banks: [
+      {
+        id: bankId,
+        subjectKey: bankId.startsWith('english') ? 'english' : 'math',
+        track: bankId.split('-')[0],
+        year: bankId.split('-')[1],
+        name: 'Synthetic'
+      }
+    ]
+  });
+}
+
+function digestCard() {
+  return {
+    id: 'math1-2099-1',
+    type: 'short_answer',
+    question: 'Find 2 + 3.',
+    answer: '5',
+    sourceEvidenceId: 'synthetic-source',
+    answerEvidenceStatus: 'matched',
+    questionTextHash: textDigest('Find 2 + 3.'),
+    answerTextHash: textDigest('5')
+  };
+}
+
 describe('question bank release gate', () => {
+  it('keeps both supplemented references blocked even after rewriting their candidate evidence', async () => {
+    const payload = JSON.parse(fs.readFileSync(path.resolve('data/flashcards/politics-2023.json'), 'utf8'));
+    for (const number of [10, 11]) {
+      const card = structuredClone(payload.cards[number - 1]);
+      card.answerEvidenceStatus = 'matched';
+      card.answerEvidence.status = 'matched';
+      card.answerEvidence.referenceProof = undefined;
+      expect((await reportForCard(card, 'politics-2023')).summary.answerEvidenceBlockerCount).toBe(1);
+    }
+  });
+  it('keeps publisher-only politics references blocked after candidate flags and proof are stripped', async () => {
+    const card = {
+      ...digestCard(),
+      id: 'politics-2023-003',
+      number: 3,
+      type: 'single_choice',
+      options: ['A', 'B', 'C', 'D'],
+      answer: 'C',
+      answerTextHash: textDigest('C')
+    };
+    const report = await reportForCard(card, 'politics-2023');
+    expect(report.summary.answerEvidenceBlockerCount).toBe(1);
+  });
+  it('rejects a missing cloze blank even when the complete payload proof is recalculated', async () => {
+    for (const bankId of ['english1-2006', 'english1-2007', 'english1-2010']) {
+      const card = JSON.parse(fs.readFileSync(path.resolve('src/config/flashcard-banks', `${bankId}.json`), 'utf8'))
+        .cards[0];
+      const damaged = structuredClone(card);
+      for (const key of ['passage', 'context', 'material']) damaged[key] = damaged[key].replace('[1]', '');
+      damaged.passageSegments = damaged.passageSegments.map((segment) => segment.replace('[1]', ''));
+      const result = spawnSync(
+        path.resolve('.venv-baidu/bin/python'),
+        [
+          '-c',
+          'import sys,json,hashlib; c=json.load(sys.stdin); p=c["sourceEvidence"]["questionProof"]; fields=["id","number","question","passage","context","material","options","passageSegments","answer"]; body={k:c.get(k) for k in fields}|{k:v for k,v in p.items() if k!="contentHash"}; value=" ".join(json.dumps(body,ensure_ascii=False,sort_keys=True).split()); print("sha256:"+hashlib.sha256(value.encode()).hexdigest())'
+        ],
+        { input: JSON.stringify(damaged), encoding: 'utf8', timeout: 10000 }
+      );
+      expect(result.status).toBe(0);
+      damaged.sourceEvidence.questionProof.contentHash = result.stdout.trim();
+      expect((await reportForCard(damaged, bankId)).summary.answerEvidenceBlockerCount).toBe(1);
+    }
+  });
+  it('binds restored translation underlines and fixed ordering positions; missing proof and number drift stay blocked', async () => {
+    for (const [bankId, number] of [
+      ['english1-2007', 46],
+      ['english1-2010', 41],
+      ['english1-2010', 48]
+    ]) {
+      const card = JSON.parse(
+        fs.readFileSync(path.resolve('src/config/flashcard-banks', `${bankId}.json`), 'utf8')
+      ).cards.find((value) => value.number === number);
+      expect((await reportForCard(card, bankId)).summary.answerEvidenceBlockerCount).toBe(0);
+      for (const change of [
+        { targetSegment: 'changed' },
+        { fixedSequence: ['41', 'E', '42'] },
+        { passage: `${card.passage} changed` },
+        { sourceEvidence: { ...card.sourceEvidence, questionProof: undefined } },
+        { number: 99 }
+      ])
+        expect((await reportForCard({ ...card, ...change }, bankId)).summary.answerEvidenceBlockerCount).toBe(1);
+    }
+  });
+  it('binds restored cloze content, answer, segments and actual PDF identity; stripping proof stays blocked', async () => {
+    for (const bankId of ['english1-2006', 'english1-2007', 'english1-2010']) {
+      const card = JSON.parse(fs.readFileSync(path.resolve('src/config/flashcard-banks', `${bankId}.json`), 'utf8'))
+        .cards[0];
+      expect((await reportForCard(card, bankId)).summary.answerEvidenceBlockerCount).toBe(0);
+      const changes = [
+        { passage: `${card.passage} changed` },
+        { context: `${card.context} changed` },
+        { answer: card.answer === 'A' ? 'B' : 'A' },
+        { passageSegments: ['changed'] },
+        { sourceEvidence: { ...card.sourceEvidence, questionProof: undefined } },
+        {
+          sourceEvidence: {
+            ...card.sourceEvidence,
+            questionProof: { ...card.sourceEvidence.questionProof, sourceFileSha256: textDigest('different') }
+          }
+        },
+        {
+          sourceEvidence: {
+            ...card.sourceEvidence,
+            questionProof: { ...card.sourceEvidence.questionProof, sourceFilePath: 'data/raw-inbox/../private.pdf' }
+          }
+        }
+      ];
+      for (const change of changes)
+        expect((await reportForCard({ ...card, ...change }, bankId)).summary.answerEvidenceBlockerCount).toBe(1);
+      expect(card.questionEvidenceHistory.length).toBeGreaterThan(0);
+    }
+  });
+  it('binds composite options, passages, material and answer role rather than just the display prompt', async () => {
+    const bankId = 'english2-2014';
+    const card = JSON.parse(fs.readFileSync(path.resolve('src/config/flashcard-banks', `${bankId}.json`), 'utf8'))
+      .cards[0];
+    const changes = [
+      { options: card.options.map((option, i) => (i ? option : { ...option, text: `${option.text} altered` })) },
+      { passage: `${card.passage} altered` },
+      { material: `${card.material} altered` },
+      { answerEvidence: { ...card.answerEvidence, evidenceRole: 'different_role' } },
+      { answerEvidence: { ...card.answerEvidence, answerTextHash: textDigest('different') } }
+    ];
+    for (const change of changes)
+      expect((await reportForCard({ ...card, ...change }, bankId)).summary.answerEvidenceBlockerCount).toBe(1);
+  });
+
+  it('preserves split and masked page references while rejecting missing or cross-bank pages', async () => {
+    for (const [bankId, number] of [
+      ['math1-2023', 7],
+      ['math2-2014', 22],
+      ['math3-2010', 20],
+      ['math1-2025', 1]
+    ]) {
+      const card = JSON.parse(
+        fs.readFileSync(path.resolve('src/config/flashcard-banks', `${bankId}.json`), 'utf8')
+      ).cards.find((row) => row.number === number);
+      expect((await reportForCard(card, bankId)).summary.answerEvidenceBlockerCount).toBe(0);
+      expect((await reportForCard({ ...card, questionImages: [] }, bankId)).summary.answerEvidenceBlockerCount).toBe(1);
+      const changed = {
+        ...card,
+        questionImages: [{ ...card.questionImages[0], src: 'question-bank/other/paper-page-01.jpg' }]
+      };
+      expect((await reportForCard(changed, bankId)).summary.answerEvidenceBlockerCount).toBe(1);
+    }
+    const bankId = 'math3-2007';
+    const missing = JSON.parse(
+      fs.readFileSync(path.resolve('src/config/flashcard-banks', `${bankId}.json`), 'utf8')
+    ).cards.find((row) => row.number === 24);
+    expect((await reportForCard(missing, bankId)).summary.answerEvidenceBlockerCount).toBe(0);
+    expect((await reportForCard({ ...missing, questionImages: [] }, bankId)).summary.answerEvidenceBlockerCount).toBe(
+      1
+    );
+  });
+  it.each([
+    'math1-2013',
+    'math3-2017',
+    'english1-2013',
+    'english2-2014',
+    'english2-2015',
+    'english1-2022',
+    'english1-2024',
+    'politics-2024'
+  ])('checks the registered composite digest for %s rather than only its display string', async (bankId) => {
+    const card = JSON.parse(fs.readFileSync(path.resolve('src/config/flashcard-banks', `${bankId}.json`), 'utf8'))
+      .cards[0];
+    const original = JSON.stringify(card);
+    expect((await reportForCard(card, bankId)).summary.answerEvidenceBlockerCount).toBe(0);
+    expect(JSON.stringify(card)).toBe(original);
+    for (const field of ['question', 'answer']) {
+      const changed = { ...card, [field]: `${card[field]} altered` };
+      expect((await reportForCard(changed, bankId)).summary.answerEvidenceBlockerCount).toBe(1);
+    }
+  });
+  it.each(['camel', 'snake', 'nested'])(
+    'rejects conflicting %s digest aliases despite one valid declaration',
+    async (location) => {
+      const card = digestCard();
+      if (location === 'camel') card.questionTextHash = 'sha256:placeholder';
+      if (location === 'snake') card.question_text_hash = textDigest('Different question');
+      card.sourceEvidence = {
+        questionTextHash: location === 'nested' ? textDigest('Different question') : textDigest(card.question)
+      };
+      const before = JSON.stringify(card);
+      const report = await reportForCard(card);
+      expect(report.summary.answerEvidenceBlockerCount).toBe(1);
+      expect(report.answerEvidence.blockedBanks[0].blockedCards[0].missingFields).toContain(
+        'questionTextHash=content_mismatch'
+      );
+      expect(JSON.stringify(card)).toBe(before);
+    }
+  );
+
+  it.each(['nested', 'snake'])(
+    'accepts actual %s digests without introducing a new required declaration',
+    async (location) => {
+      const card = digestCard();
+      if (location === 'nested')
+        card.sourceEvidence = { questionTextHash: card.questionTextHash, answerTextHash: card.answerTextHash };
+      else {
+        card.question_text_hash = card.questionTextHash;
+        card.answer_text_hash = card.answerTextHash;
+      }
+      delete card.questionTextHash;
+      delete card.answerTextHash;
+      const report = await reportForCard(card);
+      expect(report.summary.answerEvidenceBlockerCount).toBe(0);
+      expect(report.answerEvidence.blockedBanks).toEqual([]);
+    }
+  );
+
+  it('keeps cleaning whitespace compatible while preserving BOM and punctuation as content', async () => {
+    const card = digestCard();
+    card.question = '\u001cFind\u00852\t+\n3.\u3000';
+    expect((await reportForCard(card)).summary.answerEvidenceBlockerCount).toBe(0);
+    for (const text of ['\ufeffFind 2 + 3.', 'Find 2 + 3?', 'Find 2 + 4.']) {
+      card.question = text;
+      expect((await reportForCard(card)).summary.answerEvidenceBlockerCount).toBe(1);
+    }
+  });
+
+  it('uses the same Unicode edge policy for declared digests', async () => {
+    const card = digestCard();
+    card.questionTextHash = `\u0085${card.questionTextHash}\u3000`;
+    expect((await reportForCard(card)).summary.answerEvidenceBlockerCount).toBe(0);
+    card.answerTextHash = `\ufeff${card.answerTextHash}`;
+    expect((await reportForCard(card)).summary.answerEvidenceBlockerCount).toBe(1);
+  });
+
+  it.each(['question', 'answer'])('blocks stale matched evidence after changing %s', async (field) => {
+    const { buildQuestionBankReleaseReport } = await import('../../scripts/build/question-bank-release-gate.mjs');
+    const bankDir = tempDir('exam-master-qb-digest-');
+    const card = {
+      id: 'math1-2099-1',
+      type: 'short_answer',
+      question: 'Find 2 + 3.',
+      answer: '5',
+      sourceEvidenceId: 'synthetic-source',
+      answerEvidenceStatus: 'matched',
+      questionTextHash: textDigest('Find 2 + 3.'),
+      answerTextHash: textDigest('5')
+    };
+    card[field] = field === 'question' ? 'Find 2 + 4.' : '6';
+    fs.writeFileSync(path.join(bankDir, 'math1-2099.json'), JSON.stringify({ cards: [card] }));
+    const report = buildQuestionBankReleaseReport({
+      minYear: 2099,
+      maxYear: 2099,
+      tracks: ['math1'],
+      sourceManifest: tempManifestPath(),
+      bankDir,
+      banks: [{ id: 'math1-2099', subjectKey: 'math', track: 'math1', year: '2099', name: 'Synthetic' }]
+    });
+    expect(report.summary.answerEvidenceBlockerCount).toBe(1);
+    expect(report.answerEvidence.blockedBanks[0].blockedCards[0].missingFields).toContain(
+      `${field}TextHash=content_mismatch`
+    );
+    expect(report.releaseReadiness.canPublish).toBe(false);
+  });
+
   it('blocks published English papers when choice questions lack passage context', async () => {
     const { buildQuestionBankReleaseReport } = await import('../../scripts/build/question-bank-release-gate.mjs');
-    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'exam-master-qb-bank-'));
+    const tmp = tempDir('exam-master-qb-bank-');
     fs.writeFileSync(
       path.join(tmp, 'english1-2099.json'),
       JSON.stringify(
@@ -42,8 +330,8 @@ describe('question bank release gate', () => {
               answer: 'A',
               sourceEvidenceId: 'src_ev_english_2099_021',
               answerEvidenceStatus: 'matched',
-              questionTextHash: 'sha256:q21',
-              answerTextHash: 'sha256:a21'
+              questionTextHash: textDigest('Question 21'),
+              answerTextHash: textDigest('A')
             }
           ]
         },
@@ -143,12 +431,13 @@ describe('question bank release gate', () => {
       autoPairEligible: true,
       blockReasons: []
     });
-    expect(report.summary.answerEvidenceBlockerCount).toBe(0);
+    expect(report.summary.answerEvidenceBlockerCount).toBe(
+      report.answerEvidence.blockedBanks.reduce((count, bank) => count + bank.blockedCards.length, 0)
+    );
     expect(report.summary.enabledBankCount).toBeGreaterThan(0);
     expect(report.summary.selfStudyDraftBankCount).toBe(0);
     expect(report.summary.pendingBankCount).toBeGreaterThan(0);
     expect(report.coverage.tracks.find((track) => track.track === 'english2').releaseState).toBe('partial');
-    expect(report.answerEvidence.blockedBanks).toEqual([]);
   });
 
   it('does not require English II source evidence before the first real exam year', async () => {
@@ -353,7 +642,7 @@ describe('question bank release gate', () => {
 
   it('keeps self-study draft banks as pending release blockers even when source evidence is complete', async () => {
     const { buildQuestionBankReleaseReport } = await import('../../scripts/build/question-bank-release-gate.mjs');
-    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'exam-master-qb-bank-'));
+    const tmp = tempDir('exam-master-qb-bank-');
     fs.writeFileSync(path.join(tmp, 'english1-2099.json'), JSON.stringify({ cards: [] }, null, 2));
     const manifest = tempManifestPath([
       {
@@ -411,7 +700,7 @@ describe('question bank release gate', () => {
 
   it('blocks unregistered flashcard bank files and registered banks with missing JSON', async () => {
     const { buildQuestionBankReleaseReport } = await import('../../scripts/build/question-bank-release-gate.mjs');
-    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'exam-master-qb-bank-'));
+    const tmp = tempDir('exam-master-qb-bank-');
     fs.writeFileSync(path.join(tmp, 'english1-2099.json'), JSON.stringify({ cards: [] }, null, 2));
     fs.writeFileSync(path.join(tmp, 'english-2099.json'), JSON.stringify({ cards: [] }, null, 2));
 
@@ -556,6 +845,6 @@ describe('question bank release gate', () => {
     const report = JSON.parse(fs.readFileSync(output, 'utf8'));
     expect(report.releaseReadiness.blockers.coverage).toBeGreaterThan(0);
     expect(report.releaseReadiness.blockers.sourceEvidence).toBeGreaterThan(0);
-    expect(report.releaseReadiness.blockers.answerEvidence).toBe(0);
+    expect(report.releaseReadiness.blockers.answerEvidence).toBe(report.summary.answerEvidenceBlockerCount);
   });
 });

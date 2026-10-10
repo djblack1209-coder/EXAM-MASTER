@@ -47,9 +47,9 @@ describe('question bank recommended start entry', () => {
 
     const panel = wrapper.find('.recommended-panel');
     expect(panel.exists()).toBe(true);
-    expect(panel.text()).toContain('推荐开练');
+    expect(panel.text()).not.toContain('推荐开练');
     expect(panel.text()).toContain('2025考研政治真题');
-    expect(panel.text()).toContain('当前方向最近可练整卷');
+    expect(panel.text()).not.toContain('当前方向最近可练整卷');
     expect(panel.text()).toContain('方向');
     expect(panel.text()).toContain('101');
     expect(panel.text()).toContain('年份');
@@ -74,7 +74,7 @@ describe('question bank recommended start entry', () => {
     const panel = wrapper.find('.recommended-panel');
     expect(panel.text()).toContain('已同步');
     expect(panel.text()).toContain('2 题');
-    expect(panel.text()).toContain('可直接继续训练');
+    expect(panel.text()).not.toContain('可直接继续训练');
     expect(panel.text()).toContain('继续本卷');
 
     wrapper.unmount();
@@ -104,10 +104,13 @@ describe('question bank recommended start entry', () => {
     await flushPromises();
 
     expect(loadBankData).toHaveBeenCalledWith('politics-2025');
-    expect(storageService.get('smart_review_ids', [])).toEqual(['politics-2025-001']);
+    expect(storageService.get('smart_review_ids', [])).toEqual([]);
+    const handoff = storageService.get('quiz_review_handoff_v1');
+    expect(handoff.questions.map((q) => q.id)).toEqual(['politics-2025-001']);
+    expect(handoff.questions[0].quizOriginal.fields.question).toBe('第一题题干内容足够长');
     expect(global.uni.navigateTo).toHaveBeenCalledWith(
       expect.objectContaining({
-        url: '/pages/practice-sub/do-quiz?mode=smart_review&paperId=politics-2025'
+        url: `/pages/practice-sub/do-quiz?mode=smart_review&reviewId=${handoff.id}&paperId=politics-2025`
       })
     );
 
@@ -117,7 +120,8 @@ describe('question bank recommended start entry', () => {
   it('guards recommendation wiring, dark-mode coverage, and user-facing wording', () => {
     expect(source).toContain('recommendedSlot');
     expect(source).toContain('recommendedLocalState');
-    expect(source).toContain('recommendedSlotRecommendation');
+    expect(source).not.toContain('recommendedSlotRecommendation');
+    expect(source).toContain('recommendedSlot.name');
     expect(source).toContain('recommendedActionText');
     expect(source).toContain('@tap="loadAndStartSlot(recommendedSlot)"');
     expect(source).toContain('.dark-mode .recommended-panel');

@@ -1,13 +1,15 @@
 <template>
-  <view class="page" :class="{ 'dark-mode': isDark }">
+  <LearningLanding v-if="!showLegacyDashboard" @legacy="openLegacyDashboard">
+    <PrivacyPopup />
+  </LearningLanding>
+  <view v-else class="page" :class="{ 'dark-mode': isDark }">
     <!-- 微信隐私保护弹窗 -->
     <PrivacyPopup />
 
     <!-- 自定义导航栏 -->
     <view class="nav-bar" :style="{ paddingTop: statusBarHeight + 'px' }">
       <view class="nav-content">
-        <text class="nav-title">EXAM-MASTER</text>
-        <text class="nav-status">{{ navStatusText }}</text>
+        <text class="nav-title">{{ BRAND.name }}</text>
       </view>
     </view>
 
@@ -23,33 +25,30 @@
       <view v-if="isPageLoading || pageError" class="section shell-state-section">
         <view class="shell-state-card" :class="{ error: pageError }">
           <view class="shell-state-copy">
-            <text class="shell-state-title">{{ pageError ? '学习数据暂未同步' : '正在同步学习轨迹' }}</text>
-            <text class="shell-state-desc">
-              {{
-                pageError
-                  ? '已保留本地默认视图，可以重试或直接继续刷题。'
-                  : '正在读取今日进度、题库资产和最近训练记录。'
-              }}
-            </text>
+            <text class="shell-state-title" role="status">{{ pageError ? '记录暂不可读' : '正在读取记录' }}</text>
           </view>
-          <view v-if="pageError" class="shell-state-action" hover-class="btn-hover" @tap="retryLoadData">
+          <button
+            v-if="pageError"
+            class="shell-state-action"
+            role="button"
+            tabindex="0"
+            hover-class="btn-hover"
+            @tap="retryLoadData"
+          >
             <text>重试</text>
-          </view>
+          </button>
           <view v-else class="shell-state-meter">
             <view class="shell-state-meter-fill" />
           </view>
         </view>
       </view>
 
+      <button class="dashboard-return" @tap="showLegacyDashboard = false">返回学习空间</button>
+      <LearningOverview />
       <!-- 品牌冲击首屏 -->
       <view class="section hero-section">
         <view class="hero-panel">
-          <view class="hero-topline">
-            <text class="hero-kicker">公共课训练台</text>
-            <text class="hero-state">{{ masteryStateText }}</text>
-          </view>
-          <text class="hero-title">{{ greeting }}，进入今天的备考主线</text>
-          <text class="hero-subtitle">把真题、错题和复习节奏压缩成一条可执行路径。</text>
+          <text class="hero-title">学习记录</text>
 
           <view class="dashboard-tabs">
             <view
@@ -64,11 +63,9 @@
             </view>
           </view>
 
-          <view class="today-focus-panel">
+          <view v-if="!hasSharedLearning" class="today-focus-panel">
             <view class="today-focus-copy">
-              <text class="today-focus-kicker">今日重点</text>
               <text class="today-focus-title">{{ focusPanelTitle }}</text>
-              <text class="today-focus-desc">{{ todayMomentumText }}</text>
             </view>
             <view class="mastery-orb">
               <text class="mastery-orb-value">{{ todayProgressPercent }}%</text>
@@ -76,21 +73,13 @@
             </view>
           </view>
 
-          <view class="focus-chip-row">
-            <view v-for="card in todayFocusCards" :key="card.label" class="focus-chip">
-              <text class="focus-chip-value">{{ card.value }}</text>
-              <text class="focus-chip-label">{{ card.label }}</text>
-            </view>
-          </view>
-
           <view class="paper-stage">
             <view class="paper-stage-head">
               <view>
-                <text class="paper-kicker">真题资产</text>
                 <text class="paper-title">近年真题整卷进度</text>
               </view>
-              <view class="paper-score">
-                <text class="paper-score-value">{{ totalQuestions }}</text>
+              <view v-if="!hasSharedLearning" class="paper-score">
+                <text class="paper-score-value">{{ displayTotalQuestions }}</text>
                 <text class="paper-score-label">已练题</text>
               </view>
             </view>
@@ -103,30 +92,13 @@
             </view>
 
             <view class="paper-foot">
-              <text>{{ paperStageCaption }}</text>
               <text>{{ loadedPaperCount }} 套已加载</text>
-            </view>
-          </view>
-
-          <view class="hero-metric-strip">
-            <view class="hero-metric">
-              <text class="metric-label">今日完成</text>
-              <text class="metric-value">{{ todayProgressPercent }}%</text>
-            </view>
-            <view class="hero-metric">
-              <text class="metric-label">今日剩余</text>
-              <text class="metric-value">{{ remainingToday }}</text>
-            </view>
-            <view class="hero-metric">
-              <text class="metric-label">连续学习</text>
-              <text class="metric-value">{{ streakDays }} 天</text>
             </view>
           </view>
 
           <view class="onboarding-entry" hover-class="btn-hover" @tap="goOnboarding">
             <view class="onboarding-entry-copy">
-              <text class="onboarding-entry-title">重新校准备考路径</text>
-              <text class="onboarding-entry-desc">选择英语/数学版本、每日目标和训练节奏</text>
+              <text class="onboarding-entry-title">备考设置</text>
             </view>
             <view class="onboarding-entry-mark">
               <text>设置</text>
@@ -134,16 +106,15 @@
           </view>
 
           <view class="hero-action-row">
-            <view class="hero-primary" hover-class="btn-hover" @tap="goToPractice">
-              <text class="hero-primary-text">{{ isNewUser ? '开始第一次刷题' : '继续刷题' }}</text>
+            <view class="hero-primary" hover-class="btn-hover" @tap="goLearning">
+              <text class="hero-primary-text">开始对话学习</text>
             </view>
-            <text class="hero-note">{{ todayMomentumText }}</text>
           </view>
         </view>
       </view>
 
       <!-- 今日进度卡片 -->
-      <view class="section">
+      <view v-if="!hasSharedLearning" class="section">
         <view class="card progress-card">
           <view class="card-header">
             <text class="card-title">今日进度</text>
@@ -153,22 +124,20 @@
             <view class="progress-bar">
               <view class="progress-fill" :style="{ width: todayProgressPercent + '%' }" />
             </view>
-            <text class="progress-text">{{ todayCount }} / {{ dailyGoal }}</text>
+            <text class="progress-text">{{ displayTodayCount }} / {{ displayDailyGoal }}</text>
           </view>
         </view>
       </view>
 
       <!-- 统计网格 -->
-      <view class="section stats-row">
+      <view v-if="!hasSharedLearning" class="section stats-row">
         <view class="stat-card">
-          <text class="stat-kicker">累计</text>
-          <text class="stat-value">{{ totalQuestions }}</text>
-          <text class="stat-label">累计做题</text>
+          <text class="stat-value">{{ displayTotalQuestions }}</text>
+          <text class="stat-label">累计有效作答</text>
         </view>
         <view class="stat-card">
-          <text class="stat-kicker">正确率</text>
-          <text class="stat-value">{{ accuracy }}%</text>
-          <text class="stat-label">正确率</text>
+          <text class="stat-value">{{ displayAccuracy }}</text>
+          <text class="stat-label">{{ hasSharedLearning ? '正确率' : '近期旧判对' }}</text>
         </view>
       </view>
 
@@ -201,6 +170,10 @@
 </template>
 
 <script>
+import { BRAND } from '@/config/brand.js';
+import LearningOverview from '@/components/business/learning/learning-overview.vue';
+import LearningLanding from '@/components/business/learning/learning-landing.vue';
+
 import CustomTabbar from '@/components/layout/custom-tabbar/custom-tabbar.vue';
 import PrivacyPopup from '@/components/common/privacy-popup.vue';
 import { useStudyStore } from '@/stores/modules/study';
@@ -208,13 +181,21 @@ import { useUserStore } from '@/stores/modules/user';
 import { storageService } from '@/services/storageService.js';
 import { logger } from '@/utils/logger.js';
 import { safeNavigateTo } from '@/utils/safe-navigate';
+import { useConversationLearningStore } from '@/stores/modules/conversation-learning.js';
 import { getPracticeNavigationTree } from '@/config/bank-registry.js';
 
 export default {
-  components: { CustomTabbar, PrivacyPopup },
+  components: {
+    LearningOverview,
+    LearningLanding,
+    CustomTabbar,
+    PrivacyPopup
+  },
 
   data() {
     return {
+      BRAND,
+      showLegacyDashboard: false,
       // 布局
       statusBarHeight: 44,
       tabBarHeight: 90,
@@ -242,6 +223,38 @@ export default {
   },
 
   computed: {
+    sharedLearning() {
+      return useConversationLearningStore();
+    },
+    hasSharedLearning() {
+      const { conversations, attempts, plans } = this.sharedLearning.state;
+      return Boolean(conversations.length || attempts.length || plans.length);
+    },
+    displayTodayCount() {
+      return this.hasSharedLearning ? this.sharedLearning.summary.tasks.numerator : this.todayCount;
+    },
+    displayDailyGoal() {
+      return this.hasSharedLearning ? this.sharedLearning.summary.tasks.denominator : this.dailyGoal;
+    },
+    displayTotalQuestions() {
+      return this.hasSharedLearning ? this.sharedLearning.summary.totalReliableAnswers : this.totalQuestions;
+    },
+    displayAccuracy() {
+      const s = this.sharedLearning.summary;
+      const legacyAccuracy = Number(this.accuracy);
+      return this.hasSharedLearning
+        ? s.totalReliableAnswers
+          ? `${((100 * s.reliableCorrectAnswers) / s.totalReliableAnswers).toFixed(1)}%`
+          : '—'
+        : this.totalQuestions > 0 &&
+            this.accuracy !== null &&
+            this.accuracy !== '' &&
+            Number.isFinite(legacyAccuracy) &&
+            legacyAccuracy >= 0 &&
+            legacyAccuracy <= 100
+          ? `${legacyAccuracy}%`
+          : '—';
+    },
     greeting() {
       const h = new Date().getHours();
       if (h < 6) return '夜深了';
@@ -252,8 +265,8 @@ export default {
     },
 
     todayProgressPercent() {
-      if (this.dailyGoal <= 0) return 0;
-      return Math.min(100, Math.round((this.todayCount / this.dailyGoal) * 100));
+      if (this.displayDailyGoal <= 0) return 0;
+      return Math.min(100, Math.round((this.displayTodayCount / this.displayDailyGoal) * 100));
     },
 
     isNewUser() {
@@ -267,7 +280,7 @@ export default {
     },
 
     remainingToday() {
-      return Math.max(0, this.dailyGoal - this.todayCount);
+      return Math.max(0, this.displayDailyGoal - this.displayTodayCount);
     },
 
     masteryStateText() {
@@ -284,17 +297,16 @@ export default {
     },
 
     focusPanelTitle() {
-      if (this.activeDashboardTab === 'bank') return '先确认可训练真题年份';
-      if (this.activeDashboardTab === 'review') return '先处理错题与间隔复习队列';
-      if (this.isNewUser) return '从第一组公共课真题开始';
-      return '继续推进今日训练窗口';
+      if (this.activeDashboardTab === 'bank') return '题库记录';
+      if (this.activeDashboardTab === 'review') return '复习记录';
+      return '今日任务';
     },
 
     todayFocusCards() {
       return [
         { label: '剩余题量', value: this.remainingToday },
         { label: '连续天数', value: `${this.streakDays}d` },
-        { label: '正确率', value: `${this.accuracy}%` }
+        { label: this.hasSharedLearning ? '正确率' : '近期旧判对', value: this.displayAccuracy }
       ];
     },
 
@@ -307,15 +319,17 @@ export default {
   onLoad() {
     this.syncTheme();
     this.initLayout();
-    this.loadData();
+    if (this.showLegacyDashboard) this.loadData();
     uni.$on('themeUpdate', this.syncTheme);
     uni.$on('updateTheme', this.syncTheme);
   },
 
   onShow() {
+    uni.setNavigationBarTitle({ title: BRAND.title });
     this.syncTheme();
+    this.sharedLearning.refresh();
     // 每次切回首页刷新统计
-    if (this._loaded) {
+    if (this.showLegacyDashboard && this._loaded) {
       this.loadData();
     }
   },
@@ -328,12 +342,19 @@ export default {
   // 微信分享
   onShareAppMessage() {
     return {
-      title: 'EXAM-MASTER — 智能助力，一战成硕',
+      title: BRAND.title,
       path: '/pages/index/index'
     };
   },
 
   methods: {
+    openLegacyDashboard() {
+      this.showLegacyDashboard = true;
+      this.loadData();
+    },
+    goLearning() {
+      safeNavigateTo('/pages/learning/index');
+    },
     initLayout() {
       try {
         const info = uni.getWindowInfo();
@@ -362,7 +383,7 @@ export default {
         userStore.restoreUserInfo();
         const progress = studyStore.studyProgress;
         this.totalQuestions = progress.completedQuestions || 0;
-        this.accuracy = studyStore.accuracy || 0;
+        this.accuracy = studyStore.accuracy ?? null;
         this.streakDays = progress.studyDays || 0;
         this.dailyGoal = storageService.get('daily_goal', 25);
         const loadedPapers = storageService.get('loaded_flashcard_banks', []) || [];
@@ -442,7 +463,7 @@ export default {
         const state = isLoaded ? 'ready' : readyTrackIds.has(track.id) ? 'available' : 'pending';
         return {
           label: track.label,
-          value: state === 'ready' ? '已加载' : state === 'available' ? '可练' : '即将开放',
+          value: state === 'ready' ? '已加载' : state === 'available' ? '可练' : '未就绪',
           state
         };
       });
@@ -503,7 +524,7 @@ $text-main: #1a1d26;
 $text-sub: #5f6672;
 $text-weak: #9ca3af;
 
-$radius-lg: 24rpx;
+$radius-lg: 24px;
 $radius-md: 16rpx;
 $radius-sm: 12rpx;
 $spacing-page: 32rpx;
@@ -573,15 +594,20 @@ $spacing-section: 24rpx;
   align-items: center;
   justify-content: space-between;
   padding: 22rpx 24rpx;
-  border: 1rpx solid rgba(22, 51, 0, 0.08);
-  border-radius: 28rpx;
-  background: rgba(255, 255, 255, 0.74);
-  box-shadow: 0 14rpx 36rpx rgba(24, 169, 87, 0.08);
+
+  border: 0;
+
+  border-radius: 24px;
+
+  background: var(--yozi-reading);
+
+  box-shadow: var(--yozi-shadow);
 }
 
 .shell-state-card.error {
   border-color: rgba(239, 68, 68, 0.14);
-  background: rgba(255, 255, 255, 0.82);
+
+  background: var(--yozi-reading);
   box-shadow: 0 14rpx 36rpx rgba(239, 68, 68, 0.08);
 }
 
@@ -1093,8 +1119,13 @@ $spacing-section: 24rpx;
 
 /* ==================== 今日进度卡片 ==================== */
 .progress-card {
-  background:
-    linear-gradient(135deg, rgba(255, 255, 255, 0.86) 0%, rgba(234, 251, 226, 0.78) 100%), rgba(255, 255, 255, 0.72);
+  background: var(--yozi-reading);
+
+  border: 0;
+
+  border-radius: 24px;
+
+  box-shadow: var(--yozi-shadow);
 }
 
 .card-header {
@@ -1229,16 +1260,15 @@ $spacing-section: 24rpx;
 
 /* ==================== Dark Theme Guardrail ==================== */
 .page.dark-mode {
-  color: #f5f7fb;
-  background:
-    radial-gradient(circle at 16% 8%, rgba(0, 224, 255, 0.1) 0, rgba(0, 224, 255, 0) 32%),
-    radial-gradient(circle at 82% 16%, rgba(155, 81, 224, 0.12) 0, rgba(155, 81, 224, 0) 34%),
-    linear-gradient(180deg, #11141c 0%, #1a1c23 58%, #12151d 100%);
+  color: var(--text-main);
+
+  background: var(--yozi-background);
 }
 
 .dark-mode .nav-bar {
-  background: rgba(17, 20, 28, 0.82);
-  box-shadow: 0 1rpx 0 rgba(255, 255, 255, 0.08);
+  background: var(--yozi-floating);
+
+  box-shadow: var(--yozi-shadow);
 }
 
 .dark-mode .nav-title,
@@ -1259,14 +1289,17 @@ $spacing-section: 24rpx;
 .dark-mode .card,
 .dark-mode .stat-card,
 .dark-mode .shell-state-card {
-  background: rgba(34, 37, 45, 0.82);
-  border: 1rpx solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 18rpx 48rpx rgba(0, 0, 0, 0.32);
+  background: var(--yozi-reading);
+
+  border: 0;
+
+  box-shadow: var(--yozi-shadow);
 }
 
 .dark-mode .shell-state-card.error {
   border-color: rgba(255, 120, 120, 0.18);
-  background: rgba(42, 35, 39, 0.82);
+
+  background: var(--yozi-reading);
 }
 
 .dark-mode .shell-state-title {
@@ -1290,7 +1323,13 @@ $spacing-section: 24rpx;
 }
 
 .dark-mode .progress-card {
-  background: rgba(34, 37, 45, 0.82);
+  background: var(--yozi-reading);
+
+  border: 0;
+
+  border-radius: 24px;
+
+  box-shadow: var(--yozi-shadow);
 }
 
 .dark-mode .progress-bar {

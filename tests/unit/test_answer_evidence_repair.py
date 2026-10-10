@@ -26,7 +26,197 @@ def bank_payload(source: str, subject: str, year: int, cards: list[dict]) -> dic
     }
 
 
+def politics_primary_fixture() -> bytes:
+    """Reconstruct the preserved primary-only candidate after supplementation."""
+    payload = json.loads((PROJECT_ROOT / "data/flashcards/politics-2023.json").read_text())
+    for card in payload["cards"]:
+        if "supplementProof" in card.get("answerEvidence", {}).get("referenceProof", {}):
+            history = card["referenceEvidenceHistory"]
+            card.update(history[-1])
+            card["referenceEvidenceHistory"] = history[:-1]
+            card["answerEvidenceSourceId"] = card["answerEvidence"]["sourceId"]
+    return (json.dumps(payload, ensure_ascii=False, indent=2) + "\n").encode("utf-8")
+
+
 class AnswerEvidenceRepairTest(unittest.TestCase):
+    def test_supplement_source_bytes_paths_and_limits_fail_closed(self):
+        from unittest.mock import patch
+        from scripts.baidu import answer_evidence_repair as repair
+
+        source = PROJECT_ROOT / "data/raw-inbox" / repair.POLITICS_SUPPLEMENT_SOURCE[0]
+        raw = source.read_bytes()
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp).resolve()
+            registered = root / "data/raw-inbox" / source.name
+            registered.parent.mkdir(parents=True)
+            registered.write_bytes(raw)
+            with patch.object(repair, "PROJECT_ROOT", root):
+                self.assertEqual(
+                    {
+                        n: row["answer"]
+                        for n, row in repair.read_politics_supplement_source(registered).items()
+                    },
+                    {10: "D", 11: "A"},
+                )
+                registered.write_bytes(raw[:-1] + b"x")
+                with self.assertRaisesRegex(ValueError, "bytes mismatch"):
+                    repair.read_politics_supplement_source(registered)
+                registered.write_bytes(b"%PDF-" + b"x" * 1024 * 1024)
+                with self.assertRaisesRegex(ValueError, "exceeds limit"):
+                    repair.read_politics_supplement_source(registered)
+                registered.unlink()
+                registered.symlink_to(source)
+                with self.assertRaisesRegex(ValueError, "source path"):
+                    repair.read_politics_supplement_source(registered)
+            self.assertEqual(source.read_bytes(), raw)
+
+    def test_registered_supplement_fills_only_missing_references_without_promoting(self):
+        import copy
+        from scripts.baidu import answer_evidence_repair as repair
+
+        sources = [
+            PROJECT_ROOT / "data/raw-inbox" / repair.POLITICS_REFERENCE_SOURCES[role][0]
+            for role in ["question", "answer"]
+        ]
+        supplement = PROJECT_ROOT / "data/raw-inbox" / repair.POLITICS_SUPPLEMENT_SOURCE[0]
+        with tempfile.TemporaryDirectory() as temp:
+            target = Path(temp) / "politics-2023.json"
+            original = politics_primary_fixture()
+            target.write_bytes(original)
+            report = repair.restore_politics_reference(
+                target, *sources, supplement_source=supplement, write=False
+            )
+            self.assertEqual(target.read_bytes(), original)
+            self.assertEqual(report["verifiedReferenceAnswers"], 38)
+            self.assertEqual(report["missingReferenceNumbers"], [])
+            self.assertEqual(report["primaryMissingReferenceNumbers"], [10, 11])
+            self.assertEqual(report["supplementReferenceNumbers"], [10, 11])
+            self.assertEqual(report["changedCards"], 2)
+            self.assertEqual(report["answersChanged"], 1)
+            self.assertEqual(report["questionsChanged"], 0)
+            repair.restore_politics_reference(
+                target, *sources, supplement_source=supplement, write=True
+            )
+            saved = json.loads(target.read_text())
+            self.assertEqual(saved["publicationStatus"], "blocked")
+            for old, new in zip(json.loads(original)["cards"], saved["cards"]):
+                if old["number"] not in [10, 11]:
+                    self.assertEqual(old, new)
+                    continue
+                for key in ["id", "number", "type", "question", "options", "explanation"]:
+                    self.assertEqual(old[key], new[key])
+                self.assertEqual(new["answer"], "D" if new["number"] == 10 else "A")
+                self.assertEqual(new["answerEvidenceStatus"], "candidate_matched")
+                proof = new["answerEvidence"]["referenceProof"]
+                self.assertEqual(proof["answerState"], "matched_supplement_reference")
+                self.assertFalse(proof["scoringAuthority"])
+                self.assertEqual(proof["rightsStatus"], "not_verified")
+                self.assertEqual(proof["supplementProof"]["page"], 3)
+                self.assertEqual(
+                    new["referenceEvidenceHistory"][:-1], old["referenceEvidenceHistory"]
+                )
+                self.assertEqual(
+                    new["referenceEvidenceHistory"][-1]["answerEvidence"], old["answerEvidence"]
+                )
+            once = target.read_bytes()
+            repair.restore_politics_reference(
+                target, *sources, supplement_source=supplement, write=True
+            )
+            self.assertEqual(target.read_bytes(), once)
+            with self.assertRaisesRegex(ValueError, "supplement"):
+                repair.restore_politics_reference(target, *sources, write=True)
+            self.assertEqual(target.read_bytes(), once)
+            copied = Path(temp) / supplement.name
+            copied.write_bytes(supplement.read_bytes())
+            with self.assertRaises(ValueError):
+                repair.restore_politics_reference(
+                    target, *sources, supplement_source=copied, write=True
+                )
+            self.assertEqual(target.read_bytes(), once)
+            corrupted = copy.deepcopy(saved)
+            corrupted["cards"][-1]["id"] = "wrong"
+            write_json(target, corrupted)
+            failing = target.read_bytes()
+            with self.assertRaises(ValueError):
+                repair.restore_politics_reference(
+                    target, *sources, supplement_source=supplement, write=True
+                )
+            self.assertEqual(target.read_bytes(), failing)
+
+    def test_registered_politics_reference_restores_complete_source_and_remains_blocked(self):
+        from scripts.baidu import answer_evidence_repair as repair
+        import copy
+
+        q = next((PROJECT_ROOT / "data/raw-inbox").glob("src_94b2105814110617930cf327-*.pdf"))
+        a = next((PROJECT_ROOT / "data/raw-inbox").glob("src_6d757672897de533d4ff50b6-*.pdf"))
+        with tempfile.TemporaryDirectory() as temp:
+            target = Path(temp) / "politics-2023.json"
+            original = politics_primary_fixture()
+            target.write_bytes(original)
+            report = repair.restore_politics_reference(target, q, a, write=False)
+            self.assertEqual(report["verifiedQuestions"], 38)
+            self.assertEqual(report["verifiedReferenceAnswers"], 36)
+            self.assertEqual(report["missingReferenceNumbers"], [10, 11])
+            self.assertEqual(target.read_bytes(), original)
+            repair.restore_politics_reference(target, q, a, write=True)
+            saved = json.loads(target.read_text())
+            self.assertEqual(saved["publicationStatus"], "blocked")
+            self.assertEqual(
+                [c["id"] for c in saved["cards"]], [c["id"] for c in json.loads(original)["cards"]]
+            )
+            selected = {c["number"]: c for c in saved["cards"]}
+            self.assertEqual(selected[3]["answer"], "C")
+            self.assertEqual(selected[17]["answer"], "ABC")
+            self.assertIn("感性认识", selected[34]["answer"])
+            self.assertIn("（2）", selected[34]["question"])
+            for card in saved["cards"]:
+                self.assertEqual(
+                    card["answerEvidenceStatus"],
+                    "candidate_existing_answer"
+                    if card["number"] in {10, 11}
+                    else "candidate_matched",
+                )
+                self.assertNotIn("公众号", card["question"] + card["answer"])
+                self.assertNotIn("【试题简析】", card["answer"])
+                self.assertFalse(card["answerEvidence"]["referenceProof"]["scoringAuthority"])
+            for number in [10, 11]:
+                self.assertEqual(
+                    selected[number]["answer"], json.loads(original)["cards"][number - 1]["answer"]
+                )
+                self.assertEqual(
+                    selected[number]["answerEvidence"]["referenceProof"]["answerState"],
+                    "missing_reference",
+                )
+            once = target.read_bytes()
+            repair.restore_politics_reference(target, q, a, write=True)
+            self.assertEqual(target.read_bytes(), once)
+            bad = copy.deepcopy(saved)
+            bad["cards"][0]["id"] = "different"
+            write_json(target, bad)
+            fail_before = target.read_bytes()
+            with self.assertRaises(ValueError):
+                repair.restore_politics_reference(target, q, a, write=True)
+            self.assertEqual(target.read_bytes(), fail_before)
+            for field, value in [
+                ("sourceEvidence", []),
+                ("answerEvidence", None),
+                ("referenceEvidenceHistory", {}),
+            ]:
+                malformed = copy.deepcopy(saved)
+                malformed["cards"][0][field] = value
+                write_json(target, malformed)
+                before_failure = target.read_bytes()
+                with self.assertRaises(ValueError):
+                    repair.restore_politics_reference(target, q, a, write=True)
+                self.assertEqual(target.read_bytes(), before_failure)
+            write_json(target, saved)
+            before_failure = target.read_bytes()
+            copied_source = Path(temp) / q.name
+            copied_source.write_bytes(q.read_bytes())
+            with self.assertRaises(ValueError):
+                repair.restore_politics_reference(target, copied_source, a, write=True)
+            self.assertEqual(target.read_bytes(), before_failure)
+
     def test_repair_fills_missing_answer_from_companion_without_marking_matched(self):
         from scripts.baidu.answer_evidence_repair import repair_bank
 
@@ -83,8 +273,16 @@ class AnswerEvidenceRepairTest(unittest.TestCase):
                 queue,
                 {
                     "tasks": [
-                        {"sourceId": "src_question", "outputPath": str(target), "status": "completed"},
-                        {"sourceId": "src_answer", "outputPath": str(companion), "status": "completed"},
+                        {
+                            "sourceId": "src_question",
+                            "outputPath": str(target),
+                            "status": "completed",
+                        },
+                        {
+                            "sourceId": "src_answer",
+                            "outputPath": str(companion),
+                            "status": "completed",
+                        },
                     ]
                 },
             )
@@ -135,7 +333,9 @@ class AnswerEvidenceRepairTest(unittest.TestCase):
         self.assertTrue(card["answerTextHash"].startswith("sha256:"))
         self.assertTrue(companion_payload["supportingEvidenceOnly"])
         self.assertEqual(companion_payload["supportingEvidenceUsedBy"], str(target))
-        target_task = next(task for task in queue_payload["tasks"] if task["sourceId"] == "src_question")
+        target_task = next(
+            task for task in queue_payload["tasks"] if task["sourceId"] == "src_question"
+        )
         self.assertEqual(target_task["missingAnswerCount"], 0)
         self.assertEqual(target_task["answerEvidenceStatus"], "candidate_repaired")
         self.assertEqual(target_task["answerEvidenceRepairedAt"], "2026-04-30T00:00:00Z")
@@ -269,12 +469,21 @@ class AnswerEvidenceRepairTest(unittest.TestCase):
                 },
             )
 
-            report = repair_bank(target, [companion], queue_path=queue, write=True, now="2026-04-30T00:00:00Z")
+            report = repair_bank(
+                target,
+                [companion],
+                queue_path=queue,
+                write=True,
+                now="2026-04-30T00:00:00Z",
+            )
             cards = json.loads(target.read_text(encoding="utf-8"))["cards"]
 
         self.assertEqual(report["summary"]["repairedOptions"], 2)
         self.assertEqual(len(cards[0]["options"]), 4)
-        self.assertEqual(cards[0]["options"][0]["text"], "the justification of the news-filtering practice.")
+        self.assertEqual(
+            cards[0]["options"][0]["text"],
+            "the justification of the news-filtering practice.",
+        )
         self.assertEqual(len(cards[1]["options"]), 7)
         self.assertEqual(cards[1]["options"][4]["text"], "Paragraph E text.")
         self.assertEqual(cards[1]["optionEvidence"]["method"], "target_source_option_text")
@@ -371,7 +580,10 @@ class AnswerEvidenceRepairTest(unittest.TestCase):
                 "27. Next question\n",
                 encoding="utf-8",
             )
-            worse_source.write_text("26. Broken source without options\n27. Next question\n", encoding="utf-8")
+            worse_source.write_text(
+                "26. Broken source without options\n27. Next question\n",
+                encoding="utf-8",
+            )
             write_json(
                 target,
                 bank_payload(
@@ -413,7 +625,13 @@ class AnswerEvidenceRepairTest(unittest.TestCase):
                 },
             )
 
-            report = repair_bank(target, [companion], queue_path=queue, write=True, now="2026-04-30T00:00:00Z")
+            report = repair_bank(
+                target,
+                [companion],
+                queue_path=queue,
+                write=True,
+                now="2026-04-30T00:00:00Z",
+            )
             card = json.loads(target.read_text(encoding="utf-8"))["cards"][0]
 
         self.assertEqual(report["targetSourceId"], "src_better")
@@ -434,11 +652,25 @@ class AnswerEvidenceRepairTest(unittest.TestCase):
                     "target.pdf",
                     "english1",
                     2001,
-                    [{"id": "q21", "number": 21, "type": "single_choice", "question": "Q", "answer": ""}],
+                    [
+                        {
+                            "id": "q21",
+                            "number": 21,
+                            "type": "single_choice",
+                            "question": "Q",
+                            "answer": "",
+                        }
+                    ],
                 ),
             )
-            write_json(first, bank_payload("a.pdf", "english", 2001, [{"number": 21, "answer": "A"}]))
-            write_json(second, bank_payload("b.pdf", "english", 2001, [{"number": 21, "answer": "B"}]))
+            write_json(
+                first,
+                bank_payload("a.pdf", "english", 2001, [{"number": 21, "answer": "A"}]),
+            )
+            write_json(
+                second,
+                bank_payload("b.pdf", "english", 2001, [{"number": 21, "answer": "B"}]),
+            )
 
             report = repair_bank(target, [first, second], write=True, now="2026-04-30T00:00:00Z")
             card = json.loads(target.read_text(encoding="utf-8"))["cards"][0]
@@ -456,33 +688,60 @@ class AnswerEvidenceRepairTest(unittest.TestCase):
             companion = tmp_dir / "companion.json"
             answer_key_text = tmp_dir / "answer-key.txt"
             queue = tmp_dir / "cleaning-queue.json"
-            answer_key_text.write_text("2005年考研英语（一）真题答案速查表\n45 B\n41 ~45 ECGFB\n", encoding="utf-8")
+            answer_key_text.write_text(
+                "2005年考研英语（一）真题答案速查表\n45 B\n41 ~45 ECGFB\n",
+                encoding="utf-8",
+            )
             write_json(
                 target,
                 bank_payload(
                     "target.pdf",
                     "english1",
                     2005,
-                    [{"id": "q45", "number": 45, "type": "single_choice", "question": "Q45", "answer": ""}],
+                    [
+                        {
+                            "id": "q45",
+                            "number": 45,
+                            "type": "single_choice",
+                            "question": "Q45",
+                            "answer": "",
+                        }
+                    ],
                 ),
             )
-            write_json(companion, bank_payload("answers.pdf", "english", 2005, [{"number": 45, "answer": "F"}]))
+            write_json(
+                companion,
+                bank_payload("answers.pdf", "english", 2005, [{"number": 45, "answer": "F"}]),
+            )
             write_json(
                 queue,
                 {
                     "tasks": [
-                        {"sourceId": "src_answer_key", "outputPath": str(companion), "localPath": str(answer_key_text)}
+                        {
+                            "sourceId": "src_answer_key",
+                            "outputPath": str(companion),
+                            "localPath": str(answer_key_text),
+                        }
                     ]
                 },
             )
 
-            report = repair_bank(target, [companion], queue_path=queue, write=True, now="2026-04-30T00:00:00Z")
+            report = repair_bank(
+                target,
+                [companion],
+                queue_path=queue,
+                write=True,
+                now="2026-04-30T00:00:00Z",
+            )
             card = json.loads(target.read_text(encoding="utf-8"))["cards"][0]
 
         self.assertEqual(report["summary"]["conflictCount"], 0)
         self.assertEqual(report["summary"]["repairedAnswers"], 1)
         self.assertEqual(card["answer"], "B")
-        self.assertEqual(card["answerEvidence"]["conflictResolution"], "preferred_original_answer_key")
+        self.assertEqual(
+            card["answerEvidence"]["conflictResolution"],
+            "preferred_original_answer_key",
+        )
         self.assertEqual(len(card["answerEvidence"]["conflictCandidates"]), 2)
 
     def test_repair_fills_missing_answers_from_companion_answer_key_text(self):
@@ -495,8 +754,7 @@ class AnswerEvidenceRepairTest(unittest.TestCase):
             answer_key_text = tmp_dir / "answer-key.txt"
             queue = tmp_dir / "cleaning-queue.json"
             answer_key_text.write_text(
-                "2010年考研英语（一）真题答案速查表\n"
-                "21-25 BADAB  36 -40 ADCBD 41 ~45 BFDGA\n",
+                "2010年考研英语（一）真题答案速查表\n21-25 BADAB  36 -40 ADCBD 41 ~45 BFDGA\n",
                 encoding="utf-8",
             )
             write_json(
@@ -506,9 +764,27 @@ class AnswerEvidenceRepairTest(unittest.TestCase):
                     "english1",
                     2010,
                     [
-                        {"id": "q21", "number": 21, "type": "single_choice", "question": "Q21", "answer": ""},
-                        {"id": "q22", "number": 22, "type": "single_choice", "question": "Q22", "answer": ""},
-                        {"id": "q36", "number": 36, "type": "single_choice", "question": "Q36", "answer": ""},
+                        {
+                            "id": "q21",
+                            "number": 21,
+                            "type": "single_choice",
+                            "question": "Q21",
+                            "answer": "",
+                        },
+                        {
+                            "id": "q22",
+                            "number": 22,
+                            "type": "single_choice",
+                            "question": "Q22",
+                            "answer": "",
+                        },
+                        {
+                            "id": "q36",
+                            "number": 36,
+                            "type": "single_choice",
+                            "question": "Q36",
+                            "answer": "",
+                        },
                         {
                             "id": "q41",
                             "number": 41,
@@ -524,7 +800,11 @@ class AnswerEvidenceRepairTest(unittest.TestCase):
                 queue,
                 {
                     "tasks": [
-                        {"sourceId": "src_answer_key", "outputPath": str(companion), "localPath": str(answer_key_text)}
+                        {
+                            "sourceId": "src_answer_key",
+                            "outputPath": str(companion),
+                            "localPath": str(answer_key_text),
+                        }
                     ]
                 },
             )
@@ -541,7 +821,9 @@ class AnswerEvidenceRepairTest(unittest.TestCase):
         self.assertEqual(report["summary"]["repairedAnswers"], 4)
         self.assertEqual(report["summary"]["answerKeyTextCandidates"], 15)
         self.assertEqual([card["answer"] for card in repaired_cards], ["B", "A", "A", "BFDGA"])
-        self.assertTrue(all(card["answerEvidenceStatus"] == "candidate_matched" for card in repaired_cards))
+        self.assertTrue(
+            all(card["answerEvidenceStatus"] == "candidate_matched" for card in repaired_cards)
+        )
         self.assertEqual(repaired_cards[0]["answerEvidence"]["method"], "companion_answer_key_text")
 
     def test_repair_reads_answer_key_text_from_companion_source_in_raw_inbox(self):
@@ -556,8 +838,7 @@ class AnswerEvidenceRepairTest(unittest.TestCase):
             raw_inbox.mkdir()
             answer_key_text = raw_inbox / "src_answer-2005答案速查.txt"
             answer_key_text.write_text(
-                "2005年考研英语（一）真题答案速查表\n"
-                "21-25 CBACB 41 ~45 ECGFB\n",
+                "2005年考研英语（一）真题答案速查表\n21-25 CBACB 41 ~45 ECGFB\n",
                 encoding="utf-8",
             )
             write_json(
@@ -567,7 +848,13 @@ class AnswerEvidenceRepairTest(unittest.TestCase):
                     "english1",
                     2005,
                     [
-                        {"id": "q21", "number": 21, "type": "single_choice", "question": "Q21", "answer": ""},
+                        {
+                            "id": "q21",
+                            "number": 21,
+                            "type": "single_choice",
+                            "question": "Q21",
+                            "answer": "",
+                        },
                         {
                             "id": "q41",
                             "number": 41,
@@ -578,7 +865,10 @@ class AnswerEvidenceRepairTest(unittest.TestCase):
                     ],
                 ),
             )
-            write_json(companion, bank_payload("src_answer-2005答案速查.txt", "english-support", 2005, []))
+            write_json(
+                companion,
+                bank_payload("src_answer-2005答案速查.txt", "english-support", 2005, []),
+            )
 
             original_raw_inbox = answer_evidence_repair.DEFAULT_RAW_INBOX
             try:
@@ -592,7 +882,10 @@ class AnswerEvidenceRepairTest(unittest.TestCase):
         self.assertEqual(report["summary"]["answerKeyTextCandidates"], 10)
         self.assertEqual(report["summary"]["answerKeyGroupCandidates"], 2)
         self.assertEqual([card["answer"] for card in repaired_cards], ["C", "ECGFB"])
-        self.assertEqual(repaired_cards[1]["answerEvidence"]["method"], "companion_answer_key_range_text")
+        self.assertEqual(
+            repaired_cards[1]["answerEvidence"]["method"],
+            "companion_answer_key_range_text",
+        )
 
     def test_repair_fills_subjective_answers_from_numbered_answer_key_text(self):
         from scripts.baidu.answer_evidence_repair import repair_bank
@@ -620,8 +913,20 @@ class AnswerEvidenceRepairTest(unittest.TestCase):
                     "english1",
                     2007,
                     [
-                        {"id": "q46", "number": 46, "type": "analysis", "question": "Q46", "answer": ""},
-                        {"id": "q47", "number": 47, "type": "analysis", "question": "Q47", "answer": ""},
+                        {
+                            "id": "q46",
+                            "number": 46,
+                            "type": "analysis",
+                            "question": "Q46",
+                            "answer": "",
+                        },
+                        {
+                            "id": "q47",
+                            "number": 47,
+                            "type": "analysis",
+                            "question": "Q47",
+                            "answer": "",
+                        },
                     ],
                 ),
             )
@@ -630,12 +935,22 @@ class AnswerEvidenceRepairTest(unittest.TestCase):
                 queue,
                 {
                     "tasks": [
-                        {"sourceId": "src_answer_key", "outputPath": str(companion), "localPath": str(answer_key_text)}
+                        {
+                            "sourceId": "src_answer_key",
+                            "outputPath": str(companion),
+                            "localPath": str(answer_key_text),
+                        }
                     ]
                 },
             )
 
-            report = repair_bank(target, [companion], queue_path=queue, write=True, now="2026-04-30T00:00:00Z")
+            report = repair_bank(
+                target,
+                [companion],
+                queue_path=queue,
+                write=True,
+                now="2026-04-30T00:00:00Z",
+            )
             repaired_cards = json.loads(target.read_text(encoding="utf-8"))["cards"]
 
         self.assertEqual(report["summary"]["repairedAnswers"], 2)
@@ -648,7 +963,10 @@ class AnswerEvidenceRepairTest(unittest.TestCase):
             repaired_cards[1]["answer"],
             "另一方面，法律将这些概念和日常实际相结合,正如新闻记者每天报道和评论新闻时的做法一样。",
         )
-        self.assertEqual(repaired_cards[0]["answerEvidence"]["method"], "companion_numbered_answer_text")
+        self.assertEqual(
+            repaired_cards[0]["answerEvidence"]["method"],
+            "companion_numbered_answer_text",
+        )
 
     def test_repair_fills_politics_subjective_answer_from_numbered_answer_points(self):
         from scripts.baidu.answer_evidence_repair import repair_bank
@@ -671,7 +989,15 @@ class AnswerEvidenceRepairTest(unittest.TestCase):
                     "politics paper.pdf",
                     "politics",
                     2023,
-                    [{"id": "politics-2023-035", "number": 35, "type": "analysis", "question": "Q35", "answer": ""}],
+                    [
+                        {
+                            "id": "politics-2023-035",
+                            "number": 35,
+                            "type": "analysis",
+                            "question": "Q35",
+                            "answer": "",
+                        }
+                    ],
                 ),
             )
             write_json(companion, bank_payload("politics answers.pdf", "politics", 2023, []))
@@ -679,18 +1005,35 @@ class AnswerEvidenceRepairTest(unittest.TestCase):
                 queue,
                 {
                     "tasks": [
-                        {"sourceId": "src_question", "outputPath": str(target), "status": "completed"},
-                        {"sourceId": "src_answer", "outputPath": str(companion), "localPath": str(answer_text)},
+                        {
+                            "sourceId": "src_question",
+                            "outputPath": str(target),
+                            "status": "completed",
+                        },
+                        {
+                            "sourceId": "src_answer",
+                            "outputPath": str(companion),
+                            "localPath": str(answer_text),
+                        },
                     ]
                 },
             )
 
-            report = repair_bank(target, [companion], queue_path=queue, write=True, now="2026-04-30T00:00:00Z")
+            report = repair_bank(
+                target,
+                [companion],
+                queue_path=queue,
+                write=True,
+                now="2026-04-30T00:00:00Z",
+            )
             repaired_cards = json.loads(target.read_text(encoding="utf-8"))["cards"]
 
         self.assertEqual(report["summary"]["repairedAnswers"], 1)
         self.assertIn("人民性是马克思主义的本质属性", repaired_cards[0]["answer"])
-        self.assertEqual(repaired_cards[0]["answerEvidence"]["method"], "companion_numbered_answer_text")
+        self.assertEqual(
+            repaired_cards[0]["answerEvidence"]["method"],
+            "companion_numbered_answer_text",
+        )
 
     def test_cli_writes_report_and_requires_write_flag_to_mutate(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -704,10 +1047,21 @@ class AnswerEvidenceRepairTest(unittest.TestCase):
                     "target.pdf",
                     "english1",
                     2001,
-                    [{"id": "q21", "number": 21, "type": "single_choice", "question": "Q", "answer": ""}],
+                    [
+                        {
+                            "id": "q21",
+                            "number": 21,
+                            "type": "single_choice",
+                            "question": "Q",
+                            "answer": "",
+                        }
+                    ],
                 ),
             )
-            write_json(companion, bank_payload("answer.pdf", "english", 2001, [{"number": 21, "answer": "A"}]))
+            write_json(
+                companion,
+                bank_payload("answer.pdf", "english", 2001, [{"number": 21, "answer": "A"}]),
+            )
 
             result = subprocess.run(
                 [

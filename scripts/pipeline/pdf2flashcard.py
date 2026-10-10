@@ -7,7 +7,12 @@
 
 import fitz  # pymupdf
 from ocrmac import ocrmac
-import json, re, hashlib, os, time, sys
+import json
+import re
+import hashlib
+import os
+import time
+import sys
 from pathlib import Path
 
 
@@ -20,19 +25,66 @@ HASH_DB_PATH = Path(__file__).parent / ".card-hashes.json"
 # 机构/老师/广告 黑名单关键词（匹配到的行会被删除或替换）
 BRAND_KEYWORDS = [
     # 老师名
-    "肖秀荣", "徐涛", "腿姐", "陆寓丰", "唐迟", "田静", "刘晓艳",
-    "李永乐", "王式安", "汤家凤", "张宇", "李林", "武忠祥",
-    "何凯文", "王江涛", "潘赟", "颉斌斌", "米鹏", "蒋中挺",
+    "肖秀荣",
+    "徐涛",
+    "腿姐",
+    "陆寓丰",
+    "唐迟",
+    "田静",
+    "刘晓艳",
+    "李永乐",
+    "王式安",
+    "汤家凤",
+    "张宇",
+    "李林",
+    "武忠祥",
+    "何凯文",
+    "王江涛",
+    "潘赟",
+    "颉斌斌",
+    "米鹏",
+    "蒋中挺",
     # 机构名
-    "新东方", "文都", "中公", "粉笔", "考虫", "有道", "跨考",
-    "启航", "海天", "海文", "万学", "恩波", "觉晓",
+    "新东方",
+    "文都",
+    "中公",
+    "粉笔",
+    "考虫",
+    "有道",
+    "跨考",
+    "启航",
+    "海天",
+    "海文",
+    "万学",
+    "恩波",
+    "觉晓",
     # 社交/广告
-    "微信公众号", "公众号", "微博", "B站", "bilibili", "抖音",
-    "QQ群", "微信群", "加群", "报名", "咨询", "客服", "优惠",
-    "扫码", "二维码", "关注", "转发", "点赞",
-    "@", "NYC", "考研全程班", "网课",
+    "微信公众号",
+    "公众号",
+    "微博",
+    "B站",
+    "bilibili",
+    "抖音",
+    "QQ群",
+    "微信群",
+    "加群",
+    "报名",
+    "咨询",
+    "客服",
+    "优惠",
+    "扫码",
+    "二维码",
+    "关注",
+    "转发",
+    "点赞",
+    "@",
+    "NYC",
+    "考研全程班",
+    "网课",
     # 水印标识
-    "正版扫描件", "清爽版", "背诵清单",
+    "正版扫描件",
+    "清爽版",
+    "背诵清单",
 ]
 
 # 整行删除的正则模式
@@ -75,7 +127,16 @@ def sanitize_text(text: str) -> str:
 
         # 检查是否含广告关键词（整行删除）
         has_ad = False
-        for kw in ["微信公众号", "QQ群", "微信群", "加群", "报名", "扫码", "二维码", "关注我"]:
+        for kw in [
+            "微信公众号",
+            "QQ群",
+            "微信群",
+            "加群",
+            "报名",
+            "扫码",
+            "二维码",
+            "关注我",
+        ]:
             if kw in line:
                 has_ad = True
                 break
@@ -166,13 +227,13 @@ def ocr_pdf(pdf_path: str, max_pages: int = 0) -> str:
             page_text = "\n".join([a[0] for a in sorted_anns if a[0].strip()])
             all_text += f"\n{page_text}\n"
         except Exception as e:
-            print(f"    第{i+1}页OCR失败: {e}")
+            print(f"    第{i + 1}页OCR失败: {e}")
         finally:
             if os.path.exists(img_path):
                 os.remove(img_path)
 
         if (i + 1) % 10 == 0:
-            print(f"    进度: {i+1}/{total}")
+            print(f"    进度: {i + 1}/{total}")
 
     elapsed = time.time() - start
     doc.close()
@@ -232,9 +293,7 @@ def parse_choice_questions(text: str, subject: str, year: str, source: str) -> l
         # 匹配选项
         opt_m = re.match(r"^[\[（(]*([A-D])[\]）)\.\s．](.+)", line)
         if opt_m and current_q:
-            current_q["options"].append(
-                {"label": opt_m.group(1), "text": opt_m.group(2).strip()}
-            )
+            current_q["options"].append({"label": opt_m.group(1), "text": opt_m.group(2).strip()})
             continue
 
         # 匹配独立答案行
@@ -272,17 +331,19 @@ def parse_choice_questions(text: str, subject: str, year: str, source: str) -> l
 # ============================================================
 def process_pdf(pdf_path: str, subject: str, year: str, source: str = "") -> dict:
     """处理单个PDF：OCR → 清洗 → 解析 → 去重 → 输出"""
-    print(f"\n{'='*60}")
+    print(f"\n{'=' * 60}")
     print(f"处理: {os.path.basename(pdf_path)}")
     print(f"科目: {subject}  年份: {year}")
-    print(f"{'='*60}")
+    print(f"{'=' * 60}")
 
     # 1. OCR
     raw_text = ocr_pdf(pdf_path)
 
     # 2. 清洗
     clean_text = sanitize_text(raw_text)
-    print(f"  清洗完成: {len(raw_text)}字 → {len(clean_text)}字 (删除{len(raw_text)-len(clean_text)}字)")
+    print(
+        f"  清洗完成: {len(raw_text)}字 → {len(clean_text)}字 (删除{len(raw_text) - len(clean_text)}字)"
+    )
 
     # 3. 解析
     cards = parse_choice_questions(clean_text, subject, year, source or os.path.basename(pdf_path))
@@ -320,7 +381,7 @@ def process_pdf(pdf_path: str, subject: str, year: str, source: str = "") -> dic
     with open(out_file, "w", encoding="utf-8") as f:
         json.dump(result, f, ensure_ascii=False, indent=2)
 
-    print(f"  输出: {out_file} ({os.path.getsize(out_file)/1024:.1f}KB)")
+    print(f"  输出: {out_file} ({os.path.getsize(out_file) / 1024:.1f}KB)")
     return result
 
 

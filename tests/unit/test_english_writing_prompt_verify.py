@@ -15,7 +15,9 @@ def write_json(path: Path, payload: dict) -> None:
 
 
 class EnglishWritingPromptVerifyTest(unittest.TestCase):
-    def test_marks_writing_cards_as_essay_prompt_evidence_without_model_answer_claim(self):
+    def test_marks_writing_cards_as_essay_prompt_evidence_without_model_answer_claim(
+        self,
+    ):
         from scripts.baidu.english_writing_prompt_verify import verify_bank
 
         with tempfile.TemporaryDirectory() as tmp:
@@ -99,7 +101,12 @@ class EnglishWritingPromptVerifyTest(unittest.TestCase):
                 },
             )
 
-            report = verify_bank(target, prompt_source=prompt_source, write=True, now="2026-05-26T00:00:00Z")
+            report = verify_bank(
+                target,
+                prompt_source=prompt_source,
+                write=True,
+                now="2026-05-26T00:00:00Z",
+            )
             payload = json.loads(target.read_text(encoding="utf-8"))
 
         self.assertEqual(report["summary"]["verifiedWritingCards"], 2)
@@ -157,7 +164,12 @@ class EnglishWritingPromptVerifyTest(unittest.TestCase):
                 },
             )
 
-            report = verify_bank(target, prompt_source=prompt_source, write=True, now="2026-05-26T00:00:00Z")
+            report = verify_bank(
+                target,
+                prompt_source=prompt_source,
+                write=True,
+                now="2026-05-26T00:00:00Z",
+            )
             payload = json.loads(target.read_text(encoding="utf-8"))
 
         self.assertEqual(report["summary"]["verifiedWritingCards"], 2)
@@ -165,7 +177,10 @@ class EnglishWritingPromptVerifyTest(unittest.TestCase):
         self.assertIn("chart", payload["cards"][1]["question"])
         self.assertEqual(payload["cards"][0]["type"], "essay")
         self.assertEqual(payload["cards"][1]["type"], "essay")
-        self.assertEqual(payload["cards"][0]["answerEvidence"]["evidenceRole"], "official_writing_prompt")
+        self.assertEqual(
+            payload["cards"][0]["answerEvidence"]["evidenceRole"],
+            "official_writing_prompt",
+        )
         self.assertEqual(payload["cards"][1]["answerEvidenceStatus"], "matched")
 
 

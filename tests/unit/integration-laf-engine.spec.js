@@ -149,9 +149,7 @@ describe('全链路: LafService 核心请求引擎', () => {
       mockRequest.mockRejectedValue(new Error('网络连接失败'));
 
       // 所有接口都不应该抛出未捕获异常
-      const results = await Promise.all([
-        lafService.getRandomQuestions()
-      ]);
+      const results = await Promise.all([lafService.getRandomQuestions()]);
 
       // 所有结果都应该是标准错误格式
       for (const result of results) {

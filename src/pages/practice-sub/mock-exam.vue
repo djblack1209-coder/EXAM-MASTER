@@ -303,6 +303,7 @@
 </template>
 
 <script setup>
+import { BRAND } from '@/config/brand.js';
 import { ref, computed } from 'vue';
 import { onLoad, onUnload, onHide, onShareAppMessage } from '@dcloudio/uni-app';
 import { modal } from '@/utils/modal.js';
@@ -794,7 +795,7 @@ onHide(() => {
 
 // [F2-FIX] 微信分享配置
 onShareAppMessage(() => ({
-  title: '模拟考试 - Exam-Master 考研备考',
+  title: `模拟考试 - ${BRAND.name} 考研备考`,
   path: '/pages/practice-sub/do-quiz',
   imageUrl: ASSETS.appShareCover
 }));

@@ -14,7 +14,9 @@ describe('settings legal and privacy scope', () => {
     expect(settingsSource).toContain("safeNavigateTo('/pages/settings/privacy')");
     expect(settingsSource).toContain('openTermsPage');
     expect(settingsSource).toContain("safeNavigateTo('/pages/settings/terms')");
-    expect(settingsSource).toContain('查看隐私政策、用户协议与账号注销说明');
+    expect(settingsSource).toContain('安全与隐私');
+    expect(settingsSource).toContain('用户协议');
+    expect(settingsSource).not.toContain('查看隐私政策、用户协议与账号注销说明');
   });
 
   it('keeps privacy policy aligned with the lightweight quiz product scope', () => {

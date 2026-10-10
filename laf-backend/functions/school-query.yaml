@@ -1,5 +1,5 @@
 name: school-query
-desc: ""
+desc: ''
 methods:
   - GET
   - POST

@@ -1,0 +1,52 @@
+@startuml
+title Yozi AI 执行进度 · 2026-10-09
+
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName "PingFang SC"
+skinparam defaultFontSize 16
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam ArrowColor #64748B
+skinparam activityBorderColor #64748B
+skinparam activityFontColor #172033
+skinparam activityBackgroundColor #EDF2FF
+skinparam noteBackgroundColor #F8FAFC
+skinparam noteBorderColor #CBD5E1
+
+start
+:持续目标：进行中\n功能与设计分别推进; <<#E8E5FF>>
+
+fork
+    :功能线; <<#E8E5FF>>
+    :已验证：学习事实\n原答、帮助、独立判分与可靠复习分开; <<#DFF5E6>>
+    :已验证：原件与账户\n选题 / 收藏 / 查看自评分别保存\n失败保全、明确续答与正常重开; <<#DFF5E6>>
+    :已验证：学习工具\n函数带练、符号计算、资料页处理\n来源 / 授权 / 取消各自保留; <<#DFF5E6>>
+    :已验证：计时与网页更新\n暂停和关窗不累加\n新版等待，原稿不被打断; <<#DFF5E6>>
+    :本阶段已验证：语法帮助\n真实本机后端与浏览器\n明确请求、失败保全、取消迟到\n授权同步与正常重开一致\n不自动改答或授予作文判分; <<#DFF5E6>>
+    :仍待定位：耗时与容量\n历史整组耗时波动 / 真实设备容量\n语法冷加载触及15秒上限\n原限额保持，稳定性尚未通过; <<#FFF1C9>>
+    :待完成：剩余能力\n阅读词汇、语音、科学 / 内容\n编排能力按实际收益采用或暂缓; <<#F0F2F6>>
+fork again
+    :设计线; <<#E8E5FF>>
+    :已有方向\n紫蓝吉祥物与玻璃组件; <<#FFF1C9>>
+    :待完成\n完整品牌、字体、材质\n组件及各种操作状态; <<#F0F2F6>>
+    :待完成：八组完整原型\n登录、首页、对话、选择题\n长正文、资料、日历、记录导出; <<#F0F2F6>>
+    :待完成\n实施界面\n深浅色、窄屏、键盘与减少动态; <<#F0F2F6>>
+end fork
+
+:待完成：整体软件验收\n真实后端、浏览器、日常 App\n可用设备分别验证; <<#F0F2F6>>
+note right
+  当前阶段通过，不代表全项目完成。
+  缺失设备和长期学习效果单独记录。
+  生产发布没有本轮授权。
+end note
+
+:全部授权任务通过后\n统一核验并清理垃圾和冗余\n保留用户资料与必要恢复材料; <<#F0F2F6>>
+stop
+
+legend bottom
+  绿色：已有本机验证依据
+  黄色：已有方向或下一步
+  灰色：尚未完成
+  已在过程清理自有测试资源；最终统一清理待整体完工。
+endlegend
+@enduml

@@ -1,5 +1,8 @@
-import { normalizeQuizAnswer } from '@/services/quiz-session-contract.js';
-import { getStaticAssetUrl } from '@/config/static-assets.js';
+import { prepareQuizQuestion, prepareQuizSelection } from '@/services/quiz-session-contract.js';
+import {
+  captureQuizOriginal,
+  validateQuizOriginalData
+} from '../../laf-backend/functions/_shared/learning-quiz-original.js';
 
 /**
  * 闪卡数据适配器
@@ -12,93 +15,35 @@ import { getStaticAssetUrl } from '@/config/static-assets.js';
  * @param {Object} card - 闪卡数据 {id, question, options: [{label, text}], answer, explanation, ...}
  * @returns {Object} - v30_bank格式 {id, question, options: ['A. xxx'], answer, desc, ...}
  */
-function normalizeOptionText(option) {
-  const text =
-    typeof option === 'string'
-      ? option
-      : [option?.label, option?.text || option?.value || option?.content].filter(Boolean).join('. ');
-  return String(text)
-    .trim()
-    .replace(/^[A-Z]\s*[.。:：、)\）-]\s*/i, '')
-    .trim();
-}
-
-function normalizeImageList(value) {
-  if (!Array.isArray(value)) return [];
-  return value
-    .map((item) => {
-      if (typeof item === 'string') {
-        return {
-          src: getStaticAssetUrl(item) || item,
-          alt: '',
-          caption: ''
-        };
-      }
-      const rawSrc = item?.src || item?.url || item?.path || '';
-      const src = getStaticAssetUrl(rawSrc) || String(rawSrc || '').trim();
-      if (!src) return null;
-      return {
-        ...item,
-        src,
-        alt: item?.alt || item?.caption || '',
-        caption: item?.caption || ''
-      };
-    })
-    .filter(Boolean);
-}
-
 export function adaptCard(card, defaults = {}) {
-  const paperMeta = {
-    ...(defaults.paper || defaults.paperMeta || {}),
-    ...(card.paper || card.paperMeta || {})
+  validateQuizOriginalData(card);
+  validateQuizOriginalData(defaults);
+  const paperMeta = { ...(defaults.paper || defaults.paperMeta || {}), ...(card.paper || card.paperMeta || {}) };
+  const paperId = card.paperId ?? paperMeta.id ?? defaults.paperId;
+  const raw = {
+    ...card,
+    ...(paperId !== undefined ? { paperId } : {}),
+    ...(!card.quizOriginal && Object.keys(defaults).length ? { importContext: defaults } : {})
   };
-  const passage = card.passage || card.context || card.material || card.article || '';
-  const passageSegments = Array.isArray(card.passageSegments) ? card.passageSegments : undefined;
-
+  const quizOriginal = captureQuizOriginal(raw);
+  const prepared = prepareQuizQuestion({ ...raw, quizOriginal });
+  if (!prepared) throw new Error('ORIGINAL_UNAVAILABLE');
   return {
-    id: card.id,
-    number: card.number || card.questionNumber || card.question_no || defaults.number || '',
-    question: card.question || '',
-    passage,
-    ...(passageSegments ? { passageSegments } : {}),
-    targetSegment: card.targetSegment || card.segment || card.translationSegment || '',
-    targetSegmentNumber: card.targetSegmentNumber || card.segmentNumber || '',
-    context: card.context || passage,
-    material: card.material || passage,
-    questionImages: normalizeImageList(card.questionImages || card.question_images || card.sourcePageImages),
-    answerImages: normalizeImageList(card.answerImages || card.answer_images || card.answerPageImages),
-    paperId: card.paperId || paperMeta.id || defaults.paperId || '',
-    paperName: card.paperName || paperMeta.name || defaults.paperName || '',
-    section: card.section || card.part || '',
-    groupId: card.groupId || card.passageId || '',
-    fixedSequence: card.fixedSequence || card.fixed_sequence || [],
-    fixedParagraphs: card.fixedParagraphs || card.fixed_paragraphs || [],
-    // 题号字母由答题页独立渲染，正文只保留选项文本，避免出现 “A A. ...”
-    options: (card.options || []).map(normalizeOptionText),
-    // 闪卡/分析题保留完整答案，多选题保留多字母答案，单选题规范为 A-D
-    answer: normalizeQuizAnswer(card, card.type),
-    desc: card.explanation || card.desc || '暂无解析',
-    category: card.subject || defaults.subject || card.tags?.[0] || '未分类',
-    // 保留原始 type 字段，do-quiz.vue 会根据它决定交互模式
-    type: card.type || 'single_choice',
-    difficulty: card.difficulty || 2,
-    knowledgeNodeIds: card.knowledgeNodeIds || card.knowledge_points || [],
-    knowledge_points: card.knowledge_points || card.knowledgeNodeIds || [],
-    eloRating: card.eloRating || card.elo_rating || undefined,
-    // 保留原始标签用于筛选
-    tags: card.tags || [],
-    year: card.year || defaults.year || '',
-    source: card.source || defaults.source || ''
+    ...raw,
+    ...prepared,
+    quizOriginal,
+    number: card.number ?? card.questionNumber ?? card.question_no ?? defaults.number ?? '',
+    paperName: card.paperName ?? paperMeta.name ?? defaults.paperName ?? '',
+    category: card.category ?? card.subject ?? defaults.subject ?? card.tags?.[0] ?? '未分类',
+    year: card.year ?? defaults.year ?? ''
   };
 }
 
-/**
- * 批量转换闪卡数组
- * @param {Array} cards - 闪卡数据数组
- * @returns {Array} - v30_bank格式数组
- */
 export function adaptFlashcards(cards, defaults = {}) {
-  return cards.filter((c) => c.question && c.question.length > 5).map((card) => adaptCard(card, defaults));
+  if (!Array.isArray(cards)) throw new Error('INVALID_CARDS');
+  const adapted = cards.map((card) => adaptCard(card, defaults));
+  if (adapted.length && !prepareQuizSelection(adapted)) throw new Error('INCOMPLETE_SELECTION');
+  return adapted;
 }
 
 /**
@@ -109,16 +54,19 @@ export function adaptFlashcards(cards, defaults = {}) {
  */
 export function importFlashcardsToBank(flashcardData, storageService, options = {}) {
   // 读取现有题库
-  const existingBank = storageService.get('v30_bank') || [];
-  const existingIndexById = new Map(existingBank.map((q, index) => [q.id, index]));
+  const storedBank = storageService.get('v30_bank');
+  if (!Array.isArray(storedBank)) throw new Error('BANK_UNAVAILABLE');
+  const existingBank = JSON.parse(JSON.stringify(storedBank));
+  const existingIndexById = new Map(existingBank.map((q, index) => [q?.id ?? q?._id, index]));
 
   // 转换格式
   const adapted = adaptFlashcards(flashcardData.cards || [], {
-    paperId: options.paperId || flashcardData.id || flashcardData.paperId || flashcardData.source || '',
+    paperId: options.paperId ?? flashcardData.id ?? flashcardData.paperId ?? '',
     paperName: options.paperName || flashcardData.name || flashcardData.paperName || flashcardData.title || '',
     subject: options.subject || flashcardData.subject || '',
     year: flashcardData.year || '',
-    source: flashcardData.source || ''
+    ...captureQuizOriginal(flashcardData).fields,
+    source: flashcardData.source ?? ''
   });
 
   // 去重导入
@@ -130,7 +78,16 @@ export function importFlashcardsToBank(flashcardData, storageService, options = 
     const existingIndex = existingIndexById.get(card.id);
     if (existingIndex !== undefined) {
       const current = existingBank[existingIndex];
+      if (
+        existingBank.filter((q) => (q?.id ?? q?._id) === card.id).length !== 1 ||
+        (current.paperId ?? '') !== (card.paperId ?? '')
+      )
+        throw new Error('SOURCE_ID_CONFLICT');
       const next = { ...current, ...card };
+      // Do not attach stale content/source fields to the newly imported original.
+      for (const key of Object.keys(captureQuizOriginal(current).fields)) {
+        if (!Object.prototype.hasOwnProperty.call(card, key)) delete next[key];
+      }
       if (JSON.stringify(current) === JSON.stringify(next)) {
         skipped++;
       } else {
@@ -145,7 +102,9 @@ export function importFlashcardsToBank(flashcardData, storageService, options = 
   }
 
   // 写回存储
-  storageService.set('v30_bank', existingBank);
+  if (storageService.set('v30_bank', existingBank) !== true) throw new Error('BANK_SAVE_FAILED');
+  if (JSON.stringify(storageService.get('v30_bank')) !== JSON.stringify(existingBank))
+    throw new Error('BANK_SAVE_UNCONFIRMED');
 
   return {
     imported,

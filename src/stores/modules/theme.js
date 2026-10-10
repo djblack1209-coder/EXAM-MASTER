@@ -7,7 +7,8 @@ import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
 import storageService from '@/services/storageService.js';
 import { logger } from '@/utils/logger.js';
-import { applyTheme } from '@/design/theme-engine.js';
+import { applyTheme } from '@/design/theme-runtime.js';
+import { isDesktopRuntime } from '@/services/desktop/runtime.js';
 
 export const useThemeStore = defineStore('theme', () => {
   // 主题类型：'wise' | 'bitget'
@@ -15,6 +16,19 @@ export const useThemeStore = defineStore('theme', () => {
 
   // 深色模式：true | false
   const isDark = ref(false);
+  const visualStyle = ref(
+    storageService.get('learning_visual_style', isDesktopRuntime() ? 'future' : 'playful') === 'future'
+      ? 'future'
+      : 'playful'
+  );
+  // #ifndef H5
+  if (import.meta.env.MODE !== 'test') visualStyle.value = 'future';
+  // #endif
+  const setVisualStyle = (style) => {
+    if (!['playful', 'future'].includes(style)) return;
+    visualStyle.value = style;
+    storageService.save('learning_visual_style', style);
+  };
 
   /**
    * 切换主题类型
@@ -91,6 +105,7 @@ export const useThemeStore = defineStore('theme', () => {
     // 状态
     themeType,
     isDark,
+    visualStyle,
 
     // 计算属性
     themeClass,
@@ -99,6 +114,7 @@ export const useThemeStore = defineStore('theme', () => {
     setThemeType,
     setDarkMode,
     toggleTheme,
+    setVisualStyle,
     $reset
   };
 });

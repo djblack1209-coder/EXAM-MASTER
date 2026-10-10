@@ -9,7 +9,11 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from scripts.baidu import incremental_sync  # noqa: E402
-from scripts.baidu.incremental_sync import download_candidates, merge_sources, select_download_candidates  # noqa: E402
+from scripts.baidu.incremental_sync import (  # noqa: E402
+    download_candidates,
+    merge_sources,
+    select_download_candidates,
+)  # noqa: E402
 
 
 class BaiduIncrementalSyncDownloadTest(unittest.TestCase):
@@ -158,9 +162,12 @@ class BaiduIncrementalSyncDownloadTest(unittest.TestCase):
             }
         ]
 
-        with tempfile.TemporaryDirectory() as tmp, patch(
-            "scripts.baidu.incremental_sync.BaiduPan",
-            FakeBaiduPan,
+        with (
+            tempfile.TemporaryDirectory() as tmp,
+            patch(
+                "scripts.baidu.incremental_sync.BaiduPan",
+                FakeBaiduPan,
+            ),
         ):
             result = download_candidates(candidates, Path(tmp), dry_run=False)
 

@@ -1,10 +1,12 @@
+import { BRAND } from './src/config/brand.js';
+import { publicImageMatch, publicFontMatch, appShellNavigationAllowlist } from './scripts/build/pwa-cache-policy.mjs';
 import { defineConfig, loadEnv } from 'vite';
 import uniModule from '@dcloudio/vite-plugin-uni';
 import path from 'path';
 import fs from 'fs';
 import { createRequire } from 'module';
 import { normalizeAppRuntimeIndexFile } from './scripts/build/app-runtime-html.js';
-import { copyPwaIconAssets } from './scripts/build/pwa-assets.mjs';
+import { copyPwaIconAssets, copyPwaRuntimeAssets } from './scripts/build/pwa-assets.mjs';
 import { VitePWA } from 'vite-plugin-pwa';
 import { compression, defineAlgorithm } from 'vite-plugin-compression2';
 import postcssColorMixFallback from './scripts/build/postcss-color-mix-fallback.js';
@@ -185,13 +187,30 @@ function forceAppInlineDynamicImports() {
   };
 }
 
-function copyH5PwaIcons() {
+function copyH5PwaIcons({ enableUpdates = false } = {}) {
   return {
     name: 'copy-h5-pwa-icons',
+    transformIndexHtml() {
+      return enableUpdates ? [{ tag: 'script', attrs: { src: '/registerSW.js', defer: true }, injectTo: 'head' }] : [];
+    },
     writeBundle(options) {
       try {
         const outDir = options.dir || '';
-        if (!/[/\\]dist[/\\](build|dev)[/\\]h5$/.test(outDir)) return;
+        if (!outDir || process.env.UNI_PLATFORM !== 'h5') return;
+
+        for (const directory of ['fonts', 'visual']) {
+          const source = path.resolve(__dirname, 'public', directory);
+          if (fs.existsSync(source)) fs.cpSync(source, path.join(outDir, 'public', directory), { recursive: true });
+        }
+
+        const oauthSource = path.resolve(__dirname, 'public/oauth');
+        fs.cpSync(oauthSource, path.join(outDir, 'oauth'), { recursive: true });
+
+        copyPwaRuntimeAssets({
+          sourceFile: path.resolve(__dirname, 'public/sw-cache-cleanup.js'),
+          outDir,
+          registerSourceFile: enableUpdates ? path.resolve(__dirname, 'public/registerSW.js') : undefined
+        });
 
         const copied = copyPwaIconAssets({
           sourceDir: path.resolve(__dirname, 'public/static/pwa-icons'),
@@ -202,7 +221,7 @@ function copyH5PwaIcons() {
           console.log(`[PWA Assets Plugin] Copied ${copied.length} icon files to ${outDir}/static/pwa-icons`);
         }
       } catch (err) {
-        console.error('[PWA Assets Plugin] Failed to copy PWA icon assets:', err.message);
+        throw new Error(`[PWA Assets Plugin] Required PWA assets could not be copied: ${err.message}`);
       }
     }
   };
@@ -232,6 +251,7 @@ export default defineConfig(({ command, mode }) => {
   process.env.VITE_ROOT_DIR = viteRootDir;
 
   const isH5 = !platform || platform === 'h5';
+  const isDesktop = isH5 && process.env.WENLI_DESKTOP === '1';
 
   console.log(`[Vite] Building for mode: ${mode}, command: ${command}, platform: ${platform || 'unknown'}`);
 
@@ -246,24 +266,25 @@ export default defineConfig(({ command, mode }) => {
       emitAppPackManifest(),
       normalizeAppRuntimeIndex(),
       forceAppInlineDynamicImports(),
-      copyH5PwaIcons(),
+      copyH5PwaIcons({ enableUpdates: isH5 && !isDesktop && command === 'build' }),
       // Phase 3-6: PWA 离线体验（仅 H5 平台启用）
-      ...(isH5
+      ...(isH5 && !isDesktop
         ? [
             VitePWA({
-              registerType: 'autoUpdate',
+              registerType: 'prompt',
+              injectRegister: false,
               includeAssets: [
                 'static/pwa-icons/icon-192x192.png',
                 'static/pwa-icons/icon-512x512.png',
                 'static/pwa-icons/icon-512x512-maskable.png'
               ],
               manifest: {
-                name: '研友刷题',
-                short_name: '研友刷题',
-                description: '考研备考刷题助手 - 智能间隔重复、PK对战、AI诊断',
+                name: BRAND.title,
+                short_name: BRAND.name,
+                description: BRAND.description,
                 lang: 'zh-CN',
-                theme_color: '#6366f1',
-                background_color: '#f5f5f7',
+                theme_color: BRAND.themeColor,
+                background_color: BRAND.themeColor,
                 display: 'standalone',
                 scope: '/',
                 start_url: '/',
@@ -279,36 +300,30 @@ export default defineConfig(({ command, mode }) => {
                 ]
               },
               workbox: {
+                skipWaiting: false,
+                clientsClaim: false,
+                importScripts: ['/sw-cache-cleanup.js'],
+                // uni-app 使用根路径 hash 路由；服务端/独立文件地址不得被 app shell 冒充。
+                navigateFallbackAllowlist: appShellNavigationAllowlist,
                 // 预缓存 app shell
                 globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
                 // 运行时缓存策略
                 runtimeCaching: [
                   {
-                    // API 请求：NetworkFirst，离线时回退缓存
-                    urlPattern: /^https:\/\/(api\.245334\.xyz|.*\.(sealosbja\.site|lafyun\.com))\/.*/i,
-                    handler: 'NetworkFirst',
-                    options: {
-                      cacheName: 'api-cache',
-                      expiration: { maxEntries: 100, maxAgeSeconds: 60 * 60 * 24 }, // 1天
-                      networkTimeoutSeconds: 5,
-                      cacheableResponse: { statuses: [0, 200] }
-                    }
-                  },
-                  {
                     // 图片资源：CacheFirst
-                    urlPattern: /\.(?:png|jpg|jpeg|svg|gif|webp)$/,
+                    urlPattern: publicImageMatch,
                     handler: 'CacheFirst',
                     options: {
-                      cacheName: 'image-cache',
+                      cacheName: 'public-image-cache-v1',
                       expiration: { maxEntries: 200, maxAgeSeconds: 60 * 60 * 24 * 30 } // 30天
                     }
                   },
                   {
                     // 字体：CacheFirst
-                    urlPattern: /\.(?:woff|woff2|ttf|eot)$/,
+                    urlPattern: publicFontMatch,
                     handler: 'CacheFirst',
                     options: {
-                      cacheName: 'font-cache',
+                      cacheName: 'public-font-cache-v1',
                       expiration: { maxEntries: 20, maxAgeSeconds: 60 * 60 * 24 * 365 } // 1年
                     }
                   }
@@ -345,6 +360,7 @@ export default defineConfig(({ command, mode }) => {
       __APP_VERSION__: JSON.stringify(env.npm_package_version || '1.0.0'),
       __BUILD_TIME__: JSON.stringify(new Date().toISOString()),
       __BUILD_MODE__: JSON.stringify(mode),
+      __WENLI_DESKTOP__: JSON.stringify(isDesktop),
       __ENABLE_GUEST_DEMO__: JSON.stringify(enableGuestDemo)
     },
 
@@ -467,7 +483,6 @@ export default defineConfig(({ command, mode }) => {
     server: {
       host: '0.0.0.0',
       port: parseInt(env.VITE_DEV_PORT) || 5173,
-      strictPort: false,
       open: false,
 
       // 代理配置

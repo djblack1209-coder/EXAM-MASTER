@@ -1,6 +1,6 @@
 <template>
   <view class="onboarding-page">
-    <view class="topbar">
+    <view v-if="legacyMode" class="topbar">
       <view class="progress-track">
         <view class="progress-fill" :style="{ width: progressPercent + '%' }" />
       </view>
@@ -8,29 +8,27 @@
     </view>
 
     <view class="brand-line">
-      <text class="brand">EXAM-MASTER</text>
-      <text class="step-count">{{ step + 1 }} / 4</text>
+      <text class="brand">{{ BRAND.name }}</text>
+      <text v-if="legacyMode" class="step-count">{{ step + 1 }} / 4</text>
     </view>
 
     <view class="panel">
-      <view v-if="step === 0" class="step">
-        <text class="eyebrow">备考路径</text>
-        <text class="title">先确定你的备考路径</text>
-        <text class="desc">小程序会根据路径分配公共课题库、每日目标和复习节奏。</text>
+      <view v-if="!legacyMode" class="step welcome-step">
+        <text class="title">开始学习</text>
+      </view>
+      <view v-else-if="step === 0" class="step">
+        <text class="title">备考方向</text>
 
         <view class="exam-card selected">
           <view class="exam-card-main">
             <text class="exam-name">2027 考研公共课</text>
-            <text class="exam-desc">政治、英语、数学按你选择的版本进入训练</text>
           </view>
           <text class="exam-status">已选择</text>
         </view>
       </view>
 
       <view v-else-if="step === 1" class="step">
-        <text class="eyebrow">公共课选择</text>
-        <text class="title">选择你要训练的公共课</text>
-        <text class="desc">后续题库、错题复习和整卷进度都按这里的轨道归档。</text>
+        <text class="title">选择科目</text>
 
         <view v-for="group in trackGroups" :key="group.subject" class="track-group">
           <text class="track-title">{{ group.label }}</text>
@@ -49,9 +47,7 @@
       </view>
 
       <view v-else-if="step === 2" class="step">
-        <text class="eyebrow">DAILY RHYTHM</text>
-        <text class="title">设定每天的训练强度</text>
-        <text class="desc">建议从 25 题开始，既能形成节奏，也不会让前几天过载。</text>
+        <text class="title">每日题量</text>
 
         <view class="goal-grid">
           <view
@@ -69,9 +65,7 @@
       </view>
 
       <view v-else class="step">
-        <text class="eyebrow">整卷训练</text>
-        <text class="title">先把公共课真题按年份跑顺</text>
-        <text class="desc">系统会按英语一/二、政治、数学一/二/三记录整卷进度，并把错题送入下一轮复习。</text>
+        <text class="title">确认设置</text>
 
         <view class="paper-preview">
           <view v-for="paper in previewPapers" :key="paper.label" class="paper-row" :class="paper.state">
@@ -83,28 +77,58 @@
         <view class="summary-card">
           <text class="summary-label">已配置</text>
           <text class="summary-value">{{ selectedTrackLabels.join(' / ') }}</text>
-          <text class="summary-sub">{{ dailyGoal }} 题/天，优先进入限时训练</text>
+          <text class="summary-sub">{{ dailyGoal }} 题/天</text>
         </view>
       </view>
     </view>
 
     <view class="actions">
-      <view v-if="step > 0" class="secondary-btn" hover-class="btn-hover" @tap="prevStep">
+      <view v-if="legacyMode && step > 0" class="secondary-btn" hover-class="btn-hover" @tap="prevStep">
         <text>上一步</text>
       </view>
       <view class="primary-btn" hover-class="btn-hover" @tap="nextOrComplete">
-        <text>{{ step === 3 ? '进入 EXAM-MASTER' : '继续' }}</text>
+        <text>{{ !legacyMode ? '开始学习' : step === 3 ? '保存设置' : '继续' }}</text>
       </view>
     </view>
   </view>
 </template>
 
 <script setup>
-import { computed, ref } from 'vue';
+import { BRAND } from '@/config/brand.js';
+import { computed, ref, onBeforeUnmount } from 'vue';
+import { onLoad } from '@dcloudio/uni-app';
 import { storageService } from '@/services/storageService.js';
 import { openHomeTab } from '@/utils/home-navigation.js';
 
 const step = ref(0);
+const legacyMode = ref(false);
+let active = true;
+const navigationTimers = new Set();
+onBeforeUnmount(() => {
+  active = false;
+  for (const timer of navigationTimers) clearTimeout(timer);
+  navigationTimers.clear();
+});
+function returnHome() {
+  if (!active) return;
+  for (const timer of navigationTimers) clearTimeout(timer);
+  navigationTimers.clear();
+  openHomeTab({
+    isCurrent: () => active,
+    schedule(callback, delay) {
+      if (!active) return;
+      const timer = setTimeout(() => {
+        navigationTimers.delete(timer);
+        if (active) callback();
+      }, delay);
+      navigationTimers.add(timer);
+    }
+  });
+}
+onLoad((options) => {
+  legacyMode.value = options?.source === 'home';
+  if (!legacyMode.value) skipOnboarding();
+});
 const dailyGoal = ref(25);
 const selectedTracks = ref(['politics', 'english1', 'math1']);
 
@@ -141,13 +165,13 @@ const goalOptions = [
 ];
 
 const previewPapers = [
-  { label: '政治 2025', state: 'ready', stateText: '可练' },
-  { label: '政治 2024', state: 'ready', stateText: '可练' },
+  { label: '政治 2025', state: 'pending', stateText: '核对来源' },
+  { label: '政治 2024', state: 'pending', stateText: '核对来源' },
   { label: '英语一/二 2025', state: 'pending', stateText: '补篇章' },
   { label: '数学一/二/三 2025', state: 'pending', stateText: '完善中' }
 ];
 
-const progressPercent = computed(() => ((step.value + 1) / 4) * 100);
+const progressPercent = computed(() => (legacyMode.value ? ((step.value + 1) / 4) * 100 : 100));
 
 const selectedTrackLabels = computed(() => {
   const labels = [];
@@ -180,7 +204,7 @@ function prevStep() {
 }
 
 function nextOrComplete() {
-  if (step.value < 3) {
+  if (legacyMode.value && step.value < 3) {
     step.value += 1;
     return;
   }
@@ -188,12 +212,13 @@ function nextOrComplete() {
 }
 
 function saveOnboardingData(completed = true) {
+  storageService.save('onboarding_completed', completed);
+  if (!legacyMode.value) return;
   const profile = {
     exam: 'kaoyan',
     targetYear: 2027,
     tracks: selectedTracks.value
   };
-  storageService.save('onboarding_completed', completed);
   storageService.save('exam_type', 'kaoyan');
   storageService.save('exam_profile', profile);
   storageService.save('daily_goal', dailyGoal.value);
@@ -201,30 +226,38 @@ function saveOnboardingData(completed = true) {
 
 function completeOnboarding() {
   saveOnboardingData(true);
-  openHomeTab();
+  returnHome();
 }
 
 function skipOnboarding() {
-  saveOnboardingData(true);
-  openHomeTab();
+  storageService.save('onboarding_completed', true);
+  returnHome();
 }
 </script>
 
 <style lang="scss" scoped>
-$primary: #9fe870;
-$ink: #142017;
-$muted: #6e776f;
-$paper: #fcfdf8;
-$surface: #ffffff;
-$line: rgba(20, 32, 23, 0.08);
+$primary: var(--primary, #785bbc);
+$ink: var(--text-primary, #080909);
+$muted: var(--text-secondary, #62576d);
+$paper: var(--bg-page, #f0eefa);
+$surface: var(--bg-card, #ffffff);
+$line: var(--border, rgba(98, 87, 109, 0.12));
 
 .onboarding-page {
   box-sizing: border-box;
   min-height: 100vh;
   padding: calc(env(safe-area-inset-top, 44px) + 28rpx) 34rpx 42rpx;
-  background: linear-gradient(180deg, #fcfdf8 0%, #f2f5ee 100%);
+  background: $paper;
   color: $ink;
-  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Noto Sans SC', sans-serif;
+  font-family:
+    'DM Sans',
+    -apple-system,
+    BlinkMacSystemFont,
+    'PingFang SC',
+    'Microsoft YaHei',
+    sans-serif;
+  max-width: 840px;
+  margin: 0 auto;
 }
 
 .topbar {
@@ -237,13 +270,13 @@ $line: rgba(20, 32, 23, 0.08);
   height: 8rpx;
   overflow: hidden;
   border-radius: 999rpx;
-  background: rgba(20, 32, 23, 0.08);
+  background: var(--bg-secondary, #eeeaf6);
 }
 
 .progress-fill {
   height: 100%;
   border-radius: 999rpx;
-  background: #27b45f;
+  background: $primary;
   transition-property: width;
   transition-duration: 260ms;
   transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
@@ -281,12 +314,12 @@ $line: rgba(20, 32, 23, 0.08);
   padding: 38rpx 34rpx;
   border-radius: 34rpx;
   background: $surface;
-  box-shadow: 0 18rpx 52rpx rgba(20, 32, 23, 0.08);
+  box-shadow: 0 18rpx 52rpx rgba(98, 87, 109, 0.08);
 }
 
 .eyebrow {
   display: block;
-  color: rgba(20, 32, 23, 0.44);
+  color: $muted;
   font-size: 18rpx;
   font-weight: 900;
   letter-spacing: 2rpx;
@@ -317,12 +350,12 @@ $line: rgba(20, 32, 23, 0.08);
   margin-top: 48rpx;
   padding: 30rpx;
   border-radius: 28rpx;
-  background: #f6f8f2;
+  background: var(--bg-secondary, #eeeaf6);
   box-shadow: inset 0 0 0 1rpx $line;
 }
 
 .exam-card.selected {
-  background: #f1f8ea;
+  background: var(--bg-secondary, #eeeaf6);
 }
 
 .exam-card-main {
@@ -350,7 +383,7 @@ $line: rgba(20, 32, 23, 0.08);
   padding: 10rpx 16rpx;
   border-radius: 999rpx;
   background: $primary;
-  color: #102415;
+  color: var(--primary-foreground, #ffffff);
   font-size: 22rpx;
   font-weight: 850;
 }
@@ -377,16 +410,16 @@ $line: rgba(20, 32, 23, 0.08);
   margin-bottom: 14rpx;
   padding: 18rpx 22rpx;
   border-radius: 999rpx;
-  background: #f4f5f1;
+  background: var(--bg-secondary, #eeeaf6);
   color: $muted;
   font-size: 25rpx;
   font-weight: 750;
 }
 
 .track-chip.selected {
-  background: #102415;
-  color: #f8fff2;
-  box-shadow: 0 12rpx 28rpx rgba(16, 36, 21, 0.14);
+  background: $primary;
+  color: var(--primary-foreground, #ffffff);
+  box-shadow: 0 12rpx 28rpx rgba(120, 91, 188, 0.14);
 }
 
 .goal-grid {
@@ -401,7 +434,7 @@ $line: rgba(20, 32, 23, 0.08);
   margin-bottom: 20rpx;
   padding: 30rpx;
   border-radius: 28rpx;
-  background: #f6f7f2;
+  background: var(--bg-secondary, #eeeaf6);
   box-shadow: inset 0 0 0 1rpx $line;
 }
 
@@ -410,7 +443,7 @@ $line: rgba(20, 32, 23, 0.08);
 }
 
 .goal-card.selected {
-  background: #102415;
+  background: $primary;
 }
 
 .goal-count {
@@ -424,7 +457,7 @@ $line: rgba(20, 32, 23, 0.08);
 .goal-card.selected .goal-count,
 .goal-card.selected .goal-label,
 .goal-card.selected .goal-time {
-  color: #f8fff2;
+  color: var(--primary-foreground, #ffffff);
 }
 
 .goal-label {
@@ -448,7 +481,7 @@ $line: rgba(20, 32, 23, 0.08);
   gap: 14rpx;
   margin-top: 40rpx;
   border-radius: 30rpx;
-  background: linear-gradient(145deg, #102415, #17261d);
+  background: #332842;
   padding: 24rpx;
 }
 
@@ -463,7 +496,7 @@ $line: rgba(20, 32, 23, 0.08);
 }
 
 .paper-row.ready {
-  background: rgba(159, 232, 112, 0.16);
+  background: rgba(201, 177, 238, 0.16);
 }
 
 .paper-label {
@@ -485,7 +518,7 @@ $line: rgba(20, 32, 23, 0.08);
 }
 
 .summary-label {
-  color: rgba(20, 32, 23, 0.44);
+  color: $muted;
   font-size: 20rpx;
   font-weight: 850;
   letter-spacing: 1rpx;
@@ -493,6 +526,11 @@ $line: rgba(20, 32, 23, 0.08);
 
 .summary-value {
   margin-top: 8rpx;
+}
+
+.welcome-note {
+  margin-top: 48rpx;
+  padding: 30rpx;
 }
 
 .actions {
@@ -513,12 +551,12 @@ $line: rgba(20, 32, 23, 0.08);
 
 .primary-btn {
   flex: 1;
-  background: #102415;
-  box-shadow: 0 18rpx 38rpx rgba(16, 36, 21, 0.18);
+  background: $primary;
+  box-shadow: 0 18rpx 38rpx rgba(120, 91, 188, 0.18);
 }
 
 .primary-btn text {
-  color: #ffffff;
+  color: var(--primary-foreground, #ffffff);
   font-size: 30rpx;
   font-weight: 850;
 }
@@ -526,7 +564,7 @@ $line: rgba(20, 32, 23, 0.08);
 .secondary-btn {
   width: 178rpx;
   margin-right: 18rpx;
-  background: rgba(20, 32, 23, 0.06);
+  background: var(--bg-secondary, #eeeaf6);
 }
 
 .secondary-btn text {

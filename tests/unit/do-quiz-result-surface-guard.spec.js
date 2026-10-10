@@ -28,7 +28,7 @@ describe('do quiz result surface guard', () => {
   });
 
   it('keeps accessibility and disabled state contracts on the primary action', () => {
-    expect(source).toContain(':aria-disabled="isNavigating ? \'true\' : \'false\'"');
+    expect(source).toContain(":aria-disabled=\"isNavigating ? 'true' : 'false'\"");
     expect(source).toContain(':class="{ disabled: isNavigating }"');
     expect(source).toContain('.result-primary-action.disabled');
   });

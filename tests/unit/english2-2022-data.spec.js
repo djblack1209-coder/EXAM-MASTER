@@ -28,11 +28,7 @@ describe('English II 2022 published bank data', () => {
     );
     expect(bank.cards.find((card) => card.number === 46).answer).toContain('创造性地解决问题');
     expect(bank.cards.find((card) => card.number === 47).question).toContain('campus food festival');
-    expect(bank.cards.find((card) => card.number === 48).question).toContain(
-      '2018—2020年我国快递业务量变动情况'
-    );
-    expect(bank.cards.find((card) => card.number === 48).answerEvidence.evidenceRole).toBe(
-      'official_writing_prompt'
-    );
+    expect(bank.cards.find((card) => card.number === 48).question).toContain('2018—2020年我国快递业务量变动情况');
+    expect(bank.cards.find((card) => card.number === 48).answerEvidence.evidenceRole).toBe('official_writing_prompt');
   });
 });

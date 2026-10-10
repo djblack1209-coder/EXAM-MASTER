@@ -462,7 +462,9 @@ describe('release external gate', () => {
 
     const report = JSON.parse(fs.readFileSync(output, 'utf8'));
     expect(report.sections.wechatDevice.blockers[0].code).toBe('wechat_device_evidence_incomplete');
-    expect(report.sections.opsEvidence.blockers.map((item) => item.code)).toContain('backup_restore_evidence_incomplete');
+    expect(report.sections.opsEvidence.blockers.map((item) => item.code)).toContain(
+      'backup_restore_evidence_incomplete'
+    );
     expect(report.sections.opsEvidence.blockers.map((item) => item.code)).toContain('monitoring_evidence_incomplete');
   });
 });

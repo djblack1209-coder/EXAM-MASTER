@@ -58,7 +58,7 @@ $palette-neutral-1000: #000000;
 $color-success: #34d399; // Align with App.vue --success
 $color-warning: #f59e0b; // Align with App.vue --warning
 $color-error: #ef4444; // Align with App.vue --danger
-$color-info: #4a90e2; // Align with App.vue --info
+$color-info: #785bbc; // Align with App.vue --info
 
 // --- Spacing (8px grid, rpx for cross-device) ---
 $spacing-xs: 4px; // Align with App.vue --spacing-xs
@@ -77,7 +77,7 @@ $radius-2xl: 48px;
 $radius-full: 9999px; // Align with App.vue --radius-full
 
 // --- Typography ---
-$font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Helvetica Neue', 'Segoe UI', 'Roboto', sans-serif;
+$font-family: 'DM Sans', 'PingFang SC', 'Microsoft YaHei', sans-serif;
 
 $font-size-xs: 20rpx;
 $font-size-sm: 24rpx;
@@ -109,54 +109,50 @@ $tabbar-height: 120rpx;
 $navbar-height: 88rpx;
 
 // --- Mobile App Shell Palette ---
-$mobile-green-env: #9fe870;
-$mobile-green-env-soft: #c9f6a8;
-$mobile-green-mist: #e7ffd6;
-$mobile-green-deep: #10281a;
-$mobile-green-ink: #132618;
-$mobile-green-ink-soft: rgba(19, 38, 24, 0.68);
+$mobile-green-env: #b5a0dc;
+$mobile-green-env-soft: #e4daf6;
+$mobile-green-mist: #f0eefa;
+$mobile-green-deep: #332842;
+$mobile-green-ink: #080909;
+$mobile-green-ink-soft: rgba(62, 46, 81, 0.68);
 $mobile-blue-info: #75ddff;
 $mobile-surface: rgba(255, 255, 255, 0.76);
-$mobile-surface-solid: #fbfff5;
+$mobile-surface-solid: #f7f5fc;
 $mobile-surface-strong: rgba(255, 255, 255, 0.9);
-$mobile-line: rgba(18, 64, 30, 0.1);
-$mobile-shadow-soft: 0 18rpx 50rpx rgba(15, 81, 43, 0.14);
-$mobile-shadow-lift: 0 28rpx 76rpx rgba(11, 49, 27, 0.2);
+$mobile-line: rgba(81, 60, 110, 0.1);
+$mobile-shadow-soft: 0 18rpx 50rpx rgba(69, 43, 107, 0.14);
+$mobile-shadow-lift: 0 28rpx 76rpx rgba(49, 31, 74, 0.2);
 
 @mixin em-mobile-canvas {
   min-height: 100vh;
-  color: $mobile-green-ink;
-  background:
-    radial-gradient(circle at 15% 8%, rgba(255, 255, 255, 0.74) 0, rgba(255, 255, 255, 0) 30%),
-    radial-gradient(circle at 85% 18%, rgba(117, 221, 255, 0.3) 0, rgba(117, 221, 255, 0) 34%),
-    linear-gradient(158deg, #8fde60 0%, $mobile-green-env-soft 34%, $mobile-green-mist 66%, #bdf2d2 100%);
+  color: var(--text-main);
+  background: var(--yozi-background);
   font-family: $font-family;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 @mixin em-mobile-topbar {
-  background:
-    linear-gradient(180deg, rgba(193, 244, 147, 0.86), rgba(229, 255, 214, 0.68)),
-    rgba(255, 255, 255, 0.36);
-  box-shadow: 0 1rpx 0 rgba(18, 64, 30, 0.07);
-  backdrop-filter: blur(18px) saturate(135%);
-  -webkit-backdrop-filter: blur(18px) saturate(135%);
+  background: var(--yozi-floating);
+  box-shadow: var(--yozi-shadow);
+  backdrop-filter: blur(24px) saturate(120%);
+  -webkit-backdrop-filter: blur(24px) saturate(120%);
+  @media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
 }
 
-@mixin em-mobile-glass-surface($radius: 28rpx, $padding: 30rpx) {
+@mixin em-mobile-glass-surface($radius: 24px, $padding: 30rpx) {
   box-sizing: border-box;
   padding: $padding;
   border-radius: $radius;
-  background:
-    linear-gradient(145deg, rgba(255, 255, 255, 0.82), rgba(240, 255, 228, 0.68)),
-    rgba(255, 255, 255, 0.72);
-  box-shadow:
-    $mobile-shadow-soft,
-    inset 0 1rpx 0 rgba(255, 255, 255, 0.84),
-    inset 0 -1rpx 0 rgba(18, 64, 30, 0.05);
-  backdrop-filter: blur(16px) saturate(130%);
-  -webkit-backdrop-filter: blur(16px) saturate(130%);
+  background: var(--yozi-reading);
+  box-shadow: var(--yozi-shadow);
+  border: 0;
+  // Reading surfaces remain thick; blur belongs to the floating chrome.
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 }
 
 @mixin em-mobile-deep-panel($radius: 36rpx, $padding: 36rpx) {
@@ -166,22 +162,46 @@ $mobile-shadow-lift: 0 28rpx 76rpx rgba(11, 49, 27, 0.2);
   padding: $padding;
   border-radius: $radius;
   background:
-    radial-gradient(circle at 14% 0%, rgba(178, 255, 106, 0.24) 0, rgba(178, 255, 106, 0) 32%),
+    radial-gradient(circle at 14% 0%, rgba(201, 177, 238, 0.24) 0, rgba(201, 177, 238, 0) 32%),
     radial-gradient(circle at 94% 18%, rgba(117, 221, 255, 0.18) 0, rgba(117, 221, 255, 0) 30%),
-    linear-gradient(145deg, #0b2015 0%, #18552f 52%, #07120d 100%);
+    linear-gradient(145deg, #211a2e 0%, #473457 52%, #282032 100%);
   box-shadow: $mobile-shadow-lift;
 }
 
 @mixin em-mobile-primary-action {
-  border-radius: $radius-full;
-  background: linear-gradient(135deg, #b2ff6a 0%, #76edc4 58%, $mobile-blue-info 100%);
-  box-shadow:
-    0 14rpx 34rpx rgba(47, 158, 68, 0.22),
-    inset 0 1rpx 0 rgba(255, 255, 255, 0.58);
-  color: $mobile-green-deep;
+  min-height: 44px;
+  border-radius: 12px;
+  background: var(--yozi-button);
+  box-shadow: var(--yozi-button-shadow);
+  color: var(--yozi-button-ink);
+  touch-action: manipulation;
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease;
+  &:active:not([disabled]):not(.disabled) {
+    transform: translateY(2px);
+    box-shadow:
+      inset 0 2px 4px rgba(30, 15, 65, 0.16),
+      0 2px 0 var(--yozi-button-edge);
+    transition-duration: 100ms;
+  }
+  &:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+    &:active:not([disabled]):not(.disabled) {
+      transform: none;
+    }
+  }
 }
 
 @mixin em-mobile-pressable {
+  &:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+  }
   transform: translate3d(0, 0, 0) scale(1);
   touch-action: manipulation;
   transition-property: transform, opacity, box-shadow;
@@ -191,6 +211,12 @@ $mobile-shadow-lift: 0 28rpx 76rpx rgba(11, 49, 27, 0.2);
   &:active {
     transform: translate3d(0, 0, 0) scale(0.97);
     opacity: 0.9;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+    &:active {
+      transform: none;
+    }
   }
 }
 

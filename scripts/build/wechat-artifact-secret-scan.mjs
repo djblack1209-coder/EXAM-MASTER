@@ -4,8 +4,11 @@ import { relative, resolve } from 'node:path';
 const DEFAULT_FORBIDDEN_CLIENT_TOKENS = [
   'VITE_INVITE_SECRET',
   'WX_APP_SECRET',
+  'WX_SECRET',
   'WX_GZH_SECRET',
+  'WX_MOBILE_SECRET',
   'QQ_SECRET',
+  'QQ_MINI_SECRET',
   'ZHIPU_API_KEY',
   'BAIDU_SECRET_KEY',
   'BAIDU_ACCESS_TOKEN',
@@ -14,17 +17,7 @@ const DEFAULT_FORBIDDEN_CLIENT_TOKENS = [
   'SMTP_PASS'
 ];
 
-const SCANNED_EXTENSIONS = new Set([
-  '.js',
-  '.json',
-  '.wxml',
-  '.wxss',
-  '.wxs',
-  '.map',
-  '.txt',
-  '.html',
-  '.css'
-]);
+const SCANNED_EXTENSIONS = new Set(['.js', '.json', '.wxml', '.wxss', '.wxs', '.map', '.txt', '.html', '.css']);
 
 function hasScannedExtension(filePath) {
   const dotIndex = filePath.lastIndexOf('.');

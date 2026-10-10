@@ -60,12 +60,22 @@ CLOZE_OPTIONS = {
     1: {"A": "illusion", "B": "discussion", "C": "tradition", "D": "question"},
     2: {"A": "reluctance", "B": "ambition", "C": "tendency", "D": "enthusiasm"},
     3: {"A": "attention", "B": "talent", "C": "courage", "D": "patience"},
-    4: {"A": "At any time", "B": "In other words", "C": "By all means", "D": "On the contrary"},
+    4: {
+        "A": "At any time",
+        "B": "In other words",
+        "C": "By all means",
+        "D": "On the contrary",
+    },
     5: {"A": "unrealistic", "B": "deceptive", "C": "tiresome", "D": "uncomfortable"},
     6: {"A": "doubts", "B": "concerns", "C": "suggestions", "D": "secrets"},
     7: {"A": "Once", "B": "Unless", "C": "Although", "D": "Before"},
     8: {"A": "theory", "B": "choice", "C": "factor", "D": "context"},
-    9: {"A": "overpraising", "B": "outperforming", "C": "reassessing", "D": "inconveniencing"},
+    9: {
+        "A": "overpraising",
+        "B": "outperforming",
+        "C": "reassessing",
+        "D": "inconveniencing",
+    },
     10: {"A": "reach out", "B": "settle down", "C": "turn over", "D": "look back"},
     11: {"A": "declining", "B": "considering", "C": "criticising", "D": "evaluating"},
     12: {"A": "unnecessary", "B": "negative", "C": "strange", "D": "impractical"},
@@ -576,9 +586,15 @@ def option_list(options: dict[str, str]) -> list[dict[str, str]]:
 
 
 def require_sources() -> None:
-    missing = [str(path) for path in [PAPER, ANSWER_PARTIAL, PAPER_ANSWER, DETAILED_ANALYSIS] if not path.exists()]
+    missing = [
+        str(path)
+        for path in [PAPER, ANSWER_PARTIAL, PAPER_ANSWER, DETAILED_ANALYSIS]
+        if not path.exists()
+    ]
     if missing:
-        raise FileNotFoundError("Missing required English II 2025 source PDFs: " + ", ".join(missing))
+        raise FileNotFoundError(
+            "Missing required English II 2025 source PDFs: " + ", ".join(missing)
+        )
 
 
 def evidence_source_path(source_id: str) -> Path:
@@ -640,7 +656,15 @@ def attach_evidence(
     return card
 
 
-def base_card(number: int, *, card_type: str, section: str, group_id: str, question: str, answer: str) -> dict[str, Any]:
+def base_card(
+    number: int,
+    *,
+    card_type: str,
+    section: str,
+    group_id: str,
+    question: str,
+    answer: str,
+) -> dict[str, Any]:
     return {
         "id": f"english2-2025-{number:03d}",
         "paperId": "english2-2025",
@@ -675,7 +699,9 @@ def build_bank(now: str | None = None) -> dict[str, Any]:
         )
         card["passage"] = CLOZE_PASSAGE
         card["options"] = option_list(CLOZE_OPTIONS[number])
-        card["explanation"] = "答案已按本地百度网盘英语二参考答案 PDF 匹配；第 9 题 D 选项按答案 PDF 修复原卷水印/OCR 误读。"
+        card["explanation"] = (
+            "答案已按本地百度网盘英语二参考答案 PDF 匹配；第 9 题 D 选项按答案 PDF 修复原卷水印/OCR 误读。"
+        )
         cards.append(
             attach_evidence(
                 card,
@@ -699,7 +725,9 @@ def build_bank(now: str | None = None) -> dict[str, Any]:
         )
         card["passage"] = READING_PASSAGES[data["group"]]
         card["options"] = option_list(data["options"])
-        card["explanation"] = "答案已按本地百度网盘逐题细解 PDF/OCR 匹配，优先采用与原卷选项一致的完整解析答案。"
+        card["explanation"] = (
+            "答案已按本地百度网盘逐题细解 PDF/OCR 匹配，优先采用与原卷选项一致的完整解析答案。"
+        )
         cards.append(
             attach_evidence(
                 card,
@@ -797,7 +825,11 @@ def build_bank(now: str | None = None) -> dict[str, Any]:
         "sections": ["完形填空", "阅读理解", "新题型", "翻译", "写作"],
         "sourceEvidenceSummary": {
             "questionSources": [SOURCE_IDS["paper"], SOURCE_IDS["paper_answer"]],
-            "answerSources": [SOURCE_IDS["answer_partial"], SOURCE_IDS["detailed_analysis"], SOURCE_IDS["paper_answer"]],
+            "answerSources": [
+                SOURCE_IDS["answer_partial"],
+                SOURCE_IDS["detailed_analysis"],
+                SOURCE_IDS["paper_answer"],
+            ],
             "policy": "local_baidu_pdf_text_visual_and_detailed_analysis_match",
         },
         "cards": cards,
@@ -810,7 +842,9 @@ def write_json(path: Path, payload: Any) -> None:
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Build 2025 English II public-course flashcard bank.")
+    parser = argparse.ArgumentParser(
+        description="Build 2025 English II public-course flashcard bank."
+    )
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
     args = parser.parse_args(argv)
 

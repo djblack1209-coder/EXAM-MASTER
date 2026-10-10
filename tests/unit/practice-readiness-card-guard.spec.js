@@ -6,7 +6,7 @@ const source = readFileSync(resolve(process.cwd(), 'src/pages/practice/index.vue
 
 describe('practice readiness card guard', () => {
   it('surfaces public-course bank readiness in user-facing language', () => {
-    expect(source).toContain('题库就绪度');
+    expect(source).not.toContain('题库就绪度');
     expect(source).toContain('readinessTitle');
     expect(source).toContain('readinessPercent');
     expect(source).toContain('readinessSummary.publishedSlots');
@@ -28,10 +28,10 @@ describe('practice readiness card guard', () => {
     expect(source).not.toContain('SourceEvidence');
   });
 
-  it('keeps readiness card styled in the shared financial shell system', () => {
+  it('keeps readiness card styled in the shared Yozi material system', () => {
     expect(source).toContain('class="readiness-card"');
     expect(source).toContain('.readiness-progress-fill');
-    expect(source).toContain('linear-gradient(90deg, #9fe870 0%, #75ddff 100%)');
+    expect(source).toContain('background: var(--yozi-button)');
     expect(source).toContain('.dark-mode .readiness-card');
     expect(source).toContain('.dark-mode .readiness-track-line');
   });

@@ -29,8 +29,6 @@ describe('English II 2016 published bank data', () => {
     expect(bank.cards.find((card) => card.number === 48).question).toContain('某高校学生旅游目的调查');
     expect(bank.cards.find((card) => card.number === 48).question).toContain('欣赏风景 37%');
     expect(bank.cards.find((card) => card.number === 48).question).toContain('缓解压力 33%');
-    expect(bank.cards.find((card) => card.number === 48).answerEvidence.evidenceRole).toBe(
-      'official_writing_prompt'
-    );
+    expect(bank.cards.find((card) => card.number === 48).answerEvidence.evidenceRole).toBe('official_writing_prompt');
   });
 });

@@ -1,33 +1,38 @@
 <template>
-  <view class="page-container" :class="{ 'dark-mode': isDark }">
+  <view ref="keyboardRoot" class="page-container" :class="{ 'dark-mode': isDark }">
     <view class="top-nav">
-      <view class="nav-back" @tap="goBack">
+      <button class="nav-back" role="button" aria-label="返回" tabindex="0" @tap="goBack">
         <text class="back-icon">
-          <BaseIcon name="arrow-left" :size="36" />
+          <BaseIcon name="arrow-left" :size="20" />
         </text>
-      </view>
+      </button>
       <text class="nav-title"> 隐私政策 </text>
     </view>
 
     <scroll-view scroll-y class="content-scroll">
       <view class="content-section">
-        <text class="update-date"> 更新日期：2026年2月18日 </text>
+        <text class="update-date"> 更新日期：2026年9月29日 · 本地候选说明，公开发布前需审核 </text>
 
         <view class="section">
           <text class="section-title"> 一、引言 </text>
           <text class="section-text">
-            欢迎使用 Exam
-            Master（以下简称"本应用"）。我们深知个人信息对您的重要性，将严格遵守相关法律法规，采取相应的安全保护措施，保护您的个人信息安全。
+            欢迎使用
+            {{
+              BRAND.name
+            }}（以下简称"本应用"）。我们深知个人信息对您的重要性，将严格遵守相关法律法规，采取相应的安全保护措施，保护您的个人信息安全。
           </text>
         </view>
 
         <view class="section">
           <text class="section-title"> 二、我们收集的信息 </text>
           <text class="section-text"> 为了向您提供服务，我们可能会收集以下信息： </text>
-          <text class="section-text"> 1. 账号信息：微信昵称、头像，用于创建和展示您的个人资料。 </text>
+          <text class="section-text">
+            1. 选择账号服务时使用登录资料。本地学习可以不登录；微信昵称、头像仅用于您选择的账号展示。
+          </text>
           <text class="section-text">
             2. 学习数据：您的刷题记录、错题本、收藏和题库同步状态，用于提供练习、复习和学习进度展示。
           </text>
+          <text class="section-text"> 对话、私人材料片段、页图、作答和计划按所选模式保存，不默认进入公共题库。 </text>
           <text class="section-text"> 3. 设备信息：设备型号、操作系统版本、屏幕分辨率，用于适配显示和优化性能。 </text>
         </view>
 
@@ -42,14 +47,22 @@
         <view class="section">
           <text class="section-title"> 四、信息的存储与保护 </text>
           <text class="section-text">
-            您的数据存储在安全的云服务器上，我们采用加密传输和访问控制等技术手段保护您的信息安全。我们不会将您的个人信息出售、出租或以其他方式提供给第三方。
+            本地模式使用当前设备的普通本地存储，包含恢复副本，不承诺系统级加密。
+            只有明确选择云同步或模型并同意共享，相关记录或当前任务必要上下文才发送至所选服务；
+            本机解析的原件、页图与识别留在本机。不会因本地能力不足静默上传整份资料。
+          </text>
+          <text class="section-text">
+            自带 API
+            的密钥由项目后端单独加密保存，服务端运维具备解密能力，不是端到端加密。普通学习导出不含密钥。本地连接令牌仅本次页面持有，离开页面后需重新连接。上游模型处理规则需按所选供应商核对。
           </text>
         </view>
 
         <view class="section">
           <text class="section-title"> 五、您的权利 </text>
           <text class="section-text">
-            您有权查看、修改您的个人资料信息。您可以在"设置"页面中管理您的账号信息。如需注销账号，您可以在"设置"页面中直接申请注销，注销后将有7天冷静期，期间可撤销申请。冷静期结束后，您的账号及所有相关数据将被永久删除。
+            您可以查看、纠正和导出学习记录，删除本地新学习记录会覆盖相应恢复副本，
+            但不会同时删除旧记录、云副本或本机解析原件；这些范围需分别处理。 账号注销流程保留7天冷静期，期间可撤销申请。
+            生产备份保留周期、清除范围和必要留存尚需部署验收，不宣称即时删除全部副本。
           </text>
         </view>
 
@@ -86,130 +99,104 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import { onLoad } from '@dcloudio/uni-app';
-import { storageService } from '@/services/storageService.js';
+import { computed, ref, onMounted, onBeforeUnmount } from 'vue';
+import { BRAND } from '@/config/brand.js';
+import { useThemeStore } from '@/stores/modules/theme.js';
 import { safeNavigateBack } from '@/utils/safe-navigate';
+import { bindLearningKeyboard } from '@/services/learning/keyboard-controls.js';
 
-const isDark = ref(false);
-
-onLoad(() => {
-  const savedTheme = storageService.get('theme_mode', 'light');
-  isDark.value = savedTheme === 'dark';
+const keyboardRoot = ref(null);
+let unbindKeyboard = () => undefined;
+onMounted(() => {
+  unbindKeyboard = bindLearningKeyboard(keyboardRoot.value);
 });
+onBeforeUnmount(() => unbindKeyboard());
+
+const themeStore = useThemeStore();
+const isDark = computed(() => themeStore.isDark);
 
 function goBack() {
   safeNavigateBack();
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .page-container {
-  min-height: 100%;
   min-height: 100vh;
-  background: linear-gradient(
-    180deg,
-    var(--page-gradient-top) 0%,
-    var(--page-gradient-mid) 52%,
-    var(--page-gradient-bottom) 100%
-  );
+  color: var(--text-main);
+  background: var(--yozi-background);
+  font-family: 'DM Sans', 'PingFang SC', 'Microsoft YaHei', sans-serif;
 }
-.page-container.dark-mode {
-  background: linear-gradient(180deg, var(--background) 0%, var(--page-gradient-mid) 48%, var(--background) 100%);
-}
-
 .top-nav {
+  @include em-mobile-topbar;
   display: flex;
   align-items: center;
-  padding: 0 32rpx;
-  padding-top: calc(constant(safe-area-inset-top) + 20rpx);
-  padding-top: calc(env(safe-area-inset-top, 0px) + 20rpx);
-  height: calc(constant(safe-area-inset-top) + 100rpx);
-  height: calc(env(safe-area-inset-top, 0px) + 100rpx);
-  background-color: #ffffff;
-  border-bottom: 1rpx solid rgba(0, 0, 0, 0.06);
-  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.04);
+  padding: env(safe-area-inset-top, 0px) 16px 0;
+  height: calc(env(safe-area-inset-top, 0px) + 64px);
+  gap: 12px;
 }
 .nav-back {
-  width: 72rpx;
-  height: 72rpx;
+  @include em-mobile-pressable;
+  width: 44px;
+  height: 44px;
+  margin: 0;
+  padding: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 999rpx;
-  background: #f5f7fa;
-  border: 1rpx solid rgba(0, 0, 0, 0.06);
+  border-radius: 12px;
+  border: 0;
+  background: var(--yozi-glass);
+  color: var(--text-main);
+  box-shadow: var(--yozi-control-shadow);
 }
-.back-icon {
-  color: #1a1d26;
-  font-size: 36rpx;
+.nav-back::after {
+  border: 0;
 }
-.dark-mode .nav-back {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.1);
-}
-.dark-mode .back-icon {
-  color: var(--foreground);
+.nav-back:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
 }
 .nav-title {
-  color: var(--text-primary);
-  font-size: 34rpx;
-  font-weight: 800;
-  margin-left: 16rpx;
+  color: var(--text-main);
+  font-size: 17px;
+  font-weight: 700;
 }
-.dark-mode .nav-title {
-  color: var(--foreground);
-}
-
 .content-scroll {
-  height: calc(100vh - constant(safe-area-inset-top) - 100rpx);
-  height: calc(100vh - env(safe-area-inset-top, 0px) - 100rpx);
+  height: calc(100vh - env(safe-area-inset-top, 0px) - 64px);
 }
 .content-section {
-  padding: 32rpx;
+  max-width: 76ch;
+  margin: 0 auto;
+  padding: 20px 16px;
 }
 .update-date {
-  font-size: 24rpx;
+  font-size: 12px;
   color: var(--text-sub);
-  margin-bottom: 32rpx;
+  margin-bottom: 20px;
   display: block;
+  line-height: 1.65;
 }
-.dark-mode .update-date {
-  color: rgba(255, 255, 255, 0.62);
-}
-
 .section {
-  margin-bottom: 24rpx;
-  padding: 26rpx 24rpx;
-  border-radius: 28rpx;
-  background-color: #ffffff;
-  border: 1rpx solid rgba(0, 0, 0, 0.06);
-  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
-}
-.dark-mode .section {
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, transparent 42%),
-    linear-gradient(160deg, rgba(18, 20, 28, 0.94) 0%, rgba(10, 12, 18, 0.9) 100%);
-  border-color: rgba(255, 255, 255, 0.1);
+  @include em-mobile-glass-surface(24px, 20px);
+  margin-bottom: 16px;
 }
 .section-title {
-  font-size: 30rpx;
-  font-weight: 800;
-  color: var(--text-primary);
-  margin-bottom: 16rpx;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 12px;
   display: block;
-}
-.dark-mode .section-title {
-  color: var(--foreground);
 }
 .section-text {
-  font-size: 28rpx;
-  color: var(--text-secondary);
+  font-size: 14px;
+  color: var(--text-sub);
   line-height: 1.8;
-  margin-bottom: 12rpx;
+  margin-bottom: 12px;
   display: block;
+  overflow-wrap: anywhere;
 }
-.dark-mode .section-text {
-  color: rgba(255, 255, 255, 0.68);
+.section-text:last-child {
+  margin-bottom: 0;
 }
 </style>

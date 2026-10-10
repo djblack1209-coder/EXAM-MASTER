@@ -16,9 +16,11 @@
 依赖：pip install requests python-dotenv
 """
 
-import os, sys, time, json, webbrowser
+import os
+import sys
+import time
+import webbrowser
 from pathlib import Path
-from urllib.parse import urlencode, quote
 
 import requests
 from dotenv import load_dotenv, set_key
@@ -110,9 +112,9 @@ def get_quota(access_token: str) -> dict:
 def device_code_flow():
     """设备码授权流程（推荐）"""
     check_credentials()
-    print("="*50)
+    print("=" * 50)
     print("百度网盘 OAuth — 设备码模式")
-    print("="*50)
+    print("=" * 50)
 
     # 1. 获取设备码
     resp = requests.get(
@@ -137,7 +139,7 @@ def device_code_flow():
     interval = data.get("interval", 5)
     expires_in = data.get("expires_in", 300)
 
-    print(f"\n请在浏览器中打开以下链接并登录授权：")
+    print("\n请在浏览器中打开以下链接并登录授权：")
     print(f"\n  {verify_url}\n")
     print(f"输入用户码：{user_code}")
     if qrcode_url:
@@ -208,9 +210,9 @@ def device_code_flow():
 def authorization_code_flow():
     """授权码模式"""
     check_credentials()
-    print("="*50)
+    print("=" * 50)
     print("百度网盘 OAuth — 授权码模式")
-    print("="*50)
+    print("=" * 50)
 
     # 使用 oob 回调（无需搭建回调服务器）
     auth_url = (
@@ -222,7 +224,7 @@ def authorization_code_flow():
         f"display=popup"
     )
 
-    print(f"\n请在浏览器中打开以下链接并登录授权：\n")
+    print("\n请在浏览器中打开以下链接并登录授权：\n")
     print(f"  {auth_url}\n")
 
     try:
@@ -315,9 +317,9 @@ def refresh_token_flow():
 # ============================================================
 def show_status():
     """显示当前 token 状态"""
-    print("="*50)
+    print("=" * 50)
     print("百度网盘 OAuth 状态")
-    print("="*50)
+    print("=" * 50)
 
     access_token = os.environ.get("BAIDU_ACCESS_TOKEN", "")
     if not access_token:
@@ -329,7 +331,7 @@ def show_status():
 
     info = verify_token(access_token)
     if info["ok"]:
-        print(f"状态：有效")
+        print("状态：有效")
         print(f"用户：{info['name']}")
         print(f"会员：{info['vip']}")
         print(f"UK：{info['uk']}")

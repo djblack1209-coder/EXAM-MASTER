@@ -12,10 +12,23 @@ import { dirname, extname, relative, resolve, sep } from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const distRoot = resolve(__dirname, '../../dist/build/mp-weixin');
+const distRoot = resolve(process.env.UNI_OUTPUT_DIR || resolve(__dirname, '../../dist/build/mp-weixin'));
 const appJsonPath = resolve(distRoot, 'app.json');
 const wechatMediaBudgetBytes = 200 * 1024;
-const mediaExtensions = new Set(['.png', '.jpg', '.jpeg', '.gif', '.webp', '.svg', '.mp3', '.wav', '.aac', '.m4a']);
+const mediaExtensions = new Set([
+  '.png',
+  '.jpg',
+  '.jpeg',
+  '.gif',
+  '.webp',
+  '.svg',
+  '.mp3',
+  '.wav',
+  '.aac',
+  '.m4a',
+  '.mp4',
+  '.webm'
+]);
 const runtimeLocalKeepFiles = new Set([
   'static/images/default-avatar.png',
   'static/images/logo.png',
@@ -26,6 +39,21 @@ const runtimeLocalKeepFiles = new Set([
   'static/tabbar/profile.png',
   'static/tabbar/profile-active.png'
 ]);
+
+function applyWechatBrandExports() {
+  // 微信显示尺寸的同图导出；网页/App原图保留。只改当前隔离/指定构建产物。
+  const brandPath = resolve(distRoot, 'config/brand.js');
+  if (!existsSync(brandPath) || !readFileSync(brandPath, 'utf8').includes('Yozi AI')) return;
+  for (const [source, target] of [
+    ['yozi-mini-icon.png', 'static/images/logo.png'],
+    ['learning-projector-mini.webp', 'static/brand/learning-projector.webp']
+  ]) {
+    const sourcePath = resolve(__dirname, '../../src/static/brand', source);
+    const targetPath = resolve(distRoot, target);
+    if (!existsSync(sourcePath)) throw new Error('缺少已批准的微信品牌导出：' + source);
+    if (existsSync(targetPath)) copyFileSync(sourcePath, targetPath);
+  }
+}
 
 function toPosixPath(filePath) {
   return filePath.split(sep).join('/');
@@ -78,6 +106,7 @@ function hasLocalReference(referenceText, relativePath) {
 }
 
 function pruneUnusedMediaForWechatQuality() {
+  applyWechatBrandExports();
   const cdnEnabled = detectCdnEnabled();
   const referenceText = buildLocalReferenceText();
   const removed = [];

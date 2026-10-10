@@ -143,7 +143,9 @@ def run(cmd: list[str]) -> None:
     subprocess.run(cmd, cwd=PROJECT_ROOT, check=True)
 
 
-def render_pdf_assets(pdf: Path, prefix: str, *, asset_dir: Path, force: bool, pages: set[int]) -> None:
+def render_pdf_assets(
+    pdf: Path, prefix: str, *, asset_dir: Path, force: bool, pages: set[int]
+) -> None:
     if not pdf.exists():
         raise FileNotFoundError(pdf)
     asset_dir.mkdir(parents=True, exist_ok=True)
@@ -159,7 +161,18 @@ def render_pdf_assets(pdf: Path, prefix: str, *, asset_dir: Path, force: bool, p
         item.unlink()
 
     output_prefix = TMP_RENDER_DIR / prefix
-    run(["pdftoppm", "-r", "130", "-jpeg", "-jpegopt", "quality=70", str(pdf), str(output_prefix)])
+    run(
+        [
+            "pdftoppm",
+            "-r",
+            "130",
+            "-jpeg",
+            "-jpegopt",
+            "quality=70",
+            str(pdf),
+            str(output_prefix),
+        ]
+    )
 
     for page in sorted(pages):
         rendered = TMP_RENDER_DIR / f"{prefix}-{page:02d}.jpg"
@@ -261,7 +274,9 @@ def answer_for(number: int) -> str:
 
 
 def question_anchor(number: int) -> str:
-    return f"2015考研数学二第{number}题（{section_for(number)}）。题干、公式和图形以题面裁切图为准。"
+    return (
+        f"2015考研数学二第{number}题（{section_for(number)}）。题干、公式和图形以题面裁切图为准。"
+    )
 
 
 def explanation_for(number: int) -> str:
@@ -372,7 +387,13 @@ def validate_cards(cards: list[dict[str, Any]], *, asset_dir: Path) -> None:
 
 
 def build_payload(*, asset_dir: Path, force_assets: bool) -> dict[str, Any]:
-    render_pdf_assets(PAPER_ANSWER, "paper-page", asset_dir=asset_dir, force=force_assets, pages=set(range(1, 15)))
+    render_pdf_assets(
+        PAPER_ANSWER,
+        "paper-page",
+        asset_dir=asset_dir,
+        force=force_assets,
+        pages=set(range(1, 15)),
+    )
     crop_assets(asset_dir=asset_dir, force=force_assets)
     for raw_page in asset_dir.glob("paper-page-*.jpg"):
         raw_page.unlink()

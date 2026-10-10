@@ -156,7 +156,9 @@ def run(cmd: list[str]) -> None:
     subprocess.run(cmd, cwd=PROJECT_ROOT, check=True)
 
 
-def render_pdf_assets(pdf: Path, *, asset_dir: Path, prefix: str, expected_pages: int, force: bool) -> None:
+def render_pdf_assets(
+    pdf: Path, *, asset_dir: Path, prefix: str, expected_pages: int, force: bool
+) -> None:
     if not pdf.exists():
         raise FileNotFoundError(pdf)
     asset_dir.mkdir(parents=True, exist_ok=True)
@@ -170,19 +172,46 @@ def render_pdf_assets(pdf: Path, *, asset_dir: Path, prefix: str, expected_pages
         item.unlink()
 
     output_prefix = render_dir / "page"
-    run(["pdftoppm", "-r", "160", "-jpeg", "-jpegopt", "quality=76", str(pdf), str(output_prefix)])
+    run(
+        [
+            "pdftoppm",
+            "-r",
+            "160",
+            "-jpeg",
+            "-jpegopt",
+            "quality=76",
+            str(pdf),
+            str(output_prefix),
+        ]
+    )
 
-    rendered_pages = sorted(render_dir.glob("page-*.jpg"), key=lambda path: int(path.stem.split("-")[-1]))
+    rendered_pages = sorted(
+        render_dir.glob("page-*.jpg"), key=lambda path: int(path.stem.split("-")[-1])
+    )
     if len(rendered_pages) != expected_pages:
-        raise ValueError(f"{pdf.name}: rendered {len(rendered_pages)} pages, expected {expected_pages}")
+        raise ValueError(
+            f"{pdf.name}: rendered {len(rendered_pages)} pages, expected {expected_pages}"
+        )
     for index, rendered in enumerate(rendered_pages, start=1):
         target = asset_dir / f"{prefix}-{index:02d}.jpg"
         shutil.copyfile(rendered, target)
 
 
 def render_all_assets(*, asset_dir: Path, force: bool) -> None:
-    render_pdf_assets(SOURCE_PAPER_PDF, asset_dir=asset_dir, prefix="paper-page", expected_pages=13, force=force)
-    render_pdf_assets(SOURCE_ANSWER_PDF, asset_dir=asset_dir, prefix="answer-page", expected_pages=20, force=force)
+    render_pdf_assets(
+        SOURCE_PAPER_PDF,
+        asset_dir=asset_dir,
+        prefix="paper-page",
+        expected_pages=13,
+        force=force,
+    )
+    render_pdf_assets(
+        SOURCE_ANSWER_PDF,
+        asset_dir=asset_dir,
+        prefix="answer-page",
+        expected_pages=20,
+        force=force,
+    )
 
 
 def image_ref(page: int, *, prefix: str, caption: str) -> dict[str, str]:
@@ -268,8 +297,13 @@ def build_card(number: int) -> dict[str, Any]:
     options = options_for(number)
     question_pages = QUESTION_PAGES[number]
     answer_pages = ANSWER_PAGES[number]
-    question_images = [image_ref(page, prefix="paper-page", caption=f"试卷原页 p.{page}") for page in question_pages]
-    answer_images = [image_ref(page, prefix="answer-page", caption=f"答案原页 p.{page}") for page in answer_pages]
+    question_images = [
+        image_ref(page, prefix="paper-page", caption=f"试卷原页 p.{page}")
+        for page in question_pages
+    ]
+    answer_images = [
+        image_ref(page, prefix="answer-page", caption=f"答案原页 p.{page}") for page in answer_pages
+    ]
     question_hash = sha256_text(
         json.dumps(
             {"question": question, "options": options, "questionPages": question_pages},

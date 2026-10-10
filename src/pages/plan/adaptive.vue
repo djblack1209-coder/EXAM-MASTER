@@ -76,7 +76,6 @@
         <!-- ==================== Hero 总览 ==================== -->
         <view v-if="hasPlan" class="hero-card glass-card">
           <text class="hero-title">{{ planData.summary || '个性化学习计划' }}</text>
-          <text class="hero-sub">{{ planData.description || 'AI 根据你的掌握度动态调整' }}</text>
           <!-- 计划有效期提示 -->
           <view v-if="planAgeLabel" class="plan-age-row">
             <BaseIcon name="timer" :size="24" />

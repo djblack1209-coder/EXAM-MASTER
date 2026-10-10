@@ -1,15 +1,19 @@
 /**
- * 单题计时器模块 - 提供单题限时、超时提醒、答题效率分析
+ * 单题计时器模块 - 采集实际作答间隔，提供限时提醒
  *
  * 核心功能：
  * 1. 单题倒计时 - 可配置每题时限
  * 2. 超时提醒 - 多级提醒（50%、80%、100%）
- * 3. 答题效率分析 - 统计平均用时、最快/最慢题目
- * 4. 时间预警 - 根据题目难度动态调整时限
+ * 3. 旧计时记录仅供读取，不推断判分或学习能力
+ * 4. 时间预警 - 按配置调整提醒时限
  */
 
 import storageService from '@/services/storageService.js';
 import { logger } from '@/utils/logger.js';
+import { getUserId } from '@/services/auth-storage.js';
+let timerSequence = 0;
+const monotonicNow = () =>
+  typeof performance !== 'undefined' && typeof performance.now === 'function' ? performance.now() : Date.now();
 const STORAGE_KEYS = {
   TIMER_SETTINGS: 'question_timer_settings',
   TIME_RECORDS: 'question_time_records'
@@ -41,6 +45,10 @@ class QuestionTimer {
     this.startTime = 0;
     this.timeLimit = 0;
     this.elapsed = 0;
+    this.elapsedMs = 0;
+    this.active = false;
+    this.token = null;
+    this.owner = null;
     this.isPaused = false;
     this.callbacks = {
       onTick: null,
@@ -55,7 +63,17 @@ class QuestionTimer {
    * 初始化
    */
   init() {
-    if (this.isInitialized) return;
+    const owner = getUserId() || '';
+    if (this.isInitialized && this.owner === owner) return;
+    if (this.currentTimer) clearInterval(this.currentTimer);
+    this.currentTimer = null;
+    this.active = false;
+    this.isPaused = false;
+    this.elapsedMs = this.elapsed = 0;
+    this.token = null;
+    this.settings = { ...DEFAULT_SETTINGS };
+    this.timeRecords = [];
+    this.owner = owner;
     this._loadSettings();
     this._loadTimeRecords();
     this.isInitialized = true;
@@ -104,13 +122,21 @@ class QuestionTimer {
     this.callbacks = { onTick, onWarning, onTimeout };
 
     // 重置状态
-    this.startTime = Date.now();
-    this.elapsed = 0;
+    this.startTime = monotonicNow();
+    this.elapsedMs =
+      Number.isFinite(options.initialElapsedMs) && options.initialElapsedMs >= 0
+        ? Math.min(options.initialElapsedMs, 86400000)
+        : 0;
+    this.elapsed = this.elapsedMs / 1000;
+    this.active = true;
+    this.token = `question_timer_${++timerSequence}`;
+    this.notificationsEnabled = options.notificationsEnabled !== false;
+    this._timedOut = false;
     this.isPaused = false;
     this._triggeredWarnings = new Set();
 
     // 启动计时器
-    if (this.settings.enabled) {
+    if (this.settings.enabled && this.notificationsEnabled) {
       this.currentTimer = setInterval(() => this._tick(), 1000);
     }
 
@@ -120,8 +146,9 @@ class QuestionTimer {
     });
 
     return {
+      token: this.token,
       timeLimit: this.timeLimit,
-      remaining: this.timeLimit
+      remaining: Math.max(0, this.timeLimit - this.elapsed)
     };
   }
 
@@ -129,252 +156,125 @@ class QuestionTimer {
    * 停止计时
    * @returns {Object} 答题用时信息
    */
-  stop() {
-    if (this.currentTimer) {
-      clearInterval(this.currentTimer);
-      this.currentTimer = null;
-    }
+  _matches(token) {
+    return (token === undefined || token === this.token) && (!this.isInitialized || (getUserId() || '') === this.owner);
+  }
 
-    const result = {
+  _sample() {
+    if (!this.active || this.isPaused) return;
+    const now = monotonicNow();
+    this.elapsedMs += Math.max(0, now - this.startTime);
+    this.startTime = now;
+    this.elapsed = this.elapsedMs / 1000;
+  }
+
+  stop(token) {
+    if (!this._matches(token)) return { success: false, code: 'TIMER_CONTEXT_CHANGED', elapsed: 0, elapsedMs: 0 };
+    this._sample();
+    if (this.currentTimer) clearInterval(this.currentTimer);
+    this.currentTimer = null;
+    this.active = false;
+    return {
+      success: true,
       elapsed: this.elapsed,
+      elapsedMs: Math.round(this.elapsedMs),
       timeLimit: this.timeLimit,
-      isTimeout: this.elapsed >= this.timeLimit,
+      isTimeout: this.timeLimit > 0 && this.elapsed >= this.timeLimit,
       efficiency: this.timeLimit > 0 ? Math.round((1 - this.elapsed / this.timeLimit) * 100) : 0
     };
-
-    return result;
   }
 
-  /**
-   * 暂停计时
-   */
-  pause() {
+  pause(token) {
+    if (!this._matches(token)) return false;
+    this._sample();
     this.isPaused = true;
-    if (this.currentTimer) {
-      clearInterval(this.currentTimer);
-      this.currentTimer = null;
-    }
+    if (this.currentTimer) clearInterval(this.currentTimer);
+    this.currentTimer = null;
+    return true;
   }
 
-  /**
-   * 恢复计时
-   */
-  resume() {
-    if (this.isPaused && this.settings.enabled) {
-      this.isPaused = false;
-      this.currentTimer = setInterval(() => this._tick(), 1000);
-    }
+  resume(token) {
+    if (!this._matches(token) || !this.active || !this.isPaused) return false;
+    this.isPaused = false;
+    this.startTime = monotonicNow();
+    if (this.settings.enabled && this.notificationsEnabled) this.currentTimer = setInterval(() => this._tick(), 1000);
+    return true;
   }
 
-  /**
-   * 获取剩余时间
-   * @returns {Object} 剩余时间信息
-   */
-  getRemaining() {
-    const remaining = Math.max(0, this.timeLimit - this.elapsed);
-    const progress = this.timeLimit > 0 ? this.elapsed / this.timeLimit : 0;
-
+  getRemaining(token) {
+    if (!this._matches(token)) return { success: false, elapsed: 0, elapsedMs: 0 };
+    this._sample();
+    const remaining = Math.max(0, this.timeLimit - this.elapsed),
+      progress = this.timeLimit > 0 ? this.elapsed / this.timeLimit : 0;
     return {
+      success: true,
+      token: this.token,
+      active: this.active,
+      paused: this.isPaused,
       remaining,
       elapsed: this.elapsed,
+      elapsedMs: Math.round(this.elapsedMs),
       timeLimit: this.timeLimit,
       progress,
-      formattedRemaining: this._formatTime(remaining),
-      formattedElapsed: this._formatTime(this.elapsed),
+      formattedRemaining: this._formatTime(Math.ceil(remaining)),
+      formattedElapsed: this._formatTime(Math.floor(this.elapsed)),
       isWarning: progress >= 0.8,
       isDanger: progress >= 0.95
     };
   }
 
   /**
-   * 记录答题时间
-   * @param {Object} data - 答题数据
+   * 旧独立写入已退役；作答用时随明确提交进入学习核心。
    */
-  recordTime(data) {
-    this.init();
-
-    const record = {
-      questionId: data.questionId,
-      category: data.category || '未分类',
-      difficulty: data.difficulty || 2,
-      timeSpent: data.timeSpent || this.elapsed,
-      timeLimit: this.timeLimit,
-      isCorrect: data.isCorrect,
-      isTimeout: data.timeSpent >= this.timeLimit,
-      timestamp: Date.now()
-    };
-
-    this.timeRecords.push(record);
-    this._saveTimeRecords();
-
-    return record;
+  recordTime() {
+    return { success: false, code: 'LEGACY_TIMER_WRITER_RETIRED' };
   }
 
-  /**
-   * 获取答题时间统计
-   * @returns {Object} 时间统计
-   */
+  // Old numbers remain readable; they have no verified units or grading authority.
   getTimeStats() {
     this.init();
-
-    if (this.timeRecords.length === 0) {
-      return {
-        totalQuestions: 0,
-        averageTime: 0,
-        fastestTime: 0,
-        slowestTime: 0,
-        timeoutCount: 0,
-        timeoutRate: 0,
-        efficiencyScore: 0,
-        categoryStats: {},
-        recentTrend: 'stable'
-      };
-    }
-
-    const times = this.timeRecords.map((r) => r.timeSpent);
-    const totalTime = times.reduce((sum, t) => sum + t, 0);
-    const averageTime = Math.round(totalTime / times.length);
-    const fastestTime = Math.min(...times);
-    const slowestTime = Math.max(...times);
-    const timeoutCount = this.timeRecords.filter((r) => r.isTimeout).length;
-
-    // 按分类统计
-    const categoryStats = {};
-    for (const record of this.timeRecords) {
-      const cat = record.category;
-      if (!categoryStats[cat]) {
-        categoryStats[cat] = { total: 0, totalTime: 0, timeouts: 0 };
-      }
-      categoryStats[cat].total++;
-      categoryStats[cat].totalTime += record.timeSpent;
-      if (record.isTimeout) categoryStats[cat].timeouts++;
-    }
-
-    // 计算每个分类的平均时间
-    for (const cat of Object.keys(categoryStats)) {
-      categoryStats[cat].averageTime = Math.round(categoryStats[cat].totalTime / categoryStats[cat].total);
-    }
-
-    // 计算效率分数
-    const efficiencyScore = this._calculateEfficiencyScore();
-
-    // 计算最近趋势
-    const recentTrend = this._calculateRecentTrend();
-
+    const rows = Array.isArray(this.timeRecords) ? this.timeRecords : [];
+    const times = rows.filter((r) => r && Number.isFinite(r.timeSpent) && r.timeSpent >= 0).map((r) => r.timeSpent);
+    const summary = times.reduce(
+      (state, value, index) => ({
+        average: state.average + (value - state.average) / (index + 1),
+        minimum: Math.min(state.minimum, value),
+        maximum: Math.max(state.maximum, value)
+      }),
+      { average: 0, minimum: Infinity, maximum: 0 }
+    );
     return {
-      totalQuestions: this.timeRecords.length,
-      averageTime,
-      fastestTime,
-      slowestTime,
-      timeoutCount,
-      timeoutRate: Math.round((timeoutCount / this.timeRecords.length) * 100),
-      efficiencyScore,
-      categoryStats,
-      recentTrend,
-      formattedAverage: this._formatTime(averageTime),
-      formattedFastest: this._formatTime(fastestTime),
-      formattedSlowest: this._formatTime(slowestTime)
+      source: 'legacy_timing',
+      scoringAuthority: false,
+      reliableCount: 0,
+      timeUnit: 'unverified_legacy_unit',
+      totalQuestions: rows.length,
+      validValueCount: times.length,
+      omittedValueCount: rows.length - times.length,
+      averageTime: times.length ? summary.average : null,
+      fastestTime: times.length ? summary.minimum : null,
+      slowestTime: times.length ? summary.maximum : null,
+      legacyTimeoutMarkCount: rows.filter((r) => r?.isTimeout === true).length,
+      efficiencyScore: null,
+      recentTrend: null
     };
   }
 
-  /**
-   * 获取推荐时限
-   * @param {Object} question - 题目信息
-   * @returns {number} 推荐时限（秒）
-   */
-  getRecommendedTimeLimit(question) {
+  getRecommendedTimeLimit(difficulty = 2) {
     this.init();
-
-    const category = question.category || '未分类';
-    const difficulty = question.difficulty || 2;
-
-    // 基于历史数据计算推荐时限
-    const categoryRecords = this.timeRecords.filter((r) => r.category === category && r.isCorrect);
-
-    let baseTime = this.settings.defaultTimeLimit;
-
-    if (categoryRecords.length >= 5) {
-      // 使用该分类正确答题的平均时间 * 1.5 作为推荐时限
-      const avgTime = categoryRecords.reduce((sum, r) => sum + r.timeSpent, 0) / categoryRecords.length;
-      baseTime = Math.round(avgTime * 1.5);
-    }
-
-    // 应用难度系数
-    const multiplier = this.settings.difficultyMultipliers[difficulty] || 1.0;
-    const recommended = Math.round(baseTime * multiplier);
-
-    // 限制在合理范围内
-    return Math.max(30, Math.min(300, recommended));
+    const base = Number.isFinite(this.settings.defaultTimeLimit) ? this.settings.defaultTimeLimit : 120;
+    const multiplier = this.settings.difficultyMultipliers?.[difficulty] ?? 1;
+    return Math.max(30, Math.min(300, Math.round(base * multiplier)));
   }
 
-  /**
-   * 获取最佳答题时段分析
-   * @returns {Object} 时段分析
-   */
   getBestTimeSlotAnalysis() {
     this.init();
-
-    if (this.timeRecords.length < 10) {
-      return {
-        hasEnoughData: false,
-        message: '数据不足，需要至少10道题的记录'
-      };
-    }
-
-    // 按小时分组
-    const hourlyStats = {};
-    for (let h = 0; h < 24; h++) {
-      hourlyStats[h] = { total: 0, correct: 0, totalTime: 0 };
-    }
-
-    for (const record of this.timeRecords) {
-      const hour = new Date(record.timestamp).getHours();
-      hourlyStats[hour].total++;
-      if (record.isCorrect) hourlyStats[hour].correct++;
-      hourlyStats[hour].totalTime += record.timeSpent;
-    }
-
-    // 找出最佳时段
-    let bestHour = 0;
-    let bestScore = 0;
-
-    for (const [hour, stats] of Object.entries(hourlyStats)) {
-      if (stats.total >= 3) {
-        const accuracy = stats.correct / stats.total;
-        const avgTime = stats.totalTime / stats.total;
-        const efficiency = 1 - avgTime / this.settings.defaultTimeLimit;
-        const score = accuracy * 0.7 + Math.max(0, efficiency) * 0.3;
-
-        if (score > bestScore) {
-          bestScore = score;
-          bestHour = parseInt(hour);
-        }
-      }
-    }
-
-    // 生成时段建议
-    const timeSlots = {
-      morning: { start: 6, end: 12, label: '上午' },
-      afternoon: { start: 12, end: 18, label: '下午' },
-      evening: { start: 18, end: 22, label: '晚上' },
-      night: { start: 22, end: 6, label: '深夜' }
-    };
-
-    let bestSlot = 'morning';
-    for (const [slot, config] of Object.entries(timeSlots)) {
-      if (bestHour >= config.start && bestHour < config.end) {
-        bestSlot = slot;
-        break;
-      }
-    }
-
     return {
-      hasEnoughData: true,
-      bestHour,
-      bestSlot,
-      bestSlotLabel: timeSlots[bestSlot].label,
-      hourlyStats,
-      recommendation: `你在${timeSlots[bestSlot].label} ${bestHour}:00 左右学习效率最高`
+      source: 'legacy_timing',
+      scoringAuthority: false,
+      hasEnoughData: false,
+      recommendation: null,
+      message: '旧计时记录不能证明学习效率'
     };
   }
 
@@ -384,9 +284,8 @@ class QuestionTimer {
    * 计时器tick
    */
   _tick() {
-    if (this.isPaused) return;
-
-    this.elapsed++;
+    if (this.isPaused || !this.active || !this._matches(this.token)) return;
+    this._sample();
     const remaining = Math.max(0, this.timeLimit - this.elapsed);
     const progress = this.elapsed / this.timeLimit;
 
@@ -410,7 +309,8 @@ class QuestionTimer {
     }
 
     // 检查超时
-    if (this.elapsed >= this.timeLimit) {
+    if (this.elapsed >= this.timeLimit && !this._timedOut) {
+      this._timedOut = true;
       this._triggerTimeout();
     }
   }
@@ -447,7 +347,7 @@ class QuestionTimer {
    * 触发超时
    */
   _triggerTimeout() {
-    this.stop();
+    // A soft deadline is a reminder; measurement continues until explicit submit/hide.
 
     if (this.callbacks.onTimeout) {
       this.callbacks.onTimeout({
@@ -472,59 +372,6 @@ class QuestionTimer {
   }
 
   /**
-   * 计算效率分数
-   */
-  _calculateEfficiencyScore() {
-    if (this.timeRecords.length === 0) return 0;
-
-    let totalScore = 0;
-    for (const record of this.timeRecords) {
-      // 基础分：正确得60分，错误得20分
-      let score = record.isCorrect ? 60 : 20;
-
-      // 时间效率加分：用时越少加分越多（最多40分）
-      if (record.timeLimit > 0) {
-        const timeRatio = record.timeSpent / record.timeLimit;
-        if (timeRatio <= 0.5) {
-          score += 40; // 用时不到一半，满分
-        } else if (timeRatio <= 0.8) {
-          score += 30; // 用时80%以内
-        } else if (timeRatio < 1.0) {
-          score += 20; // 未超时
-        }
-        // 超时不加分
-      }
-
-      totalScore += score;
-    }
-
-    return Math.round(totalScore / this.timeRecords.length);
-  }
-
-  /**
-   * 计算最近趋势
-   */
-  _calculateRecentTrend() {
-    if (this.timeRecords.length < 10) return 'stable';
-
-    const recent = this.timeRecords.slice(-10);
-    const previous = this.timeRecords.slice(-20, -10);
-
-    if (previous.length === 0) return 'stable';
-
-    const recentAvg = recent.reduce((sum, r) => sum + r.timeSpent, 0) / recent.length;
-    const previousAvg = previous.reduce((sum, r) => sum + r.timeSpent, 0) / previous.length;
-
-    // [AUDIT R298] 防止 previousAvg 为 0 时除零产生 Infinity
-    if (previousAvg === 0) return 'stable';
-    const change = (recentAvg - previousAvg) / previousAvg;
-
-    if (change < -0.1) return 'improving'; // 用时减少10%以上
-    if (change > 0.1) return 'slowing'; // 用时增加10%以上
-    return 'stable';
-  }
-
-  /**
    * 格式化时间
    */
   _formatTime(seconds) {
@@ -539,7 +386,7 @@ class QuestionTimer {
   _loadSettings() {
     try {
       if (typeof uni !== 'undefined') {
-        const saved = storageService.get(STORAGE_KEYS.TIMER_SETTINGS);
+        const saved = storageService.get(STORAGE_KEYS.TIMER_SETTINGS, null, { migrateLegacy: false });
         if (saved) {
           this.settings = { ...DEFAULT_SETTINGS, ...saved };
         }
@@ -568,27 +415,10 @@ class QuestionTimer {
   _loadTimeRecords() {
     try {
       if (typeof uni !== 'undefined') {
-        this.timeRecords = storageService.get(STORAGE_KEYS.TIME_RECORDS, []);
+        this.timeRecords = storageService.get(STORAGE_KEYS.TIME_RECORDS, [], { migrateLegacy: false });
       }
     } catch (_e) {
       this.timeRecords = [];
-    }
-  }
-
-  /**
-   * 保存时间记录
-   */
-  _saveTimeRecords() {
-    try {
-      if (typeof uni !== 'undefined') {
-        // 只保留最近500条
-        if (this.timeRecords.length > 500) {
-          this.timeRecords = this.timeRecords.slice(-500);
-        }
-        storageService.save(STORAGE_KEYS.TIME_RECORDS, this.timeRecords);
-      }
-    } catch (e) {
-      logger.warn('[QuestionTimer] 保存时间记录失败:', e);
     }
   }
 }
@@ -601,20 +431,20 @@ export function startTimer(options) {
   return questionTimer.start(options);
 }
 
-export function stopTimer() {
-  return questionTimer.stop();
+export function stopTimer(token) {
+  return questionTimer.stop(token);
 }
 
-export function pauseTimer() {
-  return questionTimer.pause();
+export function pauseTimer(token) {
+  return questionTimer.pause(token);
 }
 
-export function resumeTimer() {
-  return questionTimer.resume();
+export function resumeTimer(token) {
+  return questionTimer.resume(token);
 }
 
-export function getRemaining() {
-  return questionTimer.getRemaining();
+export function getRemaining(token) {
+  return questionTimer.getRemaining(token);
 }
 
 export function recordTime(data) {

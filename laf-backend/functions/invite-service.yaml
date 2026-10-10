@@ -1,5 +1,5 @@
 name: invite-service
-desc: ""
+desc: ''
 methods:
   - GET
   - POST

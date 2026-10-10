@@ -1,144 +1,21 @@
-# 后端分仓迁移指南
+# 迁移与恢复
 
-> 本文档记录将 `laf-backend/` 从 EXAM-MASTER 主仓库拆分为独立仓库的操作步骤。
+## 本地学习数据
 
-## 前置条件
+保持旧应用 ID、命名空间和资料路径。版本 1 迁移保留旧键并保存原始快照；缺尝试级依据的旧进度只显示待复核，不进入新首答统计。重复迁移幂等，保存失败如实报告。
 
-- 已在 GitHub 创建新仓库 `EXAM-MASTER-BACKEND`
-- 当前 `laf-backend/` 目录已包含独立运行所需的全部文件
+备份恢复采用同账户事件合并。先在设备校验并预览，再检查当前revision、写者租约和账户，创建recovery前态后提交。不信任导入文件中的统计、grade、result或成功声明；有限可执行规则再验，新增人工参考待复核，依赖复习暂停。小备份500操作/150万字符/32层/2秒，大旧v1及分页包分批最多20操作/140万字符、总120秒、可取消；逻辑600万字符/2万操作，不部分覆盖。普通跨账户恢复拒绝；访客→当前正式账户仅通过独立预览/确认，完整源指纹再验，原访客保留，同日计划完整合并，不静默上传。
 
-## 迁移步骤
+恢复和撤销改变 lifecycleRevision，阻止旧网络同步结果写入；重连仍须用户授权。回滚恢复最近一次写入前态，不自动删除服务端副本，不抵消供应商成本。旧 legacy 原始快照不作为可信新事件重放。
 
-### 1. 从主仓库提取后端历史（保留 git 历史）
+长历史物理迁移在下一次成功保存发生，旧raw可读，本机不可变分页/manifest与共享副本、服务端单文档gzip/CAS保持逻辑v1。中断页清理、重复重放、归属、陈旧分页和回滚由专项测试验证；真实隔离Mongo/H5已通过，设备另验。隐私删除清理恢复/迁移/冲突副本及无引用分页，不能通过撤销复活正文。回退旧服务代码不能直接读取gzip封装；生产须具备独立前态及授权转换演练，不以本机逻辑撤销代替数据库回滚。
 
-```bash
-# 在主仓库目录执行
-cd /path/to/EXAM-MASTER
+## 生产数据
 
-# 使用 git subtree split 提取 laf-backend 目录的完整历史
-git subtree split -P laf-backend -b backend-split
+必须具备真实原始数据源、对应版本、数据库前态、可恢复备份、原子应用、独立回滚和真实业务后检。禁止空库/样例修复替代真实恢复，禁止借新学习入口发布未通过质量门禁的旧公共库。现有部署拒绝未保护写入的策略继续生效。
 
-# 创建临时目录，初始化新仓库
-mkdir /tmp/exam-master-backend
-cd /tmp/exam-master-backend
-git init
-git pull /path/to/EXAM-MASTER backend-split
+2026-10-02 客户已授权受保护后端升级，并在没有旧业务数据库后明确授权新建私有账户与学习库。新库准备已由独立守护者接受，合成文档/索引的隔离恢复和私有备份通过；主库实际 `users:0`，没有恢复旧账号、历史或公共题库。实际保留库备份随后在独立容器恢复应用账户和 readWrite 权限，重新认证、本库读写、管理库访问拒绝和索引通过，临时容器/数据已清理，主库及备份未改。原公开后端尚未切换，最终原子应用、入口回滚和外部业务后检仍须按[09A](09A-LAF-BACKEND-DEPLOYMENT.md)完成。
 
-# 关联远程仓库并推送
-git remote add origin git@github.com:djblack1209-coder/EXAM-MASTER-BACKEND.git
-git push -u origin main
-```
+变更时保留操作结果、版本和脱敏证据；普通备份不含 JWT/模型/保险库密钥，依法必要记录及运营备份保留策略由真实部署合同说明。没有生产授权时只做本地隔离演练。
 
-### 2. 验证新仓库
-
-```bash
-cd /tmp/exam-master-backend
-
-# 确认目录结构
-ls -la
-# 应包含: functions/ deploy/ scripts/ data/ database/ database-schema/
-#         types/ utils/ triggers/ .github/ package.json tsconfig.json README.md
-
-# 确认 git 历史
-git log --oneline | head -20
-```
-
-### 3. 清理主仓库
-
-```bash
-cd /path/to/EXAM-MASTER
-
-# 删除已迁移的后端目录
-git rm -r laf-backend/
-
-# 删除已迁移到后端的根目录资源
-git rm -r data/
-git rm -r database/
-git rm -r scripts/crawlers/
-git rm -r scripts/data-sync/
-git rm scripts/test/load-test-50qps.js
-git rm scripts/test/load-test.ts
-git rm scripts/test/pk-atomicity-test.js
-git rm scripts/test/security-audit.js
-git rm scripts/test/test-ai-service.js
-git rm scripts/test/test-ai-upgrade.js
-git rm scripts/test/test-cot-verification.js
-
-# 提交
-git commit -m "chore: 移除已迁移至独立仓库的后端代码"
-```
-
-### 4. 更新前端 CI/CD
-
-主仓库的 `.github/workflows/ci-cd.yml` 需要移除后端构建步骤：
-- 删除 `Build and push backend image` step
-- 删除 staging/production 部署中的 backend 相关 kubectl 命令
-- 保留前端专属的 lint → test → build → deploy 流程
-
-### 5. 更新 .gitignore
-
-移除主仓库 `.gitignore` 中的后端相关条目：
-```
-# 删除这些行
-laf-backend/.app.yaml
-laf-backend/.env*
-```
-
-### 6. 更新文档引用
-
-以下文档中引用了 `laf-backend/` 路径，需要更新为新仓库地址：
-- `docs/04-API-DOCUMENTATION.md`
-- `docs/08C-SCRIPTS-REFERENCE.md`
-- `docs/09-DEPLOYMENT-GUIDE.md`
-- `docs/09A-LAF-BACKEND-DEPLOYMENT.md`
-
-### 7. 更新 Docker 构建上下文
-
-`deploy/docker/Dockerfile` 中的 `COPY laf-backend/ ./` 需要删除（后端已有独立 Dockerfile）。
-`deploy/docker/docker-compose.yml` 中的 backend service 需要改为引用外部镜像或删除。
-
-## 分仓后的目录结构
-
-### 前端仓库 (EXAM-MASTER)
-```
-EXAM-MASTER/
-├── src/                    # 前端源码
-├── common/                 # 公共样式
-├── static/                 # 静态资源
-├── scripts/                # 前端构建/修复脚本
-│   ├── build/
-│   ├── fix/
-│   ├── optimize/
-│   ├── refactor/
-│   └── test/               # 前端测试脚本
-├── tests/                  # 单元/视觉测试
-├── deploy/                 # 前端部署配置
-├── docs/                   # 项目文档
-├── .github/workflows/      # 前端 CI/CD
-├── package.json
-└── vite.config.js
-```
-
-### 后端仓库 (EXAM-MASTER-BACKEND)
-```
-EXAM-MASTER-BACKEND/
-├── functions/              # 云函数（API）
-│   └── _shared/
-├── database-schema/        # 数据库 Schema
-├── database/               # SQL Schema
-├── data/                   # 静态数据
-├── triggers/               # 数据库触发器
-├── types/                  # TypeScript 类型
-├── utils/                  # 工具函数
-├── scripts/                # 后端脚本
-│   ├── crawlers/
-│   ├── data-sync/
-│   └── test/
-├── deploy/                 # 后端部署配置
-│   ├── docker/
-│   ├── k8s/
-│   └── monitoring/
-├── .github/workflows/      # 后端 CI/CD
-├── package.json
-└── tsconfig.json
-```
+流式迁移继续复用learning_accounts、learning_model_keys与逻辑v1事件；新增配置版本/transport/usageComplete/executionStage字段为兼容添加，旧成本记录不抹掉。旧记录缺当前配置身份视为连接未测试；旧请求指纹不保证当前模型配置已验证，不猜历史调用或补造费用。model.request备份导入只作历史，原学习事实和公共题库门禁不变。已有升级授权不省略前态、独立备份、原子应用/独立回滚和真实业务后检，也不扩大为收费、公共库发布或破坏性恢复授权。

@@ -1,8 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import {
-  PUBLIC_COURSE_RELEASE_SCOPE,
-  buildPublicCourseTrainingPlan
-} from '@/config/public-course-training-plan.js';
+import { PUBLIC_COURSE_RELEASE_SCOPE, buildPublicCourseTrainingPlan } from '@/config/public-course-training-plan.js';
 
 describe('public course training plan', () => {
   it('keeps the strict 2005-2026 six-track release scope', () => {
@@ -11,14 +8,7 @@ describe('public course training plan', () => {
       endYear: 2026,
       totalSlots: 132
     });
-    expect(PUBLIC_COURSE_RELEASE_SCOPE.tracks).toEqual([
-      'politics',
-      'english1',
-      'english2',
-      'math1',
-      'math2',
-      'math3'
-    ]);
+    expect(PUBLIC_COURSE_RELEASE_SCOPE.tracks).toEqual(['politics', 'english1', 'english2', 'math1', 'math2', 'math3']);
   });
 
   it('builds a weekly plan without marking missing banks as ready', () => {

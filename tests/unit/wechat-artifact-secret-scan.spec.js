@@ -6,22 +6,25 @@ import { describe, expect, it } from 'vitest';
 import { scanForbiddenClientSecrets } from '../../scripts/build/wechat-artifact-secret-scan.mjs';
 
 describe('wechat artifact secret scan', () => {
-  it('flags server-only env names in generated client artifacts', () => {
-    const root = mkdtempSync(join(tmpdir(), 'exam-master-secret-scan-'));
-    try {
-      mkdirSync(join(root, 'config'), { recursive: true });
-      writeFileSync(join(root, 'config/index.js'), 'const leak = "VITE_INVITE_SECRET";\n', 'utf8');
+  it.each(['VITE_INVITE_SECRET', 'WX_SECRET', 'WX_MOBILE_SECRET', 'QQ_MINI_SECRET'])(
+    'flags server-only %s in generated client artifacts',
+    (token) => {
+      const root = mkdtempSync(join(tmpdir(), 'exam-master-secret-scan-'));
+      try {
+        mkdirSync(join(root, 'config'), { recursive: true });
+        writeFileSync(join(root, 'config/index.js'), `const leak = "${token}";\n`, 'utf8');
 
-      const findings = scanForbiddenClientSecrets(root);
+        const findings = scanForbiddenClientSecrets(root);
 
-      expect(findings).toEqual([
-        {
-          file: 'config/index.js',
-          token: 'VITE_INVITE_SECRET'
-        }
-      ]);
-    } finally {
-      rmSync(root, { recursive: true, force: true });
+        expect(findings).toEqual([
+          {
+            file: 'config/index.js',
+            token
+          }
+        ]);
+      } finally {
+        rmSync(root, { recursive: true, force: true });
+      }
     }
-  });
+  );
 });

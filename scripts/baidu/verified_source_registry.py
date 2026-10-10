@@ -22,7 +22,11 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_REGISTRY = PROJECT_ROOT / "data" / "verified-source-registry.json"
 DEFAULT_OUTPUT = PROJECT_ROOT / "data" / "verified-source-export.json"
 PUBLIC_TRACKS = {"politics", "english1", "english2", "math1", "math2", "math3"}
-SUPPORTED_SOURCE_TYPES = {"official_paper", "official_question_paper", "official_syllabus"}
+SUPPORTED_SOURCE_TYPES = {
+    "official_paper",
+    "official_question_paper",
+    "official_syllabus",
+}
 
 
 def utc_now() -> str:
@@ -92,22 +96,30 @@ def require_text(source: dict[str, Any], field_name: str) -> str:
 def require_human_verified_fields(source: dict[str, Any]) -> tuple[str, str]:
     draft_status = str(source.get("draftStatus") or "").strip()
     if draft_status == "requires_human_verification":
-        raise ValueError("draftStatus requires human verification; remove draft handoff fields after verification")
+        raise ValueError(
+            "draftStatus requires human verification; remove draft handoff fields after verification"
+        )
 
     human_field_status = str(source.get("humanFieldStatus") or "").strip()
     if human_field_status == "requires_human_input":
-        raise ValueError("humanFieldStatus requires human input; fill the verified source registry draft first")
+        raise ValueError(
+            "humanFieldStatus requires human input; fill the verified source registry draft first"
+        )
 
     missing_human_fields = source.get("missingHumanFields")
     if isinstance(missing_human_fields, list):
         missing = [str(item).strip() for item in missing_human_fields if str(item).strip()]
         if missing:
-            raise ValueError(f"missingHumanFields must be empty before export: {', '.join(missing)}")
+            raise ValueError(
+                f"missingHumanFields must be empty before export: {', '.join(missing)}"
+            )
 
     verified_by = require_text(source, "verifiedBy")
     evidence_note = require_text(source, "evidenceNote")
     if evidence_note.startswith("DRAFT:"):
-        raise ValueError("evidenceNote must be replaced with a human verification note before export")
+        raise ValueError(
+            "evidenceNote must be replaced with a human verification note before export"
+        )
 
     return verified_by, evidence_note
 
@@ -139,8 +151,19 @@ def normalize_source(source: dict[str, Any], *, registry_path: Path, now: str) -
     computed_sha256 = sha256_file(local_path)
     expected_sha256 = normalize_sha256(source.get("expectedSha256") or source.get("sha256"))
     if expected_sha256 and expected_sha256 != computed_sha256:
-        raise ValueError(f"expectedSha256 mismatch for {local_path}: expected {expected_sha256}, got {computed_sha256}")
-    subject = str(source.get("subject") or ("english" if track.startswith("english") else "math" if track.startswith("math") else track))
+        raise ValueError(
+            f"expectedSha256 mismatch for {local_path}: expected {expected_sha256}, got {computed_sha256}"
+        )
+    subject = str(
+        source.get("subject")
+        or (
+            "english"
+            if track.startswith("english")
+            else "math"
+            if track.startswith("math")
+            else track
+        )
+    )
     verified_by, evidence_note = require_human_verified_fields(source)
 
     return {
@@ -165,11 +188,16 @@ def normalize_source(source: dict[str, Any], *, registry_path: Path, now: str) -
     }
 
 
-def build_verified_source_export(registry_path: Path | str = DEFAULT_REGISTRY) -> dict[str, Any]:
+def build_verified_source_export(
+    registry_path: Path | str = DEFAULT_REGISTRY,
+) -> dict[str, Any]:
     registry_path = Path(registry_path)
     payload = read_json(registry_path)
     now = utc_now()
-    files = [normalize_source(source, registry_path=registry_path, now=now) for source in get_sources(payload)]
+    files = [
+        normalize_source(source, registry_path=registry_path, now=now)
+        for source in get_sources(payload)
+    ]
 
     return {
         "version": 1,
@@ -180,7 +208,9 @@ def build_verified_source_export(registry_path: Path | str = DEFAULT_REGISTRY) -
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Build a verified official source export for Source Manifest.")
+    parser = argparse.ArgumentParser(
+        description="Build a verified official source export for Source Manifest."
+    )
     parser.add_argument("--registry", type=Path, default=DEFAULT_REGISTRY)
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
     parser.add_argument("--dry-run", action="store_true")

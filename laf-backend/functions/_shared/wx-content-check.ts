@@ -12,7 +12,7 @@
  * @since H019 修复
  */
 
-import { createLogger } from './api-response';
+import { createLogger } from './api-response.js';
 
 const logger = createLogger('[WxContentCheck]');
 

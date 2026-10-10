@@ -18,6 +18,8 @@ import config from '@/config/index.js';
 const APP_CONFIG = { cacheKeys: config.storage.cacheKeys };
 import { storageService } from '../../services/storageService.js';
 
+import { summarizeQuizProgress } from '@/services/quiz-session-contract.js';
+
 export const useStudyStore = defineStore('study', () => {
   /** @type {import('vue').Ref<Object>} 学习进度汇总数据 */
   const studyProgress = ref({
@@ -32,12 +34,16 @@ export const useStudyStore = defineStore('study', () => {
   /** @type {import('vue').Ref<Array<Object>>} 最近答题记录（最多 100 条） */
   const questionHistory = ref([]);
 
-  /** @type {import('vue').ComputedRef<number>} 正确率百分比（保留一位小数） */
-  const accuracy = computed(() => {
-    const { completedQuestions, correctQuestions } = studyProgress.value;
-    if (completedQuestions === 0) return 0;
-    return Math.round((correctQuestions / completedQuestions) * 1000) / 10;
-  });
+  /** 近期逐题旧判定的比例；原累计汇总保持，但不再作为可核对分母。 */
+  const legacySummary = computed(() =>
+    summarizeQuizProgress({
+      answeredQuestions: (Array.isArray(questionHistory.value) ? questionHistory.value : []).map((item, index) => ({
+        ...item,
+        index
+      }))
+    })
+  );
+  const accuracy = computed(() => legacySummary.value.legacyAccuracy);
 
   /**
    * 从本地缓存恢复进度数据（App 启动时调用）
@@ -128,6 +134,7 @@ export const useStudyStore = defineStore('study', () => {
     studyProgress,
     questionHistory,
     accuracy,
+    legacySummary,
 
     // 方法
     restoreProgress,

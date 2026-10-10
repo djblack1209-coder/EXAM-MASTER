@@ -126,10 +126,9 @@ function findSourceAuditReports(rootPath) {
 }
 
 function defaultLocalSourceAuditPaths() {
-  return unique([
-    DEFAULT_LOCAL_SOURCE_AUDIT,
-    ...findSourceAuditReports(DEFAULT_HISTORY_SOURCE_AUDIT_ROOT)
-  ]).filter(existsFile);
+  return unique([DEFAULT_LOCAL_SOURCE_AUDIT, ...findSourceAuditReports(DEFAULT_HISTORY_SOURCE_AUDIT_ROOT)]).filter(
+    existsFile
+  );
 }
 
 function mergeLocalSourceAudits(reports) {
@@ -286,9 +285,7 @@ function sourceSampleHasBlocker(sample, blocker) {
   const riskFlags = Array.isArray(sample?.riskFlags) ? sample.riskFlags : [];
   const blockReasons = Array.isArray(sample?.blockReasons) ? sample.blockReasons : [];
   const sourceQualityReason = sample?.sourceQuality?.blockReason ? [sample.sourceQuality.blockReason] : [];
-  return [...riskFlags, ...blockReasons, ...sourceQualityReason].some((value) =>
-    String(value || '').includes(blocker)
-  );
+  return [...riskFlags, ...blockReasons, ...sourceQualityReason].some((value) => String(value || '').includes(blocker));
 }
 
 function sourceSamplesHaveBlocker(samples, blocker) {
@@ -519,25 +516,10 @@ function compareVerifiedSourceRegistryHumanFields(a, b) {
   return fieldRank || String(a || '').localeCompare(String(b || ''));
 }
 
-const SOURCE_MANIFEST_HUMAN_VERIFICATION_STEPS = [
-  '核验 localPath 对应文件与 track/year/科目一致，且 paper 与 answer 是同一套试卷。',
-  '核验 answer 文件覆盖全部客观题/主观题参考答案；缺题或版本差异时不得标 matched。',
-  '核验 sourceUrl/provenanceUrl/remotePath 指向权威或已授权来源，并与 SHA-256 文件一致。',
-  '核验 legalReview.publishBlocked=false，riskFlags 不含 answer_missing/brand_leak/copyright_review_required/ad_or_promo。',
-  '登记后重新运行 Source Manifest merge、manifest/question-bank/release backlog 门禁。'
-];
-
 const SOURCE_MANIFEST_POST_REGISTRATION_COMMANDS = [
   'npm run audit:release:backlog',
   'npm run audit:question-bank:release'
 ];
-
-function subjectForTrack(track) {
-  if (track === 'politics') return 'politics';
-  if (String(track || '').startsWith('english')) return 'english';
-  if (String(track || '').startsWith('math')) return 'math';
-  return '';
-}
 
 function missingVerifiedSourceRegistryHumanFields(draft) {
   return VERIFIED_SOURCE_REGISTRY_HUMAN_FIELDS.filter((field) => {
@@ -547,44 +529,7 @@ function missingVerifiedSourceRegistryHumanFields(draft) {
   });
 }
 
-function verifiedSourceRegistryDrafts(localSourceAudit, { track = '', year = '' } = {}) {
-  return localSourceAuditSamples(localSourceAudit)
-    .filter((sample) => {
-      const role = String(sample.role || '');
-      return (
-        ['paper', 'answer', 'paper_answer'].includes(role) &&
-        sample.textLayer === 'usable' &&
-        !sample.blockers.length &&
-        sample.localPath
-      );
-    })
-    .map((sample) => {
-      const draft = {
-        id: `${track || 'track'}_${year || 'year'}_${sample.role || 'source'}_draft`,
-        localPath: sample.localPath,
-        sourceUrl: '',
-        remotePath: '',
-        expectedSha256: sample.sha256 || '',
-        sourceRole: sample.role || '',
-        subject: subjectForTrack(track),
-        track,
-        year,
-        sourceType: 'official_paper',
-        answerEvidenceStatus: 'matched',
-        verifiedBy: '',
-        evidenceNote: `DRAFT: human must verify ${sample.role || 'source'} file SHA-256 ${sample.sha256 || 'missing'} against an authorized source before registration.`,
-        draftStatus: 'requires_human_verification'
-      };
-      const missingHumanFields = missingVerifiedSourceRegistryHumanFields(draft);
-      return {
-        ...draft,
-        missingHumanFields,
-        humanFieldStatus: missingHumanFields.length ? 'requires_human_input' : 'ready_for_merge'
-      };
-    });
-}
-
-function sourceManifestRegistrationChecklist(localSourceAudit, manifestSamples = [], slot = {}) {
+function sourceManifestRegistrationChecklist(localSourceAudit, manifestSamples = []) {
   const diagnostics = localSourceAudit || {};
   const localFileCandidates = localSourceAuditSamples(diagnostics).map((sample) => ({
     role: sample.role || '',
@@ -639,7 +584,7 @@ function sourceManifestRegistrationChecklist(localSourceAudit, manifestSamples =
       ? 'Local paper/answer files are readable and unblocked. Current release gate counts Baidu Netdisk official_paper sources by auto-pairing remotePath plus content hash; verified source registry drafts are optional audit metadata, not a release prerequisite.'
       : hasSourceContentMismatch
         ? 'At least one manifest candidate is a known content mismatch. Keep it publish-blocked and add a visually verified replacement source before auto-pairing.'
-      : 'Resolve listed local-source blockers before the slot can be treated as an auto-paired official source.'
+        : 'Resolve listed local-source blockers before the slot can be treated as an auto-paired official source.'
   };
 }
 
@@ -833,9 +778,10 @@ function buildCoverageItems(
           track: trackId,
           year,
           title: `${TRACK_LABELS[trackId] || trackId} ${year} 缺少可发布题库`,
-          nextAction: missingSource || localSourceBlocked
-            ? sourceEvidenceNextAction(localSourceAudit, '再进入题卡清洗和 registry 注册。', candidateSamples)
-            : '已有可发布题源证据时，完成题卡清洗、答案匹配、证据哈希，再按 registry 规范注册题库。',
+          nextAction:
+            missingSource || localSourceBlocked
+              ? sourceEvidenceNextAction(localSourceAudit, '再进入题卡清洗和 registry 注册。', candidateSamples)
+              : '已有可发布题源证据时，完成题卡清洗、答案匹配、证据哈希，再按 registry 规范注册题库。',
           evidence: {
             requiredYears: track.requiredYears || [],
             publishedYears: track.publishedYears || [],
@@ -881,9 +827,10 @@ function buildCoverageItems(
           track: trackId,
           year,
           title: `${TRACK_LABELS[trackId] || trackId} ${year} 有候选来源但未达到发布标准`,
-          nextAction: missingSource || localSourceBlocked
-            ? sourceEvidenceNextAction(localSourceAudit, '再继续题卡清洗和 registry 发布状态核验。', candidateSamples)
-            : '沿用现有清洗队列推进，补齐题目结构、答案 evidence、source evidence 和注册状态；未通过前保持禁用或自用草稿。',
+          nextAction:
+            missingSource || localSourceBlocked
+              ? sourceEvidenceNextAction(localSourceAudit, '再继续题卡清洗和 registry 发布状态核验。', candidateSamples)
+              : '沿用现有清洗队列推进，补齐题目结构、答案 evidence、source evidence 和注册状态；未通过前保持禁用或自用草稿。',
           evidence: {
             requiredYears: track.requiredYears || [],
             publishedYears: track.publishedYears || [],
@@ -1185,15 +1132,20 @@ function buildWechatDevtoolsSmokeItems(wechatSmoke) {
   const diagnosticCode = String(sampleStep?.code || '').trim();
   let nextAction =
     '重新构建 mp-weixin 后运行 npm run smoke:wechat:devtools；若页面断言失败，按失败步骤修复小程序可用性。';
-  if (diagnosticCode === 'wechat_devtools_login_required' || /需要重新登录|login required|login\s*false/i.test(errorText)) {
+  if (
+    diagnosticCode === 'wechat_devtools_login_required' ||
+    /需要重新登录|login required|login\s*false/i.test(errorText)
+  ) {
     nextAction = '重新登录微信开发者工具，确认 CLI islogin=true 后重新运行 npm run smoke:wechat:devtools。';
   } else if (errorText.includes('listen EPERM')) {
-    nextAction = '当前执行环境禁止本地端口监听；在允许 WeChat DevTools 自动化端口的本机环境重新运行 npm run smoke:wechat:devtools。';
+    nextAction =
+      '当前执行环境禁止本地端口监听；在允许 WeChat DevTools 自动化端口的本机环境重新运行 npm run smoke:wechat:devtools。';
   } else if (
     diagnosticCode === 'wechat_devtools_automation_port_unavailable' ||
     /http port is open|Failed connecting to ws|Port .* is in use/i.test(errorText)
   ) {
-    nextAction = '开启微信开发者工具服务端口/自动化能力，必要时重启 DevTools 后重新运行 npm run smoke:wechat:devtools。';
+    nextAction =
+      '开启微信开发者工具服务端口/自动化能力，必要时重启 DevTools 后重新运行 npm run smoke:wechat:devtools。';
   }
 
   return [

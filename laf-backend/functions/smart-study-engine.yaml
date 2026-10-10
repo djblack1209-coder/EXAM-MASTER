@@ -1,5 +1,5 @@
 name: smart-study-engine
-desc: 智能学习引擎 - 自适应学习计划/知识图谱分析/间隔重复调度
+desc: 学习依据汇总、旧记录分组与复习计划草稿
 methods:
   - POST
 tags: []

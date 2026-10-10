@@ -31,8 +31,6 @@ describe('English II 2017 published bank data', () => {
     expect(bank.cards.find((card) => card.number === 48).question).toContain('4692');
     expect(bank.cards.find((card) => card.number === 48).question).toContain('6378');
     expect(bank.cards.find((card) => card.number === 48).question).toContain('7811');
-    expect(bank.cards.find((card) => card.number === 48).answerEvidence.evidenceRole).toBe(
-      'official_writing_prompt'
-    );
+    expect(bank.cards.find((card) => card.number === 48).answerEvidence.evidenceRole).toBe('official_writing_prompt');
   });
 });

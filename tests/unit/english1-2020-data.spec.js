@@ -26,14 +26,10 @@ describe('English I 2020 published bank data', () => {
     expect(bank.cards.find((card) => card.number === 46).targetSegment).toContain(
       "With the Church's teachings and ways of thinking"
     );
-    expect(bank.cards.find((card) => card.number === 51).question).toContain(
-      'upcoming singing contest'
-    );
+    expect(bank.cards.find((card) => card.number === 51).question).toContain('upcoming singing contest');
     expect(bank.cards.find((card) => card.number === 52).question).toContain('习惯');
     expect(JSON.stringify(bank)).not.toContain('手机阅读目的调查');
     expect(JSON.stringify(bank)).not.toContain('failure');
-    expect(bank.cards.find((card) => card.number === 52).answerEvidence.evidenceRole).toBe(
-      'official_writing_prompt'
-    );
+    expect(bank.cards.find((card) => card.number === 52).answerEvidence.evidenceRole).toBe('official_writing_prompt');
   });
 });

@@ -2,10 +2,18 @@ import { describe, expect, it } from 'vitest';
 
 import {
   buildMobileModuleInventory,
+  loadInventoryFromDisk,
   normalizePagePath
 } from '../../scripts/build/mobile-module-inventory.mjs';
 
 describe('mobile module inventory', () => {
+  it('registers the actual dialogue, mistakes, plan and statistics routes in the project', () => {
+    const inventory = loadInventoryFromDisk();
+    for (const route of ['learning', 'mistake', 'plan', 'study-detail']) {
+      expect(inventory.exposedRoutes).toContain(`pages/${route}/index`);
+      expect(inventory.hiddenPageFiles).not.toContain(`pages/${route}/index`);
+    }
+  });
   it('normalizes page files and route declarations consistently', () => {
     expect(normalizePagePath('src/pages/practice-sub/do-quiz.vue')).toBe('pages/practice-sub/do-quiz');
     expect(normalizePagePath('pages/login/index')).toBe('pages/login/index');

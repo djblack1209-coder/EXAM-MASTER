@@ -1,0 +1,316 @@
+// @vitest-environment node
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import { EventEmitter } from 'node:events';
+import { PassThrough } from 'node:stream';
+import { createAlgebraQuestion } from '../../laf-backend/functions/_shared/learning-algebra.js';
+import { applyLearningOperation, emptyLearningState } from '../../laf-backend/functions/_shared/learning-domain.js';
+import {
+  computeSympyReference,
+  prepareSympyReference,
+  runSympyWorker,
+  validateSympyResult
+} from '../../laf-backend/functions/_shared/learning-sympy';
+
+const processes = vi.hoisted(() => ({ spawn: vi.fn(), execFile: vi.fn() }));
+vi.mock('node:child_process', () => ({ ...processes, default: processes }));
+const scope = { ownerId: 'sympy-owner', conversationId: 'task-a', questionKey: 'q@1', attemptId: 'answer-a' };
+const runtime = { python: '/trusted/python', packages: '/trusted/packages' };
+function context() {
+  let state = emptyLearningState(scope.ownerId);
+  for (const op of [
+    { id: scope.conversationId, type: 'conversation.start', data: { goal: '解方程' } },
+    {
+      id: 'question-a',
+      type: 'question.add',
+      data: { conversationId: scope.conversationId, question: createAlgebraQuestion('q', '解方程 x^2-2=0') }
+    },
+    {
+      id: 'focus-a',
+      type: 'question.focus',
+      data: { conversationId: scope.conversationId, questionKey: scope.questionKey }
+    },
+    {
+      id: scope.attemptId,
+      type: 'attempt.submit',
+      data: { conversationId: scope.conversationId, answer: 'sqrt(2)', explicit: true }
+    }
+  ])
+    state = applyLearningOperation(state, op).state;
+  return { ownerId: scope.ownerId, conversationId: scope.conversationId, epoch: 'view-a', state };
+}
+const output = () => ({
+  upstream: 'sympy',
+  version: '1.14.0',
+  domain: 'real',
+  all: false,
+  solutions: ['-sqrt(2)', 'sqrt(2)'],
+  excluded: [],
+  gradingAuthority: false
+});
+function child() {
+  const c: any = new EventEmitter();
+  Object.assign(c, {
+    pid: 1234,
+    exitCode: null,
+    signalCode: null,
+    stdin: new PassThrough(),
+    stdout: new PassThrough(),
+    stderr: new PassThrough()
+  });
+  c.kill = vi.fn((signal) => {
+    queueMicrotask(() => {
+      c.signalCode = signal;
+      c.emit('close', null);
+    });
+    return true;
+  });
+  c.finish = (value = output(), code = 0) => {
+    c.stdout.write(JSON.stringify(value));
+    c.exitCode = code;
+    c.emit('close', code);
+  };
+  processes.spawn.mockReturnValue(c);
+  return c;
+}
+afterEach(() => {
+  vi.useRealTimers();
+  vi.clearAllMocks();
+});
+
+describe('saved question and original-answer binding', () => {
+  it('derives stable structured coefficients only from the current original question without changing pending facts', () => {
+    const c = context();
+    const before = JSON.stringify(c);
+    const first = prepareSympyReference(c, scope);
+    expect(prepareSympyReference(c, scope)).toEqual(first);
+    expect(first.input.left.numerator).toEqual([
+      [-2, 1],
+      [0, 1],
+      [1, 1]
+    ]);
+    expect(JSON.stringify(first.input)).not.toContain('sqrt');
+    expect(c.state.attempts[0].grade.status).toBe('pending');
+    expect(JSON.stringify(c)).toBe(before);
+  });
+  it.each([
+    [
+      'owner',
+      (c: any) => {
+        c.ownerId = 'someone';
+      },
+      'OWNER_CHANGED'
+    ],
+    [
+      'state owner',
+      (c: any) => {
+        c.state.owner = 'someone';
+      },
+      'OWNER_CHANGED'
+    ],
+    [
+      'task',
+      (c: any) => {
+        c.conversationId = 'other';
+      },
+      'CONTEXT_CHANGED'
+    ],
+    [
+      'question',
+      (c: any) => {
+        c.state.conversations[0].activeQuestionKey = 'other@1';
+      },
+      'CONTEXT_CHANGED'
+    ],
+    [
+      'stopped',
+      (c: any) => {
+        c.state.conversations[0].stopped = true;
+      },
+      'STOPPED'
+    ],
+    [
+      'missing answer',
+      (c: any) => {
+        c.state.attempts = [];
+      },
+      'ORIGINAL_ANSWER_CHANGED'
+    ],
+    [
+      'newer answer',
+      (c: any) => {
+        c.state.attempts.push({ ...c.state.attempts[0], id: 'new' });
+      },
+      'ORIGINAL_ANSWER_CHANGED'
+    ],
+    [
+      'new version',
+      (c: any) => {
+        c.state.questions[0].version++;
+      },
+      'ORIGINAL_ANSWER_CHANGED'
+    ],
+    [
+      'uncertainty',
+      (c: any) => {
+        c.state.questions[0].uncertainties = [{ resolved: false }];
+      },
+      'UNRESOLVED_QUESTION'
+    ],
+    [
+      'unsupported',
+      (c: any) => {
+        c.state.questions[0].prompt = '任意程序';
+      },
+      'UNSUPPORTED_QUESTION'
+    ]
+  ])('rejects %s', (_, change, code) => {
+    const c = context();
+    (change as Function)(c);
+    expect(() => prepareSympyReference(c, scope)).toThrow(code as string);
+  });
+  it('question source, raw original, task epoch, and stop/resume revision change the request identity', () => {
+    for (const change of [
+      (c: any) => {
+        c.state.questions[0].source = { kind: 'different' };
+      },
+      (c: any) => {
+        c.state.attempts[0].answer = 'another original';
+      },
+      (c: any) => {
+        c.epoch = 'view-b';
+      },
+      (c: any) => {
+        c.state.revision += 2;
+      }
+    ]) {
+      const c = context();
+      const first = prepareSympyReference(c, scope);
+      change(c);
+      expect(prepareSympyReference(c, scope).requestId).not.toBe(first.requestId);
+    }
+  });
+  it('rejects extra scope authority or incomplete scope', () => {
+    expect(() => prepareSympyReference(context(), { ...scope, authority: true } as any)).toThrow('INVALID_SCOPE');
+    const { attemptId: _, ...missing } = scope;
+    expect(() => prepareSympyReference(context(), missing as any)).toThrow('INVALID_SCOPE');
+  });
+});
+
+describe('bounded worker and late result handling', () => {
+  it('returns a bound unpersisted reference; does not send the original answer or inherit environment credentials', async () => {
+    const c = context();
+    const before = JSON.stringify(c);
+    const p = child();
+    const done = computeSympyReference(scope, () => c, runtime);
+    await vi.waitFor(() => expect(processes.spawn).toHaveBeenCalledOnce());
+    p.finish();
+    const result = await done;
+    expect(result).toMatchObject({
+      gradingAuthority: false,
+      persisted: false,
+      requiresHelpRecord: true,
+      binding: { attemptId: scope.attemptId },
+      source: { version: '1.14.0', license: 'BSD-3-Clause' }
+    });
+    expect(JSON.stringify(c)).toBe(before);
+    const [, args, opts] = processes.spawn.mock.calls[0];
+    expect(args.slice(0, 2)).toEqual(['-I', '-B']);
+    expect(opts.env).toEqual({ PATH: '/usr/bin:/bin', LANG: 'C.UTF-8' });
+    expect(opts.shell).toBeUndefined();
+  });
+  it.each(['epoch', 'stop', 'original', 'owner', 'revision'])('rejects late %s changes', async (change) => {
+    const c = context();
+    const p = child();
+    const done = computeSympyReference(scope, () => c, runtime);
+    const rejection = expect(done).rejects.toBeInstanceOf(Error);
+    await vi.waitFor(() => expect(processes.spawn).toHaveBeenCalledOnce());
+    if (change === 'epoch') c.epoch = 'later';
+    if (change === 'stop') c.state.conversations[0].stopped = true;
+    if (change === 'original') c.state.attempts[0].answer = 'later';
+    if (change === 'owner') c.ownerId = 'other';
+    if (change === 'revision') c.state.revision++;
+    p.finish();
+    await rejection;
+  });
+  it('pre-cancel never starts a process; in-flight cancellation terminates and awaits the child', async () => {
+    const controller = new AbortController();
+    controller.abort();
+    await expect(computeSympyReference(scope, context, runtime, controller.signal)).rejects.toThrow('CANCELLED');
+    expect(processes.spawn).not.toHaveBeenCalled();
+    const p = child();
+    const next = new AbortController();
+    const done = runSympyWorker({}, runtime, next.signal);
+    const rejected = expect(done).rejects.toThrow('CANCELLED');
+    next.abort();
+    await rejected;
+    expect(p.kill).toHaveBeenCalledWith('SIGTERM');
+  });
+  it('rejects oversized output and stops its worker', async () => {
+    const p = child();
+    const done = runSympyWorker({}, runtime);
+    const rejected = expect(done).rejects.toThrow('OUTPUT_LIMIT');
+    p.stdout.write('x'.repeat(16385));
+    await rejected;
+    expect(p.kill).toHaveBeenCalledWith('SIGTERM');
+  });
+  it('time limit terminates and reaps a stalled worker', async () => {
+    vi.useFakeTimers();
+    const p = child();
+    processes.execFile.mockImplementation(() => ({ kill: vi.fn() }));
+    const done = runSympyWorker({}, runtime);
+    const rejected = expect(done).rejects.toThrow('TIME_LIMIT');
+    await vi.advanceTimersByTimeAsync(5000);
+    await rejected;
+    expect(p.kill).toHaveBeenCalledWith('SIGTERM');
+  });
+  it.each([
+    ['999999', null, 'MEMORY_LIMIT'],
+    ['bad', null, 'RESOURCE_MONITOR_FAILED'],
+    ['', new Error('ps'), 'RESOURCE_MONITOR_FAILED']
+  ])('monitors RSS and fails closed: %s', async (rss, error, code) => {
+    vi.useFakeTimers();
+    const p = child();
+    processes.execFile.mockImplementation((_a, _b, _c, callback) => {
+      queueMicrotask(() => callback(error, rss));
+      return { kill: vi.fn() };
+    });
+    const done = runSympyWorker({}, runtime);
+    const rejected = expect(done).rejects.toThrow(code as string);
+    await vi.advanceTimersByTimeAsync(125);
+    await rejected;
+    expect(p.kill).toHaveBeenCalledWith('SIGTERM');
+  });
+  it('lets normal child close settle when ps observes its exit first', async () => {
+    vi.useFakeTimers();
+    const p = child();
+    processes.execFile.mockImplementation((_a, _b, _c, callback) => {
+      queueMicrotask(() => callback(new Error('already exited'), ''));
+      return { kill: vi.fn() };
+    });
+    const done = runSympyWorker({}, runtime);
+    await vi.advanceTimersByTimeAsync(100);
+    p.finish();
+    await expect(done).resolves.toEqual(output());
+    await vi.advanceTimersByTimeAsync(50);
+    expect(p.kill).not.toHaveBeenCalled();
+  });
+  it('reports the operating system CPU limit as a resource timeout', async () => {
+    const p = child();
+    const done = runSympyWorker({}, runtime);
+    const rejected = expect(done).rejects.toThrow('TIME_LIMIT');
+    p.emit('close', null, 'SIGXCPU');
+    await rejected;
+  });
+  it.each([
+    { version: 'other' },
+    { gradingAuthority: true },
+    { all: true },
+    { solutions: ['2', '2'] },
+    { excluded: ['sqrt(2)'] },
+    { score: 100 },
+    { solutions: [''] },
+    { domain: 'complex' }
+  ])('rejects mismatched or inflated worker output %j', (patch) => {
+    expect(() => validateSympyResult({ ...output(), ...patch })).toThrow('INVALID_RESULT');
+  });
+});

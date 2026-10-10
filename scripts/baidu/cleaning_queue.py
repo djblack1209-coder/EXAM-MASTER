@@ -30,9 +30,23 @@ DEFAULT_OUTPUT = PROJECT_ROOT / "data" / "cleaning-queue.json"
 DEFAULT_RAW_INBOX = PROJECT_ROOT / "data" / "raw-inbox"
 DEFAULT_RELEASE_BACKLOG = PROJECT_ROOT / "data" / "release-blocker-backlog.json"
 
-SUPPORTED_SOURCE_CHANNELS = {"app_dir", "netdisk_full_path", "group_service", "group_file_index"}
+SUPPORTED_SOURCE_CHANNELS = {
+    "app_dir",
+    "netdisk_full_path",
+    "group_service",
+    "group_file_index",
+}
 DIRECT_DOWNLOAD_CHANNELS = {"app_dir", "netdisk_full_path"}
-SUPPORTED_EXTENSIONS = {".pdf", ".doc", ".docx", ".txt", ".md", ".json", ".html", ".htm"}
+SUPPORTED_EXTENSIONS = {
+    ".pdf",
+    ".doc",
+    ".docx",
+    ".txt",
+    ".md",
+    ".json",
+    ".html",
+    ".htm",
+}
 PROCESSABLE_STATUS = {"discovered", "missing"}
 AUTOMATION_READY_ACTIONS = {"download_and_extract"}
 MANUAL_BLOCKED_ACTIONS = {"manual_review", "manual_ingest"}
@@ -137,7 +151,9 @@ def task_stage(action: str) -> str:
     }.get(action, "ingest")
 
 
-def task_status_reason(item: dict[str, Any], action: str, previous_for_source: dict[str, Any] | None) -> str:
+def task_status_reason(
+    item: dict[str, Any], action: str, previous_for_source: dict[str, Any] | None
+) -> str:
     if previous_for_source and previous_for_source.get("fingerprint") != source_fingerprint(item):
         return "source_changed"
     if item.get("status") == "missing":
@@ -192,7 +208,10 @@ def build_task(
         "statusReason": task_status_reason(item, action, previous_for_source),
         "attempts": 0,
         "updatedAt": now,
-        "contentHash": item.get("contentHash") or item.get("sha256") or item.get("fileSha256") or item.get("sourceHash"),
+        "contentHash": item.get("contentHash")
+        or item.get("sha256")
+        or item.get("fileSha256")
+        or item.get("sourceHash"),
         "expectedLocalPath": str(raw_inbox_dir / f"{source_id}-{file_name}"),
     }
 
@@ -205,7 +224,9 @@ def public_course_slot_key(track: Any, year: Any) -> str:
     return f"{track_text}:{year_text}"
 
 
-def build_release_backlog_lookup(release_backlog: dict[str, Any] | None) -> dict[str, dict[str, Any]]:
+def build_release_backlog_lookup(
+    release_backlog: dict[str, Any] | None,
+) -> dict[str, dict[str, Any]]:
     if not isinstance(release_backlog, dict):
         return {}
 
@@ -217,7 +238,9 @@ def build_release_backlog_lookup(release_backlog: dict[str, Any] | None) -> dict
 
     lookup: dict[str, dict[str, Any]] = {}
     for index, item in enumerate(candidates):
-        slot_key = str(item.get("slotKey") or public_course_slot_key(item.get("track"), item.get("year"))).strip()
+        slot_key = str(
+            item.get("slotKey") or public_course_slot_key(item.get("track"), item.get("year"))
+        ).strip()
         if not slot_key or slot_key in lookup:
             continue
         lookup[slot_key] = {
@@ -231,7 +254,9 @@ def build_release_backlog_lookup(release_backlog: dict[str, Any] | None) -> dict
     return lookup
 
 
-def attach_release_backlog_metadata(task: dict[str, Any], lookup: dict[str, dict[str, Any]]) -> None:
+def attach_release_backlog_metadata(
+    task: dict[str, Any], lookup: dict[str, dict[str, Any]]
+) -> None:
     slot_key = public_course_slot_key(task.get("track"), task.get("year"))
     if not slot_key:
         return
@@ -247,7 +272,9 @@ def attach_release_backlog_metadata(task: dict[str, Any], lookup: dict[str, dict
     task["releaseSlotStatus"] = release_item["slotStatus"]
 
 
-def merge_previous_task(task: dict[str, Any], previous_task: dict[str, Any] | None, *, now: str) -> tuple[dict[str, Any], bool]:
+def merge_previous_task(
+    task: dict[str, Any], previous_task: dict[str, Any] | None, *, now: str
+) -> tuple[dict[str, Any], bool]:
     if not previous_task:
         return task, False
 
@@ -281,12 +308,18 @@ def summarize_tasks(tasks: list[dict[str, Any]], *, preserved: int, changed: int
         "completedTasks": sum(1 for task in tasks if task.get("status") == "completed"),
         "failedTasks": sum(1 for task in tasks if task.get("status") == "failed"),
         "manualReviewTasks": sum(1 for task in tasks if task.get("action") == "manual_review"),
-        "autoDownloadTasks": sum(1 for task in tasks if task.get("action") == "download_and_extract"),
-        "transferTasks": sum(1 for task in tasks if task.get("action") == "transfer_or_direct_download"),
+        "autoDownloadTasks": sum(
+            1 for task in tasks if task.get("action") == "download_and_extract"
+        ),
+        "transferTasks": sum(
+            1 for task in tasks if task.get("action") == "transfer_or_direct_download"
+        ),
         "automationActionablePendingTasks": sum(
             1 for task in pending_tasks if task.get("action") in AUTOMATION_READY_ACTIONS
         ),
-        "manualBlockedPendingTasks": sum(1 for task in pending_tasks if task.get("action") in MANUAL_BLOCKED_ACTIONS),
+        "manualBlockedPendingTasks": sum(
+            1 for task in pending_tasks if task.get("action") in MANUAL_BLOCKED_ACTIONS
+        ),
         "transferBlockedPendingTasks": sum(
             1 for task in pending_tasks if task.get("action") in TRANSFER_BLOCKED_ACTIONS
         ),
@@ -318,7 +351,8 @@ def build_cleaning_queue(
 ) -> dict[str, Any]:
     now = now or utc_now()
     previous_tasks = [
-        task for task in (previous_queue or {}).get("tasks", [])
+        task
+        for task in (previous_queue or {}).get("tasks", [])
         if isinstance(task, dict) and task.get("sourceId")
     ]
     previous_by_key = {
@@ -337,7 +371,12 @@ def build_cleaning_queue(
         item = apply_source_quality_overrides(item)
         source_id = str(item.get("sourceId"))
         previous_for_source = previous_by_source.get(source_id)
-        task = build_task(item, raw_inbox_dir=raw_inbox_dir, previous_for_source=previous_for_source, now=now)
+        task = build_task(
+            item,
+            raw_inbox_dir=raw_inbox_dir,
+            previous_for_source=previous_for_source,
+            now=now,
+        )
         previous_task = previous_by_key.get((task["sourceId"], task["fingerprint"], task["action"]))
         task, preserved = merge_previous_task(task, previous_task, now=now)
         attach_release_backlog_metadata(task, release_backlog_lookup)
@@ -352,7 +391,9 @@ def build_cleaning_queue(
     tasks.sort(
         key=lambda row: (
             1 if row.get("status") == "completed" else 0,
-            int(row.get("releaseBacklogRank")) if row.get("releaseBacklogRank") is not None else 999_999,
+            int(row.get("releaseBacklogRank"))
+            if row.get("releaseBacklogRank") is not None
+            else 999_999,
             -int(row.get("priority") or 0),
             str(row.get("track") or ""),
             str(row.get("year") or ""),
@@ -411,7 +452,9 @@ def run_self_test() -> None:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Build an incremental Baidu source cleaning queue.")
+    parser = argparse.ArgumentParser(
+        description="Build an incremental Baidu source cleaning queue."
+    )
     parser.add_argument("--manifest", type=Path, default=DEFAULT_MANIFEST)
     parser.add_argument("--previous-queue", type=Path)
     parser.add_argument("--release-backlog", type=Path, default=DEFAULT_RELEASE_BACKLOG)

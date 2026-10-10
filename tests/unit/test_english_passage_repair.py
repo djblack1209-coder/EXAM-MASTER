@@ -17,6 +17,166 @@ def write_json(path: Path, payload: dict) -> None:
 
 
 class EnglishPassageRepairTest(unittest.TestCase):
+    def test_registered_cloze_preserves_all_twenty_ordered_blanks_and_original_context_numbers(
+        self,
+    ):
+        from scripts.baidu import english_passage_repair as repair
+        import re
+
+        for year, source_id in [
+            (2006, "9ec7d1d38e6f1d22108b63ac"),
+            (2007, "e148ece4fffe3713d05b40f8"),
+            (2010, "bff66c7d8434bb36d89117d9"),
+        ]:
+            source = next((PROJECT_ROOT / "data/raw-inbox").glob(f"src_{source_id}-*.pdf"))
+            with tempfile.TemporaryDirectory() as temp:
+                target = Path(temp) / f"english1-{year}.json"
+                original = (
+                    PROJECT_ROOT / f"src/config/flashcard-banks/english1-{year}.json"
+                ).read_bytes()
+                target.write_bytes(original)
+                repair.restore_cloze_source_evidence(target, source, write=True)
+                saved = json.loads(target.read_text())
+                passage = saved["cards"][0]["passage"]
+                self.assertEqual(re.findall(r"\[(\d+)\]", passage), [str(i) for i in range(1, 21)])
+                if year == 2007:
+                    self.assertIn("roughly 20 million [1] of these nations", passage)
+                    self.assertIn("Born in the crisis", passage)
+                    self.assertIn("Spain’s [17] colonies", passage)
+                if year == 2006:
+                    self.assertIn("3 million", passage)
+                    self.assertIn("19 million", passage)
+                    self.assertIn('"There has to be [20] of programs.', passage)
+                    self.assertIn("What's needed", passage)
+                self.assertEqual(
+                    [c["answer"] for c in saved["cards"]],
+                    [c["answer"] for c in json.loads(original)["cards"]],
+                )
+                once = target.read_bytes()
+                repair.restore_cloze_source_evidence(target, source, write=True)
+                self.assertEqual(target.read_bytes(), once)
+
+    def test_registered_sections_restore_only_underlines_and_complete_ordering_atomically(self):
+        from scripts.baidu import english_passage_repair as repair
+
+        for year, source_id in [
+            (2007, "e148ece4fffe3713d05b40f8"),
+            (2010, "bff66c7d8434bb36d89117d9"),
+        ]:
+            source = next((PROJECT_ROOT / "data/raw-inbox").glob(f"src_{source_id}-*.pdf"))
+            with tempfile.TemporaryDirectory() as temp:
+                target = Path(temp) / f"english1-{year}.json"
+                target.write_bytes(
+                    (PROJECT_ROOT / f"src/config/flashcard-banks/english1-{year}.json").read_bytes()
+                )
+                original = target.read_bytes()
+                repair.restore_section_source_evidence(target, source, write=False)
+                self.assertEqual(target.read_bytes(), original)
+                repair.restore_section_source_evidence(target, source, write=True)
+                cards = json.loads(target.read_text())["cards"]
+                self.assertEqual(
+                    [c["answer"] for c in cards],
+                    [c["answer"] for c in json.loads(original)["cards"]],
+                )
+                selected = {c["number"]: c for c in cards if c["number"] >= 41}
+                for number in range(46, 51):
+                    self.assertNotRegex(
+                        selected[number]["passage"], r"Writing|参考译文|答案|[\u4e00-\u9fff]"
+                    )
+                    self.assertIn(selected[number]["targetSegment"], selected[number]["passage"])
+                    self.assertEqual(selected[number]["targetSegmentNumber"], number)
+                if year == 2007:
+                    self.assertIn("journalist must understand", selected[48]["targetSegment"])
+                    self.assertTrue(
+                        selected[50]["targetSegment"].endswith("make their own judgments.")
+                    )
+                else:
+                    self.assertEqual(
+                        selected[41]["fixedSequence"], ["41", "42", "43", "44", "E", "45"]
+                    )
+                    self.assertEqual(selected[41]["fixedParagraphs"], ["E"])
+                    self.assertTrue(
+                        selected[41]["options"][-1]["text"].endswith("considerable gains.")
+                    )
+                    self.assertTrue(
+                        selected[48]["targetSegment"].endswith('only on "worthless" species.')
+                    )
+                once = target.read_bytes()
+                repair.restore_section_source_evidence(target, source, write=True)
+                self.assertEqual(target.read_bytes(), once)
+                bad = json.loads(once)
+                next(c for c in bad["cards"] if c["number"] == 46)["answer"] = "changed"
+                write_json(target, bad)
+                failed = target.read_bytes()
+                with self.assertRaises(ValueError):
+                    repair.restore_section_source_evidence(target, source, write=True)
+                self.assertEqual(target.read_bytes(), failed)
+
+    def test_source_restoration_preserves_answers_old_evidence_and_atomic_failure(self):
+        from scripts.baidu import english_passage_repair as repair
+        import copy
+
+        passage = "Synthetic passage with blanks " + " ".join(str(i) for i in range(1, 21)) + "."
+        text = (
+            "Section I Use of English\nDirections:\nRead the following text. (10 points)\n"
+            + passage
+            + "\n\n"
+        )
+        text += "\n".join(f"{i}. [A] One [B] Two [C] Three [D] Four" for i in range(1, 21))
+        text += (
+            "\nSection II Reading Comprehension\n1~5 AAAAA\n6~10 AAAAA\n11~15 AAAAA\n16~20 AAAAA\n"
+        )
+        cards = [
+            {
+                "id": f"english1-2006-{i:03d}",
+                "number": i,
+                "type": "single_choice",
+                "question": f"完形填空第 {i} 空：阅读全文后选择最合适的选项。",
+                "passage": passage,
+                "context": passage,
+                "material": passage,
+                "options": [
+                    {"label": v, "text": name}
+                    for v, name in zip("ABCD", ["One", "Two", "Three", "Four"])
+                ],
+                "answer": "A",
+                "sourceEvidence": {"questionTextHash": "sha256:older", "status": "matched"},
+                "answerEvidence": {"status": "matched"},
+                "sourceEvidenceId": "original-source",
+            }
+            for i in range(1, 21)
+        ]
+        with tempfile.TemporaryDirectory() as temp:
+            target = Path(temp) / "english1-2006.json"
+            source = Path(temp) / "src_aaaaaaaaaaaaaaaaaaaaaaaa-2006-paper-answer.txt"
+            source.write_text(text)
+            payload = {"year": 2006, "cards": cards}
+            write_json(target, payload)
+            original = target.read_bytes()
+            report = repair.restore_cloze_source_evidence(target, source, write=False)
+            self.assertEqual(report["verifiedCards"], 20)
+            self.assertEqual(target.read_bytes(), original)
+            repair.restore_cloze_source_evidence(target, source, write=True)
+            saved = json.loads(target.read_text())
+            self.assertEqual([c["answer"] for c in saved["cards"]], ["A"] * 20)
+            self.assertEqual(
+                saved["cards"][0]["questionEvidenceHistory"][0]["questionTextHash"], "sha256:older"
+            )
+            self.assertEqual(
+                saved["cards"][0]["sourceEvidence"]["questionProof"]["sourceType"],
+                "synthetic_text_fixture",
+            )
+            once = target.read_bytes()
+            repair.restore_cloze_source_evidence(target, source, write=True)
+            self.assertEqual(target.read_bytes(), once)
+            bad = copy.deepcopy(payload)
+            bad["cards"][4]["answer"] = "B"
+            write_json(target, bad)
+            failed_before = target.read_bytes()
+            with self.assertRaises(ValueError):
+                repair.restore_cloze_source_evidence(target, source, write=True)
+            self.assertEqual(target.read_bytes(), failed_before)
+
     def test_extracts_passage_groups_and_repairs_existing_cards(self):
         from scripts.baidu import english_passage_repair
 
@@ -110,7 +270,9 @@ Section III Writing
         self.assertEqual(repaired[5]["options"][0]["label"], "A")
         self.assertIn("Part B material", repaired[5]["passage"])
 
-    def test_extracts_scanned_style_fullwidth_choice_markers_and_strips_watermarks(self):
+    def test_extracts_scanned_style_fullwidth_choice_markers_and_strips_watermarks(
+        self,
+    ):
         from scripts.baidu import english_passage_repair
 
         paper_text = """
@@ -169,11 +331,17 @@ Section III Writing
 
         passages = english_passage_repair.extract_english_passages(paper_text)
 
-        self.assertEqual(set(passages.keys()), {"cloze", "text1", "text2", "text3", "text4", "part-b", "part-c"})
+        self.assertEqual(
+            set(passages.keys()),
+            {"cloze", "text1", "text2", "text3", "text4", "part-b", "part-c"},
+        )
         self.assertEqual(passages["cloze"]["passage"], "Cloze body.")
         self.assertEqual(passages["text1"]["passage"], "Text one paragraph.")
         self.assertEqual(passages["part-b"]["passage"], "Part B article body. （41）")
-        self.assertEqual([option["label"] for option in passages["part-b"]["options"]], list("ABCDEFG"))
+        self.assertEqual(
+            [option["label"] for option in passages["part-b"]["options"]],
+            list("ABCDEFG"),
+        )
 
     def test_extracts_part_b_heading_options_with_dot_labels(self):
         from scripts.baidu import english_passage_repair
@@ -223,8 +391,13 @@ Section III Writing
         passages = english_passage_repair.extract_english_passages(paper_text)
 
         self.assertLess(len(passages["cloze"]["passage"]), 80)
-        self.assertEqual([option["label"] for option in passages["part-b"]["options"]], list("ABCDEFG"))
-        self.assertEqual(passages["part-b"]["options"][0]["text"], "Set a Good Example for Your Kids")
+        self.assertEqual(
+            [option["label"] for option in passages["part-b"]["options"]],
+            list("ABCDEFG"),
+        )
+        self.assertEqual(
+            passages["part-b"]["options"][0]["text"], "Set a Good Example for Your Kids"
+        )
         self.assertIn("How Can a Parent Help?", passages["part-b"]["passage"])
         self.assertNotIn("Set a Good Example", passages["part-b"]["passage"])
 
@@ -341,7 +514,15 @@ Section III Writing
             tmp_dir = Path(tmp)
             target = tmp_dir / "english1-2005.json"
             source = tmp_dir / "paper.pdf"
-            write_json(target, {"id": "english1-2005", "year": 2005, "subject": "english1", "cards": []})
+            write_json(
+                target,
+                {
+                    "id": "english1-2005",
+                    "year": 2005,
+                    "subject": "english1",
+                    "cards": [],
+                },
+            )
             source.write_text("placeholder", encoding="utf-8")
             original_extract = english_passage_repair.extract_pdf_text
             try:
@@ -491,7 +672,15 @@ Section III Writing
             tmp_dir = Path(tmp)
             target = tmp_dir / "english1-2011.json"
             source = tmp_dir / "paper.pdf"
-            write_json(target, {"id": "english1-2011", "year": 2011, "subject": "english1", "cards": []})
+            write_json(
+                target,
+                {
+                    "id": "english1-2011",
+                    "year": 2011,
+                    "subject": "english1",
+                    "cards": [],
+                },
+            )
             source.write_text("placeholder", encoding="utf-8")
             original_extract = english_passage_repair.extract_pdf_text
             try:
@@ -555,7 +744,15 @@ Section III Writing
             tmp_dir = Path(tmp)
             target = tmp_dir / "english2-2021.json"
             source = tmp_dir / "paper.pdf"
-            write_json(target, {"id": "english2-2021", "year": 2021, "subject": "english2", "cards": []})
+            write_json(
+                target,
+                {
+                    "id": "english2-2021",
+                    "year": 2021,
+                    "subject": "english2",
+                    "cards": [],
+                },
+            )
             source.write_text("placeholder", encoding="utf-8")
             original_extract = english_passage_repair.extract_pdf_text
             try:

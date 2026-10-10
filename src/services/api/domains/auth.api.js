@@ -24,19 +24,45 @@ export async function login(params) {
   try {
     logger.log('[LafService] 🔐 登录请求:', { type: params.type });
 
-    const response = await request('/login', params, { skipAuth: true });
+    // 登录凭证可能仅可消费一次；网络失败后由用户重新发起，不自动重放。
+    const response = await request('/login', params, {
+      skipAuth: true,
+      maxRetries: 0,
+      coldStartRetries: 0,
+      redactErrors: true,
+      suppressAuthFailure: true
+    });
 
     if (response.code === 0 && response.data) {
       logger.log('[LafService] ✅ 登录成功:', {
-        userId: response.data.userId,
-        isNewUser: response.data.isNewUser
+        isNewUser: response.data.isNewUser === true
       });
     }
 
     return response;
   } catch (error) {
-    logger.error('[LafService] ❌ 登录失败:', error);
-    return normalizeError(error, '登录'); // [AUDIT FIX R267]
+    logger.error('[LafService] ❌ 登录未完成');
+    return normalizeError(error, '登录', { redact: true });
+  }
+}
+
+// No credentials or session verifier enter logs; a pending receipt is not a login.
+export async function desktopOAuth(params) {
+  try {
+    return await request(
+      '/login',
+      { ...params, type: 'desktop_oauth' },
+      {
+        skipAuth: true,
+        maxRetries: 0,
+        coldStartRetries: 0,
+        redactErrors: true,
+        suppressAuthFailure: true,
+        timeout: 10_000
+      }
+    );
+  } catch (error) {
+    return normalizeError(error, '桌面授权', { redact: true });
   }
 }
 

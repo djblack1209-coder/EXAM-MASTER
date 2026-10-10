@@ -32,7 +32,6 @@ from pan import BaiduPan, format_size  # noqa: E402
 from source_manifest import (  # noqa: E402
     DEFAULT_MANIFEST,
     build_manifest_from_payload,
-    load_manifest,
     utc_now,
     write_json,
 )
@@ -195,14 +194,18 @@ def select_download_candidates(manifest: dict[str, Any], *, limit: int = 0) -> l
     return candidates[:limit] if limit > 0 else candidates
 
 
-def download_candidates(candidates: list[dict[str, Any]], download_dir: Path, *, dry_run: bool) -> dict[str, Any]:
+def download_candidates(
+    candidates: list[dict[str, Any]], download_dir: Path, *, dry_run: bool
+) -> dict[str, Any]:
     result = {"planned": len(candidates), "downloaded": 0, "failed": []}
     if not candidates:
         return result
 
     if dry_run:
         for item in candidates[:20]:
-            print(f"[baidu-sync] plan download {item['fileName']} {format_size(item.get('size', 0))}")
+            print(
+                f"[baidu-sync] plan download {item['fileName']} {format_size(item.get('size', 0))}"
+            )
         if len(candidates) > 20:
             print(f"[baidu-sync] ... {len(candidates) - 20} more")
         return result
@@ -225,7 +228,13 @@ def download_candidates(candidates: list[dict[str, Any]], download_dir: Path, *,
             pan.download(item["remotePath"], str(target_path), overwrite=True)
             result["downloaded"] += 1
         except Exception as exc:  # noqa: BLE001 - CLI should keep processing batch.
-            result["failed"].append({"sourceId": item["sourceId"], "fileName": item["fileName"], "error": str(exc)})
+            result["failed"].append(
+                {
+                    "sourceId": item["sourceId"],
+                    "fileName": item["fileName"],
+                    "error": str(exc),
+                }
+            )
 
     return result
 
@@ -233,7 +242,9 @@ def download_candidates(candidates: list[dict[str, Any]], download_dir: Path, *,
 def main() -> None:
     ensure_baidu_runtime(sys.argv[1:])
 
-    parser = argparse.ArgumentParser(description="Incrementally scan Baidu Pan resources into Source Manifest.")
+    parser = argparse.ArgumentParser(
+        description="Incrementally scan Baidu Pan resources into Source Manifest."
+    )
     parser.add_argument(
         "--scan-dir",
         action="append",
@@ -242,9 +253,17 @@ def main() -> None:
     )
     parser.add_argument("--manifest", type=Path, default=DEFAULT_MANIFEST)
     parser.add_argument("--report", type=Path, default=DEFAULT_REPORT)
-    parser.add_argument("--group-export", type=Path, help="JSON export from official group service or browser collector.")
+    parser.add_argument(
+        "--group-export",
+        type=Path,
+        help="JSON export from official group service or browser collector.",
+    )
     parser.add_argument("--download-dir", type=Path, default=DEFAULT_DOWNLOAD_DIR)
-    parser.add_argument("--download", action="store_true", help="Download eligible app-directory documents after manifest merge.")
+    parser.add_argument(
+        "--download",
+        action="store_true",
+        help="Download eligible app-directory documents after manifest merge.",
+    )
     parser.add_argument("--download-limit", type=int, default=0)
     parser.add_argument("--no-recursive", action="store_true")
     parser.add_argument("--dry-run", action="store_true")
@@ -272,7 +291,9 @@ def main() -> None:
     report["download"] = {"enabled": args.download, "candidates": len(candidates)}
 
     if args.download:
-        report["download"].update(download_candidates(candidates, args.download_dir, dry_run=args.dry_run))
+        report["download"].update(
+            download_candidates(candidates, args.download_dir, dry_run=args.dry_run)
+        )
 
     print(
         "[baidu-sync] manifest "

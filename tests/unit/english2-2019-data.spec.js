@@ -27,14 +27,10 @@ describe('English II 2019 published bank data', () => {
       'It is easy to underestimate English writer James Herriot'
     );
     expect(bank.cards.find((card) => card.number === 46).targetSegment).not.toContain('英语（二）试题');
-    expect(bank.cards.find((card) => card.number === 48).question).toContain(
-      '某高校2013年和2018年本科毕业生去向统计'
-    );
+    expect(bank.cards.find((card) => card.number === 48).question).toContain('某高校2013年和2018年本科毕业生去向统计');
     expect(bank.cards.find((card) => card.number === 48).question).toContain('80.0%');
     expect(bank.cards.find((card) => card.number === 48).question).toContain('2013年');
     expect(bank.cards.find((card) => card.number === 48).question).toContain('2018年');
-    expect(bank.cards.find((card) => card.number === 48).answerEvidence.evidenceRole).toBe(
-      'official_writing_prompt'
-    );
+    expect(bank.cards.find((card) => card.number === 48).answerEvidence.evidenceRole).toBe('official_writing_prompt');
   });
 });

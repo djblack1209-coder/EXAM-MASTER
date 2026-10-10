@@ -10,11 +10,14 @@ paper itself exposes A-G candidate paragraphs.
 from __future__ import annotations
 
 import argparse
+import copy
 import hashlib
 import json
+import os
 import re
 import shutil
 import subprocess
+import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -70,7 +73,12 @@ def infer_english_subject(payload: Any, path: Path) -> str:
         )
     candidates.append(path.stem)
     joined = " ".join(str(candidate or "").lower() for candidate in candidates)
-    if "english2" in joined or "english-2" in joined or "英语二" in joined or "英语（二）" in joined:
+    if (
+        "english2" in joined
+        or "english-2" in joined
+        or "英语二" in joined
+        or "英语（二）" in joined
+    ):
         return "english2"
     return "english1"
 
@@ -136,8 +144,12 @@ def ocr_pdf_with_apple_vision(path: Path) -> str:
                         str(image_path),
                         language_preference=OCR_LANGUAGE_PREFERENCE,
                     ).recognize()
-                    sorted_annotations = sorted(annotations, key=lambda row: (1 - row[2][1], row[2][0]))
-                    page_text = "\n".join(row[0] for row in sorted_annotations if str(row[0]).strip())
+                    sorted_annotations = sorted(
+                        annotations, key=lambda row: (1 - row[2][1], row[2][0])
+                    )
+                    page_text = "\n".join(
+                        row[0] for row in sorted_annotations if str(row[0]).strip()
+                    )
                     text_parts.append(f"\n--- PAGE {index + 1} ---\n{page_text}\n")
                 finally:
                     image_path.unlink(missing_ok=True)
@@ -158,7 +170,12 @@ def clean_text(text: str) -> str:
         .replace("｣", "]")
     )
     text = re.sub(r"^\s*---\s*PAGE\s+\d+\s*---\s*$", "", text, flags=re.MULTILINE | re.IGNORECASE)
-    text = re.sub(r"^.*(?:微信|QQ|公众号|二维码|扫码|全年免费分享|研池大叔).*$", "", text, flags=re.MULTILINE)
+    text = re.sub(
+        r"^.*(?:微信|QQ|公众号|二维码|扫码|全年免费分享|研池大叔).*$",
+        "",
+        text,
+        flags=re.MULTILINE,
+    )
     text = re.sub(r"英语[（(]?\s*[一二]\s*[）)]?试题\.\s*\d+\s*\.\s*[（(]共\d+页[）)]", "", text)
     text = re.sub(r"^\s*[（(]共\s*\d+\s*页[）)]\s*$", "", text, flags=re.MULTILINE)
     text = re.sub(r"^\s*英语试题\s*[,.，。]?\s*\d*\s*[,.，。]?\s*$", "", text, flags=re.MULTILINE)
@@ -174,7 +191,11 @@ def compact(text: str) -> str:
 
 def clean_inline_artifact_text(text: str) -> str:
     text = compact(text)
-    text = re.sub(r"\s*英语[（(]?\s*[一二]?\s*[）)]?试题\s*[,.，。]?\s*\d*\s*[,.，。]?\s*$", "", text)
+    text = re.sub(
+        r"\s*英语[（(]?\s*[一二]?\s*[）)]?试题\s*[,.，。]?\s*\d*\s*[,.，。]?\s*$",
+        "",
+        text,
+    )
     text = re.sub(r"\s*[.。]?\s*\d+\s*[.。]\s*[（(]\s*共\s*\d+\s*页\s*[）)]\s*$", "", text)
     text = re.sub(r"\s*[（(]\s*共\s*\d+\s*页\s*[）)]\s*$", "", text)
     return text.strip()
@@ -198,7 +219,10 @@ def refresh_question_hash(card: dict[str, Any]) -> bool:
         changed = True
 
     source_evidence = card.get("sourceEvidence")
-    if isinstance(source_evidence, dict) and source_evidence.get("questionTextHash") != question_hash:
+    if (
+        isinstance(source_evidence, dict)
+        and source_evidence.get("questionTextHash") != question_hash
+    ):
         source_evidence["questionTextHash"] = question_hash
         changed = True
 
@@ -209,7 +233,9 @@ def first_match(text: str, pattern: str, start: int = 0) -> re.Match[str] | None
     return re.search(pattern, text[start:], flags=re.IGNORECASE | re.MULTILINE)
 
 
-def section_between_patterns(text: str, start_pattern: str, end_pattern: str | None, *, start: int = 0) -> str:
+def section_between_patterns(
+    text: str, start_pattern: str, end_pattern: str | None, *, start: int = 0
+) -> str:
     start_match = first_match(text, start_pattern, start)
     if not start_match:
         return ""
@@ -288,7 +314,11 @@ def parse_cloze_options(options_text: str) -> dict[int, list[dict[str, str]]]:
         if number < 1 or number > 20:
             continue
         start = match.end()
-        end = number_matches[index + 1].start() if index + 1 < len(number_matches) else len(options_text)
+        end = (
+            number_matches[index + 1].start()
+            if index + 1 < len(number_matches)
+            else len(options_text)
+        )
         chunk = options_text[start:end]
         label_matches = list(
             re.finditer(
@@ -301,13 +331,19 @@ def parse_cloze_options(options_text: str) -> dict[int, list[dict[str, str]]]:
         for label_index, label_match in enumerate(label_matches):
             label = (label_match.group(1) or label_match.group(2) or "").upper()
             label_start = label_match.end()
-            label_end = label_matches[label_index + 1].start() if label_index + 1 < len(label_matches) else len(chunk)
+            label_end = (
+                label_matches[label_index + 1].start()
+                if label_index + 1 < len(label_matches)
+                else len(chunk)
+            )
             text = compact(chunk[label_start:label_end])
             text = re.sub(r"^[J\]\s]+", "", text).strip()
             if label in "ABCD" and text:
                 parsed[label] = text
         if set(parsed) == set("ABCD"):
-            options_by_number[number] = [{"label": label, "text": parsed[label]} for label in "ABCD"]
+            options_by_number[number] = [
+                {"label": label, "text": parsed[label]} for label in "ABCD"
+            ]
     return options_by_number
 
 
@@ -331,9 +367,12 @@ def parse_labelled_option_segments(text: str) -> dict[str, str]:
     return parsed
 
 
-def row_groups_from_ocr_annotations(annotations: list[Any], *, y_tolerance: float = 0.009) -> list[list[Any]]:
+def row_groups_from_ocr_annotations(
+    annotations: list[Any], *, y_tolerance: float = 0.009
+) -> list[list[Any]]:
     positioned = [
-        row for row in annotations
+        row
+        for row in annotations
         if isinstance(row, (tuple, list))
         and len(row) >= 3
         and isinstance(row[2], (tuple, list))
@@ -359,7 +398,9 @@ def row_groups_from_ocr_annotations(annotations: list[Any], *, y_tolerance: floa
     return groups
 
 
-def extract_cloze_options_from_pdf_geometry(source_pdf: Path) -> dict[int, list[dict[str, str]]]:
+def extract_cloze_options_from_pdf_geometry(
+    source_pdf: Path,
+) -> dict[int, list[dict[str, str]]]:
     if source_pdf.suffix.lower() != ".pdf":
         return {}
     try:
@@ -389,7 +430,11 @@ def extract_cloze_options_from_pdf_geometry(source_pdf: Path) -> dict[int, list[
                     row_text = compact(" ".join(str(item[0]).strip() for item in group))
                     if not row_text:
                         continue
-                    if re.search(r"Section\s+II\s+Reading\s+Comprehension", row_text, flags=re.IGNORECASE):
+                    if re.search(
+                        r"Section\s+II\s+Reading\s+Comprehension",
+                        row_text,
+                        flags=re.IGNORECASE,
+                    ):
                         return {
                             number: [{"label": label, "text": values[label]} for label in "ABCD"]
                             for number, values in sorted(options_by_number.items())
@@ -508,7 +553,9 @@ def extract_english_passages(paper_text: str) -> dict[str, dict[str, Any]]:
             "options": parse_ag_options(part_b),
         }
 
-    part_c = section_between_patterns(cleaned, r"\n\s*Part\s+C\s*\n", r"\n\s*Section\s+(?:III|ID)\s+Writing")
+    part_c = section_between_patterns(
+        cleaned, r"\n\s*Part\s+C\s*\n", r"\n\s*Section\s+(?:III|ID)\s+Writing"
+    )
     if not part_c:
         part_c = section_between_patterns(
             cleaned,
@@ -516,7 +563,10 @@ def extract_english_passages(paper_text: str) -> dict[str, dict[str, Any]]:
             r"\n\s*Section\s+(?:IV|III|ID)\s+Writing",
         )
     if part_c:
-        passages["part-c"] = {"section": "翻译", "passage": compact(strip_leading_directions(part_c))}
+        passages["part-c"] = {
+            "section": "翻译",
+            "passage": compact(strip_leading_directions(part_c)),
+        }
 
     return passages
 
@@ -548,7 +598,12 @@ def card_number(card: dict[str, Any]) -> int:
 
 
 def reset_answer_evidence(card: dict[str, Any]) -> None:
-    for key in ["answerEvidenceStatus", "answerEvidenceSourceId", "answerTextHash", "answerEvidence"]:
+    for key in [
+        "answerEvidenceStatus",
+        "answerEvidenceSourceId",
+        "answerTextHash",
+        "answerEvidence",
+    ]:
         card.pop(key, None)
 
 
@@ -581,6 +636,388 @@ def build_cloze_card(
         card["answer"] = ""
         reset_answer_evidence(card)
     return card
+
+
+def cloze_source_payload(card: dict[str, Any], proof: dict[str, Any]) -> dict[str, Any]:
+    fields = [
+        "id",
+        "number",
+        "question",
+        "passage",
+        "context",
+        "material",
+        "options",
+        "passageSegments",
+        "answer",
+    ]
+    if proof.get("contract") == "english-section-source-v1":
+        fields += ["targetSegment", "targetSegmentNumber", "fixedSequence", "fixedParagraphs"]
+    return {key: card.get(key) for key in fields} | {
+        key: proof.get(key)
+        for key in [
+            "contract",
+            "bankId",
+            "sourceId",
+            "sourceFilePath",
+            "sourceFileSha256",
+            "sourceType",
+        ]
+    }
+
+
+SECTION_SOURCE_FILES = {
+    "english1-2007": (
+        "src_e148ece4fffe3713d05b40f8",
+        "44d08043b1e76a0fe935d1d46ffc3ccfeec36bff3e73091a55246975c6dc6a53",
+    ),
+    "english1-2010": (
+        "src_bff66c7d8434bb36d89117d9",
+        "75eb0f30f453a0c518b2731ba33894f59af2dd808d227168762ebf919bdd5bbc",
+    ),
+}
+CLOZE_SOURCE_FILES = {
+    "english1-2006": (
+        "src_9ec7d1d38e6f1d22108b63ac",
+        "0bf28e07ed34cbc33af0b79f620ac31c8897e91859a70748c3a55de3e5e9e9d4",
+    ),
+    **SECTION_SOURCE_FILES,
+}
+
+
+def canonical_cloze_blanks(passage: str, bank_id: str, file_hash: str) -> str:
+    # Only these exact source files have the page-checked missing/OCR markers.
+    if bank_id == "english1-2007" and file_hash == "sha256:" + CLOZE_SOURCE_FILES[bank_id][1]:
+        passage = passage.replace(
+            "roughly 20 million of these nations", "roughly 20 million 1 of these nations"
+        )
+        passage = passage.replace("Bom in the crisis", "Born in the crisis").replace(
+            "Spain9s", "Spain’s"
+        )
+    if bank_id == "english1-2006" and file_hash == "sha256:" + CLOZE_SOURCE_FILES[bank_id][1]:
+        passage = passage.replace("uThere has to be u20", '"There has to be 20').replace(
+            "Whafs needed", "What's needed"
+        )
+    # Context values such as 3/19/20 million are not blanks. Keep them intact.
+    passage = re.sub(
+        r"(?<![\dA-Za-z\[])([1-9]|1\d|20)(?![\dA-Za-z\]])(?!\s+million)", r"[\1]", passage
+    )
+    if re.findall(r"\[(\d+)\]", passage) != [str(i) for i in range(1, 21)]:
+        raise ValueError("Incomplete, duplicate or reordered cloze blanks")
+    return passage
+
+
+def restore_section_source_evidence(
+    target: Path, source: Path, *, write: bool = False
+) -> dict[str, Any]:
+    """Restore only the two registered, page-checked translation/ordering sources."""
+    import fitz
+
+    try:
+        from scripts.baidu.english_answer_key_verify import (
+            parse_answer_key_ranges,
+            parse_numbered_answer_text,
+        )
+    except ModuleNotFoundError:
+        from english_answer_key_verify import parse_answer_key_ranges, parse_numbered_answer_text
+
+    profile = SECTION_SOURCE_FILES.get(target.stem)
+    if (
+        not profile
+        or target.is_symlink()
+        or source.is_symlink()
+        or source.stat().st_size > 16 * 1024 * 1024
+    ):
+        raise ValueError("Unregistered section source")
+    original, raw = target.read_bytes(), source.read_bytes()
+    sid, expected = profile
+    if (
+        not raw.startswith(b"%PDF-")
+        or hashlib.sha256(raw).hexdigest() != expected
+        or not source.name.startswith(sid + "-")
+    ):
+        raise ValueError("Section source identity mismatch")
+    with fitz.open(source) as document:
+        from_text = "\n".join(page.get_text() for page in document)
+        text = clean_text(from_text)
+    # These substitutions and exact underlined sentence boundaries were checked
+    # against the original exam scans, not inferred from the answer-key summary.
+    if target.stem == "english1-2007":
+        text = re.sub(r"journalist\s+most\s+understand", "journalist must understand", text)
+    else:
+        text = re.sub(r'"\s+worthless\s+”\s+species,', '"worthless" species.', text)
+        text = re.sub(r"u\s+read out of the partyn", '"read out of the party"', text)
+    text = re.sub(
+        r"英语[（(]?\s*[一二]?\s*[）)]?\s*试题\s*\.\s*\d+\s*\.\s*[（(]共\s*\d+\s*页[）)]", "", text
+    )
+    text = re.split(r"\n\s*Section\s+(?:III|HI|DI|ID)\s+Writing", text, maxsplit=1)[0]
+    groups = extract_english_passages(text)
+    passage = groups.get("part-c", {}).get("passage", "")
+    segments = parse_translation_segments(passage)
+    if set(segments) != set(range(46, 51)) or re.search(r"答案|参考译文|Writing|公众号", passage):
+        raise ValueError("Incomplete or contaminated translation material")
+    targets = {}
+    for number, value in segments.items():
+        end = re.search(r"[.]\s|[.]$", value)
+        if not end:
+            raise ValueError("Missing verified sentence boundary")
+        targets[number] = value[: end.start() + 1]
+    if target.stem == "english1-2007" and not targets[50].endswith("make their own judgments."):
+        raise ValueError("Translation boundary mismatch")
+    if target.stem == "english1-2010" and not targets[48].endswith('only on "worthless" species.'):
+        raise ValueError("Translation boundary mismatch")
+    # Obtain answers from the complete source, not the truncated question material.
+    pdftotext = shutil.which("pdftotext")
+    if not pdftotext:
+        raise ValueError("A readable answer-key text source is required")
+    answer_text = subprocess.run(
+        [pdftotext, "-layout", str(source), "-"],
+        capture_output=True,
+        text=True,
+        check=True,
+        timeout=90,
+    ).stdout
+    answers = {**parse_answer_key_ranges(answer_text), **parse_numbered_answer_text(answer_text)}
+    payload = json.loads(original)
+    candidate = copy.deepcopy(payload)
+    numbers = set(range(46, 51)) | (set(range(41, 46)) if target.stem == "english1-2010" else set())
+    selected = [c for c in candidate["cards"] if c.get("number") in numbers]
+    if len(selected) != len(numbers) or {c["number"] for c in selected} != numbers:
+        raise ValueError("Incomplete or duplicate section slots")
+    options = []
+    if target.stem == "english1-2010":
+        part_b = section_between_patterns(text, r"\n\s*Part\s+B\s*\n", r"\n\s*Part\s+C\s*\n")
+        part_b = re.split(r"(?m)^[^\nA-Za-z]{0,8}41\s*[.]", part_b, maxsplit=1)[0]
+        options = parse_ag_options(part_b)
+        if [o["label"] for o in options] != list("ABCDEFG") or not options[-1]["text"].endswith(
+            "considerable gains."
+        ):
+            raise ValueError("Incomplete ordering paragraphs")
+    changed = 0
+    for card in selected:
+        number = card["number"]
+        if card.get("id") != f"{target.stem}-{number:03d}" or card.get("answer") != answers.get(
+            str(number)
+        ):
+            raise ValueError("Section identity or source answer mismatch")
+        before = copy.deepcopy(card)
+        if number >= 46:
+            rebuilt = build_translation_card(
+                card,
+                payload=payload,
+                number=number,
+                passage_info={"section": "翻译", "passage": passage},
+                segment=targets[number],
+                reset_answer=False,
+            )
+            rebuilt["targetSegmentNumber"] = number
+        else:
+            rebuilt = build_part_b_card(
+                card,
+                payload=payload,
+                number=number,
+                passage_info={
+                    "section": "段落排序",
+                    "passage": "41 → 42 → 43 → 44 → E → 45。E 段位置已固定；选择 A–G 段落完成排序，有一段不使用。",
+                    "options": options,
+                },
+                reset_answer=False,
+            )
+            rebuilt["fixedSequence"] = ["41", "42", "43", "44", "E", "45"]
+            rebuilt["fixedParagraphs"] = ["E"]
+        proof = {
+            "contract": "english-section-source-v1",
+            "bankId": target.stem,
+            "sourceId": sid,
+            "sourceFilePath": relative_path(source),
+            "sourceFileSha256": "sha256:" + expected,
+            "sourceType": "paper_answer_pdf",
+        }
+        proof["contentHash"] = hash_text(
+            json.dumps(cloze_source_payload(rebuilt, proof), ensure_ascii=False, sort_keys=True)
+        )
+        evidence = rebuilt.get("sourceEvidence")
+        if not isinstance(evidence, dict):
+            raise ValueError("Missing previous section evidence")
+        if evidence.get("questionProof") != proof:
+            rebuilt.setdefault("questionEvidenceHistory", []).append(copy.deepcopy(evidence))
+        rebuilt["questionTextHash"] = hash_text(rebuilt["question"])
+        evidence["questionTextHash"] = rebuilt["questionTextHash"]
+        evidence["questionProof"] = proof
+        card.clear()
+        card.update(rebuilt)
+        changed += card != before
+    if source.read_bytes() != raw or target.read_bytes() != original:
+        raise ValueError("Section source or target changed during verification")
+    if write and changed:
+        with tempfile.NamedTemporaryFile(
+            mode="w",
+            encoding="utf-8",
+            dir=target.parent,
+            prefix=".section-source-",
+            suffix=".json",
+            delete=False,
+        ) as handle:
+            temporary = Path(handle.name)
+            json.dump(candidate, handle, ensure_ascii=False, indent=2)
+            handle.write("\n")
+        try:
+            os.chmod(temporary, target.stat().st_mode & 0o777)
+            os.replace(temporary, target)
+        finally:
+            temporary.unlink(missing_ok=True)
+    return {
+        "targetFile": relative_path(target),
+        "sourceFile": relative_path(source),
+        "verifiedCards": len(numbers),
+        "changedCards": changed,
+        "write": write,
+        "answersPreserved": True,
+        "previousEvidencePreserved": True,
+    }
+
+
+def restore_cloze_source_evidence(
+    target: Path, source: Path, *, write: bool = False
+) -> dict[str, Any]:
+    # A complete source comparison precedes every metadata write. An answer-key
+    # match alone must not promote an unrelated question or repair a stale hash.
+    try:
+        from scripts.baidu.english_answer_key_verify import (
+            parse_inline_answer_key,
+            parse_answer_key_ranges,
+        )
+    except ModuleNotFoundError:
+        from english_answer_key_verify import parse_inline_answer_key, parse_answer_key_ranges
+    if target.is_symlink() or source.is_symlink():
+        raise ValueError("Source restoration does not follow symlinks")
+    if source.stat().st_size > 16 * 1024 * 1024:
+        raise ValueError("Source restoration exceeds file limit")
+    original = target.read_bytes()
+    source_bytes = source.read_bytes()
+    file_hash = "sha256:" + hashlib.sha256(source_bytes).hexdigest()
+    payload = json.loads(original)
+    bank_id = target.stem
+    if bank_id not in {"english1-2006", "english1-2007", "english1-2010"}:
+        raise ValueError("Unregistered cloze source restoration")
+    if bank_id.split("-")[1] not in source.name:
+        raise ValueError("Source year mismatch")
+    if source.suffix.lower() == ".pdf":
+        sid, expected_hash = CLOZE_SOURCE_FILES[bank_id]
+        if file_hash != "sha256:" + expected_hash or not source.name.startswith(sid + "-"):
+            raise ValueError("Unregistered cloze PDF identity")
+        pdftotext = shutil.which("pdftotext")
+        if not pdftotext or not source_bytes.startswith(b"%PDF-"):
+            raise ValueError("A readable PDF text source is required")
+        text = subprocess.run(
+            [pdftotext, "-layout", str(source), "-"],
+            capture_output=True,
+            text=True,
+            check=True,
+            timeout=90,
+        ).stdout
+    else:
+        text = source_bytes.decode("utf-8")
+    # These exact OCR artifacts were checked against the original 2010 scan.
+    # Other files do not inherit these substitutions.
+    if file_hash == "sha256:75eb0f30f453a0c518b2731ba33894f59af2dd808d227168762ebf919bdd5bbc":
+        for old, new in [
+            ("u Hawthorne effectM", '"Hawthorne effect"'),
+            ("subjects9", "subjects’"),
+            ("workers5", "workers’"),
+            ('uHawthorne effect"', '"Hawthorne effect"'),
+            ("a1 plateau", "a plateau"),
+        ]:
+            text = text.replace(old, new)
+    cloze = extract_english_passages(text).get("cloze", {})
+    cloze["passage"] = canonical_cloze_blanks(cloze.get("passage", ""), bank_id, file_hash)
+    choices = cloze.get("optionsByNumber", {})
+    if file_hash == "sha256:75eb0f30f453a0c518b2731ba33894f59af2dd808d227168762ebf919bdd5bbc":
+        for option in choices.get(3, []):
+            if option == {"label": "B", "text": "sight ・"}:
+                option["text"] = "sight"
+    answers = {**parse_inline_answer_key(text), **parse_answer_key_ranges(text)}
+    if set(choices) != set(range(1, 21)) or not cloze.get("passage"):
+        raise ValueError("Incomplete source passage or options")
+    cards = payload.get("cards", [])
+    selected = [
+        c
+        for c in cards
+        if isinstance(c, dict) and isinstance(c.get("number"), int) and 1 <= c["number"] <= 20
+    ]
+    if len(selected) != 20 or {c["number"] for c in selected} != set(range(1, 21)):
+        raise ValueError("Incomplete or duplicate cloze slots")
+    source_id_match = re.match(r"(src_[a-f0-9]{24})-", source.name)
+    if not source_id_match:
+        raise ValueError("Missing stable source identity")
+    candidate = copy.deepcopy(payload)
+    changed = 0
+    for card in candidate["cards"]:
+        number = card.get("number")
+        if not isinstance(number, int) or not 1 <= number <= 20:
+            continue
+        if card.get("id") != f"{bank_id}-{number:03d}" or card.get("answer") != answers.get(
+            str(number)
+        ):
+            raise ValueError("Question identity or source answer mismatch")
+        before = copy.deepcopy(card)
+        rebuilt = build_cloze_card(
+            card, payload=payload, number=number, passage_info=cloze, reset_answer=False
+        )
+        proof = {
+            "contract": "cloze-source-v1",
+            "bankId": bank_id,
+            "sourceId": source_id_match[1],
+            "sourceFilePath": relative_path(source),
+            "sourceFileSha256": file_hash,
+            "sourceType": "paper_answer_pdf"
+            if source.suffix.lower() == ".pdf"
+            else "synthetic_text_fixture",
+        }
+        proof["contentHash"] = hash_text(
+            json.dumps(cloze_source_payload(rebuilt, proof), ensure_ascii=False, sort_keys=True)
+        )
+        evidence = rebuilt.get("sourceEvidence")
+        if not isinstance(evidence, dict):
+            raise ValueError("Missing previous source evidence")
+        if evidence.get("questionProof") != proof:
+            history = rebuilt.setdefault("questionEvidenceHistory", [])
+            history.append(copy.deepcopy(evidence))
+        rebuilt["questionTextHash"] = hash_text(rebuilt["question"])
+        evidence["questionTextHash"] = rebuilt["questionTextHash"]
+        evidence["questionProof"] = proof
+        card.clear()
+        card.update(rebuilt)
+        changed += card != before
+    if source.read_bytes() != source_bytes or target.read_bytes() != original:
+        raise ValueError("Source or target changed during verification")
+    if write and changed:
+        candidate["clozeSourceRestoredAt"] = utc_now()
+        with tempfile.NamedTemporaryFile(
+            mode="w",
+            encoding="utf-8",
+            dir=target.parent,
+            prefix=".cloze-source-",
+            suffix=".json",
+            delete=False,
+        ) as handle:
+            temporary = Path(handle.name)
+            json.dump(candidate, handle, ensure_ascii=False, indent=2)
+            handle.write("\n")
+        try:
+            os.chmod(temporary, target.stat().st_mode & 0o777)
+            os.replace(temporary, target)
+        finally:
+            temporary.unlink(missing_ok=True)
+    return {
+        "targetFile": relative_path(target),
+        "sourceFile": relative_path(source),
+        "sourceFileSha256": file_hash,
+        "verifiedCards": 20,
+        "changedCards": changed,
+        "write": write,
+        "answersPreserved": True,
+        "previousEvidencePreserved": True,
+    }
 
 
 def build_translation_card(
@@ -665,7 +1102,11 @@ def repair_english_passages(
 ) -> dict[str, Any]:
     now = now or utc_now()
     payload = read_json(target_path, {})
-    cards = payload.get("cards") if isinstance(payload, dict) and isinstance(payload.get("cards"), list) else []
+    cards = (
+        payload.get("cards")
+        if isinstance(payload, dict) and isinstance(payload.get("cards"), list)
+        else []
+    )
     english_subject = infer_english_subject(payload, target_path)
     translation_numbers = translation_numbers_for_subject(english_subject)
     passages = extract_english_passages(extract_pdf_text(source_pdf))
@@ -685,8 +1126,16 @@ def repair_english_passages(
 
     if repair_cloze_cards and isinstance(payload, dict) and passages.get("cloze"):
         cloze_info = passages["cloze"]
-        options_by_number = cloze_info.get("optionsByNumber") if isinstance(cloze_info.get("optionsByNumber"), dict) else {}
-        existing_by_number = {card_number(card): card for card in cards if isinstance(card, dict) and 1 <= card_number(card) <= 20}
+        options_by_number = (
+            cloze_info.get("optionsByNumber")
+            if isinstance(cloze_info.get("optionsByNumber"), dict)
+            else {}
+        )
+        existing_by_number = {
+            card_number(card): card
+            for card in cards
+            if isinstance(card, dict) and 1 <= card_number(card) <= 20
+        }
         rebuilt_cloze_cards: list[dict[str, Any]] = []
         for number in range(1, 21):
             if number not in options_by_number:
@@ -705,13 +1154,25 @@ def repair_english_passages(
                 cloze_added_count += 1
 
         if rebuilt_cloze_cards:
-            non_cloze_cards = [card for card in cards if not (isinstance(card, dict) and 1 <= card_number(card) <= 20)]
+            non_cloze_cards = [
+                card
+                for card in cards
+                if not (isinstance(card, dict) and 1 <= card_number(card) <= 20)
+            ]
             cards = sorted(rebuilt_cloze_cards + non_cloze_cards, key=card_number)
             payload["cards"] = cards
 
-    if repair_part_b_cards and isinstance(payload, dict) and passages.get("part-b", {}).get("options"):
+    if (
+        repair_part_b_cards
+        and isinstance(payload, dict)
+        and passages.get("part-b", {}).get("options")
+    ):
         part_b_info = passages["part-b"]
-        existing_by_number = {card_number(card): card for card in cards if isinstance(card, dict) and 41 <= card_number(card) <= 45}
+        existing_by_number = {
+            card_number(card): card
+            for card in cards
+            if isinstance(card, dict) and 41 <= card_number(card) <= 45
+        }
         rebuilt_part_b_cards: list[dict[str, Any]] = []
         for number in range(41, 46):
             rebuilt_part_b_cards.append(
@@ -723,7 +1184,9 @@ def repair_english_passages(
                     reset_answer=reset_part_b_answers,
                 )
             )
-        non_part_b_cards = [card for card in cards if not (isinstance(card, dict) and 41 <= card_number(card) <= 45)]
+        non_part_b_cards = [
+            card for card in cards if not (isinstance(card, dict) and 41 <= card_number(card) <= 45)
+        ]
         cards = sorted(non_part_b_cards + rebuilt_part_b_cards, key=card_number)
         payload["cards"] = cards
 
@@ -810,10 +1273,14 @@ def repair_english_passages(
             "passageGroupCount": len(passages),
             "repairedCardCount": len(repaired_cards),
             "missingGroupCount": len(missing_groups),
-            "clozeOptionNumberCount": len(passages.get("cloze", {}).get("optionsByNumber", {}) or {}),
+            "clozeOptionNumberCount": len(
+                passages.get("cloze", {}).get("optionsByNumber", {}) or {}
+            ),
             "clozeRebuiltCount": cloze_rebuilt_count,
             "clozeAddedCount": cloze_added_count,
-            "translationSegmentCount": len(parse_translation_segments(passages.get("part-c", {}).get("passage", ""))),
+            "translationSegmentCount": len(
+                parse_translation_segments(passages.get("part-c", {}).get("passage", ""))
+            ),
             "translationRebuiltCount": translation_rebuilt_count,
             "translationAddedCount": translation_added_count,
         },
@@ -832,11 +1299,15 @@ def repair_english_passages(
 
 
 def run(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Repair English flashcards with source passage material.")
+    parser = argparse.ArgumentParser(
+        description="Repair English flashcards with source passage material."
+    )
     parser.add_argument("--target", type=Path, required=True)
     parser.add_argument("--source-pdf", type=Path, required=True)
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
     parser.add_argument("--write", action="store_true")
+    parser.add_argument("--restore-cloze-evidence", action="store_true")
+    parser.add_argument("--restore-section-evidence", action="store_true")
     parser.add_argument(
         "--repair-cloze-cards",
         action="store_true",
@@ -868,6 +1339,22 @@ def run(argv: list[str] | None = None) -> int:
         help="Clear rebuilt translation answers so answer_evidence_repair can refill them from the answer key.",
     )
     args = parser.parse_args(argv)
+
+    if args.restore_section_evidence:
+        report = restore_section_source_evidence(args.target, args.source_pdf, write=args.write)
+        write_json(args.output, report)
+        print(
+            f"[section-source-restore] write={args.write} verified={report['verifiedCards']} changed={report['changedCards']}"
+        )
+        return 0
+
+    if args.restore_cloze_evidence:
+        report = restore_cloze_source_evidence(args.target, args.source_pdf, write=args.write)
+        write_json(args.output, report)
+        print(
+            f"[cloze-source-restore] write={args.write} verified={report['verifiedCards']} changed={report['changedCards']}"
+        )
+        return 0
 
     report = repair_english_passages(
         args.target,
