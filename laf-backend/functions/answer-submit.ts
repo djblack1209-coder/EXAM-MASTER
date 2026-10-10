@@ -7,12 +7,12 @@
  *
  * 幂等性说明：
  * - 客户端需要在请求中携带 idempotencyKey
- * - 相同的 idempotencyKey 在24小时内只会被处理一次
+ * - 同一账户的 idempotencyKey 在原记录保留期间只接收一次
  * - 重复请求会直接返回之前的结果
  *
  * 请求参数：
  * - action: string (必填) - 操作类型
- * - userId: string (必填) - 用户ID
+ * - 用户身份只取 JWT，忽略 body userId
  * - idempotencyKey: string (提交答案时必填) - 幂等键
  * - data: object - 操作数据
  *
@@ -21,6 +21,8 @@
  */
 
 import cloud from '@lafjs/cloud';
+import { summarizeQuizReceipts } from './_shared/quiz-receipts.js';
+import { createHash } from 'node:crypto';
 // ✅ B003: 使用共享 API 响应模块，统一错误处理格式
 import {
   badRequest,
@@ -29,21 +31,9 @@ import {
   wrapResponse,
   logger,
   checkRateLimitDistributed
-} from './_shared/api-response';
-import { requireAuth, isAuthError } from './_shared/auth-middleware';
-import {
-  createNewCard,
-  scheduleReviewFSRS,
-  hasFSRSState,
-  extractFSRSState,
-  migrateToFSRS,
-  type ReviewLogRecord,
-  type FSRSScheduleResult,
-  type ReviewRating
-} from './_shared/fsrs-scheduler';
-// 幂等性模块可用但当前未启用 — 答案提交通过 DB upsert 天然幂等
-// 如需请求级去重（如弱网重试场景），取消以下注释：
-// import { checkIdempotency, markCompleted as markIdempotencyCompleted } from './_shared/idempotency';
+} from './_shared/api-response.js';
+import { requireAuth, isAuthError } from './_shared/auth-middleware.js';
+import { createNewCard, type ReviewLogRecord } from './_shared/fsrs-scheduler.js';
 
 const db = cloud.database();
 const _ = db.command;
@@ -51,8 +41,7 @@ const _ = db.command;
 const ANSWER_RATE_LIMIT_WINDOW_MS = 60 * 1000;
 const ANSWER_RATE_LIMIT_MAX = 120;
 
-// 幂等性共享模块位于 _shared/idempotency.ts（pk-battle 已在使用）
-// 本函数通过 DB upsert 保证天然幂等，无需额外请求级去重
+// 一份不可变 practice_records 文档即作答回执；内置 _id 唯一约束保证并发重传只写一次。
 
 // ==================== 参数校验 ====================
 export function validateSubmitParams(data: unknown): {
@@ -60,7 +49,9 @@ export function validateSubmitParams(data: unknown): {
   error?: string;
   sanitized?: Record<string, unknown>;
 } {
-  if (!data) return { valid: false, error: 'data 不能为空' };
+  if (!data || typeof data !== 'object' || Array.isArray(data)) return { valid: false, error: 'data 不合法' };
+  const allowed = ['question_id', 'user_answer', 'session_id', 'duration', 'practice_mode'];
+  if (Object.keys(data).some((key) => !allowed.includes(key))) return { valid: false, error: 'data 包含不支持字段' };
 
   const { question_id, user_answer, session_id, duration, practice_mode } = data as Record<string, unknown>;
 
@@ -80,13 +71,14 @@ export function validateSubmitParams(data: unknown): {
   if (!user_answer || typeof user_answer !== 'string') {
     return { valid: false, error: 'user_answer 不能为空' };
   }
-  if (user_answer.length > 100) {
+  if (user_answer.length > 8) {
     return { valid: false, error: 'user_answer 过长' };
   }
   // 答案格式校验（只允许字母，支持多选题）
   if (!/^[A-Ha-h]+$/.test(user_answer)) {
     return { valid: false, error: 'user_answer 格式不正确，只允许字母A-H' };
   }
+  if (new Set(user_answer.toUpperCase()).size !== user_answer.length) return { valid: false, error: '答案选项重复' };
 
   // session_id 校验（可选）
   if (session_id !== undefined && session_id !== null) {
@@ -101,22 +93,23 @@ export function validateSubmitParams(data: unknown): {
   // duration 校验（可选，答题用时，单位秒）
   let sanitizedDuration = 0;
   if (duration !== undefined) {
-    const parsedDuration = parseInt(duration as string, 10);
-    if (isNaN(parsedDuration) || parsedDuration < 0) {
-      sanitizedDuration = 0;
-    } else {
-      // 限制最大值为1小时（3600秒），防止异常数据
-      sanitizedDuration = Math.min(parsedDuration, 3600);
-    }
+    if (
+      !['number', 'string'].includes(typeof duration) ||
+      (typeof duration === 'string' && duration.length > 32) ||
+      !/^\d+(?:\.\d+)?$/.test(String(duration)) ||
+      !Number.isFinite(Number(duration))
+    )
+      return { valid: false, error: 'duration 不合法' };
+    sanitizedDuration = Math.min(Math.floor(Number(duration)), 3600);
   }
 
   // practice_mode 校验（可选）
   const validModes = ['normal', 'exam', 'review', 'challenge', 'pk'];
   let sanitizedMode = 'normal';
   if (practice_mode !== undefined) {
-    if (typeof practice_mode === 'string' && validModes.includes(practice_mode)) {
-      sanitizedMode = practice_mode;
-    }
+    if (typeof practice_mode !== 'string' || !validModes.includes(practice_mode))
+      return { valid: false, error: 'practice_mode 不合法' };
+    sanitizedMode = practice_mode;
   }
 
   return {
@@ -150,7 +143,7 @@ export default async function (ctx) {
     const userId = authResult.userId;
 
     // 1. 基础参数校验（已通过认证） - ✅ B003: 使用共享响应格式
-    if (!action || typeof action !== 'string') {
+    if (!action || typeof action !== 'string' || !['submit', 'getRecords'].includes(action)) {
       return wrapResponse(badRequest('action 不能为空'), requestId, startTime);
     }
 
@@ -171,15 +164,15 @@ export default async function (ctx) {
     // 2. 路由处理
     if (action === 'submit') {
       const result = await handleSubmit(userId, idempotencyKey, data, requestId);
-      return wrapResponse(result as unknown as import('./_shared/api-response').ApiResponse, requestId, startTime);
+      return wrapResponse(result as unknown as import('./_shared/api-response.js').ApiResponse, requestId, startTime);
     } else if (action === 'getRecords') {
       const result = await handleGetRecords(userId, data, requestId);
-      return wrapResponse(result as unknown as import('./_shared/api-response').ApiResponse, requestId, startTime);
+      return wrapResponse(result as unknown as import('./_shared/api-response.js').ApiResponse, requestId, startTime);
     } else {
       return wrapResponse(badRequest(`不支持的操作: ${action}`), requestId, startTime);
     }
-  } catch (error) {
-    logger.error(`[${requestId}] 答案提交异常:`, error);
+  } catch (_error) {
+    logger.error(`[${requestId}] 答案提交异常`);
     return wrapResponse(serverError('服务器内部错误'), requestId, startTime);
   }
 }
@@ -187,69 +180,127 @@ export default async function (ctx) {
 /**
  * 提交答案（带幂等性保护）
  */
-async function handleSubmit(userId: string, _idempotencyKey: string, data: Record<string, unknown>, requestId: string) {
-  const { questionId, userAnswer: _userAnswer, isCorrect, timeSpent: _timeSpent } = data;
-  if (!questionId || typeof isCorrect !== 'boolean') {
-    return { code: 400, success: false, message: '参数错误：缺少题目标识或对错结果', requestId };
+function digest(value: unknown): string {
+  return createHash('sha256').update(JSON.stringify(value)).digest('hex');
+}
+
+async function bindServerQuestion(questionId: string, userId: string) {
+  const response = await db
+    .collection('questions')
+    .where({ _id: questionId, is_active: true, review_status: 'approved' })
+    .getOne();
+  const q = response.data;
+  if (
+    !q ||
+    q.is_premium === true ||
+    ['user_id', 'owner', 'owner_id'].some((key) => q[key] != null && q[key] !== userId)
+  ) {
+    return { status: 'unresolved', kind: 'question_id_only', question_id: questionId };
   }
+  const text = q.question || q.content;
+  if (
+    typeof text !== 'string' ||
+    !text.trim() ||
+    text.length > 50000 ||
+    !Array.isArray(q.options) ||
+    q.options.length < 2 ||
+    q.options.length > 8 ||
+    q.options.some((item) => typeof item !== 'string' || item.length > 4000)
+  ) {
+    return { status: 'unresolved', kind: 'question_id_only', question_id: questionId };
+  }
+  const snapshot = {
+    question_id: questionId,
+    question: text,
+    options: q.options,
+    type: typeof q.type === 'string' ? q.type : null,
+    category: typeof q.category === 'string' ? q.category : null,
+    source: typeof q.source === 'string' ? q.source : null,
+    year: typeof q.year === 'string' || typeof q.year === 'number' ? q.year : null
+  };
+  if (JSON.stringify(snapshot).length > 65536)
+    return { status: 'unresolved', kind: 'question_id_only', question_id: questionId };
+  return {
+    status: 'bound',
+    kind: 'server_question_snapshot',
+    question_id: questionId,
+    fingerprint: digest(snapshot),
+    snapshot
+  };
+}
 
-  try {
-    // 1. 根据对错映射 FSRS 评分（答对=good, 答错=again）
-    const rating: ReviewRating = isCorrect ? 'good' : 'again';
-
-    // 2. 从 practice_records 获取已有卡片状态（如果有的话）
-    const recordDoc = await db
-      .collection('practice_records')
-      .where({ user_id: userId, question_id: questionId })
-      .orderBy('created_at', 'desc')
-      .limit(1)
-      .get();
-
-    let fsrsResult: FSRSScheduleResult;
-    const existingRecord = recordDoc.data?.[0];
-
-    if (existingRecord && hasFSRSState(existingRecord)) {
-      // 已有 FSRS 原生状态：无损往返调度
-      const fsrsState = extractFSRSState(existingRecord);
-      fsrsResult = scheduleReviewFSRS(fsrsState, rating);
-    } else if (existingRecord?.ease_factor) {
-      // 旧 SM-2 卡片：先迁移再调度
-      const migrated = migrateToFSRS({
-        ease_factor: existingRecord.ease_factor,
-        interval_days: existingRecord.interval_days,
-        review_count: existingRecord.review_count || 0,
-        last_review_time: existingRecord.last_review_time,
-        next_review_time: existingRecord.next_review_time
-      });
-      fsrsResult = scheduleReviewFSRS(migrated, rating);
-    } else {
-      // 新卡片：创建初始状态后调度
-      const newCard = createNewCard();
-      fsrsResult = scheduleReviewFSRS(newCard, rating);
+function receipt(record) {
+  return {
+    code: 0,
+    success: true,
+    message: '作答已保存，判分待核对',
+    data: {
+      submission_contract: record.submission_contract,
+      attempt_id: record.idempotency_key,
+      record_id: record._id,
+      question_id: record.question_id,
+      session_id: record.session_id,
+      user_answer: record.user_answer,
+      user_answer_raw: record.raw_input.user_answer,
+      duration: record.duration,
+      practice_mode: record.practice_mode,
+      received_at: record.created_at,
+      question_binding: record.question_binding,
+      grade: record.grade,
+      isCorrect: null,
+      memoryState: null,
+      tutorFeedback: null
     }
+  };
+}
 
-    // 3. 构建返回的记忆状态
-    const memoryState = {
-      ...fsrsResult.card,
-      interval_days: fsrsResult.legacy.interval_days,
-      ease_factor: fsrsResult.legacy.ease_factor,
-      next_review_time: fsrsResult.legacy.next_review_time
-    };
-
-    return {
-      code: 0,
-      success: true,
-      message: '提交成功',
-      data: {
-        isCorrect,
-        memoryState,
-        tutorFeedback: null // AI 辅导反馈通过独立的 AI 咨询接口提供
-      },
-      requestId
-    };
-  } catch (error) {
-    logger.error('Answer submission processing failed', error);
-    return { code: 500, success: false, message: '处理提交失败', requestId };
+async function handleSubmit(userId: string, idempotencyKey: unknown, data: unknown, _requestId: string) {
+  if (typeof idempotencyKey !== 'string' || !/^[a-zA-Z0-9_:-]{1,160}$/.test(idempotencyKey))
+    return badRequest('参数错误：缺少合法作答编号');
+  const checked = validateSubmitParams(data);
+  if (!checked.valid) return badRequest(`参数错误：${checked.error}`);
+  const raw = data as Record<string, unknown>;
+  const rawInput = Object.fromEntries(
+    ['question_id', 'user_answer', 'session_id', 'duration', 'practice_mode']
+      .filter((key) => Object.prototype.hasOwnProperty.call(raw, key))
+      .map((key) => [key, raw[key]])
+  );
+  const fingerprint = digest(rawInput);
+  const id = `ans_${digest([userId, 'answer-submit', idempotencyKey])}`;
+  const records = db.collection('practice_records');
+  const existing = await records.where({ _id: id, user_id: userId }).getOne();
+  const replay = (original) => {
+    if (original.submission_contract !== 'quiz-answer-submission-v1' || original.payload_fingerprint !== fingerprint)
+      return { code: 409, success: false, message: '该作答编号已有不同内容，原作答已保留' };
+    return receipt(original);
+  };
+  if (existing.data) return replay(existing.data);
+  const input = checked.sanitized!;
+  const binding = await bindServerQuestion(input.question_id as string, userId);
+  const record = {
+    _id: id,
+    submission_contract: 'quiz-answer-submission-v1',
+    user_id: userId,
+    idempotency_key: idempotencyKey,
+    payload_fingerprint: fingerprint,
+    raw_input: rawInput,
+    ...input,
+    category: binding.snapshot?.category || null,
+    question_binding: binding,
+    grade: { status: 'pending', outcome: null, basis: 'no_independent_reference' },
+    is_correct: null,
+    created_at: Date.now()
+  };
+  try {
+    const saved = await records.add(record);
+    if (saved.id !== id) throw new Error('RECEIPT_ID_MISMATCH');
+    return receipt(record);
+  } catch (_error) {
+    // 并发唯一冲突或响应丢失后，只读取已保存的同一账户回执，不补写或重复调度。
+    const persisted = await records.where({ _id: id, user_id: userId }).getOne();
+    if (persisted.data) return replay(persisted.data);
+    logger.warn('原作答未保存，请求可沿原编号重试');
+    return serverError('作答未保存，请沿原编号重试');
   }
 }
 
@@ -257,6 +308,29 @@ async function handleSubmit(userId: string, _idempotencyKey: string, data: Recor
  * 获取答题记录
  */
 async function handleGetRecords(userId: string, data: Record<string, unknown>, requestId: string) {
+  if (!data || typeof data !== 'object' || Array.isArray(data)) return badRequest('记录筛选参数不合法');
+  const allowed = ['page', 'limit', 'category', 'is_correct', 'session_id', 'question_id'];
+  if (Object.keys(data).some((key) => !allowed.includes(key))) return badRequest('记录筛选包含不支持字段');
+  for (const key of ['page', 'limit']) {
+    const value = data[key];
+    if (
+      value !== undefined &&
+      (!['number', 'string'].includes(typeof value) || !/^\d{1,10}$/.test(String(value)) || Number(value) < 1)
+    )
+      return badRequest('分页参数不合法');
+  }
+  for (const key of ['session_id', 'question_id']) {
+    const value = data[key];
+    if (value !== undefined && (typeof value !== 'string' || !/^[a-zA-Z0-9_-]{1,64}$/.test(value)))
+      return badRequest('记录筛选编号不合法');
+  }
+  if (
+    data.category !== undefined &&
+    (typeof data.category !== 'string' || !data.category.trim() || data.category.length > 100)
+  )
+    return badRequest('记录分类不合法');
+  if (data.is_correct !== undefined && data.is_correct !== null && typeof data.is_correct !== 'boolean')
+    return badRequest('判分筛选只接受布尔值或 null');
   const collection = db.collection('practice_records');
 
   // 分页参数校验
@@ -267,33 +341,30 @@ async function handleGetRecords(userId: string, data: Record<string, unknown>, r
   // 构建查询条件
   const query: Record<string, unknown> = { user_id: userId };
 
-  if (data?.category) {
-    const validCategories = ['政治', '英语', '数学', '专业课', '综合'];
-    if (validCategories.includes(data.category as string)) {
-      query.category = data.category;
-    }
-  }
+  if (data.category !== undefined) query.category = data.category;
+  for (const key of ['session_id', 'question_id']) if (data[key] !== undefined) query[key] = data[key];
 
   if (data?.is_correct !== undefined) {
-    query.is_correct = Boolean(data.is_correct);
+    query.is_correct = data.is_correct;
   }
 
-  // 查询数据
-  const [listRes, countRes] = await Promise.all([
+  // 列表与汇总共享已校验的账户/筛选；汇总不受分页上限影响。
+  const [listRes, summary] = await Promise.all([
     collection.where(query).orderBy('created_at', 'desc').skip(skip).limit(limit).get(),
-    collection.where(query).count()
+    summarizeQuizReceipts(db, userId, query)
   ]);
 
-  logger.info(`[${requestId}] 获取答题记录: ${listRes.data.length}/${countRes.total}`);
+  logger.info(`[${requestId}] 获取答题记录: ${listRes.data.length}/${summary.received}`);
 
   return {
     code: 0,
     success: true,
     data: listRes.data,
-    total: countRes.total,
+    total: summary.received,
+    summary,
     page,
     limit,
-    hasMore: skip + listRes.data.length < countRes.total,
+    hasMore: skip + listRes.data.length < summary.received,
     requestId
   };
 }

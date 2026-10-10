@@ -3,10 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import {
-  formatForbiddenClientSecretFindings,
-  scanForbiddenClientSecrets
-} from './wechat-artifact-secret-scan.mjs';
+import { formatForbiddenClientSecretFindings, scanForbiddenClientSecrets } from './wechat-artifact-secret-scan.mjs';
 
 const PROJECT_ROOT = path.resolve(fileURLToPath(import.meta.url), '../../..');
 const DEFAULT_APP_DIR = path.join(PROJECT_ROOT, 'dist/build/app');
@@ -29,9 +26,7 @@ function requireFile(appDir, relativePath, blockers) {
 }
 
 function findExistingHtmlEntries(appDir) {
-  return ['__uniappview.html', 'index.html'].filter((relativePath) =>
-    fs.existsSync(path.join(appDir, relativePath))
-  );
+  return ['__uniappview.html', 'index.html'].filter((relativePath) => fs.existsSync(path.join(appDir, relativePath)));
 }
 
 export function verifyAppArtifacts(appDir = DEFAULT_APP_DIR) {

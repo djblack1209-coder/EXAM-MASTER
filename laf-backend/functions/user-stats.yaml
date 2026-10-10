@@ -1,5 +1,5 @@
 name: user-stats
-desc: ""
+desc: ''
 methods:
   - GET
   - POST

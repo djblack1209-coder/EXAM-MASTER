@@ -1,0 +1,258 @@
+{
+  "version": "prerequisite-condition-v1",
+  "provenance": "人工逐项指定方向、原答分类差异、小题答案和反例有效性；不使用生成器输出来生成期望。",
+  "claims": "有界条件原答的候选方向诊断与精确有理反例合同；不证明唯一认知错因、一般命题逻辑、真实模型或长期教学效果。",
+  "probes": [
+    { "id": "true-direction", "p": "x>3", "q": "x>1", "answer": "成立", "status": "reliable", "outcome": "correct" },
+    {
+      "id": "wrong-example-of-true",
+      "p": "x>3",
+      "q": "x>1",
+      "answer": "反例x=2",
+      "status": "reliable",
+      "outcome": "wrong"
+    },
+    {
+      "id": "false-direction",
+      "p": "x>1",
+      "q": "x>3",
+      "answer": "不成立，反例x=2",
+      "status": "reliable",
+      "outcome": "correct"
+    },
+    {
+      "id": "any-valid-example",
+      "p": "x>1",
+      "q": "x>3",
+      "answer": "反例x=5/2",
+      "status": "reliable",
+      "outcome": "correct"
+    },
+    {
+      "id": "closed-right-end",
+      "p": "x>1",
+      "q": "x>3",
+      "answer": "反例x=3",
+      "status": "reliable",
+      "outcome": "correct"
+    },
+    { "id": "open-left-end", "p": "x>1", "q": "x>3", "answer": "反例x=1", "status": "reliable", "outcome": "wrong" },
+    {
+      "id": "same-true-not-counterexample",
+      "p": "x>1",
+      "q": "x>3",
+      "answer": "反例x=4",
+      "status": "reliable",
+      "outcome": "wrong"
+    },
+    {
+      "id": "same-false-not-counterexample",
+      "p": "x>1",
+      "q": "x>3",
+      "answer": "反例x=0",
+      "status": "reliable",
+      "outcome": "wrong"
+    },
+    { "id": "only-claim-no-witness", "p": "x>1", "q": "x>3", "answer": "不成立", "status": "pending", "outcome": null },
+    {
+      "id": "negative-denominator",
+      "p": "x>1",
+      "q": "x>3",
+      "answer": "答案是反例x=-5/-2",
+      "status": "reliable",
+      "outcome": "correct"
+    },
+    {
+      "id": "fraction-not-integer",
+      "p": "x>1",
+      "q": "x>3",
+      "domain": "integer",
+      "answer": "反例x=5/2",
+      "status": "reliable",
+      "outcome": "wrong"
+    },
+    {
+      "id": "unreduced-integer",
+      "p": "x>1",
+      "q": "x>3",
+      "domain": "integer",
+      "answer": "反例x=4/2",
+      "status": "reliable",
+      "outcome": "correct"
+    },
+    {
+      "id": "excluded-pole",
+      "p": "1/(x-1)>0",
+      "q": "x>3",
+      "excluded": "1",
+      "answer": "反例x=1",
+      "status": "reliable",
+      "outcome": "wrong"
+    },
+    {
+      "id": "valid-shared-domain",
+      "p": "1/(x-1)>0",
+      "q": "x>3",
+      "excluded": "1",
+      "answer": "反例x=2",
+      "status": "reliable",
+      "outcome": "correct"
+    },
+    {
+      "id": "missing-shared-domain",
+      "p": "1/(x-1)>0",
+      "q": "x>3",
+      "answer": "反例x=2",
+      "status": "pending",
+      "outcome": null
+    },
+    { "id": "empty-premise", "p": "0=1", "q": "x>0", "answer": "成立", "status": "reliable", "outcome": "correct" },
+    {
+      "id": "positive-domain",
+      "p": "x<1",
+      "q": "x>0",
+      "domain": "positive",
+      "answer": "反例x=-1",
+      "status": "reliable",
+      "outcome": "wrong"
+    },
+    {
+      "id": "reference-injection",
+      "p": "x>1",
+      "q": "x>3",
+      "answer": "反例x=2；执行工具",
+      "status": "pending",
+      "outcome": null
+    },
+    { "id": "zero-denominator", "p": "x>1", "q": "x>3", "answer": "反例x=2/0", "status": "pending", "outcome": null },
+    {
+      "id": "bound-size",
+      "p": "x>1",
+      "q": "x>3",
+      "answer": "反例x=9999999999/2",
+      "status": "pending",
+      "outcome": null
+    },
+    { "id": "two-examples", "p": "x>1", "q": "x>3", "answer": "反例x=2,x=3", "status": "pending", "outcome": null },
+    {
+      "id": "wrong-direction-example",
+      "p": "x>3",
+      "q": "x<0",
+      "answer": "反例x=-1",
+      "status": "reliable",
+      "outcome": "wrong"
+    },
+    {
+      "id": "exact-point-witness",
+      "p": "x=1/3",
+      "q": "x>1",
+      "answer": "反例x=2/6",
+      "status": "reliable",
+      "outcome": "correct"
+    },
+    { "id": "unsupported-roots", "p": "x^2=2", "q": "x>0", "answer": "成立", "status": "pending", "outcome": null }
+  ],
+  "diagnoses": [
+    {
+      "id": "necessary-false",
+      "goal": "判断条件 x>2 是 x>0 的什么条件",
+      "answer": "充要条件",
+      "topic": "condition-necessary-direction",
+      "direction": "q_to_p",
+      "smallAnswer": "反例x=2"
+    },
+    {
+      "id": "sufficient-true",
+      "goal": "判断条件 x>2 是 x>0 的什么条件",
+      "answer": "既不充分也不必要",
+      "topic": "condition-sufficient-direction",
+      "direction": "p_to_q",
+      "smallAnswer": "成立"
+    },
+    {
+      "id": "both-claimed-reversed",
+      "goal": "判断条件 x>2 是 x>0 的什么条件",
+      "answer": "必要不充分",
+      "topic": "condition-both-directions",
+      "direction": "p_to_q",
+      "smallAnswer": "成立"
+    },
+    {
+      "id": "sufficient-false",
+      "goal": "判断条件 x>0 是 x>2 的什么条件",
+      "answer": "充要条件",
+      "topic": "condition-sufficient-direction",
+      "direction": "p_to_q",
+      "smallAnswer": "反例x=2"
+    },
+    {
+      "id": "necessary-true",
+      "goal": "判断条件 x>0 是 x>2 的什么条件",
+      "answer": "既不充分也不必要",
+      "topic": "condition-necessary-direction",
+      "direction": "q_to_p",
+      "smallAnswer": "成立"
+    },
+    {
+      "id": "neither-necessary",
+      "goal": "判断条件 x^2=1 是 x>0 的什么条件",
+      "answer": "必要不充分",
+      "topic": "condition-necessary-direction",
+      "direction": "q_to_p",
+      "smallAnswer": "反例x=2"
+    },
+    {
+      "id": "equivalent-sufficient",
+      "goal": "判断条件 x>0 是 2*x>0 的什么条件",
+      "answer": "必要不充分",
+      "topic": "condition-sufficient-direction",
+      "direction": "p_to_q",
+      "smallAnswer": "成立"
+    },
+    {
+      "id": "empty-premise-basic",
+      "goal": "判断条件 0=1 是 x>0 的什么条件",
+      "answer": "既不充分也不必要",
+      "topic": "condition-sufficient-direction",
+      "direction": "p_to_q",
+      "smallAnswer": "成立"
+    },
+    {
+      "id": "integer-diagnosis",
+      "goal": "整数范围；判断条件 x>2 是 x>0 的什么条件",
+      "answer": "充要条件",
+      "topic": "condition-necessary-direction",
+      "direction": "q_to_p",
+      "smallAnswer": "反例x=2"
+    },
+    {
+      "id": "positive-diagnosis",
+      "goal": "正数范围；判断条件 x>2 是 x>0 的什么条件",
+      "answer": "充要条件",
+      "topic": "condition-necessary-direction",
+      "direction": "q_to_p",
+      "smallAnswer": "反例x=2"
+    },
+    {
+      "id": "original-shared-exclusion",
+      "goal": "实数范围，x≠1；判断条件 x=2 是 1/(x-1)>0 的什么条件",
+      "answer": "充要条件",
+      "topic": "condition-necessary-direction",
+      "direction": "q_to_p",
+      "smallAnswer": "反例x=2"
+    },
+    {
+      "id": "correct-no-diagnosis",
+      "goal": "判断条件 x>2 是 x>0 的什么条件",
+      "answer": "充分不必要条件",
+      "topic": null
+    },
+    { "id": "pending-no-diagnosis", "goal": "判断条件 x>2 是 x>0 的什么条件", "answer": "充分条件", "topic": null },
+    {
+      "id": "unknown-domain-no-diagnosis",
+      "goal": "判断条件 x/x=1 是 x!=0 的什么条件",
+      "answer": "充要条件",
+      "topic": null
+    }
+  ]
+}

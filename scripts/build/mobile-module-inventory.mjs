@@ -23,7 +23,9 @@ const HISTORICAL_MODULES = {
 };
 
 function toPosix(value) {
-  return String(value || '').split(path.sep).join('/');
+  return String(value || '')
+    .split(path.sep)
+    .join('/');
 }
 
 export function normalizePagePath(input) {

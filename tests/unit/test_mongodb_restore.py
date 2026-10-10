@@ -3,6 +3,7 @@
 MongoDB commands are isolated stubs. Archive fixtures test dispatch and safe
 extraction, not BSON validity or a real production/database recovery.
 """
+
 from __future__ import annotations
 
 import hashlib
@@ -18,7 +19,7 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[2]
 SCRIPT = ROOT / "deploy/scripts/restore-mongodb.sh"
-STUB = r'''import json, os, pathlib, sys
+STUB = r"""import json, os, pathlib, sys
 name = pathlib.Path(sys.argv[0]).name
 with open(os.environ['RESTORE_CALL_LOG'], 'a') as stream:
     stream.write(json.dumps({'tool': name, 'args': sys.argv[1:], 'cwd': os.getcwd()}) + '\n')
@@ -36,7 +37,7 @@ elif name == 'df':
     print('Filesystem 1G-blocks Used Available Use% Mounted\nfixture 40G 5G 35G 12% /')
 else:
     raise SystemExit(99)
-'''
+"""
 
 
 class MongoRestoreTests(unittest.TestCase):
@@ -55,14 +56,23 @@ class MongoRestoreTests(unittest.TestCase):
             path.write_text(f"#!{sys.executable}\n" + STUB)
             path.chmod(0o755)
         self.env = dict(os.environ)
-        for key in ("MONGODB_URI", "BACKUP_DIR", "RESTORE_TEST_MODE", "RESTORE_CALL_LOG", "BASH_ENV", "ENV"):
+        for key in (
+            "MONGODB_URI",
+            "BACKUP_DIR",
+            "RESTORE_TEST_MODE",
+            "RESTORE_CALL_LOG",
+            "BASH_ENV",
+            "ENV",
+        ):
             self.env.pop(key, None)
-        self.env.update({
-            "PATH": str(self.bin) + os.pathsep + os.environ["PATH"],
-            "BACKUP_DIR": str(self.backups),
-            "MONGODB_URI": "mongodb://fixture.invalid/exam-master",
-            "RESTORE_CALL_LOG": str(self.calls),
-        })
+        self.env.update(
+            {
+                "PATH": str(self.bin) + os.pathsep + os.environ["PATH"],
+                "BACKUP_DIR": str(self.backups),
+                "MONGODB_URI": "mongodb://fixture.invalid/exam-master",
+                "RESTORE_CALL_LOG": str(self.calls),
+            }
+        )
 
     def checksum(self, path: Path, filename: str | None = None):
         digest = hashlib.sha256(path.read_bytes()).hexdigest()
@@ -94,8 +104,20 @@ class MongoRestoreTests(unittest.TestCase):
         env = {**self.env, "RESTORE_TEST_MODE": mode}
         if not uri:
             env.pop("MONGODB_URI", None)
-        result = subprocess.run(["bash", str(SCRIPT), *map(str, args)], input="y\n", text=True, capture_output=True, cwd=self.root, env=env, timeout=10)
-        calls = [json.loads(line) for line in self.calls.read_text().splitlines()] if self.calls.exists() else []
+        result = subprocess.run(
+            ["bash", str(SCRIPT), *map(str, args)],
+            input="y\n",
+            text=True,
+            capture_output=True,
+            cwd=self.root,
+            env=env,
+            timeout=10,
+        )
+        calls = (
+            [json.loads(line) for line in self.calls.read_text().splitlines()]
+            if self.calls.exists()
+            else []
+        )
         return result, calls
 
     def assert_no_restore(self, calls):

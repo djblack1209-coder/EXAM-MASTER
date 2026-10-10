@@ -2,16 +2,24 @@
  * 本地学习引擎 Store
  *
  * 这是离线业务闭环的聚合层：答题页把结果写入 studyProgress / mistake_book，
- * 这里再从同一份本地资产生成掌握度、错题聚类、学习计划和会话进度。
+ * 旧资产仅保留历史口径；当前学习状态与计划从可追溯学习核心读取。
  * 不调用云函数、不恢复数据库，网络不可用时也能给页面稳定的数据契约。
  */
 import { defineStore } from 'pinia';
 import { useStudyStore } from '@/stores/modules/study.js';
 import { storageService } from '@/services/storageService.js';
+import { learningRepository } from '@/services/learning/learning-repository.js';
+import { summarizeLearning, knowledgeScope, questionKey } from '@/services/learning/learning-domain.js';
+import {
+  summarizeQuizProgress,
+  normalizeLegacyReviewQuestion,
+  legacyReviewQuestionIdentity,
+  createQuizAttemptId,
+  LEGACY_REVIEW_HANDOFF_KEY
+} from '@/services/quiz-session-contract.js';
+import { getUserId } from '@/services/auth-storage.js';
 
 const STORAGE_KEY = 'study_engine_state_v1';
-const MASTERY_CACHE_KEY = 'knowledge_mastery';
-const CLUSTER_CACHE_KEY = 'error_clusters';
 const BANK_KEY = 'v30_bank';
 const MISTAKE_KEY = 'mistake_book';
 const DAY_MS = 86400000;
@@ -27,16 +35,8 @@ const ERROR_TYPE_NAMES = {
   unknown: '未分类'
 };
 
-const MASTERY_LEVELS = [
-  { id: 'unlearned', name: '未学习', threshold: 0, color: '#9CA3AF' },
-  { id: 'weak', name: '薄弱', threshold: 0.01, color: '#EF4444' },
-  { id: 'developing', name: '发展中', threshold: 30, color: '#F59E0B' },
-  { id: 'proficient', name: '熟练', threshold: 60, color: '#3B82F6' },
-  { id: 'mastered', name: '掌握', threshold: 85, color: '#10B981' }
-];
-
-function readArray(key) {
-  const value = storageService.get(key, []);
+function readArray(key, migrateLegacy = true) {
+  const value = storageService.get(key, [], { migrateLegacy });
   return Array.isArray(value) ? value : [];
 }
 
@@ -66,68 +66,17 @@ function questionCategory(question = {}) {
   );
 }
 
-function questionSubject(question = {}) {
-  return normalizeKey(question.subject || question.category || '综合');
-}
-
-function masteryLevel(value) {
-  let selected = MASTERY_LEVELS[0];
-  for (const level of MASTERY_LEVELS) {
-    if (value >= level.threshold) selected = level;
-  }
-  return selected;
-}
-
 function isMistakeMastered(mistake) {
-  return Boolean(mistake?.is_mastered ?? mistake?.isMastered);
-}
-
-function mistakeCount(mistake) {
-  const value = Number(mistake?.wrong_count ?? mistake?.wrongCount ?? 1);
-  return Number.isFinite(value) && value > 0 ? Math.floor(value) : 1;
-}
-
-function correctStreak(mistake) {
-  const value = Number(mistake?.correct_streak ?? mistake?.correctStreak ?? 0);
-  return Number.isFinite(value) && value > 0 ? Math.floor(value) : 0;
+  return (mistake?.is_mastered ?? mistake?.isMastered) === true;
 }
 
 function getMistakeErrorType(mistake) {
-  return normalizeKey(mistake?.error_type || mistake?.errorType || 'unknown');
+  const value = mistake?.error_type || mistake?.errorType;
+  return Object.prototype.hasOwnProperty.call(ERROR_TYPE_NAMES, value) ? value : 'unknown';
 }
 
-function getMistakeTimestamp(mistake) {
-  return Number(
-    mistake?.last_wrong_time ||
-      mistake?.lastWrongTime ||
-      mistake?.last_review ||
-      mistake?.last_review_time ||
-      mistake?.created_at ||
-      mistake?.createdAt ||
-      0
-  );
-}
-
-function normalizeQuestionForReview(mistake, index) {
-  const options =
-    Array.isArray(mistake?.options) && mistake.options.length > 0
-      ? mistake.options
-      : Array.isArray(mistake?.choices) && mistake.choices.length > 0
-        ? mistake.choices
-        : ['A. 选项A', 'B. 选项B', 'C. 选项C', 'D. 选项D'];
-  const answerValue = mistake?.answer ?? mistake?.correct_answer ?? mistake?.correctAnswer ?? 'A';
-  const answer =
-    typeof answerValue === 'number'
-      ? ['A', 'B', 'C', 'D'][answerValue] || 'A'
-      : String(answerValue).charAt(0).toUpperCase();
-  return {
-    id: mistake?.id || mistake?._id || `mistake_${index}`,
-    question: mistake?.question || mistake?.question_content || mistake?.title || `错题 ${index + 1}`,
-    options,
-    answer: answer || 'A',
-    category: mistake?.category || mistake?.subject || '综合',
-    desc: mistake?.desc || mistake?.analysis || mistake?.explanation || '暂无解析'
-  };
+function legacyGroupId(mistake) {
+  return JSON.stringify([getMistakeErrorType(mistake), questionCategory(mistake)]);
 }
 
 function readPersistedState() {
@@ -227,7 +176,10 @@ export const useStudyEngineStore = defineStore('study-engine', {
         total,
         completed,
         correct,
-        accuracy: completed > 0 ? Math.round((correct / completed) * 1000) / 10 : 0,
+        accuracy: null,
+        legacyAccuracy: studyStore.accuracy,
+        legacyGradedCount: studyStore.legacySummary.legacyGradedCount,
+        scoringAuthority: false,
         studyDays: Number(progress.studyDays || 0),
         studyMinutes: Number(progress.studyMinutes || 0),
         mistakes: mistakes.length,
@@ -236,178 +188,199 @@ export const useStudyEngineStore = defineStore('study-engine', {
     },
 
     async analyzeMastery() {
+      const state = learningRepository.read();
+      const reliable = summarizeLearning(state);
+      const canPractice = (attemptId) => {
+        const attempt = state.attempts.find((item) => item.id === attemptId);
+        return Boolean(
+          attempt && state.conversations.some((session) => session.id === attempt.conversationId && !session.stopped)
+        );
+      };
+      const mastery = Object.entries(reliable.knowledge).map(([scope, evidence]) => ({
+        knowledgePoint: scope,
+        subject: state.questions.find((question) => knowledgeScope(question) === scope)?.subject || '综合',
+        status: evidence.status,
+        evidenceIds: [...evidence.evidenceIds],
+        needsRetest: evidence.status === '待复测',
+        needsHelp: evidence.status === '需提示',
+        canPractice: canPractice(evidence.evidenceIds.at(-1))
+      }));
+      const reviewTargets = reliable.due
+        .filter((review) => canPractice(review.attemptId))
+        .map((review) => {
+          const question = state.questions.find((question) => questionKey(question) === review.questionKey);
+          return {
+            knowledgePoint: knowledgeScope(question),
+            subject: question?.subject || '综合',
+            questionKey: review.questionKey,
+            due: review.due,
+            evidenceIds: [review.attemptId]
+          };
+        });
       const studyStore = useStudyStore();
       studyStore.restoreProgress();
       const history = Array.isArray(studyStore.questionHistory) ? studyStore.questionHistory : [];
-      const mistakes = readArray(MISTAKE_KEY);
-      const map = new Map();
-
-      const ensure = (key, subject = key) => {
-        if (!map.has(key)) {
-          map.set(key, {
-            knowledgePoint: key,
-            subject,
-            totalQuestions: 0,
-            correctCount: 0,
-            wrongCount: 0,
-            recent: [],
-            errorTypes: {},
-            avgRetrievability: 50
-          });
-        }
-        return map.get(key);
-      };
-
-      // history 是答题页写入的唯一逐题答题流水，优先用于准确率和趋势。
-      for (const item of history) {
-        const key = questionCategory(item);
-        const entry = ensure(key, questionSubject(item));
-        const correct = item.isCorrect === true || item.correct === true;
-        entry.totalQuestions += 1;
-        if (correct) entry.correctCount += 1;
-        else entry.wrongCount += 1;
-        entry.recent.push({ timestamp: Number(item.timestamp || 0), correct });
-      }
-
-      // 错题本补充尚未出现在历史中的本地错题，以及 FSRS 可提取性信息。
-      for (const mistake of mistakes) {
-        const key = questionCategory(mistake);
-        const entry = ensure(key, questionSubject(mistake));
-        const wrong = mistakeCount(mistake);
-        const streak = correctStreak(mistake);
-        if (history.length === 0) {
-          entry.totalQuestions += wrong + streak;
-          entry.wrongCount += wrong;
-          entry.correctCount += streak;
-        } else if (entry.totalQuestions === 0) {
-          entry.totalQuestions += wrong + streak;
-          entry.wrongCount += wrong;
-          entry.correctCount += streak;
-        }
-        const errorType = getMistakeErrorType(mistake);
-        entry.errorTypes[errorType] = (entry.errorTypes[errorType] || 0) + 1;
-        const stability = Number(mistake.stability || 0);
-        const due = Number(mistake.due || mistake.next_review_time || 0);
-        if (stability > 0 && due > 0) {
-          entry.avgRetrievability = Math.max(0, Math.min(100, due >= Date.now() ? 80 : 30));
-        }
-      }
-
-      const mastery = Array.from(map.values())
-        .map((entry) => {
-          const accuracy = entry.totalQuestions > 0 ? (entry.correctCount / entry.totalQuestions) * 100 : 0;
-          const value = Math.round((0.4 * entry.avgRetrievability + 0.6 * accuracy) * 10) / 10;
-          const recent = entry.recent
-            .filter((item) => item.timestamp > 0)
-            .sort((a, b) => b.timestamp - a.timestamp)
-            .slice(0, 5);
-          let recentTrend = 'stable';
-          if (recent.length >= 3) {
-            const recentAccuracy = recent.filter((item) => item.correct).length / recent.length;
-            const overallAccuracy = accuracy / 100;
-            if (recentAccuracy > overallAccuracy + 0.1) recentTrend = 'improving';
-            else if (recentAccuracy < overallAccuracy - 0.1) recentTrend = 'declining';
-          }
-          return {
-            knowledgePoint: entry.knowledgePoint,
-            subject: entry.subject,
-            totalQuestions: entry.totalQuestions,
-            correctCount: entry.correctCount,
-            wrongCount: entry.wrongCount,
-            accuracy: Math.round(accuracy * 10) / 10,
-            avgRetrievability: Math.round(entry.avgRetrievability * 10) / 10,
-            mastery: value,
-            masteryLevel: masteryLevel(value),
-            isWeak: value < 60,
-            prerequisites: [],
-            prerequisitesMet: true,
-            recentTrend,
-            errorTypes: entry.errorTypes
-          };
-        })
-        .sort((a, b) => a.mastery - b.mastery);
-
-      const weak = mastery.filter((item) => item.isWeak);
+      const legacyHistory = summarizeQuizProgress({
+        answeredQuestions: history.map((item, index) => ({ ...item, index }))
+      });
       const data = {
+        contract: 'learning-evidence-summary-v1',
         mastery,
+        reviewTargets,
+        legacyHistory,
         summary: {
           totalKnowledgePoints: mastery.length,
-          weakCount: weak.length,
-          masteredCount: mastery.filter((item) => item.mastery >= 85).length,
-          avgMastery: mastery.length
-            ? Math.round((mastery.reduce((sum, item) => sum + item.mastery, 0) / mastery.length) * 10) / 10
-            : 0,
-          weakestPoint: weak[0]?.knowledgePoint || null
+          independentCount: mastery.filter((item) => item.status === '可独立完成').length,
+          retestCount: mastery.filter((item) => item.needsRetest).length,
+          needsHelpCount: mastery.filter((item) => item.needsHelp).length,
+          // 不再把旧匹配、题量或预设记忆值拼成能力百分比。
+          avgMastery: null,
+          masteredCount: null,
+          weakCount: null,
+          weakestPoint: null,
+          reliableAnswers: reliable.totalReliableAnswers,
+          pending: reliable.pending
         }
       };
       this.lastAnalysis = data;
-      storageService.save(MASTERY_CACHE_KEY, mastery, true);
-      this._persist();
-      return { success: true, data, source: 'local' };
+      // 只读分析不回写或清空旧 knowledge_mastery/原作答缓存。
+      return { success: true, data, source: 'learning-core' };
     },
 
     async getErrorClusters() {
-      const mistakes = readArray(MISTAKE_KEY).filter((item) => !isMistakeMastered(item));
+      const raw = readArray(MISTAKE_KEY, false).filter(
+        (item) => item && typeof item === 'object' && !Array.isArray(item)
+      );
+      const counts = new Map();
+      for (const item of raw) {
+        const key = String(item.id ?? item._id);
+        counts.set(key, (counts.get(key) || 0) + 1);
+      }
+      const mistakes = raw.filter((item) => !isMistakeMastered(item));
       const grouped = new Map();
       for (const mistake of mistakes) {
-        const errorType = getMistakeErrorType(mistake);
-        const category = questionCategory(mistake);
-        const key = `${errorType}::${category}`;
+        const key = legacyGroupId(mistake);
         if (!grouped.has(key)) grouped.set(key, []);
         grouped.get(key).push(mistake);
       }
-
       const clusters = Array.from(grouped.entries())
         .map(([key, items]) => {
-          const [errorType, category] = key.split('::');
+          const [errorType, category] = JSON.parse(key);
           const questionCount = items.length;
-          const severity = questionCount >= 10 ? 'high' : questionCount >= 5 ? 'medium' : 'low';
-          const timestamps = items
-            .map(getMistakeTimestamp)
-            .filter(Boolean)
-            .sort((a, b) => a - b);
-          let trend = 'stable';
-          if (timestamps.length >= 3) {
-            const midpoint = timestamps[Math.floor(timestamps.length / 2)];
-            const newer = timestamps.filter((time) => time >= midpoint).length;
-            const older = timestamps.length - newer;
-            if (newer > older * 1.5) trend = 'increasing';
-            else if (older > newer * 1.5) trend = 'decreasing';
-          }
           return {
-            clusterId: `local_cluster_${errorType}_${category}`,
+            clusterId: key,
+            source: 'legacy',
+            scoringAuthority: false,
             errorType,
             errorTypeName: ERROR_TYPE_NAMES[errorType] || ERROR_TYPE_NAMES.unknown,
             knowledgePoints: [category],
             questionCount,
-            examples: items.slice(0, 3).map((item, index) => {
-              const q = normalizeQuestionForReview(item, index);
-              return {
-                questionContent: q.question,
-                userAnswer: item.user_answer || item.userAnswer || '',
-                correctAnswer: q.answer
-              };
-            }),
-            severity,
-            suggestion: `建议针对「${category}」进行${severity === 'high' ? '集中' : '专项'}复习，并在复习后立即重练。`,
-            trend
+            countBand: questionCount >= 10 ? 'high' : questionCount >= 5 ? 'medium' : 'low',
+            reviewableCount: items.filter(
+              (item) => normalizeLegacyReviewQuestion(item) && counts.get(String(item.id ?? item._id)) === 1
+            ).length,
+            examples: items.slice(0, 3).map((item) => ({
+              questionContent:
+                typeof (item.question ?? item.question_content ?? item.title) === 'string'
+                  ? (item.question ?? item.question_content ?? item.title)
+                  : '',
+              userAnswer: ['string', 'number'].includes(typeof (item.user_answer ?? item.userAnswer))
+                ? String(item.user_answer ?? item.userAnswer)
+                : '',
+              referenceAnswer: ['string', 'number'].includes(
+                typeof (item.answer ?? item.correct_answer ?? item.correctAnswer)
+              )
+                ? String(item.answer ?? item.correct_answer ?? item.correctAnswer)
+                : ''
+            }))
           };
         })
         .sort((a, b) => b.questionCount - a.questionCount);
-
       const data = {
+        contract: 'legacy-error-groups-v1',
+        ownerId: getUserId() || '',
+        scoringAuthority: false,
         clusters,
         summary: {
           totalClusters: clusters.length,
-          highSeverity: clusters.filter((item) => item.severity === 'high').length,
           totalMistakes: clusters.reduce((sum, item) => sum + item.questionCount, 0),
-          topErrorType: clusters[0]?.errorTypeName || null
+          reviewableCount: clusters.reduce((sum, item) => sum + item.reviewableCount, 0)
         }
       };
       this.lastClusters = clusters;
-      storageService.save(CLUSTER_CACHE_KEY, data, true);
-      this._persist();
-      return { success: true, data, source: 'local' };
+      // 只读分组：不回写旧 error_clusters，不生成诊断、严重度或虚构日趋势。
+      return { success: true, data, source: 'legacy' };
+    },
+
+    prepareLegacyReview({
+      clusterId,
+      recordIds,
+      expectedQuestions,
+      referenceViewedIds = [],
+      expectedOwnerId = getUserId() || ''
+    } = {}) {
+      const ownerId = getUserId() || '';
+      if (ownerId !== expectedOwnerId) return { success: false, message: '账户已变化，请重新打开历史记录' };
+      if (clusterId !== undefined && typeof clusterId !== 'string') return { success: false };
+      if (
+        recordIds !== undefined &&
+        (!Array.isArray(recordIds) ||
+          recordIds.length === 0 ||
+          recordIds.some((id) => !['string', 'number'].includes(typeof id)))
+      )
+        return { success: false };
+      const ids = recordIds && new Set(recordIds.map(String));
+      const raw = readArray(MISTAKE_KEY, false).filter(
+        (item) => item && typeof item === 'object' && !Array.isArray(item)
+      );
+      const selected = raw.filter(
+        (item) =>
+          (!clusterId || (!isMistakeMastered(item) && legacyGroupId(item) === clusterId)) &&
+          (!ids || ids.has(String(item.id ?? item._id)))
+      );
+      const counts = new Map();
+      for (const item of raw) {
+        const key = String(item.id ?? item._id);
+        counts.set(key, (counts.get(key) || 0) + 1);
+      }
+      const complete = selected
+        .map(normalizeLegacyReviewQuestion)
+        .filter((item) => item && counts.get(String(item.id)) === 1);
+      if (expectedQuestions !== undefined) {
+        if (!Array.isArray(expectedQuestions) || !ids || !expectedQuestions.length)
+          return { success: false, message: '请重新选择原条目' };
+        const expected = new Map(
+          expectedQuestions.map((q) => [String(q?.id ?? q?._id), legacyReviewQuestionIdentity(q)])
+        );
+        if (
+          [...ids].some((id) => !expected.has(id)) ||
+          complete.some((q) => expected.get(String(q.id)) !== legacyReviewQuestionIdentity(q))
+        )
+          return { success: false, message: '原题或材料已变化，请重新打开历史记录' };
+      }
+      if (
+        !Array.isArray(referenceViewedIds) ||
+        referenceViewedIds.some((id) => !['string', 'number'].includes(typeof id))
+      )
+        return { success: false };
+      const viewed = new Set(referenceViewedIds.map(String));
+      const questions = complete.slice(0, 200).map((q) => ({
+        ...q,
+        legacyReviewContext: { contract: 'legacy-review-view-v1', referenceViewed: viewed.has(String(q.id)) }
+      }));
+      if (!questions.length) return { success: false, message: '这些旧条目暂不能重练，原记录已保留' };
+      const handoff = JSON.parse(
+        JSON.stringify({ contract: 'legacy-review-handoff-v1', id: createQuizAttemptId(), ownerId, questions })
+      );
+      if ((getUserId() || '') !== ownerId || !storageService.save(LEGACY_REVIEW_HANDOFF_KEY, handoff, true))
+        return { success: false, message: '未保存重练入口，请重试' };
+      return {
+        success: true,
+        count: questions.length,
+        skipped: selected.length - complete.length,
+        deferred: complete.length - questions.length,
+        url: `/pages/practice-sub/do-quiz?mode=legacy_review&reviewId=${encodeURIComponent(handoff.id)}`
+      };
     },
 
     async generateStudyPlan(examDate, dailyHours = 4) {
@@ -432,8 +405,8 @@ export const useStudyEngineStore = defineStore('study-engine', {
       const dailyMinutes = Math.max(30, Math.min(720, Math.round(Number(dailyHours || 4) * 60)));
       const masteryResult = await this.analyzeMastery();
       const mastery = masteryResult.data.mastery || [];
-      const weak = mastery.filter((item) => item.isWeak).slice(0, 3);
-      const review = mastery.filter((item) => item.avgRetrievability < 70 && item.mastery >= 30).slice(0, 3);
+      const weak = mastery.filter((item) => item.canPractice && (item.needsRetest || item.needsHelp)).slice(0, 3);
+      const review = masteryResult.data.reviewTargets.slice(0, 3);
       const plans = [];
       const planDays = Math.min(7, daysRemaining);
 
@@ -449,8 +422,9 @@ export const useStudyEngineStore = defineStore('study-engine', {
             action: 'review',
             durationMinutes,
             questionCount: Math.max(1, Math.ceil(durationMinutes / 3)),
-            mastery: item.mastery,
-            reason: `可提取性${item.avgRetrievability.toFixed(0)}%，有遗忘风险`
+            questionKey: item.questionKey,
+            evidenceIds: item.evidenceIds,
+            reason: '已有复习安排到期'
           });
           remainingMinutes -= durationMinutes;
         }
@@ -460,11 +434,11 @@ export const useStudyEngineStore = defineStore('study-engine', {
           tasks.push({
             knowledgePoint: item.knowledgePoint,
             subject: item.subject,
-            action: item.mastery < 10 ? 'new_learn' : 'drill',
+            action: 'drill',
             durationMinutes,
             questionCount: Math.max(1, Math.ceil(durationMinutes / 4)),
-            mastery: item.mastery,
-            reason: `掌握度仅${item.mastery.toFixed(0)}%，需重点突破`
+            evidenceIds: item.evidenceIds,
+            reason: item.needsHelp ? '此前使用过提示，可另题练习' : '此前作答需要复测'
           });
           remainingMinutes -= durationMinutes;
         }
@@ -495,11 +469,11 @@ export const useStudyEngineStore = defineStore('study-engine', {
             startDate: formatDate(now),
             endDate: formatDate(addDays(now, Math.max(0, Math.min(daysRemaining - 1, 6)))),
             focus: weak.length
-              ? `优先突破${weak.map((item) => item.knowledgePoint).join('、')}`
+              ? `先复测${weak.map((item) => item.knowledgePoint).join('、')}`
               : '保持刷题节奏，巩固已学内容'
           }
         ],
-        summary: `已按本地答题记录生成未来${planDays}天计划，每日${Math.round((dailyMinutes / 60) * 10) / 10}小时。`
+        summary: `已按可靠作答依据与可用时间生成未来${planDays}天计划，每日${Math.round((dailyMinutes / 60) * 10) / 10}小时。`
       };
       // 同时提供 data.plan 兼容旧计划页和 data.plans 兼容自适应计划页。
       const payload = { ...data, plan: data };

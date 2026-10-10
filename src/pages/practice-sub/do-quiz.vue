@@ -61,7 +61,6 @@
           <view class="quiz-loading-dot secondary" />
         </view>
         <text class="quiz-loading-title">正在准备题目</text>
-        <text class="quiz-loading-subtitle">加载本地题库与练习进度</text>
         <view class="quiz-loading-skeleton">
           <view class="quiz-loading-line long" />
           <view class="quiz-loading-line" />
@@ -183,6 +182,13 @@
             </view>
           </view>
           <RichText class="q-content" :content="currentQuestion.question" />
+          <view
+            v-if="currentQuestion.type === 'translation' && currentQuestion.targetSegment"
+            id="e2e-quiz-translation-target"
+            class="q-translation-target"
+          >
+            <RichText :content="currentQuestion.targetSegment" />
+          </view>
           <view v-if="currentQuestionImages.length" class="q-image-list">
             <view
               v-for="(image, imageIndex) in currentQuestionImages"
@@ -211,16 +217,23 @@
               'glass-card',
               'option-item',
               {
-                selected: userChoice === idx,
+                selected: isOptionSelected(idx),
                 correct: hasAnswered && isCorrectOption(idx),
-                wrong: hasAnswered && userChoice === idx && !isCorrectOption(idx),
+                wrong: hasAnswered && isOptionSelected(idx) && !isCorrectOption(idx),
                 'option-folded': isOptionFolded(idx),
                 'option-muted-after-answer': isOptionDeemphasized(idx),
-                disabled: isAnalyzing || (hasAnswered && userChoice !== idx)
+                disabled: isAnalyzing || isNavigating || hasAnswered
               }
             ]"
             hover-class="option-hover"
+            role="button"
+            :aria-label="`${getOptionLabel(idx)}. ${opt}`"
+            :aria-pressed="isOptionSelected(idx)"
+            :aria-disabled="isAnalyzing || isNavigating || hasAnswered"
+            :tabindex="isAnalyzing || isNavigating || hasAnswered ? -1 : 0"
             @tap="selectOption(idx)"
+            @keydown.enter.prevent="selectOption(idx)"
+            @keydown.space.prevent="selectOption(idx)"
           >
             <view class="opt-index">
               {{ getOptionLabel(idx) }}
@@ -228,13 +241,32 @@
             <RichText class="opt-text" :content="opt" />
             <view v-if="hasAnswered" class="select-indicator">
               <BaseIcon v-if="isCorrectOption(idx)" name="check" :size="28" />
-              <BaseIcon v-else-if="userChoice === idx && !isCorrectOption(idx)" name="cross" :size="28" />
-              <view v-else-if="userChoice === idx" class="indicator-circle" />
+              <BaseIcon v-else-if="isOptionSelected(idx) && !isCorrectOption(idx)" name="cross" :size="28" />
+              <view v-else-if="isOptionSelected(idx)" class="indicator-circle" />
             </view>
           </view>
+          <wd-button
+            v-if="!hasAnswered"
+            id="e2e-quiz-submit-choice"
+            custom-class="choice-submit"
+            :disabled="!canSubmitChoice"
+            role="button"
+            :aria-disabled="!canSubmitChoice"
+            :tabindex="canSubmitChoice ? 0 : -1"
+            @click="submitChoice"
+            @keydown.enter.prevent="submitChoice"
+            @keydown.space.prevent="submitChoice"
+          >
+            提交作答
+          </wd-button>
         </view>
 
-        <!-- 经典闪卡模式：翻转卡片 + FSRS 四级自评 -->
+        <view v-if="currentAnswerRecord && !showResult" class="answer-sync" role="status" aria-live="polite">
+          <text>{{ answerSyncText }}</text>
+          <wd-button v-if="canRetryAnswerSync" size="small" @click="retryAnswerSync">重试同步</wd-button>
+        </view>
+
+        <!-- 经典闪卡：查看参考与独立自评记录。 -->
         <view v-if="isFlashcardMode" class="flashcard-area">
           <!-- 翻转前：显示"翻转查看答案"按钮 -->
           <view v-if="!flashcardFlipped" class="flashcard-reveal">
@@ -278,22 +310,63 @@
               </view>
             </view>
 
-            <!-- FSRS 四级自评按钮 -->
+            <view
+              v-if="recordingObservation || observationError"
+              role="status"
+              aria-live="polite"
+              class="flashcard-rate-hint"
+            >
+              <text>{{ recordingObservation ? '保存中…' : observationError }}</text>
+              <button v-if="!referenceSaved && !recordingObservation" @tap="flipFlashcard">重试保存查看记录</button>
+            </view>
+            <!-- 记忆自评不直接安排可靠复习。 -->
             <view class="flashcard-rate-hint">根据记忆情况自评：</view>
             <view class="fsrs-rating-row flashcard-rating">
-              <view class="fsrs-rating-btn fsrs-again" @tap="rateFlashcardAndNext(1)">
+              <view
+                class="fsrs-rating-btn fsrs-again"
+                role="button"
+                :tabindex="referenceSaved && !recordingObservation ? 0 : -1"
+                :aria-disabled="!referenceSaved || recordingObservation"
+                @tap="rateFlashcardAndNext(1)"
+                @keydown.enter.prevent="rateFlashcardAndNext(1)"
+                @keydown.space.prevent="rateFlashcardAndNext(1)"
+              >
                 <text class="fsrs-rating-label">忘了</text>
                 <text class="fsrs-rating-interval">{{ getFlashcardInterval('again') }}</text>
               </view>
-              <view class="fsrs-rating-btn fsrs-hard" @tap="rateFlashcardAndNext(2)">
+              <view
+                class="fsrs-rating-btn fsrs-hard"
+                role="button"
+                :tabindex="referenceSaved && !recordingObservation ? 0 : -1"
+                :aria-disabled="!referenceSaved || recordingObservation"
+                @tap="rateFlashcardAndNext(2)"
+                @keydown.enter.prevent="rateFlashcardAndNext(2)"
+                @keydown.space.prevent="rateFlashcardAndNext(2)"
+              >
                 <text class="fsrs-rating-label">模糊</text>
                 <text class="fsrs-rating-interval">{{ getFlashcardInterval('hard') }}</text>
               </view>
-              <view class="fsrs-rating-btn fsrs-good" @tap="rateFlashcardAndNext(3)">
+              <view
+                class="fsrs-rating-btn fsrs-good"
+                role="button"
+                :tabindex="referenceSaved && !recordingObservation ? 0 : -1"
+                :aria-disabled="!referenceSaved || recordingObservation"
+                @tap="rateFlashcardAndNext(3)"
+                @keydown.enter.prevent="rateFlashcardAndNext(3)"
+                @keydown.space.prevent="rateFlashcardAndNext(3)"
+              >
                 <text class="fsrs-rating-label">记得</text>
                 <text class="fsrs-rating-interval">{{ getFlashcardInterval('good') }}</text>
               </view>
-              <view class="fsrs-rating-btn fsrs-easy" @tap="rateFlashcardAndNext(4)">
+              <view
+                class="fsrs-rating-btn fsrs-easy"
+                role="button"
+                :tabindex="referenceSaved && !recordingObservation ? 0 : -1"
+                :aria-disabled="!referenceSaved || recordingObservation"
+                @tap="rateFlashcardAndNext(4)"
+                @keydown.enter.prevent="rateFlashcardAndNext(4)"
+                @keydown.space.prevent="rateFlashcardAndNext(4)"
+              >
                 <text class="fsrs-rating-label">简单</text>
                 <text class="fsrs-rating-interval">{{ getFlashcardInterval('easy') }}</text>
               </view>
@@ -315,29 +388,37 @@
     <view v-if="showResult" :class="['result-pop', resultStatus]">
       <view class="result-header">
         <view class="result-status-mark">
-          <BaseIcon :name="resultStatus === 'correct' ? 'check' : 'cross'" :size="30" />
+          <BaseIcon
+            :name="resultStatus === 'pending' ? 'info' : resultStatus === 'correct' ? 'check' : 'cross'"
+            :size="30"
+          />
         </view>
         <text class="status-title">
-          {{ resultStatus === 'correct' ? '回答正确' : '再想想' }}
+          {{ resultStatus === 'pending' ? '已记录，待核对' : resultStatus === 'correct' ? '回答正确' : '再想想' }}
         </text>
       </view>
 
       <scroll-view scroll-y class="result-content-scroll">
-        <view v-if="resultStatus === 'wrong'" class="ai-analysis-scroll">
+        <view v-if="currentAnswerRecord" class="answer-sync" role="status" aria-live="polite">
+          <text>{{ answerSyncText }}</text>
+          <wd-button v-if="canRetryAnswerSync" size="small" @click="retryAnswerSync">重试同步</wd-button>
+        </view>
+
+        <view v-if="resultStatus === 'wrong' || resultStatus === 'pending'" class="ai-analysis-scroll">
           <view class="analysis-tag">
             <view class="sparkle-icon">
               <BaseIcon name="sparkle" :size="28" />
             </view>
             <text>解析</text>
             <!-- ✅ [P0重构] 内联AI加载指示器 -->
-            <text v-if="!aiComment" class="ai-loading-hint">分析中...</text>
+            <text v-if="resultStatus === 'wrong' && !aiComment" class="ai-loading-hint">分析中...</text>
           </view>
           <!-- AI 个人历史微反馈 — 基于错题历史的一句话上下文提醒 -->
           <view v-if="personalHint" class="personal-hint-bar">
             <text class="personal-hint-text">{{ personalHint }}</text>
           </view>
           <view class="answer-display">
-            <text class="answer-label"> 正确答案： </text>
+            <text class="answer-label">{{ resultStatus === 'pending' ? '参考答案：' : '正确答案：' }}</text>
             <text class="answer-value">
               {{ currentQuestion ? currentQuestion.answer : 'A' }}
             </text>
@@ -481,9 +562,9 @@
     <CustomModal
       :visible="showEmptyBankModal"
       type="upload"
-      title="题库空空如也"
-      content="请先到刷题中心加载题库，再开始练习。"
-      confirm-text="去加载"
+      :title="resumeUnavailable ? '续答暂不可用' : '题库空空如也'"
+      :content="resumeUnavailable ? '请返回刷题中心重试，原记录已保留。' : '请先到刷题中心加载题库，再开始练习。'"
+      :confirm-text="resumeUnavailable ? '返回' : '去加载'"
       :show-cancel="false"
       :is-dark="isDark"
       @confirm="handleEmptyBankConfirm"
@@ -591,20 +672,22 @@
 </template>
 
 <script>
+import { BRAND } from '@/config/brand.js';
 import { modal } from '@/utils/modal.js';
 import { toast } from '@/utils/toast.js';
 import { storageService } from '@/services/storageService.js';
 import CustomModal from '@/components/common/CustomModal.vue';
-import { useStudyStore } from '@/stores/modules/study';
 
 // ✅ P0-3: 导入自动保存功能
 import {
   saveQuizProgress,
   loadQuizProgress,
   clearQuizProgress,
-  hasUnfinishedProgress,
-  getProgressSummary
+  getRecoverableQuizProgress,
+  isQuizProgressComplete
 } from '@/composables/useQuizAutoSave.js';
+import { getUserId, getToken } from '@/services/auth-storage.js';
+import { restoreQuizLearningAttempts } from '@/services/learning/quiz-learning-bridge.js';
 // ✅ 检查点 5.1: 导入分析服务
 import { analytics } from '@/utils/analytics/event-bus-analytics.js';
 import { getStatusBarHeight, getWindowInfo } from '@/utils/core/system.js';
@@ -631,7 +714,13 @@ import {
 // ✅ Phase 3-4: 卡片堆叠切换
 import { useCardStack } from './composables/useCardStack.js';
 // ✅ 导入单题计时器模块
-import { startTimer as startQuestionTimer, stopTimer as stopQuestionTimer } from './question-timer.js';
+import {
+  startTimer as startQuestionTimer,
+  stopTimer as stopQuestionTimer,
+  pauseTimer as pauseQuestionTimer,
+  resumeTimer as resumeQuestionTimer,
+  getRemaining as getQuestionTime
+} from './question-timer.js';
 // ✅ 智能组题与自适应学习模块
 import { pickQuestions } from './utils/smart-question-picker.js';
 import { generateAdaptiveSequence, getNextRecommendedQuestion } from '@/utils/learning/adaptive-learning-engine.js';
@@ -640,11 +729,7 @@ import { checkOfflineAvailability } from './services/offline-cache-service.js';
 // ✅ 导入题目笔记模块
 import { addQuestionNote, getNotesByQuestion, getNoteTags } from './question-note.js';
 // ✅ P1: 提取的模块
-import {
-  saveToMistakes as saveMistake,
-  updateMistakeWithAI as updateMistakeAI,
-  generateMnemonic
-} from './quiz-mistake-handler.js';
+import { saveToMistakes as saveMistake, updateMistakeWithAI as updateMistakeAI } from './quiz-mistake-handler.js';
 import { fetchAIDeepAnalysis as fetchAIAnalysis } from './quiz-ai-analysis.js';
 import { recordAnswerToAnalytics as recordAnalytics } from './quiz-analytics-recorder.js';
 // ✅ AI 打字机效果
@@ -664,7 +749,7 @@ import {
 } from '@/utils/quiz-elo.js';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 // 静态资源 CDN 映射（大图已迁出主包）
-import { ASSETS } from '@/config/static-assets.js';
+import { ASSETS, getStaticAssetUrl } from '@/config/static-assets.js';
 import MemoryStatsRow from './components/quiz-result/MemoryStatsRow.vue';
 import TutorFeedbackCard from './components/quiz-result/TutorFeedbackCard.vue';
 import QuizResult from './components/quiz-result/quiz-result.vue';
@@ -677,25 +762,65 @@ import { useQuizEngine } from './composables/useQuizEngine.js';
 import {
   buildQuizCompletionContent,
   buildQuizAnswerRecord,
+  isValidQuizAttemptId,
+  createQuizAttemptId,
   getQuizOptionLabel,
   getQuizQuestionTypeLabel,
+  getQuizAnswerRecordOutcome,
+  LEGACY_REVIEW_HANDOFF_KEY,
+  readLegacyReviewHandoff,
+  summarizeQuizProgress,
+  getQuizSelectionAnswer,
   hasQuizSelectableOptions,
   isCorrectQuizOption,
+  isCorrectQuizSelection,
+  isQuizMultiChoice,
   isQuizFlashcardMode,
   normalizeQuizQuestion,
+  prepareQuizQuestion,
+  prepareQuizSelection,
+  QUIZ_REVIEW_HANDOFF_KEY,
+  readQuizReviewHandoff,
+  readSinglePracticeHandoff,
   upsertQuizAnswerRecord
 } from '@/services/quiz-session-contract.js';
+import { formatInterval } from '@/services/fsrs-service.js';
 import {
-  scheduleAndSave,
-  previewSchedule,
-  formatInterval,
-  loadCardState,
-  createNewCard
-} from '@/services/fsrs-service.js';
-import { triggerOptimization } from './services/fsrs-optimizer-client.js';
+  recordQuizLearningObservation,
+  quizReferenceObservationExists
+} from '@/services/learning/quiz-learning-bridge.js';
 
 function normalizePracticeQuestion(q, index, options = {}) {
   return normalizeQuizQuestion(q, index, options);
+}
+
+function quizRecordOwnerMatches(page) {
+  if (page.quizOwnerId !== null && page.quizOwnerId !== undefined) return (getUserId() || '') === page.quizOwnerId;
+  return (page.mode !== 'legacy_review' && !page.resumeProgressIdentity) || (getUserId() || '') === page.resumeOwnerId;
+}
+
+function resumeTargetMatches(page, progress) {
+  if (!page.resumeProgressIdentity) return !page.forceResumeProgress;
+  return (
+    progress !== null &&
+    JSON.stringify(progress) === page.resumeProgressIdentity &&
+    (getUserId() || '') === page.resumeOwnerId
+  );
+}
+
+function rejectQuizResume(page) {
+  page.resumeUnavailable = true;
+  page.showResumeModal = false;
+  page.questions = [];
+  page.answeredQuestions = [];
+  page.currentIndex = 0;
+  page.userChoice = null;
+  page.hasAnswered = false;
+  page.questionBankFingerprint = '';
+  page.showEmptyBankModal = true;
+  if (page.timer) clearInterval(page.timer);
+  page.timer = null;
+  stopQuestionTimer(page.questionTimerToken);
 }
 
 export default {
@@ -730,6 +855,11 @@ export default {
       // 经典闪卡模式状态
       flashcardFlipped: false,
       flashcardFsrsPreview: null,
+      referenceObservationId: '',
+      selfRatingObservationId: '',
+      referenceSaved: false,
+      recordingObservation: false,
+      observationError: '',
       statusBarHeight: 44,
       navBarHeight: 88, // 标准导航栏高度 = 44 + 44
       capsuleMargin: 100,
@@ -741,7 +871,8 @@ export default {
       timer: null,
       isAnalyzing: false,
       showResult: false,
-      resultStatus: '', // 'correct' or 'wrong'
+      resultStatus: '', // 'pending', 'correct' or 'wrong'
+      syncingAttemptIds: [],
       aiComment: '',
       personalHint: '', // 基于个人历史的AI微反馈
       showBreakReminder: false, // 休息提醒显示状态
@@ -785,9 +916,16 @@ export default {
       questionTimeLimit: 120, // 当前题目时限（秒）
       questionTimeRemaining: 120, // 剩余时间
       showTimeWarning: false, // 是否显示时间警告
+      questionTimerToken: null,
+      questionTimerBinding: '',
       questionTimerEnabled: true, // 是否启用单题计时
       questionBankFingerprint: '',
       forceResumeProgress: false,
+      quizPageClosed: false,
+      resumeUnavailable: false,
+      resumeProgressIdentity: '',
+      resumeOwnerId: '',
+      quizOwnerId: null,
       // ✅ 智能组题状态
       smartPickerEnabled: true, // 是否启用智能组题
       currentQuestionDifficulty: 2, // 当前题目难度
@@ -802,11 +940,46 @@ export default {
       passageAnnotations: {},
       showAnswerSheet: false, // 答题卡显示状态
       mode: '', // 刷题模式：'' | 'single' | 'temp_bank' | 'smart_review'
+      legacyReviewId: '',
+      singlePracticeId: '',
+      smartReviewId: '',
       eloState: { userRating: 1500, questionRatings: {} },
       pendingTimers: [] // [AUDIT FIX R264] setTimeout 追踪，防止内存泄漏
     };
   },
   computed: {
+    currentAnswerRecord() {
+      return this.answeredQuestions.find(
+        (item) =>
+          item.index === this.currentIndex &&
+          item.questionId === this.currentQuestion?.id &&
+          item.source === 'reference_match'
+      );
+    },
+    answerSyncText() {
+      const record = this.currentAnswerRecord;
+      if (!record) return '';
+      if (this.syncingAttemptIds.includes(record.attemptId)) return '正在同步…';
+      if (record.submission?.status === 'received') return '已同步，判分待核对';
+      if (record.submission?.status === 'local_only' && record.submission.localSaved) return '仅保存在本机';
+      if (record.submission?.localSaved) return '已保存在本机，同步未完成';
+      return '保存状态待确认';
+    },
+    canRetryAnswerSync() {
+      const record = this.currentAnswerRecord;
+      return Boolean(
+        record?.attemptId &&
+        typeof record.userAnswer === 'string' &&
+        record.ownerId &&
+        record.ownerId === (getUserId() || '') &&
+        getToken() &&
+        record.submission?.status !== 'received' &&
+        !this.syncingAttemptIds.includes(record.attemptId) &&
+        !this.quizPageClosed &&
+        !this.showResumeModal &&
+        !this.resumeUnavailable
+      );
+    },
     showQuizLoading() {
       return !this.currentQuestion && !this.showEmptyBankModal && !this.showResumeModal && !this.showCompleteModal;
     },
@@ -834,14 +1007,25 @@ export default {
       return {
         mode: this.mode || 'normal',
         paperId: this.paperId || '',
-        questionBankFingerprint: this.questionBankFingerprint || ''
+        questionBankFingerprint: this.questionBankFingerprint || '',
+        ...((this.mode === 'smart_review' ? this.smartReviewId : this.singlePracticeId)
+          ? { handoffId: this.mode === 'smart_review' ? this.smartReviewId : this.singlePracticeId }
+          : {})
       };
     },
     isAnswerSheetJumpLocked() {
       return this.showResult || this.isAnalyzing || this.isNavigating;
     },
     isQuestionActionLocked() {
-      return this.showResult || this.isAnalyzing || this.isNavigating;
+      return (
+        !quizRecordOwnerMatches(this) ||
+        this.quizPageClosed ||
+        this.showResult ||
+        this.isAnalyzing ||
+        this.isNavigating ||
+        this.showResumeModal ||
+        this.resumeUnavailable
+      );
     },
     currentQuestionPassage() {
       return (
@@ -856,10 +1040,16 @@ export default {
       return Array.isArray(this.currentQuestion?.passageSegments) ? this.currentQuestion.passageSegments : [];
     },
     currentQuestionImages() {
-      return Array.isArray(this.currentQuestion?.questionImages) ? this.currentQuestion.questionImages : [];
+      return (this.currentQuestion?.questionImages || []).map((image) => ({
+        ...image,
+        src: getStaticAssetUrl(image.src) || image.src
+      }));
     },
     currentAnswerImages() {
-      return Array.isArray(this.currentQuestion?.answerImages) ? this.currentQuestion.answerImages : [];
+      return (this.currentQuestion?.answerImages || []).map((image) => ({
+        ...image,
+        src: getStaticAssetUrl(image.src) || image.src
+      }));
     },
     currentQuestionNumberText() {
       return this.currentQuestion?.number || this.currentIndex + 1;
@@ -923,6 +1113,19 @@ export default {
     hasSelectableOptions() {
       return hasQuizSelectableOptions(this.currentQuestion);
     },
+    canSubmitChoice() {
+      return (
+        quizRecordOwnerMatches(this) &&
+        !this.quizPageClosed &&
+        !this.isAnalyzing &&
+        !this.isNavigating &&
+        !this.showResult &&
+        !this.hasAnswered &&
+        !this.showResumeModal &&
+        !this.resumeUnavailable &&
+        Boolean(getQuizSelectionAnswer(this.currentQuestion, this.userChoice))
+      );
+    },
     isCorrectOption() {
       return (idx) => {
         return isCorrectQuizOption(this.currentQuestion, idx);
@@ -932,19 +1135,21 @@ export default {
       return (idx) => {
         if (!this.hasAnswered) return false;
         if (this.isCorrectOption(idx)) return false;
-        return this.userChoice !== idx;
+        return !this.isOptionSelected(idx);
       };
     },
     isOptionDeemphasized() {
       return (idx) => {
         if (!this.hasAnswered) return false;
-        return !this.isCorrectOption(idx) && this.userChoice !== idx;
+        return !this.isCorrectOption(idx) && !this.isOptionSelected(idx);
       };
     },
     // ✅ 完美全对检测（用于庆祝动画）
     isPerfectScore() {
       return (
-        this.showCompleteModal && this.answeredQuestions.length > 0 && this.answeredQuestions.every((a) => a.isCorrect)
+        this.showCompleteModal &&
+        this.answeredQuestions.length > 0 &&
+        this.answeredQuestions.every((a) => getQuizAnswerRecordOutcome(a) === 'correct')
       );
     },
     // ✅ 可用的笔记标签
@@ -956,13 +1161,14 @@ export default {
   // [F2-FIX] 微信分享配置
   onShareAppMessage() {
     return {
-      title: '智能刷题 - Exam-Master 考研备考',
+      title: `智能刷题 - ${BRAND.name} 考研备考`,
       path: '/pages/practice/index',
       imageUrl: ASSETS.appShareCover
     };
   },
 
-  onLoad() {
+  onLoad(initialQuery = {}) {
+    this.quizOwnerId = getUserId() || '';
     this.initSystemUI();
 
     // ✅ 生成刷题会话ID（用于AI诊断闭环）
@@ -998,8 +1204,25 @@ export default {
     // 读取页面参数（uni-app onLoad 接收 query 对象）
     const pages = getCurrentPages();
     const currentPage = pages[pages.length - 1];
-    const query = currentPage?.$page?.options || currentPage?.options || {};
+    const routeQuery = {};
+    // #ifdef H5
+    if (typeof location !== 'undefined' && location.hash.split('?')[0] === '#/pages/practice-sub/do-quiz') {
+      const params = new URLSearchParams(location.hash.split('?')[1] || '');
+      for (const key of ['resume', 'mode', 'paperId', 'paper_id', 'reviewId', 'singleId']) {
+        if (params.has(key)) routeQuery[key] = params.get(key);
+      }
+    }
+    // #endif
+    const query = {
+      ...(currentPage?.$page?.options || currentPage?.options || {}),
+      ...routeQuery,
+      ...(initialQuery && typeof initialQuery === 'object' ? initialQuery : {})
+    };
     this.mode = query.mode || '';
+    if (this.mode === 'legacy_review') this.resumeOwnerId = getUserId() || '';
+    this.legacyReviewId = query.reviewId || '';
+    this.singlePracticeId = query.singleId || '';
+    this.smartReviewId = this.mode === 'smart_review' ? query.reviewId || '' : '';
     this.paperId = query.paperId || query.paper_id || '';
     this.forceResumeProgress = query.resume === 'true';
     if (query.mode === 'single') {
@@ -1026,18 +1249,21 @@ export default {
     }, 16);
   },
   onShow() {
+    if (!quizRecordOwnerMatches(this)) return rejectQuizResume(this);
     // 主题监听已在 onLoad 注册，仅刷新当前值
     this.isDark = storageService.get('theme_mode', 'light') === 'dark';
     // ✅ P1-1: 恢复计时器（onHide 时已暂停）
     if (this.questions && this.questions.length > 0 && !this.timer) {
       this.startTimer();
+      if (!this.hasAnswered && !this.showResumeModal) resumeQuestionTimer(this.questionTimerToken);
     }
   },
   onUnload() {
+    this.quizPageClosed = true;
     if (this.timer) {
       clearInterval(this.timer);
     }
-    stopQuestionTimer();
+    stopQuestionTimer(this.questionTimerToken);
     this.clearComboFeedback();
 
     // [AUDIT FIX R264] 清理所有未完成的 setTimeout，防止内存泄漏
@@ -1064,7 +1290,7 @@ export default {
       clearInterval(this.timer);
       this.timer = null;
     }
-    stopQuestionTimer();
+    pauseQuestionTimer(this.questionTimerToken);
     this.saveCurrentProgress(true);
   },
   methods: {
@@ -1072,27 +1298,14 @@ export default {
     _safeTimeout(fn, delay) {
       const id = setTimeout(() => {
         this.pendingTimers = this.pendingTimers.filter((t) => t !== id);
-        fn();
+        if (!this.quizPageClosed && quizRecordOwnerMatches(this)) fn();
       }, delay);
       this.pendingTimers.push(id);
       return id;
     },
-    // ✅ FIX: 恢复错题复习模式前的题库
+    // 旧备份没有本次原件/版本恢复授权，退出只保留现场。
     _restoreQuestionBankIfReview() {
-      try {
-        const isReview = storageService.get('is_review_mode', false);
-        if (isReview) {
-          const backup = storageService.get('v30_bank_backup', []);
-          if (backup.length > 0) {
-            storageService.save('v30_bank', backup);
-          }
-          storageService.remove('is_review_mode');
-          storageService.remove('v30_bank_backup');
-          storageService.remove('temp_review_questions');
-        }
-      } catch (_e) {
-        // 静默处理，不影响页面退出
-      }
+      return { restored: false, reason: 'EXPLICIT_RESTORE_REQUIRED' };
     },
     getFlashcardInterval(ratingKey) {
       const intervalDays = this.flashcardFsrsPreview?.[ratingKey]?.intervalDays;
@@ -1100,25 +1313,45 @@ export default {
     },
     // ✅ P0-3: 检查未完成的进度
     checkUnfinishedProgress() {
+      if (this.resumeUnavailable) return;
       const progressContext = this.forceResumeProgress ? null : this.quizProgressContext;
-      if (hasUnfinishedProgress(progressContext)) {
-        const summary = getProgressSummary(progressContext);
-        if (summary && summary.currentIndex > 0) {
-          // ✅ 使用自定义弹窗
-          this.resumeModalContent = `上次答到第 ${summary.currentIndex + 1} 题，用时 ${summary.formattedTime}（${summary.timeAgo}保存）。是否继续？`;
-          this.showResumeModal = true;
-        } else {
-          this.startTimer();
-        }
+      const progress = this.forceResumeProgress ? getRecoverableQuizProgress() : loadQuizProgress(progressContext);
+      if (
+        progress &&
+        !isQuizProgressComplete(progress) &&
+        (progress.currentIndex > 0 || progress.answeredQuestions.length > 0)
+      ) {
+        this.resumeProgressIdentity = JSON.stringify(progress);
+        this.resumeOwnerId = getUserId() || '';
+        const minutes = Math.floor(progress.seconds / 60);
+        const seconds = Math.floor(progress.seconds % 60);
+        this.resumeModalContent = `上次答到第 ${progress.currentIndex + 1} 题，用时 ${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}。是否继续？`;
+        pauseQuestionTimer(this.questionTimerToken);
+        this.showResumeModal = true;
       } else {
+        if (this.forceResumeProgress) {
+          rejectQuizResume(this);
+          return;
+        }
         this.startTimer();
       }
     },
 
     // ✅ P0-3: 恢复进度
     restoreProgress() {
-      const progress = loadQuizProgress(this.forceResumeProgress ? null : this.quizProgressContext);
+      if (this.resumeProgressIdentity && (getUserId() || '') !== this.resumeOwnerId) {
+        rejectQuizResume(this);
+        return;
+      }
+      const progress = this.forceResumeProgress
+        ? getRecoverableQuizProgress()
+        : loadQuizProgress(this.quizProgressContext);
+      if (!resumeTargetMatches(this, progress)) {
+        rejectQuizResume(this);
+        return;
+      }
       if (progress) {
+        if (progress.sessionId) this.sessionId = progress.sessionId;
         this.currentIndex = progress.currentIndex || 0;
         if (Array.isArray(progress.questions) && progress.questions.length > 0) {
           this.questions = progress.questions;
@@ -1126,11 +1359,53 @@ export default {
         this.seconds = progress.seconds || 0;
         this.answeredQuestions = progress.answeredQuestions || [];
         this.aiComment = progress.aiComment || '';
+        const question = this.questions[this.currentIndex];
+        const observed = this.answeredQuestions.find(
+          (row) => row.index === this.currentIndex && row.questionId === question?.id
+        );
+        if (isQuizFlashcardMode(question) && observed?.source === 'reference_view') {
+          this.flashcardFlipped = true;
+          this.referenceObservationId = observed.observationId || '';
+          this.referenceSaved = quizReferenceObservationExists({
+            currentQuestion: normalizeQuizQuestion(question),
+            sessionId: this.sessionId,
+            observationId: this.referenceObservationId
+          });
+          this.observationError = this.referenceSaved ? '' : '查看记录未确认，请重试';
+        }
 
-        // 如果上次已作答但未进入下一题，重置作答状态
-        this.hasAnswered = false;
-        this.userChoice = null;
-        this.showResult = false;
+        const submittedChoice =
+          hasQuizSelectableOptions(question) &&
+          observed?.source === 'reference_match' &&
+          isValidQuizAttemptId(observed.attemptId);
+        this.hasAnswered = !!submittedChoice;
+        this.userChoice = submittedChoice
+          ? Array.isArray(observed.userChoice)
+            ? [...observed.userChoice]
+            : observed.userChoice
+          : null;
+        this.showResult = !!submittedChoice;
+        if (submittedChoice) this.resultStatus = 'pending';
+
+        if (progress.sessionId) {
+          const sessionId = this.sessionId;
+          const owner = getUserId() || '';
+          restoreQuizLearningAttempts({
+            questions: this.questions,
+            answeredQuestions: this.answeredQuestions,
+            sessionId,
+            canContinue: () => !this.quizPageClosed && this.sessionId === sessionId && (getUserId() || '') === owner
+          })
+            .then((result) => {
+              if (result.restored) uni.$emit('conversationLearningUpdated');
+            })
+            .catch(() => {
+              logger.warn('[do-quiz] 原作答仍保留，本地学习记录待恢复');
+              if (!this.quizPageClosed && this.sessionId === sessionId && (getUserId() || '') === owner) {
+                toast.info('作答已保留，学习记录待恢复');
+              }
+            });
+        }
 
         logger.log('[do-quiz] ✅ 进度已恢复:', {
           currentIndex: this.currentIndex,
@@ -1141,17 +1416,22 @@ export default {
         toast.success('进度已恢复');
       }
       this.startTimer();
+      if (!this.hasAnswered) this.startQuestionTimer(progress?.questionTiming?.elapsedMs || 0);
     },
 
     // ✅ P0-3: 保存当前进度
     saveCurrentProgress(immediate = false) {
+      if (!quizRecordOwnerMatches(this) || this.showResumeModal || this.resumeUnavailable) return;
       // 只有在有题目且已开始答题时才保存
-      if (this.questions.length === 0 || (this.currentIndex === 0 && !this.hasAnswered)) {
+      if (
+        this.questions.length === 0 ||
+        (this.currentIndex === 0 && !this.hasAnswered && this.answeredQuestions.length === 0)
+      ) {
         return;
       }
 
       // 如果已完成所有题目，清除进度
-      if (this.currentIndex >= this.questions.length - 1 && this.hasAnswered) {
+      if (this.hasAnswered && isQuizProgressComplete(this)) {
         clearQuizProgress();
         logger.log('[do-quiz] 练习已完成，清除进度');
         return;
@@ -1165,14 +1445,23 @@ export default {
           seconds: this.seconds,
           aiComment: this.aiComment,
           answeredQuestions: this.answeredQuestions,
-          questions: this.questions
+          questions: this.questions,
+          sessionId: this.sessionId,
+          questionTiming:
+            !this.hasAnswered && this.questionTimerToken
+              ? {
+                  index: this.currentIndex,
+                  questionId: this.questions[this.currentIndex]?.id,
+                  elapsedMs: getQuestionTime(this.questionTimerToken).elapsedMs
+                }
+              : undefined
         },
         immediate,
         this.quizProgressContext
       );
 
       if (success) {
-        logger.log('[do-quiz] ✅ 进度已自动保存');
+        logger.log(immediate ? '[do-quiz] 进度保存已确认' : '[do-quiz] 已安排保存进度');
       }
     },
 
@@ -1202,131 +1491,111 @@ export default {
       // #endif
     },
     async loadQuestions() {
-      // ✅ mode=single：从收藏页传入的单题练习
+      if (this.quizOwnerId === null || this.quizOwnerId === undefined) this.quizOwnerId = getUserId() || '';
+      if (!quizRecordOwnerMatches(this)) return rejectQuizResume(this);
+      if (this.forceResumeProgress) {
+        const progress = getRecoverableQuizProgress();
+        if (!progress) {
+          rejectQuizResume(this);
+          return;
+        }
+        this.questions = progress.questions;
+        this.mode = progress.context?.mode === 'normal' ? '' : progress.context?.mode || '';
+        this.paperId = progress.context?.paperId || '';
+        this._singleMode = this.mode === 'single';
+        this.singlePracticeId = this._singleMode ? progress.context?.handoffId || '' : '';
+        this._smartReviewMode = this.mode === 'smart_review';
+        this.smartReviewId = this._smartReviewMode ? progress.context?.handoffId || '' : '';
+        this.questionBankFingerprint =
+          progress.context?.questionBankFingerprint || this.buildQuestionBankFingerprint(this.questions);
+        this.resumeProgressIdentity = JSON.stringify(progress);
+        this.resumeOwnerId = getUserId() || '';
+        return;
+      }
+      if (this.mode === 'legacy_review') {
+        const questions = readLegacyReviewHandoff(
+          storageService.get(LEGACY_REVIEW_HANDOFF_KEY, null, { migrateLegacy: false }),
+          this.legacyReviewId,
+          getUserId() || ''
+        );
+        if (!questions) {
+          this.questions = [];
+          this.questionBankFingerprint = '';
+          this.resumeUnavailable = true;
+          this.showEmptyBankModal = true;
+          toast.info('重练入口已变化，请返回历史记录重新选择');
+          return;
+        }
+        this.questions = questions.map((question, index) => normalizePracticeQuestion(question, index));
+        this.questionBankFingerprint = this.buildQuestionBankFingerprint(this.questions);
+        this.resumeOwnerId = getUserId() || '';
+        this.startQuestionTimer();
+        return;
+      }
+      // 指定入口必须完整命中，失败时保留交接资料供返回重选。
+      const unavailable = (message) => {
+        rejectQuizResume(this);
+        toast.info(message);
+      };
+      const accept = (questions, consumedKey) => {
+        this.questions = questions;
+        this.questionBankFingerprint = this.buildQuestionBankFingerprint(questions);
+        if (consumedKey) storageService.remove(consumedKey);
+        this.startTimer();
+        this.startQuestionTimer();
+      };
       if (this._singleMode) {
-        const singleQ = storageService.get('temp_practice_question', null);
-        if (singleQ) {
-          this.questionBankFingerprint = this.buildQuestionBankFingerprint([singleQ]);
-          this.questions = [
-            normalizePracticeQuestion(
-              {
-                ...singleQ,
-                id: singleQ.id || 'single_q',
-                question: singleQ.question,
-                desc: singleQ.desc || '暂无解析',
-                category: singleQ.category || '未分类',
-                type: singleQ.type || '单选',
-                difficulty: singleQ.difficulty || 2
-              },
-              0,
-              { fillMissingChoiceOptions: true }
-            )
-          ];
-          storageService.remove('temp_practice_question');
-          this.startTimer();
-          return;
+        let singleQ;
+        try {
+          singleQ = storageService.get('temp_practice_question', null, { migrateLegacy: false, throwOnError: true });
+        } catch (_error) {
+          return unavailable('原题暂不可读取，请返回重试');
         }
+        const selected = readSinglePracticeHandoff(singleQ, this.singlePracticeId, getUserId() || '');
+        if (!selected) return unavailable('原题资料不完整，请返回重新选择');
+        accept(selected, 'temp_practice_question');
+        return;
       }
-
-      // ✅ [零摩擦] mode=temp_bank：从拍照搜题直接进入练习
       if (this.mode === 'temp_bank') {
-        const tempQuestions = storageService.get('temp_practice_questions', []);
-        if (tempQuestions.length > 0) {
-          this.questionBankFingerprint = this.buildQuestionBankFingerprint(tempQuestions);
-          this.questions = tempQuestions.map((q, index) =>
-            normalizePracticeQuestion(
-              {
-                ...q,
-                id: q.id || `temp_${index}`,
-                question: q.question || '',
-                desc: q.desc || '暂无解析',
-                category: q.category || '拍照搜题',
-                type: q.type || '单选',
-                difficulty: q.difficulty || 2,
-                source: q.source || 'temp'
-              },
-              index,
-              { fillMissingChoiceOptions: true }
-            )
-          );
-          storageService.remove('temp_practice_questions');
-          this.startTimer();
-          return;
-        }
-      }
-
-      // ✅ [闭环核心] mode=smart_review：从智能复习页传入的复习题目
-      if (this._smartReviewMode) {
-        const reviewIds = storageService.get('smart_review_ids', []) || [];
-        if (reviewIds.length > 0) {
-          const bank = storageService.get('v30_bank', []);
-          const reviewQuestions = reviewIds
-            .map((id) => bank.find((q) => (q.id || q._id) === id))
-            .filter(Boolean)
-            .map((q, index) =>
-              normalizePracticeQuestion(
-                {
-                  ...q,
-                  id: q.id || q._id || `review_${index}`,
-                  question: q.question || q.title || `题目 ${index + 1}`,
-                  desc: q.desc || q.description || q.explanation || q.analysis || '暂无解析',
-                  category: q.category || '未分类',
-                  type: q.type || '单选',
-                  difficulty: q.difficulty || 2,
-                  source: q.source || '',
-                  year: q.year || ''
-                },
-                index
-              )
-            );
-          if (reviewQuestions.length > 0) {
-            this.questionBankFingerprint = this.buildQuestionBankFingerprint(reviewQuestions);
-            this.questions = reviewQuestions;
-            storageService.remove('smart_review_ids');
-            this.startTimer();
-            return;
-          }
-        }
-        // 没找到复习题目，回退到普通模式
-        toast.info('复习题目加载失败，已切换普通模式');
-      }
-
-      // 从本地存储读取题库
-      const bank = storageService.get('v30_bank', []);
-
-      if (!bank || bank.length === 0) {
-        // ✅ 使用自定义弹窗
-        this.showEmptyBankModal = true;
+        const raw = storageService.get('temp_practice_questions', [], { migrateLegacy: false });
+        const selected = prepareQuizSelection(raw);
+        if (!selected) return unavailable('原题资料不完整，请返回重新选择');
+        accept(selected, 'temp_practice_questions');
         return;
       }
 
-      // 验证并标准化题目数据
-      const activeBank = this.paperId ? bank.filter((q) => q.paperId === this.paperId) : bank;
-      if (this.paperId && activeBank.length === 0) {
-        toast.info('指定试卷加载失败，已切换全部题库');
+      if (this._smartReviewMode && this.smartReviewId) {
+        let selected;
+        try {
+          selected = readQuizReviewHandoff(
+            storageService.get(QUIZ_REVIEW_HANDOFF_KEY, null, { migrateLegacy: false, throwOnError: true }),
+            this.smartReviewId,
+            this.quizOwnerId,
+            this.paperId
+          );
+        } catch (_error) {
+          return unavailable('复习原题暂不可读取，请返回重试');
+        }
+        if (!selected) return unavailable('复习入口已变化，请返回重新选择');
+        accept(selected);
+        return;
+      }
+      const bank = storageService.get('v30_bank', [], { migrateLegacy: false });
+      // 整卷刷新使用当前账户的完整试卷，不依赖已消费的临时编号。
+      if (this.paperId) {
+        const raw = Array.isArray(bank) ? bank.filter((q) => q?.paperId === this.paperId) : [];
+        const selected = prepareQuizSelection(raw);
+        if (!selected) return unavailable('本卷题目未完整载入，请返回题库重试');
+        accept(selected);
+        return;
+      }
+      if (this._smartReviewMode) {
+        return unavailable('请返回重新选择复习题目');
       }
 
-      const sourceQuestions = activeBank.length > 0 ? activeBank : bank;
-      this.questionBankFingerprint = this.buildQuestionBankFingerprint(sourceQuestions);
-
-      let questions = sourceQuestions
-        .map((q, index) =>
-          normalizePracticeQuestion(
-            {
-              ...q,
-              id: q.id || `q_${index}`,
-              question: q.question || q.title || `题目 ${index + 1}`,
-              desc: q.desc || q.description || q.explanation || q.analysis || '暂无解析',
-              category: q.category || '未分类',
-              type: q.type || '单选',
-              difficulty: q.difficulty || 2,
-              source: q.source || '',
-              year: q.year || ''
-            },
-            index
-          )
-        )
-        .filter((q) => q.question && !/^题目 \d+$/.test(q.question)); // 过滤无效占位题目
+      // 普通组题只使用有完整原件的题目；显示默认值不进入原件快照。
+      let questions = Array.isArray(bank) ? bank.map(prepareQuizQuestion).filter(Boolean) : [];
+      this.questionBankFingerprint = this.buildQuestionBankFingerprint(questions);
 
       // ✅ 使用智能组题算法优化题目序列（懒加载）
       if (this.smartPickerEnabled && questions.length > 0) {
@@ -1365,7 +1634,7 @@ export default {
     },
     buildQuestionBankFingerprint(questions = []) {
       return (questions || [])
-        .map((question, index) => question?.id || question?._id || question?.question || `q_${index}`)
+        .map((question, index) => question?.id ?? question?._id ?? question?.question ?? `q_${index}`)
         .map((id) => String(id))
         .sort()
         .join('|');
@@ -1437,12 +1706,15 @@ export default {
       }, 1000);
     },
     formatTime(s) {
+      s = Math.max(0, Math.ceil(Number(s) || 0));
       const m = Math.floor(s / 60);
       const rs = s % 60;
       return `${m < 10 ? '0' + m : m}:${rs < 10 ? '0' + rs : rs}`;
     },
     getCompletionNextReviewDelayMs() {
-      const wrongCount = (this.answeredQuestions || []).filter((answer) => answer.isCorrect === false).length;
+      const wrongCount = (this.answeredQuestions || []).filter(
+        (answer) => getQuizAnswerRecordOutcome(answer) === 'wrong'
+      ).length;
       if (wrongCount <= 0) return null;
 
       try {
@@ -1453,129 +1725,110 @@ export default {
         return null;
       }
     },
-    async selectOption(idx) {
-      if (this.isAnalyzing || this.showResult || this.hasAnswered) return;
-
+    isOptionSelected(idx) {
+      return Array.isArray(this.userChoice) ? this.userChoice.includes(idx) : this.userChoice === idx;
+    },
+    selectOption(idx) {
+      if (
+        !quizRecordOwnerMatches(this) ||
+        this.quizPageClosed ||
+        this.isAnalyzing ||
+        this.isNavigating ||
+        this.showResult ||
+        this.hasAnswered ||
+        this.showResumeModal ||
+        this.resumeUnavailable
+      )
+        return;
+      if (!hasQuizSelectableOptions(this.currentQuestion)) return;
+      if (!Number.isInteger(idx) || idx < 0 || idx >= this.currentQuestion.options.length) return;
       playClickSound();
-      this.userChoice = idx;
-      this.hasAnswered = true;
-
-      // ✅ 停止单题计时器并记录用时
-      const timerResult = stopQuestionTimer();
-      const timeSpent = timerResult.elapsed * 1000; // 转换为毫秒
-
-      // 判断答案是否正确
-      const isCorrect = this.isCorrectOption(idx);
-
-      // FSRS 预览：计算 4 种评分的下次复习时间，显示在评分按钮上
-      const questionId = this.currentQuestion?.id || this.currentQuestion?._id;
-      if (questionId) {
-        try {
-          const card = loadCardState(questionId) || createNewCard();
-          this.fsrsPreview = previewSchedule(card);
-        } catch (err) {
-          logger.warn('[DoQuiz] FSRS preview failed:', err);
-          this.fsrsPreview = null;
-        }
+      if (isQuizMultiChoice(this.currentQuestion)) {
+        const selected = Array.isArray(this.userChoice) ? this.userChoice : [];
+        this.userChoice = selected.includes(idx)
+          ? selected.filter((index) => index !== idx)
+          : [...selected, idx].sort((a, b) => a - b);
+      } else {
+        this.userChoice = idx;
       }
+    },
+    async submitChoice() {
+      // 账户存储并非响应式；不能只依赖可能已缓存的按钮状态。
+      if (!quizRecordOwnerMatches(this)) return rejectQuizResume(this);
+      if (!this.canSubmitChoice) return;
+      const choice = Array.isArray(this.userChoice) ? [...this.userChoice] : this.userChoice;
+      const submittedAnswer = getQuizSelectionAnswer(this.currentQuestion, choice);
+      // ✅ 停止单题计时器并记录用时
+      const timerResult = stopQuestionTimer(this.questionTimerToken);
+      if (timerResult.success === false) return;
+      this.hasAnswered = true;
+      const timeSpent = timerResult.elapsedMs ?? timerResult.elapsed * 1000; // 转换为毫秒
 
-      // ✅ 记录已答题目
-      const speedScore = this.calculateSpeedScore(isCorrect, timeSpent);
-      const elo = this.updateQuestionElo(isCorrect, speedScore);
+      // 本地答案只提供参考匹配；可靠判分由独立依据决定。
+      const referenceMatch = isCorrectQuizSelection(this.currentQuestion, choice);
       this.answeredQuestions = upsertQuizAnswerRecord(
         this.answeredQuestions,
         buildQuizAnswerRecord({
           question: this.currentQuestion,
           index: this.currentIndex,
-          userChoice: idx,
-          isCorrect,
+          userChoice: choice,
+          userAnswer: submittedAnswer,
+          source: 'reference_match',
+          referenceMatch,
           timeSpent,
-          speedScore,
-          elo
+          attemptId: createQuizAttemptId(),
+          ownerId: getUserId() || ''
         })
       );
-
-      // ✅ 记录答题数据到各个分析模块
-      this.recordAnswerToAnalytics(isCorrect, timeSpent).catch((_err) => {
-        /* silent analytics failure */
+      this.saveCurrentProgress(true);
+      this.recordAnswerToAnalytics(referenceMatch, timeSpent).catch(() => {
+        logger.warn('[do-quiz] 原答同步未完成，本地原答保留');
       });
-
-      if (isCorrect) {
-        // ✅ 播放正确答案动画
-        this.playCorrectEffect();
-        this.showComboFeedbackIfNeeded();
-
-        // ✅ 延迟解锁防重复点击（300ms后允许再次点击）
-        this._safeTimeout(() => {
-          this.isNavigating = false;
-        }, 300);
-
-        this.resultStatus = 'correct';
-        this.personalHint = '';
-        this.updateStudyStats(isCorrect);
-        this.showResult = true;
-      } else {
-        // ✅ 播放错误答案动画
-        this.playWrongEffect();
-        this.clearComboFeedback();
-
-        this.resultStatus = 'wrong';
-        // ✅ [P0重构] 非阻塞AI分析：先立即显示结果（题目自带解析），AI异步增强
-        this.aiComment = ''; // 清空，让模板先显示 currentQuestion.desc
-        this.personalHint = this._buildPersonalHint(); // 生成个人历史微反馈
-        this.updateStudyStats(isCorrect);
-        this.showResult = true; // 立即显示结果弹窗，不等AI
-
-        // 错误时：先保存到错题本（不含智能解析）
-        this.saveToMistakes().catch((_err) => {
-          /* silent save failure */
-        });
-        // AI深度解析异步执行，完成后自动替换解析内容（打字机效果）
-        this.fetchAIDeepAnalysis(this.currentQuestion, this.currentQuestion.options[idx]).catch((aiErr) => {
-          logger.warn('[do-quiz] AI深度解析失败，不影响答题流程:', aiErr);
-        });
-        // ✅ [差异化壁垒] 异步生成记忆口诀/助记符（不阻塞）
-        generateMnemonic({
-          currentQuestion: this.currentQuestion,
-          correctAnswer: this.currentQuestion.answer
-        }).catch(() => {
-          /* silent */
-        });
-      }
+      this.updateStudyStats();
+      this.resultStatus = 'pending';
+      this.aiComment = '';
+      this.personalHint = '';
+      this.fsrsPreview = null;
+      this.clearComboFeedback();
+      this.showResult = true;
     },
     // ✅ [P0重构] AI深度解析 — 非阻塞：不再显示全屏遮罩，异步增强已显示的解析内容
     async fetchAIDeepAnalysis(question, userChoice) {
-      // 不再设置 isAnalyzing = true（不阻塞UI）
-
-      // 初始化打字机（懒创建）
-      if (!this._typewriter) {
-        this._typewriter = useTypewriter({
+      if (!quizRecordOwnerMatches(this) || this.quizPageClosed) return;
+      const frozen = JSON.parse(JSON.stringify(question)),
+        index = this.currentIndex;
+      const owner = getUserId() || '',
+        token = getToken() || '';
+      const generation = (this._analysisGeneration = (this._analysisGeneration || 0) + 1);
+      const current = () =>
+        !this.quizPageClosed &&
+        quizRecordOwnerMatches(this) &&
+        this._analysisGeneration === generation &&
+        this.currentIndex === index &&
+        JSON.stringify(this.currentQuestion) === JSON.stringify(frozen) &&
+        (getUserId() || '') === owner &&
+        (getToken() || '') === token;
+      this._typewriter?.stopTyping();
+      try {
+        const result = await fetchAIAnalysis({ question: frozen, userChoice });
+        if (!current()) return;
+        const writer = useTypewriter({
           speed: 25,
           initialDelay: 100,
           onChar: (text) => {
-            this.aiComment = text;
+            if (current()) this.aiComment = text;
+            else writer.stopTyping();
           }
         });
-      }
-
-      try {
-        const result = await fetchAIAnalysis({ question, userChoice });
-
-        if (result.success) {
-          // 将智能解析同步保存到错题本（用完整文本）
-          this.updateMistakeWithAI(result.comment);
-        }
-
-        // 用打字机效果逐字显示 AI 回复（替换题目自带解析）
-        await this._typewriter.startTyping(result.comment);
-      } catch (e) {
-        // 静默失败，用户已经能看到题目自带解析
-        logger.warn('[do-quiz] AI解析异步增强失败:', e);
+        this._typewriter = writer;
+        await writer.startTyping(result.comment);
+      } catch (_error) {
+        logger.warn('[do-quiz] 解析显示未完成，原件保持');
       }
     },
     // ✅ P1: 委托给 quiz-mistake-handler.js
     async saveToMistakes() {
-      await saveMistake({
+      return await saveMistake({
         currentQuestion: this.currentQuestion,
         userChoice: this.userChoice,
         aiComment: this.aiComment
@@ -1583,25 +1836,13 @@ export default {
     },
     // ✅ P1: 委托给 quiz-mistake-handler.js
     updateMistakeWithAI(aiAnalysis) {
-      updateMistakeAI({
+      return updateMistakeAI({
         currentQuestion: this.currentQuestion,
         aiAnalysis
       });
     },
-    async updateStudyStats(isCorrect = this.resultStatus === 'correct') {
-      try {
-        const studyStore = useStudyStore();
-        studyStore.restoreProgress();
-        studyStore.recordQuestionAttempt({
-          question: this.currentQuestion,
-          isCorrect,
-          timeSpent: Date.now() - (this.answerStartTime || Date.now()),
-          timestamp: Date.now()
-        });
-      } catch (e) {
-        logger.warn('[do-quiz] study progress update failed:', e);
-      }
-
+    async updateStudyStats() {
+      // 仅累计明确作答次数，不将参考匹配写入掌握度或估算学习时长。
       // 更新学习热力图数据
       const today = new Date().toISOString().split('T')[0];
       const stats = storageService.get('study_stats', {});
@@ -1617,121 +1858,154 @@ export default {
       } else {
         uni.setStorageSync('today_answer_count', String(todayCount + 1));
       }
-      // 上报后端统计（异步，不阻塞本地保存）
-      try {
-        const { useStatsStore } = await import('@/stores/modules/stats.js');
-        const statsStore = useStatsStore();
-        // 每次答题算1分钟学习时长（近似）
-        statsStore.reportStudyTime(1);
-        // 每日首次答题时更新连续学习天数
-        statsStore.reportStreak();
-      } catch (_e) {
-        // 上报失败不影响答题流程
-      }
     },
     formatFsrsInterval(days) {
       return formatInterval(days);
     },
-    rateAndNext(rating) {
-      const questionId = this.currentQuestion?.id || this.currentQuestion?._id;
-      if (questionId) {
-        try {
-          scheduleAndSave(questionId, rating);
-        } catch (err) {
-          logger.warn('[DoQuiz] FSRS schedule failed:', err);
-        }
-      }
-      // 每 50 次答题触发一次 FSRS 参数优化（非阻塞）
-      const reviewCount = parseInt(uni.getStorageSync('fsrs_review_count') || '0') + 1;
-      uni.setStorageSync('fsrs_review_count', String(reviewCount));
-      if (reviewCount % 50 === 0) {
-        triggerOptimization().catch(() => {
-          /* no-op */
-        });
-      }
+    rateAndNext(_rating) {
+      if (!quizRecordOwnerMatches(this) || this.quizPageClosed || this.resumeUnavailable || !this.hasAnswered) return;
       this.fsrsPreview = null;
-      this.toNext();
+      return this.toNext();
     },
-    // 经典闪卡：翻转查看答案
-    flipFlashcard() {
+    // 看参考只记录帮助，不制造原答、判分、卡片或优化次数。
+    async flipFlashcard() {
+      if (
+        !quizRecordOwnerMatches(this) ||
+        this.quizPageClosed ||
+        this.isQuestionActionLocked ||
+        this.recordingObservation ||
+        this.referenceSaved ||
+        !isQuizFlashcardMode(this.currentQuestion)
+      )
+        return;
+      const question = JSON.parse(JSON.stringify(this.currentQuestion)),
+        index = this.currentIndex,
+        sessionId = this.sessionId;
+      const owner = getUserId() || '',
+        token = getToken() || '';
+      const current = () =>
+        !this.quizPageClosed &&
+        quizRecordOwnerMatches(this) &&
+        this.sessionId === sessionId &&
+        this.currentIndex === index &&
+        JSON.stringify(this.currentQuestion) === JSON.stringify(question) &&
+        (getUserId() || '') === owner &&
+        (getToken() || '') === token;
+      this.referenceObservationId ||= createQuizAttemptId();
       this.flashcardFlipped = true;
-      this.hasAnswered = true;
-
-      // 停止单题计时器
-      const timerResult = stopQuestionTimer();
-      const timeSpent = timerResult.elapsed * 1000;
-
-      // 计算 FSRS 预览（四级评分的下次复习时间）
-      const questionId = this.currentQuestion?.id || this.currentQuestion?._id;
-      if (questionId) {
-        try {
-          const card = loadCardState(questionId) || createNewCard();
-          this.flashcardFsrsPreview = previewSchedule(card);
-        } catch (err) {
-          logger.warn('[DoQuiz] Flashcard FSRS preview failed:', err);
-          this.flashcardFsrsPreview = null;
-        }
-      }
-
-      // 记录已答题目（闪卡模式不判断对错，由用户自评）
-      this.answeredQuestions = upsertQuizAnswerRecord(
-        this.answeredQuestions,
-        buildQuizAnswerRecord({
-          question: this.currentQuestion,
-          index: this.currentIndex,
-          userChoice: 'flashcard_flip',
-          isCorrect: null,
-          timeSpent
-        })
-      );
-
-      playFlipSound();
-    },
-    // 经典闪卡：自评后进入下一题
-    rateFlashcardAndNext(rating) {
-      const questionId = this.currentQuestion?.id || this.currentQuestion?._id;
-      if (questionId) {
-        try {
-          scheduleAndSave(questionId, rating);
-        } catch (err) {
-          logger.warn('[DoQuiz] Flashcard FSRS schedule failed:', err);
-        }
-      }
-
-      const latestAnswer = [...this.answeredQuestions].reverse().find((item) => item.index === this.currentIndex);
-      const timeSpent = latestAnswer?.timeSpent || 0;
-      this.answeredQuestions = upsertQuizAnswerRecord(
-        this.answeredQuestions,
-        buildQuizAnswerRecord({
-          question: this.currentQuestion,
-          index: this.currentIndex,
-          userChoice: `flashcard_rating_${rating}`,
-          isCorrect: rating >= 3,
-          timeSpent,
-          rating
-        })
-      );
-
-      // 更新学习统计
-      this.updateStudyStats(rating >= 3);
-
-      if (rating >= 3) {
-        this.playCorrectEffect();
-      }
-
-      // FSRS 优化计数
-      const reviewCount = parseInt(uni.getStorageSync('fsrs_review_count') || '0') + 1;
-      uni.setStorageSync('fsrs_review_count', String(reviewCount));
-      if (reviewCount % 50 === 0) {
-        triggerOptimization().catch((_err) => {
-          /* silent optimization failure */
-        });
-      }
-
       this.flashcardFsrsPreview = null;
-      this.toNext();
+      this.recordingObservation = true;
+      this.observationError = '';
+      const measured = stopQuestionTimer(this.questionTimerToken);
+      if (measured.success === false) return;
+      const timeSpent = measured.elapsedMs ?? measured.elapsed * 1000;
+      try {
+        await recordQuizLearningObservation({
+          currentQuestion: question,
+          sessionId,
+          observationId: this.referenceObservationId,
+          kind: 'reference_view',
+          canContinue: current
+        });
+        if (!current()) return;
+        this.referenceSaved = true;
+        this.hasAnswered = true;
+        this.answeredQuestions = upsertQuizAnswerRecord(
+          this.answeredQuestions,
+          buildQuizAnswerRecord({
+            question,
+            index,
+            userChoice: 'flashcard_flip',
+            isCorrect: null,
+            mode: 'flashcard',
+            source: 'reference_view',
+            observationId: this.referenceObservationId,
+            timeSpent
+          })
+        );
+        this.saveCurrentProgress(true);
+        playFlipSound();
+      } catch (_error) {
+        if (current()) this.observationError = '查看记录未保存，请重试';
+      } finally {
+        if (current()) this.recordingObservation = false;
+      }
+    },
+    async rateFlashcardAndNext(rating) {
+      if (
+        !quizRecordOwnerMatches(this) ||
+        this.quizPageClosed ||
+        this.isQuestionActionLocked ||
+        this.recordingObservation ||
+        !this.flashcardFlipped ||
+        !this.referenceSaved ||
+        !isQuizFlashcardMode(this.currentQuestion) ||
+        ![1, 2, 3, 4].includes(rating)
+      )
+        return;
+      const question = JSON.parse(JSON.stringify(this.currentQuestion)),
+        index = this.currentIndex,
+        sessionId = this.sessionId;
+      const owner = getUserId() || '',
+        token = getToken() || '';
+      const current = () =>
+        !this.quizPageClosed &&
+        quizRecordOwnerMatches(this) &&
+        this.sessionId === sessionId &&
+        this.currentIndex === index &&
+        JSON.stringify(this.currentQuestion) === JSON.stringify(question) &&
+        (getUserId() || '') === owner &&
+        (getToken() || '') === token;
+      this.selfRatingObservationId ||= createQuizAttemptId();
+      this.recordingObservation = true;
+      this.observationError = '';
+      try {
+        await recordQuizLearningObservation({
+          currentQuestion: question,
+          sessionId,
+          observationId: this.selfRatingObservationId,
+          kind: 'self_rating',
+          rating,
+          referenceId: this.referenceObservationId,
+          canContinue: current
+        });
+        if (!current()) return;
+        const latest = this.answeredQuestions.find((item) => item.index === index && item.questionId === question.id);
+        this.answeredQuestions = upsertQuizAnswerRecord(
+          this.answeredQuestions,
+          buildQuizAnswerRecord({
+            question,
+            index,
+            userChoice: `flashcard_rating_${rating}`,
+            isCorrect: null,
+            timeSpent: latest?.timeSpent || 0,
+            rating,
+            mode: 'flashcard',
+            source: 'self_rating',
+            observationId: this.selfRatingObservationId,
+            referenceId: this.referenceObservationId
+          })
+        );
+        this.saveCurrentProgress(true);
+        this.flashcardFsrsPreview = null;
+        this.recordingObservation = false;
+        await this.toNext();
+      } catch (_error) {
+        if (current()) this.observationError = '自评未保存，请重试';
+      } finally {
+        if (current()) this.recordingObservation = false;
+      }
     },
     async toNext() {
+      if (
+        !quizRecordOwnerMatches(this) ||
+        this.quizPageClosed ||
+        this.recordingObservation ||
+        this.showResumeModal ||
+        this.resumeUnavailable ||
+        this.questions.length === 0
+      )
+        return;
       // ✅ 防重复点击保护
       if (this.isNavigating) {
         return;
@@ -1771,9 +2045,15 @@ export default {
         // 重置闪卡翻转状态
         this.flashcardFlipped = false;
         this.flashcardFsrsPreview = null;
+        this.referenceObservationId = '';
+        this.selfRatingObservationId = '';
+        this.referenceSaved = false;
+        this.observationError = '';
+        this.recordingObservation = false;
 
         // ✅ 重置答题开始时间
         this.answerStartTime = Date.now();
+        this.startQuestionTimer();
 
         // ✅ P0-3: 进入下一题时保存进度
         this.saveCurrentProgress();
@@ -1783,13 +2063,28 @@ export default {
           this.isNavigating = false;
         }, 300);
       } else {
+        if (!isQuizProgressComplete(this)) {
+          const nextIndex = this.questions.findIndex(
+            (q, index) =>
+              !this.answeredQuestions.some(
+                (record) => record.index === index && String(record.questionId) === String(q.id ?? q._id)
+              )
+          );
+          this.currentIndex = Math.max(0, nextIndex);
+          this.resetQuestionState();
+          this.updateFavoriteStatus();
+          this.saveCurrentProgress(true);
+          this.isNavigating = false;
+          toast.info('还有未作答的题目');
+          return;
+        }
         // ✅ P0-3: 练习完成，清除进度
         clearQuizProgress();
 
         // ✅ 检查点 5.1: 追踪完成练习事件
         analytics.trackConversion('COMPLETE_SESSION', {
           totalQuestions: this.questions.length,
-          correctCount: this.answeredQuestions.filter((a) => a.isCorrect).length,
+          correctCount: this.answeredQuestions.filter((a) => getQuizAnswerRecordOutcome(a) === 'correct').length,
           totalTime: this.seconds
         });
 
@@ -1813,7 +2108,7 @@ export default {
       if (this.timer) {
         clearInterval(this.timer);
       }
-      stopQuestionTimer();
+      stopQuestionTimer(this.questionTimerToken);
       safeNavigateBack();
     },
 
@@ -1831,14 +2126,27 @@ export default {
 
     // ✅ 处理恢复进度取消（重新开始）
     handleResumeCancel() {
+      if (this.resumeProgressIdentity && (getUserId() || '') !== this.resumeOwnerId) {
+        rejectQuizResume(this);
+        return;
+      }
+      const progress = this.forceResumeProgress
+        ? getRecoverableQuizProgress()
+        : loadQuizProgress(this.quizProgressContext);
+      if (!resumeTargetMatches(this, progress)) {
+        rejectQuizResume(this);
+        return;
+      }
       this.showResumeModal = false;
       clearQuizProgress();
+      this.resumeProgressIdentity = '';
+      this.resumeOwnerId = this.mode === 'legacy_review' ? getUserId() || '' : '';
       this.startTimer();
     },
 
     // ✅ [闭环核心] 自动诊断 + AI推荐下一组 — 刷题结束后台自动触发
     async autoDiagnose() {
-      if (!this.sessionId || this.answeredQuestions.length < 3) {
+      if (!this.sessionId || summarizeQuizProgress({ answeredQuestions: this.answeredQuestions }).gradedCount < 3) {
         return;
       }
       this.diagnosisLoading = true;
@@ -1865,9 +2173,7 @@ export default {
 
         // 处理推荐结果 — AI自动推荐下一组
         if (recRes.status === 'fulfilled' && recRes.value.success && recRes.value.data) {
-          const ids = (recRes.value.data.questions || recRes.value.data || [])
-            .map((q) => q.id || q._id)
-            .filter(Boolean);
+          const ids = (recRes.value.data.questions || recRes.value.data || []).map((q) => q.id ?? q._id);
           if (ids.length > 0) {
             this.nextRecommendationIds = ids;
             this.hasNextRecommendation = true;
@@ -1882,11 +2188,15 @@ export default {
 
     // ✅ [P1重构] 完成弹窗主按钮 — 根据是否有推荐决定行为
     handleCompleteAction() {
+      if (!quizRecordOwnerMatches(this)) return toast.info('账户已变化，请返回重新选择');
       if (this.hasNextRecommendation && this.nextRecommendationIds.length > 0) {
-        // AI已推荐下一组，直接开始
+        const result = storageService.prepareQuizReview({
+          ids: this.nextRecommendationIds,
+          expectedOwner: this.quizOwnerId
+        });
+        if (!result.success) return toast.info('下一组原题未确认保存，请返回重新选择');
         this.showCompleteModal = false;
-        uni.setStorageSync('smart_review_ids', this.nextRecommendationIds);
-        safeRedirectTo('/pages/practice-sub/do-quiz?mode=smart_review');
+        safeRedirectTo(result.url);
       } else {
         // 没有推荐，查看诊断报告
         this.viewDiagnosisReport();
@@ -1896,6 +2206,10 @@ export default {
     // ✅ 查看诊断报告
     viewDiagnosisReport() {
       this.showCompleteModal = false;
+      if (summarizeQuizProgress({ answeredQuestions: this.answeredQuestions }).gradedCount === 0) {
+        safeNavigateTo('/pages/study-detail/index');
+        return;
+      }
       if (this.diagnosisId) {
         modal.show({
           title: '练习诊断',
@@ -1938,34 +2252,17 @@ export default {
      * 在用户答错时调用，根据该知识点的历史错误次数给出上下文提醒
      */
     _buildPersonalHint() {
-      if (!this.currentQuestion) return '';
-      const cat = this.currentQuestion.category || '';
-      if (!cat) return '';
-
-      // 统计本次练习中该知识点的错误次数
-      const catWrongCount = this.answeredQuestions.filter(
-        (a) => !a.isCorrect && this.questions[a.index]?.category === cat
-      ).length;
-
-      // 统计总体该知识点的历史错误
-      const mistakes = storageService.get('mistake_book', []);
-      const catMistakes = mistakes.filter((m) => (m.category || m.knowledge_point || '') === cat);
-      const totalWrong = catMistakes.length;
-
-      if (totalWrong >= 5) {
-        return `你在「${cat}」上已累计错${totalWrong}题，建议做完后去错题本集中突破这个知识点。`;
-      }
-      if (catWrongCount >= 2) {
-        return `本次在「${cat}」已错${catWrongCount}题，这可能是你的薄弱点。`;
-      }
-      if (totalWrong >= 2) {
-        return `「${cat}」是你的高频易错知识点（累计${totalWrong}次），注意审题。`;
-      }
-      return `记住这道题的考点：「${cat}」`;
+      return '';
     },
 
     // ✅ [闭环核心] AI智能诊断 — 刷题结束后触发
     async handleDiagnosis() {
+      if (!quizRecordOwnerMatches(this) || this.quizPageClosed) return;
+      if (summarizeQuizProgress({ answeredQuestions: this.answeredQuestions }).gradedCount === 0) {
+        toast.info('参考作答和自评不能生成可靠诊断');
+        safeNavigateTo('/pages/study-detail/index');
+        return;
+      }
       if (this.diagnosisLoading) return;
       if (!this.sessionId) {
         toast.info('会话数据不足，无法诊断');
@@ -2004,6 +2301,10 @@ export default {
     },
 
     closeResult() {
+      if (this.hasAnswered && this.resultStatus === 'pending') {
+        this.toNext();
+        return;
+      }
       if (this.hasAnswered) {
         this.rateAndNext(this.resultStatus === 'correct' ? 3 : 1);
         return;
@@ -2110,6 +2411,13 @@ export default {
       this.userChoice = null;
       this.showResult = false;
       this.aiComment = '';
+      this.flashcardFlipped = false;
+      this.flashcardFsrsPreview = null;
+      this.referenceObservationId = '';
+      this.selfRatingObservationId = '';
+      this.referenceSaved = false;
+      this.observationError = '';
+      this.recordingObservation = false;
       this.answerStartTime = Date.now();
       this.correctAnimationClass = '';
       this.wrongAnimationClass = '';
@@ -2126,6 +2434,7 @@ export default {
 
     // ✅ 切换收藏状态（通过 Store，登录时走后端）
     async handleToggleFavorite(options = {}) {
+      if (!quizRecordOwnerMatches(this)) return rejectQuizResume(this);
       if (!this.currentQuestion) return;
       if (this.isQuestionActionLocked && !options.allowDuringResult) {
         toast.info('请先完成当前题目的反馈');
@@ -2133,8 +2442,14 @@ export default {
       }
 
       const favoriteStore = useFavoriteStore();
-      const result = await favoriteStore.toggleFavorite(this.currentQuestion);
+      const result = await favoriteStore.toggleFavorite(
+        this.currentQuestion,
+        'default',
+        this.quizOwnerId ?? getUserId() ?? ''
+      );
+      if (!quizRecordOwnerMatches(this) || this.quizPageClosed) return;
       this.isCurrentFavorited = result.isFavorited;
+      if (!result.success) toast.info(result.message || '收藏未保存，请重试');
 
       playClickSound();
 
@@ -2149,9 +2464,10 @@ export default {
     async updateFavoriteStatus() {
       if (this.currentQuestion) {
         const favoriteStore = useFavoriteStore();
-        this.isCurrentFavorited = await favoriteStore.checkIsFavorited(
-          this.currentQuestion.id || this.currentQuestion.question
-        );
+        if (!quizRecordOwnerMatches(this)) return;
+        const question = this.currentQuestion;
+        const saved = await favoriteStore.checkIsFavorited(question);
+        if (quizRecordOwnerMatches(this) && this.currentQuestion?.id === question.id) this.isCurrentFavorited = saved;
       }
     },
 
@@ -2201,31 +2517,57 @@ export default {
     // ==================== 单题计时器相关方法 ====================
 
     // ✅ 启动单题计时器
-    startQuestionTimer() {
-      if (!this.questionTimerEnabled || !this.currentQuestion) return;
+    startQuestionTimer(initialElapsedMs = 0) {
+      if (
+        !this.currentQuestion ||
+        this.hasAnswered ||
+        !quizRecordOwnerMatches(this) ||
+        this.quizPageClosed ||
+        this.showResumeModal
+      )
+        return;
+      const binding = JSON.stringify([
+        this.quizOwnerId,
+        this.sessionId,
+        this.currentIndex,
+        this.questionBankFingerprint
+      ]);
+      const current = getQuestionTime(this.questionTimerToken);
+      if (this.questionTimerBinding === binding && current.active) {
+        resumeQuestionTimer(this.questionTimerToken);
+        return;
+      }
 
       const difficulty = this.currentQuestion.difficulty || 2;
       this.currentQuestionDifficulty = difficulty;
 
+      const currentBinding = () =>
+        !this.quizPageClosed && quizRecordOwnerMatches(this) && this.questionTimerBinding === binding;
       const timerResult = startQuestionTimer({
         difficulty,
+        initialElapsedMs,
+        notificationsEnabled: this.questionTimerEnabled,
         onTick: (data) => {
+          if (!currentBinding()) return;
           this.questionTimeRemaining = data.remaining;
           this.showTimeWarning = data.progress >= 0.8;
         },
         onWarning: (data) => {
+          if (!currentBinding()) return;
           if (data.level === 'warning') {
             toast.info(data.message);
           }
         },
         onTimeout: (_data) => {
           // 超时处理
-          if (!this.hasAnswered) {
+          if (currentBinding() && !this.hasAnswered) {
             toast.info('时间到！');
           }
         }
       });
 
+      this.questionTimerToken = timerResult.token;
+      this.questionTimerBinding = binding;
       this.questionTimeLimit = timerResult.timeLimit;
       this.questionTimeRemaining = timerResult.remaining;
 
@@ -2238,28 +2580,61 @@ export default {
     // ==================== 数据分析记录方法 ====================
 
     // ✅ P1: 委托给 quiz-analytics-recorder.js（组件状态更新保留在组件内）
-    async recordAnswerToAnalytics(isCorrect, timeSpent) {
-      const questionData = await recordAnalytics({
-        currentQuestion: this.currentQuestion,
-        isCorrect,
-        timeSpent,
-        userChoice: this.userChoice,
-        questionTimeLimit: this.questionTimeLimit,
-        getOptionLabel: (idx) => this.getOptionLabel(idx),
-        sessionId: this.sessionId
-      });
-
-      // 答题进度已在 selectOption 中写入；这里仅回填分析状态，避免进度翻倍。
-      if (questionData) {
-        const recordIndex = this.answeredQuestions.findIndex((item) => {
-          return item.index === this.currentIndex && item.questionId === this.currentQuestion.id;
+    async retryAnswerSync() {
+      if (!this.canRetryAnswerSync) return;
+      await this.recordAnswerToAnalytics();
+    },
+    async recordAnswerToAnalytics() {
+      if (!quizRecordOwnerMatches(this)) return;
+      const question = this.currentQuestion;
+      const index = this.currentIndex;
+      const sessionId = this.sessionId;
+      const owner = getUserId() || '';
+      const token = getToken() || '';
+      const record = this.answeredQuestions.find((item) => item.index === index && item.questionId === question?.id);
+      if (
+        !record?.attemptId ||
+        record.ownerId !== owner ||
+        typeof record.userAnswer !== 'string' ||
+        this.syncingAttemptIds.includes(record.attemptId) ||
+        this.quizPageClosed
+      )
+        return;
+      const attemptId = record.attemptId;
+      const choice = Array.isArray(record.userChoice) ? [...record.userChoice] : record.userChoice;
+      const stillCurrent = () =>
+        !this.quizPageClosed &&
+        this.sessionId === sessionId &&
+        (getUserId() || '') === owner &&
+        (getToken() || '') === token;
+      this.syncingAttemptIds.push(attemptId);
+      try {
+        const questionData = await recordAnalytics({
+          currentQuestion: question,
+          isCorrect: record.referenceMatch,
+          timeSpent: record.timeSpent,
+          userChoice: choice,
+          questionTimeLimit: this.questionTimeLimit,
+          getOptionLabel: () => record.userAnswer,
+          sessionId,
+          attemptId,
+          canContinue: stillCurrent
         });
-        if (recordIndex >= 0) {
+        if (!stillCurrent() || this.currentIndex !== index || this.currentQuestion?.id !== question.id) return;
+        const recordIndex = this.answeredQuestions.findIndex(
+          (item) => item.index === index && item.questionId === question.id && item.attemptId === attemptId
+        );
+        if (recordIndex >= 0 && questionData?.submission) {
           this.answeredQuestions.splice(recordIndex, 1, {
             ...this.answeredQuestions[recordIndex],
-            analyticsRecordedAt: Date.now()
+            submission: questionData.submission
           });
+          this.saveCurrentProgress(true);
         }
+      } catch {
+        logger.warn('[do-quiz] 原答同步未完成，可重试');
+      } finally {
+        this.syncingAttemptIds = this.syncingAttemptIds.filter((id) => id !== attemptId);
       }
     },
     calculateSpeedScore(isCorrect, timeSpent) {
@@ -2412,19 +2787,15 @@ export default {
 .container {
   min-height: 100%;
   min-height: 100vh;
-  background:
-    radial-gradient(circle at 18% 0%, rgba(159, 232, 112, 0.14) 0, rgba(159, 232, 112, 0) 34%),
-    linear-gradient(180deg, #f7f9f4 0%, #eef3f6 100%);
+
+  background: var(--yozi-background);
   position: relative;
   overflow: hidden;
   color: #1d1d1f;
 }
 
 .container.dark-mode {
-  background:
-    radial-gradient(circle at 20% 0%, rgba(0, 224, 255, 0.12) 0, rgba(0, 224, 255, 0) 34%),
-    radial-gradient(circle at 86% 12%, rgba(155, 81, 224, 0.1) 0, rgba(155, 81, 224, 0) 32%),
-    linear-gradient(180deg, #10131a 0%, #1a1c23 62%, #11141c 100%);
+  background: var(--yozi-background);
   color: #f5f7fb;
 }
 
@@ -2676,18 +3047,26 @@ export default {
 
 /* 玻璃卡片通用样式 */
 .glass-card {
-  background: rgba(255, 255, 255, 0.9);
-  border: 1rpx solid rgba(15, 23, 42, 0.06);
-  border-radius: 28rpx;
+  background: var(--yozi-reading);
+
+  border: 0;
+
+  border-radius: 24px;
   padding: 36rpx;
   margin-bottom: 24rpx;
-  box-shadow: 0 16rpx 42rpx rgba(15, 23, 42, 0.08);
+
+  box-shadow: var(--yozi-shadow);
 }
 
 .dark-mode .glass-card {
-  background: rgba(34, 37, 45, 0.86);
+  background: var(--yozi-reading);
   border-color: rgba(255, 255, 255, 0.08);
-  box-shadow: 0 18rpx 48rpx rgba(0, 0, 0, 0.34);
+
+  box-shadow: var(--yozi-shadow);
+
+  border: 0;
+
+  border-radius: 24px;
 }
 
 .quiz-loading-overlay {
@@ -2912,12 +3291,25 @@ export default {
   color: #f5f7fb;
 }
 
+.q-translation-target {
+  margin-top: 20rpx;
+  padding: 24rpx;
+  border-radius: 16rpx;
+  background: var(--yozi-solid);
+  color: var(--foreground);
+  font-size: 32rpx;
+  line-height: 1.7;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
 .q-passage-card {
   margin-bottom: 28rpx;
   padding: 24rpx;
   border: 1rpx solid rgba(0, 0, 0, 0.06);
   border-radius: 22rpx;
-  background: #fafafa;
+
+  background: var(--muted);
 }
 
 .dark-mode .q-passage-card,
@@ -3081,7 +3473,8 @@ export default {
   overflow: hidden;
   border: 1rpx solid rgba(0, 0, 0, 0.08);
   border-radius: 18rpx;
-  background: #ffffff;
+
+  background: var(--muted);
 }
 
 .q-source-image {
@@ -3107,7 +3500,7 @@ export default {
 .option-item {
   display: flex;
   align-items: center;
-  min-height: 96rpx;
+  min-height: max(44px, 96rpx);
   padding: 28rpx 32rpx;
   background: rgba(255, 255, 255, 0.92);
   border: 1rpx solid rgba(15, 23, 42, 0.08);
@@ -3119,6 +3512,23 @@ export default {
     background-color 170ms ease,
     box-shadow 170ms ease;
   position: relative;
+}
+.option-item:focus-visible {
+  outline: 2px solid var(--yozi-focus, #7367f0);
+  outline-offset: 2px;
+}
+.choice-submit {
+  display: block;
+  width: 100%;
+  min-height: 44px;
+  margin-top: 16px;
+  background: var(--yozi-button);
+  color: var(--yozi-button-ink);
+  box-shadow: var(--yozi-button-shadow);
+}
+.choice-submit:focus-visible {
+  outline: 2px solid var(--yozi-focus, #7367f0);
+  outline-offset: 2px;
 }
 .option-item:active {
   transform: scale(0.975);
@@ -3301,12 +3711,12 @@ export default {
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  background: rgba(255, 255, 255, 0.94);
+
+  background: var(--yozi-floating);
   border: 1rpx solid rgba(15, 23, 42, 0.08);
   border-radius: 32rpx;
-  box-shadow:
-    0 -8rpx 40rpx rgba(15, 23, 42, 0.12),
-    inset 0 1rpx 0 rgba(255, 255, 255, 0.86);
+
+  box-shadow: var(--yozi-shadow);
   animation: slideUpResult 0.35s cubic-bezier(0.32, 0.72, 0, 1) forwards;
 
   /* FSRS 按钮色彩变量 — 基于全局语义色的半透明变体 */
@@ -3388,10 +3798,8 @@ export default {
 
 .result-primary-action {
   width: 100%;
-  border-radius: 999rpx;
-  background: linear-gradient(135deg, #1d1d1f 0%, #30343b 100%);
-  color: #ffffff;
-  box-shadow: 0 12rpx 28rpx rgba(15, 23, 42, 0.16);
+
+  @include em-mobile-primary-action;
 }
 
 .result-pop.correct .result-status-mark {
@@ -3420,16 +3828,20 @@ export default {
 }
 
 .result-pop.correct .result-primary-action {
-  background: linear-gradient(135deg, #9fe870 0%, #75ddff 100%);
+  background: var(--yozi-button);
+
+  box-shadow: var(--yozi-button-shadow);
 }
 
 .result-pop.correct .result-action-icon,
 .result-pop.correct .result-primary-label {
-  color: #10281a;
+  color: var(--yozi-button-ink);
 }
 
 .result-pop.wrong .result-primary-action {
-  background: linear-gradient(135deg, #ff7b72 0%, #f59e0b 100%);
+  background: var(--yozi-button);
+
+  box-shadow: var(--yozi-button-shadow);
 }
 
 .dark-mode .result-pop.wrong .result-primary-action,
@@ -3439,9 +3851,14 @@ export default {
 
 .result-primary-action-hover,
 .result-primary-action:active {
-  transform: scale(0.98);
+  transform: translateY(2px);
   opacity: 0.9;
-  box-shadow: none;
+
+  box-shadow:
+    inset 0 2px 4px rgba(30, 15, 65, 0.16),
+    0 2px 0 var(--yozi-button-edge);
+
+  transition-duration: 100ms;
 }
 
 .result-primary-action.disabled {
@@ -3461,15 +3878,15 @@ export default {
 }
 
 .result-next-btn {
-  min-height: 92rpx;
+  min-height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
   @include em-flex-gap(12rpx, row);
+
   transition:
-    transform 0.22s ease,
-    opacity 0.22s ease,
-    box-shadow 0.22s ease;
+    transform 180ms ease,
+    box-shadow 180ms ease;
 }
 
 .result-action-icon {
@@ -3483,7 +3900,21 @@ export default {
 .result-primary-label {
   font-size: 28rpx;
   font-weight: 700;
-  color: #ffffff;
+
+  color: var(--yozi-button-ink);
+}
+
+.answer-sync {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16rpx;
+  padding: 16rpx 8rpx;
+  font-size: 24rpx;
+  color: var(--text-secondary);
+  :deep(button) {
+    min-height: 44px;
+  }
 }
 
 .result-assist-row {
@@ -4219,28 +4650,30 @@ export default {
   align-items: center;
   justify-content: center;
   padding: 28rpx 60rpx;
-  background: #1d1d1f;
-  border-radius: 22rpx;
-  box-shadow: none;
-  transition:
-    transform 0.15s,
-    box-shadow 0.15s;
+
+  @include em-mobile-primary-action;
 }
 
 .flashcard-reveal-btn:active {
-  transform: scale(0.98);
-  box-shadow: none;
+  transform: translateY(2px);
+
+  box-shadow:
+    inset 0 2px 4px rgba(30, 15, 65, 0.16),
+    0 2px 0 var(--yozi-button-edge);
+
+  transition-duration: 100ms;
 }
 
 .flashcard-reveal-text {
   font-size: 32rpx;
   font-weight: 700;
-  color: #fff;
+
+  color: var(--yozi-button-ink);
   margin-left: 12rpx;
 }
 
 .flashcard-reveal-btn .base-icon {
-  color: #fff;
+  color: var(--yozi-button-ink);
 }
 
 /* 翻转后：答案卡片 */
@@ -4331,8 +4764,9 @@ export default {
 
 /* 暗色模式适配 */
 .dark-mode .flashcard-reveal-btn {
-  background: linear-gradient(135deg, #00a65e, #008a4c);
-  box-shadow: 0 8rpx 0 #006b38;
+  background: var(--yozi-button);
+
+  box-shadow: var(--yozi-button-shadow);
 }
 
 .dark-mode .flashcard-answer-card {

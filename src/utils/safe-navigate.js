@@ -16,6 +16,7 @@
 
 import { logger } from '@/utils/logger.js';
 import { toast } from '@/utils/toast.js';
+import { getCurrentRoute, isHomeRoute, openHomeTab } from '@/utils/home-navigation.js';
 
 // tabBar 页面路径列表（与 pages.json 中 tabBar.list 保持一致）
 const TAB_BAR_PAGES = ['/pages/index/index', '/pages/practice/index', '/pages/profile/index'];
@@ -181,6 +182,29 @@ export function safeRedirectTo(url, options = {}) {
  */
 export function safeNavigateBack(options = {}) {
   const { delta = 1, success, fail, complete, ...rest } = options;
+  // Refreshing a deep H5 route leaves a single uni-app page. navigateBack can
+  // silently succeed there, so use the existing route-verified home fallback.
+  if (!fail && Number.isInteger(delta) && delta > 0 && typeof getCurrentPages === 'function') {
+    try {
+      if (getCurrentPages().length <= delta) {
+        const origin = getCurrentRoute();
+        openHomeTab({
+          isCurrent: () => getCurrentRoute() === origin || isHomeRoute(),
+          onSuccess() {
+            success?.();
+            complete?.();
+          },
+          onFail(error) {
+            toast.info('返回失败，请重试');
+            complete?.(error);
+          }
+        });
+        return;
+      }
+    } catch (_error) {
+      // An unavailable page stack keeps the platform's ordinary back path.
+    }
+  }
   uni.navigateBack({
     delta,
     ...ANIMATION.navigateBack,
@@ -195,12 +219,10 @@ export function safeNavigateBack(options = {}) {
       }
       logger.warn('[safeNavigate] navigateBack failed:', err);
       // 返回失败时降级到首页
-      uni.switchTab({
-        url: '/pages/index/index',
-        ...ANIMATION.switchTab,
-        fail(err2) {
-          logger.warn('[safeNavigate] fallback switchTab also failed:', err2);
-        }
+      const origin = getCurrentRoute();
+      openHomeTab({
+        isCurrent: () => getCurrentRoute() === origin || isHomeRoute(),
+        onFail: () => toast.info('返回失败，请重试')
       });
     },
     complete(res) {

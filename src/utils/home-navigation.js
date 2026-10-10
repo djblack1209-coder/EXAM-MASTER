@@ -26,26 +26,36 @@ export function openHomeTab(options = {}) {
   const {
     verifyDelays = [350, 1200, 2500],
     schedule = (callback, delay) => setTimeout(callback, delay),
+    isCurrent = () => true,
     onSuccess,
     onFail
   } = options;
   let settled = false;
   let fallbackStarted = false;
 
+  const cancelled = () => {
+    if (settled) return true;
+    if (!isCurrent()) {
+      settled = true;
+      return true;
+    }
+    return false;
+  };
+
   const finishSuccess = () => {
-    if (settled) return;
+    if (cancelled()) return;
     settled = true;
     onSuccess?.();
   };
 
   const finishFail = (error) => {
-    if (settled) return;
+    if (cancelled()) return;
     settled = true;
     onFail?.(error);
   };
 
   const verifyRoute = (source, error) => {
-    if (settled) return;
+    if (cancelled()) return;
     if (isHomeRoute()) {
       finishSuccess();
       return;
@@ -58,6 +68,7 @@ export function openHomeTab(options = {}) {
         url: HOME_TAB_URL,
         success: () => scheduleVerification('reLaunch'),
         fail: (err2) => {
+          if (cancelled()) return;
           logger.warn('[home-navigation] reLaunch failed, trying redirectTo', err2);
           uni.redirectTo({
             url: HOME_TAB_URL,
@@ -85,11 +96,13 @@ export function openHomeTab(options = {}) {
     url: HOME_TAB_URL,
     success: () => scheduleVerification('switchTab'),
     fail: (err1) => {
+      if (cancelled()) return;
       logger.warn('[home-navigation] switchTab failed, trying reLaunch', err1);
       uni.reLaunch({
         url: HOME_TAB_URL,
         success: () => scheduleVerification('reLaunch'),
         fail: (err2) => {
+          if (cancelled()) return;
           logger.warn('[home-navigation] reLaunch failed, trying redirectTo', err2);
           uni.redirectTo({
             url: HOME_TAB_URL,

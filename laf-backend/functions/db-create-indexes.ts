@@ -22,11 +22,88 @@
  */
 
 import cloud from '@lafjs/cloud';
-import { createLogger } from './_shared/api-response';
-import { requireAdminAccess } from './_shared/admin-auth';
+import { createLogger } from './_shared/api-response.js';
+import { requireAdminAccess } from './_shared/admin-auth.js';
 
 const logger = createLogger('[DbIndexes]');
 const db = cloud.database();
+
+type UserIdentityIndex = {
+  key: Record<string, 1>;
+  options: {
+    name: string;
+    unique: true;
+    sparse?: true;
+    partialFilterExpression?: Record<string, { $type: 'string' }>;
+  };
+};
+
+// The protected standalone migration and the existing full migration share
+// these definitions. Returning a copy prevents a caller from changing them.
+const userIdentityIndexes: UserIdentityIndex[] = [
+  {
+    key: { wx_mobile_appid: 1, app_openid: 1 },
+    options: {
+      unique: true,
+      name: 'idx_wx_mobile_identity_unique',
+      partialFilterExpression: { wx_mobile_appid: { $type: 'string' }, app_openid: { $type: 'string' } }
+    }
+  },
+  { key: { openid: 1 }, options: { unique: true, sparse: true, name: 'idx_openid_unique' } },
+  { key: { h5_openid: 1 }, options: { unique: true, sparse: true, name: 'idx_h5_openid_unique' } },
+  { key: { unionid: 1 }, options: { unique: true, sparse: true, name: 'idx_unionid_unique' } },
+  { key: { qq_openid: 1 }, options: { unique: true, sparse: true, name: 'idx_qq_openid_unique' } },
+  { key: { qq_unionid: 1 }, options: { unique: true, sparse: true, name: 'idx_qq_unionid_unique' } },
+  {
+    key: { qq_mobile_appid: 1, qq_mobile_openid: 1 },
+    options: {
+      unique: true,
+      name: 'idx_qq_mobile_identity_unique',
+      partialFilterExpression: { qq_mobile_appid: { $type: 'string' }, qq_mobile_openid: { $type: 'string' } }
+    }
+  },
+  {
+    key: { qq_mini_appid: 1, qq_mini_openid: 1 },
+    options: {
+      unique: true,
+      name: 'idx_qq_mini_identity_unique',
+      partialFilterExpression: { qq_mini_appid: { $type: 'string' }, qq_mini_openid: { $type: 'string' } }
+    }
+  },
+  {
+    key: { wx_web_appid: 1, web_openid: 1 },
+    options: {
+      unique: true,
+      name: 'idx_wx_web_identity_unique',
+      partialFilterExpression: { wx_web_appid: { $type: 'string' }, web_openid: { $type: 'string' } }
+    }
+  }
+];
+
+export function getUserIdentityIndexes(): UserIdentityIndex[] {
+  return structuredClone(userIdentityIndexes);
+}
+
+const desktopOAuthIndexes = [
+  {
+    key: { expires_at: 1 as const },
+    options: { expireAfterSeconds: 0, name: 'idx_desktop_oauth_expiry' }
+  }
+];
+
+export function getDesktopOAuthIndexes() {
+  return structuredClone(desktopOAuthIndexes);
+}
+
+async function createDesktopOAuthIndexes() {
+  const sessions = db.collection('desktop_oauth_sessions');
+  for (const { key, options } of getDesktopOAuthIndexes()) await sessions.createIndex(key, options);
+}
+
+async function createUserIdentityIndexes() {
+  const users = db.collection('users');
+  for (const { key, options } of getUserIdentityIndexes()) await users.createIndex(key, options);
+}
 
 export default async function (ctx) {
   const requestId = `db_idx_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
@@ -45,7 +122,49 @@ export default async function (ctx) {
       };
     }
 
+    const scope = ctx.body?.scope;
+    if (scope !== undefined && scope !== 'all' && scope !== 'user-identities' && scope !== 'desktop-oauth') {
+      return { code: 400, success: false, message: '索引迁移范围无效', requestId };
+    }
+    if (scope === 'desktop-oauth') {
+      try {
+        await createDesktopOAuthIndexes();
+        return { code: 0, success: true, message: '桌面授权保留期限已配置', requestId };
+      } catch {
+        return { code: 1, success: false, message: '桌面授权保留期限未配置', requestId };
+      }
+    }
+    if (scope === 'user-identities') {
+      try {
+        await createUserIdentityIndexes();
+        return {
+          code: 0,
+          success: true,
+          message: '用户身份索引已完成',
+          requestId,
+          data: [{ collection: 'users(unique identities)', status: 'ok', indexes: userIdentityIndexes.length }]
+        };
+      } catch {
+        // A duplicate-key error can include a real openid/unionid. Keep the
+        // result fixed, and let the guarded operator recover a partial apply.
+        return {
+          code: 1,
+          success: false,
+          message: '用户身份索引未完成，请核对历史记录或索引定义',
+          requestId,
+          data: [{ collection: 'users(unique identities)', status: 'error' }]
+        };
+      }
+    }
+
     const results = [];
+
+    try {
+      await createDesktopOAuthIndexes();
+      results.push({ collection: 'desktop_oauth_sessions', status: 'ok', indexes: 1 });
+    } catch {
+      results.push({ collection: 'desktop_oauth_sessions', status: 'error', message: '桌面授权保留期限未配置' });
+    }
 
     // ==================== 用户表索引 (B012) ====================
     try {
@@ -66,16 +185,15 @@ export default async function (ctx) {
 
     // ==================== 用户身份唯一索引（并发登录防重） ====================
     try {
-      const usersCol = db.collection('users');
-      await usersCol.createIndex({ openid: 1 }, { unique: true, sparse: true, name: 'idx_openid_unique' });
-      await usersCol.createIndex({ h5_openid: 1 }, { unique: true, sparse: true, name: 'idx_h5_openid_unique' });
-      await usersCol.createIndex({ unionid: 1 }, { unique: true, sparse: true, name: 'idx_unionid_unique' });
-      await usersCol.createIndex({ qq_openid: 1 }, { unique: true, sparse: true, name: 'idx_qq_openid_unique' });
-      await usersCol.createIndex({ qq_unionid: 1 }, { unique: true, sparse: true, name: 'idx_qq_unionid_unique' });
-      results.push({ collection: 'users(unique identities)', status: 'ok', indexes: 5 });
-    } catch (e) {
+      await createUserIdentityIndexes();
+      results.push({ collection: 'users(unique identities)', status: 'ok', indexes: userIdentityIndexes.length });
+    } catch {
       // 历史脏数据可能导致唯一索引创建失败，记录告警并允许后续索引继续执行
-      results.push({ collection: 'users(unique identities)', status: 'warn', message: e.message });
+      results.push({
+        collection: 'users(unique identities)',
+        status: 'warn',
+        message: '用户身份索引未完成，请核对历史记录或索引定义'
+      });
     }
 
     // ==================== 错题本索引 (B010 - 修正: mistakes → mistake_book, userId → user_id) ====================

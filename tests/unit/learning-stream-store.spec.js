@@ -1,0 +1,465 @@
+import { beforeEach, afterEach, it, expect, vi } from 'vitest';
+import { createPinia, setActivePinia } from 'pinia';
+import { flushPromises, mount } from '@vue/test-utils';
+import { useConversationLearningStore } from '@/stores/modules/conversation-learning.js';
+import { learningRepository } from '@/services/learning/learning-repository.js';
+import LearningPage from '@/pages/learning/index.vue';
+import { createLearningRepository } from '@/services/learning/learning-repository.js';
+import { emptyLearningState } from '@/services/learning/learning-domain.js';
+import config from '@/config/index.js';
+import { onHide } from '@dcloudio/uni-app';
+vi.mock('@dcloudio/uni-app', () => ({ onShow: vi.fn(), onLoad: vi.fn(), onBackPress: vi.fn(), onHide: vi.fn() }));
+let previousBaseUrl;
+const stores = [];
+const wrappers = [];
+beforeEach(() => {
+  previousBaseUrl = config.api.baseUrl;
+  uni.clearStorageSync();
+  setActivePinia(createPinia());
+  vi.stubGlobal('ReadableStream', class {});
+});
+afterEach(async () => {
+  for (const wrapper of wrappers.splice(0)) wrapper.unmount();
+  for (const store of stores.splice(0)) {
+    store.cancel();
+    store.$dispose();
+  }
+  await flushPromises();
+  config.api.baseUrl = previousBaseUrl;
+  delete uni.requireNativePlugin;
+  vi.restoreAllMocks();
+  vi.clearAllMocks();
+  vi.unstubAllGlobals();
+});
+function setup(platform = 'h5') {
+  let bridge;
+  if (platform === 'app') {
+    config.api.baseUrl = 'https://synthetic-app.invalid';
+    vi.stubGlobal('plus', { os: { name: 'Android' } });
+    bridge = {
+      getCapabilities: () => ({
+        contract: 'wenli-app-connector-v1',
+        redirect: 'reject',
+        responseLimit: 'bytes',
+        utf8: 'strict',
+        tls: 'system',
+        cancel: true,
+        stream: {
+          contract: 'wenli-app-stream-v1',
+          chunks: 'base64',
+          sequence: true,
+          maxBytes: 2097152,
+          maxChunks: 256,
+          timeoutMs: 45000
+        }
+      }),
+      request: vi.fn(),
+      stream: vi.fn(),
+      cancel: vi.fn()
+    };
+    uni.requireNativePlugin = vi.fn(() => bridge);
+  }
+  uni.setStorageSync('EXAM_USER_ID', 'stream-store-owner');
+  uni.setStorageSync('EXAM_TOKEN', platform === 'app' ? 'SYNTHETIC_APP_STREAM_TOKEN_32_CHARS' : 'fixture-only-token');
+  const store = useConversationLearningStore();
+  stores.push(store);
+  store.start(platform === 'app' ? '雅思写作观点与依据' : '理解函数');
+  store.models = [{ id: 'fixture', model: 'explicit', capabilities: { stream: true } }];
+  store.modelId = 'fixture';
+  store.selectedMode = 'cloud';
+  store.sharingAllowed = true;
+  store.streamEnabled = true;
+  let request,
+    waiting,
+    closed = false,
+    nativeInput,
+    nativeDone,
+    nativeSequence = 1,
+    receivedBytes = 0;
+  const queue = [];
+  const push = (text) => {
+    if (platform === 'app') {
+      const bytes = new TextEncoder().encode(text);
+      for (let i = 0; i < bytes.length; i += 11) {
+        const part = bytes.slice(i, i + 11);
+        receivedBytes += part.length;
+        nativeDone({
+          id: nativeInput.id,
+          kind: 'chunk',
+          sequence: nativeSequence++,
+          receivedBytes,
+          data: Buffer.from(part).toString('base64')
+        });
+      }
+      return;
+    }
+    queue.push({ value: new TextEncoder().encode(text), done: false });
+    if (waiting) {
+      const next = waiting;
+      waiting = null;
+      next.resolve(queue.shift());
+    }
+  };
+  const end = () => {
+    closed = true;
+    if (platform === 'app') {
+      nativeDone({ id: nativeInput.id, kind: 'complete', sequence: nativeSequence++, receivedBytes });
+      return;
+    }
+    if (waiting) {
+      waiting.resolve({ done: true });
+      waiting = null;
+    }
+  };
+  const frame = (name, id, data) => `event: ${name}\nid: ${id}\ndata: ${JSON.stringify(data)}\n\n`;
+  const fetch = vi.fn(async (_url, options) => {
+    request = JSON.parse(options.body);
+    options.signal.addEventListener('abort', () => {
+      if (waiting) {
+        waiting.reject(new Error('fixture abort'));
+        waiting = null;
+      }
+      closed = true;
+    });
+    return {
+      headers: new Headers({ 'content-type': 'text/event-stream' }),
+      body: {
+        getReader: () => ({
+          read: () =>
+            queue.length
+              ? Promise.resolve(queue.shift())
+              : closed
+                ? Promise.resolve({ done: true })
+                : new Promise((resolve, reject) => (waiting = { resolve, reject })),
+          cancel: vi.fn(),
+          releaseLock: vi.fn()
+        })
+      }
+    };
+  });
+  vi.stubGlobal('fetch', fetch);
+  if (bridge)
+    bridge.stream.mockImplementation((input, done) => {
+      nativeInput = input;
+      nativeDone = done;
+      request = JSON.parse(input.body);
+      done({
+        id: input.id,
+        kind: 'headers',
+        sequence: nativeSequence++,
+        receivedBytes: 0,
+        status: 200,
+        contentType: 'text/event-stream'
+      });
+    });
+  return {
+    store,
+    bridge,
+    fetch,
+    push,
+    end,
+    frame,
+    get request() {
+      return request;
+    },
+    preview() {
+      push(
+        frame('start', 1, { version: 1, requestId: request.requestId, modelId: 'fixture', model: 'explicit' }) +
+          frame('preview', 2, {
+            text: platform === 'app' ? '先区分观点与例子🙂' : '先用一个映射的例子理解函数',
+            provisional: true
+          })
+      );
+    },
+    complete(patch = {}) {
+      push(
+        frame('result', 3, {
+          success: true,
+          data: {
+            requestId: request.requestId,
+            requestBinding: request.requestBinding,
+            modelId: 'fixture',
+            model: 'explicit',
+            message: platform === 'app' ? '观点需要相关且充分的依据。' : '每个输入对应唯一输出。',
+            tools: [
+              {
+                name: 'plan',
+                arguments: {
+                  reason: '先理解再独立检验',
+                  tasks: [
+                    { title: platform === 'app' ? '独立说明观点与依据' : '独立说明唯一对应', condition: 'manual' }
+                  ]
+                }
+              }
+            ],
+            ...patch
+          }
+        })
+      );
+      end();
+    }
+  };
+}
+it('预览只在临时区域出现，完整终止前无计划/工具/教学事实；重复消息不重扣', async () => {
+  const harness = setup(),
+    { store } = harness;
+  const wrapper = mount(LearningPage, {
+    global: {
+      stubs: {
+        view: { template: '<div><slot /></div>' },
+        text: { template: '<span><slot /></span>' },
+        LearningShell: { template: '<div><slot /></div>' },
+        NumberLine: true,
+        BaseIcon: true,
+        LearningOverview: true
+      }
+    }
+  });
+  wrappers.push(wrapper);
+  const send = store.send('请讲解函数', { id: 'stream-task' });
+  await flushPromises();
+  harness.preview();
+  await flushPromises();
+  expect(store.streamPreview).toContain('映射');
+  expect(wrapper.find('.message.notice[aria-live="polite"]').text()).toContain('生成中 · 未确认');
+  expect(wrapper.find('.message.notice[aria-live="polite"]').text()).toContain('映射');
+  expect(store.state.plans).toHaveLength(0);
+  expect(store.state.executions).toHaveLength(0);
+  expect(store.active.messages.filter((m) => m.role === 'assistant')).toHaveLength(0);
+  harness.complete();
+  await send;
+  await flushPromises();
+  expect(store.streamPreview).toBe('');
+  expect(store.state.plans).toHaveLength(1);
+  expect(wrapper.find('.message.notice[aria-live="polite"]').exists()).toBe(false);
+  expect(store.active.messages.filter((m) => m.role === 'assistant')).toHaveLength(1);
+  expect(store.summary.first.denominator).toBe(0);
+  await store.send('请讲解函数', { id: 'stream-task' });
+  expect(harness.fetch).toHaveBeenCalledOnce();
+  expect(store.recoverableRequest).toBeNull();
+  wrapper.unmount();
+});
+it('断流仅保存请求意图；重开读取绑定的原结果，两个动作都不重复调用模型', async () => {
+  const harness = setup(),
+    send = harness.store.send('请讲解函数', { id: 'lost-task' });
+  await flushPromises();
+  harness.preview();
+  harness.end();
+  await send;
+  expect(harness.store.state.plans).toHaveLength(0);
+  expect(harness.store.recoverableRequest.requestId).toBe('lost-task');
+  setActivePinia(createPinia());
+  const reopened = useConversationLearningStore();
+  reopened.selectedMode = 'cloud';
+  reopened.modelId = 'fixture';
+  reopened.sharingAllowed = true;
+  const transport = vi.spyOn(uni, 'request').mockImplementation((options) => {
+    expect(options.data).toEqual({ action: 'result', requestId: 'lost-task' });
+    options.success({
+      data: {
+        success: true,
+        reused: true,
+        data: {
+          requestId: 'lost-task',
+          requestBinding: harness.request.requestBinding,
+          modelId: 'fixture',
+          model: 'explicit',
+          message: '已完成的原教学结果',
+          tools: [{ name: 'progress', arguments: {} }]
+        }
+      }
+    });
+    return { abort: vi.fn() };
+  });
+  expect((await reopened.recoverModelResult()).reused).toBe(true);
+  expect(reopened.active.messages.at(-1).content).toBe('已完成的原教学结果');
+  expect(reopened.state.executions).toHaveLength(1);
+  expect(harness.fetch).toHaveBeenCalledOnce();
+  expect(transport).toHaveBeenCalledOnce();
+  await expect(reopened.recoverModelResult()).rejects.toThrow('没有');
+});
+it('上下文已调整、隐私删除/恢复或取消之后，拒绝迟到片段及旧工具', async () => {
+  const harness = setup(),
+    send = harness.store.send('请讲解函数');
+  await flushPromises();
+  harness.preview();
+  await flushPromises();
+  harness.store.sharingAllowed = false;
+  harness.complete();
+  await send;
+  expect(harness.store.state.plans).toHaveLength(0);
+  expect(harness.store.streamPreview).toBe('');
+  harness.store.sharingAllowed = true;
+  harness.store.commit('profile.set', {
+    field: 'preference',
+    value: '用另一种方法',
+    source: 'self_report',
+    scope: '当前任务',
+    evidenceIds: []
+  });
+  await expect(harness.store.recoverModelResult()).rejects.toThrow('上下文已变化');
+  expect(harness.fetch).toHaveBeenCalledOnce();
+  const second = setup(),
+    next = second.store.send('请讲解');
+  await flushPromises();
+  second.preview();
+  await flushPromises();
+  learningRepository.deleteData();
+  second.complete();
+  await next;
+  expect(second.store.state.plans).toHaveLength(0);
+  expect(second.store.state.conversations).toHaveLength(0);
+});
+it('取消清除临时预览并发送同账户服务端取消，不把取消当零成本成功', async () => {
+  const harness = setup();
+  const transport = vi.spyOn(uni, 'request').mockImplementation((options) => {
+    options.success({ data: { success: true, data: { cancellationRecorded: true, status: 'reserved' } } });
+    return { abort: vi.fn() };
+  });
+  const send = harness.store.send('请讲解', { id: 'cancel-task' });
+  await flushPromises();
+  harness.preview();
+  await flushPromises();
+  harness.store.cancel();
+  await send;
+  expect(harness.store.streamPreview).toBe('');
+  expect(harness.store.recoverableRequest).toBeNull();
+  expect(harness.store.state.plans).toHaveLength(0);
+  expect(transport.mock.calls[0][0].data).toEqual({ action: 'cancel', requestId: 'cancel-task' });
+  expect(harness.store.error).toContain('取消');
+});
+
+it('备份中的请求意图只重建历史；不恢复执行授权或导入密钥', async () => {
+  const harness = setup(),
+    pending = harness.store.send('请讲解', { id: 'history-only-task' });
+  await flushPromises();
+  harness.preview();
+  harness.end();
+  await pending;
+  const exported = harness.store.exportData(),
+    map = new Map();
+  const repository = createLearningRepository(
+    {
+      get: (key, fallback) => (map.has(key) ? map.get(key) : fallback),
+      save: (key, value) => {
+        map.set(key, structuredClone(value));
+        return true;
+      },
+      remove: (key) => {
+        map.delete(key);
+        return true;
+      }
+    },
+    () => 'stream-store-owner'
+  );
+  const preview = repository.previewRestore(exported);
+  repository.restoreData(exported, preview.expectedRevision);
+  expect(repository.read().events.find((e) => e.type === 'model.request').data.historyOnly).toBe(true);
+  expect(repository.read().attempts).toHaveLength(0);
+  expect(repository.read().plans).toHaveLength(0);
+  const hostile = JSON.parse(exported);
+  hostile.events.find((e) => e.type === 'model.request').data.apiKey = 'fixture-only-secret';
+  expect(() => repository.previewRestore(JSON.stringify(hostile))).toThrow('敏感');
+  expect(emptyLearningState('stream-store-owner').revision).toBe(0);
+});
+
+it('App Store只在原生EOF和完整收据后执行一次学习计划，预览不写事实', async () => {
+  const harness = setup('app'),
+    { store, bridge } = harness;
+  try {
+    expect(store.streamSupported).toBe(true);
+    const send = store.send('请讲解写作观点与依据', { id: 'synthetic-app-stream-task' });
+    await flushPromises();
+    harness.preview();
+    await flushPromises();
+    expect(store.streamPreview).toBe('先区分观点与例子🙂');
+    expect(store.state.plans).toHaveLength(0);
+    expect(store.state.attempts).toHaveLength(0);
+    expect(store.active.messages.filter((m) => m.role === 'assistant')).toHaveLength(0);
+    const before = JSON.parse(store.exportData());
+    expect(JSON.stringify(before)).not.toContain('先区分观点与例子');
+    expect(JSON.stringify(before)).not.toContain('SYNTHETIC_APP_STREAM_TOKEN');
+    harness.complete();
+    await send;
+    expect(store.state.plans).toHaveLength(1);
+    expect(store.active.messages.filter((m) => m.role === 'assistant')).toHaveLength(1);
+    expect(store.streamPreview).toBe('');
+    expect(store.summary.first.denominator).toBe(0);
+    await store.send('请讲解写作观点与依据', { id: 'synthetic-app-stream-task' });
+    expect(bridge.stream).toHaveBeenCalledOnce();
+    expect(bridge.request).not.toHaveBeenCalled();
+    expect(harness.fetch).not.toHaveBeenCalled();
+    expect(store.recoverableRequest).toBeNull();
+  } finally {
+    store.$dispose();
+  }
+});
+it.each(['incomplete', 'binding', 'model'])('App %s回执不能执行工具或生成可靠首答', async (kind) => {
+  const harness = setup('app'),
+    { store } = harness;
+  try {
+    const send = store.send('请讲解观点与依据');
+    await flushPromises();
+    harness.preview();
+    if (kind === 'incomplete') harness.end();
+    else harness.complete(kind === 'binding' ? { requestBinding: 'wrong' } : { model: 'other' });
+    await send;
+    expect(store.state.plans).toHaveLength(0);
+    expect(store.state.attempts).toHaveLength(0);
+    expect(store.summary.first.denominator).toBe(0);
+    expect(store.streamPreview).toBe('');
+    expect(store.recoverableRequest).not.toBeNull();
+  } finally {
+    store.$dispose();
+  }
+});
+it.each(['owner', 'model', 'stop', 'withdraw', 'hide'])('App预览后%s变化拒绝迟到工具与事实', async (change) => {
+  const harness = setup('app'),
+    { store, bridge } = harness;
+  let wrapper;
+  vi.spyOn(uni, 'request').mockImplementation((options) => {
+    options.success({ data: { success: true, data: { cancellationRecorded: true, status: 'reserved' } } });
+    return { abort: vi.fn() };
+  });
+  if (change === 'hide')
+    wrapper = mount(LearningPage, {
+      global: {
+        stubs: {
+          view: { template: '<div><slot /></div>' },
+          text: { template: '<span><slot /></span>' },
+          LearningShell: { template: '<div><slot /></div>' },
+          NumberLine: true,
+          BaseIcon: true,
+          LearningOverview: true
+        }
+      }
+    });
+  if (wrapper) wrappers.push(wrapper);
+  try {
+    const send = store.send('请讲解观点与依据');
+    await flushPromises();
+    harness.preview();
+    await flushPromises();
+    expect(store.streamPreview).toContain('观点');
+    if (change === 'owner') uni.setStorageSync('EXAM_USER_ID', 'other-synthetic-owner');
+    else if (change === 'model') store.modelId = 'other-model';
+    else if (change === 'stop') await store.send('请停止当前任务');
+    else if (change === 'withdraw') store.sharingAllowed = false;
+    else onHide.mock.calls.at(-1)[0]();
+    await flushPromises();
+    harness.complete();
+    await send;
+    expect(store.state.plans).toHaveLength(0);
+    expect(store.state.attempts).toHaveLength(0);
+    expect(store.streamPreview).toBe('');
+    expect(store.summary.first.denominator).toBe(0);
+    expect(bridge.cancel).toHaveBeenCalledOnce();
+    expect(bridge.stream).toHaveBeenCalledOnce();
+    expect(harness.fetch).not.toHaveBeenCalled();
+    if (change === 'stop') expect(store.activeStrategy.stopped).toBe(true);
+    if (change === 'hide') expect(store.sharingAllowed).toBe(false);
+  } finally {
+    wrapper?.unmount();
+    store.$dispose();
+  }
+});

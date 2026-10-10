@@ -24,6 +24,7 @@
 <script setup>
 import { computed, watch, ref, nextTick, onMounted, onBeforeUnmount } from 'vue';
 import { storageService } from '@/services/storageService.js';
+import { getQuizAnswerRecordOutcome } from '@/services/quiz-session-contract.js';
 
 const props = defineProps({
   total: { type: Number, default: 0 },
@@ -60,7 +61,7 @@ const answeredMap = computed(() => {
   props.answered.forEach((item) => {
     const index = Number(item?.index);
     if (!Number.isFinite(index) || index < 0 || index >= safeTotal.value) return;
-    map[index] = item.isCorrect === true ? 'correct' : item.isCorrect === false ? 'wrong' : 'reviewed';
+    map[index] = getQuizAnswerRecordOutcome(item);
   });
   return map;
 });
@@ -73,23 +74,27 @@ const safeCurrent = computed(() => {
 const answeredCount = computed(() => {
   return Object.keys(answeredMap.value).length;
 });
-const correctCount = computed(() => {
-  return Object.values(answeredMap.value).filter((status) => status === 'correct').length;
-});
-const wrongCount = computed(() => {
-  return Object.values(answeredMap.value).filter((status) => status === 'wrong').length;
-});
 const remainingCount = computed(() => {
   return Math.max(0, safeTotal.value - answeredCount.value);
 });
+const reviewedCount = computed(() => Object.values(answeredMap.value).filter((status) => status === 'reviewed').length);
 const progressPercent = computed(() => {
   if (safeTotal.value <= 0) return 0;
   return Math.max(0, Math.min(100, Math.round((safeCurrent.value / safeTotal.value) * 100)));
 });
 const progressStateLabel = computed(() => {
   if (safeTotal.value <= 0) return '等待题目';
-  if (wrongCount.value > 0) return `${answeredCount.value} 已答 · ${correctCount.value} 对 ${wrongCount.value} 错`;
-  return `${answeredCount.value} 已答 · 剩 ${remainingCount.value}`;
+  const statuses = Object.values(answeredMap.value);
+  const parts = [`${answeredCount.value} 已记录`];
+  const pending = statuses.filter((status) => status === 'pending').length;
+  const legacy = statuses.filter((status) => status.startsWith('legacy_')).length;
+  const unknown = statuses.filter((status) => status === 'unclassified').length;
+  if (pending) parts.push(`${pending} 待核对`);
+  if (reviewedCount.value) parts.push(`${reviewedCount.value} 已查看/自评`);
+  if (legacy) parts.push(`${legacy} 旧记录`);
+  if (unknown) parts.push(`${unknown} 依据不明`);
+  parts.push(`剩 ${remainingCount.value}`);
+  return parts.join(' · ');
 });
 const progressAriaLabel = computed(() => {
   return `练习进度 第 ${safeCurrent.value} / ${safeTotal.value} 题，${progressStateLabel.value}`;
@@ -249,7 +254,11 @@ watch(
   background: var(--danger, #ef4444);
 }
 
-/* 已复习但不判断正误，例如经典闪卡 */
+/* 已查看/自评但不判断正误，例如经典闪卡 */
+.dot-pending,
+.dot-legacy_correct,
+.dot-legacy_wrong,
+.dot-unclassified,
 .dot-reviewed {
   background: var(--primary, #0f5f34);
   opacity: 0.72;
@@ -286,6 +295,7 @@ watch(
   color: rgba(245, 247, 251, 0.64);
 }
 
+.dark-mode .dot-pending,
 .dark-mode .dot-reviewed {
   background: rgba(117, 221, 255, 0.78);
 }

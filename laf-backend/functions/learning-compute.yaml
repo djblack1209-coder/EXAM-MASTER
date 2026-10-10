@@ -1,0 +1,5 @@
+name: learning-compute
+desc: 已同步题目与原答的受限参考计算，需JWT与明确授权，不写成绩
+methods:
+  - POST
+tags: []

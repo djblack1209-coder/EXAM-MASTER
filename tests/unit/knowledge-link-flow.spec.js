@@ -4,7 +4,6 @@ import { resolve } from 'node:path';
 
 const doQuizSource = readFileSync(resolve(process.cwd(), 'src/pages/practice-sub/do-quiz.vue'), 'utf8');
 const practiceSource = readFileSync(resolve(process.cwd(), 'src/pages/practice/index.vue'), 'utf8');
-const questionBankSource = readFileSync(resolve(process.cwd(), 'src/pages/practice-sub/question-bank.vue'), 'utf8');
 const quizResultSource = readFileSync(
   resolve(process.cwd(), 'src/pages/practice-sub/components/quiz-result/quiz-result.vue'),
   'utf8'
@@ -19,11 +18,10 @@ describe('post-answer knowledge link flow', () => {
   it('keeps the practice center focused on paper training and smart review', () => {
     expect(practiceSource).not.toContain('focusedKnowledgeNode');
     expect(practiceSource).not.toContain('startKnowledgeNodeTraining');
-    expect(questionBankSource).toContain('smart_review_ids');
   });
 
   it('does not let analytics recording duplicate answered question progress', () => {
-    const methodStart = doQuizSource.indexOf('async recordAnswerToAnalytics(isCorrect, timeSpent)');
+    const methodStart = doQuizSource.indexOf('async recordAnswerToAnalytics(');
     const methodEnd = doQuizSource.indexOf('calculateSpeedScore', methodStart);
     const methodSource = doQuizSource.slice(methodStart, methodEnd);
 

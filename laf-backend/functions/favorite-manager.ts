@@ -22,7 +22,7 @@
  */
 
 import cloud from '@lafjs/cloud';
-import { requireAuth, isAuthError } from './_shared/auth-middleware';
+import { requireAuth, isAuthError } from './_shared/auth-middleware.js';
 import {
   logger,
   sanitizeString,
@@ -33,7 +33,7 @@ import {
   serverError,
   generateRequestId,
   checkRateLimitDistributed
-} from './_shared/api-response';
+} from './_shared/api-response.js';
 
 const db = cloud.database();
 const _ = db.command;
@@ -421,9 +421,7 @@ async function handleBatchAdd(userId: string, data: Record<string, unknown>, req
   const CONCURRENCY = 10;
   for (let i = 0; i < toAdd.length; i += CONCURRENCY) {
     const chunk = toAdd.slice(i, i + CONCURRENCY);
-    const settled = await Promise.allSettled(
-      chunk.map((item) => collection.add(item.favorite))
-    );
+    const settled = await Promise.allSettled(chunk.map((item) => collection.add(item.favorite)));
     for (let j = 0; j < settled.length; j++) {
       const s = settled[j];
       const qId = chunk[j].qId;

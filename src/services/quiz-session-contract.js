@@ -1,5 +1,278 @@
+import {
+  captureQuizOriginal,
+  quizOriginalIdentity,
+  validateCapturedQuizOriginal,
+  assertQuizOriginalDisplay,
+  quizOriginalChoiceOptions
+} from '../../laf-backend/functions/_shared/learning-quiz-original.js';
 const FALLBACK_CHOICE_OPTIONS = ['选项A', '选项B', '选项C', '选项D'];
+
+export function isValidQuizSessionId(value) {
+  return typeof value === 'string' && /^[a-zA-Z0-9_-]{1,64}$/.test(value);
+}
+
+export function isValidQuizAttemptId(value) {
+  return typeof value === 'string' && /^[a-zA-Z0-9_:-]{1,160}$/.test(value);
+}
+
+// 接收回执只证明保存原答，不赋予评分权威。
+export function parseQuizSubmissionReceipt(response, attemptId, submitted) {
+  const receipt = response?.data;
+  if (
+    response?.success !== true ||
+    response?.code !== 0 ||
+    receipt?.submission_contract !== 'quiz-answer-submission-v1' ||
+    receipt?.attempt_id !== attemptId ||
+    !isValidQuizAttemptId(attemptId) ||
+    typeof receipt?.record_id !== 'string' ||
+    !/^ans_[a-f0-9]{64}$/.test(receipt.record_id) ||
+    receipt.question_id !== submitted.question_id ||
+    receipt.session_id !== submitted.session_id ||
+    receipt.user_answer_raw !== submitted.user_answer ||
+    receipt.user_answer !== submitted.user_answer.toUpperCase() ||
+    receipt.duration !== Math.min(Math.floor(submitted.duration), 3600) ||
+    receipt.practice_mode !== submitted.practice_mode ||
+    !Number.isSafeInteger(receipt.received_at) ||
+    receipt.received_at <= 0 ||
+    receipt.grade?.status !== 'pending' ||
+    receipt.isCorrect !== null
+  )
+    return null;
+  return { status: 'received', recordId: receipt.record_id, receivedAt: receipt.received_at };
+}
+
+export function createQuizAttemptId() {
+  const nonce =
+    globalThis.crypto?.randomUUID?.() ||
+    `${Date.now().toString(36)}_${Math.random().toString(36).slice(2)}_${Math.random().toString(36).slice(2)}`;
+  return `quiz_answer_${nonce}`;
+}
 const OPTION_LABELS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+export const LEGACY_REVIEW_HANDOFF_KEY = 'legacy_review_handoff_v1';
+
+// 旧条目只能重用完整原题；缺失资料不以样例选项或默认答案补齐。
+export function normalizeLegacyReviewQuestion(record) {
+  if (!record || typeof record !== 'object' || Array.isArray(record)) return null;
+  const id = record.id ?? record._id;
+  const question =
+    record.question ?? record.question_content ?? record.questionContent ?? record.content ?? record.title;
+  const reference = record.answer ?? record.correct_answer ?? record.correctAnswer;
+  if (
+    !['string', 'number'].includes(typeof id) ||
+    !String(id).trim() ||
+    (typeof id === 'number' && !Number.isSafeInteger(id)) ||
+    typeof question !== 'string' ||
+    !question.trim()
+  )
+    return null;
+  let type = record.type;
+  let answer;
+  let options = record.options ?? record.choices ?? record.option_list;
+  if (isEvidenceOnlyType(type)) {
+    if (typeof reference !== 'string' || !reference.trim()) return null;
+    answer = reference;
+    options = [];
+  } else {
+    if (
+      type &&
+      !['单选', '单选题', 'single_choice', '多选', '多选题', 'multi_choice', 'multiple_choice'].includes(type)
+    )
+      return null;
+    if (
+      !Array.isArray(options) ||
+      options.length < 2 ||
+      options.length > 26 ||
+      quizOriginalChoiceOptions(options) === null
+    )
+      return null;
+    if (typeof reference === 'number') {
+      if (!Number.isInteger(reference) || reference < 0 || reference >= options.length) return null;
+      answer = OPTION_LABELS[reference];
+    } else if (typeof reference === 'string') {
+      const compact = reference
+        .trim()
+        .toUpperCase()
+        .replace(/[\s,，、;；/|]+/g, '');
+      if (!compact || ![...compact].every((label) => OPTION_LABELS.slice(0, options.length).includes(label)))
+        return null;
+      answer = OPTION_LABELS.filter((label) => compact.includes(label)).join('');
+    } else return null;
+    const multi = ['多选', '多选题', 'multi_choice', 'multiple_choice'].includes(type);
+    if (type && !multi && answer.length !== 1) return null;
+    type = multi || answer.length > 1 ? 'multi_choice' : 'single_choice';
+  }
+  return {
+    ...record,
+    id,
+    question,
+    options: [...options],
+    answer,
+    type,
+    isReview: true,
+    scoringAuthority: false,
+    quizOriginal: captureQuizOriginal(record)
+  };
+}
+
+// Compare the displayed original, not counters or mastery labels added later.
+export function legacyReviewQuestionIdentity(record) {
+  const q = normalizeLegacyReviewQuestion(record);
+  if (!q) return null;
+  return quizOriginalIdentity(q.quizOriginal);
+}
+
+// 选题入口共用：先核对原件，再生成显示数据。缺资料的指定题不补造。
+export function prepareQuizQuestion(record, index = 0) {
+  try {
+    if (!record || typeof record !== 'object' || Array.isArray(record)) return null;
+    const original = captureQuizOriginal(record);
+    validateCapturedQuizOriginal(original);
+    const parsed = normalizeLegacyReviewQuestion({ ...original.fields, id: original.id, quizOriginal: original });
+    if (!parsed) return null;
+    const fields = original.fields;
+    const originalPrompt =
+      fields.question ?? fields.question_content ?? fields.questionContent ?? fields.content ?? fields.title;
+    const originalOptions = fields.options ?? fields.choices ?? fields.option_list ?? [];
+    if (
+      String(record.id ?? record._id) !== String(original.id) ||
+      (record.question ?? record.question_content ?? record.questionContent ?? record.content ?? record.title) !==
+        originalPrompt ||
+      ![originalOptions, quizOriginalChoiceOptions(originalOptions), parsed.options].some(
+        (options) =>
+          quizOriginalIdentity(record.options ?? record.choices ?? record.option_list ?? []) ===
+          quizOriginalIdentity(options)
+      ) ||
+      ![fields.answer ?? fields.correct_answer ?? fields.correctAnswer ?? null, parsed.answer].some(
+        (answer) =>
+          quizOriginalIdentity(record.answer ?? record.correct_answer ?? record.correctAnswer ?? null) ===
+          quizOriginalIdentity(answer)
+      )
+    )
+      return null;
+    assertQuizOriginalDisplay({ ...record, quizOriginal: original }, original);
+    const displayed = normalizeQuizQuestion({ ...record, ...parsed, isReview: record.isReview }, index);
+    assertQuizOriginalDisplay(displayed, displayed.quizOriginal);
+    return displayed;
+  } catch (_error) {
+    return null;
+  }
+}
+
+export function prepareQuizSelection(records) {
+  if (!Array.isArray(records) || records.length === 0) return null;
+  const questions = records.map(prepareQuizQuestion);
+  if (questions.some((q) => !q) || new Set(questions.map((q) => String(q.id))).size !== questions.length) return null;
+  return questions;
+}
+
+export function selectQuizQuestionsById(bank, ids) {
+  if (!Array.isArray(bank) || !Array.isArray(ids) || ids.length === 0) return null;
+  const selected = ids.map((id) => {
+    const matches = bank.filter((q) => (q?.id ?? q?._id) === id);
+    return matches.length === 1 ? matches[0] : null;
+  });
+  return prepareQuizSelection(selected);
+}
+
+export function createSinglePracticeHandoff(question, ownerId, id = createQuizAttemptId()) {
+  if (typeof ownerId !== 'string' || !isValidQuizAttemptId(id) || !question?.quizOriginal) return null;
+  const original = question.quizOriginal;
+  const raw = {
+    ...original.fields,
+    id: original.id,
+    quizOriginal: original,
+    ...(question.legacyReviewContext?.referenceViewed === true
+      ? {
+          legacyReviewContext: { contract: 'legacy-review-view-v1', referenceViewed: true }
+        }
+      : {})
+  };
+  if (!prepareQuizQuestion(raw)) return null;
+  return JSON.parse(JSON.stringify({ contract: 'quiz-single-handoff-v1', id, ownerId, question: raw }));
+}
+
+export function readSinglePracticeHandoff(value, id, ownerId) {
+  if (value?.contract === 'quiz-single-handoff-v1') {
+    if (!isValidQuizAttemptId(id) || value.id !== id || value.ownerId !== ownerId) return null;
+    return prepareQuizSelection([value.question]);
+  }
+  // 兼容当前私有命名空间内的旧原题；带新跳转编号时绝不回退到旧临时值。
+  return id || value?.contract ? null : prepareQuizSelection([value]);
+}
+
+export const QUIZ_REVIEW_HANDOFF_KEY = 'quiz_review_handoff_v1';
+export function createQuizReviewHandoff(questions, ownerId, paperId = '', id = createQuizAttemptId()) {
+  if (!Array.isArray(questions) || !questions.length || questions.length > 200 || typeof paperId !== 'string')
+    return null;
+  const raw = questions.map((q) => createSinglePracticeHandoff(q, ownerId, id)?.question);
+  if (raw.some((q) => !q) || !prepareQuizSelection(raw)) return null;
+  if (paperId && raw.some((q) => q.paperId !== paperId)) return null;
+  const result = JSON.stringify({ contract: 'quiz-review-handoff-v1', id, ownerId, paperId, questions: raw });
+  return result.length <= 3600000 ? JSON.parse(result) : null;
+}
+
+export function readQuizReviewHandoff(value, id, ownerId, paperId = '') {
+  if (
+    value?.contract !== 'quiz-review-handoff-v1' ||
+    !isValidQuizAttemptId(id) ||
+    value.id !== id ||
+    value.ownerId !== ownerId ||
+    typeof value.paperId !== 'string' ||
+    (paperId && value.paperId !== paperId) ||
+    !Array.isArray(value.questions) ||
+    value.questions.length > 200 ||
+    value.questions.some((q) => !q?.quizOriginal)
+  )
+    return null;
+  try {
+    if (JSON.stringify(value).length > 3600000) return null;
+    const selected = prepareQuizSelection(value.questions);
+    return selected && (!value.paperId || selected.every((q) => q.paperId === value.paperId)) ? selected : null;
+  } catch (_error) {
+    return null;
+  }
+}
+
+export function summarizeLegacyMistakeRecords(records) {
+  if (!Array.isArray(records)) return null;
+  const groups = new Map();
+  const rows = records.filter((row) => row && typeof row === 'object' && !Array.isArray(row));
+  for (const row of rows) {
+    const label = row.category ?? row.subject;
+    const category = typeof label === 'string' && label.trim() ? label.trim() : '未分类';
+    groups.set(category, (groups.get(category) || 0) + 1);
+  }
+  return {
+    contract: 'legacy-record-report-v1',
+    scope: 'loaded_list',
+    scoringAuthority: false,
+    recordCount: rows.length,
+    omittedInvalidRows: records.length - rows.length,
+    categories: [...groups]
+      .map(([category, count]) => ({ category, count }))
+      .sort((a, b) => b.count - a.count || a.category.localeCompare(b.category))
+  };
+}
+
+export function readLegacyReviewHandoff(handoff, id, ownerId) {
+  if (
+    handoff?.contract !== 'legacy-review-handoff-v1' ||
+    !isValidQuizAttemptId(id) ||
+    handoff.id !== id ||
+    handoff.ownerId !== ownerId ||
+    !Array.isArray(handoff.questions) ||
+    handoff.questions.length === 0 ||
+    handoff.questions.length > 200
+  )
+    return null;
+  const questions = handoff.questions.map(normalizeLegacyReviewQuestion);
+  if (
+    questions.some((question) => !question) ||
+    new Set(questions.map((question) => String(question.id))).size !== questions.length
+  )
+    return null;
+  return JSON.parse(JSON.stringify(questions));
+}
 const QUESTION_TYPE_LABELS = {
   single_choice: '单选题',
   multi_choice: '多选题',
@@ -140,7 +413,14 @@ export function normalizeQuizQuestion(question, index = 0, options = {}) {
   const knowledgePoints = asArray(question.knowledge_points).length
     ? asArray(question.knowledge_points)
     : knowledgeNodeIds;
-  const passage = question.passage || question.context || question.material || question.article || '';
+  const passage =
+    question.passage ||
+    question.reading_material ||
+    question.readingMaterial ||
+    question.context ||
+    question.material ||
+    question.article ||
+    '';
   const passageSegments = Array.isArray(question.passageSegments)
     ? question.passageSegments
     : splitPassageSegments(passage);
@@ -150,14 +430,22 @@ export function normalizeQuizQuestion(question, index = 0, options = {}) {
 
   return {
     ...question,
-    id: question.id || question._id || `q_${index}`,
-    question: question.question || question.title || options.defaultQuestion || `题目 ${index + 1}`,
+    quizOriginal: captureQuizOriginal(question),
+    id: question.id === 0 ? 0 : question.id || (question._id === 0 ? 0 : question._id || `q_${index}`),
+    question:
+      question.question ||
+      question.question_content ||
+      question.questionContent ||
+      question.content ||
+      question.title ||
+      options.defaultQuestion ||
+      `题目 ${index + 1}`,
     passage,
     passageSegments,
     context: question.context || passage,
     material: question.material || passage,
     questionImages: normalizeImageList(
-      question.questionImages || question.question_images || question.sourcePageImages
+      question.questionImages || question.question_images || question.images || question.sourcePageImages
     ),
     answerImages: normalizeImageList(question.answerImages || question.answer_images || question.answerPageImages),
     paperId: question.paperId || question.paper_id || '',
@@ -214,6 +502,35 @@ export function hasQuizSelectableOptions(question) {
   return Boolean(question?.options?.length) && !isQuizFlashcardMode(question);
 }
 
+export function isQuizMultiChoice(question) {
+  return isMultiChoiceType(question?.type);
+}
+
+export function getQuizSelectionAnswer(question, selection) {
+  if (!hasQuizSelectableOptions(question)) return '';
+  const indices = isQuizMultiChoice(question) ? selection : [selection];
+  if (!Array.isArray(indices) || !indices.length || new Set(indices).size !== indices.length) return '';
+  if (indices.some((index) => !Number.isInteger(index) || index < 0 || index >= question.options.length)) return '';
+  return [...indices]
+    .sort((a, b) => a - b)
+    .map((index) => getQuizOptionLabel(question, index))
+    .join('');
+}
+
+export function isCorrectQuizSelection(question, selection) {
+  const selected = getQuizSelectionAnswer(question, selection);
+  if (!selected) return false;
+  const raw = String(question.answer || '')
+    .trim()
+    .toUpperCase()
+    .replace(/[\s,，、;；/|]+/g, '');
+  const allowedLabels = OPTION_LABELS.slice(0, question.options.length).join('');
+  if (!raw || !new RegExp(`^[${allowedLabels}]+$`).test(raw)) return false;
+  if (!isQuizMultiChoice(question) && raw.length !== 1) return false;
+  const expected = OPTION_LABELS.filter((label) => raw.includes(label)).join('');
+  return selected === expected;
+}
+
 export function getQuizQuestionTypeLabel(question) {
   const type = question?.type;
   return QUESTION_TYPE_LABELS[type] || type || '单选题';
@@ -223,20 +540,33 @@ export function buildQuizAnswerRecord(input = {}) {
   const question = input.question || {};
   const now = input.now == null ? Date.now() : input.now;
   const record = {
-    questionId: question.id || question._id || input.questionId || '',
+    questionId: question.id ?? question._id ?? input.questionId ?? '',
     index: Number(input.index || 0),
     userChoice: input.userChoice,
-    isCorrect: input.isCorrect,
+    isCorrect: input.source === 'reference_match' ? null : input.isCorrect,
     timeSpent: Number(input.timeSpent || 0),
     answeredAt: now
   };
 
-  ['speedScore', 'elo', 'rating', 'source', 'mode'].forEach((key) => {
+  [
+    'speedScore',
+    'elo',
+    'rating',
+    'source',
+    'mode',
+    'attemptId',
+    'referenceMatch',
+    'userAnswer',
+    'ownerId',
+    'observationId',
+    'referenceId'
+  ].forEach((key) => {
     if (input[key] !== undefined) {
       record[key] = input[key];
     }
   });
 
+  if (input.source === 'reference_match') record.grade = { status: 'pending' };
   return record;
 }
 
@@ -244,11 +574,11 @@ export function upsertQuizAnswerRecord(records = [], record = {}) {
   const normalized = {
     ...record,
     index: Number(record.index || 0),
-    questionId: record.questionId || ''
+    questionId: record.questionId ?? ''
   };
   const existingIndex = (records || []).findIndex((item) => {
     const sameIndex = Number(item.index || 0) === normalized.index;
-    const sameQuestion = (item.questionId || '') === normalized.questionId;
+    const sameQuestion = (item.questionId ?? '') === normalized.questionId;
     return sameIndex && sameQuestion;
   });
 
@@ -264,57 +594,66 @@ export function upsertQuizAnswerRecord(records = [], record = {}) {
   return next;
 }
 
+export function getQuizAnswerRecordOutcome(record) {
+  if (record?.grade?.status === 'pending' || record?.source === 'reference_match') return 'pending';
+  if (
+    record?.mode === 'flashcard' ||
+    record?.source === 'self_rating' ||
+    /^flashcard_(?:flip|rating_)/.test(String(record?.userChoice || ''))
+  )
+    return 'reviewed';
+  // 旧布尔值只能解释为旧判定，缓存中自称 reliable 的字段也不是校验依据。
+  if (!record || ['grade', 'submission_contract'].some((key) => Object.prototype.hasOwnProperty.call(record, key)))
+    return 'unclassified';
+  if (
+    Object.prototype.hasOwnProperty.call(record, 'isCorrect') &&
+    Object.prototype.hasOwnProperty.call(record, 'correct') &&
+    record.isCorrect !== record.correct
+  )
+    return 'unclassified';
+  const value = Object.prototype.hasOwnProperty.call(record, 'isCorrect') ? record.isCorrect : record.correct;
+  return value === true ? 'legacy_correct' : value === false ? 'legacy_wrong' : 'unclassified';
+}
+
 export function summarizeQuizProgress({ questions = [], answeredQuestions = [], currentIndex = 0 } = {}) {
   const deduped = (answeredQuestions || []).reduce((acc, record) => upsertQuizAnswerRecord(acc, record), []);
-  const total = questions.length;
-  const correctCount = deduped.filter((record) => record.isCorrect === true).length;
-  const wrongCount = deduped.filter((record) => record.isCorrect === false).length;
-  const neutralCount = deduped.length - correctCount - wrongCount;
-  const gradedCount = correctCount + wrongCount;
-
+  const outcomes = deduped.map(getQuizAnswerRecordOutcome);
+  const count = (value) => outcomes.filter((outcome) => outcome === value).length;
+  const legacyCorrectCount = count('legacy_correct');
+  const legacyWrongCount = count('legacy_wrong');
+  const legacyGradedCount = legacyCorrectCount + legacyWrongCount;
   return {
-    total,
+    total: questions.length,
     currentIndex,
     answeredCount: deduped.length,
-    gradedCount,
-    correctCount,
-    wrongCount,
-    neutralCount,
-    progressRate: total > 0 ? deduped.length / total : 0,
-    accuracy: gradedCount > 0 ? Math.round((correctCount / gradedCount) * 100) : 0
+    // 当前题库缓存只有参考、旧判定和自评；可靠统计从学习核心读取。
+    scoringAuthority: false,
+    gradedCount: 0,
+    correctCount: 0,
+    wrongCount: 0,
+    accuracy: null,
+    neutralCount: deduped.length,
+    pendingCount: count('pending'),
+    reviewedCount: count('reviewed'),
+    unclassifiedCount: count('unclassified'),
+    legacyCorrectCount,
+    legacyWrongCount,
+    legacyGradedCount,
+    legacyAccuracy: legacyGradedCount ? Math.round((100 * legacyCorrectCount) / legacyGradedCount) : null,
+    progressRate: questions.length > 0 ? deduped.length / questions.length : 0
   };
 }
 
-function formatNextReviewDelay(delayMs) {
-  const delay = Number(delayMs);
-  if (!Number.isFinite(delay) || delay <= 0) return '';
-  const minutes = Math.round(delay / 60000);
-  if (minutes < 60) {
-    return `约 ${minutes} 分钟后首次复习`;
-  }
-  const hours = Math.round(delay / 3600000);
-  return `约 ${hours} 小时后首次复习`;
-}
-
-export function buildQuizCompletionContent({
-  questions = [],
-  answeredQuestions = [],
-  diagnosisLoading = false,
-  diagnosisReady = false,
-  diagnosisSummary = '',
-  hasNextRecommendation = false,
-  nextReviewDelayMs = null
-} = {}) {
+export function buildQuizCompletionContent({ questions = [], answeredQuestions = [] } = {}) {
   const summary = summarizeQuizProgress({ questions, answeredQuestions });
-  const base = `本次完成 ${summary.total} 题，正确率 ${summary.accuracy}%`;
-  const nextReviewText = formatNextReviewDelay(nextReviewDelayMs);
-  const scheduleHint =
-    summary.wrongCount > 0 && nextReviewText ? `\n${summary.wrongCount} 道错题已加入复习计划，${nextReviewText}` : '';
-
-  if (diagnosisLoading) return `${base}\n\nAI 正在分析你的答题数据...`;
-  if (diagnosisReady && diagnosisSummary) return `${base}\n\n${diagnosisSummary}${scheduleHint}`;
-  if (hasNextRecommendation) return `${base}${scheduleHint}\n\nAI 已根据薄弱点为你准备了下一组练习`;
-  return `${base}${scheduleHint}\n\n点击查看 AI 诊断报告`;
+  if (summary.answeredCount && summary.reviewedCount === summary.answeredCount)
+    return `本次查看或自评 ${summary.answeredCount} 题`;
+  const parts = [`本次已记录 ${summary.answeredCount} 题`];
+  if (summary.pendingCount) parts.push(`${summary.pendingCount} 题待核对`);
+  if (summary.reviewedCount) parts.push(`${summary.reviewedCount} 题已查看/自评`);
+  if (summary.legacyGradedCount) parts.push(`${summary.legacyGradedCount} 题旧记录`);
+  if (summary.unclassifiedCount) parts.push(`${summary.unclassifiedCount} 题判分依据不明`);
+  return parts.join('，');
 }
 
 export function buildQuizKnowledgeFeedback({

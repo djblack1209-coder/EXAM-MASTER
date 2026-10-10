@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-discard-learning-material"
+description = "Enables the discard_learning_material command without any pre-configured scope."
+commands.allow = ["discard_learning_material"]
+
+[[permission]]
+identifier = "deny-discard-learning-material"
+description = "Denies the discard_learning_material command without any pre-configured scope."
+commands.deny = ["discard_learning_material"]

@@ -35,13 +35,21 @@
         <view class="accuracy-section">
           <view class="ring-wrap">
             <view class="ring-bg" />
-            <view class="ring-progress" :style="ringStyle" />
+            <view v-if="gradedCount > 0" class="ring-progress" :style="ringStyle" />
             <view class="ring-center">
-              <text class="ring-number">{{ displayAccuracy }}</text>
-              <text class="ring-unit">%</text>
+              <text class="ring-number">{{ gradedCount > 0 ? displayAccuracy : neutralCount }}</text>
+              <text v-if="gradedCount > 0" class="ring-unit">%</text>
             </view>
           </view>
-          <text class="accuracy-label">正确率</text>
+          <text class="accuracy-label">{{
+            pendingCount > 0
+              ? '已记录，待核对'
+              : reviewedCount === answeredCount && answeredCount > 0
+                ? '已查看/自评'
+                : legacyCount > 0
+                  ? '历史记录'
+                  : '暂未判分'
+          }}</text>
         </view>
 
         <!-- 统计行 -->
@@ -52,24 +60,38 @@
           </view>
           <view class="stat-divider" />
           <view class="stat-item">
-            <text class="stat-value correct-text">{{ correctCount }}</text>
-            <text class="stat-label">正确</text>
+            <text class="stat-value">{{ progressSummary.legacyCorrectCount }}</text>
+            <text class="stat-label">旧判对</text>
           </view>
           <view class="stat-divider" />
           <view class="stat-item">
-            <text class="stat-value wrong-text">{{ wrongCount }}</text>
-            <text class="stat-label">错误</text>
+            <text class="stat-value">{{ progressSummary.legacyWrongCount }}</text>
+            <text class="stat-label">旧判错</text>
           </view>
           <view class="stat-divider" />
           <view class="stat-item">
             <text class="stat-value">{{ neutralCount > 0 ? neutralCount : avgTimeDisplay }}</text>
-            <text class="stat-label">{{ neutralCount > 0 ? '已复习' : '平均用时' }}</text>
+            <text class="stat-label">{{
+              pendingCount > 0
+                ? '未判分'
+                : reviewedCount === answeredCount && answeredCount > 0
+                  ? '已查看/自评'
+                  : '已记录'
+            }}</text>
           </view>
+        </view>
+
+        <view v-if="legacyCount" class="motivational glass-card">
+          <text
+            >旧判对比例 {{ progressSummary.legacyAccuracy }}%（{{ progressSummary.legacyCorrectCount }}/{{
+              legacyCount
+            }}），不代表可靠判分。</text
+          >
         </view>
 
         <!-- 分类正确率 -->
         <view v-if="categoryBreakdown.length > 0" class="category-section glass-card">
-          <text class="section-title">分类正确率</text>
+          <text class="section-title">分类记录</text>
           <view v-for="cat in categoryBreakdown" :key="cat.name" class="cat-row">
             <text class="cat-name">{{ cat.name }}</text>
             <view class="cat-bar-bg">
@@ -79,7 +101,7 @@
                 :style="{ width: (cat.graded > 0 ? cat.accuracy : 100) + '%' }"
               />
             </view>
-            <text class="cat-pct">{{ cat.graded > 0 ? `${cat.accuracy}%` : '已复习' }}</text>
+            <text class="cat-pct">{{ cat.label }}</text>
           </view>
         </view>
 
@@ -130,7 +152,7 @@
       <!-- 操作按钮 -->
       <view class="action-dock">
         <button
-          v-if="hasNextRecommendation"
+          v-if="hasNextRecommendation && gradedCount > 0"
           class="action-btn primary-btn"
           hover-class="btn-hover"
           @tap="emit('continueNext')"
@@ -142,7 +164,7 @@
           hover-class="btn-hover"
           @tap="emit('viewReport')"
         >
-          查看诊断报告
+          {{ gradedCount > 0 ? '查看诊断报告' : '查看学习记录' }}
         </button>
         <button class="action-btn tertiary-btn" hover-class="btn-hover" @tap="emit('close')">返回</button>
       </view>
@@ -192,9 +214,12 @@ const progressSummary = computed(() =>
   })
 );
 const answeredCount = computed(() => progressSummary.value.answeredCount);
-const correctCount = computed(() => progressSummary.value.correctCount);
 const wrongCount = computed(() => progressSummary.value.wrongCount);
 const neutralCount = computed(() => progressSummary.value.neutralCount);
+const pendingCount = computed(() => progressSummary.value.pendingCount);
+const reviewedCount = computed(() => progressSummary.value.reviewedCount);
+const legacyCount = computed(() => progressSummary.value.legacyGradedCount);
+const gradedCount = computed(() => progressSummary.value.gradedCount);
 const accuracy = computed(() => {
   return progressSummary.value.accuracy;
 });
@@ -230,6 +255,25 @@ function onXpCoinsEnd() {
   showXpCoins.value = false;
 }
 
+// --- 分类统计 ---
+const categoryBreakdown = computed(() => {
+  const map = new Map();
+  for (const answer of props.answeredQuestions) {
+    const name = props.questions[answer.index]?.category || '未分类';
+    if (!map.has(name)) map.set(name, []);
+    map.get(name).push(answer);
+  }
+  return [...map].map(([name, answers]) => {
+    const summary = summarizeQuizProgress({ answeredQuestions: answers });
+    const parts = [];
+    if (summary.pendingCount) parts.push(`${summary.pendingCount} 待核对`);
+    if (summary.reviewedCount) parts.push(`${summary.reviewedCount} 已查看/自评`);
+    if (summary.legacyGradedCount) parts.push(`${summary.legacyGradedCount} 旧记录`);
+    if (summary.unclassifiedCount) parts.push(`${summary.unclassifiedCount} 依据不明`);
+    return { name, graded: 0, accuracy: null, label: parts.join(' · ') };
+  });
+});
+
 // --- 基于本地记录的学习建议 ---
 const nextSteps = ref([]);
 const loadingNextSteps = ref(false);
@@ -238,6 +282,10 @@ const loadingNextSteps = ref(false);
 async function loadNextSteps() {
   loadingNextSteps.value = true;
   try {
+    if (gradedCount.value === 0) {
+      nextSteps.value = [];
+      return;
+    }
     const steps = [];
 
     // 规则1：有错题 → 推荐去错题本
@@ -252,7 +300,7 @@ async function loadNextSteps() {
     }
 
     // 规则2：正确率低于60% → 推荐薄弱点训练
-    if (accuracy.value < 60) {
+    if (gradedCount.value > 0 && accuracy.value < 60) {
       const gradedCategories = categoryBreakdown.value.filter((cat) => cat.graded > 0);
       const weakest = gradedCategories.length > 0 ? gradedCategories[gradedCategories.length - 1] : null;
       steps.push({
@@ -335,13 +383,14 @@ watch(
       showHighScore.value = true;
       showXpCoins.value = true;
       displayAccuracy.value = 0;
-      _animDelayTimer = setTimeout(() => {
-        _animDelayTimer = null;
-        if (animHandle) animHandle.cancel();
-        animHandle = animateNumber(0, accuracy.value, 1200, (v) => {
-          displayAccuracy.value = v;
-        });
-      }, 300);
+      if (gradedCount.value > 0)
+        _animDelayTimer = setTimeout(() => {
+          _animDelayTimer = null;
+          if (animHandle) animHandle.cancel();
+          animHandle = animateNumber(0, accuracy.value, 1200, (v) => {
+            displayAccuracy.value = v;
+          });
+        }, 300);
       // 异步加载本地学习建议
       loadNextSteps();
     }
@@ -366,50 +415,25 @@ const ringStyle = computed(() => {
   };
 });
 
-// --- 分类统计 ---
-const categoryBreakdown = computed(() => {
-  const map = {};
-  props.answeredQuestions.forEach((a, idx) => {
-    const q = props.questions[a.index ?? idx];
-    if (!q) return;
-    const cat = q.category || '未分类';
-    if (!map[cat]) map[cat] = { answered: 0, graded: 0, correct: 0, neutral: 0 };
-    map[cat].answered++;
-    if (a.isCorrect === true) {
-      map[cat].graded++;
-      map[cat].correct++;
-    } else if (a.isCorrect === false) {
-      map[cat].graded++;
-    } else {
-      map[cat].neutral++;
-    }
-  });
-  return Object.entries(map)
-    .map(([name, d]) => ({
-      name,
-      answered: d.answered,
-      graded: d.graded,
-      accuracy: d.graded > 0 ? Math.round((d.correct / d.graded) * 100) : 0,
-      reviewed: d.neutral
-    }))
-    .sort((a, b) => Number(b.graded > 0) - Number(a.graded > 0) || b.accuracy - a.accuracy);
-});
-
 // --- 激励文案 — 优先使用真实AI诊断，降级到本地规则 ---
 const motivationalText = computed(() => {
   // 有真实 AI 诊断数据时使用（由 do-quiz.vue 的 autoDiagnose 传入）
-  if (props.diagnosisSummary) return props.diagnosisSummary;
+  if (pendingCount.value > 0 && gradedCount.value === 0) return '原答已记录，参考匹配不计入正确率。';
+  if (legacyCount.value > 0) return '旧记录保留，当前学习状态以可追溯作答依据为准。';
+  if (progressSummary.value.unclassifiedCount > 0) return '原记录保留，判分依据不明。';
+  if (gradedCount.value > 0 && props.diagnosisSummary) return props.diagnosisSummary;
+  if (gradedCount.value === 0) return '已记录查看与自评，请继续作答。';
 
   // 降级：基于本次表现的本地规则文案
   if (accuracy.value >= 90) {
-    const weakCat = categoryBreakdown.value.find((c) => c.accuracy < 80);
+    const weakCat = categoryBreakdown.value.find((c) => c.graded > 0 && c.accuracy < 80);
     return weakCat
       ? `整体表现很棒！「${weakCat.name}」还可以再提升，建议针对训练。`
       : '全面发挥出色，继续保持这个节奏！';
   }
   if (accuracy.value >= 70) {
-    const worst =
-      categoryBreakdown.value.length > 0 ? categoryBreakdown.value[categoryBreakdown.value.length - 1] : null;
+    const gradedCategories = categoryBreakdown.value.filter((c) => c.graded > 0);
+    const worst = gradedCategories.length > 0 ? gradedCategories[gradedCategories.length - 1] : null;
     return worst
       ? `不错的表现！「${worst.name}」正确率${worst.accuracy}%是主要失分点，建议重点复习。`
       : `正确率${accuracy.value}%，基础不错，继续巩固！`;

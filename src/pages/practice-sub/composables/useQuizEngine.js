@@ -21,8 +21,14 @@ import {
   buildQuizCompletionContent,
   getQuizOptionLabel,
   isCorrectQuizOption,
-  normalizeQuizQuestion
+  normalizeQuizQuestion,
+  prepareQuizQuestion,
+  prepareQuizSelection,
+  QUIZ_REVIEW_HANDOFF_KEY,
+  readQuizReviewHandoff,
+  readSinglePracticeHandoff
 } from '@/services/quiz-session-contract.js';
+import { getUserId } from '@/services/auth-storage.js';
 
 /**
  * @param {Object} [options]
@@ -78,58 +84,42 @@ export function useQuizEngine(options = {}) {
     return isCorrectQuizOption(currentQuestion.value, idx);
   }
 
-  /** 标准化单个题目对象 */
-  function _normalizeQuestion(q, index) {
-    return normalizeQuizQuestion(q, index, { fillMissingChoiceOptions: true });
-  }
-
-  // ---- core methods ----
-
-  /**
-   * 加载题目（支持 single / smart_review / 普通模式）
-   * @param {Object} [params]
-   * @param {'normal'|'single'|'smart_review'} [params.mode='normal']
-   * @returns {boolean} 是否成功加载到题目
-   */
+  /** 加载时保存原件；指定题缺失时不切换为普通组题。 */
   function loadQuestions(params = {}) {
-    const { mode = 'normal' } = params;
-
-    // 单题模式
+    const { mode = 'normal', singleId = '', reviewId = '', paperId = '' } = params;
+    questions.value = [];
+    const accept = (selected, key) => {
+      if (!selected) return false;
+      questions.value = selected;
+      if (key) storageService.remove(key);
+      answerStartTime.value = Date.now();
+      return true;
+    };
     if (mode === 'single') {
-      const singleQ = storageService.get('temp_practice_question', null);
-      if (singleQ) {
-        questions.value = [_normalizeQuestion(singleQ, 0)];
-        storageService.remove('temp_practice_question');
-        answerStartTime.value = Date.now();
-        return true;
+      let raw;
+      try {
+        raw = storageService.get('temp_practice_question', null, { migrateLegacy: false, throwOnError: true });
+      } catch (_error) {
+        return false;
       }
-      return false;
+      return accept(readSinglePracticeHandoff(raw, singleId, getUserId() || ''), 'temp_practice_question');
     }
-
-    // 智能复习模式
+    if (mode === 'temp_bank') {
+      return accept(
+        prepareQuizSelection(storageService.get('temp_practice_questions', [], { migrateLegacy: false })),
+        'temp_practice_questions'
+      );
+    }
     if (mode === 'smart_review') {
-      const reviewIds = uni.getStorageSync('smart_review_ids') || [];
-      if (reviewIds.length > 0) {
-        const bank = storageService.get('v30_bank', []);
-        const reviewQuestions = reviewIds
-          .map((id) => bank.find((q) => (q.id || q._id) === id))
-          .filter(Boolean)
-          .map((q, i) => _normalizeQuestion(q, i));
-        if (reviewQuestions.length > 0) {
-          questions.value = reviewQuestions;
-          uni.removeStorageSync('smart_review_ids');
-          answerStartTime.value = Date.now();
-          return true;
-        }
+      try {
+        const saved = storageService.get(QUIZ_REVIEW_HANDOFF_KEY, null, { migrateLegacy: false, throwOnError: true });
+        return accept(readQuizReviewHandoff(saved, reviewId, getUserId() || '', paperId));
+      } catch (_error) {
+        return false;
       }
-      // 回退到普通模式
     }
-
-    // 普通模式：从本地题库加载
-    const bank = storageService.get('v30_bank', []);
-    if (!bank || bank.length === 0) return false;
-
-    let list = bank.map((q, i) => _normalizeQuestion(q, i)).filter((q) => q.question && !/^题目 \d+$/.test(q.question));
+    const bank = storageService.get('v30_bank', [], { migrateLegacy: false });
+    let list = Array.isArray(bank) ? bank.map(prepareQuizQuestion).filter(Boolean) : [];
 
     if (smartPicker && list.length > 0) {
       list = pickQuestions(list, {

@@ -5,6 +5,31 @@
 import { beforeEach, vi } from 'vitest';
 import crypto from 'crypto';
 
+// Plain Vue cannot compile uni-app renderjs; real portal behavior is checked in platform builds.
+vi.mock('wot-design-uni/components/wd-root-portal/wd-root-portal.vue', () => ({
+  default: { name: 'WdRootPortal', template: '<div><slot /></div>' }
+}));
+
+// Capture each real page controller callback so late/duplicate replies can be exercised in isolation.
+// Component rendering and input events have their own UI tests; this never invokes the system modal.
+export function observeLearningDialogs(wrapper, onOpen) {
+  return wrapper.vm.$watch(
+    () => wrapper.vm.dialogState,
+    (state) => {
+      if (!state.visible) return;
+      onOpen({
+        ...state,
+        success(result) {
+          if (result.confirm) state.confirm(result.content);
+          else state.cancel();
+          state.closed();
+        }
+      });
+    },
+    { immediate: true, flush: 'sync' }
+  );
+}
+
 const globalScope = /** @type {any} */ (globalThis);
 
 function createMemoryLocalStorage() {

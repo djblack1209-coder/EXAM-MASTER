@@ -16,10 +16,11 @@
  */
 
 import cloud from '@lafjs/cloud';
-import { requireAuth, isAuthError } from './_shared/auth-middleware';
-import { generateRequestId, createLogger, checkRateLimitDistributed } from './_shared/api-response';
-import type { UserFSRSParams, ReviewLogRecord } from './_shared/fsrs-scheduler';
-import type { FSRSBundleExports, Grade, RecordLogItem } from './_shared/ts-fsrs-bundle-types';
+import type { FunctionContext } from '../types/cloud-functions.js';
+import { requireAuth, isAuthError } from './_shared/auth-middleware.js';
+import { generateRequestId, createLogger, checkRateLimitDistributed } from './_shared/api-response.js';
+import type { UserFSRSParams, ReviewLogRecord } from './_shared/fsrs-scheduler.js';
+import type { FSRSBundleExports, Grade, RecordLogItem } from './_shared/ts-fsrs-bundle-types.js';
 
 const { fsrs, generatorParameters, State, createEmptyCard } = require('./_shared/ts-fsrs-bundle') as FSRSBundleExports;
 

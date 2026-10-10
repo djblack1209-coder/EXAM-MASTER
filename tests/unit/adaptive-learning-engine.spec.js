@@ -106,9 +106,7 @@ describe('AdaptiveLearningEngine — 特征测试', () => {
     });
 
     it('禁用所有选项时应返回原始序列的副本', () => {
-      const questions = [
-        { id: 'q1', question: '题目1', category: '数学' }
-      ];
+      const questions = [{ id: 'q1', question: '题目1', category: '数学' }];
       const result = generateAdaptiveSequence(questions, {
         insertReviewQuestions: false,
         prioritizeWeak: false
@@ -214,8 +212,8 @@ describe('AdaptiveLearningEngine — 特征测试', () => {
 
     it('正确率低于60%的知识点应被标记为薄弱', () => {
       adaptiveLearningEngine.knowledgeMap = {
-        '数学': { total: 10, correct: 3, lastPractice: Date.now() }, // 30% → 薄弱
-        '英语': { total: 10, correct: 8, lastPractice: Date.now() } // 80% → 不薄弱
+        数学: { total: 10, correct: 3, lastPractice: Date.now() }, // 30% → 薄弱
+        英语: { total: 10, correct: 8, lastPractice: Date.now() } // 80% → 不薄弱
       };
       adaptiveLearningEngine.isInitialized = true;
 
@@ -228,9 +226,9 @@ describe('AdaptiveLearningEngine — 特征测试', () => {
 
     it('应按正确率升序排序', () => {
       adaptiveLearningEngine.knowledgeMap = {
-        '数学': { total: 10, correct: 5, lastPractice: Date.now() }, // 50%
-        '政治': { total: 10, correct: 2, lastPractice: Date.now() }, // 20%
-        '英语': { total: 10, correct: 4, lastPractice: Date.now() } // 40%
+        数学: { total: 10, correct: 5, lastPractice: Date.now() }, // 50%
+        政治: { total: 10, correct: 2, lastPractice: Date.now() }, // 20%
+        英语: { total: 10, correct: 4, lastPractice: Date.now() } // 40%
       };
       adaptiveLearningEngine.isInitialized = true;
 
@@ -357,7 +355,8 @@ describe('AdaptiveLearningEngine — 特征测试', () => {
       adaptiveLearningEngine.isInitialized = true;
 
       const questions = Array.from({ length: 20 }, (_, i) => ({
-        id: `q${i}`, question: `题目${i}`
+        id: `q${i}`,
+        question: `题目${i}`
       }));
 
       const result = getNextRecommendedQuestion(4, questions); // currentIndex=4 → 第5题后

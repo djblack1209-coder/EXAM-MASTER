@@ -259,7 +259,7 @@ describe('主题系统', () => {
     const origDoc = globalThis.document;
     delete globalThis.document;
 
-    const { applyTheme } = await import('@/design/theme-engine.js');
+    const { applyTheme } = await import('@/design/theme-runtime.js');
     // 不应抛出错误
     expect(() => applyTheme('light')).not.toThrow();
     expect(() => applyTheme('dark')).not.toThrow();
@@ -268,7 +268,7 @@ describe('主题系统', () => {
   });
 
   it('getCurrentTheme 返回有效值', async () => {
-    const { getCurrentTheme } = await import('@/design/theme-engine.js');
+    const { getCurrentTheme } = await import('@/design/theme-runtime.js');
     const theme = getCurrentTheme();
     expect(['light', 'dark']).toContain(theme);
   });

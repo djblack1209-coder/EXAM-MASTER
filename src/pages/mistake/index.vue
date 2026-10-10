@@ -1,5 +1,11 @@
 <template>
-  <view :class="['container', { 'dark-mode': isDark }]">
+  <LearningShell v-if="!showLegacy" active="mistake" title="错题与复习">
+    <LearningOverview :initial-expanded="true" :show-navigation="false" view="mistake" />
+    <view class="legacy-entry">
+      <button class="quiet-button" role="button" tabindex="0" @tap="toggleLegacy">历史题库记录</button>
+    </view>
+  </LearningShell>
+  <view v-else :class="['container', { 'dark-mode': isDark }]">
     <view class="aurora-bg" />
 
     <!-- 骨架屏 -->
@@ -27,164 +33,177 @@
       @scrolltolower="loadMore"
       @refresherrefresh="onPullRefresh"
     >
-      <!-- 统计卡片区域 -->
-      <view v-if="mistakes.length > 0" class="stats-grid">
-        <StatsCard title="错题总数" :value="mistakes.length" icon="note" :is-dark="isDark" />
-        <StatsCard
-          title="待复习"
-          :value="pendingReviewCount"
-          icon="refresh"
-          change="需要巩固"
-          change-type="neutral"
-          :is-dark="isDark"
-        />
+      <LearningOverview :initial-expanded="true" />
+      <button size="mini" @tap="toggleLegacy">
+        {{ showLegacy ? '收起历史视图' : '历史题库记录' }}
+      </button>
+      <button
+        role="button"
+        tabindex="0"
+        size="mini"
+        :disabled="isPendingSyncing"
+        :aria-busy="isPendingSyncing"
+        @tap="confirmPendingSync"
+        @keydown.enter.prevent="confirmPendingSync"
+        @keydown.space.prevent="confirmPendingSync"
+      >
+        同步历史待办
+      </button>
+      <view v-if="syncFeedback" role="status" aria-live="polite" data-test="legacy-sync-feedback" class="sync-feedback">
+        {{ syncFeedback }}
       </view>
-
-      <!-- ✅ P1: 重练模式提示 -->
-      <view v-if="isReviewMode && mistakes.length > 0" class="review-mode-banner">
-        <BaseIcon name="refresh" :size="40" class="review-icon" />
-        <view class="review-info">
-          <text class="review-title"> 错题重练模式 </text>
-          <text class="review-desc"> {{ filteredReviewMistakes.length }} 道待重练 </text>
+      <template v-if="showLegacy">
+        <!-- 统计卡片区域 -->
+        <view v-if="mistakes.length > 0" class="stats-grid">
+          <StatsCard title="已载入旧条目" :value="mistakes.length" icon="note" :is-dark="isDark" />
+          <StatsCard
+            title="旧重复错误"
+            :value="pendingReviewCount"
+            icon="refresh"
+            change="原记录次数≥2"
+            change-type="neutral"
+            :is-dark="isDark"
+          />
         </view>
-        <button class="start-review-btn" @tap="startSequentialReview">开始重练</button>
-      </view>
 
-      <!-- 错题筛选栏 -->
-      <view v-if="mistakes.length > 0" class="review-filter-bar">
-        <scroll-view scroll-x :show-scrollbar="false" class="filter-scroll">
-          <view :class="['filter-chip', { active: reviewFilter === 'all' }]" @tap="reviewFilter = 'all'">
-            <text class="filter-text"> 全部 </text>
+        <!-- ✅ P1: 重练模式提示 -->
+        <view v-if="isReviewMode && mistakes.length > 0" class="review-mode-banner">
+          <BaseIcon name="refresh" :size="40" class="review-icon" />
+          <view class="review-info">
+            <text class="review-title"> 错题重练模式 </text>
+            <text class="review-desc"> {{ filteredReviewMistakes.length }} 道待重练 </text>
           </view>
-          <view :class="['filter-chip', { active: reviewFilter === 'high_freq' }]" @tap="reviewFilter = 'high_freq'">
-            <text class="filter-text"> 高频错题 </text>
-          </view>
-          <view :class="['filter-chip', { active: reviewFilter === 'recent' }]" @tap="reviewFilter = 'recent'">
-            <text class="filter-text"> 最近错题 </text>
+          <button class="start-review-btn" @tap="startSequentialReview">开始重练</button>
+        </view>
+
+        <!-- 错题筛选栏 -->
+        <view v-if="mistakes.length > 0" class="review-filter-bar">
+          <scroll-view scroll-x :show-scrollbar="false" class="filter-scroll">
+            <view :class="['filter-chip', { active: reviewFilter === 'all' }]" @tap="reviewFilter = 'all'">
+              <text class="filter-text"> 全部 </text>
+            </view>
+            <view :class="['filter-chip', { active: reviewFilter === 'high_freq' }]" @tap="reviewFilter = 'high_freq'">
+              <text class="filter-text"> 高频错题 </text>
+            </view>
+            <view :class="['filter-chip', { active: reviewFilter === 'recent' }]" @tap="reviewFilter = 'recent'">
+              <text class="filter-text"> 最近错题 </text>
+            </view>
+            <view
+              :class="['filter-chip cluster-chip', { active: reviewFilter === 'cluster' }]"
+              @tap="switchToClusterView"
+            >
+              <text class="filter-text"> 历史分组 </text>
+            </view>
+            <view
+              v-for="cat in mistakeCategories"
+              :key="cat"
+              :class="['filter-chip', { active: reviewFilter === 'cat_' + cat }]"
+              @tap="reviewFilter = 'cat_' + cat"
+            >
+              <text class="filter-text"> {{ cat }} </text>
+            </view>
+          </scroll-view>
+        </view>
+
+        <!-- 模式切换 - 优化布局 -->
+        <view v-if="mistakes.length > 0" class="mode-switch glass-card ds-flex ds-gap-xs">
+          <view
+            :class="['mode-item', 'ds-flex-center', 'ds-touchable', { active: mode === 'quiz' }]"
+            @tap="switchMode('quiz')"
+          >
+            <text class="ds-text-sm ds-font-medium"> 刷题模式 </text>
           </view>
           <view
-            :class="['filter-chip cluster-chip', { active: reviewFilter === 'cluster' }]"
-            @tap="switchToClusterView"
+            :class="['mode-item', 'ds-flex-center', 'ds-touchable', { active: mode === 'recite' }]"
+            @tap="switchMode('recite')"
           >
-            <text class="filter-text"> 知识点聚类 </text>
+            <text class="ds-text-sm ds-font-medium"> 背诵模式 </text>
           </view>
-          <view
-            v-for="cat in mistakeCategories"
-            :key="cat"
-            :class="['filter-chip', { active: reviewFilter === 'cat_' + cat }]"
-            @tap="reviewFilter = 'cat_' + cat"
-          >
-            <text class="filter-text"> {{ cat }} </text>
+        </view>
+
+        <!-- 空状态 - 优化样式 -->
+        <view v-if="mistakes.length === 0 && !isInitLoading" class="empty-box ds-flex-col ds-flex-center">
+          <BaseIcon name="celebrate" :size="160" class="empty-icon" />
+          <text class="empty-title ds-text-lg ds-font-bold"> 暂无历史错题 </text>
+          <text class="empty-text ds-text-sm"> 这里尚未记录旧版练习错题，不代表已经掌握。 </text>
+          <view class="go-practice-btn ds-touchable" @tap="goBack">
+            <BaseIcon name="pen" :size="28" /><text>去刷题</text>
           </view>
-        </scroll-view>
-      </view>
+        </view>
 
-      <!-- 模式切换 - 优化布局 -->
-      <view v-if="mistakes.length > 0" class="mode-switch glass-card ds-flex ds-gap-xs">
-        <view
-          :class="['mode-item', 'ds-flex-center', 'ds-touchable', { active: mode === 'quiz' }]"
-          @tap="switchMode('quiz')"
-        >
-          <text class="ds-text-sm ds-font-medium"> 刷题模式 </text>
-        </view>
-        <view
-          :class="['mode-item', 'ds-flex-center', 'ds-touchable', { active: mode === 'recite' }]"
-          @tap="switchMode('recite')"
-        >
-          <text class="ds-text-sm ds-font-medium"> 背诵模式 </text>
-        </view>
-      </view>
-
-      <!-- 空状态 - 优化样式 -->
-      <view v-if="mistakes.length === 0 && !isInitLoading" class="empty-box ds-flex-col ds-flex-center">
-        <BaseIcon name="celebrate" :size="160" class="empty-icon" />
-        <text class="empty-title ds-text-lg ds-font-bold"> 太厉害了！ </text>
-        <text class="empty-text ds-text-sm"> 暂时没有错题，继续保持这个状态！ </text>
-        <text class="empty-hint ds-text-xs"> 刷题过程中答错的题目会自动收录到这里 </text>
-        <view class="go-practice-btn ds-touchable" @tap="goBack">
-          <BaseIcon name="pen" :size="28" /><text>去刷题</text>
-        </view>
-      </view>
-
-      <!-- 知识点聚类视图（AI 分析模式） -->
-      <view v-if="reviewFilter === 'cluster'" class="cluster-view">
-        <view v-if="clusterLoading" class="cluster-loading">
-          <view v-for="i in 3" :key="i" class="loading-dot" />
-          <text class="cluster-loading-text">AI 正在分析错题模式...</text>
-        </view>
-        <view v-else-if="errorClusters.length === 0" class="cluster-empty">
-          <text class="cluster-empty-text">暂无足够数据生成聚类分析</text>
-        </view>
-        <view v-else>
-          <view v-for="cluster in errorClusters" :key="cluster.clusterId" class="cluster-card glass-card">
-            <view class="cluster-header">
-              <view class="cluster-badge" :class="[cluster.severity]">
-                <text class="cluster-badge-text">
-                  {{ cluster.severity === 'high' ? '高频' : cluster.severity === 'medium' ? '中频' : '低频' }}
-                </text>
+        <!-- 历史分组视图（AI 分析模式） -->
+        <view v-if="reviewFilter === 'cluster'" class="cluster-view">
+          <view v-if="clusterLoading" class="cluster-loading">
+            <view v-for="i in 3" :key="i" class="loading-dot" />
+            <text class="cluster-loading-text">正在读取旧条目…</text>
+          </view>
+          <view v-else-if="errorClusters.length === 0" class="cluster-empty">
+            <text class="cluster-empty-text">暂无可分组的旧条目</text>
+          </view>
+          <view v-else>
+            <view v-for="cluster in errorClusters" :key="cluster.clusterId" class="cluster-card glass-card">
+              <view class="cluster-header">
+                <view class="cluster-badge" :class="[cluster.countBand]">
+                  <text class="cluster-badge-text"> 旧标签 </text>
+                </view>
+                <text class="cluster-type">{{ cluster.errorTypeName }}</text>
+                <text class="cluster-count">{{ cluster.questionCount }}条 · 可重练 {{ cluster.reviewableCount }}</text>
               </view>
-              <text class="cluster-type">{{ cluster.errorTypeName }}</text>
-              <text class="cluster-count">{{ cluster.questionCount }}题</text>
-            </view>
-            <view v-if="cluster.knowledgePoints && cluster.knowledgePoints.length > 0" class="cluster-kps">
-              <text v-for="kp in cluster.knowledgePoints" :key="kp" class="kp-tag">{{ kp }}</text>
-            </view>
-            <text class="cluster-suggestion">{{ cluster.suggestion }}</text>
-            <view class="cluster-trend">
-              <text :class="['trend-text', cluster.trend]">
+              <view v-if="cluster.knowledgePoints && cluster.knowledgePoints.length > 0" class="cluster-kps">
+                <text v-for="kp in cluster.knowledgePoints" :key="kp" class="kp-tag">{{ kp }}</text>
+              </view>
+              <button class="train-btn" :disabled="!cluster.reviewableCount" @tap="startClusterTraining(cluster)">
+                重练完整条目
                 {{
-                  cluster.trend === 'increasing'
-                    ? '↑ 近期增多'
-                    : cluster.trend === 'decreasing'
-                      ? '↓ 逐渐减少'
-                      : '— 保持稳定'
+                  cluster.knowledgePoints && cluster.knowledgePoints[0]
+                    ? cluster.knowledgePoints[0]
+                    : cluster.errorTypeName
                 }}
-              </text>
+              </button>
             </view>
-            <button class="train-btn" @tap="startClusterTraining(cluster)">
-              针对训练
-              {{
-                cluster.knowledgePoints && cluster.knowledgePoints[0]
-                  ? cluster.knowledgePoints[0]
-                  : cluster.errorTypeName
-              }}
-            </button>
           </view>
         </view>
-      </view>
 
-      <!-- 错题列表 (F007: 限制DOM节点数量，最多渲染 maxDomItems 条) -->
-      <template v-if="reviewFilter !== 'cluster'">
-        <MistakeCard
-          v-for="(item, index) in displayedMistakes"
-          :key="item.id || item._id || index"
-          :item="item"
-          :index="index"
-          :mode="mode"
-          :mistakes="mistakes"
-          @remove="removeMistake"
-        />
+        <!-- 错题列表 (F007: 限制DOM节点数量，最多渲染 maxDomItems 条) -->
+        <template v-if="reviewFilter !== 'cluster'">
+          <MistakeCard
+            v-for="(item, index) in displayedMistakes"
+            :key="item.id || item._id || index"
+            :item="item"
+            :index="index"
+            :mode="mode"
+            :mistakes="mistakes"
+            :expected-owner-id="loadedOwnerId"
+            @remove="removeMistake(item)"
+          />
+        </template>
+
+        <!-- 一键清空按钮（显示在列表最底部） - 优化样式 -->
+        <view v-if="mistakes.length > 0 && !isLoading && reviewFilter !== 'cluster'" class="clear-all-section">
+          <button
+            class="clear-all-btn ds-flex ds-flex-center ds-gap-xs ds-touchable"
+            :disabled="isClearing"
+            @tap="clearAllMistakes"
+          >
+            <BaseIcon name="delete" :size="36" class="clear-all-icon" />
+            <text class="clear-all-text ds-text-sm ds-font-semibold">
+              {{ isClearing ? '移除中...' : '移除已载入条目' }}
+            </text>
+          </button>
+        </view>
+
+        <view class="safe-area" />
       </template>
-
-      <!-- 一键清空按钮（显示在列表最底部） - 优化样式 -->
-      <view v-if="mistakes.length > 0 && !isLoading && reviewFilter !== 'cluster'" class="clear-all-section">
-        <button
-          class="clear-all-btn ds-flex ds-flex-center ds-gap-xs ds-touchable"
-          :disabled="isClearing"
-          @tap="clearAllMistakes"
-        >
-          <BaseIcon name="delete" :size="36" class="clear-all-icon" />
-          <text class="clear-all-text ds-text-sm ds-font-semibold">
-            {{ isClearing ? '清空中...' : '清空所有错题' }}
-          </text>
-        </button>
-      </view>
-
-      <view class="safe-area" />
     </scroll-view>
 
     <!-- 智能诊断报告组件 - ✅ 2.3: 仅在有错题时渲染，避免空数据时的无效组件挂载 -->
-    <MistakeReport v-if="mistakes.length > 0" :mistakes="mistakes" :user-info="userInfo" :is-dark="isDark" />
+    <MistakeReport
+      v-if="mistakes.length > 0"
+      :mistakes="mistakes"
+      :user-info="userInfo"
+      :is-dark="isDark"
+      :expected-owner-id="loadedOwnerId"
+    />
 
     <!-- 离线状态指示器 -->
     <OfflineIndicator :auto-show="true" position="top" :auto-hide-delay="5000" />
@@ -192,7 +211,17 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import LearningOverview from '@/components/business/learning/learning-overview.vue';
+import LearningShell from '@/components/business/learning/learning-shell.vue';
+import { useConversationLearningStore } from '@/stores/modules/conversation-learning.js';
+
+import { ref, computed, watch, onUnmounted } from 'vue';
+const learning = useConversationLearningStore();
+const showLegacy = ref(false);
+function toggleLegacy() {
+  showLegacy.value = !showLegacy.value;
+  if (showLegacy.value) loadData(true);
+}
 import { onLoad, onShow, onUnload } from '@dcloudio/uni-app';
 import { modal } from '@/utils/modal.js';
 import { toast } from '@/utils/toast.js';
@@ -207,12 +236,13 @@ import MistakeCard from './MistakeCard.vue';
 import MistakeReport from './MistakeReport.vue';
 import { normalizeMistakes as normalizeFields } from '@/utils/field-normalizer.js';
 import { getStatusBarHeight, getCapsuleSafeRight } from '@/utils/core/system.js';
+import { getUserId, getToken } from '@/services/auth-storage.js';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 
 // --- 非响应式属性（模块级变量） ---
 let studyEngineStore = null; // Pinia store 实例，在 onLoad 中初始化
 let _themeHandler = null; // 主题切换回调引用，用于 onUnload 精确移除
-let syncDelayTimer = null; // 同步延迟定时器 ID
+let syncGeneration = 0;
 const PAGE_SIZE = 20; // 每页数量（常量）
 const MAX_DOM_ITEMS = 80; // F007: DOM 上限，防止无限滚动导致 DOM 节点过多
 
@@ -221,6 +251,8 @@ const isRefreshing = ref(false);
 const statusBarHeight = ref(44);
 const capsuleSafeRight = ref(20);
 const mistakes = ref([]);
+const loadedOwnerId = ref(null);
+const clustersOwnerId = ref(null);
 const mode = ref('quiz'); // 'quiz' 或 'recite'
 const userInfo = ref({});
 const isDark = ref(false);
@@ -229,10 +261,31 @@ const hasMore = ref(true);
 const isLoading = ref(false);
 const isInitLoading = ref(true); // 初始骨架屏加载状态
 const isClearing = ref(false); // 防重复点击：清空错题
+const isPendingSyncing = ref(false);
+const syncFeedback = ref('');
+function resetPendingSync() {
+  syncGeneration++;
+  if (isPendingSyncing.value) toast.hide();
+  isPendingSyncing.value = false;
+  syncFeedback.value = '';
+}
+onUnmounted(resetPendingSync);
 const isReviewMode = ref(false); // ✅ P1: 错题重练模式
 const reviewFilter = ref('all'); // ✅ 1.7: 筛选条件 all | high_freq | recent | cluster
-const errorClusters = ref([]); // 知识点聚类数据
+const errorClusters = ref([]); // 历史分组数据
 const clusterLoading = ref(false); // 聚类加载状态
+watch(
+  () => learning.state.owner,
+  () => {
+    if (loadedOwnerId.value === (getUserId() || '')) return;
+    resetPendingSync();
+    mistakes.value = [];
+    loadedOwnerId.value = null;
+    errorClusters.value = [];
+    clustersOwnerId.value = null;
+    if (showLegacy.value && !isLoading.value) loadData(true);
+  }
+);
 
 // --- 计算属性 ---
 
@@ -280,14 +333,16 @@ const mistakeCategories = computed(() => {
 
 // F007: 限制渲染到 DOM 的错题数量，防止无限滚动导致 DOM 过大
 const displayedMistakes = computed(() => {
-  return mistakes.value.slice(0, MAX_DOM_ITEMS);
+  return filteredReviewMistakes.value.slice(0, MAX_DOM_ITEMS);
 });
 
 // --- 方法 ---
 
 // 统一错题字段名，消除 wrongCount/wrong_count 等不一致
 function normalizeMistakes(list) {
-  return normalizeFields(list).map((item) => ({
+  return normalizeFields(
+    Array.isArray(list) ? list.filter((item) => item && typeof item === 'object' && !Array.isArray(item)) : []
+  ).map((item) => ({
     ...item,
     showAnalysis: item.showAnalysis ?? false
   }));
@@ -323,24 +378,56 @@ function loadUserInfo() {
 }
 
 // 自动同步待同步的错题
-async function syncPendingMistakes() {
+function confirmPendingSync() {
+  if (isPendingSyncing.value) return;
+  const owner = loadedOwnerId.value;
+  const token = getToken() || '';
+  if (owner !== (getUserId() || '')) return toast.info('账户已变化，请重新打开历史记录');
+  const records = storageService.get('mistake_book', [], { migrateLegacy: false });
+  const pending = records.filter((item) => ['pending', 'local_only'].includes(item?.sync_status));
+  if (!pending.length) {
+    syncFeedback.value = '暂无历史同步待办';
+    return;
+  }
+  const snapshot = JSON.parse(JSON.stringify(pending));
+  modal.show({
+    title: '同步历史待办',
+    content: `将当前账户已确认的 ${snapshot.length} 条历史原文发送至本项目后端。原参考仍待核对。`,
+    success: (res) => {
+      if (!res.confirm) return;
+      if (owner !== (getUserId() || '') || token !== (getToken() || '')) return toast.info('账户已变化，请重新确认');
+      syncPendingMistakes(snapshot, owner, token);
+    }
+  });
+}
+async function syncPendingMistakes(expectedRecords, owner, token) {
+  if (isPendingSyncing.value) return;
+  const generation = ++syncGeneration;
+  const current = () => generation === syncGeneration && owner === (getUserId() || '') && token === (getToken() || '');
+  isPendingSyncing.value = true;
+  syncFeedback.value = '同步中…';
   toast.loading('同步中...');
   try {
     logger.log('[mistake-book] 开始自动同步待同步错题...');
-    const result = await storageService.syncPendingMistakes();
-    if (result.synced > 0) {
-      logger.log(`[mistake-book] ✅ 同步完成: ${result.synced} 条错题已同步到云端`);
-      // 延迟一下，确保本地存储已更新（追踪定时器，在 onUnload 中清理）
-      syncDelayTimer = setTimeout(() => {
-        loadData(true);
-      }, 300);
-    } else if (result.failed > 0) {
-      logger.warn(`[mistake-book] ⚠️ 同步部分失败: ${result.failed} 条错题未能同步`);
-    }
+    const result = await storageService.syncPendingMistakes({ expectedRecords });
+    if (!current()) return;
+    if (result.success === false) syncFeedback.value = result.error || '同步未确认，原待办保留';
+    else if (result.synced > 0) {
+      const remaining = (result.failed || 0) + (result.conflicts || 0);
+      syncFeedback.value = remaining
+        ? `已确认 ${result.synced} 条，还有 ${remaining} 条未完成。`
+        : `已确认 ${result.synced} 条历史原件。`;
+      await loadData(true);
+    } else syncFeedback.value = '暂无历史同步待办';
   } catch (error) {
     logger.error('[mistake-book] 同步待同步错题异常:', error);
+    if (current()) syncFeedback.value = '同步未确认，原待办保留';
   } finally {
-    toast.hide();
+    if (generation === syncGeneration) {
+      toast.hide();
+      isPendingSyncing.value = false;
+      if (!current()) syncFeedback.value = '';
+    }
   }
 }
 
@@ -349,6 +436,12 @@ async function syncPendingMistakes() {
  * @param {boolean} [reset=false] - 是否重置到第一页重新加载
  */
 async function loadData(reset = false) {
+  const ownerId = getUserId() || '';
+  learning.refresh();
+  if (!showLegacy.value) {
+    isInitLoading.value = false;
+    return;
+  }
   if (isLoading.value) {
     logger.log('[mistake-book] ⏸️ 加载中，跳过重复请求');
     return;
@@ -369,6 +462,8 @@ async function loadData(reset = false) {
     logger.log(`[mistake-book] 📡 调用 storageService.getMistakes(${currentPage.value}, ${PAGE_SIZE})`);
     // 使用云端方法获取错题列表
     const result = await storageService.getMistakes(currentPage.value, PAGE_SIZE);
+    if ((getUserId() || '') !== ownerId) return;
+    loadedOwnerId.value = ownerId;
     logger.log('[mistake-book] ✅ 数据加载完成:', {
       count: result?.list?.length || 0,
       total: result?.total || 0,
@@ -411,12 +506,15 @@ async function loadData(reset = false) {
       mistakes.value = normalizeMistakes(storageService.get('mistake_book', []));
     }
   } catch (error) {
+    if ((getUserId() || '') !== ownerId) return;
+    loadedOwnerId.value = ownerId;
     logger.error('加载错题列表失败:', error);
     // 降级到本地读取
     mistakes.value = normalizeMistakes(storageService.get('mistake_book', []));
   } finally {
     isLoading.value = false;
     isInitLoading.value = false; // 隐藏骨架屏
+    if (showLegacy.value && (getUserId() || '') !== ownerId) loadData(true);
   }
 }
 
@@ -430,20 +528,6 @@ function goBack() {
   });
 }
 
-// 恢复原始题库（从备份中还原）
-function _restoreOriginalBank() {
-  try {
-    const backup = storageService.get('v30_bank_backup', []);
-    if (backup.length > 0) {
-      storageService.save('v30_bank', backup);
-      logger.log('[mistake-book] ✅ 原题库已恢复');
-    }
-    storageService.remove('v30_bank_backup');
-  } catch (e) {
-    logger.error('[mistake-book] ❌ 恢复原题库失败:', e);
-  }
-}
-
 // ✅ P1 + 1.7: 开始顺序重练（使用筛选后的错题列表）
 function startSequentialReview() {
   const source = isReviewMode.value ? filteredReviewMistakes.value : mistakes.value;
@@ -452,136 +536,54 @@ function startSequentialReview() {
     return;
   }
 
-  logger.log('[mistake-book] 📝 开始错题重练，共', source.length, '道题，筛选:', reviewFilter.value);
-
-  // 问题51修复：确保错题数据格式正确，兼容多种字段名
-  const reviewQuestions = source
-    .map((m, index) => {
-      // 获取题目内容（兼容多种字段名）
-      const questionContent = m.question || m.question_content || m.title || `错题 ${index + 1}`;
-
-      // 获取选项（确保是数组且有内容）
-      let options = m.options;
-      if (!Array.isArray(options) || options.length === 0) {
-        // 尝试从其他字段获取选项
-        options = m.choices || m.option_list || ['A. 选项A', 'B. 选项B', 'C. 选项C', 'D. 选项D'];
-      }
-
-      // 获取正确答案（兼容多种格式）
-      let answer = m.answer || m.correct_answer || m.correctAnswer || 'A';
-      // 确保答案是单个字母
-      if (typeof answer === 'string' && answer.length > 1) {
-        answer = answer.charAt(0).toUpperCase();
-      }
-      if (typeof answer === 'number') {
-        answer = ['A', 'B', 'C', 'D'][answer] || 'A';
-      }
-
-      const reviewQuestion = {
-        id: m.id || m._id || `review_${index}_${Date.now()}`,
-        question: questionContent,
-        options: options,
-        answer: answer,
-        desc: m.desc || m.analysis || m.explanation || '暂无解析',
-        category: m.category || m.subject || '错题重练',
-        type: m.type || '单选',
-        difficulty: m.difficulty || 2,
-        wrongCount: m.wrong_count || 1,
-        isReview: true // 标记为复习题
-      };
-
-      logger.log(`[mistake-book] 📋 错题 ${index + 1}:`, {
-        id: reviewQuestion.id,
-        question: reviewQuestion.question.substring(0, 30) + '...',
-        optionsCount: reviewQuestion.options.length,
-        answer: reviewQuestion.answer
-      });
-
-      return reviewQuestion;
-    })
-    .filter((q) => q.question && q.options.length >= 2); // 过滤无效题目
-
-  if (reviewQuestions.length === 0) {
-    toast.info('错题数据格式异常');
-    logger.error('[mistake-book] ❌ 所有错题数据格式异常，无法开始重练');
-    return;
-  }
-
-  logger.log('[mistake-book] ✅ 有效错题数量:', reviewQuestions.length);
-
-  // 问题51修复：使用正确的存储键名，并同时更新题库
-  storageService.save('temp_review_questions', reviewQuestions);
-
-  // 同时将错题临时写入题库，确保 do-quiz 页面能读取
-  const currentBank = storageService.get('v30_bank', []);
-  if (currentBank.length > 0) {
-    storageService.save('v30_bank_backup', currentBank); // 备份原题库
-  }
-  storageService.save('v30_bank', reviewQuestions); // 临时替换为错题
-  storageService.save('is_review_mode', true); // 标记为复习模式
-
-  safeNavigateTo('/pages/practice-sub/do-quiz?mode=review', {
-    success: () => {
-      logger.log('[mistake-book] ✅ 成功跳转到答题页面');
-    },
-    fail: (err) => {
-      logger.error('[mistake-book] ❌ 跳转失败:', err);
-      // 立即恢复原题库
-      _restoreOriginalBank();
-      storageService.remove('is_review_mode');
-    }
+  const result = studyEngineStore.prepareLegacyReview({
+    expectedOwnerId: loadedOwnerId.value,
+    recordIds: source.map((item) => item.id ?? item._id).filter((id) => id !== undefined && id !== null),
+    expectedQuestions: source
   });
+  openLegacyReview(result);
 }
 
-// 一键清空所有错题
-function clearAllMistakes() {
-  // 防重复点击
-  if (isClearing.value) return;
-
-  if (mistakes.value.length === 0) {
-    return toast.info('已经没有错题了');
+function openLegacyReview(result) {
+  if (!result.success) {
+    toast.info(result.message || '这些旧条目暂不能重练，原记录已保留');
+    return;
   }
+  if (result.skipped || result.deferred) toast.info(`本次重练${result.count}条，其余原记录已保留`);
+  safeNavigateTo(result.url);
+}
 
+// Only the explicitly reviewed loaded identities are removed.
+function clearAllMistakes() {
+  if (isClearing.value || !mistakes.value.length) return;
+  const owner = loadedOwnerId.value,
+    snapshot = JSON.stringify(mistakes.value);
+  const ids = mistakes.value.map((row) => row.id ?? row._id);
+  if (ids.some((id) => !['string', 'number'].includes(typeof id)) || new Set(ids.map(String)).size !== ids.length)
+    return toast.info('存在缺失或重复编号，原记录保留，请重新加载');
+  const current = () => owner === (getUserId() || '') && snapshot === JSON.stringify(mistakes.value);
+  if (!current()) return toast.info('账户或列表已变化，请重新加载');
   modal.show({
-    title: '清空错题本',
-    content: `确定要清空所有 ${mistakes.value.length} 道错题吗？此操作不可恢复。`,
+    title: '移除已载入条目',
+    content: `仅移除当前已载入的 ${ids.length} 条历史记录，其他条目保留。移除后无法恢复。`,
     confirmColor: 'var(--danger)',
     success: async (res) => {
-      if (res.confirm) {
-        isClearing.value = true;
-        toast.loading('清空中...');
-
-        try {
-          logger.log('[mistake-book] 🧹 开始清空所有错题...');
-
-          // 获取所有错题的 ID
-          const mistakeIds = mistakes.value.map((m) => m.id || m._id).filter(Boolean);
-
-          // P2-4: 批量删除云端错题（单次请求替代 N+1 逐条删除）
-          // batchRemoveMistakes 内部已同步清理本地缓存
-          const result = await storageService.batchRemoveMistakes(mistakeIds);
-          const deletedCount = result.deleted || 0;
-
-          // 清空列表
-          mistakes.value = [];
-          currentPage.value = 1;
-          hasMore.value = false;
-
-          logger.log(`[mistake-book] 清空完成: 已删除 ${deletedCount}/${mistakeIds.length} 条云端错题，本地缓存已清空`);
-          logger.log(`[mistake-book] 空状态：错题列表为空，显示空状态UI`);
-
-          toast.hide();
-          const totalCount = mistakeIds.length;
-          toast.success(totalCount > 0 ? `已清空 ${totalCount} 道错题` : '已清空所有错题', 2000);
-
-          // 响应式数据已更新，Vue 会自动触发视图更新
-        } catch (error) {
-          logger.error('[mistake-book] ❌ 清空错题失败:', error);
-          toast.hide();
-          toast.info('清空失败，请重试');
-        } finally {
-          isClearing.value = false;
-        }
+      if (!res.confirm) return;
+      if (!current()) return toast.info('账户或列表已变化，请重新确认');
+      isClearing.value = true;
+      try {
+        const result = await storageService.batchRemoveMistakes(ids);
+        if (!current()) return;
+        if (!result.success) return toast.info(result.error || '移除未确认，原记录保留');
+        const removed = new Set(ids.map(String));
+        mistakes.value = mistakes.value.filter((row) => !removed.has(String(row.id ?? row._id)));
+        toast.success(
+          `已移除本次 ${ids.length} 条${result.source === 'local' ? '本机记录，云端结果未确认' : '历史记录'}`
+        );
+      } catch (_error) {
+        toast.info('移除未确认，请重新加载原列表');
+      } finally {
+        isClearing.value = false;
       }
     }
   });
@@ -592,7 +594,7 @@ function switchMode(newMode) {
   mode.value = newMode;
 }
 
-// === 知识点聚类功能 ===
+// === 历史分组功能 ===
 
 // 切换到聚类视图，首次切换时加载数据
 async function switchToClusterView() {
@@ -602,17 +604,20 @@ async function switchToClusterView() {
   }
 }
 
-// 调用后端 AI 错题聚类分析
+// 只读整理当前账户的旧条目
 async function loadErrorClusters() {
   clusterLoading.value = true;
+  const ownerId = getUserId() || '';
   try {
     const result = await studyEngineStore.getErrorClusters();
+    if ((getUserId() || '') !== ownerId) return;
     if (result?.data?.clusters) {
+      clustersOwnerId.value = ownerId;
       errorClusters.value = result.data.clusters;
     }
   } catch (error) {
     logger.error('[mistake-book] 错题聚类加载失败:', error);
-    toast.info('聚类分析暂时不可用');
+    toast.info('历史分组暂时不可用');
   } finally {
     clusterLoading.value = false;
   }
@@ -620,104 +625,51 @@ async function loadErrorClusters() {
 
 // 基于聚类结果筛选错题，跳转到针对训练
 function startClusterTraining(cluster) {
-  const kpSet = new Set(cluster.knowledgePoints || []);
-  const filteredMistakes = mistakes.value.filter((m) => {
-    const cat = m.category || m.knowledge_point || '';
-    return kpSet.has(cat) || cat === cluster.errorTypeName;
-  });
-
-  if (filteredMistakes.length === 0) {
-    toast.info('该类型暂无可练习的错题');
-    return;
-  }
-
-  logger.log(
-    '[mistake-book] 开始聚类针对训练，知识点:',
-    cluster.knowledgePoints,
-    '共',
-    filteredMistakes.length,
-    '道题'
+  if (!cluster?.reviewableCount) return;
+  openLegacyReview(
+    studyEngineStore.prepareLegacyReview({ clusterId: cluster.clusterId, expectedOwnerId: clustersOwnerId.value })
   );
-
-  const reviewQuestions = filteredMistakes
-    .map((m, index) => {
-      const questionContent = m.question || m.question_content || m.title || `错题 ${index + 1}`;
-      let options = m.options;
-      if (!Array.isArray(options) || options.length === 0) {
-        options = m.choices || m.option_list || ['A. 选项A', 'B. 选项B', 'C. 选项C', 'D. 选项D'];
-      }
-      let answer = m.answer || m.correct_answer || m.correctAnswer || 'A';
-      if (typeof answer === 'string' && answer.length > 1) answer = answer.charAt(0).toUpperCase();
-      if (typeof answer === 'number') answer = ['A', 'B', 'C', 'D'][answer] || 'A';
-
-      return {
-        id: m.id || m._id || `cluster_${index}_${Date.now()}`,
-        question: questionContent,
-        options,
-        answer,
-        desc: m.desc || m.analysis || m.explanation || '暂无解析',
-        category: m.category || m.subject || '针对训练',
-        type: m.type || '单选',
-        difficulty: m.difficulty || 2,
-        wrongCount: m.wrong_count || 1,
-        isReview: true
-      };
-    })
-    .filter((q) => q.question && q.options.length >= 2);
-
-  if (reviewQuestions.length === 0) {
-    toast.info('错题数据格式异常');
-    return;
-  }
-
-  storageService.save('temp_review_questions', reviewQuestions);
-  const currentBank = storageService.get('v30_bank', []);
-  if (currentBank.length > 0) {
-    storageService.save('v30_bank_backup', currentBank);
-  }
-  storageService.save('v30_bank', reviewQuestions);
-  storageService.save('is_review_mode', true);
-
-  safeNavigateTo('/pages/practice-sub/do-quiz?mode=review', {
-    success: () => logger.log('[mistake-book] ✅ 聚类训练跳转成功'),
-    fail: (err) => {
-      logger.error('[mistake-book] ❌ 聚类训练跳转失败:', err);
-      _restoreOriginalBank();
-      storageService.remove('is_review_mode');
-    }
-  });
 }
 
 /** @param {number} index - 错题在列表中的索引 */
-async function removeMistake(index) {
-  const mistake = mistakes.value[index];
+async function removeMistake(mistake) {
   if (!mistake) return;
+  const ownerId = loadedOwnerId.value,
+    id = mistake.id ?? mistake._id;
+  const snapshot = JSON.stringify(mistake);
+  const current = () =>
+    (getUserId() || '') === ownerId &&
+    mistakes.value.some((item) => (item.id ?? item._id) === id && JSON.stringify(item) === snapshot);
+  if (
+    !current() ||
+    mistakes.value.filter((row) => String(row.id ?? row._id) === String(id)).length !== 1 ||
+    !['string', 'number'].includes(typeof id)
+  )
+    return toast.info('条目或账户已变化，请重新加载');
 
   modal.show({
     title: '移除题目',
-    content: '掌握了吗？移除后无法恢复。',
+    content: '仅移除这条历史记录，学习掌握状态保持独立。移除后无法恢复。',
     confirmColor: 'var(--danger)',
     success: async (res) => {
       if (res.confirm) {
+        if (!current()) return toast.info('条目或账户已变化，请重新确认');
         toast.loading('删除中...');
 
         try {
           // 使用云端方法删除
-          const mistakeId = mistake.id || mistake._id;
-          logger.log(`[mistake-book] 开始删除错题: ${mistakeId} (index: ${index})`);
-          const result = await storageService.removeMistake(mistakeId);
+          const result = await storageService.removeMistake(id);
+          if (!current()) return;
 
           if (result.success) {
             // 从列表中移除
-            mistakes.value.splice(index, 1);
+            mistakes.value = mistakes.value.filter((item) => (item.id ?? item._id) !== id);
             logger.log(`[mistake-book] ✅ 删除成功，列表剩余 ${mistakes.value.length} 条错题`);
             toast.success('已移除');
           } else {
-            // 如果云端删除失败，尝试本地删除
-            logger.warn(`[mistake-book] ⚠️ 删除失败，降级到本地删除: ${result.error}`);
-            mistakes.value.splice(index, 1);
-            storageService.save('mistake_book', mistakes.value, true);
-            toast.info('已移除（本地）');
+            // 保存失败不丢弃原记录或替换尚未加载的其他条目。
+            logger.warn(`[mistake-book] 移除未确认: ${result.error}`);
+            toast.info('移除未确认，原记录保留，请重新加载');
           }
         } catch (error) {
           logger.error('[mistake-book] 删除错题异常:', error);
@@ -759,21 +711,34 @@ onLoad((options) => {
 });
 
 onShow(() => {
+  learning.refresh();
+  if (loadedOwnerId.value !== (getUserId() || '')) {
+    mistakes.value = [];
+    loadedOwnerId.value = null;
+    errorClusters.value = [];
+    clustersOwnerId.value = null;
+  }
+  if (!showLegacy.value) {
+    isInitLoading.value = false;
+    return;
+  }
   loadData(true); // 重置并重新加载
   loadUserInfo();
-  // 自动同步待同步的错题
-  syncPendingMistakes();
 });
 
 onUnload(() => {
   // 移除事件监听
   uni.$off('themeUpdate', _themeHandler);
-  // 清理同步延迟定时器，防止页面卸载后仍触发加载
-  if (syncDelayTimer) clearTimeout(syncDelayTimer);
+  resetPendingSync();
 });
 </script>
 
 <style lang="scss" scoped>
+.sync-feedback {
+  margin: 12rpx 30rpx;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
 /* 统计卡片网格 */
 .stats-grid {
   display: grid;
@@ -881,12 +846,15 @@ onUnload(() => {
 }
 
 .glass-card {
-  background: var(--bg-card);
-  border: 2rpx solid rgba(0, 0, 0, 0.04);
-  border-radius: 28rpx;
+  background: var(--yozi-reading);
+
+  border: 0;
+
+  border-radius: 24px;
   padding: 30rpx;
   margin-bottom: 30rpx;
-  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
+
+  box-shadow: var(--yozi-shadow);
 }
 
 .mode-switch {
@@ -1138,7 +1106,7 @@ onUnload(() => {
 
 /* [AUDIT FIX R201] 筛选栏 .dark-mode 块已移除 — var(--bg-card)/var(--border-light)/var(--text-sub) 已自动适配 */
 
-/* === 知识点聚类视图 === */
+/* === 历史分组视图 === */
 .cluster-view {
   padding: 0 0 30rpx;
 }

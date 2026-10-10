@@ -25,16 +25,16 @@
  */
 
 import cloud from '@lafjs/cloud';
-import { requireAuth, isAuthError } from './_shared/auth-middleware';
+import type { FunctionContext } from '../types/cloud-functions.js';
+import { requireAuth, isAuthError } from './_shared/auth-middleware.js';
+import { createHash } from 'node:crypto';
 import {
-  scheduleReviewFSRS,
-  createNewCard,
-  hasFSRSState,
-  extractFSRSState,
-  migrateToFSRS,
-  type FSRSScheduleResult,
-  type ReviewLogRecord
-} from './_shared/fsrs-scheduler';
+  prepareLegacyMistakeImport,
+  sameLegacyOriginalContent,
+  sameLegacyOriginalState,
+  LEGACY_IMPORT_CONTRACT
+} from './_shared/legacy-mistake-import.js';
+import { quizOriginalIdentity } from './_shared/learning-quiz-original.js';
 import {
   sanitizeString,
   validateAction,
@@ -42,22 +42,10 @@ import {
   createLogger,
   generateRequestId,
   checkRateLimitDistributed
-} from './_shared/api-response';
+} from './_shared/api-response.js';
 
 const db = cloud.database();
 const _ = db.command;
-
-// ✅ E004: 简单的内容哈希函数（用于去重，非密码学用途）
-function contentHash(str: string): string {
-  let hash = 0;
-  const s = (str || '').substring(0, 200);
-  for (let i = 0; i < s.length; i++) {
-    const ch = s.charCodeAt(i);
-    hash = (hash << 5) - hash + ch;
-    hash |= 0; // 转为32位整数
-  }
-  return 'h_' + (hash >>> 0).toString(36);
-}
 
 // ==================== 日志工具 ====================
 const logger = createLogger('[MistakeManager]');
@@ -248,7 +236,9 @@ export default async function (ctx: FunctionContext) {
     }
 
     // 校验并清理 data
-    const dataValidation = validateMistakeData(data);
+    const dataValidation = ['add', 'batchSync'].includes(action)
+      ? { valid: true, sanitized: {} }
+      : validateMistakeData(data);
     if (!dataValidation.valid) {
       return { code: 400, success: false, message: `参数错误: ${dataValidation.error}`, requestId };
     }
@@ -296,6 +286,13 @@ export default async function (ctx: FunctionContext) {
     logger.error(`[${requestId}] 错题管理异常:`, error);
 
     // P015: 错误分类，提供更精确的错误码和信息
+    if (['INVALID_INPUT', 'SOURCE_MISMATCH', 'FORBIDDEN', 'RESOURCE_LIMIT'].includes(error.code))
+      return {
+        code: error.code === 'FORBIDDEN' ? 403 : error.code === 'RESOURCE_LIMIT' ? 413 : 400,
+        success: false,
+        message: error.message,
+        requestId
+      };
     const errMsg = error.message || '';
     let code = 500;
     let message = '服务器内部错误';
@@ -328,82 +325,84 @@ export default async function (ctx: FunctionContext) {
  * 添加错题
  * ✅ E004: 使用内容哈希去重，避免拉取500条记录到内存
  */
-async function handleAdd(userId, data, requestId) {
-  if (!data || !data.question_content) {
-    return { code: 400, success: false, message: '参数错误: 题目内容不能为空' };
-  }
+async function handleAdd(userId, data, _requestId) {
+  return persistLegacyImport(userId, prepareLegacyMistakeImport(data));
+}
 
+async function persistLegacyImport(userId, prepared) {
   const collection = db.collection('mistake_book');
-  const now = Date.now();
-
-  // 使用内容哈希进行 O(1) 去重查询
-  const qHash = contentHash(data.question_content);
-
-  const existing = await collection
-    .where({
-      user_id: userId,
-      _content_hash: qHash
-    })
-    .getOne();
-
-  if (existing.data) {
-    // 二次验证：哈希碰撞时比较前100字符
-    const existingKey = (existing.data.question_content || '').substring(0, 100);
-    const newKey = (data.question_content || '').substring(0, 100);
-    if (existingKey === newKey) {
-      await collection.doc(existing.data._id).update({
-        wrong_count: _.inc(1),
-        updated_at: now,
-        is_mastered: false
-      });
-
-      logger.info(`[${requestId}] 错题已存在，更新错误次数: ${existing.data._id}`);
-
-      return {
-        code: 0,
-        success: true,
-        id: existing.data._id,
-        _id: existing.data._id,
-        message: '错题已更新',
-        isUpdate: true
-      };
-    }
-  }
-
-  // 新增错题（带内容哈希字段）
-  const mistake = {
-    user_id: userId,
-    _content_hash: qHash,
-    question_id: data.question_id || null,
-    question_content: data.question_content,
-    options: data.options || [],
-    user_answer: data.user_answer || '',
-    correct_answer: data.correct_answer || '',
-    analysis: data.analysis || '',
-    category: data.category || '综合',
-    tags: data.tags || [],
-    error_type: data.error_type || 'knowledge_gap',
-    difficulty: data.difficulty || 'medium',
-    wrong_count: data.wrong_count || 1,
-    review_count: 0,
-    is_mastered: false,
-    last_review_time: null,
-    ...createNewCard(),
-    created_at: now,
-    updated_at: now
-  };
-
-  const result = await collection.add(mistake);
-
-  logger.info(`[${requestId}] 新增错题成功: ${result.id}`);
-
-  return {
+  const digest = createHash('sha256')
+    .update(quizOriginalIdentity([userId, prepared.importKey, prepared.content]))
+    .digest('hex');
+  const id = `mi_${digest.slice(0, 60)}`;
+  const receipt = (row, replayed) => ({
     code: 0,
     success: true,
-    id: result.id,
-    _id: result.id,
-    message: '添加成功'
+    id: String(row._id),
+    _id: String(row._id),
+    replayed,
+    importContract: LEGACY_IMPORT_CONTRACT,
+    message: replayed ? '原记录已保存' : '历史原件已保存，判分仍待核对'
+  });
+  const compare = (row, original) => {
+    if (!sameLegacyOriginalContent(original, prepared.original)) return null;
+    if (!sameLegacyOriginalState(original, prepared.original))
+      return {
+        code: 409,
+        success: false,
+        conflict: true,
+        id: String(row._id),
+        cloudData: row,
+        message: '旧状态不同，原记录保留'
+      };
+    return receipt(row, true);
   };
+  let parentId = null;
+  if (typeof prepared.targetId === 'string' && !prepared.targetId.startsWith('local_')) {
+    const target = await collection.where({ _id: prepared.targetId, user_id: userId }).getOne();
+    if (target.data) {
+      const original = target.data.legacy_original ?? prepareLegacyMistakeImport(target.data).original;
+      const result = compare(target.data, original);
+      if (result) return result;
+      parentId = String(target.data._id);
+    }
+  }
+  const replay = (row) => {
+    if (row.legacy_original?.contract !== LEGACY_IMPORT_CONTRACT)
+      return { code: 409, success: false, message: '保存编号已有不同原件，原记录保留' };
+    return (
+      compare(row, row.legacy_original) ?? { code: 409, success: false, message: '保存编号已有不同原件，原记录保留' }
+    );
+  };
+  const existing = await collection.where({ _id: id, user_id: userId }).getOne();
+  if (existing.data) return replay(existing.data);
+  const now = Date.now();
+  const record = {
+    ...prepared.display,
+    ...prepared.metadata,
+    _id: id,
+    user_id: userId,
+    _content_hash: `import_${digest}`,
+    import_key: prepared.importKey,
+    legacy_original: prepared.original,
+    legacy_parent_id: parentId,
+    legacy_import_contract: LEGACY_IMPORT_CONTRACT,
+    grade: { status: 'pending', outcome: null, basis: 'legacy_import' },
+    stats_eligible: false,
+    imported_at: now,
+    created_at: prepared.metadata.created_at ?? prepared.metadata.createdAt ?? prepared.metadata.addTime ?? now,
+    updated_at: now
+  };
+  try {
+    const saved = await collection.add(record);
+    if (saved.id !== id) throw new Error('IMPORT_ID_MISMATCH');
+    return receipt(record, false);
+  } catch (_error) {
+    // A unique conflict or lost response never justifies another insert or review schedule.
+    const stored = await collection.where({ _id: id, user_id: userId }).getOne();
+    if (stored.data) return replay(stored.data);
+    return { code: 500, success: false, message: '保存结果未确认，请保留原件并沿原编号核对' };
+  }
 }
 
 /**
@@ -530,99 +529,8 @@ async function handleBatchRemove(userId, data, requestId) {
 /**
  * 更新错题状态（掌握/未掌握）
  */
-async function handleUpdateStatus(userId, data, requestId) {
-  if (!data?.id) {
-    return { code: 400, success: false, message: '参数错误: id 不能为空' };
-  }
-
-  const collection = db.collection('mistake_book');
-  const now = Date.now();
-
-  // 验证权限
-  const mistake = await collection
-    .where({
-      _id: data.id,
-      user_id: userId
-    })
-    .getOne();
-
-  if (!mistake.data) {
-    logger.warn(`[${requestId}] 错题不存在: ${data.id}`);
-    return { code: 404, success: false, message: '错题不存在' };
-  }
-
-  // 计算 FSRS 调度参数（优先使用原生 FSRS 路径，回退到旧版 SM-2 兼容路径）
-  const isMastered = Boolean(data.is_mastered);
-  let updateData: Record<string, unknown> = {
-    is_mastered: isMastered,
-    last_review_time: now,
-    review_count: _.inc(1),
-    updated_at: now
-  };
-
-  const rating = isMastered ? 'good' : 'again';
-  let fsrsResult: FSRSScheduleResult;
-
-  if (hasFSRSState(mistake.data)) {
-    // ✅ FSRS 原生路径：无损往返，保留 lapses/state/learning_steps
-    const fsrsState = extractFSRSState(mistake.data);
-    fsrsResult = scheduleReviewFSRS(fsrsState, rating);
-
-    // 持久化完整 FSRS 卡片状态
-    updateData = {
-      ...updateData,
-      ...fsrsResult.card,
-      // 同时写回旧字段，保持向后兼容
-      interval_days: fsrsResult.legacy.interval_days,
-      ease_factor: fsrsResult.legacy.ease_factor,
-      next_review_time: fsrsResult.legacy.next_review_time
-    };
-  } else {
-    // 旧卡片：先迁移到 FSRS，再用原生路径调度
-    const migrated = migrateToFSRS({
-      ease_factor: mistake.data.ease_factor,
-      interval_days: mistake.data.interval_days,
-      review_count: mistake.data.review_count || 0,
-      last_review_time: mistake.data.last_review_time,
-      next_review_time: mistake.data.next_review_time
-    });
-    fsrsResult = scheduleReviewFSRS(migrated, rating);
-
-    updateData = {
-      ...updateData,
-      ...fsrsResult.card,
-      interval_days: fsrsResult.legacy.interval_days,
-      ease_factor: fsrsResult.legacy.ease_factor,
-      next_review_time: fsrsResult.legacy.next_review_time
-    };
-  }
-
-  // 执行更新
-  const result = await collection.doc(data.id).update(updateData);
-
-  // ✅ Phase 3-1: 持久化 review log（异步写入，不阻塞主流程）
-  try {
-    const reviewLog: ReviewLogRecord = {
-      user_id: userId,
-      card_id: data.id,
-      card_type: 'mistake',
-      ...fsrsResult.reviewLog,
-      created_at: now
-    };
-    await db.collection('review_logs').add(reviewLog);
-  } catch (logErr) {
-    logger.warn(`[${requestId}] review_log 写入失败（不影响主流程）:`, logErr.message);
-  }
-
-  logger.info(`[${requestId}] 更新错题状态: ${data.id}, is_mastered: ${isMastered}`);
-
-  return {
-    code: 0,
-    success: true,
-    updated: result.updated || 1,
-    id: data.id,
-    message: isMastered ? '已标记为掌握' : '已标记为未掌握'
-  };
+async function handleUpdateStatus() {
+  return { code: 409, success: false, message: '旧掌握标记不能证明复习，请在学习页明确作答' };
 }
 
 /**
@@ -639,55 +547,30 @@ async function handleUpdateFields(userId, data, requestId) {
     return { code: 400, success: false, message: '参数错误: fields 必须是对象' };
   }
 
-  const fieldValidation = validateMistakeData(rawFields);
-  if (!fieldValidation.valid) {
-    return { code: 400, success: false, message: `参数错误: ${fieldValidation.error}` };
+  const keys = Object.keys(rawFields);
+  const metadata = ['tags', 'notes', 'note'];
+  if (keys.some((key) => !metadata.includes(key))) {
+    const hasMetadata = keys.some((key) => metadata.includes(key));
+    return {
+      code: hasMetadata ? 403 : 400,
+      success: false,
+      message: hasMetadata ? '仅可修改标签和笔记，原件及学习状态不可覆盖' : '没有可更新字段'
+    };
   }
-
-  const allowedFields = new Set([
-    'question_id',
-    'question_content',
-    'options',
-    'user_answer',
-    'correct_answer',
-    'analysis',
-    'category',
-    'tags',
-    'error_type',
-    'difficulty',
-    'wrong_count',
-    'review_count',
-    'is_mastered',
-    'last_review_time',
-    'next_review_time',
-    'ease_factor',
-    'interval_days',
-    'source',
-    'notes',
-    // FSRS 原生字段
-    'due',
-    'stability',
-    'elapsed_days',
-    'scheduled_days',
-    'learning_steps',
-    'reps',
-    'lapses',
-    'state',
-    'last_review'
-  ]);
-
+  if (
+    rawFields.tags !== undefined &&
+    (!Array.isArray(rawFields.tags) ||
+      rawFields.tags.length > 20 ||
+      !rawFields.tags.every((tag) => typeof tag === 'string' && tag.length <= 50))
+  )
+    return { code: 400, success: false, message: '标签格式不合法' };
+  const notes = rawFields.notes !== undefined ? rawFields.notes : rawFields.note;
+  if (notes !== undefined && notes !== null && (typeof notes !== 'string' || notes.length > 2000))
+    return { code: 400, success: false, message: '笔记超过保存范围' };
   const updateData: Record<string, unknown> = {};
-  const sanitizedFields = fieldValidation.sanitized || {};
-
-  for (const [key, value] of Object.entries(sanitizedFields)) {
-    if (allowedFields.has(key) && value !== undefined) {
-      updateData[key] = value;
-    }
-  }
-
-  if (Object.keys(updateData).length === 0) {
-    return { code: 400, success: false, message: '没有可更新字段' };
-  }
+  if (rawFields.tags !== undefined) updateData.tags = rawFields.tags;
+  if (notes !== undefined) updateData.notes = notes;
+  if (Object.keys(updateData).length === 0) return { code: 400, success: false, message: '没有可更新字段' };
 
   const collection = db.collection('mistake_book');
   const existing = await collection
@@ -706,22 +589,24 @@ async function handleUpdateFields(userId, data, requestId) {
   const now = Date.now();
   updateData.updated_at = now;
 
-  if (typeof updateData.question_content === 'string' && updateData.question_content.length > 0) {
-    updateData._content_hash = contentHash(updateData.question_content);
+  const result = await collection.where({ _id: data.id, user_id: userId }).update(updateData);
+  if (!(result.updated > 0)) {
+    const stored = await collection.where({ _id: data.id, user_id: userId }).getOne();
+    if (
+      !stored.data ||
+      Object.entries(updateData).some(
+        ([key, value]) => quizOriginalIdentity(stored.data[key]) !== quizOriginalIdentity(value)
+      )
+    )
+      return { code: 409, success: false, message: '附加信息未确认保存，请保留原记录' };
   }
-
-  if (Object.prototype.hasOwnProperty.call(updateData, 'is_mastered')) {
-    updateData.mastered_at = Boolean(updateData.is_mastered) ? now : null;
-  }
-
-  const result = await collection.doc(data.id).update(updateData);
   logger.info(`[${requestId}] updateFields 成功: ${data.id}, fields=${Object.keys(updateData).join(',')}`);
 
   return {
     code: 0,
     success: true,
     id: data.id,
-    updated: result.updated || 1,
+    updated: result.updated || 0,
     data: {
       fields: Object.keys(updateData)
     },
@@ -733,102 +618,42 @@ async function handleUpdateFields(userId, data, requestId) {
  * 批量同步错题
  * ✅ E004: 并行批量插入（每批5条），替代逐条顺序插入
  */
-async function handleBatchSync(userId, data, requestId) {
-  if (!data?.mistakes || !Array.isArray(data.mistakes)) {
-    return { code: 400, success: false, message: '参数错误: mistakes 必须是数组' };
-  }
-
-  // ✅ P1-7: 限制批量同步上限，防止滥用
-  const MAX_SYNC_SIZE = 200;
-  if (data.mistakes.length > MAX_SYNC_SIZE) {
-    return { code: 400, success: false, message: `单次同步上限 ${MAX_SYNC_SIZE} 条` };
-  }
-
-  const collection = db.collection('mistake_book');
-  const now = Date.now();
-
-  let synced = 0;
-  let failed = 0;
+async function handleBatchSync(userId, data, _requestId) {
+  if (!Array.isArray(data?.mistakes) || data.mistakes.length > 200)
+    return { code: 400, success: false, message: 'mistakes 必须为不超过200条的数组' };
+  if (JSON.stringify(data.mistakes).length > 3600000)
+    return { code: 413, success: false, message: '同步资料超过本批上限，请保留原件后分批处理' };
+  // Validate the complete batch before any write; duplicate mappings cannot become two facts.
+  const prepared = data.mistakes.map(prepareLegacyMistakeImport);
+  const ids = prepared.map((item) => String(item.localId ?? ''));
+  if (ids.some((id) => !id) || new Set(ids).size !== ids.length)
+    return { code: 400, success: false, message: '同步原件编号缺失或重复，请保留原件' };
   const results = [];
-
-  // 并行批量插入，每批5条
-  const BATCH_SIZE = 5;
-  for (let i = 0; i < data.mistakes.length; i += BATCH_SIZE) {
-    const batch = data.mistakes.slice(i, i + BATCH_SIZE);
-    const batchResults = await Promise.allSettled(
-      batch.map(async (mistake) => {
-        const questionContent = sanitizeString(String(mistake.question_content || mistake.question || ''), 2000);
-        const qHash = contentHash(questionContent);
-
-        // 去重检查：与 handleAdd 保持一致
-        const existing = await collection
-          .where({
-            user_id: userId,
-            _content_hash: qHash
-          })
-          .getOne();
-
-        if (existing.data) {
-          const existingKey = (existing.data.question_content || '').substring(0, 100);
-          const newKey = questionContent.substring(0, 100);
-          if (existingKey === newKey) {
-            // 已存在，更新错误次数
-            await collection.doc(existing.data._id).update({
-              wrong_count: _.inc(mistake.wrong_count || 1),
-              updated_at: now,
-              is_mastered: false
-            });
-            return { oldId: mistake.id, newId: existing.data._id, isUpdate: true };
-          }
+  for (let index = 0; index < prepared.length; index += 5) {
+    const batch = await Promise.all(
+      prepared.slice(index, index + 5).map(async (item) => {
+        let saved;
+        try {
+          saved = await persistLegacyImport(userId, item);
+        } catch {
+          saved = { code: 500, success: false, message: '保存结果未确认，原件保留' };
         }
-
-        // 新增 — [R2-P1] 对 batchSync 数据做消毒处理
-        const mistakeData = {
-          user_id: userId,
-          _content_hash: qHash,
-          question_content: questionContent,
-          options: Array.isArray(mistake.options)
-            ? mistake.options.slice(0, 10).map((o: unknown) => sanitizeString(String(o), 500))
-            : [],
-          user_answer: sanitizeString(String(mistake.user_answer || mistake.userChoice || ''), 100),
-          correct_answer: sanitizeString(String(mistake.correct_answer || mistake.answer || ''), 100),
-          analysis: sanitizeString(String(mistake.analysis || mistake.desc || ''), 5000),
-          category: sanitizeString(String(mistake.category || '综合'), 50),
-          tags: Array.isArray(mistake.tags)
-            ? mistake.tags.slice(0, 20).map((t: unknown) => sanitizeString(String(t), 50))
-            : [],
-          is_mastered: mistake.is_mastered || false,
-          wrong_count: mistake.wrong_count || 1,
-          review_count: 0,
-          ...createNewCard(),
-          created_at: now,
-          updated_at: now
-        };
-        const result = await collection.add(mistakeData);
-        return { oldId: mistake.id, newId: result.id, isUpdate: false };
+        return { ...saved, localId: item.localId, oldId: item.localId, newId: saved.id };
       })
     );
-
-    for (const r of batchResults) {
-      if (r.status === 'fulfilled') {
-        results.push({ ...r.value, success: true });
-        synced++;
-      } else {
-        results.push({ success: false });
-        failed++;
-      }
-    }
+    results.push(...batch);
   }
-
-  logger.info(`[${requestId}] 批量同步完成: 成功 ${synced}, 失败 ${failed}`);
-
+  const synced = results.filter((item) => item.success).length,
+    failed = results.length - synced;
   return {
     code: 0,
     success: true,
+    importContract: LEGACY_IMPORT_CONTRACT,
     synced,
     failed,
     results,
-    message: `同步完成: ${synced} 成功, ${failed} 失败`
+    data: { synced, failed, results },
+    message: `历史原件保存回执：${synced}已确认，${failed}待核对`
   };
 }
 

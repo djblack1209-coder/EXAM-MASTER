@@ -4,12 +4,12 @@
  */
 
 import cloud from '@lafjs/cloud';
-import { requireAuth, isAuthError } from './_shared/auth-middleware';
-import { checkRateLimitDistributed, createLogger } from './_shared/api-response';
-import { requireAdminAccess } from './_shared/admin-auth';
+import { requireAuth, isAuthError } from './_shared/auth-middleware.js';
+import { checkRateLimitDistributed, createLogger } from './_shared/api-response.js';
+import { requireAdminAccess } from './_shared/admin-auth.js';
 // ✅ B8: 输入清洗工具（共享模块）
-import { escapeRegex } from './_shared/sanitize';
-import { filterCategoryStats, filterQuestionList, getCategoryAllowlistQuery } from './_shared/env-guard';
+import { escapeRegex } from './_shared/sanitize.js';
+import { filterCategoryStats, filterQuestionList, getCategoryAllowlistQuery } from './_shared/env-guard.js';
 
 const db = cloud.database();
 const _ = db.command;
@@ -113,7 +113,13 @@ export default async function (ctx) {
         // 预置题目导入是危险操作，必须验证管理员权限
         const adminAuth = requireAdminAccess(ctx, { allowBodyFallback: true });
         if (!adminAuth.ok) {
-          return { code: adminAuth.code, success: false, message: adminAuth.message || '需要管理员权限', requestId, timestamp: Date.now() };
+          return {
+            code: adminAuth.code,
+            success: false,
+            message: adminAuth.message || '需要管理员权限',
+            requestId,
+            timestamp: Date.now()
+          };
         }
         result = await seedPresetQuestions(data, requestId);
         break;

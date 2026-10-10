@@ -1,5 +1,5 @@
 <template>
-  <view class="page" :class="{ 'dark-mode': isDark }">
+  <view ref="keyboardRoot" class="page" :class="{ 'dark-mode': isDark }">
     <!-- 自定义导航栏 -->
     <view class="nav-bar" :style="{ paddingTop: statusBarHeight + 'px' }">
       <view class="nav-content">
@@ -12,9 +12,7 @@
       <!-- 可用题库列表 -->
       <view class="section practice-hero-section">
         <view class="practice-hero">
-          <text class="practice-kicker">{{ practiceHeroKicker }}</text>
           <text class="practice-title">{{ practiceHeroTitle }}</text>
-          <text class="practice-subtitle">{{ practiceHeroSubtitle }}</text>
           <view class="practice-signal-row">
             <view class="practice-signal">
               <text class="signal-value">{{ loadedBankCount }}</text>
@@ -33,12 +31,22 @@
           <view class="practice-command-row">
             <view
               class="practice-command primary"
+              role="button"
+              tabindex="0"
+              data-learning-toggle
               hover-class="btn-hover"
-              @tap="hasBank ? goDoQuiz() : chooseImportSource()"
+              @tap="hasBank || hasQuizResume ? goDoQuiz({ resume: true }) : chooseImportSource()"
             >
-              <text>{{ hasBank ? '继续训练' : '历年真题' }}</text>
+              <text>{{ hasQuizResume ? '继续训练' : hasBank ? '开始训练' : '历年真题' }}</text>
             </view>
-            <view class="practice-command secondary" hover-class="btn-hover" @tap="chooseImportSource">
+            <view
+              class="practice-command secondary"
+              role="button"
+              tabindex="0"
+              data-learning-toggle
+              hover-class="btn-hover"
+              @tap="chooseImportSource"
+            >
               <text>真题库</text>
             </view>
           </view>
@@ -48,8 +56,7 @@
       <!-- #ifdef H5 -->
       <view v-if="guestDemoEnabled && !hasBank" class="section">
         <view class="card demo-entry">
-          <text class="section-title">先体验 3 道示例题</text>
-          <text class="section-hint">无需登录，体验答题、判分与解析。示例内容仅用于功能演示。</text>
+          <text class="section-title">示例题 · 3 道</text>
           <button class="demo-start" :loading="startingDemo" :disabled="startingDemo" @tap="startDemo">
             开始本地演示
           </button>
@@ -61,7 +68,6 @@
         <view class="section-head navigator-head">
           <view>
             <text class="section-title">题库</text>
-            <text class="section-hint">科目、年份与训练方式</text>
           </view>
           <text class="section-meta">{{ bankAvailabilityText }}</text>
         </view>
@@ -69,7 +75,6 @@
         <view class="readiness-card">
           <view class="readiness-head">
             <view>
-              <text class="readiness-kicker">题库就绪度</text>
               <text class="readiness-title">{{ readinessTitle }}</text>
             </view>
             <text class="readiness-percent">{{ readinessPercent }}%</text>
@@ -101,6 +106,9 @@
             v-for="subject in navigationTree"
             :key="subject.id"
             class="subject-tab"
+            role="button"
+            tabindex="0"
+            data-learning-toggle
             :class="{ active: selectedSubject?.id === subject.id }"
             @tap="selectSubject(subject.id)"
           >
@@ -113,6 +121,9 @@
             v-for="track in selectedSubject?.tracks || []"
             :key="track.id"
             class="track-pill"
+            role="button"
+            tabindex="0"
+            data-learning-toggle
             :class="{ active: selectedTrack?.id === track.id }"
             @tap="selectTrack(track.id)"
           >
@@ -127,6 +138,10 @@
             v-for="mode in selectedModes"
             :key="mode.id"
             class="mode-chip"
+            role="button"
+            tabindex="0"
+            data-learning-toggle
+            :aria-pressed="selectedModeId === mode.id ? 'true' : 'false'"
             :class="{ active: selectedModeId === mode.id }"
             @tap="selectMode(mode.id)"
           >
@@ -150,19 +165,29 @@
               <text class="bank-track">{{ bank.year }} 真题</text>
               <text class="bank-name">{{ bank.name }}</text>
               <text v-if="bank.releaseLabel" class="bank-release-label">{{ bank.releaseLabel }}</text>
-              <text class="bank-desc">{{ bank.description }}</text>
-              <text v-if="bank.caution" class="bank-caution">{{ bank.caution }}</text>
             </view>
             <view
               v-if="!isBankLoaded(bank.id)"
               class="bank-btn detail-btn"
+              role="button"
+              tabindex="0"
+              data-learning-toggle
               :class="{ disabled: loadingBankId === bank.id }"
+              :aria-disabled="loadingBankId === bank.id ? 'true' : 'false'"
               hover-class="btn-hover"
               @tap="openBankDetail(bank.id)"
             >
               <text class="bank-btn-text">{{ loadingBankId === bank.id ? '打开中' : '查看' }}</text>
             </view>
-            <view v-else class="bank-btn continue-btn" hover-class="btn-hover" @tap="openBankDetail(bank.id)">
+            <view
+              v-else
+              class="bank-btn continue-btn"
+              role="button"
+              tabindex="0"
+              data-learning-toggle
+              hover-class="btn-hover"
+              @tap="openBankDetail(bank.id)"
+            >
               <text class="bank-btn-text">继续</text>
             </view>
           </view>
@@ -171,7 +196,14 @@
         <view v-else class="empty-track-card">
           <text class="empty-track-title">{{ emptyTrackTitle }}</text>
           <text class="empty-track-desc">{{ emptyTrackDesc }}</text>
-          <view class="empty-track-action" hover-class="btn-hover" @tap="chooseImportSource">
+          <view
+            class="empty-track-action"
+            role="button"
+            tabindex="0"
+            data-learning-toggle
+            hover-class="btn-hover"
+            @tap="chooseImportSource"
+          >
             <text>查看真题目录</text>
           </view>
         </view>
@@ -182,7 +214,6 @@
         <view class="training-plan-card">
           <view class="training-plan-head">
             <view>
-              <text class="training-kicker">公共课训练</text>
               <text class="training-title">{{ todayTraining.trackLabel }} · {{ todayTraining.focus }}</text>
             </view>
             <text class="training-minutes">{{ todayTraining.minutes }}min</text>
@@ -237,6 +268,7 @@
 </template>
 
 <script>
+import { BRAND } from '@/config/brand.js';
 import CustomTabbar from '@/components/layout/custom-tabbar/custom-tabbar.vue';
 import { useFlashcardBank } from '@/composables/useFlashcardBank.js';
 import { useBankStatus } from '@/composables/useBankStatus.js';
@@ -244,10 +276,12 @@ import { useDynamicMixin } from '@/composables/useDynamicMixin.js';
 import { buildPublicCourseCoverage, getPracticeNavigationTree } from '@/config/bank-registry.js';
 import { buildPublicCourseTrainingPlan } from '@/config/public-course-training-plan.js';
 import { storageService } from '@/services/storageService.js';
+import { bindLearningKeyboard } from '@/services/learning/keyboard-controls.js';
 import { safeNavigateTo } from '@/utils/safe-navigate';
 import { logger } from '@/utils/logger.js';
 import { toast } from '@/utils/toast.js';
 import { isGuestDemoEnabled, startGuestDemoPractice } from '@/utils/practice/demo-bank.js';
+import { getRecoverableQuizProgress } from '@/composables/useQuizAutoSave.js';
 
 export default {
   components: { CustomTabbar },
@@ -282,6 +316,7 @@ export default {
 
   data() {
     return {
+      hasQuizResume: false,
       statusBarHeight: 44,
       tabBarHeight: 90,
       loadingBankId: null,
@@ -315,7 +350,7 @@ export default {
     },
 
     practiceHeroKicker() {
-      return 'Exam Master';
+      return BRAND.name;
     },
 
     practiceHeroTitle() {
@@ -432,10 +467,18 @@ export default {
     }
   },
 
+  mounted() {
+    this.unbindKeyboard = bindLearningKeyboard(this.$refs.keyboardRoot);
+  },
+  beforeUnmount() {
+    this.unbindKeyboard?.();
+  },
+
   onLoad() {
     this.syncTheme();
     this.initLayout();
     this.refreshBankStatus();
+    this.hasQuizResume = Boolean(getRecoverableQuizProgress());
     this.ensureNavigationSelection();
     this.preloadPracticeSubPackage();
     uni.$on('themeUpdate', this.syncTheme);
@@ -447,6 +490,7 @@ export default {
     // 每次切回刷新题库状态（可能在do-quiz中答了题）
     this.syncLoadedBankIds?.();
     this.refreshBankStatus();
+    this.hasQuizResume = Boolean(getRecoverableQuizProgress());
     this.ensureNavigationSelection();
   },
 
@@ -457,7 +501,7 @@ export default {
 
   onShareAppMessage() {
     return {
-      title: 'EXAM-MASTER — 刷题中心',
+      title: `${BRAND.name} — 练习`,
       path: '/pages/practice/index'
     };
   },
@@ -589,7 +633,11 @@ export default {
       this.loadingBankId = null;
     },
 
-    goDoQuiz() {
+    goDoQuiz(options = {}) {
+      if (options.resume === true && getRecoverableQuizProgress()) {
+        safeNavigateTo('/pages/practice-sub/do-quiz?resume=true');
+        return;
+      }
       this.refreshBankStatus?.();
       if (!this.hasBank) {
         toast.info('请先加载题库');
@@ -619,6 +667,15 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.page [role='button'] {
+  min-height: 44px;
+  touch-action: manipulation;
+}
+.page [role='button']:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
 .demo-entry {
   display: flex;
   flex-direction: column;
@@ -628,23 +685,24 @@ export default {
 .demo-start {
   width: 100%;
   margin: 0;
-  border-radius: 20rpx;
-  background: var(--accent-color, #2563eb);
-  color: #fff;
-  font-size: 28rpx;
+
+  font-size: 12px;
+  font-size: max(12px, 28rpx);
   font-weight: 600;
+
+  @include em-mobile-primary-action;
 }
 
-$primary: #9fe870;
-$primary-light: #eafbe2;
-$primary-deep: #163300;
-$action-green: #18a957;
-$bg: #f5f7f1;
-$card-bg: #ffffff;
+$primary: #c9b1ee;
+$primary-light: #eee8f7;
+$primary-deep: #332842;
+$action-green: #785bbc;
+$bg: #eae8fc;
+$card-bg: var(--yozi-reading);
 $text-main: #1a1d26;
-$text-sub: #5f6672;
-$text-weak: #9ca3af;
-$radius-lg: 24rpx;
+$text-sub: #62576d;
+$text-weak: #6c6176;
+$radius-lg: 24px;
 $radius-sm: 12rpx;
 $spacing-page: 32rpx;
 $spacing-card: 32rpx;
@@ -709,7 +767,8 @@ $spacing-section: 24rpx;
   z-index: 1;
   display: block;
   color: rgba(255, 255, 255, 0.6);
-  font-size: 18rpx;
+  font-size: 12px;
+  font-size: max(12px, 18rpx);
   font-weight: 900;
   letter-spacing: 0;
 }
@@ -732,7 +791,8 @@ $spacing-section: 24rpx;
   max-width: 590rpx;
   margin-top: 18rpx;
   color: rgba(255, 255, 255, 0.68);
-  font-size: 26rpx;
+  font-size: 12px;
+  font-size: max(12px, 26rpx);
   line-height: 1.55;
 }
 
@@ -768,7 +828,8 @@ $spacing-section: 24rpx;
   display: block;
   margin-top: 8rpx;
   color: rgba(255, 255, 255, 0.54);
-  font-size: 21rpx;
+  font-size: 12px;
+  font-size: max(12px, 21rpx);
   font-weight: 600;
 }
 
@@ -788,13 +849,13 @@ $spacing-section: 24rpx;
   min-height: 72rpx;
   padding: 22rpx 32rpx;
   border-radius: 999rpx;
-  font-size: 27rpx;
+  font-size: 12px;
+  font-size: max(12px, 27rpx);
   font-weight: 900;
 }
 
 .practice-command.primary {
   @include em-mobile-primary-action;
-  color: $primary-deep;
 }
 
 .practice-command.secondary {
@@ -829,14 +890,16 @@ $spacing-section: 24rpx;
 
 .section-meta {
   color: $text-weak;
-  font-size: 23rpx;
+  font-size: 12px;
+  font-size: max(12px, 23rpx);
 }
 
 .section-hint {
   display: block;
   margin-top: 6rpx;
   color: $text-weak;
-  font-size: 22rpx;
+  font-size: 12px;
+  font-size: max(12px, 22rpx);
 }
 
 .subject-tabs {
@@ -855,7 +918,8 @@ $spacing-section: 24rpx;
   min-height: 72rpx;
   border-radius: 22rpx;
   color: $text-sub;
-  font-size: 26rpx;
+  font-size: 12px;
+  font-size: max(12px, 26rpx);
   font-weight: 750;
 }
 
@@ -869,10 +933,14 @@ $spacing-section: 24rpx;
   box-sizing: border-box;
   margin-bottom: 18rpx;
   padding: 26rpx;
-  border-radius: 28rpx;
-  background: #ffffff;
-  border: 1rpx solid rgba(15, 23, 42, 0.06);
-  box-shadow: 0 10rpx 28rpx rgba(15, 23, 42, 0.06);
+
+  border-radius: 24px;
+
+  background: var(--yozi-reading);
+
+  border: 0;
+
+  box-shadow: var(--yozi-shadow);
 }
 
 .readiness-head {
@@ -885,7 +953,8 @@ $spacing-section: 24rpx;
 .readiness-kicker {
   display: block;
   color: $text-weak;
-  font-size: 19rpx;
+  font-size: 12px;
+  font-size: max(12px, 19rpx);
   font-weight: 900;
 }
 
@@ -918,7 +987,7 @@ $spacing-section: 24rpx;
 .readiness-progress-fill {
   height: 100%;
   border-radius: inherit;
-  background: linear-gradient(90deg, #9fe870 0%, #75ddff 100%);
+  background: var(--yozi-button);
   transition: width 0.28s ease;
 }
 
@@ -940,7 +1009,8 @@ $spacing-section: 24rpx;
   @include em-mobile-number;
   display: block;
   color: $text-main;
-  font-size: 28rpx;
+  font-size: 12px;
+  font-size: max(12px, 28rpx);
   font-weight: 850;
   line-height: 1;
 }
@@ -949,7 +1019,8 @@ $spacing-section: 24rpx;
   display: block;
   margin-top: 7rpx;
   color: $text-weak;
-  font-size: 20rpx;
+  font-size: 12px;
+  font-size: max(12px, 20rpx);
   font-weight: 750;
 }
 
@@ -961,7 +1032,8 @@ $spacing-section: 24rpx;
 
 .readiness-track-line text {
   color: $text-sub;
-  font-size: 23rpx;
+  font-size: 12px;
+  font-size: max(12px, 23rpx);
   font-weight: 700;
   line-height: 1.45;
 }
@@ -979,27 +1051,36 @@ $spacing-section: 24rpx;
   min-width: 212rpx;
   margin-right: 14rpx;
   padding: 18rpx 20rpx;
-  border-radius: 24rpx;
-  background: #ffffff;
-  border: 1rpx solid rgba(0, 0, 0, 0.06);
-  box-shadow: 0 8rpx 22rpx rgba(15, 23, 42, 0.06);
+
+  border-radius: 12px;
+
+  background: var(--yozi-glass);
+
+  border: 0;
+
+  box-shadow: var(--yozi-control-shadow);
+
+  min-height: 44px;
 }
 
 .track-pill.active {
-  background: #1d1d1f;
-  box-shadow: 0 14rpx 32rpx rgba(17, 24, 39, 0.16);
+  background: var(--yozi-button);
+
+  box-shadow: var(--yozi-button-shadow);
 }
 
 .track-code {
   color: $text-weak;
-  font-size: 21rpx;
+  font-size: 12px;
+  font-size: max(12px, 21rpx);
   font-weight: 900;
 }
 
 .track-label {
   margin-left: 10rpx;
   color: $text-main;
-  font-size: 25rpx;
+  font-size: 12px;
+  font-size: max(12px, 25rpx);
   font-weight: 850;
 }
 
@@ -1008,8 +1089,9 @@ $spacing-section: 24rpx;
   padding: 4rpx 10rpx;
   border-radius: 999rpx;
   background: rgba(31, 122, 77, 0.1);
-  color: $primary;
-  font-size: 20rpx;
+  color: var(--primary);
+  font-size: 12px;
+  font-size: max(12px, 20rpx);
   font-weight: 900;
 }
 
@@ -1030,29 +1112,38 @@ $spacing-section: 24rpx;
 }
 
 .mode-chip {
+  min-height: 44px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
   margin-right: 12rpx;
   margin-bottom: 12rpx;
   padding: 13rpx 18rpx;
   border-radius: 999rpx;
-  background: rgba(20, 32, 23, 0.06);
+  background: var(--muted);
   color: $text-sub;
-  font-size: 23rpx;
+  font-size: 12px;
+  font-size: max(12px, 23rpx);
   font-weight: 700;
 }
 
 .mode-chip.active {
-  background: rgba(31, 122, 77, 0.12);
-  color: $primary;
+  background: var(--bg-active);
+  color: var(--text-main);
 }
 
 .training-plan-card {
   box-sizing: border-box;
   padding: 30rpx 28rpx;
   margin-bottom: 24rpx;
-  border-radius: 28rpx;
-  background: #ffffff;
-  border: 1rpx solid rgba(0, 0, 0, 0.06);
-  box-shadow: 0 10rpx 28rpx rgba(15, 23, 42, 0.06);
+
+  border-radius: 24px;
+
+  background: var(--yozi-reading);
+
+  border: 0;
+
+  box-shadow: var(--yozi-shadow);
 }
 
 .training-plan-head {
@@ -1065,7 +1156,8 @@ $spacing-section: 24rpx;
 .training-kicker {
   display: block;
   color: $text-weak;
-  font-size: 20rpx;
+  font-size: 12px;
+  font-size: max(12px, 20rpx);
   font-weight: 900;
 }
 
@@ -1083,8 +1175,9 @@ $spacing-section: 24rpx;
   padding: 8rpx 14rpx;
   border-radius: 999rpx;
   background: rgba(31, 122, 77, 0.1);
-  color: $primary;
-  font-size: 22rpx;
+  color: var(--primary);
+  font-size: 12px;
+  font-size: max(12px, 22rpx);
   font-weight: 900;
 }
 
@@ -1098,7 +1191,8 @@ $spacing-section: 24rpx;
 
 .training-status,
 .training-meta {
-  font-size: 22rpx;
+  font-size: 12px;
+  font-size: max(12px, 22rpx);
   font-weight: 760;
 }
 
@@ -1111,7 +1205,7 @@ $spacing-section: 24rpx;
 
 .training-status.status-ready {
   background: rgba(31, 122, 77, 0.1);
-  color: $primary;
+  color: var(--primary);
 }
 
 .training-status.status-pending {
@@ -1165,14 +1259,16 @@ $spacing-section: 24rpx;
 
 .training-day-label {
   color: $text-weak;
-  font-size: 18rpx;
+  font-size: 12px;
+  font-size: max(12px, 18rpx);
   font-weight: 800;
 }
 
 .training-day-track {
   margin-top: 5rpx;
   color: $text-main;
-  font-size: 19rpx;
+  font-size: 12px;
+  font-size: max(12px, 19rpx);
   font-weight: 850;
 }
 
@@ -1218,30 +1314,18 @@ $spacing-section: 24rpx;
   border-radius: 999rpx;
   background: rgba(31, 122, 77, 0.1);
   color: #1f7a4d;
-  font-size: 20rpx;
+  font-size: 12px;
+  font-size: max(12px, 20rpx);
   font-weight: 850;
 }
 
 .bank-track {
   color: $text-weak;
-  font-size: 18rpx;
+  font-size: 12px;
+  font-size: max(12px, 18rpx);
   font-weight: 900;
   letter-spacing: 0;
   margin-bottom: 8rpx;
-}
-
-.bank-desc {
-  font-size: 24rpx;
-  color: $text-sub;
-  margin-top: 6rpx;
-}
-
-.bank-caution {
-  display: block;
-  margin-top: 8rpx;
-  color: $text-weak;
-  font-size: 22rpx;
-  line-height: 1.45;
 }
 
 .bank-btn {
@@ -1252,7 +1336,7 @@ $spacing-section: 24rpx;
 }
 
 .detail-btn {
-  background: #1d1d1f;
+  @include em-mobile-primary-action;
 }
 
 .continue-btn {
@@ -1260,9 +1344,11 @@ $spacing-section: 24rpx;
 }
 
 .bank-btn-text {
-  font-size: 26rpx;
+  font-size: 12px;
+  font-size: max(12px, 26rpx);
   font-weight: 500;
-  color: #ffffff;
+
+  color: var(--yozi-button-ink);
 }
 
 .continue-btn .bank-btn-text {
@@ -1271,6 +1357,14 @@ $spacing-section: 24rpx;
 
 .empty-track-card {
   @include em-mobile-glass-surface($radius-lg, 32rpx);
+
+  background: var(--yozi-reading);
+
+  border: 0;
+
+  border-radius: 24px;
+
+  box-shadow: var(--yozi-shadow);
 }
 
 .empty-track-title {
@@ -1284,7 +1378,8 @@ $spacing-section: 24rpx;
   display: block;
   margin-top: 10rpx;
   color: $text-sub;
-  font-size: 24rpx;
+  font-size: 12px;
+  font-size: max(12px, 24rpx);
   line-height: 1.5;
 }
 
@@ -1295,10 +1390,12 @@ $spacing-section: 24rpx;
   justify-content: center;
   min-height: 72rpx;
   margin-top: 22rpx;
-  border-radius: 18rpx;
-  background: #1d1d1f;
-  font-size: 25rpx;
+
+  font-size: 12px;
+  font-size: max(12px, 25rpx);
   font-weight: 850;
+
+  @include em-mobile-primary-action;
 }
 
 .empty-track-action text {
@@ -1341,7 +1438,8 @@ $spacing-section: 24rpx;
 
 .progress-label {
   margin-left: 16rpx;
-  font-size: 24rpx;
+  font-size: 12px;
+  font-size: max(12px, 24rpx);
   color: $text-sub;
   white-space: nowrap;
 }
@@ -1362,9 +1460,15 @@ $spacing-section: 24rpx;
 }
 
 .secondary-btn {
-  background: #ffffff;
-  border: 1rpx solid rgba(0, 0, 0, 0.06);
-  box-shadow: none;
+  background: var(--yozi-glass);
+
+  border: 0;
+
+  box-shadow: var(--yozi-control-shadow);
+
+  border-radius: 12px;
+
+  min-height: 44px;
 }
 
 .action-btn-text {
@@ -1384,16 +1488,15 @@ $spacing-section: 24rpx;
 
 /* ==================== Dark Theme Guardrail ==================== */
 .page.dark-mode {
-  color: #f5f7fb;
-  background:
-    radial-gradient(circle at 16% 8%, rgba(0, 224, 255, 0.1) 0, rgba(0, 224, 255, 0) 32%),
-    radial-gradient(circle at 82% 16%, rgba(155, 81, 224, 0.12) 0, rgba(155, 81, 224, 0) 34%),
-    linear-gradient(180deg, #11141c 0%, #1a1c23 58%, #12151d 100%);
+  color: var(--text-main);
+
+  background: var(--yozi-background);
 }
 
 .dark-mode .nav-bar {
-  background: rgba(17, 20, 28, 0.82);
-  box-shadow: 0 1rpx 0 rgba(255, 255, 255, 0.08);
+  background: var(--yozi-floating);
+
+  box-shadow: var(--yozi-shadow);
 }
 
 .dark-mode .nav-title,
@@ -1419,9 +1522,12 @@ $spacing-section: 24rpx;
 .dark-mode .track-pill,
 .dark-mode .empty-track-card,
 .dark-mode .secondary-btn {
-  background: rgba(34, 37, 45, 0.82);
+  background: var(--yozi-reading);
   border-color: rgba(255, 255, 255, 0.08);
-  box-shadow: 0 18rpx 48rpx rgba(0, 0, 0, 0.32);
+
+  box-shadow: var(--yozi-shadow);
+
+  border: 0;
 }
 
 .dark-mode .subject-tabs,
@@ -1442,8 +1548,6 @@ $spacing-section: 24rpx;
 .dark-mode .readiness-kicker,
 .dark-mode .readiness-label,
 .dark-mode .readiness-track-line text,
-.dark-mode .bank-desc,
-.dark-mode .bank-caution,
 .dark-mode .empty-track-desc,
 .dark-mode .progress-label {
   color: rgba(245, 247, 251, 0.62);
@@ -1460,8 +1564,9 @@ $spacing-section: 24rpx;
 .dark-mode .practice-command.primary,
 .dark-mode .detail-btn,
 .dark-mode .empty-track-action {
-  background: linear-gradient(135deg, #00e0ff 0%, #3f8cff 100%);
-  box-shadow: 0 16rpx 38rpx rgba(0, 224, 255, 0.22);
+  background: var(--yozi-button);
+
+  box-shadow: var(--yozi-button-shadow);
 }
 
 .dark-mode .continue-btn {

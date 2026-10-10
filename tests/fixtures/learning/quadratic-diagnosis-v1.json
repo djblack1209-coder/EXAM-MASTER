@@ -1,0 +1,386 @@
+{
+  "version": "prerequisite-quadratic-inequality-v1",
+  "provenance": "人工固定原答差异、候选小题与精确答案，区间/并集/平方/零点逐项手算；不采用生成器或模型输出作为期望。",
+  "claims": "只覆盖有界精确二次原答的候选先修，不证明实际认知错因、教学因果、主观语义或长期掌握；解析不明确、未校对与超限必须拒绝诊断，旧合同保持。",
+  "cases": [
+    {
+      "id": "open-middle",
+      "goal": "解二次不等式 x^2-4<0",
+      "answer": "[-2,2]",
+      "status": "reliable",
+      "outcome": "wrong",
+      "topic": "quadratic-boundary",
+      "prompt": "在实数范围内解不等式 x-1>0，写出完整解集。",
+      "diagnosticAnswer": "x>1"
+    },
+    {
+      "id": "closed-middle-negative",
+      "goal": "解二次不等式 -x^2+4>=0",
+      "answer": "(-2,2]",
+      "status": "reliable",
+      "outcome": "wrong",
+      "topic": "quadratic-boundary",
+      "prompt": "在实数范围内解不等式 x-1>=0，写出完整解集。",
+      "diagnosticAnswer": "x>=1"
+    },
+    {
+      "id": "open-outside",
+      "goal": "解二次不等式 x^2-4>0",
+      "answer": "(-∞,-2]∪[2,∞)",
+      "status": "reliable",
+      "outcome": "wrong",
+      "topic": "quadratic-boundary",
+      "prompt": "在实数范围内解不等式 x-1>0，写出完整解集。",
+      "diagnosticAnswer": "x>1"
+    },
+    {
+      "id": "closed-outside",
+      "goal": "解二次不等式 x^2-4>=0",
+      "answer": "(-∞,-2)∪(2,∞)",
+      "status": "reliable",
+      "outcome": "wrong",
+      "topic": "quadratic-boundary",
+      "prompt": "在实数范围内解不等式 x-1>=0，写出完整解集。",
+      "diagnosticAnswer": "x>=1"
+    },
+    {
+      "id": "rational-endpoint",
+      "goal": "解二次不等式 (x-1/3)*(x-2/3)<=0",
+      "answer": "(1/3,2/3)",
+      "status": "reliable",
+      "outcome": "wrong",
+      "topic": "quadratic-boundary",
+      "prompt": "在实数范围内解不等式 x-1>=0，写出完整解集。",
+      "diagnosticAnswer": "[1,∞)"
+    },
+    {
+      "id": "missing-left",
+      "goal": "解二次不等式 x^2-4>=0",
+      "answer": "x>=2",
+      "status": "reliable",
+      "outcome": "wrong",
+      "topic": "quadratic-completeness",
+      "prompt": "在实数范围内解二次不等式 x^2-1>=0，写出完整解集。",
+      "diagnosticAnswer": "(-∞,-1]∪[1,∞)"
+    },
+    {
+      "id": "missing-right",
+      "goal": "解二次不等式 x^2-4>0",
+      "answer": "x<-2",
+      "status": "reliable",
+      "outcome": "wrong",
+      "topic": "quadratic-completeness",
+      "prompt": "在实数范围内解二次不等式 x^2-1>0，写出完整解集。",
+      "diagnosticAnswer": "(-∞,-1)∪(1,∞)"
+    },
+    {
+      "id": "missing-and-boundary",
+      "goal": "解二次不等式 x^2-4>=0",
+      "answer": "x>2",
+      "status": "reliable",
+      "outcome": "wrong",
+      "topic": "quadratic-completeness",
+      "prompt": "在实数范围内解二次不等式 x^2-1>=0，写出完整解集。",
+      "diagnosticAnswer": "x<=-1∪x>=1"
+    },
+    {
+      "id": "inside-sign",
+      "goal": "解二次不等式 x^2-4<0",
+      "answer": "(-∞,-2)∪(2,∞)",
+      "status": "reliable",
+      "outcome": "wrong",
+      "topic": "quadratic-sign-regions",
+      "prompt": "在实数范围内解二次不等式 x^2-1<0，写出完整解集。",
+      "diagnosticAnswer": "(-1,1)"
+    },
+    {
+      "id": "outside-negative-sign",
+      "goal": "解二次不等式 -x^2+4<0",
+      "answer": "[-2,2]",
+      "status": "reliable",
+      "outcome": "wrong",
+      "topic": "quadratic-sign-regions",
+      "prompt": "在实数范围内解二次不等式 x^2-1>0，写出完整解集。",
+      "diagnosticAnswer": "x<-1∪x>1"
+    },
+    {
+      "id": "closed-outside-sign",
+      "goal": "解二次不等式 (x-2)*(x-4)>=0",
+      "answer": "[2,4]",
+      "status": "reliable",
+      "outcome": "wrong",
+      "topic": "quadratic-sign-regions",
+      "prompt": "在实数范围内解二次不等式 x^2-1>=0，写出完整解集。",
+      "diagnosticAnswer": "(-∞,-1]∪[1,∞)"
+    },
+    {
+      "id": "middle-zero-values",
+      "goal": "解二次不等式 x^2-4<0",
+      "answer": "(-3,3)",
+      "status": "reliable",
+      "outcome": "wrong",
+      "topic": "quadratic-zeros",
+      "prompt": "在实数范围内解方程 x^2-1=0，写出全部精确解。",
+      "diagnosticAnswer": "x=-1,1"
+    },
+    {
+      "id": "outside-zero-values",
+      "goal": "解二次不等式 x^2-4>0",
+      "answer": "(-∞,-3)∪(3,∞)",
+      "status": "reliable",
+      "outcome": "wrong",
+      "topic": "quadratic-zeros",
+      "prompt": "在实数范围内解方程 x^2-1=0，写出全部精确解。",
+      "diagnosticAnswer": "{-1,1}"
+    },
+    {
+      "id": "decimal-zero-values",
+      "goal": "解二次不等式 x^2-0.25<=0",
+      "answer": "[-0.6,0.6]",
+      "status": "reliable",
+      "outcome": "wrong",
+      "topic": "quadratic-zeros",
+      "prompt": "在实数范围内解方程 x^2-1=0，写出全部精确解。",
+      "diagnosticAnswer": "-1,1"
+    },
+    {
+      "id": "roots-only",
+      "goal": "解二次不等式 x^2-4>0",
+      "answer": "[-2,-2]∪[2,2]",
+      "status": "reliable",
+      "outcome": "wrong",
+      "topic": "quadratic-solution-set",
+      "prompt": "在实数范围内解二次不等式 x^2-1>0，写出完整解集。",
+      "diagnosticAnswer": "x<-1∪x>1"
+    },
+    {
+      "id": "all-instead-middle",
+      "goal": "解二次不等式 x^2-4<=0",
+      "answer": "任意实数",
+      "status": "reliable",
+      "outcome": "wrong",
+      "topic": "quadratic-solution-set",
+      "prompt": "在实数范围内解二次不等式 x^2-1<=0，写出完整解集。",
+      "diagnosticAnswer": "[-1,1]"
+    },
+    {
+      "id": "empty-instead-middle",
+      "goal": "解二次不等式 x^2-4<0",
+      "answer": "无解",
+      "status": "reliable",
+      "outcome": "wrong",
+      "topic": "quadratic-solution-set",
+      "prompt": "在实数范围内解二次不等式 x^2-1<0，写出完整解集。",
+      "diagnosticAnswer": "-1<x<1"
+    },
+    {
+      "id": "multiple-differences",
+      "goal": "解二次不等式 x^2-4>0",
+      "answer": "x>3",
+      "status": "reliable",
+      "outcome": "wrong",
+      "topic": "quadratic-solution-set",
+      "prompt": "在实数范围内解二次不等式 x^2-1>0，写出完整解集。",
+      "diagnosticAnswer": "(-∞,-1)∪(1,∞)"
+    },
+    {
+      "id": "repeated-single-point",
+      "goal": "解二次不等式 (x-3)^2<=0",
+      "answer": "x<=3",
+      "status": "reliable",
+      "outcome": "wrong",
+      "topic": "quadratic-repeated-root",
+      "prompt": "在实数范围内解二次不等式 (x-1)^2<=0，写出完整解集。",
+      "diagnosticAnswer": "[1,1]"
+    },
+    {
+      "id": "repeated-complement",
+      "goal": "解二次不等式 -(x+2)^2<0",
+      "answer": "[-2,-2]",
+      "status": "reliable",
+      "outcome": "wrong",
+      "topic": "quadratic-repeated-root",
+      "prompt": "在实数范围内解二次不等式 (x-1)^2>0，写出完整解集。",
+      "diagnosticAnswer": "(-∞,1)∪(1,∞)"
+    },
+    {
+      "id": "repeated-all",
+      "goal": "解二次不等式 -(x+2)^2<=0",
+      "answer": "无解",
+      "status": "reliable",
+      "outcome": "wrong",
+      "topic": "quadratic-repeated-root",
+      "prompt": "在实数范围内解二次不等式 (x-1)^2>=0，写出完整解集。",
+      "diagnosticAnswer": "任意实数"
+    },
+    {
+      "id": "repeated-empty",
+      "goal": "解二次不等式 (x-5)^2<0",
+      "answer": "(-∞,5)∪(5,∞)",
+      "status": "reliable",
+      "outcome": "wrong",
+      "topic": "quadratic-repeated-root",
+      "prompt": "在实数范围内解二次不等式 (x-1)^2<0，写出完整解集。",
+      "diagnosticAnswer": "无解"
+    },
+    {
+      "id": "repeated-missing-point-exclusion",
+      "goal": "解二次不等式 (x+2)^2>0",
+      "answer": "任意实数",
+      "status": "reliable",
+      "outcome": "wrong",
+      "topic": "quadratic-repeated-root",
+      "prompt": "在实数范围内解二次不等式 (x-1)^2>0，写出完整解集。",
+      "diagnosticAnswer": "(-∞,1)∪(1,∞)"
+    },
+    {
+      "id": "repeated-missing-half",
+      "goal": "解二次不等式 (x-2)^2>0",
+      "answer": "x>2",
+      "status": "reliable",
+      "outcome": "wrong",
+      "topic": "quadratic-repeated-root",
+      "prompt": "在实数范围内解二次不等式 (x-1)^2>0，写出完整解集。",
+      "diagnosticAnswer": "(-∞,1)∪(1,∞)"
+    },
+    {
+      "id": "no-root-all",
+      "goal": "解二次不等式 x^2+1>=0",
+      "answer": "无解",
+      "status": "reliable",
+      "outcome": "wrong",
+      "topic": "quadratic-no-real-root",
+      "prompt": "在实数范围内解二次不等式 x^2+1>0，写出完整解集。",
+      "diagnosticAnswer": "任意实数"
+    },
+    {
+      "id": "no-root-empty-negative",
+      "goal": "解二次不等式 -x^2-1>=0",
+      "answer": "任意实数",
+      "status": "reliable",
+      "outcome": "wrong",
+      "topic": "quadratic-no-real-root",
+      "prompt": "在实数范围内解二次不等式 x^2+1<0，写出完整解集。",
+      "diagnosticAnswer": "无解"
+    },
+    {
+      "id": "no-root-halfline",
+      "goal": "解二次不等式 x^2+9<0",
+      "answer": "x>0",
+      "status": "reliable",
+      "outcome": "wrong",
+      "topic": "quadratic-no-real-root",
+      "prompt": "在实数范围内解二次不等式 x^2+1<0，写出完整解集。",
+      "diagnosticAnswer": "无解"
+    },
+    {
+      "id": "correct-closed",
+      "goal": "解二次不等式 x^2-4>=0",
+      "answer": "x<=-2∪x>=2",
+      "status": "reliable",
+      "outcome": "correct",
+      "topic": null
+    },
+    {
+      "id": "correct-merged",
+      "goal": "解二次不等式 x^2-4>=0",
+      "answer": "(-∞,-2)∪[-2,-2]∪[2,∞)",
+      "status": "reliable",
+      "outcome": "correct",
+      "topic": null
+    },
+    {
+      "id": "correct-repeated",
+      "goal": "解二次不等式 (x-2)^2<=0",
+      "answer": "[2,2]",
+      "status": "reliable",
+      "outcome": "correct",
+      "topic": null
+    },
+    {
+      "id": "malformed-answer",
+      "goal": "解二次不等式 x^2-4<0",
+      "answer": "(-2,2",
+      "status": "pending",
+      "outcome": null,
+      "topic": null
+    },
+    {
+      "id": "uncertain-answer",
+      "goal": "解二次不等式 x^2-4<0",
+      "answer": "可能(-2,2)",
+      "status": "pending",
+      "outcome": null,
+      "topic": null
+    },
+    {
+      "id": "answer-injection",
+      "goal": "解二次不等式 x^2-4<0",
+      "answer": "(-2,2);globalThis.process.exit()",
+      "status": "pending",
+      "outcome": null,
+      "topic": null
+    },
+    {
+      "id": "answer-resource-limit",
+      "goal": "解二次不等式 x^2-4<0",
+      "answer": "[0,0]∪[1,1]∪[2,2]∪[3,3]∪[4,4]",
+      "status": "pending",
+      "outcome": null,
+      "topic": null
+    },
+    {
+      "id": "irrational-zeros",
+      "goal": "解二次不等式 x^2<2",
+      "answer": "(-1.414,1.414)",
+      "status": "pending",
+      "outcome": null,
+      "topic": null
+    },
+    {
+      "id": "original-domain-hole",
+      "goal": "解二次不等式 (x^2-4)/(x-2)>0",
+      "answer": "x>-2",
+      "status": "pending",
+      "outcome": null,
+      "topic": null
+    },
+    {
+      "id": "higher-degree",
+      "goal": "解二次不等式 x^3-4<0",
+      "answer": "x<2",
+      "status": "pending",
+      "outcome": null,
+      "topic": null
+    },
+    {
+      "id": "old-quadratic-pending",
+      "goal": "解不等式 x^2-4<0",
+      "answer": "(-2,2)",
+      "status": "pending",
+      "outcome": null,
+      "topic": null
+    },
+    {
+      "id": "linear-contract-rejected",
+      "goal": "解不等式 x-2>0",
+      "answer": "x<2",
+      "status": "reliable",
+      "outcome": "wrong",
+      "topic": null
+    },
+    {
+      "id": "critical-input-uncertain",
+      "goal": "解二次不等式 x^2-4<0",
+      "answer": "无解",
+      "status": "pending",
+      "outcome": null,
+      "topic": null,
+      "uncertainties": [
+        {
+          "resolved": false
+        }
+      ]
+    }
+  ]
+}

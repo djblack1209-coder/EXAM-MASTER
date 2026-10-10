@@ -1,0 +1,14 @@
+{
+  "name": "@wenli/file-type-compat",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Jimp 构建工具 fromBuffer 与受维护 file-type ESM 的窄接口适配",
+  "main": "index.cjs",
+  "license": "UNLICENSED",
+  "engines": {
+    "node": ">=22.22.3"
+  },
+  "dependencies": {
+    "file-type-modern": "npm:file-type@21.3.4"
+  }
+}

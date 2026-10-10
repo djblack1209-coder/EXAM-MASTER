@@ -13,7 +13,7 @@
 
 import cloud from '@lafjs/cloud';
 import crypto from 'crypto';
-import { createLogger } from './_shared/api-response';
+import { createLogger } from './_shared/api-response.js';
 
 const db = cloud.database();
 const _ = db.command;
@@ -50,6 +50,9 @@ const USER_COLLECTIONS = [
   // AI 相关
   { name: 'ai_friend_memory', field: 'user_id' },
   { name: 'ai_usage_logs', field: 'userId' },
+  { name: 'learning_accounts', field: 'user_id' },
+  { name: 'learning_model_keys', field: 'user_id' },
+  { name: 'learning_states', field: 'user_id' },
 
   // 邀请（invites 使用 inviterId/inviteeId，需特殊处理，见下方）
   { name: 'invite_stats', field: 'userId' },

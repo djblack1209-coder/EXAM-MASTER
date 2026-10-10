@@ -1,207 +1,636 @@
-# Styling System
+---
 
-> Auto-generated: 2026-03-22
+## 2026-10-08：双线执行的页面与状态设计清单
 
-## Architecture Overview
+按调研报告，设计先形成完整页面、组件与状态规范，再实施批量界面；功能合同修复所需的“待核对”等短反馈可以先沿现有组件落地。网页 Playful Idea 与桌面 Future 3D Portfolio 仅在首页场景保留差异，学习业务控件共享紫蓝品牌、玻璃导航、实色长正文、立体按钮、BaseIcon及现有字体体系。未经原型校准，不为单页另外猜字体或材质。
 
-EXAM-MASTER uses a layered styling system:
+| 首批页面 | 必须呈现的状态与交互 |
+| --- | --- |
+| 登录 | 未填写、可提交、处理中、失败及重试；保留隐私和授权信息 |
+| 学习首页 | 初次进入、空记录、已有学习、恢复入口 |
+| 连续对话 | 草稿、发送、流式中、停止、已停止、明确恢复；迟到结果不改变停止状态 |
+| 选择题 | 未选、可变更草稿、明确提交、原答已保存、待核对、参考反馈、提交失败和原编号重试 |
+| 阅读/写作 | 长正文、引用/页码、选段、草稿、原答、反馈；不以字数或语法提示充当可靠语义成绩 |
+| 资料 | 选择、授权、导入、解析、引用定位、失败恢复、原件不可用与删除确认 |
+| 复习日历 | 空计划、到期、未来禁答、处理中、已完成；自评与判分分开 |
+| 学习记录/导出 | 空记录、筛选、原答与依据、待核对/旧判定、导出、取消、失败与恢复预览 |
 
-```
-Layer 1: CSS Custom Properties (runtime, in App.vue :root)
-Layer 2: SCSS Design Tokens (build-time, auto-injected via Vite)
-Layer 3: Theme Presets (Wise green / Bitget dark)
-Layer 4: Component Scoped Styles (<style lang="scss" scoped>)
-Layer 5: Utility Classes (global in App.vue)
-```
+所有业务控件覆盖正常、悬停、按下、键盘聚焦、禁用、处理中；每组页面覆盖宽/窄屏、浅/深色和减少动态。字体规范需明确中文/英文、标题/正文/题目/公式/数字的继承关系；Logo、字标、吉祥物、应用及小尺寸图标分别校准。沿现有44px触区与2px焦点要求实测，不能以源码声明代替界面验收。
 
-## File Inventory
+选择题回执沿现有 Wot 按钮与结果面板展示短状态：正在同步、仅保存在本机、同步未完成、已同步但判分待核对、保存状态待确认。仅可重试的原账户记录显示“重试同步”；忙碌时不重复请求，声明44px按钮与礼貌播报。实际浅深色、键盘、窄屏和触区仍待当前浏览器可用后核验。
 
-### Core Design System
+历史答题摘要用中性状态显示旧记录和依据不明；旧判对比例单列并说明不代表可靠判分。待核对、自评、旧判定和未知记录不显示当前考试分数环、正确奖励或失分建议，结果入口改为“查看学习记录”。首页/个人中心标为“近期旧判对”；学习详情保留当前 LearningOverview 和历史数量/时长，撤去由旧累计统计生成的能力等级、雷达与AI洞察。布局沿原组件，当前组件行为检查不代替浅深色、窄屏与真实操作验收。
 
-| File           | Path                              | Purpose                                                                                |
-| -------------- | --------------------------------- | -------------------------------------------------------------------------------------- |
-| Design Tokens  | `src/styles/_design-tokens.scss`  | Core SCSS variables (colors, spacing, typography) — auto-injected into every component |
-| Dark Mode Vars | `src/styles/_dark-mode-vars.scss` | `@mixin dark-mode-vars` — all CSS variable overrides for dark mode                     |
+历史分组用“旧标签/条目/可重练”短句，缺失原答或参考显示“未保存”；移除虚构日趋势和由数量推断的严重度。重练按钮只用于完整条目，其余原记录保留。独立旧矩阵组件增加键盘展开/收起、焦点和最小触区声明，但未注册页面；当前浏览器通过的是错题页实际分组入口，完整视觉仍单列。
 
-### Theme Files
+当前这是一份执行清单，关键页面原型与完整视觉校准尚未完成。MotionSites仅作方向参考；独立设计工作区（优先评估Penpot）不进入产品运行依赖，尚未安装或授权。模板原始提示词、源码和素材库保持独立，不纳入公开产物；正式采用时重新核对实际许可与可交付范围。
 
-| File         | Path                         | Purpose                                                                           |
-| ------------ | ---------------------------- | --------------------------------------------------------------------------------- |
-| Wot Theme    | `src/styles/_wot-theme.scss` | wot-design-uni component library theme overrides                                  |
-| Theme Engine | `src/design/theme-engine.js` | Runtime theme switching (JS: `applyTheme()`, `getCurrentTheme()`, `watchTheme()`) |
+## 2026-10-07：精确翻译范围的阅读区域
 
-### Design System Utilities
+本批最后修改的是题面空序及来源门禁，画线区域样式源码保持。先前实色与320px局部实操证据继续有效，深色/减少动态/整体控件、Mac其他题面和设备各自待验。
 
-| File              | Path                                | Purpose                                 |
-| ----------------- | ----------------------------------- | --------------------------------------- |
-| Button Animations | `src/styles/button-animations.scss` | Global button press feedback animations |
+翻译题有targetSegment时，答题页在题干之后呈现完整画线句；使用现有实色--yozi-solid/--foreground阅读色、正常换行、下划线与4px偏移，不增加重复副标题或开发文案。只负责明确待翻译范围，不改判分、翻卡、明确提交或学习事实。页面交互仍沿44px触区、2px聚焦和减少动态合同；当前区域无新增交互。
 
-### Global Styles (App.vue)
+功能与UI/UX继续分开。本次画线区域实测为不透明rgb(240,237,252)，320px局部宽度265px且完整换行，viewport已恢复；深色/减少动态/整体控件和其他设备仍后验。初版沿--card得到透明色，已改用既有--yozi-solid并实际核验；新构建不能代替实际或设备验收。验证窗口尽量右侧，本次用右侧浏览器面板，窗口故障不阻塞独立功能。[实际范围](06-FRONTEND-REFERENCE.md)。
 
-`src/App.vue` contains ~570 lines of global styles including:
+## 2026-10-07：压强复用计算面板，视觉独立验收
 
-- CSS custom property definitions (`:root` and `page`)
-- Dark mode overrides (`@media prefers-color-scheme: dark` + `.dark` class)
-- Apple Glass effects (`.apple-glass`, `.apple-glass-card`, `.apple-group-card`, `.apple-glass-pill`)
-- Utility classes (`.card`, `.glass-card`, `.btn`, `.btn-primary`, `.btn-secondary`)
-- Text color utilities (`.text-main`, `.text-sub`, `.text-primary`, `.text-success`, etc.)
-- Background utilities (`.bg-page`, `.bg-card`)
-- Performance utilities (`.will-change-transform`, `.gpu-accelerated`)
-- Click feedback states (`.clickable:active`, `.card-hover:active`, etc.)
-- Dark mode smooth transitions
-- driver.js onboarding style overrides
+沿Playful Idea/Future 3D Portfolio、紫蓝卡通吉祥物、玻璃控件与实色阅读面；压强复用现有density-practice面板，按当前合同切换标题、输入和“单位出处”，不另建重复通用组件。Wot Design Uni 1.14.0、uni-app、BaseIcon/Lucide、Clay与DM Sans保持；短错误恢复、待核对、物理前提和出处保留。
 
-## Color System
+既有44px按钮、2px聚焦、无新增动态和减少动态回退保留。不可用项同时disabled/aria-disabled、tabindex=-1，方法按语义来源监听，等值题目刷新保持、实际切题撤去。双端主要功能、Mac Tab/Return与停止辅助状态已验；本单元实际尺寸、浅深/窄屏/减少动态和完整视觉仍独立待验。
 
-### Light Mode (Default - Wise Green)
+按客户指示功能与UI/UX分开，窗口尽量贴桌面右侧，左侧留给其他App。本轮系统Right菜单已执行，1602×1428深色局部可读；精确位置/几何未测，不能据此声称全部视觉通过。窗口问题只保留对应待办，继续功能工作。[实际范围](06-FRONTEND-REFERENCE.md)、[完整矩阵](13-DEVELOPMENT-PLAN.md)。
 
-| Variable               | Value     | Usage                         |
-| ---------------------- | --------- | ----------------------------- |
-| `--background`         | `#b8eb89` | Page background (fresh green) |
-| `--foreground`         | `#10281a` | Main text (dark green-black)  |
-| `--card`               | `#eaf9d5` | Card background (light green) |
-| `--primary`            | `#0f5f34` | Brand color (deep green)      |
-| `--primary-foreground` | `#ffffff` | Brand text (white)            |
-| `--muted`              | `#d0ecad` | Muted background              |
-| `--muted-foreground`   | `#35533f` | Muted text                    |
-| `--border`             | `#98cd6f` | Border color (grass green)    |
-| `--success`            | `#10b981` | Success state                 |
-| `--warning`            | `#f59e0b` | Warning state                 |
-| `--danger`             | `#ef4444` | Error/danger state            |
-| `--info`               | `#3b82f6` | Info state                    |
+## 2026-10-07：密度功能收口，视觉测量单列
 
-### Dark Mode
+按客户指示，功能开发与UI/UX尽量分开；窗口问题保留对应待办，优先继续独立功能。可操作的任务窗口尽量贴桌面右侧，本轮已使用系统Right菜单；当前原生捕获仅缩略视图，精确位置/几何未验，不盲目拖动或反复重启。
 
-Applied via `@mixin dark-mode-vars` in `_dark-mode-vars.scss`:
+密度面板复用既有紫蓝、玻璃控件、实色阅读面、Clay/DM Sans、Wot Design Uni 1.14.0和BaseIcon/Lucide体系。按钮声明至少44px、2px聚焦，无新增动态；不可用时同时声明disabled/aria-disabled并退出Tab序列，沿页面既有键盘绑定。提示保存后等值题目刷新不清展示，切题/版本/条件/隐藏/忙碌/停止才清理；短错误恢复与NIST出处保留。
 
-- Triggered by `@media (prefers-color-scheme: dark)` or `.dark` / `.dark-mode` class
-- Inverts to dark backgrounds (`#0b0b0f`, `#161622`) with muted color palette
-- Images get `opacity: 0.9; filter: brightness(0.9)` treatment
+最终双端功能与正常恢复成立，Mac实际Tab/Enter和停止辅助状态成立；密度最终浅深/窄屏/减少动态、44px/2px精确测量与完整原生视觉/其他设备另验，不能以源码声明替代实际测量。Playful Idea/Future 3D Portfolio原布局与基础合同不变，UI/UX后续补齐。[实操](06-FRONTEND-REFERENCE.md)、[矩阵](13-DEVELOPMENT-PLAN.md)。
 
-## Design Token System
+## 2026-10-07：功能与视觉分别推进
 
-### Spacing Scale
+按客户最新指示，先完成独立功能、后端与回归，UI/UX可后续补齐或修正；窗口故障仅保留对应界面/设备待验，不阻塞其他功能。可操作的开发/验证窗口尽量贴桌面右侧对齐，左侧留给客户切换App。品牌、既有Playful/Future与组件体系仍作为后续补验依据，44px/2px、减少动态、必要隐私/恢复/待核对及明确事实写入不移除。[完整矩阵](13-DEVELOPMENT-PLAN.md)。
 
-| Token           | Value |
-| --------------- | ----- |
-| `--spacing-xs`  | 4px   |
-| `--spacing-sm`  | 8px   |
-| `--spacing-md`  | 16px  |
-| `--spacing-lg`  | 20px  |
-| `--spacing-xl`  | 24px  |
-| `--spacing-2xl` | 32px  |
-| `--spacing-3xl` | 40px  |
+## 2026-10-07：英文全文沿现有阅读面与段落批注
 
-### Border Radius Scale
+公开参考沿现有实色阅读面、来源链接和短批注，7小节/8段正文保留段落与标题；目录只显示篇目，“读正文全文”表示明确阅读，未将页面配图或导航称全文。批注定位第1/3/8段，旧参考仍按原句定位。Playful/Future、紫蓝吉祥物、玻璃控件、Clay/DM Sans及Wot1.14体系保持，没有新组件库、依赖或动画。
 
-| Token           | Value  |
-| --------------- | ------ |
-| `--radius-xs`   | 4px    |
-| `--radius-sm`   | 8px    |
-| `--radius-md`   | 16px   |
-| `--radius-lg`   | 24px   |
-| `--radius-xl`   | 32px   |
-| `--radius-full` | 9999px |
+H5当前 `index-Iq_scx1s.js` 的320px浅深实测页面/滚动宽均320px，42可见按钮宽高均至少44px；篇目按钮实际键盘聚焦2px solid，减少动态时按钮动画/过渡0s。临时视口与媒体模拟已撤销。Mac新正文窗口观察失败，未借H5结果推断桌面精确几何、窄窗、系统减少动态或真机。[实际范围与画面](06-FRONTEND-REFERENCE.md)。
 
-### Shadow Scale
+## 2026-10-07：资料状态沿原短反馈，当前窄屏实测
 
-| Token         | Value                             |
-| ------------- | --------------------------------- |
-| `--shadow-sm` | `0 1px 3px rgba(17,17,26,0.04)`   |
-| `--shadow-md` | `0 4px 14px rgba(17,17,26,0.07)`  |
-| `--shadow-lg` | `0 10px 24px rgba(17,17,26,0.12)` |
-| `--shadow-xl` | `0 18px 38px rgba(17,17,26,0.16)` |
+Apple准备/失败沿原subtle与status语义；成功只显示实际n/total页，必要待校对、部分失败与恢复短句保留。Playful/Future、紫蓝吉祥物、玻璃控件、实色阅读面、Clay/DM Sans及减少动态合同保持，没有新体系、依赖或动画。
 
-### Typography
+当前H5资产 `index-Do-rI4H8.js` 的320px浅深准备状态，实测页面宽/滚动宽同为320px；37按钮的宽高均至少44px，文件选择键盘焦点2px solid，减少动态时动画/过渡均0s。原视口1090×533、媒体模拟和浅色偏好已恢复。Mac当前浅深完整窗口2180×1426覆盖连接/识别控件，完整结果卡、精确几何、窄窗和系统减少动态仍分别待验，不借截图推断。[实操与画面](06-FRONTEND-REFERENCE.md)。
 
-| Token                     | Value |
-| ------------------------- | ----- |
-| `--font-weight-regular`   | 400   |
-| `--font-weight-medium`    | 500   |
-| `--font-weight-semibold`  | 600   |
-| `--font-weight-bold`      | 700   |
-| `--font-weight-extrabold` | 800   |
+## 2026-10-07：功与动能沿原互动面板
 
-### Transitions
+沿现有Wot Design Uni 1.14.0、uni-app、BaseIcon/Lucide、Clay与DM Sans，保留Playful/Future布局、紫蓝吉祥物、玻璃控件、实色阅读面和立体按钮。单质点轨道、两条动能柱与短读数沿现有令牌；预测为草稿，明确观察才显示结果。44px、2px聚焦与减少动态逐步观察回退适用；没有新增依赖、下载素材或另建体系。
 
-| Token                 | Value                                    |
-| --------------------- | ---------------------------------------- |
-| `--transition-fast`   | 0.15s                                    |
-| `--transition-normal` | 0.3s                                     |
-| `--transition-slow`   | 0.5s                                     |
-| `--ease-default`      | `cubic-bezier(0.4, 0, 0.2, 1)`           |
-| `--ease-bounce`       | `cubic-bezier(0.68, -0.55, 0.265, 1.55)` |
+最终H5实色面浅色rgb(240,237,252)/深色rgb(48,40,63)、DM Sans、320px无横溢、读数宽240px，观察/下一步/回到起点各44px高、出处44px/2px实线焦点/4px偏移，减少动态时动画与过渡0s已实测；临时媒体、视口和主题已还原。Mac本次2180×1426完整浅深读数、来源与概念焦点画面成立，先前214×240 JPEG只作当时工具边界，不追认。Mac系统减少动态、窄窗/触摸和精确几何仍独立待验。[实际范围](06-FRONTEND-REFERENCE.md)。
 
-## Vite Integration
+## 2026-10-07：公共全文的选择与阅读面
 
-Design tokens are auto-injected via `vite.config.js`:
+中文叙事沿现有逐句带练面板，保留旧《社戏》片段为默认；增加“记承天寺夜游 · 全文”“小石潭记 · 全文”篇目按钮和明确“读全文”。选择只改草稿、换篇撤下旧正文，阅读保存后才展示；不改原稿与四步进度。正文仍用DM Sans、16px/1.75和pre-wrap的实色阅读面，来源、许可、必要异文和批注短句随文呈现。Playful Idea/Future 3D、紫蓝吉祥物、玻璃组件和立体按钮沿用。
 
-```js
-css: {
-  preprocessorOptions: {
-    scss: {
-      additionalData: `
-        @use "src/styles/_design-tokens.scss" as *;
-        $env-mode: "${mode}";
-        $is-production: ${isProduction};
-      `;
-    }
-  }
-}
-```
+本批网页浅/深、320px均实际观察；三篇选择及阅读按钮44px高、2px实线焦点，全文阅读面无横向溢出，减少动态时新增控件动画/过渡0s，临时覆盖已还原。Mac篇目/键盘/主题切换与完整来源在可访问性树成立；工具截图仍为214×270缩略图，不计完整原生视觉、触区或系统减少动态验收。[实操](06-FRONTEND-REFERENCE.md)、[验证边界](08-TESTING-INFRA.md)。
 
-This means every `.vue` file with `<style lang="scss">` automatically has access to all design token variables without importing.
+## 2026-10-06：句子词块与短复测入口
 
-## Theme Switching Flow
+沿原Playful/Future、紫蓝吉祥物、玻璃控件、实色阅读面、立体按钮与DM Sans；现有Wot 1.14.0/uni-app/BaseIcon/Lucide/Clay继续复用。词块选择、左右移动、撤回和重排只改草稿，“提交句子”明确保存；反馈限“本题组合正确 / 本题组合需调整 / 本次作答待核对”。原创练习与官方形式出处用短行，不把固定组合变成通用语法或官方分数。
 
-1. User toggles theme in Settings page
-2. `ThemeSelectorModal.vue` calls `useThemeStore().setThemeType(type)`
-3. Store emits `themeTypeUpdate` event
-4. `App.vue` listens and calls `switchTheme(mode)`
-5. `theme-engine.js` → `applyTheme()`:
-   - Adds/removes `.dark` class on `page` element
-   - Updates `data-theme` attribute
-   - Saves to `uni.setStorageSync('theme_mode')`
-6. CSS custom properties cascade handles the rest
-7. Navigation bar color updated via `uni.setNavigationBarColor()`
+计划页沿既有行与按钮增加“句子复测 · 日期 / 回到复测题”，提前题面可读但提交禁用，停止保持只读。没有新素材/依赖或重设计。首轮完整H5浅深卡片、最终320px/17控件44px/减少动态0s/实色/DM Sans与2px键盘焦点成立；原生当前功能与主题切换已实际操作，完整视觉、系统减少动态/窄屏/触摸仍按[06](06-FRONTEND-REFERENCE.md)单列，缩略图不作验收。
 
-## Component Library (wot-design-uni)
+## 2026-10-06：邮件四步与短教学反馈
 
-- Base UI components from [wot-design-uni](https://wot-design-uni.cn/) v1.14.0
-- Themed via `src/styles/_wot-theme.scss` (CSS variable overrides)
-- Components used: wd-button, wd-input, wd-toast, wd-picker, wd-popup, wd-cell, wd-icon, etc.
-- Imported from `wot-design-uni/components/common/abstracts/variable.scss` for base variables
+继续原Playful/Future布局、紫蓝吉祥物、玻璃控件、实色阅读面和立体按钮；六体裁中的“英文邮件”复用既有带练，短标签为来意、情况、回应、结尾。收件角色/情境/三个任务要求保留，称呼与署名不强加句末句号。时间及边界只显示“原创邮件 · 建议7分钟 · 辅助反馈待核对”，出处链接沿现有44px触区与2px键盘焦点，不增加组件、素材或依赖。
 
-## UI Quality Metrics
+H5当前浅深视口/DM Sans/实色父面、320px无横溢/减少动态0s已核对，Mac保存前当前完整浅深四步画面成立。补充卡片截图裁切只作工具边界，不充完整网页阅读卡片验收；Mac系统减少动态/窄屏/触摸仍待验。[实际范围](06-FRONTEND-REFERENCE.md)。
 
-The project maintains UI quality through an automated gate check (`npm run audit:ui-quality`). As of 2026-03-23, the score is **97/100**.
+## 2026-10-06：讨论三步与出处焦点
 
-**Passing Checks (242):**
+沿原Playful/Future布局、紫蓝吉祥物、玻璃控件、实色阅读底层和立体按钮；新增“英文讨论”体裁复用带练，三个短标签为看法、回应、展开，进度列数随步骤数变化。教授/同学原条件与项目辅助/待核对保留，建议词数/时间及出处只用短句，不增开发说明段落。表达词释义沿原表补齐，没有新组件、素材或依赖。
 
-- Most Vue components successfully implement error handling and are GPU-accelerated.
-- Loading states are implemented in 26 components.
-- Error handlers are implemented in 154 components.
-- 68 components are GPU-accelerated.
+实际Tab发现出处链接使用默认1px焦点，沿原`.reference-links a`规则覆盖`.writing-source`，最终浅深链接2px solid/4px偏移。H5实测44px、DM Sans、320px无横溢、减少动态0s与实色父阅读面；Mac保存前取得当前完整浅深草稿画面，未把截图后旧缩略图或编译当设备证明。[当前实际范围及回退](06-FRONTEND-REFERENCE.md)。
 
-**Current Warnings (7):**
+## 2026-10-06：当前演示重复选择与原图状态
 
-- Missing user prompts in error catch blocks:
-  - `src/components/base/base-icon/base-icon.vue`
-  - `src/components/business/index/WelcomeBanner.vue`
-  - `src/pages/practice-sub/question-bank.vue`
-  - `src/pages/settings/InviteModal.vue`
-- Missing loading states for asynchronous operations:
-  - `src/pages/study-detail/FSRSOptimizer.vue`
+不新增控件、素材、依赖或视觉体系；只修重复选择当前视图时已确认原图与显示状态不一致。沿原Playful/Future布局、紫蓝吉祥物、玻璃控件、实色阅读面、立体按钮、DM Sans、44px触区、2px聚焦和减少动态回退。真实目录关闭按钮及Escape保持当前对话；自动化须点击实际关闭按钮，不能使用被卡片覆盖的蒙层中心。[当前H5窄屏/减少动态与Mac完整浅深画面及设备边界](06-FRONTEND-REFERENCE.md)。
 
-## Current Design Baseline
+## 2026-10-06：当前题适配与明确查看演示
 
-The retired mini-program and mobile design reports are consolidated here as long-term styling policy. The product direction is mature, commercial, and task-first:
+保留原互动学习布局、三种视图及玻璃按钮行；改变题目默认视图/条件与迟到演示的接纳方式。“查看新演示”复用原按钮与键盘绑定，不添说明段落或推断学习基础。计算范围在明确观察前隐藏，错误保留短句；紫蓝吉祥物、立体按钮、DM Sans、44px触区、2px聚焦与减少动态/透明度回退保持。
 
-- Use Wise-style green as the brand/action color, with white, mint, deep green, and small amounts of calm blue for status and sync states.
-- Keep the first screen useful: users should be able to continue study, start practice, import resources, or inspect the next review task without reading marketing copy.
-- Use glass and soft material effects only for navigation, floating actions, or primary surfaces. Repeated list rows and dense data should stay compact and readable.
-- Prefer vector/icon components for functional recognition. Generated PNGs are limited to brand, onboarding, empty state, sharing, and milestone scenes.
-- Preserve mature learning-product tone: no emoji-as-icons, childish mascot, owl, graduation cap, rocket, trophy, coin, fire, fantasy AI orb, or decorative purple-blue glow.
-- Keep page structure stable on mobile: no nested cards, no text overflow, no layout shift when timers, feedback, or loading states update.
+实际画面发现带练阅读面仍使用半透明`--yozi-reading`，仅该面改用原`--yozi-solid`，玻璃控件与外部背景保留。最终H5浅深实色、320px/44px/2px/减少动态及Mac当前完整浅深画面成立；没有新增视觉体系、依赖或素材。实际跨端范围以[06](06-FRONTEND-REFERENCE.md)为准，不把旧透明画面、组件或编译当真机/全部视觉验收。
 
-Mini-program remains the lightweight entry product. iOS, Android, and H5 mobile shells are the full product surface and must share the same resource intake, question-bank release gate, quiz, FSRS, mistake, and knowledge-graph contracts.
+## 2026-10-06：英文论证沿现有带练与实际阅读面
+
+共用主题与原写作带练增加英文论证，不新增视觉体系、依赖或素材。四步使用短段落标签，检查/继续按钮对应“段”；官方出处与原创/待核对只保留必要短句。沿44px触区、2px聚焦、实色阅读底面、DM Sans及减少动态，保留紫蓝吉祥物、玻璃控件、立体按钮与原Playful/Future布局。
+
+H5当前最终根已实测44px、2px聚焦、DM Sans、浅深/320px/减少动态0s，无横溢出；Mac完整当前题目浅深2180×1424、普通键盘与长输入分别成立。保存后的旧缩略图未用于验收；系统保存前的重开画面与原色恢复已核对。Mac系统减少动态/窄屏/触摸、Windows和微信/App设备仍待验证，不用编译替代。
+
+## 词句反馈与原答依据（2026-10-06，本地有界核验）
+
+保持Playful/Future、紫蓝吉祥物、玻璃控件、实色阅读底层与立体按钮；自由原句提交后只增加“获取反馈”，反馈短标签“AI反馈·待核对”，沿现有原答位置/完整原答控件展示。原句用DM Sans/pre-wrap，词义/词形与搭配/情境维度仍为辅助；固定词义题的无效量表编辑入口移除，不将只含目标词视为正确或整词掌握。
+
+实际H5位置按钮102×44px、聚焦2px/偏移2px；父题目阅读面浅深均实色，内部面透明度不会透出页面背景。320px原答换行无横溢，减少动态0秒，键盘未连接错误和停止禁用保持。合成夹具文字与产品教学反馈分开，不增加素材/依赖或开发说明段落；Mac初轮深色和最终截图缺口分别记录，不借AX证明颜色。[实际界面](06-FRONTEND-REFERENCE.md)。
+
+## 速度图与原页条件（2026-10-06，本地有界核验）
+
+沿原Playful/Future布局、紫蓝吉祥物、玻璃控件与立体按钮；速度图使用现有浅深实色阅读令牌和DM Sans，坐标/零线/正负速度、带单位的折点文本与无障碍描述并存。观察开始后才着色正/负面积并显示游标；独立题只给原条件曲线，不画答案辅助面积。颜色不独自承载信息，Canvas不可用时保留坐标和短错误，不增加解释页或素材依赖。
+
+原图时间/速度单位、正方向和直线约定优先明确选择；坐标允许常用选择和带符号自由填写，未知条件不默认补全。输入只改草稿，确认才保存帮助，提交才保存原答；按钮沿44px触区、2px聚焦及减少动态回退。初轮H5浅深/320px减少动态与最终Mac浅深当前视口有界成立，截图版本和未验设备范围见[06](06-FRONTEND-REFERENCE.md)。不改变指定教法、停止、隐私或待核对反馈。
+
+## 可见日历与复测状态（2026-10-06）
+
+日期、今日任务和复测门禁在页面持续可见时随分钟读取更新；时间变化沿现有短标签、按钮禁用与实色阅读区域表达，不增加说明段落、提醒动画或自动动作。草稿、明确提交、待核对、原安排时区和停止保持；页面隐藏/卸载释放自己的时间资源，恢复立即核对。减少动态只控制表现，不能停用正确日期读取。独立H5日界、320px/减少动态停止状态与Mac原记录重开范围见[06](06-FRONTEND-REFERENCE.md)；没有新增组件/素材/依赖或改变Playful/Future布局、44px/2px合同。
+
+## 中文公共叙事参考控件（2026-10-06，本地有界核验）
+
+沿原Playful/Future布局、紫蓝卡通吉祥物、玻璃控件与立体按钮；原文使用已有实色阅读面、DM Sans/16px/28px、可选取文本。出处、许可、协作署名（有才显示）与Yozi AI写法批注/课程目标分开，长链接在非H5端换行。课程标准链接沿已有writing-source的44px/2px聚焦与减少动态回退；不追加开发说明或宣称官方满分。参考保存失败不展示，提交/切题/忙碌/隐藏/停止收起，原稿及已存帮助保持。最终H5浅深/320px/44px/2px/减少动态成立；Mac原文与目标分别核对当前视口，完整浅深/减少动态/触摸与设备仍独立验收。范围见[06](06-FRONTEND-REFERENCE.md)。
+
+## 初速度与分段合力控件（2026-10-06，本地有界界面核验）
+
+已打开物理题的普通示例与固定视频会先保存观察帮助；保存失败用短句保留在原位，不启动播放或展示计算结果。原图确认沿原帮助路径，示例条件不伪称原图；帮助不等于成绩，重复观察不刷次数。
+
+两新概念沿原紫蓝吉祥物/玻璃控件/实色阅读面/立体按钮、Wot与DM Sans；预测前不显示计算结果，24步观察后才开放独立题。坐标保留正负方向和两种质量的完整范围，近似值用≈，正式选项用精确值。原图速度/单位/分段条件采用常用选项与自由输入，空白不推断静止；必要错误保持短句。44px触区、2px聚焦、减少动态逐步观察及隐藏/停止/卸载清理沿旧合同。
+
+最终H5浅深、320px/无横向溢出、12个演示控件44px、2px焦点和减少动态0秒逐步观察成立，原页手工换算/精确分数已实操。当前题目背景保持实色，CSS仍有静态blur声明，不称移除全部模糊。Mac浅深分段结果仅核对当前窗口可见区域，完整页面、原生减少动态/触摸和微信/App设备分别待验。[界面与截图](06-FRONTEND-REFERENCE.md)、[合同](04-API-DOCUMENTATION.md)。
+
+## 公开说明文参考的阅读控件（2026-10-06）
+
+当前英文说明面板增加可选“读一段说明”，不改变Playful/Future布局、紫蓝吉祥物、玻璃控件或立体按钮。原文保持可选取的实色阅读面，16px/28px/DM Sans；出处与许可用短行，批注明确标为Yozi AI，不自称作者原文或考试满分。来源链接保持44px最小触区、现有space-focus的2px聚焦与4px偏移；320px可换行，无横向溢出，减少动态保持0秒回退。提交、切题、忙碌/隐藏或停止收起参考，原稿与已保存帮助保留；重新明确阅读再记录帮助，不让旧显示混入下一次作答。[实际窗口与边界](06-FRONTEND-REFERENCE.md)、[来源合同](04-API-DOCUMENTATION.md)。
+
+## 科学检验的用户界面（2026-10-05）
+
+沿当前Yozi AI紫蓝、Playful/Future、Wot、DM Sans、玻璃控件与实色阅读面。观察时先显示条件及预测选项，开始观察后才显示加速度比较值；不提前给出预测答案。完成观察才显示“独立检验”，换条件后收起演示。四个选项点击仅填草稿，独立题保留明确“提交作答”；这类固定单选题不显示多选切换或不能保存的题面校对入口。
+
+复测沿现有计划列表，用“科学复测 · 日期”“回到复测题”和“已安排 日期”短状态，不添加开发说明或重复引导段落。提前查看保留题面与日期，提交禁用；停止后仍可读计划与原答。44px触区、2px焦点、180ms反馈、减少动态及不支持玻璃时的实色回退继续适用。保留必要隐私、错误与真实教学反馈；规则题验证不等同完整课程或设备验收。[合同](04-API-DOCUMENTATION.md)、[最终画面与范围](06-FRONTEND-REFERENCE.md)。
+
+## Overview
+
+### 2026-10-05：完整记录与统计文字
+
+统计面向用户显示原题和已明确知识点，内部题目标识只作事实键，不显示作标题；同题干不同题目仍分组。常用时区沿原选择中的城市名称显示，实际日期边界/自定义时区原值不变。Root布局、DM Sans、紫蓝玻璃/厚阅读面、44px/2px/180ms保持，数据不因阅读或文字替换改变。[实际范围](06-FRONTEND-REFERENCE.md)。
+
+### 2026-10-05：原图确认与科学比较
+
+原图入口/查看、数值、单位、方向和科学条件优先选择，必要数值可输入；默认未知，不填猜测值。校对期间隐藏示例和播放器，只显示当前步骤。确认后只保留一条原图状态，概念选项不再重复题名；一反馈/一解释邀请，不增加开发说明。停止禁用新场景，原图仍可读。
+
+沿原Wot/uni、紫蓝阅读面和按钮，44px触区、2px聚焦、180ms反馈及减少动态回退保持。向左坐标负号、零合力无方向与近似数值为学习含义，必须如实显示；原图查看复用官方现有API，关闭/上下文变化释放。最终H5浅深/320px/键盘与Mac浅深实际进入，早期图不回写为最终通过。减少动态变为逐步观察，减少透明度退回实色与无blur；原图阅读按钮的按下100ms及scale(0.95)是当前uni样式的CDP度量，不称真实触摸。[范围与截图](06-FRONTEND-REFERENCE.md)。
+
+#2026-10-06词义最终候选补齐：计划页显示词义复测日期，canonical任务隐藏不相容的通用变式/校对入口；题目正文使用现有`--yozi-solid`。H5浅深实色、44px/2px/320px/减少动态已实际核对；Mac单视口与操作证据不等同完整视觉验收。
+
+## 2026-10-06：开始主题与简洁启动入口
+
+词义确认后沿既有按钮行显示“明日认词”“自己写一句”；已安排用短日期并禁用重复安排。安排保留逐句草稿，明确打开独立任务后使用现有实色阅读面、空作答框和提交按钮；未来日期保持提交禁用，自由写句保留待核对。沿44px触区/2px焦点、浅深色和减少动态，不能把新增按钮源码当作最终跨端实际验收。
+
+首页/对话页共用五个快捷主题，英文说明、中文叙事可直接选择；选中保留紫蓝状态并可编辑，明确开始才写事实。启动页仅留吉祥物、品牌和加载状态，移除口号、团队署名及重复兜底说明；“进入首页”用真实立体按钮，保持键盘绑定、2px焦点与减少动态回退。旧首页用“未就绪”描述不可练来源，有共享对话时隐藏重复进度/统计及真题计数，保留来源和恢复入口。
+
+沿原Playful/Future布局、Wot 1.14.0、uni-app、BaseIcon/Lucide、Clay与DM Sans。主题图标按钮补44px最小宽并禁止收缩；320px实际当前可见按钮不少于44×44px，正文不横向溢出。原阅读实色与玻璃层保持，不据视口检查宣称真机或全部旧页面验收。
+
+### 2026-10-05：认词与词卡适配
+
+支持的词卡直接打开一句原文和四个短词义；选项先选择，“确认词义”才保存。需要时“看释义”，反馈一次只显示本句结果及当前词义，随后“换句再认 / 回到草稿”。不增加功能说明或重复标题。当前输入草稿保持；账户/题目/记录切换释放选择，停止禁用新增动作。提示必须先保存再展示，未保存不能显示成功。困难词优先，两个不同语境无提示选对的义项折叠到“更多词语”，不显示掌握徽章；统计和关系图用词义与语境名称，内部义项/版本标识留在记录。
+
+沿原实色阅读面、玻璃控件、紫蓝选中状态与立体按钮；窄屏词义选项整行换行，使用原44px/2px/180ms及减少动态/透明度规则。[合同](04-API-DOCUMENTATION.md)。
+
+### 2026-10-05：体裁选择与当前题目的逐句带练
+
+沿原互动区加入“英文通知 / 英文说明 / 中文叙事”三项选择及首页快捷主题。开始带练、必要的单句输入、按需词语/句型、检查/保留、独立写作和复测采用同一条路径；不加说明段落或重复副标题。当前情境的四个短步骤和词语跟随题目，中文使用中文输入标签与标点；格式反馈每次只改一处，未知表达可明确保留，不强制复制句式。原答仍需明确提交，辅助或原创量表显示待核对。
+
+词语帮助成功保存后保持带练区/未保存草稿，实际账户/记录/题目或体裁切换收起并清空草稿；停止/在途请求禁用新增帮助和任务。三种体裁提前复测均禁用提交并显示短日期。玻璃选择/导航、实色阅读面、立体按钮及DM Sans/44px/2px/180ms、浅深色和减少动态/透明度沿现有令牌，不创建新的布局或组件体系。实际范围与截图按最终构建在06分别记录；词表点击/格式检查不称词汇掌握、语义评分或设备验收。
+
+### 2026-10-05：通知正式原答的文案与触区
+
+保留必要题干、四个短维度名及各满分，表单写“写你的英文通知”；提交后的写作操作为“获取反馈 / 换题练习 / 明日复测”，不重复通用“变式练习”，已安排显示短日期。任务按原条件显示“待确认/已确认、待检验/已通过、待提交/已提交”，去掉重复的完成说明，不把提交称为掌握。草稿、原答、待核对和已停止区分，不新增开发/MVP说明或重复副标题。带练每次一条具体反馈，找到有限要点时为“这句已有本步要点，表达仍需核对。”；信息检查不包装为语义或掌握。复测日期/题目可读，提前查看与继续任务分别操作。
+
+沿原紫蓝玻璃导航/控件、厚阅读面和立体按钮，不新建布局或组件体系；Wot/uni-app/BaseIcon/Lucide/Clay/DM Sans、28/24/12px、180ms/100ms、2px聚焦和减少动态/透明度回退保持。320px实测目录图标可被挤至约33px，本轮目录/关闭按钮共同加44px最小宽及禁止收缩，最小高度仍44px。最新根下当前可见按钮全不小于44×44px、正文不横向溢出；普通Mac最终浅深计划画面、短状态及主题键盘切换成立，最终H5动作仍待验，不将CSS分支或视口作为设备通过。[画面](06-FRONTEND-REFERENCE.md)、[边界](08-TESTING-INFRA.md)。
+
+### 2026-10-05：旧页面材质与返回规则
+
+旧页面沿公共 `em-mobile-canvas/topbar/glass-surface/primary-action` 适配；导航浮动层使用 blur，厚阅读面不叠 blur，主按钮按原紫色令牌生成侧面厚度。原布局和状态色保留，源头像/Logo/素材不重画。公共字体为 DM Sans；题库小字号设 12px 回退与 `max()` 下限，浅色元信息使用 `#62576d`、深色 `#d2c8e5`，不依赖随视口缩小的 rpx。
+
+有点击动作的旧选择控件保留 44px 最小高度、2px focus-visible，学科/轨道/年份/模式通过现有 DOM 键盘绑定支持 Enter/Space，组件卸载释放监听。选项只改当前选择；不可练年份可阅读状态，但没有开始动作。模板事件包装不能作为键盘通过证据，必须实际确认动作已发生。
+
+移除题库卡片内部处理说明、重复状态/下一步和静态副标题；保留题型、年份、同步状态、不可练原因和受保护错误。两份协议全文属于必要隐私/费用信息，本批只改阅读材质与导航，正文不改法律含义；公开条款审核继续独立。
+
+返回规则沿 `safeNavigateBack`/`openHomeTab`：有栈返回原页，刷新后不足栈沿原首页恢复并核实落点；当前路径已变化时旧回调不得覆盖新页面，自定义失败处理保持。最终 320/390/1280px、浅深色、键盘、焦点及减少透明度已有实际范围；按下/悬停为 CDP 伪类度量，设备与全部旧视图状态不能由该证据替代。[画面与限制](06-FRONTEND-REFERENCE.md)、[结果](12-CHANGELOG.md)。
+
+### 2026-10-05：Yozi AI 当前方向合同
+
+客户本次明确改名与材质方向，取代本文历史批次中的实色、平面按钮限制；历史截图和验收名称仍反映当时版本。显示名统一 **Yozi AI**，仓库路径、账户/存储键、应用 ID、OAuth、插件名和题源路径保持兼容。
+
+THESIS：在连续学习空间中加入紫蓝玻璃层次与友好的原创吉祥物，阅读和停止状态始终清晰。OWN-WORLD：薰衣草/蔚蓝背景、透明导航、厚磨砂内容面、圆润有侧面厚度的主按钮；DM Sans 与 28/24/12px 层级沿用。STORY：从首页进入对话、原答阅读与真实学习记录，视觉不创造学习事实。
+
+FIRST VIEWPORT：保留 Playful 网页和 Future 桌面原布局；吉祥物替换文字图形 Logo，桌面投影器同步新品牌。学习页保留左侧导航和右侧内容，移动端保留抽屉/dock。FORM：客户指定 Apple 材质与卡通按钮，直接沿已有组件实施，不随机选择另一套布局。FINISH：桌面/窄屏浅深色、焦点/按下/减少动态与透明度回退、独立界面复核与现有规范同步完成后才记为本批完成；设备、真实模型和发布分别验收。
+
+方法来源：[Apple 官方 Materials](https://developer.apple.com/design/human-interface-guidelines/materials)将玻璃用于导航/控件、内容采用更厚材料；本项目以兼容 CSS 适配，不能称为原生 Liquid Glass API。Logo 采用社区 [Logo Design 技能](https://github.com/seb1n/awesome-ai-agent-skills/blob/main/design-and-ui-ux/logo-design/SKILL.md)的轮廓/小尺寸规则，其 [MIT 许可](https://github.com/seb1n/awesome-ai-agent-skills/blob/main/LICENSE)已核实；未安装技能代码或依赖。紫蓝无文字角色由内置图像生成工具原创制作，既有桌面插画编辑复用角色；来源与生成记录随素材保留。
+
+玻璃强度按层级分配，减少透明度/高对比/不支持 blur 时恢复有色不透明面。主按钮的侧面厚度不增加触区位移，按下反馈 100ms、常规反馈 180ms，44px 与 2px 焦点保持；减少动态效果下不位移。Wot 1.14.0、uni-app、BaseIcon/Lucide 和 Clay 用户默认头像继续复用。
+
+**Creative North Star: “紫蓝伙伴的连续学习空间”**。品牌角色陪伴进入学习，材质区分导航、内容和浮层，文字与可追溯原答承担学习解释。卡通、玻璃和厚按钮是客户 2026-10-05 的明确选择；保留 Playful/Future 原构图，不把此前实色限制继续当作当前材质禁止项。
+
+本次按 Impeccable `document` 的源码提取流程刷新已有规范；专用 documenter 不可用，由新鲜默认角色替代，不继承全历史 fork。产品事实仍由 [01](01-PRODUCT-VISION.md)维护；设计事实、规范与扩展说明集中本文和现有 YAML，不创建根级 PRODUCT/DESIGN、sidecar 或新报告。YAML 仅用已有 colors/typography/rounded/spacing/components 层，阴影、动效、焦点和断点在正文说明；不为工具面板虚构色阶或组件。令牌按下述作用域适用，不能用一个主色替换全项目所有变量。
+
+## Colors
+
+浅色以薰衣草与蔚蓝环境衬托紫色控件，深色用深紫内容层和淡紫强调。正文与错误/警告保留语义，不靠透明度掩盖状态。YAML 的 `primary` 是全局 `--primary`，`learning-primary` 是学习空间 `--space-paper`，`dark-primary` 是深色强调；三个值分别提取，不互相合并。
+
+| 作用域          | 规范令牌与来源                                                                                                                             | 使用方式                                                                                                                       |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------ |
+| 全局/登录/账户  | `colors.primary`；[App](../src/App.vue) 与 [主题兼容运行时](../src/design/theme-runtime.js)                                                | 全局主题、协议链接和焦点；Wot 沿原主题映射。请求中的 `src/styles/mixins/theme-runtime.scss` 在本仓库不存在，实际为此 JS 文件。 |
+| 学习空间浅色    | `colors.learning-primary`、`learning-ink`、`learning-selected`；[学习样式最终覆盖](../src/components/business/learning/learning-space.css) | 正文、选择、受支持强调和学习焦点；更早 CSS 声明不是最终有效值。                                                                |
+| 深色            | `colors.dark-primary` 与深色材质；[dark-mode-vars](../src/styles/_dark-mode-vars.scss)                                                     | 系统默认及显式 dark/space-dark/dark-mode/page-dark 范围共用深色材质；学习正文沿 `dark-learning-ink`。                          |
+| Future 场景导航 | `colors.future-navigation`；[Future 样式](../src/components/business/learning/future-landing.css)                                          | 天空背景上的文字与焦点，保持原位置，不将场景导航当通用深色页面。                                                               |
+| 背景与兼容变量  | `colors.background` 来源为 `BRAND.themeColor`/App 当前基值；兼容运行时仍有原浅紫背景别名                                                   | 品牌底色与实际渐变环境分开；未宣称所有旧背景别名均已迁移。[品牌配置](../src/config/brand.js)。                                 |
+
+**作用域规则。** 新控件先取所在业务主题；主按钮真实背景是 `--yozi-button` 渐变，不能把它描述为单一 `primary` 实色。深色协议链接用当前主题色并始终下划线，颜色不单独承担链接含义。历史题库无样本/不可用显示“—”，有实际样本的 0% 保留；首答 0/0 仍按无可靠样本解释。
+
+## Typography
+
+学习、登录、账户及普通业务正文使用本地 DM Sans 与 PingFang SC/Microsoft YaHei/sans-serif 后备。YAML `body` 是基础正文，`lab-title`、`lab-prompt` 只适用探索组件；反馈沿当前组件的较松行高与 `pre-wrap`，不据此把全站文字设成相同尺寸。
+
+Playful 继续 Epilogue Black 900 的标题/字标与 DM Sans、原 vw 比例和 700px 断点；Future 保留 Playfair Display、DM Sans/Poppins 及原场景字标关系。它们的页面策略不提升为所有业务页的字体。登录按钮显式继承容器字体与已有行高；中文光学宽度按当前布局换行，不以硬裁切保持英文长度。
+
+**原答规则。** 完整保存文本按普通文字展示，换行与连续空格保持；v2 引用必须重验完整范围，重复文字仅突出明确第二处，非法范围不猜位置。旧 v1 保持未定位，已校对记录显示历史提示，不用新样式改变旧评估或学习事实。
+
+**用户文案与选择规则（2026-10-05 追加）。** 默认界面只保留任务、真实状态、字段名和操作；移除功能介绍、重复副标题、技术范围、缓存/传输/版本等实现说明。按钮直接命名操作，不附一句解释；教学内容只在当前学习步骤或反馈出现。必要的隐私、供应商额度、授权、不可逆删除和可恢复错误仍用短句说明，AI 评分/旧引用/无样本的事实不能因精简变成已校验。
+
+方向、阶段/教材、基础、时区和今日任务优先用可选按钮；阶段/教材可跳过，其他值可自由填写，不按年龄或目标猜设置。题目答案、写作和私人资料正文保留自由表达。选择题可单选/明确切换多选，异常或重复标识不猜映射；选择只改草稿，明确提交才保存作答，切换账户/记录/对话/题目清除旧选择。偏好与计划须明确保存；自述基础保持 `self_report`，不是掌握证据。普通首次入口直接进入学习，历史题库备考配置仍可显式进入。
+
+程序设置的目标、答案和任务文本使用 uni-app 的 `value`/输入事件同步，兼容 H5 的 `target.value` 与微信/App 的 `detail.value`；不将重复 `v-model`/`value` 绑定带入跨端编译。520px 以内输入区按文档流排列，避免遮挡完整原答；其余布局、玻璃层级、44px/2px/180ms 和减少动态效果沿现有合同。解析设置与导入记录按需展开的是操作控件，已移除的说明段落不作为折叠文案回填。
+
+## Layout
+
+Playful 保留原三列和移动堆叠/视频文档流；Future 保留归一化天空、投影桌面、左下导航、滚动字标和原进场关系。新角色替换品牌与指定投影画面，学习表单进入原业务空间，不在首页加无依据的新卡片或改造导航。
+
+学习 Shell 沿最大 1320px 外框、236px 左目录，1100px 下 216px，900px 下折叠目录，520px 下收紧；桌面面板沿 `spacing.panel`，窄屏沿 `mobile-panel`，dock 与安全区保留。探索区位于原学习页，可折叠，标签、词汇与原答入口允许换行；原回答与单句/独立草稿输入保持完整可读。截图与浏览器 320/390px 操作范围见 [06](06-FRONTEND-REFERENCE.md)，不由这些视口推断移动设备通过。
+
+## Elevation & Depth
+
+导航/框架用薄玻璃，阅读面用更厚磨砂，composer、登录方法和 Wot/公共 Popup 用浮层材质；嵌套内容不逐层加 blur。实际来源是 [\_wot-theme](../src/styles/_wot-theme.scss)、App、dark-mode-vars 和学习样式最终覆盖，属于兼容网页 CSS 对 Apple Materials 的适配，不是 Liquid Glass 原生 API。
+
+薄层、阅读层、浮层分别映射 YAML `glass`、`surface`、`floating` 及其深色对应项。共用 `--yozi-shadow`，浅色为 `0 12px 32px rgba(74,55,124,0.12), inset 0 1px 0 var(--yozi-highlight)`，深色为 `0 12px 32px rgba(10,7,24,0.28), inset 0 1px 0 var(--yozi-highlight)`；这是承托内容的层次，文字和原答仍完整清楚。导航常见 blur 24px、composer/登录方法 20px，沿现有实现，不能推断所有层都应统一 blur 数值。
+
+主按钮沿 `--yozi-button` 上亮下暗渐变、内高光和 4px 侧面影，按下视觉位移 2px、侧面影缩至 2px；布局触区不随视觉位移移动。次级控件沿 `--yozi-control-shadow`，静态选中和焦点独立于立体感；不增加液态折射或新的持续背景动画。
+
+**实色回退规则。** App 的全局回退必须位于全部浅/深主题之后，在减少透明度、高对比和不支持标准/前缀 blur 时把 `--yozi-glass`、`--yozi-reading`、`--yozi-floating` 都映射到 `--yozi-solid`；覆盖 `:root`/page 及显式 dark、space-dark、dark-mode、page-dark，直接读取材质的 Lab 也包含在内。学习空间的 glass/composer 与 frame/sidebar/header/dock 另沿后置覆盖回退，不能只关闭 backdrop-filter 而留下半透明输入。
+
+主任务实际减少透明度核验了登录与 Lab 的三种变量均为深色 `dark-solid`；高对比与无 blur 引擎的回退有源码/编译依据，**无 blur 引擎没有运行时验收**，不能从当前支持 blur 的浏览器伪称不支持分支已运行。[当前回执](12-CHANGELOG.md)。
+
+## Shapes
+
+外框、面板、业务控件沿 YAML 的 frame/panel/control 层级，圆润但保持信息密度。原首页徽章和场景开关保留各自几何，不强套业务圆角。吉祥物使用原创无字母紫蓝角色的同一导出，小尺寸可辨，不拉伸；用户头像继续本地 Clay，上传照片优先，角色 Logo 不替代用户身份或头像来源。
+
+## Components
+
+| 已有组件           | 形态、状态与适用边界                                                                                                                                                                                                                                                    |
+| ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 主/次按钮          | 主按钮沿现有 Yozi 渐变及侧面阴影，次按钮沿薄玻璃/控制影，低强调操作沿文字。新增业务触区至少 44px，正常反馈 180ms、按下 100ms；focus-visible 至少 2px 对比描边，焦点不靠按下位移表达。禁用/等待沿实际能力和业务状态，不取消协议、鉴权或重复请求保护。                    |
+| 登录按钮与协议     | 真实 button 保留 role/tabindex、disabled/aria-disabled，并复用键盘适配处理 uni-app H5 的 Enter/Space、重复键与禁用。未勾协议不发认证；Tab/Enter/Space 的实际证据仅为主任务本机前置拒绝，不是供应商登录。返回、协议、表单切换等小目标沿 44px；深色协议色随主题且下划线。 |
+| 输入、卡片、浮层   | 学习 panel/原公共 Popup/Wot 输入各取真实材质，普通阅读不重排。探索单句输入沿现有 12px 圆角/内距与 16px 字号，单句 240/独立草稿 1000 字符是数据上限。空白禁用、错误保留适用输入，状态用文字；公共弹窗仍保留焦点进入/归还、Escape、遮罩和生命周期边界。                   |
+| 导航与选择         | 学习选中沿当前主题状态面及文字，目录/dock 保留原交互；Future 场景导航沿独立深紫文字和焦点。两套首页动效不套业务统一时长。                                                                                                                                               |
+| 功能图标与默认头像 | 复用 BaseIcon 与已有 Lucide 增量；新增功能图形沿 24×24 viewBox、2 单位圆端描边，显示尺寸仍用原适配器。Clay 为本地静态默认头像，CC0 风格许可与用户上传优先规则保留；旧图形不追认全部来自 Lucide。                                                                        |
+| 有界学习探索       | “预测→观察→一句解释”只适用当前路程/位移模板；四句英文通知与独立新草稿只做有限信息反馈。关系/14 天格表达当前账户/对话的原答归属与可靠/待核对/帮助，颜色表达活动，不宣称掌握。全局教学能力、正式判分和长期效果不能由这些组件推出。                                        |
+
+减少动态效果时按钮取消过渡/位移，已有弹窗/目录与反馈保留状态；Playful 停止视频循环/追踪，Future 停止天空/ticker 并即时呈现。Lab 没有自动播放，减少动态效果改为逐步观察；停止暂停/禁用并撤销临时请求，上下文变化及页面隐藏/离开清空探索，折叠/换标签暂停并收起视频。草稿不持久化，不把关闭播放描述成完成复习；具体收尾语义以 [04](04-API-DOCUMENTATION.md)和 [Lab](../src/components/business/learning/learning-lab.vue)为准。
+
+原吉祥物/hero 的生成原图、提示词、平台必要导出和来源回执保留在既有证据链，生成工具未读取用户学习原件；原 Future/Playful 外部视频的完整授权仍未核实。新增路程视频是固定本地 Blender 场景实际产物，Manim 未安装/未渲染，不能把旧视频许可缺口或新视频生成扩大为全部素材授权。[生成与保留回执](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/server.json)、[许可与来源合同](04-API-DOCUMENTATION.md)。
+
+## Do's and Don'ts
+
+- **Do** 保留客户指定的紫蓝角色、玻璃和立体按钮，沿原 Playful/Future 构图与现有 Wot/uni-app 适配，按主题作用域读取颜色。
+- **Do** 给链接下划线、控件可见焦点、可靠/待核对/帮助明确文字；用当前有效原答和真实收据表达结果。
+- **Do** 将减少动态效果、减少透明度/高对比、无 blur 回退与上下文释放作为对应组件合同，并分别记录源码、浏览器与设备证据。
+- **Don't** 把观看/草稿/活动色深当成绩、词汇掌握、先修关系或长期效果，把模型文本当可执行 Python。
+- **Don't** 将原七项 ship、十三张截图或构建成功扩大为全项目批准、真实语义/设备/正式发布完成；机械检测器未完成，不写 pass。
+- **Don't** 回写旧截图、历史品牌、备份分母或实色规则。协议/旧 HTML 可见命名已独立修补并实际核验；微信分享标题和备用导出文件名另按名称收尾回执记录。旧 practice/settings 白色覆盖仍待逐页迁移，尤其已实际观察到的深色协议导航背景/文字冲突，以及旧首页无样本0%的显示。[当前范围与后续](13-DEVELOPMENT-PLAN.md)。
+
+## 历史实现与验收记录
+
+以下条目、提示词、选型与统计保持原批次证据。包括 Wenli/问理、旧 W 标志、实色面和“未新增素材/视频”等描述，均为当时范围；与当前材质方向冲突时，以本文 YAML 及上方八节为当前规范，不能据新方向改写历史事实或扩大旧许可。
+
+## 2026-10-05：字段对应先修的沿用与实际状态
+
+本批复用现有诊断小题、理由、帮助记录、按钮和任务，不增加组件、依赖、素材或视频。网页 Playful Idea、桌面 Future 3D Portfolio、Wot Design Uni 1.14.0、uni-app、BaseIcon/Lucide、Clay、DM Sans、浅紫/深紫实色阅读面及 28/24/12px 层级保持；新选型仅为现有受限规则中的固定合成字段定位合同。[业务合同](04-API-DOCUMENTATION.md)。
+
+最终 H5 `index-C8T6amGh.js` 的 27 份 CSS 与前批逐字一致。1280/320/390px 无横向溢出，320px 诊断理由正常换行；浅深色、Enter/Space 操作、44px 按钮和 2px 聚焦通过。正常反馈 180ms；现有按下伪类 100ms/缩放 0.95 沿原规范，本批只核对 CSS 状态，不冒充物理触摸。减少动态效果为 0s，覆盖、视口和焦点状态已复原。[浅色小题](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/material-prerequisite-mobile-light.png)、[深色小题与帮助记录](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/material-prerequisite-mobile-dark.png)、[停止状态](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/material-prerequisite-stopped-desktop.png)。这些是实际浏览器画面；此前原生候选属于本增量前的证据，微信/App 源码构建仍不代替设备操作。
+
+## 2026-10-05：Future 原生桌面候选补验
+
+复用原 `future-landing.vue`、桌面提示词与既有学习组件，无新增素材、组件或样式数值。最新候选普通窗口实际显示 Future 首页，鼠标关闭动效、键盘 Space 恢复开关；原答学习页与概览保留浅紫/深紫实色阅读面，重复文字第二处引用下划线、空格/换行、HTML 普通文字与历史校对提示可见，Space/Enter 收起展开通过。旧记录停止后仍可阅读，切换对话及重开默认收起。清晰的[浅色概览](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/desktop-fields-v3-reader-light.jpg)、[深色阅读](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/desktop-fields-v3-reader-dark.jpg)、[Future 首页](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/desktop-fields-v3-future-hero.jpg)来自实际 macOS 候选；此前缩略截图与控制超时仅为诊断，未计作视觉验收。44px/2px/180ms 与窄屏/减少动态效果的度量仍引用下节最终 H5 范围，本轮没有原生逐像素或跨设备度量。[合同](04-API-DOCUMENTATION.md)、[本机范围](12-CHANGELOG.md)。
+
+## 2026-10-05：完整原文字段最终界面与模拟器边界
+
+新资料练习沿原字段面板、错误提示及禁用状态显示完整原文检查；不忽略非空标题/说明或缺失字段，不从常见答案、批注、作答标签建立新的可靠练习。复用原Wot/uni-app、DM Sans与浅紫/深紫实色阅读面，无新组件、依赖、素材、视频或外观数值。旧版本记录独立按原合同回放，新的来源检查不自动改写旧题或分值。[合同](04-API-DOCUMENTATION.md)。
+
+本批H5最终入口`index-1RhFXD_P.js`及三端源码构建/审计通过，27份CSS与上一实际网页版本逐字一致。10月5日实际补齐完整阅读与字段流程：1280/390/320px无横向溢出、浅深色实色阅读面、DM Sans、44px控制、Enter/Space/Tab与2px焦点。真实鼠标悬停和按下分别进入对应伪类，按下缩放0.95；减少动态效果时过渡/动画为0s，复原后恢复180ms。没有视觉源码、组件体系或素材变化。[390px浅色](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/material-fields-v3-reader-mobile-light.jpg)、[390px深色](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/material-fields-v3-reader-mobile-dark.jpg)、[320px减少动态效果](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/material-fields-v3-reader-320-dark-reduced.jpg)。
+
+完整原答保留连续空格/换行、HTML普通文字及明确第二处引用；旧记录未定位、历史校对、停止和只读规则保持，概览复用同一组件。非法原文拒绝时显示原就近错误并禁用建题，完整公开导出不变；英文原文字面错答、提示订正和不同字段独立变式已实际操作。专属标签/预览正常退出，视口、主题和减少动态效果覆盖均复原。[实际范围](06-FRONTEND-REFERENCE.md)、[结果与资源](12-CHANGELOG.md)。上述浏览器视口不代替物理触摸、模拟器内部控件、原生App或真机。
+
+专属iOS27模拟器通过Device Hub原生截图得到[1206×2622的Safari学习页](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/ios-safari-restored-wrong-record.png)，确认重开时原对话及错题可见；普通窗口取景仍只有缩略图，网页按钮、触摸、深色和减少动态效果尚未验收。未全屏、未安装设备代理，原键盘转发设置与Shutdown已复原；原生App和物理设备验收继续分开。
+
+## 2026-10-04：App云教学流式沿用规则
+
+本批复用现有流式开关、临时预览/等待/取消与错误状态，以及 App 原生连接器；无需新组件、素材或视频。网页继续 Playful Idea、桌面继续 Future 3D Portfolio，Wot Design Uni 1.14.0、uni-app、BaseIcon/Lucide、Clay、DM Sans、浅紫/深紫实色面、28/24/12px 层级、44px触区、180ms反馈和2px聚焦沿原规范。完整保护合同匹配及明确模型能力后才允许 App 主动选择流式，预览提示仍说明“尚未校验，未执行工具”；失效/停止/离页清空临时内容。[接口](04-API-DOCUMENTATION.md)、[原生合同与证据层级](09B-APP-CONNECTOR.md)。
+
+本批没有新增页面结构或视觉数值；Vue挂载/Store的合成原生回调用于验证预览与事实边界，不能称为手机原生界面或物理操作通过。实际移动SDK装配、分块桥、系统偏好/触摸与真机仍独立验收；现有网页截图是各自记录的历史实际构建证据。
+
+## 2026-10-04：原答与操作词的界面接续
+
+本批沿原 Playful/Future、Wot Design Uni 1.14.0、uni-app、BaseIcon/Lucide、Clay 和学习组件处理意愿边界，未新增组件、依赖或素材，字体、颜色、实色阅读面及 28/24/12px、44px、180ms、2px 规则保持。正常原答用原作答反馈表达，否定/引用用原澄清，明确停止用原状态说明；不以动画或操作词猜测掌握。
+
+新的 H5 实际画面：[320px 浅色原答](../tmp/visual-build-20261001/component-resume-20261003/directive-boundary-mobile-light.jpg)、[390px 深色原答与保存反馈](../tmp/visual-build-20261001/component-resume-20261003/directive-boundary-mobile-dark.jpg)。本批核验浏览器视口、键盘发送与刷新接续，未更改样式源码；前批完整原答阅读的焦点/按下/减少动态效果证据仍按该批范围保留，不冒称本批重新跑全部交互或正式桌面/移动设备。[实际范围](06-FRONTEND-REFERENCE.md)。
+
+## 2026-10-04：辅助评分的完整原答阅读
+
+学习页与概览共用 [RubricEvidence](../src/components/business/learning/rubric-evidence.vue)，自主复用 Wot Design Uni 1.14.0、uni-app、BaseIcon/Lucide、Clay 默认头像与现有学习组件；本批无需新依赖、素材、视频或付费选择。网页 Playful Idea、桌面 Future 3D Portfolio 的原构图与提示词继续沿用，原文来源及素材授权未在本轮重新联网核验，不扩大此前证据。DM Sans、浅紫/深紫实色阅读面、28/24/12px 层级保持；原答内层为 12px 圆角，文字可选择，保留已保存作答的换行与连续空格。
+
+引用按钮与完整阅读按钮至少 44px 高、默认 180ms 颜色反馈、按下 100ms、2px 紫色键盘焦点；减少动态效果取消过渡并保留展开状态提示。指定引用以底色、加粗和下划线共同标示，不单靠颜色。v2 只突出重新核实的明确范围，重复文字显示出现序号；v1 保持“旧记录未定位”，异常范围只保留待核对说明。已有用户校对时明确显示历史辅助记录。完整规则见[合同](04-API-DOCUMENTATION.md)。
+
+复用最终 `index-Bs6Zr6e6.js`，已补齐 1280/390/320px、浅深色、Enter/Space、2px 焦点、概览/旧记录与减少动态效果；悬停/按下用 CDP 伪类检查，窄屏是浏览器视口模拟，均不称手机触摸或设备验收。两张前轮截图已替换为最终构建的[浅色](../tmp/visual-build-20261001/component-resume-20261003/rubric-reader-mobile-light.jpg)与[深色](../tmp/visual-build-20261001/component-resume-20261003/rubric-reader-mobile-dark.jpg)，原答完整可见。只读展开、切换与刷新不写学习事实或解除停止；[验证与资源收尾](12-CHANGELOG.md)、[完整矩阵](13-DEVELOPMENT-PLAN.md)。
+
+## 2026-10-04：诊断依据与学习状态沿用规则
+
+继续使用已安装Wot 1.14.0（MIT）、原uni-app学习按钮、诊断面板和NumberLine；没有第二套组件体系或新的外观数值。小题题干旁的“诊断依据”复用`subtle`和DM Sans，按原浅紫/深紫实色阅读面显示，说明可观察答案差异和诊断限制。等待作答、受阻、帮助后正确、独立正确和待核对均用文字表达；完整原题仍需独立检验。原12px控件、44px触区、180ms反馈和2px聚焦沿用，停止后禁用独立检验；不靠新增动画表示成功或能力。
+
+实际H5已核对浅色/深色、320/390/1280宽度、悬停/按下/Tab/禁用以及减少动态效果0s；新文字无横向溢出，提示事实没有变成独立成功。三张实际画面：[浅色手机待作答](../tmp/visual-build-20261001/component-resume-20261003/quadratic-diagnosis-mobile-light.jpg)、[深色手机帮助后正确与焦点](../tmp/visual-build-20261001/component-resume-20261003/quadratic-diagnosis-mobile-dark.jpg)、[桌面停止与禁用](../tmp/visual-build-20261001/component-resume-20261003/quadratic-diagnosis-stopped-wide-dark.jpg)。网页继续Playful、桌面继续Future；未因补齐功能更换材质、图标、头像或整体设计方向。跨端真机与正式安装验收见[13](13-DEVELOPMENT-PLAN.md)。
+
+## 2026-10-04：完整区间图示沿用规则
+
+复用原Wot/uni-app控件和现有NumberLine；数学结构由原有界精确代数工具提供，无新依赖、组件体系、付费素材或视频。数轴沿用本学习空间的DM Sans、浅紫/深紫与实色阅读面：文字`space-ink`、背景`space-composer`、边框`space-line`、解段`space-paper`，圆角用已有12px。原独立蓝色兜底已改正；不画额外函数曲线或装饰。控件沿原44px、聚焦和180ms反馈，图形静态且提供完整文字说明，减少动态效果时不依靠动画表达答案。
+
+实心/空心分别表示边界包含/不包含；多段全部显示，孤立点只显示一个实心标记，全体/空集沿原表示。点位置为示意，边界值为精确标签；完整图示按3级帮助保存，首次判错和提示后修正不混作独立掌握。390/320/1280宽度、浅深色、Tab焦点和减少动态效果已实际核对。未覆盖真机/正式安装更新或所有数值极端布局；具体先修诊断按上节接续；无理根与一般有理式仍有界待核对。[规则与能力边界](04-API-DOCUMENTATION.md)、[实际核验](06-FRONTEND-REFERENCE.md)。
+
+本批三张实际界面：[手机浅色闭边界](../tmp/visual-build-20261001/component-resume-20261003/quadratic-closed-mobile-light.jpg)、[手机深色开边界](../tmp/visual-build-20261001/component-resume-20261003/quadratic-open-mobile-dark.jpg)、[桌面深色重根单点](../tmp/visual-build-20261001/component-resume-20261003/quadratic-point-wide-dark.jpg)。这是本机H5画面，使用既有业务主题，没有新增整体主题或付费决策。
+
+## 2026-10-04：网页备份文件与状态
+
+继续复用现有 Wot Loading、原学习按钮和恢复面板；文件选择使用浏览器标准接口，没有第二套组件库、依赖安装、素材、视频或新外观数值。DM Sans、浅紫/深紫实色阅读面、12px 控件、44px 触区和原反馈保持。等待、取消、读取失败与成功靠近文件操作，不显示没有业务总量依据的百分比；成功明确尚未校验或合并，错误说明原输入和记录保留。原格式校验与明确合并不被文件选择替代。
+
+已检查标准接口文档：[文件选择取消](https://developer.mozilla.org/en-US/docs/Web/API/HTMLInputElement/cancel_event)、[有界字节读取](https://developer.mozilla.org/en-US/docs/Web/API/FileReader/readAsArrayBuffer)、[严格 UTF-8](https://developer.mozilla.org/en-US/docs/Web/API/TextDecoder/fatal)。这些是浏览器原生能力，无新增第三方组件许可；旧浏览器取消事件或严格解码能力不完整时，保留页面明确取消和粘贴路径，不宣称全部历史浏览器已通过。
+
+实际 390×844、320×568、1280×720 无横向溢出；文件/取消按钮高 44px、12px 圆角，Tab 焦点 2px。浏览器减少动态效果覆盖下等待为 0s、操作仍可取消。最终 `index-CXjIbcGI.js` 经普通刷新接续后台更新，没有清缓存或修改更新机制；原错答与停止保留。两万操作文件在 IAB 和独立 Chrome 存储均已恢复，完整公开导出已逐项比对；下载事件没有文件回执，下载管理页被安全策略拒绝，不以正文生成代替落盘证据。[实际浅色等待](../tmp/visual-build-20261001/component-resume-20261003/record-file-loading-mobile-light.jpg)、[深色大文件确认前](../tmp/visual-build-20261001/component-resume-20261003/record-file-complete-mobile-dark.jpg)、[重开后的完整备份](../tmp/visual-build-20261001/component-resume-20261003/record-file-persisted-wide-dark.jpg)。实际 Mac/Windows/微信/App/手机与已安装 PWA 更新仍分别验收，本批没有新的付费或主题决策。
+
+## 2026-10-04：两万操作与本地分页容量
+
+继续沿既有Wot、公共弹窗、BaseIcon/Lucide、Clay、DM Sans和Playful/Future及业务浅紫/深紫规则；本批只修保存容量，颜色、字体、材质、圆角、间距、图标和180ms反馈未变。没有新增组件体系、素材、视频或付费决策。物理分页复用已安装pako 1.0.11的官方 `dist/pako.min.js`，源码版C条件注释会被uni-app误读，未修改第三方原件或安装/升级依赖。原包装及zlib核心许可已逐字读取，[本地MIT/Zlib声明](../src/static/licenses/pako.txt)随静态资源保留；[官方许可说明](https://nodeca.github.io/pako/#license)对应上游现行版本，1.0.11 API及许可以本机锁定源码为核对依据，原版本GitHub页面无法访问，不追认已在线查看。
+
+正式模式网页实际保存两万操作，保持原19错答、主动停止和任务1/1；19985消息仍是50条更早/更新/最新窗口。完整2,909,645字符导出已按私人安全归一化核对所有操作和学习事实，普通刷新及上限拒绝后全文逐字一致。同步仍按原限流，接收20,000/20,000时仍需核对，最终API47页及数据库完整状态一致。390/320视口无横向溢出，44px操作、DM Sans、深浅色及减少动态效果的0s进度保持；属于H5浏览器证据。其他设备容量、不易压缩数据、600万满边界、旧二进制/正式安装更新与长期多设备仍另验。
+
+实际画面：[浅色接收进度](../tmp/visual-build-20261001/component-resume-20261003/history-capacity-progress-mobile.jpg)、[深色重开后完整备份](../tmp/visual-build-20261001/component-resume-20261003/history-capacity-success-mobile-dark.jpg)、[桌面长会话接续](../tmp/visual-build-20261001/component-resume-20261003/history-capacity-persisted-wide-dark.jpg)。正文完整展开/收起与拒绝状态沿现有入口，不为了容量改变主题或隐藏旧记录。[合同](04-API-DOCUMENTATION.md)、[验证及收尾](12-CHANGELOG.md)。
+
+## 2026-10-04：已接收进度与长会话
+
+本批继续复用既有Wot ring、公共弹窗、BaseIcon/Lucide与Clay默认头像；字体、紫色浅深主题、实色阅读面、28/24/12px层级、44px触区和180ms反馈沿原规范，没有新依赖、素材或视频。分批同步进度复用资料进度条及transform比例；总量未知只显示读取阶段，确定补传总量后回执核验通过才增长。文字同时说明完整结果仍需核对，100%接收也不能替代最终云端事实。减少动态效果保留静态进度、文字和取消，实际进度过渡为0s。
+
+正文摘要的显示分界现在沿现有历史分页大小120000字符，完整文本仍可明确展开/收起和清除重贴。原150万字符小备份校验与600万字符/2万操作逻辑合同保持。旧入口约85.7万字符直接正文曾出现控件自动化连续超时，底层原因未独立定位；最终摘要、完整展开及分段读回已实际核对完整857,009字符，没有把工具返回截断当原文缺失。下载事件无文件回执，界面保留同一份导出正文。
+
+实际H5合成账号完成六千操作保存、5986消息的50条更早/更新/最新窗口、完整分批同步和普通刷新；原19错答、停止及任务1/1保持。14页签名API、压缩数据库与全部6000事件核对一致。390/320逻辑窄屏无横向溢出，原操作44px与DM Sans、深色及减少动态效果已核对；这仍属于浏览器预览范围。两万操作完成预览后实际分页保存失败，原12操作保留，上限与底层原因、其他设备容量、正式安装更新和长期多设备继续待验。相关检查与资源收尾见[12](12-CHANGELOG.md)。
+
+实际画面：[静态接收进度](../tmp/visual-build-20261001/component-resume-20261003/history-sync-progress-mobile.jpg)、[深色最终结果](../tmp/visual-build-20261001/component-resume-20261003/history-sync-success-mobile-dark.jpg)、[长会话翻页](../tmp/visual-build-20261001/component-resume-20261003/history-pagination-wide-dark.jpg)。后续沿本规范和既有来源补齐功能；没有本批新增的付费或主题决策。
+
+## 2026-10-04：同步、冲突与云端删除反馈
+
+继续复用已安装的 Wot Design Uni 1.14.0（MIT）、公共学习弹窗、BaseIcon 与当前学习布局；没有新增库、依赖、素材或视频。同步状态沿现有 DM Sans、浅紫/深紫实色阅读面、语义警告色与 28/24/12px 层级，使用现有 24px ring 加载和至少 44px 操作。首次等待、阶段/请求尝试数、取消、错误与成功均靠近对应操作，不用无业务依据的骨架屏或额外转场。按钮继续原次级/主操作规则，未添加磨砂、弹跳或新样式数值。
+
+同步期间禁用重复同步、云端删除及冲突采用/恢复/移除；双方导出保持可用。取消说明已发送批次可能已保存、已完成的删除不能被取消撤销。错误使用 alert，其他状态沿 status/live 区域；仅在当前页面/账户/记录/归档有效时显示。新的确认动作清除旧页底提示，后续成功不会和过时警告并列。减少动态效果下实际加载节点 animation/transition 为 0s，文字及取消入口保留。归档身份与学习事实规则见[04](04-API-DOCUMENTATION.md)，不由外观或进度冒充处理完成。
+
+本机 H5 实操核验首个请求等待、禁用/取消、断网失败、两份冲突导出、本机恢复、重新核对后采用云端、移除归档、完整删除回执及删除后明确补传。原 19 错答、主动停止、单次作答、首答错题 1/1 和任务 1/1 保持。390×844 与 320×568 无横向溢出，同步/云端删除按钮均高 44px；深色、键盘 Enter/Tab、弹窗取消后的焦点恢复与减少动态效果已实际观察。网络延迟/断网是浏览器模拟，API 与数据库是本机真实实现和合成账户，未验真实登录或生产服务。
+
+| 实际画面                                                                                        | 已核验用途                                 |
+| ----------------------------------------------------------------------------------------------- | ------------------------------------------ |
+| [首次同步等待](../tmp/visual-build-20261001/component-resume-20261003/sync-loading-wide.jpg)    | 最终构建的 ring、首次阶段、禁用与取消      |
+| [手机错误与重试](../tmp/visual-build-20261001/component-resume-20261003/sync-error-mobile.jpg)  | 最终构建的就近错误、44px 控件和 390px 布局 |
+| [手机冲突处理](../tmp/visual-build-20261001/component-resume-20261003/sync-conflict-mobile.jpg) | 分批实操中恢复本机、双方导出和三个确认入口 |
+| [深色同步完成](../tmp/visual-build-20261001/component-resume-20261003/sync-success-dark.jpg)    | 最终构建的实际成功、任务事实和旧警告清除   |
+
+前三类行为分批验证，最终等待/错误/深色截图已更新为 `index-B_xorZAD.js`；冲突图来自同批旧页底提示修复前的构建，冲突控件与合同随后未改。新标签首次沿旧缓存载入上一入口，普通刷新后确认最终脚本；未清缓存或改变更新机制。浏览器画面不替代已安装 PWA、系统偏好、Mac/Windows/微信/App/手机设备验收。当前没有新的免费选型或主题决策；参考视频完整使用许可仍无法核实，本批不需要生成视频。
+
+## 2026-10-04：原生精确占比的实际效果
+
+当前源码独立 Mac App 的占比表单、讲解/修正、独立变式、原生备份和正常重开已实际核验；继续用 Wot、BaseIcon、DM Sans、原浅紫/深紫、实色阅读面及既有圆角/反馈，没有新设计数值或组件体系。原首页 Future 的天空/构图及各端原动画保持。空字段禁用、部分大于整体的就近提示、选中字段、严格分数作答和停止状态沿同一规则。
+
+本轮四张完整原生截图均为 2180×1426，来自普通 Mac 窗口。前批原生截图只返回缩略图的记录不追认为完整视觉通过；本批也不代替 Mac 系统减少动态效果、正式 App 安装更新或 Windows/微信/App/手机验收。视频沿已选参考，本轮不需要生成，原视频完整使用许可仍无法核实。
+
+| 实际画面                                                                                                        | 已核验用途                                     |
+| --------------------------------------------------------------------------------------------------------------- | ---------------------------------------------- |
+| [原生浅色字段](../tmp/visual-build-20261001/component-resume-20261003/numeric-native-share-fields-light.jpg)    | 部分/整体选择、选中状态与原文纯数值            |
+| [原生深色统计](../tmp/visual-build-20261001/component-resume-20261003/numeric-native-share-stats-dark.jpg)      | 三次作答、原错题与任务 1/2，修正不冒充独立完成 |
+| [原生备份预览](../tmp/visual-build-20261001/component-resume-20261003/numeric-native-backup-preview-dark.jpg)   | 实际保存/读取后新增 0 / 已有 27，合并禁用      |
+| [原生正常重开](../tmp/visual-build-20261001/component-resume-20261003/numeric-native-reopened-stopped-dark.jpg) | 原资料变式、直接讲解及停止保留                 |
+
+## 本批选择与构建顺序
+
+客户已选择 [提示词来源](https://wangshiliang.cn/news)：主网页 **Playful Idea**，macOS/Windows 的视觉及小程序参考 **Future 3D Portfolio**。本批先以原文案、原 Logo/场景和原交互构建模板，再沿同样的排版替换为问理元素，最后连接现有学习功能。原模板、完整提示词及本机截图保存在忽略目录 `tmp/visual-build-20261001/`；没有另建根级设计文档。
+
+Playful 是一屏工作室页脚，不增设原模板没有的导航头、营销卡片或表单。Future 是全屏天空、滚动字标、透明投影桌面、衬线标题与左下导航；原模板按提示词的 1280×720 归一化尺寸构建，保留原远程场景与天空素材。模板文件用于来源对照，不作为生产功能入口。
+
+## 产品元素与配色
+
+显示品牌继续使用 **Wenli · 问理**，EXAM-MASTER 的应用 ID、存储键、数据库及题源标识不变。沿用本地原创 W 标志和已有 PWA 图标，不另造品牌。网页左侧导航接学习、错题、复习计划、学习足迹；右侧保持两行标题及短注释，以三枚功能图标接私人资料、模型连接与账户。
+
+H5 安装清单的主题色和启动背景共用现有 `BRAND.themeColor`（浅紫 `#f0eefa`），与网页入口一致；图标、安装范围和启动路由保留。安装清单仅普通 H5 构建启用，Tauri、微信和 App 不使用该清单；生成文件与本机网页读取不代替已安装 PWA 或正式更新验收。
+
+Future 的 Ayush 替换为同样五字母的 Wenli，介绍保留两行，导航接首页、学习、私人资料、复习计划；背景滚动词替换为 LEARNING、PRACTICE、REVIEW。只编辑投影画面中的品牌与学习文案，透明图仍为 1672×941，桌子、投影器和道具布局保留。投影屏幕是装饰图，实际任务与统计由学习页面呈现。
+
+默认阅读页用浅紫底、黑色文字、白色内容面和紫色主操作。深色阅读用深紫底、暖白文字与淡紫操作；错误/警告继续保留语义色。登录、账户和旧功能沿既有主题变量与组件调整配色，不另建业务逻辑。减少透明度或提高对比度时使用实色表面。
+
+微信网站扫码沿原登录按钮与回调卡片，不增加独立营销页或重排首页；普通浏览器按钮显示扫码，微信内显示授权。2026-10-03 的接续补齐 Store 导出与验证，没有修改选定模板的布局、字体、颜色或动效。实际 H5 原 Playful 首页、Future 切换及学习入口成立；合成授权回执不能当作真实平台登录或桌面原生验收。
+
+同日桌面接续继续使用上述原按钮、回调卡片、通知和学习记录弹窗；只补系统浏览器完成后的返回提示、访客同步登录引导与隐私/协议返回按钮的语义和键盘行为。模板布局、字体、色彩和动效保持，原生与合成身份范围在[13](13-DEVELOPMENT-PLAN.md)单独说明。
+
+主题偏好统一从现有 storageService 读取，保留旧版原始键回退；启动、页面返回、账户概览与底部导航共用主题 Store。H5 根节点明确标记已选主题，系统深色只在没有显式主题时提供默认值，不能覆盖用户选择的浅色。实际重开已分别验证浅色和深色；原生系统主题及设备显示仍需各端验收。
+
+## 字体与布局
+
+Playful 使用提示词指定的本地 DM Sans Regular、Epilogue Black，正文及两行标题的 vw 比例与 700px 断点保留。桌面三列内容叠在原视频上，手机先叠放文案，视频随后进入文档流。中文使用系统后备字体，字数与光学宽度尽量匹配原版。
+
+Future 使用 Playfair Display（常规/斜体）、DM Sans 与 Poppins；保留提示词的布局、字标宽度缩放、82 秒无缝滚动、手机/平板/横屏比例和进场时间。产品字体在网页本地提供并保留 SIL OFL 文本；原模板仍按提示词从 Google Fonts 加载。中文系统后备与原英文的字形宽度不会完全相同。
+
+学习功能共用原 Shell：最大外框 1320px，236px 左目录，1100px 下为 216px，900px 下折叠，520px 下收紧；手机保留 dock 与安全区。开始学习表单、资料/连接/备份/隐私控件从真实操作入口打开，不叠加到原首页构图中。
+
+首次引导按通用目标、教学、私人资料和学习依据四步说明；完成或跳过只记录引导状态，不自动创建考试画像或学习事实。旧入口显式携带 `source=home` 时保留原考试设置流程。账户概览读取对话学习事实，旧题库记录另列，避免将历史题库正确率与首答错题口径混用。
+
+## 动效与跨端边界
+
+Playful 的眼睛来自原视频帧，不重绘瞳孔；按完整非线性帧表、object-fit cover 后的眼睛位置与鼠标角度定位，桌面停留当前帧，手机自然循环。卸载时取消帧与监听。网页素材位于 `public/visual/`，仅 H5 构建复制；不会把大视频打入微信或 App。
+
+首页与已有学习控件共用键盘激活：Enter/Space 对应现有动作，移动目录打开后聚焦搜索，Escape 关闭并归还焦点；主内容在目录打开时不可交互。搜索输入保留确认后的焦点，避免 uni-input 的默认确认收尾立即将其失焦。减少动效同时停止 Playful 循环与追踪，保留静态首帧；旧版媒体查询监听有兼容释放。
+
+Future 天空第一次播放后从 3 秒重启，阻止播放或失败时显示原首帧背景；动效开关暂停视频与字标。减少动效时卸载视频、停止滚动并立即展示内容；进场有兜底与卸载清理。网页可完整展示动效；非 H5 沿已有 uni-app 使用静态天空/投影场景，原生运行时不依赖 DOM 进场能力。微信/App 源码构建和实际设备显示分别成立。
+
+macOS/Windows 桌面宿主已采用 Tauri 2，独立桌面构建默认 Future；已有显式外观偏好优先，普通 H5 默认 Playful。macOS arm64 App/DMG 已构建并从 DMG 安装副本实际操作，首页沿相同天空、投影场景、字体与比例；原生窗口标题栏和系统选择器保留平台外观。学习、错题、计划、统计、账户及深浅阅读继续复用原组件与主题。Windows 安装及微信/App 真机显示仍未验证，不能由网页或 macOS 证据替代；当前范围见[13](13-DEVELOPMENT-PLAN.md)。
+
+## 来源与判定
+
+字体许可存放于 `public/fonts/OFL-*.txt`，Google Fonts 上游：[DM Sans](https://github.com/google/fonts/tree/main/ofl/dmsans)、[Epilogue](https://github.com/google/fonts/tree/main/ofl/epilogue)、[Playfair Display](https://github.com/google/fonts/tree/main/ofl/playfairdisplay)、[Poppins](https://github.com/google/fonts/tree/main/ofl/poppins)。原模板页脚的社交 SVG 按提示词末尾“find icon”要求使用 Bootstrap Icons；产品功能图标复用项目现有图标库。第三方视觉素材来自客户指定提示词，不据此扩大整个仓库许可或宣称完整授权。
+
+原品牌标志源文件在 `src/static/brand/`，至少 16px，留白不小于线宽；深色表面用浅色版，PWA maskable 图形保留安全区域。不拉伸标志，不用装饰屏幕代替真实数据，不修改授权、判分、停止/教法、预算、幂等或公共库门禁。
+
+本批验证与限制见 12 的本批条目及忽略目录；此前 Reading Library / Mood Tracker 与 `learning-room.webp` 自然光背景是旧视觉记录，当前首页已按客户新选择替换。旧素材保留原文件，不作为新首页依据。
+
+## 自动选型与补齐规范（2026-10-03）
+
+2026-10-04 数量资料增量继续沿既有 Wot/MIT、BaseIcon、DM Sans、浅紫/深紫实色面和 12px 控件，不新增库、素材或动画语言。占比沿同一字段选择器，明确“部分字段 / 整体字段”；增量与增长率保留“基期 / 现期”。数值说明使用原正文与状态区域，精确分数、不猜单位/舍入的要求跟随当前练习；计划完成条件区分“独立正确才完成 / 正式作答后完成 / 手动确认完成”，历史事实不重写。实际空选、反选、单位拒绝与成功入口见[桌面](../tmp/visual-build-20261001/component-resume-20261003/numeric-desktop-invalid.jpg)、[390px 浅色](../tmp/visual-build-20261001/component-resume-20261003/numeric-mobile-light-fields.jpg)、[320px 深色最终表单](../tmp/visual-build-20261001/component-resume-20261003/numeric-mobile-dark-fields-final.jpg)、[最终练习](../tmp/visual-build-20261001/component-resume-20261003/numeric-mobile-result-final.jpg)。前两张为本批初次构建，后两张为最终构建；首页 Playful/Future 明确构图与原动效保持。新增入口实测 44px 触区、12px 圆角、180ms 反馈，按下 0.95/brightness(0.9)、Tab 2px 紫色焦点；减少动态效果过渡 0s。此证据为 H5 浏览器与窄屏视口，不称为本批原生或手机真机验收。[实现、构建和限制](12-CHANGELOG.md)。
+
+客户追加的“自动补齐组件与动画，保持原设计一致”替代此前逐组件选参考、逐项确认的规则。后续在已授权的开发范围内，自主复用、选型和统一适配；只有付费、影响整体主题的参考冲突或显著改变设计方向时，集中提出必要决策。本节最初在审计阶段确定来源与规则；其后客户明确选择“恢复本地开发与核验（推荐）”，本地实施和实际证据见下文，不再沿用此前停止状态作为当前范围。
+
+### 依据与适用范围
+
+| 依据类别                          | 已确定内容                                                                                                                                                                                               | 使用边界                                                                                                                                                                 |
+| --------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 原文明确规定：Playful Idea        | `#080909` 墨色、`#dfe4f2` 视频后备色、`#f7f8fa` 徽章、`#f0eefa` 手机背景；Epilogue Black 900 与 DM Sans Regular 400；桌面三列、700px 手机断点、徽章 100px 圆角、手机至少 44px 触区；原视频非线性帧表追踪 | [完整原文](../tmp/visual-build-20261001/playful-prompt.txt)。首页不增加视频遮罩、染色或磨砂层，不把原毛绒角色改成用户头像。减少动态效果沿现有静态首帧扩展。              |
+| 原文明确规定：Future 3D Portfolio | Playfair Display 常规/斜体、DM Sans、Poppins；1280×720 归一化场景、1672×941 透明投影图、字标 82 秒循环、原顺序进场、开关弹簧和减少动态效果                                                               | [完整原文](../tmp/visual-build-20261001/future-prompt.txt)。透明投影是场景图片，不能据此推定所有按钮、卡片和弹窗都应磨砂。首页的原进场与开关节奏不套用业务控件的新时长。 |
+| 从可见画面推断                    | 两套参考都有柔和紫色、圆润角色或道具、轻松而清楚的层次；Future 的场景道具有立体感                                                                                                                        | 已实际观看[提示词库](https://wangshiliang.cn/news)中两个选定条目的高清视频。此项支持圆润卡通和克制反馈的选择，不能当作原文中的头像、阴影或模糊数值。                     |
+| 已有项目规范与实现                | 本文 front matter 的浅紫/深紫、DM Sans 中文后备、28/24/12px 圆角和 24/20px 面板内边距；[学习样式](../src/components/business/learning/learning-space.css)最终主题覆盖的实色内容面、细边框与深色变体      | 这些是已有业务主题，沿用到学习、错题、计划、统计、账户、登录和相关操作面板。不能覆盖两套首页各自的明确规定，也不能移用到其他项目。                                       |
+| 原设计未规定，现已自主补齐        | 按钮角色、默认卡通头像、统一功能图标、新业务弹窗/抽屉/菜单、状态与短动效规则                                                                                                                             | 下文是本项目的业务适配决定，非原提示词逐字要求；无需再次逐项选参考。按已获授权的本地开发范围增量实施，不能把规则已定等同于全部控件已验收。                               |
+
+两份本机完整提示词已与提示词库复制出的原文比对一致；原始来源是 [MotionSites](https://motionsites.ai/)，未解锁的原文按客户指定在上述提示词库查找。本机模板截图是实现对照，不能作为原网站的独立截图；原始视频素材的完整授权仍未核实，不将新选组件的免费许可扩大到这些视频。
+
+### 主来源、许可与技术适配
+
+| 用途         | 已确定来源与实际核验                                                                                                                                                                                                                                                                  | 许可、维护与适配结论                                                                                                                                                                                                                                                                                                           |
+| ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 基础组件     | 复用项目已安装的 Wot Design Uni **1.14.0**；[官方文档](https://v1.wot-ui.cn/)、[按钮演示](https://v1.wot-ui.cn/component/button.html)、[弹出层演示](https://v1.wot-ui.cn/component/popup.html)。已实际查看按钮的实色/描边/禁用/加载、打开居中弹窗和底部弹出层，并只读检查本机组件源码 | 本机包及 LICENSE 为 MIT，Vue 要求 >=3.2.47，与项目 Vue 3.4.21、uni-app 相符。上游 [1.14.0 发布](https://github.com/Moonofweisheng/wot-design-uni/releases/tag/v1.14.0)和官方页面版本一致，仓库 2026-09-24 仍有提交；页面已提示 v2，不能据此承诺 v1 的长期维护。本轮不升级，不引入第二套基础库。                                |
+| 业务动画     | 同一 Wot 的 [Transition](https://v1.wot-ui.cn/component/transition.html)、Popup 与 scoped CSS；已触发 fade-up 演示并读取过渡、弹出层属性和样式源码                                                                                                                                    | 同一 MIT 许可。支持自定义进入/退出类及 duration，可通过项目包装适配；原始 fade-up 位移为 100%，默认弹框有缩放，不能直接称为本文的轻滑淡入。已有 MessageBox 内部固定 zoom-in/200ms，后续需按实际接口包装或复用 Popup，不能声称所有属性均可直接配置。                                                                            |
+| 加载占位     | 已安装的 [Wot Skeleton](https://v1.wot-ui.cn/component/skeleton.html)，已查看头像/文本/段落占位演示，源码确认静态、gradient 和 flashed 三种选择                                                                                                                                       | MIT，无须新依赖。选择柔和 gradient，减少动态效果时设为静态；1.5 秒周期来自当前源码。强闪烁 flashed 不作为业务默认。渐变在产品深浅主题及设备上的效果尚未验证。                                                                                                                                                                  |
+| 功能图标     | 保留 [BaseIcon](../src/components/base/base-icon/base-icon.vue)接口及合适的已有线条图标；新增或需要替换的图形统一从 [Lucide 目录](https://lucide.dev/icons/)取。已观看目录，并读取 [message-circle SVG](https://github.com/lucide-icons/lucide/blob/main/icons/message-circle.svg)    | [Lucide 许可](https://github.com/lucide-icons/lucide/blob/main/LICENSE)为 ISC，列出的 Feather 衍生图形另适用 MIT，分发时保留相应声明；免费用于本项目。2026-10-03 上游仍有图标提交。用本地 SVG/受支持图片走已有适配器，不安装仅面向浏览器的图标运行库；微信/App 的渲染另验。旧图标未找到统一来源声明，不追认其全部来自 Lucide。 |
+| 默认卡通头像 | 选 [DiceBear Clay](https://www.dicebear.com/styles/clay/) 静态圆润卡通；已实际看预览、读取 [10.6.0 风格定义](https://cdn.hopjs.net/npm/@dicebear/styles@10.6.0/dist/clay.min.json)中的构成和许可元数据                                                                                | 风格素材为 CC0 1.0，可免费用于本项目。它是带黏土感的矢量卡通，非原视频毛绒模型或真实 3D。DiceBear 上游 2026-09-28 仍有提交；Clay 标为新风格，采用离线静态素材以免引入新运行依赖，平台支持仍需实测。                                                                                                                            |
+
+Wot 旧文档域名未成功打开，已沿其官方仓库 README 找到上述 v1 新入口并在浏览器加载演示；部分网页文本抓取超时不作为失败的视觉证据。Element Plus 的弹窗/抽屉和 Vue 官方 Transition 示例可供理解交互，均不作为本项目新增基础库；Vue Bits 的玻璃折射与需要 GSAP 的淡入方案不进入默认选型，避免偏离实色阅读面及现有跨端结构。
+
+### 统一外观与素材规则
+
+业务浅色继续使用本文已定的 `#f0eefa` 背景、`#080909` 正文、白色内容面和 `#785bbc` 主操作；深色沿现有学习主题的 `#211a2e` 背景、暖白正文和 `#c9b1ee` 主操作。次要文字、边框、警告、错误和成功复用各端现有语义变量，不从候选演示引入蓝色主色、额外装饰色或随机头像背景。浅色主按钮白字，深色主按钮用深紫文字；开发时核对实际对比度。
+
+业务英文/数字与正文采用 DM Sans，中文按本文系统后备；14px/1.65 是已有基础正文值，输入和标题按现有层级与可读性适配，不把所有文字压成同一字号。业务外框/内容面/控件分别沿用 28/24/12px，面板内边距桌面 24px、手机 20px；首页徽章和原场景控件保留原尺寸。密度、Shell 断点和手机安全区不因组件来源而改变。
+
+阅读内容面保持实色、1px 主题细边框和无重阴影。轻浮层沿现有低强度投影，仅用于菜单、弹窗和 dock 的层级提示；不新增凹凸双阴影、光晕或液态折射。透明描边用于次操作，文字按钮用于低强调操作；磨砂只保留在确有背景层次需求的既有浮层，沿其已有参数，在减少透明度/高对比或不支持 blur 时回退实色。常规卡片、输入框和主按钮不任意混用玻璃。
+
+功能图标统一 24×24 viewBox、2 单位描边、圆端点/圆连接；显示尺寸仍由 BaseIcon 的现有 rpx 适配控制，颜色随主题和语义，不把淡色硬编码到浅色内容面。符合规则的现有图形优先保留；1.6 描边等差异在相关开发时归一。品牌 W 和明确属于原模板的装饰图形沿原规范，不套用功能图标规则。
+
+默认头像只使用 Clay 同一风格，优先紫色身体、浅紫背景和墨色面部；已有头像容器尺寸、圆形裁切和上传入口沿用，用户上传照片优先，不改变用户资料。仅补齐已有账户/个人位置的空缺，头像加载失败用同一离线默认素材；不为聊天或列表新增原业务没有的头像。后续只导出必要静态文件并保留来源版本，运行时不向外部头像 API 传用户标识，不捆绑整个生成器；微信媒体与包体沿现有合同验收。
+
+### 组件覆盖与处理顺序
+
+以下相同用途合并处理；“选型已定”不等于“已实现”或“实际界面已通过”。源码中的名称、类名及代码存在只能证明实现线索。
+
+| 组件或状态                   | 位置与现状证据                                                                                                                                                                 | 选型与后续统一方式                                                                                                                                                                     | 顺序 |
+| ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---- |
+| 按钮、输入框与表单           | 开始学习、登录、账户、模型/私人资料设置；已有 Wot 与自制控件并存，原模板只覆盖首页局部控件                                                                                     | 复用 Wot Button/Input/Textarea/Form。主操作实色紫，次操作紫色描边，低强调操作文字；统一字形、12px 圆角、触区和状态。保留协议、授权、校验、发送/停止语义。                              | P1   |
+| 导航、标签页、菜单           | 原首页导航、LearningShell、手机目录/dock、旧业务 tabs 和操作菜单；原设计规定首页构图，业务细节未规定                                                                           | 首页保留；业务沿 Shell 与 Wot Tabs/Popover/ActionSheet 的适用结构。选中用现有浅紫/深紫状态面，不能只靠颜色；手机侧目录沿已有打开方向，操作清单才使用底部面板。                         | P1   |
+| 卡片与内容面、图表/记录列表  | 学习、错题、计划、统计和账户；[App](../src/App.vue)的旧 `.glass-card` 仍有双阴影，[学习样式](../src/components/business/learning/learning-space.css)最终覆盖已采用无模糊内容面 | 阅读面以现有学习主题为准，增量消除相同用途的旧材质/字体差异。现有列表与图表足以承载当前业务，不为凑组件库增加表格；真实需要表格时才复用 Wot Table。                                    | P1   |
+| 弹窗、抽屉、退出行为         | 通知、学习记录、资料操作及旧答题 [CustomModal](../src/components/common/CustomModal.vue)；旧面板有 0.3s 弹跳进入，根节点 `v-if` 退出直接移除，手机目录有显示切换               | 用项目公共包装统一 Wot Popup 的结构与本节动效，兼顾现有弹窗参数。保留焦点归还、Escape、遮罩策略、滚动锁定和手机安全区；危险/未保存操作沿业务规则，不能默认遮罩即可丢弃。               | P1   |
+| 功能图标与默认头像           | BaseIcon、首页三枚功能入口、账户/个人浮层；现有图标线宽混合，学习表单多处固定 `#f8f5ee`，默认头像样式未由原文规定                                                              | 选 Lucide 补充已有图标、Clay 补默认头像，按上节归一；硬编码图标的实际对比度仍需代表页面验证，不能只凭源码宣布已修正。                                                                  | P1   |
+| 加载、空白、错误、成功与提示 | 列表初次加载、生成/上传/保存、连接失败、无记录；新旧页面已有部分骨架屏、行内提示与通知                                                                                         | 复用 Wot Skeleton/Loading/StatusTip/Toast 与现有行内提示。骨架形状对应实际内容；无数据说明下一步；错误保留输入并提供允许的重试；成功在真实操作完成后展示，重要结果不能只靠短暂 toast。 | P1   |
+| 上传与附件                   | 私人资料、头像、聊天附件；已有上传、安全和权限流程                                                                                                                             | 沿现有服务与 Wot Upload/进度呈现，不新增传输或权限。正常、校验错误、上传中、取消、失败重试、完成使用同一状态语言；无真实进度时不能伪造百分比。                                         | P2   |
+| 聊天与编辑区                 | 连续学习对话、composer 和答题输入；实际流式内容与旧的完成后打字效果分别存在                                                                                                    | 保留现有消息结构、输入、附件与发送/停止功能，必要时复用 Textarea；不引入 React 聊天组件、富文本编辑器或新头像栏。新消息轻淡入，真实流式文字直接呈现，不额外逐字重播完整答案。          | P2   |
+| 展开收起、列表变化与页面切换 | 学习折叠、记录增减、手机目录及 [safeNavigate](../src/utils/safe-navigate.js)已有平台导航参数                                                                                   | 按下节处理相关控件。进入/退出成对，新增条目保持阅读位置，不重播全列表；原生路由沿现有平台参数，网页动效不能替代原生验收。                                                              | P2   |
+
+P1 是最影响统一感的五组：按钮/表单、导航、内容面、浮层、图标/头像；加载和状态与这些组同步处理。上表保留审计阶段发现，已处理与尚余范围以下文实施记录为准；原文未涉及的控件无需因此全部重做。现有业务可正确承载时，优先统一公共规则和实际不一致处。
+
+### 业务动效规则
+
+下表数值由已有 100ms 按压、180ms 反馈及业务阅读需求自主补齐，不宣称来自两份原提示词。仅适用于新增或需要归一的业务交互；首页仍遵守各自原动画。
+
+| 场景                    | 已确定节奏与动作                                                                                                      | 减少动态效果                                                                               |
+| ----------------------- | --------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| 悬停、按下与聚焦        | 悬停/颜色反馈 180ms；按下 100ms，以主题颜色或边框反馈为主，不用弹跳或整张内容卡缩放；键盘焦点立即清楚显示             | 状态即时切换；焦点和选中反馈保留。悬停仅适用于有悬停指针的设备。                           |
+| 内容与居中弹窗进入/退出 | 180ms，opacity 与最多 6px 垂直位移；进入 `cubic-bezier(0.2, 0, 0, 1)`，退出 ease-in；遮罩只淡入淡出，不缩放或弹性回弹 | 时长 0，取消位移并立即显示/移除；退出清理和焦点归还仍执行。                                |
+| 抽屉/操作面板           | 240ms，沿其物理进入边滑动，配短遮罩淡入；关闭沿原边退出，不随页面任意变向                                             | 立即打开/关闭；滚动锁定、安全区与焦点管理保留。                                            |
+| 展开收起、业务 tabs     | 展开收起 180ms，仅变化对应区域，内容布局需要 height 时限制测量范围；标签内容轻淡入 180ms，不同时横移整页或跳动容器    | 内容即时切换；不删改折叠语义或用户选中状态。                                               |
+| 列表新增/删除与消息     | 只对新增或离开的条目淡入/淡出 180ms；旧记录不重复错峰进场，不因装饰动画强制滚至底部；保持真实流式更新                 | 即时增删，保持滚动与阅读位置；真实生成仍以文字状态/停止操作呈现。                          |
+| 加载                    | Skeleton gradient 1.5s 低对比渐变；需要小面积等待时复用现有 Loading。按钮保留尺寸和“发送中/保存中”等真实状态文字      | 静态骨架或文字状态，不依赖旋转/闪动，也不把停止动画当作操作完成。                          |
+| 页面转场                | H5 业务内容必要时使用 180ms 轻淡入，避免与路由动画叠加；原生 forward/back 等保留 safeNavigate 已有平台参数，首页独立  | H5 立即呈现；原生端通过该端可用能力取消非必要运动，不能只写 CSS 媒体查询就称所有平台支持。 |
+
+减少动态效果需覆盖 CSS、视频、ticker、JS 计时与文字效果，遵守系统偏好及已有显式动效开关；监听/计时器卸载清理。非 H5 的检测能力、静态素材回退和组件行为在对应平台验证后才记为通过。保留真实流式学习信息，已完成文本的装饰打字可直接展示；不新增庆祝、强闪烁或持续背景运动。
+
+### 状态与实际核验合同
+
+适用控件统一检查正常、悬停、按下、键盘聚焦、禁用、加载、错误、成功，以及浅/深色、窄屏、安全区和减少动态效果。新增业务控件触区至少 44px；H5 焦点用 2px 主题对比描边，公共弹窗沿 2px 外偏移，学习字段按钮本轮实测沿既有 4px 外偏移，紧凑导航用内描边避免裁切。这些是业务适配和实际核验值，不追认为原提示词规定。禁用说明原因，不只降低透明度；加载防止重复提交但保留适用的停止/取消入口；错误同时提供文字，成功依据真实结果，不改变鉴权、限流、预算、幂等和用户隔离。
+
+后续开发以首页、学习 composer/表单、账户/登录、一个弹窗与手机目录、一个加载/错误列表为代表，在实际运行界面验证，再补对应平台构建与设备证据。先统一公共体系，再沿真实页面增量替换；不改上游包源码、不更换 Vue/uni-app/Tauri 技术栈，不添加无业务用途的组件。审计阶段核验的是原文、可见参考、上游演示、源码、许可与技术适配线索；本地开发已实现的部分单列如下，Windows/微信/App 的实际结果不能由上游 H5 演示推定。
+
+后续新增缺口直接沿本节处理并在本文件更新来源、适配规则和验收事实；发现免费许可变化、基础版本不再可用或整体参考冲突时再集中说明。仅使用现有正式文档，不为每个组件另建选型报告。
+
+### 本地实施与核验（2026-10-03）
+
+客户已明确恢复本地代码开发与界面核验。本批沿当前学习流程补齐公共规则，Playful/Future 首页各自的布局、字体、视频与明确动效保持；没有安装、升级依赖或重新绘制参考素材，没有生产、模型或真实账户调用。
+
+| 已处理范围           | 实施与风格记录                                                                                                                                                                                                                                                                             | 证据和边界                                                                                                                                                                                                                                   |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 公共弹窗             | [CustomModal](../src/components/common/CustomModal.vue)包装已安装的 Wot Popup，实色主题面、24px 面板/12px 控件圆角、44px 按钮；180ms 淡入淡出与 6px 轻滑，保留取消、遮罩策略、禁用、加载和重复确认保护                                                                                     | H5 窄屏实际打开/关闭，确认按钮 44px；键盘进入、Tab 循环、Escape 与焦点归还已核验。减少动态效果时不依赖动画完成事件，按实际可见状态进入焦点；等待显示的观察在成功或卸载时释放。加载/禁用/重复确认另有单元检查，未把合成检查称为真实账户操作。 |
+| 学习按钮、表单与概览 | [学习页](../src/pages/learning/index.vue)将固定淡色图标改为主题色，已有禁用按钮同步说明不可操作；[公共样式](../src/components/business/learning/learning-space.css)与[概览](../src/components/business/learning/learning-overview.vue)沿实色、DM Sans、12px 圆角、44px 触区和 2px 焦点描边 | 窄屏没有横向溢出；空目标保持禁用，原学习校验与发送/停止逻辑保持。本机有限计算实操保留 19 错答、20 更正及概览更新；不证明真实模型生成和教学长期效果。                                                                                         |
+| 手机目录与浮动导航   | [LearningShell](../src/components/business/learning/learning-shell.vue)增加成对的 240ms 滑入/滑出和遮罩关闭，退出期间阻止再次交互；[浮动导航](../src/components/layout/custom-tabbar/custom-tabbar.vue)保留原胶囊材质，增加键盘、当前页面语义及再次显示时清除旧高亮                        | 实际目录打开聚焦搜索、Escape 关闭归还入口；账户→首页→账户的高亮与当前页面提示已复核。减少动态效果时目录无进入动画，导航滑块立即切换；不把这些 H5 结果扩大为真机验收。                                                                        |
+| 账户阅读面与默认头像 | [账户页](../src/pages/profile/index.vue)沿同一实色深浅主题；修正深色快捷按钮浅底白字的实际对比偏差，反馈/退出复用公共弹窗。优先用户上传头像，仅缺失或失败时用本地 [Clay PNG](../src/static/images/avatar-clay.png)                                                                         | 官方可见 Clay 预览 Anouk 的紫色静态素材导出并转为 128×128 PNG，4165 字节；是已有素材转换，不是自绘或 AI 生成。H5 实际载入成功；用户头像优先、失败回退、新地址重新加载及退出保留原账户记录通过单元检查。运行时不调用公共头像 API。            |
+| 图标与减少动态效果   | 仅 chat/message-circle 与 menu 从 Lucide 补充到现有 [BaseIcon 图形表](../src/components/base/base-icon/icons.js)，24×24、2 单位圆端描边；[business-motion](../src/design/business-motion.js)在 H5 跟随系统偏好，未知能力端先用静态反馈                                                     | 悬停/按下沿既有轻反馈，焦点立即清楚显示；H5 实际减少动态效果时弹窗和目录动画为 none，按钮和滑块过渡为 0s。原生端保守静态分支已编译，尚未读取或验证对应设备的系统偏好。旧图标和装饰素材不追认全部为 Lucide。                                  |
+
+同日接续将[学习页](../src/pages/learning/index.vue)全部 21 处系统确认迁入公共包装，其中两处支持编辑。题干按原文预填、提示按空输入打开；88px 输入区沿现有业务字段的尺度，长正文与换行不截断，空白禁用确认。H5 先保存入口焦点再进入输入框，原生端使用独立的 `focus` 属性分支；警告只改变图标语义，仍沿主题主色，并用组件专属类名避免业务警告文字色覆盖按钮。原提示词没有规定这些业务细节，本批按既定主题自主补齐。
+
+[页内确认控制器](../src/services/learning/learning-dialog.js)将每次确认绑定原账户与记录生命周期；提示另绑定对话和题目版本，校对绑定原题。取消、离页、返回、卸载、重复与迟到回调分别受控，不依赖退出动画事件才能再次打开。原上传/页图/同步/删除/恢复的逐次授权、范围说明、预览和执行前复查保持。
+
+本次相关检查为 13 组 315 项，包括真实公共编辑组件事件、题干原版保留、同对话换题后的旧提示拒绝，以及 H5/微信/App 文件许可与迟到读取保护。实际 H5 检查桌面深浅色、390×844 与 320×568 逻辑视口、312 字多行输入、预填/取消/版本 2、键盘焦点循环与归还、同步登录接续和减少动态效果；危险删除只打开并取消，真正删除及文件传输的证据来自隔离测试。修正深色警告按钮被全局文字色覆盖的实际偏差。截图为浏览器返回的 JPEG：[桌面提示](../tmp/visual-build-20261001/component-resume-20261003/learning-hint-desktop-light.jpg)、[手机题干](../tmp/visual-build-20261001/component-resume-20261003/learning-edit-mobile-dark.jpg)、[手机删除提示](../tmp/visual-build-20261001/component-resume-20261003/learning-delete-mobile-dark.jpg)。最终构建改用当前标签可访问入口实操，提示随 20 作答保存，显示“提示后正确”；[作答回执](../tmp/visual-build-20261001/component-resume-20261003/learning-hint-result-mobile-dark.jpg)。原自动点击入口的超时原因未核实。微信/App 聚焦属性与结构已编译，真机键盘、系统返回和系统偏好仍未验收。
+
+收尾后复用同一 4223 地址的缓存页面补取手机题干和删除提示截图：先确认弹窗实际显示，再截图并目视核对，替换此前过早取景的两张底层页面图片。缓存页恢复了本轮 20 作答和提示记录；这只证明普通 H5 缓存页面可复用，不构成已安装 PWA 的更新验收。补取完成后关闭本轮标签并恢复默认视口，没有重启服务或构建。
+
+客户已允许在确有视频缺口时调用可用的视频技能或 MCP，参考原片的场景、配色、构图和节奏生成并核验播放；需要额外付费时集中说明。本批无需新视频，未生成或替换视频，原视频完整使用许可仍标为无法核实。
+
+许可随本地素材保留：[Wot MIT](../src/static/licenses/wot-design-uni.txt)、[Lucide ISC/Feather MIT](../src/static/licenses/lucide.txt)、[Clay CC0 来源与转换记录](../src/static/licenses/avatar-clay.txt)。DiceBear 公共托管 API 有使用范围限制；本项目只分发允许使用的本地风格素材，不依赖该托管服务。
+
+本批相关检查去重累计 114 项；其中公共弹窗、动效与实际入口的最终回归为 3 组 26 项，覆盖不可见祖先的焦点延迟、观察释放、缓存导航旧高亮和重复动作。单元编译只隔离了 uni-app 原生 renderjs 入口，不用它证明 Wot 实际渲染；实际界面以独立本机 H5 构建为准。[学习窄屏](../tmp/visual-build-20261001/component-resume-20261003/learning-mobile-dark.jpg)、[账户窄屏](../tmp/visual-build-20261001/component-resume-20261003/profile-mobile-dark.jpg)、[弹窗窄屏](../tmp/visual-build-20261001/component-resume-20261003/dialog-mobile-dark.jpg)保存于既有忽略证据目录。构建与资源收尾见[本批变更](12-CHANGELOG.md)和[当前计划](13-DEVELOPMENT-PLAN.md)。
+
+同日私人资料批复用已安装 Wot 的 [Loading 官方演示](https://v1.wot-ui.cn/component/loading.html)与现有业务组件。小面积等待采用 20px outline，颜色取当前主题；连接检查、选择/确认/读取文件、逐批解析分别显示实际文字和适用的取消入口。已知总页数才显示 4px 进度条，用 `scaleX` 和 180ms 过渡，减少动态效果时静态呈现。错误沿主题警告面，禁用按钮沿主题背景和文字，继续使用 DM Sans、12px 控件圆角、44px 触区及 2px 焦点描边。这些业务补齐数值沿本节规则，不追认为原提示词规定。
+
+空状态明确粘贴与文件授权路径；正文为空时不能保存。结果分别显示处理中、已保存、部分完成、失败和取消；页数包含处理失败的页，不能代表全部成功。全部页面失败时说明未提取到正文，只有实际有正文才称“已提取片段”。连接检查失败可说明尚未发送资料；文件请求失败只说明结果未确认，并按是否存在导入待办提示核对。反馈绑定当前账户/记录与本次动作，离页或授权变化后取消旧检查并丢弃迟到结果；同目标重试只复用当前内存令牌。
+
+本机 Poppler 26.04.0 在合成 PDF 的 XHTML 元数据输出环节异常；[私人解析器](../scripts/pipeline/private-material-parser.py)增加严格列结构、页码和有限坐标校验的 TSV 兼容路径，两次文本提取共用原有 20 秒预算。字词仍是 `source_text`，不推定识别置信度，原页图和校对要求保留，不自动开启 OCR。第 1、2、22 页真实正文、坐标及 PNG 已验证；PDF 版面与题干结构仍需按原图局部校对。
+
+实际 H5 用合成 22 页资料经过原发送范围确认，完成 20/22 页批次上限、取消后保留 20 个片段、再次续传至 22/22，以及末页正文和 1200×1200 原图载入；迟到回调与账户/授权失效拒绝另有隔离检查。连接失败来自真实本机鉴权拒绝。390×844、320×568 无横向溢出，资料按钮实测至少 44px；Tab 进入连接按钮时主题焦点描边 2px。代表性资料按钮实际正常/悬停/按下背景依次为主题白色的 0.1/0.2/0.28 透明度，减少动态效果时实际 Loading 的 animation 为 none、按钮和进度过渡 0s；这些是浏览器逻辑视口结果，右侧浏览器滚动轨道不作为手机设备画面验收。截图：[连接错误](../tmp/visual-build-20261001/component-resume-20261003/material-connection-desktop-light.jpg)、[正在解析](../tmp/visual-build-20261001/component-resume-20261003/material-upload-mobile-dark.jpg)、[已取消](../tmp/visual-build-20261001/component-resume-20261003/material-cancel-mobile-dark.jpg)、[保存完成](../tmp/visual-build-20261001/component-resume-20261003/material-result-mobile-dark.jpg)、[第 22 页原图](../tmp/visual-build-20261001/component-resume-20261003/material-page-mobile-dark.jpg)。
+
+既有 4225/4226 地址实际仍显示旧入口，临时调试设置未更新该入口并已恢复；没有清除原缓存或学习记录。最终使用系统分配的独立地址，实际 DOM 的 `index-CXtuzoDw.js` 与最终落盘入口一致。该地址首次打开显示服务器超时，重载后恢复，原因未核实；这项不能当作已安装 PWA 冷启动和更新通过。
+
+本批相关 JS 检查累计 15 组 365 项通过，最后影响的两组 91 项重跑通过；解析器、导入回执恢复与维护三组 Python 共 47 项通过。原安全、授权、原件/用户隔离、预算与回执合同保持；没有用户原件、真实账户、模型、供应商或生产调用。
+
+### 私人资料字段练习与本机启动核验（2026-10-04）
+
+实际 PDF 原文的各行此前被空格合并，无法可靠提供逐行字段。现由[私人解析器](../scripts/pipeline/private-material-parser.py)保留 Poppler XML 的明确行结构，兼容路径保留 TSV 的段落/块/行标识；不根据坐标猜测换行，也不把识别置信度升级为标准答案。PDF 文本提取版本单列为 `poppler-pdf-text-v3`，原件哈希、字词位置、页图、校对要求与原 OCR 版本保持；旧资料、旧题和历史作答不会自动改写。
+
+[学习页](../src/pages/learning/index.vue)复用现有客观练习校验，只列出当前资料中真实可用的“字段：值”，不预选基期/现期或猜测字段。字段按钮沿 DM Sans、12px 圆角和现有主题面，选中使用主题底色及 1px 内描边；开始沿现有淡紫主操作。手工输入保留，正文按原换行展示并可选取；单行输入回到现有紧凑尺度，实际 H5 高 48px，字段按钮高 44px。缺字段、同一数值字段、无效整数、已停止任务均说明原因并禁用开始。重新提取或修改来源后保留正在编辑的草稿，要求明确“重新选择本页”才接纳新来源，不能静默覆盖。
+
+建题前先执行共享纯校验，无效输入不会留下空对话，也不会自动恢复已停止任务。建题成功关闭资料面板，通过既有 [uni.pageScrollTo](https://uniapp.dcloud.net.cn/api/ui/scroll.html) 定位当前题目，`duration: 0` 不叠加装饰转场；H5/App Vue/微信的 API 支持来自官方文档，本轮实际操作证据仅为 H5。原逐次文件授权、范围、取消、账户/记录生命周期、独立判分和旧错答保持。
+
+实际 H5 从浏览器系统文件选择器，经既有传输确认导入一页合成 PDF，原文五行与 1200×1200 页图均载入；2024/2025/2026 三个实际字段可直接点选。20% 首答判错，讲解后 25% 修正，2025→2026 变式 50% 独立正确，最终三次有效作答、一条首答错题、任务 1/2；帮助后的正确不增加独立完成数。停止任务后字段可查看，开始保持禁用并提示先明确继续。390×844 和 320×568 逻辑视口无横向溢出；真实 Tab 焦点描边 2px、外偏移 4px，减少动态效果时字段过渡 0s、animation 为 none，悬停/按下仍有 0.2/0.28 的主题透明度反馈。截图：[最终字段选择](../tmp/visual-build-20261001/component-resume-20261003/material-fields-mobile-dark.jpg)、[停止后禁用](../tmp/visual-build-20261001/component-resume-20261003/material-fields-stopped-mobile.jpg)、[实际作答结果](../tmp/visual-build-20261001/component-resume-20261003/material-exercise-result-light.jpg)。
+
+本轮捕获默认 Python 预览服务公共脚本连接重置，同一文件、相同哈希的 48 个并发请求在队列 5 时完成 9 个、39 个请求异常，在队列 128 时全部完成；只调整本轮预览服务，没有将此结论冒充产品启动代码修复。独立本机来源直接首次进入学习页已实际成功，[首启截图](../tmp/visual-build-20261001/component-resume-20261003/learning-cold-load-ready.jpg)保留；最终普通刷新从旧主入口加载与落盘一致的 `index-Ct9WbIjF.js`，三次作答、错题、资料和指定讲解记录仍在。没有清除原缓存或学习事实；这是普通浏览器首启和刷新证据，已安装 PWA 更新、真实设备及正式部署仍分别待验。检查、构建和资源收尾见[12](12-CHANGELOG.md)。
+
+### Mac 系统文件与重开核验（2026-10-04）
+
+当前源码的独立 Mac App 普通窗口实际发现：系统文件面板已选中本轮合成 PDF，但“打开”保持禁用；合成 PNG 同样未能打开。原 H5 文件控件只创建后调用 `click()`，未保持 DOM 和页面强引用。本批仅在选择等待期间保留隐藏控件，成功、取消、离页、卸载和切换目标时释放；旧回调不能清掉新选择器。同步启动失败释放动作，并提示重新选择且正文未读取或发送。文件类型、10MB 上限、逐次确认前不读正文、原账户/目标/动作序列校验及取消合同保持，不增加原生文件权限或依赖。
+
+[WebKit 201289](https://bugs.webkit.org/show_bug.cgi?id=201289)记录了脱离 DOM 的文件控件被回收后使选择器失效的相似现象，仅作为排查依据；本轮未直接观测垃圾回收，不认定已经证明同一内部原因。修复后的独立 App 在同一系统面板中两次选中同一 PDF 均可“打开”：首次取消既有传输确认后回到入口，再选并明确确认完成导入。PNG 未在修复后重测，不扩大结论。截图：[原生传输确认](../tmp/visual-build-20261001/component-resume-20261003/native-pdf-consent-light.jpg)、[实际字段](../tmp/visual-build-20261001/component-resume-20261003/native-material-fields-light.jpg)。
+
+业务外观继续沿现有 Wot、BaseIcon、DM Sans、浅紫/深紫和实色阅读面，桌面首页保持 Future 参考；没有新素材或视频。原生编辑弹窗题干按原文预填，实际 Tab 循环、Escape 取消并归还焦点，原题版本保持。实际 PDF 五行→字段点选→20% 首答判错→讲解后 25% 修正→50% 独立变式完成，三次作答、一条原错题、任务 1/2；帮助后的正确单列，不计为独立完成。截图：[题干预填](../tmp/visual-build-20261001/component-resume-20261003/native-edit-prefill-light.jpg)、[深色学习事实](../tmp/visual-build-20261001/component-resume-20261003/native-learning-stats-dark.jpg)。
+
+原生保存先实际取消并显示取消结果，再明确保存本轮合成备份；文件权限为 0600，内容核对与三次作答、任务和停止事实一致，内存解析令牌没有进入备份。读取取消保持原记录，读取该备份后预览“新增 0 / 已有 30 / 待核对 0 / 暂停 0”，合并禁用；未执行恢复写入。[实际恢复预览](../tmp/visual-build-20261001/component-resume-20261003/native-backup-preview-dark.jpg)。正常退出并关闭本机解析器后重开同一隔离 App，深色阅读、资料原文/原页图、三次作答、一条错题、任务 1/2 和停止状态保持；停止时重新选择字段仍不能开始练习，解析连接须重新授权。[重开后停止状态](../tmp/visual-build-20261001/component-resume-20261003/native-reopen-stopped-dark.jpg)、[重开后原页图](../tmp/visual-build-20261001/component-resume-20261003/native-reopen-page-preview-dark.jpg)。系统网络未关闭，这只证明解析器关闭后的本机重开，不称为整机断网验收。
+
+本批相关五组 160 项通过，最终生命周期 72 项重跑属于其中子集；桌面 H5、微信、App 构建、产物审计和最新源码独立 Mac App 构建通过。正常窗口实操不等同最新正式 DMG 安装/更新，也不代替 Windows、微信/App 真机、已安装 PWA 或真实服务。Mac 系统减少动态效果偏好未切换核验，悬停/按下的量化值仍仅沿上述 H5 证据。临时 App、解析器、隔离构建、合成材料和专属缓存已收尾，保留 26 张实际截图；检查和清理详情见[12](12-CHANGELOG.md)。
+
+### 错题争议与共享输入核验（2026-10-04）
+
+[学习概览](../src/components/business/learning/learning-overview.vue)的“这次判分有误”原用系统单行编辑提示，与已统一的学习输入外观不一致；现复用现有 CustomModal/Wot Popup，不新增组件库、素材或业务入口。沿 DM Sans、浅紫/深紫实色面、24px 面板和 12px 输入/按钮圆角、44px 触区及既有 180ms/6px 动效；警告仍用主题紫色。返回原题箭头改为现有主题图标色。以上是已确定的业务适配规则，非原提示词中的逐字规定。[改前实操](../tmp/visual-build-20261001/component-resume-20261003/assessment-before-light.jpg)、[统一后的输入](../tmp/visual-build-20261001/component-resume-20261003/assessment-dialog-desktop-light.jpg)。
+
+争议只作用于打开时的账户、记录生命周期和仍有可靠错题结论的原作答；离页、返回、卸载、账户切换、清除后重建同 ID、判分已变化时旧确认失效。空白禁用并说明原因，明确取消不改原答；失败只在原作答仍有效时保留当前页面的完整草稿，重新打开可继续编辑，不写入持久存储，账户/记录变化即丢弃。实际同源第二窗口持有写入权时，保存被现有保护拒绝，300 字多行说明重新打开后完整保留；反馈移到折叠区外，以 status/alert 区分结果，不用重新展开寻找。[实际保存受阻](../tmp/visual-build-20261001/component-resume-20261003/assessment-save-error-dark.jpg)。
+
+H5 本批实际检查桌面及 390×844/320×568 逻辑视口，弹窗宽度分别 440/350/280px，输入控件 88px、按钮 44px，无横向溢出。Tab 在输入、取消、确认之间循环，Escape 取消并归还入口；深色空白禁用按钮和说明沿原主题。减少动态效果时动画为 none、过渡 0s。真实按住确认按钮时曾由后置悬停规则覆盖，现仅排除 active，沿用原亮度反馈：悬停 1.05、按下 0.95，实际 active/hover 同时成立时已复核；测量后移出释放并取消，没有保存提示。[深色禁用](../tmp/visual-build-20261001/component-resume-20261003/assessment-dialog-disabled-dark.jpg)、[手机深色输入](../tmp/visual-build-20261001/component-resume-20261003/assessment-dialog-mobile-dark.jpg)、[实际按下反馈](../tmp/visual-build-20261001/component-resume-20261003/shared-confirm-pressed-light.jpg)。
+
+明确提交争议后，现有纠正合同撤销可靠结论并保存说明，原答 19 和任务 1/1 保持；可靠首答变为 0/0（尚无样本），待核对 1，不直接记为正确。返回原题和普通刷新后停止状态仍在。[实际结果](../tmp/visual-build-20261001/component-resume-20261003/assessment-result-desktop-light.jpg)。本轮 Service Worker 控制的普通网页先载入旧入口，再经正常后台更新和刷新与最终落盘 `index-BosglZmf.js` 一致；没有清缓存或改 PWA 更新机制，不能扩大为已安装 PWA 更新通过。相关五组 100 项通过，最终公共弹窗/页内两组 47 项重跑属于其子集；构建、原生范围和资源收尾见[12](12-CHANGELOG.md)。
+
+最终源码的独立 Mac App 普通窗口实际完成 12+8 的 19 错答→明确停止→争议取消/重开空白→300 字多行争议确认；空白禁用、Tab 循环、Escape 取消与焦点归还通过。确认后原答、任务 1/1 保持，可靠首答 0/0、待核对 1，不冒充正确。已有系统保存入口产生 14,602 字节、0600 的合成备份：只有一次作答、一次纠正，原判错依据保持；操作说明 300 字，纠正记录沿原校验去掉末尾空白为 299 字，段内换行完整，复测取消。正常退出再重开，从最近学习进入原对话，深色、原答、待核对、任务和停止事实保持，没有自动继续。[Mac 实际输入](../tmp/visual-build-20261001/component-resume-20261003/native-assessment-input-light.jpg)、[Mac 实际争议结果](../tmp/visual-build-20261001/component-resume-20261003/native-assessment-result-dark.jpg)、[重开后仍停止](../tmp/visual-build-20261001/component-resume-20261003/native-assessment-reopen-stopped-dark.jpg)。
+
+这是独立源码包的真实 Mac 窗口证据，不是正式 DMG 安装/更新验收；没有真实账户、模型、供应商或生产调用。最终三端隔离构建、产物审计和离线锁定依赖的 Mac 构建通过，没有安装或升级依赖；Mac 系统减少动态效果和悬停/按下量化值仍不由网页模拟替代。[构建范围与收尾](12-CHANGELOG.md)。
+
+**尚余范围**：学习页确认、编辑、概览判分争议、私人资料本机连接/上传及逐行字段练习已处理；最新源码独立 Mac App 的文件、学习、备份、争议与重开已有分批实际核验。模型目录与用量读取的本机状态补齐见下节；其他网络列表按真实业务增量核验，不为无数据页面添加假加载。旧未注册 settings 页面不因本批新增功能。Windows、微信/App 真机、最新正式 Mac 安装包更新和已安装 PWA 更新尚未纳入本批验收；原模板视频完整授权仍无法核实。当前免费选型无需新增客户决策，整体开发目标尚未完成。
+
+## 2026-10-04：模型列表与用量读取
+
+原提示词给定整体风格，未逐字规定这些业务读取状态；本批沿已确定的业务规则补齐，不追认为原文数值。继续使用已安装 Wot 1.14.0/MIT 的 Loading 与现有按钮、BaseIcon、DM Sans、浅紫/深紫实色面；20px outline 等待指示、12px 控件圆角、44px 触区、2px 焦点和 180ms 反馈都沿本规范。失败沿现有主题警告文字，成功/空白用正文；状态就近显示，未新增卡片、磨砂材质、配色、素材或视频，也不引入另一套组件库。[官方免费实现](https://v1.wot-ui.cn/component/loading.html)、[本地许可](../src/static/licenses/wot-design-uni.txt)。
+
+列表和用量分别呈现等待、取消、成功、空白、失败与明确重试；更新原列表时暂时禁用选择/测试/删除，取消后原已核验列表保留。未登录提供“前往登录”，成功后回到模型面板，不自动读取、选模型、开启共享或测试连接。减少动态效果时等待仍有文字，指示不转动、过渡为 0s；未知总量不添加百分比或假骨架屏。读取绑定已有账户与记录生命周期，重复点击合并同一请求，离页/卸载、账户往返或本机记录更换撤销旧读取；迟到回执不覆盖新的状态。不完整列表/用量回执进入可重试错误，避免空能力对象解引用或 NaN。
+
+实际网页检查桌面、390×844 和 320×568 逻辑视口，等待/取消/成功/空白/错误/重试、原本地模式和未开启共享保持；无横向溢出，重试按钮高 44px。悬停沿原透明反馈，Tab 焦点为 2px 主题描边；真实按下取消按钮为既有 0.95 缩放/0.9 亮度，减少动态效果下过渡 0s，outline 指示 animation 为 none。最终页面入口 `index-B4SYEj4r.js` 与本轮构建一致，控制台未观察到错误/警告；普通关闭重开接续 Service Worker 后台更新，没有清缓存或修改更新机制。[浅色等待](../tmp/visual-build-20261001/component-resume-20261003/model-read-loading-desktop-light.jpg)、[窄屏空状态](../tmp/visual-build-20261001/component-resume-20261003/model-read-empty-small-dark.jpg)、[最终深色错误](../tmp/visual-build-20261001/component-resume-20261003/model-read-final-mobile-dark.jpg)、[最终明确重试成功](../tmp/visual-build-20261001/component-resume-20261003/model-read-final-ready-mobile-dark.jpg)。
+
+实际 Safari WebKit 普通/私密窗口完成未登录提示→登录入口→原模型面板、等待、原列表按钮禁用、取消、成功与不完整回执拒绝，原本地模式及共享未开启保持；合成密码未保存。截图接口只返回缩略图，Raise 也未改变，不能据此宣称 Safari 完整像素验收或手机/原生 App 验收，完整视觉证据以上述网页截图为准。[WebKit 缩略图范围](../tmp/visual-build-20261001/component-resume-20261003/model-read-webkit-invalid-dark.jpg)。全部网络使用本机合成登录、目录与用量回执，零真实账户、模型、供应商或生产调用；相关检查、各端构建及资源收尾见[12](12-CHANGELOG.md)。当前无需新增客户选型决策。
+
+## 2026-10-04：备份预览与大正文
+
+记录与隐私面板继续复用现有 Wot Loading、行内状态、公共确认和主题控件；实际计算样式为 DM Sans 中文后备、44px 触区、2px 键盘焦点与 180ms 反馈，颜色、材质、圆角和首页规则沿本规范。等待与真实批次进度就近显示，错误保留输入，成功预览清楚说明尚未合并；取消后保留备份，重复校验等待原任务收尾。输入改回原文也不复活旧结果，账户往返/记录重建/新增作答、隐藏及离开撤销旧确认，访客预览沿同一规则。
+
+沿已有小备份 150 万字符分界，较大正文默认呈现字符数与校验入口，保留完整内容；明确展开可查看/复制/编辑，清除后可重新粘贴。该分界来自数据合同，不是新增视觉数值。本机约 212 万字符输入曾导致页面自动化连续超时，具体原因未核实；摘要呈现后，同一来源的大输入与后续控件已实际可操作。最终 H5 已主动展开与收起 2,122,133 字符，全文与输入逐字符一致，清除后空输入与禁用校验可见；1200 万字符上限及其他设备的性能仍另验。
+
+实际 H5 完成格式错误、取消小备份合并、重新确认合并 22 操作、大历史等待/取消/重试与新增 2200 / 已有 22 的完成预览；大历史未合并。原 19 错答与停止保留，合成记录有效作答 8、首答 3/7、任务 6/10。390/320 逻辑窄屏无横向溢出，深浅色、悬停、按下与键盘已核验；浏览器减少动态效果覆盖下加载动画和按钮过渡均为 0s，静态文字/取消仍可操作。普通缓存刷新后最终实际入口为 `index-BoCA6cId.js`，主动全文展开、默认摘要、等待/取消及 Tab 到达合并确认已在最终入口操作；检查以 [12](12-CHANGELOG.md)为准。该范围不代替已安装 PWA、Mac/Windows/微信/App 设备、系统偏好或真实服务。
+
+分批实际截图：[浅色格式错误](../tmp/visual-build-20261001/component-resume-20261003/record-preview-error-light.jpg)、[深色取消](../tmp/visual-build-20261001/component-resume-20261003/record-preview-cancelled-dark.jpg)、[最终窄屏静态等待](../tmp/visual-build-20261001/component-resume-20261003/record-preview-loading-mobile-dark.jpg)、[最终大历史完成与聚焦确认](../tmp/visual-build-20261001/component-resume-20261003/record-preview-complete-mobile-dark.jpg)、[320 窄屏错误](../tmp/visual-build-20261001/component-resume-20261003/record-preview-error-small-dark.jpg)、[保留的原答](../tmp/visual-build-20261001/component-resume-20261003/record-preview-original-answer-dark.jpg)。本批无需新组件库、素材、视频或逐项设计决策；检查与收尾见 [12](12-CHANGELOG.md)。

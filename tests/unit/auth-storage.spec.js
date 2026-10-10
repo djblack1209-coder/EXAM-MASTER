@@ -40,7 +40,9 @@ function mockUni(storage = {}) {
     getStorageSync: vi.fn((key) => {
       if (key in storage) return storage[key];
       return '';
-    })
+    }),
+    setStorageSync: vi.fn(),
+    removeStorageSync: vi.fn()
   };
 }
 
@@ -127,11 +129,37 @@ describe('auth-storage', () => {
       globalThis.uni = {
         getStorageSync: vi.fn(() => {
           throw new Error('storage error');
-        })
+        }),
+        setStorageSync: vi.fn(),
+        removeStorageSync: vi.fn()
       };
       mockLocalStorage({ EXAM_USER_ID: 'ls_fallback' });
 
       expect(getUserId()).toBe('ls_fallback');
+    });
+
+    it('H5 的不完整 uni 对象不遮蔽兼容存储中的登录身份', () => {
+      globalThis.uni = { getStorageSync: vi.fn(() => '') };
+      mockLocalStorage({
+        '__exam_storage__:_enc_EXAM_USER_ID': JSON.stringify({ value: 'encrypted_uid' }),
+        '__exam_storage__:_enc_EXAM_TOKEN': JSON.stringify({ value: 'encrypted_token' })
+      });
+      deobfuscate.mockImplementation((value) =>
+        value === 'encrypted_uid' ? 'account_a' : value === 'encrypted_token' ? 'token_a' : null
+      );
+
+      expect(getUserId()).toBe('account_a');
+      expect(getToken()).toBe('token_a');
+      expect(globalThis.uni.getStorageSync).not.toHaveBeenCalled();
+    });
+
+    it('完整运行时清除登录后不恢复兼容存储中的旧身份', () => {
+      mockUni({});
+      mockLocalStorage({ EXAM_USER_ID: 'stale_uid', EXAM_TOKEN: 'stale_token' });
+
+      expect(getUserId()).toBeNull();
+      expect(getToken()).toBeNull();
+      expect(globalThis.localStorage.getItem).not.toHaveBeenCalled();
     });
   });
 

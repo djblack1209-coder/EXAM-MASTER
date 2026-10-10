@@ -1,3 +1,5 @@
+import { validateQuizOriginalData } from '../../laf-backend/functions/_shared/learning-quiz-original.js';
+
 /**
  * 字段命名规范化工具
  * 解决前后端字段命名不一致问题（snake_case vs camelCase）
@@ -144,15 +146,20 @@ export function normalizeMistakes(items) {
 export function offlineMistakeToBackend(cached) {
   if (!cached || typeof cached !== 'object') return cached;
 
+  const raw = cached.legacy_raw ?? cached;
+  validateQuizOriginalData(raw);
   return {
-    question_id: cached.question_id || cached.questionId || '',
-    question_content: cached.question_content || cached.questionContent || cached.question || '',
-    user_answer: cached.user_answer || cached.userAnswer || cached.userChoice || '',
-    correct_answer: cached.correct_answer || cached.correctAnswer || cached.answer || '',
-    wrong_count: cached.wrong_count || cached.wrongCount || 1,
-    is_mastered: Boolean(cached.is_mastered || cached.isMastered || false),
+    ...cached,
+    legacy_raw: JSON.parse(JSON.stringify(cached.legacy_raw ?? cached)),
+    question_id: cached.question_id ?? cached.questionId ?? '',
+    question_content:
+      cached.question_content ?? cached.questionContent ?? cached.question ?? cached.content ?? cached.title ?? '',
+    user_answer: cached.user_answer ?? cached.userAnswer ?? cached.userChoice ?? '',
+    correct_answer: cached.correct_answer ?? cached.correctAnswer ?? cached.answer ?? '',
+    wrong_count: cached.wrong_count ?? cached.wrongCount,
+    is_mastered: cached.is_mastered ?? cached.isMastered,
     error_type: cached.error_type || cached.errorType || '',
-    created_at: cached.created_at || cached.createdAt || cached.addTime || Date.now(),
+    created_at: cached.created_at ?? cached.createdAt ?? cached.addTime ?? Date.now(),
     updated_at: Date.now(),
     // 保留原始字段（如 _id、subject 等不需要转换的字段）
     ...(cached._id ? { _id: cached._id } : {}),

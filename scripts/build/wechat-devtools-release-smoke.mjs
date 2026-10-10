@@ -204,8 +204,12 @@ async function seedEnglish2011Bank(miniProgram) {
       const text =
         typeof option === 'string'
           ? option
-          : [option && option.label, (option && (option.text || option.value || option.content))].filter(Boolean).join('. ');
-      return String(text || '').replace(/^[A-Z]\s*[.。:：、)）-]\s*/i, '').trim();
+          : [option && option.label, option && (option.text || option.value || option.content)]
+              .filter(Boolean)
+              .join('. ');
+      return String(text || '')
+        .replace(/^[A-Z]\s*[.。:：、)）-]\s*/i, '')
+        .trim();
     };
     const cards = (payload.cards || []).map((card) => {
       const passage = card.passage || card.context || card.material || card.article || '';
@@ -223,12 +227,15 @@ async function seedEnglish2011Bank(miniProgram) {
     });
     wx.setStorageSync('v30_bank', cards);
     wx.setStorageSync('loaded_flashcard_banks', ['english1-2011']);
-    wx.setStorageSync('smart_review_ids', cards.map((card) => card.id));
+    wx.setStorageSync(
+      'smart_review_ids',
+      cards.map((card) => card.id)
+    );
   }, bank);
   return bank.cards?.length || 0;
 }
 
-async function runSmoke(options) {
+async function runSmoke(options, lifecycle) {
   if (!fs.existsSync(options.cliPath)) {
     throw new Error(`WeChat DevTools CLI not found: ${options.cliPath}`);
   }
@@ -271,19 +278,23 @@ async function runSmoke(options) {
       timeout: options.timeout,
       trustProject: true
     });
+    lifecycle.miniProgram = miniProgram;
+    if (lifecycle.timedOut) throw new Error('Smoke deadline expired before launch completed');
 
     miniProgram.on('exception', (event) => {
       report.steps.push(block('runtime-exception', new Error(JSON.stringify(event))));
     });
 
     const systemInfo = await miniProgram.systemInfo();
-    report.steps.push(pass('devtools-runtime', {
-      platform: systemInfo?.platform,
-      SDKVersion: systemInfo?.SDKVersion,
-      version: systemInfo?.version,
-      model: systemInfo?.model,
-      system: systemInfo?.system
-    }));
+    report.steps.push(
+      pass('devtools-runtime', {
+        platform: systemInfo?.platform,
+        SDKVersion: systemInfo?.SDKVersion,
+        version: systemInfo?.version,
+        model: systemInfo?.model,
+        system: systemInfo?.system
+      })
+    );
 
     await setReleaseSmokeProfile(miniProgram);
     report.steps.push(pass('reset-local-profile'));
@@ -291,7 +302,10 @@ async function runSmoke(options) {
     let page = await miniProgram.reLaunch('/pages/splash/index');
     await page.waitFor(2300);
     page = await miniProgram.currentPage();
-    assertCondition(['pages/index/index', 'pages/practice/index'].includes(page.path), `Unexpected post-splash page: ${page.path}`);
+    assertCondition(
+      ['pages/index/index', 'pages/practice/index'].includes(page.path),
+      `Unexpected post-splash page: ${page.path}`
+    );
     report.steps.push(pass('launch-and-splash-route', { path: page.path }));
 
     page = await miniProgram.switchTab('/pages/practice/index');
@@ -301,12 +315,14 @@ async function runSmoke(options) {
     const practiceCommands = await countOf(page, '.practice-command');
     assertCondition(practiceHeroText.includes('今日刷题'), 'Practice center hero is not visible');
     assertCondition(practiceCommands >= 2, 'Practice center command buttons are missing');
-    report.steps.push(pass('practice-center', {
-      path: page.path,
-      commandCount: practiceCommands,
-      selectedTrackId: practiceData.selectedTrackId,
-      selectedSubjectKey: practiceData.selectedSubjectKey
-    }));
+    report.steps.push(
+      pass('practice-center', {
+        path: page.path,
+        commandCount: practiceCommands,
+        selectedTrackId: practiceData.selectedTrackId,
+        selectedSubjectKey: practiceData.selectedSubjectKey
+      })
+    );
 
     page = await miniProgram.navigateTo('/pages/practice-sub/question-bank');
     await waitForPage(page, '.paper-card');
@@ -315,28 +331,35 @@ async function runSmoke(options) {
     const pendingItemCount = await countOf(page, '.pending-item');
     assertCondition(questionBankText.includes('按年份刷真题'), 'Question bank title is not visible');
     assertCondition(paperCardCount >= 1, 'No playable paper cards are visible');
-    report.steps.push(pass('question-bank', {
-      path: page.path,
-      paperCardCount,
-      pendingItemCount
-    }));
+    report.steps.push(
+      pass('question-bank', {
+        path: page.path,
+        paperCardCount,
+        pendingItemCount
+      })
+    );
 
     const defaultPaperButton = await page.$('.paper-btn.primary');
     assertCondition(defaultPaperButton, 'Default paper primary action is not visible');
     await defaultPaperButton.tap();
     await page.waitFor(4500);
     page = await miniProgram.currentPage();
-    assertCondition(page.path === 'pages/practice-sub/do-quiz', `Expected quiz page after default paper start, got ${page.path}`);
+    assertCondition(
+      page.path === 'pages/practice-sub/do-quiz',
+      `Expected quiz page after default paper start, got ${page.path}`
+    );
     const defaultStartStorage = await getStorage(miniProgram);
     const defaultBankCount = Array.isArray(defaultStartStorage.v30_bank) ? defaultStartStorage.v30_bank.length : 0;
     const defaultOptionCount = await countOf(page, '.option-item');
     assertCondition(defaultBankCount > 0, 'Default paper start did not import questions into local storage');
     assertCondition(defaultOptionCount >= 4, 'Default paper start did not render selectable options');
-    report.steps.push(pass('question-bank-default-start', {
-      path: page.path,
-      localBankCount: defaultBankCount,
-      optionCount: defaultOptionCount
-    }));
+    report.steps.push(
+      pass('question-bank-default-start', {
+        path: page.path,
+        localBankCount: defaultBankCount,
+        optionCount: defaultOptionCount
+      })
+    );
 
     page = await miniProgram.navigateBack();
     await page.waitFor(800);
@@ -356,19 +379,24 @@ async function runSmoke(options) {
     const loadedEnglishCards = Array.isArray(quizStorage.v30_bank)
       ? quizStorage.v30_bank.filter((item) => item.paperId === 'english1-2011')
       : [];
-    assertCondition(loadedEnglishCards.length === 52, `Expected 52 loaded English 2011 cards, got ${loadedEnglishCards.length}`);
+    assertCondition(
+      loadedEnglishCards.length === 52,
+      `Expected 52 loaded English 2011 cards, got ${loadedEnglishCards.length}`
+    );
     const passageSegmentCount = await countOf(page, '.q-passage-segment');
     const optionCount = await countOf(page, '.option-item');
     const progressText = await textOf(page, '#e2e-quiz-progress');
     assertCondition(passageSegmentCount > 0, 'English passage segments are not visible');
     assertCondition(optionCount >= 4, 'Quiz options are not visible');
-    report.steps.push(pass('english-quiz-entry', {
-      path: page.path,
-      progressText,
-      loadedEnglish2011Cards: loadedEnglishCards.length,
-      passageSegmentCount,
-      optionCount
-    }));
+    report.steps.push(
+      pass('english-quiz-entry', {
+        path: page.path,
+        progressText,
+        loadedEnglish2011Cards: loadedEnglishCards.length,
+        passageSegmentCount,
+        optionCount
+      })
+    );
 
     const firstSegment = await page.$('.q-passage-segment');
     assertCondition(firstSegment, 'No passage segment can be selected');
@@ -377,10 +405,12 @@ async function runSmoke(options) {
     const storageAfterAnnotation = await getStorage(miniProgram);
     const annotationKeys = Object.keys(storageAfterAnnotation.passage_annotations || {});
     assertCondition(annotationKeys.length > 0, 'Passage annotation was not saved');
-    report.steps.push(pass('english-passage-annotation', {
-      annotationKeys,
-      storageHasPassageAnnotations: Boolean(storageAfterAnnotation.passage_annotations)
-    }));
+    report.steps.push(
+      pass('english-passage-annotation', {
+        annotationKeys,
+        storageHasPassageAnnotations: Boolean(storageAfterAnnotation.passage_annotations)
+      })
+    );
 
     const firstOption = await page.$('.option-item');
     assertCondition(firstOption, 'No option can be selected');
@@ -388,9 +418,11 @@ async function runSmoke(options) {
     await page.waitFor(800);
     const resultVisible = await countOf(page, '.result-pop');
     assertCondition(resultVisible === 1, 'Quiz result panel did not open after selecting an answer');
-    report.steps.push(pass('quiz-answer-result', {
-      resultVisible
-    }));
+    report.steps.push(
+      pass('quiz-answer-result', {
+        resultVisible
+      })
+    );
 
     await miniProgram.navigateBack();
     await miniProgram.navigateBack();
@@ -400,11 +432,16 @@ async function runSmoke(options) {
     const sourceCardCount = await countOf(page, '.source-card');
     assertCondition(professionalText.includes('专业课索引'), 'Professional index header is not visible');
     assertCondition(sourceCardCount > 0, 'Professional source cards are not visible');
-    assertCondition(!/\benglish\b|\bpolitics\b|\bmath\b/.test(professionalText), 'Professional directions expose raw track keys');
-    report.steps.push(pass('professional-index', {
-      path: page.path,
-      visibleSourceCards: sourceCardCount
-    }));
+    assertCondition(
+      !/\benglish\b|\bpolitics\b|\bmath\b/.test(professionalText),
+      'Professional directions expose raw track keys'
+    );
+    report.steps.push(
+      pass('professional-index', {
+        path: page.path,
+        visibleSourceCards: sourceCardCount
+      })
+    );
 
     ensureParent(options.screenshot);
     await miniProgram.screenshot({ path: options.screenshot });
@@ -412,13 +449,7 @@ async function runSmoke(options) {
   } catch (error) {
     report.steps.push(block('smoke-run', error));
   } finally {
-    if (miniProgram) {
-      try {
-        await miniProgram.close();
-      } catch (_error) {
-        miniProgram.disconnect?.();
-      }
-    }
+    await lifecycle.close();
   }
 
   report.finishedAt = new Date().toISOString();
@@ -433,14 +464,49 @@ async function main() {
     return 0;
   }
 
+  const lifecycle = {
+    miniProgram: null,
+    timedOut: false,
+    closing: null,
+    async close() {
+      if (!this.miniProgram) return;
+      if (!this.closing) {
+        const program = this.miniProgram;
+        this.closing = (async () => {
+          let deadline;
+          try {
+            await Promise.race([
+              program.close(),
+              new Promise((_, reject) => {
+                deadline = setTimeout(() => reject(new Error('DevTools close timeout')), 5000);
+              })
+            ]);
+          } finally {
+            clearTimeout(deadline);
+            program.disconnect?.();
+          }
+        })();
+      }
+      return this.closing;
+    }
+  };
   let timeoutHandle;
   const timeoutPromise = new Promise((resolve) => {
-    timeoutHandle = setTimeout(() => {
-      resolve(buildTimeoutReport(options));
-    }, Math.max(Number(options.timeout || 60_000) + 10_000, 15_000));
+    timeoutHandle = setTimeout(
+      () => {
+        lifecycle.timedOut = true;
+        resolve(buildTimeoutReport(options));
+      },
+      Math.max(Number(options.timeout || 60_000) + 10_000, 15_000)
+    );
   });
-  const report = await Promise.race([runSmoke(options), timeoutPromise]);
-  clearTimeout(timeoutHandle);
+  let report;
+  try {
+    report = await Promise.race([runSmoke(options, lifecycle), timeoutPromise]);
+  } finally {
+    clearTimeout(timeoutHandle);
+    await lifecycle.close();
+  }
   ensureParent(options.output);
   fs.writeFileSync(options.output, `${JSON.stringify(report, null, 2)}\n`, 'utf8');
 

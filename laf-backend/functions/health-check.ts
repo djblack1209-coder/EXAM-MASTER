@@ -9,8 +9,8 @@
  */
 
 import cloud from '@lafjs/cloud';
-import { requireAdminAccess } from './_shared/admin-auth';
-import { createLogger } from './_shared/api-response';
+import { requireAdminAccess } from './_shared/admin-auth.js';
+import { createLogger } from './_shared/api-response.js';
 
 const db = cloud.database();
 const logger = createLogger('[HealthCheck]');

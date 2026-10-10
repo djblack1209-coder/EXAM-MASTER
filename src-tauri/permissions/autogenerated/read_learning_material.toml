@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-read-learning-material"
+description = "Enables the read_learning_material command without any pre-configured scope."
+commands.allow = ["read_learning_material"]
+
+[[permission]]
+identifier = "deny-read-learning-material"
+description = "Denies the read_learning_material command without any pre-configured scope."
+commands.deny = ["read_learning_material"]

@@ -21,7 +21,10 @@ class PublicCourseSourceAuditTest(unittest.TestCase):
         self.assertEqual(blockers, ["missing_answer_markers:5"])
 
     def test_display_path_allows_external_temp_outputs(self):
-        self.assertEqual(source_audit.display_path(Path("/tmp/source-audit.json")), "/tmp/source-audit.json")
+        self.assertEqual(
+            source_audit.display_path(Path("/tmp/source-audit.json")),
+            "/tmp/source-audit.json",
+        )
 
 
 if __name__ == "__main__":

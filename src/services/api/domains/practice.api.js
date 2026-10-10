@@ -217,7 +217,7 @@ export async function ragIngest(action, data) {
  */
 async function mistakeManager(params) {
   try {
-    return await request('/mistake-manager', params);
+    return await request('/mistake-manager', params, { skipCache: true });
   } catch (error) {
     logger.warn('[Practice] 错题管理失败:', error);
     return normalizeError(error, '错题管理');
@@ -239,7 +239,7 @@ export async function addMistake(userId, mistakeData) {
  * @param {Object} params - { page, limit, is_mastered, id }
  */
 export async function getMistakes(userId, params = {}) {
-  return mistakeManager({ action: 'get', userId, ...params });
+  return mistakeManager({ action: 'get', userId, data: params });
 }
 
 /**
@@ -280,7 +280,7 @@ export async function batchSyncMistakes(userId, mistakes) {
 // ==================== 答题提交 ====================
 
 /**
- * 提交答题数据到后端（触发自动错题收集 + 会话数据累积）
+ * 提交原答并获取保存回执（不触发可靠判分、错题或复习统计）
  * @param {Object} params - 提交参数
  * @param {string} params.idempotencyKey - 幂等键（防重复提交）
  * @param {Object} params.data - 答题数据 { question_id, user_answer, session_id, duration, practice_mode }

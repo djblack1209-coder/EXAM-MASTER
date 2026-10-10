@@ -1,5 +1,5 @@
 <template>
-  <view class="login-container" :class="{ 'dark-mode': isDark }">
+  <view ref="root" class="login-container" :class="{ 'dark-mode': isDark }">
     <!-- 微信隐私保护弹窗 -->
     <PrivacyPopup />
     <!-- 背景装饰 -->
@@ -11,28 +11,23 @@
 
     <!-- 顶部返回按钮 -->
     <view class="top-bar" :style="{ paddingTop: statusBarHeight + 'px', paddingRight: capsuleSafeRight + 'px' }">
-      <view class="back-btn" hover-class="btn-hover" @tap="handleBack">
+      <button
+        class="back-btn"
+        role="button"
+        tabindex="0"
+        aria-label="返回上一页"
+        hover-class="btn-hover"
+        @tap="handleBack"
+      >
         <BaseIcon name="arrow-left" :size="32" class="back-icon" />
-      </view>
+      </button>
     </view>
 
     <!-- Logo区域 -->
     <view class="logo-section">
-      <image
-        class="login-logo-mark"
-        :src="getAssetUrl('images', 'logo')"
-        mode="aspectFit"
-        alt="EXAM-MASTER brand mark"
-      />
+      <image class="login-logo-mark" :src="BRAND.icon" mode="aspectFit" :alt="BRAND.name" />
       <view class="app-name-row">
-        <text class="brand-exam">EXAM</text>
-        <text class="brand-master">-MASTER</text>
-      </view>
-      <text class="app-slogan">真题训练、错题复习、间隔复习，一条路径完成</text>
-      <view class="login-proof-row">
-        <text class="proof-chip">公共课题库</text>
-        <text class="proof-chip">限时刷题</text>
-        <text class="proof-chip">FSRS复习</text>
+        <text class="brand-exam">{{ BRAND.name }}</text>
       </view>
     </view>
 
@@ -40,11 +35,15 @@
     <view class="login-methods">
       <!-- 微信登录 -->
       <!-- #ifdef MP-WEIXIN -->
-      <view
+      <button
         id="e2e-login-wechat-btn"
+        role="button"
+        tabindex="0"
         class="login-btn wechat-btn"
         hover-class="btn-hover"
         :class="{ 'btn-disabled': isLoading }"
+        :disabled="isLoading"
+        :aria-disabled="isLoading"
         @tap="handleWechatLogin"
       >
         <view class="btn-icon wechat-icon">
@@ -54,18 +53,22 @@
           {{ isLoading ? '登录中...' : '微信一键登录' }}
         </text>
         <BaseIcon name="arrow-right" :size="24" class="btn-arrow" />
-      </view>
+      </button>
       <!-- #endif -->
 
       <!-- #ifndef MP-WEIXIN -->
-      <!-- 非微信小程序环境显示微信登录（App / H5微信浏览器） -->
+      <!-- 非微信小程序环境显示微信登录（App / 网页） -->
       <!-- #ifdef APP-PLUS -->
       <!-- E007: 仅在检测到微信 OAuth provider 时显示按钮 -->
-      <view
+      <button
         v-if="hasWechatProvider"
+        role="button"
+        tabindex="0"
         class="login-btn wechat-btn"
         hover-class="btn-hover"
         :class="{ 'btn-disabled': isLoading }"
+        :disabled="isLoading"
+        :aria-disabled="isLoading"
         @tap="handleWechatLogin"
       >
         <view class="btn-icon wechat-icon">
@@ -73,33 +76,40 @@
         </view>
         <text class="btn-text"> 微信一键登录 </text>
         <BaseIcon name="arrow-right" :size="24" class="btn-arrow" />
-      </view>
+      </button>
       <!-- #endif -->
       <!-- #ifdef H5 -->
-      <!-- E007: H5微信浏览器内显示微信登录按钮 -->
-      <view
-        v-if="isWeChatBrowser"
+      <!-- 同一按钮保留公众号授权，并接普通浏览器网站扫码。 -->
+      <button
+        role="button"
+        tabindex="0"
         class="login-btn wechat-btn"
         hover-class="btn-hover"
         :class="{ 'btn-disabled': isLoading }"
+        :disabled="isLoading"
+        :aria-disabled="isLoading"
         @tap="handleWechatH5Login"
       >
         <view class="btn-icon wechat-icon">
           <text>微信</text>
         </view>
         <text class="btn-text">
-          {{ isLoading ? '登录中...' : '微信授权登录' }}
+          {{ isLoading ? '登录中...' : isWeChatBrowser ? '微信授权登录' : '微信扫码登录' }}
         </text>
         <BaseIcon name="arrow-right" :size="24" class="btn-arrow" />
-      </view>
+      </button>
       <!-- #endif -->
       <!-- #endif -->
 
       <!-- #ifndef MP-WEIXIN -->
-      <view
+      <button
+        role="button"
+        tabindex="0"
         class="login-btn qq-btn"
         hover-class="btn-hover"
         :class="{ 'btn-disabled': isLoading }"
+        :disabled="isLoading"
+        :aria-disabled="isLoading"
         @tap="handleQQLogin"
       >
         <view class="btn-icon qq-icon">
@@ -109,7 +119,7 @@
           {{ isLoading ? '登录中...' : 'QQ快捷登录' }}
         </text>
         <BaseIcon name="arrow-right" :size="24" class="btn-arrow" />
-      </view>
+      </button>
       <!-- #endif -->
 
       <!-- 分割线 -->
@@ -150,13 +160,16 @@
               placeholder="请输入密码"
               placeholder-class="input-placeholder"
             />
-            <text
+            <button
               id="e2e-login-toggle-password"
+              role="button"
+              tabindex="0"
+              :aria-label="showLoginPassword ? '隐藏登录密码' : '显示登录密码'"
               class="password-toggle-btn"
               @tap="showLoginPassword = !showLoginPassword"
             >
               {{ showLoginPassword ? '隐藏' : '显示' }}
-            </text>
+            </button>
           </view>
         </view>
 
@@ -172,15 +185,19 @@
               placeholder-class="input-placeholder"
               maxlength="6"
             />
-            <view
+            <button
               id="e2e-login-send-code"
+              role="button"
+              tabindex="0"
               class="send-code-btn"
               hover-class="btn-hover"
               :class="{ disabled: isSendingCode || codeCooldown > 0 || !isEmailValid }"
+              :disabled="isSendingCode || codeCooldown > 0 || !isEmailValid"
+              :aria-disabled="isSendingCode || codeCooldown > 0 || !isEmailValid"
               @tap="sendVerifyCode"
             >
               <text>{{ isSendingCode ? '发送中...' : codeCooldown > 0 ? `${codeCooldown}s` : '发送验证码' }}</text>
-            </view>
+            </button>
           </view>
         </view>
 
@@ -197,79 +214,101 @@
               placeholder="请设置8-32位密码（含大小写字母和数字）"
               placeholder-class="input-placeholder"
             />
-            <text
+            <button
               id="e2e-login-toggle-register-password"
+              role="button"
+              tabindex="0"
+              :aria-label="showRegisterPassword ? '隐藏注册密码' : '显示注册密码'"
               class="password-toggle-btn"
               @tap="showRegisterPassword = !showRegisterPassword"
             >
               {{ showRegisterPassword ? '隐藏' : '显示' }}
-            </text>
+            </button>
           </view>
         </view>
 
-        <view
+        <button
           id="e2e-login-email-submit"
+          role="button"
+          tabindex="0"
           class="login-btn email-submit-btn"
           hover-class="btn-hover"
           :class="{ 'btn-disabled': isLoading || emailSubmitting }"
+          :disabled="isLoading || emailSubmitting"
+          :aria-disabled="isLoading || emailSubmitting"
           @tap="handleEmailLogin"
         >
           <text class="btn-text">
             {{ isLoading || emailSubmitting ? '登录中...' : isRegister ? '注册并登录' : '登录' }}
           </text>
-        </view>
+        </button>
 
         <view class="form-switch">
-          <text id="e2e-login-toggle-register" @tap="toggleRegister">
+          <button
+            id="e2e-login-toggle-register"
+            class="form-switch-btn"
+            role="button"
+            tabindex="0"
+            @tap="toggleRegister"
+          >
             {{ isRegister ? '已有账号？去登录' : '没有账号？去注册' }}
-          </text>
+          </button>
         </view>
       </view>
 
       <!-- 邮箱登录入口 -->
-      <view
+      <button
         v-else
         id="e2e-login-email-entry"
+        role="button"
+        tabindex="0"
         class="login-btn email-btn"
         hover-class="btn-hover"
         @tap="openEmailForm"
-        @click="openEmailForm"
       >
         <view class="btn-icon email-icon">
           <BaseIcon name="email" :size="36" />
         </view>
         <text class="btn-text"> 邮箱登录/注册 </text>
         <BaseIcon name="arrow-right" :size="24" class="btn-arrow" />
-      </view>
+      </button>
     </view>
 
     <!-- 用户协议 -->
     <view class="agreement">
-      <view id="e2e-login-agreement" class="checkbox-wrapper" @tap="toggleAgreement">
+      <view
+        id="e2e-login-agreement"
+        class="checkbox-wrapper"
+        role="checkbox"
+        aria-label="同意隐私政策与用户协议"
+        :aria-checked="agreedToTerms"
+        tabindex="0"
+        @tap="toggleAgreement"
+        @keydown.enter="toggleAgreement"
+        @keydown.space.prevent="toggleAgreement"
+      >
         <view class="checkbox" :class="{ checked: agreedToTerms }">
           <BaseIcon v-if="agreedToTerms" name="check" :size="24" />
         </view>
       </view>
-      <text class="agreement-text">
-        登录即表示同意
-        <text class="link" @tap="openPrivacy"> 《隐私政策》 </text>
-        和
-        <text class="link" @tap="openTerms"> 《用户协议》 </text>
-      </text>
-    </view>
-
-    <!-- 底部提示 -->
-    <view class="footer-tip">
-      <text>首次登录将自动创建账号</text>
+      <view class="agreement-text">
+        <text>登录即表示同意</text>
+        <button class="link" role="button" tabindex="0" @tap="openPrivacy">《隐私政策》</button>
+        <text>和</text>
+        <button class="link" role="button" tabindex="0" @tap="openTerms">《用户协议》</button>
+      </view>
     </view>
   </view>
 </template>
 
 <script setup>
+import { BRAND } from '@/config/brand.js';
 import { modal } from '@/utils/modal.js';
 import { toast } from '@/utils/toast.js';
 import { ref, computed, onMounted, onUnmounted } from 'vue';
+import { onShow, onHide } from '@dcloudio/uni-app';
 import { storageService } from '@/services/storageService.js';
+import { getUserId, getToken } from '@/services/auth-storage.js';
 import { logger } from '@/utils/logger.js';
 import { safeNavigateTo, safeNavigateBack } from '@/utils/safe-navigate';
 import { useUserStore } from '@/stores/modules/user';
@@ -282,16 +321,40 @@ import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 import PrivacyPopup from '@/components/common/privacy-popup.vue';
 import { getStatusBarHeight, getCapsuleSafeRight } from '@/utils/core/system.js';
 import { getRetryCooldownSeconds, normalizeEmailAddress, resolveEmailAuthErrorMessage } from './email-auth-utils.js';
+import { beginWebOAuth, loginNativeWechat, loginNativeQQ } from './oauth-utils.js';
+import { isDesktopRuntime } from '@/services/desktop/runtime.js';
+import { loginDesktopOAuth } from '@/services/desktop/oauth.js';
+import { bindLearningKeyboard } from '@/services/learning/keyboard-controls.js';
 // 静态资源 CDN 映射（大图已迁出主包）
-import { getAssetUrl } from '@/config/static-assets.js';
 
 // 主题状态
 const isDark = ref(false);
+const root = ref(null);
+let releaseKeyboard = () => undefined;
 const statusBarHeight = ref(44);
 const capsuleSafeRight = ref(20);
 
 // 登录状态
 const isLoading = ref(false);
+let loginPageActive = true;
+let loginPageVersion = 0;
+let nativeLoginRedirectTimer;
+const nativeLoginContext = () => {
+  const account = { userId: getUserId(), token: getToken(), version: loginPageVersion };
+  return () =>
+    loginPageActive &&
+    account.version === loginPageVersion &&
+    account.userId === getUserId() &&
+    account.token === getToken();
+};
+onShow(() => {
+  loginPageActive = true;
+});
+onHide(() => {
+  loginPageActive = false;
+  loginPageVersion++;
+  clearTimeout(nativeLoginRedirectTimer);
+});
 // 邮箱登录提交锁（响应式 ref，驱动按钮 disabled 样式，阻止并行点击）
 const emailSubmitting = ref(false);
 let lastEmailSubmitAt = 0;
@@ -413,7 +476,6 @@ const sendVerifyCode = async () => {
     logger.error('[Login] 发送验证码失败:', error);
     enterCodeCooldownFallback(60);
   } finally {
-    toast.hide();
     isSendingCode.value = false;
   }
 };
@@ -452,8 +514,6 @@ const handleWechatLogin = async () => {
       logger.error('[Login] uni.login failed:', err);
       throw new Error('获取登录凭证失败');
     });
-
-    logger.log('[Login] 微信登录code:', loginRes.code);
 
     // 调用后端登录接口
     const res = await authStore
@@ -503,44 +563,31 @@ const handleWechatLogin = async () => {
     }
 
     try {
-      const loginRes = await new Promise((resolve, reject) => {
-        uni.login({
-          provider: 'weixin',
-          success: resolve,
-          fail: reject
-        });
-      });
-
-      logger.log('[Login] App微信登录结果:', loginRes);
-
-      const userInfoRes = await new Promise((resolve, _reject) => {
-        uni.getUserInfo({
-          provider: 'weixin',
-          success: resolve,
-          fail: (_err) => resolve({ userInfo: {} }) // 用户可能拒绝授权头像昵称
-        });
-      });
-
-      const res = await authStore
-        .loginByWechat({
-          code: loginRes.code,
-          accessToken: loginRes.authResult?.access_token,
-          openid: loginRes.authResult?.openid,
-          userInfo: userInfoRes.userInfo,
-          platform: 'app'
-        })
-        .catch((err) => {
-          logger.error('[Login] authStore.loginByWechat (app) failed:', err);
-          return { code: -1, message: '登录请求失败' };
-        });
+      const isCurrent = nativeLoginContext();
+      const res = await loginNativeWechat(uni, authStore.loginByWechat, isCurrent);
+      if (!isCurrent()) throw new Error('页面或账户已变化，请重新登录');
 
       toast.hide();
 
       if (res && res.code === 0 && res.data) {
+        if (!res.data.token || !(res.data.userId || res.data._id)) {
+          throw new Error('登录结果不完整，请重新登录');
+        }
         saveLoginInfo(res.data);
         toast.success('登录成功');
-        setTimeout(() => {
-          navigateAfterLogin();
+        const acceptedUserId = getUserId();
+        const acceptedToken = getToken();
+        const acceptedVersion = loginPageVersion;
+        clearTimeout(nativeLoginRedirectTimer);
+        nativeLoginRedirectTimer = setTimeout(() => {
+          if (
+            loginPageActive &&
+            loginPageVersion === acceptedVersion &&
+            getUserId() === acceptedUserId &&
+            getToken() === acceptedToken
+          ) {
+            navigateAfterLogin();
+          }
         }, 1500);
       } else {
         let errorMsg = '微信登录失败，请重试';
@@ -549,10 +596,8 @@ const handleWechatLogin = async () => {
       }
     } catch (appWechatErr) {
       toast.hide();
-      logger.error('[Login] App微信登录失败:', appWechatErr);
-      let errorMsg = '微信登录失败，请重试';
-      if (appWechatErr?.errMsg?.includes('cancel')) errorMsg = '已取消微信登录';
-      toast.info(errorMsg);
+      logger.warn('[Login] App微信登录未完成');
+      if (loginPageActive) toast.info(appWechatErr.message || '微信登录失败，请重试');
     }
     // #endif
 
@@ -572,8 +617,8 @@ const handleWechatLogin = async () => {
   }
 };
 
-// E007: H5微信浏览器 OAuth 网页授权登录
-const handleWechatH5Login = () => {
+// 微信内网页使用公众号，普通浏览器使用独立网站应用。
+const handleWechatH5Login = async () => {
   if (!agreedToTerms.value) {
     toast.info('请先同意用户协议');
     return;
@@ -583,61 +628,25 @@ const handleWechatH5Login = () => {
 
   // #ifdef H5
   try {
-    // I005: 从统一配置获取微信公众号 AppID
-    const wxAppId = config.wx.gzhAppId || '';
+    if (isDesktopRuntime()) {
+      await handleDesktopLogin('wechat');
+      isLoading.value = false;
+      return;
+    }
+    const wechatMode = isWeChatBrowser.value ? 'h5' : 'website';
+    const wxAppId = wechatMode === 'h5' ? config.wx.gzhAppId : config.wx.webAppId;
     if (!wxAppId) {
-      toast.info('微信公众号未配置');
+      toast.info(wechatMode === 'h5' ? '微信公众号未配置' : '微信网站应用未配置');
       isLoading.value = false;
       return;
     }
 
-    const currentOrigin = typeof location !== 'undefined' ? location.origin : '';
-    const hashMode = typeof location !== 'undefined' ? location.href.includes('#') : false;
-    let callbackUrl;
-    if (hashMode) {
-      callbackUrl = `${currentOrigin}/#/pages/login/wechat-callback`;
-    } else {
-      callbackUrl = `${currentOrigin}/pages/login/wechat-callback`;
-    }
-    const redirectUri = encodeURIComponent(callbackUrl);
-
-    // 生成安全的 state 防 CSRF
-    let state;
-    try {
-      const array = new Uint8Array(16);
-      crypto.getRandomValues(array);
-      state = Array.from(array, (b) => b.toString(16).padStart(2, '0')).join('');
-    } catch {
-      state = Date.now().toString(36) + '_' + Math.random().toString(36).substring(2, 18);
-    }
-
-    storageService.save('wx_oauth_state', state);
-
-    logger.log('[Login] 微信H5 OAuth配置:', {
-      wxAppId,
-      callbackUrl,
-      state: state.substring(0, 20) + '...'
+    location.href = beginWebOAuth('wechat', wxAppId, wechatMode === 'website' ? config.wx.webRedirectUri : '', {
+      wechatMode
     });
-
-    // 微信网页授权 URL（snsapi_userinfo 获取用户信息）
-    const authUrl =
-      'https://open.weixin.qq.com/connect/oauth2/authorize' +
-      `?appid=${wxAppId}` +
-      `&redirect_uri=${redirectUri}` +
-      '&response_type=code' +
-      '&scope=snsapi_userinfo' +
-      `&state=${state}` +
-      '#wechat_redirect';
-
-    if (typeof location !== 'undefined') {
-      location.href = authUrl;
-    } else {
-      toast.info('当前环境不支持网页授权跳转');
-      isLoading.value = false;
-    }
   } catch (err) {
-    logger.error('[Login] 微信H5 OAuth跳转失败:', err);
-    toast.info('微信授权跳转失败');
+    logger.warn('[Login] 微信网页授权未发起');
+    if (loginPageActive) toast.info(err?.message || '微信授权跳转失败');
     isLoading.value = false;
   }
   // #endif
@@ -648,6 +657,29 @@ const handleWechatH5Login = () => {
 };
 
 // QQ登录
+const handleDesktopLogin = async (provider) => {
+  const isCurrent = nativeLoginContext();
+  const result = await loginDesktopOAuth(provider, authStore.desktopOAuth, isCurrent, () => {
+    toast.info('请在系统浏览器完成授权，随后返回Yozi AI');
+  });
+  if (!isCurrent()) throw new Error('账户或页面已变化，请重新登录');
+  saveLoginInfo(result.data);
+  toast.success('登录成功');
+  const acceptedUserId = getUserId();
+  const acceptedToken = getToken();
+  const acceptedVersion = loginPageVersion;
+  clearTimeout(nativeLoginRedirectTimer);
+  nativeLoginRedirectTimer = setTimeout(() => {
+    if (
+      loginPageActive &&
+      loginPageVersion === acceptedVersion &&
+      getUserId() === acceptedUserId &&
+      getToken() === acceptedToken
+    )
+      navigateAfterLogin();
+  }, 1500);
+};
+
 const handleQQLogin = async () => {
   if (!agreedToTerms.value) {
     toast.info('请先同意用户协议');
@@ -666,11 +698,9 @@ const handleQQLogin = async () => {
       uni.login({
         provider: 'qq',
         success: resolve,
-        fail: reject
+        fail: () => reject(new Error('QQ登录失败，请重试'))
       });
     });
-
-    logger.log('[Login] QQ小程序登录code:', loginRes.code);
 
     // 调用后端登录接口
     const res = await authStore.loginByQQ({
@@ -714,139 +744,65 @@ const handleQQLogin = async () => {
     // H5环境：使用QQ OAuth网页授权
     toast.hide();
 
-    // QQ互联配置 — 从统一配置读取，支持环境变量覆盖
-    const qqAppId = config.qq.appId;
-    if (!qqAppId) {
-      toast.hide();
-      toast.info('QQ登录未配置');
-      isLoading.value = false;
+    if (isDesktopRuntime()) {
+      await handleDesktopLogin('qq');
       return;
     }
-    const currentOrigin = typeof location !== 'undefined' ? location.origin : '';
-    const hashMode = typeof location !== 'undefined' ? location.href.includes('#') : false;
-    const callbackUrl =
-      config.qq.redirectUri ||
-      (hashMode ? `${currentOrigin}/#/pages/login/qq-callback` : `${currentOrigin}/pages/login/qq-callback`);
 
-    const redirectUri = encodeURIComponent(callbackUrl);
-    // E007: 使用 crypto.getRandomValues() 生成安全的 OAuth state
-    let state;
-    try {
-      const array = new Uint8Array(16);
-      crypto.getRandomValues(array);
-      state = Array.from(array, (b) => b.toString(16).padStart(2, '0')).join('');
-    } catch {
-      // 降级方案（极少数不支持 crypto 的环境）
-      state = Date.now().toString(36) + '_' + Math.random().toString(36).substring(2, 18);
-    }
-
-    // 保存state和回调信息用于验证
-    storageService.save('qq_oauth_state', state);
-    storageService.save('qq_oauth_origin', currentOrigin);
-
-    logger.log('[Login] QQ OAuth配置:', {
-      qqAppId,
-      callbackUrl,
-      state: state.substring(0, 20) + '...'
-    });
-
-    // 构建授权URL
-    const authUrl = `https://graph.qq.com/oauth2.0/authorize?response_type=code&client_id=${qqAppId}&redirect_uri=${redirectUri}&state=${state}&scope=get_user_info`;
-
-    // 直接跳转，不需要确认弹窗（更好的用户体验）
-    if (typeof location !== 'undefined') {
-      location.href = authUrl;
-    } else {
-      toast.info('当前环境不支持网页授权跳转');
-      isLoading.value = false;
-    }
+    // QQ互联配置 — 从统一配置读取，支持环境变量覆盖
+    const qqAppId = config.qq.appId;
+    location.href = beginWebOAuth('qq', qqAppId, config.qq.redirectUri);
     // #endif
 
     // #ifdef APP-PLUS
-    // App环境：使用uni.login的QQ provider
+    // App环境：SDK token 只用于服务端应用/身份校验。
     try {
-      // 检查是否安装了QQ
-      const providers = await new Promise((resolve) => {
-        uni.getProvider({
-          service: 'oauth',
-          success: (res) => resolve(res.provider || []),
-          fail: () => resolve([])
-        });
-      });
-
-      if (!providers.includes('qq')) {
-        toast.hide();
-        toast.info('请先安装QQ客户端');
-        return;
-      }
-
-      const loginRes = await new Promise((resolve, reject) => {
-        uni.login({
-          provider: 'qq',
-          success: resolve,
-          fail: reject
-        });
-      });
-
-      logger.log('[Login] App QQ登录结果:', loginRes);
-
-      // 获取用户信息
-      const userInfoRes = await new Promise((resolve, reject) => {
-        uni.getUserInfo({
-          provider: 'qq',
-          success: resolve,
-          fail: reject
-        });
-      });
-
-      // 调用后端登录接口
-      const res = await authStore.loginByQQ({
-        code: loginRes.code,
-        accessToken: loginRes.authResult?.access_token,
-        openid: loginRes.authResult?.openid,
-        userInfo: userInfoRes.userInfo,
-        platform: 'app',
-        redirectUri: config.qq.redirectUri
-      });
+      const isCurrent = nativeLoginContext();
+      const res = await loginNativeQQ(uni, authStore.loginByQQ, isCurrent);
+      if (!isCurrent()) throw new Error('页面或账户已变化，请重新登录');
 
       toast.hide();
 
-      if (res.code === 0 && res.data) {
+      if (res && res.code === 0 && res.data) {
+        if (!res.data.token || !(res.data.userId || res.data._id)) {
+          throw new Error('登录结果不完整，请重新登录');
+        }
         saveLoginInfo(res.data);
         toast.success('登录成功');
-
-        setTimeout(() => {
-          navigateAfterLogin();
+        const acceptedUserId = getUserId();
+        const acceptedToken = getToken();
+        const acceptedVersion = loginPageVersion;
+        clearTimeout(nativeLoginRedirectTimer);
+        nativeLoginRedirectTimer = setTimeout(() => {
+          if (
+            loginPageActive &&
+            loginPageVersion === acceptedVersion &&
+            getUserId() === acceptedUserId &&
+            getToken() === acceptedToken
+          ) {
+            navigateAfterLogin();
+          }
         }, 1500);
       } else {
         // 根据错误码给出更友好的提示
         let errorMsg = 'QQ登录失败，请重试';
-        if (res.code === 500) {
+        if (res?.code === 500) {
           errorMsg = '服务器繁忙，请稍后再试';
-        } else if (res.message) {
+        } else if (res?.message) {
           errorMsg = res.message;
         }
         toast.info(errorMsg);
       }
     } catch (appError) {
       toast.hide();
-      logger.error('[Login] App QQ登录失败:', appError);
-
-      // 根据错误类型给出提示
-      let errorMsg = 'QQ登录失败，请重试';
-      if (appError.errMsg?.includes('cancel')) {
-        errorMsg = '已取消QQ登录';
-      } else if (appError.errMsg?.includes('deny')) {
-        errorMsg = '用户拒绝授权';
-      }
-
-      toast.info(errorMsg);
+      logger.warn('[Login] App QQ授权未完成');
+      if (loginPageActive) toast.info(appError.message || 'QQ登录失败，请重试');
     }
     // #endif
   } catch (error) {
     toast.hide();
-    logger.error('[Login] QQ登录失败:', error);
-    toast.info('登录失败，请重试');
+    logger.warn('[Login] QQ授权未完成');
+    if (loginPageActive) toast.info(error?.message || '登录失败，请重试');
   } finally {
     isLoading.value = false;
   }
@@ -956,7 +912,6 @@ const handleEmailLogin = async () => {
       logger.error('[Login] 邮箱登录失败:', error);
       toast.info('网络错误，请重试');
     } finally {
-      toast.hide();
       isLoading.value = false;
     }
   } finally {
@@ -998,7 +953,7 @@ const saveLoginInfo = (data) => {
   uni.$emit('loginStatusChanged', true);
   uni.$emit('userInfoUpdated', userInfo);
 
-  logger.log('[Login] 用户信息已保存:', { uid: userInfo.uid, nickName: userInfo.nickName });
+  logger.log('[Login] 用户信息已保存');
 };
 
 // 登录成功后跳转
@@ -1036,6 +991,7 @@ const openTerms = () => {
 
 // 初始化
 onMounted(() => {
+  releaseKeyboard = bindLearningKeyboard(root.value);
   statusBarHeight.value = getStatusBarHeight();
   capsuleSafeRight.value = getCapsuleSafeRight();
 
@@ -1074,6 +1030,10 @@ onMounted(() => {
 
 // 清理事件监听和定时器
 onUnmounted(() => {
+  releaseKeyboard();
+  loginPageActive = false;
+  loginPageVersion++;
+  clearTimeout(nativeLoginRedirectTimer);
   if (_themeHandler) {
     uni.$off('themeUpdate', _themeHandler);
     _themeHandler = null;
@@ -1087,9 +1047,10 @@ onUnmounted(() => {
 
 <style lang="scss" scoped>
 .login-container {
+  font-family: 'DM Sans', 'PingFang SC', 'Microsoft YaHei', sans-serif;
   min-height: 100%;
   min-height: 100vh;
-  background: linear-gradient(180deg, #f9fcf7 0%, #eff7ef 100%);
+  background: var(--yozi-background);
   padding: 0 40rpx;
   position: relative;
   overflow: hidden;
@@ -1123,7 +1084,7 @@ onUnmounted(() => {
 .bg-circle-2 {
   width: 300rpx;
   height: 300rpx;
-  background: var(--brand-hover, #157141);
+  background: var(--brand-hover, #65429e);
   bottom: 200rpx;
   left: -150rpx;
 }
@@ -1131,7 +1092,7 @@ onUnmounted(() => {
 .bg-circle-3 {
   width: 200rpx;
   height: 200rpx;
-  background: var(--brand-active, #0d522e);
+  background: var(--brand-active, #573686);
   bottom: -50rpx;
   right: 100rpx;
 }
@@ -1144,6 +1105,8 @@ onUnmounted(() => {
 .back-btn {
   width: 80rpx;
   height: 80rpx;
+  min-width: 44px;
+  min-height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1195,44 +1158,21 @@ onUnmounted(() => {
 .brand-exam {
   font-size: 50rpx;
   font-weight: 800;
-  color: #163300;
+  color: var(--text-primary);
 }
 
 .brand-master {
   font-size: 50rpx;
   font-weight: 800;
-  color: #00b86b;
+  color: var(--brand-color);
 }
 
 .app-name {
   font-size: 48rpx;
   font-weight: 800;
-  color: #58cc02;
+  color: #785bbc;
   margin-bottom: 12rpx;
   letter-spacing: 1.5px;
-}
-
-.app-slogan {
-  max-width: 560rpx;
-  font-size: 27rpx;
-  color: #5f6672;
-  line-height: 1.55;
-  text-align: center;
-  letter-spacing: 0;
-}
-
-.login-proof-row {
-  display: flex;
-  margin-top: 24rpx;
-}
-
-.proof-chip {
-  padding: 9rpx 14rpx;
-  border-radius: 999rpx;
-  background: rgba(159, 232, 112, 0.24);
-  color: #163300;
-  font-size: 21rpx;
-  font-weight: 700;
 }
 
 .proof-chip + .proof-chip {
@@ -1252,7 +1192,7 @@ onUnmounted(() => {
   border-radius: var(--em3d-radius-lg);
   margin-bottom: 24rpx;
   border: 2rpx solid var(--em3d-border);
-  box-shadow: 0 var(--em3d-depth-md) 0 var(--em3d-border-shadow);
+  box-shadow: var(--yozi-shadow);
   transition: var(--em3d-ease-press);
   position: relative;
   overflow: hidden;
@@ -1303,9 +1243,9 @@ onUnmounted(() => {
   align-items: center;
   justify-content: center;
   margin-right: 24rpx;
-  color: #163300;
-  background: rgba(159, 232, 112, 0.32);
-  box-shadow: inset 0 0 0 2rpx rgba(22, 51, 0, 0.08);
+  color: #332842;
+  background: rgba(201, 177, 238, 0.32);
+  box-shadow: inset 0 0 0 2rpx rgba(51, 40, 66, 0.08);
 }
 
 .btn-text {
@@ -1419,7 +1359,7 @@ onUnmounted(() => {
   text-align: center;
   font-size: 24rpx;
   font-weight: 700;
-  color: #58cc02;
+  color: #785bbc;
 }
 
 .dark-mode .password-toggle-btn {
@@ -1433,7 +1373,7 @@ onUnmounted(() => {
 .send-code-btn {
   min-width: 180rpx;
   height: 88rpx;
-  background: #58cc02;
+  background: #785bbc;
   color: #ffffff;
   border: none;
   border-radius: 999rpx;
@@ -1460,7 +1400,7 @@ onUnmounted(() => {
 }
 
 .email-submit-btn {
-  background: #58cc02;
+  background: #785bbc;
   color: #ffffff;
   border: none;
   box-shadow: 0 8rpx 0 #46a302;
@@ -1485,14 +1425,14 @@ onUnmounted(() => {
   margin-top: 4rpx;
   margin-bottom: 18rpx;
   border-radius: var(--em3d-radius-lg);
-  background: linear-gradient(135deg, rgba(159, 232, 112, 0.26), rgba(255, 255, 255, 0.94));
-  border: 2rpx solid rgba(22, 51, 0, 0.1);
-  box-shadow: 0 var(--em3d-depth-sm) 0 rgba(22, 51, 0, 0.12);
+  background: linear-gradient(135deg, rgba(201, 177, 238, 0.26), rgba(255, 255, 255, 0.94));
+  border: 2rpx solid rgba(51, 40, 66, 0.1);
+  box-shadow: 0 var(--em3d-depth-sm) 0 rgba(51, 40, 66, 0.12);
 }
 
 .login-demo-entry:active {
   transform: translateY(3rpx);
-  box-shadow: 0 var(--em3d-depth-press) 0 rgba(22, 51, 0, 0.12);
+  box-shadow: 0 var(--em3d-depth-press) 0 rgba(51, 40, 66, 0.12);
 }
 
 .demo-copy {
@@ -1504,14 +1444,14 @@ onUnmounted(() => {
 .demo-title {
   font-size: 30rpx;
   font-weight: 800;
-  color: #163300;
+  color: #332842;
 }
 
 .demo-subtitle {
   margin-top: 6rpx;
   font-size: 23rpx;
   line-height: 1.35;
-  color: #5d6b61;
+  color: #62576d;
 }
 
 .form-switch {
@@ -1521,7 +1461,7 @@ onUnmounted(() => {
 
 .form-switch text {
   font-size: 26rpx;
-  color: #58cc02;
+  color: #785bbc;
 }
 
 /* 用户协议 */
@@ -1573,7 +1513,7 @@ onUnmounted(() => {
 }
 
 .agreement-text .link {
-  color: #58cc02;
+  color: #785bbc;
 }
 
 /* 底部提示 */
@@ -1617,7 +1557,7 @@ onUnmounted(() => {
 
 /* 3D 立体风格统一调整 */
 .login-container {
-  background-color: var(--em3d-bg);
+  background: var(--yozi-background);
   padding: 0 32rpx;
   color: var(--em3d-text-1);
 }
@@ -1628,7 +1568,7 @@ onUnmounted(() => {
 }
 
 .bg-circle-1 {
-  background: radial-gradient(circle, rgba(88, 204, 2, 0.2) 0%, transparent 72%);
+  background: radial-gradient(circle, rgba(120, 91, 188, 0.2) 0%, transparent 72%);
 }
 
 .bg-circle-2 {
@@ -1636,11 +1576,11 @@ onUnmounted(() => {
 }
 
 .bg-circle-3 {
-  background: radial-gradient(circle, rgba(88, 204, 2, 0.12) 0%, transparent 72%);
+  background: radial-gradient(circle, rgba(120, 91, 188, 0.12) 0%, transparent 72%);
 }
 
 .dark-mode .bg-circle-1 {
-  background: radial-gradient(circle, rgba(88, 204, 2, 0.15) 0%, transparent 72%);
+  background: radial-gradient(circle, rgba(120, 91, 188, 0.15) 0%, transparent 72%);
 }
 
 .dark-mode .bg-circle-2 {
@@ -1648,7 +1588,7 @@ onUnmounted(() => {
 }
 
 .dark-mode .bg-circle-3 {
-  background: radial-gradient(circle, rgba(88, 204, 2, 0.1) 0%, transparent 72%);
+  background: radial-gradient(circle, rgba(120, 91, 188, 0.1) 0%, transparent 72%);
   opacity: 0.46;
 }
 
@@ -1661,7 +1601,7 @@ onUnmounted(() => {
   z-index: 1;
 }
 
-/* 3D 统一：所有容器用实色 + 厚底阴影 */
+/* Existing login groups use frosted materials. */
 .back-btn,
 .logo-section,
 .login-methods,
@@ -1689,7 +1629,7 @@ onUnmounted(() => {
 
 /* P1修复: 提交按钮白色文字不被通用.btn-text覆盖 */
 .email-submit-btn .btn-text {
-  color: #ffffff;
+  color: var(--yozi-button-ink);
 }
 
 .logo-section {
@@ -1700,11 +1640,11 @@ onUnmounted(() => {
 
 .app-name {
   font-size: 52rpx;
-  color: #58cc02;
+  color: #785bbc;
 }
 
 .form-switch text {
-  color: #58cc02;
+  color: #785bbc;
 }
 
 .dark-mode .form-switch text {
@@ -1737,19 +1677,21 @@ onUnmounted(() => {
   box-shadow: 0 var(--em3d-depth-press) 0 var(--em3d-border-shadow);
 }
 
-/* 提交按钮保持品牌绿色和3D阴影 */
+/* Tactile primary action. */
 .email-submit-btn {
-  background-color: var(--em3d-primary);
-  color: var(--em3d-text-inv);
+  background: var(--yozi-button);
+  color: var(--yozi-button-ink);
   border: none;
-  box-shadow: 0 8rpx 0 var(--em3d-primary-shadow);
+  box-shadow: var(--yozi-button-shadow);
   padding: 26rpx 28rpx;
   margin-bottom: 18rpx;
 }
 
 .email-submit-btn:active {
   transform: translateY(4rpx);
-  box-shadow: 0 4rpx 0 var(--em3d-primary-shadow);
+  box-shadow:
+    inset 0 2px 4px rgba(30, 15, 65, 0.16),
+    0 2px 0 var(--yozi-button-edge);
 }
 
 .btn-icon {
@@ -1838,7 +1780,9 @@ onUnmounted(() => {
 }
 
 .agreement-text .link {
-  color: var(--em3d-primary);
+  color: var(--primary);
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
 .footer-tip {
@@ -1847,5 +1791,80 @@ onUnmounted(() => {
 
 .footer-tip text {
   display: inline-block;
+}
+.login-container .login-methods {
+  background: var(--yozi-floating);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 0;
+}
+.login-container .logo-section,
+.login-container .agreement,
+.login-container .footer-tip text {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+.login-container .login-btn {
+  min-height: 44px;
+  border-radius: 12px;
+  transition:
+    box-shadow 180ms ease,
+    transform 180ms ease;
+}
+.login-container button {
+  font-family: inherit;
+  line-height: 1.6;
+  text-align: left;
+}
+.login-container button::after {
+  border: 0;
+}
+.login-container button:focus-visible,
+.login-container .checkbox-wrapper:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+.login-container .back-btn {
+  margin: 0;
+  padding: 0;
+}
+.login-container .link,
+.login-container .form-switch-btn,
+.login-container .password-toggle-btn {
+  min-height: 44px;
+  min-width: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  margin: 0;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--primary);
+  font-size: inherit;
+}
+.login-container .form-switch-btn {
+  font-size: 26rpx;
+}
+.login-container .password-toggle-btn {
+  font-size: 24rpx;
+}
+.login-container .login-btn:active {
+  transition-duration: 100ms;
+}
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+  .login-container .login-methods {
+    background: var(--yozi-solid);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .login-container .login-btn {
+    transition: none !important;
+    transform: none !important;
+  }
 }
 </style>

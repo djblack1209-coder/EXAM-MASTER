@@ -1,5 +1,5 @@
 name: proxy-ai
-desc: ""
+desc: ''
 methods:
   - GET
   - POST

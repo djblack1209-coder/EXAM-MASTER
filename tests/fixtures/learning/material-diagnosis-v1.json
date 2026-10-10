@@ -1,0 +1,91 @@
+{
+  "version": "prerequisite-material-literal-v1",
+  "provenance": "项目自编合成字段；原题、不同字段复测及合成定位题期望由固定文本独立给出，不从判分器或模型输出生成。",
+  "claims": "七个学习方向仅核验字段与值的字面对应及安全关联，不证明教材覆盖、英语语义、认知错因、官方等级或长期教学效果。",
+  "cases": [
+    {
+      "id": "primary-label",
+      "track": "primary",
+      "content": "颜色: 紫色\n形状: 圆形\n大小: 中等",
+      "field": "颜色",
+      "wrong": "圆形",
+      "correct": "紫色",
+      "variantField": "形状",
+      "variantAnswer": "圆形",
+      "probeWrong": "书架",
+      "probeCorrect": "书桌"
+    },
+    {
+      "id": "junior-schedule",
+      "track": "junior",
+      "content": "Day: Monday\nRoom: Library\nTime: Morning",
+      "field": "Day",
+      "wrong": "Morning",
+      "correct": "Monday",
+      "variantField": "Room",
+      "variantAnswer": "Library",
+      "probeWrong": "Shelf",
+      "probeCorrect": "Desk"
+    },
+    {
+      "id": "senior-source-label",
+      "track": "senior",
+      "content": "文体: 说明文\n标题: 海边的树\n作者: 合成作者",
+      "field": "文体",
+      "wrong": "海边的树",
+      "correct": "说明文",
+      "variantField": "标题",
+      "variantAnswer": "海边的树",
+      "probeWrong": "书架",
+      "probeCorrect": "书桌"
+    },
+    {
+      "id": "postgraduate-record",
+      "track": "postgraduate",
+      "content": "Topic: Habitat\nMethod: Observation\nLocation: Coast",
+      "field": "Topic",
+      "wrong": "Observation",
+      "correct": "Habitat",
+      "variantField": "Method",
+      "variantAnswer": "Observation",
+      "probeWrong": "Shelf",
+      "probeCorrect": "Desk"
+    },
+    {
+      "id": "civil-info-label",
+      "track": "civil",
+      "content": "事项: 合成登记\n地点: 北厅\n日期: 周二",
+      "field": "事项",
+      "wrong": "北厅",
+      "correct": "合成登记",
+      "variantField": "地点",
+      "variantAnswer": "北厅",
+      "probeWrong": "书架",
+      "probeCorrect": "书桌"
+    },
+    {
+      "id": "ielts-travel",
+      "track": "ielts",
+      "content": "Departure city: Bristol\nArrival city: Oxford\nReturn city: York",
+      "field": "Departure city",
+      "wrong": "London",
+      "correct": "Bristol",
+      "variantField": "Arrival city",
+      "variantAnswer": "Oxford",
+      "probeWrong": "Shelf",
+      "probeCorrect": "Desk"
+    },
+    {
+      "id": "toefl-lab-record",
+      "track": "toefl",
+      "content": "Sample: Cedar\nMedium: Water\nContainer: Glass",
+      "field": "Sample",
+      "wrong": "Glass",
+      "correct": "Cedar",
+      "variantField": "Medium",
+      "variantAnswer": "Water",
+      "probeWrong": "Shelf",
+      "probeCorrect": "Desk"
+    }
+  ]
+}

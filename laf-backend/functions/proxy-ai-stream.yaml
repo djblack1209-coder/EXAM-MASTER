@@ -1,5 +1,5 @@
 name: proxy-ai-stream
-desc: AI 流式代理接口
+desc: 有界文本SSE，完整校验及用量结算后返回学习结果
 methods:
   - POST
 tags: []

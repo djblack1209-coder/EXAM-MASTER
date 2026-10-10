@@ -8,7 +8,7 @@ describe('do quiz formal feedback experience', () => {
   it('folds unrelated wrong options after answering', () => {
     expect(doQuizSource).toContain("'option-folded': isOptionFolded(idx)");
     expect(doQuizSource).toContain('option-item.option-folded');
-    expect(doQuizSource).toContain('userChoice !== idx');
+    expect(doQuizSource).toContain('!this.isOptionSelected(idx)');
   });
 
   it('shows a knowledge card in the result surface', () => {

@@ -7,15 +7,219 @@ import {
   getQuizOptionLabel,
   getQuizQuestionTypeLabel,
   hasQuizSelectableOptions,
+  getQuizSelectionAnswer,
+  getQuizAnswerRecordOutcome,
+  isCorrectQuizSelection,
   isCorrectQuizOption,
   isQuizFlashcardMode,
   normalizeQuizAnswer,
   normalizeQuizQuestion,
+  normalizeLegacyReviewQuestion,
+  readLegacyReviewHandoff,
   summarizeQuizProgress,
   upsertQuizAnswerRecord
 } from '@/services/quiz-session-contract.js';
+import { calculateCorrectStreak } from '@/pages/practice-sub/utils/session-feedback.js';
 
 describe('quiz session contract', () => {
+  it('preserves complete legacy multiple-choice references and full original material', () => {
+    const raw = {
+      id: 'old-multi',
+      question: '完整原题',
+      options: ['A. 甲', 'B. 乙', 'C. 丙'],
+      correct_answer: 'C、A',
+      type: '多选题',
+      passage: '完整材料',
+      targetSegment: '原画线'
+    };
+    const before = JSON.stringify(raw);
+    expect(normalizeLegacyReviewQuestion(raw)).toMatchObject({
+      id: 'old-multi',
+      answer: 'AC',
+      type: 'multi_choice',
+      passage: '完整材料',
+      targetSegment: '原画线',
+      scoringAuthority: false
+    });
+    expect(JSON.stringify(raw)).toBe(before);
+    expect(normalizeLegacyReviewQuestion({ ...raw, answer: 0, type: '单选' }).answer).toBe('A');
+  });
+
+  it.each([
+    { id: null },
+    { question: '' },
+    { options: [] },
+    { options: ['甲', ''] },
+    { answer: null },
+    { answer: '' },
+    { answer: false },
+    { answer: '参考A' },
+    { answer: 'Z' },
+    { answer: 2 },
+    { options: ['B. 乙', 'A. 甲'] },
+    { type: 'single_choice', answer: 'AB' }
+  ])('does not invent missing or ambiguous legacy question fields: %j', (invalid) => {
+    const raw = { id: 'old-one', question: '原题', options: ['甲', '乙'], answer: 'B', ...invalid };
+    const before = JSON.stringify(raw);
+    expect(normalizeLegacyReviewQuestion(raw)).toBeNull();
+    expect(JSON.stringify(raw)).toBe(before);
+  });
+
+  it('binds legacy handoff to its current owner and exact launch identity, rejecting partial data', () => {
+    const question = { id: 'old-one', question: '原题', options: ['甲', '乙'], answer: 'B' };
+    const handoff = {
+      contract: 'legacy-review-handoff-v1',
+      id: 'launch-original',
+      ownerId: 'owner-a',
+      questions: [question]
+    };
+    expect(readLegacyReviewHandoff(handoff, handoff.id, handoff.ownerId)).toHaveLength(1);
+    expect(readLegacyReviewHandoff(handoff, 'launch-other', handoff.ownerId)).toBeNull();
+    expect(readLegacyReviewHandoff(handoff, handoff.id, 'owner-b')).toBeNull();
+    expect(
+      readLegacyReviewHandoff({ ...handoff, questions: [question, question] }, handoff.id, handoff.ownerId)
+    ).toBeNull();
+    expect(
+      readLegacyReviewHandoff({ ...handoff, questions: [{ ...question, answer: '' }] }, handoff.id, handoff.ownerId)
+    ).toBeNull();
+    const copy = readLegacyReviewHandoff(handoff, handoff.id, handoff.ownerId);
+    copy[0].options[0] = 'changed';
+    expect(handoff.questions[0].options[0]).toBe('甲');
+  });
+  it('separates pending reference matches from grades and reviews without changing historical payloads', () => {
+    const records = [true, false].map((referenceMatch, index) =>
+      buildQuizAnswerRecord({
+        question: { id: `pending-${index}` },
+        index,
+        userChoice: index,
+        userAnswer: index ? 'B' : 'A',
+        isCorrect: referenceMatch,
+        referenceMatch,
+        source: 'reference_match'
+      })
+    );
+    expect(records.every((r) => r.isCorrect === null && r.grade.status === 'pending')).toBe(true);
+    const before = JSON.stringify(records);
+    expect(summarizeQuizProgress({ questions: [{}, {}], answeredQuestions: records })).toMatchObject({
+      answeredCount: 2,
+      pendingCount: 2,
+      gradedCount: 0,
+      correctCount: 0,
+      wrongCount: 0,
+      reviewedCount: 0
+    });
+    expect(getQuizAnswerRecordOutcome({ ...records[0], isCorrect: true })).toBe('pending');
+    expect(calculateCorrectStreak(records)).toBe(0);
+    expect(buildQuizCompletionContent({ questions: [{}, {}], answeredQuestions: records })).toBe(
+      '本次已记录 2 题，2 题待核对'
+    );
+    expect(JSON.stringify(records)).toBe(before);
+  });
+  it.each([
+    {},
+    { isCorrect: null },
+    { isCorrect: null, correct: true },
+    { isCorrect: false, correct: true },
+    { isCorrect: 'true' },
+    { isCorrect: true, grade: null },
+    { isCorrect: true, grade: { status: 'reliable', outcome: 'correct' } },
+    { isCorrect: false, submission_contract: 'unknown' }
+  ])('does not infer grading or review from unknown provenance %j', (record) => {
+    const before = JSON.stringify(record);
+    expect(getQuizAnswerRecordOutcome(record)).toBe('unclassified');
+    expect(summarizeQuizProgress({ answeredQuestions: [record] })).toMatchObject({
+      accuracy: null,
+      gradedCount: 0,
+      reviewedCount: 0,
+      legacyGradedCount: 0,
+      unclassifiedCount: 1
+    });
+    expect(calculateCorrectStreak([record])).toBe(0);
+    expect(JSON.stringify(record)).toBe(before);
+  });
+  it('preserves a mixed legacy/reference/review distribution without granting scoring authority', () => {
+    const records = [
+      { isCorrect: true },
+      { isCorrect: false },
+      { correct: true },
+      { isCorrect: true, grade: { status: 'pending' } },
+      { userChoice: 'flashcard_rating_3', isCorrect: true },
+      {}
+    ].map((record, index) => ({ ...record, index }));
+    expect(summarizeQuizProgress({ answeredQuestions: records })).toMatchObject({
+      answeredCount: 6,
+      scoringAuthority: false,
+      legacyCorrectCount: 2,
+      legacyWrongCount: 1,
+      legacyAccuracy: 67,
+      pendingCount: 1,
+      reviewedCount: 1,
+      unclassifiedCount: 1,
+      accuracy: null
+    });
+    expect(calculateCorrectStreak([{ isCorrect: true }, { isCorrect: true }])).toBe(0);
+  });
+  it('does not turn self confidence into an exam accuracy, wrong point or perfect-score streak', () => {
+    const self = { userChoice: 'flashcard_rating_3', isCorrect: true };
+    expect(getQuizAnswerRecordOutcome(self)).toBe('reviewed');
+    expect(getQuizAnswerRecordOutcome({ userChoice: 'flashcard_flip', isCorrect: false })).toBe('reviewed');
+    expect(calculateCorrectStreak([{ userChoice: 0, isCorrect: true }, self])).toBe(0);
+    expect(buildQuizCompletionContent({ questions: [{}], answeredQuestions: [{ ...self, index: 0 }] })).toBe(
+      '本次查看或自评 1 题'
+    );
+  });
+  it('keeps historical self ratings out of correctness without rewriting their original payload', () => {
+    const records = [
+      { questionId: 'choice', index: 0, userChoice: 0, isCorrect: true },
+      { questionId: 'remembered', index: 1, userChoice: 'flashcard_rating_3', rating: 3, isCorrect: true },
+      { questionId: 'forgotten', index: 2, userChoice: 'flashcard_rating_1', rating: 1, isCorrect: false }
+    ];
+    const before = JSON.stringify(records);
+    expect(summarizeQuizProgress({ questions: [{}, {}, {}], answeredQuestions: records })).toMatchObject({
+      answeredCount: 3,
+      gradedCount: 0,
+      correctCount: 0,
+      wrongCount: 0,
+      neutralCount: 3,
+      reviewedCount: 2,
+      legacyGradedCount: 1,
+      legacyAccuracy: 100,
+      accuracy: null
+    });
+    expect(JSON.stringify(records)).toBe(before);
+  });
+  it.each(['multi_choice', 'multiple_choice', '多选'])(
+    'compares the complete selection set for %s without treating one correct option as the entire answer',
+    (type) => {
+      const question = { type, options: ['一', '二', '三', '四'], answer: 'AC' };
+      expect(getQuizSelectionAnswer(question, [2, 0])).toBe('AC');
+      expect(isCorrectQuizSelection(question, [2, 0])).toBe(true);
+      expect(isCorrectQuizSelection(question, [0])).toBe(false);
+      expect(isCorrectQuizSelection(question, [0, 1, 2])).toBe(false);
+      expect(isCorrectQuizSelection(question, [1, 3])).toBe(false);
+      expect(getQuizSelectionAnswer(question, 0)).toBe('');
+    }
+  );
+
+  it('keeps single-choice labels and rejects malformed or unavailable selection/key shapes', () => {
+    const question = { type: 'single_choice', options: ['一', '二', '三', '四'], answer: 'C' };
+    expect(getQuizSelectionAnswer(question, 2)).toBe('C');
+    expect(isCorrectQuizSelection(question, 2)).toBe(true);
+    expect(isCorrectQuizSelection(question, 0)).toBe(false);
+    for (const selection of [null, undefined, [], [2], -1, 4, NaN, Infinity, '2', 0.5]) {
+      expect(getQuizSelectionAnswer(question, selection)).toBe('');
+      expect(isCorrectQuizSelection(question, selection)).toBe(false);
+    }
+    for (const answer of ['', 'C is correct', 'AC', 'Z']) {
+      expect(isCorrectQuizSelection({ ...question, answer }, 2)).toBe(false);
+    }
+    for (const selection of [[], [0, 0], [0, 4], ['0'], [0.5]]) {
+      expect(getQuizSelectionAnswer({ ...question, type: 'multi_choice' }, selection)).toBe('');
+    }
+    expect(getQuizSelectionAnswer({ ...question, type: 'translation' }, 2)).toBe('');
+    expect(getQuizSelectionAnswer(null, 0)).toBe('');
+  });
+
   it('normalizes analysis and flashcard questions without losing answer evidence fields', () => {
     const question = normalizeQuizQuestion(
       {
@@ -132,7 +336,6 @@ describe('quiz session contract', () => {
     ]);
   });
 
-
   it('normalizes choice questions and checks answers by stable option labels', () => {
     const question = normalizeQuizQuestion(
       {
@@ -224,6 +427,14 @@ describe('quiz session contract', () => {
     expect(isCorrectQuizOption(question, 2)).toBe(true);
   });
 
+  it('keeps numeric zero as the answer identity without merging an empty-id record', () => {
+    const record = buildQuizAnswerRecord({ question: { id: 0 }, index: 0, userChoice: 0, source: 'reference_match' });
+    expect(record.questionId).toBe(0);
+    const rows = upsertQuizAnswerRecord([{ questionId: '', index: 0, userChoice: 1 }], record);
+    expect(rows).toHaveLength(2);
+    expect(rows[1].questionId).toBe(0);
+  });
+
   it('builds and upserts answer records by question and index', () => {
     const baseQuestion = normalizeQuizQuestion({ id: 'q1', question: 'Q1', answer: 'A' }, 0);
     const first = buildQuizAnswerRecord({
@@ -271,16 +482,22 @@ describe('quiz session contract', () => {
       currentIndex: 2
     });
 
-    expect(summary).toEqual({
+    expect(summary).toMatchObject({
       total: 4,
       currentIndex: 2,
       answeredCount: 3,
-      gradedCount: 2,
-      correctCount: 1,
-      wrongCount: 1,
-      neutralCount: 1,
+      gradedCount: 0,
+      correctCount: 0,
+      wrongCount: 0,
+      neutralCount: 3,
+      pendingCount: 0,
+      reviewedCount: 0,
+      unclassifiedCount: 1,
+      legacyCorrectCount: 1,
+      legacyWrongCount: 1,
+      legacyAccuracy: 50,
       progressRate: 0.75,
-      accuracy: 50
+      accuracy: null
     });
   });
 
@@ -297,7 +514,7 @@ describe('quiz session contract', () => {
       hasNextRecommendation: true
     });
 
-    expect(content).toBe('本次完成 4 题，正确率 50%\n1 道错题已加入复习计划，约 45 分钟后首次复习\n\nAI 已根据薄弱点为你准备了下一组练习');
+    expect(content).toBe('本次已记录 3 题，2 题旧记录，1 题判分依据不明');
   });
 
   it('uses diagnosis states when building completion content', () => {
@@ -307,7 +524,7 @@ describe('quiz session contract', () => {
         answeredQuestions: [{ questionId: 'q1', index: 0, isCorrect: true }],
         diagnosisLoading: true
       })
-    ).toBe('本次完成 1 题，正确率 100%\n\nAI 正在分析你的答题数据...');
+    ).toBe('本次已记录 1 题，1 题旧记录');
 
     expect(
       buildQuizCompletionContent({
@@ -316,7 +533,7 @@ describe('quiz session contract', () => {
         diagnosisReady: true,
         diagnosisSummary: '稳定掌握'
       })
-    ).toBe('本次完成 1 题，正确率 100%\n\n稳定掌握');
+    ).toBe('本次已记录 1 题，1 题旧记录');
   });
 
   it('classifies quiz question display modes for mobile shells', () => {

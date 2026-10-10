@@ -1,3 +1,4 @@
+import { BRAND } from './brand.js';
 import { logger } from '@/utils/logger.js';
 
 /**
@@ -35,6 +36,8 @@ const CLIENT_ENV = {
   SSR: import.meta.env.SSR,
   VITE_WX_APP_ID: import.meta.env.VITE_WX_APP_ID,
   VITE_WX_GZH_APP_ID: import.meta.env.VITE_WX_GZH_APP_ID,
+  VITE_WX_WEB_APP_ID: import.meta.env.VITE_WX_WEB_APP_ID,
+  VITE_WX_WEB_REDIRECT_URI: import.meta.env.VITE_WX_WEB_REDIRECT_URI,
   VITE_QQ_APP_ID: import.meta.env.VITE_QQ_APP_ID,
   VITE_QQ_REDIRECT_URI: import.meta.env.VITE_QQ_REDIRECT_URI,
   VITE_API_BASE_URL: import.meta.env.VITE_API_BASE_URL,
@@ -179,7 +182,11 @@ const config = {
      * 微信公众号 AppID（H5 微信登录用）
      * 配置方式：VITE_WX_GZH_APP_ID=your_gzh_app_id
      */
-    gzhAppId: getEnv('VITE_WX_GZH_APP_ID', '')
+    gzhAppId: getEnv('VITE_WX_GZH_APP_ID', ''),
+
+    // 普通浏览器使用开放平台网站应用，公开 ID/同源静态回调不含 AppSecret。
+    webAppId: getEnv('VITE_WX_WEB_APP_ID', ''),
+    webRedirectUri: getEnv('VITE_WX_WEB_REDIRECT_URI', '')
   },
 
   // ==================== QQ登录配置 ====================
@@ -197,7 +204,7 @@ const config = {
 
     /**
      * QQ OAuth 回调地址
-     * 配置方式：VITE_QQ_REDIRECT_URI=https://your-domain.com/pages/login/qq-callback
+     * 配置方式：VITE_QQ_REDIRECT_URI=https://your-domain.com/oauth/qq.html（同源、无 #）
      */
     redirectUri: getEnv('VITE_QQ_REDIRECT_URI', '')
   },
@@ -280,7 +287,7 @@ const config = {
     /**
      * 应用名称
      */
-    name: getEnv('VITE_APP_NAME', 'Exam-Master'),
+    name: getEnv('VITE_APP_NAME', BRAND.name),
 
     /**
      * 应用版本

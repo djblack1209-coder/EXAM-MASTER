@@ -18,7 +18,10 @@ describe('answer sheet jump guard', () => {
 
   it('does not let the jump handler reset an active result flow', () => {
     const handlerStart = doQuizSource.indexOf('handleJumpToQuestion(index)');
-    const handlerBody = doQuizSource.slice(handlerStart, doQuizSource.indexOf("logger.log('[do-quiz] ✅ 跳转到题目:'", handlerStart));
+    const handlerBody = doQuizSource.slice(
+      handlerStart,
+      doQuizSource.indexOf("logger.log('[do-quiz] ✅ 跳转到题目:'", handlerStart)
+    );
 
     expect(handlerStart).toBeGreaterThan(-1);
     expect(handlerBody).toContain('if (this.isAnswerSheetJumpLocked)');
@@ -28,7 +31,7 @@ describe('answer sheet jump guard', () => {
 
   it('keeps a visible locked state in the answer sheet surface', () => {
     expect(answerSheetSource).toContain('jumpLocked: { type: Boolean, default: false }');
-    expect(answerSheetSource).toContain('lockText: { type: String, default: \'请先完成当前反馈\' }');
+    expect(answerSheetSource).toContain("lockText: { type: String, default: '请先完成当前反馈' }");
     expect(answerSheetSource).toContain('v-if="jumpLocked"');
     expect(answerSheetSource).toContain('class="sheet-lock-notice"');
     expect(answerSheetSource).toContain('if (props.jumpLocked) return;');

@@ -10,9 +10,10 @@ vi.mock('@/utils/logger.js', () => ({
 vi.mock('@/utils/core/performance.js', () => ({
   perfMonitor: { trackApi: vi.fn(), trackRender: vi.fn(), getReport: vi.fn(() => ({})) }
 }));
-vi.mock('@/services/storageService.js', () => ({
-  default: { save: vi.fn(), get: vi.fn(), remove: vi.fn() }
-}));
+vi.mock('@/services/storageService.js', () => {
+  const storageService = { save: vi.fn(), get: vi.fn(), remove: vi.fn() };
+  return { default: storageService, storageService };
+});
 
 // ============================================================
 // PART 1: Theme Token Correctness
@@ -20,7 +21,7 @@ vi.mock('@/services/storageService.js', () => ({
 describe('[Audit] Theme Token Correctness', () => {
   let tokens;
   beforeEach(async () => {
-    const mod = await import('@/design/theme-engine.js');
+    const mod = await import('@/design/theme-runtime.js');
     tokens = mod.tokens;
   });
 
@@ -48,24 +49,24 @@ describe('[Audit] Theme Token Correctness', () => {
     }
   });
 
-  it('dark bg-body is dark blue-black and light bg-body uses gray-blue surface', () => {
-    expect(tokens.light['--bg-body']).toBe('#f5f7fa');
-    expect(tokens.dark['--bg-body']).toBe('#1a1c23');
+  it('dark bg-body is deep violet and light bg-body uses a lavender surface', () => {
+    expect(tokens.light['--bg-body']).toBe('#f0eefa');
+    expect(tokens.dark['--bg-body']).toBe('#211a2e');
   });
 
-  it('dark bg-card uses dark glass surface color', () => {
-    expect(tokens.dark['--bg-card']).toBe('#22252d');
-    expect(tokens.light['--bg-card']).toBe('#ffffff');
+  it('reading cards use the thick Yozi glass surfaces in both themes', () => {
+    expect(tokens.dark['--bg-card']).toBe('rgba(46, 38, 65, 0.9)');
+    expect(tokens.light['--bg-card']).toBe('rgba(246, 243, 255, 0.86)');
   });
 
   it('dark text-primary is bright white and light text-primary is near-black', () => {
     expect(tokens.dark['--text-primary']).toBe('#ffffff');
-    expect(tokens.light['--text-primary']).toBe('#1a1d1f');
+    expect(tokens.light['--text-primary']).toBe('#080909');
   });
 
-  it('brand color differs: light uses soft blue, dark uses neon cyan', () => {
-    expect(tokens.light['--brand-color']).toBe('#4a90e2');
-    expect(tokens.dark['--brand-color']).toBe('#00e0ff');
+  it('brand color differs: light uses violet, dark uses soft lavender', () => {
+    expect(tokens.light['--brand-color']).toBe('#785bbc');
+    expect(tokens.dark['--brand-color']).toBe('#c9b1ee');
   });
 
   it('danger color: light=#ef4444 (red), dark=#f87171 (soft red)', () => {
@@ -80,7 +81,7 @@ describe('[Audit] Theme Token Correctness', () => {
 describe('[Audit] Dark Mode Font Weight Bump', () => {
   let tokens;
   beforeEach(async () => {
-    const mod = await import('@/design/theme-engine.js');
+    const mod = await import('@/design/theme-runtime.js');
     tokens = mod.tokens;
   });
 
@@ -116,7 +117,7 @@ describe('[Audit] Dark Mode Font Weight Bump', () => {
 describe('[Audit] Dark Mode Shadow & Glow', () => {
   let tokens;
   beforeEach(async () => {
-    const mod = await import('@/design/theme-engine.js');
+    const mod = await import('@/design/theme-runtime.js');
     tokens = mod.tokens;
   });
 
@@ -151,7 +152,7 @@ describe('[Audit] Dark Mode Shadow & Glow', () => {
 describe('[Audit] Dark Mode Animation Timing', () => {
   let tokens;
   beforeEach(async () => {
-    const mod = await import('@/design/theme-engine.js');
+    const mod = await import('@/design/theme-runtime.js');
     tokens = mod.tokens;
   });
 
@@ -183,7 +184,7 @@ describe('[Audit] Dark Mode Animation Timing', () => {
 describe('[Audit] Cross-Mode Consistency', () => {
   let tokens;
   beforeEach(async () => {
-    const mod = await import('@/design/theme-engine.js');
+    const mod = await import('@/design/theme-runtime.js');
     tokens = mod.tokens;
   });
 
@@ -244,7 +245,7 @@ describe('[Audit] applyTheme DOM Injection', () => {
 
   beforeEach(async () => {
     vi.resetModules();
-    const mod = await import('@/design/theme-engine.js');
+    const mod = await import('@/design/theme-runtime.js');
     applyTheme = mod.applyTheme;
     tokens = mod.tokens;
     const existing = document.getElementById('v0-animations');
@@ -255,17 +256,17 @@ describe('[Audit] applyTheme DOM Injection', () => {
   it('applies light tokens as CSS custom properties on :root', () => {
     applyTheme('light');
     const root = document.documentElement;
-    expect(root.style.getPropertyValue('--bg-body')).toBe('#f5f7fa');
-    expect(root.style.getPropertyValue('--text-primary')).toBe('#1a1d1f');
-    expect(root.style.getPropertyValue('--brand-color')).toBe('#4a90e2');
+    expect(root.style.getPropertyValue('--bg-body')).toBe('#f0eefa');
+    expect(root.style.getPropertyValue('--text-primary')).toBe('#080909');
+    expect(root.style.getPropertyValue('--brand-color')).toBe('#785bbc');
   });
 
   it('applies dark tokens as CSS custom properties on :root', () => {
     applyTheme('dark');
     const root = document.documentElement;
-    expect(root.style.getPropertyValue('--bg-body')).toBe('#1a1c23');
+    expect(root.style.getPropertyValue('--bg-body')).toBe('#211a2e');
     expect(root.style.getPropertyValue('--text-primary')).toBe('#ffffff');
-    expect(root.style.getPropertyValue('--brand-color')).toBe('#00e0ff');
+    expect(root.style.getPropertyValue('--brand-color')).toBe('#c9b1ee');
   });
 
   it('injects v0-animations style element into head', () => {
@@ -288,13 +289,13 @@ describe('[Audit] applyTheme DOM Injection', () => {
   it('falls back to light tokens for unknown theme name', () => {
     applyTheme('neon');
     const root = document.documentElement;
-    expect(root.style.getPropertyValue('--bg-body')).toBe('#f5f7fa');
+    expect(root.style.getPropertyValue('--bg-body')).toBe('#f0eefa');
   });
 
   it('defaults to light when called with no argument', () => {
     applyTheme();
     const root = document.documentElement;
-    expect(root.style.getPropertyValue('--bg-body')).toBe('#f5f7fa');
+    expect(root.style.getPropertyValue('--bg-body')).toBe('#f0eefa');
   });
 
   it('switching from dark to light replaces all variables', () => {
@@ -329,7 +330,7 @@ describe('[Audit] getCurrentTheme Fallback', () => {
 
   beforeEach(async () => {
     vi.resetModules();
-    const mod = await import('@/design/theme-engine.js');
+    const mod = await import('@/design/theme-runtime.js');
     getCurrentTheme = mod.getCurrentTheme;
     window.localStorage.clear();
   });
@@ -385,19 +386,19 @@ describe('[Audit] applyTheme DOM Rendering', () => {
     vi.resetModules();
     document.documentElement.style.cssText = '';
     window.localStorage.clear();
-    const mod = await import('@/design/theme-engine.js');
+    const mod = await import('@/design/theme-runtime.js');
     applyTheme = mod.applyTheme;
   });
 
   it('applies dark theme tokens to DOM', () => {
     applyTheme('dark');
-    expect(document.documentElement.style.getPropertyValue('--bg-body')).toBe('#1a1c23');
+    expect(document.documentElement.style.getPropertyValue('--bg-body')).toBe('#211a2e');
   });
 
   it('applies light theme tokens to DOM', () => {
     applyTheme('dark');
     applyTheme('light');
-    expect(document.documentElement.style.getPropertyValue('--bg-body')).toBe('#f5f7fa');
+    expect(document.documentElement.style.getPropertyValue('--bg-body')).toBe('#f0eefa');
   });
 
   it('rapid apply does not corrupt DOM state', () => {
@@ -405,12 +406,12 @@ describe('[Audit] applyTheme DOM Rendering', () => {
       applyTheme(i % 2 === 0 ? 'dark' : 'light');
     }
     // 最后一次是 i=9 → light
-    expect(document.documentElement.style.getPropertyValue('--text-primary')).toBe('#1a1d1f');
+    expect(document.documentElement.style.getPropertyValue('--text-primary')).toBe('#080909');
   });
 
   it('defaults to light when given invalid theme', () => {
     applyTheme('invalid');
-    expect(document.documentElement.style.getPropertyValue('--bg-body')).toBe('#f5f7fa');
+    expect(document.documentElement.style.getPropertyValue('--bg-body')).toBe('#f0eefa');
   });
 });
 
@@ -421,7 +422,7 @@ describe('[Audit] v0Animations Content', () => {
   let v0Animations;
 
   beforeEach(async () => {
-    const mod = await import('@/design/theme-engine.js');
+    const mod = await import('@/design/theme-runtime.js');
     v0Animations = mod.v0Animations;
   });
 

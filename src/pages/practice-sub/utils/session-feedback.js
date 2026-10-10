@@ -1,3 +1,5 @@
+import { getQuizAnswerRecordOutcome } from '@/services/quiz-session-contract.js';
+
 const DEFAULT_COMBO_MILESTONES = [3, 5, 10, 15, 20, 30, 50];
 
 export function calculateCorrectStreak(answeredQuestions = []) {
@@ -6,7 +8,7 @@ export function calculateCorrectStreak(answeredQuestions = []) {
   let streak = 0;
   for (let index = answeredQuestions.length - 1; index >= 0; index--) {
     const item = answeredQuestions[index];
-    if (!item || item.isCorrect !== true) break;
+    if (getQuizAnswerRecordOutcome(item) !== 'correct') break;
     streak += 1;
   }
   return streak;

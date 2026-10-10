@@ -1,583 +1,647 @@
-# 前端参考手册
+# 前端与平台
 
-> 合并自旧前端模块说明文档
+## 2026-10-08：公共书信正文阅读与实际重开
 
----
+沿既有互动学习参考区增加“读信件正文”，保留 Yozi AI、Playful/Future、Wot、玻璃控件/实色阅读面及键盘聚焦；没有新增组件体系。信件从称呼至落款完整显示，来源/许可/署名、隐藏联系方式的改动、1998年旧示例说明及三项写法短注保留。读参考是帮助，原草稿不改变；主观原答仍待核对。
 
-## 当前小程序主链路
+当前51639来源的原24个对话保全，明确开始邮件才增加至25；实际Enter读完整9段与落款，提交前零新原答，同周期重复读后的完整导出逐字一致。随后明确提交原英文邮件为pending且绑定1份原帮助，后续新阅读为下一周期帮助；明确停止后提交/反馈/阅读禁用。实际键盘定位落款、署名、许可与改动说明，参考收起控件聚焦可见。[首屏](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-public-email-reference-h5.jpg)、[正文与归属](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-public-email-reference-body.jpg)。
 
-> Last updated: 2026-05-14
+正常关闭重开完整1060748字节导出逐字一致；原八集合前缀、原画像和24个对话的教法/停止合同保持。全局策略是当前新停止任务的投影，未把投影变化说成旧记录改写。当前H5资料与原30条H5身份分别保留。11阶段构建和微信/App审计通过；唯一固定Mac7e及完整资料未变，最新3f候选尚未安装，完整Mac/其他设备/深浅减少动态触区及长期效果继续验收。
 
-当前小程序面向考研公共课刷题，主链路固定为：
+## 2026-10-08：续答身份与重传编号，完整目标继续
 
-1. 打开小程序，在首页查看今日进度、连续学习和已加载真题。
-2. 从首页继续刷题，或进入刷题中心查看真题目录。
-3. 在题库页按政治、英语一、英语二、数学一、数学二、数学三选择年份试卷。
-4. 可练试卷进入整卷练习；即将开放的年份只展示状态，不进入训练流。
+保留原练习页/按钮/确认弹窗、44px/2px/减少动态与Playful Idea/Future 3D Portfolio体系，不新增身份开发文案。合法原会话只在继续确认后进入运行态，新作答保存一次编号；草稿不写，旧身份不猜配，切题和账户变化拒绝迟到回填。功能115专项通过，相关/完整及隔离产物/当前H5实际继续；固定Mac7e/完整记录保持，9cdd上一候选为此前范围未安装产物。
 
-用户可见页面必须使用产品语言，不暴露后台整理、证据、脚本、发布、OCR、哈希等工程流程词。相关守卫测试为 `tests/unit/frontend-copy-guard.spec.js`。
+首次实操旧资源404/重试0答但原缓存保留，正常刷新后明确恢复38题/旧5条；新C原答和UUID已保存，首次本地桥接因写锁尚未就绪漏记。现仅在明确继续后补记带原身份的已提交选择，页面关闭/账户/会话变化拒绝；界面/原题和统计不借补记改变。真实最终重新构建/冷启动及完整重开仍接续，旧失败现场保留。
 
-## H5 本地演示（2026-09-13）
+新2项最小红复现onLoad忽略实际query及H5重试丢resume意图；已接宿主参数、仅当前do-quiz的H5路由四键回退，直接参数优先，其他页面不借查询串。224专项通过后再补优先/外国页面边界；写锁与补记版522相关/3894完整通过，保留为before-query-fix，最终10源码/17快照的相关、完整、8客户端与冷启动/稳定身份补记/正常重开重新执行。首次混用旧资源及原稳定C未入core的现场保持，不以正常刷新替代错误恢复验收。
 
-- 开发模式下，刷题中心在没有加载题库时提供「开始本地演示」。复用 `src/utils/practice/demo-bank.js`，加载 3 道明确标注的示例题；已有题库时不显示入口。
-- 正常生产构建关闭示例入口。构建期常量与运行期环境条件同时成立才允许加载，`guest_demo` 和 `publishableOfficial: false` 保留在题目/题库来源中。
-- 答题页显示「示例」标记；结果页的规则与统计推荐称为「学习建议」，不作为在线 AI 推理展示。
-- 本地计划使用本地日历日期生成，避免 UTC 格式化让晚间或清晨的计划偏移一天。
-- 验证入口：`tests/unit/guest-demo-boundary.spec.js`、`tests/unit/offline-business-closure.spec.js`；截图见 README，演示路径不代表登录、云端保存或微信实机验收。
+[当前正常重开画面](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-quiz-session-identity-h5-final-reopened.png)。
 
-## 平台 UI 边界
+最终当前范围525相关/3897完整、6原跳过（165.37秒）与8隔离客户端通过，10源码测试冻结一致；微信241主包1449804字节、12媒体132099/最大32728、含许可全部static146742及秘密/分包、App0阻塞审计通过。H5首次加载超时仍存在，页面重试保留原继续确认；明确继续本地补记原C同UUID/会话为pending，不增统计或重发API/模型。新D独立UUID仍属同一保存会话，原所有core集合前缀与218库保持；正常关闭重开16键1841071字节逐字相同，7条缓存记录（含2条自评），5份核心原答均pending、不重复补记，仍余31。只在该刷题资料范围成立，原H530身份/旧统计/后端答案真正接收幂等、Mac与设备/视觉/模型自然时间/长会话长期效果/公共许可和受保护发布继续；固定7e及1156979恢复材料未动，最新476f候选未安装，完整目标active。
 
-- 微信小程序是当前轻量发布面，真实注册路由以 `src/pages.json` 为准；未注册的 `.vue` 页面只能视为 App/H5 或历史功能资产，不能算作小程序已上线页面。
-- App/H5 是完整产品方向，可复用更多页面和交互代码，但必须单独经过对应平台构建、路由注册和真机/浏览器验证后才能认定完成。
+## 2026-10-08：通用续答恢复，完整目标继续
 
-## 题库与音频反馈
+现有主按钮根据可恢复快照显示继续训练，有库但无快照显示开始训练，无库显示历年真题；下方开始刷题仍明确创建普通新组。完整旧快照可在当前库不可用时恢复已有本地练习，不激活或发布缺来源公共题库。恢复确认沿原弹窗/短句，失败显示续答暂不可用、原记录已保留；检查与弹窗阶段不写原答，确认清空未提交草稿。
 
-- `src/config/bank-registry.js` 是公共课真题目录入口，负责按科目轨道、年份、正式/整理中/待入库状态生成 2005-2026 六轨道槽位和导航树。
-- `src/pages/practice-sub/question-bank.vue` 是用户选择整卷试卷的主入口；页面必须展示 132 个公共课槽位的年份地图，只有正式题库可进入训练，整理中和待入库槽位只展示可信状态。英语选择题必须有篇章材料，缺材料的试卷不得开放训练。
-- `src/pages/practice-sub/do-quiz.vue` 负责整卷练习、篇章材料展示、闪卡翻转、FSRS 自评和完成弹窗。
-- `src/pages/practice-sub/utils/quiz-sound.js` 是统一音频反馈服务：点击、答对、答错、连击、翻卡、完成整卷、升级成就均通过该模块触发；H5 使用 Web Audio，小程序不可用时降级为轻震动或静默。
+保留原Playful/Future、紫蓝吉祥物、玻璃/实色阅读面、Wot1.14/Clay/DM Sans与44px/2px/减少动态。当前仅路由/恢复/短标签，没有新增布局、组件库或动态；真实H5、完整视觉和固定Mac分别验收，Mac保存面板捕获没有新前提，本轮不再次启动。[矩阵](13-DEVELOPMENT-PLAN.md)。
 
-## 一、组件清单
+初版D7e3OKch已实测主继续入口Enter、resume=true、确认前后14键逐字相同、原18/38及3原答；末题明确自评后回首个未答2/38并保留4条，但旧自評写true且显示4已答。实际失败已保留。现进度用已答/已复习区分，答题卡已记录/暂未判分沿旧短标签；历史自评只改解释，不改原true/false。新自评无答题正确奖励，旧参考不能带到下一题；最后实际重建与重开另验。旧StudyStore统计历史与原服务器会话独立待审，不声称此缓存解释修复已纠正所有历史统计。
 
-> Auto-generated: 2026-03-22 | Last updated: 2026-03-25 (Round 39 AI助手化)
+结果页全自评改为数量与“已复习”，保留原圆环与现有控件，不增加说明区；混合练习的分类、进度、答题卡和激励只使用已判分记录。首次直接打开低分报告不再读取尚未初始化的分类状态。后台浏览器/右侧原生窗口约束保持，最终重开仍接续。
 
-### Base Components (`src/components/base/`)
+最终H5正常通用Enter/明确确认恢复原38与4记录，旧自评按复习显示；新“忘了”自评不增错误数，切到下一题撤参考，正常关闭重开16键1823963字节相同，3已答/2已复习/剩33仍未完成。首次加载超时→页面重试恢复，根因仍待查；固定Mac7e不改，9cdd候选未安装。[重开画面](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-quiz-continuation-recovery-h5-final-reopened.png)。
 
-Primitive UI building blocks with no business logic.
+## 2026-10-08：刷题明确提交与键盘
 
-| Component      | File                                  | Purpose                                                                                                                                                   |
-| -------------- | ------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| BaseCard       | `base-card/base-card.vue`             | Generic card container with border, shadow, radius                                                                                                        |
-| BaseEmpty      | `base-empty/base-empty.vue`           | Empty state display with icon and message                                                                                                                 |
-| BaseIcon       | `base-icon/base-icon.vue`             | **(Round 35k)** SVG icon component — 86 icons (74 base + 12 Lucide-style), 35 aliases. Globally registered in main.js. Supports dark mode theme switching |
-| BaseSkeleton   | `base-skeleton/base-skeleton.vue`     | Generic loading skeleton placeholder                                                                                                                      |
-| SchoolSkeleton | `school-skeleton/school-skeleton.vue` | School list item loading skeleton                                                                                                                         |
+单/多选选项在提交前不呈现答案色、判分、错题或已答进度；选项具有按钮语义、aria-pressed、禁用/Tab边界以及Enter/Space改草稿。现有Wot1.14.0按钮短句“提交作答”在有效草稿时开放，补role/aria-disabled、Tab与Enter/Space；点击或键盘明确提交后才呈现原反馈。选项/按钮至少44px、2px可见聚焦，复用原紫蓝/玻璃/实色阅读面/Clay令牌，不新增依赖或动态。
 
-### Business Components (`src/components/business/`)
+H5首轮当前资产OPvoDDEg、原4库180题前态保持，正常选卷只改草稿；明确开始已启用政治2024才载入38题，政治2023仍待入库。单选B→Enter A、多选ABD→撤B→Space B均全存储逐字相同；明确两份原答A/ABD才写事实。实际发现Wot根uni-button缺按钮语义、第二份对话原答存在但旧续答快照仍仅1份，已补声明及提交即时保存；首轮实操与候选保留边界，最终重建/实际重开另验。Mac捕获导出保存面板时3812，Escape取消后原停止状态恢复可见，正常退出、固定7e未更新；系统Right已执行，其他应用保持。[矩阵](13-DEVELOPMENT-PLAN.md)。
 
-Domain-specific components organized by feature area.
+最终CUWy9jHU实际Tab聚焦提交按钮、44px高度/2px solid轮廓、Enter提交ACD成立；禁用时aria-disabled=true/tabindex=-1，工具拒绝禁用键入，单位测试覆盖空提交。鼠标C/Enter A/Space D均不写事实；第三次提交即存续答。正常关闭9、重开10并明确继续后18/38、3原答、空草稿/禁提交成立；14项白名单1822782字节相同。原180题逐项保留，仅明确开始新增已启用2024的38题；政治2023未启用。[实际重开](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-quiz-explicit-submit-h5-final-reopened.png)。泛“继续训练”仍进入普通20题，具体整卷入口按38题确认恢复，不将泛入口称已验续答；完整视觉/设备、Mac与旧H530身份另验。
 
-#### Index (Home Page) Components (`business/index/`)
+## 2026-10-08：中文材料论证沿现有段落带练
 
-| Component       | File                  | Purpose                                                                                                   |
-| --------------- | --------------------- | --------------------------------------------------------------------------------------------------------- |
-| AIDailyBriefing | `AIDailyBriefing.vue` | **(Round 39)** AI每日简报 — 智能任务调度+个性化建议+一键开始最优先任务。基于FSRS/倒计时/错题/进度本地计算 |
-| DailyGoalRing   | `DailyGoalRing.vue`   | Circular progress ring for daily goal tracking                                                            |
-| StatsGrid       | `StatsGrid.vue`       | Grid of key learning statistics                                                                           |
-| StudyHeatmap    | `StudyHeatmap.vue`    | GitHub-style contribution heatmap for study days                                                          |
-| WelcomeBanner   | `WelcomeBanner.vue`   | Personalized welcome banner with greeting                                                                 |
-| StudyTimeCard   | `StudyTimeCard.vue`   | Today's study time display card                                                                           |
-| ActivityList    | `ActivityList.vue`    | Recent learning activity feed                                                                             |
-| IndexHeaderBar  | `IndexHeaderBar.vue`  | Home page custom navigation header                                                                        |
-| FormulaModal    | `FormulaModal.vue`    | Mathematical formula reference modal                                                                      |
+共用主题和体裁新增中文材料论证，只有明确开始才建新任务。材料全文位于原题目阅读区；原互动面板使用中文段落标签、2000字符输入与现有四步草稿，不新增组件库、动态或重复说明区。检查只保存本题帮助并提示表达待核对，拼稿仍未提交；独立任务使用另一整组材料并清除旧帮助。
 
-#### Practice Components (`business/practice/`)
+保留Playful Idea/Future 3D Portfolio、紫蓝吉祥物、玻璃控件/实色阅读面、Clay/DM Sans、Wot1.14.0、44px/2px/减少动态和明确提交。功能、H5/固定Mac实际操作、完整重开、浅深/控件和设备分别验证；当前固定7e入口及完整1156979字节记录保持，新候选未更新。最新30条H5身份与Mac答题卡末行、后排翻译/数学24仍独立待办，窗口继续右侧。[矩阵](13-DEVELOPMENT-PLAN.md)。
 
-| Component             | File                        | Purpose                                         |
-| --------------------- | --------------------------- | ----------------------------------------------- |
-| GenerationProgressBar | `GenerationProgressBar.vue` | AI question generation progress indicator       |
-| PauseBanner           | `PauseBanner.vue`           | Quiz pause state banner                         |
-| QuizManageModal       | `QuizManageModal.vue`       | Quiz bank management modal                      |
-| GoalSettingModal      | `GoalSettingModal.vue`      | Daily practice goal setting                     |
-| AchievementModal      | `AchievementModal.vue`      | Achievement unlocked celebration modal          |
-| PracticeModesModal    | `PracticeModesModal.vue`    | Practice mode selection (normal, speed, review) |
-| SpeedReadyModal       | `SpeedReadyModal.vue`       | Speed mode countdown ready screen               |
-| AiGenerationOverlay   | `AiGenerationOverlay.vue`   | Full-screen AI generation loading overlay       |
-| LearningStatsCard     | `LearningStatsCard.vue`     | Compact learning statistics display             |
+H5实际正常刷新旧CeoOzLLq到B5lzhiZp，23条/961424字节完整前态与上一成功记录相同，未清缓存或恢复/合并。高中/材料主题、第一段草稿、拼稿和两份主输入草稿均保持16项学习存储摘要；四段明确检查仅存帮助，完整三组材料与原范围逐项和规范prompt一致。两次明确原答439/365字符含首尾空格、双空格与换行保持pending；独立题撤旧帮助、指定explain保持，0模型。正常计划进入10/09第三组材料，提前输入仍禁提交/0事实；停止后中文段落、体裁、词语和检查禁用，正常关闭重开1018749字节逐字相同，原23条画像/教法/九集合保持。[停止重开画面](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-chinese-material-argument-h5-stopped-reopen.png)。这是当前资料功能验收，原30条身份、固定Mac实际更新/重开、完整视觉/聚焦触区/减少动态及其他设备仍待。
 
-### Chart Components (`src/components/charts/`)
+## 2026-10-08：词义间隔沿现有词卡选择
 
-ECharts-based data visualization components. **v2 (Round 13)**: 搬运 ECharts 官方最佳实践配置。
+确认词义后显示明日/3天后/7天后选择，选择只改组件草稿，原逐句草稿双空格/换行保持；明确认词安排按钮才写计划，已安排显示日期并禁用重复保存。回到草稿/换词清除间隔草稿，停止/忙碌禁止选择和安排；“自己写一句”沿原即时明确开始，不接受复测间隔。复用现有lab-tabs、实色阅读面/玻璃控件、44px触区/2px焦点和减少动态，不新增组件库、动态或说明段落。
 
-| Component  | File             | Purpose                                                                                |
-| ---------- | ---------------- | -------------------------------------------------------------------------------------- |
-| StudyTrend | `StudyTrend.vue` | **v2**: 学习趋势图 — dataZoom 横向滚动 + areaStyle 渐变 + markLine 均值 + HTML tooltip |
+12文件439项相关回归及完整回归、隔离后端与跨端构建、当前H5草稿/安排/未来禁答/停止和完整重开已验；Mac实际接续。当前95584e79…固定入口的上轮完整记录证据保持；Mac答题卡末行、后排49/50翻译及数学24仍单独UI待办，不借新词卡功能关闭这些边界。窗口继续靠右，其他App/共享服务保持。[矩阵](13-DEVELOPMENT-PLAN.md)、[验证](08-TESTING-INFRA.md)。
 
-### Common Components (`src/components/common/`)
+最终439相关/3751完整、11类型与构建阶段、16项36请求HTTP及微信/App审计通过。H5当前可读22条/938314字节前态保全，原九集合/画像和22条各自教法保持；选择主题、词义、3/7间隔及两未来题前后学习存储摘要相同。明确开始/确认/安排新增1对话、4题、1词义原答、3计划；10/11与10/15原时区未来题提交禁用、0原答、未完成。草稿双空格/换行在安排期间保持，3间隔按钮实测高度44px。停止点击回执超时后在同一标签确认已生效，未重复发停止；正常关闭重开961424字节逐字相同。
 
-Cross-cutting UI components used across multiple pages.
+51639当前资料与最新30条回执有差异；当前22条新增功能实操不代替最新30条原会话验收。固定Mac已在955适当回滚归档试还原后原子更新7e796927…；完整浅深/减少动态/全部聚焦触区与设备、Mac末行及后排翻译/数学24继续独立待办。
 
-| Component           | File                      | Purpose                                                               |
-| ------------------- | ------------------------- | --------------------------------------------------------------------- |
-| CustomModal         | `CustomModal.vue`         | Reusable modal dialog with slot content                               |
-| EmptyState          | `EmptyState.vue`          | Empty state with illustration and CTA                                 |
-| share-modal         | `share-modal.vue`         | Social sharing modal (WeChat, QQ, poster)                             |
-| ResumePracticeModal | `ResumePracticeModal.vue` | "Resume where you left off" prompt                                    |
-| offline-indicator   | `offline-indicator.vue`   | Network offline status banner (6 pages)                               |
-| ErrorBoundary       | `ErrorBoundary.vue`       | Catches render errors, shows recovery UI (global registered, 5 pages) |
-| privacy-popup       | `privacy-popup.vue`       | Privacy agreement popup (first launch)                                |
-
-### Layout Components (`src/components/layout/`)
-
-| Component     | File                              | Purpose                                 |
-| ------------- | --------------------------------- | --------------------------------------- |
-| custom-tabbar | `custom-tabbar/custom-tabbar.vue` | Custom bottom tab bar (replaces native) |
-
-### 组件统计
-
-- **Total shared components**: ~32
-- **Base**: 5 primitives
-- **Business**: 18 domain-specific components (across 2 domains)
-- **Charts**: 1 ECharts wrapper
-- **Common**: 7 cross-cutting components
-- **Layout**: 1 tab bar
-
-#### New in Round 13-15
-
-| Component  | File                    | Change                          |
-| ---------- | ----------------------- | ------------------------------- |
-| StudyTrend | `charts/StudyTrend.vue` | v2: dataZoom+areaStyle+markLine |
-
----
-
-## 二、页面路由
-
-> Auto-generated: 2026-03-22 | Last updated: 2026-03-26 (Round 53 架构重构)
->
-> **Round 53 变更**:
->
-> - **D001 service 层重构**：删除 6 个 `.service.js` 文件 (-10,085 行)，`lafService.js` 改为聚合 8 个 `.api.js`
-> - **H005 Store 层归位**：31 处 `lafService.xxx()` → Store action（classroomStore 8处, toolsStore 6处, reviewStore 17处）
-> - **D004/D009 清理**：废弃 `getApiKey()` 删除，4 个 mixin 迁移为 composable，`src/mixins/` 目录删除
-
-### Main Package (tabBar)
-
-| Page          | Path                           | Lines | Title        | Key Features                                                                               |
-| ------------- | ------------------------------ | ----- | ------------ | ------------------------------------------------------------------------------------------ |
-| Splash        | `src/pages/splash/index.vue`   | 562   | Exam Master  | Brand animation, auto-redirect                                                             |
-| Home          | `src/pages/index/index.vue`    | 2310  | (custom nav) | ECharts, FSRS review, heatmap, knowledge bubbles, daily quote, stats grid, recommendations |
-| Practice Hub  | `src/pages/practice/index.vue` | 1955  | 智能刷题     | Quiz config panel, Anki import, AI generation, practice modes, learning stats              |
-| School Search | `src/pages/school/index.vue`   | 2396  | 择校分析     | Province filter, school list, hot schools, search input                                    |
-| Profile       | `src/pages/profile/index.vue`  | 1907  | 个人中心     | User stats, VIP status, settings entry, gamification display                               |
-
-### Sub-Package: practice-sub
-
-| Page               | Path                                          | Lines | Title      | Key Features                                                                                     |
-| ------------------ | --------------------------------------------- | ----- | ---------- | ------------------------------------------------------------------------------------------------ |
-| Quiz Engine        | `src/pages/practice-sub/do-quiz.vue`          | 1774  | 刷题进行中 | R43拆分: script -87%，逻辑提取到5个composable (useQuizState/Timer/Submit/Navigation/FSRS)        |
-| PK Battle          | `src/pages/practice-sub/pk-battle.vue`        | 1959  | PK 对战    | R45拆分: script -92%，逻辑提取到4个mixin (pkMatching/Gameplay/Result/Share)                      |
-| Ranking            | `src/pages/practice-sub/rank.vue`             | 1758  | 学霸排行榜 | Leaderboard, weekly/monthly/all-time, user rank card                                             |
-| Import Data        | `src/pages/practice-sub/import-data.vue`      | 2851  | 资料导入   | Anki .apkg import, file upload, format conversion, progress tracking                             |
-| File Manager       | `src/pages/practice-sub/file-manager.vue`     | 624   | 文件管理   | Uploaded files list, delete, preview                                                             |
-| Mock Exam          | `src/pages/practice-sub/mock-exam.vue`        | ~1600 | 模拟考试   | **[ENHANCED]** 计时压力感(warning/danger) + 实时IRT分数预测 + 每题用时 + 分科统计 + 离线三层降级 |
-| Smart Review       | `src/pages/practice-sub/smart-review.vue`     | 950   | 智能复习   | FSRS-driven due cards, retrievability sorting                                                    |
-| Question Bank      | `src/pages/practice-sub/question-bank.vue`    | 487   | 考研题库   | Browse question bank, filter by subject/chapter                                                  |
-| Diagnosis Report   | `src/pages/practice-sub/diagnosis-report.vue` | 1035  | 学习诊断   | AI analysis, weak points, improvement plan                                                       |
-| **Error Clusters** | `src/pages/practice-sub/error-clusters.vue`   | ~215  | 错题归因   | **[NEW]** 错题按error_type×category聚类，趋势分析，severity分级                                  |
-| **Sprint Mode**    | `src/pages/practice-sub/sprint-mode.vue`      | ~225  | 冲刺模式   | **[NEW]** ROI优先级排序，考试倒计时，战略放弃建议                                                |
+固定Mac实际主题/方向、词义选项、3→7间隔和两未来题选择前后完整导出逐字相同，未提交草稿双空格/换行保持。明确7天/3天安排各显示禁用已安排10/15、10/11；未来选择后提交禁用、停止后选项禁用，正常退出重开1156979字节相同，原25条各自教法与九集合前缀保持。三次打开均系统Right，1602×1428局部实图可读，完整全桌面几何/视觉不据此通过。随后2007答题卡内部滚3页再1页仍只见末部37–48，49/50在窗口下方裁切；未继续点屏幕外，2010/数学24本次未操作，0原答/评分/笔记。正常退出后128题/3库、已做0%，完整学习记录1156979字节仍相同。[本轮Mac词卡](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-vocabulary-cross-week-native-intervals.png)、[末行现场](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-source-recovery-native-7e-answer-sheet-last-row.png)。
 
-### Sub-Package: login
-
-| Page            | Path                                  | Lines | Title    | Key Features                                            |
-| --------------- | ------------------------------------- | ----- | -------- | ------------------------------------------------------- |
-| Login           | `src/pages/login/index.vue`           | 1890  | 登录     | Email + code, WeChat login, QQ login, privacy agreement |
-| WeChat Callback | `src/pages/login/wechat-callback.vue` | 366   | 微信登录 | OAuth callback handler                                  |
-| QQ Callback     | `src/pages/login/qq-callback.vue`     | 499   | QQ登录   | OAuth callback handler                                  |
-
-### Sub-Package: settings
-
-| Page             | Path                             | Lines | Title    | Key Features                                                 |
-| ---------------- | -------------------------------- | ----- | -------- | ------------------------------------------------------------ |
-| Settings         | `src/pages/settings/index.vue`   | 2132  | 系统设置 | Theme switch, account mgmt, about, feedback, AI tutor config |
-| Privacy Policy   | `src/pages/settings/privacy.vue` | 229   | 隐私政策 | Static content                                               |
-| Terms of Service | `src/pages/settings/terms.vue`   | 231   | 用户协议 | Static content                                               |
-
-### Sub-Package: social
-
-| Page           | Path                                  | Lines | Title    | Key Features                              |
-| -------------- | ------------------------------------- | ----- | -------- | ----------------------------------------- |
-| Friend List    | `src/pages/social/friend-list.vue`    | 1513  | 我的好友 | Friend list, add friend, search, requests |
-| Friend Profile | `src/pages/social/friend-profile.vue` | 867   | 好友资料 | Friend stats, AI chat, study comparison   |
-
-### Sub-Package: chat
-
-| Page    | Path                      | Lines | Title    | Key Features                                                     |
-| ------- | ------------------------- | ----- | -------- | ---------------------------------------------------------------- |
-| AI Chat | `src/pages/chat/chat.vue` | 2024  | 智能对话 | Streaming SSE chat, Markdown rendering, KaTeX, code highlighting |
-
-### Sub-Package: mistake
-
-| Page         | Path                          | Lines | Title  | Key Features                                            |
-| ------------ | ----------------------------- | ----- | ------ | ------------------------------------------------------- |
-| Mistake Book | `src/pages/mistake/index.vue` | 1161  | 错题本 | Error collection, filter by subject/type, stats, export |
-
-### Sub-Package: favorite
-
-| Page      | Path                           | Lines | Title    | Key Features                           |
-| --------- | ------------------------------ | ----- | -------- | -------------------------------------- |
-| Favorites | `src/pages/favorite/index.vue` | 1339  | 我的收藏 | Saved questions, folders, quick access |
-
-### Sub-Package: plan
-
-| Page              | Path                          | Lines | Title        | Key Features                                      |
-| ----------------- | ----------------------------- | ----- | ------------ | ------------------------------------------------- |
-| Plan List         | `src/pages/plan/index.vue`    | 1184  | 我的学习计划 | Plan overview, progress tracking, daily tasks     |
-| Create Plan       | `src/pages/plan/create.vue`   | 759   | 创建学习计划 | Plan wizard, goal setting, schedule configuration |
-| **Adaptive Plan** | `src/pages/plan/adaptive.vue` | ~235  | 智能学习计划 | **[NEW]** AI自适应7天计划，阶段划分，每日任务卡片 |
-
-### Sub-Package: study-detail
-
-| Page         | Path                               | Lines | Title    | Key Features                                        |
-| ------------ | ---------------------------------- | ----- | -------- | --------------------------------------------------- |
-| Study Detail | `src/pages/study-detail/index.vue` | 707   | 学习详情 | Detailed stats, trend chart, heatmap, ability radar |
-
-### Sub-Package: tools
-
-| Page         | Path                               | Lines | Title      | Key Features                                     |
-| ------------ | ---------------------------------- | ----- | ---------- | ------------------------------------------------ |
-| Photo Search | `src/pages/tools/photo-search.vue` | 1796  | 拍照搜题   | Camera/gallery input, OCR, AI answer generation  |
-| Doc Convert  | `src/pages/tools/doc-convert.vue`  | 1510  | 文档转换   | File format conversion (PDF, DOCX, etc.)         |
-| ID Photo     | `src/pages/tools/id-photo.vue`     | 1479  | 证件照制作 | Background removal, color change, size selection |
-
-### Sub-Package: knowledge-graph
-
-| Page                 | Path                                    | Lines | Title      | Key Features                                            |
-| -------------------- | --------------------------------------- | ----- | ---------- | ------------------------------------------------------- |
-| Knowledge Graph      | `src/pages/knowledge-graph/index.vue`   | 1961  | 知识图谱   | Force-directed graph, node interaction, mastery display |
-| **Mastery Overview** | `src/pages/knowledge-graph/mastery.vue` | ~220  | 掌握度全景 | **[NEW]** 各知识点掌握度可视化，科目分组，趋势指示      |
-
-### Sub-Package: ai-classroom
-
-| Page               | Path                                   | Lines | Title   | Key Features                                             |
-| ------------------ | -------------------------------------- | ----- | ------- | -------------------------------------------------------- |
-| AI Classroom Index | `src/pages/ai-classroom/index.vue`     | 544   | AI 课堂 | Lesson selection, subject browser (R18: 修复 timer leak) |
-| AI Classroom       | `src/pages/ai-classroom/classroom.vue` | 751   | AI 课堂 | Interactive lesson, teacher/student/examiner agents      |
-
-### Sub-Package: school-sub
-
-| Page          | Path                                  | Lines | Title    | Key Features                             |
-| ------------- | ------------------------------------- | ----- | -------- | ---------------------------------------- |
-| School Detail | `src/pages/school-sub/detail.vue`     | 1417  | 院校详情 | Score lines, major info, admission stats |
-| AI Consult    | `src/pages/school-sub/ai-consult.vue` | —     | —        | AI school counseling                     |
-
-### Sub-Package: login (含 onboarding)
-
-| Page       | Path                             | Lines | Title    | Key Features                |
-| ---------- | -------------------------------- | ----- | -------- | --------------------------- |
-| Onboarding | `src/pages/login/onboarding.vue` | —     | 新手引导 | Feature tour with driver.js |
-
-### Page-Local Components
-
-Some pages have co-located components in their directories:
-
-| Component          | Path                                                                  | Parent Page     |
-| ------------------ | --------------------------------------------------------------------- | --------------- |
-| quiz-progress      | `src/pages/practice-sub/components/quiz-progress/quiz-progress.vue`   | do-quiz         |
-| answer-sheet       | `src/pages/practice-sub/components/answer-sheet/answer-sheet.vue`     | do-quiz         |
-| quiz-result        | `src/pages/practice-sub/components/quiz-result/quiz-result.vue`       | do-quiz         |
-| TutorFeedbackCard  | `src/pages/practice-sub/components/quiz-result/TutorFeedbackCard.vue` | quiz-result     |
-| MemoryStatsRow     | `src/pages/practice-sub/components/quiz-result/MemoryStatsRow.vue`    | quiz-result     |
-| xp-toast           | `src/pages/practice-sub/components/xp-toast/xp-toast.vue`             | do-quiz         |
-| base-loading       | `src/pages/practice-sub/components/base-loading/base-loading.vue`     | do-quiz         |
-| RichText           | `src/pages/practice-sub/components/RichText.vue`                      | do-quiz         |
-| EnhancedProgress   | `src/pages/practice-sub/EnhancedProgress.vue`                         | do-quiz         |
-| knowledge-graph.js | `src/pages/knowledge-graph/knowledge-graph.js`                        | knowledge-graph |
-| plan-skeleton      | `src/pages/plan/components/plan-skeleton/plan-skeleton.vue`           | plan            |
-| mistake-skeleton   | `src/pages/mistake/components/mistake-skeleton/mistake-skeleton.vue`  | mistake         |
-| MistakeCard        | `src/pages/mistake/MistakeCard.vue`                                   | mistake         |
-| MistakeReport      | `src/pages/mistake/MistakeReport.vue`                                 | mistake         |
-| StatsCard          | `src/pages/mistake/StatsCard.vue`                                     | mistake         |
-| FSRSOptimizer      | `src/pages/study-detail/FSRSOptimizer.vue`                            | study-detail    |
-| StudyTrendChart    | `src/pages/study-detail/StudyTrendChart.vue`                          | study-detail    |
-| AbilityRadar       | `src/pages/study-detail/AbilityRadar.vue`                             | study-detail    |
-| ThemeSelectorModal | `src/pages/settings/ThemeSelectorModal.vue`                           | settings        |
-| AITutorList        | `src/pages/settings/AITutorList.vue`                                  | settings        |
-| AIChatModal        | `src/pages/settings/AIChatModal.vue`                                  | settings        |
-| InviteModal        | `src/pages/settings/InviteModal.vue`                                  | settings        |
-| PosterModal        | `src/pages/settings/PosterModal.vue`                                  | settings        |
-| FriendsEntryCard   | `src/pages/settings/FriendsEntryCard.vue`                             | settings        |
-| LogoutButton       | `src/pages/settings/LogoutButton.vue`                                 | settings        |
-
-### 页面统计
-
-- **Total pages**: 36
-- **Total page lines**: ~49,870
-- **Largest page**: pk-battle.vue (3327 lines)
-- **Heaviest sub-package**: practice-sub (9 pages, ~15,639 lines)
-
----
-
-## 三、状态管理
-
-> Auto-generated: 2026-03-22
->
-> All stores use Pinia `defineStore()` with setup function syntax (Composition API).
-> Entry point: `src/stores/index.js` re-exports all stores.
-
-### Store Architecture
-
-The user store is a **facade pattern** that composes 4 sub-stores:
-
-```
-useUserStore (facade)
-├── useAuthStore      → token, isLogin, login(), logout(), silentLogin()
-├── useProfileStore   → userInfo, planProgress, updateProfile()
-├── useVipStore       → vipStatus, vipLevel, isVip, vipDaysLeft
-└── useInviteStore    → inviteCode, inviteCount, inviteRewards
-```
-
-### Store Modules
-
-#### useUserStore (Facade)
-
-| Property | Path                                                                        | Purpose                                         |
-| -------- | --------------------------------------------------------------------------- | ----------------------------------------------- |
-| File     | `src/stores/modules/user.js`                                                | Composes auth + profile + vip + invite + social |
-| State    | `token`, `isLogin`, `userInfo`, `vipStatus`, `inviteCode`, `friendsList`    | Unified access                                  |
-| Actions  | `login()`, `logout()`, `silentLogin()`, `fetchFriends()`, `updateProfile()` | Delegates to sub-stores                         |
-
-#### useAuthStore
-
-| Property | Path                                                               | Purpose                  |
-| -------- | ------------------------------------------------------------------ | ------------------------ |
-| File     | `src/stores/modules/auth.js`                                       | Authentication state     |
-| State    | `token` (ref), `isLogin` (computed)                                | JWT token & login status |
-| Actions  | `setToken()`, `clearToken()`, `syncLoginStatus()`, `silentLogin()` | Token management         |
-
-#### useProfileStore
-
-| Property | Path                                                    | Purpose                     |
-| -------- | ------------------------------------------------------- | --------------------------- |
-| File     | `src/stores/modules/profile.js`                         | User profile data           |
-| State    | `userInfo` (ref), `planProgress` (ref)                  | Profile & learning progress |
-| Actions  | `setUserInfo()`, `updateProfile()`, `loadFromStorage()` | Profile management          |
-
-#### useVipStore (已移除)
-
-> VIP 功能已整体移除。相关状态已合并到 useUserStore facade 中，独立的 vip.js 文件已删除。
-
-#### useInviteStore
-
-| Property | Path                                         | Purpose                  |
-| -------- | -------------------------------------------- | ------------------------ |
-| File     | `src/stores/modules/invite.js`               | Invite & referral system |
-| State    | `inviteCode`, `inviteCount`, `inviteRewards` | Invite tracking          |
-| Computed | `totalInviteRewards`                         | Sum of rewards           |
-
-#### useStudyStore
-
-| Property    | Path                                                                                                                                                 | Purpose                 |
-| ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------- |
-| File        | `src/stores/modules/study.js`                                                                                                                        | Aggregate study metrics |
-| State       | `studyProgress` (totalQuestions, completedQuestions, correctQuestions, studyDays, studyMinutes, lastStudyDate), `currentQuestion`, `questionHistory` | Learning metrics        |
-| Computed    | `completionRate`, `accuracyRate`                                                                                                                     | Derived metrics         |
-| Actions     | `recordAnswer()`, `loadProgress()`, `saveProgress()`, `resetProgress()`                                                                              | Metric updates          |
-| Persistence | Via `storageService`, key configured in `APP_CONFIG`                                                                                                 | Local storage           |
-
-#### useGamificationStore
-
-| Property    | Path                                                                                             | Purpose                   |
-| ----------- | ------------------------------------------------------------------------------------------------ | ------------------------- |
-| File        | `src/stores/modules/gamification.js`                                                             | XP, streaks, achievements |
-| State       | `xp`, `level`, `streakDays`, `achievements`, `dailyChallenges`                                   | Gamification data         |
-| Constants   | `XP_REWARDS` (CORRECT_ANSWER: 10, STREAK_BONUS: 5, PERFECT_SCORE: 50, FIRST_PRACTICE: 20)        | XP values                 |
-| Constants   | `STREAK_MILESTONES` [3, 7, 14, 30, 60, 100, 365]                                                 | Streak milestones         |
-| Constants   | `ACHIEVEMENT_DEFS` (first_blood, streak_3/7/14/30, etc.)                                         | Achievement definitions   |
-| Actions     | `awardXP()`, `recordCorrectAnswer()`, `recordMistake()`, `checkAchievements()`, `updateStreak()` | Gamification logic        |
-| Persistence | Key: `gamification_state`                                                                        | Local storage             |
-
-#### useThemeStore
-
-| Property | Path                                                                       | Purpose             |
-| -------- | -------------------------------------------------------------------------- | ------------------- |
-| File     | `src/stores/modules/theme.js`                                              | Theme management    |
-| State    | `themeType` ('wise' or 'bitget'), `isDark` (boolean)                       | Theme settings      |
-| Actions  | `setThemeType()`, `setDarkMode()`, `initFromStorage()`, `getThemeTokens()` | Theme switching     |
-| Events   | Emits `themeTypeUpdate` via uni.$emit                                      | Global notification |
-
-#### useAppStore (已移除)
-
-> App 运行时上下文 store 已移除。系统信息和网络状态现由各 composable 局部管理。
-
-#### useSchoolStore
-
-| Property    | Path                                                           | Purpose                            |
-| ----------- | -------------------------------------------------------------- | ---------------------------------- |
-| File        | `src/stores/modules/school.js`                                 | School selection                   |
-| State       | `info` (ref: Object)                                           | Selected school/major/target score |
-| Computed    | `hasPlan` (boolean)                                            | Whether user has set school target |
-| Actions     | `setInfo()`, `loadFromStorage()`, `saveToStorage()`, `clear()` | School selection management        |
-| Persistence | Key: `school_selection_info`                                   | Local storage                      |
-
-#### useTodoStore
-
-| Property    | Path                                                                         | Purpose               |
-| ----------- | ---------------------------------------------------------------------------- | --------------------- |
-| File        | `src/stores/modules/todo.js`                                                 | Daily task management |
-| State       | `tasks` (array of {id, title, done, priority, tag, tagColor})                | Task list             |
-| Actions     | `addTask()`, `removeTask()`, `toggleTask()`, `reorderTasks()`, `loadTasks()` | CRUD operations       |
-| Persistence | Key: `my_tasks`                                                              | Local storage         |
-| Default     | Creates 3 default tasks on first load                                        | Pre-seeded content    |
-
-#### useLearningTrajectoryStore
-
-| Property    | Path                                                                                              | Purpose                      |
-| ----------- | ------------------------------------------------------------------------------------------------- | ---------------------------- |
-| File        | `src/stores/modules/learning-trajectory-store.js`                                                 | Fine-grained learning events |
-| State       | `trajectory` (event array), `knowledgeMastery` (per-point scores), `sessions` (learning sessions) | Event stream                 |
-| Event Types | `BUBBLE_CLICK`, `ANSWER_QUESTION`, `REVIEW_CARD`, `START_SESSION`, `END_SESSION`                  | Trajectory events            |
-| Actions     | `addTrajectory()`, `updateMastery()`, `startSession()`, `endSession()`, `getStats()`              | Event recording              |
-| Persistence | Keys: `learning_trajectory`, `knowledge_mastery`, `learning_sessions`                             | Local storage                |
-
-### Store Dependencies
-
-```
-useUserStore → useAuthStore, useProfileStore, useVipStore, useInviteStore
-useStudyStore → storageService, APP_CONFIG
-useGamificationStore → storageService
-useLearningTrajectoryStore → storageService
-useThemeStore → storageService
-useSchoolStore → storageService
-useTodoStore → storageService
-useAppStore → (no external deps)
-```
-
-### Store 汇总
-
-| Store               | Key Responsibility         | Persistence                  |
-| ------------------- | -------------------------- | ---------------------------- |
-| user                | Auth + profile facade      | Via sub-stores               |
-| auth                | JWT token, login status    | `EXAM_TOKEN`, `EXAM_USER_ID` |
-| profile             | User profile data          | `userInfo`                   |
-| vip                 | VIP membership             | Via profile                  |
-| invite              | Referral system            | Via profile                  |
-| study               | Aggregate learning metrics | APP_CONFIG key               |
-| gamification        | XP, streaks, achievements  | `gamification_state`         |
-| theme               | Theme type + dark mode     | `theme_type`, `theme_mode`   |
-| app                 | Device info, network       | In-memory only               |
-| school              | Target school selection    | `school_selection_info`      |
-| todo                | Daily task list            | `my_tasks`                   |
-| learning-trajectory | Fine-grained event stream  | `learning_trajectory`        |
-
----
-
-## 四、服务层
-
-> Auto-generated: 2026-03-22 | Last updated: 2026-03-25 (Round 41 全维度审计重构)
-
-### API Layer
-
-#### Core Request Infrastructure
-
-| File              | Path                                        | Lines | Purpose                                                      |
-| ----------------- | ------------------------------------------- | ----- | ------------------------------------------------------------ |
-| \_request-core.js | `src/services/api/domains/_request-core.js` | 592   | **请求基础设施**: 签名、重试、缓存、限流、去重、双服务器切换 |
-
-**Key features of the request layer:**
-
-- Automatic retry with exponential backoff
-- Response caching (SWR pattern)
-- Request deduplication (same URL + params)
-- FNV-1a request signing (anti-tamper)
-- Network connectivity pre-check
-- Frontend rate limiting
-- Auth token injection (Bearer)
-- Standardized error normalization
-
-#### Domain Services (Round 41 按领域拆分)
-
-| File              | Path                                        | Lines | Domain                                     |
-| ----------------- | ------------------------------------------- | ----- | ------------------------------------------ |
-| \_request-core.js | `src/services/api/domains/_request-core.js` | 592   | 请求基础设施                               |
-| auth.api.js       | `src/services/api/domains/auth.api.js`      | 65    | 登录、邮箱验证码                           |
-| school.api.js     | `src/services/api/domains/school.api.js`    | 99    | 院校查询、热门院校、省份列表               |
-| ai.api.js         | `src/services/api/domains/ai.api.js`        | 662   | AI 代理、流式聊天、诊断、拍照搜题、AI 课堂 |
-| practice.api.js   | `src/services/api/domains/practice.api.js`  | 253   | 题库、答题提交、错题、收藏、FSRS           |
-| social.api.js     | `src/services/api/domains/social.api.js`    | 116   | 好友系统、排行榜、邀请奖励                 |
-| user.api.js       | `src/services/api/domains/user.api.js`      | 307   | 用户档案、账号注销、统计、学习目标、成就   |
-| tools.api.js      | `src/services/api/domains/tools.api.js`     | 85    | 去背景、语音识别/合成、音色列表            |
-| study.api.js      | `src/services/api/domains/study.api.js`     | 159   | 学习统计、学习资源、首页数据               |
-
-#### Service Facade
-
-| File          | Path                         | Lines | Purpose                                                             |
-| ------------- | ---------------------------- | ----- | ------------------------------------------------------------------- |
-| lafService.js | `src/services/lafService.js` | 55    | Facade: merges all 6 domain services + tool APIs into single export |
-
-**Usage pattern:**
-
-```js
-import { lafService } from '@/services/lafService.js';
-const result = await lafService.proxyAI(messages, options);
-const schools = await lafService.getSchoolList(params);
-```
-
-### Core Services
-
-#### FSRS Service
-
-| File            | Path                           | Lines | Purpose                                        |
-| --------------- | ------------------------------ | ----- | ---------------------------------------------- |
-| fsrs-service.js | `src/services/fsrs-service.js` | 640   | FSRS-5 spaced repetition scheduler (singleton) |
-
-**Key exports:**
-
-- `scheduleCard(questionId, rating)` — Schedule next review
-- `createNewCard(questionId)` — Initialize FSRS state for new question
-- `getDueCards(allCards)` — Get cards due for review, sorted by retrievability
-- `getReviewStats(questionIds)` — Get aggregate review statistics
-- `updateUserParams(params)` — Hot-swap personalized FSRS parameters
-
-**Constants:**
-
-- FSRS-5 default weights: 21 parameters
-- Target retention: 90%
-- Storage key pattern: `fsrs_card_{questionId}`
-
-#### Knowledge Engine
-
-| File                | Path                                            | Lines | Purpose                              |
-| ------------------- | ----------------------------------------------- | ----- | ------------------------------------ |
-| knowledge-engine.js | `src/pages/knowledge-graph/knowledge-engine.js` | —     | Knowledge graph x FSRS fusion engine |
-
-**Key exports:**
-
-- `calculateMastery(knowledgePoint)` — Weighted mastery (40% FSRS retrievability + 60% accuracy)
-- `getLearningPath(subject)` — Topological sort of knowledge points based on prerequisites
-- `getGraphData(subject)` — Nodes/edges data for force-directed graph visualization
-- `isPrerequisiteMet(knowledgePoint)` — Check if prerequisites mastered (>70%)
-
-**Prerequisite DAG:** Defines dependencies between 考研 knowledge points (e.g., probability depends on calculus).
-
-#### Storage Service
-
-| File              | Path                             | Lines | Purpose                           |
-| ----------------- | -------------------------------- | ----- | --------------------------------- |
-| storageService.js | `src/services/storageService.js` | ~200  | Unified local storage abstraction |
-
-**Key exports:**
-
-- `save(key, value, sync)` — Save to uni storage
-- `get(key, defaultValue)` — Read from uni storage
-- `remove(key, sync)` — Delete from storage
-- `clear(sync, options)` — Clear all storage
-- `getUserId()` — Get current user ID from storage
-- `getStorageInfo()` — Get storage usage stats
-
-#### Stream Service (已移除)
-
-> SSE 流式服务已移除，AI 聊天打字效果现由 `src/composables/useTypewriter.js` 纯前端实现。
-
-### Utility Services
-
-| File                     | Path                                                       | Purpose                                                                                             |
-| ------------------------ | ---------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
-| toast.js                 | `src/utils/toast.js`                                       | **(Round 14)** 中心化 Toast：success/error/info/warning/loading/hide                                |
-| auth-storage.js          | `src/services/auth-storage.js`                             | Auth token persistence (R18: 修复 `uni.getItem` → `localStorage.getItem`)                           |
-| checkin-streak.js        | `src/services/checkin-streak.js`                           | Daily check-in streak calculation                                                                   |
-| streak-recovery.js       | `src/services/streak-recovery.js`                          | Streak recovery (freeze, skip) logic                                                                |
-| fsrs-optimizer-client.js | `src/pages/practice-sub/services/fsrs-optimizer-client.js` | Client for cloud FSRS parameter optimization                                                        |
-| offline-cache-service.js | `src/pages/practice-sub/services/offline-cache-service.js` | Offline data caching + answer queue + sync; exports `saveOfflineAnswer`, `checkOfflineAvailability` |
-| subscribe-message.js     | `src/services/subscribe-message.js`                        | WeChat subscription message API                                                                     |
-
-### Composables (Vue 3 Hooks)
-
-| File                     | Path                                       | Purpose                                 |
-| ------------------------ | ------------------------------------------ | --------------------------------------- |
-| useQuizAutoSave.js       | `src/composables/useQuizAutoSave.js`       | Auto-save quiz progress with debouncing |
-| useNavigation.js         | `src/composables/useNavigation.js`         | Safe uni-app page navigation            |
-| useTodo.js               | `src/composables/useTodo.js`               | Todo list CRUD tied to todo store       |
-| usePracticeNavigation.js | `src/composables/usePracticeNavigation.js` | Practice-specific navigation logic      |
-| useRecommendations.js    | `src/composables/useRecommendations.js`    | AI-powered learning recommendations     |
-| useLearningStyle.js      | `src/composables/useLearningStyle.js`      | Adaptive learning style detection       |
-| useTheme.js              | `src/composables/useTheme.js`              | Theme switching reactive hook           |
+## 2026-10-08：整卷刷新回退的修复接续
+
+前轮实际H5刷新52→20已定位到一次性smart_review_ids被消费后进入默认组题。当前答题页按指定paperId在当前账户库恢复完整整卷，缺卷/坏缓存显示短句返回重试；不会混成其他卷或据此写作答事实。模板、选项只改草稿/明确提交、44px/2px/减少动态及原视觉体系保持；原问卷材料、精确翻译范围与数学题图随规范化保留。
+
+11项实际页面加载方法专项、20文件111相关、完整3727项及8隔离阶段通过。H5正常入口明确开始后刷新2007仍52题；180题/4库、原数学第24题书签在刷新/恢复提示/明确确认后摘要完全相同，0新原答，两张数学裁切可见。首次练习加载超时经页面重试恢复，未据此宣称网络问题已修复。
+
+固定Mac更新95584e79…后正常退出重开，完整1129028字节与原记录逐字一致，原画像/指定教法/停止及提交禁用保持。2007/2010各46–48画线句实际完整文本与源码一致，两年画线区可见；2010完整G段及41→42→43→44→E→45成立。明确开始2010/数学只载入各52/24题，保留原52题，最终3库128题，0作答。2007第49题点击两次、数学第24题一次被判屏幕外，答题卡末行现场已记录；其他49/50尚未点击，全部后排翻译及Mac数学24仍待验。深浅/减少动态/全部44px触区与2px焦点、设备和完整视觉分别验收。
+
+两次打开均执行系统Window→Move & Resize→Right；截图1602×1428确认应用内容可观察，未测全桌面精确位置。Codex自身窗口被界面工具禁止控制，未绕过或盲目拖动；其他App及台前调度保持。自有窗口、IAB标签2和4382预览已正常回收。[验证](08-TESTING-INFRA.md)、[矩阵](13-DEVELOPMENT-PLAN.md)。
+
+## 2026-10-08：重启后的空序与固定Mac正常重开补验
+
+复用当前source-recovery-h5产物，从学习页的历史题库记录→刷题→英语年份入口操作。2007和2006完整[1]–[20]实际可读，2007首空/Born/Spain’s及末段、2006第20空无旧OCR前缀成立。选择英语/年份前后题库记录逐字一致；两次明确开始分别载入52题，原76题逐项保持，现共180题且0新作答。浏览器刷新后这些题库事实逐字相同，但复习会话由52题回退为20题并提示切换普通模式：smart_review_ids首次载入后被消费，paperId未用于恢复原复习范围。此失败仍待修，不能称会话正常恢复或完整H5验收通过。
+
+唯一固定Mac ae2c5d49…正常打开、系统右侧排列、完整导出、正常退出重开及再次完整导出均已实际执行。前后1129028字节/SHA256 bd2bca60…与原成功记录完全相同，25对话/58题/3资料/31原答/50计划/418事件、原画像/指定教法和停止状态保持；导航没有解除停止，提交和压强辅助仍禁用。一次原生观察连接失败通过重绑仍在运行窗口恢复，未因此重启程序。客户补充右侧对齐要求后已再次执行系统Right；精确几何仍未测。Mac翻译/数学、完整浅深/减少动态/触区聚焦及其他设备继续单列；相关窗口/自有H5标签和预览用完正常回收。[当前回执](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/server.json)、[矩阵](13-DEVELOPMENT-PLAN.md)。
+
+## 2026-10-07：原始题面恢复的实际范围
+
+最新固定入口ae2c5d49…实际将已有52题只刷新20题，完整[1]–[20]、Born/Spain’s与0已答可见。随后ScreenCaptureKit -3812使Mac翻译/数学和完整正常重开仍待验；H5此前画线/320px/数学实操保持观察边界，新空序最终实操另补。
+
+当前H5右侧浏览器面板实际选择英语/2010只更新草稿，“开始”后同步52题；0已答。已看到20空完整文章、正确顺序和原选项，答题卡跳到41后完整G段及41→42→43→44→E→45固定位置，跳到46后全文无后续写作/答案/广告。这个实操不是全部题目/许可/语义验收。
+
+实际46页仅显示全文和编号，未显示精确画线范围；现已补仅translation且有targetSegment时的画线阅读区，其他题与原提交/翻卡流程保持。画线区域已实测rgb(240,237,252)实色/下划线，320px局部scrollWidth=clientWidth=265，无横向溢出；恢复正常题库继续仍52题/0已答。直接练习URL无入口载荷曾回退20题，偶发加载提示可见重试恢复，保留未闭环。数学第24题本地两图1090×358/1010×106实载，密度/样本/两项要求和隐藏解答实际可读。Mac已在试还原当前成功归档后原子更新bb9dacff…，前后1129028字节完整记录相同；实际英语/年份只选草稿、明确开始才同步52题。但2007第1空缺失及OCR残留在实操被发现，2006原页也确认第20空前缀错误，继续修复空序，当前最终回归/跨端构建和实际再验进行中。Mac新画线/数学、完整正常重开、深色/减少动态/整体控件/其他设备仍分项验。[验证](08-TESTING-INFRA.md)、[矩阵](13-DEVELOPMENT-PLAN.md)。
+
+## 2026-10-07：压强双端主要功能与正常重开
+
+H5最终资产index-BfB2fDfO.js与固定Mac程序e9c258e9…已实际操作。主题选择前后H5 1306232/Mac1053156字节完整记录相同，明确开始后各增1任务。方法保存持续显示，重读仅1帮助；30000Pa带帮助正确提交，独立换条件撤去方法，76.16N无提示正确提交。直接自由输入76.16N另记pending，不覆盖可靠选择原答。Mac实际Tab/Tab/Enter进入独立题并用Return重读。
+
+两端原时区America/Los_Angeles的10/08面积复测已安排，提前选择答案仍禁用提交；停止后方法、独立与提交辅助状态禁用。H5 1381690/Mac1129028字节完整导出正常关闭重开分别逐字相同，旧29/24对话及九集合逐项保持；每端新增3题、3原答（2已登记正确、1待核对），未来题0作答。0模型请求。
+
+固定入口保持标识cn.wangshiliang.wenli.localqa93d5ef76c442；更新前成功5a816bd5…程序和1053156字节配对记录已归档、试还原核验，只原子替换可执行文件，图标/元数据/资料保持，无新增可见.app。系统Right菜单用于本轮窗口；原生1602×1428深色窗口局部已可读，不等于完整视觉或捕获故障已修复。
+
+压强kPa任务的实际界面、负向选择实操、浅深/窄屏/减少动态、44px/2px精确测量、精确右侧对齐与其他设备仍待。功能与UI/UX分开，窗口问题不阻塞独立开发；自然跨天、语义与长期效果另验。[矩阵](13-DEVELOPMENT-PLAN.md)、[回归](08-TESTING-INFRA.md)。
+
+## 2026-10-07：密度双端主流程与正常恢复已验
+
+H5最终资产 `index-D4eOqtbB.js` 与固定Mac程序5a816bd5…已实际操作。主题选择只改草稿：H5选择前后1239009字节、Mac985519字节完整导出分别相同；明确开始才建新任务。方法保存后持续显示，重复阅读只记一次本题帮助；2.4g/cm³明确提交正确，换条件撤去帮助，142.76g无提示独立提交正确。Mac实际Tab/Tab/Enter进入独立题；双端真实计划显示洛杉矶10/08体积复测，选择未来答案仍禁用提交，停止后密度方法/独立与作答均禁用。
+
+停止正常关闭重开后，H5 1306232/Mac1053156字节分别逐字相同。每端只增1对话、3题、2明确原答，原28/23对话及八集合逐项保持；原资料4/3份保持，未来题0作答。提示分别随原题作答保存、独立原答无提示，0模型生成。桌面更新前3211d14b…完整程序归档已试还原，保留标识、资料、图标与元数据，只原子替换程序，没有新增可见.app。
+
+同时补验3211d14b…的USGS正文：7节8段/末段、署名/许可/排除范围、批注与合成草稿保持；重复阅读只增1帮助、0作答，旧22对话/各事实保持，985519字节正常重开相同。实际正文不产生可靠语义或官方成绩。
+
+按客户新指示，功能与UI/UX分开；原生Window→Move & Resize→Right已用于本轮窗口，但捕获仅162×262缩略视图，精确桌面位置/几何和完整视觉不作通过。密度浅深/窄屏/减少动态、实际44px/2px测量、SI/自由pending界面、自然次日及其他设备继续待验；基础样式与安全合同保留，不阻塞独立功能。[矩阵](13-DEVELOPMENT-PLAN.md)、[回归](08-TESTING-INFRA.md)。
+
+## 2026-10-07：英文正文网页实操成立，桌面观察待恢复
+
+H5正常刷新从上一资产 `index-Do-rI4H8.js` 进入本轮 `index-Iq_scx1s.js`，未清浏览器资料。初中/英文说明主题选择与篇目选择前后完整记录逐字节相同；明确开始创建本轮1对话/1题，明确阅读后显示4438字符、7节8段完整正文、末段、USGS署名/许可及第1/3/8段批注，原草稿双空格保持。重读完整记录相同，停止后阅读/作答禁用；正常关闭重开最终1239009字节逐字节一致。
+
+原27对话、60题/427事件前缀、49计划、原材料/原答/教法/停止/档案/复习/执行与删除记录保持；新增今日计划仅在原12任务上加入本轮题。第一次未刷新候选在本轮题明确读过旧Frontiers片段，该自有帮助保留，不冒充新全文验收。未实际提交原答或调用模型；独立题/日期/原子拒绝另由隔离HTTP与自动化验证。
+
+320px浅深无横向溢出，42可见按钮宽高至少44px，实际键盘聚焦2px solid，减少动态时按钮动画/过渡0s；临时视口/媒体模拟已恢复，浅色偏好保留。[浅色窄屏](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-public-english-full-h5-320-light.png)、[深色窄屏](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-public-english-full-h5-320-dark.png)、[末段与署名](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-public-english-full-h5-320-dark-end.png)。
+
+唯一Mac入口的更新前947946字节完整记录与上一成功版本一致，031cbff1…归档已试还原核验；仅可执行程序原子更新为3211d14b…，标识/图标/元数据/资料保持。更新后的窗口捕获连续失败，正常回收自有进程并重开仍未恢复；不能据构建或进程存在称桌面功能通过。当前桌面全文实操/完整导出重开仍待验，设备和语义验证边界保持。[当前矩阵](13-DEVELOPMENT-PLAN.md)。
+
+## 2026-10-07：Apple 状态与原生材料入口实际核验
+
+准备显示“Apple 识别准备中，请稍后检查连接。”并禁用Apple；失败使用原短恢复句。明确再次“授权并连接”刷新能力，引擎选择只改草稿。完整成功显示“已处理 n / total 页”，部分失败与取消保留恢复入口，候选仍待校对。
+
+H5首轮就绪资产 `index-C0BUfkr_.js` 的正常原PNG许可、1/1候选与范围删除成立，1198047字节停止重开相同。桌面适配重建后先观察到该旧缓存，正常刷新进入当前 `index-Do-rI4H8.js`，未清浏览器数据；320px浅深准备状态无横向溢出，37按钮均至少44px，文件选择键盘焦点2px solid，减少动态时按钮动画/过渡0s。默认1090×533及媒体模拟已恢复；显式重查就绪、选择Apple后，可见完整备份逐字等同原1198047字节，27对话/26教法与停止及4资料保持。下载事件观察超时不当作已定位文件；备份控件分段读取解决工具长字符串截断，未合并或发送备份。
+
+Mac的WebView选择器对原PNG及同一JSON均禁用Open，而现有原生备份选择器可打开JSON；底层原因未定，不改上游。复用原生选择器后原PNG的Open实际启用，选择只取元信息；取消后零导入，重选并明确Apple许可保存960×540、8行private/unassigned/reviewRequired候选。500/200仍误读S0D/208，不改为可靠条件。原停止任务不恢复、0新题目/作答/复习/能力/计划，原9组事实及3资料相同。删除预览仅1新材料、0关联题/对话/作答/计划任务；原件确认删除后947946字节在服务停止、程序正常重开后逐字相同。
+
+唯一入口已原子更新至 `031cbff1…`，061166c0…与0d9fe727…两份程序前态均经归档试还原核验，资料分别配对。当前[浅色窗口](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-native-material-saved.jpg)/[深色窗口](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-native-material-dark-final.jpg)均为2180×1426，覆盖连接/引擎控件，未覆盖完整结果卡；原生精确几何/系统减少动态/窄窗和其他设备不追认通过。[H5浅色窄屏](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-apple-readiness-h5-320-light-reduced.png)、[深色窄屏](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-apple-readiness-h5-320-dark-reduced.png)。禁用控件Enter被工具拒绝，未声称其实际激活键已验。
+
+## 2026-10-07：功与动能本地功能与原图保持已核验
+
+共用“功与动能”主题只改草稿，明确开始才创建事实。互动面板沿现有轨道增加初始/当前动能柱与合力总功/动能变化，短句说明质点、惯性系、恒定质量、直线和恒定合力。预测不写事实；观察先保存本题帮助，独立题改条件并撤去帮助；原答、指定教法、原时区未来复测和停止沿原合同。
+
+双端主流程已实操：草稿导出不变、24步正功、帮助归属、两次明确可靠原答、独立无提示、原时区10/08复测/提前禁用、停止及正常重开。主流程H5 1,146,385/Mac897,190字节逐字保持，旧24/19对话的九集合、教法和停止未改。
+
+本机原创合成页经产品备份预览与明确合并接入原图条件；两端六类不适用前提均拒绝且完整记录不变。500g/200cm/s转换为0.5kg/2m/s；转向点总功−1J/动能0，结束总功0/路程2m/位移0/速度−2m/s/动能1J。当前概念鼠标/回车重复选择保持原图确认、预测和步骤；H5两次、Mac一次明确确认只存绑定当前题的帮助，没有新增作答、复习、能力或计划。来源图实际预览成立；这仅验合成备份恢复及手工条件，不验正常文件导入、解析或自动识图。最后停止重开H5 1,183,739/Mac933,638字节完全一致。
+
+最终H5入口`index-C_ZVRfdC.js`的浅深实色面、DM Sans、320px无横溢、44px控件/出处、2px焦点及减少动态逐步观察/0s已实测并还原临时设置。固定Mac程序`061166c0…`已原子更新，元数据/标识/图标/资料保留；本次完整2180×1426浅深读数、来源预览与聚焦画面可见，先前缩略图不追认。Mac系统减少动态、窄窗/触摸和精确触区/焦点几何，Windows/微信/App真机仍单独待验。[验证](08-TESTING-INFRA.md)、[矩阵](13-DEVELOPMENT-PLAN.md)。
+
+随后两端从真实10/07洛杉矶计划进入10/06安排的recycle词义题：导航只记录题目归属，不自动解除停止；明确继续、草稿选择、正式提交、对应计划已通过及恢复停止均已操作。每端仅1条无提示review原答和1条“仍待复测”观察，0新FSRS；全部26/21对话教法与停止保持。最终正常重开H5 1,191,029/Mac940,928字节一致。这证明当前原创词义任务自然次日调度，不代表整词掌握、自由写句语义或长期学习效果。
+
+随后正常PNG导入也已在H5和唯一Mac入口实际操作：取消发送后无原件/上传登记，重选后明确本次Apple识别，保存原页960×540、8行候选及同页坐标。首次H5冷识别超原12秒上限而失败；45秒上限的合成本机诊断在39.883秒完成，预热后两端实际12秒路径保存候选。原图500/200识别为S0D/208，两端保持待校对及未指定区域，字面练习禁用，0新题目/作答/复习/能力/计划。仅本轮合成材料与解析器原件通过范围预览删除，旧4/3份资料及26/21对话教法/停止保持；新空核验任务明确停止，最终H5 1,196,033/Mac945,932字节正常重开一致。冷启动就绪、数字准确率/真实手写和更复杂公式仍未验收。
+
+## 2026-10-07：公共全文与写作换题实际核验
+
+现有中文叙事逐句面板保留《社戏》默认片段，加入两篇完整古文的选择；选择只改草稿，明确“读全文”写本题帮助后才显示，换篇撤下旧正文，原稿与四步进度保持。两端实际键盘/点击切换篇目时完整导出分别保持H5 1,033,502/Mac 783,686字节；首次原答带两份完整参考、独立借书情境原答无旧帮助，两端113/105字符原文分别一致，均pending。全文末段、固定版本、署名、异文、许可和批注已见实际界面。
+
+实操发现“换题练习”绑定不存在的函数；六体裁页面按钮回归先复现失败，改接现有受保护入口后，最后网页 `index-BriMePda.js` 与固定Mac入口均实际创建新情境、清除本题帮助。原时区10/08复测从既有计划“回到复测题”打开，非空提前草稿仍禁提交；未来可读参考但0作答，停止撤下正文并禁用篇目/阅读，普通重开不恢复任务。新网页完整记录1,086,720/Mac837,111字节停止正常重开逐字一致，旧23/18对话、九个事实集合前缀及各旧对话指定教法/停止保持。全局教法快照正确指向新当前对话，不将它误当所有旧对话的教法。
+
+网页先普通重载排除旧缓存，再实际看到三篇参考；本批浅深/320px、44px触区、2px实线焦点、实色阅读面无横向溢出及减少动态0s成立，临时覆盖已还原。Mac功能、键盘、主题切换、系统导出成立；Raise后截图仍214×270缩略图，完整原生视觉/系统减少动态/窄屏触区继续未验。[最终网页画面](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-public-works-h5-final-reference.jpg)、[合同](04-API-DOCUMENTATION.md)、[验证](08-TESTING-INFRA.md)、[当前矩阵](13-DEVELOPMENT-PLAN.md)。
+
+## 2026-10-06：句子组织实际流程与计划入口修复
+
+H5与固定Mac入口的首页/对话主题选择只改草稿，完整导出分别938,419/690,767字节保持；明确开始后才新增一个对话。词块选择、左右移、撤回和重排只改草稿，操作前后完整导出961,520/712,802字节相同；Enter已实际执行选择、移动和Mac提交。两端各四次明确作答：登记组合正确、未知排列待核对、已复核错误替换需调整、撤去帮助后的不同新句子正确。两端原答/结果/提示归属一致，指定直接讲解及原记录保持，没有模型执行。
+
+实际发现明日句子题已经保存却未列入计划页；补回既有“句子复测 · 10/07 / 回到复测题”入口，并由新增回归先复现、修复后通过。最终网页从旧`index-BGseRvSs.js`普通重载到`index-YogLy4Sj.js`，Mac最终固定程序也实际显示入口。原时区洛杉矶保持，未来题可选满五个词块但提交禁用；Mac焦点到禁用按钮后Enter不写作答。停止后只读，正常重开仍停止，完整H5 1,014,624/Mac 765,045字节逐字相同；旧22/17对话及九集合前缀保持，各新增四原答、0未来作答、0模型执行。
+
+原Chrome会话建页被工具限制，实际网页验收使用原本为空的可操作会话，从上一成功938,314字节导出明确恢复。恢复后九类学习事实一致；事件的`publishable`及客户端校验字段按既有私人重放规则规范化，导出938,419字节，不称原会话原导出逐字一致。后续草稿与停止重开比较均基于这一明确恢复后的基线，旧导出保留。
+
+首轮网页完整[浅色](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-sentence-h5-light.jpg)/[深色](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-sentence-h5-dark.jpg)卡片及15控件44px成立；最终[320px减少动态](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-sentence-h5-final-narrow-reduced.jpg)的17控件不少于44px、无横向溢出、动画/过渡0s，以及[最终停止重开](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-sentence-h5-final-stopped.jpg)的实色/DM Sans/2px solid焦点成立。Mac实际浅深切换、功能/键盘/系统保存成立，截图出现缩略图或未覆盖整卡的视口，完整原生视觉、系统减少动态/窄屏/触摸及Windows/微信/App设备仍待验。[合同](04-API-DOCUMENTATION.md)、[自动化与编译边界](08-TESTING-INFRA.md)。
+
+## 2026-10-06：英文邮件实际流程与唯一入口
+
+两共享入口新增“英文邮件写作”，选择仍只改草稿，明确开始后H5对话21→22、Mac16→17。两端本次保持未指定方向，不从体裁推断学段或考试。实际图书延期四步带练接受`Dear Library Team,`和`Best regards,\nAlex`，检查仅记帮助、表达待核对；H5另核对request释义。拼稿后明确独立写作转社团场地新题，撤去原帮助，保留直接讲解。两端同一1236字符完整独立邮件提交pending，首尾/双空格/换行逐字相同；未连接反馈短错误，0新模型请求。10/07小组项目新题可从计划返回，提前输入仍禁止提交；停止后带练只读，Enter收起/重开不恢复任务。[合同](04-API-DOCUMENTATION.md)。
+
+网页首次仍载上一成功根`index-DEWY32xu.js`，普通重载更新到`index-Df3bBBhy.js`，没有清除缓存或学习记录。H5当前浅深视口、实色父阅读面rgb(240,237,252)/rgb(48,40,63)、DM Sans、来源触区44px、键盘2px solid成立；[320px减少动态画面](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-email-h5-narrow-reduced.png)无横溢、过渡0s，媒体/视口和浅色已还原。补充完整阅读卡片的CDP截图出现裁切/空白，未计完整卡片视觉验收，没有据截图改产品。
+
+唯一Mac入口仅替换已验证程序，正常启动、当前四步浅深、独立原答/未来/停止/键盘和系统保存成立；保存前取得[当前浅色](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-email-native-light.jpg)及[当前深色](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-email-native-deep.jpg)，不把保存后的旧缩略图当当前画面。H5完整938,314/Mac690,767字节正常停止重开逐字一致，旧21/16对话及九集合前缀、各对话教法/停止保持；每端一个已停止核验任务、一条独立原答，无新增模型执行/可靠判分/复习。Mac系统减少动态/窄屏/触摸、Windows、微信/App设备、可靠语义、官方分数及完整托福听说读写分别待验。
+
+## 2026-10-06：英文学术讨论实际流程与最终焦点
+
+共享入口新增“英文学术讨论”，选择只改草稿，明确开始才建立任务。H5实际选托福方向，Mac保留未指定方向；两端四原创情境沿同一合同，当前教授/同学观点进入看法、回应、展开三步，选词与检查只记帮助。原`view`等表达词沿现有释义表补齐，不把释义当语义掌握。三段草稿后明确独立写作换到志愿安排，撤去原帮助；158词/1046字符原文明确提交pending，首尾/双空格/换行在两端完整导出相同。未连接反馈显示“请先连接模型”，没有新增模型请求。10/07新讨论可从计划进入，提前输入仍禁用提交；明确停止及重开保持。[合同](04-API-DOCUMENTATION.md)。
+
+首轮网页经普通刷新由旧`index-B4OOjX0Z.js`更新到讨论构建；实际发现新出处链接焦点仍是浏览器默认1px，复用原聚焦规则补2px并重新全量/跨端构建。最终根`index-DEWY32xu.js`已正常缓存更新，链接实测2px solid/4px偏移、DM Sans，带练13按钮44px/最窄71.85px，320px的clientWidth/scrollWidth均320。阅读父面浅色rgb(240,237,252)、深色rgb(48,40,63)实色，减少动态0s；临时媒体/视口和深色恢复。[最终深色焦点](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-discussion-h5-deep-320-focus-final.png)、[最终浅色](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-discussion-h5-light-320-reduced-final.png)。首轮1px画面只作诊断，不代替最终证据。
+
+唯一Mac入口最终程序正常启动，实际主题/三步草稿/原文/教法/未来/停止与系统保存成立；保存之前取得完整当前浅深画面，[深色草稿](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-discussion-native-draft-deep-final.png)、[浅色草稿](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-discussion-native-draft-light-final.png)。滚动条使用公开浮点值定位，未修改窗口样式或系统偏好。补充实际Return收起/重开仍为只读，完整导出625,348字节相同；原生控制通道一次启动失败未产生应用进程，只读库存确认后单次重试恢复，没有修系统或重建环境。普通重开最终H5 870,364/Mac625,348字节逐字一致，旧20/15对话、八集合前缀与各对话教法/停止保持；各一个已停止核验任务、一个明确原答，无新增模型操作/可靠判分/复习。Mac系统减少动态/窄屏/触摸、Windows、微信/App设备、真实语义和完整托福听说读写仍未验收，不能由格式出处和局部原文保存代替。
+
+## 2026-10-06：同视图原图保持与目录误点定位
+
+真实复现：已确认2kg、恒定合力4N向右、初始静止的原图演示，重复选择当前“动态演示”会清除父级条件，却保留子级“原图条件已确认”，退回6/4米普通示例。补同视图短路后，最终H5根`index-B4OOjX0Z.js`与唯一Mac入口的点击/Enter均保持两轨道、预测及播放；Mac重复后1.417秒仍在播放，2秒自然结束。切其他视图和停止边界仍保持。
+
+上批窄屏目录切换观察本轮定位为自动化误点：两个“关闭学习目录”分别是蒙层与44px关闭按钮，蒙层中心被目录卡片覆盖；切主题后中心实际落在“中文叙事写作”。真实`.sidebar-close`与Escape在普通/减少动态下保持原对话并返回菜单焦点，因此不修改导航源码，也不把误点路径计为通过。[命中区域](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-transitions-sidebar-hit-region.png)。原观察保留，上述为后续诊断结论。
+
+最终H5浅深、320px/减少动态重复选择保持原图；原图查看后Escape正常关闭预览，临时视口/媒体与深色恢复。[320px浅色两轨道](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-transitions-h5-narrow-light.png)。Mac系统保存前取得当前程序完整浅深画面，[深色两轨道](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-transitions-native-deep.png)、[浅色](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-transitions-native-light.png)；系统减少动态/窄屏/触摸及Windows、微信/App设备仍未验收。
+
+纯选择/预测/播放的完整导出前后H5 809,909、Mac567,256字节相同；明确停止/普通重开最终H5 811,422、Mac568,769字节逐字一致。原19/14对话和八类集合前缀、各对话指定教法/停止保持，两端各一个已停止的合成任务，0新作答/模型操作；H5两次、Mac一次明确原图确认分别记帮助，重复视图不记。题目/资料待核对，不推断语义或课程掌握。Mac继续固定唯一入口、原配置/图标/资料，不新建.app。[合同](04-API-DOCUMENTATION.md)、[验证](08-TESTING-INFRA.md)。
+
+## 2026-10-06：互动学习当前题适配与实色阅读核验
+
+默认入口按当前规范题选本体裁带练或科学条件；视图/示例与开合仍是本地界面选择。新演示沿现有按钮行显示“查看新演示”，保留正在使用的视图、草稿和原图，明确点击才替换；换账户/对话/题目收起旧草稿，隐藏暂停并保留同上下文的选择。条件未就绪短错误与停止门禁保持，观察前不显示计算所得轴范围。
+
+最终H5根`index-DaYVN8WJ.js`：当前英文论证/说明/叙事默认本体裁带练，分段合力与速度图读取当前原题条件；Enter打开/收起、明确视图在收起重开后保留，双空格草稿在切视图后保持，换题清空旧草稿，停止控件禁用。首轮带标记的自由目标未自动建写作题，随后使用明确体裁/开始带练；未放宽识别规则。窄屏目录关闭时选中对话发生变化，不把该路径当隐藏草稿保持通过。
+
+现场发现带练背景仍透出桌面图，已改用既有`--yozi-solid`并重新全量/构建核验。最终H5浅色rgb(240,237,252)、深色rgb(48,40,63)实色；320px的clientWidth/scrollWidth均320，带练区13按钮高度44px、最窄66.30px，DM Sans、2px聚焦、减少动态过渡0s。[最终320×850浅色画面](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-contextual-lab-h5-solid-light-320-reduced.png)。普通刷新读取新Service Worker版本，临时视口/媒体与原深色已恢复。
+
+最终唯一Mac入口正常启动；原论证题默认带练，当前分段合力按原1.5kg/初速度1m/s及三段条件显示，观察前无计算轴范围，停止播放/下一步禁用。普通窗口完整浅深阅读面与最终Enter收起重开成立；原深色在重开后单独明确切换并核对导出后标签，先前未证实的恢复不计通过。[深色画面](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-contextual-lab-native-argument-solid-dark.jpg)、[浅色画面](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-contextual-lab-native-argument-solid-light.jpg)。H5 798,276字节、Mac557,891字节最终与普通重开完整导出逐字一致；原18/14对话、资料/原答/教法/复习/停止保持，H5仅新增一个明确开始后停止的核验任务，没有新作答或模型操作。迟到模型演示接纳仅组件合成验证，真实供应商、Mac系统减少动态/窄屏/触摸、Windows、微信/App真机仍分别待验。[合同](04-API-DOCUMENTATION.md)、[验证](08-TESTING-INFRA.md)。
+
+## 2026-10-06：英文论证实际操作与重开保护
+
+两处共用主题均可选择英文论证，选择不添对话，明确开始才建立任务；H5实际选择雅思方向并键盘开始，17→18对话，Mac13→14，学习阶段/版本仍不猜测。四段256词草稿检查只记帮助，未变原答；独立新题撤去支架，260词/1724字符原文明确提交后pending，双空格和段间换行保留。离线反馈只给短错误，不生成模型请求；两端明日10/07新题、输入后仍禁用提前提交、明确停止、原旧停止对话与教法保持。
+
+实际H5揭示短写作1000字符拒绝完整论证，已补页面/后端共用8000字符；原失败输入保留并在最终根 `index-3-6PIuvt.js` 正常缓存更新后重验成功。正式原答8000、段落2000，旧写作/词句1000保持。H5实际44px、2px聚焦（偏移4px）、DM Sans、浅深/320px无横溢出、减少动态0s；深色题目底面rgb(48,40,63)。[完整320×850浅色画面](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-argument-writing-h5-light-320-reduced.png)。临时媒体/视口与原深色已恢复，25/26自有标签关闭。
+
+Mac固定唯一入口正常启动、键盘开始/检查/提交、四段草稿、独立长原答、日期与停止成立。普通重开后、系统保存之前取得当前题目的完整浅深2180×1424画面：[浅色](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-argument-writing-native-question-light-final.jpg)、[深色](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-argument-writing-native-question-dark-final.jpg)。保存操作后的214×238旧缩略图仅作诊断；首轮点击输入/粘贴未生效，使用公开可设置控件后重验。滚动条公开浮点值定位，不修改应用样式、系统偏好或截图。当前视口浅深成立，不扩大到Mac窄屏、系统减少动态、触摸或全部页面。
+
+H5停止/普通重开785,492字节、Mac557,891字节逐字一致；改前744,385/516,577与上一词句重开基线逐字一致。旧17/13对话和全部九集合前缀、原复习事实保持。Mac原深色恢复，两个自有进程普通退出。旧程序ZIP和改前公开导出成套保留；回滚旧解释器前另保留当前完整导出，不能只换程序后宣称新记录仍兼容。设备、签名安装、自然跨天、可靠语义与官方等级分别验收。
+
+## 2026-10-06：词句反馈、原答位置与验证边界
+
+最终H5根 `index-DNk5RrFd.js`，原Service Worker经普通刷新从BLG3候选更新，没有清库；721,449字节/16对话原记录与上一速度图最终导出相同。通过系统文件选择、校验预览和明确合并10个合成操作，增加词句反馈任务；合成反馈各维度未定分，明确标为不判断语义。最终原句保留 `recycles  bottles` 的双空格，原答范围10–27及完整正文一致，旧16对话和九类集合前缀保持。
+
+实际键盘打开原答位置、获取反馈的未连接短错误、停止后反馈禁用成立；离线/共享未选状态不新增原答或供应商请求。三个反馈维度复用原答阅读面，规范词语题不再露出不能保存的量表编辑入口。实测原答位置按钮102×44px，聚焦2px solid/2px偏移，DM Sans/pre-wrap；深色父阅读面rgb(48,40,63)、浅色rgb(240,237,252)均实色，内部半透明面叠在该实色父面。320px实际clientWidth/scrollWidth均320，减少动态过渡0秒，原文未横向溢出。初次截图接口只返回320×180缩略图，另用同标签CDP范围捕获320×850完整画面，不把缩略图称完整视口。
+
+![最终320px减少动态下的停止词句任务](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-vocabulary-use-feedback-h5-cdp-320-reduced.png)
+
+恢复原深色/视口/媒体后关闭重开，最终744,385字节完整导出逐字相同；17对话，原答仍pending、合成反馈仍ai_assisted，不增加首答或自动复习。合成任务的“1/1”表示原句已提交，不是词义掌握。[合同](04-API-DOCUMENTATION.md)。
+
+Mac继续固定唯一入口，最终程序 `1836eca33af17fb33718661f7cdda94104478fde7836d42bd46d297a0ef827ff`；Info/图标/标识/QA资料保持。初轮正确2180×1424深色窗口已实际读取原答、键盘展开/收起、未连接短错误和明确停止。最终程序正常启动、原答/停止与编辑入口移除由AX实际核对；516,577字节系统保存/普通重开与初轮停止导出相同，旧12对话及九类集合前缀保持。最终截图异常返回214×232旧画面缩略图，重绑/窗口Raise未解决，未重置系统或把该图计入最终浅深视觉通过；原深色已恢复，自有窗口正常退出。Mac最终完整浅深/减少动态/窄屏/触摸、Windows和微信/App真机继续待验。
+
+真实词句请求未越过SSRF保护，没有供应商语义或一般准确率结论；本轮合成反馈只验证绑定/保存/阅读。自然跨天、长期效果、更多义项/学科与官方考试评分分别验收。[测试](08-TESTING-INFRA.md)、[模型回执](14-MODEL-PRIVACY-COST.md)、[资源](12-CHANGELOG.md)。
+
+## 2026-10-06：速度—时间图的实际操作
+
+最终H5根 `index-BLG3mwTP.js`；原记录经普通Service Worker更新，没有清库。合成私人原页标明ms/cm/s、向右为正及两点(0,200)/(3000,−100)，选择“曲线”明确确认时拒绝，改选直线才保存帮助并采用；换算后(0s,2m/s)/(3s,−1m/s)。预测只改草稿，键盘播放及明确开始独立检验成立；观察正面积2m、负面积大小0.5m、路程2.5m、位移1.5m。新题改为2.5/−0.5m/s，选择C不写事实，明确提交保存无提示的正确variant；10/07复测3/0m/s即使选A仍禁止提前提交。停止后普通重开保持，旧15对话和全部集合前缀不变。
+
+初轮深色图表/播放及浅色320px减少动态画面成立，实际clientWidth/scrollWidth均320、图表208×210；随后仅修正恢复成功收据的失效文案并加入回归，最终根正常重开仍保持720,953字节。再用一个无题/原答的合成时区操作检查成功合并后的新事实状态，明确保存同一洛杉矶时区后不显示旧预览错误；最终停止/重开导出均721,449字节、逐字相同。初轮截图的版本边界保留，不称最终根重新完成全部聚焦/宽度测量；没有系统时钟、模型或远程同步操作。
+
+Mac唯一入口 `/Users/blackdj/Applications/Yozi AI.app` 已更新最终程序 `faad205eee0581edb07c685118c6606daf95b3ae277d27f9d23c3c4d673b420f`。普通启动与原11停止对话、系统选择/校验/明确合并4合成操作、原图单位与带符号折点、普通播放、新题C明确提交、原时区10/07计划、未来选A仍禁用、明确停止成立；浅深当前视口均实际看到图表，键盘切回原深色。系统保存后正常退出重开，12对话/28题/12原答的493,641字节导出逐字相同，旧九类集合前缀保持；新增原答为variant且hints为空，首答与旧待核对状态不提升。
+
+![最终Mac速度图观察与独立检验入口](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-velocity-graph-native-complete-dark.png)
+
+应用读取一度出现ScreenCaptureKit参数错误，收回旧自有窗口后普通启动恢复，未绕过权限或重置资料。合成PNG和手工确认不证明OCR/自动识图；Canvas在本地H5/Mac已绘制，缺绘图能力时保留折点文本及短错误。Mac320px/完整减少动态/触摸、Windows、微信/App真机登录网络、自然跨日及长期效果分别待验。[合同](04-API-DOCUMENTATION.md)、[验证](08-TESTING-INFRA.md)、[资源](12-CHANGELOG.md)。
+
+## 2026-10-06：持续停留时的跨日显示与复测
+
+当前H5根`index-CHWT3o1E.js`，页面无新增解释段落/控件/动画；只修正持续可见时昨日日期、今日任务和缓存写作门禁。三个复测按钮在原时区到期后主动更新，草稿和原答不随时间变化写入。浏览器原来源51639经普通刷新更新旧Service Worker候选，不清库；607,792字节/15对话完整导出在关闭重开后逐字相同，原教法/停止/全部集合保持，没有新增原来源学习事实。
+
+独立来源51641通过正常主题选择/明确开始、合成原答pending、明日10/07计划、回到复测题、未提交双空格/换行草稿建立夹具，再仅用[Chrome官方日期模拟接口](https://raw.githubusercontent.com/ChromeDevTools/devtools-protocol/master/json/browser_protocol.json)推进该标签的时间。无需改输入，页面日期10/06→10/07、今日任务1/1→0/1、提交从禁用变为可用；没有点击提交。关闭模拟标签、恢复真实时钟重开后16,785字节导出逐字相同，证明此实验未写新事实，不代表真实等候一夜。随后明确停止该夹具，再模拟日界仍显示已停止、提交禁用。
+
+初次暂停时钟再加载使测试输入等待；丢弃无记录标签后改为正常页面准备完成才模拟，未计入通过。初次浏览器尺寸请求实际仍1280px，保留为1280证据；按标签明确覆盖后实际clientWidth/scrollWidth均320，减少动态及停止状态跨日成立，控件44px、过渡0秒，覆盖随标签关闭释放。浅色日期实验与深色原来源保持；本轮未重新宣称全页面/全部聚焦或真机视觉验收。
+
+![320px减少动态下停止任务的日界显示](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-learning-calendar-stopped-320-reduced.png)
+
+Mac继续唯一固定入口`/Users/blackdj/Applications/Yozi AI.app`；当前程序SHA256 `19166ce6ca6c0dc0cb1c18f5546afa4c0ddbdd6de669a309a17822f1f8c28af2`，Info/标识/图标/QA资料保持。普通启动、原11对话、原停止任务、计划/对话导航、三类未来计划读取、系统保存与正常退出重开成立；三次导出383,735字节与上一成功单元逐字相同。super+m后AX Raise可返回，但工具没有独立暴露最小化状态，不把尝试当已核验后台状态。一次保存后的原生管道响应中断，文件/当前窗口后检确认保存成功，未重复写入。
+
+Mac未模拟日界或修改系统时间；分钟更新与隐藏资源边界由相关页面/服务测试覆盖，自然跨天、原生所有视觉/减少动态/设备与长期效果仍未验收。[矩阵](13-DEVELOPMENT-PLAN.md)、[保护与资源](12-CHANGELOG.md)。
+
+## 2026-10-06：中文公共叙事参考的实际界面
+
+当前中文叙事逐句带练新增“读一段叙事”，沿已有保存帮助→实色原文→署名/来源/许可→Yozi AI批注→收起的流程。没有协作作者时不显示空署名；三句批注后用短行显示课程目标、页码与官方原PDF链接，学习目标转述署名独立。英文说明入口/参考不改，普通草稿、原答、未来提交门禁和停止保持；换新情境不迁移旧帮助。
+
+最终H5根`index-_bEeMGXh.js`：主题键盘选择仍是草稿，明确开始后创建任务；Return阅读/重复阅读、署名/许可/课程目标、原稿双空格、正式提交收起/重新阅读与未来题输入仍禁用提交、停止收起成立。浅色rgb(240,237,252)、深色rgb(48,40,63)，参考无模糊，DM Sans/16px/28px；320px无横向溢出，原文/许可/课程标准/收起均44px，来源聚焦2px，减少动态过渡/动画0秒。恢复原深色、视口和媒体后收尾。初开仍是旧科学Service Worker缓存，经普通刷新读到最终根；不称正式PWA更新。
+
+旧553,346字节基线保持；最终停止/正常关闭重开导出607,792字节逐字一致，旧14对话与全部集合前缀保留，旧指定教法/停止、原答/资料及词义/科学复测未改。新增一条pending中文原答、三条参考帮助（原答前、提交后重读、未来新题明确阅读），不是阅读点击数/语义分数或掌握次数；原时区洛杉矶，10/07新叙事计划未提前完成。
+
+![最终H5深色叙事参考](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-narrative-reference-h5-dark-final.jpg)
+![最终H5浅色320px叙事参考](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-narrative-reference-h5-light-320-final.jpg)
+
+Mac继续同一个固定入口`/Users/blackdj/Applications/Yozi AI.app`，Info/标识/图标/原资料保持；更新前337,897字节系统导出与科学最终重开记录逐字一致。Shift+Tab/Return明确开始、鼠标/Return阅读去重、原文/许可/批注/课程标准链接、双空格草稿、明确原答pending/提交收起/重读、10/07安排与停止完成。正常退出重开系统保存383,735字节逐字一致，旧10对话与全部集合前缀保持，只新增一条pending原答、两条参考帮助；原深色恢复。
+
+![Mac深色原文与批注当前视口](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-narrative-reference-native-dark-final.png)
+![Mac浅色学习目标与草稿当前视口](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-narrative-reference-native-light-final.png)
+
+Mac深色截图可见原文/许可和三批注，浅色可见目标/出处链接及草稿；都是当前窗口范围，未关闭完整浅深全页面、Mac减少动态/触摸、Windows、微信/App真机/登录/网络、签名安装、真实模型/语义与自然跨天/长期效果。教学目标不授予官方考试分数；片段不称满分范文。[合同](04-API-DOCUMENTATION.md)、[验证](08-TESTING-INFRA.md)、[矩阵](13-DEVELOPMENT-PLAN.md)。
+
+## 2026-10-06：初速度与分段合力的实际界面
+
+互动学习新增“初速度与转向”“分段合力”，先预测、再观察，完成后才显示独立检验。坐标覆盖两种质量的正负轨迹与转向点；显示当前速度/加速度/路程/位移，零合力保持已有速度。独立题使用精确小数或分数，图中近似值带≈。原图沿现有来源查看与明确确认，常用数值/单位/方向优先选择，保留自由输入及短错误。已有科学题或物理题旁观看示例，先成功保存本题帮助；重复观察去重，帮助不迁移到新条件，观看不产生原答或掌握。
+
+最终H5根`index-fkQT0uih.js`：键盘明确开始、转向示例正常24步播放、分段2s/4s边界和6s结果、两条新条件A原答正式提交、10/07复测/提前禁用、当前复测旁观察帮助归属均成立。320px浅色/减少动态逐步观察无横向溢出，12个演示控件至少44px，聚焦2px，动画/过渡0秒；DM Sans保持。当前题目阅读面为实色rgb(240,237,252)，CSS仍声明静态backdrop-filter:blur(18px)，不能据此称已移除模糊属性。
+
+通过正常备份预览与明确合并加入合成原页，分别拒绝空白/缺单位与未知初始状态；明确确认300g、100cm/s、0.2N向左、4s后才采用原页演示，显示精确路程17/6m、位移−4/3m。确认只保存一条图示帮助，原页题仍待核对，没有自动识图或主观评分。最终停止/正常关闭重开导出均553,346字节，逐字相同；旧12对话及题目/原答/资料/事件/教法全部集合前缀保持，原未来题和复测计划没有变成完成。
+
+![最终H5浅色320px分段观察](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-science-motion-h5-segments-light-320-final.jpg)
+![最终H5合成原页条件观察](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-science-motion-h5-original-final.jpg)
+
+Mac继续使用唯一入口`/Users/blackdj/Applications/Yozi AI.app`，以最终--no-bundle程序替换，Info/标识/图标及原资料保持；更新前305,877字节系统导出与上一公开参考逐字相同。主题选择仍是草稿，Shift+Tab/Return明确开始；分段演示自然完成，轻物体路程4m/位移−2m，双质量路程2m/位移2m。明确提交新独立题A后正确，10/07计划沿洛杉矶时区；未来题选择C仍禁用提交，示例首帧先保存一条本题帮助，重复观察不增写。停止并正常退出/重开系统导出337,897字节逐字相同，旧9对话及全部集合前缀保持，原深色已恢复。
+
+![Mac深色分段结果当前视口](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-science-motion-native-segments-dark-final.png)
+![Mac浅色分段结果当前视口](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-science-motion-native-segments-light-final.png)
+
+Mac截图仅表示当前窗口可见区域，未关闭全页面视觉、Mac减少动态/触摸、Windows、微信/App真机与登录网络、正式签名安装、真实识图/模型、自然跨天或长期效果。修正前根index-BkSfzK6P.js与426,364字节中间记录保留为诊断，不能代替最终观察帮助版本。[合同](04-API-DOCUMENTATION.md)、[验证](08-TESTING-INFRA.md)、[矩阵](13-DEVELOPMENT-PLAN.md)。
+
+## 2026-10-06：公开说明文参考的实际界面
+
+英文说明带练新增“读一段说明”，复用现有控件和实色阅读面；原文、署名、原文/许可链接与Yozi AI写法批注分开。参考保存失败不展示，读取和收起保持逐句原稿；提交当前原答后收起，再明确阅读才记新帮助。原Wot/uni/BaseIcon/Clay/DM Sans、紫蓝玻璃布局和按钮保持，未增加依赖或运行时抓取。
+
+最终H5根`index-BSrQF0X1.js`实际键盘阅读、重复打开、来源链接、浅深/320px/减少动态、原稿/明确提交/重新阅读/停止已核验。原文/许可/收起控制至少44px，来源聚焦2px；窄屏无横向溢出，减少动态时transition/animation均0秒，阅读面浅色rgb(240,237,252)、深色rgb(48,40,63)，无模糊、16px正文与28px行高、DM Sans。旧10对话全部集合前缀保持，新增两个合成核验对话/两条pending原答；第一次实操暴露提交后参考未收起，修正后的最终候选已操作通过。参考阅读事件共3条，其中最终新原答后的明确重读另外保存帮助；不是点击次数、语义评分或掌握次数。最终停止/正常关闭重开导出均396,670字节，逐字相同，全部对话保持停止。
+
+![最终H5深色参考](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-public-excerpt-h5-reference-dark-final.jpg)
+![最终H5浅色320px参考](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-public-excerpt-h5-reference-light-320-final.jpg)
+
+Mac继续使用唯一入口`/Users/blackdj/Applications/Yozi AI.app`；正常启动前274,836字节基线未变。新增合成英文任务、来源/许可与三条批注、原稿、重复鼠标/Return阅读、明确提交后的收起与重新阅读、停止及系统保存已实操；原8对话与全部集合前缀保持。最终停止/正常退出重开系统导出305,877字节逐字相同；只新增一条pending原答，原提示带出处、重读产生新提示，0模型生成/0新FSRS。
+
+![Mac深色参考窗口](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-public-excerpt-native-reference-dark.jpg)
+![Mac浅色参考当前视口](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-public-excerpt-native-reference-light.jpg)
+
+Mac深色参考当前窗口可见原文、署名/许可与三条批注；浅色画面可见入口、正文与归属，部分下方内容未入图，不称完整浅色/全页面视觉。全平台触摸、Mac减少动态和全部阅读区、微信/App真机/登录/网络、Windows、正式安装、真实模型/语义与长期效果分别验收。H5为完整页面截图，不冒充设备截图；普通刷新接续候选不等于正式PWA更新。[证据](08-TESTING-INFRA.md)、[合同](04-API-DOCUMENTATION.md)。
+
+## 2026-10-06：词义明日任务与自由写句
+
+当前词义原答后可明确安排明日认词或自己写一句：安排保留逐句草稿，独立写句不复制草稿，明确提交只记原答/已提交和待核对。计划页补入“词义复测”日期与返回入口；提前选择只改草稿，提交仍禁用。新词义任务沿紫蓝/Wot/44px/2px/DM Sans，不提供整词掌握、自动语义判分或FSRS；规则只校验一个原创语境的选择。
+
+H5最终根`index-wPo4dpbs.js`：双空格草稿、明日安排禁用、空独立写句、双空格/换行原答、pending、未来计划、提前拒绝及停止均实际操作。原9对话/21题/8原答等完整集合前缀保持，新增1对话/4题/2原答（选择wrong与自由写句pending），可靠首答与复习不增加；正常关闭/重开334,992字节逐字一致。320px无横向溢出，触区44px、键盘焦点2px、减少动态过渡0秒；题目阅读面原半透明改为现有实色令牌，浅色rgb(240,237,252)、深色rgb(48,40,63)。
+
+Mac隔离候选完成双空格逐句草稿、本句选择correct、明日安排、空独立写句和含双空格/换行的pending原答；最终重建后未来计划可达，提前选择仍禁用提交，明确停止再普通退出/重开。274,836字节系统导出逐字一致，旧7对话及全部题/原答/材料/计划/事件前缀保持，新增2原答不写首答掌握或FSRS。这里的到期提交是日期合同自动化/HTTP证据，未声称Mac或H5自然跨日操作。
+
+![明日认词保持逐句草稿](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-vocabulary-next-h5-scheduled-dark.jpg)
+![最终Mac词义题的当前窗口](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-vocabulary-next-native-future-final.jpg)
+
+Mac浅深切换成立，截图是单个窗口视口，不能据此宣称所有选项、阅读区域、减少动态和触摸均完成视觉验收；完整原生装配、微信/App设备、Windows、正式PWA/安装签名、真实模型语义和长期效果继续分开验收。[完整矩阵](13-DEVELOPMENT-PLAN.md)、[当前回归差额](08-TESTING-INFRA.md)。
+
+## 2026-10-06：五主题入口与启动恢复
+
+首页和学习页共用路程与位移、英文通知、英文说明、中文叙事及12 + 8五个主题；选择只填草稿，明确开始才建立对话。旧首页保留学习记录、来源状态和恢复入口，共享学习存在时隐藏旧进度、统计、今日重点和卷面分数，避免把对话作答混入旧题库指标。启动页精简为品牌和必要入口，沿原启动路由；导航失败显示真实“进入首页”按钮，卸载清除自有验证计时器，迟到回调不再跳转。
+
+最终H5实际根为`index-Bqg-f4Q4.js`。五主题键盘选择、2px焦点、主题切换44×44px最小触区，浅深色及320×844减少动态回退已操作；窄屏无横向溢出，按钮过渡/动画为0，阅读面实色且无模糊。临时路由拦截模拟首页导航失败，按钮用Return进入首页；拦截随后撤除，普通启动自动进入首页。这个故障注入覆盖H5路由恢复，不称原生启动失败或正式PWA更新验收。
+
+两种新增体裁已明确开始并停止；旧6对话/18题/8原答等集合前缀保持，新增3对话没有新增作答。最终停止与普通重开公开导出均为293,633字节，逐字一致。最新Mac候选正常启动，五主题点击/Tab/空格只改变草稿，原7对话与停止保持；系统导出235,988字节与退出前逐字一致。先前同一入口单元的Mac英文说明、中文叙事明确开始/停止已操作，最新重建后没有重复创建任务。所有材料为本机合成记录，0模型调用、0生产操作。
+
+![最终H5深色入口](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-entry-h5-start-dark-lifecycle.jpg)
+![最终Mac深色入口](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-entry-native-start-lifecycle.png)
+
+Mac最新深色入口取得完整窗口画面；浅色停止阅读操作成立，但该次截图只返回缩略图，不记作完整浅色画面验收。H5旧首页实际记录/重复指标隐藏成立，“未就绪”分支本轮只有源码与回归证据。真实触摸、Mac全页面浅深/减少动态、Windows、微信/App设备与登录网络、正式安装、真实模型和长期效果仍分别验收。[当前矩阵](13-DEVELOPMENT-PLAN.md)、[测试记录](08-TESTING-INFRA.md)。
+
+## 2026-10-05：写作认词的实际界面
+
+写作词卡现在可打开原创原句和四个短词义；按需看释义，明确确认后给一条反馈，原草稿保持。H5实际键盘选择、双空格草稿、提示后错选、困难词优先、两个不同无提示原句后的折叠与“更多词语”展开均已操作。1280×720浅色与320×844深色沿原阅读面/玻璃控件；窄屏选项206×44px、普通反馈180ms、聚焦2px，减少动态/透明度时transition0、实色rgb(48,40,63)、blur none且无横向溢出。hover/active为CDP伪状态样式度量（180/100ms），不代替真实鼠标、触摸或设备验收。
+
+H5在停止后关闭专属标签并普通重开，224,595字符/250,944字节的完整公开正文逐字一致，保留旧81事件/12题/4原答/原计划等前缀；新4词义原答按语境可靠，可靠首答仍0/1、辅助待核对仍3。浏览器读取接口每次长字符串曾裁短至20万字符，页面实际包含完整正文且maxlength仍1200万；改用5万字符分段读取，未改备份输入或导出合同。旧SW先载旧根，再普通刷新接续新根；这不是正式PWA更新验收。
+
+Mac实际认词、帮助标记、反馈去重、原稿保持及四句英文说明已操作；独立新节水题输入空白，明确提交两行/连续空格原答后仍待核对、0提示。明日交换旧书情境与旧通知/科学/中文计划共存；提前填写仍不能提交。普通退出/重开系统导出的208,386字节公开正文逐字一致，旧62事件/9题/3原答等前缀保留；新增2词义原答的帮助数0/3、1主观原答待核对，可靠首答仍0/1。所有素材与作答均为本机合成合同材料，0真实模型或生产操作。
+
+图为本地候选实际界面，保留来源批次；Mac词义图只覆盖可见上部和首个选项，不能称完整屏幕/设备验收：
+
+![H5浅色认词](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-vocabulary-h5-light-final.png)
+![H5深色窄屏阅读](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-vocabulary-h5-dark-320-final.png)
+![Mac实际认词](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-vocabulary-native-dark-final.png)
+
+最终显示收口后实际H5根为`index-BCKDvHFT.js`；关系图用普通词义/语境名称，阅读后250944字节完整公开正文仍逐字一致。最终Mac统计实际显示同样名称与“待复测”，没有整词掌握徽章。词义组件前述画面在显示名称收口之前；该收口不改组件样式或保存记录，不把不同根的画面混称同一批次。
+
+![最终词义关系图](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-vocabulary-map-names-final.png)
+
+跨天词义调度/长期记忆、词汇自由使用与中文语义、真实模型、其他设备/完整装配及公共范文许可仍独立待验。[合同](04-API-DOCUMENTATION.md)、[矩阵](13-DEVELOPMENT-PLAN.md)。
+
+## 2026-10-05：英文说明与中文叙事的实际路径
+
+最终H5实际入口`index-CRwzCWr4.js`经普通刷新接续更新，没有清缓存或绕过service worker。合并既有42操作合成记录后，完成英文逐句草稿/词语帮助/单条大小写纠正、换节水新情境、空正式输入、明确原答和明日复测；同一对话选择中文体裁后明确开始，完成四步草稿/标点纠正、换找书新情境、含连续空格/换行的原答与复测。帮助保存保持带练与草稿，步骤/词语跟随taskId，离线反馈只提示先连接模型。
+
+新原答两次均pending/0提示，首答错题仍0/1、待核对3、今日4/7；未提交的带练原题保持待提交，不自动完成。计划保留旧通知/科学和新英文说明/中文叙事的四个10/06入口，提前填写仍禁用提交。停止后关闭自有标签、普通重开、再次公开导出，81事件/12题/4原答、**200,421字节**逐字相同，旧42操作前缀不变。最终无障碍组名为“写作操作”，适用于三种体裁。
+
+浅深/320px、键盘目录主题切换与2px焦点实操成立，窄屏无横向溢出，新控件最小44px高度/56px宽。减少动态/透明度为实色rgb(48,40,63)、无backdrop与0s过渡，覆盖已复原。CSS伪类只记录样式，不能称真实鼠标悬停或触摸；选中标签度量为常规180ms、按下100ms，没有声称所有状态统一180ms。首次窄屏截图处于目录关闭过渡，已用实际关闭后的画面更新。[浅色带练](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-genres-lab-light-final.png)、[窄屏深色只读](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-genres-lab-dark-320-final.png)、[深色计划](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-genres-plan-dark-final.png)。
+
+普通Mac最终候选完成中文四步草稿/词语帮助、换找书情境、明确原答、未来复测/提前禁用、停止、系统导出及正常退出重开。62事件/9题/3原答、今日3/5、待核对2；新增原答pending/0提示，旧42事件/6题/2原答/1资料/3对话/5计划保持原前缀。两份系统导出**157,690字节**逐字相同，空格/换行与停止保持。[中文草稿](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-genres-native-chinese-draft-final.png)、[Mac计划](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-genres-native-plan-final.png)。本轮未验Mac英文完整流程/到期日样例、Windows/手机/微信真机、正式安装、真实模型或桌面首页完整视觉；入口主题与启动/旧业务文案继续推进。[合同](04-API-DOCUMENTATION.md)、[验证](08-TESTING-INFRA.md)。
+
+## 2026-10-05：科学独立题与复测
+
+最终H5实际载入`index-CVsSZIr0.js`，沿原玻璃控件/实色阅读面，没有新组件体系。合力演示先预测，观察后才显示数值；独立入口收起观察，改变质量/合力/方向。键盘选择只填草稿，明确提交保存一次原答、完成独立任务。科学复测已纳入现有未来计划列表；提前查看10/06题、选择C，提交仍禁用，停止后普通重开保留14事件/1原答和未完成复测，完整公开正文逐字一致。
+
+最终320px浅深画面无横向溢出、四选项44px；Enter、2px焦点与移动目录Escape实际进入。悬停/按下是CSS伪类覆盖核验，180ms及按下缩放成立，不称真实鼠标/触控验收；覆盖已撤销。减少动态/透明度时按钮无过渡、面板实色且无模糊，“逐步观察”只推进一格，没有自动播放。临时媒体/视口已复原。
+
+另以昨日八事件合成日期样例验证当前到期入口，没有改变浏览器/系统时钟；确认合并后提交路程复测C，可靠review正确且无提示，首答分母仍2，任务仅正式提交后完成。原合力题/原答及旧停止保持。备份按现有计划版本规则重放，旧已完成计划保留为历史版本；不宣称合并后的当前任务分母保持。该日期合同不证明真实跨天记忆或长期效果。
+
+画面：[独立题浅色（计划挂接前，题面/选择未再改）](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-science-independent-light-before-upcoming.png)、[深色计划](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-science-plan-dark-final.png)、[320px提前复测](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-science-early-retest-dark-320-final.png)、[320px停止/减少动态](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-science-stopped-light-320-reduced-final.png)、[到期原答](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-science-due-retest-light-final.png)、[普通Mac计划](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-science-native-plan-final.jpg)、[普通Mac停止](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-science-native-stopped-dark-final.jpg)。
+
+普通Mac最终候选完成新对话/观察/独立A/明日复测、提前C仍禁用、停止及系统导出/正常重开；119,767字节逐字相同，42事件/6题/2原答，旧通知1待核对、原图/题目/原答/停止保留，今日2/3和明日两类复测并存。首次离屏控件尝试不计完成，滚到可见区域后确认停止。无Mac到期日期样例、正式安装、Windows、微信/App真机、模型或长期效果结论，仍分别验收。[合同](04-API-DOCUMENTATION.md)、[结果](12-CHANGELOG.md)。
+
+## 2026-10-05：完整历史与可读统计
+
+本机合成20,000操作历史在干净专属Origin51637经实际文件选择、原120秒预算内预览、明确合并；预览前记录为空。最终首答2/6、计划6/10、7作答/0待核对、停止保持，当前50条消息窗为19928–19977/19977，实际更早页19878–19927。普通重开回最新页，不丢旧消息或恢复任务。导出可见字段完整3,041,578字符，工具单字符串返回截断后改100K分段读取；3,121,682字节在阅读/重开前后逐字一致，不称文件下载成功或产品截断。
+
+初次H5实际根index-FKsXNRgs.js，[20K预览](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-history-20000-preview.jpg)、[统计改前](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-history-statistics-before-copy-fix.jpg)。实际发现无知识点记录显示内部ID；显示组件改为原题文字，相同题干仍保留独立事实行，明确知识点不改。常用时区显示沿原选择名称，未知自定义原值保留。当前账户时区没有被合成输入的Asia/Shanghai覆盖。
+
+最终两次普通刷新载入index-CcD5BPGP.js，未绕过service worker。原题文字/洛杉矶、六个事实行和原统计实际确认，[浅色](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-history-statistics-light-final.jpg)、[深色](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-history-statistics-dark-final.jpg)。最终再导出3,121,682字节，和改前/重开逐字一致；往返统计仍停止。没有扩大窄屏/触摸或正式PWA更新范围。
+
+普通Mac最终未正式签名/安装候选读取原有28事件/4题/1待核对；统计显示洛杉矶、尚未检验，可靠首答0/0、原写作原答保留。回原图对话仍停止，经系统保存公开备份99,872字节，与前一增量逐字相同后正常退出。[桌面画面](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-history-native-statistics-final.jpg)。Mac使用原隔离资料，未另导入20K；两万操作实际范围仅为本轮H5。没有真实模型/设备/长期效果验收。
+
+## 2026-10-05：原图条件与科学比较
+
+学习页复用原Lab、紫蓝材质和控件。新增原图查看/条件选择及同合力双质量比较；原图校对时只显示当前步骤，场景须先预测。原图、题目/账户变化释放；停止禁用新演示，原图可读。最终收口移除重复题名/原图状态，向左轴标负值，零合力选择无方向。
+
+首次网页导航超时，随后一次普通刷新进入index-hbRFfnxT.js，实际点击/预测/逐步/播放均进入。2kg/4kg在4N恒定合力下于2秒物理时间分别到4m/2m；此为本机合成模板，不是录像时间或真机测量。实际文件选择/预览/明确合并4操作原图夹具，0作答；缺单位、单个推力两类拒绝前后67,764字节公开正文逐字相同。完整确认后仅新增1帮助，5事件/0作答/0计划/0复习，题目与材料逐字段相同。下载事件等待超时，正文通过实际导出面板读取，不称文件下载成功。
+
+首次画面保留 [原图场景](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-diagram-before-refinement.jpg)，来源图为本机原创 [合成页图](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-diagram-synthetic-source.png)。截图在原图查看/零方向/去重收口前，不回写为最终通过。
+
+最终普通刷新实际载入index-BFPXomwP.js。320px正文与文档宽均320px；原图查看/修改与逐步按钮高44px，Tab焦点2px、Enter推进成立，常规180ms/按下100ms分别度量。原图打开后Escape关闭并回到阅读按钮。减少动态下“逐步观察”只前进一步，两次观察仍停在0.25秒；减少透明度下Lab为实色rgb(48,40,63)、无blur、按钮反馈0秒。悬停/按下为CDP伪类度量，按下结束值scale(0.95)，不称真实触摸。所有临时覆盖已复原。最终截图：[浅色320px全页](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-diagram-mobile-light-final.jpg)、[深色演示](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-diagram-mobile-dark-final.jpg)、[深色减少动态](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-diagram-mobile-dark-reduced-final.jpg)、[原图查看](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-diagram-original-preview-final.jpg)。
+
+最终查看原图前后68,516字节公开正文逐字一致。刷新后重新明确确认同一组条件，另记1帮助；随后停止、查看原图、普通重开，70,791字节逐字相同，0作答/计划/复习、原题和材料不变，停止保持，旧临时条件不自动恢复。
+
+普通Mac最终候选通过实际粘贴、预览、明确合并4操作，保留原写作20事件/3题/1待核对；合并基线为24事件/97,639字节。原图打开/Escape关闭、相同条件、预测、逐步/播放到2秒4m/2m、Tab焦点及浅深成立。停止后仍可读原图；系统导出、正常退出和重开再次导出99,872字节逐字一致。新增4事件为1帮助及停止的3事件，原答/题目/材料/计划/复习与合并基线相同。系统文件选择器曾打开，但路径快捷键未进入预期动作，随后取消并用产品内粘贴入口，不称该文件选择成功。一次自动化连接在保存回执返回前中断，文件实际存在且界面显示已保存，未重复导出。[桌面深色](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-diagram-native-dark-final.jpg)、[浅色](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-diagram-native-light-final.jpg)、[原图](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-diagram-native-original-final.jpg)。候选未正式签名/安装，Windows与移动/微信设备独立待验。
+
+官方uni图片API网页取回超时，未作在线兼容确认；使用当前安装的官方H5 SDK源码中的previewImage/closePreviewImage和内嵌URL逻辑，完整跨端设备仍独立待验。未绕过service worker、未发送图片给模型、未变更网络。
+
+## 2026-10-05：通知带练接入正式原答与复测
+
+明确开始“英文通知写作”后建立原创题和四维量表；带练完成提供“独立写作”，接受帮助后换四项条件并清空正式输入。提交后的写作操作为“获取反馈 / 换题练习 / 明日复测”，通知题不再重复显示通用“变式练习”；离线反馈只显示“请先连接模型”。概览展示复测日期/原题入口，任务用“待确认/已确认、待检验/已通过、待提交/已提交”表达原完成条件，普通查看不解除停止。[合同](04-API-DOCUMENTATION.md)、[文案与触区](07-STYLING-SYSTEM.md)。
+
+普通macOS隔离候选实际完成四句草稿→美术新题58词原答→明确提交→离线反馈拒绝→10/06运动会复测→停止后查看→系统导出→正常退出重开。30,238字节公开备份逐字一致，20事件/3题/1待核对，旧未提交题5帮助/新原答0帮助，可靠首答0/0、FSRS空、停止保持。Tab到主题控件后Enter切换浅/深成立；初次浅色214×270缩略捕获不计通过。最终候选另补2180×1424浅深计划画面，实际确认“待提交/已提交”、未来复测及停止后作答禁用，并以Enter恢复深色；系统再导出30,238字节仍逐字相同。候选未正式签名/安装，不代表Windows或真机。
+
+| 画面                                                                                                                                                                                                                    | 范围                                                                                 |
+| ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| [带练过程](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-notice-native-guided.jpg)                                                                                                                  | 初次功能候选2180×1426；之后仅压短反馈/任务状态、修目录宽度及移除重复入口，旧图不回写 |
+| [停止与新条件](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-notice-native-stopped.jpg)                                                                                                             | 同一候选，停止后的运动会复测及待核对保持                                             |
+| [最终320px全页](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-notice-h5-320-final-full.jpg) / [当前视口](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-notice-h5-320-final.jpg) | 最新网页排版：无横向溢出，当前可见按钮至少44×44px，重复入口已移除；不是手机触摸证据  |
+
+最终H5根 **index-mq_NIABo.js** 经两次普通刷新实际接续，未绕过service worker。320px目录原约33px，加最小宽与禁止收缩后为44×44px，文档/正文宽均320px。最后CSS/短反馈、任务状态和重复入口小改，业务核验、65项与140项子集重跑及最终构建分别记录，子集不相加。
+
+IAB点击/键盘未进入预期操作，调试观察未收到click事件；重绑、同源新标签和控制会话重置未解决，原因尚未确认。Chrome创建入口拒绝、未返回注册自有标签，归属不明标签未接管。最终H5正式作答、浅深/键盘/悬停按下/减少动态动作仍待补；已有源码、窄屏与普通Mac动作不能代替。临时调试/视口按回执复原。
+
+最终H5/微信/App/桌面前端与普通Mac候选隔离构建、微信隐私/完整主包/媒体及App审计成立。[量化结果](12-CHANGELOG.md)、[矩阵](13-DEVELOPMENT-PLAN.md)。下文旧根、截图与数量保留各批范围。
+
+最终Mac画面：[计划浅色](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-notice-native-plan-light-final.jpg)、[计划深色](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-notice-native-plan-dark-final.jpg)、[停止状态](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-notice-native-stopped-final.jpg)。这些来自最终候选，不回写旧带练截图或扩大其他页面/设备范围。
+
+## 2026-10-05：旧练习材质与协议导航
+
+本批修复刷新后协议页返回失效，以及深色协议页白色导航导致标题/图标不可见的问题。正常页面栈返回原页；刷新后的单页栈沿原首页入口恢复，核对实际落点后才确认成功。用户已离开时取消迟到的回退，保留调用方自定义失败处理。两份协议正文仅有格式变化，规范化空白后与改前相同；不构成公开法律条款验收。
+
+旧练习、真题库、作答、备考首页、计划、错题、统计及未注册旧设置中的局部材质覆盖改用现有 Yozi 令牌。导航用浮动玻璃，内容用厚磨砂面，主按钮采用紫色立体材质；DM Sans、原布局和判分逻辑保持。题库卡片处理说明、重复“当前状态/下一步”和静态副标题移除，年份、题型、同步状态、不可练原因及禁用动作保留。常用学科/轨道/年份/模式选择增加键盘入口，单击与 Enter/Space 共用动作。
+
+最终网页根模块按 `index.html` 的 `script[type="module"]` 核实为 **`index-CS6xb10U.js`**，学习动态分块另为 `pages-learning-index.CUw3Sq41.js`。接管时旧根是 `index-EB2K4pjd.js`；前文文案批次的 `index-0c1lad9f.js` 记录不作为根模块核验。每次本地覆盖构建第一次刷新仍可能命中旧离线入口，本轮随后普通刷新载入最终版本，未使用 service worker 绕过；正式 PWA 更新仍另验。
+
+| 本轮实际画面                                                                                                                                                                                                              | 核验范围                                                     |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------ |
+| [练习浅色](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-legacy-practice-light.png) / [深色](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-legacy-practice-dark.png)              | 390px，44px 触区、DM Sans、厚阅读面与立体按钮                |
+| [年份窄屏](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-legacy-year-map-320-light.png)                                                                                                               | 320px 无横向溢出，年份/状态至少 12px；键盘选择保留不可练状态 |
+| [协议浅色](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-legacy-privacy-light.png) / [协议深色](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-legacy-terms-dark.png)              | 页面内键盘返回；刷新单页回首页、普通栈回原页分别确认         |
+| [协议桌面网页](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-legacy-privacy-desktop-dark.png)                                                                                                         | 1280px，限宽阅读与可见导航                                   |
+| [Mac 隐私](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-legacy-privacy-native-dark.png) / [Mac 协议](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-legacy-terms-native-dark.png) | 普通候选，Tab 后 Enter/Space 均回账户                        |
+
+最后一次变更仅调整练习选中项文字色，浅色实际对比度 15.08:1；该构建重新确认浅深色并更新两张练习截图。其余画面和键盘/协议证据来自此前候选，相关业务及协议源码未变；重新构建成功不能增加设备验收范围。
+
+按下 2px/100ms 与常规 180ms 为 CDP 伪类度量，不作为物理触摸验收。减少动态效果下按下不位移；减少透明度下导航/内容实际回到 `#30283f` 且无 blur，临时覆盖均复原。普通 Mac 还核验 Future→学习→历史备考首页→账户的原入口，最近学习仍 0、未启动任务；网页概览仍三条待核对、可靠首答 0/0。本轮未另做学习导出逐字比较，历史备份结论保留各自批次。
+
+相关 29 组/312 项、ESLint、隔离 H5/微信/App/桌面前端和未正式签名 Mac 候选构建通过。非空练习/结果、旧计划/错题/统计全部状态及未注册设置没有本轮逐页实操结论；旧备考首页仍见空状态引导文案，旧计划创建路径未注册，继续留作明确缺口。正式安装、Windows、微信/App 真机、真实模型/语义、长期效果与发布分别验收，完整目标 active。[本轮结果](12-CHANGELOG.md)、[矩阵](13-DEVELOPMENT-PLAN.md)。
+
+## 2026-10-05：用户文案与选择输入
+
+按客户追加要求，首页、学习、登录、账户、计划及历史题库相关页面移除说明段落、重复副标题和开发实现文案；普通首次进入直接到学习，显式历史备考配置保留。默认只呈现任务、状态、字段和操作，必要的隐私/费用/授权、删除确认、错误恢复及具体教学反馈用短句保留。[文案与选择规则](07-STYLING-SYSTEM.md)、[本轮结果](12-CHANGELOG.md)。
+
+学习方向、可跳过的阶段/教材、自述基础、时区及今日任务优先选择，保留“其他”输入；目标可选快捷主题后编辑。选择题支持单选或明确切换多选，选择只改草稿，明确“提交作答”才记录；基础和计划明确保存，基础仍为 `self_report`，不推断掌握。解析与导入控件按需展开，不将已删除的说明移入折叠区。学习页与首页入口的程序填值使用兼容 H5/uni-app 的输入同步，520px 以内输入区回到文档流，完整原答不被底部输入区遮挡。
+
+最终 H5 在关闭临时 service worker 绕过后，普通刷新实际载入 `index-0c1lad9f.js`。1280/390/320px、浅深色、键盘 Enter/Space、44px 触区、2px 焦点和减少动态效果已有本机证据；悬停/按下为 CDP 伪类度量，不能称真实指针或手机触摸验收。原答连续空格/换行、HTML 普通文字、第二处重复引用、旧 v1 未定位、概览和停止保持。独立普通 macOS 候选实际显示 Future 首页与精简学习入口，选择“英文通知写作”正确填入输入框，最近学习仍为 0，未启动任务。
+
+| 本轮实际画面                                                                                             | 核验范围                              |
+| -------------------------------------------------------------------------------------------------------- | ------------------------------------- |
+| [Future 首页](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-ux-future-native.png)    | 最终普通 macOS 候选、原场景与精简入口 |
+| [学习入口](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-ux-entry-native.png)        | 同一候选的快捷主题填值，未启动学习    |
+| [浅色原答](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-ux-reader-mobile-light.png) | 最终 H5 390px、完整原答               |
+| [深色原答](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-ux-reader-mobile-dark.png)  | 最终 H5 390px、短状态与引用           |
+| [320px 原答](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-ux-reader-320-light.png)  | 最终 H5 窄屏、文档流输入区            |
+
+本轮涉及 24 个 Vue 页面/组件及学习 Store；上述实际入口之外，其他相关页面以模板、单测和跨端编译核验，没有逐页设备通过结论。最终 21 组/633 项及相关 ESLint 通过，H5/微信/App/桌面前端与普通 macOS 候选隔离构建、微信隐私和产物审计通过。微信/App 真机、正式安装/PWA 更新、真实供应商与主观语义仍单独验收，完整目标 active。以下批次的截图、入口哈希与数量保留当时范围，不作为本次精简后的最终画面。
+
+## 2026-10-05：Yozi AI 当前入口与首个学习探索单元
+
+当前显示品牌为 **Yozi AI**，原创无字母紫蓝卡通吉祥物用于品牌入口与演示，Future 投影场景同步新品牌。普通网页沿 Playful Idea，桌面默认沿 Future 3D Portfolio；保留原构图、导航关系与字体层级，在原学习、登录、账户和公共组件内适配玻璃材质及立体按钮。[当前视觉合同](07-STYLING-SYSTEM.md)、[产品方向](01-PRODUCT-VISION.md)。这是已覆盖入口的本地增量。原七项复核之外的隐私/协议页与旧 HTML 标题已统一名称；两份协议在 H5 和普通 macOS 候选均实际显示 Yozi AI，同意选项未勾选。后续补查的两处微信分享标题及备用导出文件名也改为新品牌，协议格式/存储标识保持；分享未实际发送。旧练习/settings 白色覆盖未全部迁移，**全项目界面材质尚未闭合**。
+
+原七项修正版 H5 经普通刷新实际载入 `index-efuqAOtP.js`；名称收尾最终构建又经普通刷新载入 `index-Bt2CZS0o.js`，两份协议均再次显示新名称，没有以构建落盘代替执行版本。当前入口仍由 `learning-landing`、Playful/Future、`learning-shell` 与学习页组成；学习页新增可折叠的“把理解看得见”，三个标签共用当前账户、记录生命周期、对话与题目上下文。账户历史正确率在无样本或不可用时显示“—”，有实际样本的 0% 仍显示 0%；不与对话可靠首答 0/0 混为同一口径。
+
+| 本机已实现与操作范围 | 实际行为与限制                                                                                                                                                                                                                                 |
+| -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 动态演示             | 先预测相同/不同，再主动播放或手动下一步，固定路程/位移模板共 24 步、6 秒，终点只给一条短反馈并邀请一句解释。默认去程 6 米/回程 4 米；其他已校验数值可生成示意，不是任意题图自动动画。减少动态效果使用手动逐步观察。                            |
+| 本地视频             | 默认 6/4 示例可主动打开并播放同一示例的 6 秒视频。既有 Blender 5.2.1 LTS 与 FFmpeg 实际产出 640×360、24fps、20,862 字节 MP4；互动的 24 步与视频的 144 帧分别成立。固定 Manim 源码生成适配已存在，本机未安装、未渲染 Manim。                    |
+| 逐句带练             | 原创英文通知按活动、时间、地点、行动四句组织，单句最多 240 字符，每次一条有限反馈，词义/句型按本步显示。随后使用不同活动、时间、地点的独立草稿，最多 1000 字符；信息检查不等于语义、语法全检或正式独立判分。                                   |
+| 原答关系与活动格     | 当前账户内按当前对话筛选已有原答，使用当前有效更正；最多 40 个知识范围节点、每节点最近 4 条原答入口。14 天活动格区分可靠与待核对，提示帮助另列；关系仅为 `record_membership`，不推断先修、因果或掌握拓扑。回看原题只选择已有记录，不解除停止。 |
+
+本地预测、观看、词汇浏览、草稿与关系阅读不提交作答、成绩、草稿持久化或掌握事件，不调用模型或网络。受限 `visualize` 另沿原工具执行收据记录成功，并不形成成绩；只有客户端明确声明 `visualization: learning-visual-v1` 且原权限、预算、取消、对话/停止及用户锁定教法全部通过才可采用。停止立即撤销临时演示请求、暂停播放并禁用带练；账户/记录/对话/题目变化及隐藏/离页清空探索，重开不自动恢复。折叠或换标签停止播放并收起视频；不能把暂停描述成所有草稿已清空。[参数、权限与数据合同](04-API-DOCUMENTATION.md)、[现有渲染入口](08C-SCRIPTS-REFERENCE.md)。
+
+写作仅参考 Cambridge B1 官方评价维度，练习文字为原创；没有满分作文语料入库、完整语义评分、个人可靠词汇适配、中文作文或长期学习完成结论。原答阅读仍保留完整换行/连续空格、普通文字 HTML、明确第二处重复引用、旧 v1 未定位及非法 v2 不突出；概览复用同一阅读组件。品牌、探索与最终修正前后完整公开备份为 UTF-8 **15,027 字节且逐字相同**，11 事件/两条待核对作答/可靠首答 0/0 及停止保持；这份合成夹具与下文此前字段批次的备份分开。
+
+仅命名收尾的实际协议画面另见[网页隐私页](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-privacy-brand.png)、[网页用户协议](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-terms-brand.png)、[桌面隐私页](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-privacy-native-brand.png)、[桌面用户协议](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-terms-native-brand.png)。此轮 H5 先命中旧离线入口并出现页面加载失败，一次普通刷新后载入 `index-D_OwGqlb.js` 并显示新名称；正常进入的协议可以返回，刷新后的隐私页内返回曾未移动，浏览器历史返回可用，原因仍待定位。桌面正常返回和账户无样本“—”确认。深色协议页白色导航背景导致标题/返回图标不可见、旧首页无样本仍显示0%，属于接下来的旧界面缺口，不能由原七项 ship 覆盖。下列十三张来自此前七项修正构建；命名收尾的截图与构建按各自回执保留，不回写旧图。
+
+### 当前十三张参考画面
+
+以下文件均在既有接续证据目录。桌面网页、窄屏浏览器和普通 macOS 候选分别取景；文件名不把浏览器视口升级为物理设备，也不把普通候选升级为正式安装。
+
+| 当前画面                                                                                                                              | 范围                            |
+| ------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------- |
+| [yozi-playful-desktop.png](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-playful-desktop.png)                     | Playful 桌面网页、品牌与原布局  |
+| [yozi-playful-mobile.png](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-playful-mobile.png)                       | Playful 窄屏网页                |
+| [yozi-future-native.png](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-future-native.png)                         | Future 普通 macOS 候选窗口      |
+| [yozi-learning-native-light.png](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-learning-native-light.png)         | 最新候选浅色学习入口            |
+| [yozi-lab-visual-desktop-light.png](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-lab-visual-desktop-light.png)   | 网页预测、演示与文字读数        |
+| [yozi-lab-writing-desktop-light.png](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-lab-writing-desktop-light.png) | 原创逐句草稿                    |
+| [yozi-lab-map-desktop-light.png](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-lab-map-desktop-light.png)         | 当前对话原答关系与活动格        |
+| [yozi-lab-mobile-dark.png](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-lab-mobile-dark.png)                     | 窄屏深色探索                    |
+| [yozi-reader-mobile-light.png](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-reader-mobile-light.png)             | 浅色完整原答                    |
+| [yozi-reader-mobile-dark.png](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-reader-mobile-dark.png)               | 深色完整原答                    |
+| [yozi-reader-320-light.png](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-reader-320-light.png)                   | 320px 原答阅读                  |
+| [yozi-profile-mobile.png](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-profile-mobile.png)                       | 账户、Clay 默认头像与无历史样本 |
+| [yozi-login-mobile-dark.png](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-login-mobile-dark.png)                 | 深色登录、协议链接与原按钮      |
+
+新鲜独立复核者 `01a10c79-e9e0-75a2-9471-e123ed2d5fcd` 以默认角色替代不可用的专用 reviewer，独立读取全部 13 张、源码和最终编译 CSS。初审七项问题一次修正后，round 1 仅对**原七项**返回 ship：7 resolved / 0 partial / 0 unresolved，未要求再取景；不是全项目批准。键盘/状态、测试和构建结论来自主任务提供的回执，复核者没有自行重跑。机械检测器启动失败、未完成，不能记作通过；本次文档整理同样由新鲜默认角色替代专用 documenter，只读取已有证据。[回执与分项结论](12-CHANGELOG.md)。
+
+主任务当前去重回归为 13 组/242 项，加独立供应商账本 1 组/30 项，合计 **14 组/272 项**；新增六项包含其中，不加历史批次。相关 lint、此前源码的后端 noEmit、最终隔离 H5/微信/App/桌面前端及 macOS 候选构建通过。微信主包 224 文件/1,219,729 字节，媒体含 MP4/WebM 为 13 文件/144,579 字节；隐私注入开启、`requiredPrivateInfos: []`、`permission: {}`，App 审计 0 阻塞。[测试口径](08-TESTING-INFRA.md)。
+
+最新候选为本地未作正式签名、未安装的普通 1280×800 逻辑窗口；最终修正版只补采 Future 导航/窗口、动效键盘切换与浅色学习入口，先前探索/草稿的原生操作按各自回执保留。网页登录/Lab 的减少透明度已实际得到深色实色 `#30283f`；无 blur 引擎分支仅源码/编译核验。正式安装/PWA 更新、Windows、移动/微信真机、完整 DCloud 装配、真实模型选模板/作文语义、长期效果及公共题源/发布仍各自待验，完整目标 active。[后续范围](13-DEVELOPMENT-PLAN.md)。
+
+以下旧批次、入口哈希、截图与能力叙述保留当时范围；当前品牌/材质和新增能力以本节及 07 的当前规范为准，不将历史无视频、实色限制或验收数量回写成最新结果。
+
+## 2026-10-05：资料字段对应基础诊断
+
+复用现有“开始先修诊断”“独立检验原题”、诊断理由、帮助记录和今日任务。v3 字面原答可靠判错后可进入合成字段对应小题；原资料和原错答保留，基础小题通过后仍须原资料不同字段的独立复测。沿 Wot/uni-app、BaseIcon 与原学习组件，无新增 Vue/CSS、依赖或素材；教法仍按明确用户请求记录，停止边界保持。[严格依据](04-API-DOCUMENTATION.md)、[样式与截图](07-STYLING-SYSTEM.md)。
+
+最终 H5 实际入口 `index-C8T6amGh.js` 完成 London 原题错答→Shelf 小题错答→低级提示→Desk 帮助后订正→Oxford 原资料无提示变式→明确停止。帮助后任务仍 0/2，独立变式后任务 1/3；8 作答、6 资料、6 题、4 对话和 66 事件保持，待核对 2。普通刷新后重新选择原对话仍停止，84,641 字节完整公开备份逐字相同；原四作答、六资料、前 27 事件与前批公开备份逐字段相同。恢复与私人同步重放均匹配，不将默认选中的旧对话冒充自动恢复当前选择。
+
+1280/320/390px、浅深色、Enter/Space、44px/2px 和减少动态效果已实际补验。[320px 浅色](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/material-prerequisite-mobile-light.png)、[390px 深色](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/material-prerequisite-mobile-dark.png)、[停止后的桌面网页](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/material-prerequisite-stopped-desktop.png)。三端源码隔离构建及审计通过；下述原生桌面证据来自本增量之前的版本，新诊断尚未原生重建或设备验收。有限字段基础不代表阅读理解、官方评分、真实模型语义或长期效果。
+
+2026-10-05 最新桌面候选补验：桌面专用前端 `index-EdRyHWQ4.js`、既有 CDN 素材与离线锁定 Tauri App 构建通过，普通 macOS 窗口实际显示 Future 首页。独立候选完成系统文件恢复/取消/保存、原答与概览、键盘 Space/Enter、浅深色及两次正常退出重开；阅读前后 37,555 字节公开备份相同，v3 英文字段错答→提示订正→无提示变式→停止后重开，63,635 字节公开备份相同。四对话、六资料、七作答、49 事件保留，原四作答和前 27 事件不变，任务 1/2、有效作答 3、错题 2、待核对 2。[原生浅色](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/desktop-fields-v3-reader-light.jpg)、[原生深色](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/desktop-fields-v3-reader-dark.jpg)、[重开仍停止](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/desktop-fields-v3-fields-stopped.jpg)。候选使用独立标识与 WebKit 存储；临时源码副本仅适配存储 API，原源码/权限保持，设备和正式安装更新另验。[构建范围](09-DEPLOYMENT-GUIDE.md)、[验证](12-CHANGELOG.md)。
+
+新资料练习默认`material-objective-v3`：现有字段面板只列出完整逐行校验后的字段，非空标题/说明、缺失字段及常见答案/作答/批注标签显示原就近错误并禁用建题，不生成空对话或自动删除原文。字面与精确数量共用原组件；旧v1/v2题目与变式仍按父合同回放。相关8文件/258项和实际共享入口17项通过，本批H5/微信/App源码隔离构建与产物审计通过。最终H5普通刷新确认`index-1RhFXD_P.js`，27份CSS与前批逐字一致；10月5日已从原专属标签完成公开恢复、完整原答及字段流程的实际后检。[合同](04-API-DOCUMENTATION.md)、[验证](12-CHANGELOG.md)。
+
+10月5日实际阅读补齐1280/390/320px浅深色、Enter/Space/Tab、44px触区、2px聚焦、悬停/按下及减少动态效果；精确第二处引用、连续空格/换行、HTML普通文字、旧v1未定位、历史校对、概览和切换收起均保持。阅读前后35,067字符/37,555字节的完整公开备份逐字一致。非法Answers/Solutions/未解析标题均禁用可靠建题，完整导出不变；合法英文原文London判错→记录提示→Bristol订正→Oxford无提示变式→停止通过。刷新后63,689字节完整公开备份逐字一致，选择原对话后仍停止；任务1/2、首答错题2/3、有效作答3、待核对2。原4作答、6资料、27事件逐字段保持。[浅色阅读](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/material-fields-v3-reader-mobile-light.jpg)、[深色阅读](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/material-fields-v3-reader-mobile-dark.jpg)、[停止接续](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/material-fields-v3-fields-stopped.jpg)。
+
+同版后端实际27项合同与原冷启动基线13/13分别通过，保留前轮超时失败；本批无产品源码/依赖/模型调用或生产变更。日志采样无warn/error；专属IAB标签及预览正常关闭，视口、主题和动态效果覆盖已复原。此前一次Chrome创建结果未知且其连接盘点不可用，未声称已关闭、未重复创建。合成浏览器证据不代替SDK/设备、正式安装、真实语义或长期效果。
+
+## 2026-10-04：App云教学原生分块
+
+App云教学已沿现有流式开关和临时预览接入专用能力门禁、JSON/Base64分块及共用UTF-8/SSE消费器。旧模块不支持时保持原拒绝提示；完整原生回执、EOF及模型/请求绑定通过后才应用工具，预览不写学习事实。Store原账户、对话/题目、模型、记录生命周期及共享授权检查现在覆盖每一分块和事件，变化时取消并拒绝迟到输出；停止、离页和历史意愿不由流式恢复。[接口](04-API-DOCUMENTATION.md)、[原生合同](09B-APP-CONNECTOR.md)、[设计沿用](07-STYLING-SYSTEM.md)。
+
+真实JDK/Foundation回环内核55组、最终Android SDK/dex及iPhoneOS arm64内核编译分别通过；相关回归去重26文件/811项通过，Vue挂载与Store仍使用合成桥。最终H5构建入口为index-XJh2n4Ex.js，9个本地资源引用存在，27份CSS与前批实际核验构建逐字一致；本批没有新增浏览器操作或截图证据。微信隔离构建、隐私注入及全文件/含视频扩展的媒体审计通过。官方DCloud完整模块依赖/装配和Android/iOS真机缺口保留，不将App前端构建或SDK内核代替原生运行。网页与桌面原设计、原答阅读/辅助统计及既有Wot/字体/反馈规则保持，本批没有新增页面结构、素材、视频或外观数值。最终回归、各端产物和本机范围见[12](12-CHANGELOG.md)。
+
+2026-10-04 专属 iOS27 模拟器 Safari 已在原 `127.0.0.1:58974` 地址重开保留学习页，[原生完整截图](../tmp/visual-build-20261001/resume-rubric-evidence-20261004/ios-safari-restored-wrong-record.png)显示“12+8”、错题1、待核对0。预览收到当前入口及资源请求，但未独立确认执行版本；网页内部控件不可访问，现有移动工具缺设备代理，未安装或绕过。提示/订正/独立变式和订正后重开仍未验收；模拟器Safari不代表DCloud原生App或真机。设备恢复Shutdown，预览与Device Hub正常退出，[分项收尾](12-CHANGELOG.md)。
+
+## 2026-10-04：原答与操作词的实际对话接续
+
+修复正文关键词误触发教法/停止，复用原对话、节奏、发送和正式作答入口。新的隔离 H5 经普通刷新实际载入 `index-DvGyxIGF.js`：选择慢慢理解后，含“图示/提示”的明确原答正常保存；“停止排放……”及“不要直接讲解”先澄清，未改用户选择；键盘 Enter 发送完整“请停止当前任务”后仍立即停止。重开保留 3 条待核对、可靠首答 0/0 和 steps/self_report；原两条作答及辅助评估逐字段一致，没有新帮助执行。
+
+1280px 实际操作及 320px 浅色/390px 深色无横向溢出，新截图见[设计规范](07-STYLING-SYSTEM.md)。公开合成导出为 revision 33；备份恢复及私人同步归一化纯重放通过，这不是新真实服务器同步或下载落盘证据。微信本批重新隔离构建、隐私注入及完整产物审计通过；主包 219 文件 / 1141383 字节，媒体 13 文件 / 113712 字节。App 本批源码隔离构建/产物审计通过，阻塞 0；设备、正式安装更新和真实模型仍未验证。[合同](04-API-DOCUMENTATION.md)、[变更记录](12-CHANGELOG.md)。
+
+## 2026-10-04：完整原答阅读与最终界面接续
+
+学习页和概览复用同一阅读组件，支持完整保存原答、明确引用范围、旧 v1 未定位阅读与已校对历史提示。[合同](04-API-DOCUMENTATION.md)、[选型与最终画面](07-STYLING-SYSTEM.md)。主观辅助分值继续待核对，阅读不恢复停止或改动学习事实；当前学习页已有对话/题目筛选正确，概览的聚合记录范围保持。
+
+本轮实际 H5 普通刷新载入 `index-Bs6Zr6e6.js`：明确突出第二处重复引用，完整保留连续空格/换行，`<b>` 按普通文字显示；1280/390/320px 浅深色、Enter/Space、44px 触区、2px 聚焦、悬停/按下伪类及减少动态效果已补验，概览与旧记录完整阅读、切换后当前阅读区收起、停止/刷新保持两次待核对和可靠首答 0/0。最终截图已替换前轮画面；前后完整公开正文 16469 字节逐字一致。这是合成记录的本机浏览器及视口证据，无真实语义评分、物理触摸、正式安装更新或移动设备结论。
+
+复用前轮最终微信构建后，本轮隐私注入、产物密钥标识检查、完整主包与媒体及题库分包审计通过；App 本轮隔离重建与产物检查通过。未覆盖正式 dist，未运行完整发布门禁或部署。七阶段中英文及攻击输入扩展的是固定合同/实际 Repository 与 Store 的阅读回归，不能称七阶段真实学习或语义通过。详细结果与下一步见[变更记录](12-CHANGELOG.md)及[开发矩阵](13-DEVELOPMENT-PLAN.md)。
+
+## 2026-10-04：二次错答的候选先修
+
+二次原题的可靠错答现在可通过原“开始先修诊断”进入小题；在小题题干旁显示具体依据和候选检查的限制。原返回题目/独立检验按钮、Store/reducer/计划与备份体系继续复用；小题答对不能替代完整原题或长期掌握。[合同](04-API-DOCUMENTATION.md)、[持续规范](07-STYLING-SYSTEM.md)。
+
+实际本机H5入口`index-CJ6Q1TFf.js`：`(x-2)*(x-4)>=0`漏左段错→诊断`x^2-1>=0`仍漏段错→原菜单图示→帮助后正确→完整原题负倍对调变式独立正确→停止→从计划切回小题→普通刷新。4次作答和2条首答错题、任务2/3保持；小题显示“提示后正确”，独立检验在停止后禁用。原图示教法选择保留，独立变式没有小题图示或提示。
+
+公开界面导出49,182字符/42操作，分别为first/wrong/0帮助、first/wrong/0帮助、revision/correct/1帮助、variant/correct/0帮助；页面实际恢复预览新增0/已有42、待核对0、复习暂停0，合并禁用且原记录不变。离线恢复、私人同步归一化重放及重复恢复保持相同首答错题2/2、任务2/3、诊断帮助后正确、原题关联和停止；这不是下载落盘、新实际云端同步或实体多设备验收。
+
+390/320/1280视口无横向溢出；依据文本随浅深色、DM Sans与原subtle层级显示。44px/12px控件、2px Tab聚焦、实际悬停/按下与停止禁用通过；减少动态效果下相关控件及图示/解段/边界动画和过渡0s，测试覆盖已复原。日志采样没有error/warn。微信/App仅隔离构建与产物检查，后端仅类型/共享规则重放，本批未启动真实HTTP后端或模型。真机、正式安装/更新、模型语义及长期教学效果仍分别验收。
+
+## 2026-10-04：二次完整区间学习
+
+沿现有目标、对话、教学和数轴入口增加显式“解二次不等式”；不添加新导航或另一套作答页面。二次题就近说明完整区间、∪并集/单点语法和核验边界。原数轴扩展为两个边界与多段、重根单点，完整文字同步给出包含/不包含；只有实际使用图示后显示，按帮助记录。原蓝色兜底改用学习空间已有紫色、深浅文字/阅读面和12px圆角，DM Sans及原控件反馈保持。[合同](04-API-DOCUMENTATION.md)、[持续视觉规则](07-STYLING-SYSTEM.md)。
+
+实际本机最终H5 `index-BvwnYSox.js` 完成漏写左段判错→图示→修正判对→无提示变式判对→主动停止→普通刷新。界面公开导出32,998字符/29操作，三个作答分别为first/wrong/0帮助、revision/correct/1帮助、variant/correct/0帮助；离线恢复与私人同步归一化重放的首答1/1、任务2/2和停止一致。没有把生成公开正文当下载落盘或新云端实际同步验收。普通刷新先载旧入口，再接续后台更新为最终入口，没有清缓存或改变正式更新策略。
+
+最终界面实际查看两侧闭/开区间、中间[0,3]和重根[1,1]；390/320/1280逻辑视口无横向溢出，边界标签保持可见，浅色紫线/深色淡紫线、12px/DM Sans、44px控制和Tab 2px焦点确认。减少动态效果下图形及其标记动画/过渡为0s；测试覆盖已复原。无理零点`x^2<2`的近似答案仅增加待核对1，可靠作答3和错题1保持。日志采样仅出现两项Zotero扩展连接错误，没有本项目来源错误；这不是所有浏览器或真机通过证明。微信/App仅构建和产物检查，正式Mac/Windows/PWA更新、手机/系统偏好、真实模型和长期质量继续分别验收。
+
+## 2026-10-04：网页备份文件接续
+
+普通网页原恢复入口只有粘贴正文，现增加“选择备份文件”，不改变桌面系统选择器、账户归属和校验后明确合并。选择/读取等待、取消、错误、成功就在对应操作旁显示，读取期间禁用重复选择、校验和同步；取消/错误保留原输入，格式与账户归属继续由既有恢复预览验证。文件读取不自动上传或合并，旧回执不能覆盖账户、记录或输入变化后的页面。[合同](04-API-DOCUMENTATION.md)、[持续视觉规则](07-STYLING-SYSTEM.md)。
+
+实际本机 H5 完成错误扩展名/损坏 UTF-8 保留输入、选择等待/取消、小文件预览/取消合并/再次合并，以及 2,959,365 字符、3,119,611 字节的两万操作文件读取和完整恢复。IAB 原 13 个操作合并新增 19987；独立 Chrome 存储从空记录合并 20000。原 19 错答、任务/首答分母及主动停止保持。普通重开后界面公开导出全文读取 2,959,687 字符；Chrome 全文 2,959,709 字符。两份均含 20000 操作，沿既有私人操作归一化与来源逐项一致；不是输入文件逐字一致或下载落盘回执。下载事件未取得回执，下载管理页被浏览器安全策略拒绝，未绕过限制。微信/App 是构建与产物证据，实际设备、正式安装/PWA 更新与长期多设备验收另列。
+
+两万操作容量接续：本地分页按需压缩，沿原备份预览→明确合并、恢复副本、50条消息窗口和同步入口；界面样式及公开备份保持。正式模式网页已实际合并19987/复用13操作，完整展开/收起2,909,645字符导出正文并逐项比对；原19错答、停止、单次作答与任务1/1保留。容量拒绝仍说明导出与原记录保留，不自动删除旧历史。设备、正式安装/更新及长期多设备独立验收，详见[04](04-API-DOCUMENTATION.md)与[12](12-CHANGELOG.md)。
+
+资料面板新增“导入回执待核对”：只显示编号尾部、字节数和授权目标，逐次“核对原件状态 / 恢复已收原件 / 取消登记并核对原件”。三个动作均先明确许可、检查当前账户/记录生命周期/资料授权/写租约及原存储身份。刷新保留无正文定位待办、清会话令牌，零自动重发或恢复。查询不读取原件正文；恢复仅fileId并沿原识别许可，候选仍须校对；关闭如实区分原件已删与已有/共享保留。原存储暂未找到仍保留待办，明确关闭阻止晚到正文。已关联保存资料不能从此快捷删除，沿既有资料删除范围预览。
+
+H5/微信导入与App确认读取的授权上下文继续传至Store，准备登记等待期间再次复核后才发送正文，不因refresh完成其他隐私写入而重新授予旧文件许可。新解析器支持预登记；旧未声明恢复能力的连接器仍旧路径，页面明确提示不支持丢失回执恢复。此增量实际H5验收不代表微信/App SDK/设备；未新增视觉改版。
+
+H5同账户其他窗口的学习根/共享撤销标记/隐私待办Storage事件刷新当前事实，撤销选择、确认、Reader或旧解析；Store卸载移除监听，其他账户事件不刷新。H5/微信选择动作与App读取确认开始前，以及Store发送前检查现有写入租约；只读窗口拒绝正文动作，关闭写入窗口后可重新取得租约、重新选择与确认。上下文读取不再依赖重放整个学习正文或在只读窗口完成隐私写入。H5兼容存储的学习根/标记使用实时localStorage读取，避免会话缓存遮蔽其他窗口变更。无Web Locks时继续现有仅单窗口提示，不宣称并发写入安全。
+
+H5与微信资料动作使用当前账户、记录生命周期及资料授权代次：删除/恢复/换授权后，旧选中文件或确认回调不得读取或发送。H5正在读取时主动abort Reader，重复选择/确认/load只接纳一次；重新选择不会被旧cancel回调撤销。微信SDK无读取取消句柄时，在隐私许可、选择、确认、元信息和正文回调处拒收迟到结果，不宣称立刻终止SDK I/O。App确认/读取改为同一单调代次并主动取消原生读取；仅元信息选择的隐藏返回例外保留。普通学习更新不使许可失效，失败后可以重新选择。
+
+资料识别勾选后可明确选“解析器上的 Tesseract”或“解析器 Mac 上的 Apple Vision”；Apple需当前健康能力通过，程序存在不表示准确。发送确认显示执行位置/引擎，选择在本次文件动作内固定，取消不上传。续页和失败页重试沿资料原选择，不随新的UI选项漂移；改解析器Origin拒绝续传原件标识。识别候选与页图并列，关键条件仍需局部校对；公式/单位/答案候选不自动升级。页面代码跨端构建通过与移动SDK、原生OCR桥、设备分别记录。
+
+App资料流程：系统选择PDF/PNG/JPEG→展示元信息（正文未读）→当前解析器授权→逐次确认文件/origin/OCR→有界读取→私人片段。取消、隐藏、换账户、清除/恢复记录或连接变化终止旧动作。系统选择导致隐藏时令牌照常清空，返回须重授权；临时元信息可保留，不自动上传。只添加功能控件，未开展视觉优化。
+
+App新增专用原生宿主与Java/Foundation内核，健康/文本/已有原件续解析/删除沿原服务。必须匹配装配保护合同；当前缺实际移动SDK、二进制装配和设备验收，缺模块零请求。[09B](09B-APP-CONNECTOR.md)区分代码/本机内核与移动运行，文件选择/逐次确认源码与功能控件已接，视觉/流式未开放。
+
+条件题可靠错答已接原“开始先修诊断”入口。候选理由区分充分/必要方向，基础小题要求“成立”或“反例x=整数或分数”；不将“不成立”、猜测或单个同真例子当完整答案。低层提示只说明方向，三级/讲解可给精确例子并保存帮助；提示后正确不完成独立任务。随后“独立检验原题”保留原完整条件、数域及排除值并交换P/Q。原答、小题、帮助与独立变式沿回看/统计/刷新/导出/恢复及显式同步追溯；复用原页面入口和样式，视觉优化后置。
+
+当前主观辅助评分在对话和统计中显示原答引用、具体位置、同文出现序号及附近原文；重复文字须明确范围或扩展为唯一原文。v2位置从绑定原答重建，旧v1仅显示历史引用和未定位提示。未校对疑义共享给所选模型时保留全部field/reason/critical/resolved，评分维度保持未定分；明确共享、预算、取消和题目/账户变化保护沿原合同。原答位置真实不证明分值或语义判断正确，不升级可靠错题、掌握或FSRS。
+
+可直接在目标输入“判断条件 x>2 是 x>0 的什么条件”；答完整“充分不必要条件/必要不充分条件/充要条件/既不充分也不必要条件”。指定共同数域如“正数范围；判断条件 x^2=4 是 x=2 的什么条件”，指定共同排除如“实数范围，x≠1；判断条件 1/(x-1)>0 是 x>1 的什么条件”。页面显示能力/待核对边界，直接讲解展示两向检查与精确反例，低层提示不泄露分类；独立变式交换P/Q而保留数域。半个分类先澄清，未校对或超能力作答可保存但不计可靠错题。没有新增集合图形渲染或视觉改版。
+
+微信模型/资料连接入口已接原生RequestTask受限传输，需基础库3.2.2以上、iOS/Android或开发者工具与分块能力；旧SDK、PC及未装配保护模块的App在发令牌前拒绝。文件选择先微信隐私授权，发送前再次确认当前解析器及识别许可；随后核对文件元信息并读取最多10MB，账户/连接变化失效。页面复用已有隐私弹窗，卸载时拒绝待决授权。健康检查不发送资料、不证明推理或识别质量；微信实际域名/HTTPS、网络、隐私与设备待验。
+
+## 入口
+
+普通浏览器的原微信按钮已接网站扫码模式，微信内继续使用公众号模式；回调沿原登录分包、Auth Store 和 API。应用模式绑定初次同源随机上下文，失败可键盘重试，账户变化/离开页面后的迟到回执拒绝保存。本轮实际网页验证协议门禁、缺配置提示、合成失败重试与成功返回、过期上下文拒绝和手机无横向溢出；真实微信仍待平台申请与发布。[人工配置指南](15-MANUAL-SETUP-GUIDE.md)。
+
+桌面按钮沿原登录页发起系统浏览器授权，浏览器回调卡片提示返回问理，桌面凭一次校验领取身份后返回。主窗口仍是本地来源，不增加远程页面权限；页面隐藏/卸载或账户变化使当前动作失效，快速返回不恢复旧动作，固定业务错误沿现有脱敏通道显示。访客点“同步学习记录”先得到原样式的登录弹窗，本机记录保留；登录返回不会自动同步或认领访客记录，再次同步仍需明确授权。隐私/协议页的原返回按钮补可访问名称与键盘操作。合同与验证分级见[04](04-API-DOCUMENTATION.md)和[13](13-DEVELOPMENT-PLAN.md)。
+
+2026-10-03 当前源码重建的独立 Tauri 普通窗口已实际完成系统浏览器打开、本地合成回调、原窗口领取并回到学习页；登录后的同步提示明确列出上传范围，取消后没有同步请求。固定平台网页使用无效测试应用身份，真实平台换码为零；这是原生窗口与浏览器接续的实操证据，真实 QQ/微信及正式包仍另验。[本轮观察](../tmp/visual-build-20261001/desktop-success-20261003/acceptance-report.json)。
+
+每个对话恢复自己的教法、理由和停止状态；导航题目不会解除停止，页面提供明确“继续当前任务”和“恢复自动教法”按钮及同名自然语言指令。恢复自动仅改变教法控制，不执行模型或作答。可靠错答或受支持的部分正确可进入先修候选小题：v2按实际原答差异区分整数进位/符号、不等式边界/方向/临界值、方程解集/原定义域和化简等价；理由说明有限检查而非确定认知错因。显示独立/提示后/待核对状态、返回原题和独立检验入口；方程检验继续要求原数域内全部解，部分正确不转成错题。基础小题与原题变式分别记事实，不将诊断通过显示为整科掌握。旧v1保留，此批复用原样式，视觉优化仍后置。
+
+首页默认 learning-landing → 对话 learning/index；错题、计划和统计入口使用 learning-shell 的同一 Store。独立练习通过 quiz-learning-bridge 汇入连续事实。旧首页可兼容展开，不同时挂载双套导航。模型设置、私人资料、目标与记录隐私面板服务当前对话。
+
+展开统计依据可查看最近六段“教学后的作答观察”，分别显示可靠/待定后续、提示正确、独立变式和到期复测，返回原题/原对话。该视图来自共享事实派生，无额外打卡或录入，不以精确百分比宣称教法有效。恢复的旧交付带历史标记。用户明确教法/节奏持续保留；自动换法只依据本对话可靠表现及实际教学，并实际交付受限工具内容。此批沿用原样式，仅新增功能视图。
+
+桌面左侧目录和最近学习，手机折叠目录与四项 dock；支持搜索、Escape、焦点恢复、对话续学、浅/深色和减少动效。指标持续但克制展示，分子/分母可查看；错误如实显示，不用每条消息庆祝或收费弹窗。
+
+备份路径：记录与隐私 → 导出或恢复备份 → 查看/粘贴同账户 JSON → 校验预览 → 确认合并 → 查看同一错题/计划/统计；可撤销最近一次写入。正文显示分界沿现有历史分页大小120000字符，较大内容默认显示字符数并完整保留，可明确展开查看/复制/编辑，也可清除后重新粘贴；原150万字符的小备份校验合同保持。手动展开大正文可能需要等待。下载受限时仍可通过展示的同一正文保存。等待、取消、失败和完成在操作旁显示，空白及正在校验时禁用重复请求；输入变化、记录/账户变化及隐藏/离开撤销旧预览，迟到结果不恢复确认。恢复前仍用公共弹窗明确合并范围。读取与校验在设备进行，没有自动上传或密钥恢复。Mac 已有系统文件选择入口，其他端的通用入口继续是粘贴，各端设备与文件回执分开验证。
+
+登录后可预览并确认接管访客记录，退出保留原账户本机记录。同步、云端采用和删除在操作旁用现有 Wot ring/主题状态栏显示首次等待、阶段、取消、错误及实际回执；进行中禁用重复动作，导出仍可用。错误为 alert，其他反馈为 status；减少动态效果保留静态文字与取消。新的已确认动作清除旧页底提示，避免过时警告与成功结果并列。离页/返回、账户切换或记录生命周期变化撤销旧请求与反馈；取消明确说明已发送批次可能已保存，删除取消不能撤销已完成的删除。
+
+同步冲突提供双方导出、采用重新核对的云端副本、恢复本机副本和显式清除归档；三类确认都核对实际归档身份和当前账户/版本/生命周期，同版本替换的新副本不能接纳旧确认。云端副本删除与本机删除分别确认，完整成功需要学习副本与教学结果缓存两项回执，后续主动同步可重新上传。2026-10-04 实际 H5 使用合成 JWT 与独立临时 Mongo 库完成冲突、采用/恢复/归档移除、删除及补传；原 19 错答、暂停、单次作答与任务 1/1 保持，实际后端事实与界面导出相同。网络等待/断网使用浏览器模拟，生命周期/归档替换以隔离回归验证；这些证据不代表真实登录、已有模型缓存、生产服务或其他端设备。[持续规则与实际截图](07-STYLING-SYSTEM.md)。
+
+资料解析独立于模型连接：输入本机解析器地址/临时令牌→鉴权健康检查→选择 PDF/图片→明确确认解析。取消确认不上传；文字识别默认不授权。分段进度、取消后续、继续处理、页图和局部角色校对共用资料记录；相同批次去重，变化提取保留历史。配置和文件选择中切换账户使旧动作失效。
+
+## 能力矩阵
+
+| 能力                | H5                                                    | 微信                                            | App                                                                   |
+| ------------------- | ----------------------------------------------------- | ----------------------------------------------- | --------------------------------------------------------------------- |
+| 页面与共享状态      | 可构建，有本地浏览器证据                              | 可构建，分包/产物审计                           | 已配置目标可构建                                                      |
+| BYOK 文本结构化工具 | Gemini 有限真实路径；其他模型按配置能力               | 未完成真机网络/鉴权                             | 未完成真机网络/鉴权                                                   |
+| 备份导出            | JSON 可见内容已验证；文件下载待宿主验证               | 剪贴板代码路径，待设备                          | 剪贴板代码路径，待设备                                                |
+| 备份恢复            | 本地粘贴/校验/确认                                    | 同源实现，待设备                                | 同源实现，待设备                                                      |
+| PDF/印刷图解析      | 鉴权/分段/页图与本机有限路径通过                      | 原生权限/文件/分段代码及隔离HTTP通过，待真机    | 系统选择/逐次确认/续解析/删除源码与本机内核通过；完整SDK装配/设备待验 |
+| Apple OCR           | 未实现                                                | 不可直接调用 Apple 原生 API                     | 原生桥接未实现                                                        |
+| 本地模型            | Node 鉴权/预算/幂等 HTTP 隔离通过；真实推理待模型服务 | 原生文本代码及隔离HTTP通过，桌面可达性/真机待验 | 专用文本模块源码与本机内核通过；装配/推理/设备待验                    |
+| 流式教学            | H5与独立后端本机隔离闭环，真实供应商待验              | 原生chunk隔离路径，真机待验                     | 保护分块源码/宿主与移动SDK内核编译通过；完整模块装配/设备待验         |
+
+视觉、站外通知和真实支付仍未验收；不因流式协议接入提升其他能力。构建通过与设备通过分开。微信主包全文件 2 MB、媒体 200 KB 继续执行；较大依赖和题库留分包，H5 manualChunks 不推导到微信。页面注册、应用 ID 和权限以 src/pages.json / src/manifest.json 为准。
+
+本地开发与界面核验已按 2026-10-03 授权恢复，沿 Playful/Future 与现有业务组件补齐配置、确认和状态，不另建主题；持续功能范围见[功能清单](11-RELEASE-NOTES.md)及[开发矩阵](13-DEVELOPMENT-PLAN.md)。
+
+教学功能增量沿用现有数轴组件，只在当前题目有实际图形交付且任务未停止时显示；策略标签本身不代表已显示图形。部分正确在固定概览单列，计入可靠首答分母但不计为完整判错或判对。帮助经历跨入口保留，详细状态以记录为准，旧消息不代表当前状态。
+
+资料行提供“预览并删除资料”；范围包括关联对话全部正文/作答、本机副本、题目/变式和计划影响，确认前核对用户/版本。原件删除待确认在资料面板持续显示，重试单独确认；状态来自真实记录，不由旧聊天消息代替。选中资料编辑区在清理后清空；云端需主动同步墓碑。当前沿用既有布局，未启动新的视觉优化。
+
+主观题功能增量沿用现有表单：可选评分维度编辑，保存生成新版本，历史计划/帮助保留；对话与统计展开真实辅助总分、分维反馈及原答引用。明确显示待核对，不将辅助分值混入可靠错题率或掌握。H5操作、三端构建与真实模型语义评分分别验收；纯文本本地连接器不执行评分工具。未开展视觉或动效重设计。
+
+符号学习增量：目标直接创建有界代数任务，不要求API配置或资料。对话明确作答自动保存、可靠判错进入共享错题；缺定义域只请求关键补充，不误记错题。分层提示、直接讲解和任务方向/数域变式复用原界面；显示精确工具范围与待核对状态，不伪造函数图形。H5实际操作与微信/App构建分别验收，尚无新真机证据；未进行视觉优化。
+
+长历史功能：当前对话一次挂载50条，提供更早/更新/最新/当前题相关对话；有questionKey关联的消息定位实际窗口，缺关联历史不伪造消息。阅读较早窗口时发送新消息保留阅读位置，最新窗口随消息增长。大备份和访客预览分批核验，展示进度并可取消；同步展示阶段和请求数，超限/断网保留本机，确认已同步以实际完整服务端事实为准。
+
+同步进度复用现有资料进度条：首次读取期间总量未知不显示百分比；补传总量确定后，只有本批回执检查通过才增加已接收数量。数字表达本次补传范围，接收完全部也继续核对完整云端事实，缺失进入错误而非完成。取消后进度消失，已发送批次可继续幂等补传。当前实际 H5 六千操作已保存、5986消息以50条窗口翻页、全量同步并逐项核对签名API与数据库；两万操作仅完成预览，实际分页保存失败且原记录完整保留，设备容量与长期更新继续独立待验。
+
+H5已用622个合成操作/600消息验证读取与写入、626操作备份预览、真实本机同步、刷新及错题/统计入口；原作答7次，计划6/10和首答2/6保持。微信/App共用代码、构建/产物通过，长历史设备容量和运行尚未实测。浏览器容量不足路径已实际出现且报告保存失败；没有因此放宽设备配额或宣称所有长历史都能写入。沿用现有视觉，仅增加功能控件。
+
+## 流式教学功能控件
+
+模型面板只在当前云模型声明流式且终端可用时允许勾选；用户主动选择，默认关闭。切换模式/型号取消在途任务、清空预览并重新确认共享。预览为独立纯文本区域“接收中/尚未校验/未执行工具”，不会创建聊天教学记录、错题、提示、计划或掌握判断。完结后清空，固定概览读取真实执行状态。取消立即清空临时区域；断流不自动重试或换模型。
+
+未确认的请求可重开后“读取本次已完成结果”，仅查询原服务端结果；重新选择原模型/共享授权，学习上下文变化则拒绝执行旧工具。导入的历史意图不可恢复执行。网络与账本故障如实显示，不伪造AI完成。沿用现有视觉与动效，本批没有重设计。
+
+页图解读功能控件沿用当前设计：BYOK配置显式声明图片协议，当前题目有匹配提取事件的原页图时可发起辅助解读；逐次确认整页及当前上下文将经后端到所选供应商、上游可能计费。H5非流式代码接入；微信/App、本地文本连接器及平台图像费用路径当前明确不可用，不自动改用云端。普通文本连接不能代替图片状态；图片结果在当前对话标注角色与局部疑义，仍待校对，不直接判错。真实模型/手写含图质量与设备待验收，视觉优化继续暂停。
+
+一次不等式属于功能扩展：所有端沿用目标、聊天作答、提示、变式、错题与统计入口，本地可执行有限检验无需API/会员。数轴组件增加半直线开闭点、全体/空集、可访问描述，精确标签与示意位置分开；没有视觉设计优化。H5真实操作与微信/App构建分级报告，布局构建成功不当作设备验收。

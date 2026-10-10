@@ -21,6 +21,10 @@ export function resolveEmailAuthErrorMessage(message, isRegisterMode = false) {
     return rawMessage.replace('密码强度不足:', '密码强度不足：');
   }
 
+  if (rawMessage === '该账号未设置密码，请使用验证码登录') {
+    return rawMessage;
+  }
+
   if (rawMessage.includes('验证码')) {
     return '验证码错误或已过期';
   }

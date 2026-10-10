@@ -63,7 +63,9 @@ def source_quality_override_for_item(item: dict[str, Any]) -> dict[str, Any] | N
             return override
         if source_hashes.intersection(set(override.get("contentHashes", set()))):
             return override
-        if remote_path and any(fragment in remote_path for fragment in override.get("remotePathContains", [])):
+        if remote_path and any(
+            fragment in remote_path for fragment in override.get("remotePathContains", [])
+        ):
             return override
 
     return None

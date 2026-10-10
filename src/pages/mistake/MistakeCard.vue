@@ -1,332 +1,127 @@
 <template>
   <view class="glass-card mistake-card">
-    <view class="card-tag">
-      {{ getCategory(item) }}
-    </view>
-    <text class="question-text">
-      {{ item.question || item.question_content || '题目内容加载中...' }}
-    </text>
-
-    <!-- 错题重做区域 -->
-    <view v-if="localIsPracticing" class="practice-area">
-      <view v-if="item.practiceStatus" class="practice-status-bar">
-        <view class="status-icon" :class="item.practiceStatus">
-          <BaseIcon v-if="item.practiceStatus === 'checking'" name="timer" :size="28" />
-          <BaseIcon v-else-if="item.practiceStatus === 'correct'" name="check" :size="28" />
-          <BaseIcon v-else name="cross" :size="28" />
-        </view>
-        <text class="status-text">
-          {{
-            item.practiceStatus === 'checking'
-              ? '正在检查答案...'
-              : item.practiceStatus === 'correct'
-                ? '回答正确！'
-                : '回答错误'
-          }}
-        </text>
-      </view>
-      <view class="options-list practice-options">
-        <view
-          v-for="(opt, i) in item.options"
-          :key="i"
-          class="option-row"
-          :class="{
-            selected: practiceChoice === i,
-            disabled: isAnalyzing,
-            'correct-option': practiceResult && ['A', 'B', 'C', 'D'][i] === (item.answer || item.correct_answer),
-            'wrong-option': practiceResult && !practiceResult.isCorrect && practiceChoice === i
-          }"
-          @tap="selectOption(i)"
-        >
-          <text class="opt-idx">
-            {{ ['A', 'B', 'C', 'D'][i] }}
-          </text>
-          <text class="opt-text">
-            {{ opt }}
-          </text>
-        </view>
-      </view>
-      <view class="practice-actions">
-        <button
-          class="action-btn primary"
-          hover-class="ds-hover-btn"
-          :disabled="practiceChoice === undefined || isAnalyzing"
-          @tap="submitAnswer"
-        >
-          {{ isAnalyzing ? '检查中...' : '提交答案' }}
-        </button>
-        <button class="action-btn" hover-class="ds-hover-btn" @tap="cancelPractice">取消</button>
-      </view>
-      <view v-if="practiceResult" class="practice-result">
-        <view class="result-header">
-          <view class="result-icon" :class="practiceResult.isCorrect ? 'correct' : 'wrong'">
-            <BaseIcon :name="practiceResult.isCorrect ? 'check' : 'cross'" :size="28" />
-          </view>
-          <text class="result-text">
-            {{
-              practiceResult.isCorrect
-                ? '回答正确！太棒了！'
-                : '回答错误，正确答案是 ' + (item.answer || item.correct_answer)
-            }}
-          </text>
-        </view>
-        <text v-if="practiceResult.feedback" class="result-desc">
-          {{ practiceResult.feedback }}
-        </text>
-        <view v-if="!practiceResult.isCorrect" class="result-actions">
-          <button class="retry-btn" @tap="retryPractice">再试一次</button>
-        </view>
+    <view class="card-tag">{{ item.category || item.subject || '未分类' }}</view>
+    <text class="question-text">{{ item.question ?? item.question_content ?? '原题未保存' }}</text>
+    <view class="options-list">
+      <view v-for="(option, optionIndex) in options" :key="optionIndex" class="option-row">
+        <text class="opt-idx">{{ getQuizOptionLabel({ options }, optionIndex) }}</text>
+        <text class="opt-text">{{ option }}</text>
       </view>
     </view>
-
-    <!-- 普通错题展示区域 -->
-    <view v-else>
-      <view class="options-list">
-        <view v-for="(opt, i) in item.options" :key="i" class="option-row">
-          <text
-            class="opt-idx"
-            :class="{
-              correct:
-                (mode === 'recite' || localShowAnalysis) &&
-                ['A', 'B', 'C', 'D'][i] === (item.answer || item.correct_answer),
-              wrong:
-                (mode === 'recite' || localShowAnalysis) &&
-                item.userChoice &&
-                item.userChoice.charAt(0) === ['A', 'B', 'C', 'D'][i] &&
-                item.userChoice.charAt(0) !== (item.answer || item.correct_answer)
-            }"
-          >
-            {{ ['A', 'B', 'C', 'D'][i] }}
-          </text>
-          <text class="opt-text">
-            {{ opt }}
-          </text>
-        </view>
+    <view v-if="mode === 'recite' || localShowAnalysis" class="analysis-box">
+      <view class="correct-ans">历史参考：{{ reference ?? '未保存' }} · 待核对</view>
+      <view v-if="originalAnswer !== undefined && originalAnswer !== null" class="analysis-content">
+        <text class="label">原作答：</text>{{ originalAnswer }}
       </view>
-
-      <view v-if="mode === 'recite' || localShowAnalysis" class="analysis-box">
-        <view class="correct-ans"> 正确答案：{{ item.answer || item.correct_answer || '未知' }} </view>
-        <view class="analysis-content">
-          <text class="label"> 智能解析： </text>
-          {{ item.desc || item.analysis || '暂无解析' }}
-        </view>
-      </view>
+      <view class="analysis-content"
+        ><text class="label">历史解析：</text>{{ item.desc ?? item.analysis ?? '未保存' }}</view
+      >
     </view>
-
     <view class="card-footer">
-      <text class="time-text">
-        {{ formatDate(item.addTime || item.created_at || item.timestamp) }}
-      </text>
-      <view v-if="(item.wrongCount || item.wrong_count || 0) > 1" class="wrong-count">
+      <text class="time-text">{{ formatDate(item.addTime ?? item.created_at ?? item.timestamp) }}</text>
+      <view v-if="(item.wrongCount ?? item.wrong_count ?? 0) > 1" class="wrong-count">
         <BaseIcon name="warning" :size="20" class="count-icon" />
-        <text class="count-text"> 错误 {{ item.wrongCount || item.wrong_count || 1 }} 次 </text>
+        <text class="count-text">旧错误次数 {{ item.wrongCount ?? item.wrong_count }}</text>
       </view>
       <view class="actions">
-        <button v-if="mode === 'quiz' && !localIsPracticing" class="action-btn sm" @tap="toggleAnalysis">
-          {{ localShowAnalysis ? '隐藏解析' : '查看解析' }}
+        <button
+          v-if="mode === 'quiz'"
+          class="action-btn sm"
+          role="button"
+          tabindex="0"
+          @tap="toggleAnalysis"
+          @keydown.enter.prevent="toggleAnalysis"
+          @keydown.space.prevent="toggleAnalysis"
+        >
+          {{ localShowAnalysis ? '隐藏参考' : '查看参考' }}
         </button>
-        <button v-if="!localIsPracticing" class="action-btn sm primary" @tap="startPractice">重做此题</button>
-        <button v-if="!localIsPracticing" class="action-btn sm del" @tap="$emit('remove', index)">移除</button>
+        <button
+          class="action-btn sm primary"
+          role="button"
+          :disabled="!reviewable"
+          :aria-disabled="!reviewable"
+          :tabindex="reviewable ? 0 : -1"
+          @tap="startPractice"
+          @keydown.enter.prevent="startPractice"
+          @keydown.space.prevent="startPractice"
+        >
+          重做此题
+        </button>
+        <button
+          class="action-btn sm del"
+          role="button"
+          tabindex="0"
+          @tap="emit('remove', index)"
+          @keydown.enter.prevent="emit('remove', index)"
+          @keydown.space.prevent="emit('remove', index)"
+        >
+          移除
+        </button>
       </view>
     </view>
+    <text v-if="!reviewable" class="time-text">原题或参考资料不完整，原记录保留。</text>
   </view>
 </template>
 
 <script setup>
-import { ref, onBeforeUnmount } from 'vue';
-import { storageService } from '@/services/storageService.js';
-import { analytics } from '@/utils/analytics/event-bus-analytics.js';
-import { recordReview } from '@/utils/learning/adaptive-learning-engine.js';
-import { logger } from '@/utils/logger.js';
-import { vibrateLight } from '@/utils/helpers/haptic.js';
+import { ref, computed, watch } from 'vue';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
-
-// ---------- Props ----------
+import { useStudyEngineStore } from '@/stores/modules/study-engine.js';
+import {
+  getQuizOptionLabel,
+  normalizeLegacyReviewQuestion,
+  legacyReviewQuestionIdentity
+} from '@/services/quiz-session-contract.js';
+import { toast } from '@/utils/toast.js';
+import { safeNavigateTo } from '@/utils/safe-navigate';
 const props = defineProps({
-  /** 错题数据对象 */
-  item: {
-    type: Object,
-    required: true
-  },
-  /** 在错题列表中的索引 */
-  index: {
-    type: Number,
-    required: true
-  },
-  /** 当前模式: quiz / recite */
-  mode: {
-    type: String,
-    default: 'quiz'
-  },
-  /** 完整错题列表引用（用于云端同步后更新本地缓存） */
-  mistakes: {
-    type: Array,
-    default: () => []
-  }
+  item: { type: Object, required: true },
+  index: { type: Number, required: true },
+  mode: { type: String, default: 'quiz' },
+  mistakes: { type: Array, default: () => [] },
+  expectedOwnerId: { type: String, default: null }
 });
-
-// ---------- Emits ----------
-const emit = defineEmits(['remove', 'update:item']);
-
-// ---------- 响应式状态 ----------
-const practiceChoice = ref(undefined);
-const practiceResult = ref(null);
-const isAnalyzing = ref(false);
-const localShowAnalysis = ref(false);
-const localIsPracticing = ref(false);
-/** @type {import('vue').Ref<number|null>} 分析延迟定时器 ID */
-const analyzeTimerId = ref(null);
-
-// ---------- 生命周期 ----------
-onBeforeUnmount(() => {
-  if (analyzeTimerId.value) {
-    clearTimeout(analyzeTimerId.value);
-    analyzeTimerId.value = null;
+const emit = defineEmits(['remove']);
+const engine = useStudyEngineStore();
+const localShowAnalysis = ref(false),
+  referenceViewed = ref(props.mode === 'recite');
+const options = computed(() => (Array.isArray(props.item.options) ? props.item.options : []));
+const reference = computed(() => props.item.answer ?? props.item.correct_answer ?? props.item.correctAnswer);
+const originalAnswer = computed(() => props.item.user_answer ?? props.item.userAnswer ?? props.item.userChoice);
+const reviewable = computed(() => !!normalizeLegacyReviewQuestion(props.item));
+watch(
+  () => [legacyReviewQuestionIdentity(props.item), props.expectedOwnerId],
+  () => {
+    localShowAnalysis.value = false;
+    referenceViewed.value = props.mode === 'recite';
   }
-});
-
-// ---------- 方法 ----------
-
-/** 获取错题分类 */
-function getCategory(item) {
-  return item.category || item.subject || '未分类';
-}
-
-/** 格式化日期为 "X月X日 HH:mm" */
-function formatDate(ts) {
-  if (!ts) return '';
-  const d = new Date(ts);
-  if (isNaN(d.getTime())) return '';
-  const month = d.getMonth() + 1;
-  const day = d.getDate();
-  const hour = d.getHours().toString().padStart(2, '0');
-  const min = d.getMinutes().toString().padStart(2, '0');
-  return month + '月' + day + '日 ' + hour + ':' + min;
-}
-
-/** 切换解析显示 */
+);
+watch(
+  () => props.mode,
+  (mode) => {
+    if (mode === 'recite') referenceViewed.value = true;
+  }
+);
 function toggleAnalysis() {
   localShowAnalysis.value = !localShowAnalysis.value;
+  if (localShowAnalysis.value) referenceViewed.value = true;
 }
-
-/** 开始重做练习 */
+function formatDate(value) {
+  if (value === undefined || value === null) return '';
+  const date = new Date(value);
+  if (!Number.isFinite(date.getTime())) return '';
+  return `${date.getMonth() + 1}月${date.getDate()}日 ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+}
 function startPractice() {
-  localIsPracticing.value = true;
-  practiceChoice.value = undefined;
-  practiceResult.value = null;
-}
-
-/** 选择选项 */
-function selectOption(optionIndex) {
-  if (!isAnalyzing.value) {
-    practiceChoice.value = optionIndex;
-  }
-}
-
-/** 提交答案 */
-function submitAnswer() {
-  if (isAnalyzing.value) return;
-  if (practiceChoice.value === undefined) {
-    logger.log('[MistakeCard] 未选择答案，无法提交');
-    return;
-  }
-
-  const mistake = props.item;
-  if (!mistake) {
-    logger.error('[MistakeCard] 错题数据不存在');
-    return;
-  }
-
-  const mistakeId = mistake.id || mistake._id;
-  const selectedOption = practiceChoice.value;
-  const selectedAnswer = ['A', 'B', 'C', 'D'][selectedOption];
-  const correctAnswer = (mistake.answer || mistake.correct_answer || 'A').toUpperCase();
-  const correctOptionIndex = ['A', 'B', 'C', 'D'].indexOf(correctAnswer);
-  const isCorrect = selectedOption === correctOptionIndex;
-
-  logger.log(
-    '[MistakeCard] 提交重做答案 - ID: ' +
-      mistakeId +
-      ', 选择: ' +
-      selectedAnswer +
-      ', 正确: ' +
-      correctAnswer +
-      ', 结果: ' +
-      isCorrect
-  );
-
-  isAnalyzing.value = true;
-
-  analyzeTimerId.value = setTimeout(() => {
-    isAnalyzing.value = false;
-
-    const feedback = isCorrect ? '太棒了！你已经掌握了这道题。' : '再想想！正确答案是 ' + correctAnswer + '。';
-
-    practiceResult.value = { isCorrect, feedback };
-
-    // 追踪复习错题事件
-    analytics.trackReviewMistake(mistakeId, isCorrect, {
-      category: mistake.category,
-      wrongCount: mistake.wrong_count || mistake.wrongCount || 1
-    });
-
-    // 记录复习结果到自适应学习引擎
-    if (mistakeId) {
-      recordReview(mistakeId, isCorrect);
-    }
-
-    // 答对了，通知父组件更新错题状态
-    if (isCorrect) {
-      logger.log('[MistakeCard] 答案正确，更新掌握状态 - ID: ' + mistakeId);
-
-      localIsPracticing.value = false;
-      const updatedItem = {
-        ...props.item,
-        is_mastered: true,
-        isMastered: true,
-        isPracticing: false,
-        last_practice_time: Date.now()
-      };
-      emit('update:item', updatedItem);
-
-      if (mistakeId) {
-        storageService
-          .updateMistakeStatus(mistakeId, true)
-          .then((result) => {
-            if (result.success) {
-              logger.log('[MistakeCard] 云端状态更新成功 - source: ' + result.source);
-            } else {
-              logger.warn('[MistakeCard] 云端状态更新失败: ' + result.error);
-            }
-            storageService.save('mistake_book', props.mistakes, true);
-          })
-          .catch((err) => {
-            logger.error('[MistakeCard] 更新错题状态异常:', err);
-            storageService.save('mistake_book', props.mistakes, true);
-          });
-      } else {
-        logger.warn('[MistakeCard] 错题ID为空，仅更新本地状态');
-        storageService.save('mistake_book', props.mistakes, true);
-      }
-
-      vibrateLight();
-    } else {
-      logger.log('[MistakeCard] 答案错误，不更新掌握状态');
-    }
-  }, 500);
-}
-
-/** 取消练习 */
-function cancelPractice() {
-  localIsPracticing.value = false;
-  practiceChoice.value = undefined;
-  practiceResult.value = null;
-}
-
-/** 重试练习 */
-function retryPractice() {
-  practiceChoice.value = undefined;
-  practiceResult.value = null;
+  const id = props.item.id ?? props.item._id;
+  const result = engine.prepareLegacyReview({
+    expectedOwnerId: props.expectedOwnerId,
+    recordIds: [id],
+    expectedQuestions: [props.item],
+    referenceViewedIds: referenceViewed.value ? [id] : []
+  });
+  if (!result.success) return toast.info(result.message || '原条目暂不能重练，请重新打开历史记录');
+  safeNavigateTo(result.url);
 }
 </script>
 
@@ -411,7 +206,7 @@ function retryPractice() {
 
   .correct-ans {
     font-weight: bold;
-    color: var(--success);
+    color: var(--text-primary);
     margin-bottom: 20rpx;
     font-size: 28rpx;
     display: block;
@@ -433,6 +228,8 @@ function retryPractice() {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 12rpx;
   padding-top: 20rpx;
   border-top: 1rpx solid var(--border);
 
@@ -443,10 +240,13 @@ function retryPractice() {
 
   .actions {
     display: flex;
+    flex-wrap: wrap;
+    gap: 12rpx;
     /* gap: 16rpx; -- replaced for Android WebView compat */
   }
 
   .action-btn {
+    min-height: 44px;
     padding: 10rpx 24rpx;
     border-radius: 20rpx;
     font-size: 24rpx;
@@ -487,131 +287,6 @@ function retryPractice() {
 
   .count-icon {
     font-size: 20rpx;
-  }
-}
-
-/* 练习选项样式 */
-.practice-options {
-  margin-bottom: 20rpx;
-}
-
-.practice-options .option-row {
-  padding: 20rpx;
-  border-radius: 16rpx;
-  background: var(--bg-secondary);
-  transition: all 0.2s;
-
-  &.selected {
-    background: var(--primary-light);
-    border: 1px solid var(--primary);
-  }
-
-  &.disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
-
-  &.correct-option {
-    background: var(--success-light);
-    border: 1px solid var(--success);
-  }
-
-  &.wrong-option {
-    background: var(--danger-light);
-    border: 1px solid var(--danger);
-  }
-}
-
-.practice-actions {
-  display: flex;
-  /* gap: 16rpx; -- replaced for Android WebView compat */
-  margin-top: 20rpx;
-}
-
-.practice-result {
-  margin-top: 30rpx;
-  padding: 20rpx;
-  border-radius: 16rpx;
-  background: var(--bg-secondary);
-}
-
-.result-header {
-  display: flex;
-  align-items: center;
-  margin-bottom: 10rpx;
-}
-
-.result-icon {
-  font-size: 36rpx;
-  font-weight: bold;
-  margin-right: 10rpx;
-
-  &.correct {
-    color: var(--success);
-  }
-
-  &.wrong {
-    color: var(--danger);
-  }
-}
-
-.result-text {
-  font-size: 28rpx;
-  font-weight: bold;
-  color: var(--text-primary);
-}
-
-.result-desc {
-  font-size: 26rpx;
-  color: var(--text-sub);
-  line-height: 1.5;
-}
-
-.result-actions {
-  margin-top: 16rpx;
-}
-
-.retry-btn {
-  padding: 10rpx 24rpx;
-  border-radius: 20rpx;
-  font-size: 24rpx;
-  background: var(--primary-light);
-  color: var(--primary);
-  border: none;
-  font-weight: 600;
-
-  &::after {
-    border: none;
-  }
-}
-
-.practice-status-bar {
-  display: flex;
-  align-items: center;
-  /* gap: 10rpx; -- replaced for Android WebView compat */
-  padding: 16rpx 20rpx;
-  margin-bottom: 20rpx;
-  border-radius: 12rpx;
-  background: var(--bg-secondary);
-
-  .status-icon {
-    font-size: 28rpx;
-    font-weight: bold;
-
-    &.correct {
-      color: var(--success);
-    }
-    &.wrong {
-      color: var(--danger);
-    }
-    &.checking {
-      color: var(--warning);
-    }
-  }
-
-  .status-text {
-    font-size: 26rpx;
-    color: var(--text-primary);
   }
 }
 

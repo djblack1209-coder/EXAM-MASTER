@@ -14,15 +14,16 @@
  */
 
 import cloud from '@lafjs/cloud';
-import { requireAuth, isAuthError } from './_shared/auth-middleware';
+import type { FunctionContext } from '../types/cloud-functions.js';
+import { requireAuth, isAuthError } from './_shared/auth-middleware.js';
 
 const db = cloud.database();
 
 // ==================== 环境配置 ====================
-import { createLogger, sanitizeString, checkRateLimitDistributed, tooManyRequests } from './_shared/api-response';
+import { createLogger, sanitizeString, checkRateLimitDistributed, tooManyRequests } from './_shared/api-response.js';
 
 // ✅ H019: 微信内容安全检测
-import { checkTextSecurity, ContentScene } from './_shared/wx-content-check';
+import { checkTextSecurity, ContentScene } from './_shared/wx-content-check.js';
 
 // 头像上传配置
 const AVATAR_MAX_SIZE = 2 * 1024 * 1024; // 2MB

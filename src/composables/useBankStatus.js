@@ -5,9 +5,10 @@
 import { ref } from 'vue';
 import { storageService } from '@/services/storageService.js';
 import { logger } from '@/utils/logger.js';
-import { toast } from '@/utils/toast.js';
+import { getUserId } from '@/services/auth-storage.js';
 
 export function useBankStatus() {
+  const owner = getUserId() || '';
   const hasBank = ref(false);
   const totalQuestions = ref(0);
   const progressPercent = ref(0);
@@ -21,9 +22,14 @@ export function useBankStatus() {
    * 刷新题库状态（无参版，兼容外部直接调用）
    */
   function refreshBankStatus() {
-    const bankData = storageService.get('v30_bank', []);
-    const userAnswers = storageService.get('v30_user_answers', {});
-    refreshBankWithData(bankData, userAnswers);
+    try {
+      const bankData = storageService.get('v30_bank', [], { migrateLegacy: false, throwOnError: true });
+      const userAnswers = storageService.get('v30_user_answers', {}, { migrateLegacy: false, throwOnError: true });
+      refreshBankWithData(bankData, userAnswers);
+    } catch (error) {
+      logger.warn('[刷题中心] 原题库暂不可读取，原资料保留', error);
+      refreshBankWithData([], {});
+    }
   }
 
   /**
@@ -36,18 +42,7 @@ export function useBankStatus() {
     logger.log('[刷题中心] 开始刷新题库状态');
 
     try {
-      let bank = bankFromService;
-
-      // 仅在数据为空时才尝试备份恢复
-      if (!bank || bank.length === 0) {
-        const bankFromUni = storageService.get('v30_bank', []);
-        if (bankFromUni.length > 0) {
-          bank = bankFromUni;
-        } else {
-          logger.log('[刷题中心] 题库数据为空，尝试从备份恢复...');
-          bank = _tryRestoreFromBackup() || [];
-        }
-      }
+      const bank = (getUserId() || '') === owner && Array.isArray(bankFromService) ? bankFromService : [];
 
       hasBank.value = bank.length > 0;
       totalQuestions.value = bank.length;
@@ -66,40 +61,6 @@ export function useBankStatus() {
       isPageLoading.value = false;
     }
     _hasLoadedOnce = true;
-  }
-
-  /**
-   * 从备份恢复题库数据
-   */
-  function _tryRestoreFromBackup() {
-    const backupKeys = ['v30_bank_backup', 'v30_bank_backup_before_clear'];
-
-    for (const backupKey of backupKeys) {
-      try {
-        const backupFromUni = storageService.get(backupKey);
-        const backupFromService = storageService.get(backupKey, null);
-
-        for (const backup of [backupFromUni, backupFromService]) {
-          if (!backup) continue;
-          try {
-            const restoredData = typeof backup === 'string' ? JSON.parse(backup) : backup;
-            if (Array.isArray(restoredData) && restoredData.length > 0) {
-              logger.log(`[刷题中心] 从备份恢复题库 (${backupKey}):`, restoredData.length, '道题');
-              storageService.save('v30_bank', restoredData);
-              toast.success(`已从备份恢复 ${restoredData.length} 道题`, 2000);
-              return restoredData;
-            }
-          } catch (parseErr) {
-            logger.warn(`[刷题中心] 解析备份失败 (${backupKey}):`, parseErr);
-          }
-        }
-      } catch (restoreErr) {
-        logger.warn(`[刷题中心] 恢复备份失败 (${backupKey}):`, restoreErr);
-      }
-    }
-
-    logger.log('[刷题中心] 所有备份都不可用');
-    return null;
   }
 
   /**

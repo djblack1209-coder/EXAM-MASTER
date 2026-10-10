@@ -82,7 +82,12 @@ def is_publishable_source(item: dict[str, Any]) -> bool:
         return False
     if item.get("answerEvidenceStatus") != "matched":
         return False
-    if not (item.get("contentHash") or item.get("sha256") or item.get("fileSha256") or item.get("sourceHash")):
+    if not (
+        item.get("contentHash")
+        or item.get("sha256")
+        or item.get("fileSha256")
+        or item.get("sourceHash")
+    ):
         return False
     if not (item.get("remotePath") or item.get("sourceUrl") or item.get("provenanceUrl")):
         return False
@@ -123,7 +128,14 @@ def build_processing_queue(items: list[dict[str, Any]]) -> list[dict[str, Any]]:
             }
         )
 
-    return sorted(queue, key=lambda row: (-int(row.get("priority") or 0), str(row.get("track")), str(row.get("year"))))
+    return sorted(
+        queue,
+        key=lambda row: (
+            -int(row.get("priority") or 0),
+            str(row.get("track")),
+            str(row.get("year")),
+        ),
+    )
 
 
 def safe_display_name(item: dict[str, Any]) -> str:
@@ -216,9 +228,7 @@ def analyze_manifest(
 
     queue = build_processing_queue(items)
     blocking_gaps = {
-        track: value["missingYears"]
-        for track, value in coverage.items()
-        if value["missingYears"]
+        track: value["missingYears"] for track, value in coverage.items() if value["missingYears"]
     }
     cleaning_plan = build_cleaning_plan(items, coverage=coverage)
     can_publish = (
@@ -344,7 +354,9 @@ def run_self_test() -> None:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Analyze Source Manifest coverage and processing queue.")
+    parser = argparse.ArgumentParser(
+        description="Analyze Source Manifest coverage and processing queue."
+    )
     parser.add_argument("--manifest", type=Path, default=DEFAULT_MANIFEST)
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
     parser.add_argument("--tracks", default=",".join(PUBLIC_TRACKS))
@@ -367,10 +379,7 @@ def main() -> None:
     )
 
     summary = report["summary"]
-    print(
-        "[manifest-quality] "
-        + " ".join(f"{key}={value}" for key, value in summary.items())
-    )
+    print("[manifest-quality] " + " ".join(f"{key}={value}" for key, value in summary.items()))
 
     if args.dry_run:
         print("[manifest-quality] dry-run, report not written")

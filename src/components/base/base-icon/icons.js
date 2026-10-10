@@ -7,6 +7,10 @@ import { SVG_DATA } from './svg-data.js';
 
 // 主包页面使用的核心图标（内联 data URI，消除文件依赖）
 const INLINE = {
+  // Lucide message-circle and menu; their attribution is shipped in static/licenses/lucide.txt.
+  chat: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"%3E%3Cpath d="M2.992 16.342a2 2 0 0 1 .094 1.167l-1.065 3.29a1 1 0 0 0 1.236 1.168l3.413-.998a2 2 0 0 1 1.099.092 10 10 0 1 0-4.777-4.719"/%3E%3C/svg%3E',
+  menu: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"%3E%3Cpath d="M4 5h16"/%3E%3Cpath d="M4 12h16"/%3E%3Cpath d="M4 19h16"/%3E%3C/svg%3E',
+
   check:
     'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"%3E%3Cpath d="M20 6 9 17l-5-5"/%3E%3C/svg%3E',
   cross:

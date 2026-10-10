@@ -41,12 +41,31 @@ const mocked = vi.hoisted(() => {
         state.field = value;
         return collection;
       },
+      orderBy() {
+        return collection;
+      },
+      skip() {
+        return collection;
+      },
+      limit() {
+        return collection;
+      },
+      async get() {
+        return { data: [] };
+      },
+      async count() {
+        return { total: 0 };
+      },
       async getOne() {
         return resolve(scenario.getOne, name, state, { data: null });
       },
       async remove(options) {
         scenario.removeCalls.push({ name, options, query: state.query });
         return resolve(scenario.remove, name, state, { deleted: 0 });
+      },
+      async update(payload) {
+        scenario.docUpdateCalls.push({ name, id: state.query?._id, query: state.query, payload });
+        return resolve(scenario.docUpdate, name, state, { updated: 1 });
       },
       doc(id) {
         return {
@@ -127,10 +146,37 @@ vi.mock('../../laf-backend/functions/_shared/fsrs-scheduler', () => ({
 
 import mistakeManagerHandler from '../../laf-backend/functions/mistake-manager';
 
+vi.mock('@/services/api/domains/_request-core.js', async (importOriginal) => {
+  const original = await importOriginal();
+  return {
+    ...original,
+    request: (_endpoint, body) => mistakeManagerHandler({ body, headers: { authorization: 'Bearer valid_token' } })
+  };
+});
+
 describe('[安全审计] mistake-manager updateFields 行为', () => {
   beforeEach(() => {
     mocked.resetScenario();
     mocked.setJwtPayload({ userId: 'user_1' });
+  });
+
+  it('真实客户端查询合同把指定编号和 false 筛选送入后端，账户仍由JWT决定', async () => {
+    const api = await import('@/services/api/domains/practice.api.js');
+    const result = await api.getMistakes('forged-other-owner', {
+      id: 'exact-original-id',
+      page: 2,
+      limit: 1,
+      is_mastered: false
+    });
+    expect(result).toMatchObject({ code: 0, page: 2, limit: 1 });
+    const queries = mocked.scenario.whereCalls.filter((call) => call.name === 'mistake_book');
+    expect(queries).toHaveLength(2);
+    expect(
+      queries.every(
+        (call) =>
+          call.query.user_id === 'user_1' && call.query._id === 'exact-original-id' && call.query.is_mastered === false
+      )
+    ).toBe(true);
   });
 
   it('应拒绝更新非本人错题', async () => {
@@ -197,7 +243,7 @@ describe('[安全审计] mistake-manager updateFields 行为', () => {
     expect(result.code).not.toBe(401);
   });
 
-  it('应按白名单更新字段并自动维护 hash/mastered_at', async () => {
+  it('原件和旧状态不能被附加信息写入覆盖，整次拒绝', async () => {
     mocked.scenario.getOne.mistake_book = { data: { _id: 'm_1' } };
 
     const result = await mistakeManagerHandler({
@@ -218,20 +264,9 @@ describe('[安全审计] mistake-manager updateFields 行为', () => {
       headers: { authorization: 'Bearer valid_token' }
     });
 
-    expect(result.code).toBe(0);
-    expect(result.success).toBe(true);
-
-    const updateCall = mocked.scenario.docUpdateCalls.find((item) => item.name === 'mistake_book');
-    expect(updateCall).toBeTruthy();
-    expect(updateCall.id).toBe('m_1');
-    expect(updateCall.payload.question_content).toBe('新的题目内容ABCDE');
-    expect(updateCall.payload.wrong_count).toBe(7);
-    expect(updateCall.payload.notes).toBe('note_payload');
-    expect(updateCall.payload.is_mastered).toBe(true);
-    expect(updateCall.payload.evil_field).toBeUndefined();
-    expect(updateCall.payload.updated_at).toEqual(expect.any(Number));
-    expect(updateCall.payload.mastered_at).toEqual(expect.any(Number));
-    expect(updateCall.payload._content_hash).toMatch(/^h_/);
+    expect(result.code).toBe(403);
+    expect(result.success).toBe(false);
+    expect(mocked.scenario.docUpdateCalls).toEqual([]);
   });
 
   it('fields 无白名单字段时应返回 400', async () => {

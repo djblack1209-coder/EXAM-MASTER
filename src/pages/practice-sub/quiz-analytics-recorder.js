@@ -1,26 +1,25 @@
 /**
- * 答题数据分析记录模块
- * 从 do-quiz.vue 提取，负责将答题数据分发到各个分析子模块
- *
- * ⚠️ 隐藏约束（Chesterton's Fence）：
- * - 每个子模块的 try/catch 是独立的，一个失败不影响其他模块记录
- * - smart-question-picker 已下沉到 practice-sub，避免进入主包
- * - learning-analytics 使用动态导入，避免主包引入分包依赖
+ * 保存明确提交的原答与参考匹配，沿原编号同步到学习记录和后端。
+ * 本地答案键不构成可靠评分，不分发到掌握度、每日正确率和计时评分。
  */
 
-import { recordTime as recordQuestionTime } from './question-timer.js';
 import { saveOfflineAnswer } from './offline-cache.js';
 import { logger } from '@/utils/logger.js';
-import { recordSmartAnswer } from './utils/smart-question-picker.js';
-import { recordAnswer as recordAnalyticsAnswer } from './utils/learning-analytics.js';
 // H026 FIX: 通过 API domain 层调用，不再直接导入 _request-core.js
+import { recordQuizLearningAttempt } from '@/services/learning/quiz-learning-bridge.js';
 import { submitAnswer } from '@/services/api/domains/practice.api.js';
+import {
+  isValidQuizAttemptId,
+  isValidQuizSessionId,
+  parseQuizSubmissionReceipt
+} from '@/services/quiz-session-contract.js';
+import { getUserId, getToken } from '@/services/auth-storage.js';
 
 /**
  * 记录答题数据到各个分析模块
  * @param {Object} params
  * @param {Object} params.currentQuestion - 当前题目对象
- * @param {boolean} params.isCorrect - 是否答对
+ * @param {boolean} params.isCorrect - 本地参考答案是否匹配（不代表可靠判分）
  * @param {number} params.timeSpent - 答题用时（毫秒）
  * @param {number} params.userChoice - 用户选择的选项索引
  * @param {number} params.questionTimeLimit - 单题时限（秒）
@@ -35,77 +34,84 @@ export async function recordAnswerToAnalytics({
   userChoice,
   questionTimeLimit,
   getOptionLabel,
-  sessionId
+  sessionId,
+  attemptId,
+  canContinue = () => true
 }) {
   if (!currentQuestion) return null;
+  const owner = getUserId() || '';
+  const token = getToken() || '';
+  const stillCurrent = () => (getUserId() || '') === owner && (getToken() || '') === token && canContinue();
+  if (!stillCurrent()) return null;
 
+  // 在任何异步操作前冻结本次明确提交，重试不读取后来的草稿。
+  currentQuestion = JSON.parse(JSON.stringify(currentQuestion));
+  const userAnswer = String(getOptionLabel(userChoice));
+  const submitted = {
+    question_id: Number.isSafeInteger(currentQuestion.id) ? String(currentQuestion.id) : currentQuestion.id,
+    user_answer: userAnswer,
+    session_id: sessionId,
+    duration: Math.round(timeSpent / 1000),
+    practice_mode: 'normal'
+  };
   const questionData = {
     questionId: currentQuestion.id,
     category: currentQuestion.category,
     difficulty: currentQuestion.difficulty || 2,
-    isCorrect,
+    isCorrect: null,
+    grade: { status: 'pending' },
+    source: 'reference_match',
+    referenceMatch: typeof isCorrect === 'boolean' ? isCorrect : null,
     timeSpent
   };
 
-  // 记录到智能组题模块（懒加载）
   try {
-    recordSmartAnswer(currentQuestion, isCorrect, timeSpent);
-  } catch (e) {
-    logger.warn('[quiz-analytics] 记录到智能组题模块失败:', e);
-  }
-
-  // 记录到学习数据分析模块
-  try {
-    recordAnalyticsAnswer(questionData);
-  } catch (e) {
-    logger.warn('[quiz-analytics] 记录到学习分析模块失败:', e);
-  }
-
-  // 记录到单题计时器模块
-  try {
-    recordQuestionTime({
-      ...questionData,
-      timeLimit: questionTimeLimit
+    await recordQuizLearningAttempt({
+      currentQuestion,
+      sessionId,
+      attemptId,
+      userAnswer,
+      canContinue: stillCurrent
     });
-  } catch (e) {
-    logger.warn('[quiz-analytics] 记录到计时器模块失败:', e);
+    if (stillCurrent()) uni.$emit('conversationLearningUpdated');
+  } catch (_error) {
+    if (_error?.code === 'STOPPED') return null;
+    logger.warn('[quiz-analytics] 对话学习记录写入失败，旧版答题记录仍保留');
   }
+  if (!stillCurrent()) return null;
 
-  // ✅ 保存离线答题记录
+  const offlineAnswer = {
+    ...questionData,
+    attemptId,
+    sessionId,
+    userId: owner,
+    questionContent: currentQuestion.question,
+    userAnswer,
+    correctAnswer: currentQuestion.answer,
+    timeLimit: questionTimeLimit
+  };
+  let localSaved = false;
   try {
-    saveOfflineAnswer({
-      questionId: currentQuestion.id,
-      questionContent: currentQuestion.question,
-      userAnswer: getOptionLabel(userChoice),
-      correctAnswer: currentQuestion.answer,
-      isCorrect,
-      timeSpent,
-      category: currentQuestion.category
-    });
-  } catch (e) {
-    logger.warn('[quiz-analytics] 保存离线答题记录失败:', e);
+    localSaved = (await saveOfflineAnswer(offlineAnswer)) === true;
+  } catch {
+    logger.warn('[quiz-analytics] 离线原答保存未完成');
   }
+  if (!stillCurrent()) return null;
 
-  // ✅ [闭环关键] 提交到后端（触发自动错题收集+会话数据累积）
-  if (sessionId) {
+  let submission = { status: owner && token ? 'unconfirmed' : 'local_only' };
+  // 访客不向受保护接口发送请求；账户、令牌或页面变化后不接收迟到回执。
+  if (owner && token && isValidQuizSessionId(sessionId) && isValidQuizAttemptId(attemptId)) {
     try {
-      const idempotencyKey = `${currentQuestion.id}_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
-      // H026 FIX: 通过 practice.api.js 的 submitAnswer 调用
-      await submitAnswer({
-        idempotencyKey,
-        data: {
-          question_id: currentQuestion.id,
-          user_answer: getOptionLabel(userChoice),
-          session_id: sessionId,
-          duration: Math.round(timeSpent / 1000),
-          practice_mode: 'normal'
-        }
-      });
-    } catch (e) {
-      logger.warn('[quiz-analytics] 后端答题提交失败（不影响前端）:', e);
+      const response = await submitAnswer({ idempotencyKey: attemptId, data: submitted });
+      if (!stillCurrent()) return null;
+      submission = parseQuizSubmissionReceipt(response, attemptId, submitted) || submission;
+      if (submission.status === 'received') {
+        localSaved = (await saveOfflineAnswer({ ...offlineAnswer, submission })) === true;
+      }
+    } catch {
+      logger.warn('[quiz-analytics] 原答同步未完成，可沿原编号重试');
     }
   }
-
-  logger.log('[quiz-analytics] ✅ 答题数据已记录:', questionData);
-  return questionData;
+  if (!stillCurrent()) return null;
+  return { ...questionData, submission: { ...submission, localSaved } };
 }

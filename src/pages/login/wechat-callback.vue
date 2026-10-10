@@ -7,7 +7,7 @@
     </view>
 
     <!-- 加载状态 -->
-    <view v-if="isLoading" class="loading-section">
+    <view v-if="isLoading" class="loading-section" role="status" aria-live="polite">
       <view class="loading-icon">
         <view class="spinner" />
       </view>
@@ -16,16 +16,16 @@
     </view>
 
     <!-- 成功状态 -->
-    <view v-else-if="loginSuccess" class="success-section">
+    <view v-else-if="loginSuccess" class="success-section" role="status" aria-live="polite">
       <view class="success-icon">
         <BaseIcon name="success" :size="64" />
       </view>
-      <text class="success-text"> 登录成功 </text>
-      <text class="success-hint"> 即将跳转... </text>
+      <text class="success-text"> {{ desktopCompleted ? '授权已完成' : '登录成功' }} </text>
+      <text class="success-hint"> {{ desktopCompleted ? '请返回Yozi AI桌面应用继续学习' : '即将跳转...' }} </text>
     </view>
 
     <!-- 错误状态 -->
-    <view v-else-if="loginError" class="error-section">
+    <view v-else-if="loginError" class="error-section" role="alert">
       <view class="error-icon">
         <BaseIcon name="error" :size="64" />
       </view>
@@ -33,7 +33,14 @@
       <text class="error-hint">
         {{ errorMessage }}
       </text>
-      <view class="retry-btn" @tap="handleRetry">
+      <view
+        class="retry-btn"
+        role="button"
+        tabindex="0"
+        @tap="handleRetry"
+        @keydown.enter="handleRetry"
+        @keydown.space.prevent="handleRetry"
+      >
         <text>重新登录</text>
       </view>
     </view>
@@ -41,29 +48,39 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, computed, onUnmounted } from 'vue';
+import { onLoad } from '@dcloudio/uni-app';
 import { storageService } from '@/services/storageService.js';
+import { getUserId, getToken } from '@/services/auth-storage.js';
 import { logger } from '@/utils/logger.js';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 import { useAuthStore } from '@/stores/modules/auth';
+import { useThemeStore } from '@/stores/modules/theme.js';
+import { consumeWebOAuth, consumeDesktopOAuth } from './oauth-utils.js';
 
 // 初始化认证 Store
 const authStore = useAuthStore();
 
 // 状态
-const isDark = ref(false);
+const themeStore = useThemeStore();
+const isDark = computed(() => themeStore.isDark);
 const isLoading = ref(true);
 const loginSuccess = ref(false);
+const desktopCompleted = ref(false);
 const loginError = ref(false);
 const errorMessage = ref('');
+let active = true;
+let requestStarted = false;
+let redirectTimer;
 
 // 保存登录信息
 const saveLoginInfo = (data) => {
+  if (!data.token || !(data.userId || data._id)) throw new Error('登录结果不完整，请重新登录');
   const userInfo = {
     uid: data.userId || data._id,
     _id: data.userId || data._id,
     userId: data.userId || data._id,
-    nickName: data.userInfo?.nickname || data.nickname || '考研人',
+    nickName: data.userInfo?.nickname || data.nickname || '学习者',
     avatarUrl: data.userInfo?.avatar_url || data.avatar_url || ''
   };
 
@@ -76,11 +93,6 @@ const saveLoginInfo = (data) => {
 
   uni.$emit('loginStatusChanged', true);
   uni.$emit('userInfoUpdated', userInfo);
-
-  logger.log('[WeChat-Callback] 用户信息已保存:', {
-    uid: userInfo.uid,
-    nickName: userInfo.nickName
-  });
 };
 
 // 登录成功后跳转
@@ -101,45 +113,30 @@ const navigateAfterLogin = () => {
 };
 
 // 处理微信 OAuth 回调
-const handleWeChatCallback = async () => {
+const handleWeChatCallback = async (options = {}) => {
+  if (requestStarted) return;
+  requestStarted = true;
+  const account = { userId: getUserId(), token: getToken() };
   try {
     // #ifdef H5
-    // 从 URL 获取授权码
-    const urlParams = new URLSearchParams(options);
-    let code = urlParams.get('code');
-    const state = urlParams.get('state');
-
-    // Hash 模式下参数可能在 hash 后面
-    if (!code && options.hash) {
-      const hashQuery = options.hash;
-      if (hashQuery) {
-        const hashParams = new URLSearchParams(hashQuery);
-        code = hashParams.get('code');
-      }
+    const desktop = consumeDesktopOAuth('wechat', options);
+    if (desktop) {
+      const receipt = await authStore.desktopOAuth({ action: 'complete', provider: 'wechat', ...desktop });
+      if (!active) return;
+      if (receipt?.code !== 0 || receipt.data?.desktopReady !== true)
+        throw new Error(receipt?.message || '桌面授权未完成，请重新登录');
+      isLoading.value = false;
+      desktopCompleted.value = true;
+      loginSuccess.value = true;
+      return;
     }
-
-    logger.log('[WeChat-Callback] URL参数:', { code: !!code, state });
-
-    // 验证 state（防止 CSRF 攻击）
-    const savedState = storageService.get('wx_oauth_state');
-    // 清除保存的 state（无论验证是否通过，都应清除，防止重放）
-    storageService.remove('wx_oauth_state');
-
-    // 安全修复：savedState 为空时也应拒绝（防止绕过 CSRF 检查）
-    if (!savedState || state !== savedState) {
-      logger.warn('[WeChat-Callback] State验证失败:', {
-        received: state,
-        hasSaved: !!savedState
-      });
-      throw new Error('安全验证失败，请重新登录');
+    const { code, wechatMode } = consumeWebOAuth('wechat', options);
+    const res =
+      wechatMode === 'website' ? await authStore.loginByWechatWeb(code) : await authStore.loginByWechatH5(code);
+    if (!active) return;
+    if (account.userId !== getUserId() || account.token !== getToken()) {
+      throw new Error('账户已变化，请重新登录');
     }
-
-    if (!code) {
-      throw new Error('未获取到微信授权码');
-    }
-
-    // 调用后端接口完成登录
-    const res = await authStore.loginByWechatH5(code);
 
     if (res.code === 0 && res.data) {
       saveLoginInfo(res.data);
@@ -147,19 +144,21 @@ const handleWeChatCallback = async () => {
       isLoading.value = false;
       loginSuccess.value = true;
 
-      setTimeout(() => {
+      redirectTimer = setTimeout(() => {
         navigateAfterLogin();
       }, 1500);
     } else {
       throw new Error(res.message || '微信登录失败');
     }
+    return;
     // #endif
 
     // #ifndef H5
     uni.redirectTo({ url: '/pages/login/index' });
     // #endif
   } catch (error) {
-    logger.error('[WeChat-Callback] 登录失败:', error);
+    if (!active) return;
+    logger.warn('[WeChat-Callback] 授权未完成');
     isLoading.value = false;
     loginError.value = true;
     errorMessage.value = error.message || '登录失败，请重试';
@@ -168,15 +167,15 @@ const handleWeChatCallback = async () => {
 
 // 重试登录
 const handleRetry = () => {
+  active = false;
+  clearTimeout(redirectTimer);
   uni.redirectTo({ url: '/pages/login/index' });
 };
 
-// 初始化
-onMounted(() => {
-  const savedTheme = storageService.get('theme_mode', 'light');
-  isDark.value = savedTheme === 'dark';
-
-  handleWeChatCallback();
+onLoad(handleWeChatCallback);
+onUnmounted(() => {
+  active = false;
+  clearTimeout(redirectTimer);
 });
 </script>
 
@@ -391,7 +390,7 @@ onMounted(() => {
 }
 
 .bg-circle-1 {
-  background: radial-gradient(circle, rgba(107, 208, 150, 0.3) 0%, transparent 72%);
+  background: radial-gradient(circle, rgba(122, 87, 179, 0.2) 0%, transparent 72%);
 }
 
 .bg-circle-2 {
@@ -399,11 +398,11 @@ onMounted(() => {
 }
 
 .dark-mode .bg-circle-1 {
-  background: radial-gradient(circle, rgba(7, 193, 96, 0.24) 0%, transparent 72%);
+  background: radial-gradient(circle, rgba(122, 87, 179, 0.24) 0%, transparent 72%);
 }
 
 .dark-mode .bg-circle-2 {
-  background: radial-gradient(circle, rgba(6, 173, 86, 0.16) 0%, transparent 72%);
+  background: radial-gradient(circle, rgba(194, 170, 237, 0.16) 0%, transparent 72%);
   opacity: 0.42;
 }
 
@@ -443,12 +442,12 @@ onMounted(() => {
 
 .spinner {
   border-color: var(--em3d-primary-light);
-  border-top-color: var(--success);
+  border-top-color: var(--brand-color);
 }
 
 .dark-mode .spinner {
-  border-color: rgba(7, 193, 96, 0.16);
-  border-top-color: var(--success);
+  border-color: rgba(194, 170, 237, 0.16);
+  border-top-color: var(--brand-color);
 }
 
 .loading-text,
@@ -483,5 +482,19 @@ onMounted(() => {
 
 .retry-btn text {
   color: var(--cta-primary-text);
+}
+
+.retry-btn:focus-visible {
+  outline: 3rpx solid var(--brand-color);
+  outline-offset: 8rpx;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation: none;
+  }
+  .retry-btn:active {
+    transform: none;
+  }
 }
 </style>

@@ -1,0 +1,321 @@
+{
+  "version": "quadratic-inequality-v1",
+  "provenance": "人工独立列出双根/重根/无实根、系数符号、分数及区间答案和安全降级期望；不从实现或模型产生期望。",
+  "claims": "仅覆盖显式二次入口、完整实数域、有理系数且全部实零点可精确表示为有理数的二次多项式；不证明一般有理式/无理根/多变量/主观语义或长期效果。旧一次入口与合同不升级。",
+  "cases": [
+    {
+      "id": "inside-open",
+      "goal": "解二次不等式 x^2-4<0",
+      "answer": "-2<x<2",
+      "status": "reliable",
+      "outcome": "correct",
+      "reference": "(-2,2)"
+    },
+    {
+      "id": "inside-closed",
+      "goal": "解二次不等式 x^2-4<=0",
+      "answer": "[-2,2]",
+      "status": "reliable",
+      "outcome": "correct",
+      "reference": "[-2,2]"
+    },
+    {
+      "id": "negative-outside",
+      "goal": "解二次不等式 -x^2+4<0",
+      "answer": "x>2∪x<-2",
+      "status": "reliable",
+      "outcome": "correct",
+      "reference": "(-∞,-2)∪(2,∞)"
+    },
+    {
+      "id": "outside-closed",
+      "goal": "解二次不等式 x^2-4>=0",
+      "answer": "(-∞,-2]∪[2,∞)",
+      "status": "reliable",
+      "outcome": "correct",
+      "reference": "(-∞,-2]∪[2,∞)"
+    },
+    {
+      "id": "missing-branch",
+      "goal": "解二次不等式 x^2-4>0",
+      "answer": "x>2",
+      "status": "reliable",
+      "outcome": "wrong",
+      "reference": "(-∞,-2)∪(2,∞)"
+    },
+    {
+      "id": "open-closed-wrong",
+      "goal": "解二次不等式 x^2-4<0",
+      "answer": "[-2,2]",
+      "status": "reliable",
+      "outcome": "wrong",
+      "reference": "(-2,2)"
+    },
+    {
+      "id": "double-root-point",
+      "goal": "解二次不等式 (x-1)^2<=0",
+      "answer": "[1,1]",
+      "status": "reliable",
+      "outcome": "correct",
+      "reference": "[1,1]"
+    },
+    {
+      "id": "double-root-empty",
+      "goal": "解二次不等式 (x-1)^2<0",
+      "answer": "无解",
+      "status": "reliable",
+      "outcome": "correct",
+      "reference": "无解"
+    },
+    {
+      "id": "double-root-all",
+      "goal": "解二次不等式 (x-1)^2>=0",
+      "answer": "任意实数",
+      "status": "reliable",
+      "outcome": "correct",
+      "reference": "任意实数"
+    },
+    {
+      "id": "double-root-punctured",
+      "goal": "解二次不等式 (x-1)^2>0",
+      "answer": "(-∞,1)∪(1,∞)",
+      "status": "reliable",
+      "outcome": "correct",
+      "reference": "(-∞,1)∪(1,∞)"
+    },
+    {
+      "id": "negative-double-all",
+      "goal": "解二次不等式 -(x+2)^2<=0",
+      "answer": "R",
+      "status": "reliable",
+      "outcome": "correct",
+      "reference": "任意实数"
+    },
+    {
+      "id": "negative-double-point",
+      "goal": "解二次不等式 -(x+2)^2>=0",
+      "answer": "[-2,-2]",
+      "status": "reliable",
+      "outcome": "correct",
+      "reference": "[-2,-2]"
+    },
+    {
+      "id": "no-roots-positive-all",
+      "goal": "解二次不等式 x^2+1>=0",
+      "answer": "(-∞,∞)",
+      "status": "reliable",
+      "outcome": "correct",
+      "reference": "任意实数"
+    },
+    {
+      "id": "no-roots-positive-empty",
+      "goal": "解二次不等式 x^2+1<0",
+      "answer": "空集",
+      "status": "reliable",
+      "outcome": "correct",
+      "reference": "无解"
+    },
+    {
+      "id": "no-roots-negative-empty",
+      "goal": "解二次不等式 -x^2-1>0",
+      "answer": "∅",
+      "status": "reliable",
+      "outcome": "correct",
+      "reference": "无解"
+    },
+    {
+      "id": "no-roots-negative-all",
+      "goal": "解二次不等式 -x^2-1<=0",
+      "answer": "ℝ",
+      "status": "reliable",
+      "outcome": "correct",
+      "reference": "任意实数"
+    },
+    {
+      "id": "fraction-roots",
+      "goal": "解二次不等式 (2*x-1)*(3*x-2)<0",
+      "answer": "(1/2,2/3)",
+      "status": "reliable",
+      "outcome": "correct",
+      "reference": "(1/2,2/3)"
+    },
+    {
+      "id": "decimal-coefficients",
+      "goal": "解二次不等式 x^2-0.3*x+0.02<0",
+      "answer": "(0.1,0.2)",
+      "status": "reliable",
+      "outcome": "correct",
+      "reference": "(1/10,1/5)"
+    },
+    {
+      "id": "negative-constant-denominator",
+      "goal": "解二次不等式 (x^2-9)/-2>0",
+      "answer": "(-3,3)",
+      "status": "reliable",
+      "outcome": "correct",
+      "reference": "(-3,3)"
+    },
+    {
+      "id": "both-sides",
+      "goal": "解二次不等式 x^2+4>=5*x",
+      "answer": "x<=1∪x>=4",
+      "status": "reliable",
+      "outcome": "correct",
+      "reference": "(-∞,1]∪[4,∞)"
+    },
+    {
+      "id": "union-reordered",
+      "goal": "解二次不等式 x^2-4>=0",
+      "answer": "[2,∞)∪(-∞,-3]∪[-3,-2]",
+      "status": "reliable",
+      "outcome": "correct",
+      "reference": "(-∞,-2]∪[2,∞)"
+    },
+    {
+      "id": "gap-not-complete",
+      "goal": "解二次不等式 x^2-4<0",
+      "answer": "(-2,0)∪(0,2)",
+      "status": "reliable",
+      "outcome": "wrong",
+      "reference": "(-2,2)"
+    },
+    {
+      "id": "double-root-omitted",
+      "goal": "解二次不等式 (x-1)^2<=0",
+      "answer": "无解",
+      "status": "reliable",
+      "outcome": "wrong",
+      "reference": "[1,1]"
+    },
+    {
+      "id": "roots-alone-incomplete",
+      "goal": "解二次不等式 x^2-4>=0",
+      "answer": "[-2,-2]∪[2,2]",
+      "status": "reliable",
+      "outcome": "wrong",
+      "reference": "(-∞,-2]∪[2,∞)"
+    },
+    {
+      "id": "unicode-power",
+      "goal": "解二次不等式 x²−4≤0",
+      "answer": "2>=x>=-2",
+      "status": "reliable",
+      "outcome": "correct",
+      "reference": "[-2,2]"
+    },
+    {
+      "id": "latex-comparison",
+      "goal": "解二次不等式 x^2\\geq 4",
+      "answer": "x\\in (-\\infty,-2]\\cup[2,\\infty)",
+      "status": "reliable",
+      "outcome": "correct",
+      "reference": "(-∞,-2]∪[2,∞)"
+    },
+    {
+      "id": "zero-root",
+      "goal": "解二次不等式 x*(x-3)<=0",
+      "answer": "0<=x<=3",
+      "status": "reliable",
+      "outcome": "correct",
+      "reference": "[0,3]"
+    },
+    {
+      "id": "irrational-roots",
+      "goal": "解二次不等式 x^2<2",
+      "answer": "(-1.414,1.414)",
+      "status": "pending",
+      "outcome": null
+    },
+    {
+      "id": "variable-denominator",
+      "goal": "解二次不等式 x^2/x>0",
+      "answer": "x>0",
+      "status": "pending",
+      "outcome": null
+    },
+    {
+      "id": "cancelled-hole",
+      "goal": "解二次不等式 (x/x)*(x^2-4)<0",
+      "answer": "(-2,2)",
+      "status": "pending",
+      "outcome": null
+    },
+    {
+      "id": "cubic-input",
+      "goal": "解二次不等式 x^3<4",
+      "answer": "x<1",
+      "status": "pending",
+      "outcome": null
+    },
+    {
+      "id": "linear-input",
+      "goal": "解二次不等式 x<4",
+      "answer": "x<4",
+      "status": "pending",
+      "outcome": null
+    },
+    {
+      "id": "chained-input",
+      "goal": "解二次不等式 0<x^2<4",
+      "answer": "(-2,0)∪(0,2)",
+      "status": "pending",
+      "outcome": null
+    },
+    {
+      "id": "critical-input",
+      "goal": "解二次不等式 x^2-4<0",
+      "answer": "(-2,2)",
+      "status": "pending",
+      "outcome": null,
+      "uncertainties": [
+        {
+          "field": "二次项符号",
+          "resolved": false
+        }
+      ]
+    },
+    {
+      "id": "invented-domain",
+      "goal": "解二次不等式 x^2-4<0",
+      "answer": "(-2,2)，x≠0",
+      "status": "pending",
+      "outcome": null
+    },
+    {
+      "id": "answer-code",
+      "goal": "解二次不等式 x^2-4<0",
+      "answer": "process.exit(0)",
+      "status": "pending",
+      "outcome": null
+    },
+    {
+      "id": "expression-resource-bound",
+      "goal": "解二次不等式 999999999*x^2-999999999<0",
+      "answer": "(-1,1)",
+      "status": "pending",
+      "outcome": null
+    },
+    {
+      "id": "rounded-fraction",
+      "goal": "解二次不等式 (2*x-1)*(3*x-2)<0",
+      "answer": "(0.5,0.666666667)",
+      "status": "reliable",
+      "outcome": "wrong",
+      "reference": "(1/2,2/3)"
+    },
+    {
+      "id": "legacy-entry-frozen",
+      "goal": "解不等式 x^2-4<0",
+      "answer": "(-2,2)",
+      "status": "pending",
+      "outcome": null
+    },
+    {
+      "id": "root-function-answer",
+      "goal": "解二次不等式 x^2-4<0",
+      "answer": "(-sqrt(4),sqrt(4))",
+      "status": "pending",
+      "outcome": null
+    }
+  ]
+}

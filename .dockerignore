@@ -1,0 +1,16 @@
+.git
+**/node_modules
+**/dist
+**/.env*
+**/.app.yaml
+**/*.key
+**/*.pem
+**/*.p12
+**/__pycache__
+.venv*
+tmp
+output
+logs
+data
+cdn-assets
+backups

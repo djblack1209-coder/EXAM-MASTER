@@ -1,9 +1,9 @@
 <template>
-  <view class="page" :class="{ 'dark-mode': isDark }">
+  <view ref="root" class="page" :class="{ 'dark-mode': isDark, 'reduce-motion': reducedMotion }">
     <!-- 自定义导航栏 -->
     <view class="nav-bar" :style="{ paddingTop: statusBarHeight + 'px' }">
       <view class="nav-content">
-        <text class="nav-title">我的</text>
+        <text class="nav-title">我的账户</text>
       </view>
     </view>
 
@@ -14,27 +14,35 @@
         <view class="profile-command-card">
           <view class="profile-top">
             <view class="avatar-wrap">
-              <image v-if="avatarUrl" class="avatar" :src="avatarUrl" mode="aspectFill" />
-              <view v-else class="avatar avatar-placeholder">
-                <text class="avatar-text">{{ initials }}</text>
-              </view>
+              <image
+                class="avatar"
+                :src="avatarUrl && !avatarFailed ? avatarUrl : defaultAvatar"
+                mode="aspectFill"
+                alt="账户头像"
+                @error="avatarFailed = true"
+              />
             </view>
             <view class="profile-copy">
-              <text class="profile-kicker">LEARNING ASSET</text>
               <text class="user-name">{{ userName }}</text>
-              <text v-if="!isLoggedIn" class="login-hint" @tap="goLogin">登录后同步学习轨迹</text>
+              <button v-if="!isLoggedIn" class="login-hint" role="button" tabindex="0" @tap="goLogin">
+                登录后同步学习轨迹
+              </button>
               <text v-else class="login-hint">本地学习轨迹已启用</text>
             </view>
           </view>
           <view class="profile-pulse">
-            <text class="pulse-title">下一阶段核心能力</text>
-            <text class="pulse-desc">错题资产、复习间隔和整卷进度会在这里收拢成个人备考画像。</text>
+            <text class="pulse-title">你的学习记录</text>
           </view>
         </view>
       </view>
 
-      <!-- 统计卡片 -->
       <view class="section">
+        <LearningOverview view="study-detail" />
+      </view>
+
+      <!-- 旧题库记录继续保留原口径 -->
+      <view class="section">
+        <text class="legacy-stats-label">历史题库记录</text>
         <view class="card stats-card">
           <view class="stat-item">
             <text class="stat-val">{{ studyTimeDisplay }}</text>
@@ -42,8 +50,8 @@
           </view>
           <view class="stat-divider" />
           <view class="stat-item">
-            <text class="stat-val">{{ accuracy }}%</text>
-            <text class="stat-lbl">掌握率</text>
+            <text class="stat-val">{{ accuracyDisplay }}</text>
+            <text class="stat-lbl">近期旧判对</text>
           </view>
           <view class="stat-divider" />
           <view class="stat-item">
@@ -56,38 +64,65 @@
       <!-- 菜单列表 -->
       <view class="section">
         <view class="card menu-card">
-          <view class="menu-item" hover-class="menu-hover" @tap="goTo('/pages/mistake/index')">
+          <button
+            class="menu-item"
+            role="button"
+            tabindex="0"
+            hover-class="menu-hover"
+            @tap="goTo('/pages/mistake/index')"
+          >
             <text class="menu-text">错题本</text>
             <text class="menu-arrow">›</text>
-          </view>
-          <view class="menu-item" hover-class="menu-hover" @tap="goTo('/pages/settings/privacy')">
+          </button>
+          <button
+            class="menu-item"
+            role="button"
+            tabindex="0"
+            hover-class="menu-hover"
+            @tap="goTo('/pages/favorite/index')"
+          >
+            <text class="menu-text">我的收藏</text>
+            <text class="menu-arrow">›</text>
+          </button>
+          <button
+            class="menu-item"
+            role="button"
+            tabindex="0"
+            hover-class="menu-hover"
+            @tap="goTo('/pages/settings/privacy')"
+          >
             <text class="menu-text">隐私政策</text>
             <text class="menu-arrow">›</text>
-          </view>
-          <view class="menu-item" hover-class="menu-hover" @tap="goTo('/pages/settings/terms')">
+          </button>
+          <button
+            class="menu-item"
+            role="button"
+            tabindex="0"
+            hover-class="menu-hover"
+            @tap="goTo('/pages/settings/terms')"
+          >
             <text class="menu-text">用户协议</text>
             <text class="menu-arrow">›</text>
-          </view>
-          <view class="menu-item menu-last" hover-class="menu-hover" @tap="handleFeedback">
+          </button>
+          <button class="menu-item menu-last" role="button" tabindex="0" hover-class="menu-hover" @tap="handleFeedback">
             <text class="menu-text">意见反馈</text>
             <text class="menu-arrow">›</text>
-          </view>
+          </button>
         </view>
       </view>
 
       <!-- APP引流横幅 -->
       <view class="section">
         <view class="card app-banner">
-          <text class="banner-title">按年份完成公共课真题</text>
-          <text class="banner-desc">先把英语、政治和数学的整卷训练、错题复习、间隔复习跑顺。</text>
+          <text class="banner-title">从问题走向理解</text>
         </view>
       </view>
 
       <!-- 退出登录 -->
       <view v-if="isLoggedIn" class="section">
-        <view class="logout-btn" hover-class="btn-hover" @tap="handleLogout">
+        <button class="logout-btn" role="button" tabindex="0" hover-class="btn-hover" @tap="handleLogout">
           <text class="logout-text">退出登录</text>
-        </view>
+        </button>
       </view>
 
       <!-- 底部占位 -->
@@ -96,29 +131,55 @@
 
     <!-- 底部导航栏 -->
     <CustomTabbar :active-index="2" />
+    <CustomModal
+      v-model:visible="showDialog"
+      :is-dark="isDark"
+      :title="dialog.title"
+      :content="dialog.content"
+      :show-cancel="dialog.kind === 'logout'"
+      :mask-closable="dialog.kind === 'feedback'"
+      :confirm-text="dialog.kind === 'logout' ? '退出登录' : '知道了'"
+      @confirm="confirmDialog"
+    />
   </view>
 </template>
 
 <script>
 import CustomTabbar from '@/components/layout/custom-tabbar/custom-tabbar.vue';
+import LearningOverview from '@/components/business/learning/learning-overview.vue';
 import { useUserStore } from '@/stores/modules/user';
 import { useStudyStore } from '@/stores/modules/study';
+import { useThemeStore } from '@/stores/modules/theme.js';
 import { storageService } from '@/services/storageService.js';
 import { safeNavigateTo } from '@/utils/safe-navigate';
 import { logger } from '@/utils/logger.js';
+import CustomModal from '@/components/common/CustomModal.vue';
+import { DEFAULT_AVATAR } from '@/config/brand.js';
+import { bindLearningKeyboard } from '@/services/learning/keyboard-controls.js';
+import { bindBusinessMotion } from '@/design/business-motion.js';
 
 export default {
-  components: { CustomTabbar },
+  components: { CustomTabbar, LearningOverview, CustomModal },
 
   data() {
     return {
       statusBarHeight: 44,
       tabBarHeight: 90,
-      isDark: false
+      defaultAvatar: DEFAULT_AVATAR,
+      avatarFailed: false,
+      reducedMotion: true,
+      showDialog: false,
+      dialog: { kind: 'feedback', title: '意见反馈', content: '如有问题或建议，请通过微信联系我们' }
     };
   },
 
   computed: {
+    themeStore() {
+      return useThemeStore();
+    },
+    isDark() {
+      return this.themeStore.isDark;
+    },
     userStore() {
       return useUserStore();
     },
@@ -132,25 +193,27 @@ export default {
 
     userName() {
       if (!this.isLoggedIn) return '未登录';
-      return this.userStore?.userInfo?.nickName || storageService.get('userInfo')?.nickName || '考研人 同学';
+      return this.userStore?.userInfo?.nickName || storageService.get('userInfo')?.nickName || '同学';
     },
 
     avatarUrl() {
       return this.userStore?.userInfo?.avatarUrl || storageService.get('userInfo')?.avatarUrl || '';
     },
 
-    initials() {
-      const name = this.userName;
-      if (!name || name === '未登录') return '?';
-      return name.charAt(0);
-    },
-
     totalQuestions() {
       return this.studyStore?.studyProgress?.completedQuestions || 0;
     },
 
-    accuracy() {
-      return this.studyStore?.accuracy || 0;
+    accuracyDisplay() {
+      const value = this.studyStore?.accuracy;
+      return Number.isFinite(Number(this.totalQuestions)) &&
+        Number(this.totalQuestions) > 0 &&
+        typeof value === 'number' &&
+        Number.isFinite(value) &&
+        value >= 0 &&
+        value <= 100
+        ? `${value}%`
+        : '—';
     },
 
     studyTimeDisplay() {
@@ -167,6 +230,22 @@ export default {
     this.initLayout();
     uni.$on('themeUpdate', this.syncTheme);
     uni.$on('updateTheme', this.syncTheme);
+  },
+
+  watch: {
+    avatarUrl() {
+      this.avatarFailed = false;
+    }
+  },
+  mounted() {
+    this.releaseKeyboard = bindLearningKeyboard(this.$refs.root);
+    this.releaseMotion = bindBusinessMotion((reduced) => {
+      this.reducedMotion = reduced;
+    });
+  },
+  beforeUnmount() {
+    this.releaseKeyboard?.();
+    this.releaseMotion?.();
   },
 
   onShow() {
@@ -187,8 +266,9 @@ export default {
 
   methods: {
     syncTheme(mode) {
-      const resolved = mode || storageService.get('theme_mode', 'light');
-      this.isDark = resolved === 'dark';
+      if (['dark', 'light'].includes(mode) && this.themeStore.isDark !== (mode === 'dark')) {
+        this.themeStore.setDarkMode(mode === 'dark');
+      }
     },
 
     initLayout() {
@@ -212,47 +292,41 @@ export default {
     },
 
     handleFeedback() {
-      uni.showModal({
-        title: '意见反馈',
-        content: '如有问题或建议，请通过微信联系我们',
-        showCancel: false,
-        confirmText: '知道了'
-      });
+      this.dialog = { kind: 'feedback', title: '意见反馈', content: '如有问题或建议，请通过微信联系我们' };
+      this.showDialog = true;
     },
 
     handleLogout() {
-      uni.showModal({
-        title: '确认退出',
-        content: '退出后学习数据将保留在本地',
-        success: (res) => {
-          if (res.confirm) {
-            try {
-              this.userStore.logout();
-              storageService.remove('userInfo');
-              storageService.remove('EXAM_USER_ID');
-              storageService.remove('EXAM_TOKEN');
-              uni.$emit('loginStatusChanged', false);
-              uni.showToast({ title: '已退出登录', icon: 'success' });
-              setTimeout(() => {
-                safeNavigateTo('/pages/index/index');
-              }, 1000);
-            } catch (e) {
-              logger.error('[Profile] logout failed:', e);
-            }
-          }
+      this.dialog = { kind: 'logout', title: '确认退出', content: '退出后学习数据将保留在本地' };
+      this.showDialog = true;
+    },
+    confirmDialog() {
+      if (this.dialog.kind === 'logout') {
+        try {
+          this.userStore.logout();
+          storageService.remove('userInfo');
+          storageService.remove('EXAM_USER_ID');
+          storageService.remove('EXAM_TOKEN');
+          uni.$emit('loginStatusChanged', false);
+          uni.showToast({ title: '已退出登录', icon: 'success' });
+          setTimeout(() => {
+            safeNavigateTo('/pages/index/index');
+          }, 1000);
+        } catch (e) {
+          logger.error('[Profile] logout failed:', e);
         }
-      });
+      }
     }
   }
 };
 </script>
 
 <style lang="scss" scoped>
-$primary: #9fe870;
-$primary-light: #eafbe2;
-$primary-deep: #163300;
-$action-green: #00b86b;
-$bg: #f4f8f2;
+$primary: #c9b1ee;
+$primary-light: #eee7f7;
+$primary-deep: #332842;
+$action-green: #785bbc;
+$bg: #f0eefa;
 $card-bg: #ffffff;
 $text-main: #1a1d26;
 $text-sub: #5f6672;
@@ -266,14 +340,26 @@ $spacing-section: 24rpx;
 
 .page {
   @include em-mobile-canvas;
+  --space-glass: var(--bg-card);
+  --space-ink: var(--text-primary);
+  --space-muted: var(--text-secondary);
+  --space-line: var(--border);
+  --space-sage: var(--primary);
+}
+
+.legacy-stats-label {
+  display: block;
+  margin-bottom: 16rpx;
+  color: var(--text-secondary);
+  font-size: 24rpx;
 }
 
 .page.dark-mode {
   color: #f5f7fb;
   background:
-    radial-gradient(circle at 16% 8%, rgba(0, 224, 255, 0.1) 0, rgba(0, 224, 255, 0) 32%),
+    radial-gradient(circle at 16% 8%, rgba(201, 177, 238, 0.1) 0, rgba(201, 177, 238, 0) 32%),
     radial-gradient(circle at 82% 16%, rgba(155, 81, 224, 0.12) 0, rgba(155, 81, 224, 0) 34%),
-    linear-gradient(180deg, #11141c 0%, #1a1c23 58%, #12151d 100%);
+    linear-gradient(180deg, #211a2e 0%, #211a2e 58%, #282032 100%);
 }
 
 /* 导航栏 */
@@ -298,7 +384,7 @@ $spacing-section: 24rpx;
 }
 
 .dark-mode .nav-bar {
-  background: rgba(17, 20, 28, 0.82);
+  background: rgba(33, 26, 46, 0.82);
   box-shadow: 0 1rpx 0 rgba(255, 255, 255, 0.08);
 }
 
@@ -323,7 +409,7 @@ $spacing-section: 24rpx;
 .dark-mode .card,
 .dark-mode .profile-command-card,
 .dark-mode .logout-btn {
-  background: rgba(34, 37, 45, 0.82);
+  background: rgba(45, 37, 63, 0.82);
   border: 1rpx solid rgba(255, 255, 255, 0.08);
   box-shadow: 0 18rpx 48rpx rgba(0, 0, 0, 0.32);
 }
@@ -353,7 +439,7 @@ $spacing-section: 24rpx;
   height: 116rpx;
   border-radius: 50%;
   border: 4rpx solid rgba(255, 255, 255, 0.86);
-  box-shadow: 0 14rpx 26rpx rgba(22, 51, 0, 0.12);
+  box-shadow: 0 14rpx 26rpx rgba(51, 40, 66, 0.12);
 }
 
 .avatar-placeholder {
@@ -370,11 +456,11 @@ $spacing-section: 24rpx;
 }
 
 .dark-mode .avatar-placeholder {
-  background: rgba(0, 224, 255, 0.12);
+  background: rgba(201, 177, 238, 0.12);
 }
 
 .dark-mode .avatar-text {
-  color: #75ddff;
+  color: #c9b1ee;
 }
 
 .profile-copy {
@@ -384,7 +470,7 @@ $spacing-section: 24rpx;
 
 .profile-kicker {
   display: block;
-  color: rgba(22, 51, 0, 0.42);
+  color: rgba(51, 40, 66, 0.42);
   font-size: 18rpx;
   font-weight: 900;
   letter-spacing: 1.8rpx;
@@ -410,17 +496,17 @@ $spacing-section: 24rpx;
   margin-top: 28rpx;
   padding: 24rpx;
   border-radius: 24rpx;
-  background: rgba(22, 51, 0, 0.88);
+  background: rgba(51, 40, 66, 0.88);
 }
 
 .dark-mode .profile-pulse {
   background:
-    radial-gradient(circle at 18% 0%, rgba(0, 224, 255, 0.16) 0, rgba(0, 224, 255, 0) 38%), rgba(16, 19, 26, 0.88);
+    radial-gradient(circle at 18% 0%, rgba(201, 177, 238, 0.16) 0, rgba(201, 177, 238, 0) 38%), rgba(16, 19, 26, 0.88);
 }
 
 .dark-mode .pulse-title,
 .dark-mode .login-hint {
-  color: #75ddff;
+  color: #c9b1ee;
 }
 
 .dark-mode .user-name,
@@ -533,13 +619,13 @@ $spacing-section: 24rpx;
   align-items: center;
   align-items: flex-start;
   background:
-    linear-gradient(135deg, rgba(255, 255, 255, 0.82) 0%, rgba(234, 251, 226, 0.74) 100%), rgba(255, 255, 255, 0.68);
+    linear-gradient(135deg, rgba(255, 255, 255, 0.82) 0%, rgba(238, 231, 247, 0.74) 100%), rgba(255, 255, 255, 0.68);
   padding: 40rpx $spacing-card;
 }
 
 .dark-mode .app-banner {
   background:
-    radial-gradient(circle at 16% 0%, rgba(0, 224, 255, 0.12) 0, rgba(0, 224, 255, 0) 36%), rgba(34, 37, 45, 0.82);
+    radial-gradient(circle at 16% 0%, rgba(201, 177, 238, 0.12) 0, rgba(201, 177, 238, 0) 36%), rgba(45, 37, 63, 0.82);
 }
 
 .banner-title {
@@ -571,5 +657,140 @@ $spacing-section: 24rpx;
 
 .btn-hover {
   opacity: 0.85;
+}
+
+/* Shared business surfaces retain the homepage's purple palette and reading typography. */
+.page {
+  --account-surface: var(--yozi-reading);
+  --account-ink: #080909;
+  --account-muted: #63596f;
+  --account-line: #dbd5e6;
+  --account-primary: #785bbc;
+  --account-hover: #eee7f7;
+  --space-glass: var(--account-surface);
+  --space-ink: var(--account-ink);
+  --space-muted: var(--account-muted);
+  --space-line: var(--account-line);
+  --space-sage: var(--account-primary);
+  --space-notice: var(--account-hover);
+  font-family: 'DM Sans', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  background: var(--yozi-background);
+  color: var(--account-ink);
+}
+.page.dark-mode {
+  --account-surface: var(--yozi-reading);
+  --account-ink: #f8f4ff;
+  --account-muted: #d2c8e5;
+  --account-line: #504164;
+  --account-primary: #c9b1ee;
+  --account-hover: #473457;
+  background: var(--yozi-background);
+}
+.page .card,
+.page .profile-command-card {
+  background: var(--account-surface);
+  border: 0;
+  border-radius: 24px;
+  box-shadow: var(--yozi-shadow);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+.page .profile-command-card,
+.page .stats-card,
+.page .app-banner {
+  padding: 20px;
+}
+.page .menu-card {
+  padding: 0;
+}
+.page .user-name,
+.page .menu-text,
+.page .stat-val,
+.page .banner-title {
+  color: var(--account-ink);
+}
+.page .profile-kicker,
+.page .stat-lbl,
+.page .menu-arrow,
+.page .banner-desc,
+.page .legacy-stats-label {
+  color: var(--account-muted);
+}
+.page .login-hint {
+  color: var(--account-primary);
+}
+.page .login-hint[role='button'],
+.page .menu-item,
+.page .logout-btn {
+  min-height: 44px;
+  margin-left: 0;
+  margin-right: 0;
+  border-radius: 12px;
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 1.65;
+  text-align: left;
+  background: transparent;
+  transition:
+    background-color 180ms ease,
+    color 180ms ease;
+  &::after {
+    border: 0;
+  }
+  &:focus-visible {
+    outline: 2px solid var(--account-primary);
+    outline-offset: 2px;
+  }
+}
+.page .login-hint[role='button'] {
+  padding: 0;
+  border: 0;
+}
+.page .menu-item {
+  width: 100%;
+  padding: 14px 20px;
+  border-radius: 0;
+  border-bottom-color: var(--account-line);
+}
+.page .menu-last {
+  border-bottom: 0;
+}
+.page .menu-hover {
+  background: var(--account-hover);
+}
+.page .logout-btn {
+  width: 100%;
+  padding: 12px 20px;
+  background: var(--account-surface);
+  border: 1px solid var(--account-line);
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+.page .login-hint[role='button']:active,
+.page .menu-item:active,
+.page .logout-btn:active {
+  background: var(--account-hover);
+  transform: none;
+  transition-duration: 100ms;
+}
+@media (hover: hover) {
+  .page .login-hint[role='button']:hover,
+  .page .menu-item:hover,
+  .page .logout-btn:hover {
+    background: var(--account-hover);
+  }
+}
+.page.reduce-motion button {
+  animation: none !important;
+  transition: none !important;
+  transform: none !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  .page button {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+  }
 }
 </style>

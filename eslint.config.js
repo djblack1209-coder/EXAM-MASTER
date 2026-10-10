@@ -30,7 +30,7 @@ export default [
 
   // ==================== 主配置 ====================
   {
-    files: ['**/*.js', '**/*.vue'],
+    files: ['**/*.js', '**/*.mjs', '**/*.cjs', '**/*.vue'],
 
     languageOptions: {
       ecmaVersion: 2022,
@@ -118,16 +118,7 @@ export default [
       'comma-spacing': ['warn', { before: false, after: true }],
 
       // 最大行长度
-      'max-len': [
-        'warn',
-        {
-          code: 120,
-          ignoreStrings: true,
-          ignoreTemplateLiterals: true,
-          ignoreUrls: true,
-          ignoreComments: true
-        }
-      ],
+      'max-len': 'off',
 
       // ==================== 最佳实践 ====================
 
@@ -204,6 +195,7 @@ export default [
       'vue/html-indent': 'off',
       'vue/html-closing-bracket-newline': 'off',
       'vue/singleline-html-element-content-newline': 'off',
+      'vue/multiline-html-element-content-newline': 'off',
 
       // 自闭合标签
       'vue/html-self-closing': [
@@ -275,13 +267,14 @@ export default [
   {
     files: ['**/*.spec.js', '**/*.test.js', 'tests/**/*'],
     rules: {
-      'no-console': 'off'
+      'no-console': 'off',
+      'no-empty-function': 'off'
     }
   },
 
   // ==================== 配置文件特殊规则 ====================
   {
-    files: ['*.config.js', '*.config.ts', 'vite.config.js', 'vitest.config.js'],
+    files: ['*.config.js', '*.config.ts', 'scripts/**/*.{js,mjs,cjs}', 'laf-backend/standalone/*.mjs'],
     rules: {
       'no-console': 'off'
     }

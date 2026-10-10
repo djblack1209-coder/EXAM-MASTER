@@ -24,7 +24,7 @@ const ROOT = resolve(__dirname, '..', '..');
 // 源目录：cdn-assets/
 const SRC_DIR = resolve(ROOT, 'cdn-assets');
 // 目标目录：dist/build/h5/static/
-const DEST_DIR = resolve(ROOT, 'dist', 'build', 'h5', 'static');
+const DEST_DIR = resolve(ROOT, process.env.UNI_OUTPUT_DIR || 'dist/build/h5', 'static');
 
 /**
  * 递归统计目录中的文件数量
@@ -82,9 +82,7 @@ try {
   console.log(`[copy-cdn-to-h5] ✅ 成功复制 ${fileCount} 个文件到 H5 构建产物`);
 
   // 显示复制了哪些子目录
-  const subDirs = readdirSync(SRC_DIR).filter(
-    (entry) => statSync(join(SRC_DIR, entry)).isDirectory()
-  );
+  const subDirs = readdirSync(SRC_DIR).filter((entry) => statSync(join(SRC_DIR, entry)).isDirectory());
   if (subDirs.length > 0) {
     console.log(`[copy-cdn-to-h5]    子目录: ${subDirs.join(', ')}`);
   }

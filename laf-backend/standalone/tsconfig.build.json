@@ -3,7 +3,7 @@
     "target": "ES2022",
     "module": "Node16",
     "moduleResolution": "Node16",
-    "outDir": "../dist",
+    "outDir": "./dist",
     "rootDir": "..",
     "strict": false,
     "esModuleInterop": true,
@@ -13,10 +13,13 @@
     "declaration": false,
     "sourceMap": false,
     "paths": {
-      "@lafjs/cloud": ["./cloud-shim"]
+      "@lafjs/cloud": ["./cloud-shim.ts"],
+      "nodemailer": ["./node_modules/nodemailer/dist/esm/nodemailer.js"]
     },
-    "baseUrl": "."
+    "baseUrl": ".",
+    "allowJs": true,
+    "noEmitOnError": true
   },
-  "include": ["./**/*.ts", "../functions/**/*.ts"],
+  "include": ["./**/*.ts", "../functions/**/*.ts", "../functions/_shared/learning-domain.js"],
   "exclude": ["../node_modules", "../dist"]
 }

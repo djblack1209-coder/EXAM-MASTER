@@ -29,7 +29,7 @@ describe('全链路: 刷题核心流程', () => {
 
       expect(studyStore.studyProgress.totalQuestions).toBe(0);
       expect(studyStore.studyProgress.completedQuestions).toBe(0);
-      expect(studyStore.accuracy).toBe(0);
+      expect(studyStore.accuracy).toBeNull();
     });
 
     it('restoreProgress 从缓存恢复', async () => {
@@ -80,11 +80,40 @@ describe('全链路: 刷题核心流程', () => {
   });
 
   describe('Phase 2: 边界场景', () => {
-    it('accuracy 分母为零时返回 0', async () => {
+    it('accuracy 缺少可分类旧判定时返回 null', async () => {
       const { useStudyStore } = await import('@/stores/modules/study.js');
       const studyStore = useStudyStore();
 
-      expect(studyStore.accuracy).toBe(0);
+      expect(studyStore.accuracy).toBeNull();
+    });
+
+    it('classifies only recent explicit legacy booleans without rewriting the saved aggregate or source records', async () => {
+      const { useStudyStore } = await import('@/stores/modules/study.js');
+      const studyStore = useStudyStore();
+      global.__mockStorage.EXAM_STUDY_PROGRESS = {
+        progress: { totalQuestions: 1000, completedQuestions: 1000, correctQuestions: 999 },
+        history: [
+          { isCorrect: true },
+          { isCorrect: false },
+          { isCorrect: true, grade: { status: 'pending' } },
+          { isCorrect: true, userChoice: 'flashcard_rating_3' },
+          { isCorrect: null },
+          { isCorrect: 'true' },
+          { isCorrect: true, grade: { status: 'reliable' } }
+        ]
+      };
+      const before = JSON.stringify(global.__mockStorage);
+      studyStore.restoreProgress();
+      expect(studyStore.accuracy).toBe(50);
+      expect(studyStore.legacySummary).toMatchObject({
+        legacyGradedCount: 2,
+        pendingCount: 1,
+        reviewedCount: 1,
+        unclassifiedCount: 3
+      });
+      expect(JSON.stringify(global.__mockStorage)).toBe(before);
+      studyStore.questionHistory = [{ isCorrect: null }];
+      expect(studyStore.accuracy).toBeNull();
     });
 
     it('restoreProgress 缓存为空时不崩溃', async () => {

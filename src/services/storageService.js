@@ -24,29 +24,40 @@
  */
 
 import { logger } from '@/utils/logger.js';
+import { readLocalHistory } from './learning/history-storage.js';
 import {
   addMistake as apiAddMistake,
   getMistakes as apiGetMistakes,
   removeMistake as apiRemoveMistake,
   batchRemoveMistakes as apiBatchRemoveMistakes,
-  updateMistakeStatus as apiUpdateMistakeStatus,
   updateMistakeFields as apiUpdateMistakeFields,
   batchSyncMistakes as apiBatchSyncMistakes
 } from './api/domains/practice.api.js';
 import { offlineMistakeToBackend } from '@/utils/field-normalizer.js';
+import {
+  QUIZ_REVIEW_HANDOFF_KEY,
+  createQuizReviewHandoff,
+  readQuizReviewHandoff,
+  selectQuizQuestionsById
+} from './quiz-session-contract.js';
+import {
+  captureQuizOriginal,
+  quizOriginalIdentity
+} from '../../laf-backend/functions/_shared/learning-quiz-original.js';
 
 function createUniCompat() {
   const memoryStore = new Map();
   const keyPrefix = '__exam_storage__:';
 
-  const readLocal = (key) => {
+  const readLocal = (key, throwOnError = false) => {
     try {
       if (typeof localStorage === 'undefined') return undefined;
       const raw = localStorage.getItem(`${keyPrefix}${key}`);
       if (raw === null) return undefined;
       const parsed = JSON.parse(raw);
       return Object.prototype.hasOwnProperty.call(parsed, 'value') ? parsed.value : parsed;
-    } catch {
+    } catch (error) {
+      if (throwOnError) throw error;
       return undefined;
     }
   };
@@ -71,7 +82,21 @@ function createUniCompat() {
   };
 
   return {
+    getStorageSyncStrict(key) {
+      if (typeof localStorage === 'undefined') return memoryStore.get(key) ?? '';
+      const current = readLocal(key, true);
+      if (current === undefined) memoryStore.delete(key);
+      else memoryStore.set(key, current);
+      return current === undefined ? '' : current;
+    },
     getStorageSync(key) {
+      // Learning roots and their revocation markers must observe other windows.
+      if (typeof localStorage !== 'undefined' && /(?:^|_)conversation_learning_v1(?:_|$)/.test(key)) {
+        const current = readLocal(key);
+        if (current === undefined) memoryStore.delete(key);
+        else memoryStore.set(key, current);
+        return current === undefined ? '' : current;
+      }
       if (memoryStore.has(key)) return memoryStore.get(key);
       const localValue = readLocal(key);
       if (localValue !== undefined) {
@@ -137,17 +162,24 @@ const globalRef = typeof globalThis !== 'undefined' ? globalThis : {};
 const uniCompat = createUniCompat();
 
 function getRuntimeUni() {
+  // uni 编译器会重写 wx.getStorageSync 静态访问；H5 的微信 JS-SDK 并非存储运行时。
+  // 按完整接口检查候选，使用动态属性以免把导入的函数误当作 SDK 能力。
+  const supportsStorage = (candidate) =>
+    candidate &&
+    ['getStorageSync', 'setStorageSync', 'removeStorageSync'].every(
+      (method) => typeof Reflect.get(candidate, method) === 'function'
+    );
   const runtimeUni = globalRef['uni'];
-  if (runtimeUni && typeof runtimeUni.getStorageSync === 'function') {
+  if (supportsStorage(runtimeUni)) {
     return runtimeUni;
   }
 
   const runtimeWx = globalRef['wx'];
-  if (runtimeWx && typeof runtimeWx.getStorageSync === 'function') {
+  if (supportsStorage(runtimeWx)) {
     return runtimeWx;
   }
 
-  if (typeof wx !== 'undefined' && wx && typeof wx.getStorageSync === 'function') {
+  if (typeof wx !== 'undefined' && supportsStorage(wx)) {
     return wx;
   }
 
@@ -230,7 +262,7 @@ const GLOBAL_KEYS = new Set([
   'daily_quote_date',
   'cached_schools',
   'cached_schools_time',
-  // 页面跳转瞬态参数：写入页与读取页必须共享同一个键，不能按用户前缀隔离
+  // 只兼容保留旧交接；新练习使用私有、带账户和原件的 quiz_review_handoff_v1。
   'smart_review_ids'
 ]);
 
@@ -285,6 +317,49 @@ function resolveKey(key) {
 // 高频写入场景（如练习状态保存）使用防抖，减少 I/O 操作
 const _pendingWrites = new Map(); // key -> { value, timer }
 const DEBOUNCE_DELAY = 500; // 防抖延迟 500ms
+const isOwnedLearningKey = (key) => key === 'conversation_learning_v1' || key.startsWith('conversation_learning_v1_');
+const PRIVATE_QUIZ_KEYS = new Set([
+  'v30_bank',
+  'v30_user_answers',
+  'v30_bank_backup',
+  'v30_bank_backup_before_clear',
+  'loaded_flashcard_banks',
+  'temp_practice_question',
+  'temp_practice_questions',
+  'temp_review_questions',
+  'quiz_review_handoff_v1',
+  'legacy_review_handoff_v1',
+  'question_favorites',
+  'favorite_folders',
+  'favorite_settings',
+  'EXAM_QUIZ_PROGRESS',
+  'EXAM_QUIZ_PROGRESS_TIME',
+  'question_timer_settings',
+  'question_time_records'
+]);
+const isDurableLearningKey = (key) =>
+  isOwnedLearningKey(key) ||
+  key.startsWith('fsrs_card_') ||
+  [
+    'mistake_book',
+    'studyProgress',
+    'EXAM_STUDY_PROGRESS',
+    'study_engine_state_v1',
+    'imported_files',
+    'imported_files_backup',
+    'fsrs_user_params',
+    'v30_bank',
+    'v30_bank_backup',
+    'v30_bank_backup_before_clear',
+    'v30_user_answers',
+    'question_favorites',
+    'favorite_folders',
+    'favorite_settings',
+    'EXAM_QUIZ_PROGRESS',
+    'EXAM_QUIZ_PROGRESS_TIME',
+    'question_timer_settings',
+    'question_time_records'
+  ].includes(key);
 
 function clearPendingWrites() {
   _pendingWrites.forEach(({ timer }) => {
@@ -302,119 +377,120 @@ class StorageService {
     this._guestMistakeReadWarned = false;
   }
 
+  prepareQuizReview({ ids, expectedOwner, paperId = '' } = {}) {
+    const owner = getUserId() || '',
+      token = getToken() || '';
+    const current = () => (getUserId() || '') === owner && (getToken() || '') === token;
+    if (expectedOwner !== owner) return { success: false, code: 'CONTEXT_CHANGED' };
+    try {
+      const bank = this.get('v30_bank', [], { migrateLegacy: false, throwOnError: true });
+      const selected = selectQuizQuestionsById(bank, ids);
+      const handoff = createQuizReviewHandoff(selected, owner, paperId);
+      if (!handoff) return { success: false, code: 'ORIGINAL_UNAVAILABLE' };
+      if (!current()) return { success: false, code: 'CONTEXT_CHANGED' };
+      if (this.save(QUIZ_REVIEW_HANDOFF_KEY, handoff, true) !== true) return { success: false, code: 'SAVE_FAILED' };
+      if (!current()) return { success: false, code: 'CONTEXT_CHANGED' };
+      const saved = this.get(QUIZ_REVIEW_HANDOFF_KEY, null, { migrateLegacy: false, throwOnError: true });
+      if (!current()) return { success: false, code: 'CONTEXT_CHANGED' };
+      if (
+        !readQuizReviewHandoff(saved, handoff.id, owner, paperId) ||
+        quizOriginalIdentity(saved) !== quizOriginalIdentity(handoff)
+      )
+        return { success: false, code: 'SAVE_UNCONFIRMED' };
+      const query =
+        `mode=smart_review&reviewId=${encodeURIComponent(handoff.id)}` +
+        (paperId ? `&paperId=${encodeURIComponent(paperId)}` : '');
+      return { success: true, id: handoff.id, url: `/pages/practice-sub/do-quiz?${query}` };
+    } catch (_error) {
+      return { success: false, code: 'STORAGE_UNAVAILABLE' };
+    }
+  }
+
+  _mistakeContext() {
+    const owner = getUserId() || '',
+      token = getToken() || '';
+    return () => (getUserId() || '') === owner && (getToken() || '') === token;
+  }
+
+  _mistakeContextChanged() {
+    return { success: false, code: 'CONTEXT_CHANGED', error: '账户或登录状态已变化，请回到原账户核对结果' };
+  }
+
+  _mistakeRequestCancelled(response) {
+    for (let depth = 0, failure = response; depth < 4 && failure; depth++, failure = failure.error) {
+      if (['account_changed', 'cancelled'].includes(failure.errorType)) return true;
+    }
+    return false;
+  }
+
   async _withMistakeBookLock(task) {
-    const next = this._mistakeBookMutex.then(async () => task());
+    const current = this._mistakeContext();
+    const next = this._mistakeBookMutex.then(async () => (current() ? task(current) : this._mistakeContextChanged()));
     this._mistakeBookMutex = next.catch(() => undefined);
     return next;
+  }
+
+  _mistakeBookRows() {
+    const rows = this.get('mistake_book', [], { migrateLegacy: false });
+    if (!Array.isArray(rows)) throw new Error('历史记录无法读取，请保留原件后恢复');
+    return JSON.parse(JSON.stringify(rows));
+  }
+
+  _mistakeSaveFailed(extra = {}) {
+    return { success: false, code: 'STORAGE_FAILED', error: '本机记录未保存，原记录保留，请核对原账户', ...extra };
+  }
+
+  _sameMistakeOriginal(left, right) {
+    const original = (row) => {
+      const identified = { ...row, id: row.question_id ?? row.questionId ?? 'legacy-import' };
+      return {
+        captured: captureQuizOriginal(identified),
+        current: captureQuizOriginal({ ...identified, quizOriginal: undefined })
+      };
+    };
+    return (
+      quizOriginalIdentity(original(left)) === quizOriginalIdentity(original(right)) &&
+      (left.user_answer ?? left.userAnswer ?? left.userChoice ?? '') ===
+        (right.user_answer ?? right.userAnswer ?? right.userChoice ?? '')
+    );
   }
 
   _filterMistakeBookByIds(mistakes, ids) {
     const idSet = new Set(ids.map((id) => String(id)));
     return mistakes.filter((m) => {
-      const currentId = m?.id || m?._id;
+      const currentId = m?.id ?? m?._id;
       return !idSet.has(String(currentId));
     });
   }
 
-  _toOptionalNumber(value) {
-    const n = Number(value);
-    return Number.isFinite(n) ? n : undefined;
-  }
-
   _buildMistakeCloudFields(mistake) {
-    const source = mistake && typeof mistake === 'object' ? mistake : {};
     const fields = {};
-
-    const setIfDefined = (key, value) => {
-      if (value !== undefined) {
-        fields[key] = value;
-      }
-    };
-
-    setIfDefined('question_id', source.question_id ?? source.questionId);
-    setIfDefined('question_content', source.question_content ?? source.question ?? source.title);
-
-    if (Array.isArray(source.options)) {
-      setIfDefined('options', source.options);
-    }
-
-    setIfDefined('user_answer', source.user_answer ?? source.userAnswer ?? source.userChoice);
-    setIfDefined('correct_answer', source.correct_answer ?? source.correctAnswer ?? source.answer);
-    setIfDefined('analysis', source.analysis ?? source.desc);
-    setIfDefined('category', source.category);
-
-    if (Array.isArray(source.tags)) {
-      setIfDefined('tags', source.tags);
-    }
-
-    setIfDefined('error_type', source.error_type ?? source.errorType);
-    setIfDefined('difficulty', source.difficulty);
-    setIfDefined('source', source.source);
-
-    const wrongCount = this._toOptionalNumber(source.wrong_count ?? source.wrongCount);
-    if (wrongCount !== undefined) {
-      setIfDefined('wrong_count', Math.max(1, Math.floor(wrongCount)));
-    }
-
-    const reviewCount = this._toOptionalNumber(source.review_count ?? source.reviewCount);
-    if (reviewCount !== undefined) {
-      setIfDefined('review_count', Math.max(0, Math.floor(reviewCount)));
-    }
-
-    const easeFactor = this._toOptionalNumber(source.ease_factor ?? source.easeFactor);
-    if (easeFactor !== undefined) {
-      setIfDefined('ease_factor', easeFactor);
-    }
-
-    const intervalDays = this._toOptionalNumber(source.interval_days ?? source.intervalDays);
-    if (intervalDays !== undefined) {
-      setIfDefined('interval_days', Math.max(1, Math.floor(intervalDays)));
-    }
-
-    const lastReviewTime = this._toOptionalNumber(
-      source.last_review_time ?? source.lastReviewTime ?? source.last_practice_time
-    );
-    if (lastReviewTime !== undefined) {
-      setIfDefined('last_review_time', Math.floor(lastReviewTime));
-    }
-
-    const nextReviewTime = this._toOptionalNumber(source.next_review_time ?? source.nextReviewTime);
-    if (nextReviewTime !== undefined) {
-      setIfDefined('next_review_time', Math.floor(nextReviewTime));
-    }
-
-    if (
-      Object.prototype.hasOwnProperty.call(source, 'is_mastered') ||
-      Object.prototype.hasOwnProperty.call(source, 'isMastered')
-    ) {
-      setIfDefined('is_mastered', Boolean(source.is_mastered ?? source.isMastered));
-    }
-
-    const notesValue = source.notes !== undefined ? source.notes : source.note;
-    if (notesValue !== undefined) {
-      setIfDefined('notes', notesValue);
-    }
-
+    if (Array.isArray(mistake?.tags)) fields.tags = [...mistake.tags];
+    const notes = mistake?.notes !== undefined ? mistake.notes : mistake?.note;
+    if (notes !== undefined) fields.notes = notes;
     return fields;
   }
 
   async _updateMistakeFieldsInCloud(userId, mistakeId, mistakeData) {
     if (!userId || !mistakeId || String(mistakeId).startsWith('local_')) {
-      return false;
+      return { confirmed: false };
     }
 
     const fields = this._buildMistakeCloudFields(mistakeData);
     if (Object.keys(fields).length === 0) {
-      return false;
+      return { confirmed: true, skipped: true };
     }
 
     try {
       const res = await apiUpdateMistakeFields(userId, mistakeId, fields);
       const resAny = /** @type {any} */ (res);
-      return Boolean(resAny?.ok === true || resAny?.code === 0 || (resAny?.updated || 0) > 0);
+      return {
+        confirmed: resAny?.success !== false && Boolean(resAny?.ok === true || resAny?.code === 0),
+        cancelled: this._mistakeRequestCancelled(res)
+      };
     } catch (e) {
       logger.warn('[StorageService] 错题字段回写云端失败:', e);
-      return false;
+      return { confirmed: false, cancelled: this._mistakeRequestCancelled(e) };
     }
   }
 
@@ -489,26 +565,30 @@ class StorageService {
    * @param {any} defaultValue - 如果不存在时返回的默认值
    * @returns {any} 存储的值或默认值
    */
-  get(key, defaultValue = null) {
+  get(key, defaultValue = null, { migrateLegacy = true, throwOnError = false } = {}) {
     try {
       const rk = resolveKey(key);
+      const read = (name) => {
+        const runtime = getRuntimeUni();
+        return throwOnError && runtime === uniCompat ? runtime.getStorageSyncStrict(name) : uni.getStorageSync(name);
+      };
       // ✅ B021: 优先读取加密存储的敏感数据
       if (isSensitiveKey(key)) {
-        const encrypted = uni.getStorageSync(`_enc_${rk}`);
+        const encrypted = read(`_enc_${rk}`);
         if (encrypted && encrypted !== '') {
           const decrypted = deobfuscate(encrypted);
           if (decrypted !== null) return decrypted;
         }
         // 回退：读取旧的明文存储（兼容迁移期间）
-        const plainValue = uni.getStorageSync(rk);
+        const plainValue = read(rk);
         if (plainValue !== '' && plainValue !== null && plainValue !== undefined) {
           // 自动迁移：将明文数据加密后重新存储
-          this.save(key, plainValue, true);
+          if (migrateLegacy) this.save(key, plainValue, true);
           return plainValue;
         }
         // 二次回退：读取无前缀的旧数据（用户隔离迁移期间）
-        if (rk !== key) {
-          const legacyEnc = uni.getStorageSync(`_enc_${key}`);
+        if (rk !== key && migrateLegacy) {
+          const legacyEnc = read(`_enc_${key}`);
           if (legacyEnc && legacyEnc !== '') {
             const dec = deobfuscate(legacyEnc);
             if (dec !== null) {
@@ -525,12 +605,14 @@ class StorageService {
         }
         return defaultValue;
       }
-      const value = uni.getStorageSync(rk);
+      const value = read(rk);
       // uni.getStorageSync 在 key 不存在时返回空字符串，需要判断
       if (value === '' || value === null || value === undefined) {
+        // 新学习事实显式绑定 owner，不从游客命名空间回退或自动迁移。
+        if (isOwnedLearningKey(key) || PRIVATE_QUIZ_KEYS.has(key) || !migrateLegacy) return defaultValue;
         // 回退：读取无前缀的旧数据（用户隔离迁移期间）
-        if (rk !== key) {
-          const legacyValue = uni.getStorageSync(key);
+        if (rk !== key && migrateLegacy) {
+          const legacyValue = read(key);
           if (legacyValue !== '' && legacyValue !== null && legacyValue !== undefined) {
             // 自动迁移到带前缀的 key
             this.save(key, legacyValue, true);
@@ -547,6 +629,7 @@ class StorageService {
       return value;
     } catch (error) {
       logger.error(`[StorageService] 读取失败: ${key}`, error);
+      if (throwOnError) throw error;
       return defaultValue;
     }
   }
@@ -693,6 +776,8 @@ class StorageService {
     try {
       const allKeys = uni.getStorageInfoSync().keys || [];
       for (const rawKey of allKeys) {
+        // 对话事实有显式 owner；不能把游客或其他人的记录静默搬到登录账户。
+        if (isOwnedLearningKey(rawKey) || PRIVATE_QUIZ_KEYS.has(rawKey)) continue;
         // 跳过已有前缀的、全局的、加密前缀的
         if (rawKey.startsWith('u_')) continue;
         if (isUnscopedKey(rawKey)) continue;
@@ -742,14 +827,16 @@ class StorageService {
   }
 
   /**
-   * 登出时清理当前用户的所有隔离数据
+   * 清理当前用户隔离数据；登出可保留学习事实，显式删除仍可全量清理。
    * 保留全局 key 和其他用户的数据
    * @param {string} [uid] - 要清理的 userId，默认当前用户
    * @returns {number} 清理的 key 数量
    */
-  clearUserData(uid) {
+  clearUserData(uid, { preserveLearning = false } = {}) {
     const userId = uid || getUserId();
     if (!userId) return 0;
+    if (preserveLearning && userId === getUserId()) this.flushPendingWrites();
+    clearPendingWrites();
 
     let cleared = 0;
     try {
@@ -758,6 +845,8 @@ class StorageService {
       const allKeys = uni.getStorageInfoSync().keys || [];
       for (const key of allKeys) {
         if (key.startsWith(prefix) || key.startsWith(encPrefix)) {
+          const ownedKey = key.slice(key.startsWith(encPrefix) ? encPrefix.length : prefix.length);
+          if (preserveLearning && isDurableLearningKey(ownedKey)) continue;
           try {
             uni.removeStorageSync(key);
             cleared++;
@@ -773,6 +862,14 @@ class StorageService {
       logger.error('[StorageService] 清理用户数据失败:', error);
     }
     return cleared;
+  }
+
+  // 只用于用户明确确认的访客迁移，不开放任意账户的原始键读取。
+  getGuestLearningSnapshot() {
+    const value = uni.getStorageSync('conversation_learning_v1');
+    return value && typeof value === 'object'
+      ? JSON.parse(JSON.stringify(readLocalHistory(value, (key) => uni.getStorageSync(key), 'guest')))
+      : null;
   }
 
   /**
@@ -903,157 +1000,129 @@ class StorageService {
    * @returns {Promise<Object>} 解决结果
    */
   async resolveConflict(mistakeId, strategy = 'merge') {
+    return this._withMistakeBookLock((current) => this._resolveMistakeConflict(current, mistakeId, strategy));
+  }
+
+  async _resolveMistakeConflict(current, mistakeId, strategy) {
     const userId = getUserId();
-    if (!userId) {
-      return { success: false, error: '用户未登录' };
-    }
-
+    if (!userId) return { success: false, error: '用户未登录' };
+    if (!['local', 'cloud', 'merge'].includes(strategy))
+      return { success: false, code: 'INVALID_INPUT', error: '请选择冲突处理方式' };
     try {
-      const localMistakes = this.get('mistake_book', []);
-      const localMistake = localMistakes.find((m) => m.id === mistakeId || m._id === mistakeId);
-
-      if (!localMistake || localMistake.sync_status !== 'conflict') {
-        return { success: false, error: '未找到冲突记录' };
-      }
-
-      // 获取云端版本
-      let cloudMistake = null;
+      const localMistakes = this._mistakeBookRows();
+      const originalBook = JSON.stringify(localMistakes);
+      const index = localMistakes.findIndex((row) => String(row.id ?? row._id) === String(mistakeId));
+      const localMistake = localMistakes[index];
+      if (!localMistake || localMistake.sync_status !== 'conflict') return { success: false, error: '未找到冲突记录' };
+      let response;
       try {
-        const res = await apiGetMistakes(userId, { id: mistakeId });
-        if (res.data && !Array.isArray(res.data)) {
-          cloudMistake = res.data;
-        } else if (Array.isArray(res.data)) {
-          cloudMistake = res.data.find((m) => m._id === mistakeId || m.id === mistakeId);
-        }
-      } catch (e) {
-        logger.warn('[StorageService] 获取云端冲突数据失败:', e);
+        response = await apiGetMistakes(userId, { id: mistakeId });
+      } catch (error) {
+        if (!current() || this._mistakeRequestCancelled(error)) return this._mistakeContextChanged();
+        return { success: false, code: 'CONFLICT_UNCONFIRMED', error: '云端版本未确认，原冲突保留' };
       }
-
-      if (!cloudMistake && localMistake._conflict_cloud_data && typeof localMistake._conflict_cloud_data === 'object') {
-        cloudMistake = localMistake._conflict_cloud_data;
-      }
-
-      let resolvedData = null;
+      if (!current() || this._mistakeRequestCancelled(response)) return this._mistakeContextChanged();
+      const data = response?.data;
+      const rows = Array.isArray(data) ? data : (data?.list ?? data?.data ?? (data?.id || data?._id ? [data] : []));
+      const cloudMistake =
+        Array.isArray(rows) &&
+        rows.find(
+          (row) => String(row?.id ?? row?._id) === String(mistakeId) && (!row.user_id || row.user_id === userId)
+        );
+      if (response?.success === false || !(response?.code === 0 || response?.ok === true) || !cloudMistake)
+        return { success: false, code: 'CONFLICT_UNCONFIRMED', error: '云端版本未确认，原冲突保留' };
+      // Conflicting source versions or raw answers need separate records, never a destructive field merge.
+      if (!this._sameMistakeOriginal(localMistake, cloudMistake))
+        return { success: false, code: 'SOURCE_CONFLICT', error: '原题或原答不同，保留两份原件后再处理' };
+      const oldStateFields = [
+        'wrong_count',
+        'review_count',
+        'is_mastered',
+        'mastered_at',
+        'last_practice_time',
+        'last_review_time',
+        'next_review_time',
+        'ease_factor',
+        'interval_days',
+        'due',
+        'stability',
+        'elapsed_days',
+        'scheduled_days',
+        'learning_steps',
+        'reps',
+        'lapses',
+        'state',
+        'last_review'
+      ];
+      if (
+        oldStateFields.some(
+          (key) => quizOriginalIdentity(localMistake[key] ?? null) !== quizOriginalIdentity(cloudMistake[key] ?? null)
+        )
+      )
+        return {
+          success: false,
+          code: 'LEGACY_STATE_CONFLICT',
+          error: '两份旧状态不一致，原冲突保留，不能自动当作作答或复习'
+        };
+      let resolvedData;
       let cloudPersisted = false;
-      const cloudTargetId = cloudMistake?._id || cloudMistake?.id || mistakeId;
-
-      switch (strategy) {
-        case 'local':
-          // 以本地为准，上传到云端
-          resolvedData = { ...localMistake };
-          delete resolvedData.sync_status;
-          delete resolvedData._conflict_cloud_data;
-          cloudPersisted = await this._updateMistakeFieldsInCloud(userId, cloudTargetId, resolvedData);
-          if (cloudPersisted && cloudTargetId) {
-            resolvedData.id = cloudTargetId;
-            resolvedData._id = cloudTargetId;
-          }
-          break;
-
-        case 'cloud':
-          // 以云端为准，覆盖本地
-          if (cloudMistake) {
-            resolvedData = { ...cloudMistake };
-          } else {
-            resolvedData = { ...localMistake };
-            delete resolvedData._conflict_cloud_data;
-          }
-          break;
-
-        case 'merge':
-        default:
-          // I003: 字段级合并策略 — 逐字段取最新修改
-          const localTime = localMistake.last_practice_time || localMistake.updated_at || 0;
-          const cloudTime = cloudMistake?.updated_at || cloudMistake?.last_review_time || 0;
-
-          if (!cloudMistake) {
-            // 云端无数据，直接用本地
-            resolvedData = { ...localMistake };
-            delete resolvedData._conflict_cloud_data;
-          } else {
-            // 字段级合并：以时间戳较新的一方为基础，合并另一方的独有字段
-            const base = cloudTime > localTime ? cloudMistake : localMistake;
-            const other = cloudTime > localTime ? localMistake : cloudMistake;
-            resolvedData = { ...base };
-
-            // 合并特定字段：取两边的最大值或最新值
-            resolvedData.wrong_count = Math.max(base.wrong_count || 0, other.wrong_count || 0);
-            // 标签合并去重
-            if (other.tags?.length || base.tags?.length) {
-              resolvedData.tags = Array.from(new Set([...(base.tags || []), ...(other.tags || [])]));
-            }
-            // is_mastered 取最新修改方的值（已由 base 决定）
-            // 笔记合并：保留较长的版本（兼容 note/notes）
-            const baseNotes = (base.notes || base.note || '').toString();
-            const otherNotes = (other.notes || other.note || '').toString();
-            if (baseNotes || otherNotes) {
-              resolvedData.notes = otherNotes.length > baseNotes.length ? otherNotes : baseNotes;
-            }
-            delete resolvedData.note;
-            delete resolvedData._conflict_cloud_data;
-          }
-
-          // 上传合并结果到云端
-          cloudPersisted = await this._updateMistakeFieldsInCloud(userId, cloudTargetId, resolvedData);
-          if (cloudPersisted && cloudTargetId) {
-            resolvedData.id = cloudTargetId;
-            resolvedData._id = cloudTargetId;
-          }
-          break;
-      }
-
-      // 更新本地记录
-      if (resolvedData) {
-        const canMarkSynced = (strategy === 'cloud' && Boolean(cloudMistake)) || cloudPersisted;
-        if (canMarkSynced) {
-          resolvedData.sync_status = 'synced';
-          delete resolvedData._needs_remote_merge;
-          delete resolvedData._conflict_cloud_data;
-        } else {
-          resolvedData.sync_status = 'conflict';
-          resolvedData._needs_remote_merge = true;
+      if (strategy === 'cloud') resolvedData = { ...cloudMistake };
+      else {
+        const localTime = localMistake.last_practice_time || localMistake.updated_at || 0;
+        const cloudTime = cloudMistake.updated_at || cloudMistake.last_review_time || 0;
+        const base = strategy === 'merge' && cloudTime > localTime ? cloudMistake : localMistake;
+        const other = base === localMistake ? cloudMistake : localMistake;
+        resolvedData = { ...base };
+        if (strategy === 'merge') {
+          if (base.tags?.length || other.tags?.length)
+            resolvedData.tags = Array.from(new Set([...(base.tags || []), ...(other.tags || [])]));
+          const baseNotes = String(base.notes ?? base.note ?? ''),
+            otherNotes = String(other.notes ?? other.note ?? '');
+          if (baseNotes || otherNotes)
+            resolvedData.notes = otherNotes.length > baseNotes.length ? otherNotes : baseNotes;
+          delete resolvedData.note;
         }
-        const idx = localMistakes.findIndex((m) => m.id === mistakeId || m._id === mistakeId);
-        if (idx !== -1) {
-          localMistakes[idx] = resolvedData;
-          this.save('mistake_book', localMistakes, true);
-        }
+        delete resolvedData._conflict_cloud_data;
+        const persisted = await this._updateMistakeFieldsInCloud(userId, mistakeId, resolvedData);
+        if (!current() || persisted.cancelled) return this._mistakeContextChanged();
+        if (!persisted.confirmed)
+          return { success: false, code: 'CONFLICT_UNCONFIRMED', error: '云端未确认保存，原冲突保留' };
+        cloudPersisted = !persisted.skipped;
+        resolvedData = { ...cloudMistake, ...this._buildMistakeCloudFields(resolvedData) };
       }
-
-      logger.log(`[StorageService] 冲突已解决: ${mistakeId}, 策略: ${strategy}`);
+      if (!current()) return this._mistakeContextChanged();
+      if (JSON.stringify(this._mistakeBookRows()) !== originalBook)
+        return { success: false, code: 'CONTEXT_CHANGED', cloudPersisted, error: '本机记录已变化，请重新核对冲突' };
+      resolvedData.id = cloudMistake.id ?? cloudMistake._id;
+      resolvedData._id = cloudMistake._id ?? cloudMistake.id;
+      resolvedData.sync_status = 'synced';
+      delete resolvedData._needs_remote_merge;
+      delete resolvedData._conflict_cloud_data;
+      localMistakes[index] = resolvedData;
+      if (!this.save('mistake_book', localMistakes, true)) return this._mistakeSaveFailed({ cloudPersisted });
       return { success: true, strategy, data: resolvedData, cloudPersisted };
     } catch (error) {
-      logger.error('[StorageService] 解决冲突失败:', error);
+      if (!current()) return this._mistakeContextChanged();
       return { success: false, error: error.message };
     }
   }
 
-  /**
-   * 自动解决所有冲突（使用merge策略）
-   * @returns {Promise<Object>} 批量解决结果
-   */
   async resolveAllConflicts() {
-    const localMistakes = this.get('mistake_book', []);
-    const conflicts = localMistakes.filter((m) => m.sync_status === 'conflict');
-
-    if (conflicts.length === 0) {
-      return { success: true, resolved: 0 };
-    }
-
-    let resolved = 0;
-    let failed = 0;
-
-    for (const conflict of conflicts) {
-      const result = await this.resolveConflict(conflict.id || conflict._id, 'merge');
-      if (result.success) {
-        resolved++;
-      } else {
-        failed++;
+    // One lock and one account context cover the whole batch; no nested mutex acquisition.
+    return this._withMistakeBookLock(async (current) => {
+      const conflicts = this._mistakeBookRows().filter((row) => row.sync_status === 'conflict');
+      let resolved = 0,
+        failed = 0;
+      for (const conflict of conflicts) {
+        if (!current()) return { ...this._mistakeContextChanged(), resolved, failed };
+        const result = await this._resolveMistakeConflict(current, conflict.id ?? conflict._id, 'merge');
+        if (!current() || result.code === 'CONTEXT_CHANGED')
+          return { ...this._mistakeContextChanged(), resolved, failed };
+        if (result.success) resolved++;
+        else failed++;
       }
-    }
-
-    logger.log(`[StorageService] 批量解决冲突: 成功 ${resolved}, 失败 ${failed}`);
-    return { success: resolved > 0, resolved, failed };
+      return { success: failed === 0, resolved, failed };
+    });
   }
 
   /**
@@ -1062,55 +1131,59 @@ class StorageService {
    * @returns {Promise<Object>} 返回保存结果
    */
   async addMistake(data) {
-    const userId = getUserId();
-    if (!userId) {
-      logger.warn('[StorageService] 用户未登录，降级到本地存储');
-      return this._saveMistakeLocal(data, 'local_only');
-    }
-
+    if (!data || typeof data !== 'object' || Array.isArray(data))
+      return { success: false, code: 'INVALID_INPUT', error: '题目记录无法保存，请保留原件' };
+    let original;
     try {
-      logger.log('[StorageService] 📡 开始保存错题到云端...');
-      // 统一字段名：前端 question → 后端 question_content
-      const normalizedData = offlineMistakeToBackend(data);
-      const res = await apiAddMistake(userId, normalizedData);
-      const resAny = /** @type {any} */ (res);
-
-      // 统一返回格式：后端可能返回 {id: "...", ok: true} 或 {code: 0, data: {...}}
-      const cloudId = resAny?.id || resAny?._id || resAny?.data?.id || resAny?.data?._id;
-      const isSuccess = (resAny?.ok === true || resAny?.code === 0) && cloudId;
-
-      if (isSuccess) {
-        logger.log(`[StorageService] ✅ 云端保存成功 - ID: ${cloudId}`);
-        // 更新本地缓存（云端保存成功后，同步更新本地）
-        const localMistakes = this.get('mistake_book', []);
-        const newMistake = {
-          ...data,
-          id: cloudId,
-          _id: cloudId,
-          sync_status: 'synced',
-          created_at: Date.now()
-        };
-        localMistakes.unshift(newMistake);
-        this.save('mistake_book', localMistakes, true);
-        logger.log(`[StorageService] ✅ 本地缓存已同步更新`);
-
-        return {
-          success: true,
-          id: cloudId,
-          source: 'cloud'
-        };
-      } else {
-        logger.warn('[StorageService] ⚠️ 云端保存返回格式异常，降级到本地:', res);
-        return this._saveMistakeLocal(data, 'pending');
-      }
-    } catch (error) {
-      logger.warn('[StorageService] ⚠️ 云端保存异常，降级到本地存储:', error);
-      const localResult = this._saveMistakeLocal(data, 'pending');
-      if (localResult.success) {
-        logger.log('[StorageService] ✅ 已降级到本地保存，sync_status: pending');
-      }
-      return localResult;
+      original = JSON.parse(JSON.stringify(data));
+    } catch {
+      return { success: false, code: 'INVALID_INPUT', error: '题目记录无法保存，请保留原件' };
     }
+    return this._withMistakeBookLock(async (current) => {
+      const userId = getUserId();
+      if (!userId) return this._saveMistakeLocal(original, 'local_only');
+      try {
+        this._mistakeBookRows();
+      } catch {
+        return this._mistakeSaveFailed();
+      }
+      let response;
+      try {
+        response = await apiAddMistake(userId, offlineMistakeToBackend(original));
+      } catch (error) {
+        if (!current() || this._mistakeRequestCancelled(error)) return this._mistakeContextChanged();
+        if (['FORBIDDEN', 'RESOURCE_LIMIT', 'INVALID_INPUT'].includes(error.code))
+          return { success: false, code: error.code, error: error.message };
+        return this._saveMistakeLocal(original, 'pending');
+      }
+      if (!current() || this._mistakeRequestCancelled(response)) return this._mistakeContextChanged();
+      const cloudId = response?.id ?? response?._id ?? response?.data?.id ?? response?.data?._id;
+      const confirmed = response?.success !== false && (response?.ok === true || response?.code === 0) && cloudId;
+      if (!confirmed) return this._saveMistakeLocal(original, 'pending');
+      const localMistakes = this._mistakeBookRows();
+      const existing = localMistakes.find((row) => String(row.id ?? row._id) === String(cloudId));
+      if (existing) {
+        if (!this._sameMistakeOriginal(existing, original))
+          return {
+            success: false,
+            code: 'SOURCE_CONFLICT',
+            remoteSaved: true,
+            id: cloudId,
+            error: '云端编号已有不同原件，本机原记录保留'
+          };
+        return { success: true, id: cloudId, source: 'cloud', replayed: true };
+      }
+      localMistakes.unshift({
+        ...original,
+        id: cloudId,
+        _id: cloudId,
+        sync_status: 'synced',
+        created_at: original.created_at ?? original.createdAt ?? original.addTime ?? Date.now()
+      });
+      if (!this.save('mistake_book', localMistakes, true))
+        return this._mistakeSaveFailed({ remoteSaved: true, id: cloudId });
+      return { success: true, id: cloudId, source: 'cloud' };
+    });
   }
 
   /**
@@ -1128,15 +1201,15 @@ class StorageService {
    */
   _saveMistakeLocal(mistakeData, syncStatus = 'pending') {
     try {
-      const localMistakes = this.get('mistake_book', []);
+      const localMistakes = this._mistakeBookRows();
       const newMistake = {
         ...mistakeData,
         id: `local_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`,
         sync_status: syncStatus,
-        created_at: Date.now()
+        created_at: mistakeData.created_at ?? mistakeData.createdAt ?? mistakeData.addTime ?? Date.now()
       };
       localMistakes.unshift(newMistake);
-      this.save('mistake_book', localMistakes, true);
+      if (!this.save('mistake_book', localMistakes, true)) return this._mistakeSaveFailed();
 
       return {
         success: true,
@@ -1161,7 +1234,7 @@ class StorageService {
    * @returns {Promise<Array>} 返回错题列表数组
    */
   async getMistakes(page = 1, limit = 20, filters = {}) {
-    return this._withMistakeBookLock(async () => {
+    return this._withMistakeBookLock(async (current) => {
       const userId = getUserId();
       if (!userId) {
         if (!this._guestMistakeReadWarned) {
@@ -1181,6 +1254,9 @@ class StorageService {
           limit,
           ...(filters.is_mastered !== undefined ? { is_mastered: filters.is_mastered } : {})
         });
+        if (!current() || this._mistakeRequestCancelled(res)) return this._mistakeContextChanged();
+        if (res?.success === false || (res?.code !== 0 && res?.ok !== true && res?.success !== true))
+          throw new Error('历史列表读取未确认');
         logger.log(
           `[StorageService] ✅ 云端获取成功，返回 ${Array.isArray(res.data) ? res.data.length : res.data?.data?.length || res.data?.list?.length || 0} 条记录`
         );
@@ -1194,42 +1270,25 @@ class StorageService {
         const serverTotal = mistakeList.total;
         const serverHasMore = mistakeList.hasMore;
 
-        // 更新本地缓存（第一页时），合并本地待同步数据
-        if (page === 1 && Array.isArray(list)) {
-          // 获取本地待同步的错题（sync_status 为 'pending' 或 'local_only'）
-          const localMistakes = this.get('mistake_book', []);
-          const pendingMistakes = localMistakes.filter(
-            (m) => (m.sync_status === 'pending' || m.sync_status === 'local_only') && m.id && m.id.startsWith('local_')
+        // A remote page updates its identities; unloaded cached originals remain.
+        let cacheSaved = true;
+        if (Array.isArray(list)) {
+          const cached = this.get('mistake_book', [], { migrateLegacy: false });
+          const oldRows = Array.isArray(cached) ? cached : [];
+          const incomingIds = new Set(
+            list
+              .map((row) => row?.id ?? row?._id)
+              .filter((id) => id !== undefined && id !== null)
+              .map(String)
           );
-
-          if (pendingMistakes.length > 0) {
-            // 合并云端数据和本地待同步数据（去重：如果云端已有相同题目，保留云端版本）
-            const cloudIds = new Set(list.map((m) => m.id || m._id).filter(Boolean));
-            const mergedList = [
-              ...list, // 云端数据优先
-              ...pendingMistakes.filter((m) => {
-                const mId = m.id || m._id;
-                // 如果本地待同步数据在云端不存在，则保留
-                return mId && mId.startsWith('local_') && !cloudIds.has(mId);
-              })
-            ];
-
-            // 按创建时间倒序排序
-            mergedList.sort((a, b) => {
-              const timeA = a.created_at || a.addTime || a.timestamp || 0;
-              const timeB = b.created_at || b.addTime || b.timestamp || 0;
-              return timeB - timeA;
-            });
-
-            // 使用合并后的列表进行后续处理
-            list = mergedList;
-
-            // 保存合并后的数据到本地缓存
-            this.save('mistake_book', mergedList, true);
-            logger.log(`[StorageService] ✅ 已合并 ${pendingMistakes.length} 条本地待同步错题到列表`);
-          } else {
-            // 没有待同步数据，直接保存云端数据
-            this.save('mistake_book', list, true);
+          const retained = oldRows.filter((row) => !incomingIds.has(String(row?.id ?? row?._id)));
+          const identifiable = list.filter(
+            (row) => row && (row.id ?? row._id) !== undefined && (row.id ?? row._id) !== null
+          );
+          cacheSaved = this.save('mistake_book', [...identifiable, ...retained], true);
+          if (page === 1) {
+            const pending = retained.filter((row) => row && ['pending', 'local_only'].includes(row.sync_status));
+            list = [...list, ...pending];
           }
         }
 
@@ -1240,9 +1299,11 @@ class StorageService {
           page: page,
           limit: limit,
           hasMore: serverHasMore !== undefined ? serverHasMore : list.length >= limit,
-          source: 'cloud'
+          source: 'cloud',
+          cacheSaved
         };
       } catch (error) {
+        if (!current()) return this._mistakeContextChanged();
         logger.warn('[StorageService] Laf 获取异常，降级到本地:', error);
         return this._getMistakesLocal(page, limit, filters);
       }
@@ -1255,7 +1316,7 @@ class StorageService {
    */
   _getMistakesLocal(page = 1, limit = 20, filters = {}) {
     try {
-      const allMistakes = this.get('mistake_book', []);
+      const allMistakes = this.get('mistake_book', [], { migrateLegacy: false });
 
       // 应用筛选条件
       let filteredMistakes = Array.isArray(allMistakes) ? [...allMistakes] : [];
@@ -1301,219 +1362,99 @@ class StorageService {
    * @returns {Promise<Object>} 返回删除结果 { success: boolean, source: 'cloud'|'local' }
    */
   async removeMistake(id) {
-    if (!id) {
+    if (!['string', 'number'].includes(typeof id) || String(id).trim() === '')
       return { success: false, error: '错题ID不能为空' };
-    }
-
-    const userId = getUserId();
-    if (!userId) {
-      logger.warn('[StorageService] 用户未登录，仅删除本地');
-      return this._removeMistakeLocal(id);
-    }
-
-    // 使用 Laf 后端删除
-    try {
-      logger.log(`[StorageService] 开始删除错题: ${id}`);
-      const res = await apiRemoveMistake(userId, id);
-      const resAny = /** @type {any} */ (res);
-
-      // 后端返回格式: {deleted: 1, ok: true} 或 {deleted: 0, ok: true}
-      if (resAny?.ok === true) {
-        if ((resAny?.deleted || 0) > 0) {
-          // 云端删除成功（云端确实有这条记录并已删除）
-          logger.log(`[StorageService] ✅ 云端删除成功: ${id} (deleted: ${resAny?.deleted})`);
-        } else {
-          // 云端没有这条记录（可能是本地待同步数据），但仍认为操作成功
-          logger.log(`[StorageService] ⚠️ 云端未找到记录: ${id} (可能是本地待同步数据)，仅删除本地`);
-        }
-        // 无论云端是否找到记录，都同步删除本地
-        const localResult = this._removeMistakeLocal(id);
-        if (localResult.success) {
-          logger.log(`[StorageService] ✅ 本地缓存已同步删除: ${id}`);
-        }
-        return { success: true, source: 'cloud' };
-      } else {
-        // 云端删除失败，尝试本地删除
-        logger.warn('[StorageService] Laf 删除失败，尝试本地删除:', resAny?.message || resAny);
-        return this._removeMistakeLocal(id);
-      }
-    } catch (error) {
-      // 网络错误，尝试本地删除
-      logger.warn('[StorageService] Laf 删除异常，尝试本地删除:', error);
-      return this._removeMistakeLocal(id);
-    }
-  }
-
-  /**
-   * 本地删除错题（内部方法）
-   * @private
-   */
-  _removeMistakeLocal(id) {
-    try {
-      const localMistakes = this.get('mistake_book', []);
-      const index = localMistakes.findIndex((m) => m.id === id || m._id === id);
-
-      if (index !== -1) {
-        localMistakes.splice(index, 1);
-        this.save('mistake_book', localMistakes, true);
-        logger.log(`[StorageService] ✅ 本地删除成功: ${id}, 剩余 ${localMistakes.length} 条`);
-        return { success: true, source: 'local' };
-      } else {
-        logger.warn(`[StorageService] ⚠️ 本地缓存中未找到错题: ${id}`);
-        return { success: false, error: '错题不存在' };
-      }
-    } catch (error) {
-      logger.error('[StorageService] 本地删除错题失败:', error);
-      return { success: false, error: error.message };
-    }
-  }
-
-  /**
-   * 批量删除错题（P2-4: 替代逐条 removeMistake 的 N+1 模式）
-   * 一次请求删除所有指定 ID 的错题，同时清理本地缓存
-   * @param {string[]} ids - 错题ID数组
-   * @returns {Promise<Object>} { success: boolean, deleted: number, source: 'cloud'|'local' }
-   */
-  async batchRemoveMistakes(ids) {
-    return this._withMistakeBookLock(async () => {
-      if (!ids || !Array.isArray(ids) || ids.length === 0) {
-        return { success: false, error: '错题ID列表不能为空' };
-      }
-
+    return this._withMistakeBookLock(async (current) => {
       const userId = getUserId();
-      if (!userId) {
-        logger.warn('[StorageService] 用户未登录，仅删除本地');
-        const localMistakes = this.get('mistake_book', []);
-        const nextMistakes = this._filterMistakeBookByIds(localMistakes, ids);
-        const deleted = localMistakes.length - nextMistakes.length;
-        this.save('mistake_book', nextMistakes, true);
-        return { success: true, deleted, source: 'local' };
-      }
-
+      if (!userId) return this._removeMistakeLocal(id);
       try {
-        logger.log(`[StorageService] 开始批量删除 ${ids.length} 条错题`);
-        const res = await apiBatchRemoveMistakes(userId, ids);
-        const resAny = /** @type {any} */ (res);
-
-        if (resAny?.ok === true) {
-          logger.log(`[StorageService] ✅ 云端批量删除成功: ${resAny?.deleted}/${ids.length}`);
-          // 同步清理本地缓存
-          const localMistakes = this.get('mistake_book', []);
-          const nextMistakes = this._filterMistakeBookByIds(localMistakes, ids);
-          const deleted = localMistakes.length - nextMistakes.length;
-          this.save('mistake_book', nextMistakes, true);
-          return { success: true, deleted: Math.max(resAny?.deleted || 0, deleted), source: 'cloud' };
-        } else {
-          logger.warn('[StorageService] 云端批量删除失败:', resAny?.message);
-          // 降级：仅清理本次请求的本地目标记录
-          const localMistakes = this.get('mistake_book', []);
-          const nextMistakes = this._filterMistakeBookByIds(localMistakes, ids);
-          const deleted = localMistakes.length - nextMistakes.length;
-          this.save('mistake_book', nextMistakes, true);
-          return { success: true, deleted, source: 'local' };
-        }
+        const res = await apiRemoveMistake(userId, id);
+        if (!current() || this._mistakeRequestCancelled(res)) return this._mistakeContextChanged();
+        const receipt = res?.ok === true ? res : res?.code === 0 && res?.data?.ok === true ? res.data : null;
+        const local = this._removeMistakeLocal(id);
+        if (!receipt) return local;
+        if (!local.success && local.code !== 'NOT_FOUND') return { ...local, source: 'cloud', localPending: true };
+        return { success: true, source: 'cloud', deleted: receipt.deleted || 0 };
       } catch (error) {
-        logger.warn('[StorageService] 云端批量删除异常，清理本地目标记录:', error);
-        const localMistakes = this.get('mistake_book', []);
-        const nextMistakes = this._filterMistakeBookByIds(localMistakes, ids);
-        const deleted = localMistakes.length - nextMistakes.length;
-        this.save('mistake_book', nextMistakes, true);
-        return { success: true, deleted, source: 'local' };
+        if (!current()) return this._mistakeContextChanged();
+        logger.warn('[StorageService] 远端移除未确认，仅处理本机指定条目', error);
+        return this._removeMistakeLocal(id);
       }
     });
   }
 
-  /**
-   * 更新错题掌握状态（云端+本地）
-   * @param {string} id - 错题ID
-   * @param {boolean} is_mastered - 是否已掌握
-   * @returns {Promise<Object>} 返回更新结果 { success: boolean, source: 'cloud'|'local' }
-   */
-  async updateMistakeStatus(id, is_mastered) {
-    if (!id) {
-      logger.warn('[StorageService] ⚠️ 更新错题状态失败：错题ID不能为空');
-      return { success: false, error: '错题ID不能为空' };
-    }
-
-    const userId = getUserId();
-    if (!userId) {
-      logger.warn('[StorageService] ⚠️ 用户未登录，仅更新本地状态');
-      return this._updateMistakeStatusLocal(id, is_mastered);
-    }
-
-    logger.log(`[StorageService] 📡 开始更新错题状态 - ID: ${id}, is_mastered: ${is_mastered}`);
-
-    // 优先尝试云端更新（使用 Laf 后端）
+  _removeMistakeLocal(id) {
     try {
-      logger.log(
-        `[StorageService] 🌐 发送云端更新请求: /mistake-manager { action: 'updateStatus', id: ${id}, is_mastered: ${is_mastered} }`
-      );
-      const res = await apiUpdateMistakeStatus(userId, id, is_mastered);
-      const resAny = /** @type {any} */ (res);
-
-      logger.log(`[StorageService] 📥 云端更新响应:`, res);
-
-      // 检查返回格式：可能是 {code: 200, ok: true, updated: 1} 或 {ok: true} 或 {code: 0, data: {...}}
-      const cloudId = resAny?.id || resAny?._id || resAny?.data?.id;
-      const isSuccess =
-        (resAny?.ok === true || resAny?.code === 200 || resAny?.code === 0) &&
-        ((resAny?.updated || 0) > 0 || resAny?.ok === true || cloudId);
-
-      if (isSuccess) {
-        logger.log(`[StorageService] ✅ 云端状态更新成功 - ID: ${id}, is_mastered: ${is_mastered}, 响应:`, res);
-        // 云端更新成功，同步更新本地
-        const localResult = this._updateMistakeStatusLocal(id, is_mastered);
-        if (localResult.success) {
-          logger.log(`[StorageService] ✅ 本地缓存已同步更新`);
-        }
-        return { success: true, source: 'cloud' };
-      } else {
-        // 云端更新失败，尝试本地更新
-        logger.warn(`[StorageService] ⚠️ 云端更新失败（返回格式异常），降级到本地更新 - ID: ${id}`, res);
-        return this._updateMistakeStatusLocal(id, is_mastered);
-      }
+      const rows = this.get('mistake_book', [], { migrateLegacy: false });
+      if (!Array.isArray(rows)) return { success: false, error: '本机条目格式异常，原记录保留' };
+      const next = rows.filter((row) => (row?.id ?? row?._id) !== id);
+      if (next.length === rows.length) return { success: false, code: 'NOT_FOUND', error: '错题不存在' };
+      if (!this.save('mistake_book', next, true))
+        return { success: false, code: 'STORAGE_FAILED', error: '本机移除未保存，原记录保留' };
+      return { success: true, source: 'local', deleted: rows.length - next.length };
     } catch (error) {
-      // 网络错误，尝试本地更新
-      logger.warn(`[StorageService] ⚠️ 云端更新异常（网络错误），降级到本地更新 - ID: ${id}`, error);
-      return this._updateMistakeStatusLocal(id, is_mastered);
-    }
-  }
-
-  /**
-   * 本地更新错题状态（内部方法）
-   * @private
-   */
-  _updateMistakeStatusLocal(id, is_mastered) {
-    try {
-      logger.log(`[StorageService] 🔄 开始本地更新错题状态 - ID: ${id}, is_mastered: ${is_mastered}`);
-      const localMistakes = this.get('mistake_book', []);
-      const mistake = localMistakes.find((m) => m.id === id || m._id === id);
-
-      if (mistake) {
-        const oldStatus = mistake.is_mastered;
-        mistake.is_mastered = Boolean(is_mastered);
-        mistake.last_practice_time = Date.now();
-        this.save('mistake_book', localMistakes, true);
-        logger.log(
-          `[StorageService] ✅ 本地状态更新成功 - ID: ${id}, 状态: ${oldStatus} -> ${is_mastered}, last_practice_time: ${Date.now()}`
-        );
-        return { success: true, source: 'local' };
-      } else {
-        logger.warn(`[StorageService] ⚠️ 本地缓存中未找到错题 - ID: ${id}`);
-        return { success: false, error: '错题不存在' };
-      }
-    } catch (error) {
-      logger.error('[StorageService] ❌ 本地更新错题状态失败:', error);
       return { success: false, error: error.message };
     }
   }
 
+  async batchRemoveMistakes(ids) {
+    if (
+      !Array.isArray(ids) ||
+      !ids.length ||
+      ids.some((id) => !['string', 'number'].includes(typeof id) || String(id).trim() === '')
+    )
+      return { success: false, error: '错题ID列表不合法' };
+    const requested = [...ids];
+    return this._withMistakeBookLock(async (current) => {
+      const userId = getUserId();
+      let receipt;
+      if (userId) {
+        try {
+          const res = await apiBatchRemoveMistakes(userId, requested);
+          if (!current() || this._mistakeRequestCancelled(res)) return this._mistakeContextChanged();
+          receipt = res?.ok === true ? res : res?.code === 0 && res?.data?.ok === true ? res.data : null;
+        } catch (error) {
+          if (!current()) return this._mistakeContextChanged();
+          logger.warn('[StorageService] 批量远端移除未确认，保留原账户边界', error);
+        }
+      }
+      if (!current()) return this._mistakeContextChanged();
+      const rows = this.get('mistake_book', [], { migrateLegacy: false });
+      if (!Array.isArray(rows)) return { success: false, error: '本机条目格式异常，原记录保留' };
+      const next = this._filterMistakeBookByIds(rows, requested);
+      if (!this.save('mistake_book', next, true))
+        return {
+          success: false,
+          code: 'STORAGE_FAILED',
+          source: receipt ? 'cloud' : 'local',
+          localPending: true,
+          error: '本机移除未保存，原记录保留'
+        };
+      return {
+        success: true,
+        deleted: Math.max(receipt?.deleted || 0, rows.length - next.length),
+        source: receipt ? 'cloud' : 'local'
+      };
+    });
+  }
+
   /**
-   * I003: 同步本地待同步的错题到云端（优先批量同步，失败回退逐条）
+   * 兼容旧调用，但旧掌握标记没有可靠作答依据，不能写复习事实。
+   */
+  async updateMistakeStatus() {
+    return {
+      success: false,
+      code: 'RELIABLE_REVIEW_REQUIRED',
+      error: '请在学习页明确作答；旧掌握标记不能证明完成复习'
+    };
+  }
+
+  /**
+   * 同步本地待办；结果未确认时保留原件，不立即逐条重发。
    * @returns {Promise<Object>} 返回同步结果 { success: boolean, synced: number, failed: number, conflicts: number }
    */
-  async syncPendingMistakes() {
-    return this._withMistakeBookLock(async () => {
+  async syncPendingMistakes({ expectedRecords } = {}) {
+    return this._withMistakeBookLock(async (current) => {
       const userId = getUserId();
       if (!userId) {
         logger.warn('[StorageService] 用户未登录，无法同步待同步错题');
@@ -1521,10 +1462,13 @@ class StorageService {
       }
 
       try {
-        const localMistakes = this.get('mistake_book', []);
+        const localMistakes = this._mistakeBookRows();
+        const originalBook = JSON.stringify(localMistakes);
         const pendingMistakes = localMistakes.filter(
-          (m) => m.sync_status === 'pending' || m.sync_status === 'local_only'
+          (m) => m && (m.sync_status === 'pending' || m.sync_status === 'local_only')
         );
+        if (expectedRecords !== undefined && JSON.stringify(pendingMistakes) !== JSON.stringify(expectedRecords))
+          return { success: false, code: 'CONTEXT_CHANGED', error: '待办已变化，请重新确认发送范围' };
 
         if (pendingMistakes.length === 0) {
           logger.log('[StorageService] ✅ 没有待同步的错题');
@@ -1540,84 +1484,57 @@ class StorageService {
         // I003: 尝试批量同步（后端 batchSync action）
         const batchData = pendingMistakes.map((m) => ({
           ...offlineMistakeToBackend(m),
-          _local_id: m.id || m._id // 用于回写映射
+          _local_id: m.id ?? m._id // 用于回写映射
         }));
 
-        let useBatch = true;
+        let batchRes;
         try {
-          const batchRes = await apiBatchSyncMistakes(userId, batchData);
-
-          if (batchRes.code === 0 && batchRes.data?.results) {
-            // 批量同步成功，逐条更新本地状态
-            for (const result of batchRes.data.results) {
-              const localId = result.localId || result._local_id;
-              const mistake = pendingMistakes.find((m) => (m.id || m._id) === localId);
-              if (!mistake) continue;
-
-              if (result.success && result.id) {
-                mistake.id = result.id;
-                mistake._id = result.id;
-                mistake.sync_status = 'synced';
-                synced++;
-              } else if (result.conflict) {
-                // I003: 标记冲突，保存云端数据供后续解决
-                mistake.sync_status = 'conflict';
-                mistake._conflict_cloud_data = result.cloudData || null;
-                conflicts++;
-              } else {
-                failed++;
-              }
-            }
-          } else {
-            // 批量接口不可用或返回异常，回退到逐条
-            useBatch = false;
-          }
-        } catch (_e) {
-          logger.log('[StorageService] 批量同步不可用，回退到逐条同步');
-          useBatch = false;
+          batchRes = await apiBatchSyncMistakes(userId, batchData);
+        } catch (error) {
+          if (!current() || this._mistakeRequestCancelled(error)) return this._mistakeContextChanged();
+          return { success: false, code: 'SYNC_UNCONFIRMED', error: '同步结果未确认，原待办保留，请稍后核对' };
         }
-
-        // 回退：逐条同步（兼容不支持 batchSync 的后端版本）
-        if (!useBatch) {
-          for (const mistake of pendingMistakes) {
-            if (mistake.sync_status === 'synced') continue; // 批量已处理的跳过
-            try {
-              const mistakeData = {
-                question_content: mistake.question_content || mistake.question,
-                options: mistake.options || [],
-                user_answer: mistake.user_answer || mistake.userChoice,
-                correct_answer: mistake.correct_answer || mistake.answer,
-                analysis: mistake.analysis || mistake.desc || '',
-                tags: mistake.tags || [],
-                is_mastered: mistake.is_mastered || false,
-                wrong_count: mistake.wrong_count || mistake.wrongCount || 1
-              };
-
-              const oldId = mistake.id || mistake._id;
-              const res = await apiAddMistake(userId, mistakeData);
-              const resAny = /** @type {any} */ (res);
-
-              const cloudId = resAny?.data?.id || resAny?.data?._id || resAny?.id || resAny?._id;
-              const isSuccess = (resAny?.code === 0 || resAny?.ok === true) && cloudId;
-
-              if (isSuccess) {
-                mistake.id = cloudId;
-                mistake._id = cloudId;
-                mistake.sync_status = 'synced';
-                synced++;
-                logger.log(`[StorageService] ✅ 错题同步成功: ${oldId} -> ${cloudId}`);
-              } else {
-                failed++;
-              }
-            } catch (error) {
-              logger.error(`[StorageService] ❌ 同步错题异常: ${mistake.id || mistake._id}`, error);
-              failed++;
-            }
-          }
+        if (!current() || this._mistakeRequestCancelled(batchRes)) return this._mistakeContextChanged();
+        const receipts = batchRes?.data?.results ?? batchRes?.results;
+        if (batchRes?.success === false || batchRes?.code !== 0 || !Array.isArray(receipts))
+          return { success: false, code: 'SYNC_UNCONFIRMED', error: '同步结果未确认，原待办保留，请稍后核对' };
+        const mapped = new Set();
+        const cloudIds = new Set();
+        for (const receipt of receipts) {
+          const localId = receipt.localId ?? receipt._local_id ?? receipt.oldId;
+          const mistake = pendingMistakes.find((row) => String(row.id ?? row._id) === String(localId));
+          const cloudId = receipt.id ?? receipt.newId;
+          if (!mistake || mapped.has(mistake) || (receipt.success && cloudIds.has(String(cloudId))))
+            return { success: false, code: 'SYNC_UNCONFIRMED', error: '同步编号对应关系不明确，原待办保留' };
+          mapped.add(mistake);
+          if (receipt.success && cloudId) {
+            cloudIds.add(String(cloudId));
+            mistake.id = cloudId;
+            mistake._id = cloudId;
+            mistake.sync_status = 'synced';
+            synced++;
+          } else if (receipt.conflict) {
+            mistake.sync_status = 'conflict';
+            mistake._conflict_cloud_data = receipt.cloudData || null;
+            conflicts++;
+          } else failed++;
         }
+        failed += pendingMistakes.length - mapped.size;
+        if (JSON.stringify(this._mistakeBookRows()) !== originalBook)
+          return { success: false, code: 'CONTEXT_CHANGED', remoteSynced: synced, error: '本机记录已变化，原待办保留' };
 
         // 更新本地存储
-        this.save('mistake_book', localMistakes, true);
+        if (!current()) return this._mistakeContextChanged();
+        if (!this.save('mistake_book', localMistakes, true))
+          return {
+            success: false,
+            code: 'STORAGE_FAILED',
+            synced: 0,
+            failed,
+            conflicts,
+            remoteSynced: synced,
+            error: '同步映射未保存，原待办保留'
+          };
 
         const result = {
           success: synced > 0,
@@ -1627,23 +1544,15 @@ class StorageService {
         };
 
         // 记录最后同步时间
-        this.save('last_sync_time', Date.now(), true);
+        if (synced > 0) this.save('last_sync_time', Date.now(), true);
 
         logger.log(`[StorageService] 📊 同步完成: 成功 ${synced} 条, 失败 ${failed} 条, 冲突 ${conflicts} 条`);
 
-        // I003: 如果有冲突，自动尝试 merge 解决
-        if (conflicts > 0) {
-          try {
-            const conflictResult = await this.resolveAllConflicts();
-            logger.log(`[StorageService] 自动解决冲突: ${conflictResult.resolved} 条`);
-            result.autoResolved = conflictResult.resolved;
-          } catch (e) {
-            logger.warn('[StorageService] 自动解决冲突失败:', e);
-          }
-        }
+        if (conflicts > 0) result.requiresConflictReview = true;
 
         return result;
       } catch (error) {
+        if (!current()) return this._mistakeContextChanged();
         logger.error('[StorageService] ❌ 同步待同步错题失败:', error);
         return {
           success: false,

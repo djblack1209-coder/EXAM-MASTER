@@ -1,0 +1,64 @@
+:root {
+  color-scheme: light dark;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: radial-gradient(ellipse at top left, #d5c8f7, transparent 65%), linear-gradient(155deg, #eeebfc, #d7e8fa);
+  color: #35294d;
+}
+body {
+  min-height: 100vh;
+  margin: 0;
+  display: grid;
+  place-items: center;
+}
+main {
+  box-sizing: border-box;
+  width: min(25rem, calc(100% - 2rem));
+  padding: 2.5rem 1.5rem;
+  border: 1px solid #dcd5ef;
+  border-radius: 1.5rem;
+  background: rgba(246, 243, 255, 0.84);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  box-shadow:
+    0 12px 32px rgba(74, 55, 124, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  text-align: center;
+}
+.brand {
+  color: #6851a5;
+  font-weight: 700;
+}
+h1 {
+  margin: 1.5rem 0 1rem;
+  font-size: 1.5rem;
+}
+p,
+noscript {
+  line-height: 1.6;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    background: #12132d;
+    color: #eeebfc;
+  }
+  main {
+    background: rgba(46, 38, 65, 0.9);
+    border-color: #494664;
+  }
+  .brand {
+    color: #cbb9ff;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+  main {
+    background: #f0edfc;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+@media (prefers-color-scheme: dark) and (prefers-reduced-transparency: reduce) {
+  main {
+    background: #30283f;
+  }
+}

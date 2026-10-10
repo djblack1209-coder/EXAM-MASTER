@@ -1,84 +1,87 @@
 <template>
-  <view>
-    <!-- 生成智能诊断报告按钮 -->
+  <view ref="keyboardRoot">
     <view v-if="hasMistakes" class="bottom-bar">
-      <button class="export-btn ds-flex ds-flex-center ds-gap-xs" :disabled="isGenerating" @tap="prepareReport">
+      <button
+        class="export-btn ds-flex ds-flex-center ds-gap-xs"
+        role="button"
+        tabindex="0"
+        :disabled="isGenerating"
+        @tap="prepareReport"
+      >
         <BaseIcon name="chart-bar" :size="36" class="export-icon" />
-        <view class="export-text-wrapper ds-flex-center">
-          <text class="export-text ds-text-sm ds-font-bold">
-            {{ isGenerating ? '智能正在深度诊断...' : '生成智能诊断报告' }}
-          </text>
-        </view>
+        <view class="export-text-wrapper ds-flex-center"
+          ><text class="export-text ds-text-sm ds-font-bold">{{
+            isGenerating ? '正在生成图片…' : '生成历史记录汇总'
+          }}</text></view
+        >
       </button>
     </view>
-
-    <!-- Canvas 用于绘制报告 - 始终挂载（offscreen），避免 v-if 导致 DOM 抖动 -->
     <canvas canvas-id="reportCanvas" class="report-canvas"></canvas>
-
-    <!-- 自定义Loading界面 -->
-    <view v-if="showCustomLoading" class="custom-loading-mask">
-      <view class="custom-loading-card">
-        <view class="loading-spinner">
-          <view class="spinner-ring" />
-        </view>
-        <text class="loading-text"> 智能正在深度诊断... </text>
-        <text class="loading-desc"> 请稍候，正在生成专属报告 </text>
-      </view>
-    </view>
-
-    <!-- 报告预览弹窗 -->
-    <view v-if="showReportModal" v-show="showReportModal" class="report-modal">
+    <view
+      v-if="showReportModal"
+      ref="dialogRoot"
+      class="report-modal"
+      role="dialog"
+      aria-modal="true"
+      aria-label="历史错题记录汇总"
+    >
       <view class="modal-bg" @tap="closeReport" />
       <view class="modal-content">
         <view class="modal-header ds-flex ds-flex-between">
-          <text class="modal-title ds-text-xl ds-font-bold"> 智能诊断报告 </text>
-          <view class="modal-close ds-flex-center ds-rounded-full ds-touchable" @tap="closeReport">
-            <text class="modal-close-icon">
-              <BaseIcon name="close" :size="24" />
-            </text>
-          </view>
+          <text class="modal-title ds-text-xl ds-font-bold">历史错题记录汇总</text>
+          <button
+            class="modal-close ds-flex-center ds-rounded-full ds-touchable"
+            role="button"
+            aria-label="关闭历史记录汇总"
+            tabindex="0"
+            @tap="closeReport"
+          >
+            <BaseIcon name="close" :size="24" />
+          </button>
         </view>
         <scroll-view scroll-y class="modal-scroll">
-          <!-- E010: Canvas 图片模式 -->
           <image
-            v-if="reportImagePath"
+            v-if="previewImage && reportImagePath"
             :src="reportImagePath"
-            alt=""
+            aria-label="历史记录汇总图片"
             mode="widthFix"
             class="report-image"
             @error="handleImageError"
-            @load="handleImageLoad"
           />
-          <!-- E010: 文本降级模式（Canvas 不可用时） -->
-          <view v-else-if="reportTextContent" class="report-text-fallback">
-            <view class="report-text-header">
-              <text class="report-text-title"> Exam Master </text>
-              <text class="report-text-subtitle"> 智能诊断报告 </text>
-            </view>
-            <view class="report-text-userinfo">
-              <text class="report-text-name">
-                {{ userInfo.nickName || '考研人' }}
-              </text>
-              <text class="report-text-meta"> 错题总数：{{ mistakes.length }} 道 </text>
-            </view>
-            <view class="report-text-body">
-              <text class="report-text-content" selectable>
-                {{ reportTextContent }}
-              </text>
-            </view>
-            <view class="report-text-footer">
-              <text>汗水铸就辉煌 · 智能伴你上岸</text>
-            </view>
-          </view>
-          <view v-else class="loading-placeholder">
-            <text class="ds-text-sm"> 图片加载中... </text>
+          <view v-else class="report-text-fallback">
+            <view class="report-text-header"
+              ><text class="report-text-title">{{ BRAND.name }}</text></view
+            >
+            <view class="report-text-userinfo"
+              ><text class="report-text-name">{{ reportUserName }}</text></view
+            >
+            <view class="report-text-body"
+              ><text class="report-text-content" selectable>{{ reportTextContent }}</text></view
+            >
           </view>
         </scroll-view>
         <view class="modal-footer ds-flex ds-gap-xs">
-          <button class="modal-btn secondary ds-font-bold" @tap="closeReport">关闭</button>
-          <button v-if="reportImagePath" class="modal-btn primary ds-font-bold" @tap="saveReport">保存到相册</button>
-          <button v-else-if="reportTextContent" class="modal-btn primary ds-font-bold" @tap="copyReportText">
-            复制报告文本
+          <button class="modal-btn secondary ds-font-bold" role="button" tabindex="0" @tap="closeReport">关闭</button>
+          <button
+            v-if="reportImagePath"
+            class="modal-btn secondary ds-font-bold"
+            role="button"
+            tabindex="0"
+            @tap="previewImage = !previewImage"
+          >
+            {{ previewImage ? '查看正文' : '查看图片' }}
+          </button>
+          <button
+            v-if="reportImagePath"
+            class="modal-btn primary ds-font-bold"
+            role="button"
+            tabindex="0"
+            @tap="saveReport"
+          >
+            保存图片
+          </button>
+          <button class="modal-btn primary ds-font-bold" role="button" tabindex="0" @tap="copyReportText">
+            复制完整汇总
           </button>
         </view>
       </view>
@@ -87,187 +90,197 @@
 </template>
 
 <script setup>
-import { ref, computed, nextTick, getCurrentInstance, onBeforeUnmount } from 'vue';
-import { modal } from '@/utils/modal.js';
+import { BRAND } from '@/config/brand.js';
+import { ref, computed, watch, nextTick, getCurrentInstance, onMounted, onBeforeUnmount } from 'vue';
+import { bindLearningKeyboard, bindLearningDialog } from '@/services/learning/keyboard-controls.js';
 import { toast } from '@/utils/toast.js';
-import { storageService } from '@/services/storageService.js';
 import { logger } from '@/utils/logger.js';
+import { modal } from '@/utils/modal.js';
+import { getUserId } from '@/services/auth-storage.js';
+import { summarizeLegacyMistakeRecords } from '@/services/quiz-session-contract.js';
 import {
   getCanvasTheme,
   drawStyledCard as drawCard,
   drawWrappedText as drawText,
-  drawRadarChart as drawRadar,
   drawDivider,
   canvasToImage,
   drawLabel,
   drawReportBackground
 } from './canvas-report.js';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
-
-// --- Props 定义 ---
 const props = defineProps({
-  /** 错题列表 */
-  mistakes: {
-    type: Array,
-    default: () => []
-  },
-  /** 用户信息 */
-  userInfo: {
-    type: Object,
-    default: () => ({})
-  },
-  /** 是否深色模式 */
-  isDark: {
-    type: Boolean,
-    default: false
-  }
+  mistakes: { type: Array, default: () => [] },
+  userInfo: { type: Object, default: () => ({}) },
+  isDark: { type: Boolean, default: false },
+  expectedOwnerId: { type: String, default: null }
 });
-
-// --- 获取组件实例（Canvas API 需要传入 this） ---
 const instance = getCurrentInstance();
-
-// --- 响应式状态 ---
-const isGenerating = ref(false);
-const showReportModal = ref(false);
-const reportImagePath = ref('');
-// E010: Canvas 不可用时的文本降级内容
-const reportTextContent = ref('');
-const showCustomLoading = ref(false);
-let cachedBankData = null;
-let cachedBankTimestamp = 0;
-
-// 关闭弹窗的延时器引用（非响应式）
-let closeTimer = null;
-
-// --- 计算属性 ---
-const hasMistakes = computed(() => {
-  return props.mistakes && props.mistakes.length > 0;
+const isGenerating = ref(false),
+  showReportModal = ref(false),
+  reportImagePath = ref(''),
+  reportTextContent = ref(''),
+  previewImage = ref(false),
+  reportUserName = ref('学习者');
+const hasMistakes = computed(() => props.mistakes.length > 0);
+const keyboardRoot = ref(null),
+  dialogRoot = ref(null);
+let releaseKeyboard, releaseDialog;
+onMounted(() => {
+  releaseKeyboard = bindLearningKeyboard(keyboardRoot.value);
 });
-
-// --- 生命周期 ---
-onBeforeUnmount(() => {
-  // 清理关闭弹窗的延时器，防止组件销毁后仍执行回调
-  if (closeTimer) clearTimeout(closeTimer);
+watch(showReportModal, async (visible) => {
+  releaseDialog?.();
+  releaseDialog = null;
+  if (!visible) return;
+  await nextTick();
+  if (showReportModal.value && isReportCurrent())
+    releaseDialog = bindLearningDialog(dialogRoot.value, { onEscape: closeReport });
 });
-
-// --- 方法 ---
-
-/** 准备并生成智能诊断报告 */
-async function prepareReport() {
-  if (props.mistakes.length === 0) {
-    return toast.info('先刷题积累错题才能生成报告哦');
-  }
-
-  if (isGenerating.value) return;
-
-  isGenerating.value = true;
-  showCustomLoading.value = true;
+let active = true,
+  sequence = 0,
+  reportStamp = '',
+  cancelRendering;
+const currentStamp = () =>
+  JSON.stringify([props.expectedOwnerId, getUserId() || '', props.mistakes, props.userInfo, props.isDark]);
+function isReportCurrent() {
+  return active && (getUserId() || '') === props.expectedOwnerId && reportStamp === currentStamp();
+}
+function discardImage(path) {
+  if (typeof path === 'string' && path.startsWith('blob:')) URL.revokeObjectURL?.(path);
+}
+function closeReport() {
+  discardImage(reportImagePath.value);
+  sequence++;
+  cancelRendering?.();
+  reportStamp = '';
   showReportModal.value = false;
+  isGenerating.value = false;
   reportImagePath.value = '';
   reportTextContent.value = '';
-
-  let isTimeoutHandled = false;
-  const timeoutId = setTimeout(() => {
-    if (isTimeoutHandled) return;
-    isTimeoutHandled = true;
-
-    logger.warn('[MistakeReport] 智能诊断报告生成超时（30秒）');
-    showCustomLoading.value = false;
-    isGenerating.value = false;
-
-    modal.show({
-      title: '智能分析超时',
-      content: '网络较慢，是否使用本地数据生成简化报告？',
-      confirmText: '生成简化版',
-      cancelText: '稍后重试',
-      success: (res) => {
-        if (res.confirm) {
-          generateLocalReport();
-        }
-      }
-    });
-  }, 30000);
-
+  previewImage.value = false;
+}
+watch(() => JSON.stringify([props.mistakes, props.expectedOwnerId, props.userInfo, props.isDark]), closeReport);
+onBeforeUnmount(() => {
+  active = false;
+  closeReport();
+  releaseKeyboard?.();
+  releaseDialog?.();
+});
+async function prepareReport() {
+  if (isGenerating.value) return;
+  if ((getUserId() || '') !== props.expectedOwnerId) return toast.info('账户已变化，请重新打开历史记录');
+  const summary = summarizeLegacyMistakeRecords(props.mistakes);
+  if (!summary?.recordCount) return toast.info('暂无可汇总的历史条目');
+  closeReport();
+  const generation = sequence;
+  reportStamp = currentStamp();
+  reportUserName.value = props.userInfo.nickName || '学习者';
+  const categories = summary.categories.map((item) => `${item.category}：${item.count} 条`);
+  reportTextContent.value = [
+    `当前已载入 ${summary.recordCount} 条`,
+    '统计仅限当前列表，判分依据待核对。',
+    `生成时间：${new Date().toLocaleString()}`,
+    ...(summary.omittedInvalidRows ? [`另有 ${summary.omittedInvalidRows} 条格式异常，原记录保留。`] : []),
+    '',
+    '原分类条目数',
+    ...categories
+  ].join('\n');
+  showReportModal.value = true;
+  isGenerating.value = true;
+  const remaining = summary.categories.slice(8).reduce((sum, item) => sum + item.count, 0);
+  const imageText = [
+    reportTextContent.value.split('\n').slice(0, 3).join('\n'),
+    '',
+    ...categories.slice(0, 8),
+    ...(remaining ? [`其余分类：${remaining} 条`] : []),
+    '',
+    '完整汇总可复制'
+  ].join('\n');
   try {
-    // school store 已移除，AI推荐功能降级
-    clearTimeout(timeoutId);
-    if (isTimeoutHandled) {
-      return;
-    }
-    // 使用本地降级方案
-    const reportText = `错题分析报告\n共${props.mistakes.length}道错题\n\n建议：针对薄弱知识点加强练习`;
-    const finalReportText = typeof reportText === 'string' ? reportText : JSON.stringify(reportText);
-
-    try {
-      await drawReport(finalReportText);
-      logger.log('[MistakeReport] 报告生成完成');
-    } catch (drawError) {
-      logger.error('[MistakeReport] 绘制报告失败:', drawError);
-      showCustomLoading.value = false;
-      isGenerating.value = false;
-    }
-  } catch (_e) {
-    logger.error('[MistakeReport] 智能报告生成失败', _e);
-    showCustomLoading.value = false;
-    isGenerating.value = false;
-
-    let errorMsg = '网络错误，请检查网络后重试';
-    if (_e.message && _e.message.includes('timeout')) {
-      errorMsg = '请求超时，请稍后重试';
-    } else if (_e.message && _e.message.includes('401')) {
-      errorMsg = '智能服务配置异常，请联系管理员';
-    } else if (_e.message && _e.message.includes('500')) {
-      errorMsg = '服务器错误，请稍后重试';
-    } else if (_e.message && _e.message.includes('JSON')) {
-      errorMsg = '数据解析失败，请重试';
-    }
-
-    toast.info(errorMsg, 3000);
+    await drawReport(imageText, generation);
+  } finally {
+    if (generation === sequence && isReportCurrent()) isGenerating.value = false;
   }
 }
-
-/** 关闭报告弹窗 */
-function closeReport() {
-  logger.log('[MistakeReport] 关闭报告弹窗');
-  showReportModal.value = false;
-  // 记录定时器引用，便于 onBeforeUnmount 时清理
-  closeTimer = setTimeout(() => {
-    reportImagePath.value = '';
-    reportTextContent.value = '';
-  }, 300);
+function drawReport(content, generation) {
+  if (typeof uni.createCanvasContext !== 'function') return Promise.resolve();
+  return new Promise((resolve) => {
+    let finished = false;
+    const finish = (path) => {
+      if (finished) {
+        if (path !== reportImagePath.value) discardImage(path);
+        return;
+      }
+      finished = true;
+      clearTimeout(timeout);
+      if (cancelRendering === cancel) cancelRendering = null;
+      if (path && generation === sequence && isReportCurrent()) reportImagePath.value = path;
+      else discardImage(path);
+      resolve();
+    };
+    const cancel = () => finish();
+    const timeout = setTimeout(cancel, 8000);
+    cancelRendering = cancel;
+    try {
+      const ctx = uni.createCanvasContext('reportCanvas', instance.proxy),
+        theme = getCanvasTheme(props.isDark);
+      if (!ctx) return finish();
+      drawReportBackground(ctx, 750, 1334, theme, props.isDark);
+      drawLabel(ctx, BRAND.name, 50, 100, { fontSize: 48, color: theme.titleColor });
+      drawLabel(ctx, '历史错题记录汇总', 50, 150, { fontSize: 28, color: theme.subText });
+      drawCard(ctx, 50, 190, 650, 120, 30, theme.cardBg, props.isDark);
+      drawLabel(ctx, reportUserName.value, 90, 260, { fontSize: 32, color: theme.mainText });
+      drawDivider(ctx, 50, 700, 340, theme.dividerColor);
+      ctx.setFillStyle(theme.mainText);
+      ctx.setFontSize(28);
+      drawText(ctx, content, 80, 390, 590, 45, 1200);
+      ctx.draw(false, () => {
+        if (finished || generation !== sequence || !isReportCurrent()) return finish();
+        canvasToImage('reportCanvas', instance.proxy)
+          .then(finish)
+          .catch(() => finish());
+      });
+    } catch (error) {
+      logger.warn('[MistakeReport] 图片未生成，完整正文保留', error);
+      finish();
+    }
+  });
 }
-
-/** 图片加载失败回调 */
-function handleImageError(e) {
-  logger.error('[MistakeReport] 图片加载失败:', e);
-  toast.info('图片加载失败');
-  showReportModal.value = false;
+function handleImageError() {
+  if (!isReportCurrent()) return closeReport();
+  reportImagePath.value = '';
+  previewImage.value = false;
+  toast.info('图片暂不可用，完整正文已保留');
 }
-
-/** 图片加载成功回调 */
-function handleImageLoad() {
-  logger.log('[MistakeReport] 图片加载成功');
+function copyReportText() {
+  if (!isReportCurrent()) return closeReport();
+  uni.setClipboardData({
+    data: reportTextContent.value,
+    success: () => {
+      if (isReportCurrent()) toast.success('汇总已复制');
+    }
+  });
 }
-
-/** 保存报告图片到相册 */
 function saveReport() {
-  if (!reportImagePath.value) return;
+  if (!isReportCurrent() || !reportImagePath.value) return;
 
   // #ifdef MP-WEIXIN
   uni.saveImageToPhotosAlbum({
     filePath: reportImagePath.value,
     success: () => {
+      if (!isReportCurrent()) return;
       toast.success('已保存到相册');
       showReportModal.value = false;
     },
     fail: (err) => {
+      if (!isReportCurrent()) return;
       logger.error(err);
       if (err.errMsg && err.errMsg.includes('auth')) {
         modal.show({
           title: '提示',
           content: '需要保存到相册权限',
           success: (res) => {
-            if (res.confirm) uni.openSetting();
+            if (res.confirm && isReportCurrent()) uni.openSetting();
           }
         });
       } else {
@@ -277,10 +290,32 @@ function saveReport() {
   });
   // #endif
 
-  // #ifndef MP-WEIXIN
+  // #ifdef H5
+  const link = document.createElement('a');
+  let downloadUrl;
+  try {
+    const path = reportImagePath.value;
+    if (path.startsWith('data:image/png;base64,')) {
+      const binary = atob(path.slice('data:image/png;base64,'.length));
+      const bytes = Uint8Array.from(binary, (character) => character.charCodeAt(0));
+      downloadUrl = URL.createObjectURL(new Blob([bytes], { type: 'image/png' }));
+    }
+    link.href = downloadUrl || path;
+    link.download = 'yozi-history-records.png';
+    document.body.appendChild(link);
+    link.click();
+  } catch (_error) {
+    toast.info('保存失败，请重试');
+  } finally {
+    link.remove();
+    if (downloadUrl) URL.revokeObjectURL(downloadUrl);
+  }
+  // #endif
+  // #ifdef APP-PLUS
   uni.saveImageToPhotosAlbum({
     filePath: reportImagePath.value,
     success: () => {
+      if (!isReportCurrent()) return;
       toast.success('已保存到相册');
       showReportModal.value = false;
     },
@@ -290,254 +325,10 @@ function saveReport() {
   });
   // #endif
 }
-
-/** 绘制 Canvas 报告图片 */
-function drawReport(aiSummary) {
-  return new Promise((resolve, reject) => {
-    // E010: Canvas 兼容性检测 — 不支持时走文本降级
-    if (typeof uni.createCanvasContext !== 'function') {
-      logger.warn('[MistakeReport] drawReport: 当前平台不支持 createCanvasContext，使用文本降级');
-      reportTextContent.value = aiSummary || '报告生成失败';
-      reportImagePath.value = '';
-      showCustomLoading.value = false;
-      isGenerating.value = false;
-      showReportModal.value = true;
-      return resolve('text-fallback');
-    }
-
-    if (!aiSummary || typeof aiSummary !== 'string') {
-      logger.error('[MistakeReport] drawReport: aiSummary必须是字符串', typeof aiSummary);
-      aiSummary = String(aiSummary || '报告生成失败，请重试');
-    }
-
-    logger.log('[MistakeReport] 开始绘制报告，内容长度:', aiSummary.length);
-
-    try {
-      // uni-app Composition API 中需要传入组件实例的 proxy 作为第二个参数
-      const ctx = uni.createCanvasContext('reportCanvas', instance.proxy);
-      if (!ctx) throw new Error('Canvas上下文创建失败');
-
-      const theme = getCanvasTheme(props.isDark);
-
-      // ✅ F011: 使用提取的工具函数绘制背景
-      drawReportBackground(ctx, 750, 1334, theme, props.isDark);
-
-      // ✅ F011: 使用 drawLabel 消除重复的文本绘制模式
-      drawLabel(ctx, 'Exam Master', 50, 150, { fontSize: 48, color: theme.titleColor });
-      drawLabel(ctx, '智能诊断报告', 50, 200, { fontSize: 28, color: theme.subText });
-
-      drawCard(ctx, 50, 250, 650, 180, 30, theme.cardBg, props.isDark);
-
-      const userName = props.userInfo.nickName || '考研人';
-      drawLabel(ctx, userName, 100, 330, { fontSize: 42, color: theme.mainText });
-
-      const now = new Date();
-      const dateStr = now.getFullYear() + '年' + (now.getMonth() + 1) + '月' + now.getDate() + '日';
-      drawLabel(ctx, '错题总数：' + props.mistakes.length + ' 道  |  生成日期：' + dateStr, 100, 390, {
-        fontSize: 26,
-        color: theme.subText
-      });
-
-      const capabilityData = calculateCapabilityData();
-      if (capabilityData && capabilityData.length > 0) {
-        drawLabel(ctx, '学科能力模型', 80, 490, { fontSize: 32, color: theme.mainText });
-        drawRadar(ctx, 375, 730, 160, capabilityData, theme);
-      }
-
-      drawLabel(ctx, '智能深度诊断', 50, 1000, { fontSize: 32, color: theme.titleColor });
-
-      drawDivider(ctx, 50, 700, 1020, theme.dividerColor);
-
-      ctx.setFillStyle(theme.mainText);
-      ctx.setFontSize(28);
-      drawText(ctx, aiSummary, 80, 1060, 590, 50);
-
-      drawLabel(ctx, '汗水铸就辉煌 · 智能伴你上岸', 375, 1330, {
-        fontSize: 24,
-        color: theme.subText,
-        align: 'center'
-      });
-
-      ctx.draw(false, () => {
-        logger.log('[MistakeReport] Canvas绘制完成');
-
-        canvasToImage('reportCanvas', instance.proxy)
-          .then((imagePath) => {
-            logger.log('[MistakeReport] 图片路径:', imagePath);
-
-            reportImagePath.value = imagePath;
-            showCustomLoading.value = false;
-            isGenerating.value = false;
-
-            showReportModal.value = true;
-            nextTick(() => {
-              resolve(imagePath);
-            });
-          })
-          .catch((err) => {
-            logger.error('[MistakeReport] Canvas导出失败:', err);
-            showCustomLoading.value = false;
-            isGenerating.value = false;
-            toast.info('图片生成失败：', 3000);
-            reject(err);
-          });
-      });
-    } catch (error) {
-      logger.error('[MistakeReport] drawReport执行失败:', error);
-      showCustomLoading.value = false;
-      isGenerating.value = false;
-      toast.info('报告生成失败：', 3000);
-      reject(error);
-    }
-  });
-}
-
-/** 计算学科能力雷达图数据 */
-function calculateCapabilityData() {
-  const now = Date.now();
-  const CACHE_TTL = 5 * 60 * 1000;
-
-  let allQuestions = cachedBankData;
-  if (!allQuestions || now - cachedBankTimestamp > CACHE_TTL) {
-    allQuestions = storageService.get('v30_bank', []) || [];
-    cachedBankData = allQuestions;
-    cachedBankTimestamp = now;
-    logger.log('[MistakeReport] calculateCapabilityData: 从storage刷新题库缓存，共', allQuestions.length, '题');
-  }
-  const mistakes = props.mistakes || [];
-
-  // ✅ F021: 当题库为空但有错题时，从错题数据计算能力值（而非返回空数组）
-  if (!allQuestions || allQuestions.length === 0) {
-    if (mistakes.length === 0) return [];
-
-    // 按分类统计错题数量，错题越多该分类能力越低
-    const mistakeStats = {};
-    mistakes.forEach((m) => {
-      if (!m) return;
-      const cat = m.category || '其他';
-      if (!mistakeStats[cat]) mistakeStats[cat] = 0;
-      mistakeStats[cat]++;
-    });
-
-    const maxMistakes = Math.max(...Object.values(mistakeStats), 1);
-    const data = Object.keys(mistakeStats).map((cat) => {
-      // 错题占比越高，能力值越低（最低0.3）
-      const ratio = mistakeStats[cat] / maxMistakes;
-      return {
-        category: cat,
-        rate: Math.max(0.3, 1 - ratio * 0.7)
-      };
-    });
-
-    return data.sort((a, b) => b.rate - a.rate).slice(0, 6);
-  }
-
-  const stats = {};
-  allQuestions.forEach((q) => {
-    if (!q) return;
-    const cat = q.category || '其他';
-    if (!stats[cat]) stats[cat] = { total: 0, mistakes: 0 };
-    stats[cat].total++;
-  });
-
-  mistakes.forEach((m) => {
-    if (!m) return;
-    const cat = m.category || '其他';
-    if (stats[cat]) stats[cat].mistakes++;
-  });
-
-  const data = Object.keys(stats).map((cat) => {
-    const total = stats[cat].total || 1;
-    const correctRate = (total - stats[cat].mistakes) / total;
-    return {
-      category: cat,
-      rate: Math.max(0.3, correctRate || 0.3)
-    };
-  });
-
-  return data.sort((a, b) => b.rate - a.rate).slice(0, 6);
-}
-
-/** 生成本地简化版报告（网络超时时的降级方案） */
-function generateLocalReport() {
-  logger.log('[MistakeReport] 开始生成本地简化版报告');
-
-  isGenerating.value = true;
-  showCustomLoading.value = true;
-
-  try {
-    const categoryStats = {};
-    props.mistakes.forEach((m) => {
-      const cat = m.category || '未分类';
-      if (!categoryStats[cat]) {
-        categoryStats[cat] = { count: 0, questions: [] };
-      }
-      categoryStats[cat].count++;
-      categoryStats[cat].questions.push(m.question || m.question_content || '题目');
-    });
-
-    const sortedCategories = Object.entries(categoryStats).sort((a, b) => b[1].count - a[1].count);
-
-    const weakestCategory = sortedCategories[0] ? sortedCategories[0][0] : '未知';
-    const weakestCount = sortedCategories[0] ? sortedCategories[0][1].count : 0;
-
-    const userName = props.userInfo.nickName || '考研人';
-    const totalMistakes = props.mistakes.length;
-    const categoryCount = Object.keys(categoryStats).length;
-
-    let reportText = '错题诊断报告（简化版）\n\n';
-    reportText += '亲爱的' + userName + '，\n\n';
-    reportText += '错题总数：' + totalMistakes + ' 道\n';
-    reportText += '涉及分类：' + categoryCount + ' 个\n\n';
-    reportText += '薄弱环节：' + weakestCategory + '（' + weakestCount + '道错题）\n\n';
-    reportText += '各分类错题分布：\n';
-
-    sortedCategories.slice(0, 5).forEach(([cat, data], idx) => {
-      const percentage = Math.round((data.count / totalMistakes) * 100);
-      reportText += idx + 1 + '. ' + cat + '：' + data.count + '道（' + percentage + '%）\n';
-    });
-
-    reportText += '\n建议：\n';
-    reportText += '1. 重点复习「' + weakestCategory + '」相关知识点\n';
-    reportText += '2. 每日坚持错题重练，巩固薄弱环节\n';
-    reportText += '3. 建议使用错题重练功能逐题攻克\n\n';
-    reportText += '加油！坚持就是胜利！';
-
-    drawReport(reportText)
-      .then(() => {
-        logger.log('[MistakeReport] 本地简化版报告生成成功');
-      })
-      .catch((err) => {
-        logger.error('[MistakeReport] 本地报告绘制失败:', err);
-        showCustomLoading.value = false;
-        isGenerating.value = false;
-        toast.info('报告生成失败');
-      });
-  } catch (error) {
-    logger.error('[MistakeReport] 本地报告生成异常:', error);
-    showCustomLoading.value = false;
-    isGenerating.value = false;
-    toast.info('报告生成失败：');
-  }
-}
-
-/** E010: Canvas 不可用时复制报告文本 */
-function copyReportText() {
-  if (!reportTextContent.value) return;
-  uni.setClipboardData({
-    data: reportTextContent.value,
-    success: () => {
-      toast.success('报告已复制到剪贴板');
-    },
-    fail: () => {
-      toast.info('复制失败');
-    }
-  });
-}
 </script>
 
 <style lang="scss" scoped>
-/* 智能诊断报告按钮 */
+/* 历史记录汇总按钮 */
 .bottom-bar {
   position: fixed;
   bottom: 50rpx;
@@ -602,80 +393,6 @@ function copyReportText() {
   display: block;
   width: 100%;
   text-align: center;
-}
-
-/* 自定义Loading界面 */
-.custom-loading-mask {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: var(--overlay);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 9998;
-  animation: fadeIn 0.3s ease-in-out;
-}
-
-.custom-loading-card {
-  background: var(--bg-card);
-  border-radius: 30rpx;
-  padding: 60rpx 50rpx;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  box-shadow: var(--shadow-xl);
-  min-width: 400rpx;
-}
-
-.loading-spinner {
-  width: 120rpx;
-  height: 120rpx;
-  position: relative;
-  margin-bottom: 40rpx;
-}
-
-.spinner-ring {
-  width: 120rpx;
-  height: 120rpx;
-  border: 6rpx solid var(--border);
-  border-top-color: var(--primary);
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
-.loading-text {
-  font-size: 32rpx;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin-bottom: 16rpx;
-  white-space: nowrap;
-  overflow: visible;
-}
-
-.loading-desc {
-  font-size: 24rpx;
-  color: var(--text-sub);
-  text-align: center;
-  line-height: 1.5;
-}
-
-.loading-placeholder {
-  padding: 100rpx;
-  text-align: center;
-  color: var(--text-sub);
 }
 
 /* Canvas 画布（隐藏） */
@@ -782,13 +499,15 @@ function copyReportText() {
 
   .modal-footer {
     display: flex;
-    /* gap: 20rpx; -- replaced for Android WebView compat */
+    flex-wrap: wrap;
+    gap: 12rpx;
     padding: 30rpx 40rpx;
     border-top: 1rpx solid var(--border, var(--muted));
     background: var(--bg-card);
 
     .modal-btn {
-      flex: 1;
+      flex: 1 1 200rpx;
+      min-width: 0;
       height: 88rpx;
       line-height: 88rpx;
       border-radius: 44rpx;

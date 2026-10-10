@@ -3,12 +3,7 @@ import { join, relative, resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
 const ROOT = resolve(process.cwd());
-const SCAN_TARGETS = [
-  'src/pages',
-  'src/components',
-  'src/config/home-data.js',
-  'src/config/bank-registry.js'
-];
+const SCAN_TARGETS = ['src/pages', 'src/components', 'src/config/home-data.js', 'src/config/bank-registry.js'];
 const GENERATED_DATA_FILES = new Set(['src/pages/practice-sub/bank-data-table.js']);
 
 const FORBIDDEN_PUBLIC_COPY = [

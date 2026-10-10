@@ -1,10 +1,32 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
+import { createRequestSigningSalt } from '../../scripts/build/create-request-signing-salt.mjs';
+import { buildPlatforms } from '../../scripts/build/build-all-platforms.mjs';
 
 const packageJson = JSON.parse(fs.readFileSync(path.resolve(process.cwd(), 'package.json'), 'utf8'));
 
 describe('release scripts', () => {
+  it('refuses unimplemented desktop packages and unknown flags before building', () => {
+    const run = () => {
+      throw new Error('Must not invoke a build');
+    };
+    expect(buildPlatforms(['--h5', '--mac'], { run })).toBe(1);
+    expect(buildPlatforms(['--unsupported'], { run })).toBe(1);
+  });
+
+  it('reports a failed build as failure to its caller', () => {
+    expect(
+      buildPlatforms(['--h5'], {
+        run: () => {
+          throw new Error('Synthetic build failure');
+        }
+      })
+    ).toBe(1);
+    const commands = [];
+    expect(buildPlatforms(['--h5'], { run: (_command, args) => commands.push(args) })).toBe(0);
+    expect(commands).toEqual([['run', 'build:h5']]);
+  });
   it('rebuilds release artifacts before running blocking release gates', () => {
     const reportScript = packageJson.scripts['release:gate:report'];
     const releaseScript = packageJson.scripts['release:gate'];
@@ -23,13 +45,11 @@ describe('release scripts', () => {
   });
 
   it('generates a request signing salt that satisfies the external release gate', () => {
-    const rotateScript = fs.readFileSync(path.resolve(process.cwd(), 'scripts/rotate-secrets.sh'), 'utf8');
-    const saltCommand = rotateScript
-      .split('\n')
-      .find((line) => line.includes('REQUEST_SIGN_SALT=') && line.includes('openssl rand'));
-
-    expect(saltCommand).toBeTruthy();
-    expect(saltCommand).toContain('openssl rand -hex 32');
+    const first = createRequestSigningSalt();
+    const second = createRequestSigningSalt();
+    expect(first).toMatch(/^[a-f0-9]{64}$/);
+    expect(second).toMatch(/^[a-f0-9]{64}$/);
+    expect(first).not.toBe(second);
   });
 
   it('exposes verified source evidence commands for release operators', () => {
@@ -50,8 +70,8 @@ describe('release scripts', () => {
 
     expect(pipelineScript).toBeTypeOf('string');
     expect(pipelineScript).toContain('.venv-baidu/bin/python -m unittest');
-    expect(pipelineScript).toContain('tests.unit.test_pdf2flashcard_v2');
-    expect(pipelineScript).toContain('tests.unit.test_baidu_cleaning_runner');
+    expect(pipelineScript).toContain('tests.unit.test_private_material_parser');
+    expect(pipelineScript).not.toContain('tests.unit.test_baidu_cleaning_runner');
     expect(pipelineScript).toContain('tests.unit.test_flashcard_quality');
   });
 

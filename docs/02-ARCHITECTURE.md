@@ -1,379 +1,69 @@
-# EXAM-MASTER System Architecture
+# 系统架构
 
-> Last updated: 2026-04-23 | AI-SOP Version: 1.1
+沿用 Vue 3 / uni-app + Pinia → Service/API → Laf 函数；独立运行由 Express / MongoDB 适配，资料解析使用隔离 Python 工具。不新增微服务、多智能体平台或公共插件市场。
 
-## 当前架构入口（2026-09-13）
+桌面采用客户已批准的 Tauri 2，复用上述 H5 页面、Store 和 Service，不创建第二套学习事实。桌面产物单独输出到 `dist/build/desktop`，默认 Future 外观且不注册 PWA；普通网页仍输出到 `dist/build/h5`。宿主只加载打包的本地页面，单实例聚焦已有主窗口，拒绝远程导航和新窗口。Rust 仅开放学习 JSON 的逐次选择、保存、放弃选择及读取四个命令；前端不能传入任意路径或运行系统命令。读取备份后仍由现有同账户预览与业务重放决定是否合并，文件成功回执不等于记录已恢复。入口见[03](03-MODULE-INDEX.md)，运行与费用边界见[08C](08C-SCRIPTS-REFERENCE.md)、[14](14-MODEL-PRIVACY-COST.md)。
 
-本节按当前源码核对。后续自动生成的模块清单和旧架构说明保留为历史参考，页数、部署平台、接口列表与运行状态应以实际代码及本次验收为准。
+教学后续观察通过共享只读learning-teaching-observation从已有教学收据、消息、尝试、题关系和调度重算；Store、统计与progress工具读取同一函数。它不另存效果评分或新事件流，也不由模型重猜统计；自动方法选择与持续用户意愿在原Store/工具层执行，更正继续由共享reducer撤销过期判断。
 
 ```mermaid
-flowchart TB
-  PDF[PDF 资料] --> PIPE[Python 分批结构化 / 缓存 / 调用额度]
-  PIPE --> GATE[来源与答案证据检查]
-  GATE --> BANK[题库注册与加载]
-  BANK --> UI[Vue 页面与组件]
-  UI --> STORE[Pinia Store]
-  STORE --> SERVICE[模块化 Service]
-  SERVICE --> LOCAL[本地记录 / FSRS 状态]
-  SERVICE -. HTTP .-> API[TypeScript 后端函数]
-  API --> AUTH[鉴权 / 限流 / 参数校验]
-  AUTH --> DB[MongoDB]
-  API -. 入口待补齐 .-> AI[AI provider 工厂]
+flowchart LR
+  UI[对话 / 错题 / 计划 / 统计] --> Store[conversation-learning]
+  Store --> Facts[共享学习 reducer]
+  Store --> Repo[本地分用户 repository]
+  Store --> Tools[受限学习工具]
+  Store --> API[现有 API 请求层]
+  API --> Backend[鉴权 / 预算 / provider / 同步]
+  Backend --> Mongo[私有学习状态 / 账户 / 密钥保险库]
+  Store --> Parser[明确授权的本地解析连接器]
 ```
 
-- 前端 API 按 `src/services/api/domains/` 定位。`src/services/lafService.js` 是历史兼容层，不重新接入生产调用。
-- `src/stores/modules/study-engine.js` 聚合本地学习记录，生成统计与学习建议，不调用模型；`src/services/fsrs-service.js` 使用 `ts-fsrs` 进行复习调度。
-- 资料处理位于 `scripts/pipeline/pdf2flashcard-v2.py`；`scripts/baidu/flashcard_quality.py` 和 `answer_evidence_repair.py` 负责质量与候选证据边界。
-- `laf-backend/functions/_shared/ai-providers/provider-factory.ts` 提供 AI 供应商抽象。当前 `proxy-ai` / `proxy-ai-stream` 仅有 YAML 元数据，缺少对应 TS/JS 入口，不能据此认定端到端在线 AI 可用。
-- `laf-backend/standalone/server.ts` 是独立后端适配入口；生产数据、部署状态与真实业务另行验证，不从此图推导上线状态。
+## 单一事实
 
-完整用户路径、可复现演示和当前限制见 [README](../README.md)。
+纯学习 reducer 在 laf-backend/functions/\_shared/learning-domain.js，客户端仅重导出。作答、判分、计划、复习和工具收据是显式事件，不由模型从聊天猜统计。Repository 按当前用户命名空间读写，写入前保存恢复副本。H5 Web Locks 限制单写者；不支持的端显示单窗口边界。
 
-## Frontend Architecture
+云同步上传明确授权的操作，服务端再验证答案权威，CAS 最多重试 5 次。同标识异内容冲突保存本机/云端双方，用户可导出、重新拉取校验后采用云端、或恢复冲突时本机副本；不自动合并冲突作答。取消、删除、恢复和账户切换都检查归属及生命周期，旧响应不能覆盖新状态。
 
-### Page Organization
+退出登录保留该用户本机学习命名空间，先落盘延迟写入，再清理身份、连接令牌和缓存。登录不会自动接管访客记录；预览→明确确认→重放事实→保存恢复前副本，访客原件保留，不自动上传。普通备份仍拒绝跨账户恢复。
 
-Pages are organized into a main package (5 pages including splash) and 16 subPackages for WeChat MP size optimization, total 45 registered pages:
+## 执行和预算
 
-| Package           | Pages                                                                                                                                               | Purpose                                |
-| ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------- |
-| Main              | `splash/index`, `index`, `practice`, `school`, `profile`                                                                                            | 启动页 + Tab bar pages (5 pages)       |
-| `practice-sub`    | `do-quiz`, `pk-battle`, `rank`, `import-data`, `question-bank`, `file-manager`, `mock-exam`, `diagnosis-report`, `smart-review`, `error-clusters`, `sprint-mode` | 练习功能 (11 pages)                    |
-| `school-sub`      | `detail`, `ai-consult`                                                                                                                              | 院校详情 + AI 咨询 (2 pages)           |
-| `login`           | `index`, `wechat-callback`, `qq-callback`, `onboarding`                                                                                             | 认证 + 新用户引导 (4 pages)            |
-| `settings`        | `index`, `privacy`, `terms`                                                                                                                         | 设置页 (3 pages)                       |
-| `social`          | `friend-list`, `friend-profile`                                                                                                                     | 社交功能 (2 pages)                     |
-| `chat`            | `chat`                                                                                                                                              | AI 聊天                                |
-| `mistake`         | `index`                                                                                                                                             | 错题本                                 |
-| `favorite`        | `index`                                                                                                                                             | 收藏夹                                 |
-| `plan`            | `index`, `create`, `adaptive`                                                                                                                       | 学习计划 (3 pages)                     |
-| `study-detail`    | `index`                                                                                                                                             | 学习统计详情                           |
-| `tools`           | `photo-search`, `id-photo`, `doc-convert`, `focus-timer`                                                                                            | 工具集合 (4 pages)                     |
-| `knowledge-graph` | `index`, `mastery`                                                                                                                                  | 知识图谱 + 掌握度 (2 pages)            |
-| `ai-classroom`    | `index`, `classroom`                                                                                                                                | AI 课堂 (2 pages)                      |
-| `group`           | `index`                                                                                                                                             | 学习小组                               |
-| `resource`        | `index`                                                                                                                                             | 学习资源                               |
-| `common`          | `404`                                                                                                                                               | 通用错误页                             |
+learning-tools 管理名称/版本/权限/前置条件/预算/超时/取消/幂等；模型输出先解析、白名单和业务校验再写入。provider 独立于学习记录。平台实际成本与用户权益分账，未知成本待结算，默认平台预算和支付关闭。
 
-> 注：onboarding（新用户引导）位于 login 子包内，不是独立子包。
+公网云代理固定解析后的公网 HTTPS 地址，拒绝内网/环回/元数据及重定向绕过。本地模型连接器与公网代理分开，使用数值私有地址白名单、鉴权、精确来源和会话硬预算；能力不足不静默上传。Node 文本模型连接器与 Python 资料解析器独立配置和授权，后者不再提供模型转发。
 
-### Component Architecture
+PWA 应用壳只处理根路径与 index.html 的 uni-app 哈希路由，避免吞掉独立 HTML/服务路径；私人 API 响应不进入公共缓存。刷新保留本机事实，不能用缓存的旧模型消息代替当前工具状态。
 
-Components are organized into 4 categories（共 31 个 .vue 文件）:
+## 兼容与取舍
 
-```
-src/components/
-├── base/              # 纯 UI 基础组件（无业务逻辑）
-│   ├── base-card/     # 通用卡片容器
-│   ├── base-empty/    # 空状态展示
-│   ├── base-icon/     # 图标组件
-│   ├── base-skeleton/ # 加载骨架屏
-│   ├── em3d-switch/   # 3D 切换效果
-│   └── school-skeleton/ # 院校专用骨架屏
-├── business/          # 业务领域组件
-│   ├── index/         # 首页: AIDailyBriefing, ActivityList, DailyGoalRing,
-│   │                  #   FormulaModal, IndexHeaderBar, StatsGrid,
-│   │                  #   StudyHeatmap, StudyTimeCard, WelcomeBanner
-│   ├── practice/      # 练习: AchievementModal, AiGenerationOverlay,
-│   │                  #   GenerationProgressBar, GoalSettingModal,
-│   │                  #   LearningStatsCard, PauseBanner,
-│   │                  #   PracticeModesModal, QuizManageModal, SpeedReadyModal
-│   └── school/        # （不存在，院校相关组件已内联到页面中）
-├── common/            # 共享工具组件
-│   ├── CustomModal.vue
-│   ├── EmptyState.vue
-│   ├── ResumePracticeModal.vue
-│   ├── offline-indicator.vue
-│   ├── privacy-popup.vue
-│   └── share-modal.vue
-└── layout/
-    └── custom-tabbar/ # 自定义底部 Tab 栏
-```
+保留旧题库、study-engine、本地学习键和 FSRS 调度。子包 FSRS 副本为包体边界而保留，并审计一致。旧首页/对战入口兼容，但停止无证据的游戏化扩展；聊天主流程使用 learning-shell。旧 pdf2flashcard-v2 管线不恢复为生产解析中心，必要来源/质量模块继续复用。退役 provider-factory 与 lafService 不重新接回业务。
 
-> 注：聊天相关组件（MessageActions、ThinkingBlock）位于 `src/pages/chat/components/`，不在全局 components 目录下。
+静态审计覆盖全仓自产源码；自动导入图不覆盖所有动态注册，零入边不作为自动删除证据。模块位置见[03](03-MODULE-INDEX.md)。
 
-### Service Layer
+## 有界长历史
 
-```
-src/services/
-├── lafService.js              # 门面模式：合并所有领域服务为单一导出
-├── fsrs-service.js            # FSRS-5 间隔重复调度器（单例）
-├── storageService.js          # 本地存储抽象层 (uni.setStorage)
-├── auth-storage.js            # 认证 token 持久化
-├── checkin-streak.js          # 每日打卡连续记录
-├── streak-recovery.js         # 连续打卡恢复逻辑
-├── subscribe-message.js       # 微信订阅消息
-└── api/
-    └── domains/               # API 领域服务（15 个文件）
-        ├── _request-core.js   # 请求核心（重试、缓存、签名、去重）
-        ├── ai.api.js          # AI 相关 API
-        ├── auth.api.js        # 认证 API
-        ├── favorite.api.js    # 收藏 API
-        ├── group.api.js       # 学习小组 API
-        ├── invite.api.js      # 邀请 API
-        ├── practice.api.js    # 练习 API
-        ├── resource.api.js    # 学习资源 API
-        ├── school.api.js      # 院校 API
-        ├── smart-study.api.js # 智能学习 API
-        ├── social.api.js      # 社交 API
-        ├── stats.api.js       # 统计 API
-        ├── study.api.js       # 学习 API
-        ├── tools.api.js       # 工具 API
-        └── user.api.js        # 用户 API
-```
+逻辑状态仍为v1，保留旧键和原始JSON兼容；超过12万字符的本机状态按不可变分页保存，全部页面写入成功后才切换manifest。恢复/迁移/冲突副本共用相同内容页面；目录与无正文写入日志支持清理中断重试，清理只处理当前账户已登记且不被任何有效head引用的页面。H5只读窗口不清理写者正在准备的页面。隐私删除清理所有副本及退役分页，整本机删除覆盖登记分页；下载文件和其他设备另行处理。
 
-> 注：以下服务已迁移到页面子包内部：
-> - `knowledge-engine.js` → `src/pages/knowledge-graph/knowledge-engine.js`
-> - `fsrs-optimizer-client.js` → `src/pages/practice-sub/services/fsrs-optimizer-client.js`
-> - `offline-cache-service.js` → `src/pages/practice-sub/services/offline-cache-service.js`
+同步服务复用单个learning_states文档和revision CAS，大状态使用Node内置gzip封装，旧raw可读；不新增分页集合、多文档提交或缓存旧服务端版本。客户端按固定revision/generation分批读取120000字符页面，每次最多3页，拒绝混合版本；push只取确认，最后重新读取服务端事实。每次同步最多512请求/10分钟，客户端每61秒最多24请求，服务端30次/分钟门禁保持。取消不撤销已接收批次，重连幂等补传。
 
-### Composables (Vue 3 Hooks)
+当前硬边界为逻辑状态600万UTF-16字符/2万操作；恢复预览每批最多20操作且不超过140万字符，最长120秒，可取消，全部验证完成并再次检查归属/版本后才允许合并。页面只挂载50条消息；仍完整加载逻辑状态并重算，没有实现无限归档或冷存储，实际设备空间/内存/延迟可更早成为边界。达到限制时拒绝新增写入并如实显示，不丢弃旧事实以继续生成。
 
-```
-src/composables/               # 共 15 个 composable
-├── useBankStatus.js           # 题库状态检查
-├── useDailyQuote.js           # 每日一言
-├── useDynamicMixin.js         # 动态混入
-├── useHomeReview.js           # 首页复习推荐
-├── useHomeStats.js            # 首页统计数据
-├── useLearningStyle.js        # 自适应学习风格检测
-├── useNavigation.js           # 安全页面导航工具
-├── usePracticeNavigation.js   # 练习专用导航
-├── useQuizAutoSave.js         # 答题自动保存（带防抖）
-├── useRecommendations.js      # 学习推荐引擎
-├── useStudyTimer.js           # 学习计时器
-├── useStyleOnboarding.js      # 学习风格引导
-├── useTheme.js                # 主题切换 hook
-├── useTodo.js                 # 待办清单 CRUD
-└── useTracking.js             # 学习行为追踪
-```
+没有新增运行依赖。Node22.22.3内置[zlib文档](https://raw.githubusercontent.com/nodejs/node/v22.22.3/doc/api/zlib.md)用于压缩/解压输出限制；[MongoDB文档](https://www.mongodb.com/docs/manual/reference/limits/)规定BSON文档16MiB上限。实现将压缩输出限定8MiB，Base64约10.7MiB，解压输出最多2400万字节并再验逻辑上限。gzip和校验摘要均不是加密或权限证明；归属、鉴权、CAS和业务重放独立验证。维护与验证沿用本项目规范，浏览器/微信/App共享纯JS分页，Node压缩仅在后端；构建不代替设备验收。
 
-### Store Architecture (Pinia)
+本轮移除无调用方的 favorite.api.js 客户端包装（157 行）；收藏使用现有 question-favorite 模块，后端 favorite-manager 与安全冒烟保留。easycom 注册的离线提示和公共开关组件不因静态导入图零入边删除。
 
-```
-src/stores/
-├── index.js                           # 统一导出所有 store
-└── modules/                           # 共 18 个 store 模块
-    ├── user.js                        # 门面：组合 auth + profile + invite + social
-    ├── auth.js                        # 认证状态（token、isLogin、silentLogin）
-    ├── profile.js                     # 用户个人资料
-    ├── invite.js                      # 邀请码与奖励
-    ├── study.js                       # 聚合学习指标（总数、正确率、天数、分钟数）
-    ├── stats.js                       # 学习统计数据
-    ├── gamification.js                # 经验值、连续打卡、成就、每日挑战
-    ├── theme.js                       # 主题类型 (wise/bitget) + 深色模式
-    ├── school.js                      # 目标院校选择
-    ├── todo.js                        # 每日任务清单
-    ├── favorite.js                    # 收藏管理
-    ├── group.js                       # 学习小组
-    ├── practice-engine.js             # 练习引擎状态
-    ├── resource.js                    # 学习资源
-    ├── review.js                      # 复习状态
-    ├── study-engine.js                # 学习引擎
-    ├── tools.js                       # 工具状态
-    └── learning-trajectory-store.js   # 细粒度学习事件流
-```
+## 有界精确代数
 
----
+`safe-algebra-v1` 是项目自研纯 JavaScript 模块，无新增运行依赖。它解析限定语法为精确分数系数的多项式/有理式，通过交叉相乘后的系数恒等验证等价性；方程用一次/二次有理根公式、原分母限制和精确代回验证。采样相等不作为恒等证据，模型 reference 不参与答案建立。题干必须完整匹配公开任务语法，附加条件、不可解析语法或关键识别歧义保留待核对。
 
-## Backend Architecture
+选择理由：现有数值/单位/解集工具保留，新模块填补符号与原定义域缺口，不重写 provider 或引入 CAS 服务。许可沿用仓库 `UNLICENSED` 标识，不把自研代码宣称为开源第三方许可。维护由本项目测试集和兼容合同负责；字符256、token128、嵌套16、幂指数绝对值6、多项式次数6、约分后分数分子绝对值/分母10亿，并检查所有中间安全整数。没有 BigInt、动态代码、系统调用、网络、临时文件或额外付费资源。构建跨端复用不代替旧设备运行验证。
 
-### Cloud Functions
+候选评估：未引入 SymPy。官方 [parse_expr 文档](https://docs.sympy.org/latest/modules/parsing.html) 明确提醒该接口会求值，不适合直接处理不可信输入；另起 Python CAS 服务也增加跨端、部署与资源边界。精确分数的独立核对使用已有 Python 标准库 [fractions](https://docs.python.org/3/library/fractions.html)，不调用文本求值接口、不新增生产依赖。自研工具只支持公开的有限语法；超出范围不能借候选组件名称伪装可靠核验。
 
-Each cloud function is a standalone HTTP endpoint deployed to Laf Cloud (Sealos). Functions receive HTTP POST requests with JSON body and return JSON responses.
+## 流式教学执行边界
 
-**Core Functions:**
+`proxy-ai`与`proxy-ai-stream`共用runLearningModelTask：鉴权/输入/上下文/能力→幂等预算预留→取消状态检查→指定HTTPS上游→完整输出验证→成本结算→客户端业务工具。SSE不是另一套学习状态或费用账；共享reducer仍是唯一事实与统计来源。纯JS UTF8/SSE codec不引入运行依赖，不执行代码。Node使用既有HTTPS/DNS/TLS和内置AbortController；公有DNS检查、固定socket地址、不跟随重定向保持。
 
-| Function                          | Purpose                                       | Auth Required |
-| --------------------------------- | --------------------------------------------- | ------------- |
-| `proxy-ai.ts`                     | AI request proxy with multi-provider rotation | Yes           |
-| `pk-battle.ts`                    | PK battle matching, session, ELO calculation  | Yes           |
-| `answer-submit.ts` (via practice) | Submit answers, update FSRS state             | Yes           |
-| `login.ts`                        | Email/WeChat/QQ login, JWT token issuance     | No            |
-| `send-email-code.ts`              | Email verification code                       | No            |
-| `question-bank.ts`                | Question CRUD, AI generation                  | Yes           |
-| `mistake-manager.ts`              | Mistake book operations                       | Yes           |
-| `favorite-manager.ts`             | Question favorites                            | Yes           |
-| `rank-center.ts` (via rank)       | Leaderboard with rate limiting                | Yes           |
-| `study-stats.ts`                  | Study statistics aggregation                  | Yes           |
-| `user-stats.ts`                   | User profile statistics                       | Yes           |
-| `school-query.ts`                 | School search & filtering                     | No            |
-| `school-crawler-api.ts`           | School data crawling                          | Admin         |
-| `achievement-manager.ts`          | Achievement unlocking                         | Yes           |
-| `agent-orchestrator.ts`           | Multi-agent classroom orchestration           | Yes           |
-| `lesson-generator.ts`             | AI lesson content generation                  | Yes           |
-| `anki-import.ts`                  | Import .apkg files                            | Yes           |
-| `anki-export.ts`                  | Export to .apkg format                        | Yes           |
-| `fsrs-optimizer.ts`               | Server-side FSRS parameter optimization       | Yes           |
-| `rag-ingest.ts`                   | RAG document ingestion                        | Yes           |
-| `social-service.ts`               | Friend requests, status                       | Yes           |
-| `invite-service.ts`               | Invite system                                 | Yes           |
-| `learning-goal.ts`                | Learning goal CRUD                            | Yes           |
-| `learning-resource.ts`            | Learning resource recommendations             | Yes           |
-| `material-manager.ts`             | Study material management                     | Yes           |
-| `upload-avatar.ts`                | Avatar upload to object storage               | Yes           |
-| `photo-bg.ts`                     | Photo background removal                      | Yes           |
-| `id-photo-segment-base64.ts`      | ID photo segmentation                         | Yes           |
-| `health-check.ts`                 | Service health monitoring                     | No            |
-| `account-delete.ts`               | Account deletion request                      | Yes           |
-| `account-purge.ts`                | Account data purge (GDPR)                     | Admin         |
-| `data-cleanup.ts`                 | Database cleanup jobs                         | Admin         |
-| `group-service.ts`                | Study group management                        | Yes           |
+后端每个执行器按owner/requestId独立隔离，最多128个进程内在途任务，数据库取消检查每500ms顺序进行、无重叠；多实例通过原成本账确认取消。响应通过AsyncLocalStorage绑定请求，移除全局response回退，避免并发流串线。客户端断开/取消或无法确认账本时停止新增输出；已经产生的供应商费用如实待结算。
 
-### Shared Modules (\_shared/)
-
-| Module                              | Purpose                                                                  |
-| ----------------------------------- | ------------------------------------------------------------------------ |
-| `auth.ts`                           | JWT creation/verification, password hashing                              |
-| `auth-middleware.ts`                | `requireAuth()` middleware for cloud functions                           |
-| `admin-auth.ts`                     | Admin-level authentication                                               |
-| `api-response.ts`                   | Standardized response helpers (`ok()`, `unauthorized()`, `badRequest()`) |
-| `validator.ts`                      | Request parameter validation                                             |
-| `perf-monitor.ts`                   | Performance monitoring & logging                                         |
-| `fsrs-scheduler.ts`                 | Server-side FSRS scheduling                                              |
-| `embedding.ts`                      | Text embedding for RAG                                                   |
-| `generation/generation-pipeline.ts` | AI question generation pipeline                                          |
-| `orchestration/state-machine.ts`    | Multi-agent state machine                                                |
-| `agents/teacher-agent.ts`           | Teacher agent behavior                                                   |
-| `agents/student-agent.ts`           | Student agent behavior                                                   |
-| `agents/examiner-agent.ts`         | Examiner agent behavior                                                  |
-| `agents/agent-types.ts`             | Agent type definitions                                                   |
-| `ai-providers/provider-factory.ts`  | Multi-provider AI API rotation                                           |
-| `services/agent.service.ts`         | Agent orchestration service                                              |
-| `services/fsrs.service.ts`          | FSRS scheduling service                                                  |
-
----
-
-## Data Flow: User Answers Quiz
-
-```
-1. User taps answer in do-quiz.vue
-   │
-2. ├── Update local question state (Vue reactivity)
-   │
-3. ├── fsrs-service.scheduleCard(questionId, rating)
-   │   └── ts-fsrs calculates next review date
-   │       └── storageService.save('fsrs_card_{id}', cardState)
-   │
-4. ├── studyStore.recordAnswer(isCorrect)
-   │   └── Update aggregate metrics (totalQuestions, correctQuestions)
-   │
-5. ├── gamificationStore.awardXP(XP_REWARDS.CORRECT_ANSWER)
-   │   └── Check achievement/streak milestones
-   │
-6. ├── learningTrajectoryStore.record(ANSWER_QUESTION, data)
-   │   └── Append to event stream, update knowledge mastery
-   │
-7. └── lafService.submitAnswer(questionId, answer, isCorrect)
-        └── HTTP POST → answer-submit cloud function
-            └── Update practice_records in MongoDB
-                └── Update user stats
-```
-
----
-
-## Authentication Flow
-
-```
-1. User opens app → App.vue onLaunch()
-   │
-2. └── userStore.silentLogin()
-        │
-3.      ├── Check local storage for token + userInfo
-        │   ├── Found → Validate token expiry
-        │   │   ├── Valid → Set isLogin=true, emit loginStatusChanged
-        │   │   └── Expired → Clear storage, remain logged out
-        │   └── Not found → Remain logged out (new user)
-        │
-4. User navigates to protected page
-   │
-5. └── loginGuard checks isLogin
-        ├── Logged in → Allow access
-        └── Not logged in → Redirect to /pages/login/index
-             │
-6.           └── User enters email + verification code
-                  │
-7.                └── lafService.login({ email, code, platform })
-                      │
-8.                    └── login.ts cloud function
-                          ├── Verify email code
-                          ├── Find/create user in MongoDB
-                          ├── Generate JWT token
-                          └── Return { token, userInfo }
-                               │
-9.                              └── authStore.setToken(token)
-                                    profileStore.setUserInfo(userInfo)
-                                    storageService.save('EXAM_TOKEN', token)
-```
-
----
-
-## AI Integration Architecture
-
-```
-┌──────────────────────────────────────────────────────┐
-│                  Frontend AI Calls                    │
-│                                                       │
-│  lafService.proxyAI(messages, options)                │
-│  lafService.adaptiveQuestionPick(params)              │
-│  lafService.deepMistakeAnalysis(mistakes)             │
-│  lafService.photoSearch(imageBase64)                  │
-│  lafService.aiFriendChat(messages, friendId)          │
-└─────────────────────┬────────────────────────────────┘
-                      │ HTTP POST
-                      ▼
-┌──────────────────────────────────────────────────────┐
-│              proxy-ai.ts (Backend Hub)                │
-│                                                       │
-│  1. Authenticate request (requireAuth)                │
-│  2. Select AI provider (provider-factory.ts)          │
-│     ├── Provider pool: 10+ LLM APIs                  │
-│     ├── Rotation strategy: round-robin + fallback     │
-│     └── Rate limit awareness per provider             │
-│  3. Forward request to selected provider              │
-│  4. Handle streaming (SSE) or batch response          │
-│  5. Log usage metrics (perf-monitor.ts)               │
-│  6. Return response to client                         │
-└──────────────────────────────────────────────────────┘
-```
-
-### Multi-Agent Classroom Flow
-
-```
-agent-orchestrator.ts
-  │
-  ├── TeacherAgent (teaches concept) ──→ Generate lesson content
-  │     └── Uses lesson-generator.ts
-  │
-  ├── ExaminerAgent (tests understanding) ──→ Generate quiz questions
-  │     └── Uses generation-pipeline.ts
-  │
-  └── StudentAgent (simulates learner) ──→ Provide feedback
-        └── State machine tracks: IDLE → TEACHING → EXAMINING → REVIEWING
-```
-
----
-
-## Design System Architecture
-
-```
-src/styles/
-├── _design-tokens.scss          # 核心 SCSS 变量（通过 vite.config.js additionalData 自动注入）
-├── _dark-mode-vars.scss         # 深色模式 CSS 变量覆盖（@mixin dark-mode-vars）
-├── _wot-theme.scss              # wot-design-uni 主题覆盖
-└── button-animations.scss       # 全局按钮按压动画
-
-src/design/
-└── theme-engine.js              # 运行时主题切换（CSS class + CSS vars）
-
-src/App.vue                      # 全局样式：:root CSS 变量、工具类、
-                                 # Apple Glass 效果、点击反馈、深色模式过渡
-```
-
-### Theme System
-
-- **Dual theme support**: Wise (green/white) and Bitget (dark blue)
-- **Dark mode**: CSS custom properties + `prefers-color-scheme` media query + manual `.dark` class
-- **Theme engine** (`theme-engine.js`): Runtime switching via `applyTheme()`, `watchTheme()`
-- **SCSS tokens** auto-injected into every component via Vite `additionalData`
-- **CSS variable cascade**: `:root` defines light mode → `@media (prefers-color-scheme: dark)` overrides → `.dark` class overrides
+H5 fetch Reader及微信原生RequestTask分块各自适配；当前App明确不支持此传输。start/preview/result/error有版本和严格顺序，预览只在内存且只提取教学message，完整EOF前不能落工具/题目/教学事实。恢复读取相同用户原请求结果，未调用模型；历史导入的请求意图只作历史，不授权恢复执行。

@@ -1,113 +1,130 @@
 <template>
-  <view v-if="visible" class="custom-modal-mask" @tap="handleMaskClick">
-    <view class="custom-modal-container apple-glass-card" :class="[type, { dark: isDark }]" @tap.stop>
-      <view class="modal-handle" />
-      <!-- 装饰气泡 -->
-      <view v-if="isDark" class="decoration-bubble bubble-1" />
-      <view v-if="isDark" class="decoration-bubble bubble-2" />
-
-      <!-- 图标区域 -->
-      <view class="modal-icon-wrapper" :class="type">
-        <BaseIcon :name="iconMap[type] || icon || 'info'" :size="48" />
+  <WdPopup
+    :model-value="visible"
+    :duration="reducedMotion ? 0 : 180"
+    :close-on-click-modal="maskClosable"
+    :z-index="9999"
+    transition="fade"
+    custom-style="width:calc(100vw - 40px);max-width:440px;background:transparent;overflow:visible;border-radius:24px;"
+    modal-style="background:rgba(33,26,46,.42);"
+    @close="handleCancel"
+    @after-enter="bindDialog"
+    @after-leave="emit('closed')"
+  >
+    <view
+      ref="dialog"
+      class="custom-modal-container"
+      :class="[`modal-type-${type}`, { dark: isDark, 'is-closing': !visible, 'reduced-motion': reducedMotion }]"
+      :style="{ '--modal-motion-duration': reducedMotion ? '0ms' : '180ms' }"
+      role="dialog"
+      :aria-modal="visible ? 'true' : undefined"
+      :aria-hidden="!visible || undefined"
+      :aria-labelledby="titleId"
+      :aria-describedby="content && !editable ? contentId : undefined"
+      :inert="!visible || undefined"
+      tabindex="-1"
+      @tap.stop
+    >
+      <view class="modal-icon-wrapper" :class="`modal-icon-${type}`" aria-hidden="true">
+        <BaseIcon :name="icon || iconMap[type] || 'info'" :size="48" :color="iconColor" />
       </view>
-
-      <!-- 标题 -->
-      <text class="modal-title">
-        {{ title }}
-      </text>
-
-      <!-- 内容 -->
-      <text class="modal-content">
-        {{ content }}
-      </text>
-
-      <!-- 按钮区域 -->
+      <text :id="titleId" class="modal-title">{{ title }}</text>
+      <text v-if="content && !editable" :id="contentId" class="modal-content">{{ content }}</text>
+      <textarea
+        v-if="editable && !nativeInput"
+        ref="editableInput"
+        v-model="inputText"
+        class="modal-input"
+        :aria-label="title"
+        :placeholder="placeholderText"
+        placeholder-class="modal-input-placeholder"
+        :maxlength="-1"
+      ></textarea>
+      <textarea
+        v-if="editable && nativeInput"
+        ref="editableInput"
+        v-model="inputText"
+        class="modal-input"
+        :aria-label="title"
+        :placeholder="placeholderText"
+        placeholder-class="modal-input-placeholder"
+        :maxlength="-1"
+        :focus="visible"
+      ></textarea>
+      <text v-if="editable && !inputText.trim()" class="modal-input-help">填写内容后才能确认</text>
       <view class="modal-buttons" :class="{ single: !showCancel }">
-        <view v-if="showCancel" class="modal-btn cancel-btn apple-glass-pill" @tap="handleCancel">
-          <text>{{ cancelText }}</text>
-        </view>
-        <view class="modal-btn confirm-btn apple-cta" :class="type" @tap="handleConfirm">
-          <text>{{ confirmText }}</text>
-        </view>
+        <button
+          v-if="showCancel"
+          ref="cancelButton"
+          class="modal-btn cancel-btn"
+          role="button"
+          tabindex="0"
+          @tap="handleCancel"
+        >
+          {{ cancelText }}
+        </button>
+        <button
+          ref="confirmButton"
+          class="modal-btn confirm-btn"
+          role="button"
+          tabindex="0"
+          :disabled="isConfirmDisabled"
+          :aria-disabled="isConfirmDisabled"
+          :aria-busy="confirmLoading"
+          @tap="handleConfirm"
+        >
+          <WdLoading v-if="confirmLoading && !reducedMotion" :size="18" :color="isDark ? '#20172f' : '#ffffff'" />
+          <text>{{ confirmLoading ? loadingText : confirmText }}</text>
+        </button>
       </view>
     </view>
-  </view>
+  </WdPopup>
 </template>
 
 <script setup>
-import { logger } from '@/utils/logger.js';
+import { computed, getCurrentInstance, nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
+import WdPopup from 'wot-design-uni/components/wd-popup/wd-popup.vue';
+import WdLoading from 'wot-design-uni/components/wd-loading/wd-loading.vue';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
-
-/**
- * 自定义弹窗组件
- * ✅ PM要求：替换原生弹窗，消除"塑料感"
- *
- * 使用方式：
- * <custom-modal
- *   :visible="showModal"
- *   type="info"
- *   title="提示"
- *   content="这是一条提示信息"
- *   @confirm="handleConfirm"
- *   @cancel="handleCancel"
- * />
- */
+import { bindLearningDialog, bindLearningKeyboard } from '@/services/learning/keyboard-controls.js';
+import { bindBusinessMotion } from '@/design/business-motion.js';
 
 const props = defineProps({
-  // 是否显示
-  visible: {
-    type: Boolean,
-    default: false
-  },
-  // 弹窗类型：info, success, warning, error
-  type: {
-    type: String,
-    default: 'info'
-  },
-  // 自定义图标
-  icon: {
-    type: String,
-    default: ''
-  },
-  // 标题
-  title: {
-    type: String,
-    default: '提示'
-  },
-  // 内容
-  content: {
-    type: String,
-    default: ''
-  },
-  // 确认按钮文字
-  confirmText: {
-    type: String,
-    default: '确定'
-  },
-  // 取消按钮文字
-  cancelText: {
-    type: String,
-    default: '取消'
-  },
-  // 是否显示取消按钮
-  showCancel: {
-    type: Boolean,
-    default: true
-  },
-  // 点击遮罩是否关闭
-  maskClosable: {
-    type: Boolean,
-    default: false
-  },
-  // 深色模式
-  isDark: {
-    type: Boolean,
-    default: false
-  }
+  visible: { type: Boolean, default: false },
+  type: { type: String, default: 'info' },
+  icon: { type: String, default: '' },
+  title: { type: String, default: '提示' },
+  content: { type: String, default: '' },
+  confirmText: { type: String, default: '确定' },
+  cancelText: { type: String, default: '取消' },
+  showCancel: { type: Boolean, default: true },
+  maskClosable: { type: Boolean, default: false },
+  isDark: { type: Boolean, default: false },
+  confirmDisabled: { type: Boolean, default: false },
+  confirmLoading: { type: Boolean, default: false },
+  loadingText: { type: String, default: '处理中' },
+  editable: { type: Boolean, default: false },
+  placeholderText: { type: String, default: '' }
 });
-
-const emit = defineEmits(['cancel', 'update:visible', 'confirm']);
-
+const emit = defineEmits(['cancel', 'update:visible', 'confirm', 'closed']);
+const dialog = ref(null);
+const cancelButton = ref(null);
+const confirmButton = ref(null);
+const editableInput = ref(null);
+const inputText = ref('');
+const isConfirmDisabled = computed(
+  () => props.confirmDisabled || props.confirmLoading || (props.editable && !inputText.value.trim())
+);
+// H5 enters focus through the dialog controller; native textarea uses its documented focus property.
+let nativeInput = true;
+// #ifdef H5
+nativeInput = false;
+// #endif
+const reducedMotion = ref(true);
+const instanceId = getCurrentInstance().uid;
+const titleId = `wenli-modal-title-${instanceId}`;
+const contentId = `wenli-modal-content-${instanceId}`;
+const iconColor = computed(() => (props.isDark ? '#c9b1ee' : '#785bbc'));
 const iconMap = {
   info: 'bulb',
   success: 'success',
@@ -118,284 +135,280 @@ const iconMap = {
   upload: 'upload',
   study: 'books'
 };
-
-function handleMaskClick() {
-  if (props.maskClosable) {
-    emit('cancel');
-    emit('update:visible', false);
-  }
-}
+let releaseDialog = null;
+let releaseKeyboard = () => undefined;
+let releaseMotion = () => undefined;
+let closing = false;
 
 function handleConfirm() {
-  // 震动反馈
-  try {
-    if (typeof uni.vibrateShort === 'function') {
-      uni.vibrateShort();
-    }
-  } catch (e) {
-    logger.warn('[CustomModal] 震动反馈失败:', e.message || e);
-  }
-
-  emit('confirm');
+  if (isConfirmDisabled.value || !props.visible || closing) return;
+  closing = true;
+  if (props.editable) emit('confirm', inputText.value);
+  else emit('confirm');
   emit('update:visible', false);
 }
-
 function handleCancel() {
+  if (!props.visible || closing) return;
+  closing = true;
   emit('cancel');
   emit('update:visible', false);
 }
+function bindDialog() {
+  if (!props.visible || releaseDialog || !dialog.value) return;
+  releaseKeyboard = bindLearningKeyboard(dialog.value);
+  const input = editableInput.value?.$el || editableInput.value;
+  releaseDialog = bindLearningDialog(dialog.value, {
+    initialFocus: props.editable
+      ? input?.querySelector?.('textarea') || input
+      : props.showCancel
+        ? cancelButton.value
+        : confirmButton.value,
+    onEscape: () => {
+      if (props.showCancel || props.maskClosable) handleCancel();
+    }
+  });
+}
+function releaseFocus() {
+  releaseKeyboard();
+  releaseDialog?.();
+  releaseDialog = null;
+}
+// Lazy popup content can mount after the visibility watcher, including with zero-duration motion.
+watch(dialog, bindDialog, { flush: 'post' });
+watch(
+  () => props.visible,
+  async (open) => {
+    if (!open) {
+      inputText.value = '';
+      releaseFocus();
+      return;
+    }
+    closing = false;
+    inputText.value = props.editable ? props.content : '';
+    await nextTick();
+    bindDialog();
+  },
+  { immediate: true, flush: 'post' }
+);
+onMounted(() => {
+  releaseMotion = bindBusinessMotion((reduced) => {
+    reducedMotion.value = reduced;
+  });
+});
+onUnmounted(() => {
+  releaseFocus();
+  releaseMotion();
+});
 </script>
 
 <style lang="scss" scoped>
-.custom-modal-mask {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.45);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 9999;
-  animation: fadeIn 0.2s ease;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
 .custom-modal-container {
-  width: 600rpx;
-  background-color: var(--em3d-card-bg);
-  border: 2rpx solid var(--em3d-border);
-  border-radius: var(--em3d-radius-lg);
-  padding: 18rpx 40rpx 40rpx;
-  position: relative;
-  overflow: hidden;
-  animation: slideUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-  box-shadow:
-    0 8rpx 0 var(--em3d-border-shadow),
-    0 16rpx 40rpx rgba(0, 0, 0, 0.15);
-
+  --modal-surface: rgba(246, 243, 255, 0.84);
+  --modal-ink: #080909;
+  --modal-muted: #62576d;
+  --modal-line: #dbd5e6;
+  --modal-primary: #785bbc;
+  --modal-on-primary: #ffffff;
+  --modal-soft: #eee7f7;
+  box-sizing: border-box;
+  width: 100%;
+  max-height: calc(100vh - 40px);
+  max-height: calc(100dvh - 40px);
+  padding: 24px;
+  overflow-y: auto;
+  background: var(--modal-surface);
+  color: var(--modal-ink);
+  border: 0;
+  border-radius: 24px;
+  box-shadow: var(--yozi-shadow);
+  backdrop-filter: blur(24px) saturate(1.15);
+  -webkit-backdrop-filter: blur(24px) saturate(1.15);
+  font-family: 'DM Sans', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  animation: wenli-dialog-enter var(--modal-motion-duration) cubic-bezier(0.2, 0, 0, 1);
   &.dark {
-    background-color: var(--em3d-card-bg);
-    border-color: var(--em3d-border);
+    --modal-surface: rgba(46, 38, 65, 0.9);
+    --modal-ink: #f8f4ff;
+    --modal-muted: #d2c8e5;
+    --modal-line: #504164;
+    --modal-primary: #c9b1ee;
+    --modal-on-primary: #20172f;
+    --modal-soft: #473457;
+  }
+  &.is-closing {
+    animation: none;
+    transform: translateY(6px);
+    transition: transform var(--modal-motion-duration) ease-in;
+  }
+  &.reduced-motion {
+    animation: none;
+    transition: none;
+    transform: none;
+    .modal-btn {
+      animation: none !important;
+      transition: none !important;
+      transform: none !important;
+    }
   }
 }
-
-.modal-handle {
-  width: 84rpx;
-  height: 8rpx;
-  border-radius: 999rpx;
-  background: rgba(0, 0, 0, 0.12);
-  margin: 6rpx auto 22rpx;
-}
-
-.custom-modal-container.dark .modal-handle {
-  background: rgba(255, 255, 255, 0.16);
-}
-
-@keyframes slideUp {
+@keyframes wenli-dialog-enter {
   from {
-    opacity: 0;
-    transform: translateY(40rpx) scale(0.95);
+    transform: translateY(6px);
   }
   to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translateY(0);
   }
 }
-
-// 装饰气泡
-.decoration-bubble {
-  position: absolute;
-  border-radius: 50%;
-  opacity: 0.3;
-  pointer-events: none;
-
-  &.bubble-1 {
-    width: 120rpx;
-    height: 120rpx;
-    background: radial-gradient(circle, rgba(95, 170, 255, 0.28) 0%, transparent 70%);
-    top: -30rpx;
-    right: -30rpx;
-  }
-
-  &.bubble-2 {
-    width: 80rpx;
-    height: 80rpx;
-    background: radial-gradient(circle, rgba(107, 208, 150, 0.22) 0%, transparent 70%);
-    bottom: 40rpx;
-    left: -20rpx;
-  }
-}
-
-// 图标区域
 .modal-icon-wrapper {
-  width: 100rpx;
-  height: 100rpx;
-  border-radius: 50%;
   display: flex;
-  align-items: center;
   justify-content: center;
-  margin: 0 auto 24rpx;
-
-  &.info {
-    background: color-mix(in srgb, var(--success) 12%, transparent);
-  }
-  &.success {
-    background: color-mix(in srgb, var(--success) 12%, transparent);
-  }
-  &.warning {
-    background: color-mix(in srgb, var(--warning) 14%, transparent);
-  }
-  &.error {
-    background: rgba(255, 99, 90, 0.14);
-  }
-  &.empty,
-  &.upload,
-  &.study {
-    background: color-mix(in srgb, var(--success) 12%, transparent);
-  }
-
-  .custom-modal-container.dark & {
-    &.info {
-      background: rgba(10, 132, 255, 0.14);
-    }
-    &.success {
-      background: rgba(10, 132, 255, 0.14);
-    }
-    &.warning {
-      background: rgba(255, 159, 10, 0.16);
-    }
-    &.error {
-      background: rgba(255, 99, 90, 0.16);
-    }
-    &.empty,
-    &.upload,
-    &.study {
-      background: rgba(10, 132, 255, 0.14);
-    }
-  }
-
-  .modal-icon {
-    font-size: 48rpx;
-  }
+  align-items: center;
+  width: 48px;
+  height: 48px;
+  margin: 0 auto 16px;
+  border-radius: 50%;
+  background: var(--modal-soft);
 }
-
-/* [AUDIT FIX R180] 标题/内容文字色 → CSS变量，移除手动暗黑覆盖 */
-// 标题
 .modal-title {
   display: block;
+  margin-bottom: 12px;
   text-align: center;
-  font-size: 36rpx;
-  font-weight: 600;
-  color: var(--text-main);
-  margin-bottom: 16rpx;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--modal-ink);
 }
-
-// 内容
 .modal-content {
   display: block;
+  margin-bottom: 24px;
   text-align: center;
-  font-size: 28rpx;
-  color: var(--text-sub);
-  line-height: 1.6;
-  margin-bottom: 40rpx;
   white-space: pre-wrap;
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--modal-muted);
 }
-
-// 按钮区域
 .modal-buttons {
   display: flex;
-  /* gap: 20rpx; -- removed tag-name selectors for WeChat component compat */
-
-  &.single {
-    justify-content: center;
+  gap: 12px;
+}
+.modal-input {
+  box-sizing: border-box;
+  width: 100%;
+  height: 88px;
+  padding: 12px;
+  margin-bottom: 16px;
+  border: 1px solid var(--modal-line);
+  border-radius: 12px;
+  background: var(--modal-surface);
+  color: var(--modal-ink);
+  font: inherit;
+  font-size: 14px;
+  line-height: 1.65;
+  caret-color: var(--modal-primary);
+  &:focus-within {
+    outline: 2px solid var(--modal-primary);
+    outline-offset: 2px;
   }
 }
-
+.modal-input-placeholder,
+.modal-input-help {
+  color: var(--modal-muted);
+  font-size: 14px;
+}
+.modal-input-help {
+  display: block;
+  margin: -4px 0 16px;
+}
 .modal-btn {
-  flex: 1;
-  height: 88rpx;
-  border-radius: var(--em3d-radius-pill);
   display: flex;
-  align-items: center;
   justify-content: center;
-  font-size: 30rpx;
-  font-weight: 700;
-  transition: var(--em3d-ease-press);
-
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  margin: 0;
+  min-width: 0;
+  min-height: 44px;
+  padding: 10px 16px;
+  box-sizing: border-box;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.5;
+  font-family: inherit;
+  transition:
+    background-color 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease;
+  &::after {
+    border: 0;
+  }
+  &:focus-visible {
+    outline: 2px solid var(--modal-primary);
+    outline-offset: 2px;
+  }
   &:active {
-    transform: translateY(3rpx);
+    transition-duration: 100ms;
   }
 }
-
 .cancel-btn {
-  background-color: var(--em3d-card-bg);
-  color: var(--em3d-text-1);
-  border: 2rpx solid var(--em3d-border);
-  box-shadow: 0 var(--em3d-depth-md) 0 var(--em3d-border-shadow);
-
-  .custom-modal-container.dark & {
-    background-color: var(--em3d-card-bg);
-    color: var(--em3d-text-1);
-    border-color: var(--em3d-border);
-  }
-
+  color: var(--modal-primary);
+  background: var(--modal-soft);
+  border: 0;
+  box-shadow: var(--yozi-control-shadow);
   &:active {
-    box-shadow: 0 var(--em3d-depth-press) 0 var(--em3d-border-shadow);
+    background: var(--modal-soft);
   }
 }
-
 .confirm-btn {
-  background-color: var(--em3d-primary);
-  color: var(--em3d-text-inv);
-  border: none;
-  box-shadow: 0 var(--em3d-depth-lg) 0 var(--em3d-primary-shadow);
-
-  &:active {
-    box-shadow: 0 var(--em3d-depth-press) 0 var(--em3d-primary-shadow);
+  background: var(--yozi-button);
+  color: var(--yozi-button-ink);
+  border: 0;
+  box-shadow: var(--yozi-button-shadow);
+  &[disabled] {
+    opacity: 0.55;
   }
-
-  &.warning {
-    background-color: var(--em3d-warning);
-    color: var(--em3d-text-1);
-    box-shadow: 0 var(--em3d-depth-lg) 0 var(--em3d-warning-shadow);
-  }
-
-  &.warning:active {
-    box-shadow: 0 var(--em3d-depth-press) 0 var(--em3d-warning-shadow);
-  }
-
-  &.error {
-    background-color: var(--em3d-danger);
-    color: var(--em3d-text-inv);
-    box-shadow: 0 var(--em3d-depth-lg) 0 var(--em3d-danger-shadow);
-  }
-
-  &.error:active {
-    box-shadow: 0 var(--em3d-depth-press) 0 var(--em3d-danger-shadow);
+  &:active:not([disabled]) {
+    transform: translateY(2px);
+    box-shadow:
+      inset 0 2px 4px rgba(30, 15, 65, 0.16),
+      0 2px 0 var(--yozi-button-edge);
   }
 }
-
-.custom-modal-container.dark .confirm-btn.warning {
-  background-color: var(--em3d-warning);
-  color: var(--em3d-text-1);
+@media (hover: hover) and (pointer: fine) {
+  .cancel-btn:hover {
+    background: var(--modal-soft);
+  }
+  .confirm-btn:hover:not([disabled]):not(:active) {
+    filter: brightness(1.05);
+  }
 }
-
-.custom-modal-container.dark .confirm-btn.error {
-  background-color: var(--em3d-danger);
-  color: var(--em3d-text-inv);
+@media (max-width: 520px) {
+  .custom-modal-container {
+    padding: 20px;
+  }
 }
-
-.single .confirm-btn {
-  max-width: 400rpx;
+@media (prefers-reduced-motion: reduce) {
+  .custom-modal-container,
+  .modal-btn {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+  }
+}
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+  .custom-modal-container {
+    background: #f0edfc;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+  .custom-modal-container.dark {
+    background: #30283f;
+  }
+}
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .custom-modal-container {
+    background: #f0edfc;
+  }
+  .custom-modal-container.dark {
+    background: #30283f;
+  }
 }
 </style>

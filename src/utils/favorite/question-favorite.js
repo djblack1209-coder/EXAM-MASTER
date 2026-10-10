@@ -11,6 +11,19 @@
 import storageService from '@/services/storageService.js';
 import { logger } from '@/utils/logger.js';
 import { toast } from '@/utils/toast.js';
+import { getUserId } from '@/services/auth-storage.js';
+import {
+  normalizeLegacyReviewQuestion,
+  normalizeQuizQuestion,
+  prepareQuizQuestion,
+  createSinglePracticeHandoff,
+  readSinglePracticeHandoff
+} from '@/services/quiz-session-contract.js';
+import {
+  createQuizOriginal,
+  assertQuizOriginalDisplay,
+  quizOriginalIdentity
+} from '../../../laf-backend/functions/_shared/learning-quiz-original.js';
 const STORAGE_KEYS = {
   FAVORITES: 'question_favorites',
   FAVORITE_FOLDERS: 'favorite_folders',
@@ -25,456 +38,388 @@ const DEFAULT_FOLDERS = [
   { id: 'difficult', name: '难题攻克', icon: 'fav-difficult', color: '#9C27B0', isDefault: false }
 ];
 
-/**
- * 题目收藏管理器
- */
+const clone = (value) => JSON.parse(JSON.stringify(value));
+const owner = () => getUserId() || '';
+const failed = (error, code = 'FAVORITE_SAVE_FAILED') => ({ success: false, error, code });
+
+// 原始题和已整理的显示题都需与保存的原件一致，不能按题干猜测版本。
+function originalQuestion(question) {
+  try {
+    const current = normalizeLegacyReviewQuestion(question);
+    if (!current) return null;
+    const original = createQuizOriginal({ ...question, id: current.id });
+    const restored = prepareQuizQuestion({ ...original.fields, id: original.id, quizOriginal: original });
+    if (!restored) return null;
+    const displayed = normalizeQuizQuestion(current);
+    if (
+      displayed.question !== restored.question ||
+      displayed.answer !== restored.answer ||
+      displayed.type !== restored.type ||
+      quizOriginalIdentity(displayed.options) !== quizOriginalIdentity(restored.options)
+    )
+      return null;
+    assertQuizOriginalDisplay(displayed, original);
+    return restored;
+  } catch (_error) {
+    return null;
+  }
+}
+
 class QuestionFavoriteManager {
   constructor() {
     this.favorites = [];
-    this.folders = [...DEFAULT_FOLDERS];
-    this.settings = {
-      maxFavorites: 500,
-      autoSync: true,
-      showFavoriteHint: true
-    };
+    this.folders = clone(DEFAULT_FOLDERS);
+    this.settings = { maxFavorites: 500, autoSync: true, showFavoriteHint: true };
     this.isInitialized = false;
+    this.ownerId = null;
+    this.lastError = null;
   }
 
-  /**
-   * 初始化
-   */
   init() {
-    if (this.isInitialized) return;
-    this._loadFavorites();
-    this._loadFolders();
-    this._loadSettings();
-    this.isInitialized = true;
-    logger.log('[QuestionFavorite] 初始化完成，收藏数:', this.favorites.length);
+    const expected = owner();
+    try {
+      // 每次读取当前账户的真实保存值，返回独立副本，不认领访客或别人的缓存。
+      const rows = storageService.get(STORAGE_KEYS.FAVORITES, [], { migrateLegacy: false, throwOnError: true });
+      const folders = storageService.get(STORAGE_KEYS.FAVORITE_FOLDERS, null, {
+        migrateLegacy: false,
+        throwOnError: true
+      });
+      const settings = storageService.get(STORAGE_KEYS.FAVORITE_SETTINGS, null, {
+        migrateLegacy: false,
+        throwOnError: true
+      });
+      if (
+        !Array.isArray(rows) ||
+        rows.some((row) => !row || typeof row !== 'object' || Array.isArray(row)) ||
+        (folders !== null && !Array.isArray(folders)) ||
+        owner() !== expected
+      )
+        throw Error('收藏资料暂不可读取，原记录已保留');
+      this.favorites = clone(rows);
+      this.folders = clone(folders?.length ? folders : DEFAULT_FOLDERS);
+      this.settings = {
+        maxFavorites: 500,
+        autoSync: true,
+        showFavoriteHint: true,
+        ...(settings && typeof settings === 'object' ? clone(settings) : {})
+      };
+      this.ownerId = expected;
+      this.isInitialized = true;
+      this.lastError = null;
+      return true;
+    } catch (error) {
+      this.favorites = [];
+      this.folders = clone(DEFAULT_FOLDERS);
+      this.ownerId = expected;
+      this.isInitialized = false;
+      this.lastError = error;
+      return false;
+    }
   }
 
-  /**
-   * 收藏题目
-   * @param {Object} question - 题目数据
-   * @param {string} folderId - 收藏夹ID
-   * @returns {Object} 收藏结果
-   */
-  addFavorite(question, folderId = 'default') {
-    this.init();
+  _edit(field, key, change, expectedOwner) {
+    if (!this.init()) return failed(this.lastError.message, 'FAVORITE_UNAVAILABLE');
+    if (expectedOwner !== undefined && expectedOwner !== this.ownerId)
+      return failed('账户已变化，请重新选择', 'CONTEXT_CHANGED');
+    const context = this.ownerId;
+    try {
+      const next = clone(this[field]);
+      const result = change(next);
+      if (!result.success) return result;
+      if (owner() !== context) return failed('账户已变化，请重新选择', 'CONTEXT_CHANGED');
+      if (storageService.save(key, clone(next), true) !== true) return failed('保存失败，原记录已保留');
+      if (owner() !== context) return failed('账户已变化，请重新读取', 'CONTEXT_CHANGED');
+      this[field] = next;
+      return result;
+    } catch (_error) {
+      return failed('保存失败，原记录已保留');
+    }
+  }
 
-    // 检查是否已收藏
-    const existingIndex = this.favorites.findIndex(
-      (f) => f.questionId === question.id || f.questionContent === question.question
+  _matches(input) {
+    if (input && typeof input === 'object') {
+      const q = originalQuestion(input);
+      return q
+        ? this.favorites.filter(
+            (f) => f.quizOriginal && quizOriginalIdentity(f.quizOriginal) === quizOriginalIdentity(q.quizOriginal)
+          )
+        : [];
+    }
+    const exact = this.favorites.filter((f) => f.id === input);
+    return exact.length ? exact : this.favorites.filter((f) => f.questionId === input || f.questionContent === input);
+  }
+
+  addFavorite(question, folderId = 'default', expectedOwner) {
+    const q = originalQuestion(question);
+    if (!q) return failed('原题资料不完整，请返回重新选择', 'ORIGINAL_UNAVAILABLE');
+    const result = this._edit(
+      'favorites',
+      STORAGE_KEYS.FAVORITES,
+      (next) => {
+        if (!this.folders.some((f) => f.id === folderId)) return failed('收藏夹已变化，请重新选择');
+        const existing = next.find(
+          (f) => f.quizOriginal && quizOriginalIdentity(f.quizOriginal) === quizOriginalIdentity(q.quizOriginal)
+        );
+        if (existing) {
+          existing.folderId = folderId;
+          existing.updatedAt = Date.now();
+          return { success: true, action: 'updated', id: existing.id };
+        }
+        if (next.length >= Math.min(500, Number(this.settings.maxFavorites) || 500)) return failed('收藏数量已达上限');
+        const favorite = {
+          id: this._generateId(),
+          questionId: q.id,
+          quizOriginal: clone(q.quizOriginal),
+          questionContent: q.question,
+          options: clone(q.options),
+          answer: q.answer,
+          analysis: q.desc,
+          category: q.category,
+          difficulty: q.difficulty,
+          folderId,
+          tags: Array.isArray(question.tags) ? clone(question.tags) : [],
+          note: '',
+          createdAt: Date.now(),
+          updatedAt: Date.now(),
+          reviewCount: 0,
+          lastReviewAt: null
+        };
+        next.unshift(favorite);
+        return { success: true, action: 'added', id: favorite.id };
+      },
+      expectedOwner
     );
-
-    if (existingIndex >= 0) {
-      // 已收藏，更新收藏夹
-      this.favorites[existingIndex].folderId = folderId;
-      this.favorites[existingIndex].updatedAt = Date.now();
-      this._saveFavorites();
-      return { success: true, action: 'updated', id: this.favorites[existingIndex].id };
-    }
-
-    // 检查收藏数量限制
-    if (this.favorites.length >= this.settings.maxFavorites) {
-      return { success: false, error: '收藏数量已达上限' };
-    }
-
-    // 创建收藏记录
-    const favorite = {
-      id: this._generateId(),
-      questionId: question.id || this._generateId(),
-      questionContent: question.question || question.question_content,
-      options: question.options || [],
-      answer: question.answer || question.correct_answer,
-      analysis: question.desc || question.analysis || '',
-      category: question.category || '未分类',
-      difficulty: question.difficulty || 2,
-      folderId,
-      tags: question.tags || [],
-      note: '',
-      createdAt: Date.now(),
-      updatedAt: Date.now(),
-      reviewCount: 0,
-      lastReviewAt: null
-    };
-
-    this.favorites.unshift(favorite);
-    this._saveFavorites();
-
-    // 显示收藏成功提示
-    if (this.settings.showFavoriteHint) {
-      this._showToast('收藏成功');
-    }
-
-    return { success: true, action: 'added', id: favorite.id };
-  }
-
-  /**
-   * 取消收藏
-   * @param {string} questionId - 题目ID或收藏ID
-   * @returns {Object} 操作结果
-   */
-  removeFavorite(questionId) {
-    this.init();
-
-    const index = this.favorites.findIndex(
-      (f) => f.id === questionId || f.questionId === questionId || f.questionContent === questionId
-    );
-
-    if (index === -1) {
-      return { success: false, error: '未找到收藏记录' };
-    }
-
-    this.favorites.splice(index, 1);
-    this._saveFavorites();
-
-    return { success: true, action: 'removed' };
-  }
-
-  /**
-   * 切换收藏状态
-   * @param {Object} question - 题目数据
-   * @param {string} folderId - 收藏夹ID
-   * @returns {Object} 操作结果
-   */
-  toggleFavorite(question, folderId = 'default') {
-    this.init();
-
-    if (this.isFavorited(question.id || question.question)) {
-      return this.removeFavorite(question.id || question.question);
-    } else {
-      return this.addFavorite(question, folderId);
-    }
-  }
-
-  /**
-   * 检查是否已收藏
-   * @param {string} questionId - 题目ID或内容
-   * @returns {boolean} 是否已收藏
-   */
-  isFavorited(questionId) {
-    this.init();
-
-    return this.favorites.some(
-      (f) => f.id === questionId || f.questionId === questionId || f.questionContent === questionId
-    );
-  }
-
-  /**
-   * 获取收藏详情
-   * @param {string} questionId - 题目ID
-   * @returns {Object|null} 收藏详情
-   */
-  getFavoriteDetail(questionId) {
-    this.init();
-
-    return (
-      this.favorites.find(
-        (f) => f.id === questionId || f.questionId === questionId || f.questionContent === questionId
-      ) || null
-    );
-  }
-
-  /**
-   * 获取收藏列表
-   * @param {Object} options - 筛选选项
-   * @returns {Array} 收藏列表
-   */
-  getFavorites(options = {}) {
-    this.init();
-
-    let result = [...this.favorites];
-
-    // 按收藏夹筛选
-    if (options.folderId) {
-      result = result.filter((f) => f.folderId === options.folderId);
-    }
-
-    // 按分类筛选
-    if (options.category) {
-      result = result.filter((f) => f.category === options.category);
-    }
-
-    // 按关键词搜索
-    if (options.keyword) {
-      const keyword = options.keyword.toLowerCase();
-      result = result.filter(
-        (f) =>
-          f.questionContent.toLowerCase().includes(keyword) ||
-          f.note.toLowerCase().includes(keyword) ||
-          f.tags.some((t) => t.toLowerCase().includes(keyword))
-      );
-    }
-
-    // 排序
-    const sortBy = options.sortBy || 'createdAt';
-    const sortOrder = options.sortOrder || 'desc';
-    result.sort((a, b) => {
-      const aVal = a[sortBy] || 0;
-      const bVal = b[sortBy] || 0;
-      return sortOrder === 'desc' ? bVal - aVal : aVal - bVal;
-    });
-
-    // 分页
-    if (options.limit) {
-      const offset = options.offset || 0;
-      result = result.slice(offset, offset + options.limit);
-    }
-
+    if (result.success && result.action === 'added' && this.settings.showFavoriteHint) this._showToast('收藏成功');
     return result;
   }
 
-  /**
-   * 移动到其他收藏夹
-   * @param {string} favoriteId - 收藏ID
-   * @param {string} targetFolderId - 目标收藏夹ID
-   * @returns {Object} 操作结果
-   */
-  moveToFolder(favoriteId, targetFolderId) {
-    this.init();
-
-    const favorite = this.favorites.find((f) => f.id === favoriteId);
-    if (!favorite) {
-      return { success: false, error: '未找到收藏记录' };
-    }
-
-    favorite.folderId = targetFolderId;
-    favorite.updatedAt = Date.now();
-    this._saveFavorites();
-
-    return { success: true };
+  removeFavorite(input, expectedOwner) {
+    return this._edit(
+      'favorites',
+      STORAGE_KEYS.FAVORITES,
+      (next) => {
+        const matches = this._matches(input);
+        if (matches.length !== 1) return failed('收藏记录已变化，请重新选择');
+        next.splice(
+          next.findIndex((f) => f.id === matches[0].id),
+          1
+        );
+        return { success: true, action: 'removed' };
+      },
+      expectedOwner
+    );
   }
 
-  /**
-   * 更新收藏笔记
-   * @param {string} favoriteId - 收藏ID
-   * @param {string} note - 笔记内容
-   * @returns {Object} 操作结果
-   */
-  updateNote(favoriteId, note) {
-    this.init();
-
-    const favorite = this.favorites.find((f) => f.id === favoriteId);
-    if (!favorite) {
-      return { success: false, error: '未找到收藏记录' };
-    }
-
-    favorite.note = note;
-    favorite.updatedAt = Date.now();
-    this._saveFavorites();
-
-    return { success: true };
+  toggleFavorite(question, folderId = 'default', expectedOwner) {
+    if (!this.init()) return failed(this.lastError.message, 'FAVORITE_UNAVAILABLE');
+    const matches = this._matches(question);
+    return matches.length
+      ? this.removeFavorite(question, expectedOwner)
+      : this.addFavorite(question, folderId, expectedOwner);
   }
 
-  /**
-   * 记录复习
-   * @param {string} favoriteId - 收藏ID
-   */
-  recordReview(favoriteId) {
-    this.init();
-
-    const favorite = this.favorites.find((f) => f.id === favoriteId);
-    if (favorite) {
-      favorite.reviewCount++;
-      favorite.lastReviewAt = Date.now();
-      this._saveFavorites();
-    }
+  isFavorited(input) {
+    if (!this.init()) return false;
+    return this._matches(input).length > 0;
   }
 
-  // ==================== 收藏夹管理 ====================
+  getFavoriteDetail(input) {
+    if (!this.init()) return null;
+    const matches = this._matches(input);
+    return matches.length === 1 ? { ...clone(matches[0]), favoriteOwnerId: this.ownerId } : null;
+  }
 
-  /**
-   * 获取所有收藏夹
-   * @returns {Array} 收藏夹列表
-   */
+  getFavorites(options = {}) {
+    if (!this.init()) throw this.lastError;
+    let result = this.favorites.map((row) => ({
+      ...clone(row),
+      folderId: this.folders.some((f) => f.id === row.folderId) ? row.folderId : 'default',
+      favoriteOwnerId: this.ownerId
+    }));
+    if (options.folderId) result = result.filter((f) => f.folderId === options.folderId);
+    if (options.category) result = result.filter((f) => f.category === options.category);
+    if (options.keyword) {
+      const keyword = String(options.keyword).toLowerCase();
+      result = result.filter((f) =>
+        [f.questionContent, f.note, ...(Array.isArray(f.tags) ? f.tags : [])].some((text) =>
+          String(text || '')
+            .toLowerCase()
+            .includes(keyword)
+        )
+      );
+    }
+    const sortBy = options.sortBy || 'createdAt',
+      order = options.sortOrder === 'asc' ? 1 : -1;
+    result.sort((a, b) => order * ((a[sortBy] || 0) - (b[sortBy] || 0)));
+    if (options.limit) result = result.slice(options.offset || 0, (options.offset || 0) + options.limit);
+    return result;
+  }
+
+  moveToFolder(id, folderId, expectedOwner) {
+    return this._edit(
+      'favorites',
+      STORAGE_KEYS.FAVORITES,
+      (next) => {
+        const f = next.find((row) => row.id === id);
+        if (!f || !this.folders.some((row) => row.id === folderId)) return failed('收藏或收藏夹已变化，请重新选择');
+        f.folderId = folderId;
+        f.updatedAt = Date.now();
+        return { success: true };
+      },
+      expectedOwner
+    );
+  }
+
+  updateNote(id, note, expectedOwner) {
+    return this._edit(
+      'favorites',
+      STORAGE_KEYS.FAVORITES,
+      (next) => {
+        const f = next.find((row) => row.id === id);
+        if (!f) return failed('未找到收藏记录');
+        if (typeof note !== 'string' || note.length > 2000) return failed('笔记最多2000字');
+        f.note = note;
+        f.updatedAt = Date.now();
+        return { success: true };
+      },
+      expectedOwner
+    );
+  }
+
+  recordReview() {
+    return failed('请通过可靠作答记录复习', 'RELIABLE_REVIEW_REQUIRED');
+  }
+
   getFolders() {
-    this.init();
-
+    const rows = this.getFavorites();
     return this.folders.map((folder) => ({
-      ...folder,
-      count: this.favorites.filter((f) => f.folderId === folder.id).length
+      ...clone(folder),
+      favoriteOwnerId: this.ownerId,
+      count: rows.filter((f) => f.folderId === folder.id).length
     }));
   }
 
-  /**
-   * 创建收藏夹
-   * @param {Object} folderData - 收藏夹数据
-   * @returns {Object} 创建结果
-   */
-  createFolder(folderData) {
-    this.init();
-
-    const folder = {
-      id: this._generateId(),
-      name: folderData.name,
-      icon: folderData.icon || 'folder',
-      color: folderData.color || '#9E9E9E',
-      isDefault: false,
-      createdAt: Date.now()
-    };
-
-    this.folders.push(folder);
-    this._saveFolders();
-
-    return { success: true, folder };
+  createFolder(data, expectedOwner) {
+    return this._edit(
+      'folders',
+      STORAGE_KEYS.FAVORITE_FOLDERS,
+      (next) => {
+        if (typeof data?.name !== 'string' || !data.name.trim() || data.name.length > 50)
+          return failed('收藏夹名称需在50字以内');
+        const folder = {
+          id: this._generateId(),
+          name: data.name.trim(),
+          icon: data.icon || 'folder',
+          color: data.color || '#9E9E9E',
+          isDefault: false,
+          createdAt: Date.now()
+        };
+        next.push(folder);
+        return { success: true, folder: clone(folder) };
+      },
+      expectedOwner
+    );
   }
 
-  /**
-   * 删除收藏夹
-   * @param {string} folderId - 收藏夹ID
-   * @returns {Object} 删除结果
-   */
-  deleteFolder(folderId) {
-    this.init();
-
-    const folder = this.folders.find((f) => f.id === folderId);
-    if (!folder) {
-      return { success: false, error: '收藏夹不存在' };
-    }
-
-    if (folder.isDefault) {
-      return { success: false, error: '默认收藏夹不能删除' };
-    }
-
-    // 将该收藏夹的题目移到默认收藏夹
-    this.favorites.forEach((f) => {
-      if (f.folderId === folderId) {
-        f.folderId = 'default';
-      }
-    });
-
-    // 删除收藏夹
-    this.folders = this.folders.filter((f) => f.id !== folderId);
-
-    this._saveFavorites();
-    this._saveFolders();
-
-    return { success: true };
+  renameFolder(id, name, expectedOwner) {
+    return this._edit(
+      'folders',
+      STORAGE_KEYS.FAVORITE_FOLDERS,
+      (next) => {
+        const folder = next.find((f) => f.id === id);
+        if (!folder || folder.isDefault || typeof name !== 'string' || !name.trim() || name.length > 50)
+          return failed('收藏夹名称或记录已变化');
+        folder.name = name.trim();
+        return { success: true };
+      },
+      expectedOwner
+    );
   }
 
-  // ==================== 统计分析 ====================
+  deleteFolder(id, expectedOwner) {
+    // 只持久化收藏夹的删除；无归属的条目在读取时归入默认夹，原记录无需两次写入。
+    return this._edit(
+      'folders',
+      STORAGE_KEYS.FAVORITE_FOLDERS,
+      (next) => {
+        const index = next.findIndex((f) => f.id === id);
+        if (index < 0 || next[index].isDefault) return failed('收藏夹不存在或不可删除');
+        next.splice(index, 1);
+        return { success: true };
+      },
+      expectedOwner
+    );
+  }
 
-  /**
-   * 获取收藏统计
-   * @returns {Object} 统计数据
-   */
   getStats() {
-    this.init();
-
-    const totalCount = this.favorites.length;
-    const reviewedCount = this.favorites.filter((f) => f.reviewCount > 0).length;
-    const withNoteCount = this.favorites.filter((f) => f.note && f.note.length > 0).length;
-
-    // 按分类统计
-    const categoryStats = {};
-    for (const fav of this.favorites) {
-      const cat = fav.category;
-      if (!categoryStats[cat]) {
-        categoryStats[cat] = 0;
-      }
-      categoryStats[cat]++;
-    }
-
-    // 按收藏夹统计
-    const folderStats = {};
-    for (const folder of this.folders) {
-      folderStats[folder.id] = {
-        ...folder,
-        count: this.favorites.filter((f) => f.folderId === folder.id).length
-      };
-    }
-
-    // 最近收藏
-    const recentFavorites = [...this.favorites].sort((a, b) => b.createdAt - a.createdAt).slice(0, 5);
-
-    // 待复习（超过7天未复习）
-    const needReview = this.favorites.filter((f) => {
-      if (!f.lastReviewAt) return true;
-      const daysSinceReview = (Date.now() - f.lastReviewAt) / (1000 * 60 * 60 * 24);
-      return daysSinceReview > 7;
-    });
-
+    const rows = this.getFavorites(),
+      categoryStats = {},
+      folderStats = {};
+    for (const f of rows) categoryStats[f.category || '未分类'] = (categoryStats[f.category || '未分类'] || 0) + 1;
+    for (const folder of this.folders)
+      folderStats[folder.id] = { ...clone(folder), count: rows.filter((f) => f.folderId === folder.id).length };
     return {
-      totalCount,
-      reviewedCount,
-      withNoteCount,
+      totalCount: rows.length,
+      reviewedCount: rows.filter((f) => f.reviewCount > 0).length,
+      withNoteCount: rows.filter((f) => f.note).length,
       categoryStats,
       folderStats,
-      recentFavorites,
-      needReviewCount: needReview.length,
-      needReview: needReview.slice(0, 10)
+      recentFavorites: clone(rows.slice(0, 5)),
+      needReviewCount: 0,
+      needReview: [],
+      scoringAuthority: false,
+      legacyReviewCount: rows.filter((f) => f.reviewCount > 0).length
     };
   }
 
-  // ==================== 私有方法 ====================
+  preparePractice(id, expectedOwner) {
+    if (!this.init() || expectedOwner !== this.ownerId) return failed('账户已变化，请重新选择', 'CONTEXT_CHANGED');
+    const matches = this.favorites.filter((f) => f.id === id);
+    if (matches.length !== 1 || !matches[0].quizOriginal)
+      return failed('原题资料不完整，请返回题库重新选择', 'ORIGINAL_UNAVAILABLE');
+    const original = matches[0].quizOriginal;
+    const question = prepareQuizQuestion({ ...original.fields, id: original.id, quizOriginal: original });
+    const row = matches[0];
+    if (
+      !question ||
+      row.questionContent !== question.question ||
+      row.answer !== question.answer ||
+      quizOriginalIdentity(row.options) !== quizOriginalIdentity(question.options)
+    )
+      return failed('原题资料已变化，请返回重新选择', 'ORIGINAL_UNAVAILABLE');
+    return { success: true, question, ownerId: this.ownerId };
+  }
+
+  startPractice(id, expectedOwner, { referenceViewed = false } = {}) {
+    const prepared = this.preparePractice(id, expectedOwner);
+    if (!prepared.success) return prepared;
+    if (referenceViewed === true)
+      prepared.question.legacyReviewContext = { contract: 'legacy-review-view-v1', referenceViewed: true };
+    const handoff = createSinglePracticeHandoff(prepared.question, expectedOwner);
+    if (!handoff || owner() !== expectedOwner) return failed('账户已变化，请重新选择', 'CONTEXT_CHANGED');
+    try {
+      if (storageService.save('temp_practice_question', handoff, true) !== true) return failed('练习未保存，请重试');
+      if (owner() !== expectedOwner) return failed('账户已变化，请重新选择', 'CONTEXT_CHANGED');
+      const saved = storageService.get('temp_practice_question', null, { migrateLegacy: false, throwOnError: true });
+      if (
+        !readSinglePracticeHandoff(saved, handoff.id, expectedOwner) ||
+        quizOriginalIdentity(saved) !== quizOriginalIdentity(handoff)
+      )
+        return failed('练习未确认保存，请重试');
+      return { success: true, handoffId: handoff.id, ownerId: expectedOwner };
+    } catch (_error) {
+      return failed('练习未保存，请重试');
+    }
+  }
 
   _generateId() {
     return 'fav_' + Date.now().toString(36) + Math.random().toString(36).substring(2, 7);
   }
-
   _showToast(message) {
     try {
-      if (typeof uni !== 'undefined') {
-        toast.info(message, 1500);
-      }
-    } catch (e) {
-      logger.warn('[QuestionFavorite] 显示提示失败:', e);
-    }
-  }
-
-  _loadFavorites() {
-    try {
-      if (typeof uni !== 'undefined') {
-        this.favorites = storageService.get(STORAGE_KEYS.FAVORITES, []);
-      }
+      toast.info(message, 1500);
     } catch (_e) {
-      this.favorites = [];
-    }
-  }
-
-  _saveFavorites() {
-    try {
-      if (typeof uni !== 'undefined') {
-        storageService.save(STORAGE_KEYS.FAVORITES, this.favorites);
-      }
-    } catch (_e) {
-      logger.warn('[QuestionFavorite] 保存收藏失败:', _e);
-    }
-  }
-
-  _loadFolders() {
-    try {
-      if (typeof uni !== 'undefined') {
-        const saved = storageService.get(STORAGE_KEYS.FAVORITE_FOLDERS);
-        if (saved && saved.length > 0) {
-          this.folders = saved;
-        }
-      }
-    } catch (_e) {
-      this.folders = [...DEFAULT_FOLDERS];
-    }
-  }
-
-  _saveFolders() {
-    try {
-      if (typeof uni !== 'undefined') {
-        storageService.save(STORAGE_KEYS.FAVORITE_FOLDERS, this.folders);
-      }
-    } catch (_e) {
-      logger.warn('[QuestionFavorite] 保存收藏夹失败:', _e);
-    }
-  }
-
-  _loadSettings() {
-    try {
-      if (typeof uni !== 'undefined') {
-        const saved = storageService.get(STORAGE_KEYS.FAVORITE_SETTINGS);
-        if (saved) {
-          this.settings = { ...this.settings, ...saved };
-        }
-      }
-    } catch (_e) {
-      logger.warn('[QuestionFavorite] 加载设置失败:', _e);
+      logger.warn('[QuestionFavorite] 显示提示失败');
     }
   }
 }
@@ -487,12 +432,12 @@ export function addFavorite(question, folderId) {
   return questionFavoriteManager.addFavorite(question, folderId);
 }
 
-export function removeFavorite(questionId) {
-  return questionFavoriteManager.removeFavorite(questionId);
+export function removeFavorite(questionId, expectedOwner) {
+  return questionFavoriteManager.removeFavorite(questionId, expectedOwner);
 }
 
-export function toggleFavorite(question, folderId) {
-  return questionFavoriteManager.toggleFavorite(question, folderId);
+export function toggleFavorite(question, folderId, expectedOwner) {
+  return questionFavoriteManager.toggleFavorite(question, folderId, expectedOwner);
 }
 
 export function isFavorited(questionId) {
@@ -511,16 +456,16 @@ export function getFavoriteFolders() {
   return questionFavoriteManager.getFolders();
 }
 
-export function createFolder(folderData) {
-  return questionFavoriteManager.createFolder(folderData);
+export function createFolder(folderData, expectedOwner) {
+  return questionFavoriteManager.createFolder(folderData, expectedOwner);
 }
 
-export function moveToFolder(favoriteId, targetFolderId) {
-  return questionFavoriteManager.moveToFolder(favoriteId, targetFolderId);
+export function moveToFolder(favoriteId, targetFolderId, expectedOwner) {
+  return questionFavoriteManager.moveToFolder(favoriteId, targetFolderId, expectedOwner);
 }
 
-export function updateNote(favoriteId, note) {
-  return questionFavoriteManager.updateNote(favoriteId, note);
+export function updateNote(favoriteId, note, expectedOwner) {
+  return questionFavoriteManager.updateNote(favoriteId, note, expectedOwner);
 }
 
 export function getFavoriteStats() {

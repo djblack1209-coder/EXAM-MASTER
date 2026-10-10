@@ -3,6 +3,7 @@
  * T001/T006: 核心服务层测试覆盖
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import * as practiceApi from '@/services/api/domains/practice.api.js';
 
 // Mock logger
 vi.mock('@/utils/logger.js', () => ({
@@ -10,21 +11,435 @@ vi.mock('@/utils/logger.js', () => ({
   default: { log: vi.fn(), warn: vi.fn(), error: vi.fn(), info: vi.fn(), debug: vi.fn() }
 }));
 
-// Mock lafService
-vi.mock('@/services/lafService.js', () => ({
-  lafService: {
-    request: vi.fn().mockResolvedValue({ code: 0, data: {} })
-  }
+// 存储单元测试隔离现有练习 API，允许专门验证存储运行时的延迟挂载。
+vi.mock('@/services/api/domains/practice.api.js', () => ({
+  addMistake: vi.fn().mockResolvedValue({ code: 0, data: {} }),
+  getMistakes: vi.fn().mockResolvedValue({ code: 0, data: [] }),
+  removeMistake: vi.fn().mockResolvedValue({ code: 0 }),
+  batchRemoveMistakes: vi.fn().mockResolvedValue({ code: 0 }),
+  updateMistakeStatus: vi.fn().mockResolvedValue({ code: 0 }),
+  updateMistakeFields: vi.fn().mockResolvedValue({ code: 0 }),
+  batchSyncMistakes: vi.fn().mockResolvedValue({ code: 0 })
 }));
 
 describe('storageService', () => {
   let storageService;
 
   beforeEach(async () => {
-    vi.clearAllMocks();
+    Object.values(practiceApi).forEach((method) => method.mockReset());
+    practiceApi.addMistake.mockResolvedValue({ code: 0, data: {} });
+    practiceApi.getMistakes.mockResolvedValue({ code: 0, data: [] });
+    practiceApi.removeMistake.mockResolvedValue({ ok: true, deleted: 1, code: 0 });
+    practiceApi.batchRemoveMistakes.mockResolvedValue({ ok: true, deleted: 1, code: 0 });
+    practiceApi.updateMistakeStatus.mockResolvedValue({ code: 0 });
+    practiceApi.updateMistakeFields.mockResolvedValue({ code: 0 });
+    practiceApi.batchSyncMistakes.mockResolvedValue({ code: 0 });
     global.__mockStorage = {};
     const mod = await import('@/services/storageService.js');
     storageService = mod.storageService;
+  });
+
+  describe('旧错题请求的账户与保存边界', () => {
+    it.each(['reply', 'throw', 'token'])('迟到新增 %s 不写入后来账户或新登录会话', async (outcome) => {
+      uni.setStorageSync('EXAM_USER_ID', 'writer-owner');
+      storageService.save('EXAM_TOKEN', 'original-session');
+      let resolve, reject;
+      practiceApi.addMistake.mockImplementationOnce(
+        () =>
+          new Promise((done, fail) => {
+            resolve = done;
+            reject = fail;
+          })
+      );
+      const pending = storageService.addMistake({ question: '必须留在原账户的题目', user_answer: 'B' });
+      await vi.waitFor(() => expect(resolve).toBeTypeOf('function'));
+      if (outcome === 'token') storageService.save('EXAM_TOKEN', 'new-session');
+      else uni.setStorageSync('EXAM_USER_ID', 'later-owner');
+      storageService.save('mistake_book', [{ id: 'keep', question: '后来会话原件' }], true);
+      const before = JSON.stringify(global.__mockStorage);
+      if (outcome === 'throw') reject(new Error('ISOLATED_OFFLINE'));
+      else resolve({ code: 0, id: 'old-cloud-id' });
+      expect(await pending).toMatchObject({ success: false, code: 'CONTEXT_CHANGED' });
+      expect(JSON.stringify(global.__mockStorage)).toBe(before);
+    });
+    it('排队新增固定调用时的原文，串行读取不能丢掉新保存条目', async () => {
+      uni.setStorageSync('EXAM_USER_ID', 'writer-owner');
+      let release;
+      storageService._mistakeBookMutex = new Promise((done) => {
+        release = done;
+      });
+      const original = { question: '明确选择时的原题', options: ['原选项'] };
+      practiceApi.addMistake.mockResolvedValueOnce({ code: 0, id: 'saved-one' });
+      const pending = storageService.addMistake(original);
+      original.question = '后来修改的草稿';
+      original.options[0] = '后来选项';
+      release();
+      expect((await pending).success).toBe(true);
+      expect(practiceApi.addMistake.mock.calls.at(-1)[1]).toMatchObject({
+        question_content: '明确选择时的原题',
+        options: ['原选项']
+      });
+      expect(storageService.get('mistake_book')[0].question).toBe('明确选择时的原题');
+    });
+    it.each(['guest', 'cloud', 'offline'])('新增 %s 的本机保存失败不报成功且保留原件', async (mode) => {
+      if (mode !== 'guest') uni.setStorageSync('EXAM_USER_ID', 'writer-owner');
+      storageService.save('mistake_book', [{ id: 'keep', question: '受保护旧题' }], true);
+      const before = JSON.stringify(global.__mockStorage);
+      if (mode === 'cloud') practiceApi.addMistake.mockResolvedValueOnce({ code: 0, id: 'remote-saved' });
+      if (mode === 'offline') practiceApi.addMistake.mockRejectedValueOnce(new Error('ISOLATED_OFFLINE'));
+      const save = vi.spyOn(storageService, 'save').mockReturnValue(false);
+      try {
+        expect(await storageService.addMistake({ question: '新增题目原文' })).toMatchObject({
+          success: false,
+          code: 'STORAGE_FAILED',
+          ...(mode === 'cloud' ? { remoteSaved: true, id: 'remote-saved' } : {})
+        });
+        expect(JSON.stringify(global.__mockStorage)).toBe(before);
+      } finally {
+        save.mockRestore();
+      }
+    });
+    it.each([true, false])('旧掌握标记 %s 不能凭空新增学习事实', async (mastered) => {
+      uni.setStorageSync('EXAM_USER_ID', 'writer-owner');
+      storageService.save(
+        'mistake_book',
+        [{ id: 0, question: '旧题原文', is_mastered: false, last_practice_time: 17 }],
+        true
+      );
+      const before = JSON.stringify(global.__mockStorage);
+      expect(await storageService.updateMistakeStatus(0, mastered)).toMatchObject({
+        success: false,
+        code: 'RELIABLE_REVIEW_REQUIRED'
+      });
+      expect(practiceApi.updateMistakeStatus).not.toHaveBeenCalled();
+      expect(JSON.stringify(global.__mockStorage)).toBe(before);
+    });
+    it.each(['read', 'write'])('冲突处理迟到的 %s 不改变新账户且不继续旧请求', async (step) => {
+      uni.setStorageSync('EXAM_USER_ID', 'writer-owner');
+      const row = {
+        id: 'same',
+        question_content: '完整原题',
+        user_answer: 'B',
+        tags: ['需保存的标签'],
+        sync_status: 'conflict'
+      };
+      storageService.save('mistake_book', [row], true);
+      if (step === 'write') practiceApi.getMistakes.mockResolvedValueOnce({ code: 0, data: [row] });
+      let resolve;
+      practiceApi[step === 'read' ? 'getMistakes' : 'updateMistakeFields'].mockImplementationOnce(
+        () =>
+          new Promise((done) => {
+            resolve = done;
+          })
+      );
+      const pending = storageService.resolveConflict('same', 'local');
+      await vi.waitFor(() => expect(resolve).toBeTypeOf('function'));
+      uni.setStorageSync('EXAM_USER_ID', 'later-owner');
+      storageService.save('mistake_book', [{ id: 'same', question: '另一个账户原件' }], true);
+      const before = JSON.stringify(global.__mockStorage);
+      resolve(step === 'read' ? { code: 0, data: [row] } : { code: 0 });
+      expect(await pending).toMatchObject({ success: false, code: 'CONTEXT_CHANGED' });
+      expect(JSON.stringify(global.__mockStorage)).toBe(before);
+      if (step === 'read') expect(practiceApi.updateMistakeFields).not.toHaveBeenCalled();
+    });
+    it('冲突读不到精确云端编号时不能用旧副本伪装解决', async () => {
+      uni.setStorageSync('EXAM_USER_ID', 'writer-owner');
+      const row = {
+        id: 'same',
+        question: '旧题',
+        sync_status: 'conflict',
+        _conflict_cloud_data: { id: 'same', question: '旧云端副本' }
+      };
+      storageService.save('mistake_book', [row], true);
+      practiceApi.getMistakes.mockResolvedValueOnce({ code: 0, data: { list: [{ id: 'other', question: '其他题' }] } });
+      const before = JSON.stringify(global.__mockStorage);
+      expect(await storageService.resolveConflict('same', 'cloud')).toMatchObject({
+        success: false,
+        code: 'CONFLICT_UNCONFIRMED'
+      });
+      expect(JSON.stringify(global.__mockStorage)).toBe(before);
+    });
+    it('材料或原答不同的冲突不能自动拼接，失败保存不能修改原数组', async () => {
+      uni.setStorageSync('EXAM_USER_ID', 'writer-owner');
+      const row = {
+        id: 'same',
+        question_content: '相同题干',
+        passage: '第一版完整材料',
+        user_answer: 'B',
+        sync_status: 'conflict'
+      };
+      storageService.save('mistake_book', [row], true);
+      practiceApi.getMistakes.mockResolvedValueOnce({ code: 0, data: [{ ...row, passage: '第二版材料' }] });
+      const before = JSON.stringify(global.__mockStorage);
+      expect(await storageService.resolveConflict('same', 'merge')).toMatchObject({
+        success: false,
+        code: 'SOURCE_CONFLICT'
+      });
+      expect(practiceApi.updateMistakeFields).not.toHaveBeenCalled();
+      expect(JSON.stringify(global.__mockStorage)).toBe(before);
+      practiceApi.getMistakes.mockResolvedValueOnce({ code: 0, data: { list: [row] } });
+      const save = vi.spyOn(storageService, 'save').mockReturnValue(false);
+      try {
+        expect(await storageService.resolveConflict('same', 'cloud')).toMatchObject({
+          success: false,
+          code: 'STORAGE_FAILED'
+        });
+        expect(JSON.stringify(global.__mockStorage)).toBe(before);
+      } finally {
+        save.mockRestore();
+      }
+    });
+    it('同步响应不明确时保留待办，不立即逐条重复发送', async () => {
+      uni.setStorageSync('EXAM_USER_ID', 'writer-owner');
+      storageService.save('mistake_book', [{ id: 'local_one', question: '待同步原文', sync_status: 'pending' }], true);
+      practiceApi.batchSyncMistakes.mockRejectedValueOnce(new Error('OBSERVATION_TIMEOUT'));
+      const before = JSON.stringify(global.__mockStorage);
+      expect(await storageService.syncPendingMistakes()).toMatchObject({ success: false, code: 'SYNC_UNCONFIRMED' });
+      expect(practiceApi.addMistake).not.toHaveBeenCalled();
+      expect(JSON.stringify(global.__mockStorage)).toBe(before);
+    });
+    it('直接缓存变动和重复云端编号都不能覆盖待办原件', async () => {
+      uni.setStorageSync('EXAM_USER_ID', 'writer-owner');
+      const rows = [
+        { id: 'local_one', question: '第一份原件', sync_status: 'pending' },
+        { id: 'local_two', question: '第二份原件', sync_status: 'pending' }
+      ];
+      storageService.save('mistake_book', rows, true);
+      const before = JSON.stringify(global.__mockStorage);
+      practiceApi.batchSyncMistakes.mockResolvedValueOnce({
+        code: 0,
+        results: rows.map((row) => ({ oldId: row.id, newId: 'same-cloud-id', success: true }))
+      });
+      expect(await storageService.syncPendingMistakes()).toMatchObject({ success: false, code: 'SYNC_UNCONFIRMED' });
+      expect(JSON.stringify(global.__mockStorage)).toBe(before);
+      let resolve;
+      practiceApi.batchSyncMistakes.mockImplementationOnce(
+        () =>
+          new Promise((done) => {
+            resolve = done;
+          })
+      );
+      const pending = storageService.syncPendingMistakes();
+      await vi.waitFor(() => expect(resolve).toBeTypeOf('function'));
+      storageService.save('mistake_book', [...rows, { id: 'later', question: '后来新增的原文' }], true);
+      const changed = JSON.stringify(global.__mockStorage);
+      resolve({ code: 0, results: [{ oldId: 'local_one', newId: 'cloud_one', success: true }] });
+      expect(await pending).toMatchObject({ success: false, code: 'CONTEXT_CHANGED', remoteSynced: 1 });
+      expect(JSON.stringify(global.__mockStorage)).toBe(changed);
+    });
+    it('冲突批处理在账户变化后不再处理下一个同名编号', async () => {
+      uni.setStorageSync('EXAM_USER_ID', 'writer-owner');
+      storageService.save(
+        'mistake_book',
+        ['one', 'two'].map((id) => ({ id, question_content: '相同原文', sync_status: 'conflict' })),
+        true
+      );
+      let resolve;
+      practiceApi.getMistakes.mockImplementationOnce(
+        () =>
+          new Promise((done) => {
+            resolve = done;
+          })
+      );
+      const pending = storageService.resolveAllConflicts();
+      await vi.waitFor(() => expect(resolve).toBeTypeOf('function'));
+      uni.setStorageSync('EXAM_USER_ID', 'later-owner');
+      storageService.save('mistake_book', [{ id: 'two', question: '新账户同名原件', sync_status: 'conflict' }], true);
+      const before = JSON.stringify(global.__mockStorage);
+      resolve({ code: 0, data: [{ id: 'one', question_content: '相同原文' }] });
+      expect(await pending).toMatchObject({ success: false, code: 'CONTEXT_CHANGED', resolved: 0 });
+      expect(practiceApi.getMistakes).toHaveBeenCalledTimes(1);
+      expect(practiceApi.updateMistakeFields).not.toHaveBeenCalled();
+      expect(JSON.stringify(global.__mockStorage)).toBe(before);
+    });
+    it('已取消响应不触发本机降级或修改记录', async () => {
+      uni.setStorageSync('EXAM_USER_ID', 'writer-owner');
+      storageService.save('mistake_book', [{ id: 'keep', question: '原件' }], true);
+      const before = JSON.stringify(global.__mockStorage);
+      practiceApi.addMistake.mockResolvedValueOnce({ success: false, error: { error: { errorType: 'cancelled' } } });
+      expect(await storageService.addMistake({ question: '取消的新增' })).toMatchObject({
+        success: false,
+        code: 'CONTEXT_CHANGED'
+      });
+      expect(JSON.stringify(global.__mockStorage)).toBe(before);
+    });
+    it('新增与读取共用队列，成功原件不被迟到分页擦掉', async () => {
+      uni.setStorageSync('EXAM_USER_ID', 'writer-owner');
+      let resolve;
+      practiceApi.addMistake.mockImplementationOnce(
+        () =>
+          new Promise((done) => {
+            resolve = done;
+          })
+      );
+      const adding = storageService.addMistake({ question: '完整新增原件', user_answer: 'B' });
+      await vi.waitFor(() => expect(resolve).toBeTypeOf('function'));
+      practiceApi.getMistakes.mockResolvedValueOnce({ code: 0, data: [] });
+      const reading = storageService.getMistakes();
+      expect(practiceApi.getMistakes).not.toHaveBeenCalled();
+      resolve({ code: 0, id: 'cloud-original' });
+      expect((await adding).success).toBe(true);
+      await reading;
+      expect(storageService.get('mistake_book')).toEqual([
+        expect.objectContaining({ id: 'cloud-original', question: '完整新增原件', user_answer: 'B' })
+      ]);
+    });
+    it('相同原件仅合并元数据；未确认的写入仍保留冲突', async () => {
+      uni.setStorageSync('EXAM_USER_ID', 'writer-owner');
+      const local = {
+        id: 'same',
+        question_content: '相同完整原文',
+        user_answer: 'B',
+        tags: ['本机标签'],
+        sync_status: 'conflict',
+        updated_at: 2
+      };
+      const cloud = { ...local, tags: ['云端标签'], updated_at: 1, sync_status: 'synced' };
+      storageService.save('mistake_book', [local], true);
+      practiceApi.getMistakes.mockResolvedValueOnce({ code: 0, data: { list: [cloud] } });
+      practiceApi.updateMistakeFields.mockResolvedValueOnce({ code: 500, success: false });
+      const before = JSON.stringify(global.__mockStorage);
+      expect(await storageService.resolveConflict('same', 'merge')).toMatchObject({
+        success: false,
+        code: 'CONFLICT_UNCONFIRMED'
+      });
+      expect(JSON.stringify(global.__mockStorage)).toBe(before);
+      practiceApi.getMistakes.mockResolvedValueOnce({ code: 0, data: [cloud] });
+      practiceApi.updateMistakeFields.mockResolvedValueOnce({ code: 0, success: true });
+      expect(await storageService.resolveConflict('same', 'merge')).toMatchObject({
+        success: true,
+        cloudPersisted: true
+      });
+      expect(storageService.get('mistake_book')[0]).toMatchObject({
+        question_content: local.question_content,
+        user_answer: 'B',
+        tags: ['本机标签', '云端标签'],
+        sync_status: 'synced'
+      });
+      expect(practiceApi.updateMistakeFields.mock.calls.at(-1)[2]).toEqual({ tags: ['本机标签', '云端标签'] });
+      storageService.save('mistake_book', [local], true);
+      practiceApi.getMistakes.mockResolvedValueOnce({
+        code: 0,
+        data: [{ ...cloud, review_count: 5, is_mastered: true }]
+      });
+      practiceApi.updateMistakeFields.mockClear();
+      const protectedBook = JSON.stringify(global.__mockStorage);
+      expect(await storageService.resolveConflict('same', 'merge')).toMatchObject({
+        success: false,
+        code: 'LEGACY_STATE_CONFLICT'
+      });
+      expect(practiceApi.updateMistakeFields).not.toHaveBeenCalled();
+      expect(JSON.stringify(global.__mockStorage)).toBe(protectedBook);
+    });
+    it('登录后的历史读取与待办同步不迁移无归属的访客原件', async () => {
+      storageService.save('mistake_book', [{ id: 'guest-only', question: '访客原文', sync_status: 'pending' }], true);
+      const guest = global.__mockStorage.mistake_book;
+      uni.setStorageSync('EXAM_USER_ID', 'signed-in-owner');
+      practiceApi.getMistakes.mockRejectedValueOnce(new Error('ISOLATED_OFFLINE'));
+      expect((await storageService.getMistakes()).list).toEqual([]);
+      expect((await storageService.syncPendingMistakes()).synced).toBe(0);
+      expect(practiceApi.batchSyncMistakes).not.toHaveBeenCalled();
+      expect(global.__mockStorage.mistake_book).toEqual(guest);
+    });
+    it('待办在确认之后或同步等待期间变化时，不回写另一账户或发送后来加入的原文', async () => {
+      uni.setStorageSync('EXAM_USER_ID', 'sync-owner');
+      const expected = [{ id: 'local_old', question: '明确确认的原文', sync_status: 'pending' }];
+      storageService.save(
+        'mistake_book',
+        [...expected, { id: 'local_new', question: '后来加入的原文', sync_status: 'pending' }],
+        true
+      );
+      expect(await storageService.syncPendingMistakes({ expectedRecords: expected })).toMatchObject({
+        success: false,
+        code: 'CONTEXT_CHANGED'
+      });
+      expect(practiceApi.batchSyncMistakes).not.toHaveBeenCalled();
+      storageService.save('mistake_book', expected, true);
+      let resolve;
+      practiceApi.batchSyncMistakes.mockImplementationOnce(
+        () =>
+          new Promise((done) => {
+            resolve = done;
+          })
+      );
+      const pending = storageService.syncPendingMistakes({ expectedRecords: expected });
+      await vi.waitFor(() => expect(resolve).toBeTypeOf('function'));
+      uni.setStorageSync('EXAM_USER_ID', 'later-owner');
+      storageService.save('mistake_book', [{ id: 'local_old', question: '新账户原件' }], true);
+      const before = JSON.stringify(global.__mockStorage);
+      resolve({ code: 0, data: { results: [{ localId: 'local_old', success: true, id: 'remote_old' }] } });
+      expect(await pending).toMatchObject({ success: false, code: 'CONTEXT_CHANGED' });
+      expect(JSON.stringify(global.__mockStorage)).toBe(before);
+    });
+    it('分页读取保留尚未载入的缓存原条目，只更新本页的相同编号', async () => {
+      uni.setStorageSync('EXAM_USER_ID', 'page-owner');
+      const rows = Array.from({ length: 80 }, (_, id) => ({ id: `row-${id}`, question: `原题${id}` }));
+      storageService.save('mistake_book', rows, true);
+      practiceApi.getMistakes.mockResolvedValueOnce({
+        code: 0,
+        data: { list: [{ ...rows[0], question: '当前版本' }], total: 80, hasMore: true }
+      });
+      const result = await storageService.getMistakes(1, 1);
+      expect(result.list).toHaveLength(1);
+      const cached = storageService.get('mistake_book');
+      expect(cached).toHaveLength(80);
+      expect(cached.find((row) => row.id === 'row-0').question).toBe('当前版本');
+      expect(cached.find((row) => row.id === 'row-79')).toEqual(rows[79]);
+    });
+    it.each(['removeMistake', 'batchRemoveMistakes', 'getMistakes'])(
+      '迟到 %s 不修改切换后的账户缓存',
+      async (method) => {
+        uni.setStorageSync('EXAM_USER_ID', 'request-owner');
+        storageService.save('mistake_book', [{ id: 'shared-id', question: '原账户题目' }], true);
+        let resolve;
+        practiceApi[method].mockImplementationOnce(
+          () =>
+            new Promise((done) => {
+              resolve = done;
+            })
+        );
+        const pending = storageService[method](
+          ...(method === 'getMistakes' ? [] : [method === 'removeMistake' ? 'shared-id' : ['shared-id']])
+        );
+        await vi.waitFor(() => expect(resolve).toBeTypeOf('function'));
+        uni.setStorageSync('EXAM_USER_ID', 'later-owner');
+        storageService.save('mistake_book', [{ id: 'shared-id', question: '新账户题目' }], true);
+        const before = JSON.stringify(global.__mockStorage);
+        resolve({ ok: true, deleted: 1, code: 0, data: [{ id: 'shared-id', question: '迟到旧题' }] });
+        expect(await pending).toMatchObject({ success: false, code: 'CONTEXT_CHANGED' });
+        expect(JSON.stringify(global.__mockStorage)).toBe(before);
+      }
+    );
+    it('队列等待期间账户变化时拒绝原删除，零远端请求', async () => {
+      uni.setStorageSync('EXAM_USER_ID', 'queue-owner');
+      let release;
+      storageService._mistakeBookMutex = new Promise((resolve) => {
+        release = resolve;
+      });
+      const pending = storageService.batchRemoveMistakes(['same']);
+      uni.setStorageSync('EXAM_USER_ID', 'later-owner');
+      storageService.save('mistake_book', [{ id: 'same', question: '受保护新条目' }], true);
+      const before = JSON.stringify(global.__mockStorage);
+      release();
+      expect(await pending).toMatchObject({ success: false, code: 'CONTEXT_CHANGED' });
+      expect(practiceApi.batchRemoveMistakes).not.toHaveBeenCalled();
+      expect(JSON.stringify(global.__mockStorage)).toBe(before);
+    });
+    it.each(['removeMistake', 'batchRemoveMistakes'])('本机保存失败时 %s 保留原条目且不报成功', async (method) => {
+      const original = [
+        { id: 0, question: '编号零原题' },
+        { id: 'keep', question: '未选择条目' }
+      ];
+      storageService.save('mistake_book', original, true);
+      const save = vi.spyOn(storageService, 'save').mockReturnValue(false);
+      try {
+        const result = await storageService[method](method === 'removeMistake' ? 0 : [0]);
+        expect(result.success).toBe(false);
+        expect(storageService.get('mistake_book')).toEqual(original);
+      } finally {
+        save.mockRestore();
+      }
+    });
   });
 
   describe('save / get 基础操作', () => {
@@ -66,6 +481,39 @@ describe('storageService', () => {
       expect(global.__mockStorage.smart_review_ids).toEqual(ids);
       expect(global.__mockStorage.u_user_001_smart_review_ids).toBeUndefined();
       expect(storageService.get('smart_review_ids', [])).toEqual(ids);
+    });
+
+    it('strict compat reads observe another window and reject malformed or unreadable originals', async () => {
+      const originalUni = global.uni,
+        originalWx = global.wx;
+      let readFailure;
+      try {
+        vi.resetModules();
+        delete global.uni;
+        delete global.wx;
+        const { storageService: strictStorage } = await import('@/services/storageService.js');
+        const key = '__exam_storage__:question_favorites';
+        strictStorage.save('question_favorites', [{ id: 'first' }], true);
+        expect(strictStorage.get('question_favorites')).toEqual([{ id: 'first' }]);
+        localStorage.setItem(key, JSON.stringify({ value: [{ id: 'other-window' }] }));
+        expect(strictStorage.get('question_favorites', [], { migrateLegacy: false, throwOnError: true })).toEqual([
+          { id: 'other-window' }
+        ]);
+        localStorage.setItem(key, '{broken original');
+        expect(() => strictStorage.get('question_favorites', [], { throwOnError: true })).toThrow();
+        expect(localStorage.getItem(key)).toBe('{broken original');
+        readFailure = vi.spyOn(localStorage, 'getItem').mockImplementation(() => {
+          throw Error('synthetic read failure');
+        });
+        expect(() => strictStorage.get('question_favorites', [], { throwOnError: true })).toThrow(
+          'synthetic read failure'
+        );
+      } finally {
+        readFailure?.mockRestore();
+        global.uni = originalUni;
+        global.wx = originalWx;
+        vi.resetModules();
+      }
     });
 
     it('模块加载后注入 uni 时仍写入当前运行时存储', async () => {

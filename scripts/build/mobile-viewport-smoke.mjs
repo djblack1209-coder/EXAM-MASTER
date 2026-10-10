@@ -32,8 +32,13 @@ function contentType(filePath) {
   if (filePath.endsWith('.css')) return 'text/css; charset=utf-8';
   if (filePath.endsWith('.json') || filePath.endsWith('.webmanifest')) return 'application/json; charset=utf-8';
   if (filePath.endsWith('.png')) return 'image/png';
+  if (/\.jpe?g$/.test(filePath)) return 'image/jpeg';
+  if (filePath.endsWith('.webp')) return 'image/webp';
   if (filePath.endsWith('.svg')) return 'image/svg+xml';
   if (filePath.endsWith('.ttf')) return 'font/ttf';
+  if (filePath.endsWith('.woff')) return 'font/woff';
+  if (filePath.endsWith('.woff2')) return 'font/woff2';
+  if (filePath.endsWith('.mp4')) return 'video/mp4';
   return 'application/octet-stream';
 }
 
@@ -45,8 +50,8 @@ function safeFilePath(root, requestPath) {
   return relativeToRoot && !relativeToRoot.startsWith('..') ? filePath : path.join(root, 'index.html');
 }
 
-function serveStatic(root) {
-  return new Promise((resolve) => {
+export function serveStatic(root, port = 0) {
+  return new Promise((resolve, reject) => {
     const server = http.createServer((req, res) => {
       const url = new URL(req.url || '/', 'http://127.0.0.1');
       const filePath = safeFilePath(root, url.pathname);
@@ -55,11 +60,46 @@ function serveStatic(root) {
         res.end('Not found');
         return;
       }
-      res.writeHead(200, { 'content-type': contentType(filePath) });
-      fs.createReadStream(filePath).pipe(res);
+      const size = fs.statSync(filePath).size;
+      const headers = { 'content-type': contentType(filePath), 'accept-ranges': 'bytes' };
+      let start = 0;
+      let end = size - 1;
+      const range = req.headers.range;
+      if (range) {
+        const match = /^bytes=(\d*)-(\d*)$/.exec(range);
+        if (match && (match[1] || match[2])) {
+          if (match[1]) {
+            start = Number(match[1]);
+            if (match[2]) end = Math.min(Number(match[2]), end);
+          } else {
+            start = Math.max(0, size - Number(match[2]));
+          }
+        }
+        if (
+          !match ||
+          (!match[1] && !match[2]) ||
+          !Number.isSafeInteger(start) ||
+          !Number.isSafeInteger(end) ||
+          start < 0 ||
+          start > end
+        ) {
+          res.writeHead(416, { ...headers, 'content-range': `bytes */${size}` });
+          res.end();
+          return;
+        }
+        headers['content-range'] = `bytes ${start}-${end}/${size}`;
+      }
+      headers['content-length'] = String(Math.max(0, end - start + 1));
+      res.writeHead(range ? 206 : 200, headers);
+      if (req.method === 'HEAD' || size === 0) {
+        res.end();
+        return;
+      }
+      fs.createReadStream(filePath, { start, end }).pipe(res);
     });
 
-    server.listen(0, '127.0.0.1', () => {
+    server.once('error', reject);
+    server.listen(port, '127.0.0.1', () => {
       resolve({ server, port: server.address().port });
     });
   });
@@ -82,10 +122,11 @@ async function runSmoke() {
 
   const { chromium } = await import('playwright');
   const { server, port } = await serveStatic(H5_ROOT);
-  const browser = await chromium.launch();
+  let browser;
   const failures = [];
 
   try {
+    browser = await chromium.launch();
     for (const viewport of MOBILE_VIEWPORTS) {
       for (const route of MOBILE_SMOKE_ROUTES) {
         const page = await browser.newPage({ viewport });
@@ -118,15 +159,21 @@ async function runSmoke() {
       }
     }
   } finally {
-    await browser.close();
-    await closeServer(server);
+    try {
+      await browser?.close();
+    } finally {
+      server.closeAllConnections?.();
+      await closeServer(server);
+    }
   }
 
   if (failures.length > 0) {
     console.error(`[mobile-viewport-smoke] FAIL\n${JSON.stringify(failures, null, 2)}`);
     process.exit(1);
   }
-  console.log(`[mobile-viewport-smoke] OK: ${MOBILE_VIEWPORTS.length} viewports x ${MOBILE_SMOKE_ROUTES.length} routes`);
+  console.log(
+    `[mobile-viewport-smoke] OK: ${MOBILE_VIEWPORTS.length} viewports x ${MOBILE_SMOKE_ROUTES.length} routes`
+  );
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {

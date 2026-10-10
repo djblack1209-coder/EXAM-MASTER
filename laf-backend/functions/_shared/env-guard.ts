@@ -18,11 +18,7 @@ export const IS_PRODUCTION = process.env.NODE_ENV === 'production';
  * Any category NOT on this list will be filtered OUT from
  * stats, browse, random, and search results in production mode.
  */
-export const PRODUCTION_CATEGORY_ALLOWLIST: ReadonlySet<string> = new Set([
-  '政治',
-  '英语',
-  '数学'
-]);
+export const PRODUCTION_CATEGORY_ALLOWLIST: ReadonlySet<string> = new Set(['政治', '英语', '数学']);
 
 /**
  * Check whether a category label is safe to serve in production.

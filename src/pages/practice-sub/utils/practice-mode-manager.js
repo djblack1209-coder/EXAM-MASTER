@@ -12,6 +12,7 @@
 import { storageService } from '@/services/storageService.js';
 import { questionQualityOptimizer } from './question-quality-optimizer.js';
 import { pickQuestions } from './smart-question-picker.js';
+import { getQuizAnswerRecordOutcome, summarizeQuizProgress } from '@/services/quiz-session-contract.js';
 
 // 练习模式配置
 const PRACTICE_MODES = {
@@ -223,9 +224,10 @@ class PracticeModeManager {
     const duration = endTime - session.startTime;
 
     // 计算得分和正确率
-    const correctCount = results.answeredQuestions.filter((q) => q.isCorrect).length;
-    const totalCount = results.answeredQuestions.length;
-    const accuracy = totalCount > 0 ? (correctCount / totalCount) * 100 : 0;
+    const progress = summarizeQuizProgress({ answeredQuestions: results.answeredQuestions });
+    const correctCount = progress.correctCount;
+    const totalCount = progress.answeredCount;
+    const accuracy = progress.accuracy;
 
     const summary = {
       sessionId: session.id,
@@ -238,6 +240,13 @@ class PracticeModeManager {
       answeredCount: totalCount,
       correctCount: correctCount,
       accuracy: accuracy,
+      scoringAuthority: false,
+      pendingCount: progress.pendingCount,
+      reviewedCount: progress.reviewedCount,
+      legacyCorrectCount: progress.legacyCorrectCount,
+      legacyWrongCount: progress.legacyWrongCount,
+      legacyAccuracy: progress.legacyAccuracy,
+      unclassifiedCount: progress.unclassifiedCount,
       timeLimit: session.timeLimit,
       timeUsed: duration,
       settings: session.settings,
@@ -404,7 +413,7 @@ class PracticeModeManager {
     const weakPoints = {};
 
     answeredQuestions.forEach((q) => {
-      if (!q.isCorrect && q.category) {
+      if (getQuizAnswerRecordOutcome(q) === 'wrong' && q.category) {
         weakPoints[q.category] = (weakPoints[q.category] || 0) + 1;
       }
     });

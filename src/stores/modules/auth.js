@@ -10,7 +10,11 @@ import { ref } from 'vue';
 import config from '@/config/index.js';
 const APP_CONFIG = { cacheKeys: config.storage.cacheKeys };
 import { storageService } from '../../services/storageService.js';
-import { sendEmailCode as apiSendEmailCode, login as apiLogin } from '../../services/api/domains/auth.api.js';
+import {
+  sendEmailCode as apiSendEmailCode,
+  login as apiLogin,
+  desktopOAuth as apiDesktopOAuth
+} from '../../services/api/domains/auth.api.js';
 // [AUDIT R432] 移除 _request-core 直接导入，login() 改用 auth.api.js 的 apiLogin
 import tokenRefreshPlugin from '@/utils/auth/token-refresh-plugin.js';
 import { logger } from '@/utils/logger.js';
@@ -72,7 +76,7 @@ export const useAuthStore = defineStore('auth', () => {
       // 2. 调用 Laf 登录接口（skipAuth: true 避免登录请求携带过期 token）
       // [AUDIT R432] 改用 auth.api.js 的 apiLogin，消除 _request-core 直接依赖
       try {
-        const res = await apiLogin({ type: 'weixin', code });
+        const res = await apiLogin({ type: 'wechat', code });
 
         if (res.code === 0 && res.data && res.data.userId) {
           const userId = res.data.userId;
@@ -94,7 +98,7 @@ export const useAuthStore = defineStore('auth', () => {
             setToken(res.data.token);
           }
 
-          logger.log('✅ Laf 登录成功:', userId);
+          logger.log('✅ Laf 登录成功');
 
           // ✅ 用户隔离：登录后迁移无前缀的旧数据到 u_${userId}_ 前缀
           storageService.migrateUserKeys();
@@ -140,8 +144,8 @@ export const useAuthStore = defineStore('auth', () => {
    * 登出
    */
   const logout = () => {
-    // ✅ 用户隔离：清理当前用户的隔离数据（必须在清除 userId 之前调用）
-    storageService.clearUserData();
+    // 清理会话缓存，学习事实留在账户隔离键中；删除由用户另行确认。
+    storageService.clearUserData(undefined, { preserveLearning: true });
     token.value = '';
     isLogin.value = false;
 
@@ -225,13 +229,13 @@ export const useAuthStore = defineStore('auth', () => {
 
   /**
    * 微信登录（小程序 / App）
-   * @param {Object} params - 登录参数（code, accessToken, openid, userInfo, platform 等）
+   * @param {Object} params - 一次性 code；App 必须同时指定 platform: 'app'
    */
   const loginByWechat = async (params) => {
     try {
       return await apiLogin({ type: 'wechat', ...params });
     } catch (err) {
-      logger.error('[AuthStore] loginByWechat 失败:', err);
+      logger.warn('[AuthStore] loginByWechat 未完成');
       throw err; // 重新抛出让调用方处理
     }
   };
@@ -244,20 +248,29 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       return await apiLogin({ type: 'wechat_h5', code });
     } catch (err) {
-      logger.error('[AuthStore] loginByWechatH5 失败:', err);
+      logger.warn('[AuthStore] loginByWechatH5 未完成');
       throw err; // 重新抛出让调用方处理
+    }
+  };
+
+  const loginByWechatWeb = async (code) => {
+    try {
+      return await apiLogin({ type: 'wechat_web', code });
+    } catch (err) {
+      logger.warn('[AuthStore] loginByWechatWeb 未完成');
+      throw err;
     }
   };
 
   /**
    * QQ 登录（小程序 / App / H5）
-   * @param {Object} params - 登录参数（code, platform, accessToken, openid, userInfo, redirectUri 等）
+   * @param {Object} params - H5/小程序一次性 code；App 仅 accessToken 与 platform: 'app'
    */
   const loginByQQ = async (params) => {
     try {
       return await apiLogin({ type: 'qq', ...params });
     } catch (err) {
-      logger.error('[AuthStore] loginByQQ 失败:', err);
+      logger.warn('[AuthStore] loginByQQ 未完成');
       throw err; // 重新抛出让调用方处理
     }
   };
@@ -270,7 +283,7 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       return await apiLogin({ type: 'qq', ...params });
     } catch (err) {
-      logger.error('[AuthStore] loginByQQH5 失败:', err);
+      logger.warn('[AuthStore] loginByQQH5 未完成');
       throw err; // 重新抛出让调用方处理
     }
   };
@@ -311,8 +324,10 @@ export const useAuthStore = defineStore('auth', () => {
     sendEmailCode,
     loginByWechat,
     loginByWechatH5,
+    loginByWechatWeb,
     loginByQQ,
     loginByQQH5,
-    loginByEmail
+    loginByEmail,
+    desktopOAuth: (params) => apiDesktopOAuth(params)
   };
 });

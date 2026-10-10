@@ -14,7 +14,7 @@ import * as http from 'http';
 import * as fs from 'fs';
 import * as path from 'path';
 import { fileURLToPath } from 'url';
-import { setCurrentResponse, closeDb, runWithResponse } from './cloud-shim.js';
+import { closeDb, runWithResponse } from './cloud-shim.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -32,14 +32,11 @@ app.set('trust proxy', 1);
 // ==================== 中间件 ====================
 
 // CORS 安全配置
-// ⚠️ 生产环境必须设置 ALLOWED_ORIGINS 环境变量（逗号分隔的域名列表）
-// 例: ALLOWED_ORIGINS=https://api.245334.xyz,https://nf98ia8qnt.sealosbja.site
-const DEFAULT_ORIGINS = [
-  'https://api.245334.xyz',
-  'https://nf98ia8qnt.sealosbja.site',
-  'http://localhost:5173',
-  'http://localhost:3000'
-];
+// 生产必须显式授权浏览器来源，不继承退休站点或开发来源。
+if (process.env.NODE_ENV === 'production' && !process.env.ALLOWED_ORIGINS?.trim()) {
+  throw new Error('ALLOWED_ORIGINS is required in production');
+}
+const DEFAULT_ORIGINS = ['http://localhost:5173', 'http://localhost:3000'];
 
 const allowedOrigins = process.env.ALLOWED_ORIGINS
   ? process.env.ALLOWED_ORIGINS.split(',').map((s) => s.trim())
@@ -66,9 +63,6 @@ app.use((_req, res, next) => {
 app.use(express.json({ limit: '5mb' }));
 app.use(express.urlencoded({ extended: true, limit: '5mb' }));
 
-// 大体积 JSON 解析器（仅用于头像上传/文档转换等需要 base64 的端点）
-const largeBodyParser = express.json({ limit: '50mb' });
-
 // 请求超时保护（120秒）
 app.use((req, _res, next) => {
   req.setTimeout(120000);
@@ -81,7 +75,7 @@ app.use('/storage', express.static(STORAGE_DIR));
 // 文件上传 (multer)
 const upload = multer({
   storage: multer.memoryStorage(),
-  limits: { fileSize: 20 * 1024 * 1024 } // 20MB
+  limits: { fileSize: 20 * 1024 * 1024, files: 1, fields: 20, parts: 21, fieldSize: 1024 * 1024 }
 });
 
 // ==================== 请求日志 ====================
@@ -238,8 +232,6 @@ async function registerFunctions() {
 
       // 设置 cloud.res 供 SSE 使用 (proxy-ai-stream)
       // 使用 AsyncLocalStorage 隔离并发请求，避免 SSE 数据发送到错误客户端
-      setCurrentResponse(res);
-
       try {
         const result = await runWithResponse(res, () => mod.default(ctx));
 
@@ -265,33 +257,20 @@ async function registerFunctions() {
     };
 
     // 需要大体积 JSON 的端点（头像上传、文档转换、OCR 等包含 base64 数据）
-    const LARGE_BODY_FUNCTIONS = new Set([
-      'upload-avatar',
-      'doc-convert',
-      'id-photo-segment-base64',
-      'ai-photo-search',
-      'photo-bg',
-      'proxy-ai'
-    ]);
-
     // 根据 YAML 元数据注册方法
     for (const method of methods) {
-      const middlewares: any[] = [];
-      if (LARGE_BODY_FUNCTIONS.has(funcName)) {
-        middlewares.push(largeBodyParser);
-      }
       switch (method) {
         case 'GET':
-          app.get(`/${funcName}`, ...middlewares, handler);
+          app.get(`/${funcName}`, handler);
           break;
         case 'POST':
-          app.post(`/${funcName}`, ...middlewares, upload.any(), handler);
+          app.post(`/${funcName}`, upload.any(), handler);
           break;
         case 'PUT':
-          app.put(`/${funcName}`, ...middlewares, handler);
+          app.put(`/${funcName}`, handler);
           break;
         case 'DELETE':
-          app.delete(`/${funcName}`, ...middlewares, handler);
+          app.delete(`/${funcName}`, handler);
           break;
       }
     }
@@ -337,6 +316,12 @@ async function main() {
   // Express 要求错误处理中间件有 4 个参数 (err, req, res, next)
   // 捕获所有路由/中间件中未处理的同步异常，防止进程崩溃
   app.use((err: any, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
+    if (err instanceof multer.MulterError || err.type === 'entity.too.large') {
+      return res.status(413).json({ code: 413, success: false, message: 'Request exceeds resource limits' });
+    }
+    if (err.type === 'entity.parse.failed') {
+      return res.status(400).json({ code: 400, success: false, message: 'Invalid JSON body' });
+    }
     console.error(`[express-error] ${err.stack || err.message || err}`);
     if (!res.headersSent) {
       res.status(500).json({

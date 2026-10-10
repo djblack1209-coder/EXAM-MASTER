@@ -1,30 +1,38 @@
 <template>
-  <view class="page-container" :class="{ 'dark-mode': isDark }">
+  <view ref="keyboardRoot" class="page-container" :class="{ 'dark-mode': isDark }">
     <view class="top-nav">
-      <view class="nav-back" @tap="goBack">
+      <button class="nav-back" role="button" aria-label="返回" tabindex="0" @tap="goBack">
         <text class="back-icon">
-          <BaseIcon name="arrow-left" :size="36" />
+          <BaseIcon name="arrow-left" :size="20" />
         </text>
-      </view>
+      </button>
       <text class="nav-title"> 用户协议 </text>
     </view>
 
     <scroll-view scroll-y class="content-scroll">
       <view class="content-section">
-        <text class="update-date"> 更新日期：2026年2月18日 </text>
+        <text class="update-date"> 更新日期：2026年9月29日 · 本地候选，真实收费关闭 </text>
 
         <view class="section">
           <text class="section-title"> 一、服务说明 </text>
           <text class="section-text">
-            Exam
-            Master（以下简称"本应用"）是一款面向考研学生的刷题学习小程序，提供公共课真题练习、错题复习、收藏和学习进度管理等功能。使用本应用即表示您同意本协议的全部条款。
+            {{
+              BRAND.name
+            }}（以下简称"本应用"）以对话为主要学习入口，提供讲解、作答记录、复习和计划视图，并保留公共课真题练习、错题复习、收藏和学习进度管理。公开版本的运营主体、适用规则和各端支付条款仍需审核。
           </text>
           <text class="section-text"> 本应用提供的内容用于学习辅助，不构成考试结果承诺或替代官方考试信息发布。 </text>
+          <text class="section-text">
+            核心学习工具免费，错题、基础统计和学习计划不以平台模型会员为条件。
+            可选订阅购买模型服务，价格、周期、周额度及结转尚未确定，当前仅开发沙箱且不产生实际收费。使用自带 API
+            不扣平台额度，上游费用由用户承担；本地资源有公开的大小和任务预算限制。
+          </text>
         </view>
 
         <view class="section">
           <text class="section-title"> 二、账号注册与使用 </text>
-          <text class="section-text"> 1. 您通过微信授权登录即可使用本应用。 </text>
+          <text class="section-text">
+            1. 本地学习无需账号；云同步及受保护接口需有效登录，模型调用需明确连接与数据共享授权。
+          </text>
           <text class="section-text"> 2. 您应妥善保管自己的账号信息，因账号保管不善导致的损失由您自行承担。 </text>
           <text class="section-text"> 3. 您不得将账号转让、出借给他人使用。 </text>
         </view>
@@ -41,7 +49,7 @@
         <view class="section">
           <text class="section-title"> 四、知识产权 </text>
           <text class="section-text">
-            本应用中的所有内容，包括但不限于文字、图片、软件、界面设计等，均受知识产权法律保护。未经授权，您不得复制、修改、传播本应用中的任何内容。
+            平台软件、第三方组件、题库与用户资料分别按各自授权使用。上传私人资料不表示将其转让给平台或同意公开；题目来源的内容可访问不代表可以已获授权使用。用户需持有相应使用权限。
           </text>
         </view>
 
@@ -86,130 +94,104 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import { onLoad } from '@dcloudio/uni-app';
-import { storageService } from '@/services/storageService.js';
+import { computed, ref, onMounted, onBeforeUnmount } from 'vue';
+import { BRAND } from '@/config/brand.js';
+import { useThemeStore } from '@/stores/modules/theme.js';
 import { safeNavigateBack } from '@/utils/safe-navigate';
+import { bindLearningKeyboard } from '@/services/learning/keyboard-controls.js';
 
-const isDark = ref(false);
-
-onLoad(() => {
-  const savedTheme = storageService.get('theme_mode', 'light');
-  isDark.value = savedTheme === 'dark';
+const keyboardRoot = ref(null);
+let unbindKeyboard = () => undefined;
+onMounted(() => {
+  unbindKeyboard = bindLearningKeyboard(keyboardRoot.value);
 });
+onBeforeUnmount(() => unbindKeyboard());
+
+const themeStore = useThemeStore();
+const isDark = computed(() => themeStore.isDark);
 
 function goBack() {
   safeNavigateBack();
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .page-container {
-  min-height: 100%;
   min-height: 100vh;
-  background: linear-gradient(
-    180deg,
-    var(--page-gradient-top) 0%,
-    var(--page-gradient-mid) 52%,
-    var(--page-gradient-bottom) 100%
-  );
+  color: var(--text-main);
+  background: var(--yozi-background);
+  font-family: 'DM Sans', 'PingFang SC', 'Microsoft YaHei', sans-serif;
 }
-.page-container.dark-mode {
-  background: linear-gradient(180deg, var(--background) 0%, var(--page-gradient-mid) 48%, var(--background) 100%);
-}
-
 .top-nav {
+  @include em-mobile-topbar;
   display: flex;
   align-items: center;
-  padding: 0 32rpx;
-  padding-top: calc(constant(safe-area-inset-top) + 20rpx);
-  padding-top: calc(env(safe-area-inset-top, 0px) + 20rpx);
-  height: calc(constant(safe-area-inset-top) + 100rpx);
-  height: calc(env(safe-area-inset-top, 0px) + 100rpx);
-  background-color: #ffffff;
-  border-bottom: 1rpx solid rgba(0, 0, 0, 0.06);
-  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.04);
+  padding: env(safe-area-inset-top, 0px) 16px 0;
+  height: calc(env(safe-area-inset-top, 0px) + 64px);
+  gap: 12px;
 }
 .nav-back {
-  width: 72rpx;
-  height: 72rpx;
+  @include em-mobile-pressable;
+  width: 44px;
+  height: 44px;
+  margin: 0;
+  padding: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 999rpx;
-  background: #f5f7fa;
-  border: 1rpx solid rgba(0, 0, 0, 0.06);
+  border-radius: 12px;
+  border: 0;
+  background: var(--yozi-glass);
+  color: var(--text-main);
+  box-shadow: var(--yozi-control-shadow);
 }
-.back-icon {
-  color: #1a1d26;
-  font-size: 36rpx;
+.nav-back::after {
+  border: 0;
 }
-.dark-mode .nav-back {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.1);
-}
-.dark-mode .back-icon {
-  color: var(--foreground);
+.nav-back:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
 }
 .nav-title {
-  color: var(--text-primary);
-  font-size: 34rpx;
-  font-weight: 800;
-  margin-left: 16rpx;
+  color: var(--text-main);
+  font-size: 17px;
+  font-weight: 700;
 }
-.dark-mode .nav-title {
-  color: var(--foreground);
-}
-
 .content-scroll {
-  height: calc(100vh - constant(safe-area-inset-top) - 100rpx);
-  height: calc(100vh - env(safe-area-inset-top, 0px) - 100rpx);
+  height: calc(100vh - env(safe-area-inset-top, 0px) - 64px);
 }
 .content-section {
-  padding: 32rpx;
+  max-width: 76ch;
+  margin: 0 auto;
+  padding: 20px 16px;
 }
 .update-date {
-  font-size: 24rpx;
+  font-size: 12px;
   color: var(--text-sub);
-  margin-bottom: 32rpx;
+  margin-bottom: 20px;
   display: block;
+  line-height: 1.65;
 }
-.dark-mode .update-date {
-  color: rgba(255, 255, 255, 0.62);
-}
-
 .section {
-  margin-bottom: 24rpx;
-  padding: 26rpx 24rpx;
-  border-radius: 28rpx;
-  background-color: #ffffff;
-  border: 1rpx solid rgba(0, 0, 0, 0.06);
-  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
-}
-.dark-mode .section {
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, transparent 42%),
-    linear-gradient(160deg, rgba(18, 20, 28, 0.94) 0%, rgba(10, 12, 18, 0.9) 100%);
-  border-color: rgba(255, 255, 255, 0.1);
+  @include em-mobile-glass-surface(24px, 20px);
+  margin-bottom: 16px;
 }
 .section-title {
-  font-size: 30rpx;
-  font-weight: 800;
-  color: var(--text-primary);
-  margin-bottom: 16rpx;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 12px;
   display: block;
-}
-.dark-mode .section-title {
-  color: var(--foreground);
 }
 .section-text {
-  font-size: 28rpx;
-  color: var(--text-secondary);
+  font-size: 14px;
+  color: var(--text-sub);
   line-height: 1.8;
-  margin-bottom: 12rpx;
+  margin-bottom: 12px;
   display: block;
+  overflow-wrap: anywhere;
 }
-.dark-mode .section-text {
-  color: rgba(255, 255, 255, 0.68);
+.section-text:last-child {
+  margin-bottom: 0;
 }
 </style>

@@ -5,10 +5,19 @@
     <!-- 导航栏 -->
     <view class="header-nav apple-glass" :style="{ paddingTop: statusBarHeight + 'px' }">
       <view class="nav-content">
-        <view class="nav-back" @tap="goBack"><BaseIcon name="arrow-left" :size="32" /></view>
+        <view
+          class="nav-back"
+          role="button"
+          tabindex="0"
+          aria-label="返回"
+          @tap="goBack"
+          @keydown.enter.prevent="goBack"
+          @keydown.space.prevent="goBack"
+          ><BaseIcon name="arrow-left" :size="32"
+        /></view>
         <text class="nav-title"> 我的收藏 </text>
         <view class="nav-actions">
-          <text class="nav-action" @tap="showFolderModal = true"> + </text>
+          <text class="nav-action" @tap="openFolderModal()"> + </text>
         </view>
       </view>
     </view>
@@ -29,6 +38,7 @@
       @scrolltolower="loadMoreFavorites"
       @refresherrefresh="onPullRefresh"
     >
+      <view v-if="loadError" role="alert" class="empty-text">{{ loadError }}</view>
       <!-- 统计卡片 -->
       <view class="stats-row apple-glass-card">
         <view class="stat-item">
@@ -41,13 +51,13 @@
           <text class="stat-value">
             {{ reviewedCount }}
           </text>
-          <text class="stat-label"> 已复习 </text>
+          <text class="stat-label"> 旧复习标记 </text>
         </view>
         <view class="stat-item">
           <text class="stat-value">
             {{ needReviewCount }}
           </text>
-          <text class="stat-label"> 待复习 </text>
+          <text class="stat-label"> 可靠复习待办 </text>
         </view>
         <view class="stat-item">
           <text class="stat-value">
@@ -61,7 +71,7 @@
       <view class="folder-section">
         <view class="section-header">
           <text class="section-title"> 收藏夹 </text>
-          <text class="section-action" @tap="showFolderModal = true"> + 新建 </text>
+          <text class="section-action" @tap="openFolderModal()"> + 新建 </text>
         </view>
         <view class="folder-grid">
           <!-- 全部收藏 -->
@@ -130,16 +140,23 @@
           <text class="question-text">
             {{ item.questionContent }}
           </text>
+          <text v-if="favoriteMaterial(item)" class="material-preview">{{ favoriteMaterial(item) }}</text>
 
           <view v-if="showOptions[item.id]" class="options-list">
+            <text class="analysis-label">参考答案待核对</text>
             <view
               v-for="(opt, i) in item.options"
               :key="i"
               class="option-row"
-              :class="{ correct: ['A', 'B', 'C', 'D'][i] === item.answer }"
+              :class="{
+                correct:
+                  item.quizOriginal &&
+                  typeof item.answer === 'string' &&
+                  item.answer.includes('ABCDEFGHIJKLMNOPQRSTUVWXYZ'[i])
+              }"
             >
               <text class="opt-idx">
-                {{ ['A', 'B', 'C', 'D'][i] }}
+                {{ 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'[i] }}
               </text>
               <text class="opt-text">
                 {{ opt }}
@@ -266,20 +283,22 @@ import { onLoad, onShow, onUnload } from '@dcloudio/uni-app';
 import { modal } from '@/utils/modal.js';
 import { toast } from '@/utils/toast.js';
 import { storageService } from '@/services/storageService.js';
+import { getUserId } from '@/services/auth-storage.js';
 import { safeNavigateTo, safeNavigateBack } from '@/utils/safe-navigate';
 import { useFavoriteStore } from '@/stores/modules/favorite.js';
-import questionFavoriteManager from '@/utils/favorite/question-favorite.js';
-import { logger } from '@/utils/logger.js';
 import { getStatusBarHeight } from '@/utils/core/system.js';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
+import { quizOriginalReading } from '../../../laf-backend/functions/_shared/learning-quiz-original.js';
 
-// 通过 Store 管理收藏（Store 内部自动判断登录状态走后端或本地）
+// 收藏使用当前账户的本机原件，不从云端猜测缺失资料。
 const favoriteStore = useFavoriteStore();
 
 // ── 响应式状态 ──
 const isRefreshing = ref(false);
 const statusBarHeight = ref(44);
 const isDark = ref(false);
+const loadError = ref('');
+const viewOwner = ref(getUserId() || '');
 const isLoading = ref(true); // ✅ F018: 加载状态
 
 // 收藏夹
@@ -402,30 +421,50 @@ function initSystemUI() {
   statusBarHeight.value = getStatusBarHeight();
 }
 
-/** 加载收藏数据（通过 Store，自动判断走后端或本地） */
+/** 加载当前账户已保存的收藏。 */
 async function loadData() {
+  const expected = getUserId() || '';
+  if (viewOwner.value !== expected) {
+    favorites.value = [];
+    folders.value = [];
+    stats.value = { totalCount: 0 };
+    currentFolderId.value = null;
+    editingItem.value = null;
+    movingItem.value = null;
+    showNoteModal.value = false;
+    showMoveModal.value = false;
+    showFolderModal.value = false;
+    for (const key of Object.keys(showOptions)) delete showOptions[key];
+  }
+  viewOwner.value = expected;
   try {
-    // Store 内部根据登录状态选择后端 API 或本地 storageService
     await favoriteStore.loadFavorites();
+    if ((getUserId() || '') !== expected) return;
+    if (favoriteStore.lastError) throw favoriteStore.lastError;
     favoriteStore.loadFolders();
     favoriteStore.loadStats();
-
-    // 从 Store 同步到页面状态
     favorites.value = favoriteStore.favorites;
     folders.value = favoriteStore.folders;
     stats.value = favoriteStore.stats;
-
-    logger.log('[favorite] 数据加载完成:', {
-      folders: folders.value.length,
-      favorites: favorites.value.length,
-      stats: stats.value
-    });
-  } catch (e) {
-    logger.warn('[favorite] 加载数据失败:', e);
-    toast.info('加载收藏数据失败，请稍后重试');
+    loadError.value = '';
+  } catch (_error) {
+    if ((getUserId() || '') !== expected) return;
+    favorites.value = [];
+    folders.value = [];
+    stats.value = { totalCount: 0 };
+    loadError.value = '收藏暂不可读取，原记录已保留';
   } finally {
-    isLoading.value = false; // ✅ F018
+    if ((getUserId() || '') === expected) isLoading.value = false;
   }
+}
+
+function owned(expected) {
+  if (expected !== (getUserId() || '')) {
+    toast.info('账户已变化，请重新选择');
+    loadData();
+    return false;
+  }
+  return true;
 }
 
 /** 返回上一页 */
@@ -460,6 +499,11 @@ function loadMoreFavorites() {
 function toggleOptions(itemId) {
   // Vue 3 reactive 可直接动态添加属性
   showOptions[itemId] = !showOptions[itemId];
+}
+
+function favoriteMaterial(item) {
+  const text = quizOriginalReading(item).readings[0]?.text || '';
+  return text.length > 180 ? text.slice(0, 180) + '…' : text;
 }
 
 /** 格式化时间戳为 "X月X日" */
@@ -497,14 +541,12 @@ function renameFolderPrompt(folder) {
     placeholderText: folder.name,
     success: (res) => {
       if (res.confirm && res.content && res.content.trim()) {
-        // 更新收藏夹名称
-        const idx = folders.value.findIndex((f) => f.id === folder.id);
-        if (idx >= 0) {
-          folders.value[idx].name = res.content.trim();
-          storageService.save('favorite_folders', folders.value);
+        if (!owned(folder.favoriteOwnerId)) return;
+        const result = favoriteStore.renameFolder(folder.id, res.content.trim(), folder.favoriteOwnerId);
+        if (result.success) {
           toast.success('重命名成功');
           loadData();
-        }
+        } else toast.info(result.error || '保存失败');
       }
     }
   });
@@ -517,7 +559,8 @@ function confirmDeleteFolder(folder) {
     content: `确定要删除"${folder.name}"吗？其中的收藏将移至默认收藏夹。`,
     success: (res) => {
       if (res.confirm) {
-        const result = questionFavoriteManager.deleteFolder(folder.id);
+        if (!owned(folder.favoriteOwnerId)) return;
+        const result = favoriteStore.deleteFolder(folder.id, folder.favoriteOwnerId);
         if (result.success) {
           toast.success('删除成功');
           loadData();
@@ -529,6 +572,10 @@ function confirmDeleteFolder(folder) {
   });
 }
 
+function openFolderModal() {
+  if (owned(viewOwner.value)) showFolderModal.value = true;
+}
+
 /** 创建收藏夹 */
 function createFolder() {
   if (!newFolderName.value.trim()) {
@@ -536,10 +583,14 @@ function createFolder() {
     return;
   }
 
-  const result = favoriteStore.createFolder({
-    name: newFolderName.value.trim(),
-    icon: newFolderIcon.value
-  });
+  if (!owned(viewOwner.value)) return;
+  const result = favoriteStore.createFolder(
+    {
+      name: newFolderName.value.trim(),
+      icon: newFolderIcon.value
+    },
+    viewOwner.value
+  );
 
   if (result.success) {
     toast.success('创建成功');
@@ -562,7 +613,8 @@ function moveToFolder(item) {
 function confirmMove(folderId) {
   if (!movingItem.value || folderId === movingItem.value.folderId) return;
 
-  const result = favoriteStore.moveToFolder(movingItem.value.id, folderId);
+  if (!owned(movingItem.value.favoriteOwnerId)) return;
+  const result = favoriteStore.moveToFolder(movingItem.value.id, folderId, movingItem.value.favoriteOwnerId);
 
   if (result.success) {
     toast.success('移动成功');
@@ -581,7 +633,9 @@ function removeFavorite(item) {
     content: '确定要取消收藏这道题吗？',
     success: async (res) => {
       if (res.confirm) {
-        const result = await favoriteStore.removeFromFavorite(item.id);
+        if (!owned(item.favoriteOwnerId)) return;
+        const result = await favoriteStore.removeFromFavorite(item.id, item.favoriteOwnerId);
+        if (!owned(item.favoriteOwnerId)) return;
         if (result.success) {
           toast.success('已取消收藏');
           loadData();
@@ -604,7 +658,12 @@ function openNoteModal(item) {
 function saveNote() {
   if (!editingItem.value) return;
 
-  const result = favoriteStore.updateNote(editingItem.value.id, noteContent.value.trim());
+  if (!owned(editingItem.value.favoriteOwnerId)) return;
+  const result = favoriteStore.updateNote(
+    editingItem.value.id,
+    noteContent.value.trim(),
+    editingItem.value.favoriteOwnerId
+  );
 
   if (result.success) {
     toast.success('保存成功');
@@ -619,21 +678,16 @@ function saveNote() {
 
 /** 练习题目（跳转答题页） */
 function practiceQuestion(item) {
-  try {
-    // 将题目存入临时存储，跳转到答题页面
-    storageService.save('temp_practice_question', {
-      id: item.questionId,
-      question: item.questionContent,
-      options: item.options,
-      answer: item.answer,
-      desc: item.analysis,
-      category: item.category
-    });
-
-    safeNavigateTo('/pages/practice-sub/do-quiz?mode=single');
-  } catch (_error) {
-    toast.info('跳转练习失败');
+  if (!owned(item.favoriteOwnerId)) return;
+  const result = favoriteStore.startPractice(item.id, item.favoriteOwnerId, {
+    referenceViewed: showOptions[item.id] === true
+  });
+  if (!result.success) {
+    toast.info(result.error || '练习未保存，请重试');
+    return;
   }
+  if (!owned(result.ownerId)) return;
+  safeNavigateTo(`/pages/practice-sub/do-quiz?mode=single&singleId=${encodeURIComponent(result.handoffId)}`);
 }
 
 // ── 生命周期 ──
@@ -854,6 +908,14 @@ onUnload(() => {
 }
 
 /* 收藏列表区域 */
+.material-preview {
+  display: block;
+  margin: 12rpx 0;
+  color: var(--text-secondary, #646b7a);
+  font-size: 24rpx;
+  line-height: 1.6;
+}
+
 .favorites-section {
   margin-bottom: 30rpx;
 }

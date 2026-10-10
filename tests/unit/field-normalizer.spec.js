@@ -156,7 +156,7 @@ describe('normalizeMistake', () => {
     expect(result.question_content).toBe('标准题干');
   });
 
-  it('缺失字段应有默认值', () => {
+  it('缺失字段应有显示默认值', () => {
     const result = normalizeMistake({});
     expect(result.wrong_count).toBe(1);
     expect(result.is_mastered).toBe(false);
@@ -255,8 +255,8 @@ describe('offlineMistakeToBackend', () => {
     const result = offlineMistakeToBackend({});
     expect(result.question_id).toBe('');
     expect(result.question_content).toBe('');
-    expect(result.wrong_count).toBe(1);
-    expect(result.is_mastered).toBe(false);
+    expect(result.wrong_count).toBeUndefined();
+    expect(result.is_mastered).toBeUndefined();
   });
 
   it('非对象输入应原样返回', () => {

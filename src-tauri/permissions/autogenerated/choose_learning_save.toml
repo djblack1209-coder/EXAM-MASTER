@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-choose-learning-save"
+description = "Enables the choose_learning_save command without any pre-configured scope."
+commands.allow = ["choose_learning_save"]
+
+[[permission]]
+identifier = "deny-choose-learning-save"
+description = "Denies the choose_learning_save command without any pre-configured scope."
+commands.deny = ["choose_learning_save"]

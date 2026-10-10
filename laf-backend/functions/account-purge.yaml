@@ -1,5 +1,5 @@
 name: account-purge
-desc: ""
+desc: ''
 methods:
   - GET
   - POST
