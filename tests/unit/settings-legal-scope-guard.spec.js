@@ -2,21 +2,16 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
-const settingsSource = readFileSync(resolve(process.cwd(), 'src/pages/settings/index.vue'), 'utf8');
+const profileSource = readFileSync(resolve(process.cwd(), 'src/pages/profile/index.vue'), 'utf8');
 const privacySource = readFileSync(resolve(process.cwd(), 'src/pages/settings/privacy.vue'), 'utf8');
 const termsSource = readFileSync(resolve(process.cwd(), 'src/pages/settings/terms.vue'), 'utf8');
 
 describe('settings legal and privacy scope', () => {
-  it('exposes direct settings entries for privacy policy and user agreement', () => {
-    expect(settingsSource).toContain('id="e2e-settings-privacy-entry"');
-    expect(settingsSource).toContain('id="e2e-settings-terms-entry"');
-    expect(settingsSource).toContain('openPrivacyPolicy');
-    expect(settingsSource).toContain("safeNavigateTo('/pages/settings/privacy')");
-    expect(settingsSource).toContain('openTermsPage');
-    expect(settingsSource).toContain("safeNavigateTo('/pages/settings/terms')");
-    expect(settingsSource).toContain('安全与隐私');
-    expect(settingsSource).toContain('用户协议');
-    expect(settingsSource).not.toContain('查看隐私政策、用户协议与账号注销说明');
+  it('exposes direct profile entries for privacy policy and user agreement', () => {
+    expect(profileSource).toContain("goTo('/pages/settings/privacy')");
+    expect(profileSource).toContain("goTo('/pages/settings/terms')");
+    expect(profileSource).toContain('隐私政策');
+    expect(profileSource).toContain('用户协议');
   });
 
   it('keeps privacy policy aligned with the lightweight quiz product scope', () => {

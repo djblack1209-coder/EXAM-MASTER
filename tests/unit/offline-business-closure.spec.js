@@ -1,11 +1,9 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createPinia, setActivePinia } from 'pinia';
 import { mount, flushPromises } from '@vue/test-utils';
-import ErrorClustersPage from '@/pages/practice-sub/error-clusters.vue';
 import FavoritePage from '@/pages/favorite/index.vue';
 import { storageService } from '@/services/storageService.js';
 import { useFavoriteStore } from '@/stores/modules/favorite.js';
-import { useLearningTrajectoryStore } from '@/stores/modules/learning-trajectory-store.js';
 import { useStudyEngineStore } from '@/stores/modules/study-engine.js';
 import { useStudyStore } from '@/stores/modules/study.js';
 import { learningRepository } from '@/services/learning/learning-repository.js';
@@ -129,54 +127,6 @@ describe('offline business closure', () => {
     expect(storageService.get(LEGACY_REVIEW_HANDOFF_KEY, null, { migrateLegacy: false })).toBeNull();
     expect(global.__mockStorage.mistake_book).toEqual(guest);
     expect(JSON.stringify(global.__mockStorage)).toBe(before);
-  });
-
-  it('opens the actual historical group by keyboard and launches only complete items, rejecting an account change', async () => {
-    storageService.save(
-      'mistake_book',
-      [
-        { ...question, id: 'complete', type: 'multi_choice', answer: 'AC', error_type: 'calculation_error' },
-        { ...question, id: 'incomplete', answer: '', error_type: 'calculation_error' }
-      ],
-      true
-    );
-    storageService.save('v30_bank_backup', [{ unique: 'keep' }], true);
-    const original = JSON.parse(JSON.stringify(global.__mockStorage));
-    const wrapper = mount(ErrorClustersPage, {
-      global: {
-        stubs: {
-          WdButton: { props: ['disabled'], template: '<button :disabled="disabled"><slot /></button>' },
-          BaseIcon: true
-        }
-      }
-    });
-    try {
-      await flushPromises();
-      expect(wrapper.text()).toContain('历史错题分组');
-      expect(wrapper.text()).not.toMatch(/严重|趋势|高风险|AI诊断/);
-      await wrapper
-        .find('[role="button"][aria-label="数学，旧标签计算失误，2条"]')
-        .trigger('keydown', { key: 'Enter' });
-      expect(wrapper.find('.trend-panel').text()).toContain('原参考: AC');
-      expect(wrapper.find('.trend-panel').text()).toContain('原参考: 未保存');
-      const start = wrapper.find('.trend-panel button');
-      await start.trigger('click');
-      const handoff = storageService.get(LEGACY_REVIEW_HANDOFF_KEY);
-      expect(handoff.questions.map((q) => q.id)).toEqual(['complete']);
-      expect(handoff.questions[0].answer).toBe('AC');
-      expect(uni.navigateTo).toHaveBeenLastCalledWith(
-        expect.objectContaining({ url: expect.stringContaining(`reviewId=${handoff.id}`) })
-      );
-      for (const [key, value] of Object.entries(original)) expect(global.__mockStorage[key]).toEqual(value);
-      uni.setStorageSync('EXAM_USER_ID', 'next-owner');
-      const before = JSON.stringify(global.__mockStorage);
-      const navigations = uni.navigateTo.mock.calls.length;
-      await start.trigger('click');
-      expect(uni.navigateTo.mock.calls.length).toBe(navigations);
-      expect(JSON.stringify(global.__mockStorage)).toBe(before);
-    } finally {
-      wrapper.unmount();
-    }
   });
 
   it('bounds a large review without labelling complete deferred records as damaged', () => {
@@ -444,9 +394,6 @@ describe('offline business closure', () => {
     const studyStore = useStudyStore();
     studyStore.recordQuestionAttempt({ question, isCorrect: false, timeSpent: 12000 });
     studyStore.recordQuestionAttempt({ question, isCorrect: true, timeSpent: 8000 });
-
-    const trajectory = useLearningTrajectoryStore();
-    trajectory.recordQuestionAttempt(question, { isCorrect: false, timeSpent: 12000 });
 
     const engine = useStudyEngineStore();
     const mastery = await engine.analyzeMastery();

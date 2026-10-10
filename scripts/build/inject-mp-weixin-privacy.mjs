@@ -212,8 +212,7 @@ try {
       './utils/helpers/haptic.js',
       './utils/learning/adaptive-learning-engine.js',
       './utils/modal.js',
-      './utils/quiz-elo.js',
-      './utils/security/sanitize.js'
+      './utils/quiz-elo.js'
     ];
     // 过滤掉不存在的文件
     const validFiles = mainPkgSharedFiles.filter((f) => existsSync(resolve(distRoot, f.replace('./', ''))));

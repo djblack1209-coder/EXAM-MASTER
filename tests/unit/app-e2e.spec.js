@@ -206,7 +206,7 @@ describe('导航系统', () => {
 
   it('safeNavigateTo 正常导航', async () => {
     const { safeNavigateTo } = await import('@/utils/safe-navigate.js');
-    safeNavigateTo('/pages/settings/index');
+    safeNavigateTo('/pages/settings/privacy');
     expect(mockUni.navigateTo).toHaveBeenCalled();
   });
 
@@ -280,12 +280,6 @@ describe('主题系统', () => {
 describe('网络服务', () => {
   beforeEach(() => resetMocks());
 
-  it('lafService 配置正确', async () => {
-    const { lafService } = await import('@/services/lafService.js');
-    expect(lafService).toBeDefined();
-    expect(typeof lafService.request).toBe('function');
-  });
-
   it('offlineQueue 初始化正常', async () => {
     const { offlineQueue } = await import('@/utils/core/offline-queue.js');
     expect(offlineQueue).toBeDefined();
@@ -298,12 +292,6 @@ describe('网络服务', () => {
 describe('刷题中心', () => {
   beforeEach(() => resetMocks());
 
-  it('lafService 题库查询接口可用', async () => {
-    const { lafService } = await import('@/services/lafService.js');
-    expect(lafService).toBeDefined();
-    expect(typeof lafService.request).toBe('function');
-  });
-
   it('ai-generation-mixin 导出正确', async () => {
     const mod = await import('@/pages/practice-sub/composables/ai-generation-mixin.js');
     expect(mod.aiGenerationMixin).toBeDefined();
@@ -313,24 +301,6 @@ describe('刷题中心', () => {
   it('learning-stats-mixin 导出正确', async () => {
     const mod = await import('@/pages/practice-sub/composables/learning-stats-mixin.js');
     expect(mod.learningStatsMixin).toBeDefined();
-  });
-});
-
-// ============================================================
-// TEST SUITE 8: 工具页面
-// ============================================================
-describe('工具页面', () => {
-  beforeEach(() => resetMocks());
-
-  it('fileHandler 初始化正常', async () => {
-    const { fileHandler } = await import('@/pages/practice-sub/file-handler.js');
-    expect(fileHandler).toBeDefined();
-    expect(typeof fileHandler.readTextFile).toBe('function');
-  });
-
-  it('permission-handler 导出正确', async () => {
-    const mod = await import('@/utils/helpers/permission-handler.js');
-    expect(mod).toBeDefined();
   });
 });
 

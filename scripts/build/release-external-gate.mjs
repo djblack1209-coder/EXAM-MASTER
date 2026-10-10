@@ -46,8 +46,8 @@ const PHASE4_SAFETY_EVIDENCE = [
     file: 'settings-legal-scope-guard.spec.js',
     label: 'Settings legal/privacy scope guard',
     requiredSnippets: [
-      'id="e2e-settings-privacy-entry"',
-      'id="e2e-settings-terms-entry"',
+      "goTo('/pages/settings/privacy')",
+      "goTo('/pages/settings/terms')",
       '账号注销流程申请删除账号相关数据',
       '7天冷静期'
     ]

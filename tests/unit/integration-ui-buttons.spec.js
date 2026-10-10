@@ -65,15 +65,6 @@ describe('E2E 页面按钮交互 & 数据展示准确性', () => {
       expect(url).toBe('/pages/practice/index');
     });
 
-    it('导航按钮 → 跳转到模拟考试', () => {
-      let url = null;
-      global.uni.navigateTo = vi.fn(({ url: u }) => {
-        url = u;
-      });
-      uni.navigateTo({ url: '/pages/practice-sub/mock-exam' });
-      expect(url).toBe('/pages/practice-sub/mock-exam');
-    });
-
     it('工具入口 → 拍照搜题/文档转换/证件照', () => {
       const navigations = [];
       global.uni.navigateTo = vi.fn(({ url }) => navigations.push(url));
@@ -210,72 +201,6 @@ describe('E2E 页面按钮交互 & 数据展示准确性', () => {
       currentIndex = 9;
       currentIndex = Math.min(currentIndex + 1, total - 1);
       expect(currentIndex).toBe(9);
-    });
-  });
-
-  // ==================== 模拟考试 ====================
-
-  describe('模拟考试交互', () => {
-    it('考试配置 → 题目数量和时长选择', () => {
-      const questionCountOptions = [10, 20, 30, 50];
-      const durationOptions = [15, 30, 45, 60]; // 分钟
-
-      let questionCount = 20;
-      let examDuration = 30;
-
-      expect(questionCountOptions).toContain(questionCount);
-      expect(durationOptions).toContain(examDuration);
-
-      // 切换
-      questionCount = 50;
-      examDuration = 60;
-      expect(questionCount).toBe(50);
-      expect(examDuration).toBe(60);
-    });
-
-    it('题目来源选择 → 全部/错题', () => {
-      let questionType = 'all';
-      expect(questionType).toBe('all');
-
-      questionType = 'mistakes';
-      expect(questionType).toBe('mistakes');
-    });
-
-    it('考试结果统计 → 正确/错误数准确', () => {
-      const answers = {
-        0: { user: 'A', correct: 'A' },
-        1: { user: 'B', correct: 'C' },
-        2: { user: 'C', correct: 'C' },
-        3: { user: 'A', correct: 'D' },
-        4: { user: 'B', correct: 'B' }
-      };
-
-      let correctCount = 0;
-      let wrongCount = 0;
-      Object.values(answers).forEach((a) => {
-        if (a.user === a.correct) correctCount++;
-        else wrongCount++;
-      });
-
-      expect(correctCount).toBe(3);
-      expect(wrongCount).toBe(2);
-      expect(correctCount + wrongCount).toBe(5);
-
-      const accuracy = Math.round((correctCount / 5) * 100);
-      expect(accuracy).toBe(60);
-    });
-
-    it('倒计时 → 剩余时间格式化', () => {
-      const formatTime = (seconds) => {
-        const m = Math.floor(seconds / 60);
-        const s = seconds % 60;
-        return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-      };
-
-      expect(formatTime(1800)).toBe('30:00');
-      expect(formatTime(65)).toBe('01:05');
-      expect(formatTime(0)).toBe('00:00');
-      expect(formatTime(3599)).toBe('59:59');
     });
   });
 
@@ -511,8 +436,9 @@ describe('E2E 页面按钮交互 & 数据展示准确性', () => {
     });
 
     it('删除账号 → 调用后端注销接口', async () => {
-      const { lafService } = await import('@/services/lafService.js');
+      const { requestAccountDeletion } = await import('@/services/api/domains/user.api.js');
       storageService.save('EXAM_USER_ID', 'u1');
+      storageService.save('EXAM_TOKEN', 'token');
 
       request.mockResolvedValue({
         code: 0,
@@ -520,7 +446,7 @@ describe('E2E 页面按钮交互 & 数据展示准确性', () => {
         message: '账号已申请注销'
       });
 
-      const result = await lafService.requestAccountDeletion();
+      const result = await requestAccountDeletion();
       expect(result.code).toBe(0);
     });
   });
