@@ -39,7 +39,7 @@
 
 ### 内部学习工具
 
-learning.progress、learning.focus、learning.submit、learning.hint、learning.method、learning.assess、learning.plan、learning.stop。assess 当前版本1.2，其余1.0；参数白名单、读写权限、业务前置条件、幂等 ID、调用预算、超时及取消在 learning-tools 中定义；本地动作 cost=false，模型生成另计调用预算。提交仅接收用户明确答案。
+learning.progress、learning.visualize、learning.focus、learning.submit、learning.hint、learning.method、learning.assess、learning.plan、learning.stop。assess 当前版本1.2，其余1.0；参数白名单、读写权限、业务前置条件、幂等 ID、调用预算、超时及取消在 learning-tools 中定义；本地动作 cost=false，模型生成另计调用预算。提交仅接收用户明确答案。
 
 策略调整保存 evidenceIds 与短理由，失败保存真实错误收据。模型要求“已加入错题”不能替代成功执行结果；工具结果渲染不执行 HTML/脚本。
 
@@ -544,21 +544,21 @@ Store先核对租约、账户、当前题和停止，再保存帮助，成功才
 
 App连接器须明确声明`materialParse.contract=yozi-material-parse-v1`与100000毫秒预算，才允许非流式`POST /parse`超过35秒；其他路由/方法仍限35秒，旧桥在传资料前拒绝长请求。解析器自身90秒总预算和转换资源限制保持，2MB输出、鉴权/目标绑定/取消保持。[验证](08-TESTING-INFRA.md)。
 
-### Docling接入私人解析器，客户端待接
+### Docling私人解析器与客户端接入
 
 既有鉴权/Origin保护的`POST /health`新增`ocrEngines.docling`；默认关闭，配置正确后仅核验隔离目录中的固定包版本及模型摘要，返回`files_verified/recognitionState=not_tested`，不把环境可用当作识别准确。能力检查单并发、4秒、128MiB RSS采样、64KiB输出，失败返回不可用。`POST /parse`明确`ocrEngine=docling`、严格布尔`allowOCR`后才走增强路径，当前仅PDF、单页/请求、最多2048页；未选择时原解析链继续。
 
 沿既有storageId/requestId、原件SHA、上传登记与恢复/删除合同保存原件；增强请求不等待其他解析释放锁，忙时409，不排队启动重型worker。整次处理预算90秒，转换子进程仍最多75秒/2GiB；页数读取和页图渲染均能取消。1200像素原页PNG临时生成后随回执返回，与PDF点尺寸的纵横比须一致；页图最多1MiB、完整片段最多1800000字节。所有成功/失败片段保留原件摘要、页码、提取版本及待核对/无评分权威，失败不返回部分候选或误导定位。
 
-连接断开和服务正常退出会取消增强任务、终止并回收自有子进程、清除临时转换/页图；已存原件与上传凭据保留，可沿原目标恢复。当前已验证本机HTTP接口；客户端仍未开放此引擎，不能据此声称用户入口、保存同步、跨端或设备验收完成。App原生传输现有35秒上限须先单独适配，不直接给旧原生桥发送长请求。[验证](08-TESTING-INFRA.md)、[配置](08C-SCRIPTS-REFERENCE.md)。
+连接断开和服务正常退出会取消增强任务、终止并回收自有子进程、清除临时转换/页图；已存原件与上传凭据保留，可沿原目标恢复。当前已验证本机HTTP接口；客户端显式选择与状态保存、App专用100秒解析预算均已在源码接入，增强解析默认关闭，设备/生产未验收。旧原生桥仍按35秒上限提前拒绝长请求。[验证](08-TESTING-INFRA.md)、[配置](08C-SCRIPTS-REFERENCE.md)。
 
 ### Docling逐页内部适配
 
-新增[本机worker](../scripts/pipeline/private-material-docling.py)及原私人解析器内的docling_command，合同yozi-docling-page-v1，默认关闭。宿主须明确配置Python、隔离依赖和本地模型；输入仅PDF字节、SHA-256、页码与严格布尔allowOCR，不接URL、任意源文件路径或模型参数。原件最多10MiB、页码1–2048，每次只转换一页，摘要不符先拒绝。当前未接入/parse、/health或客户端，原上传凭据、原件定位和删除恢复路径保持。
+新增[本机worker](../scripts/pipeline/private-material-docling.py)及原私人解析器内的docling_command，合同yozi-docling-page-v1，默认关闭。宿主须明确配置Python、隔离依赖和本地模型；输入仅PDF字节、SHA-256、页码与严格布尔allowOCR，不接URL、任意源文件路径或模型参数。原件最多10MiB、页码1–2048，每次只转换一页，摘要不符先拒绝。源码已接入`/parse`、`/health`及客户端，增强解析默认关闭，设备/生产未验收；原上传凭据、原件定位和删除恢复路径保持。
 
 按原JSON树保留阅读顺序、表格行列/跨行列、单元格坐标、公式orig与图内子文字；坐标为PDF点/左上原点。非法坐标、越页、循环/重复/丢失节点、重叠或不完整单元格拒绝。零行零列且无单元格的区域只保留位置，不补文字或开启OCR。上限1000块、3000文字定位、400单元格/表、20000正文字符，超限失败而不静默截断。所有结果始终unassigned、reviewRequired=true、gradingAuthority=false，不写成绩、错题或FSRS。
 
-父进程限制75秒、2GiB RSS采样、2MiB输出及256KiB丢弃式错误输出，worker另限CPU90秒；取消、超时、监测或输出失败均回收子进程，父进程删除自有临时原件/缓存。该子进程不是操作系统沙箱。后续产品接入仍须补齐每次明确授权、账户/任务/资料绑定、分批保存、迟到拒收、取消及原页预览。[实证](08-TESTING-INFRA.md)、[依赖](08C-SCRIPTS-REFERENCE.md)。
+父进程限制75秒、2GiB RSS采样、2MiB输出及256KiB丢弃式错误输出，worker另限CPU90秒；取消、超时、监测或输出失败均回收子进程，父进程删除自有临时原件/缓存。该子进程不是操作系统沙箱。产品接入继续遵守每次明确授权、账户/任务/资料绑定、分批保存、迟到拒收、取消及原页预览。[实证](08-TESTING-INFRA.md)、[依赖](08C-SCRIPTS-REFERENCE.md)。
 
 ### Apple 就绪与桌面资料逐次许可
 
@@ -586,7 +586,7 @@ App连接器须明确声明`materialParse.contract=yozi-material-parse-v1`与100
 
 沿现有学习操作与认证 learning-sync：oatutor.node.open 先保存帮助再显示提示；oatutor.scaffold.submit 要求已展开、前置节点已读/明确作答、explicit=true，最多1000字符并原样保存空格/换行；oatutor.reference.read 要求已有本步原答；oatutor.final.read 要求已有本题原答。分步原答为独立题目版本的 variant/pending，完成前置作答不表示答对。原题正式提交也保留原文；重试同编号幂等，不同内容冲突。重复读参考复用既有帮助，帮助按编号去重，并在历史续答和再次作答时继承；停止、账户/对话/题目或上下文revision变化拒绝旧动作。
 
-题面与教学参考分别署名OpenStax及OATutor，固定上游1925decc、历史d2ede1e与出版方33391c5的许可证据/摘要；九份原始JSON保留，中文翻译、重复编号、减法负号、约分和定义域修订明确标记。内容CC BY 4.0仅限此固定历史材料及适配，项目代码许可不变；来源公开不构成评分权威，grade仍pending，不写可靠成绩、错题或FSRS。[许可全文](../src/static/licenses/oatutor-functions-CC-BY-4.0.txt)、[验证](08-TESTING-INFRA.md)。
+题面与教学参考分别署名OpenStax及OATutor，固定上游1925decc、历史d2ede1e与出版方33391c5的许可证据/摘要；九份原始JSON保留，中文翻译、重复编号、减法负号、约分和定义域修订明确标记。内容CC BY 4.0仅限此固定历史材料及适配，项目代码许可不变；内容包升级与回退合同见[08C 内容包维护](08C-SCRIPTS-REFERENCE.md#内容包维护)；来源公开不构成评分权威，grade仍pending，不写可靠成绩、错题或FSRS。[许可全文](../src/static/licenses/oatutor-functions-CC-BY-4.0.txt)、[验证](08-TESTING-INFRA.md)。
 
 ### 认证计算参考与显式帮助入口
 
@@ -602,7 +602,7 @@ App连接器须明确声明`materialParse.contract=yozi-material-parse-v1`与100
 
 新增宿主内部sympy-reference-v1，仅为当前已保存的方程与原答计算参考。宿主提供已验证状态、当前认证身份、对话和页面epoch；scope严格绑定ownerId/conversationId/questionKey/attemptId，必须是当前题目版本及最近一次原答。题目全文/来源与原答摘要、状态revision、epoch形成确定请求编号，同一上下文重试一致；账户/切题/改答/停止及停止后继续的revision变化均拒收迟到结果。调用方还须将取消信号接到自己的页面/任务生命周期，本模块不是认证入口或持久化幂等账本。
 
-Python子进程只收既有安全解析器生成的有理系数/定义域，原答和题面不发送到worker，不使用parse_expr/sympify/eval或Shell。输出严格核对SymPy版本、数域、集合形状、大小和gradingAuthority=false，固定source/许可由宿主补充。结果persisted=false/requiresHelpRecord=true；未来显示前仍须走原题帮助写入与生命周期复核，未改原答、可靠评分、FSRS或统计。目前只有内部适配器，无新HTTP端点、前端入口或自动计算调用。
+Python子进程只收既有安全解析器生成的有理系数/定义域，原答和题面不发送到worker，不使用parse_expr/sympify/eval或Shell。输出严格核对SymPy版本、数域、集合形状、大小和gradingAuthority=false，固定source/许可由宿主补充。结果persisted=false/requiresHelpRecord=true；显示前仍须走原题帮助写入与生命周期复核，未改原答、可靠评分、FSRS或统计。源码已接入认证`POST /learning-compute`及客户端明确帮助入口，服务默认关闭，设备/生产未验收；不自动计算。
 
 候选CPU上限3秒、总时长5秒、输入/输出各16KiB、RSS192MiB按100ms采样；Linux另设512MiB地址空间上限。macOS的RSS监测不等于硬内存沙箱，Linux硬上限尚未实机验收。取消/超时先TERM，200ms仍未退出才终止自有子进程，等close后返回；监测失败拒绝，正常退出与ps采样竞态只等待25ms退出事件。冷启动成本和最终实测见[验证](08-TESTING-INFRA.md)，不是产品性能承诺。
 

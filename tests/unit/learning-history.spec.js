@@ -68,14 +68,15 @@ const managedSnapshots = (map) =>
     .map((value) => readLocalHistory(value, (key) => map.get(key), value.owner));
 describe('有界历史分页与完整学习事实', () => {
   it('五 MiB 隔离存储可保存两万操作及恢复副本，重开、后续写入和回滚不丢学习事实', () => {
+    // 每批取产品允许的上限 500，避免测试构造阶段反复整份复制状态（耗时与容量无关）。
     let state = historyFixture('u1', 0, 0),
-      batch = createLearningOperationBatch(state);
+      batch = createLearningOperationBatch(state, 500);
     const original = structuredClone(state);
     const messages = 19999 - state.events.length;
     for (let i = 0; i < messages; i++) {
-      if (i && i % 100 === 0) {
+      if (i && i % 500 === 0) {
         state = batch.finish();
-        batch = createLearningOperationBatch(state);
+        batch = createLearningOperationBatch(state, 500);
       }
       batch.apply({
         id: `capacity${i.toString(36)}`,
