@@ -3,12 +3,14 @@ import { createPinia } from 'pinia';
 import App from './App.vue';
 import { globalErrorHandler } from '@/utils/error/global-error-handler.js';
 import { logger } from '@/utils/logger.js';
+import { installI18n } from '@/i18n/index.js';
 
 export function createApp() {
   const app = createSSRApp(App);
   const pinia = createPinia();
 
   app.use(pinia);
+  installI18n(app);
 
   // 初始化全局错误处理器
   globalErrorHandler.init({

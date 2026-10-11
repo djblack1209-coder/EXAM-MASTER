@@ -1,107 +1,4 @@
-// ============================================================
-// Yozi AI compatibility adapters: frosted surfaces and tactile cartoon controls
-// 保留旧组件接口，表面与主操作沿 Playful Idea / Future 3D Portfolio 配色
-// ============================================================
-
-// ==================== 设计令牌 ====================
-
-:root {
-  // --- 功能色 ---
-  --em3d-primary: #785bbc;
-  --em3d-primary-shadow: #65429e;
-  --em3d-primary-light: rgba(120, 91, 188, 0.15);
-  --em3d-secondary: #1cb0f6;
-  --em3d-secondary-shadow: #1899d6;
-  --em3d-secondary-light: rgba(28, 176, 246, 0.15);
-  --em3d-danger: #ff4b4b;
-  --em3d-danger-shadow: #e63946;
-  --em3d-danger-light: rgba(255, 75, 75, 0.15);
-  --em3d-warning: #ffc800;
-  --em3d-warning-shadow: #e6b400;
-  --em3d-purple: #ce82ff;
-  --em3d-purple-shadow: #a855f7;
-
-  // --- 表面色（新拟物化：卡片与背景同色，靠阴影区分层次） ---
-  --em3d-bg: #f0eefa;
-  --em3d-card-bg: var(--yozi-reading);
-  --em3d-border: #dbd5e6;
-  --em3d-border-shadow: #ccc1df;
-  --em3d-inset: rgba(0, 0, 0, 0.06);
-
-  // --- 新拟物化阴影变量 ---
-  --neu-shadow-light: rgba(255, 255, 255, 0.8);
-  --neu-shadow-dark: rgba(145, 126, 168, 0.16);
-  --neu-shadow-sm: 4rpx 4rpx 8rpx var(--neu-shadow-dark), -4rpx -4rpx 8rpx var(--neu-shadow-light);
-  --neu-shadow-md: 6rpx 6rpx 12rpx var(--neu-shadow-dark), -6rpx -6rpx 12rpx var(--neu-shadow-light);
-  --neu-shadow-lg: 10rpx 10rpx 20rpx var(--neu-shadow-dark), -10rpx -10rpx 20rpx var(--neu-shadow-light);
-  --neu-shadow-inset: inset 4rpx 4rpx 8rpx var(--neu-shadow-dark), inset -4rpx -4rpx 8rpx var(--neu-shadow-light);
-  --neu-shadow-inset-sm: inset 2rpx 2rpx 5rpx var(--neu-shadow-dark), inset -2rpx -2rpx 5rpx var(--neu-shadow-light);
-
-  // --- 文字色 ---
-  --em3d-text-1: #080909;
-  --em3d-text-2: #62576d;
-  --em3d-text-3: #afafaf;
-  --em3d-text-inv: #ffffff;
-
-  // --- 圆角 ---
-  --em3d-radius-sm: 12rpx;
-  --em3d-radius-md: 16rpx;
-  --em3d-radius-lg: 24rpx;
-  --em3d-radius-pill: 999rpx;
-
-  // --- 过渡 ---
-  --em3d-ease-press: all 0.1s ease;
-  --em3d-ease-bounce: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
-  --em3d-ease-smooth: all 0.2s ease;
-}
-
-// ==================== 暗色模式令牌 ====================
-
-.dark-mode,
-:root[data-theme='dark'] {
-  --em3d-bg: #2d253f;
-  --em3d-card-bg: var(--yozi-reading);
-  --em3d-border: #504164;
-  --em3d-border-shadow: #211a2e;
-  --em3d-inset: rgba(0, 0, 0, 0.2);
-  --neu-shadow-light: rgba(60, 60, 80, 0.5);
-  --neu-shadow-dark: rgba(20, 20, 30, 0.7);
-  --em3d-text-1: #f0f0f0;
-  --em3d-text-2: #a0a0a0;
-  --em3d-text-3: #666666;
-  --em3d-primary-shadow: #65429e;
-  --em3d-primary-light: rgba(120, 91, 188, 0.2);
-  --em3d-secondary-shadow: #1280ab;
-  --em3d-secondary-light: rgba(28, 176, 246, 0.2);
-  --em3d-danger-shadow: #b82e38;
-  --em3d-danger-light: rgba(255, 75, 75, 0.2);
-  --em3d-warning-shadow: #b89000;
-  --em3d-purple-shadow: #7c3aed;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme='light']) {
-    --em3d-bg: #2d253f;
-    --em3d-card-bg: var(--yozi-reading);
-    --em3d-border: #504164;
-    --em3d-border-shadow: #211a2e;
-    --em3d-inset: rgba(0, 0, 0, 0.2);
-    --neu-shadow-light: rgba(60, 60, 80, 0.5);
-    --neu-shadow-dark: rgba(20, 20, 30, 0.7);
-    --em3d-text-1: #f0f0f0;
-    --em3d-text-2: #a0a0a0;
-    --em3d-text-3: #666666;
-    --em3d-primary-shadow: #65429e;
-    --em3d-primary-light: rgba(120, 91, 188, 0.2);
-    --em3d-secondary-shadow: #1280ab;
-    --em3d-secondary-light: rgba(28, 176, 246, 0.2);
-    --em3d-danger-shadow: #b82e38;
-    --em3d-danger-light: rgba(255, 75, 75, 0.2);
-    --em3d-warning-shadow: #b89000;
-    --em3d-purple-shadow: #7c3aed;
-  }
-}
-
+// 组件兼容样式；令牌与过渡别名集中在 yozi-tokens / legacy-aliases。
 // ============================================================
 // 按钮 .em3d-btn
 // ============================================================
@@ -156,10 +53,8 @@
     box-shadow: var(--yozi-button-shadow);
   }
   &--primary:active:not([disabled]) {
-    transform: translateY(2px);
-    box-shadow:
-      inset 0 2px 4px rgba(30, 15, 65, 0.16),
-      0 2px 0 var(--yozi-button-edge);
+    transform: translateY(var(--press-y));
+    box-shadow: var(--clay-shadow-press);
   }
 
   // --- 次要按钮（新拟物化凸起） ---
@@ -170,7 +65,8 @@
     box-shadow: var(--yozi-shadow);
   }
   &--secondary:active {
-    box-shadow: var(--neu-shadow-inset);
+    transform: translateY(var(--press-y));
+    box-shadow: var(--clay-shadow-press);
   }
 
   // --- 危险按钮（红色新拟物化） ---
@@ -180,7 +76,8 @@
     box-shadow: var(--yozi-shadow);
   }
   &--danger:active {
-    box-shadow: var(--neu-shadow-inset);
+    transform: translateY(var(--press-y));
+    box-shadow: var(--clay-shadow-press);
   }
 
   // --- 蓝色按钮（新拟物化） ---
@@ -190,7 +87,8 @@
     box-shadow: var(--yozi-shadow);
   }
   &--info:active {
-    box-shadow: var(--neu-shadow-inset);
+    transform: translateY(var(--press-y));
+    box-shadow: var(--clay-shadow-press);
   }
 
   // --- 紫色按钮（AI 功能，新拟物化） ---
@@ -200,7 +98,8 @@
     box-shadow: var(--yozi-shadow);
   }
   &--purple:active {
-    box-shadow: var(--neu-shadow-inset);
+    transform: translateY(var(--press-y));
+    box-shadow: var(--clay-shadow-press);
   }
 
   // --- 幽灵按钮（无阴影） ---
@@ -212,7 +111,7 @@
   }
   &--ghost:active {
     background-color: var(--em3d-primary-light);
-    transform: scale(0.97);
+    transform: translateY(var(--press-y));
   }
 
   // --- 禁用态 ---
@@ -344,7 +243,8 @@
     -webkit-tap-highlight-color: transparent;
   }
   &--tap:active {
-    box-shadow: var(--neu-shadow-inset);
+    transform: translateY(var(--press-y));
+    box-shadow: var(--clay-shadow-press);
   }
 
   // 无内边距
@@ -624,7 +524,8 @@
 // 凹陷效果
 .neu-inset {
   background: var(--em3d-bg);
-  box-shadow: var(--neu-shadow-inset);
+  transform: translateY(var(--press-y));
+  box-shadow: var(--clay-shadow-press);
   border-radius: var(--em3d-radius-lg);
   border: none;
 }
@@ -648,7 +549,8 @@
   -webkit-tap-highlight-color: transparent;
 }
 .neu-card-tap:active {
-  box-shadow: var(--neu-shadow-inset);
+  transform: translateY(var(--press-y));
+  box-shadow: var(--clay-shadow-press);
 }
 
 // 新拟物化圆形凸起（进度环、头像等）
@@ -694,7 +596,8 @@
   -webkit-tap-highlight-color: transparent;
 }
 .neu-btn:active {
-  box-shadow: var(--neu-shadow-inset);
+  transform: translateY(var(--press-y));
+  box-shadow: var(--clay-shadow-press);
 }
 
 // 新拟物化主色按钮

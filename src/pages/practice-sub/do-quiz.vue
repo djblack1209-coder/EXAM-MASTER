@@ -1,5 +1,5 @@
 <template>
-  <view class="container" :class="{ 'dark-mode': isDark, 'wot-theme-dark': isDark }">
+  <view class="container" :class="{ 'dark-mode': isDark, 'theme-light': !isDark, 'wot-theme-dark': isDark }">
     <view class="aurora-bg" />
 
     <view class="nav-header" :style="{ paddingTop: statusBarHeight + 'px', height: navBarHeight + 'px' }">
@@ -3266,7 +3266,7 @@ export default {
 /* 题目卡片 */
 .question-card .q-tag {
   display: inline-block;
-  background: rgba(31, 122, 77, 0.08);
+  background: var(--violet-soft);
   color: #1f7a4d;
   font-size: 24rpx;
   font-weight: 700;
@@ -3384,7 +3384,7 @@ export default {
 
 .q-fixed-sequence-item.locked {
   border-color: rgba(31, 122, 77, 0.22);
-  background: rgba(31, 122, 77, 0.08);
+  background: var(--violet-soft);
   color: #1f7a4d;
 }
 
@@ -3410,7 +3410,7 @@ export default {
 
 .q-passage-segment.active {
   border-color: rgba(31, 122, 77, 0.32);
-  background: rgba(31, 122, 77, 0.08);
+  background: var(--violet-soft);
 }
 
 .q-segment-marker {
@@ -3534,9 +3534,9 @@ export default {
   transform: scale(0.975);
 }
 .option-item.selected {
-  border-color: #1f7a4d;
-  background: rgba(31, 122, 77, 0.08);
-  box-shadow: 0 12rpx 30rpx rgba(31, 122, 77, 0.08);
+  border-color: var(--violet);
+  background: var(--violet-soft);
+  box-shadow: var(--lift-1);
 }
 .option-item.correct {
   border-color: #34c759;

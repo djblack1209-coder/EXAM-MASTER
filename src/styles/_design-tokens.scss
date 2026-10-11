@@ -1,127 +1,30 @@
-/**
- * EXAM-MASTER Unified Design Tokens (Single Source of Truth)
- * 
- * 合并自: _variables.scss, design-system.scss, design-system-v2.scss,
- *         _dark-mode-vars.scss, theme-engine.js
- * 
- * 架构:
- * 1. SCSS 变量 — 编译期使用（mixins、函数、条件逻辑）
- * 2. CSS Custom Properties — 运行时使用（主题切换、组件样式）
- * 3. 语义化分层: primitive → semantic → component
- * 
- * 命名规范: --em-{category}-{property}-{variant}
- * em = exam-master, 避免与第三方库冲突
- */
+/* 兼容 mixin；色彩、字体与尺寸别名统一在 legacy-aliases。 */
+@forward './legacy-aliases';
+@use './legacy-aliases' as *;
 
 // ============================================================
 // PART 1: SCSS Variables (compile-time, auto-injected via vite)
 // ============================================================
 
 // --- Primitive Palette ---
-$palette-green-50: #f2f9ee;
-$palette-green-100: #d5f8b2;
-$palette-green-200: #b8eb89;
-$palette-green-300: #9fe870;
-$palette-green-400: #7bc653;
-$palette-green-500: #37b24d;
-$palette-green-600: #2f9e44;
-$palette-green-700: #0f5f34;
-$palette-green-800: #163300;
-$palette-green-900: #10281a;
-
-$palette-blue-50: rgba(10, 132, 255, 0.08);
-$palette-blue-100: rgba(10, 132, 255, 0.14);
-$palette-blue-200: rgba(10, 132, 255, 0.22);
-$palette-blue-300: #5ac8fa;
-$palette-blue-400: #2b95ff;
-$palette-blue-500: #0a84ff;
-$palette-blue-600: #007aff;
-$palette-blue-700: #0069d9;
-$palette-blue-800: #004999;
-
-$palette-neutral-0: #ffffff;
-$palette-neutral-50: #f8f9fa;
-$palette-neutral-100: #f5f5f7;
-$palette-neutral-200: #e9ecef;
-$palette-neutral-300: #e5e5e5;
-$palette-neutral-400: #a1a1a6;
-$palette-neutral-500: #8e8e93;
-$palette-neutral-600: #666666;
-$palette-neutral-700: #495057;
-$palette-neutral-800: #2c2c2e;
-$palette-neutral-850: #1c1c1e;
-$palette-neutral-900: #111111;
-$palette-neutral-950: #0b0b0f;
-$palette-neutral-1000: #000000;
 
 // --- Semantic Colors (SCSS) ---
-$color-success: #34d399; // Align with App.vue --success
-$color-warning: #f59e0b; // Align with App.vue --warning
-$color-error: #ef4444; // Align with App.vue --danger
-$color-info: #785bbc; // Align with App.vue --info
 
 // --- Spacing (8px grid, rpx for cross-device) ---
-$spacing-xs: 4px; // Align with App.vue --spacing-xs
-$spacing-sm: 8px; // Align with App.vue --spacing-sm
-$spacing-md: 16px; // Align with App.vue --spacing-md
-$spacing-lg: 20px; // Align with App.vue --spacing-lg
-$spacing-xl: 24px; // Align with App.vue --spacing-xl
-$spacing-2xl: 32px; // Align with App.vue --spacing-2xl
 
 // --- Border Radius ---
-$radius-sm: 8px; // Align with App.vue --radius-sm
-$radius-md: 16px; // Align with App.vue --radius-md
-$radius-lg: 24px; // Align with App.vue --radius-lg
-$radius-xl: 32px; // Align with App.vue --radius-xl
-$radius-2xl: 48px;
-$radius-full: 9999px; // Align with App.vue --radius-full
 
 // --- Typography ---
-$font-family: 'DM Sans', 'PingFang SC', 'Microsoft YaHei', sans-serif;
-
-$font-size-xs: 20rpx;
-$font-size-sm: 24rpx;
-$font-size-base: 28rpx;
-$font-size-lg: 32rpx;
-$font-size-xl: 36rpx;
-$font-size-2xl: 40rpx;
-$font-size-3xl: 48rpx;
-
-$font-weight-normal: 400;
-$font-weight-medium: 500;
-$font-weight-semibold: 600;
-$font-weight-bold: 700;
 
 // --- Shadows (SCSS, for static use) ---
-$shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04); // Align with App.vue --shadow-sm
-$shadow-md: 0 4px 14px rgba(0, 0, 0, 0.06); // Align with App.vue --shadow-md
-$shadow-lg: 0 10px 24px rgba(0, 0, 0, 0.1); // Align with App.vue --shadow-lg
-$shadow-card: 0 8px 24px rgba(0, 0, 0, 0.05); // Align with App.vue --apple-shadow-card
 
 // --- Transitions ---
-$transition-fast: 150ms ease-out;
-$transition-base: 250ms ease-out;
-$transition-slow: 350ms ease-out;
-$transition-spring: 300ms cubic-bezier(0.4, 0, 0.2, 1);
 
 // --- Layout ---
 $tabbar-height: 120rpx;
 $navbar-height: 88rpx;
 
 // --- Mobile App Shell Palette ---
-$mobile-green-env: #b5a0dc;
-$mobile-green-env-soft: #e4daf6;
-$mobile-green-mist: #f0eefa;
-$mobile-green-deep: #332842;
-$mobile-green-ink: #080909;
-$mobile-green-ink-soft: rgba(62, 46, 81, 0.68);
-$mobile-blue-info: #75ddff;
-$mobile-surface: rgba(255, 255, 255, 0.76);
-$mobile-surface-solid: #f7f5fc;
-$mobile-surface-strong: rgba(255, 255, 255, 0.9);
-$mobile-line: rgba(81, 60, 110, 0.1);
-$mobile-shadow-soft: 0 18rpx 50rpx rgba(69, 43, 107, 0.14);
-$mobile-shadow-lift: 0 28rpx 76rpx rgba(49, 31, 74, 0.2);
 
 @mixin em-mobile-canvas {
   min-height: 100vh;
@@ -161,10 +64,7 @@ $mobile-shadow-lift: 0 28rpx 76rpx rgba(49, 31, 74, 0.2);
   box-sizing: border-box;
   padding: $padding;
   border-radius: $radius;
-  background:
-    radial-gradient(circle at 14% 0%, rgba(201, 177, 238, 0.24) 0, rgba(201, 177, 238, 0) 32%),
-    radial-gradient(circle at 94% 18%, rgba(117, 221, 255, 0.18) 0, rgba(117, 221, 255, 0) 30%),
-    linear-gradient(145deg, #211a2e 0%, #473457 52%, #282032 100%);
+  background: var(--brand);
   box-shadow: $mobile-shadow-lift;
 }
 
@@ -176,14 +76,12 @@ $mobile-shadow-lift: 0 28rpx 76rpx rgba(49, 31, 74, 0.2);
   color: var(--yozi-button-ink);
   touch-action: manipulation;
   transition:
-    transform 180ms ease,
-    box-shadow 180ms ease;
+    transform var(--t-press) var(--ease),
+    box-shadow var(--t-press) var(--ease);
   &:active:not([disabled]):not(.disabled) {
-    transform: translateY(2px);
-    box-shadow:
-      inset 0 2px 4px rgba(30, 15, 65, 0.16),
-      0 2px 0 var(--yozi-button-edge);
-    transition-duration: 100ms;
+    transform: translateY(var(--press-y));
+    box-shadow: var(--clay-shadow-press);
+    transition-duration: var(--t-press);
   }
   &:focus-visible {
     outline: 2px solid var(--primary);
@@ -205,11 +103,11 @@ $mobile-shadow-lift: 0 28rpx 76rpx rgba(49, 31, 74, 0.2);
   transform: translate3d(0, 0, 0) scale(1);
   touch-action: manipulation;
   transition-property: transform, opacity, box-shadow;
-  transition-duration: 180ms;
-  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  transition-duration: var(--t-press);
+  transition-timing-function: var(--ease);
 
   &:active {
-    transform: translate3d(0, 0, 0) scale(0.97);
+    transform: translateY(var(--press-y));
     opacity: 0.9;
   }
   @media (prefers-reduced-motion: reduce) {
@@ -288,7 +186,7 @@ $breakpoint-lg: 768px;
   transition: all $transition-fast;
   /* #ifndef MP */
   &:active {
-    transform: scale(0.98);
+    transform: translateY(var(--press-y));
     opacity: 0.7;
   }
   /* #endif */

@@ -36,6 +36,7 @@ export default [
       ecmaVersion: 2022,
       sourceType: 'module',
       globals: {
+        __YOZI_TOKENS__: 'readonly',
         // 浏览器全局变量
         window: 'readonly',
         document: 'readonly',

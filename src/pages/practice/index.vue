@@ -1,9 +1,9 @@
 <template>
-  <view ref="keyboardRoot" class="page" :class="{ 'dark-mode': isDark }">
+  <view ref="keyboardRoot" class="page" :class="{ 'dark-mode': isDark, 'theme-light': !isDark }">
     <!-- 自定义导航栏 -->
     <view class="nav-bar" :style="{ paddingTop: statusBarHeight + 'px' }">
       <view class="nav-content">
-        <text class="nav-title">刷题中心</text>
+        <text class="nav-title">{{ $t('pages.practice') }}</text>
       </view>
     </view>
 
@@ -692,21 +692,6 @@ export default {
 
   @include em-mobile-primary-action;
 }
-
-$primary: #c9b1ee;
-$primary-light: #eee8f7;
-$primary-deep: #332842;
-$action-green: #785bbc;
-$bg: #eae8fc;
-$card-bg: var(--yozi-reading);
-$text-main: #1a1d26;
-$text-sub: #62576d;
-$text-weak: #6c6176;
-$radius-lg: 24px;
-$radius-sm: 12rpx;
-$spacing-page: 32rpx;
-$spacing-card: 32rpx;
-$spacing-section: 24rpx;
 
 .page {
   @include em-mobile-canvas;

@@ -1,8 +1,13 @@
 <template>
-  <view ref="keyboardRoot" class="tabbar-position-wrapper" role="navigation" aria-label="主要导航">
+  <view ref="keyboardRoot" class="tabbar-position-wrapper" role="navigation" :aria-label="t('nav.label')">
     <view
       class="tabbar-capsule"
-      :class="{ 'dark-mode': isDarkMode, dragging: isDragging, 'reduce-motion': reducedMotion }"
+      :class="{
+        'dark-mode': isDarkMode,
+        'theme-light': !isDarkMode,
+        dragging: isDragging,
+        'reduce-motion': reducedMotion
+      }"
       :style="capsuleStyle"
       @touchstart="handleTouchStart"
       @touchmove.stop="handleTouchMove"
@@ -51,6 +56,7 @@ import { vibrateLight } from '@/utils/helpers/haptic.js';
 import { useThemeStore } from '@/stores/modules/theme.js';
 import { bindLearningKeyboard } from '@/services/learning/keyboard-controls.js';
 import { bindBusinessMotion } from '@/design/business-motion.js';
+import { t } from '@/i18n/index.js';
 
 const SWIPE_THRESHOLD = 28;
 const MAX_DRAG_OFFSET = 96;
@@ -125,7 +131,7 @@ let releaseMotion = () => undefined;
 const tabList = computed(() => {
   const allTabs = [
     {
-      text: '首页',
+      text: t('nav.home'),
       path: '/pages/index/index',
       icon: getAssetUrl('tabbar', 'home'),
       selectedIcon: getAssetUrl('tabbar', 'home-active'),
@@ -133,7 +139,7 @@ const tabList = computed(() => {
       isTabBar: true
     },
     {
-      text: '刷题',
+      text: t('nav.practice'),
       path: '/pages/practice/index',
       icon: getAssetUrl('tabbar', 'practice'),
       selectedIcon: getAssetUrl('tabbar', 'practice-active'),
@@ -141,7 +147,7 @@ const tabList = computed(() => {
       isTabBar: true
     },
     {
-      text: '我的',
+      text: t('nav.profile'),
       path: '/pages/profile/index',
       icon: getAssetUrl('tabbar', 'profile'),
       selectedIcon: getAssetUrl('tabbar', 'profile-active'),

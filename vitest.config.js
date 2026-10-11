@@ -8,6 +8,7 @@ import { defineConfig } from 'vitest/config';
 import vue from '@vitejs/plugin-vue';
 import { resolve } from 'path';
 import crypto from 'crypto';
+import { readYoziTokens } from './scripts/build/read-yozi-tokens.mjs';
 
 // Polyfill crypto.hash for Node < 20.12 (used by @vitejs/plugin-vue@6 internally)
 if (typeof crypto.hash !== 'function') {
@@ -17,6 +18,7 @@ if (typeof crypto.hash !== 'function') {
 }
 
 export default defineConfig({
+  define: { __YOZI_TOKENS__: JSON.stringify(readYoziTokens()) },
   plugins: [vue()],
 
   test: {

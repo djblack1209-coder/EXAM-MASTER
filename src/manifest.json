@@ -105,5 +105,7 @@
       "https": false,
       "proxy": {}
     }
-  }
+  },
+  "locale": "zh-Hans",
+  "fallbackLocale": "zh-Hans"
 }

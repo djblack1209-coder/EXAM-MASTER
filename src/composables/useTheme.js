@@ -15,6 +15,7 @@
  */
 
 import { useThemeStore } from '@/stores/modules/theme.js';
+import { tokens } from '@/design/tokens.js';
 
 const THEME_EVENT = 'themeUpdate';
 
@@ -23,8 +24,8 @@ const THEME_EVENT = 'themeUpdate';
  * 修改主题色时只需改这一处，3 个页面自动同步
  */
 export const NAV_BAR_COLORS = {
-  light: { frontColor: '#000000', backgroundColor: '#b8eb89' },
-  dark: { frontColor: '#ffffff', backgroundColor: '#0b0b0f' }
+  light: { frontColor: '#000000', backgroundColor: tokens.light['--canvas'] },
+  dark: { frontColor: '#ffffff', backgroundColor: tokens.dark['--canvas'] }
 };
 
 // 跟踪所有已注册的回调，支持多组件并发使用

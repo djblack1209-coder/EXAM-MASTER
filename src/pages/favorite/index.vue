@@ -1,5 +1,5 @@
 <template>
-  <view :class="['container', { 'dark-mode': isDark }]">
+  <view :class="['container', { 'dark-mode': isDark, 'theme-light': !isDark }]">
     <view class="aurora-bg" />
 
     <!-- 导航栏 -->
@@ -15,7 +15,7 @@
           @keydown.space.prevent="goBack"
           ><BaseIcon name="arrow-left" :size="32"
         /></view>
-        <text class="nav-title"> 我的收藏 </text>
+        <text class="nav-title">{{ $t('pages.favorite') }}</text>
         <view class="nav-actions">
           <text class="nav-action" @tap="openFolderModal()"> + </text>
         </view>

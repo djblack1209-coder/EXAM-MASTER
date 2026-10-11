@@ -2,7 +2,7 @@
   <LearningLanding v-if="!showLegacyDashboard" @legacy="openLegacyDashboard">
     <PrivacyPopup />
   </LearningLanding>
-  <view v-else class="page" :class="{ 'dark-mode': isDark }">
+  <view v-else class="page" :class="{ 'dark-mode': isDark, 'theme-light': !isDark }">
     <!-- 微信隐私保护弹窗 -->
     <PrivacyPopup />
 
@@ -514,22 +514,6 @@ export default {
 
 <style lang="scss" scoped>
 /* ==================== 设计规范变量 ==================== */
-$primary: #9fe870;
-$primary-light: #eafbe2;
-$primary-dark: #122512;
-$action-green: #18a957;
-$bg: #f5f7f1;
-$card-bg: #ffffff;
-$text-main: #1a1d26;
-$text-sub: #5f6672;
-$text-weak: #9ca3af;
-
-$radius-lg: 24px;
-$radius-md: 16rpx;
-$radius-sm: 12rpx;
-$spacing-page: 32rpx;
-$spacing-card: 32rpx;
-$spacing-section: 24rpx;
 
 /* ==================== 页面 ==================== */
 .page {
@@ -1144,7 +1128,7 @@ $spacing-section: 24rpx;
 .streak-badge {
   font-size: 24rpx;
   color: $primary-dark;
-  background: rgba($primary, 0.12);
+  background: var(--violet-soft);
   padding: 6rpx 16rpx;
   border-radius: 99rpx;
   font-weight: 500;
@@ -1158,7 +1142,7 @@ $spacing-section: 24rpx;
 .progress-bar {
   flex: 1;
   height: 16rpx;
-  background: rgba($primary, 0.12);
+  background: var(--violet-soft);
   border-radius: 99rpx;
   overflow: hidden;
 }

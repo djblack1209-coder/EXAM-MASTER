@@ -4,6 +4,7 @@
     class="learning-space"
     :class="{
       'space-dark': theme.isDark,
+      'space-light': !theme.isDark,
       'reduce-motion': reducedMotion,
       'space-future': theme.visualStyle === 'future',
       'space-playful': theme.visualStyle === 'playful'
@@ -65,7 +66,7 @@
           <BaseIcon name="plus" :size="32" :color="theme.isDark ? '#20172f' : '#ffffff'" />
           <text>开始新对话</text>
         </button>
-        <view class="desktop-navigation" aria-label="学习视图">
+        <view class="desktop-navigation" :aria-label="t('nav.learningViews')">
           <button
             v-for="item in navigation"
             :key="item.id"
@@ -191,7 +192,7 @@
             >
               <BaseIcon name="menu" :size="40" :color="iconColor" />
             </button>
-            <text class="space-title">{{ title }}</text>
+            <text class="space-title">{{ title || t('pages.learning') }}</text>
             <text class="space-date">{{ dateLabel }}</text>
           </view>
           <view class="space-header-actions"><slot name="controls"></slot></view>
@@ -199,7 +200,7 @@
         <view class="space-content"><slot></slot></view>
       </view>
     </view>
-    <view class="mobile-dock" aria-label="学习视图" :inert="menuOpen || undefined">
+    <view class="mobile-dock" :aria-label="t('nav.learningViews')" :inert="menuOpen || undefined">
       <button
         v-for="item in navigation"
         :key="item.id"
@@ -225,9 +226,10 @@ import { bindLearningKeyboard } from '@/services/learning/keyboard-controls.js';
 import { bindBusinessMotion } from '@/design/business-motion.js';
 import { BRAND } from '@/config/brand.js';
 import { FUTURE_ASSETS } from '@/design/future-motion.js';
+import { t } from '@/i18n/index.js';
 const props = defineProps({
   active: { type: String, default: 'learning' },
-  title: { type: String, default: '对话学习' }
+  title: { type: String, default: '' }
 });
 const emit = defineEmits(['materials', 'new']);
 const learning = useConversationLearningStore();
@@ -259,12 +261,12 @@ try {
 }
 // #endif
 const error = ref('');
-const navigation = [
-  { id: 'learning', label: '对话', icon: 'chat' },
-  { id: 'mistake', label: '错题', icon: 'book-open' },
-  { id: 'plan', label: '计划', icon: 'calendar' },
-  { id: 'study-detail', label: '统计', icon: 'chart-bar' }
-];
+const navigation = computed(() => [
+  { id: 'learning', label: t('nav.learning'), icon: 'chat' },
+  { id: 'mistake', label: t('nav.mistake'), icon: 'book-open' },
+  { id: 'plan', label: t('nav.plan'), icon: 'calendar' },
+  { id: 'study-detail', label: t('nav.stats'), icon: 'chart-bar' }
+]);
 const recent = computed(() =>
   [...learning.state.conversations]
     .reverse()

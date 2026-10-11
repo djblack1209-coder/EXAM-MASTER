@@ -8,7 +8,8 @@ const CORE_THEME_PAGES = [
   {
     file: 'src/pages/index/index.vue',
     required: [
-      ':class="{ \'dark-mode\': isDark }"',
+      "'dark-mode': isDark",
+      "'theme-light': !isDark",
       "uni.$on('themeUpdate'",
       "uni.$on('updateTheme'",
       "uni.$off('themeUpdate'",
@@ -21,7 +22,8 @@ const CORE_THEME_PAGES = [
   {
     file: 'src/pages/practice/index.vue',
     required: [
-      ':class="{ \'dark-mode\': isDark }"',
+      "'dark-mode': isDark",
+      "'theme-light': !isDark",
       "uni.$on('themeUpdate'",
       "uni.$on('updateTheme'",
       "uni.$off('themeUpdate'",

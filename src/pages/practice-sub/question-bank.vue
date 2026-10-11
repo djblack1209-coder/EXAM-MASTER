@@ -1,5 +1,5 @@
 <template>
-  <view ref="keyboardRoot" :class="['qb-page', { 'dark-mode': isDark }]">
+  <view ref="keyboardRoot" :class="['qb-page', { 'dark-mode': isDark, 'theme-light': !isDark }]">
     <view class="navbar">
       <view class="navbar-inner" :style="{ paddingTop: statusBarHeight + 'px' }">
         <view class="nav-back" aria-label="返回" role="button" tabindex="0" data-learning-toggle @tap="goBack">

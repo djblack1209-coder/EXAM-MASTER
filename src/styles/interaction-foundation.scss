@@ -1,0 +1,78 @@
+/* 全局按压统一下压；页面布局与非按压场景构图保留。 */
+button:not([disabled]):active,
+[role='button']:not([aria-disabled='true']):active,
+.btn:not([disabled]):active,
+.btn-scale-sm:active,
+.ds-touchable:active,
+.clickable:active,
+.touchable:active,
+.icon-btn:active,
+.theme-toggle:active,
+.nav-back:active,
+.nav-add:active,
+.bubble-card:active,
+.knowledge-bubble:active,
+.user-avatar:active,
+.avatar-ring:active,
+.hover-scale,
+.btn-hover {
+  transform: translateY(var(--press-y)) !important;
+}
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+[role='button']:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 3px;
+}
+/* 减少动态：不移动、不缩放，状态在一帧内完成；不影响静态布局 transform。 */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition-duration: 0s !important;
+    transition-delay: 0s !important;
+    scroll-behavior: auto !important;
+  }
+  :root button:active,
+  :root [role='button']:active,
+  page button:active,
+  button:hover,
+  [role='button']:hover,
+  button:active,
+  [role='button']:active,
+  .btn:active,
+  .btn:not([disabled]):active,
+  .btn-scale-sm:active,
+  .ds-touchable:active,
+  .clickable:active,
+  .touchable:active,
+  .icon-btn:active,
+  .theme-toggle:active,
+  .nav-back:active,
+  .nav-add:active,
+  .bubble-card:active,
+  .knowledge-bubble:active,
+  .user-avatar:active,
+  .avatar-ring:active,
+  .hover-scale,
+  .btn-hover {
+    transform: none !important;
+  }
+}
+
+.primary:active:not([disabled]),
+.primary-btn:active:not([disabled]),
+.btn-primary:active:not([disabled]),
+.em3d-btn--primary:active:not([disabled]) {
+  box-shadow: var(--clay-shadow-press);
+}
+h1,
+h2,
+h3,
+.nav-title,
+.page-title,
+.brand-name {
+  font-family: var(--font-display);
+}

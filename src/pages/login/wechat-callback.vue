@@ -1,5 +1,5 @@
 <template>
-  <view class="callback-container" :class="{ 'dark-mode': isDark }">
+  <view class="callback-container" :class="{ 'dark-mode': isDark, 'theme-light': !isDark }">
     <!-- 背景装饰 -->
     <view class="bg-decoration">
       <view class="bg-circle bg-circle-1" />

@@ -8,7 +8,11 @@ describe('品牌显示与兼容合同', () => {
     const pages = JSON.parse(readFileSync('src/pages.json', 'utf8'));
     expect(manifest.name).toBe(BRAND.name);
     expect(manifest.h5.title).toBe(BRAND.title);
-    expect(pages.globalStyle.navigationBarTitleText).toBe(manifest.name);
+    expect(pages.globalStyle.navigationBarTitleText).toBe('%pages.home%');
+    for (const locale of ['zh-Hans', 'en']) {
+      const labels = JSON.parse(readFileSync(`src/locale/${locale}.json`, 'utf8'));
+      expect(labels['pages.home']).toBe(manifest.name);
+    }
     expect(readFileSync('index.html', 'utf8')).toContain(`<title>${BRAND.title}</title>`);
     expect(readFileSync('vite.config.js', 'utf8')).toContain('short_name: BRAND.name');
     expect(JSON.parse(readFileSync('package.json', 'utf8')).name).toBe('yozi-ai');

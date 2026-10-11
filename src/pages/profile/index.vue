@@ -1,9 +1,13 @@
 <template>
-  <view ref="root" class="page" :class="{ 'dark-mode': isDark, 'reduce-motion': reducedMotion }">
+  <view
+    ref="root"
+    class="page"
+    :class="{ 'dark-mode': isDark, 'theme-light': !isDark, 'reduce-motion': reducedMotion }"
+  >
     <!-- 自定义导航栏 -->
     <view class="nav-bar" :style="{ paddingTop: statusBarHeight + 'px' }">
       <view class="nav-content">
-        <text class="nav-title">我的账户</text>
+        <text class="nav-title">{{ $t('pages.profile') }}</text>
       </view>
     </view>
 
@@ -64,6 +68,32 @@
       <!-- 菜单列表 -->
       <view class="section">
         <view class="card menu-card">
+          <view class="menu-item language-setting">
+            <text class="menu-text">{{ $t('settings.language') }}</text>
+            <picker
+              id="language-picker"
+              mode="selector"
+              role="button"
+              tabindex="0"
+              :range="languageOptions"
+              range-key="label"
+              :value="languageDraftIndex"
+              :aria-label="$t('settings.language')"
+              @change="selectLanguageDraft"
+            >
+              <view class="language-value" role="button" tabindex="0" :aria-label="$t('settings.language')">
+                {{ languageOptions[languageDraftIndex].label }}
+              </view>
+            </picker>
+          </view>
+          <view v-if="languageDraft !== languageCode" class="language-actions">
+            <button class="language-save" role="button" tabindex="0" @tap="saveLanguage">
+              {{ $t('settings.save') }}
+            </button>
+            <button class="language-cancel" role="button" tabindex="0" @tap="languageDraft = languageCode">
+              {{ $t('settings.cancel') }}
+            </button>
+          </view>
           <button
             class="menu-item"
             role="button"
@@ -157,12 +187,15 @@ import CustomModal from '@/components/common/CustomModal.vue';
 import { DEFAULT_AVATAR } from '@/config/brand.js';
 import { bindLearningKeyboard } from '@/services/learning/keyboard-controls.js';
 import { bindBusinessMotion } from '@/design/business-motion.js';
+import { currentLanguage, LANGUAGE_OPTIONS, setLanguage, t } from '@/i18n/index.js';
 
 export default {
   components: { CustomTabbar, LearningOverview, CustomModal },
 
   data() {
     return {
+      languageDraft: currentLanguage.value,
+      languageOptions: LANGUAGE_OPTIONS,
       statusBarHeight: 44,
       tabBarHeight: 90,
       defaultAvatar: DEFAULT_AVATAR,
@@ -174,6 +207,15 @@ export default {
   },
 
   computed: {
+    languageCode() {
+      return currentLanguage.value;
+    },
+    languageDraftIndex() {
+      return Math.max(
+        0,
+        this.languageOptions.findIndex((item) => item.value === this.languageDraft)
+      );
+    },
     themeStore() {
       return useThemeStore();
     },
@@ -233,6 +275,9 @@ export default {
   },
 
   watch: {
+    languageCode(value) {
+      this.languageDraft = value;
+    },
     avatarUrl() {
       this.avatarFailed = false;
     }
@@ -265,6 +310,13 @@ export default {
   },
 
   methods: {
+    selectLanguageDraft(event) {
+      const item = this.languageOptions[Number(event.detail.value)];
+      if (item) this.languageDraft = item.value;
+    },
+    saveLanguage() {
+      if (!setLanguage(this.languageDraft)) uni.showToast({ title: t('settings.languageError'), icon: 'none' });
+    },
     syncTheme(mode) {
       if (['dark', 'light'].includes(mode) && this.themeStore.isDark !== (mode === 'dark')) {
         this.themeStore.setDarkMode(mode === 'dark');
@@ -322,22 +374,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-$primary: #c9b1ee;
-$primary-light: #eee7f7;
-$primary-deep: #332842;
-$action-green: #785bbc;
-$bg: #f0eefa;
-$card-bg: #ffffff;
-$text-main: #1a1d26;
-$text-sub: #5f6672;
-$text-weak: #9ca3af;
-$danger: #ef4444;
-$radius-lg: 24rpx;
-$radius-sm: 12rpx;
-$spacing-page: 32rpx;
-$spacing-card: 32rpx;
-$spacing-section: 24rpx;
-
 .page {
   @include em-mobile-canvas;
   --space-glass: var(--bg-card);
@@ -496,12 +532,7 @@ $spacing-section: 24rpx;
   margin-top: 28rpx;
   padding: 24rpx;
   border-radius: 24rpx;
-  background: rgba(51, 40, 66, 0.88);
-}
-
-.dark-mode .profile-pulse {
-  background:
-    radial-gradient(circle at 18% 0%, rgba(201, 177, 238, 0.16) 0, rgba(201, 177, 238, 0) 38%), rgba(16, 19, 26, 0.88);
+  background: var(--violet-soft);
 }
 
 .dark-mode .pulse-title,
@@ -525,7 +556,7 @@ $spacing-section: 24rpx;
 
 .pulse-title {
   display: block;
-  color: $primary;
+  color: var(--violet-ink);
   font-size: 26rpx;
   font-weight: 900;
 }
@@ -792,5 +823,41 @@ $spacing-section: 24rpx;
     transition: none !important;
     transform: none !important;
   }
+}
+</style>
+
+<style lang="scss" scoped>
+.language-setting {
+  gap: var(--s-3);
+}
+.language-value {
+  padding: var(--s-3);
+  color: var(--violet-ink);
+  font-family: var(--font-ui);
+}
+.language-actions {
+  display: flex;
+  gap: var(--s-2);
+  padding: var(--s-3) var(--s-4);
+}
+.language-save,
+.language-cancel {
+  margin: 0;
+  min-height: 44px;
+  padding: var(--s-2) var(--s-4);
+  font-size: var(--size-small);
+  border-radius: var(--r-sm);
+}
+.language-save {
+  background: var(--clay-face);
+  color: var(--on-clay);
+  box-shadow: var(--clay-shadow);
+}
+.language-save:active {
+  box-shadow: var(--clay-shadow-press);
+}
+.language-cancel {
+  background: var(--paper-sunk);
+  color: var(--ink-2);
 }
 </style>

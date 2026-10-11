@@ -1,5 +1,5 @@
 <template>
-  <view ref="splashRoot" class="splash-container" :class="{ 'dark-mode': isDark }">
+  <view ref="splashRoot" class="splash-container" :class="{ 'dark-mode': isDark, 'theme-light': !isDark }">
     <!-- 主内容：垂直水平居中 -->
     <view class="splash-main">
       <!-- Logo：圆角方形裁切容器 -->

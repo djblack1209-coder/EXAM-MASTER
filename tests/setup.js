@@ -4,6 +4,11 @@
  */
 import { beforeEach, vi } from 'vitest';
 import crypto from 'crypto';
+import { config } from '@vue/test-utils';
+import { installI18n } from '@/i18n/index.js';
+
+// 与 main.js 相同的插件，真实页面挂载可使用响应式翻译与导航桥接。
+config.global.plugins.push({ install: installI18n });
 
 // Plain Vue cannot compile uni-app renderjs; real portal behavior is checked in platform builds.
 vi.mock('wot-design-uni/components/wd-root-portal/wd-root-portal.vue', () => ({

@@ -11,6 +11,7 @@ import { isUserLoggedIn } from '@/utils/auth/loginGuard.js';
 import { safeNavigateTo } from '@/utils/safe-navigate.js';
 import { NAV_BAR_COLORS } from '@/composables/useTheme.js';
 import { useThemeStore } from '@/stores/modules/theme.js';
+import { initI18n } from '@/i18n/index.js';
 import { restoreUserParams as restoreFsrsParams } from '@/services/fsrs-service.js';
 import { storageService } from '@/services/storageService.js';
 import { useConversationLearningStore } from '@/stores/modules/conversation-learning.js';
@@ -37,6 +38,7 @@ export default {
 
     // 初始化双模主题系统
     this.initThemeSystem();
+    initI18n();
 
     // 恢复 FSRS 间隔重复参数
     restoreFsrsParams();
@@ -139,7 +141,7 @@ export default {
       // 同步 store 状态（store 的 setDarkMode 会自动调用 applyTheme）
       try {
         const themeStore = useThemeStore(this.$pinia);
-        themeStore.setDarkMode(currentTheme === 'dark');
+        themeStore.setDarkMode(currentTheme === 'dark', { persist: false });
       } catch (_e) {
         // store 未初始化时降级直接渲染
         applyTheme(currentTheme);
@@ -166,17 +168,17 @@ export default {
      * 切换主题 — 委托给 useThemeStore 作为唯一写入源
      * App.vue 仅负责同步 globalData 和导航栏颜色
      */
-    switchTheme(theme) {
+    switchTheme(theme, { persist = false } = {}) {
       const isDark = theme === 'dark';
 
       // 委托 store 完成：持久化 + DOM 渲染 + 事件通知
       try {
         const themeStore = useThemeStore(this.$pinia);
-        themeStore.setDarkMode(isDark);
+        themeStore.setDarkMode(isDark, { persist });
       } catch (_e) {
         // store 未初始化时降级（仅在极早期启动阶段可能发生）
         applyTheme(theme);
-        storageService.save('theme_mode', theme);
+        if (persist) storageService.save('theme_mode', theme);
         uni.$emit('themeUpdate', theme);
       }
 
@@ -199,7 +201,7 @@ export default {
           frontColor: colors.frontColor,
           backgroundColor: colors.backgroundColor,
           animation: {
-            duration: 300,
+            duration: 0,
             timingFunc: 'easeInOut'
           }
         })
@@ -292,9 +294,10 @@ export default {
 /* 全局按钮动画反馈样式 (P010) */
 @use './styles/button-animations.scss';
 /* 深色模式变量 mixin（单一来源，消除3x重复） */
-@use './styles/_dark-mode-vars.scss' as *;
+@use './styles/yozi-tokens.scss';
 /* 3D 立体设计系统 — uiverse.io 风格原子组件 */
 @use './styles/_em3d-design-system.scss';
+@use './styles/interaction-foundation.scss';
 @import './components/business/learning/learning-space.css';
 /* wot-design-uni 基础变量 */
 @import 'wot-design-uni/components/common/abstracts/variable.scss';
@@ -303,6 +306,12 @@ export default {
   font-family: 'DM Sans';
   src: url('/public/fonts/DMSans-Regular.woff2') format('woff2');
   font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'DM Sans';
+  src: url('/public/fonts/FutureDMSans-500.woff2') format('woff2');
+  font-weight: 500;
   font-display: swap;
 }
 @font-face {
@@ -363,193 +372,6 @@ export default {
 }
 /* #endif */
 
-/* ============================================
-   EXAM-MASTER 全局配色系统 v4.0
-    亮色: Playful Light (浅紫学习风格)
-    暗色: Yozi AI Dark (紫色阅读风格) → _dark-mode-vars.scss
-    ============================================ */
-
-/* ============================================
-   核心颜色变量定义
-   ============================================ */
-
-/* 浅色模式（默认） - Playful Light 浅紫学习风格 */
-:root,
-page {
-  /* ====== 核心变量（浅紫底 + 白色卡片 + 蓝色强调色） ====== */
-  --background: #eae8fc; /* 紫蓝材质底色 */
-  --foreground: #080909; /* 主文字：近黑（高对比可读） */
-  --card: var(--yozi-reading); /* 厚磨砂内容面 */
-  --card-foreground: #080909; /* 卡片文字 */
-  --primary: #785bbc; /* 品牌主色：紫色（仅用于按钮/图标强调） */
-  --primary-foreground: #ffffff; /* 品牌主色文字：白色 */
-  --muted: #eeeaf6; /* 弱化背景：浅紫灰 */
-  --muted-foreground: #62576d; /* 紫色次要文字 */
-  --border: #dbd5e6; /* 边框：浅灰（实色，更清晰） */
-  --brand: #785bbc; /* 品牌色：紫色 */
-  --brand-glow: color-mix(in srgb, var(--primary) 18%, transparent); /* 品牌光晕 */
-  --glass-bg: rgba(255, 255, 255, 0.72); /* 毛玻璃背景：白色透明 */
-  --glass-border: rgba(255, 255, 255, 0.82); /* 毛玻璃边框 */
-
-  /* ====== 语义化别名（方便使用） ====== */
-  --bg-page: var(--background);
-  --bg-card: var(--card);
-  --bg-secondary: #eeeaf6; /* 二级背景：浅紫灰 */
-  --bg-glass: var(--glass-bg);
-  --text-main: var(--foreground);
-  --text-primary: var(--foreground);
-  --text-sub: var(--muted-foreground);
-  --text-secondary: var(--muted-foreground);
-  --border-color: var(--border);
-  --primary-light: color-mix(in srgb, var(--primary) 8%, transparent);
-  --success-light: color-mix(in srgb, var(--success) 12%, transparent);
-  --warning-light: color-mix(in srgb, var(--warning) 12%, transparent);
-  --gradient-primary: linear-gradient(135deg, #9b7cc9 0%, #785bbc 50%, #65429e 100%);
-  --page-gradient-top: #f0eefa;
-  --page-gradient-mid: #f3effa;
-  --page-gradient-bottom: #eee7f7;
-
-  /* ====== 扩展功能色 ====== */
-  --success: #34d399; /* 翡翠绿 */
-  --warning: #f59e0b; /* 琥珀橙 */
-  --danger: #ef4444; /* 红色 */
-  --info: #785bbc; /* 主蓝（与品牌色统一） */
-  --wise-blue: #785bbc; /* Wise 蓝（替代原 wise-green） */
-  --wise-blue-dark: #65429e; /* Wise 蓝深色态 */
-  --wise-green: #785bbc; /* 兼容别名：映射到 wise-blue，旧组件不受影响 */
-  --wise-green-dark: #65429e; /* 兼容别名 */
-
-  /* ====== 兼容变量桥接（解决旧页面/组件变量不一致） ====== */
-  --brand-color: #785bbc;
-  --brand-hover: #9b7cc9;
-  --brand-active: #65429e;
-  --color-primary: var(--brand-color);
-  --color-primary-dark: #573686;
-  --text-tertiary: #9ca3af; /* 三级灰 */
-  --text-inverse: #ffffff;
-  --text-primary-foreground: var(--primary-foreground);
-  --theme-primary: var(--brand-color);
-  --theme-text: var(--text-main);
-  --theme-text-secondary: var(--text-sub);
-  --theme-border: var(--border-color);
-  --theme-card-bg: var(--bg-card);
-  --theme-bg-secondary: var(--bg-secondary);
-  --theme-bg-elevated: #ffffff;
-  --theme-primary-light: color-mix(in srgb, var(--primary) 8%, transparent);
-  --danger-red: var(--danger);
-  --success-green: var(--success);
-  --info-blue: var(--info);
-  --danger-light: color-mix(in srgb, var(--danger) 10%, transparent);
-  --overlay: rgba(0, 0, 0, 0.3);
-  --mask-dark: rgba(0, 0, 0, 0.5);
-  --bg-overlay: rgba(0, 0, 0, 0.3);
-  --bg-card-alpha: rgba(255, 255, 255, 0.88);
-  --shadow-success: 0 10rpx 30rpx rgba(52, 211, 153, 0.18);
-  --shadow-danger: 0 10rpx 30rpx rgba(239, 68, 68, 0.16);
-  --bg-body: var(--bg-page);
-  --card-bg: var(--bg-card);
-  --bg-tertiary: #e4ddef; /* 三级背景：冷紫灰 */
-  --accent-warm: #f59e0b;
-  --accent-cool: #5ac8fa;
-  --accent-energy: #785bbc;
-  --skeleton-bg: rgba(0, 0, 0, 0.04);
-  --skeleton-line: rgba(0, 0, 0, 0.06);
-  --skeleton-highlight: rgba(255, 255, 255, 0.96);
-  --brand-tint: color-mix(in srgb, var(--primary) 8%, transparent);
-  --brand-tint-strong: color-mix(in srgb, var(--primary) 16%, transparent);
-  --brand-tint-subtle: color-mix(in srgb, var(--primary) 4%, transparent);
-  --shadow-brand-sm: 0 8rpx 18rpx rgba(120, 91, 188, 0.12);
-  --shadow-brand: 0 12rpx 28rpx rgba(120, 91, 188, 0.18);
-  --shadow-brand-strong: 0 16rpx 34rpx rgba(120, 91, 188, 0.24);
-  --cta-primary-bg: var(--gradient-primary);
-  --cta-primary-text: #ffffff;
-  --cta-primary-border: transparent;
-  --cta-primary-shadow: 0 12rpx 28rpx rgba(120, 91, 188, 0.22);
-  /* [已迁移] Apple Glass 变量已被 em3d 设计系统替代，保留 icon-highlight 供个别组件使用 */
-  --icon-highlight: 0 4px 20px rgba(0, 0, 0, 0.06), 0 0 0 0.5px rgba(0, 0, 0, 0.04);
-
-  /* ====== 设计系统令牌 ====== */
-  /* 圆角系统 */
-  --radius-xs: 4px;
-  --radius-sm: 8px;
-  --radius-md: 16px;
-  --radius-lg: 24px;
-  --radius-xl: 32px;
-  --radius-full: 9999px;
-
-  /* 间距系统 */
-  --spacing-xs: 4px;
-  --spacing-sm: 8px;
-  --spacing-md: 16px;
-  --spacing-lg: 20px;
-  --spacing-xl: 24px;
-  --spacing-2xl: 32px;
-  --spacing-3xl: 40px;
-
-  /* 字重系统 */
-  --font-weight-regular: 400;
-  --font-weight-medium: 500;
-  --font-weight-semibold: 600;
-  --font-weight-bold: 700;
-  --font-weight-extrabold: 800;
-
-  /* 过渡系统 */
-  --transition-fast: 0.15s;
-  --transition-normal: 0.3s;
-  --transition-slow: 0.5s;
-  --ease-default: cubic-bezier(0.4, 0, 0.2, 1);
-  --ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
-
-  /* 阴影系统（中性色调） */
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04);
-  --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.06);
-  --shadow-lg: 0 10px 24px rgba(0, 0, 0, 0.1);
-  --shadow-xl: 0 18px 38px rgba(0, 0, 0, 0.14);
-
-  /* 设计系统 ds-* 变量映射（供 base 组件使用） */
-  --ds-spacing-xs: var(--spacing-xs);
-  --ds-spacing-sm: var(--spacing-sm);
-  --ds-spacing-md: var(--spacing-md);
-  --ds-spacing-lg: var(--spacing-lg);
-  --ds-spacing-xl: var(--spacing-xl);
-  --ds-radius-sm: var(--radius-sm);
-  --ds-radius-md: var(--radius-md);
-  --ds-radius-lg: var(--radius-lg);
-  --ds-radius-full: var(--radius-full);
-  --ds-color-accent-green: var(--primary);
-  --ds-color-accent-green-light: var(--primary-light);
-  --ds-color-surface: var(--bg-card);
-  --ds-color-surface-elevated: var(--bg-secondary);
-  --ds-font-size-base: 28rpx;
-  --ds-font-size-sm: 24rpx;
-  --ds-font-size-lg: 32rpx;
-  --ds-line-height-relaxed: 1.6;
-  --ds-transition-base: 250ms ease-out;
-}
-
-/* 深色模式 - Yozi AI Dark 紫色阅读风格（系统偏好） */
-@media (prefers-color-scheme: dark) {
-  /* #ifdef H5 */
-  :root:not([data-theme]),
-  :root:not([data-theme]) page
-  /* #endif */
-  /* #ifndef H5 */
-  :root,
-  page
-  /* #endif */ {
-    @include dark-mode-vars;
-  }
-}
-
-/* 显式主题与学习空间共用深色材质。 */
-:root[data-theme='dark'],
-.space-dark,
-.dark,
-.dark-mode,
-.page-dark {
-  @include dark-mode-vars;
-}
-
 /* Resolve material fallbacks after every light/dark variant, including direct token users. */
 @media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
   :root,
@@ -587,9 +409,9 @@ page {
   height: 100%;
   background-color: var(--bg-page);
   color: var(--text-main);
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 14px;
-  line-height: 1.5;
+  font-family: var(--font-ui);
+  font-size: var(--size-body);
+  line-height: var(--leading-body);
   transition:
     background-color var(--transition-normal) var(--ease-default),
     color var(--transition-normal) var(--ease-default);
@@ -659,15 +481,13 @@ scroll-view {
   border: 0;
   box-shadow: var(--yozi-button-shadow);
   transition:
-    box-shadow 180ms ease,
-    transform 180ms ease;
+    box-shadow var(--t-press) var(--ease),
+    transform var(--t-press) var(--ease);
 }
 .apple-cta:active:not([disabled]) {
-  transform: translateY(2px);
-  box-shadow:
-    inset 0 2px 4px rgba(30, 15, 65, 0.16),
-    0 2px 0 var(--yozi-button-edge);
-  transition-duration: 100ms;
+  transform: translateY(var(--press-y));
+  box-shadow: var(--clay-shadow-press);
+  transition-duration: var(--t-press);
 }
 @media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
   .card,
@@ -714,18 +534,15 @@ scroll-view {
 
 /* 主色按钮（新拟物化绿色凸起） */
 .btn-primary {
-  background-color: var(--em3d-primary);
-  color: var(--em3d-text-inv);
+  background-color: var(--clay-face);
+  color: var(--on-clay);
   border: none;
-  box-shadow:
-    6rpx 6rpx 12rpx var(--em3d-primary-shadow),
-    -3rpx -3rpx 8rpx rgba(255, 255, 255, 0.15);
+  box-shadow: var(--clay-shadow);
 }
 
 .btn-primary:active {
-  box-shadow:
-    inset 4rpx 4rpx 8rpx var(--em3d-primary-shadow),
-    inset -2rpx -2rpx 6rpx rgba(255, 255, 255, 0.1);
+  transform: translateY(var(--press-y));
+  box-shadow: var(--clay-shadow-press);
 }
 
 /* 次要按钮（新拟物化凸起） */
@@ -737,7 +554,8 @@ scroll-view {
 }
 
 .btn-secondary:active {
-  box-shadow: var(--neu-shadow-inset);
+  transform: translateY(var(--press-y));
+  box-shadow: var(--clay-shadow-press);
 }
 
 /* 文字颜色工具类 */
@@ -829,7 +647,7 @@ scroll-view {
 
 .clickable:active,
 .touchable:active {
-  transform: scale(0.96);
+  transform: translateY(var(--press-y));
   opacity: 0.8;
 }
 
@@ -837,15 +655,15 @@ scroll-view {
 .card-hover:active,
 .glass-card:active,
 .stat-card:active {
-  transform: scale(0.98);
-  box-shadow: var(--neu-shadow-inset);
+  transform: translateY(var(--press-y));
+  box-shadow: var(--clay-shadow-press);
 }
 
 /* 按钮点击态 - 带亮度变化 */
 .btn:active,
 .action-btn:active,
 button:active {
-  transform: scale(0.95);
+  transform: translateY(var(--press-y));
   filter: brightness(0.9);
 }
 
@@ -871,21 +689,21 @@ page[data-theme='dark'] .option-item:active {
 .theme-toggle:active,
 .nav-back:active,
 .nav-add:active {
-  transform: scale(0.85) rotate(-5deg);
+  transform: translateY(var(--press-y));
   opacity: 0.7;
 }
 
 /* 气泡点击态 - 弹性效果 */
 .bubble-card:active,
 .knowledge-bubble:active {
-  transform: scale(0.92);
+  transform: translateY(var(--press-y));
   transition: transform 0.1s ease-out;
 }
 
 /* 头像点击态 */
 .user-avatar:active,
 .avatar-ring:active {
-  transform: scale(0.9);
+  transform: translateY(var(--press-y));
   box-shadow: 0 0 20rpx rgba(0, 229, 255, 0.5);
 }
 

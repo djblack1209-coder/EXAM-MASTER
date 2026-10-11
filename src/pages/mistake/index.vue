@@ -1,11 +1,11 @@
 <template>
-  <LearningShell v-if="!showLegacy" active="mistake" title="错题与复习">
+  <LearningShell v-if="!showLegacy" active="mistake" :title="$t('pages.mistake')">
     <LearningOverview :initial-expanded="true" :show-navigation="false" view="mistake" />
     <view class="legacy-entry">
       <button class="quiet-button" role="button" tabindex="0" @tap="toggleLegacy">历史题库记录</button>
     </view>
   </LearningShell>
-  <view v-else :class="['container', { 'dark-mode': isDark }]">
+  <view v-else :class="['container', { 'dark-mode': isDark, 'theme-light': !isDark }]">
     <view class="aurora-bg" />
 
     <!-- 骨架屏 -->
@@ -15,7 +15,7 @@
     <view v-if="!isInitLoading" class="header-nav" :style="{ paddingTop: statusBarHeight + 'px' }">
       <view class="nav-content ds-flex ds-flex-between" :style="{ paddingRight: capsuleSafeRight + 'px' }">
         <view class="nav-back ds-touchable" @tap="goBack"><BaseIcon name="arrow-left" :size="32" /></view>
-        <text class="nav-title ds-text-lg ds-font-semibold"> 我的错题本 </text>
+        <text class="nav-title ds-text-lg ds-font-semibold">{{ $t('pages.mistake') }}</text>
         <view class="nav-actions">
           <!-- 移除垃圾桶图标 -->
           <view class="nav-placeholder" />
