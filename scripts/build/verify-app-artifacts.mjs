@@ -36,6 +36,11 @@ export function verifyAppArtifacts(appDir = DEFAULT_APP_DIR) {
   requireFile(appDir, 'app-service.js', blockers);
   requireFile(appDir, '__uniappview.html', blockers);
 
+  const routeConfig = path.join(appDir, 'app-config-service.js');
+  if (fs.existsSync(routeConfig) && fs.readFileSync(routeConfig, 'utf8').includes('platforms/h5/components')) {
+    blockers.push({ code: 'h5_review_page_in_app', path: 'app-config-service.js' });
+  }
+
   for (const htmlEntry of findExistingHtmlEntries(appDir)) {
     const html = fs.readFileSync(path.join(appDir, htmlEntry), 'utf8');
     if (/\s(?:src|href)="\/static\//.test(html)) {

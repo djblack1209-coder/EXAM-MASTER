@@ -1,142 +1,78 @@
 <template>
-  <!-- REFACTOR: Wrapped in design system container, preserved all original directives -->
-  <view class="empty-container ds-flex-center ds-p-lg" :class="{ 'dark-mode': isDark }">
-    <view class="empty-content ds-flex-col ds-flex-center ds-gap-md">
-      <view class="empty-icon-wrap">
-        <BaseIcon v-if="isIconName" :name="icon || 'empty'" :size="120" />
-        <text v-else class="empty-icon">
-          {{ icon }}
-        </text>
-      </view>
-      <text class="empty-title ds-text-lg ds-font-semibold ds-text-primary">
-        {{ title || '暂无数据' }}
-      </text>
-      <text v-if="desc" class="empty-desc ds-text-base ds-text-secondary">
-        {{ desc }}
-      </text>
-      <button v-if="showButton" class="empty-button ds-btn ds-touchable ds-touch-target" @tap="handleAction">
-        {{ buttonText || '去添加' }}
-      </button>
-    </view>
+  <view
+    class="base-state"
+    :class="[{ 'dark-mode': isDark, 'is-compact': compact }, `base-state--${state}`]"
+    :role="state === 'error' ? 'alert' : 'status'"
+    :aria-busy="state === 'loading'"
+    aria-live="polite"
+  >
+    <view class="base-state__halo"
+      ><YoziMascot :pose="pose || poses[state]" :size="mascotSize" :decorative="true"
+    /></view>
+    <text v-if="!compact" class="base-state__title">{{ title || t(`ui.state.${state}`) }}</text>
+    <text v-if="desc && !compact" class="base-state__description">{{ desc }}</text>
+    <BaseButton
+      v-if="showButton && !compact"
+      :variant="state === 'error' ? 'primary' : 'secondary'"
+      small
+      @tap="emit('action')"
+      >{{ buttonText || t(state === 'error' ? 'ui.retry' : 'ui.add') }}</BaseButton
+    >
   </view>
 </template>
-
 <script setup>
-import { computed } from 'vue';
-import BaseIcon from '@/components/base/base-icon/base-icon.vue';
-
-// REFACTOR: Script unchanged - API contract preserved
-const props = defineProps({
-  icon: {
-    type: String,
-    default: 'empty'
-  },
-  title: {
-    type: String,
-    default: '暂无数据'
-  },
-  desc: {
-    type: String,
-    default: ''
-  },
-  showButton: {
-    type: Boolean,
-    default: false
-  },
-  buttonText: {
-    type: String,
-    default: '去添加'
-  },
-  isDark: {
-    type: Boolean,
-    default: false
-  }
+import { t } from '@/i18n/index.js';
+import YoziMascot from '../yozi-mascot/yozi-mascot.vue';
+import BaseButton from '../base-button/base-button.vue';
+defineProps({
+  state: { type: String, default: 'empty', validator: (value) => ['empty', 'loading', 'error'].includes(value) },
+  title: { type: String, default: '' },
+  desc: { type: String, default: '' },
+  showButton: Boolean,
+  buttonText: { type: String, default: '' },
+  isDark: Boolean,
+  compact: Boolean,
+  mascotSize: { type: [String, Number], default: 'state' },
+  pose: { type: String, default: '' },
+  icon: { type: String, default: '' }
 });
-
 const emit = defineEmits(['action']);
-
-const isIconName = computed(() => {
-  const v = props.icon || '';
-  return /^[a-z][a-z0-9-]*$/.test(v);
-});
-
-function handleAction() {
-  emit('action');
-}
+const poses = { empty: 'idle', loading: 'think', error: 'curious' };
 </script>
-
-<style lang="scss" scoped>
-/* REFACTOR: Design system applied, legacy CSS commented for reference */
-
-.empty-container {
-  /* VISUAL: Using ds-flex-center utility */
-  /* Legacy: display: flex; align-items: center; justify-content: center; */
-  min-height: 400rpx;
-  /* VISUAL: Using ds-p-lg utility for padding */
-  /* Legacy: padding: 60rpx 40rpx; */
-}
-
-.empty-content {
-  /* VISUAL: Using ds-flex-col, ds-flex-center, ds-gap-md utilities */
-  /* Legacy: display: flex; flex-direction: column; align-items: center; gap: 20rpx; */
+<style scoped>
+.base-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--s-2);
+  padding: var(--s-3);
   text-align: center;
+  font-family: var(--font-ui);
 }
-
-.empty-icon {
-  font-size: 120rpx;
-  opacity: 0.6;
-  margin-bottom: var(--ds-spacing-md);
-  transition: opacity var(--ds-transition-base, 250ms ease-out);
+.base-state__halo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--mascot-halo);
+  height: var(--mascot-halo);
+  border-radius: var(--r-pill);
+  background: radial-gradient(closest-side, var(--violet-soft-2), transparent);
 }
-
-/* VISUAL: Dark mode icon opacity adjustment */
-.dark-mode .empty-icon {
-  opacity: 0.5;
+.base-state__title {
+  color: var(--ink);
+  font: var(--weight-bold) var(--size-title-3)/var(--leading-title-3) var(--font-ui);
 }
-
-.empty-title {
-  /* VISUAL: Using ds-text-lg, ds-font-semibold, ds-text-primary utilities */
-  /* Legacy: font-size: 32rpx; font-weight: 600; color: var(--text-primary, var(--bg-body)); */
-  margin-bottom: var(--ds-spacing-sm);
-  /* Legacy: margin-bottom: 10rpx; */
+.base-state__description {
+  color: var(--ink-3);
+  font: var(--weight-regular) var(--size-small)/var(--leading-small) var(--font-ui);
 }
-
-/* VISUAL: Dark mode handled by ds-text-primary utility */
-/* Legacy dark mode override removed - handled by design system */
-
-.empty-desc {
-  /* VISUAL: Using ds-text-base, ds-text-secondary utilities */
-  /* Legacy: font-size: 28rpx; color: var(--text-tertiary, #767676); */
-  line-height: var(--ds-line-height-relaxed);
-  /* Legacy: line-height: 1.6; */
-  max-width: 500rpx;
+.base-state.is-compact {
+  padding: 0;
+  display: inline-flex;
 }
-
-/* VISUAL: Dark mode handled by ds-text-secondary utility */
-/* Legacy dark mode override removed - handled by design system */
-
-.empty-button {
-  /* VISUAL: Using ds-btn, ds-touchable, ds-touch-target utilities */
-  margin-top: var(--ds-spacing-lg);
-  /* Legacy: margin-top: 30rpx; */
-  padding: var(--ds-spacing-sm) var(--ds-spacing-xl);
-  /* Legacy: padding: 20rpx 60rpx; */
-  background: var(--ds-color-accent-green) !important;
-  /* Legacy: background: var(--brand-color, var(--brand-color)); */
-  color: var(--ds-color-text-inverse, #1a1a1a) !important;
-  border-radius: var(--ds-radius-full) !important;
-  /* Legacy: border-radius: 50rpx; */
-  font-size: var(--ds-font-size-base) !important;
-  /* Legacy: font-size: 28rpx; */
-  font-weight: var(--ds-font-weight-semibold) !important;
-  /* Legacy: font-weight: 600; */
-  border: none !important;
-
-  /* VISUAL: Tap feedback handled by ds-touchable utility */
-  /* ds-touch-target ensures 44px minimum touch area */
-}
-
-.empty-button::after {
-  border: none;
+.is-compact .base-state__halo {
+  width: auto;
+  height: auto;
+  background: transparent;
 }
 </style>

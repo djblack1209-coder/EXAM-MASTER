@@ -41,3 +41,5 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+Yozi UI batch 2 (2026-10-11): the approved board paths in base-icon/board-icons.js reuse this Lucide license. Product strokes are 1.75; selected navigation shapes retain the outline and use 0.16 fill opacity.

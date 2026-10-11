@@ -59,6 +59,35 @@ pages.json 的页面标题和导航文字使用 `%pages.xxx%` / `%nav.xxx%`；[s
 
 令牌和语言逻辑运行相关单测及全量单测；样式接入进行 H5、微信、App 构建、微信全文件 2MB 与媒体200KB审计。截图覆盖主要页面的移动/桌面浅深状态；语言保存、取消、重开与减少动态需实际操作。构建通过不等于微信/App/Tauri 真机或完整视觉验收。[开发约定](10-DEV-RULES.md)、[测试与设备边界](08-TESTING-INFRA.md)、[脚本入口](08C-SCRIPTS-REFERENCE.md)。
 
+## 公共组件
+
+现行组件位于 [src/components/base](../src/components/base/)，复用既有 BaseIcon、BaseCard、BaseEmpty；浮层继续使用 [CustomModal.vue](../src/components/common/CustomModal.vue)。各类只有一个渲染实现，Wot 通过现行主题变量与按钮/加载薄包装接入，不修改依赖源码。页面自己的旧按钮、选项、统计、输入和弹窗在第3/4批逐页迁移；本批不变更业务页面布局或登录方式。
+
+| 组件                                  | 现行用法                                                                                                                                                                                                                                                                                        |
+| ------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| BaseButton                            | variant 为 primary、secondary、quiet、danger、apple、google、wechat；small/block/iconOnly/icon/label/loading/disabled 与 `@tap`。每个区域最多一个 primary，图标按钮必须有 label；loading 显示随文字颜色的小转圈（减少动态时静止），loading/disabled 阻止触摸与键盘动作。                        |
+| BaseChip / BaseSegmented / BaseTag    | Chip 布尔 v-model、aria-pressed；Segmented 用 v-model、options（value/label/disabled）、label，单个选中标记与左右/Home/End/Enter/Space；Tag 五种 tone 为 violet、mint、coral、apricot、neutral。筛选与标签没有立体底边。                                                                        |
+| BaseOptions                           | 必填 label、options（value/label/state/disabled）；v-model 仅更新草稿。default/selected/correct/wrong/pending 五态：前四态圆点显示 A/B/C/D 字母（可传 key 覆盖），已选/正确/错误另有状态文字，pending 用笔形图标与杏色虚线；radio 语义与方向/Home/End/Enter/Space。结果与已选分别取调用方事实。 |
+| BaseInput / BaseCheckbox              | Input 的 v-model/label/help/error/multiline/prefix/verification/resendSeconds；帮助/错误与输入关联，验证码仅发出 resend 请求，倒计时按截止时刻计算。Checkbox 用 v-model/disabled/slot 与 aria-checked，政策链接不会顺带同意。                                                                   |
+| BaseStat / BaseBubble / BaseCard      | Stat 用 label/value/denominator/unit，保留分母；Bubble author 为 user/assistant，角色有可访问名称；Card surface 为 paper 或 glass，沿用 header/body/footer slot，玻璃在减少透明/高对比/不支持 blur 时回实色。                                                                                   |
+| BaseEmpty / BaseLoading               | Empty state 为 empty、loading、error；title/desc/showButton/buttonText/pose/mascotSize。统一 YoziMascot，错误为 alert，等待为 status；Loading 只是 Wot 兼容包装。旧 icon 参数保留兼容，不输出字符图标。                                                                                         |
+| CustomModal / BaseToast / BaseListRow | Modal 保留 visible/confirm/cancel/closed 与编辑正文合同；position 为 center 或 bottom，maskClosable/escapeClosable/closeButton；圈定/恢复焦点与可配置关闭。Toast 用 visible/message/duration 与 update:visible；ListRow 用 label/value/icon/actionable/disabled。                               |
+| BaseIcon                              | 补齐设计板 Lucide 图形，统一线宽1.75；selected 仅添加0.16浅填充，tone 取令牌，沿用旧数字 rpx size API。微信、Apple、Google 保留官方形状/颜色，许可在 static/licenses。                                                                                                                          |
+
+底栏与学习侧栏只以图标浅填充和品牌文字表明当前页面；滑动切换、实际路由与缓存页状态仍由原控制器负责。按钮、图标触区及可聚焦控件至少44px，焦点描边2px。组件内部默认文案与状态替代文字全部由 `t()` 提供，中英文即时响应。
+
+开发审阅页为 `/#/platforms/h5/components`，使用 platforms/h5 目录及编译前路由过滤，仅在 H5 注册（当前微信解析器不会自动应用目录过滤）。开发服务默认启用；静态审阅构建必须同时显式设置 `WENLI_ISOLATED_BUILD=1 VITE_YOZI_COMPONENT_PREVIEW=1`。普通 H5 生产构建不启用展示且无导航入口，微信/App不注册该路由。审阅页使用本地演示草稿，不能充当真实作答或设备验收。
+
+## 吉祥物
+
+[YoziMascot](../src/components/base/yozi-mascot/yozi-mascot.vue) 接收 `pose`、`size`、`play="auto|once|loop|none"`，默认装饰性（aria-hidden）；表达状态时设 `decorative=false`，自动提供当前姿势的简短 i18n 替代文字，也可传入已翻译的 alt。
+
+- pose 为 idle、wave、think、celebrate、encourage、read、sleep、point、curious；idle 轻浮与4.8秒眨眼，wave 两帧挥手3次后（auto）回 idle，think ±3°持续轻摆，celebrate 蓄力/起跳/回弹600ms一次，encourage 点头两下，read 慢浮，sleep 4秒呼吸，point 轻推，curious 歪头停顿回正。动作只用 CSS transform/opacity，所有尺寸、角度和时长来自唯一令牌。
+- auto 将 wave/celebrate/encourage/curious 当单次反馈，其余循环；once 所有动作一轮后停止，loop 明确循环，none 只显示姿势；`complete` 仅在对应动作实际完成时发出。size 常用 small/state/medium/large，对应32/88/124/256px；调用方可传入布局令牌或必要显示尺寸。
+- [mascot-motion.js](../src/design/mascot-motion.js) 简单登记可见实例，同屏只允许一个播放，后来登记者优先。不可见/页面onHide/应用后台停止播放并释放资格，卸载清理观察器与全局监听。H5 用 IntersectionObserver、visibilitychange，小程序/App 用 uni.createIntersectionObserver、onHide/onShow 与应用显隐 API。
+- 系统 prefers-reduced-motion、应用偏好 `yozi_reduce_motion` 或组件 reducedMotion 开启时显示静态姿势。应用通过 `setMascotReducedMotion()` 明确保存，读取与生命周期变化不写偏好。H5 作答输入聚焦与 BaseInput 原生 focus/blur 暂停循环，单次结果反馈仍可完成。
+- 256px WebP 使用本轮提供的清理后原文件；512px放在非 static 资产目录并经条件编译排除微信，只供 H5/App/桌面大图。构建审计必须确认实际产物、主包余量与图片字节；达到微信1.85MB迁移阈值时，将 read/sleep/point/curious 移入实际消费者的分包，不以路径声明代替产物检查。
+
 ## 既有功能界面合同
 
 以下为改版前已确立、仍然有效的功能界面合同与验收记录。颜色、字号、阴影、圆角、按压与动效的具体数值以上方唯一令牌来源为准；与上方规则冲突时以上方为准。

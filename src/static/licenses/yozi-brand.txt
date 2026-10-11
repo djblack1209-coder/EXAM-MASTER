@@ -15,3 +15,18 @@ Exact projector edit prompt:
 Edit the first reference image's existing 3D learning projector hero to rebrand it to Yozi AI, keeping the same wide composition, camera perspective, lavender-blue projector base, floating glass screen with purple corner brackets and beam, pale purple shelf at the bottom, transparent background and original broad silhouette. Replace the red smiling mug on the left with a small version of the purple-blue cartoon creature in the second reference image, preserving that creature's exact identity: two large petal ears one purple one blue, lavender pear body, blue hands, big dark friendly eyes and smile. The creature stands on the left of the projector at approximately the original mug's height. Recolor the green sphere on the right to soft azure blue. IMPORTANT remove every old letter W, every old word Wenli and every Chinese old brand 问理. On the main white translucent screen panel, the ONLY text is 'Yozi AI' in a clean dark indigo sans serif. Below it put three simple horizontal lavender-blue UI bars; no other text anywhere. Replace the upper left old W glyph with a tiny icon of the same mascot (no lettering). Keep the left sidebar's clean 3D book, pencil, calendar and chart pictograms. Right sidebar has several lavender/blue dot and line UI rows, with no text. The logo itself never uses letters; Yozi AI is UI text on the projector's screen. Preserve all outer margins, no clipping, no unrelated objects, no watermark. Tactile high quality clay 3D animation rendering, premium Apple-like frosted glass screen, soft blue-purple palette. Clean alpha background, no square background.
 
 Learning video: distance-return.mp4, original bounded distance_displacement scene (6m out, 4m back), rendered locally using existing Blender 5.2.1 LTS and FFmpeg. 640x360 H.264, 6 seconds, 20862 bytes. It uses simple original geometry and Blender built-in text, no external assets or student data. Reproducible via scripts/build/render-learning-visual.mjs. Manim was unavailable and was not installed.
+
+Yozi pose set (UI batch 2, 2026-10-11):
+Source: Codex built-in image generation, using the original Yozi character as the visual reference.
+Poses: idle/front, wave, think, celebrate, encourage, read, sleep, point, curious; alternate blink and wave-b frames.
+The generated transparent edges were cleaned with an alpha threshold to remove stray transparent speckles, then exported to WebP (256px and 512px).
+256px exports are local small-display assets; 512px exports are H5/App/desktop large-display assets and excluded from the WeChat main package.
+The source exports are retained in tmp/ui-redesign-20261011/mascot/webp; shipped copies preserve the provided files byte-for-byte.
+
+Official login brand marks (unmodified shapes and original official colors):
+WeChat and Apple: Simple Icons, CC0-1.0, https://github.com/simple-icons/simple-icons (icons/wechat.svg and icons/apple.svg).
+WeChat uses its official #07C160; Apple is the official monochrome silhouette in black/white button contexts.
+Google colored G: gilbarbara/logos, CC0-1.0, https://github.com/gilbarbara/logos (logos/google-icon.svg).
+The original SVGs provided for this task are shipped under src/static/brand/{wechat,apple,google-g}.svg.
+CC0 dedication: https://creativecommons.org/publicdomain/zero/1.0/
+These marks identify their respective providers; the trademark rights remain with the brand owners.

@@ -1,12 +1,13 @@
 <template>
   <WdPopup
     :model-value="visible"
-    :duration="reducedMotion ? 0 : 180"
+    :duration="reducedMotion ? 0 : motionDuration"
     :close-on-click-modal="maskClosable"
     :z-index="9999"
     transition="fade"
-    custom-style="width:calc(100vw - 40px);max-width:440px;background:transparent;overflow:visible;border-radius:24px;"
-    modal-style="background:rgba(33,26,46,.42);"
+    :position="position"
+    :custom-style="popupStyle"
+    modal-style="background:var(--scrim);"
     @close="handleCancel"
     @after-enter="bindDialog"
     @after-leave="emit('closed')"
@@ -14,8 +15,7 @@
     <view
       ref="dialog"
       class="custom-modal-container"
-      :class="[`modal-type-${type}`, { dark: isDark, 'is-closing': !visible, 'reduced-motion': reducedMotion }]"
-      :style="{ '--modal-motion-duration': reducedMotion ? '0ms' : '180ms' }"
+      :class="[{ dark: isDark, 'is-bottom': position === 'bottom', 'reduced-motion': reducedMotion }]"
       role="dialog"
       :aria-modal="visible ? 'true' : undefined"
       :aria-hidden="!visible || undefined"
@@ -25,58 +25,54 @@
       tabindex="-1"
       @tap.stop
     >
-      <view class="modal-icon-wrapper" :class="`modal-icon-${type}`" aria-hidden="true">
-        <BaseIcon :name="icon || iconMap[type] || 'info'" :size="48" :color="iconColor" />
-      </view>
-      <text :id="titleId" class="modal-title">{{ title }}</text>
-      <text v-if="content && !editable" :id="contentId" class="modal-content">{{ content }}</text>
-      <textarea
-        v-if="editable && !nativeInput"
+      <BaseButton
+        v-if="closeButton"
+        class="modal-close"
+        variant="quiet"
+        icon="x"
+        icon-only
+        :label="t('ui.close')"
+        @tap="handleCancel"
+      />
+      <view v-if="icon" class="modal-icon-wrapper" aria-hidden="true"
+        ><BaseIcon :name="icon || iconMap[type] || 'info'"
+      /></view>
+      <text :id="titleId" class="modal-title">{{ title || t('ui.dialogTitle') }}</text>
+      <slot
+        ><text v-if="content && !editable" :id="contentId" class="modal-content">{{ content }}</text></slot
+      >
+      <BaseInput
+        v-if="editable"
         ref="editableInput"
         v-model="inputText"
-        class="modal-input"
-        :aria-label="title"
+        multiline
+        :label="title || t('ui.dialogTitle')"
         :placeholder="placeholderText"
-        placeholder-class="modal-input-placeholder"
         :maxlength="-1"
-      ></textarea>
-      <textarea
-        v-if="editable && nativeInput"
-        ref="editableInput"
-        v-model="inputText"
-        class="modal-input"
-        :aria-label="title"
-        :placeholder="placeholderText"
-        placeholder-class="modal-input-placeholder"
-        :maxlength="-1"
-        :focus="visible"
-      ></textarea>
-      <text v-if="editable && !inputText.trim()" class="modal-input-help">填写内容后才能确认</text>
-      <view class="modal-buttons" :class="{ single: !showCancel }">
-        <button
+        :native-focus="nativeInput && visible"
+        :help="!inputText.trim() ? t('ui.fillToConfirm') : ''"
+      />
+      <view v-if="showActions" class="modal-buttons" :class="{ single: !showCancel }">
+        <BaseButton
           v-if="showCancel"
           ref="cancelButton"
           class="modal-btn cancel-btn"
-          role="button"
-          tabindex="0"
+          variant="secondary"
           @tap="handleCancel"
+          >{{ cancelText || t('ui.cancel') }}</BaseButton
         >
-          {{ cancelText }}
-        </button>
-        <button
+        <BaseButton
           ref="confirmButton"
           class="modal-btn confirm-btn"
-          role="button"
-          tabindex="0"
+          :variant="type === 'error' ? 'danger' : 'primary'"
           :disabled="isConfirmDisabled"
-          :aria-disabled="isConfirmDisabled"
-          :aria-busy="confirmLoading"
+          :loading="confirmLoading"
+          :loading-text="loadingText || t('ui.processing')"
           @tap="handleConfirm"
+          >{{ confirmText || t('ui.confirm') }}</BaseButton
         >
-          <WdLoading v-if="confirmLoading && !reducedMotion" :size="18" :color="isDark ? '#20172f' : '#ffffff'" />
-          <text>{{ confirmLoading ? loadingText : confirmText }}</text>
-        </button>
       </view>
+      <slot name="footer"></slot>
     </view>
   </WdPopup>
 </template>
@@ -84,7 +80,10 @@
 <script setup>
 import { computed, getCurrentInstance, nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
 import WdPopup from 'wot-design-uni/components/wd-popup/wd-popup.vue';
-import WdLoading from 'wot-design-uni/components/wd-loading/wd-loading.vue';
+import BaseButton from '@/components/base/base-button/base-button.vue';
+import BaseInput from '@/components/base/base-input/base-input.vue';
+import { t } from '@/i18n/index.js';
+import { tokens } from '@/design/tokens.js';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 import { bindLearningDialog, bindLearningKeyboard } from '@/services/learning/keyboard-controls.js';
 import { bindBusinessMotion } from '@/design/business-motion.js';
@@ -93,18 +92,22 @@ const props = defineProps({
   visible: { type: Boolean, default: false },
   type: { type: String, default: 'info' },
   icon: { type: String, default: '' },
-  title: { type: String, default: '提示' },
+  title: { type: String, default: '' },
   content: { type: String, default: '' },
-  confirmText: { type: String, default: '确定' },
-  cancelText: { type: String, default: '取消' },
+  confirmText: { type: String, default: '' },
+  cancelText: { type: String, default: '' },
   showCancel: { type: Boolean, default: true },
   maskClosable: { type: Boolean, default: false },
   isDark: { type: Boolean, default: false },
   confirmDisabled: { type: Boolean, default: false },
   confirmLoading: { type: Boolean, default: false },
-  loadingText: { type: String, default: '处理中' },
+  loadingText: { type: String, default: '' },
   editable: { type: Boolean, default: false },
-  placeholderText: { type: String, default: '' }
+  placeholderText: { type: String, default: '' },
+  position: { type: String, default: 'center', validator: (value) => ['center', 'bottom'].includes(value) },
+  escapeClosable: { type: Boolean, default: undefined },
+  closeButton: { type: Boolean, default: false },
+  showActions: { type: Boolean, default: true }
 });
 const emit = defineEmits(['cancel', 'update:visible', 'confirm', 'closed']);
 const dialog = ref(null);
@@ -124,7 +127,12 @@ const reducedMotion = ref(true);
 const instanceId = getCurrentInstance().uid;
 const titleId = `wenli-modal-title-${instanceId}`;
 const contentId = `wenli-modal-content-${instanceId}`;
-const iconColor = computed(() => (props.isDark ? '#c9b1ee' : '#785bbc'));
+const motionDuration = parseInt(tokens.light['--t-state']);
+const popupStyle = computed(() =>
+  props.position === 'bottom'
+    ? 'width:100%;background:transparent;overflow:visible;'
+    : 'width:calc(100vw - var(--s-10));max-width:var(--dialog-width);background:transparent;overflow:visible;border-radius:var(--r-xl);'
+);
 const iconMap = {
   info: 'bulb',
   success: 'success',
@@ -164,7 +172,7 @@ function bindDialog() {
         ? cancelButton.value
         : confirmButton.value,
     onEscape: () => {
-      if (props.showCancel || props.maskClosable) handleCancel();
+      if (props.escapeClosable ?? (props.showCancel || props.maskClosable)) handleCancel();
     }
   });
 }
@@ -203,212 +211,58 @@ onUnmounted(() => {
 
 <style lang="scss" scoped>
 .custom-modal-container {
-  --modal-surface: rgba(246, 243, 255, 0.84);
-  --modal-ink: #080909;
-  --modal-muted: #62576d;
-  --modal-line: #dbd5e6;
-  --modal-primary: #785bbc;
-  --modal-on-primary: #ffffff;
-  --modal-soft: #eee7f7;
   box-sizing: border-box;
+  position: relative;
   width: 100%;
-  max-height: calc(100vh - 40px);
-  max-height: calc(100dvh - 40px);
-  padding: 24px;
+  max-height: calc(100vh - var(--s-10));
+  max-height: calc(100dvh - var(--s-10));
+  padding: var(--s-6);
   overflow-y: auto;
-  background: var(--modal-surface);
-  color: var(--modal-ink);
-  border: 0;
-  border-radius: 24px;
-  box-shadow: var(--yozi-shadow);
-  backdrop-filter: blur(24px) saturate(1.15);
-  -webkit-backdrop-filter: blur(24px) saturate(1.15);
-  font-family: 'DM Sans', 'PingFang SC', 'Microsoft YaHei', sans-serif;
-  animation: wenli-dialog-enter var(--modal-motion-duration) cubic-bezier(0.2, 0, 0, 1);
-  &.dark {
-    --modal-surface: rgba(46, 38, 65, 0.9);
-    --modal-ink: #f8f4ff;
-    --modal-muted: #d2c8e5;
-    --modal-line: #504164;
-    --modal-primary: #c9b1ee;
-    --modal-on-primary: #20172f;
-    --modal-soft: #473457;
-  }
-  &.is-closing {
-    animation: none;
-    transform: translateY(6px);
-    transition: transform var(--modal-motion-duration) ease-in;
-  }
-  &.reduced-motion {
-    animation: none;
-    transition: none;
-    transform: none;
-    .modal-btn {
-      animation: none !important;
-      transition: none !important;
-      transform: none !important;
-    }
-  }
+  background: var(--paper);
+  color: var(--ink);
+  border-radius: var(--r-xl);
+  box-shadow: var(--lift-3);
+  font-family: var(--font-ui);
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
 }
-@keyframes wenli-dialog-enter {
-  from {
-    transform: translateY(6px);
-  }
-  to {
-    transform: translateY(0);
-  }
+.custom-modal-container.is-bottom {
+  border-radius: var(--r-xl) var(--r-xl) 0 0;
+  padding-bottom: calc(var(--s-6) + env(safe-area-inset-bottom));
 }
 .modal-icon-wrapper {
   display: flex;
-  justify-content: center;
   align-items: center;
-  width: 48px;
-  height: 48px;
-  margin: 0 auto 16px;
-  border-radius: 50%;
-  background: var(--modal-soft);
+  justify-content: center;
+  width: var(--control-height);
+  height: var(--control-height);
+  border-radius: var(--r-pill);
+  background: var(--violet-soft);
 }
 .modal-title {
   display: block;
-  margin-bottom: 12px;
-  text-align: center;
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--modal-ink);
+  color: var(--ink);
+  font: var(--weight-bold) var(--size-title-3)/var(--leading-title-3) var(--font-ui);
 }
 .modal-content {
   display: block;
-  margin-bottom: 24px;
-  text-align: center;
   white-space: pre-wrap;
-  font-size: 14px;
-  line-height: 1.65;
-  color: var(--modal-muted);
+  color: var(--ink-2);
+  font: var(--weight-regular) var(--size-body)/var(--leading-body) var(--font-ui);
 }
 .modal-buttons {
   display: flex;
-  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--s-3);
+  margin-top: var(--s-2);
 }
-.modal-input {
-  box-sizing: border-box;
-  width: 100%;
-  height: 88px;
-  padding: 12px;
-  margin-bottom: 16px;
-  border: 1px solid var(--modal-line);
-  border-radius: 12px;
-  background: var(--modal-surface);
-  color: var(--modal-ink);
-  font: inherit;
-  font-size: 14px;
-  line-height: 1.65;
-  caret-color: var(--modal-primary);
-  &:focus-within {
-    outline: 2px solid var(--modal-primary);
-    outline-offset: 2px;
-  }
+.modal-close {
+  align-self: flex-end;
 }
-.modal-input-placeholder,
-.modal-input-help {
-  color: var(--modal-muted);
-  font-size: 14px;
-}
-.modal-input-help {
-  display: block;
-  margin: -4px 0 16px;
-}
-.modal-btn {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 8px;
-  flex: 1;
-  margin: 0;
-  min-width: 0;
-  min-height: 44px;
-  padding: 10px 16px;
-  box-sizing: border-box;
-  border-radius: 12px;
-  font-size: 14px;
-  font-weight: 600;
-  line-height: 1.5;
-  font-family: inherit;
-  transition:
-    background-color 180ms ease,
-    box-shadow 180ms ease,
-    transform 180ms ease;
-  &::after {
-    border: 0;
-  }
-  &:focus-visible {
-    outline: 2px solid var(--modal-primary);
-    outline-offset: 2px;
-  }
-  &:active {
-    transition-duration: 100ms;
-  }
-}
-.cancel-btn {
-  color: var(--modal-primary);
-  background: var(--modal-soft);
-  border: 0;
-  box-shadow: var(--yozi-control-shadow);
-  &:active {
-    background: var(--modal-soft);
-  }
-}
-.confirm-btn {
-  background: var(--yozi-button);
-  color: var(--yozi-button-ink);
-  border: 0;
-  box-shadow: var(--yozi-button-shadow);
-  &[disabled] {
-    opacity: 0.55;
-  }
-  &:active:not([disabled]) {
-    transform: translateY(2px);
-    box-shadow:
-      inset 0 2px 4px rgba(30, 15, 65, 0.16),
-      0 2px 0 var(--yozi-button-edge);
-  }
-}
-@media (hover: hover) and (pointer: fine) {
-  .cancel-btn:hover {
-    background: var(--modal-soft);
-  }
-  .confirm-btn:hover:not([disabled]):not(:active) {
-    filter: brightness(1.05);
-  }
-}
-@media (max-width: 520px) {
-  .custom-modal-container {
-    padding: 20px;
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .custom-modal-container,
-  .modal-btn {
-    animation: none !important;
-    transition: none !important;
-    transform: none !important;
-  }
-}
-@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
-  .custom-modal-container {
-    background: #f0edfc;
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-  }
-  .custom-modal-container.dark {
-    background: #30283f;
-  }
-}
-@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .custom-modal-container {
-    background: #f0edfc;
-  }
-  .custom-modal-container.dark {
-    background: #30283f;
-  }
+.custom-modal-container.reduced-motion :deep(.base-button) {
+  transition: none !important;
+  transform: none !important;
 }
 </style>

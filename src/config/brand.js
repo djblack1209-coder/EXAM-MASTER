@@ -5,8 +5,8 @@ export const BRAND = Object.freeze({
   name: 'Yozi AI',
   title: 'Yozi AI · 对话学习空间',
   description: '从一个问题开始，在对话中理解、练习和复习。',
-  mark: '/static/brand/yozi-mascot.webp',
-  markOnDark: '/static/brand/yozi-mascot.webp',
+  mark: '/static/yozi-mascot/00-reference-front-256.webp',
+  markOnDark: '/static/yozi-mascot/00-reference-front-256.webp',
   icon: '/static/images/logo.png',
   themeColor: '#eae8fc'
 });

@@ -947,3 +947,29 @@
     transform: none !important;
   }
 }
+
+/* 第2批：侧栏/学习底栏只以图标浅填充和品牌文字表达当前页面。 */
+.learning-space .space-nav-item,
+.learning-space .mobile-dock button {
+  background: transparent;
+  color: var(--ink-3);
+  box-shadow: none;
+  border: 0;
+}
+.learning-space .space-nav-item.selected,
+.learning-space .mobile-dock button.selected {
+  background: transparent;
+  color: var(--violet-ink);
+  box-shadow: none;
+  font-weight: var(--weight-semibold);
+}
+.learning-space .space-nav-item::after,
+.learning-space .mobile-dock button::after {
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.learning-space .space-nav-item:active,
+.learning-space .mobile-dock button:active {
+  transform: none;
+}

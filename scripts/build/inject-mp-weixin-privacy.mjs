@@ -32,15 +32,22 @@ const mediaExtensions = new Set([
 const runtimeLocalKeepFiles = new Set([
   'static/images/default-avatar.png',
   'static/images/logo.png',
-  'static/tabbar/home.png',
-  'static/tabbar/home-active.png',
-  'static/tabbar/practice.png',
-  'static/tabbar/practice-active.png',
-  'static/tabbar/profile.png',
-  'static/tabbar/profile-active.png'
+  ...readdirSync(resolve(__dirname, '../../src/static/yozi-mascot'))
+    .filter((name) => name.endsWith('-256.webp'))
+    .map((name) => `static/yozi-mascot/${name}`)
 ]);
 
 function applyWechatBrandExports() {
+  // custom tabBar is rendered using BaseIcon. Its native placeholder needs page/text only;
+  // retire the six old bitmap-only fallback references in this WeChat artifact.
+  const app = JSON.parse(readFileSync(appJsonPath, 'utf8'));
+  if (app.tabBar?.custom) {
+    for (const item of app.tabBar.list || []) {
+      delete item.iconPath;
+      delete item.selectedIconPath;
+    }
+    writeFileSync(appJsonPath, JSON.stringify(app, null, 2));
+  }
   // 微信显示尺寸的同图导出；网页/App原图保留。只改当前隔离/指定构建产物。
   const brandPath = resolve(distRoot, 'config/brand.js');
   if (!existsSync(brandPath) || !readFileSync(brandPath, 'utf8').includes('Yozi AI')) return;
