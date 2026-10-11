@@ -1,49 +1,38 @@
 <template>
-  <view ref="root" class="learning-lab panel">
-    <button class="lab-heading" role="button" tabindex="0" :aria-expanded="opened" @tap="toggleOpened">
-      <text class="section-title">互动学习</text>
-      <BaseIcon :name="opened ? 'chevron-up' : 'sparkles'" :size="30" :color="iconColor" />
-    </button>
+  <BaseCard ref="root" class="learning-lab panel" padding="none">
+    <BaseButton class="lab-heading" :aria-expanded="opened" variant="quiet" @tap="toggleOpened">
+      <text class="section-title">{{ t('learning.kr6') }}</text>
+      <BaseIcon :name="opened ? 'chevron-up' : 'sparkles'" tone="ink-3" />
+    </BaseButton>
     <view v-if="opened" class="lab-content">
-      <view class="lab-tabs" aria-label="学习探索方式">
-        <button
-          v-for="item in tabs"
-          :key="item.id"
-          role="button"
-          tabindex="0"
-          :aria-pressed="tab === item.id"
-          :class="{ selected: tab === item.id }"
-          @tap="chooseTab(item.id)"
-        >
-          {{ item.label }}
-        </button>
-      </view>
+      <BaseSegmented
+        :model-value="tab"
+        :label="t('learning.exploreMode')"
+        :options="tabs.map((item) => ({ value: item.id, label: learningText(item.label) }))"
+        @update:model-value="chooseTab"
+      />
       <view v-if="pendingVisual" class="lab-tabs">
-        <button
-          role="button"
-          tabindex="0"
+        <BaseButton
           :disabled="stopped || busy"
           :aria-disabled="stopped || busy"
+          variant="quiet"
           @tap="applyRequestedVisual(true)"
+          >{{ t('learning.k17') }}</BaseButton
         >
-          查看新演示
-        </button>
       </view>
-      <text v-if="stopped" class="subtle">已停止</text>
+      <text v-if="stopped" class="subtle">{{ t('learning.keb') }}</text>
       <template v-if="tab === 'visual'">
-        <view v-if="!diagramEditing" class="lab-tabs" aria-label="动态演示概念">
-          <button
+        <view v-if="!diagramEditing" class="lab-tabs" :aria-label="t('learning.kl2')">
+          <BaseChip
             v-for="item in visualExamples"
             :key="item.template"
-            role="button"
-            tabindex="0"
             :disabled="stopped || busy"
             :aria-disabled="stopped || busy"
-            :aria-pressed="recipe.template === item.template"
-            @tap="chooseExample(item.template)"
+            :model-value="recipe.template === item.template"
+            @update:model-value="chooseExample(item.template)"
           >
-            {{ item.label }}
-          </button>
+            {{ learningText(item.label) }}
+          </BaseChip>
         </view>
         <DiagramConditions
           :state="state"
@@ -62,22 +51,31 @@
             showVideo = false;
           "
         />
-        <text v-if="contextRecipeError && !manualRecipe" class="lab-feedback" role="alert">{{
-          contextRecipeError
-        }}</text>
+        <BaseEmpty
+          v-if="contextRecipeError && !manualRecipe"
+          state="error"
+          :title="learningText(contextRecipeError)"
+          mascot-size="small"
+        />
         <template v-if="!diagramEditing && (!contextRecipeError || manualRecipe)">
-          <text v-if="!manualRecipe" class="subtle">示例</text>
+          <text v-if="!manualRecipe" class="subtle">{{ t('learning.k5j') }}</text>
           <template v-if="graphRecipe">
             <VelocityTimeGraph :points="recipe.points" :step="step" :visible="visible" />
-            <text class="scene-readout">时间 {{ physicsNumber(frame.time) }} s / {{ recipe.physicalSeconds }} s</text>
-            <text v-if="step > 0" class="subtle">速度 {{ exactMotionText(frame.exact.velocity) }} m/s</text>
+            <text class="scene-readout"
+              >{{ t('learning.kgr') }}{{ physicsNumber(frame.time) }} s / {{ recipe.physicalSeconds }} s</text
+            >
+            <text v-if="step > 0" class="subtle"
+              >{{ t('learning.ktz') }}{{ learningText(exactMotionText(frame.exact.velocity)) }} m/s</text
+            >
           </template>
           <template v-else-if="forceRecipe">
-            <text v-if="movingRecipe" class="subtle">向右为正 · 初速度 {{ recipe.initialVelocityMps }} m/s</text>
+            <text v-if="movingRecipe" class="subtle">{{ t('learning.kea') }}{{ recipe.initialVelocityMps }} m/s</text>
             <text v-else class="subtle"
-              >初始静止 · 恒定合力 {{ recipe.netForceN }} N{{ recipe.netForceN ? `向${side}` : '' }}</text
+              >{{ t('learning.koy') }}{{ recipe.netForceN }} N{{
+                recipe.netForceN ? t('learning.kns', { v0: side }) : ''
+              }}</text
             >
-            <text v-if="movingRecipe" class="subtle">{{ motionConditions }}</text>
+            <text v-if="movingRecipe" class="subtle">{{ learningText(motionConditions) }}</text>
             <view
               v-for="(mass, index) in energyRecipe ? [recipe.massKg] : [recipe.massKg, recipe.massKg * 2]"
               :key="index"
@@ -87,7 +85,13 @@
               <view
                 class="force-track"
                 role="img"
-                :aria-label="`${mass}kg物体：${physicsNumber(frame.time)}秒，位移${physicsNumber(index ? frame.comparisonPosition : frame.position)}米`"
+                :aria-label="
+                  t('learning.k98', {
+                    v0: mass,
+                    v1: physicsNumber(frame.time),
+                    v2: physicsNumber(index ? frame.comparisonPosition : frame.position)
+                  })
+                "
               >
                 <view class="force-axis" />
                 <image
@@ -110,22 +114,26 @@
                 >
               </view>
               <text v-if="frame.step > 0 && movingRecipe" class="subtle"
-                >速度 {{ physicsNumber(index ? frame.comparisonSpeed : frame.speed) }} m/s · 加速度
-                {{ physicsNumber(index ? frame.comparisonAcceleration : frame.acceleration) }} m/s²</text
+                >{{ t('learning.ktz') }}{{ physicsNumber(index ? frame.comparisonSpeed : frame.speed)
+                }}{{ t('learning.khp')
+                }}{{ physicsNumber(index ? frame.comparisonAcceleration : frame.acceleration) }} m/s²</text
               >
               <text v-else-if="frame.step > 0" class="subtle"
-                >加速度 {{ physicsNumber(Math.abs(index ? frame.comparisonAcceleration : frame.acceleration)) }} m/s²{{
-                  recipe.netForceN ? `向${side}` : ''
+                >{{ t('learning.kj8')
+                }}{{ physicsNumber(Math.abs(index ? frame.comparisonAcceleration : frame.acceleration)) }} m/s²{{
+                  recipe.netForceN ? t('learning.kns', { v0: side }) : ''
                 }}</text
               >
               <text v-if="frame.step > 0 && movingRecipe" class="subtle"
-                >路程 {{ physicsNumber(index ? frame.comparisonDistance : frame.distance) }} m · 位移
-                {{ physicsNumber(index ? frame.comparisonPosition : frame.position) }} m</text
+                >{{ t('learning.kim') }}{{ physicsNumber(index ? frame.comparisonDistance : frame.distance)
+                }}{{ t('learning.ktr') }}{{ physicsNumber(index ? frame.comparisonPosition : frame.position) }} m</text
               >
             </view>
-            <text class="scene-readout">时间 {{ physicsNumber(frame.time) }} s / {{ recipe.physicalSeconds }} s</text>
-            <view v-if="energyRecipe" class="energy-readout" aria-label="功与动能读数">
-              <text class="subtle">质点 · 惯性系 · 质量不变 · 直线运动 · 恒定合力</text>
+            <text class="scene-readout"
+              >{{ t('learning.kgr') }}{{ physicsNumber(frame.time) }} s / {{ recipe.physicalSeconds }} s</text
+            >
+            <view v-if="energyRecipe" class="energy-readout" :aria-label="t('learning.ku')">
+              <text class="subtle">{{ t('learning.k5d') }}</text>
               <view
                 v-for="item in [
                   { key: 'initialKinetic', label: '初动能' },
@@ -134,10 +142,10 @@
                 :key="item.key"
                 class="energy-lane"
               >
-                <text>{{ item.label }} {{ exactMotionText(frame.exact[item.key]) }} J</text>
+                <text>{{ learningText(item.label) }} {{ learningText(exactMotionText(frame.exact[item.key])) }} J</text>
                 <view
                   class="energy-track"
-                  :aria-label="`${item.label}${exactMotionText(frame.exact[item.key])}焦耳`"
+                  :aria-label="t('learning.k12', { v0: item.label, v1: exactMotionText(frame.exact[item.key]) })"
                   role="img"
                 >
                   <view
@@ -148,16 +156,18 @@
                 </view>
               </view>
               <view class="scene-readout"
-                ><text>合力总功 {{ exactMotionText(frame.exact.work) }} J</text
-                ><text>动能变化 {{ exactMotionText(frame.exact.kineticChange) }} J</text></view
+                ><text>{{ t('learning.k90') }}{{ learningText(exactMotionText(frame.exact.work)) }} J</text
+                ><text
+                  >{{ t('learning.kjb') }}{{ learningText(exactMotionText(frame.exact.kineticChange)) }} J</text
+                ></view
               >
-              <text class="subtle">K = ½mv² · W = FΔx（带符号）</text>
+              <text class="subtle">{{ t('learning.ksn') }}</text>
               <!-- #ifdef H5 --><a
                 class="writing-source"
                 :href="ENERGY_BASIS.url"
                 target="_blank"
                 rel="noopener noreferrer"
-                >定义参考</a
+                >{{ t('learning.k6n') }}</a
               ><!-- #endif -->
               <!-- #ifndef H5 --><text class="reference-credit" selectable>{{ ENERGY_BASIS.url }}</text
               ><!-- #endif -->
@@ -165,13 +175,14 @@
           </template>
           <template v-else>
             <text class="subtle"
-              >向{{ side }} {{ recipe.outward }} 米，再向{{ side === '右' ? '左' : '右' }}
-              {{ recipe.backward }} 米</text
+              >{{ t('learning.kde') }}{{ side }} {{ recipe.outward }}{{ t('learning.k1s')
+              }}{{ side === t('learning.kgd') ? t('learning.kqs') : t('learning.kgd') }} {{ recipe.backward
+              }}{{ t('learning.kt9') }}</text
             >
             <view
               class="scene"
               role="img"
-              :aria-label="`第${frame.step}步：走过${number(frame.distance)}米，位移${displacementText}`"
+              :aria-label="t('learning.kqz', { v0: frame.step, v1: number(frame.distance), v2: displacementText })"
             >
               <view class="scene-axis" />
               <view
@@ -192,135 +203,145 @@
                   left: `${recipe.direction === 'left' ? 92 - (84 * frame.position) / recipe.outward : 8 + (84 * frame.position) / recipe.outward}%`
                 }"
               />
-              <text class="scene-start" :class="{ 'mirrored-start': recipe.direction === 'left' }">起点 0</text
+              <text class="scene-start" :class="{ 'mirrored-start': recipe.direction === 'left' }">{{
+                t('learning.kj4')
+              }}</text
               ><text class="scene-turn" :class="{ 'mirrored-turn': recipe.direction === 'left' }"
-                >{{ recipe.direction === 'left' ? '-' : '' }}{{ recipe.outward }} 米</text
+                >{{ recipe.direction === 'left' ? '-' : '' }}{{ recipe.outward }}{{ t('learning.kt9') }}</text
               >
             </view>
             <view class="scene-readout"
-              ><text>路程 {{ number(frame.distance) }} m</text><text>位移 {{ displacementText }}</text></view
+              ><text>{{ t('learning.kim') }}{{ number(frame.distance) }} m</text
+              ><text>{{ t('learning.k6t') }}{{ learningText(displacementText) }}</text></view
             >
           </template>
           <text v-if="!prediction" class="lab-prompt">{{
             graphRecipe
-              ? '先猜一下：路程与位移的大小会相同吗？'
+              ? t('learning.ket')
               : energyRecipe
-                ? '先猜一下：观察结束时，动能会变大吗？'
+                ? t('learning.kn4')
                 : motionRecipe
-                  ? '先猜一下：较轻的物体会转向吗？'
+                  ? t('learning.k4m')
                   : forceRecipe
-                    ? '同样的合力，质量加倍，加速度会怎样？'
-                    : '先猜一下：走完后，路程与位移的大小会相同吗？'
+                    ? t('learning.krx')
+                    : t('learning.k11')
           }}</text>
           <view v-if="!prediction" class="lab-tabs">
-            <button
-              role="button"
-              tabindex="0"
+            <BaseButton
               :disabled="stopped || busy"
               :aria-disabled="stopped || busy"
+              variant="quiet"
               @tap="prediction = 'same'"
             >
-              {{ energyRecipe ? '我猜不会' : motionRecipe ? '不会转向' : forceRecipe ? '不变' : '我猜相同' }}
-            </button>
-            <button
-              role="button"
-              tabindex="0"
+              {{
+                energyRecipe
+                  ? t('learning.k6h')
+                  : motionRecipe
+                    ? t('learning.k2e')
+                    : forceRecipe
+                      ? t('learning.k7y')
+                      : t('learning.k9o')
+              }}
+            </BaseButton>
+            <BaseButton
               :disabled="stopped || busy"
               :aria-disabled="stopped || busy"
+              variant="quiet"
               @tap="prediction = 'different'"
             >
-              {{ energyRecipe ? '我猜会' : motionRecipe ? '会转向' : forceRecipe ? '减半' : '我猜不同' }}
-            </button>
+              {{
+                energyRecipe
+                  ? t('learning.kac')
+                  : motionRecipe
+                    ? t('learning.ksu')
+                    : forceRecipe
+                      ? t('learning.kg3')
+                      : t('learning.kaw')
+              }}
+            </BaseButton>
           </view>
           <view class="lab-tabs">
-            <button
+            <BaseButton
               class="primary"
-              role="button"
-              tabindex="0"
               :disabled="stopped || busy || !prediction || frame.complete"
               :aria-disabled="stopped || busy || !prediction || frame.complete"
+              variant="primary"
               @tap="togglePlayback"
             >
-              {{ playing ? '暂停演示' : reducedMotion ? '逐步观察' : '播放演示' }}
-            </button>
-            <button
-              role="button"
-              tabindex="0"
+              {{ playing ? t('learning.kio') : reducedMotion ? t('learning.khx') : t('learning.kry') }}
+            </BaseButton>
+            <BaseButton
               :disabled="stopped || busy || !prediction || frame.complete"
               :aria-disabled="stopped || busy || !prediction || frame.complete"
+              variant="quiet"
               @tap="nextFrame"
+              >{{ t('learning.ksk') }}</BaseButton
             >
-              下一步
-            </button>
-            <button role="button" tabindex="0" @tap="resetVisual">回到起点</button>
+            <BaseButton variant="quiet" @tap="resetVisual">{{ t('learning.kt4') }}</BaseButton>
           </view>
-          <text v-if="visualError" class="lab-feedback" role="alert">{{ visualError }}</text>
+          <BaseEmpty v-if="visualError" state="error" :title="learningText(visualError)" mascot-size="small" />
           <text v-if="frame.complete && graphRecipe" class="lab-feedback" role="status">
-            {{ prediction === (motionTurned ? 'different' : 'same') ? '预测与观察一致。' : '观察带来了新发现。' }}
-            正面积 {{ exactMotionText(frame.exact.positiveArea) }} m，负面积大小
-            {{ exactMotionText(frame.exact.negativeArea) }} m。 路程 {{ exactMotionText(frame.exact.distance) }} m，位移
-            {{ exactMotionText(frame.exact.displacement) }} m。 路程把两侧面积大小相加，位移保留正负。
-          </text>
+            {{ prediction === (motionTurned ? 'different' : 'same') ? t('learning.k4x') : t('learning.kf6')
+            }}{{ t('learning.klf') }}{{ learningText(exactMotionText(frame.exact.positiveArea)) }}{{ t('learning.krb')
+            }}{{ learningText(exactMotionText(frame.exact.negativeArea)) }}{{ t('learning.khf')
+            }}{{ learningText(exactMotionText(frame.exact.distance)) }}{{ t('learning.kih')
+            }}{{ learningText(exactMotionText(frame.exact.displacement)) }}{{ t('learning.k64') }}</text
+          >
           <text v-else-if="frame.complete && motionRecipe" class="lab-feedback" role="status">
-            {{ prediction === (motionTurned ? 'different' : 'same') ? '预测与观察一致。' : '观察带来了新发现。' }}
-            较轻物体：路程 {{ exactMotionText(frame.exact.distance) }} m，位移
-            {{ exactMotionText(frame.exact.displacement) }} m。
-            {{ motionTurned ? '转向前后走过的长度都计入路程。' : '这次运动没有转向。' }}
-            {{ motionZeroForce ? '零合力保持已有速度。' : '比较两条轨迹的速度与位移。' }}
+            {{ prediction === (motionTurned ? 'different' : 'same') ? t('learning.k4x') : t('learning.kf6')
+            }}{{ t('learning.k9m') }}{{ learningText(exactMotionText(frame.exact.distance)) }}{{ t('learning.kih')
+            }}{{ learningText(exactMotionText(frame.exact.displacement)) }} m。
+            {{ motionTurned ? t('learning.kty') : t('learning.k2j') }}
+            {{ motionZeroForce ? t('learning.ksx') : t('learning.knp') }}
           </text>
           <text v-else-if="frame.complete && energyRecipe" class="lab-feedback" role="status">
             {{
               prediction === (frame.exact.kineticChange[0] > 0 ? 'different' : 'same')
-                ? '预测与观察一致。'
-                : '观察带来了新发现。'
-            }}
-            合力总功 {{ exactMotionText(frame.exact.work) }} J，等于动能变化。动能{{
-              frame.exact.kineticChange[0] > 0 ? '增加' : frame.exact.kineticChange[0] < 0 ? '减少' : '不变'
+                ? t('learning.k4x')
+                : t('learning.kf6')
+            }}{{ t('learning.k90') }}{{ learningText(exactMotionText(frame.exact.work)) }}{{ t('learning.kp8')
+            }}{{
+              frame.exact.kineticChange[0] > 0
+                ? t('learning.kbk')
+                : frame.exact.kineticChange[0] < 0
+                  ? t('learning.kv8')
+                  : t('learning.k7y')
             }}。
           </text>
           <text v-else-if="frame.complete && forceRecipe" class="lab-feedback" role="status">
-            {{ prediction === (recipe.netForceN ? 'different' : 'same') ? '预测与观察一致。' : '观察带来了新发现。' }}
-            {{ recipe.netForceN ? '同样合力下，质量加倍，加速度减半。' : '合力为0，两个物体都保持静止。' }}
-            用一句话说明质量改变了什么。
-          </text>
-          <text v-else-if="frame.complete" class="lab-feedback" role="status"
-            >{{
-              prediction === (recipe.backward ? 'different' : 'same')
-                ? '你的预测与这次观察一致。'
-                : '观察带来了新发现。'
-            }}路程 {{ recipe.outward + recipe.backward }} 米，位移{{
-              displacementText
-            }}。路程累加走过的长度，位移比较起点与终点。用一句话说明它们为何{{
-              recipe.backward ? '不同' : '相同'
-            }}。</text
+            {{ prediction === (recipe.netForceN ? 'different' : 'same') ? t('learning.k4x') : t('learning.kf6') }}
+            {{ recipe.netForceN ? t('learning.kue') : t('learning.k16') }}{{ t('learning.koi') }}</text
           >
-          <button
+          <text v-else-if="frame.complete" class="lab-feedback" role="status"
+            >{{ prediction === (recipe.backward ? 'different' : 'same') ? t('learning.khi') : t('learning.kf6')
+            }}{{ t('learning.kim') }}{{ recipe.outward + recipe.backward }}{{ t('learning.k7l')
+            }}{{ learningText(displacementText) }}{{ t('learning.kj')
+            }}{{ recipe.backward ? t('learning.klm') : t('learning.kn9') }}。</text
+          >
+          <BaseButton
             v-if="frame.complete"
             class="primary"
-            role="button"
-            tabindex="0"
             :disabled="stopped || busy"
             :aria-disabled="stopped || busy"
+            variant="primary"
             @tap="requestScience"
+            >{{ t('learning.ko1') }}</BaseButton
           >
-            独立检验
-          </button>
-          <button
+          <BaseButton
             v-if="
               recipe.template === 'distance_displacement' &&
               recipe.direction !== 'left' &&
               recipe.outward === 6 &&
               recipe.backward === 4
             "
-            role="button"
-            tabindex="0"
             :disabled="stopped"
             :aria-disabled="stopped"
             :aria-expanded="showVideo"
+            variant="quiet"
             @tap="toggleVisualVideo"
           >
-            {{ showVideo ? '收起视频' : '观看视频' }}
-          </button>
+            {{ showVideo ? t('learning.kij') : t('learning.k21') }}
+          </BaseButton>
           <video
             v-if="showVideo && !stopped"
             class="scene-video"
@@ -332,82 +353,74 @@
         </template>
       </template>
       <template v-else-if="tab === 'writing'">
-        <view class="lab-tabs" aria-label="写作体裁"
-          ><button
+        <view class="lab-tabs" :aria-label="t('learning.k5a')"
+          ><BaseChip
             v-for="genre in WRITING_GENRES"
             :key="genre.id"
-            role="button"
-            tabindex="0"
             :class="{ selected: genre.id === writingGenreId }"
-            :aria-pressed="genre.id === writingGenreId"
             :disabled="stopped || busy"
             :aria-disabled="stopped || busy"
-            @tap="chooseWritingGenre(genre.id)"
+            :model-value="genre.id === writingGenreId"
+            @update:model-value="chooseWritingGenre(genre.id)"
           >
-            {{ genre.label }}
-          </button></view
-        >
-        <button
+            {{ learningText(genre.label) }}
+          </BaseChip></view
+        ><BaseButton
           v-if="!writingBound"
           class="primary"
-          role="button"
-          tabindex="0"
           :disabled="stopped || busy"
           :aria-disabled="stopped || busy"
+          variant="primary"
           @tap="$emit('writing', context, writingGenreId)"
+          >{{ t('learning.kbl') }}</BaseButton
         >
-          开始带练
-        </button>
         <template v-else>
           <view
             v-if="availableWritingReferences.length > 1 && readWritingReference"
             class="lab-tabs"
-            aria-label="写法参考篇目"
+            :aria-label="t('learning.kx')"
           >
-            <button
+            <BaseChip
               v-for="reference in availableWritingReferences"
               :key="reference.id"
-              role="button"
-              tabindex="0"
               :class="{ selected: reference.id === currentWritingReference?.id }"
-              :aria-pressed="reference.id === currentWritingReference?.id"
               :disabled="stopped || busy"
               :aria-disabled="stopped || busy"
-              @tap="chooseWritingReference(reference.id)"
+              :model-value="reference.id === currentWritingReference?.id"
+              @update:model-value="chooseWritingReference(reference.id)"
             >
               {{ reference.selectionLabel || reference.title }}
-            </button>
+            </BaseChip>
           </view>
-          <button
+          <BaseButton
             v-if="currentWritingReference && readWritingReference"
-            role="button"
-            tabindex="0"
             :disabled="stopped || busy"
             :aria-disabled="stopped || busy"
             :aria-expanded="!!writingReference"
             aria-controls="public-writing-reference"
+            variant="quiet"
             @tap="openWritingReference"
           >
             {{
               currentWritingReference.coverage === 'full_body'
-                ? '读信件正文'
+                ? t('learning.kgo')
                 : currentWritingReference.coverage === 'full_text'
-                  ? '读正文全文'
+                  ? t('learning.klb')
                   : currentWritingReference.coverage === 'full_work'
-                    ? '读全文'
+                    ? t('learning.k2b')
                     : writingGenreId === 'narrative'
-                      ? '读一段叙事'
-                      : '读一段说明'
+                      ? t('learning.ks1')
+                      : t('learning.kfz')
             }}
-          </button>
+          </BaseButton>
           <view v-if="writingReference" id="public-writing-reference" class="public-writing-reference">
-            <text class="lab-title">写法参考</text>
+            <text class="lab-title">{{ t('learning.kpz') }}</text>
             <text class="reference-title" selectable>{{ writingReference.title }}</text>
             <text class="reference-excerpt" selectable>{{ writingReference.excerpt }}</text>
             <text class="reference-credit" selectable>
               {{ writingReference.copyright }} · {{ writingReference.author }}
-              <template v-if="writingReference.coWritingCredit">
-                · 协作撰写 {{ writingReference.coWritingCredit }}</template
+              <template v-if="writingReference.coWritingCredit"
+                >{{ t('learning.ki0') }}{{ writingReference.coWritingCredit }}</template
               >
             </text>
             <text class="reference-credit">{{ writingReference.publisher }} · {{ writingReference.published }}</text>
@@ -415,7 +428,9 @@
             <text v-if="writingReference.versionNote" class="reference-credit">{{ writingReference.versionNote }}</text>
             <!-- #ifdef H5 -->
             <view class="reference-links">
-              <a class="writing-source" :href="writingReference.url" target="_blank" rel="noopener noreferrer">原文</a>
+              <a class="writing-source" :href="writingReference.url" target="_blank" rel="noopener noreferrer">{{
+                t('learning.k8v')
+              }}</a>
               <a class="writing-source" :href="writingReference.licenseUrl" target="_blank" rel="noopener noreferrer">{{
                 writingReference.license
               }}</a>
@@ -427,87 +442,86 @@
               >{{ writingReference.license }} · {{ writingReference.licenseUrl }}</text
             >
             <!-- #endif -->
-            <text class="lab-title">{{ writingReference.noteAuthor }} 写法批注</text>
+            <text class="lab-title">{{ writingReference.noteAuthor }}{{ t('learning.k6x') }}</text>
             <text v-if="writingReference.notesLicense" class="reference-credit"
-              >批注许可 · {{ writingReference.notesLicense }}</text
+              >{{ t('learning.k2l') }}{{ writingReference.notesLicense }}</text
             >
             <view
               v-for="note in writingReference.notes"
               :key="note.paragraph ? `paragraph-${note.paragraph}` : note.sentence"
               class="reference-note"
             >
-              <text>{{ writingReferenceNoteLocation(note) }} · {{ note.label }}</text>
+              <text>{{ writingReferenceNoteLocation(note) }} · {{ learningText(note.label) }}</text>
               <text>{{ note.text }}</text>
             </view>
             <view v-if="writingReference.teachingBasis" class="reference-note">
-              <text>学习目标 · 第{{ writingReference.teachingBasis.printedPage }}页</text>
+              <text
+                >{{ t('learning.kqf') }}{{ writingReference.teachingBasis.printedPage }}{{ t('learning.ke1') }}</text
+              >
               <text>{{ writingReference.teachingBasis.summary }}</text>
-              <text class="reference-credit">{{ writingReference.teachingBasis.title }} · Yozi AI 转述</text>
+              <text class="reference-credit">{{ writingReference.teachingBasis.title }}{{ t('learning.khq') }}</text>
               <!-- #ifdef H5 -->
               <a
                 class="writing-source"
                 :href="writingReference.teachingBasis.url"
                 target="_blank"
                 rel="noopener noreferrer"
-                >课程标准</a
+                >{{ t('learning.kap') }}</a
               >
               <!-- #endif -->
               <!-- #ifndef H5 -->
               <text class="reference-credit" selectable>{{ writingReference.teachingBasis.url }}</text>
               <!-- #endif -->
             </view>
-            <button role="button" tabindex="0" @tap="writingReference = null">收起参考</button>
+            <BaseButton variant="quiet" @tap="writingReference = null">{{ t('learning.k9') }}</BaseButton>
           </view>
-          <text class="subtle">草稿 · {{ writingIndex + 1 }} / {{ writingSteps.length }}</text>
+          <text class="subtle">{{ t('learning.k68') }}{{ writingIndex + 1 }} / {{ writingSteps.length }}</text>
           <view class="writing-progress" :style="{ gridTemplateColumns: `repeat(${writingSteps.length}, 1fr)` }"
             ><view
               v-for="(item, index) in writingSteps"
               :key="item.id"
               :class="{ current: index === writingIndex, done: index < writingIndex }"
               ><text>{{
-                writingGenreId === 'notice' ? ['活动', '时间', '地点', '行动'][index] : item.label
+                writingGenreId === 'notice'
+                  ? [t('learning.kle'), t('learning.kgr'), t('learning.ksj'), t('learning.kgv')][index]
+                  : item.label
               }}</text></view
             ></view
           >
           <text class="lab-prompt">{{ writingStep.prompt }}</text>
           <view class="word-list"
-            ><button
+            ><BaseButton
               v-for="card in visibleWritingWords"
               :key="card.word"
-              role="button"
-              tabindex="0"
               :disabled="stopped || busy"
               :aria-disabled="stopped || busy"
+              variant="quiet"
               @tap="chooseWord(card)"
             >
               {{ card.word }}
-            </button></view
+            </BaseButton></view
           >
-          <button
+          <BaseButton
             v-if="foldedWords && !showAllWords"
-            role="button"
-            tabindex="0"
             :disabled="stopped || busy"
+            variant="quiet"
             @tap="showAllWords = true"
+            >{{ t('learning.ka') }}</BaseButton
           >
-            更多词语
-          </button>
           <view v-if="vocabularyQuestion" class="vocabulary-check">
             <text class="lab-prompt" selectable>{{ vocabularyQuestion.prompt }}</text>
-            <view v-if="!vocabularyResult" class="vocabulary-options" role="group" aria-label="词义选择">
-              <button
+            <view v-if="!vocabularyResult" class="vocabulary-options" role="group" :aria-label="t('learning.kch')">
+              <BaseChip
                 v-for="(option, index) in vocabularyQuestion.options"
                 :key="option"
-                role="button"
-                tabindex="0"
                 :class="{ selected: vocabularyChoice === 'ABCD'[index] }"
-                :aria-pressed="vocabularyChoice === 'ABCD'[index]"
                 :disabled="stopped || busy"
                 :aria-disabled="stopped || busy"
-                @tap="vocabularyChoice = 'ABCD'[index]"
+                :model-value="vocabularyChoice === 'ABCD'[index]"
+                @update:model-value="vocabularyChoice = 'ABCD'[index]"
               >
-                {{ option }}
-              </button>
+                {{ learningText(option) }}
+              </BaseChip>
             </view>
             <text v-if="vocabularyResult" class="lab-feedback" role="status" aria-live="polite">{{
               vocabularyResult
@@ -516,161 +530,154 @@
               v-if="vocabularyResult && startVocabularyTask"
               class="lab-tabs"
               role="group"
-              aria-label="词义复测间隔"
+              :aria-label="t('learning.ks8')"
             >
-              <button
+              <BaseChip
                 v-for="interval in vocabularyDelayOptions"
                 :key="interval.days"
-                role="button"
-                tabindex="0"
                 :class="{ selected: vocabularyDelayDays === interval.days }"
-                :aria-pressed="vocabularyDelayDays === interval.days"
                 :disabled="stopped || busy"
                 :aria-disabled="stopped || busy"
-                @tap="chooseVocabularyDelay(interval.days)"
+                :model-value="vocabularyDelayDays === interval.days"
+                @update:model-value="chooseVocabularyDelay(interval.days)"
               >
-                {{ interval.label }}
-              </button>
+                {{ learningText(interval.label) }}
+              </BaseChip>
             </view>
             <view class="lab-tabs">
-              <button
+              <BaseButton
                 v-if="!vocabularyResult"
                 class="primary"
-                role="button"
-                tabindex="0"
                 :disabled="stopped || busy || !vocabularyChoice"
                 :aria-disabled="stopped || busy || !vocabularyChoice"
+                variant="primary"
                 @tap="confirmVocabulary"
+                >{{ t('learning.kvf') }}</BaseButton
               >
-                确认词义
-              </button>
-              <button
+              <BaseButton
                 v-if="!vocabularyResult"
-                role="button"
-                tabindex="0"
                 :disabled="stopped || busy"
                 :aria-disabled="stopped || busy"
+                variant="quiet"
                 @tap="wordHelp(vocabularyWord)"
+                >{{ t('learning.k49') }}</BaseButton
               >
-                看释义
-              </button>
-              <button
+              <BaseButton
                 v-else
-                role="button"
-                tabindex="0"
                 :disabled="stopped || busy"
                 :aria-disabled="stopped || busy"
+                variant="quiet"
                 @tap="openWordCheck(vocabularyWord)"
+                >{{ t('learning.kcx') }}</BaseButton
               >
-                换句再认
-              </button>
-              <button role="button" tabindex="0" @tap="clearVocabulary">回到草稿</button>
-              <button
+              <BaseButton variant="quiet" @tap="clearVocabulary">{{ t('learning.kdi') }}</BaseButton>
+              <BaseButton
                 v-if="vocabularyResult && startVocabularyTask"
-                role="button"
-                tabindex="0"
                 :disabled="stopped || busy || !!vocabularyRetest"
                 :aria-disabled="stopped || busy || !!vocabularyRetest"
+                variant="quiet"
                 @tap="wordTask('retest')"
               >
                 {{
                   vocabularyRetest
-                    ? `已安排 ${vocabularyRetest.day.slice(5).replace('-', '/')}`
+                    ? t('learning.kf0', { v0: vocabularyRetest.day.slice(5).replace('-', '/') })
                     : vocabularyDelayDays === 1
-                      ? '明日认词'
-                      : `${vocabularyDelayDays}天后认词`
+                      ? t('learning.kix')
+                      : t('learning.kf5', { v0: vocabularyDelayDays })
                 }}
-              </button>
-              <button
+              </BaseButton>
+              <BaseButton
                 v-if="vocabularyResult && startVocabularyTask"
-                role="button"
-                tabindex="0"
                 :disabled="stopped || busy"
                 :aria-disabled="stopped || busy"
+                variant="quiet"
                 @tap="wordTask('usage')"
+                >{{ t('learning.kkm') }}</BaseButton
               >
-                自己写一句
-              </button>
             </view>
           </view>
           <text v-if="wordMessage" class="lab-feedback" role="status">{{ wordMessage }}</text>
-          <textarea
+          <BaseInput
             v-model="sentence"
             class="field sentence-input"
-            :aria-label="`第${writingIndex + 1}${writingInParagraphs ? '段' : '句'}${writingIsChinese ? '中文' : '英文'}草稿`"
             :disabled="stopped || busy"
             :maxlength="writingDraftLimit(writingGenreId)"
             :placeholder="
               stopped
-                ? '已停止'
+                ? t('learning.keb')
                 : writingInParagraphs
                   ? writingIsChinese
-                    ? '写一段中文'
-                    : '写一段英文'
+                    ? t('learning.kh7')
+                    : t('learning.kor')
                   : writingIsChinese
-                    ? '写一句中文'
-                    : '写一句英文'
+                    ? t('learning.k5o')
+                    : t('learning.k5x')
             "
-            placeholder-class="space-placeholder"
-          ></textarea>
-          <button
+            :label="
+              t('learning.ken', {
+                v0: writingIndex + 1,
+                v1: writingInParagraphs ? '段' : '句',
+                v2: writingIsChinese ? '中文' : '英文'
+              })
+            "
+            multiline
+          />
+          <BaseButton
             v-if="!scaffold"
-            role="button"
-            tabindex="0"
             :disabled="stopped || busy"
             :aria-disabled="stopped || busy"
+            variant="quiet"
             @tap="showScaffold"
           >
-            {{ writingInParagraphs ? '需要表达提示' : '需要一个句型' }}
-          </button>
+            {{ writingInParagraphs ? t('learning.klj') : t('learning.kr7') }}
+          </BaseButton>
           <text v-else class="lab-feedback">{{ writingStep.scaffold }} · {{ writingStep.hint }}</text>
           <view class="lab-tabs">
-            <button
+            <BaseButton
               class="primary"
-              role="button"
-              tabindex="0"
               :disabled="stopped || busy || !sentence.trim()"
               :aria-disabled="stopped || busy || !sentence.trim()"
+              variant="primary"
               @tap="checkSentence"
             >
-              {{ writingInParagraphs ? '检查这一段' : '检查这一句' }}
-            </button>
-            <button
+              {{ writingInParagraphs ? t('learning.khh') : t('learning.kc8') }}
+            </BaseButton>
+            <BaseButton
               v-if="feedback && (feedback.ready || feedback.kind === 'content') && !writingComplete"
-              role="button"
-              tabindex="0"
               :disabled="stopped || busy"
               :aria-disabled="stopped || busy"
+              variant="quiet"
               @tap="nextSentence"
             >
               {{
                 !feedback.ready
                   ? writingInParagraphs
-                    ? '先保留这段'
-                    : '先保留这句'
+                    ? t('learning.kkj')
+                    : t('learning.kqk')
                   : writingIndex === writingSteps.length - 1
                     ? writingGenreId === 'notice'
-                      ? '拼成我的通知'
-                      : '拼成我的草稿'
+                      ? t('learning.kq3')
+                      : t('learning.k7g')
                     : writingInParagraphs
-                      ? '继续下一段'
-                      : '继续下一句'
+                      ? t('learning.ku1')
+                      : t('learning.kp4')
               }}
-            </button>
+            </BaseButton>
           </view>
-          <text v-if="feedback" class="lab-feedback" role="status" aria-live="polite">{{ feedback.message }}</text>
+          <text v-if="feedback" class="lab-feedback" role="status" aria-live="polite">{{
+            learningText(feedback.message)
+          }}</text>
           <view v-if="writingComplete" class="writing-draft">
-            <text class="lab-title">你的草稿</text><text selectable>{{ sentences.join('\n') }}</text>
-            <button
+            <text class="lab-title">{{ t('learning.k63') }}</text
+            ><text selectable>{{ sentences.join('\n') }}</text>
+            <BaseButton
               class="primary"
-              role="button"
-              tabindex="0"
               :disabled="stopped || busy"
               :aria-disabled="stopped || busy"
+              variant="primary"
               @tap="$emit('writing', context, writingGenreId)"
+              >{{ t('learning.k4k') }}</BaseButton
             >
-              独立写作
-            </button>
           </view>
           <!-- #ifdef H5 --><a
             v-if="writingGenreId === 'notice'"
@@ -678,20 +685,24 @@
             :href="WRITING_SOURCE.url"
             target="_blank"
             rel="noopener noreferrer"
-            >评分参考</a
+            >{{ t('learning.kd8') }}</a
           ><!-- #endif -->
           <view v-if="writingGenreId === 'argument'" class="reference-note">
-            <text class="subtle">原创练习 · 至少250词 · 辅助反馈待核对</text>
+            <text class="subtle">{{ t('learning.k2') }}</text>
             <!-- #ifdef H5 -->
-            <a class="writing-source" :href="ARGUMENT_WRITING_BASIS.formatUrl" target="_blank" rel="noopener noreferrer"
-              >官方任务格式</a
+            <a
+              class="writing-source"
+              :href="ARGUMENT_WRITING_BASIS.formatUrl"
+              target="_blank"
+              rel="noopener noreferrer"
+              >{{ t('learning.knf') }}</a
             >
             <a
               class="writing-source"
               :href="ARGUMENT_WRITING_BASIS.criteriaUrl"
               target="_blank"
               rel="noopener noreferrer"
-              >官方评分维度 · {{ ARGUMENT_WRITING_BASIS.criteriaVersion }}</a
+              >{{ t('learning.kvb') }}{{ ARGUMENT_WRITING_BASIS.criteriaVersion }}</a
             >
             <!-- #endif -->
             <!-- #ifndef H5 -->
@@ -700,21 +711,21 @@
             <!-- #endif -->
           </view>
           <view v-if="writingGenreId === 'discussion'" class="reference-note">
-            <text class="subtle">原创讨论 · 建议100词以上 / 10分钟 · 辅助反馈待核对</text>
+            <text class="subtle">{{ t('learning.kmy') }}</text>
             <!-- #ifdef H5 -->
             <a
               class="writing-source"
               :href="DISCUSSION_WRITING_BASIS.formatUrl"
               target="_blank"
               rel="noopener noreferrer"
-              >官方任务格式 · 2026</a
+              >{{ t('learning.kcv') }}</a
             >
             <a
               class="writing-source"
               :href="DISCUSSION_WRITING_BASIS.teachingUrl"
               target="_blank"
               rel="noopener noreferrer"
-              >官方任务说明</a
+              >{{ t('learning.krd') }}</a
             >
             <!-- #endif -->
             <!-- #ifndef H5 -->
@@ -723,14 +734,14 @@
             <!-- #endif -->
           </view>
           <view v-if="writingGenreId === 'email'" class="reference-note">
-            <text class="subtle">原创邮件 · 建议7分钟 · 辅助反馈待核对</text>
+            <text class="subtle">{{ t('learning.kkg') }}</text>
             <!-- #ifdef H5 -->
-            <a class="writing-source" :href="EMAIL_WRITING_BASIS.formatUrl" target="_blank" rel="noopener noreferrer"
-              >官方任务格式 · 2026</a
-            >
-            <a class="writing-source" :href="EMAIL_WRITING_BASIS.sampleUrl" target="_blank" rel="noopener noreferrer"
-              >官方示例与评价要点</a
-            >
+            <a class="writing-source" :href="EMAIL_WRITING_BASIS.formatUrl" target="_blank" rel="noopener noreferrer">{{
+              t('learning.kcv')
+            }}</a>
+            <a class="writing-source" :href="EMAIL_WRITING_BASIS.sampleUrl" target="_blank" rel="noopener noreferrer">{{
+              t('learning.klr')
+            }}</a>
             <!-- #endif -->
             <!-- #ifndef H5 -->
             <text class="reference-credit" selectable>{{ EMAIL_WRITING_BASIS.formatUrl }}</text>
@@ -741,45 +752,57 @@
       </template>
       <template v-else>
         <text class="lab-title">{{ map.goal }}</text>
-        <text class="subtle">近14天 · {{ map.timezone }}</text>
-        <view class="heatmap" aria-label="近14天学习活动">
+        <text class="subtle">{{ t('learning.kve') }}{{ map.timezone }}</text>
+        <view class="heatmap" :aria-label="t('learning.kp')">
           <view
             v-for="cell in map.heat"
             :key="cell.day"
             class="heat-cell"
             :class="{ active: cell.reliable, pending: !cell.reliable && cell.pending }"
-            :aria-label="`${cell.day}：可靠${cell.reliable}次，待核对${cell.pending}次`"
+            :aria-label="t('learning.k6r', { v0: cell.day, v1: cell.reliable, v2: cell.pending })"
             ><text>{{ cell.day.slice(8) }}</text
             ><text>{{ cell.reliable || '·' }}</text></view
-          >
-        </view>
-        <view class="map-legend" aria-label="学习活动图例"
-          ><text class="legend-reliable">已校验</text><text class="legend-pending">待核对</text
-          ><text>无记录</text></view
+          ></view
         >
-        <view v-if="!map.nodes.length" class="lab-feedback">暂无作答</view>
+        <view class="map-legend" :aria-label="t('learning.ka0')"
+          ><text class="legend-reliable">{{ t('learning.k1b') }}</text
+          ><text class="legend-pending">{{ t('learning.k4h') }}</text
+          ><text>{{ t('learning.kl1') }}</text></view
+        >
+        <BaseEmpty v-if="!map.nodes.length" state="empty" :title="t('learning.khn')" mascot-size="small" />
         <view v-for="node in map.nodes" :key="node.scope" class="map-node">
-          <text class="map-node-title">{{ node.label }}</text>
-          <text class="subtle">可靠 {{ node.reliable }} · 待核对 {{ node.pending }} · 有提示 {{ node.helped }}</text>
+          <text class="map-node-title">{{ learningText(node.label) }}</text>
+          <text class="subtle"
+            >{{ t('learning.k7p') }}{{ node.reliable }}{{ t('learning.kbs') }}{{ node.pending }}{{ t('learning.kpj')
+            }}{{ node.helped }}</text
+          >
           <view class="map-evidence"
-            ><button
+            ><BaseButton
               v-for="evidence in node.evidence.slice(-4)"
               :key="evidence.id"
-              role="button"
-              tabindex="0"
+              variant="quiet"
               @tap="$emit('question', evidence.questionKey, evidence.conversationId)"
-            >
-              回看{{ evidence.status === 'reliable' ? '可靠' : '待核对' }}原答
-            </button></view
+              >{{ t('learning.kak') }}{{ evidence.status === 'reliable' ? t('learning.k7p') : t('learning.k4h')
+              }}{{ t('learning.k3s') }}</BaseButton
+            ></view
           >
         </view>
-        <text v-if="map.totalNodes > 40" class="subtle">最近40个知识点</text>
+        <text v-if="map.totalNodes > 40" class="subtle">{{ t('learning.k6w') }}</text>
       </template>
     </view>
-  </view>
+  </BaseCard>
 </template>
 
 <script setup>
+import BaseEmpty from '@/components/base/base-empty/base-empty.vue';
+import BaseSegmented from '@/components/base/base-segmented/base-segmented.vue';
+import { learningText } from '@/i18n/learning.js';
+import { t } from '@/i18n/index.js';
+import BaseCard from '@/components/base/base-card/base-card.vue';
+import BaseButton from '@/components/base/base-button/base-button.vue';
+import BaseChip from '@/components/base/base-chip/base-chip.vue';
+import BaseInput from '@/components/base/base-input/base-input.vue';
+
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue';
 import { BRAND } from '@/config/brand.js';
 import { bindLearningKeyboard } from '@/services/learning/keyboard-controls.js';
@@ -847,7 +870,7 @@ const props = defineProps({
   question: { type: Object, default: null },
   visible: { type: Boolean, default: true },
   request: { type: Object, default: null },
-  iconColor: { type: String, default: '#7050b0' }
+  iconColor: { type: String, default: '' }
 });
 const emit = defineEmits(['question', 'writing', 'science']);
 const tabs = [
@@ -895,17 +918,23 @@ const motionConditions = computed(() => {
     { seconds: value.physicalSeconds, netForceN: value.netForceN, direction: value.direction }
   ];
   return schedule
-    .map(
-      (s, i) =>
-        `第${i + 1}段 ${s.seconds}s · ${s.netForceN}N${s.netForceN ? `向${s.direction === 'left' ? '左' : '右'}` : '无方向'}`
+    .map((s, i) =>
+      t('learning.motionSegment', {
+        index: i + 1,
+        seconds: s.seconds,
+        force: s.netForceN,
+        direction: s.netForceN
+          ? t(s.direction === 'left' ? 'learning.left' : 'learning.right')
+          : t('learning.noDirection')
+      })
     )
-    .join('；');
+    .join(t('learning.segmentSeparator'));
 });
 const motionTurned = computed(() => frame.value.distance > Math.abs(frame.value.position) + 1e-10);
 const motionZeroForce = computed(
   () => !(recipe.value.segments?.[frame.value.phaseIndex]?.netForceN ?? recipe.value.netForceN)
 );
-const side = computed(() => (recipe.value.direction === 'left' ? '左' : '右'));
+const side = computed(() => t(recipe.value.direction === 'left' ? 'learning.kqs' : 'learning.kgd'));
 const frame = computed(() => visualFrame(recipe.value, step.value));
 const motionOriginLabel = computed(
   () =>
@@ -1452,96 +1481,84 @@ onUnmounted(() => {
 
 <style scoped>
 .public-writing-reference {
-  margin: 12px 0 20px;
-  padding: 16px;
-  border: 1px solid var(--space-line);
-  border-radius: 12px;
-  background: var(--yozi-solid);
+  margin: var(--s-3) 0 var(--s-5);
+  padding: var(--s-4);
+  border: var(--border-thin) solid var(--line);
+  border-radius: var(--s-3);
+  background: var(--paper);
   overflow-wrap: anywhere;
 }
 .reference-title,
 .reference-excerpt,
 .reference-credit {
   display: block;
-  margin-bottom: 12px;
+  margin-bottom: var(--s-3);
 }
 .reference-excerpt {
   white-space: pre-wrap;
   line-height: 1.75;
-  font-size: 16px;
+  font-size: var(--size-body);
 }
 .reference-credit {
-  color: var(--space-muted);
-  font-size: 12px;
+  color: var(--ink-3);
+  font-size: var(--size-caption);
   line-height: 1.6;
 }
 .reference-links {
   display: flex;
   flex-wrap: wrap;
-  gap: 16px;
+  gap: var(--s-4);
 }
 .reference-links a {
   display: inline-flex;
   align-items: center;
-  min-width: 44px;
+  min-width: var(--touch-min);
 }
 .reference-links a:focus-visible,
 .writing-source:focus-visible {
-  outline: 2px solid var(--space-focus, #785bbc);
-  outline-offset: 4px;
+  outline: var(--border-selected) solid var(--focus);
+  outline-offset: var(--s-1);
 }
 .reference-note {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  margin: 12px 0;
+  gap: var(--s-1);
+  margin: var(--s-3) 0;
   line-height: 1.6;
 }
 .vocabulary-check {
-  margin: 12px 0;
-  padding: 16px;
-  border: 1px solid var(--space-line);
-  border-radius: 12px;
-  background: var(--yozi-reading);
+  margin: var(--s-3) 0;
+  padding: var(--s-4);
+  border: var(--border-thin) solid var(--line);
+  border-radius: var(--s-3);
+  background: var(--paper);
 }
 .vocabulary-options {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  margin: 12px 0;
-}
-.vocabulary-options button {
-  width: 100%;
-  text-align: left;
-  white-space: normal;
+  gap: var(--s-3);
+  margin: var(--s-3) 0;
 }
 .learning-lab {
-  margin: 24px 0;
+  margin: var(--s-6) 0;
   overflow: hidden;
-  background: var(--yozi-solid);
-  border-radius: 24px;
-  box-shadow: var(--yozi-shadow);
 }
 .lab-heading {
   display: flex;
   width: 100%;
-  gap: 16px;
+  gap: var(--s-4);
   align-items: center;
   justify-content: space-between;
-  text-align: left;
-  background: transparent !important;
-  box-shadow: none !important;
-  padding: 0;
 }
 .lab-heading view,
 .lab-content,
 .writing-draft {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: var(--s-3);
 }
 .lab-content {
-  padding-top: 16px;
+  padding-top: var(--s-4);
 }
 .lab-tabs,
 .word-list,
@@ -1550,96 +1567,86 @@ onUnmounted(() => {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px;
+  gap: var(--s-2);
 }
 .energy-readout {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  padding: 16px;
-  background: var(--yozi-solid);
-  border-radius: 12px;
+  gap: var(--s-3);
+  padding: var(--s-4);
+  background: var(--paper);
+  border-radius: var(--s-3);
 }
 .energy-lane {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: var(--s-2);
 }
 .energy-track {
-  height: 12px;
-  background: var(--yozi-glass);
-  border-radius: 8px;
+  height: var(--s-3);
+  background: var(--glass);
+  border-radius: var(--s-2);
   overflow: hidden;
 }
 .energy-bar {
   height: 100%;
-  background: #7050b0;
+  background: var(--paper-sunk);
   border-radius: inherit;
 }
 .energy-bar.current {
-  background: #5473d8;
-}
-.lab-tabs button,
-.word-list button,
-.map-evidence button {
-  margin: 0;
-  min-height: 44px;
-  font-size: 14px;
+  background: var(--paper-sunk);
 }
 .lab-title {
   display: block;
-  font-size: 20px;
-  font-weight: 600;
+  font-size: var(--size-title-3);
+  font-weight: var(--weight-semibold);
   line-height: 1.5;
 }
 .lab-prompt {
   display: block;
-  font-size: 16px;
+  font-size: var(--size-body);
   line-height: 1.65;
 }
 .lab-feedback {
   display: block;
-  padding: 12px 16px;
-  background: var(--yozi-glass);
-  border-radius: 12px;
-  font-size: 14px;
+  padding: var(--s-3) var(--s-4);
+  background: var(--glass);
+  border-radius: var(--s-3);
+  font-size: var(--size-small);
   line-height: 1.75;
   white-space: pre-wrap;
 }
-.selected {
-  background: var(--space-user, var(--yozi-solid)) !important;
-}
 .scene {
   position: relative;
-  height: 148px;
-  margin: 8px 20px;
+  height: var(--mascot-medium);
+  margin: var(--s-2) var(--s-5);
 }
 .scene-axis,
 .scene-trail {
   position: absolute;
   left: 8%;
-  top: 84px;
+  top: var(--mascot-medium);
   width: 84%;
-  height: 4px;
-  border-radius: 4px;
-  background: var(--space-line, #aaa0c0);
+  height: var(--s-1);
+  border-radius: var(--s-1);
+  background: var(--line);
 }
 .scene-trail {
-  background: #9878d4;
-  top: 76px;
+  background: var(--paper-sunk);
+  top: var(--mascot-medium);
 }
 .scene-character {
   position: absolute;
-  top: 30px;
-  width: 48px;
-  height: 48px;
+  top: var(--s-8);
+  width: var(--control-height);
+  height: var(--control-height);
   transform: translateX(-50%);
 }
 .scene-start,
 .scene-turn {
   position: absolute;
-  top: 105px;
-  font-size: 14px;
+  top: var(--mascot-medium);
+  font-size: var(--size-small);
 }
 .mirrored-start {
   left: auto;
@@ -1652,43 +1659,43 @@ onUnmounted(() => {
   transform: translateX(-50%);
 }
 .force-lane {
-  padding: 8px 0;
+  padding: var(--s-2) 0;
 }
 .lane-label {
-  font-size: 16px;
-  font-weight: 600;
+  font-size: var(--size-body);
+  font-weight: var(--weight-semibold);
 }
 .force-track {
   position: relative;
-  height: 96px;
-  margin: 0 20px;
+  height: var(--mascot-medium);
+  margin: 0 var(--s-5);
 }
 .force-axis {
   position: absolute;
-  top: 58px;
+  top: var(--mascot-medium);
   left: 8%;
   width: 84%;
-  height: 3px;
-  background: var(--space-line);
+  height: var(--s-1);
+  background: var(--line);
 }
 .force-character {
   position: absolute;
-  top: 8px;
-  width: 44px;
-  height: 44px;
+  top: var(--s-2);
+  width: var(--touch-min);
+  height: var(--touch-min);
   transform: translateX(-50%);
 }
 .force-start,
 .force-end {
   position: absolute;
-  top: 68px;
-  font-size: 12px;
+  top: var(--mascot-medium);
+  font-size: var(--size-caption);
 }
 .force-origin {
   position: absolute;
-  top: 68px;
+  top: var(--mascot-medium);
   transform: translateX(-50%);
-  font-size: 12px;
+  font-size: var(--size-caption);
 }
 .force-start {
   left: 8%;
@@ -1718,62 +1725,54 @@ onUnmounted(() => {
 }
 .scene-readout {
   justify-content: space-between;
-  font-weight: 600;
+  font-weight: var(--weight-semibold);
 }
 .scene-video {
   width: 100%;
-  height: 240px;
-  border-radius: 12px;
+  height: var(--mascot-large);
+  border-radius: var(--s-3);
 }
 .writing-progress {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 8px;
+  gap: var(--s-2);
 }
 .writing-progress view {
-  padding: 8px;
-  font-size: 12px;
-  border-bottom: 2px solid var(--space-line, #aaa0c0);
+  padding: var(--s-2);
+  font-size: var(--size-caption);
+  border-bottom: var(--border-selected) solid var(--line);
 }
 .writing-progress .current,
 .writing-progress .done {
-  border-color: #9878d4;
+  border-color: var(--line);
 }
 .sentence-input {
-  box-sizing: border-box;
   width: 100%;
-  min-height: 112px;
-  padding: 12px;
-  border: 1px solid var(--space-line, #aaa0c0);
-  border-radius: 12px;
-  background: var(--yozi-glass);
-  color: var(--space-ink);
-  font-size: 16px;
 }
 .writing-source {
   color: inherit;
   text-decoration: underline;
-  min-height: 44px;
-  line-height: 44px;
-  font-size: 12px;
+  min-height: var(--touch-min);
+  line-height: var(--touch-min);
+  font-size: var(--size-caption);
 }
 .heatmap {
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));
-  gap: 8px;
+  gap: var(--s-2);
 }
 .heat-cell {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
-  padding: 8px 0;
-  border: 1px solid var(--space-line, #aaa0c0);
-  border-radius: 8px;
-  font-size: 12px;
+  gap: var(--s-1);
+  padding: var(--s-2) 0;
+  border: var(--border-thin) solid var(--line);
+  border-radius: var(--s-2);
+  font-size: var(--size-caption);
 }
 .heat-cell.active {
-  background: var(--space-user, #e2d8f3);
+  background: var(--violet-soft);
 }
 .heat-cell.pending {
   border-style: dashed;
@@ -1781,60 +1780,60 @@ onUnmounted(() => {
 .map-legend {
   display: flex;
   flex-wrap: wrap;
-  gap: 16px;
-  font-size: 12px;
-  color: var(--space-muted);
+  gap: var(--s-4);
+  font-size: var(--size-caption);
+  color: var(--ink-3);
 }
 .map-legend text::before {
   content: '';
   display: inline-block;
-  width: 12px;
-  height: 12px;
-  margin-right: 6px;
+  width: var(--s-3);
+  height: var(--s-3);
+  margin-right: var(--s-2);
   vertical-align: middle;
-  border: 1px solid var(--space-line);
-  border-radius: 3px;
+  border: var(--border-thin) solid var(--line);
+  border-radius: var(--s-1);
 }
 .map-legend .legend-reliable::before {
-  background: var(--space-user);
+  background: var(--violet-soft);
 }
 .map-legend .legend-pending::before {
   border-style: dashed;
 }
 .map-node {
   position: relative;
-  border-left: 2px solid var(--space-line, #aaa0c0);
-  margin-left: 12px;
-  padding: 4px 0 12px 16px;
+  border-left: var(--border-selected) solid var(--line);
+  margin-left: var(--s-3);
+  padding: var(--s-1) 0 var(--s-3) var(--s-4);
 }
 .map-node-title {
   display: block;
-  font-size: 16px;
-  font-weight: 600;
+  font-size: var(--size-body);
+  font-weight: var(--weight-semibold);
   overflow-wrap: anywhere;
 }
 .map-evidence {
-  padding-top: 8px;
+  padding-top: var(--s-2);
 }
 @media (max-width: 560px) {
   .writing-progress {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
   .scene {
-    margin: 8px 12px;
+    margin: var(--s-2) var(--s-3);
   }
   .scene-readout {
-    font-size: 14px;
+    font-size: var(--size-small);
   }
   .scene-video {
-    height: 180px;
+    height: var(--mascot-large);
   }
 }
 @media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
   .learning-lab,
   .lab-feedback,
   .sentence-input {
-    background: var(--yozi-solid);
+    background: var(--paper);
   }
 }
 </style>

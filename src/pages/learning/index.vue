@@ -9,62 +9,67 @@
     <PrivacyPopup />
     <!-- #endif -->
     <template #controls>
-      <button
+      <BaseButton
         class="connection-pill"
-        role="button"
-        tabindex="0"
         :aria-expanded="showConnections"
+        variant="quiet"
         @tap="showConnections = !showConnections"
       >
-        <view class="quiet-dot" />
-        <text>{{ connectionLabel }}</text>
-        <BaseIcon name="settings" :size="30" :color="iconColor" />
-      </button>
+        <BaseTag :tone="connectionTone"
+          ><view class="connection-dot" aria-hidden="true" /><text>{{ learningText(connectionLabel) }}</text></BaseTag
+        >
+        <BaseIcon name="settings" tone="ink-3" />
+      </BaseButton>
     </template>
-    <view ref="learningRoot" class="learning-page">
+    <view
+      ref="learningRoot"
+      class="learning-page"
+      :style="composerHeight ? { '--learning-composer-height': `${composerHeight}px` } : undefined"
+    >
       <!-- #ifdef H5 -->
-      <text v-if="!learningWriteProtectionSupported" class="warning">
-        本浏览器缺少多窗口写入保护；请仅保留一个学习窗口。
-      </text>
+      <text v-if="!learningWriteProtectionSupported" class="warning">{{ t('learning.k59') }}</text>
       <!-- #endif -->
-      <view v-if="!learning.active" class="welcome-copy">
-        <text class="welcome-title">{{ '今天，想把什么\n学明白？' }}</text>
+      <view v-if="!learning.active" class="welcome-copy"
+        ><YoziMascot
+          v-if="!welcomeIdle"
+          pose="wave"
+          play="once"
+          size="state"
+          @complete="welcomeIdle = true"
+        /><YoziMascot v-else pose="idle" play="none" size="state" />
+        <text class="welcome-title">{{ t('learning.ks3') }}</text>
       </view>
-      <view v-if="showConnections" class="panel">
-        <text class="section-title">模型</text>
-        <text class="subtle">
-          当前：{{
+      <BaseCard v-if="showConnections" class="panel" padding="none">
+        <text class="section-title">{{ t('learning.kif') }}</text>
+        <text class="subtle"
+          >{{ t('learning.k3v')
+          }}{{
             learning.selectedMode === 'offline'
-              ? '仅保存到本设备'
+              ? t('learning.kp6')
               : learning.selectedMode === 'local'
-                ? '发送到已连接的本地模型'
-                : '通过服务器发送到所选模型'
+                ? t('learning.kb2')
+                : t('learning.ktn')
           }}
         </text>
         <view class="button-row">
-          <button role="button" tabindex="0" size="mini" @tap="setMode('offline')">本地记录</button>
-          <button
-            role="button"
-            tabindex="0"
-            size="mini"
+          <BaseButton variant="quiet" @tap="setMode('offline')">{{ t('learning.k1e') }}</BaseButton>
+          <BaseButton
             data-test="model-list-read"
             :disabled="learning.modelListState.phase === 'loading'"
             :aria-disabled="learning.modelListState.phase === 'loading'"
+            variant="quiet"
             @tap="loadModels"
           >
-            {{ learning.modelListState.phase === 'loading' ? '正在读取云模型' : '查看云模型' }}
-          </button>
-          <button
+            {{ learning.modelListState.phase === 'loading' ? t('learning.k15') : t('learning.kfo') }}
+          </BaseButton>
+          <BaseButton
             v-if="learning.modelListState.phase === 'loading'"
-            role="button"
-            tabindex="0"
-            size="mini"
+            variant="quiet"
             @tap="learning.cancelModelReads('models')"
+            >{{ t('learning.klz') }}</BaseButton
           >
-            取消列表读取
-          </button>
           <!-- #ifdef H5 || MP-WEIXIN || APP-PLUS -->
-          <button role="button" tabindex="0" size="mini" @tap="localForm = !localForm">本地模型</button>
+          <BaseButton variant="quiet" @tap="localForm = !localForm">{{ t('learning.kl4') }}</BaseButton>
           <!-- #endif -->
         </view>
         <view
@@ -76,161 +81,147 @@
           :aria-busy="learning.modelListState.phase === 'loading'"
           data-test="model-list-status"
         >
-          <WdLoading
+          <BaseEmpty
             v-if="learning.modelListState.phase === 'loading'"
-            :key="iconColor"
-            type="outline"
-            :color="iconColor"
-            :size="20"
-            aria-hidden="true"
+            state="loading"
+            :title="t('ui.loading')"
+            mascot-size="small"
           />
-          <text>{{ learning.modelListState.message }}</text>
+          <BaseEmpty
+            v-if="learning.modelListState.phase === 'error'"
+            state="error"
+            :title="learningText(learning.modelListState.message)"
+            mascot-size="small"
+          /><text v-else>{{ learningText(learning.modelListState.message) }}</text>
         </view>
-        <button
+        <BaseButton
           v-if="learning.modelListState.phase === 'error' && learning.modelListState.code === 401"
-          role="button"
-          tabindex="0"
-          size="mini"
+          variant="quiet"
           @tap="loginForModels"
+          >{{ t('learning.kn6') }}</BaseButton
         >
-          前往登录
-        </button>
-        <button
-          v-else-if="learning.modelListState.phase === 'error'"
-          role="button"
-          tabindex="0"
-          size="mini"
-          @tap="loadModels"
-        >
-          重试云模型列表
-        </button>
+        <BaseButton v-else-if="learning.modelListState.phase === 'error'" variant="quiet" @tap="loadModels">{{
+          t('learning.kul')
+        }}</BaseButton>
         <view v-for="model in learning.models" :key="model.id" class="model-row">
           <text>
             {{ model.provider }} / {{ model.model }} ·
-            {{ model.source === 'byok' ? '供应商计费' : '平台模型' }}
+            {{ model.source === 'byok' ? t('learning.kgc') : t('learning.kab') }}
           </text>
-          <text class="subtle">{{ connectionStatusLabel(model.connectionStatus) }}</text>
+          <text class="subtle">{{ learningText(connectionStatusLabel(model.connectionStatus)) }}</text>
           <text v-if="model.terms" class="subtle">{{ model.terms }}</text>
           <text v-if="model.privacy" class="subtle">{{ model.privacy }}</text>
-          <button
-            role="button"
-            tabindex="0"
-            size="mini"
+          <BaseButton
             :disabled="learning.modelListState.phase === 'loading'"
             :aria-disabled="learning.modelListState.phase === 'loading'"
+            variant="quiet"
             @tap="selectModel(model.id)"
           >
-            {{ learning.modelId === model.id ? '已选择' : '使用此模型' }}
-          </button>
-          <button
-            role="button"
-            tabindex="0"
-            size="mini"
+            {{ learning.modelId === model.id ? t('learning.ke4') : t('learning.k3y') }}
+          </BaseButton>
+          <BaseButton
             :disabled="learning.modelListState.phase === 'loading'"
             :aria-disabled="learning.modelListState.phase === 'loading'"
+            variant="quiet"
             @tap="testModel(model.id)"
+            >{{ t('learning.k1p') }}</BaseButton
           >
-            测试连接
-          </button>
-          <button
+          <BaseButton
             v-if="model.source === 'byok'"
-            role="button"
-            tabindex="0"
-            size="mini"
             :disabled="learning.modelListState.phase === 'loading'"
             :aria-disabled="learning.modelListState.phase === 'loading'"
+            variant="quiet"
             @tap="removeModel(model.id)"
+            >{{ t('learning.kfm') }}</BaseButton
           >
-            删除密钥
-          </button>
         </view>
-        <button
+        <BaseCheckbox
           class="consent"
-          role="checkbox"
-          tabindex="0"
-          :aria-checked="learning.sharingAllowed"
-          @tap="learning.sharingAllowed = !learning.sharingAllowed"
+          :model-value="learning.sharingAllowed"
+          @update:model-value="learning.sharingAllowed = !learning.sharingAllowed"
         >
-          {{ learning.sharingAllowed ? '☑' : '☐' }}
-          允许发送当前目标、学习路线、最近消息和当前题目，不发送整份资料
-        </button>
-        <button
-          role="checkbox"
-          tabindex="0"
-          :aria-checked="learning.streamEnabled"
+          {{ t('learning.kao') }}</BaseCheckbox
+        >
+        <BaseCheckbox
           :disabled="learning.busy || !learning.streamSupported"
           :aria-disabled="learning.busy || !learning.streamSupported"
-          @tap="learning.streamEnabled = !learning.streamEnabled"
+          :model-value="learning.streamEnabled"
+          @update:model-value="learning.streamEnabled = !learning.streamEnabled"
         >
-          {{ learning.streamEnabled ? '☑' : '☐' }} 边生成边显示
-        </button>
-        <button role="button" tabindex="0" size="mini" @tap="byokForm = !byokForm">添加模型</button>
+          {{ t('learning.kgm') }}</BaseCheckbox
+        >
+        <BaseButton variant="quiet" @tap="byokForm = !byokForm">{{ t('learning.k9r') }}</BaseButton>
         <view v-if="byokForm" class="form">
           <view class="button-row">
-            <button
+            <BaseButton
               v-for="preset in learning.modelPresets"
               :key="preset.id"
-              role="button"
-              tabindex="0"
-              size="mini"
+              variant="quiet"
               @tap="usePreset(preset)"
             >
               {{ preset.provider }} · {{ preset.model }}
-            </button>
+            </BaseButton>
           </view>
-          <input v-model="profile.id" aria-label="连接名称" placeholder="连接名称" maxlength="60" />
-          <input v-model="profile.provider" aria-label="供应商" placeholder="供应商" maxlength="80" />
-          <input v-model="profile.model" aria-label="模型 ID" placeholder="模型 ID" maxlength="120" />
-          <input v-model="profile.endpoint" aria-label="模型接口地址" placeholder="HTTPS 接口地址" />
-          <input v-model="profile.apiKey" aria-label="API 密钥" password placeholder="API 密钥" />
-          <text class="subtle"> 测试和使用会消耗供应商额度，费用按供应商规则计算。 </text>
-          <text class="subtle"> 密钥保存在服务器，管理员可访问；删除后的备份按保留期限清理。 </text>
-          <button role="checkbox" tabindex="0" :aria-checked="profile.stream" @tap="profile.stream = !profile.stream">
-            {{ profile.stream ? '☑' : '☐' }} 支持流式回复
-          </button>
-          <button role="checkbox" tabindex="0" :aria-checked="profile.vision" @tap="profile.vision = !profile.vision">
-            {{ profile.vision ? '☑' : '☐' }} 支持图片输入
-          </button>
-          <label class="consent">
-            <checkbox :checked="vaultConsent" @tap="vaultConsent = !vaultConsent" />
-            同意保存密钥并调用所选供应商
-          </label>
-          <button role="button" tabindex="0" size="mini" @tap="saveModel">保存连接</button>
+          <BaseInput v-model="profile.id" :placeholder="t('learning.kbe')" maxlength="60" :label="t('learning.kbe')" />
+          <BaseInput
+            v-model="profile.provider"
+            :placeholder="t('learning.kdp')"
+            maxlength="80"
+            :label="t('learning.kdp')"
+          />
+          <BaseInput
+            v-model="profile.model"
+            :placeholder="t('learning.k52')"
+            maxlength="120"
+            :label="t('learning.k52')"
+          />
+          <BaseInput v-model="profile.endpoint" :placeholder="t('learning.k82')" :label="t('learning.kk4')" />
+          <BaseInput
+            v-model="profile.apiKey"
+            :placeholder="t('learning.kba')"
+            :label="t('learning.kba')"
+            type="password"
+          />
+          <text class="subtle">{{ t('learning.krr') }}</text>
+          <text class="subtle">{{ t('learning.kly') }}</text>
+          <BaseCheckbox :model-value="profile.stream" @update:model-value="profile.stream = !profile.stream">
+            {{ t('learning.keh') }}</BaseCheckbox
+          >
+          <BaseCheckbox :model-value="profile.vision" @update:model-value="profile.vision = !profile.vision">
+            {{ t('learning.kke') }}</BaseCheckbox
+          >
+          <BaseCheckbox v-model="vaultConsent">{{ t('learning.k32') }}</BaseCheckbox>
+          <BaseButton variant="quiet" @tap="saveModel">{{ t('learning.kh2') }}</BaseButton>
         </view>
         <view v-if="localForm" class="form">
-          <input v-model="localEndpoint" aria-label="本地模型地址" placeholder="本地模型地址" />
-          <input v-model="localModel" aria-label="本地模型 ID" placeholder="本地模型 ID" />
-          <input v-model="localToken" aria-label="连接令牌" password placeholder="连接令牌" />
-          <text class="subtle"> 仅连接此地址，令牌不保存。手机连接电脑时，请填写电脑地址。 </text>
+          <BaseInput v-model="localEndpoint" :placeholder="t('learning.kat')" :label="t('learning.kat')" />
+          <BaseInput v-model="localModel" :placeholder="t('learning.kpl')" :label="t('learning.kpl')" />
+          <BaseInput v-model="localToken" :placeholder="t('learning.k4v')" :label="t('learning.k4v')" type="password" />
+          <text class="subtle">{{ t('learning.kv4') }}</text>
           <!-- #ifdef MP-WEIXIN -->
-          <text class="subtle">请使用已获授权的 HTTPS 地址。</text>
+          <text class="subtle">{{ t('learning.khz') }}</text>
           <!-- #endif -->
-          <button role="button" tabindex="0" size="mini" @tap="connectLocal">授权此目标并连接</button>
+          <BaseButton variant="quiet" @tap="connectLocal">{{ t('learning.kk5') }}</BaseButton>
           <text v-if="learning.localConnection?.status" class="subtle">
-            {{ learning.localConnection.status === 'model_verified' ? '模型已连接' : '连接成功，模型未测试' }}
-            · 仅文本
-          </text>
+            {{ learning.localConnection.status === 'model_verified' ? t('learning.k80') : t('learning.k57')
+            }}{{ t('learning.k29') }}</text
+          >
         </view>
         <view class="button-row">
-          <button
-            role="button"
-            tabindex="0"
-            size="mini"
+          <BaseButton
             :disabled="learning.modelUsageState.phase === 'loading'"
             :aria-disabled="learning.modelUsageState.phase === 'loading'"
+            variant="quiet"
             @tap="loadUsage"
           >
-            {{ learning.modelUsageState.phase === 'loading' ? '正在读取模型用量' : '查看模型用量' }}
-          </button>
-          <button
+            {{ learning.modelUsageState.phase === 'loading' ? t('learning.kbc') : t('learning.kod') }}
+          </BaseButton>
+          <BaseButton
             v-if="learning.modelUsageState.phase === 'loading'"
-            role="button"
-            tabindex="0"
-            size="mini"
+            variant="quiet"
             @tap="learning.cancelModelReads('usage')"
+            >{{ t('learning.kfd') }}</BaseButton
           >
-            取消用量读取
-          </button>
         </view>
         <view
           v-if="learning.modelUsageState.message"
@@ -241,394 +232,318 @@
           :aria-busy="learning.modelUsageState.phase === 'loading'"
           data-test="model-usage-status"
         >
-          <WdLoading
+          <BaseEmpty
             v-if="learning.modelUsageState.phase === 'loading'"
-            :key="iconColor"
-            type="outline"
-            :color="iconColor"
-            :size="20"
-            aria-hidden="true"
+            state="loading"
+            :title="t('ui.loading')"
+            mascot-size="small"
           />
-          <text>{{ learning.modelUsageState.message }}</text>
+          <BaseEmpty
+            v-if="learning.modelUsageState.phase === 'error'"
+            state="error"
+            :title="learningText(learning.modelUsageState.message)"
+            mascot-size="small"
+          /><text v-else>{{ learningText(learning.modelUsageState.message) }}</text>
         </view>
-        <button
+        <BaseButton
           v-if="learning.modelUsageState.phase === 'error' && learning.modelUsageState.code === 401"
-          role="button"
-          tabindex="0"
-          size="mini"
+          variant="quiet"
           @tap="loginForModels"
+          >{{ t('learning.kn6') }}</BaseButton
         >
-          前往登录
-        </button>
-        <button
-          v-else-if="learning.modelUsageState.phase === 'error'"
-          role="button"
-          tabindex="0"
-          size="mini"
-          @tap="loadUsage"
-        >
-          重试模型用量
-        </button>
+        <BaseButton v-else-if="learning.modelUsageState.phase === 'error'" variant="quiet" @tap="loadUsage">{{
+          t('learning.kdl')
+        }}</BaseButton>
         <view v-if="learning.usage" class="subtle">
-          <text>
-            剩余额度
-            {{
+          <text
+            >{{ t('learning.k9q')
+            }}{{
               learning.usage.entitlement.weeklyUnits -
               learning.usage.entitlement.spent -
               learning.usage.entitlement.reserved
             }}
           </text>
-          <text>
-            已用 {{ learning.usage.cost.spent }} · 处理中 {{ learning.usage.cost.reserved }} · 待结算
-            {{ learning.usage.cost.pending }} 次
-          </text>
-          <text v-if="learning.usage.byokBudget">
-            自带模型 {{ learning.usage.byokBudget.used }} / {{ learning.usage.byokBudget.limit }} 次 · 待结算
-            {{ learning.usage.byokBudget.pendingCosts }} 次
-          </text>
+          <text
+            >{{ t('learning.k8o') }}{{ learning.usage.cost.spent }}{{ t('learning.k5')
+            }}{{ learning.usage.cost.reserved }}{{ t('learning.k9d') }}{{ learning.usage.cost.pending
+            }}{{ t('learning.kbd') }}</text
+          >
+          <text v-if="learning.usage.byokBudget"
+            >{{ t('learning.k36') }}{{ learning.usage.byokBudget.used }} / {{ learning.usage.byokBudget.limit
+            }}{{ t('learning.kt6') }}{{ learning.usage.byokBudget.pendingCosts }}{{ t('learning.kbd') }}</text
+          >
         </view>
-      </view>
-      <view v-if="!learning.active" class="goal-panel">
-        <view class="button-row" aria-label="学习方向">
-          <button
+      </BaseCard>
+      <BaseCard v-if="!learning.active" class="goal-panel" padding="none">
+        <view class="button-row" :aria-label="t('learning.kmc')">
+          <BaseChip
             v-for="(label, track) in LEARNING_TRACKS"
             :key="track"
-            role="button"
-            tabindex="0"
-            size="mini"
             :data-test="'task-track-' + track"
-            :aria-pressed="taskTrack === track"
             :class="{ chosen: taskTrack === track }"
-            @tap="selectTaskTrack(track)"
+            :model-value="taskTrack === track"
+            @update:model-value="selectTaskTrack(track)"
           >
-            {{ label }}
-          </button>
+            {{ t('learning.' + track) }}
+          </BaseChip>
         </view>
-        <button
+        <BaseButton
           class="quiet-button"
-          role="button"
-          tabindex="0"
           :aria-expanded="showTaskOptions"
+          variant="quiet"
           @tap="showTaskOptions = !showTaskOptions"
         >
-          {{ taskStage || taskEdition ? [taskStage, taskEdition].filter(Boolean).join(' · ') : '学习设置' }}
-          <BaseIcon :name="showTaskOptions ? 'chevron-up' : 'chevron-down'" :size="26" :color="iconColor" />
-        </button>
+          {{
+            taskStage || taskEdition
+              ? [taskStage, taskEdition].filter(Boolean).map(learningText).join(' · ')
+              : t('learning.k3p')
+          }}
+          <BaseIcon :name="showTaskOptions ? 'chevron-up' : 'chevron-down'" tone="ink-3" />
+        </BaseButton>
         <view v-if="showTaskOptions" class="preference-fields">
-          <text class="field-label">{{ ['primary', 'junior', 'senior'].includes(taskTrack) ? '年级' : '阶段' }}</text>
-          <view class="button-row" aria-label="年级或学习阶段">
-            <button
+          <text class="field-label">{{
+            ['primary', 'junior', 'senior'].includes(taskTrack) ? t('learning.k4b') : t('learning.k8p')
+          }}</text>
+          <view class="button-row" :aria-label="t('learning.kqb')">
+            <BaseChip
               v-for="option in taskStages"
               :key="option"
-              role="button"
-              tabindex="0"
-              size="mini"
-              :aria-pressed="!customStage && taskStage === option"
               :class="{ chosen: !customStage && taskStage === option }"
-              @tap="
+              :model-value="!customStage && taskStage === option"
+              @update:model-value="
                 customStage = false;
                 taskStage = option;
               "
             >
-              {{ option || '不指定' }}
-            </button>
-            <button
-              role="button"
-              tabindex="0"
-              size="mini"
-              :aria-pressed="customStage"
-              @tap="
+              {{ option ? learningText(option) : t('learning.k2z') }}
+            </BaseChip>
+            <BaseChip
+              :model-value="customStage"
+              @update:model-value="
                 customStage = true;
                 taskStage = '';
               "
+              >{{ t('learning.k2w') }}</BaseChip
             >
-              其他
-            </button>
           </view>
-          <input
+          <BaseInput
             v-if="customStage"
             v-model="taskStage"
             class="field"
             maxlength="100"
-            aria-label="自定义学习阶段"
-            placeholder="学习阶段"
+            :placeholder="t('learning.kh')"
+            :label="t('learning.k46')"
           />
-          <text class="field-label">{{ ['primary', 'junior', 'senior'].includes(taskTrack) ? '教材' : '考试' }}</text>
-          <view class="button-row" aria-label="教材或考试版本">
-            <button
+          <text class="field-label">{{
+            ['primary', 'junior', 'senior'].includes(taskTrack) ? t('learning.ka5') : t('learning.krv')
+          }}</text>
+          <view class="button-row" :aria-label="t('learning.kpt')">
+            <BaseChip
               v-for="option in taskEditions"
               :key="option"
-              role="button"
-              tabindex="0"
-              size="mini"
-              :aria-pressed="!customEdition && taskEdition === option"
               :class="{ chosen: !customEdition && taskEdition === option }"
-              @tap="
+              :model-value="!customEdition && taskEdition === option"
+              @update:model-value="
                 customEdition = false;
                 taskEdition = option;
               "
             >
-              {{ option || '不指定' }}
-            </button>
-            <button
-              role="button"
-              tabindex="0"
-              size="mini"
-              :aria-pressed="customEdition"
-              @tap="
+              {{ option ? learningText(option) : t('learning.k2z') }}
+            </BaseChip>
+            <BaseChip
+              :model-value="customEdition"
+              @update:model-value="
                 customEdition = true;
                 taskEdition = '';
               "
+              >{{ t('learning.k2w') }}</BaseChip
             >
-              其他
-            </button>
           </view>
-          <input
+          <BaseInput
             v-if="customEdition"
             v-model="taskEdition"
             class="field"
             maxlength="100"
-            aria-label="自定义教材或考试"
-            placeholder="教材或考试"
+            :placeholder="t('learning.kqt')"
+            :label="t('learning.k60')"
           />
         </view>
-        <textarea
-          :value="goal"
+        <BaseInput
+          :model-value="goal"
           class="field"
-          aria-label="学习目标"
-          placeholder="输入问题，或选一个主题"
-          placeholder-class="space-placeholder"
+          :placeholder="t('learning.kbo')"
           maxlength="1000"
+          :label="t('learning.kfl')"
+          multiline
           @input="goal = textInputValue($event)"
-        ></textarea>
+        />
         <view class="goal-actions">
-          <button class="material-shortcut" role="button" tabindex="0" @tap="showMaterial = !showMaterial">
-            <BaseIcon name="upload" :size="32" :color="iconColor" />
-            <text>导入资料</text>
-          </button>
-          <button
-            role="button"
-            tabindex="0"
+          <BaseButton class="material-shortcut" variant="quiet" @tap="showMaterial = !showMaterial">
+            <BaseIcon name="upload" tone="ink-3" />
+            <text>{{ t('learning.kot') }}</text>
+          </BaseButton>
+          <BaseButton
             class="primary"
             :disabled="!goal.trim()"
             :aria-disabled="!goal.trim()"
+            variant="primary"
             @tap="start"
-          >
-            开始学习
-            <BaseIcon name="arrow-right" :size="30" :color="primaryIconColor" />
-          </button>
+            >{{ t('learning.kms') }}<BaseIcon name="arrow-right" tone="on-clay" />
+          </BaseButton>
         </view>
         <view class="starter-row">
-          <button v-for="starter in starters" :key="starter" role="button" tabindex="0" @tap="goal = starter">
-            {{ starter }}
-          </button>
+          <BaseButton v-for="starter in starters" :key="starter" variant="quiet" @tap="goal = starter">
+            {{ learningText(starter) }}
+          </BaseButton>
         </view>
-      </view>
+      </BaseCard>
       <view v-if="learning.active" class="conversation-area">
         <view class="conversation-toolbar">
           <view>
             <text class="conversation-title">{{ learning.active.goal }}</text>
           </view>
-          <button
-            role="button"
-            tabindex="0"
-            size="mini"
-            :disabled="learning.busy"
-            :aria-disabled="learning.busy"
-            @tap="newConversation"
-          >
-            <BaseIcon name="plus" :size="30" :color="iconColor" />
-            <text>新对话</text>
-          </button>
+          <BaseButton :disabled="learning.busy" :aria-disabled="learning.busy" variant="quiet" @tap="newConversation">
+            <BaseIcon name="plus" tone="ink-3" />
+            <text>{{ t('learning.k34') }}</text>
+          </BaseButton>
         </view>
         <view v-if="learning.active.messages.length > 50" class="conversation-toolbar">
-          <button
-            role="button"
-            size="mini"
+          <BaseButton
             :disabled="messageStart === 0"
             :aria-disabled="messageStart === 0"
+            variant="quiet"
             @tap="messageStart = Math.max(0, messageStart - 50)"
+            >{{ t('learning.k6q') }}</BaseButton
           >
-            更早消息
-          </button>
           <text class="subtle"
-            >消息 {{ messageStart + 1 }}–{{ Math.min(messageStart + 50, learning.active.messages.length) }} /
-            {{ learning.active.messages.length }}</text
+            >{{ t('learning.kqd') }}{{ messageStart + 1 }}–{{
+              Math.min(messageStart + 50, learning.active.messages.length)
+            }}
+            / {{ learning.active.messages.length }}</text
           >
-          <button
-            role="button"
-            size="mini"
+          <BaseButton
             :disabled="messageStart + 50 >= learning.active.messages.length"
             :aria-disabled="messageStart + 50 >= learning.active.messages.length"
+            variant="quiet"
             @tap="messageStart = Math.min(learning.active.messages.length - 50, messageStart + 50)"
+            >{{ t('learning.ku5') }}</BaseButton
           >
-            更新消息
-          </button>
-          <button role="button" size="mini" @tap="messageStart = Math.max(0, learning.active.messages.length - 50)">
-            回到最新
-          </button>
-          <button v-if="learning.activeQuestion" role="button" size="mini" @tap="locateQuestionMessages">
-            当前题相关对话
-          </button>
+          <BaseButton variant="quiet" @tap="messageStart = Math.max(0, learning.active.messages.length - 50)">{{
+            t('learning.kaz')
+          }}</BaseButton>
+          <BaseButton v-if="learning.activeQuestion" variant="quiet" @tap="locateQuestionMessages">{{
+            t('learning.kae')
+          }}</BaseButton>
         </view>
         <view
           v-for="chapter in visibleChapters"
           :id="`learning-day-${chapter.day}`"
           :key="chapter.day"
           class="conversation-day"
-          :aria-label="`${chapter.day}学习记录`"
+          :aria-label="t('learning.kse', { v0: chapter.day })"
           tabindex="-1"
         >
           <view class="conversation-day-heading">
             <text>{{ chapter.day }}</text>
             <view class="conversation-day-rule" aria-hidden="true" />
           </view>
-          <view v-if="chapter.groups.length" class="chapter-modules" aria-label="本日模块记录">
-            <button
+          <view v-if="chapter.groups.length" class="chapter-modules" :aria-label="t('learning.k1l')">
+            <BaseButton
               v-for="group in chapter.groups"
               :key="group.id"
-              role="button"
-              tabindex="0"
               :disabled="learning.busy"
               :aria-disabled="learning.busy"
+              variant="quiet"
               @tap="learning.locateConversation(learning.active.id, chapter.day, group.id)"
             >
-              <text>{{ group.label }}</text>
+              <text>{{ learningText(group.label) }}</text>
               <text class="chapter-module-count"
-                >{{ group.questionKeys.length }}题 · {{ group.submittedBy ? '已提交' : '未提交' }}</text
+                >{{ group.questionKeys.length }}{{ t('learning.kg5')
+                }}{{ group.submittedBy ? t('learning.kbr') : t('learning.knj') }}</text
               >
-              <BaseIcon name="arrow-right" :size="26" :color="iconColor" />
-            </button>
+              <BaseIcon name="arrow-right" tone="ink-3" />
+            </BaseButton>
           </view>
-          <view
+          <BaseBubble
             v-for="message in chapter.messages"
             :id="message.id"
             :key="message.id"
             class="message"
             :class="message.role"
-            :aria-label="roleLabel(message.role)"
+            :author="message.role === 'user' ? 'user' : 'assistant'"
           >
-            <LearningMessage v-if="message.role === 'assistant'" :content="message.content" />
+            <LearningMessage
+              v-if="message.role !== 'user'"
+              :content="message.role === 'notice' ? learningText(message.content) : message.content"
+            />
             <text v-else class="message-content" selectable>{{ message.content }}</text>
-          </view>
+          </BaseBubble>
         </view>
-        <LearningOverview :show-navigation="false" :inline="true" :conversation-id="learning.active.id" />
-        <view id="learning-journey-workspace" tabindex="-1"><LearningJourney :inline="true" /></view>
-        <view
+        <view v-if="learning.busy && !learning.error" class="reply-state" role="status"
+          ><YoziMascot pose="think" play="loop" size="state" :decorative="false" /><text>{{
+            t('learning.replying')
+          }}</text></view
+        >
+
+        <BaseCard
           v-if="learning.activeQuestion && !learning.batchTrainingActive"
           id="active-learning-question"
           class="question-block"
+          padding="none"
         >
           <text class="subtle">
-            {{ learning.activeQuestion.scope === 'generated' ? '练习' : '我的资料' }} ·
-            {{ learning.activeQuestion.validation ? '已校验' : '待核对' }}
+            {{ learning.activeQuestion.scope === 'generated' ? t('learning.kax') : t('learning.kil') }}
+            ·
+            {{ learning.activeQuestion.validation ? t('learning.k1b') : t('learning.k4h') }}
           </text>
-          <view
+          <BaseCard
             v-for="(reading, index) in quizOriginalView.readings"
             :key="index"
             class="question-block"
             data-test="quiz-original-reading"
+            padding="none"
           >
-            <text class="subtle">{{ reading.label }}</text>
+            <text class="subtle">{{ learningText(reading.label) }}</text>
             <text class="message-content" selectable>{{ reading.text }}</text>
-          </view>
+          </BaseCard>
           <text class="question-prompt" selectable>{{ learning.activeQuestion.prompt }}</text>
-          <view v-if="quizOriginalView.target" class="question-block" data-test="quiz-original-target">
-            <text class="subtle">指定片段</text>
+          <BaseCard
+            v-if="quizOriginalView.target"
+            class="question-block"
+            data-test="quiz-original-target"
+            padding="none"
+          >
+            <text class="subtle">{{ t('learning.k3t') }}</text>
             <text class="message-content" selectable>{{ quizOriginalView.target }}</text>
-          </view>
-          <view
+          </BaseCard>
+          <BaseCard
             v-if="quizOriginalView.source || quizOriginalView.license"
             class="question-block"
             data-test="quiz-original-source"
+            padding="none"
           >
             <text v-if="quizOriginalView.source" class="subtle" selectable
-              >原记录来源：{{ quizOriginalView.source }} · 待核对</text
+              >{{ t('learning.kc') }}{{ quizOriginalView.source }}{{ t('learning.kbs') }}</text
             >
             <text v-if="quizOriginalView.license" class="subtle" selectable
-              >原记录许可：{{ quizOriginalView.license }} · 待核对</text
+              >{{ t('learning.k1r') }}{{ quizOriginalView.license }}{{ t('learning.kbs') }}</text
             >
-          </view>
+          </BaseCard>
           <text
             v-if="learning.activeQuestion.source?.kind === 'existing_bank' && !learning.activeQuestion.quizOriginal"
             class="subtle"
             data-test="quiz-original-partial"
-            >这份旧记录未保存完整材料，原答保留。</text
+            >{{ t('learning.k6v') }}</text
           >
-          <text v-if="learning.activeQuestion.prerequisite" class="subtle" aria-label="先修诊断依据" selectable>
+          <text v-if="learning.activeQuestion.prerequisite" class="subtle" :aria-label="t('learning.ky')" selectable>
             {{ learning.activeQuestion.prerequisite.reason }}
           </text>
-          <view v-if="learning.activeQuestion.prerequisite" class="button-row">
-            <text class="subtle">先修诊断：{{ learning.diagnosticProgress?.text }}</text>
-            <button
-              role="button"
-              tabindex="0"
-              size="mini"
-              :disabled="learning.busy"
-              :aria-disabled="learning.busy"
-              @tap="learning.focus(learning.activeQuestion.prerequisite.originalQuestionKey)"
-            >
-              返回诊断原题
-            </button>
-            <button
-              role="button"
-              tabindex="0"
-              size="mini"
-              :disabled="learning.busy || learning.active.stopped"
-              :aria-disabled="learning.busy || learning.active.stopped"
-              @tap="sendDirective('独立检验原题')"
-            >
-              独立检验原题
-            </button>
-          </view>
-          <button
-            v-else-if="learning.canDiagnose"
-            role="button"
-            tabindex="0"
-            size="mini"
-            :disabled="learning.busy || learning.active.stopped"
-            :aria-disabled="learning.busy || learning.active.stopped"
-            @tap="sendDirective('开始先修诊断')"
+          <view v-if="learning.activeQuestion.prerequisite" class="question-meta"
+            ><text class="subtle">{{ t('learning.kr2') }}{{ learning.diagnosticProgress?.text }}</text></view
+          ><view v-if="learning.questionImage" class="question-meta"
+            ><text class="subtle">{{ t('learning.knb') }}</text></view
           >
-            开始先修诊断
-          </button>
-          <view v-if="learning.questionImage" class="button-row">
-            <button
-              role="button"
-              tabindex="0"
-              size="mini"
-              :disabled="learning.busy || learning.active.stopped"
-              :aria-disabled="learning.busy || learning.active.stopped"
-              @tap="interpretImage"
-            >
-              看图讲解
-            </button>
-            <text class="subtle">发送前需确认；识别结果待校对。</text>
-          </view>
-          <view v-if="learning.canComputeReference" class="button-row">
-            <button
-              role="button"
-              tabindex="0"
-              size="mini"
-              :disabled="learning.busy || learning.active.stopped"
-              :aria-disabled="learning.busy || learning.active.stopped"
-              @tap="computeReference"
-            >
-              计算参考
-            </button>
-          </view>
-          <view v-if="learning.canCheckGrammar" class="button-row">
-            <button
-              role="button"
-              tabindex="0"
-              size="mini"
-              :disabled="learning.busy || learning.active.stopped"
-              :aria-disabled="learning.busy || learning.active.stopped"
-              @tap="checkGrammar"
-            >
-              检查语法
-            </button>
-          </view>
+
           <NumberLine
             v-if="
               !learning.active.stopped &&
@@ -644,31 +559,23 @@
             :points="learning.activeQuestion.scienceExercise.input.points"
             :visible="labVisible"
           />
-          <view v-if="choiceOptions.length" class="choice-options" aria-label="答案选项">
-            <button
-              v-for="option in choiceOptions"
-              :key="option.value"
-              role="button"
-              tabindex="0"
-              :aria-pressed="selectedChoices.includes(option.value)"
+          <view v-if="choiceOptions.length" class="choice-options">
+            <BaseOptions
+              :options="answerOptions"
+              :model-value="multipleChoices ? selectedChoices : selectedChoices[0] || ''"
+              :multiple="multipleChoices"
+              :label="t('learning.answerOptions')"
               :disabled="learning.busy || learning.active.stopped"
-              :aria-disabled="learning.busy || learning.active.stopped"
-              @tap="chooseAnswer(option.value)"
-            >
-              {{ option.label }}
-            </button>
-            <button
+              @update:model-value="updateChoiceDraft"
+            />
+            <BaseCheckbox
               v-if="!learning.activeQuestion.scienceExercise"
-              class="quiet-button"
-              role="checkbox"
-              tabindex="0"
-              :aria-checked="multipleChoices"
+              data-test="multiple-answers"
+              :model-value="multipleChoices"
               :disabled="learning.busy || learning.active.stopped"
-              :aria-disabled="learning.busy || learning.active.stopped"
-              @tap="toggleMultipleChoices"
+              @update:model-value="toggleMultipleChoices"
+              >{{ t('learning.multiple') }}</BaseCheckbox
             >
-              {{ multipleChoices ? '☑' : '☐' }} 多选
-            </button>
           </view>
           <template v-else
             ><text v-for="(option, index) in learning.activeQuestion.options || []" :key="index">{{
@@ -676,74 +583,22 @@
             }}</text></template
           >
           <text v-for="(issue, index) in learning.activeQuestion.uncertainties || []" :key="index" class="warning">
-            {{ issue.resolved ? '已校对' : '待校对' }}：{{ issue.field }} {{ issue.reason }}
+            {{ issue.resolved ? t('learning.kb4') : t('learning.ku9') }}：{{ issue.field }}
+            {{ issue.reason }}
           </text>
           <view v-if="learning.activeQuestion.rubric" class="form">
-            <text class="subtle">评分维度</text>
+            <text class="subtle">{{ t('learning.kbm') }}</text>
             <text v-for="criterion in learning.activeQuestion.rubric.criteria" :key="criterion.id" class="subtle">
-              {{ criterion.name }}（{{ criterion.maxScore }}分）{{
-                learning.activeQuestion.writingExercise ? '' : `：${criterion.description}`
-              }}
+              {{ learningText(criterion.name) }}（{{ criterion.maxScore }}{{ t('learning.kc1')
+              }}{{ learning.activeQuestion.writingExercise ? '' : `：${criterion.description}` }}
             </text>
           </view>
-          <view
-            v-if="learning.activeQuestion.writingExercise && rubricAttempt"
-            class="button-row"
-            aria-label="写作操作"
-          >
-            <button
-              role="button"
-              tabindex="0"
-              size="mini"
-              :disabled="learning.busy || learning.active.stopped"
-              :aria-disabled="learning.busy || learning.active.stopped"
-              @tap="run(() => learning.requestWritingFeedback())"
-            >
-              获取反馈
-            </button>
-            <button
-              role="button"
-              tabindex="0"
-              size="mini"
-              :disabled="learning.busy || learning.active.stopped"
-              :aria-disabled="learning.busy || learning.active.stopped"
-              @tap="variant"
-            >
-              换题练习
-            </button>
-            <button
-              role="button"
-              tabindex="0"
-              size="mini"
-              :disabled="learning.busy || learning.active.stopped || !!learning.writingRetest"
-              :aria-disabled="learning.busy || learning.active.stopped || !!learning.writingRetest"
-              @tap="planWritingRetest"
-            >
-              {{
-                learning.writingRetest ? `已安排 ${learning.writingRetest.day.slice(5).replace('-', '/')}` : '明日复测'
-              }}
-            </button>
-          </view>
-          <view
-            v-if="learning.activeQuestion.vocabularyReview?.phase === 'usage' && rubricAttempt"
-            class="button-row"
-            aria-label="词语使用反馈"
-          >
-            <button
-              role="button"
-              tabindex="0"
-              size="mini"
-              :disabled="learning.busy || learning.active.stopped"
-              :aria-disabled="learning.busy || learning.active.stopped"
-              @tap="run(() => learning.requestVocabularyFeedback())"
-            >
-              获取反馈
-            </button>
-          </view>
-          <view v-if="rubricAssessment" class="form" aria-label="当前作答的辅助评分">
-            <text v-if="rubricAssessment.vocabularyUse" class="warning">AI 反馈 · 待核对</text>
-            <text v-else class="warning">
-              AI 评分 · 待核对 {{ rubricAssessment.score === null ? '未定分' : rubricAssessment.score }} /
+
+          <view v-if="rubricAssessment" class="form" :aria-label="t('learning.kr0')">
+            <text v-if="rubricAssessment.vocabularyUse" class="warning">{{ t('learning.kj9') }}</text>
+            <text v-else class="warning"
+              >{{ t('learning.kmr')
+              }}{{ rubricAssessment.score === null ? t('learning.ki1') : rubricAssessment.score }} /
               {{ rubricAssessment.maxScore }}
             </text>
             <RubricEvidence
@@ -752,24 +607,7 @@
               :context-key="learning.recordContext()"
             />
           </view>
-          <view
-            v-if="learning.activeQuestion.scienceExercise && rubricAttempt"
-            class="button-row"
-            aria-label="科学检验操作"
-          >
-            <button
-              role="button"
-              tabindex="0"
-              size="mini"
-              :disabled="learning.busy || learning.active.stopped || !!learning.scienceRetest"
-              :aria-disabled="learning.busy || learning.active.stopped || !!learning.scienceRetest"
-              @tap="run(() => learning.scheduleScienceRetest())"
-            >
-              {{
-                learning.scienceRetest ? `已安排 ${learning.scienceRetest.day.slice(5).replace('-', '/')}` : '明日复测'
-              }}
-            </button>
-          </view>
+
           <text
             v-if="
               (learning.activeQuestion.scienceExercise?.phase === 'retest' && !learning.scienceCanSubmit()) ||
@@ -785,156 +623,290 @@
               )
                 .slice(5)
                 .replace('-', '/')
-            }}
-            复测</text
+            }}{{ t('learning.kd5') }}</text
           >
-          <view class="button-row">
-            <button role="button" tabindex="0" size="mini" @tap="hint">提示</button>
-            <button
+          <view v-if="latestAnswer" class="answer-feedback" role="status"
+            ><YoziMascot
+              :key="latestAnswer.id"
+              :pose="answerMascot.pose"
+              :play="answerMascot.play"
+              size="small"
+            /><BaseTag :tone="answerMascot.tone">{{ t(answerMascot.label) }}</BaseTag></view
+          ><view class="question-actions"
+            ><view class="question-secondary" role="group" :aria-label="t('learning.questionActions')"
+              ><BaseButton small variant="quiet" @tap="hint">{{ t('learning.hint') }}</BaseButton
+              ><template v-if="learning.activeQuestion.prerequisite"
+                ><BaseButton
+                  small
+                  :disabled="learning.busy"
+                  :aria-disabled="learning.busy"
+                  variant="quiet"
+                  @tap="learning.focus(learning.activeQuestion.prerequisite.originalQuestionKey)"
+                  >{{ t('learning.kpe') }}</BaseButton
+                ><BaseButton
+                  small
+                  :disabled="learning.busy || learning.active.stopped"
+                  :aria-disabled="learning.busy || learning.active.stopped"
+                  variant="quiet"
+                  @tap="sendDirective('独立检验原题')"
+                  >{{ t('learning.k3z') }}</BaseButton
+                ></template
+              >
+              <BaseButton
+                v-if="!learning.activeQuestion.prerequisite && learning.canDiagnose"
+                small
+                :disabled="learning.busy || learning.active.stopped"
+                :aria-disabled="learning.busy || learning.active.stopped"
+                variant="quiet"
+                @tap="sendDirective('开始先修诊断')"
+                >{{ t('learning.kmm') }}</BaseButton
+              ><template v-if="learning.questionImage"
+                ><BaseButton
+                  small
+                  :disabled="learning.busy || learning.active.stopped"
+                  :aria-disabled="learning.busy || learning.active.stopped"
+                  variant="quiet"
+                  @tap="interpretImage"
+                  >{{ t('learning.k3r') }}</BaseButton
+                ></template
+              >
+              <template v-if="learning.canComputeReference"
+                ><BaseButton
+                  small
+                  :disabled="learning.busy || learning.active.stopped"
+                  :aria-disabled="learning.busy || learning.active.stopped"
+                  variant="quiet"
+                  @tap="computeReference"
+                  >{{ t('learning.ktu') }}</BaseButton
+                ></template
+              >
+              <template v-if="learning.canCheckGrammar"
+                ><BaseButton
+                  small
+                  :disabled="learning.busy || learning.active.stopped"
+                  :aria-disabled="learning.busy || learning.active.stopped"
+                  variant="quiet"
+                  @tap="checkGrammar"
+                  >{{ t('learning.kfw') }}</BaseButton
+                ></template
+              >
+              <view
+                v-if="learning.activeQuestion.writingExercise && rubricAttempt"
+                class="question-action-group"
+                role="group"
+                :aria-label="t('learning.kki')"
+                ><BaseButton
+                  small
+                  :disabled="learning.busy || learning.active.stopped"
+                  :aria-disabled="learning.busy || learning.active.stopped"
+                  variant="quiet"
+                  @tap="run(() => learning.requestWritingFeedback())"
+                  >{{ t('learning.k72') }}</BaseButton
+                ><BaseButton
+                  small
+                  :disabled="learning.busy || learning.active.stopped"
+                  :aria-disabled="learning.busy || learning.active.stopped"
+                  variant="quiet"
+                  @tap="variant"
+                  >{{ t('learning.khe') }}</BaseButton
+                ><BaseButton
+                  small
+                  :disabled="learning.busy || learning.active.stopped || !!learning.writingRetest"
+                  :aria-disabled="learning.busy || learning.active.stopped || !!learning.writingRetest"
+                  variant="quiet"
+                  @tap="planWritingRetest"
+                >
+                  {{
+                    learning.writingRetest
+                      ? t('learning.kf0', { v0: learning.writingRetest.day.slice(5).replace('-', '/') })
+                      : t('learning.k2m')
+                  }}
+                </BaseButton></view
+              >
+              <view
+                v-if="learning.activeQuestion.vocabularyReview?.phase === 'usage' && rubricAttempt"
+                class="question-action-group"
+                role="group"
+                :aria-label="t('learning.kcl')"
+                ><BaseButton
+                  small
+                  :disabled="learning.busy || learning.active.stopped"
+                  :aria-disabled="learning.busy || learning.active.stopped"
+                  variant="quiet"
+                  @tap="run(() => learning.requestVocabularyFeedback())"
+                  >{{ t('learning.k72') }}</BaseButton
+                ></view
+              >
+              <view
+                v-if="learning.activeQuestion.scienceExercise && rubricAttempt"
+                class="question-action-group"
+                role="group"
+                :aria-label="t('learning.k4y')"
+                ><BaseButton
+                  small
+                  :disabled="learning.busy || learning.active.stopped || !!learning.scienceRetest"
+                  :aria-disabled="learning.busy || learning.active.stopped || !!learning.scienceRetest"
+                  variant="quiet"
+                  @tap="run(() => learning.scheduleScienceRetest())"
+                >
+                  {{
+                    learning.scienceRetest
+                      ? t('learning.kf0', { v0: learning.scienceRetest.day.slice(5).replace('-', '/') })
+                      : t('learning.k2m')
+                  }}
+                </BaseButton></view
+              >
+              <BaseButton
+                v-if="
+                  !learning.activeQuestion.writingExercise &&
+                  !learning.activeQuestion.vocabularyReview &&
+                  !learning.activeQuestion.sentenceExercise
+                "
+                small
+                variant="quiet"
+                @tap="variant"
+                >{{ t('learning.k35') }}</BaseButton
+              ><BaseButton
+                v-if="
+                  !learning.activeQuestion.scienceExercise &&
+                  !learning.activeQuestion.vocabularyReview &&
+                  !learning.activeQuestion.sentenceExercise
+                "
+                small
+                variant="quiet"
+                @tap="editQuestion"
+                >{{ t('learning.k0') }}</BaseButton
+              ><BaseButton
+                v-if="
+                  learning.activeQuestion.answerType === 'subjective' &&
+                  !learning.activeQuestion.validation &&
+                  !learning.activeQuestion.vocabularyReview
+                "
+                small
+                :disabled="learning.busy || learning.materialBusy || learning.syncBusy"
+                :aria-disabled="learning.busy || learning.materialBusy || learning.syncBusy"
+                variant="quiet"
+                @tap="editRubric"
+                >{{ t('learning.kbm') }}</BaseButton
+              ></view
+            ><BaseButton
               v-if="
-                !learning.activeQuestion.writingExercise &&
-                !learning.activeQuestion.vocabularyReview &&
-                !learning.activeQuestion.sentenceExercise
+                learning.activeQuestion && !learning.batchTrainingActive && !learning.activeQuestion.sentenceExercise
               "
-              role="button"
-              tabindex="0"
-              size="mini"
-              @tap="variant"
-            >
-              变式练习
-            </button>
-            <button
-              v-if="
-                !learning.activeQuestion.scienceExercise &&
-                !learning.activeQuestion.vocabularyReview &&
-                !learning.activeQuestion.sentenceExercise
+              :disabled="
+                learning.busy ||
+                !draft.trim() ||
+                learning.active.stopped ||
+                !learning.scienceCanSubmit() ||
+                !learning.writingCanSubmit() ||
+                !learning.vocabularyCanSubmit()
               "
-              role="button"
-              tabindex="0"
-              size="mini"
-              @tap="editQuestion"
-            >
-              校对题目
-            </button>
-            <button
-              v-if="
-                learning.activeQuestion.answerType === 'subjective' &&
-                !learning.activeQuestion.validation &&
-                !learning.activeQuestion.vocabularyReview
+              :aria-disabled="
+                learning.busy ||
+                !draft.trim() ||
+                learning.active.stopped ||
+                !learning.scienceCanSubmit() ||
+                !learning.writingCanSubmit() ||
+                !learning.vocabularyCanSubmit()
               "
-              role="button"
-              tabindex="0"
-              size="mini"
-              :disabled="learning.busy || learning.materialBusy || learning.syncBusy"
-              :aria-disabled="learning.busy || learning.materialBusy || learning.syncBusy"
-              @tap="editRubric"
-            >
-              评分维度
-            </button>
-          </view>
-          <view v-if="showRubric" class="form" aria-label="主观题评分维度编辑">
+              variant="primary"
+              @tap="submitExplicit"
+              >{{ t('learning.submitAnswer') }}</BaseButton
+            ></view
+          ><view v-if="showRubric" class="form" :aria-label="t('learning.kce')">
             <view v-for="(criterion, index) in rubricCriteria" :key="criterion.id" class="form">
-              <input
+              <BaseInput
                 v-model="criterion.name"
-                :aria-label="`维度${index + 1}名称`"
-                placeholder="维度名称，如 概念准确"
+                :placeholder="t('learning.kd1')"
+                :label="t('learning.k3l', { v0: index + 1 })"
               />
-              <textarea
+              <BaseInput
                 v-model="criterion.description"
                 class="field"
-                :aria-label="`维度${index + 1}要求`"
-                placeholder="本维度具体要求，可接受的表达或步骤"
-              ></textarea>
-              <input
+                :placeholder="t('learning.klk')"
+                :label="t('learning.k55', { v0: index + 1 })"
+                multiline
+              />
+              <BaseInput
                 v-model.number="criterion.maxScore"
                 type="number"
-                :aria-label="`维度${index + 1}满分`"
-                placeholder="满分0.5至10，按0.5递增"
+                :placeholder="t('learning.k9j')"
+                :label="t('learning.k28', { v0: index + 1 })"
               />
-              <button
-                role="button"
-                tabindex="0"
-                size="mini"
+              <BaseButton
                 :disabled="rubricCriteria.length === 1"
                 :aria-disabled="rubricCriteria.length === 1"
+                variant="quiet"
                 @tap="rubricCriteria.splice(index, 1)"
+                >{{ t('learning.k54') }}</BaseButton
               >
-                移除此维度
-              </button>
             </view>
             <view class="button-row">
-              <button
-                role="button"
-                tabindex="0"
-                size="mini"
+              <BaseButton
                 :disabled="rubricCriteria.length >= 6"
                 :aria-disabled="rubricCriteria.length >= 6"
+                variant="quiet"
                 @tap="addRubricCriterion"
+                >{{ t('learning.k7d') }}</BaseButton
               >
-                增加维度
-              </button>
-              <button role="button" tabindex="0" size="mini" @tap="saveRubric">保存评分维度</button>
-              <button role="button" tabindex="0" size="mini" @tap="showRubric = false">取消编辑</button>
+              <BaseButton variant="quiet" @tap="saveRubric">{{ t('learning.ksw') }}</BaseButton>
+              <BaseButton variant="quiet" @tap="showRubric = false">{{ t('learning.knr') }}</BaseButton>
             </view>
-          </view>
-        </view>
-        <view v-if="learning.active.stopped" class="button-row">
-          <text class="warning">已停止</text>
-          <button
-            role="button"
-            tabindex="0"
-            size="mini"
+          </view> </BaseCard
+        ><LearningOverview :show-navigation="false" :inline="true" :conversation-id="learning.active.id" /><view
+          id="learning-journey-workspace"
+          tabindex="-1"
+          ><LearningJourney :inline="true"
+        /></view>
+        <view v-if="learning.active.stopped" class="button-row"
+          ><YoziMascot pose="sleep" play="none" size="small" />
+          <text class="warning">{{ t('learning.keb') }}</text>
+          <BaseButton
             :disabled="learning.busy"
             :aria-disabled="learning.busy"
+            variant="quiet"
             @tap="sendDirective('继续当前任务')"
+            >{{ t('learning.kad') }}</BaseButton
           >
-            继续当前任务
-          </button>
         </view>
         <view class="method-heading">
-          <button
+          <BaseButton
             class="quiet-button"
-            role="button"
-            tabindex="0"
             :aria-expanded="showMethods"
+            variant="quiet"
             @tap="showMethods = !showMethods"
           >
-            {{ showMethods ? '收起方法' : '更多方法' }}
-          </button>
+            {{ showMethods ? t('learning.ktk') : t('learning.kdt') }}
+          </BaseButton>
         </view>
         <view class="button-row methods">
-          <button
-            role="button"
-            tabindex="0"
-            size="mini"
+          <BaseButton
             :disabled="learning.busy"
             :aria-disabled="learning.busy"
+            variant="quiet"
             @tap="sendDirective('恢复自动教法')"
+            >{{ t('learning.knw') }}</BaseButton
           >
-            恢复自动教法
-          </button>
-          <button
+          <BaseButton
             v-for="action in visibleActions"
             :key="action"
-            role="button"
-            tabindex="0"
-            size="mini"
             :disabled="learning.busy && action !== '停止当前任务'"
             :aria-disabled="learning.busy && action !== '停止当前任务'"
+            variant="quiet"
             @tap="sendDirective(action)"
           >
-            {{ action }}
-          </button>
+            {{ learningText(action) }}
+          </BaseButton>
         </view>
-        <view v-if="learning.streamPreview" class="message notice" aria-live="polite">
-          <text class="subtle">生成中 · 未确认</text>
+        <BaseBubble v-if="learning.streamPreview" class="stream-preview message notice" aria-live="polite">
+          <text class="subtle">{{ t('learning.ki3') }}</text>
           <text>{{ learning.streamPreview }}</text>
-        </view>
+        </BaseBubble>
         <view v-if="learning.recoverableRequest && !learning.busy" class="button-row">
-          <text class="subtle">回复未确认，可恢复原结果。</text>
-          <button role="button" tabindex="0" size="mini" @tap="run(() => learning.recoverModelResult())">
-            恢复回复
-          </button>
+          <text class="subtle">{{ t('learning.kp2') }}</text>
+          <BaseButton variant="quiet" @tap="run(() => learning.recoverModelResult())">{{
+            t('learning.khs')
+          }}</BaseButton>
         </view>
         <OatutorPractice
           v-if="learning.activeQuestion?.oatutorExercise?.role === 'main'"
@@ -962,74 +934,62 @@
           :next-task="learning.startSentenceTask"
           :schedule-retest="learning.scheduleSentenceRetest"
         />
-        <view id="learning-composer" class="composer">
-          <textarea
-            :value="draft"
+        <BaseCard id="learning-composer" ref="composer" class="composer" surface="glass" padding="none"
+          ><BaseButton
+            variant="quiet"
+            icon-only
+            icon="paperclip"
+            :label="t('learning.import')"
+            @tap="showMaterial = !showMaterial"
+          />
+          <BaseInput
+            :model-value="draft"
             class="field"
-            :aria-label="
-              learning.batchTrainingActive
-                ? '训练提问'
-                : learning.activeQuestion?.writingExercise
-                  ? `${activeWritingGenre.label}作答`
-                  : '消息或作答'
-            "
+            auto-grow
+            :max-rows="5"
+            hide-label
             :placeholder="
               learning.batchTrainingActive
-                ? '提问或调整这组训练'
+                ? t('learning.kkk')
                 : learning.activeQuestion?.writingExercise
-                  ? `写你的${activeWritingGenre.label}`
-                  : '提问或写下答案'
+                  ? t('learning.ki2', { v0: learningText(activeWritingGenre.label) })
+                  : t('learning.kqa')
             "
-            placeholder-class="space-placeholder"
             :maxlength="
               learning.activeQuestion?.writingExercise || learning.activeQuestion?.vocabularyReview?.phase === 'usage'
                 ? writingAnswerLimit(learning.activeQuestion)
                 : 8000
             "
+            :label="
+              learning.batchTrainingActive
+                ? t('learning.k95')
+                : learning.activeQuestion?.writingExercise
+                  ? t('learning.kkv', { v0: learningText(activeWritingGenre.label) })
+                  : t('learning.kai')
+            "
+            multiline
             @input="draft = textInputValue($event)"
-          ></textarea>
+          />
           <view class="button-row">
-            <button v-if="learning.busy" role="button" tabindex="0" @tap="learning.cancel">取消请求</button>
-            <button
+            <BaseButton
+              v-if="learning.busy"
+              variant="quiet"
+              icon-only
+              icon="square"
+              :label="t('learning.cancelRequest')"
+              @tap="learning.cancel()"
+            />
+            <BaseButton
               v-else
-              role="button"
-              tabindex="0"
-              class="primary"
+              variant="primary"
+              icon-only
+              icon="arrow-up"
+              :label="t('learning.send')"
               :disabled="!draft.trim()"
-              :aria-disabled="!draft.trim()"
               @tap="send"
-            >
-              {{ learning.batchTrainingActive || learning.activeQuestion?.writingExercise ? '提问' : '发送' }}
-            </button>
-            <button
-              v-if="
-                learning.activeQuestion && !learning.batchTrainingActive && !learning.activeQuestion.sentenceExercise
-              "
-              role="button"
-              tabindex="0"
-              size="mini"
-              :disabled="
-                learning.busy ||
-                !draft.trim() ||
-                learning.active.stopped ||
-                !learning.scienceCanSubmit() ||
-                !learning.writingCanSubmit() ||
-                !learning.vocabularyCanSubmit()
-              "
-              :aria-disabled="
-                learning.busy ||
-                !draft.trim() ||
-                learning.active.stopped ||
-                !learning.scienceCanSubmit() ||
-                !learning.writingCanSubmit() ||
-                !learning.vocabularyCanSubmit()
-              "
-              @tap="submitExplicit"
-            >
-              提交作答
-            </button>
+            />
           </view>
-        </view>
+        </BaseCard>
       </view>
       <LearningLab
         v-if="
@@ -1076,102 +1036,78 @@
         @science="startIndependentScience"
       />
       <view class="today-layout" :class="{ 'in-session': !!learning.active }">
-        <view class="rhythm-panel">
+        <BaseCard class="rhythm-panel" padding="none">
           <view class="rhythm-heading">
-            <text class="section-title">学习方式</text>
+            <text class="section-title">{{ t('learning.k7b') }}</text>
           </view>
           <view class="rhythm-options">
-            <button
+            <BaseChip
               v-for="rhythm in learningRhythms"
               :key="rhythm.id"
-              role="button"
-              tabindex="0"
-              :aria-pressed="selectedRhythm === rhythm.id"
               :class="{ chosen: selectedRhythm === rhythm.id }"
               :disabled="learning.busy"
               :aria-disabled="learning.busy"
-              @tap="chooseRhythm(rhythm.id)"
+              :model-value="selectedRhythm === rhythm.id"
+              @update:model-value="chooseRhythm(rhythm.id)"
             >
-              <BaseIcon :name="rhythm.icon" :size="36" :color="iconColor" />
+              <BaseIcon :name="rhythm.icon" tone="ink-3" />
               <view class="rhythm-copy">
-                <text class="rhythm-name">{{ rhythm.label }}</text>
+                <text class="rhythm-name">{{ learningText(rhythm.label) }}</text>
               </view>
-              <BaseIcon v-if="selectedRhythm === rhythm.id" name="check" :size="32" :color="iconColor" />
-            </button>
+              <BaseIcon v-if="selectedRhythm === rhythm.id" name="check" tone="ink-3" />
+            </BaseChip>
           </view>
-          <text v-if="rhythmFeedback" class="subtle" role="status">{{ rhythmFeedback }}</text>
-        </view>
+          <text v-if="rhythmFeedback" class="subtle" role="status">{{ learningText(rhythmFeedback) }}</text>
+        </BaseCard>
         <LearningOverview v-if="!learning.active" :show-navigation="false" />
       </view>
       <view class="workspace-tools">
         <view class="button-row">
-          <button
-            role="button"
-            tabindex="0"
-            size="mini"
-            :aria-expanded="showMaterial"
-            @tap="showMaterial = !showMaterial"
+          <BaseButton :aria-expanded="showMaterial" variant="quiet" @tap="showMaterial = !showMaterial">
+            <BaseIcon name="folder" tone="ink-3" />{{ t('learning.kkt') }}</BaseButton
           >
-            <BaseIcon name="folder" :size="30" :color="iconColor" />
-            资料
-          </button>
-          <button role="button" tabindex="0" size="mini" :aria-expanded="showProfile" @tap="showProfile = !showProfile">
-            目标与计划
-          </button>
-          <button role="button" tabindex="0" size="mini" :aria-expanded="showData" @tap="showData = !showData">
-            记录与隐私
-          </button>
+          <BaseButton :aria-expanded="showProfile" variant="quiet" @tap="showProfile = !showProfile">{{
+            t('learning.k81')
+          }}</BaseButton>
+          <BaseButton :aria-expanded="showData" variant="quiet" @tap="showData = !showData">{{
+            t('learning.ksr')
+          }}</BaseButton>
         </view>
-        <view v-if="showData" class="panel">
-          <text class="section-title">记录与隐私</text>
-          <text class="subtle">记录保存在本设备；同步前需授权，导出不含密钥。</text>
+        <BaseCard v-if="showData" class="panel" padding="none">
+          <text class="section-title">{{ t('learning.ksr') }}</text>
+          <text class="subtle">{{ t('learning.kq9') }}</text>
           <view class="button-row">
-            <button role="button" tabindex="0" size="mini" @tap="exportRecords">导出记录</button>
-            <button
-              role="button"
-              tabindex="0"
-              size="mini"
-              :aria-expanded="showRestore"
-              @tap="showRestore = !showRestore"
-            >
-              恢复备份
-            </button>
-            <button
-              role="button"
-              tabindex="0"
-              size="mini"
+            <BaseButton variant="quiet" @tap="exportRecords">{{ t('learning.k3a') }}</BaseButton>
+            <BaseButton :aria-expanded="showRestore" variant="quiet" @tap="showRestore = !showRestore">{{
+              t('learning.k61')
+            }}</BaseButton>
+            <BaseButton
               :disabled="recordActionsBusy"
               :aria-disabled="recordActionsBusy"
+              variant="quiet"
               @tap="syncRecords"
+              >{{ t('learning.k13') }}</BaseButton
             >
-              同步学习记录
-            </button>
-            <button v-if="learning.syncBusy" role="button" tabindex="0" size="mini" @tap="learning.cancelSync">
-              {{ learning.syncState.kind === 'delete' ? '取消删除请求' : '取消同步' }}
-            </button>
-            <button
+            <BaseButton v-if="learning.syncBusy" variant="quiet" @tap="learning.cancelSync">
+              {{ learning.syncState.kind === 'delete' ? t('learning.kgp') : t('learning.k8i') }}
+            </BaseButton>
+            <BaseButton
               v-if="learning.state.owner !== 'guest'"
-              role="button"
-              tabindex="0"
-              size="mini"
               :disabled="recordActionsBusy"
               :aria-disabled="recordActionsBusy"
+              variant="quiet"
               @tap="previewGuestRecords"
+              >{{ t('learning.k9z') }}</BaseButton
             >
-              预览访客记录
-            </button>
-            <button role="button" tabindex="0" size="mini" @tap="deleteRecords">删除本地记录</button>
-            <button
+            <BaseButton variant="quiet" @tap="deleteRecords">{{ t('learning.knu') }}</BaseButton>
+            <BaseButton
               v-if="learning.state.owner !== 'guest'"
-              role="button"
-              tabindex="0"
-              size="mini"
               :disabled="recordActionsBusy"
               :aria-disabled="recordActionsBusy"
+              variant="quiet"
               @tap="deleteCloudRecords"
+              >{{ t('learning.krc') }}</BaseButton
             >
-              删除云端学习副本
-            </button>
           </view>
           <view
             v-if="learning.syncState.message"
@@ -1182,15 +1118,19 @@
             :aria-busy="learning.syncState.phase === 'loading'"
             data-test="record-sync-status"
           >
-            <WdLoading
+            <BaseEmpty
               v-if="learning.syncState.phase === 'loading'"
               class="feedback-loading"
-              type="ring"
-              size="24px"
-              :color="iconColor"
-              aria-hidden="true"
+              state="loading"
+              :title="t('ui.loading')"
+              mascot-size="small"
             />
-            <text>{{ learning.syncState.message }}</text>
+            <BaseEmpty
+              v-if="learning.syncState.phase === 'error'"
+              state="error"
+              :title="learningText(learning.syncState.message)"
+              mascot-size="small"
+            /><text v-else>{{ learningText(learning.syncState.message) }}</text>
           </view>
           <view
             v-if="recordPreviewStatus.message"
@@ -1201,30 +1141,34 @@
             :aria-busy="recordPreviewStatus.phase === 'loading'"
             data-test="record-preview-status"
           >
-            <WdLoading
+            <BaseEmpty
               v-if="recordPreviewStatus.phase === 'loading'"
-              :key="iconColor"
-              type="outline"
-              :color="iconColor"
-              :size="20"
-              aria-hidden="true"
+              state="loading"
+              :title="t('ui.loading')"
+              mascot-size="small"
             />
-            <text>{{ recordPreviewStatus.message }}</text>
+            <BaseEmpty
+              v-if="recordPreviewStatus.phase === 'error'"
+              state="error"
+              :title="learningText(recordPreviewStatus.message)"
+              mascot-size="small"
+            /><text v-else>{{ learningText(recordPreviewStatus.message) }}</text>
           </view>
           <view v-if="recordPreviewBusy || learning.historyBusy">
             <text v-if="learning.historyProgress" class="subtle"
-              >正在检查 {{ learning.historyProgress.completed }} / {{ learning.historyProgress.total }}</text
+              >{{ t('learning.kgn') }}{{ learning.historyProgress.completed }} /
+              {{ learning.historyProgress.total }}</text
             >
-            <button role="button" tabindex="0" size="mini" @tap="cancelRecordPreview">取消历史校验</button>
+            <BaseButton variant="quiet" @tap="cancelRecordPreview">{{ t('learning.k86') }}</BaseButton>
           </view>
           <text v-if="learning.syncBusy && learning.syncProgress" class="subtle" role="status"
-            >{{ learning.syncProgress.phase }} · {{ learning.syncProgress.calls }} 次请求</text
+            >{{ learning.syncProgress.phase }} · {{ learning.syncProgress.calls }}{{ t('learning.k65') }}</text
           >
           <view
             v-if="learning.syncBusy && syncOperationProgress"
             class="material-progress"
             role="progressbar"
-            aria-label="本次学习操作补传进度"
+            :aria-label="t('learning.k6m')"
             aria-valuemin="0"
             :aria-valuemax="syncOperationProgress.total"
             :aria-valuenow="syncOperationProgress.completed"
@@ -1243,88 +1187,72 @@
             />
           </view>
           <text v-if="learning.syncBusy && syncOperationProgress" class="subtle" role="status"
-            >本次补传：云端已接收 {{ syncOperationProgress.completed }} /
-            {{ syncOperationProgress.total }} 个学习操作；完整结果仍需核对。</text
+            >{{ t('learning.keq') }}{{ syncOperationProgress.completed }} / {{ syncOperationProgress.total
+            }}{{ t('learning.kmp') }}</text
           >
           <view v-if="guestPreview" class="form">
             <text class="subtle" role="status"
-              >访客新增 {{ guestPreview.imported }} 个操作 · 已有 {{ guestPreview.reused }} 个操作 · 合并
-              {{ guestPreview.mergedPlans }} 份计划 · {{ guestPreview.pendingReferences }} 道题待核对</text
+              >{{ t('learning.kc3') }}{{ guestPreview.imported }}{{ t('learning.ke2') }}{{ guestPreview.reused
+              }}{{ t('learning.k2q') }}{{ guestPreview.mergedPlans }}{{ t('learning.k9f')
+              }}{{ guestPreview.pendingReferences }}{{ t('learning.kq2') }}</text
             >
-            <text class="subtle">确认记录属于你后，合并到当前账户；访客原件保留。</text>
-            <button
-              role="button"
-              tabindex="0"
-              size="mini"
+            <text class="subtle">{{ t('learning.kk7') }}</text>
+            <BaseButton
               :disabled="recordActionsBusy || !guestPreview.imported"
               :aria-disabled="recordActionsBusy || !guestPreview.imported"
+              variant="quiet"
               @tap="migrateGuestRecords"
+              >{{ t('learning.kou') }}</BaseButton
             >
-              确认访客记录归属
-            </button>
           </view>
           <view v-if="learning.syncConflict" class="form">
-            <text class="section-title">同步冲突待处理</text>
+            <text class="section-title">{{ t('learning.kg0') }}</text>
             <text class="subtle"
-              >本机 {{ learning.syncConflict.localEvents }} 条 · 云端 {{ learning.syncConflict.remoteEvents }} 条</text
+              >{{ t('learning.kgw') }}{{ learning.syncConflict.localEvents }}{{ t('learning.knd')
+              }}{{ learning.syncConflict.remoteEvents }}{{ t('learning.kmq') }}</text
             >
             <view class="button-row">
-              <button role="button" tabindex="0" size="mini" @tap="exportConflict('local')">导出本机冲突副本</button>
-              <button role="button" tabindex="0" size="mini" @tap="exportConflict('remote')">导出云端冲突副本</button>
-              <button
-                role="button"
-                tabindex="0"
-                size="mini"
+              <BaseButton variant="quiet" @tap="exportConflict('local')">{{ t('learning.kay') }}</BaseButton>
+              <BaseButton variant="quiet" @tap="exportConflict('remote')">{{ t('learning.key') }}</BaseButton>
+              <BaseButton
                 :disabled="recordActionsBusy"
                 :aria-disabled="recordActionsBusy"
+                variant="quiet"
                 @tap="resolveConflict('remote')"
+                >{{ t('learning.k51') }}</BaseButton
               >
-                采用云端继续
-              </button>
-              <button
-                role="button"
-                tabindex="0"
-                size="mini"
+              <BaseButton
                 :disabled="recordActionsBusy"
                 :aria-disabled="recordActionsBusy"
+                variant="quiet"
                 @tap="resolveConflict('local')"
+                >{{ t('learning.kkq') }}</BaseButton
               >
-                恢复本机冲突副本
-              </button>
-              <button
-                role="button"
-                tabindex="0"
-                size="mini"
+              <BaseButton
                 :disabled="recordActionsBusy"
                 :aria-disabled="recordActionsBusy"
+                variant="quiet"
                 @tap="removeConflict"
+                >{{ t('learning.k1o') }}</BaseButton
               >
-                移除已保存的冲突副本
-              </button>
             </view>
           </view>
           <view v-if="showRestore" class="form">
             <!-- #ifdef H5 -->
             <view class="button-row">
-              <button
-                role="button"
-                tabindex="0"
-                size="mini"
+              <BaseButton
                 :disabled="recordActionsBusy"
                 :aria-disabled="recordActionsBusy"
+                variant="quiet"
                 @tap="chooseBackupFile"
+                >{{ t('learning.kbz') }}</BaseButton
               >
-                选择备份文件
-              </button>
-              <button
+              <BaseButton
                 v-if="recordFileBusy && !desktopHost"
-                role="button"
-                tabindex="0"
-                size="mini"
+                variant="quiet"
                 @tap="cancelRecordFile('已取消选择或读取备份，原输入和记录保留。', 'cancelled')"
+                >{{ t('learning.kv9') }}</BaseButton
               >
-                取消文件读取
-              </button>
             </view>
             <view
               v-if="recordFileStatus.message"
@@ -1335,123 +1263,121 @@
               :aria-busy="recordFileBusy"
               data-test="record-file-status"
             >
-              <WdLoading v-if="recordFileBusy" type="outline" :color="iconColor" :size="20" aria-hidden="true" />
-              <text>{{ recordFileStatus.message }}</text>
+              <BaseEmpty v-if="recordFileBusy" state="loading" :title="t('ui.loading')" mascot-size="small" />
+              <BaseEmpty
+                v-if="recordFileStatus.phase === 'error'"
+                state="error"
+                :title="learningText(recordFileStatus.message)"
+                mascot-size="small"
+              /><text v-else>{{ learningText(recordFileStatus.message) }}</text>
             </view>
-            <text class="subtle">文件仅在本设备读取。</text>
+            <text class="subtle">{{ t('learning.k9b') }}</text>
             <!-- #endif -->
-            <textarea
+            <BaseInput
               v-if="backupText.length <= HISTORY_LIMITS.pageCharacters || backupExpanded"
               v-model="backupText"
               class="field"
-              aria-label="学习记录 JSON 备份"
-              placeholder="粘贴导出的 learning-records.json 内容"
+              :placeholder="t('learning.khj')"
               :maxlength="12000000"
-            ></textarea>
+              :label="t('learning.kny')"
+              multiline
+            />
             <view
               v-if="backupText.length > HISTORY_LIMITS.pageCharacters"
               class="material-status material-status--stack"
               data-test="record-large-backup"
             >
-              <text class="subtle" role="status">已载入 {{ backupText.length }} 字符，尚未合并。</text>
-              <button role="button" tabindex="0" size="mini" @tap="backupExpanded = !backupExpanded">
-                {{ backupExpanded ? '收起正文' : '展开完整正文' }}
-              </button>
-              <button role="button" tabindex="0" size="mini" @tap="backupText = ''">清除并重新粘贴</button>
+              <text class="subtle" role="status"
+                >{{ t('learning.kj7') }}{{ backupText.length }}{{ t('learning.k8l') }}</text
+              >
+              <BaseButton variant="quiet" @tap="backupExpanded = !backupExpanded">
+                {{ backupExpanded ? t('learning.kkc') : t('learning.k6p') }}
+              </BaseButton>
+              <BaseButton variant="quiet" @tap="backupText = ''">{{ t('learning.kis') }}</BaseButton>
             </view>
-            <button
-              role="button"
-              tabindex="0"
-              size="mini"
+            <BaseButton
               :disabled="recordActionsBusy || !backupText.trim()"
               :aria-disabled="recordActionsBusy || !backupText.trim()"
+              variant="quiet"
               @tap="previewRecords"
+              >{{ t('learning.k1d') }}</BaseButton
             >
-              校验并预览
-            </button>
 
             <view v-if="restorePreview">
-              <text class="subtle" role="status">
-                新增 {{ restorePreview.imported }} 个操作 · 已有 {{ restorePreview.reused }} 个操作 ·
-                {{ restorePreview.pendingReferences }} 道题待核对 · {{ restorePreview.pendingReviews }} 项复习暂停
-              </text>
-              <button
-                role="button"
-                tabindex="0"
-                size="mini"
+              <text class="subtle" role="status"
+                >{{ t('learning.k56') }}{{ restorePreview.imported }}{{ t('learning.ke2') }}{{ restorePreview.reused
+                }}{{ t('learning.k3d') }}{{ restorePreview.pendingReferences }}{{ t('learning.kjd')
+                }}{{ restorePreview.pendingReviews }}{{ t('learning.ktq') }}</text
+              >
+              <BaseButton
                 :disabled="recordActionsBusy || !restorePreview.imported"
                 :aria-disabled="recordActionsBusy || !restorePreview.imported"
+                variant="quiet"
                 @tap="restoreRecords"
+                >{{ t('learning.k7h') }}</BaseButton
               >
-                确认合并记录
-              </button>
             </view>
-            <button role="button" tabindex="0" size="mini" @tap="rollbackRecords">撤销最近一次写入</button>
+            <BaseButton variant="quiet" @tap="rollbackRecords">{{ t('learning.kam') }}</BaseButton>
           </view>
-        </view>
-        <view v-if="showMaterial" id="material-intake" class="form panel">
-          <text class="section-title">资料</text>
-          <textarea
+        </BaseCard>
+        <BaseCard v-if="showMaterial" id="material-intake" class="form panel" padding="none">
+          <view class="material-heading"
+            ><text class="section-title">{{ t('learning.kkt') }}</text
+            ><BaseButton
+              variant="quiet"
+              icon-only
+              icon="close"
+              :label="t('learning.closeMaterials')"
+              @tap="showMaterial = false"
+          /></view>
+          <BaseInput
             v-model="materialText"
             class="field"
-            aria-label="粘贴的私人资料"
-            placeholder="粘贴资料"
+            :placeholder="t('learning.ka1')"
             maxlength="50000"
-          ></textarea>
-          <button
-            role="button"
-            tabindex="0"
-            size="mini"
+            :label="t('learning.k8a')"
+            multiline
+          />
+          <BaseButton
             :disabled="!materialText.trim() || materialActionBusy"
             :aria-disabled="!materialText.trim() || materialActionBusy"
+            variant="quiet"
             @tap="importText"
+            >{{ t('learning.ktv') }}</BaseButton
           >
-            保存文字
-          </button>
           <!-- #ifdef H5 || MP-WEIXIN || APP-PLUS -->
-          <button
-            role="button"
-            tabindex="0"
-            size="mini"
+          <BaseButton
             :aria-expanded="showMaterialSettings"
+            variant="quiet"
             @tap="showMaterialSettings = !showMaterialSettings"
+            >{{ t('learning.krw') }}</BaseButton
           >
-            解析设置
-          </button>
           <view v-if="showMaterialSettings">
-            <input
+            <BaseInput
               v-model="materialEndpoint"
-              aria-label="资料解析器地址"
               :disabled="materialActionBusy"
-              placeholder="解析服务地址"
+              :placeholder="t('learning.k4p')"
+              :label="t('learning.kme')"
             />
-            <input
+            <BaseInput
               v-model="materialToken"
-              aria-label="资料解析器令牌"
               :disabled="materialActionBusy"
-              password
-              placeholder="连接令牌"
+              :placeholder="t('learning.k4v')"
+              :label="t('learning.k8b')"
+              type="password"
             />
             <view class="button-row">
-              <button
-                role="button"
-                tabindex="0"
-                size="mini"
+              <BaseButton
                 :disabled="materialActionBusy"
                 :aria-disabled="materialActionBusy"
+                variant="quiet"
                 @tap="connectMaterial"
               >
-                {{ learning.materialConnectionBusy ? '连接中' : '授权并连接' }}
-              </button>
-              <button
-                v-if="learning.materialConnectionBusy"
-                role="button"
-                tabindex="0"
-                size="mini"
-                @tap="learning.cancelMaterial"
-              >
-                取消连接检查
-              </button>
+                {{ learning.materialConnectionBusy ? t('learning.kcu') : t('learning.kz') }}
+              </BaseButton>
+              <BaseButton v-if="learning.materialConnectionBusy" variant="quiet" @tap="learning.cancelMaterial">{{
+                t('learning.kek')
+              }}</BaseButton>
             </view>
             <view
               v-if="learning.materialConnectionBusy"
@@ -1460,65 +1386,47 @@
               aria-live="polite"
               data-test="material-connection-pending"
             >
-              <WdLoading :key="iconColor" type="outline" :color="iconColor" :size="20" aria-hidden="true" />
-              <text>连接中，尚未发送资料。</text>
+              <BaseEmpty state="loading" :title="t('ui.loading')" mascot-size="small" />
+              <text>{{ t('learning.kl3') }}</text>
             </view>
-            <text v-if="learning.materialConnection?.status" class="subtle">已连接，文件仅发送到此地址。</text>
+            <text v-if="learning.materialConnection?.status" class="subtle">{{ t('learning.k1i') }}</text>
             <text v-if="appleReadinessMessage" class="subtle" role="status" data-test="apple-readiness-status">{{
-              appleReadinessMessage
+              learningText(appleReadinessMessage)
             }}</text>
-            <label @tap="allowMaterialRecognition = !allowMaterialRecognition">
-              <checkbox :checked="allowMaterialRecognition" />识别图片文字
-            </label>
+            <BaseCheckbox v-model="allowMaterialRecognition">{{ t('learning.k4q') }}</BaseCheckbox>
             <view data-test="ocr-engine-choice" class="row wrap">
-              <button
-                role="button"
-                tabindex="0"
-                size="mini"
-                :aria-pressed="materialRecognitionEngine === 'tesseract'"
-                @tap="materialRecognitionEngine = 'tesseract'"
+              <BaseChip
+                :model-value="materialRecognitionEngine === 'tesseract'"
+                @update:model-value="materialRecognitionEngine = 'tesseract'"
               >
-                {{ allowMaterialRecognition ? '通用识别' : '普通提取' }}
-              </button>
-              <button
+                {{ allowMaterialRecognition ? t('learning.k6') : t('learning.kjx') }}
+              </BaseChip>
+              <BaseChip
                 v-if="allowMaterialRecognition"
-                role="button"
-                tabindex="0"
-                size="mini"
                 :disabled="!appleVisionAvailable"
                 :aria-disabled="!appleVisionAvailable"
-                :aria-pressed="materialRecognitionEngine === 'apple-vision'"
-                @tap="materialRecognitionEngine = 'apple-vision'"
+                :model-value="materialRecognitionEngine === 'apple-vision'"
+                @update:model-value="materialRecognitionEngine = 'apple-vision'"
+                >{{ t('learning.kp5') }}</BaseChip
               >
-                Apple 识别
-              </button>
-              <button
-                role="button"
-                tabindex="0"
-                size="mini"
+              <BaseChip
                 :disabled="!doclingAvailable"
                 :aria-disabled="!doclingAvailable"
-                :aria-pressed="materialRecognitionEngine === 'docling'"
                 data-test="docling-choice"
-                @tap="materialRecognitionEngine = 'docling'"
+                :model-value="materialRecognitionEngine === 'docling'"
+                @update:model-value="materialRecognitionEngine = 'docling'"
+                >{{ t('learning.kqo') }}</BaseChip
               >
-                版面整理
-              </button>
             </view>
-            <text v-if="materialRecognitionEngine === 'docling'" class="subtle"
-              >适合PDF双栏和表格，每次最多4页，可随时取消。</text
-            >
+            <text v-if="materialRecognitionEngine === 'docling'" class="subtle">{{ t('learning.kd0') }}</text>
           </view>
-          <button
-            role="button"
-            tabindex="0"
-            size="mini"
+          <BaseButton
             :disabled="materialFileChoiceBusy"
             :aria-disabled="materialFileChoiceBusy"
+            variant="quiet"
             @tap="chooseMaterialFile"
+            >{{ t('learning.kqw') }}</BaseButton
           >
-            选择 PDF / 作答图片
-          </button>
           <view
             v-if="appFileBusy && !learning.materialBusy"
             class="material-status"
@@ -1526,25 +1434,22 @@
             aria-live="polite"
             data-test="material-app-file-pending"
           >
-            <WdLoading :key="iconColor" type="outline" :color="iconColor" :size="20" aria-hidden="true" />
-            <text>{{ selectedAppFile ? '正在读取文件' : '请选择文件' }}</text>
-            <button v-if="!selectedAppFile" role="button" tabindex="0" size="mini" @tap="cancelAppFile">
-              取消文件选择
-            </button>
+            <BaseEmpty state="loading" :title="t('ui.loading')" mascot-size="small" />
+            <text>{{ selectedAppFile ? t('learning.k4z') : t('learning.kst') }}</text>
+            <BaseButton v-if="!selectedAppFile" variant="quiet" @tap="cancelAppFile">{{
+              t('learning.kj2')
+            }}</BaseButton>
           </view>
           <view v-if="clientPlatform === 'app' && selectedAppFile" data-test="app-selected-file" class="button-row">
-            <text class="subtle">{{ selectedAppFile.name }} · {{ selectedAppFile.size }} 字节 · 尚未发送</text>
-            <button
-              role="button"
-              tabindex="0"
-              size="mini"
+            <text class="subtle">{{ selectedAppFile.name }} · {{ selectedAppFile.size }}{{ t('learning.kh1') }}</text>
+            <BaseButton
               :disabled="appFileBusy || learning.materialBusy"
               :aria-disabled="appFileBusy || learning.materialBusy"
+              variant="quiet"
               @tap="parseSelectedAppFile"
+              >{{ t('learning.knq') }}</BaseButton
             >
-              确认解析所选文件
-            </button>
-            <button role="button" tabindex="0" size="mini" @tap="cancelAppFile">取消所选文件</button>
+            <BaseButton variant="quiet" @tap="cancelAppFile">{{ t('learning.k7r') }}</BaseButton>
           </view>
           <!-- #endif -->
           <view
@@ -1554,22 +1459,15 @@
             aria-live="polite"
             data-test="material-file-pending"
           >
-            <WdLoading
-              v-if="clientFilePhase === 'read'"
-              :key="iconColor"
-              type="outline"
-              :color="iconColor"
-              :size="20"
-              aria-hidden="true"
-            />
+            <BaseEmpty v-if="clientFilePhase === 'read'" state="loading" :title="t('ui.loading')" mascot-size="small" />
             <text>{{
               clientFilePhase === 'choose'
-                ? '请选择文件'
+                ? t('learning.kst')
                 : clientFilePhase === 'confirm'
-                  ? '等待发送确认'
-                  : '正在读取文件'
+                  ? t('learning.k5g')
+                  : t('learning.k4z')
             }}</text>
-            <button role="button" tabindex="0" size="mini" @tap="cancelClientFile">取消所选文件</button>
+            <BaseButton variant="quiet" @tap="cancelClientFile">{{ t('learning.k7r') }}</BaseButton>
           </view>
           <view
             v-if="learning.materialImportState"
@@ -1579,21 +1477,19 @@
             data-test="material-import-state"
           >
             <view class="material-status-heading">
-              <WdLoading
+              <BaseEmpty
                 v-if="learning.materialImportState.phase === 'processing'"
-                :key="iconColor"
-                type="outline"
-                :color="iconColor"
-                :size="20"
-                aria-hidden="true"
+                state="loading"
+                :title="t('ui.loading')"
+                mascot-size="small"
               />
-              <text>{{ materialImportLabel }}</text>
+              <text>{{ learningText(materialImportLabel) }}</text>
             </view>
             <view
               v-if="materialPageProgress"
               class="material-progress"
               role="progressbar"
-              aria-label="资料页处理进度"
+              :aria-label="t('learning.kth')"
               aria-valuemin="0"
               :aria-valuemax="materialPageProgress.total"
               :aria-valuenow="materialPageProgress.completed"
@@ -1605,20 +1501,20 @@
               />
             </view>
             <text v-if="materialPageProgress" class="subtle"
-              >已处理 {{ materialPageProgress.completed }} / {{ materialPageProgress.total }} 页</text
+              >{{ t('learning.k3q') }}{{ materialPageProgress.completed }} / {{ materialPageProgress.total
+              }}{{ t('learning.ke1') }}</text
             >
-            <text v-if="['failed', 'cancelled', 'partial'].includes(learning.materialImportState.phase)" class="subtle"
-              >请继续未完成页，或重试失败页。</text
+            <text
+              v-if="['failed', 'cancelled', 'partial'].includes(learning.materialImportState.phase)"
+              class="subtle"
+              >{{ t('learning.k3e') }}</text
             >
-            <button
+            <BaseButton
               v-if="learning.materialImportState.phase === 'processing' && learning.materialBusy"
-              role="button"
-              tabindex="0"
-              size="mini"
+              variant="quiet"
               @tap="learning.cancelMaterial"
+              >{{ t('learning.kfs') }}</BaseButton
             >
-              取消后续处理
-            </button>
           </view>
           <view
             v-if="materialFeedback"
@@ -1628,29 +1524,25 @@
             aria-live="polite"
             data-test="material-feedback"
           >
-            <text>{{ materialFeedback.message }}</text>
+            <BaseEmpty
+              v-if="materialFeedback.kind === 'error'"
+              state="error"
+              :title="learningText(materialFeedback.message)"
+              mascot-size="small"
+            /><text v-else>{{ learningText(materialFeedback.message) }}</text>
           </view>
           <view
             v-if="!learning.state.materials.length && !materialActionBusy"
             class="material-empty"
             data-test="material-empty"
           >
-            <text>暂无资料</text>
+            <text>{{ t('learning.klw') }}</text>
           </view>
-          <button
-            role="button"
-            tabindex="0"
-            size="mini"
-            :aria-expanded="showImportTools"
-            @tap="showImportTools = !showImportTools"
-          >
-            导入记录
-          </button>
+          <BaseButton :aria-expanded="showImportTools" variant="quiet" @tap="showImportTools = !showImportTools">{{
+            t('learning.kdb')
+          }}</BaseButton>
           <view v-if="showImportTools">
-            <button
-              role="button"
-              tabindex="0"
-              size="mini"
+            <BaseButton
               :disabled="
                 learning.materialBusy ||
                 learning.busy ||
@@ -1663,23 +1555,21 @@
                 learning.syncBusy ||
                 !learning.materialConnection?.capabilities?.uploadMaintenance?.available
               "
+              variant="quiet"
               @tap="previewUploadMaintenance"
+              >{{ t('learning.kef') }}</BaseButton
             >
-              预览登记整理
-            </button>
             <view v-if="uploadMaintenancePreview" data-test="upload-maintenance-preview">
               <text
-                >已关闭 {{ uploadMaintenancePreview.closedCount }} 项 · 未确认或已收存
-                {{ uploadMaintenancePreview.openCount }} 项 · 总名额 {{ uploadMaintenancePreview.maxReceipts }} 项</text
+                >{{ t('learning.kug') }}{{ uploadMaintenancePreview.closedCount }}{{ t('learning.kpg')
+                }}{{ uploadMaintenancePreview.openCount }}{{ t('learning.kpp')
+                }}{{ uploadMaintenancePreview.maxReceipts }}{{ t('learning.kc7') }}</text
               >
-              <text class="subtle">仅清理已关闭记录，待办和原件保留。</text>
+              <text class="subtle">{{ t('learning.k47') }}</text>
               <text v-if="uploadMaintenancePreview.pending"
-                >上次清理尚未完成 · {{ uploadMaintenancePreview.plannedCount }} 项</text
+                >{{ t('learning.k4s') }}{{ uploadMaintenancePreview.plannedCount }}{{ t('learning.kc7') }}</text
               >
-              <button
-                role="button"
-                tabindex="0"
-                size="mini"
+              <BaseButton
                 :disabled="
                   learning.materialBusy ||
                   learning.busy ||
@@ -1692,54 +1582,41 @@
                   learning.syncBusy ||
                   (!uploadMaintenancePreview.pending && !uploadMaintenancePreview.closedCount)
                 "
+                variant="quiet"
                 @tap="compactUploadReceipts"
+                >{{ t('learning.kkb') }}</BaseButton
               >
-                确认整理已关闭登记
-              </button>
             </view>
-            <button role="button" tabindex="0" size="mini" @tap="showLocator = !showLocator">定位登记导出与恢复</button>
+            <BaseButton variant="quiet" @tap="showLocator = !showLocator">{{ t('learning.ks') }}</BaseButton>
             <view v-if="showLocator" data-test="upload-locator-panel">
-              <text class="subtle">导出不含正文或令牌，请妥善保存。</text>
-              <textarea
+              <text class="subtle">{{ t('learning.kdg') }}</text>
+              <BaseInput
                 v-model="locatorText"
-                aria-label="待办定位 JSON"
                 class="field"
                 maxlength="2500"
-                placeholder="粘贴本机导出的定位登记 JSON"
-              ></textarea>
-              <button
-                role="button"
-                tabindex="0"
-                size="mini"
+                :placeholder="t('learning.kqj')"
+                :label="t('learning.kk1')"
+                multiline
+              />
+              <BaseButton
                 :disabled="!locatorText || learning.materialBusy || learning.busy || learning.syncBusy || appFileBusy"
                 :aria-disabled="
                   !locatorText || learning.materialBusy || learning.busy || learning.syncBusy || appFileBusy
                 "
+                variant="quiet"
                 @tap="restorePendingLocator"
+                >{{ t('learning.k70') }}</BaseButton
               >
-                恢复定位待办
-              </button>
               <view v-if="pendingRemovalPreview" data-test="pending-upload-removal">
                 <text
-                  >本次移除目标 {{ pendingRemovalPreview.entry.connectorOrigin }} ·
+                  >{{ t('learning.kh4') }}{{ pendingRemovalPreview.entry.connectorOrigin }} ·
                   {{ pendingRemovalPreview.entry.id }}</text
                 >
-                <button role="button" tabindex="0" size="mini" @tap="downloadPendingLocator">保存本次定位登记</button>
-                <checkbox-group
-                  data-test="locator-removal-ack"
-                  @change="pendingRemovalAcknowledged = ($event.detail?.value || []).includes('saved')"
-                >
-                  <label
-                    ><checkbox
-                      value="saved"
-                      :checked="pendingRemovalAcknowledged"
-                    />已另行保存本次定位信息或确认放弃恢复；远端原件未核验。</label
-                  >
-                </checkbox-group>
-                <button
-                  role="button"
-                  tabindex="0"
-                  size="mini"
+                <BaseButton variant="quiet" @tap="downloadPendingLocator">{{ t('learning.k67') }}</BaseButton>
+                <BaseCheckbox v-model="pendingRemovalAcknowledged" data-test="locator-removal-ack">{{
+                  t('learning.ke')
+                }}</BaseCheckbox>
+                <BaseButton
                   :disabled="
                     !pendingRemovalAcknowledged ||
                     learning.materialBusy ||
@@ -1754,124 +1631,100 @@
                     learning.syncBusy ||
                     appFileBusy
                   "
+                  variant="quiet"
                   @tap="forgetPendingUpload"
+                  >{{ t('learning.kfi') }}</BaseButton
                 >
-                  确认仅移除本机待办
-                </button>
               </view>
             </view>
             <view v-for="entry in learning.pendingUploads" :key="entry.id" class="model-row" data-test="pending-upload">
-              <text>导入回执待核对 · {{ entry.id.slice(-8) }} · {{ entry.size }} 字节</text>
+              <text>{{ t('learning.kpr') }}{{ entry.id.slice(-8) }} · {{ entry.size }}{{ t('learning.kn0') }}</text>
               <text class="subtle">{{ entry.connectorOrigin }}</text>
-              <button
-                role="button"
-                tabindex="0"
-                size="mini"
+              <BaseButton
                 :disabled="learning.materialBusy || learning.busy || learning.syncBusy || appFileBusy"
                 :aria-disabled="learning.materialBusy || learning.busy || learning.syncBusy || appFileBusy"
+                variant="quiet"
                 @tap="pendingUploadAction(entry, 'inspect')"
+                >{{ t('learning.kt3') }}</BaseButton
               >
-                核对原件状态
-              </button>
-              <button
-                role="button"
-                tabindex="0"
-                size="mini"
+              <BaseButton
                 :disabled="learning.materialBusy || learning.busy || learning.syncBusy || appFileBusy"
                 :aria-disabled="learning.materialBusy || learning.busy || learning.syncBusy || appFileBusy"
+                variant="quiet"
                 @tap="pendingUploadAction(entry, 'recover')"
+                >{{ t('learning.kaj') }}</BaseButton
               >
-                恢复已收原件
-              </button>
-              <button
-                role="button"
-                tabindex="0"
-                size="mini"
+              <BaseButton
                 :disabled="learning.materialBusy || learning.busy || learning.syncBusy || appFileBusy"
                 :aria-disabled="learning.materialBusy || learning.busy || learning.syncBusy || appFileBusy"
+                variant="quiet"
                 @tap="pendingUploadAction(entry, 'close')"
+                >{{ t('learning.ksa') }}</BaseButton
               >
-                取消登记并核对原件
-              </button>
-              <button
-                role="button"
-                tabindex="0"
-                size="mini"
+              <BaseButton
                 :disabled="learning.materialBusy || learning.busy || learning.syncBusy || appFileBusy"
                 :aria-disabled="learning.materialBusy || learning.busy || learning.syncBusy || appFileBusy"
+                variant="quiet"
                 @tap="exportPendingLocator(entry)"
+                >{{ t('learning.kiv') }}</BaseButton
               >
-                导出定位与移除待办
-              </button>
             </view>
           </view>
           <view v-for="material in learning.state.materials" :key="material.id" class="model-row">
-            <text>{{ material.name }} · {{ material.segments.length }} 个片段 · 私人</text>
-            <text v-if="material.recognitionEngine === 'apple-vision'" class="subtle">图片识别 · 待校对</text>
-            <text v-if="material.recognitionEngine === 'docling'" class="subtle">版面整理 · 待核对</text>
-            <button
+            <text>{{ material.name }} · {{ material.segments.length }}{{ t('learning.kfh') }}</text>
+            <text v-if="material.recognitionEngine === 'apple-vision'" class="subtle">{{ t('learning.klo') }}</text>
+            <text v-if="material.recognitionEngine === 'docling'" class="subtle">{{ t('learning.kku') }}</text>
+            <BaseButton
               v-if="material.segments.some((segment) => segment.status === 'failed')"
-              role="button"
-              tabindex="0"
-              size="mini"
               :disabled="materialActionBusy"
               :aria-disabled="materialActionBusy"
+              variant="quiet"
               @tap="retryMaterial(material)"
+              >{{ t('learning.kuy') }}</BaseButton
             >
-              重试未解析页
-            </button>
-            <button
+            <BaseButton
               v-if="material.nextPage"
-              role="button"
-              tabindex="0"
-              size="mini"
               :disabled="materialActionBusy"
               :aria-disabled="materialActionBusy"
+              variant="quiet"
               @tap="resumeMaterial(material)"
+              >{{ t('learning.kip') }}</BaseButton
             >
-              继续解析后续页
-            </button>
-            <button role="button" tabindex="0" size="mini" @tap="selectMaterial(material)">用此资料练习</button>
-            <button
-              role="button"
-              tabindex="0"
-              size="mini"
+            <BaseButton variant="quiet" @tap="selectMaterial(material)">{{ t('learning.koo') }}</BaseButton>
+            <BaseButton
               :disabled="learning.busy || learning.materialBusy || learning.syncBusy"
               :aria-disabled="learning.busy || learning.materialBusy || learning.syncBusy"
+              variant="quiet"
               @tap="deleteMaterial(material)"
+              >{{ t('learning.kkz') }}</BaseButton
             >
-              预览并删除资料
-            </button>
           </view>
           <view
             v-for="deletion in (learning.state.materialDeletions || []).filter((d) => d.originalStatus === 'pending')"
             :key="deletion.deletionId"
             class="model-row"
           >
-            <text>本机学习数据已清理；解析器原件删除待确认。原件编号 {{ deletion.original.fileId.slice(0, 12) }}</text>
-            <button
-              role="button"
-              tabindex="0"
-              size="mini"
+            <text>{{ t('learning.kpo') }}{{ deletion.original.fileId.slice(0, 12) }}</text>
+            <BaseButton
               :disabled="learning.materialBusy || learning.syncBusy || learning.busy"
               :aria-disabled="learning.materialBusy || learning.syncBusy || learning.busy"
+              variant="quiet"
               @tap="retryOriginalDeletion(deletion)"
+              >{{ t('learning.kj5') }}</BaseButton
             >
-              重试原件删除
-            </button>
           </view>
           <view v-if="selectedMaterial" class="form">
             <view class="button-row">
-              <button
+              <BaseButton
                 v-for="(segment, index) in currentEditorMaterial?.segments || []"
                 :key="segment.id"
-                role="button"
-                tabindex="0"
-                size="mini"
+                variant="quiet"
                 @tap="selectSegment(segment)"
               >
-                {{ segment.page ? '第 ' + segment.page + ' 页' : '片段 ' + (index + 1) }}
-              </button>
+                {{
+                  segment.page ? t('learning.ku8') + segment.page + t('learning.kky') : t('learning.k1n') + (index + 1)
+                }}
+              </BaseButton>
             </view>
             <MaterialLayout
               v-if="selectedSegment?.extractionVersion === MATERIAL_LAYOUT_CONTRACT"
@@ -1889,227 +1742,199 @@
               selectable
               >{{ selectedSegment?.content.slice(0, 300) }}</text
             >
-            <text v-if="materialEditorSourceChanged" class="warning" role="status">
-              此页已更新，请重新选择；当前草稿保留。
-            </text>
+            <text v-if="materialEditorSourceChanged" class="warning" role="status">{{ t('learning.k66') }}</text>
             <view class="form" data-test="material-objective">
               <view class="button-row">
-                <button
+                <BaseChip
                   v-for="(label, kind) in objectiveKinds"
                   :key="kind"
-                  role="button"
-                  tabindex="0"
-                  size="mini"
                   :data-test="'objective-kind-' + kind"
-                  :aria-pressed="objectiveKind === kind"
-                  @tap="objectiveKind = kind"
+                  :model-value="objectiveKind === kind"
+                  @update:model-value="objectiveKind = kind"
                 >
-                  {{ label }}
-                </button>
+                  {{ learningText(label) }}
+                </BaseChip>
               </view>
               <view v-if="objectiveFields.fields.length" class="form">
-                <text class="subtle">选择{{ objectiveFromLabel }}</text>
-                <view class="button-row" :aria-label="objectiveFromLabel">
-                  <button
+                <text class="subtle">{{ t('learning.kds') }}{{ learningText(objectiveFromLabel) }}</text>
+                <view class="button-row" :aria-label="learningText(objectiveFromLabel)">
+                  <BaseChip
                     v-for="field in objectiveFields.fields"
                     :key="field.key"
-                    role="button"
-                    tabindex="0"
-                    size="mini"
                     class="objective-field"
                     data-test="objective-field-from"
-                    :aria-pressed="objectiveFrom === field.key"
-                    @tap="objectiveFrom = field.key"
+                    :model-value="objectiveFrom === field.key"
+                    @update:model-value="objectiveFrom = field.key"
                   >
                     {{ field.key }}：{{ field.value }}
-                  </button>
+                  </BaseChip>
                 </view>
                 <template v-if="objectiveKind !== 'literal'">
-                  <text class="subtle">选择{{ objectiveToLabel }}</text>
-                  <view class="button-row" :aria-label="objectiveToLabel">
-                    <button
+                  <text class="subtle">{{ t('learning.kds') }}{{ learningText(objectiveToLabel) }}</text>
+                  <view class="button-row" :aria-label="learningText(objectiveToLabel)">
+                    <BaseChip
                       v-for="field in objectiveFields.fields"
                       :key="field.key"
-                      role="button"
-                      tabindex="0"
-                      size="mini"
                       class="objective-field"
                       data-test="objective-field-to"
-                      :aria-pressed="objectiveTo === field.key"
-                      @tap="objectiveTo = field.key"
+                      :model-value="objectiveTo === field.key"
+                      @update:model-value="objectiveTo = field.key"
                     >
                       {{ field.key }}：{{ field.value }}
-                    </button>
+                    </BaseChip>
                   </view>
                 </template>
               </view>
-              <button
-                role="button"
-                tabindex="0"
-                size="mini"
+              <BaseButton
                 class="primary"
                 data-test="start-objective"
                 :disabled="Boolean(objectiveUnavailable)"
                 :aria-disabled="Boolean(objectiveUnavailable)"
+                variant="primary"
                 @tap="structureObjective"
+                >{{ t('learning.kb0') }}</BaseButton
               >
-                开始练习
-              </button>
               <text v-if="objectiveUnavailable" class="subtle" data-test="objective-unavailable" role="status">
-                {{ objectiveUnavailable }}
+                {{ learningText(objectiveUnavailable) }}
               </text>
             </view>
-            <textarea v-model="privatePrompt" class="field" aria-label="题目" placeholder="题目"></textarea>
-            <input v-model="privateAnswer" aria-label="参考答案" placeholder="参考答案（选填）" />
-            <input v-model="importedUserAnswer" aria-label="纸面作答" placeholder="纸面作答（选填）" />
-            <input v-model="teacherAnnotation" aria-label="教师批注" placeholder="教师批注（选填）" />
-            <view @tap="privateConditionsConfirmed = !privateConditionsConfirmed">
-              <checkbox :checked="privateConditionsConfirmed" />
-              已校对题目条件
-            </view>
-            <button
-              role="button"
-              tabindex="0"
-              size="mini"
+            <BaseInput
+              v-model="privatePrompt"
+              class="field"
+              :placeholder="t('learning.kmw')"
+              :label="t('learning.kmw')"
+              multiline
+            />
+            <BaseInput v-model="privateAnswer" :placeholder="t('learning.kqg')" :label="t('learning.k9c')" />
+            <BaseInput v-model="importedUserAnswer" :placeholder="t('learning.k6l')" :label="t('learning.kne')" />
+            <BaseInput v-model="teacherAnnotation" :placeholder="t('learning.k4a')" :label="t('learning.kgk')" />
+            <BaseCheckbox v-model="privateConditionsConfirmed">{{ t('learning.k84') }}</BaseCheckbox>
+            <BaseButton
               :disabled="materialEditorSourceChanged"
               :aria-disabled="materialEditorSourceChanged"
+              variant="quiet"
               @tap="structurePrivateQuestion"
+              >{{ t('learning.kfg') }}</BaseButton
             >
-              进入对话练习
-            </button>
           </view>
-        </view>
-        <view v-if="showProfile" class="form panel">
-          <text class="section-title">目标与计划</text>
-          <text class="field-label">我的基础</text>
-          <view class="button-row" aria-label="自述基础">
-            <button
+        </BaseCard>
+        <BaseCard v-if="showProfile" class="form panel" padding="none">
+          <text class="section-title">{{ t('learning.k81') }}</text>
+          <text class="field-label">{{ t('learning.k2i') }}</text>
+          <view class="button-row" :aria-label="t('learning.kal')">
+            <BaseChip
               v-for="option in foundationOptions"
               :key="option"
-              role="button"
-              tabindex="0"
-              size="mini"
-              :aria-pressed="!customFoundation && foundation === option"
               :class="{ chosen: !customFoundation && foundation === option }"
-              @tap="
+              :model-value="!customFoundation && foundation === option"
+              @update:model-value="
                 customFoundation = false;
                 foundation = option;
               "
             >
-              {{ option }}
-            </button>
-            <button
-              role="button"
-              tabindex="0"
-              size="mini"
-              :aria-pressed="customFoundation"
-              @tap="
+              {{ learningText(option) }}
+            </BaseChip>
+            <BaseChip
+              :model-value="customFoundation"
+              @update:model-value="
                 customFoundation = true;
                 foundation = '';
               "
+              >{{ t('learning.k2w') }}</BaseChip
             >
-              其他
-            </button>
           </view>
-          <input v-if="customFoundation" v-model="foundation" aria-label="自述基础" placeholder="我的基础" />
-          <button
-            role="button"
-            tabindex="0"
-            size="mini"
+          <BaseInput
+            v-if="customFoundation"
+            v-model="foundation"
+            :placeholder="t('learning.k2i')"
+            :label="t('learning.kal')"
+          />
+          <BaseButton
             :disabled="!foundation.trim()"
             :aria-disabled="!foundation.trim()"
+            variant="quiet"
             @tap="saveFoundation"
+            >{{ t('learning.ktj') }}</BaseButton
           >
-            保存基础
-          </button>
-          <text class="field-label">时区</text>
-          <view class="button-row" aria-label="学习时区">
-            <button
+          <text class="field-label">{{ t('learning.kux') }}</text>
+          <view class="button-row" :aria-label="t('learning.kmx')">
+            <BaseChip
               v-for="option in timezoneOptions"
               :key="option.value"
-              role="button"
-              tabindex="0"
-              size="mini"
-              :aria-pressed="!customTimezone && timezone === option.value"
               :class="{ chosen: !customTimezone && timezone === option.value }"
-              @tap="
+              :model-value="!customTimezone && timezone === option.value"
+              @update:model-value="
                 customTimezone = false;
                 timezone = option.value;
               "
             >
-              {{ option.label }}
-            </button>
-            <button role="button" tabindex="0" size="mini" :aria-pressed="customTimezone" @tap="customTimezone = true">
-              其他
-            </button>
+              {{ learningText(option.label) }}
+            </BaseChip>
+            <BaseChip :model-value="customTimezone" @update:model-value="customTimezone = true">{{
+              t('learning.k2w')
+            }}</BaseChip>
           </view>
-          <input
+          <BaseInput
             v-if="customTimezone"
             v-model="timezone"
-            aria-label="自定义学习时区"
-            placeholder="时区，如 Asia/Shanghai"
+            :placeholder="t('learning.kc2')"
+            :label="t('learning.kum')"
           />
-          <button role="button" tabindex="0" size="mini" @tap="saveTimezone">保存时区</button>
-          <text class="field-label">今日任务</text>
-          <view class="button-row" aria-label="今日任务">
-            <button
+          <BaseButton variant="quiet" @tap="saveTimezone">{{ t('learning.ka8') }}</BaseButton>
+          <text class="field-label">{{ t('learning.ksz') }}</text>
+          <view class="button-row" :aria-label="t('learning.ksz')">
+            <BaseChip
               v-for="option in planOptions"
               :key="option"
-              role="button"
-              tabindex="0"
-              size="mini"
-              :aria-pressed="planLines.split('\n').includes(option)"
               :class="{ chosen: planLines.split('\n').includes(option) }"
-              @tap="togglePlanTask(option)"
+              :model-value="planLines.split('\n').includes(option)"
+              @update:model-value="togglePlanTask(option)"
             >
-              {{ option }}
-            </button>
-            <button
-              role="button"
-              tabindex="0"
-              size="mini"
-              :aria-expanded="showPlanText"
-              @tap="showPlanText = !showPlanText"
-            >
-              自定义任务
-            </button>
+              {{ learningText(option) }}
+            </BaseChip>
+            <BaseButton :aria-expanded="showPlanText" variant="quiet" @tap="showPlanText = !showPlanText">{{
+              t('learning.kt0')
+            }}</BaseButton>
           </view>
-          <textarea
+          <BaseInput
             v-if="showPlanText"
-            :value="planLines"
+            :model-value="planLines"
             class="field"
-            aria-label="自定义今日任务"
-            placeholder="每行一个任务"
+            :placeholder="t('learning.k5b')"
+            :label="t('learning.kp9')"
+            multiline
             @input="planLines = textInputValue($event)"
-          ></textarea>
-          <button
-            role="button"
-            tabindex="0"
-            size="mini"
+          />
+          <BaseButton
             :disabled="!planLines.trim()"
             :aria-disabled="!planLines.trim()"
+            variant="quiet"
             @tap="savePlan"
+            >{{ t('learning.k7i') }}</BaseButton
           >
-            保存计划
-          </button>
           <text v-for="entry in learning.state.profile" :key="entry.id" class="subtle">
-            {{ { foundation: '基础', preference: '学习方式' }[entry.field] || '偏好' }}：{{ entry.value }}
+            {{ { foundation: t('learning.kbh'), preference: t('learning.k7b') }[entry.field] || t('learning.kqv') }}：{{
+              entry.source === 'observed' ? learningText(entry.value) : entry.value
+            }}
           </text>
-        </view>
+        </BaseCard>
       </view>
-      <text v-if="feedback || learning.error" class="warning feedback" role="alert">
-        {{ feedback || learning.error }}
-      </text>
+      <BaseEmpty v-if="learning.error" state="error" :title="learningText(learning.error)" mascot-size="small" /><text
+        v-else-if="feedback"
+        class="feedback"
+        role="status"
+        >{{ learningText(feedback) }}</text
+      >
     </view>
     <CustomModal
       :key="dialogState.id"
       :visible="dialogState.visible"
-      :title="dialogState.title"
-      :content="dialogState.content"
+      :title="dialogState.title === '提示' ? t('ui.dialogTitle') : learningText(dialogState.title)"
+      :content="learningText(dialogState.content)"
       :editable="dialogState.editable"
-      :placeholder-text="dialogState.placeholderText"
-      :confirm-text="dialogState.confirmText"
-      :cancel-text="dialogState.cancelText"
+      :placeholder-text="learningText(dialogState.placeholderText)"
+      :confirm-text="dialogState.confirmText === '确定' ? t('ui.confirm') : learningText(dialogState.confirmText)"
+      :cancel-text="dialogState.cancelText === '取消' ? t('ui.cancel') : learningText(dialogState.cancelText)"
       :show-cancel="dialogState.showCancel"
       :type="dialogState.type"
       :is-dark="theme.isDark"
@@ -2120,6 +1945,21 @@
   </LearningShell>
 </template>
 <script setup>
+import BaseTag from '@/components/base/base-tag/base-tag.vue';
+import BaseBubble from '@/components/base/base-bubble/base-bubble.vue';
+import BaseOptions from '@/components/base/base-options/base-options.vue';
+import YoziMascot from '@/components/base/yozi-mascot/yozi-mascot.vue';
+import { answerFeedback, answerOptionState } from '@/components/business/learning/learning-feedback.js';
+import './messages.js';
+import { learningText } from '@/i18n/learning.js';
+import { t } from '@/i18n/index.js';
+import BaseButton from '@/components/base/base-button/base-button.vue';
+import BaseCard from '@/components/base/base-card/base-card.vue';
+import BaseEmpty from '@/components/base/base-empty/base-empty.vue';
+import BaseCheckbox from '@/components/base/base-checkbox/base-checkbox.vue';
+import BaseInput from '@/components/base/base-input/base-input.vue';
+import BaseChip from '@/components/base/base-chip/base-chip.vue';
+
 import { bindLearningKeyboard } from '@/services/learning/keyboard-controls.js';
 import { isDesktopRuntime } from '@/services/desktop/runtime.js';
 // #ifdef H5
@@ -2135,11 +1975,9 @@ import { chooseBrowserLearningBackup } from '@/services/learning/record-files.js
 import { learningWriteProtectionSupported } from '@/services/learning/learning-write-lease.js';
 import { HISTORY_LIMITS } from '../../../laf-backend/functions/_shared/learning-history.js';
 import { ref, shallowRef, computed, watch, onMounted, onUnmounted, nextTick } from 'vue';
-import { BRAND } from '@/config/brand.js';
 import { onShow, onHide, onLoad, onBackPress } from '@dcloudio/uni-app';
 import LearningShell from '@/components/business/learning/learning-shell.vue';
 import CustomModal from '@/components/common/CustomModal.vue';
-import WdLoading from '@/components/base/base-loading/base-loading.vue';
 import { createLearningDialog } from '@/services/learning/learning-dialog.js';
 // #ifdef MP-WEIXIN
 import PrivacyPopup from '@/components/common/privacy-popup.vue';
@@ -2187,6 +2025,45 @@ import { getUserId, getToken } from '@/services/auth-storage.js';
 import { storageService } from '@/services/storageService.js';
 import { safeNavigateTo } from '@/utils/safe-navigate.js';
 const learning = useConversationLearningStore();
+const welcomeIdle = ref(false);
+watch(
+  () => learning.selectedConversationId,
+  () => {
+    welcomeIdle.value = false;
+  }
+);
+const latestAnswer = computed(
+  () =>
+    learning.state.attempts
+      .filter((a) => a.conversationId === learning.active?.id && a.questionKey === learning.active?.activeQuestionKey)
+      .at(-1) || null
+);
+const answerMascot = computed(() => answerFeedback(latestAnswer.value));
+const answerOptions = computed(() =>
+  choiceOptions.value.map((option) => ({
+    ...option,
+    key: option.value,
+    label: option.label.replace(/^[A-H][.、．]\s*/i, ''),
+    state: answerOptionState(latestAnswer.value, option.value)
+  }))
+);
+function updateChoiceDraft(value) {
+  if (learning.busy || learning.active?.stopped) return;
+  if (multipleChoices.value) {
+    draft.value = value.slice().sort().join('、');
+    choiceDraft.value = draft.value;
+  } else chooseAnswer(value);
+}
+const connectionTone = computed(() => {
+  if (learning.modelListState.phase === 'error' || learning.error) return 'coral';
+  if (learning.selectedMode === 'local')
+    return learning.localConnection?.status === 'model_verified' ? 'mint' : 'apricot';
+  if (learning.selectedMode === 'cloud')
+    return learning.models.find((m) => m.id === learning.modelId)?.connectionStatus === 'connected'
+      ? 'mint'
+      : 'apricot';
+  return 'neutral';
+});
 const quizOriginalView = computed(() => quizOriginalReading(learning.activeQuestion));
 const theme = useThemeStore();
 const labVisible = ref(true);
@@ -2274,8 +2151,7 @@ function recordSciencePracticeHelp(context, input) {
 function planWritingRetest() {
   return run(() => learning.scheduleWritingRetest());
 }
-const iconColor = computed(() => (theme.isDark ? '#f8f4ff' : '#080909'));
-const primaryIconColor = computed(() => (theme.isDark ? '#20172f' : '#ffffff'));
+const iconColor = computed(() => 'var(--ink-3)');
 const desktopHost = isDesktopRuntime();
 const clientPlatform = learningClientPlatform();
 const selectedAppFile = ref(null),
@@ -2487,6 +2363,42 @@ const objectiveFromLabel = computed(() =>
 );
 const objectiveToLabel = computed(() => (objectiveKind.value === 'share_percent' ? '整体字段' : '现期字段'));
 const draft = ref('');
+const composer = ref(null);
+const composerHeight = ref(0);
+let composerObserver;
+function measureComposer() {
+  // #ifdef H5
+  const element = composer.value?.$el || composer.value;
+  if (element?.getBoundingClientRect) {
+    composerHeight.value = Math.ceil(element.getBoundingClientRect().height);
+    return;
+  }
+  // #endif
+  // #ifndef H5
+  if (composer.value)
+    uni
+      .createSelectorQuery?.()
+      ?.select?.('#learning-composer')
+      ?.boundingClientRect?.((rect) => {
+        if (rect?.height) composerHeight.value = Math.ceil(rect.height);
+      })
+      ?.exec?.();
+  // #endif
+}
+watch(composer, async () => {
+  composerObserver?.disconnect();
+  await nextTick();
+  measureComposer();
+  // #ifdef H5
+  const element = composer.value?.$el || composer.value;
+  if (element && typeof ResizeObserver !== 'undefined') {
+    composerObserver = new ResizeObserver(measureComposer);
+    composerObserver.observe(element);
+  }
+  // #endif
+});
+watch(draft, () => nextTick(measureComposer));
+onUnmounted(() => composerObserver?.disconnect());
 function textInputValue(event) {
   return event?.detail?.value ?? event?.target?.value ?? '';
 }
@@ -2752,13 +2664,17 @@ const selectedRhythm = computed(() =>
     : null
 );
 const connectionLabel = computed(() =>
-  learning.selectedMode === 'offline'
-    ? '连接模型'
-    : learning.selectedMode === 'local'
-      ? '本地模型'
-      : learning.modelId
-        ? '云模型 · 已选择'
-        : '云模型 · 待选择'
+  t(
+    connectionTone.value === 'coral'
+      ? 'learning.connectionError'
+      : connectionTone.value === 'mint'
+        ? learning.selectedMode === 'local'
+          ? 'learning.localConnected'
+          : 'learning.cloudConnected'
+        : learning.selectedMode === 'offline'
+          ? 'learning.offline'
+          : 'learning.notConnected'
+  )
 );
 const starters = LEARNING_START_TOPICS;
 const byokForm = ref(false);
@@ -3026,7 +2942,6 @@ onLoad((options) => {
   if (options.panel === 'connections') showConnections.value = true;
   if (options.panel === 'profile') showProfile.value = true;
 });
-const roleLabel = (role) => ({ user: '你', assistant: BRAND.name, tool: '结果', notice: BRAND.name })[role];
 async function run(action) {
   feedback.value = '';
   try {
@@ -4176,460 +4091,3 @@ onUnmounted(() => {
   learning.materialConnection = null;
 });
 </script>
-<style scoped>
-.learning-page {
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-}
-.material-status {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 0;
-  border-top: 1px solid var(--space-line);
-  overflow-wrap: anywhere;
-}
-.material-status--stack {
-  flex-direction: column;
-  align-items: stretch;
-  gap: 8px;
-}
-.material-status-heading {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-.material-status--error {
-  padding: 12px;
-  border: 0;
-  border-radius: 12px;
-  background: var(--space-warning-bg);
-}
-.material-progress {
-  height: 4px;
-  overflow: hidden;
-  border-radius: 12px;
-  background: var(--space-line);
-}
-.material-progress-fill {
-  height: 100%;
-  background: var(--space-paper);
-  transform-origin: left;
-  transition: transform 180ms ease-out;
-}
-.material-empty {
-  color: var(--space-muted);
-  padding: 12px 0;
-  overflow-wrap: anywhere;
-}
-.conversation-day {
-  scroll-margin-top: 88px;
-}
-.conversation-day-heading {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin: 28px 0 16px;
-  color: var(--space-muted);
-  font-size: 13px;
-  font-variant-numeric: tabular-nums;
-}
-.conversation-day-rule {
-  height: 1px;
-  flex: 1;
-  background: var(--space-line);
-}
-.chapter-modules {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 16px;
-}
-.learning-space .chapter-modules button {
-  width: 100%;
-  margin: 0;
-  padding: 12px 0;
-  gap: 12px;
-  justify-content: flex-start;
-  text-align: left;
-  background: transparent;
-  border: 0;
-  box-shadow: none;
-  white-space: normal;
-}
-.chapter-module-count {
-  margin-left: auto;
-  color: var(--space-muted);
-  font-size: 12px;
-  white-space: nowrap;
-}
-#learning-journey-workspace {
-  scroll-margin-top: 88px;
-}
-.today-layout.in-session {
-  grid-template-columns: 1fr;
-}
-.welcome-copy {
-  padding: 4px 0 24px;
-}
-.welcome-title {
-  white-space: pre-line;
-  display: block;
-  font-size: 38px;
-  line-height: 1.3;
-  font-weight: 300;
-  letter-spacing: -0.03em;
-}
-.goal-panel {
-  padding: 24px;
-  border-radius: 24px;
-  background: var(--space-glass);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-}
-.goal-panel .field {
-  height: 88px;
-  padding: 12px 0;
-  margin-top: 8px;
-  border: 0;
-  background: transparent;
-}
-.goal-panel input.field {
-  height: 44px;
-}
-.preference-fields {
-  display: grid;
-  gap: 8px;
-  margin: 12px 0;
-}
-.field-label {
-  display: block;
-  margin-top: 8px;
-  font-size: 12px;
-  color: var(--space-muted);
-}
-.choice-options {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-.learning-space .choice-options button {
-  justify-content: flex-start;
-  white-space: normal;
-  text-align: left;
-}
-.goal-actions {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-}
-.learning-space .material-shortcut {
-  background: transparent;
-  padding-left: 0;
-  font-size: 12px;
-}
-.starter-row {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-  align-items: center;
-  margin-top: 18px;
-  padding-top: 18px;
-  border-top: 1px solid var(--space-line);
-  font-size: 11px;
-  color: var(--space-muted);
-}
-.learning-space .starter-row button {
-  font-size: 12px;
-  padding: 8px 12px;
-  border-radius: 24px;
-}
-.today-layout:not(.in-session) {
-  order: 1;
-}
-.workspace-tools {
-  order: 2;
-}
-.feedback {
-  order: 3;
-}
-.today-layout {
-  display: grid;
-  grid-template-columns: 1.05fr 1fr;
-  gap: 16px;
-  margin: 20px 0;
-}
-.rhythm-panel {
-  padding: 20px;
-  border-radius: 24px;
-  background: var(--space-glass);
-}
-.rhythm-heading {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  align-items: center;
-  margin-bottom: 12px;
-}
-.rhythm-heading .section-title {
-  font-size: 16px;
-}
-.rhythm-heading .subtle {
-  font-size: 10px;
-}
-.rhythm-options {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-.learning-space .rhythm-options button {
-  text-align: left;
-  justify-content: flex-start;
-  padding: 9px 10px;
-  background: transparent;
-  gap: 10px;
-}
-.rhythm-options .rhythm-copy {
-  flex: 1;
-}
-.learning-space .rhythm-options button.chosen {
-  background: var(--space-user);
-}
-.rhythm-name {
-  font-size: 13px;
-  display: block;
-}
-.connection-pill {
-  border-radius: 24px !important;
-  font-size: 11px !important;
-  min-height: 44px !important;
-  padding: 8px 12px !important;
-}
-.conversation-toolbar {
-  display: flex;
-  justify-content: space-between;
-  gap: 16px;
-  padding: 16px 0 20px;
-  border-bottom: 1px solid var(--space-line);
-}
-.conversation-toolbar > view {
-  min-width: 0;
-}
-.conversation-title {
-  display: block;
-  font-size: 26px;
-  font-weight: 400;
-  letter-spacing: -0.02em;
-  overflow-wrap: anywhere;
-}
-.conversation-toolbar button {
-  flex-shrink: 0;
-  align-self: flex-start;
-}
-.message {
-  max-width: 68ch;
-  padding: 14px 0;
-  margin: 8px 0;
-}
-.message-role {
-  display: block;
-  color: var(--space-muted);
-  font-size: 11px;
-  margin-bottom: 6px;
-}
-.message-content {
-  display: block;
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
-  font-size: 15px;
-  line-height: 1.9;
-}
-.message.user {
-  margin-left: auto;
-  padding: 14px 18px;
-  border-radius: 20px 20px 6px 20px;
-  background: var(--space-user);
-  width: fit-content;
-  max-width: 80%;
-}
-.message.notice,
-.message.tool {
-  border: 0;
-  padding: 12px 16px;
-  border-radius: 16px;
-  background: var(--space-notice);
-}
-.message.notice .message-content,
-.message.tool .message-content {
-  font-size: 12px;
-  line-height: 1.9;
-}
-.question-block {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  padding: 24px;
-  margin: 20px 0;
-  background: var(--yozi-solid);
-  border-radius: 24px;
-}
-.question-prompt {
-  font-size: 23px;
-  line-height: 1.7;
-  white-space: pre-wrap;
-}
-.strategy {
-  margin: 12px 0;
-}
-.method-heading {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 22px;
-}
-.methods {
-  margin: 8px 0 16px;
-}
-.methods button {
-  font-size: 12px;
-  border-radius: 24px;
-}
-.composer {
-  background: var(--space-composer);
-  padding: 16px;
-  border-radius: 24px;
-  margin-top: 16px;
-  position: sticky;
-  bottom: 16px;
-  z-index: 2;
-  box-shadow: var(--yozi-shadow);
-}
-.composer .field {
-  height: 86px;
-  border: 0;
-  background: transparent;
-  padding: 4px 2px;
-}
-.composer .button-row {
-  justify-content: flex-end;
-  margin-top: 10px;
-}
-.composer .button-row button {
-  font-size: 12px;
-}
-@media (max-width: 520px) {
-  .composer {
-    position: static;
-  }
-}
-.workspace-tools {
-  padding-top: 12px;
-  margin-top: 24px;
-  border-top: 1px solid var(--space-line);
-}
-.workspace-tools > .button-row button {
-  background: transparent;
-  font-size: 12px;
-  padding-left: 0;
-}
-.source-preview {
-  width: 100%;
-}
-.source-excerpt {
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
-}
-.objective-field {
-  max-width: 100%;
-  min-width: 0;
-  white-space: normal;
-  overflow-wrap: anywhere;
-  text-align: left;
-}
-@media (max-width: 1100px) {
-  .today-layout {
-    grid-template-columns: 1fr;
-  }
-}
-@media (max-width: 900px) {
-  .welcome-title {
-    white-space: pre-line;
-    font-size: 36px;
-  }
-  .welcome-copy {
-    padding-top: 8px;
-    padding-bottom: 26px;
-  }
-  .composer {
-    bottom: calc(104px + env(safe-area-inset-bottom));
-  }
-}
-@media (max-width: 520px) {
-  .welcome-title {
-    white-space: pre-line;
-    font-size: 32px;
-  }
-  .goal-panel {
-    padding: 20px;
-  }
-  .goal-actions {
-    gap: 8px;
-  }
-  .goal-actions button {
-    padding: 10px 12px;
-  }
-  .learning-space .material-shortcut {
-    font-size: 11px;
-    padding: 8px 0;
-  }
-  .rhythm-options {
-    flex-direction: row;
-    gap: 6px;
-  }
-  .learning-space .rhythm-options button {
-    flex: 1;
-    flex-direction: column;
-    align-items: flex-start;
-    padding: 10px 8px;
-    min-width: 0;
-  }
-  .rhythm-name {
-    font-size: 12px;
-    white-space: nowrap;
-  }
-  .rhythm-heading {
-    margin-bottom: 8px;
-  }
-  .conversation-title {
-    font-size: 22px;
-  }
-  .conversation-toolbar > button {
-    font-size: 11px;
-    padding: 8px;
-  }
-  .message-content {
-    font-size: 14px;
-  }
-  .question-prompt {
-    font-size: 21px;
-  }
-  .composer .button-row {
-    justify-content: flex-start;
-  }
-}
-@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
-  .goal-panel {
-    background: var(--space-glass);
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-  }
-  .message.user {
-    background: var(--space-user);
-  }
-  .message.notice,
-  .message.tool {
-    background: var(--space-notice);
-  }
-}
-</style>

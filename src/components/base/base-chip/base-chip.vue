@@ -1,5 +1,6 @@
 <template>
   <button
+    ref="root"
     class="base-chip"
     role="button"
     :aria-pressed="modelValue"
@@ -14,6 +15,7 @@
   </button>
 </template>
 <script setup>
+import { onMounted, onBeforeUnmount, ref } from 'vue';
 import BaseIcon from '../base-icon/base-icon.vue';
 import { formatNumber } from '@/i18n/format.js';
 const props = defineProps({
@@ -23,10 +25,21 @@ const props = defineProps({
   count: { type: Number, default: null }
 });
 const emit = defineEmits(['update:modelValue']);
+const root = ref(null);
+let keyboardElement;
+onMounted(() => {
+  // #ifdef H5
+  keyboardElement = root.value?.$el || root.value;
+  keyboardElement?.addEventListener?.('keydown', keydown);
+  // #endif
+});
+onBeforeUnmount(() => keyboardElement?.removeEventListener?.('keydown', keydown));
+
 function toggle() {
   if (!props.disabled) emit('update:modelValue', !props.modelValue);
 }
 function keydown(event) {
+  if (event.defaultPrevented) return;
   if (!['Enter', ' '].includes(event.key)) return;
   event.preventDefault();
   event.stopPropagation();

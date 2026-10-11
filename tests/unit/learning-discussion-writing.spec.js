@@ -325,7 +325,7 @@ describe('当前讨论的带练与事实边界', () => {
       w = mount(LearningLab, { props: props(s), global: { stubs } });
     try {
       await button(w, '互动学习').trigger('tap');
-      expect(button(w, '逐句带练').attributes('aria-pressed')).toBe('true');
+      expect(button(w, '逐句带练').attributes('aria-selected')).toBe('true');
       expect(w.find('textarea').attributes('maxlength')).toBe('2000');
       expect(w.text()).toContain(DISCUSSION_WRITING_TASKS[0].professor);
       expect(w.findAll('a').some((a) => a.attributes('href') === DISCUSSION_WRITING_BASIS.formatUrl)).toBe(true);

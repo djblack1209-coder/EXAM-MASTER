@@ -474,7 +474,7 @@ describe('当前邮件四步带练', () => {
       w = mount(LearningLab, { props: props(s), global: { stubs } });
     try {
       await button(w, '互动学习').trigger('tap');
-      expect(button(w, '逐句带练').attributes('aria-pressed')).toBe('true');
+      expect(button(w, '逐句带练').attributes('aria-selected')).toBe('true');
       expect(w.text()).toContain(EMAIL_WRITING_TASKS[0].recipient);
       expect(w.find('textarea').attributes('maxlength')).toBe('2000');
       expect(w.findAll('a').some((a) => a.attributes('href') === EMAIL_WRITING_BASIS.sampleUrl)).toBe(true);

@@ -1,12 +1,12 @@
 <template>
   <view class="material-layout" data-test="material-layout">
-    <text class="layout-status" role="status">第 {{ segment.page }} 页 · 待核对</text>
+    <text class="layout-status" role="status">{{ t('learning.kq6') }}{{ segment.page }}{{ t('learning.kii') }}</text>
     <view v-if="valid && segment.preview" class="page-image">
       <image
         :src="segment.preview"
         mode="widthFix"
         class="original-page"
-        :aria-label="'第' + segment.page + '页原图'"
+        :aria-label="t('learning.kq6') + segment.page + t('learning.kia')"
       />
       <view
         v-if="highlight"
@@ -16,65 +16,78 @@
         data-test="layout-highlight"
       />
     </view>
-    <text v-if="!valid || segment.status === 'failed'">此页尚未解析，请重试。</text>
+    <BaseEmpty
+      v-if="!valid || segment.status === 'failed'"
+      state="error"
+      :title="t('learning.kar')"
+      mascot-size="small"
+    />
     <template v-else>
-      <view v-if="regions.length" class="region-options" aria-label="原页区域">
-        <button
+      <view v-if="regions.length" class="region-options" :aria-label="t('learning.k6j')">
+        <BaseChip
           v-for="entry in visibleRegions"
           :key="entry.block.id"
-          role="button"
-          tabindex="0"
-          size="mini"
-          :aria-pressed="selectedIndex === entry.index"
           :data-test="'layout-region-' + entry.index"
-          @tap="selectRegion(entry.index)"
+          :model-value="selectedIndex === entry.index"
+          @update:model-value="selectRegion(entry.index)"
         >
-          {{ regionLabel(entry.block.kind) }} {{ entry.index + 1 }}
-        </button>
+          {{ learningText(regionLabel(entry.block.kind)) }} {{ entry.index + 1 }}
+        </BaseChip>
       </view>
       <view v-if="regions.length > 20" class="region-options">
-        <button role="button" tabindex="0" size="mini" :disabled="offset === 0" @tap="offset -= 20">前一组</button>
+        <BaseButton :disabled="offset === 0" variant="quiet" @tap="offset -= 20">{{ t('learning.kig') }}</BaseButton>
         <text>{{ offset + 1 }}–{{ Math.min(offset + 20, regions.length) }} / {{ regions.length }}</text>
-        <button role="button" tabindex="0" size="mini" :disabled="offset + 20 >= regions.length" @tap="offset += 20">
-          后一组
-        </button>
+        <BaseButton :disabled="offset + 20 >= regions.length" variant="quiet" @tap="offset += 20">{{
+          t('learning.kf2')
+        }}</BaseButton>
       </view>
-      <text v-if="!regions.length">此页未提取到文字。</text>
+      <BaseEmpty v-if="!regions.length" state="empty" :title="t('learning.kqi')" mascot-size="small" />
       <view v-if="selected" class="region-content" aria-live="polite">
-        <text>{{ regionLabel(selected.kind) }}候选</text>
+        <text>{{ learningText(regionLabel(selected.kind)) }}{{ t('learning.kf') }}</text>
         <scroll-view v-if="selected.kind === 'table' && selected.cells.length" scroll-x class="table-scroll">
-          <view class="table-cells" :style="tableStyle" aria-label="待核对表格">
-            <button
+          <view class="table-cells" :style="tableStyle" :aria-label="t('learning.ke9')">
+            <BaseChip
               v-for="(cell, index) in selected.cells"
               :key="index"
-              role="button"
-              tabindex="0"
               class="table-cell"
-              :aria-pressed="selectedCell === index"
               :data-test="'layout-cell-' + index"
-              :aria-label="'第' + (cell.row + 1) + '行，第' + (cell.column + 1) + '列：' + (cell.text || '空白')"
+              :aria-label="
+                t('learning.kq6') +
+                (cell.row + 1) +
+                t('learning.klx') +
+                (cell.column + 1) +
+                t('learning.k8u') +
+                (cell.text || t('learning.k8c'))
+              "
               :style="cellStyle(cell)"
-              @tap="selectedCell = index"
+              :model-value="selectedCell === index"
+              @update:model-value="selectedCell = index"
             >
-              {{ cell.text || '（空白）' }}
-            </button>
+              {{ cell.text || t('learning.k18') }}
+            </BaseChip>
           </view>
         </scroll-view>
         <text
           v-if="selected.kind === 'table' && selectedCell !== null && !selected.cells[selectedCell]?.bbox"
           class="layout-status"
-          >此格未定位，原图显示整张表。</text
+          >{{ t('learning.k78') }}</text
         >
         <text v-if="selectedText" class="candidate-text" selectable data-test="layout-raw-text">{{
           selectedText
         }}</text>
-        <text v-else-if="!selected.cells?.length">此区域未提取到文字。</text>
-        <text v-if="selected.kind === 'formula'" class="layout-status">上下标和符号请对照原页。</text>
+        <BaseEmpty v-else-if="!selected.cells?.length" state="empty" :title="t('learning.k7')" mascot-size="small" />
+        <text v-if="selected.kind === 'formula'" class="layout-status">{{ t('learning.kct') }}</text>
       </view>
     </template>
   </view>
 </template>
 <script setup>
+import BaseEmpty from '@/components/base/base-empty/base-empty.vue';
+import { learningText } from '@/i18n/learning.js';
+import { t } from '@/i18n/index.js';
+import BaseChip from '@/components/base/base-chip/base-chip.vue';
+import BaseButton from '@/components/base/base-button/base-button.vue';
+
 import { computed, ref, watch } from 'vue';
 import { validMaterialLayoutSegment } from '@/services/learning/learning-domain.js';
 const props = defineProps({ segment: { type: Object, required: true } });
@@ -99,8 +112,8 @@ const visibleRegions = computed(() =>
 const selected = computed(() => regions.value[selectedIndex.value]);
 const selectedText = computed(() => selected.value?.rawText || selected.value?.text || '');
 const tableStyle = computed(() => ({
-  gridTemplateColumns: `repeat(${selected.value?.columns || 1}, minmax(88px, 1fr))`,
-  minWidth: `${(selected.value?.columns || 1) * 88}px`
+  gridTemplateColumns: `repeat(${selected.value?.columns || 1}, minmax(var(--mascot-state), 1fr))`,
+  minWidth: `calc(var(--mascot-state) * ${selected.value?.columns || 1})`
 }));
 const highlight = computed(() => {
   const block = selected.value;
@@ -144,13 +157,13 @@ function regionLabel(kind) {
 .material-layout {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: var(--s-3);
   min-width: 0;
 }
 .page-image {
   position: relative;
   width: 100%;
-  max-width: 680px;
+  max-width: var(--dialog-width);
   line-height: 0;
 }
 .original-page {
@@ -160,28 +173,20 @@ function regionLabel(kind) {
 .region-highlight {
   position: absolute;
   box-sizing: border-box;
-  border: 2px solid #6d42d8;
-  background: #9363f529;
+  border: var(--border-selected) solid var(--line);
+  background: var(--paper-sunk);
   pointer-events: none;
 }
 .region-options {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px;
-}
-.region-options button {
-  margin: 0;
-}
-.region-options button[aria-pressed='true'],
-.table-cell[aria-pressed='true'] {
-  outline: 2px solid var(--space-ink, #5638ae);
-  outline-offset: -2px;
+  gap: var(--s-2);
 }
 .region-content {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--s-2);
   min-width: 0;
 }
 .table-scroll {
@@ -194,28 +199,14 @@ function regionLabel(kind) {
 }
 .table-cell {
   width: 100%;
-  height: 100%;
-  min-height: 44px;
   margin: 0;
-  padding: 8px;
-  border: 1px solid var(--space-line, #c5ccd5);
-  border-radius: 0;
-  line-height: 1.5;
-  font-size: 14px;
-  overflow-wrap: anywhere;
-  color: var(--space-ink, #202a36);
-  background: var(--space-composer, #fff);
 }
 .candidate-text {
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
 .layout-status {
-  font-size: 13px;
-  color: var(--space-muted, #626572);
-}
-button:focus-visible {
-  outline: 3px solid var(--space-ink, #5638ae);
-  outline-offset: 2px;
+  font-size: var(--size-small);
+  color: var(--ink-3);
 }
 </style>

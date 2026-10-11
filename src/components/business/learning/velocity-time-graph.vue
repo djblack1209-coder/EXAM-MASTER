@@ -1,6 +1,6 @@
 <template>
   <view class="velocity-graph" :class="{ 'graph-dark': theme.isDark }">
-    <text class="graph-title">速度—时间图 · 向右为正</text>
+    <text class="graph-title">{{ t('learning.kiq') }}</text>
     <canvas
       v-if="recipe"
       :id="canvasId"
@@ -10,15 +10,18 @@
       role="img"
       :aria-label="description"
     ></canvas>
-    <text v-else class="graph-error" role="status">图形条件待核对</text>
-    <text v-if="unavailable && recipe" class="graph-error" role="status">图形暂不可用，折点数据保留</text>
-    <view v-if="recipe" class="graph-points" aria-label="速度图折点数据">
+    <text v-else class="graph-error" role="status">{{ t('learning.kc4') }}</text>
+    <text v-if="unavailable && recipe" class="graph-error" role="status">{{ t('learning.kno') }}</text>
+    <view v-if="recipe" class="graph-points" :aria-label="t('learning.ka9')">
       <text v-for="(point, i) in recipe.points" :key="i">{{ point.time }} s · {{ point.velocity }} m/s</text>
     </view>
-    <text v-if="observed" class="graph-note">零线上方为正，下方为负</text>
+    <text v-if="observed" class="graph-note">{{ t('learning.kec') }}</text>
   </view>
 </template>
 <script setup>
+import { tokens } from '@/design/tokens.js';
+import { t } from '@/i18n/index.js';
+
 import { computed, ref, getCurrentInstance, nextTick, onMounted, onUnmounted, watch } from 'vue';
 import { useThemeStore } from '@/stores/modules/theme.js';
 import {
@@ -34,7 +37,7 @@ const props = defineProps({
 const theme = useThemeStore(),
   instance = getCurrentInstance();
 const canvasId = `velocity_graph_${instance.uid}`,
-  height = 210;
+  height = Number.parseFloat(tokens.light['--s-14']) * 4;
 const unavailable = ref(false);
 let alive = true,
   generation = 0;
@@ -50,8 +53,12 @@ const observed = computed(
 );
 const description = computed(() =>
   recipe.value
-    ? `速度—时间图，向右为正，横轴时间秒，纵轴速度米每秒，相邻折点之间为直线。${recipe.value.points.map((p) => `${p.time}秒时速度${p.velocity}米每秒`).join('；')}`
-    : '图形条件待核对'
+    ? t('learning.graphDescription', {
+        points: recipe.value.points
+          .map((p) => t('learning.graphPoint', { time: p.time, velocity: p.velocity }))
+          .join('; ')
+      })
+    : t('learning.graphPending')
 );
 function draw(width, current) {
   if (
@@ -70,10 +77,11 @@ function draw(width, current) {
     return;
   }
   unavailable.value = false;
-  ctx.font = '12px "DM Sans", "PingFang SC", sans-serif';
-  const dark = theme.isDark,
-    ink = dark ? '#f8f4ff' : '#272039',
-    line = dark ? '#c9b1ee' : '#7050b0';
+  const palette = tokens[theme.isDark ? 'dark' : 'light'];
+  const ink = palette['--ink'],
+    line = palette['--violet'];
+  const size = Number.parseFloat(palette['--size-caption']);
+  ctx.font = `${size}px ${palette['--font-ui']}`;
   const left = 44,
     right = width - 18,
     top = 25,
@@ -83,21 +91,13 @@ function draw(width, current) {
   const x = (t) => left + ((right - left) * t) / recipe.value.physicalSeconds;
   const y = (v) => bottom - ((bottom - top) * (v - minimum)) / (maximum - minimum);
   ctx.clearRect(0, 0, width, height);
-  ctx.setFillStyle(dark ? '#30283f' : '#f0edfc');
+  ctx.setFillStyle(palette['--paper-sunk']);
   ctx.fillRect(0, 0, width, height);
   if (observed.value) {
     const frame = visualFrame(recipe.value, props.step);
     for (const part of frame.areas) {
       if (!part.sign) continue;
-      ctx.setFillStyle(
-        part.sign > 0
-          ? dark
-            ? 'rgba(133,173,255,0.3)'
-            : 'rgba(94,135,220,0.23)'
-          : dark
-            ? 'rgba(205,164,242,0.3)'
-            : 'rgba(160,108,200,0.25)'
-      );
+      ctx.setFillStyle(palette[part.sign > 0 ? '--blue-soft' : '--violet-soft']);
       ctx.beginPath();
       ctx.moveTo(x(part.from), y(0));
       ctx.lineTo(x(part.from), y(part.first));
@@ -113,7 +113,7 @@ function draw(width, current) {
     ctx.lineTo(x(frame.time), bottom);
     ctx.stroke();
   }
-  ctx.setStrokeStyle(dark ? '#817292' : '#b6a8cd');
+  ctx.setStrokeStyle(palette['--line-strong']);
   ctx.setLineWidth(1);
   for (const value of [minimum, 0, maximum]) {
     ctx.beginPath();
@@ -121,7 +121,7 @@ function draw(width, current) {
     ctx.lineTo(right, y(value));
     ctx.stroke();
     ctx.setFillStyle(ink);
-    ctx.setFontSize(12);
+    ctx.setFontSize(size);
     ctx.setTextAlign('right');
     ctx.fillText(String(value), left - 6, y(value) + 4);
   }
@@ -133,7 +133,7 @@ function draw(width, current) {
   ctx.lineTo(right, y(0));
   ctx.stroke();
   ctx.setFillStyle(ink);
-  ctx.setFontSize(12);
+  ctx.setFontSize(size);
   ctx.setTextAlign('left');
   ctx.fillText('v (m/s)', 5, 14);
   ctx.fillText('0', left, height - 17);
@@ -190,36 +190,36 @@ onUnmounted(() => {
 <style scoped>
 .velocity-graph {
   min-width: 0;
-  padding: 12px;
-  border-radius: 18px;
-  color: #272039;
-  background: #f0edfc;
+  padding: var(--s-3);
+  border-radius: var(--s-5);
+  color: var(--ink-3);
+  background: var(--paper-sunk);
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--s-2);
 }
 .graph-dark {
-  color: #f8f4ff;
-  background: #30283f;
+  color: var(--ink-3);
+  background: var(--paper-sunk);
 }
 .velocity-canvas {
   display: block;
   width: 100%;
 }
 .graph-title {
-  font-weight: 700;
-  font-size: 14px;
+  font-weight: var(--weight-bold);
+  font-size: var(--size-small);
 }
 .graph-points {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px 16px;
-  font-size: 14px;
+  gap: var(--s-2) var(--s-4);
+  font-size: var(--size-small);
   line-height: 1.6;
 }
 .graph-note,
 .graph-error {
-  font-size: 14px;
+  font-size: var(--size-small);
   line-height: 1.6;
 }
 </style>

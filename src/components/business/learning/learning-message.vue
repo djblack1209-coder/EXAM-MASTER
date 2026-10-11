@@ -1,7 +1,7 @@
 <template>
   <view class="learning-message-content">
     <template v-for="(block, index) in blocks" :key="index">
-      <view v-if="block.kind === 'table'" class="learning-text-table" role="table" aria-label="学习对照表">
+      <view v-if="block.kind === 'table'" class="learning-text-table" role="table" :aria-label="t('learning.kos')">
         <view
           v-for="(row, rowIndex) in block.rows"
           :key="rowIndex"
@@ -39,6 +39,8 @@
   </view>
 </template>
 <script setup>
+import { t } from '@/i18n/index.js';
+
 import { computed } from 'vue';
 const props = defineProps({ content: { type: String, default: '' } });
 function inline(text) {
@@ -112,65 +114,65 @@ const blocks = computed(() => {
 </script>
 <style scoped>
 .learning-message-content {
-  font-size: 16px;
+  font-size: var(--size-body);
   line-height: 1.75;
   overflow-wrap: anywhere;
   max-width: 70ch;
 }
 .learning-text-block {
   white-space: pre-wrap;
-  margin: 12px 0;
+  margin: var(--s-3) 0;
 }
 .block-heading {
-  font-size: 20px;
-  font-weight: 600;
+  font-size: var(--size-title-3);
+  font-weight: var(--weight-semibold);
   line-height: 1.4;
-  margin: 24px 0 12px;
+  margin: var(--s-6) 0 var(--s-3);
 }
 .block-heading:first-child {
   margin-top: 0;
 }
 .block-item {
   display: flex;
-  gap: 10px;
-  margin: 8px 0;
+  gap: var(--s-3);
+  margin: var(--s-2) 0;
 }
 .list-marker {
   flex-shrink: 0;
 }
 .text-emphasis {
-  font-weight: 600;
+  font-weight: var(--weight-semibold);
 }
 .block-code {
-  padding: 12px;
-  background: var(--space-notice);
-  border-radius: 12px;
-  font-family: monospace;
-  font-size: 14px;
+  padding: var(--s-3);
+  background: var(--violet-soft);
+  border-radius: var(--s-3);
+  font-family: var(--font-ui);
+  font-size: var(--size-small);
 }
 .learning-text-table {
-  margin: 16px 0;
+  margin: var(--s-4) 0;
 }
 .learning-text-row {
   display: grid;
-  gap: 12px;
-  border-bottom: 1px solid var(--space-line);
-  padding: 12px 0;
-  font-size: 14px;
+  gap: var(--s-3);
+  border-bottom: var(--border-thin) solid var(--line);
+  padding: var(--s-3) 0;
+  font-size: var(--size-small);
 }
 .learning-text-row text {
   min-width: 0;
   overflow-wrap: anywhere;
 }
 .table-heading {
-  font-weight: 600;
+  font-weight: var(--weight-semibold);
 }
 @media (max-width: 520px) {
   .block-heading {
-    font-size: 18px;
+    font-size: var(--size-title-3);
   }
   .learning-text-row {
-    gap: 8px;
+    gap: var(--s-2);
   }
 }
 </style>

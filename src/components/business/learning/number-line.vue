@@ -6,13 +6,13 @@
         <text>{{ geometry.b >= 0 ? '→' : '←' }}</text>
       </view>
       <view class="mark" :style="{ left: geometry.start + '%' }">
-        <text>{{ geometry.a }} 起点</text>
+        <text>{{ geometry.a }}{{ t('learning.kra') }}</text>
       </view>
       <view class="mark finish" :style="{ left: geometry.end + '%' }">
-        <text>{{ geometry.answer }} 终点</text>
+        <text>{{ geometry.answer }}{{ t('learning.kjy') }}</text>
       </view>
     </view>
-    <text>位置按数值比例展示；提示经历会保留，之后需要独立检验。</text>
+    <text>{{ t('learning.kgt') }}</text>
   </view>
   <view v-else-if="solution" class="number-line solution-line" role="img" :aria-label="solution.description">
     <text>{{ solution.description }}</text>
@@ -44,17 +44,19 @@
             width: solution.kind === 'all' ? '80%' : '40%'
           }"
         >
-          <text>{{ solution.kind === 'all' ? '← 全部实数 →' : solution.right ? '→' : '←' }}</text>
+          <text>{{ solution.kind === 'all' ? t('learning.k9y') : solution.right ? '→' : '←' }}</text>
         </view>
         <view v-if="solution.kind === 'half_line'" class="boundary" :class="{ closed: solution.closed }">
           <text>{{ solution.boundary }}</text>
         </view>
       </template>
     </view>
-    <text>箭头表示延伸到无穷；边界位置是示意，标签值精确。帮助保留，随后需要独立检验。</text>
+    <text>{{ t('learning.kmo') }}</text>
   </view>
 </template>
 <script setup>
+import { t } from '@/i18n/index.js';
+
 import { computed } from 'vue';
 import { inequalityDiagram } from '../../../../laf-backend/functions/_shared/learning-algebra.js';
 const props = defineProps({ question: { type: Object, required: true } });
@@ -74,7 +76,12 @@ const geometry = computed(() => {
 });
 const description = computed(() =>
   geometry.value
-    ? `从 ${geometry.value.a} ${geometry.value.b >= 0 ? '向右' : '向左'}移动 ${Math.abs(geometry.value.b)}，得到 ${geometry.value.answer}。`
+    ? t('learning.numberLine', {
+        start: geometry.value.a,
+        direction: t(geometry.value.b >= 0 ? 'learning.right' : 'learning.left'),
+        distance: Math.abs(geometry.value.b),
+        answer: geometry.value.answer
+      })
     : ''
 );
 const solution = computed(() => inequalityDiagram(props.question));
@@ -83,50 +90,50 @@ const solution = computed(() => inequalityDiagram(props.question));
 .number-line {
   display: flex;
   flex-direction: column;
-  gap: 16rpx;
-  padding: 20rpx;
-  color: var(--space-ink, var(--text-primary, #202a36));
-  background: var(--space-composer, var(--bg-card, #fff));
-  border: 1rpx solid var(--space-line, var(--border, #c5ccd5));
-  border-radius: 12px;
+  gap: var(--s-2);
+  padding: var(--s-4);
+  color: var(--ink);
+  background: var(--paper-sunk);
+  border: var(--s-4) solid var(--line);
+  border-radius: var(--s-3);
 }
 .axis {
   position: relative;
-  height: 108rpx;
-  margin: 20rpx 10rpx;
-  border-top: 2rpx solid currentColor;
+  height: var(--s-4);
+  margin: var(--s-4) var(--s-4);
+  border-top: var(--border-thin) solid currentColor;
 }
 .movement {
   position: absolute;
-  top: -40rpx;
-  border-bottom: 4rpx solid var(--space-paper, var(--primary));
+  top: calc(var(--s-5) * -1);
+  border-bottom: var(--border-selected) solid var(--clay-face);
   text-align: center;
 }
 .mark {
   position: absolute;
   top: 0;
-  border-left: 2rpx solid currentColor;
-  padding-top: 20rpx;
+  border-left: var(--border-thin) solid currentColor;
+  padding-top: var(--s-4);
 }
 .mark text {
   display: block;
   transform: translateX(-50%);
   white-space: nowrap;
-  font-size: 22rpx;
+  font-size: var(--size-title-2);
 }
 .finish {
-  top: 34rpx;
+  top: var(--s-4);
   border: none;
 }
 .boundary {
   position: absolute;
   left: 50%;
-  top: -10rpx;
-  width: 16rpx;
-  height: 16rpx;
-  border: 2rpx solid currentColor;
+  top: calc(var(--s-4) * -1);
+  width: var(--s-2);
+  height: var(--s-2);
+  border: var(--border-thin) solid currentColor;
   border-radius: 50%;
-  background: var(--space-composer, var(--bg-card, #fff));
+  background: var(--paper-sunk);
   transform: translateX(-50%);
 }
 .boundary.closed {
@@ -134,7 +141,7 @@ const solution = computed(() => inequalityDiagram(props.question));
 }
 .boundary text {
   position: absolute;
-  top: 26rpx;
+  top: var(--s-4);
   left: 50%;
   transform: translateX(-50%);
   white-space: nowrap;

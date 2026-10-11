@@ -1,11 +1,11 @@
 <template>
-  <text class="base-tag" :class="`base-tag--${tone}`"
+  <view class="base-tag" :class="`base-tag--${tone}`"
     ><BaseIcon
       v-if="icon"
       :name="icon"
       :size="'var(--size-caption)'"
       :tone="tone === 'violet' ? 'violet-ink' : tone === 'neutral' ? 'ink-2' : tone" /><slot></slot
-  ></text>
+  ></view>
 </template>
 <script setup>
 import BaseIcon from '../base-icon/base-icon.vue';

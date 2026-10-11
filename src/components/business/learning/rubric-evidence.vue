@@ -1,33 +1,33 @@
 <template>
-  <view class="rubric-evidence" aria-label="辅助评分的原答依据">
-    <text v-if="attempt.corrections?.length" class="evidence-note"> 已校对 · 历史 AI 评分待核对 </text>
+  <view class="rubric-evidence" :aria-label="t('learning.kmn')">
+    <text v-if="attempt.corrections?.length" class="evidence-note">{{ t('learning.kdv') }}</text>
     <view v-for="dimension in dimensions" :key="dimension.id" class="evidence-dimension">
       <text class="evidence-note">
-        {{ dimension.name }}：{{ dimension.score === null ? '待核对' : dimension.score }} / {{ dimension.maxScore }} ·
+        {{ learningText(dimension.name) }}：{{ dimension.score === null ? t('learning.k4h') : dimension.score }} /
+        {{ dimension.maxScore }} ·
         {{ dimension.feedback }}
       </text>
       <view v-for="entry in dimension.quotes" :key="entry.key" class="evidence-quote">
-        <text class="evidence-note" selectable>原答引用：{{ entry.quote }}</text>
+        <text class="evidence-note" selectable>{{ t('learning.kiu') }}{{ entry.quote }}</text>
         <template v-if="entry.location">
-          <text class="evidence-note">
-            原答第{{ entry.location.startCharacter }}至{{ entry.location.endCharacter }}字 · 同文第{{
-              entry.location.occurrence
-            }}/{{ entry.location.occurrences }}处
+          <text class="evidence-note"
+            >{{ t('learning.klt') }}{{ entry.location.startCharacter }}{{ t('learning.k7k')
+            }}{{ entry.location.endCharacter }}{{ t('learning.kq1') }}{{ entry.location.occurrence }}/{{
+              entry.location.occurrences
+            }}{{ t('learning.kaq') }}</text
+          >
+          <text class="evidence-note" selectable
+            >{{ t('learning.k5q') }}{{ entry.location.before }}【{{ entry.quote }}】{{ entry.location.after }}
           </text>
-          <text class="evidence-note" selectable>
-            附近原文：{{ entry.location.before }}【{{ entry.quote }}】{{ entry.location.after }}
-          </text>
-          <button
-            role="button"
-            tabindex="0"
-            size="mini"
-            :aria-label="`查看${dimension.name}引用${entry.index + 1}的原答位置`"
+          <BaseButton
+            :aria-label="t('learning.khl', { v0: learningText(dimension.name), v1: entry.index + 1 })"
             :aria-expanded="selected === entry.key"
+            variant="quiet"
             @tap="toggle(entry.key)"
           >
-            {{ selected === entry.key ? '收起原答位置' : '查看原答位置' }}
-          </button>
-          <view v-if="selected === entry.key" class="answer-panel" aria-label="作答原文（完整）">
+            {{ selected === entry.key ? t('learning.k3h') : t('learning.krs') }}
+          </BaseButton>
+          <view v-if="selected === entry.key" class="answer-panel" :aria-label="t('learning.kas')">
             <text class="answer-body" selectable
               ><text
                 v-for="(segment, index) in answerSegments"
@@ -40,28 +40,30 @@
           </view>
         </template>
         <text v-else class="evidence-note">
-          {{ assessment.contract === 'subjective-rubric-v1' ? '旧记录未定位 · 待核对' : '引用未定位 · 待核对' }}
+          {{ assessment.contract === 'subjective-rubric-v1' ? t('learning.kdo') : t('learning.kid') }}
         </text>
       </view>
     </view>
-    <button
-      role="button"
-      tabindex="0"
-      size="mini"
+    <BaseButton
       :disabled="!sourceAvailable"
       :aria-disabled="!sourceAvailable"
       :aria-expanded="selected === 'answer'"
+      variant="quiet"
       @tap="toggle('answer')"
     >
-      {{ selected === 'answer' ? '收起完整原答' : '查看完整原答' }}
-    </button>
-    <text v-if="!sourceAvailable" class="evidence-note">原答不可用</text>
-    <view v-if="selected === 'answer' && sourceAvailable" class="answer-panel" aria-label="作答原文（完整）">
+      {{ selected === 'answer' ? t('learning.k4c') : t('learning.khv') }}
+    </BaseButton>
+    <text v-if="!sourceAvailable" class="evidence-note">{{ t('learning.k50') }}</text>
+    <view v-if="selected === 'answer' && sourceAvailable" class="answer-panel" :aria-label="t('learning.kas')">
       <text class="answer-body" selectable>{{ attempt.answer }}</text>
     </view>
   </view>
 </template>
 <script setup>
+import { learningText } from '@/i18n/learning.js';
+import { t } from '@/i18n/index.js';
+import BaseButton from '@/components/base/base-button/base-button.vue';
+
 import { computed, ref, watch } from 'vue';
 
 const props = defineProps({
@@ -167,82 +169,43 @@ watch(
   display: flex;
   flex-direction: column;
   min-width: 0;
-  gap: 8px;
+  gap: var(--s-2);
 }
 .rubric-evidence {
-  gap: 14px;
+  gap: var(--s-4);
 }
 .evidence-note {
   display: block;
-  color: var(--space-muted, #62576d);
-  font-size: 12px;
+  color: var(--ink-3);
+  font-size: var(--size-caption);
   line-height: 1.8;
   overflow-wrap: anywhere;
 }
-.rubric-evidence button {
-  align-self: flex-start;
-  min-height: 44px;
-  max-width: 100%;
-  margin: 0;
-  padding: 8px 14px;
-  color: var(--space-ink, #080909);
-  background: transparent;
-  border: 1px solid var(--space-line, #dbd5e6);
-  border-radius: 12px;
-  font-family: inherit;
-  font-size: 12px;
-  line-height: 1.65;
-  transition:
-    background-color 180ms ease,
-    border-color 180ms ease,
-    color 180ms ease;
-}
-.rubric-evidence button::after {
-  border: 0;
-}
-.rubric-evidence button:active:not([disabled]),
-.rubric-evidence button[aria-expanded='true'] {
-  background: var(--space-user, #e5d9f5);
-}
-.rubric-evidence button:active:not([disabled]) {
-  transition-duration: 100ms;
-}
-.rubric-evidence button:focus-visible {
-  outline: 2px solid var(--space-focus, #785bbc);
-  outline-offset: 2px;
-}
 .answer-panel {
   min-width: 0;
-  padding: 12px;
-  border: 1px solid var(--space-line, #dbd5e6);
-  border-radius: 12px;
-  background: var(--space-composer, #fff);
+  padding: var(--s-3);
+  border: var(--border-thin) solid var(--line);
+  border-radius: var(--s-3);
+  background: var(--paper-sunk);
 }
 .answer-body {
   display: block;
-  color: var(--space-ink, #080909);
-  font-size: 14px;
+  color: var(--ink);
+  font-size: var(--size-small);
   line-height: 1.65;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
 .evidence-highlight {
-  background: var(--space-user, #e5d9f5);
-  font-weight: 700;
+  background: var(--violet-soft);
+  font-weight: var(--weight-bold);
   text-decoration: underline;
 }
 .answer-segment {
   white-space: pre-wrap;
 }
 @media (hover: hover) and (pointer: fine) {
-  .rubric-evidence button:hover:not([disabled]) {
-    background: var(--space-notice, #eee7f7);
-  }
 }
 @media (prefers-reduced-motion: reduce) {
-  .rubric-evidence button {
-    animation: none !important;
-    transition: none !important;
-  }
 }
 </style>

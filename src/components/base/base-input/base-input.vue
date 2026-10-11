@@ -1,22 +1,35 @@
 <template>
   <view class="base-field">
-    <label v-if="label" :id="`${id}-label`" :for="id" class="base-field__label">{{ label }}</label>
+    <label v-if="label && !hideLabel" :id="`${id}-label`" :for="id" class="base-field__label">{{ label }}</label>
     <view
       class="base-field__group"
-      :class="{ 'is-focused': focused, 'is-error': error, 'is-multiline': multiline, 'is-disabled': disabled }"
+      :class="{
+        'is-focused': focused && !focusVisibleOnly,
+        'focus-visible-only': focusVisibleOnly,
+        'is-keyboard-focused': focused && focusVisibleOnly && keyboardFocus,
+        'is-error': error,
+        'is-multiline': multiline,
+        'is-auto-grow': multiline && autoGrow,
+        'is-disabled': disabled
+      }"
+      :style="autoGrow ? { '--field-max-rows': maxRows } : undefined"
     >
       <text v-if="prefix" class="base-field__prefix">{{ prefix }}</text>
       <!-- #ifdef H5 -->
-      <textarea
+      <component
+        :is="'textarea'"
         v-if="multiline && !nativePlatform"
         :id="id"
-        class="base-field__input"
+        ref="textarea"
+        :class="['base-field__input', inputClass]"
         :value="modelValue"
+        :rows="autoGrow ? 1 : undefined"
         :disabled="disabled"
+        :readonly="readonly"
         :maxlength="maxlength"
         :placeholder="placeholder"
         :aria-label="label"
-        :aria-labelledby="label ? `${id}-label` : undefined"
+        :aria-labelledby="label && !hideLabel ? `${id}-label` : undefined"
         :aria-describedby="descriptionId"
         :aria-invalid="Boolean(error)"
         :aria-disabled="disabled"
@@ -24,42 +37,47 @@
         @input="input"
         @focus="focus"
         @blur="blur"
-      ></textarea>
+      />
       <!-- #endif -->
       <!-- #ifndef H5 -->
       <textarea
         v-if="multiline && nativePlatform"
         :id="id"
-        class="base-field__input"
+        :class="['base-field__input', inputClass]"
         :value="modelValue"
+        :style="autoGrow ? nativeGrowingStyle : undefined"
         :disabled="disabled"
+        :readonly="readonly"
         :maxlength="maxlength"
         :focus="nativeFocus"
         :placeholder="placeholder"
         :aria-label="label"
-        :aria-labelledby="label ? `${id}-label` : undefined"
+        :aria-labelledby="label && !hideLabel ? `${id}-label` : undefined"
         :aria-describedby="descriptionId"
         :aria-invalid="Boolean(error)"
         :aria-disabled="disabled"
         data-yozi-answer-input="true"
+        @linechange="lineChange"
         @input="input"
         @focus="focus"
         @blur="blur"
       ></textarea>
       <!-- #endif -->
       <!-- #ifdef H5 -->
-      <input
+      <component
+        :is="'input'"
         v-if="!multiline && !nativePlatform"
         :id="id"
-        class="base-field__input"
+        :class="['base-field__input', inputClass]"
         :value="modelValue"
         :type="type"
         :inputmode="inputmode"
         :disabled="disabled"
+        :readonly="readonly"
         :maxlength="maxlength"
         :placeholder="placeholder"
         :aria-label="label"
-        :aria-labelledby="label ? `${id}-label` : undefined"
+        :aria-labelledby="label && !hideLabel ? `${id}-label` : undefined"
         :aria-describedby="descriptionId"
         :aria-invalid="Boolean(error)"
         :aria-disabled="disabled"
@@ -73,16 +91,17 @@
       <input
         v-if="!multiline && nativePlatform"
         :id="id"
-        class="base-field__input"
+        :class="['base-field__input', inputClass]"
         :value="modelValue"
         :type="type"
         :inputmode="inputmode"
         :disabled="disabled"
+        :readonly="readonly"
         :maxlength="maxlength"
         :focus="nativeFocus"
         :placeholder="placeholder"
         :aria-label="label"
-        :aria-labelledby="label ? `${id}-label` : undefined"
+        :aria-labelledby="label && !hideLabel ? `${id}-label` : undefined"
         :aria-describedby="descriptionId"
         :aria-invalid="Boolean(error)"
         :aria-disabled="disabled"
@@ -114,18 +133,24 @@
   </view>
 </template>
 <script setup>
-import { computed, getCurrentInstance, onBeforeUnmount, ref, watch } from 'vue';
+import { computed, getCurrentInstance, nextTick, onBeforeUnmount, onMounted, onUpdated, ref, watch } from 'vue';
 import { t } from '@/i18n/index.js';
 import { setMascotInputFocused } from '@/design/mascot-motion.js';
 import BaseButton from '../base-button/base-button.vue';
 const props = defineProps({
-  modelValue: { type: String, default: '' },
+  modelValue: { type: [String, Number], default: '' },
   label: { type: String, default: '' },
   placeholder: { type: String, default: '' },
   type: { type: String, default: 'text' },
   inputmode: { type: String, default: 'text' },
   prefix: { type: String, default: '' },
   multiline: Boolean,
+  autoGrow: Boolean,
+  maxRows: { type: Number, default: 5, validator: (value) => Number.isInteger(value) && value >= 1 },
+  readonly: Boolean,
+  hideLabel: Boolean,
+  inputClass: { type: String, default: '' },
+  focusVisibleOnly: Boolean,
   nativeFocus: Boolean,
   disabled: Boolean,
   verification: Boolean,
@@ -134,9 +159,55 @@ const props = defineProps({
   help: { type: String, default: '' },
   error: { type: String, default: '' }
 });
-const emit = defineEmits(['update:modelValue', 'resend', 'focus', 'blur']);
+const emit = defineEmits(['update:modelValue', 'resend', 'focus', 'blur', 'input', 'resize']);
+const textarea = ref(null);
+const nativeRows = ref(1);
+const nativeGrowingStyle = computed(() => ({
+  height: `max(var(--touch-min), calc(var(--leading-body) * ${nativeRows.value} + var(--s-2) * 2))`
+}));
+function resizeTextarea() {
+  // #ifdef H5
+  if (!props.multiline || !props.autoGrow) return;
+  const element = textarea.value?.$el || textarea.value;
+  if (!element?.style) return;
+  const style = getComputedStyle(element);
+  element.style.height = 'auto';
+  const height = Math.max(
+    parseFloat(style.minHeight) || 0,
+    Math.min(parseFloat(style.maxHeight) || Infinity, element.scrollHeight)
+  );
+  if (height > 0) element.style.height = `${height}px`;
+  emit('resize');
+  // #endif
+}
+function lineChange(event) {
+  if (!props.autoGrow) return;
+  nativeRows.value = Math.max(1, Math.min(props.maxRows, Number(event.detail?.lineCount) || 1));
+  nextTick(() => emit('resize'));
+}
+watch(
+  () => props.modelValue,
+  () => nextTick(resizeTextarea)
+);
+onUpdated(resizeTextarea);
 const id = `yozi-field-${getCurrentInstance().uid}`;
-const focused = ref(false);
+const focused = ref(false),
+  keyboardFocus = ref(true);
+const keyboardModality = (event) => {
+  if (!event.altKey && !event.metaKey && !event.ctrlKey) keyboardFocus.value = true;
+};
+const pointerModality = () => {
+  keyboardFocus.value = false;
+};
+onMounted(() => {
+  resizeTextarea();
+  // #ifdef H5
+  if (props.focusVisibleOnly && typeof document !== 'undefined') {
+    document.addEventListener('keydown', keyboardModality, true);
+    document.addEventListener('pointerdown', pointerModality, true);
+  }
+  // #endif
+});
 let nativePlatform = true;
 // #ifdef H5
 nativePlatform = false;
@@ -162,7 +233,10 @@ watch(
   { immediate: true }
 );
 function input(event) {
-  if (!props.disabled) emit('update:modelValue', event.detail?.value ?? event.target?.value ?? '');
+  if (!props.disabled && !props.readonly) {
+    emit('update:modelValue', event.detail?.value ?? event.target?.value ?? '');
+    emit('input', event);
+  }
 }
 function focus(event) {
   focused.value = true;
@@ -179,6 +253,12 @@ function resend() {
 }
 onBeforeUnmount(() => {
   clearInterval(timer);
+  // #ifdef H5
+  if (typeof document !== 'undefined') {
+    document.removeEventListener('keydown', keyboardModality, true);
+    document.removeEventListener('pointerdown', pointerModality, true);
+  }
+  // #endif
   setMascotInputFocused(id, false);
 });
 </script>
@@ -215,6 +295,9 @@ onBeforeUnmount(() => {
   background: var(--paper-sunk);
   color: var(--ink-4);
 }
+.base-field__group.focus-visible-only {
+  border-color: var(--line);
+}
 .base-field__input {
   width: 100%;
   flex: 1;
@@ -233,9 +316,22 @@ onBeforeUnmount(() => {
 .base-field__input:focus {
   outline: none;
 }
+.base-field__group:not(.focus-visible-only):has(.base-field__input:focus-visible),
+.base-field__group.is-keyboard-focused {
+  outline: var(--border-selected) solid var(--focus);
+  outline-offset: var(--focus-offset);
+}
 .is-multiline .base-field__input {
   height: var(--textarea-height);
   padding: var(--s-3) var(--s-4);
+}
+.is-auto-grow .base-field__input {
+  height: var(--touch-min);
+  min-height: var(--touch-min);
+  max-height: calc(var(--leading-body) * var(--field-max-rows) + var(--s-2) * 2);
+  padding: var(--s-2) var(--s-4);
+  resize: none;
+  overflow-y: auto;
 }
 .base-field__prefix {
   align-self: stretch;

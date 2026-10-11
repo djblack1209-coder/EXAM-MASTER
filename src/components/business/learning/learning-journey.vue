@@ -1,116 +1,116 @@
 <template>
-  <view
+  <BaseCard
     v-if="learning.active"
     ref="root"
     class="journey-panel"
     :class="{ 'journey-inline': inline }"
     data-test="learning-journey"
+    padding="none"
   >
     <view class="journey-heading">
       <view>
         <text v-if="!inline" class="journey-title">{{ program?.title || learning.active.goal }}</text>
         <text v-if="program" class="journey-meta">
-          {{ program.startsLater ? `${program.startDay} 开始` : `第 ${program.dayIndex} / ${program.durationDays} 天` }}
-          · 已完成 {{ program.completedDays }} 天 · {{ modeName }}
+          {{
+            program.startsLater
+              ? t('learning.krk', { v0: program.startDay })
+              : t('learning.km0', { v0: program.dayIndex, v1: program.durationDays })
+          }}{{ t('learning.ksv') }}{{ program.completedDays }}{{ t('learning.kqh') }}{{ learningText(modeName) }}
         </text>
       </view>
-      <button role="button" tabindex="0" :aria-expanded="editing" @tap="edit">
-        {{ editing ? '收起目标' : program ? '调整目标' : '设置学习路线' }}
-      </button>
+      <BaseButton :aria-expanded="editing" variant="quiet" @tap="edit">
+        {{ editing ? t('learning.kcz') : program ? t('learning.k1m') : t('learning.klc') }}
+      </BaseButton>
     </view>
     <view v-if="editing" class="journey-form">
-      <label><text>学习目标</text><input v-model="form.title" aria-label="路线学习目标" maxlength="160" /></label>
+      <label
+        ><text>{{ t('learning.kfl') }}</text
+        ><BaseInput v-model="form.title" maxlength="160" :label="t('learning.kr3')"
+      /></label>
       <view class="journey-fields">
         <label
-          ><text>开始日期</text><input v-model="form.startDay" aria-label="路线开始日期" placeholder="YYYY-MM-DD"
+          ><text>{{ t('learning.k3g') }}</text
+          ><BaseInput v-model="form.startDay" placeholder="YYYY-MM-DD" :label="t('learning.ko5')"
         /></label>
         <label
-          ><text>计划天数</text><input v-model.number="form.durationDays" type="number" aria-label="路线计划天数"
+          ><text>{{ t('learning.ktc') }}</text
+          ><BaseInput v-model.number="form.durationDays" type="number" :label="t('learning.kpd')"
         /></label>
         <label
-          ><text>每日分钟</text><input v-model.number="form.minutes" type="number" aria-label="路线每日分钟"
+          ><text>{{ t('learning.kf8') }}</text
+          ><BaseInput v-model.number="form.minutes" type="number" :label="t('learning.k8r')"
         /></label>
       </view>
-      <view class="button-row" aria-label="训练节奏">
-        <button
+      <view class="button-row" :aria-label="t('learning.k6c')">
+        <BaseChip
           v-for="mode in TRAINING_MODES"
           :key="mode.id"
-          role="button"
-          tabindex="0"
-          :aria-pressed="form.mode === mode.id"
           :class="{ chosen: form.mode === mode.id }"
-          @tap="form.mode = mode.id"
+          :model-value="form.mode === mode.id"
+          @update:model-value="form.mode = mode.id"
         >
-          {{ mode.label }}
-        </button>
+          {{ learningText(mode.label) }}
+        </BaseChip>
       </view>
-      <text class="journey-field-label">训练模块 · {{ form.moduleIds.length }} / 8</text>
+      <text class="journey-field-label">{{ t('learning.koj') }}{{ form.moduleIds.length }} / 8</text>
       <view class="journey-module-options">
-        <button
+        <BaseChip
           v-for="module in JOURNEY_MODULES"
           :key="module.id"
-          role="button"
-          tabindex="0"
-          :aria-pressed="form.moduleIds.includes(module.id)"
           :class="{ chosen: form.moduleIds.includes(module.id) }"
-          @tap="toggleModule(module.id)"
+          :model-value="form.moduleIds.includes(module.id)"
+          @update:model-value="toggleModule(module.id)"
         >
-          {{ module.subject }} · {{ module.label }}
-        </button>
+          {{ learningText(module.subject) }} · {{ learningText(module.label) }}
+        </BaseChip>
       </view>
       <view class="button-row">
-        <button
+        <BaseButton
           class="primary"
-          role="button"
-          tabindex="0"
           :disabled="busy"
           :aria-disabled="busy"
           data-test="journey-save"
+          variant="primary"
           @tap="save"
+          >{{ t('learning.kni') }}</BaseButton
         >
-          保存学习路线
-        </button>
-        <button role="button" tabindex="0" @tap="editing = false">取消</button>
+        <BaseButton variant="quiet" @tap="editing = false">{{ t('learning.k8s') }}</BaseButton>
       </view>
     </view>
     <template v-if="program">
       <view class="journey-route-heading">
-        <text class="section-title">今日路线</text>
-        <text>{{ program.completed }} / {{ program.modules.length }} 模块已提交</text>
+        <text class="section-title">{{ t('learning.kfu') }}</text>
+        <text>{{ program.completed }} / {{ program.modules.length }}{{ t('learning.kcf') }}</text>
       </view>
-      <view class="button-row" aria-label="每组题量">
-        <text class="journey-meta">客观题每组</text>
-        <button
+      <view class="button-row" :aria-label="t('learning.kmh')">
+        <text class="journey-meta">{{ t('learning.k5v') }}</text>
+        <BaseChip
           v-for="size in [1, 2, 5, 10, 20]"
           :key="size"
-          role="button"
-          tabindex="0"
-          :aria-pressed="groupSize === size"
           :class="{ chosen: groupSize === size }"
-          @tap="groupSize = size"
+          :model-value="groupSize === size"
+          @update:model-value="groupSize = size"
         >
-          {{ size }}题
-        </button>
+          {{ size }}{{ t('learning.ko0') }}</BaseChip
+        >
       </view>
       <view
         v-if="program.modules.some((m) => m.id.startsWith('writing-'))"
         class="button-row"
-        aria-label="写作每组题量"
+        :aria-label="t('learning.kdz')"
       >
-        <text class="journey-meta">写作每组</text>
-        <button
+        <text class="journey-meta">{{ t('learning.kg9') }}</text>
+        <BaseChip
           v-for="size in [1, 2]"
           :key="size"
-          role="button"
-          tabindex="0"
-          :aria-pressed="writingSize === size"
           :class="{ chosen: writingSize === size }"
-          @tap="writingSize = size"
+          :model-value="writingSize === size"
+          @update:model-value="writingSize = size"
         >
-          {{ size }}篇
-        </button>
+          {{ size }}{{ t('learning.kcp') }}</BaseChip
+        >
       </view>
-      <view class="journey-route" aria-label="今日模块路线">
+      <view class="journey-route" :aria-label="t('learning.ko')">
         <view
           v-for="(module, index) in program.modules"
           :key="module.id"
@@ -119,51 +119,57 @@
         >
           <text class="journey-step-number">{{ index + 1 }}</text>
           <view class="journey-step-copy">
-            <text class="journey-step-title">{{ module.label }}</text>
-            <text class="journey-meta">{{ module.goal }}</text>
+            <text class="journey-step-title">{{ learningText(module.label) }}</text>
+            <text class="journey-meta">{{ learningText(module.goal) }}</text>
             <text v-if="module.group?.submittedBy" class="journey-meta"
-              >本组可靠正确 {{ module.correct }} / {{ module.reliable }} · 待核对 {{ module.pending }}</text
+              >{{ t('learning.kj3') }}{{ module.correct }} / {{ module.reliable }}{{ t('learning.kbs')
+              }}{{ module.pending }}</text
             >
           </view>
-          <text class="journey-step-state">{{ module.status }}</text>
-          <button
-            role="button"
-            tabindex="0"
+          <text class="journey-step-state">{{ learningText(module.status) }}</text>
+          <BaseButton
             :disabled="busy || learning.active.stopped"
             :aria-disabled="busy || learning.active.stopped"
             :data-test="`journey-module-${module.id}`"
+            variant="quiet"
             @tap="startModule(module)"
           >
-            {{ module.group ? (module.group.submittedBy ? '查看结果' : '继续训练') : '开始训练' }}
-          </button>
+            {{ module.group ? (module.group.submittedBy ? t('learning.k1g') : t('learning.k5l')) : t('learning.kmt') }}
+          </BaseButton>
         </view>
       </view>
-      <view v-if="!inline" class="journey-score" aria-label="今日当前目标成绩">
-        <view
-          ><text>可靠判分</text
-          ><text class="journey-score-value"
-            >{{ stats.reliableCorrectAnswers }} / {{ stats.totalReliableAnswers }}</text
-          ></view
-        >
-        <view
-          ><text>待核对</text><text class="journey-score-value">{{ stats.pending }}</text></view
-        >
-        <view
-          ><text>可靠错答</text><text class="journey-score-value">{{ stats.mistakes.length }}</text></view
-        >
+      <view v-if="!inline" class="journey-score" :aria-label="t('learning.kbn')">
+        <BaseStat
+          :label="t('learning.reliableCorrect')"
+          :value="stats.reliableCorrectAnswers"
+          :denominator="stats.totalReliableAnswers"
+        />
+        <BaseStat :label="t('learning.pending')" :value="stats.pending" />
+        <BaseStat :label="t('learning.kti')" :value="stats.mistakes.length" />
       </view>
-      <text class="journey-meta">{{ program.day }} · 当前目标 · {{ program.timezone }}</text>
+      <text class="journey-meta">{{ program.day }}{{ t('learning.kps') }}{{ program.timezone }}</text>
       <slot></slot>
       <TrainingGroup v-if="learning.batchTrainingActive" />
       <JourneyReview />
       <JourneyReminders />
     </template>
-    <text v-if="message" class="journey-feedback" :class="{ warning: failed }" :role="failed ? 'alert' : 'status'">{{
-      message
-    }}</text>
-  </view>
+    <view v-if="message" class="journey-feedback"
+      ><BaseEmpty v-if="failed" state="error" :title="learningText(message)" mascot-size="small" /><text v-else>{{
+        learningText(message)
+      }}</text></view
+    >
+  </BaseCard>
 </template>
 <script setup>
+import BaseEmpty from '@/components/base/base-empty/base-empty.vue';
+import { learningText } from '@/i18n/learning.js';
+import { t } from '@/i18n/index.js';
+import BaseStat from '@/components/base/base-stat/base-stat.vue';
+import BaseCard from '@/components/base/base-card/base-card.vue';
+import BaseButton from '@/components/base/base-button/base-button.vue';
+import BaseInput from '@/components/base/base-input/base-input.vue';
+import BaseChip from '@/components/base/base-chip/base-chip.vue';
+
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import { useConversationLearningStore } from '@/stores/modules/conversation-learning.js';
 import { dayKey } from '@/services/learning/learning-domain.js';
@@ -263,15 +269,13 @@ onUnmounted(() => unbind());
 </script>
 <style scoped>
 .journey-panel {
-  margin: 18px 0 24px;
-  padding: 24px;
-  background: var(--yozi-solid);
-  border-radius: 24px;
-  color: var(--space-ink);
+  margin: var(--s-5) 0 var(--s-6);
+  padding: var(--s-6);
+  color: var(--ink);
 }
 .journey-panel.journey-inline {
   padding: 0;
-  margin: 16px 0 28px;
+  margin: var(--s-4) 0 var(--s-8);
   background: transparent;
   border-radius: 0;
 }
@@ -280,71 +284,62 @@ onUnmounted(() => unbind());
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 16px;
+  gap: var(--s-4);
 }
 .journey-title {
   display: block;
-  font-size: 24px;
-  font-weight: 600;
+  font-size: var(--size-title-2);
+  font-weight: var(--weight-semibold);
   line-height: 1.4;
   overflow-wrap: anywhere;
 }
 .journey-meta {
   display: block;
-  color: var(--space-muted);
-  font-size: 12px;
+  color: var(--ink-3);
+  font-size: var(--size-caption);
   line-height: 1.7;
-  margin-top: 6px;
+  margin-top: var(--s-2);
   overflow-wrap: anywhere;
 }
 .journey-form {
   display: grid;
-  gap: 16px;
-  margin-top: 24px;
+  gap: var(--s-4);
+  margin-top: var(--s-6);
 }
 .journey-form label {
   display: grid;
-  gap: 8px;
-  font-size: 14px;
-}
-.journey-form input {
-  min-height: 44px;
-  padding: 10px 12px;
-  border: 1px solid var(--space-line);
-  border-radius: 12px;
-  color: var(--space-ink);
-  box-sizing: border-box;
-  width: 100%;
+  gap: var(--s-2);
+  font-size: var(--size-small);
 }
 .journey-fields {
   display: grid;
   grid-template-columns: 2fr 1fr 1fr;
-  gap: 12px;
+  gap: var(--s-3);
 }
 .journey-module-options {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: var(--s-2);
 }
 .journey-route-heading {
-  margin: 24px 0 12px;
-  font-size: 12px;
+  margin: var(--s-6) 0 var(--s-3);
+  font-size: var(--size-caption);
 }
 .journey-route {
   display: grid;
 }
 .journey-step {
   display: flex;
-  gap: 12px;
+  gap: var(--s-3);
   align-items: center;
-  padding: 14px 0;
-  border-bottom: 1px solid var(--space-line);
+  padding: var(--s-4) 0;
+  border-bottom: var(--border-thin) solid var(--line);
 }
 .journey-step-number {
-  font-size: 16px;
+  font-size: var(--size-body);
   font-variant-numeric: tabular-nums;
-  color: var(--space-muted);
-  width: 24px;
+  color: var(--ink-3);
+  width: var(--s-6);
   flex-shrink: 0;
 }
 .journey-step-copy {
@@ -352,59 +347,59 @@ onUnmounted(() => unbind());
   min-width: 0;
 }
 .journey-step-title {
-  font-size: 16px;
-  font-weight: 500;
+  font-size: var(--size-body);
+  font-weight: var(--weight-medium);
 }
 .journey-step-state {
-  font-size: 12px;
+  font-size: var(--size-caption);
   flex-shrink: 0;
 }
 .is-current .journey-step-title {
-  font-weight: 700;
+  font-weight: var(--weight-bold);
 }
 .journey-score {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 16px;
-  margin: 24px 0 12px;
+  gap: var(--s-4);
+  margin: var(--s-6) 0 var(--s-3);
 }
 .journey-score > view {
   display: grid;
-  gap: 8px;
-  font-size: 12px;
-  color: var(--space-muted);
+  gap: var(--s-2);
+  font-size: var(--size-caption);
+  color: var(--ink-3);
 }
 .journey-score-value {
-  font-size: 24px;
+  font-size: var(--size-title-2);
   line-height: 1.4;
-  color: var(--space-ink);
+  color: var(--ink);
   font-variant-numeric: tabular-nums;
 }
 .journey-feedback {
   display: block;
-  margin-top: 12px;
-  font-size: 14px;
+  margin-top: var(--s-3);
+  font-size: var(--size-small);
   line-height: 1.7;
 }
 @media (max-width: 520px) {
   .journey-panel {
-    padding: 16px;
+    padding: var(--s-4);
   }
   .journey-heading {
     align-items: flex-start;
     flex-direction: column;
   }
   .journey-title {
-    font-size: 20px;
+    font-size: var(--size-title-3);
   }
   .journey-fields {
     grid-template-columns: 1fr;
   }
   .journey-score {
-    gap: 8px;
+    gap: var(--s-2);
   }
   .journey-score-value {
-    font-size: 20px;
+    font-size: var(--size-title-3);
   }
 }
 </style>

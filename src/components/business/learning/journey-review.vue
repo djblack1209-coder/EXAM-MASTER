@@ -1,177 +1,210 @@
 <template>
   <view v-if="learning.journey" ref="root" class="journey-review" data-test="journey-review">
     <view class="review-heading"
-      ><text class="section-title">学习复盘</text>
-      <view class="button-row" aria-label="复盘范围">
-        <button
-          v-for="item in ranges"
-          :key="item.id"
-          role="button"
-          tabindex="0"
-          :aria-pressed="range === item.id"
-          :class="{ chosen: range === item.id }"
-          @tap="range = item.id"
-        >
-          {{ item.label }}
-        </button>
-      </view>
+      ><text class="section-title">{{ t('learning.ksb') }}</text>
+      <BaseSegmented
+        v-model="range"
+        :label="t('learning.recapRange')"
+        :options="ranges.map((item) => ({ value: item.id, label: learningText(item.label) }))"
+      />
     </view>
-    <template v-if="recap?.submitted">
+    <template v-if="recap?.submitted"
+      ><YoziMascot
+        v-if="range === 'day' && recap.confirmed && recap.complete"
+        :key="recap.confirmed"
+        pose="celebrate"
+        play="once"
+        size="state"
+      />
       <text class="review-summary"
-        >已提交 {{ recap.submitted }} 题 · 可靠正确 {{ recap.correct }} · 部分正确 {{ recap.partial }} · 待核对
-        {{ recap.pending }}</text
+        >{{ t('learning.kbr') }}{{ recap.submitted }}{{ t('learning.kv0') }}{{ recap.correct }}{{ t('learning.ko3')
+        }}{{ recap.partial }}{{ t('learning.kbs') }}{{ recap.pending }}</text
       >
       <text class="review-meta"
-        >独立正确 {{ recap.independentCorrect }} · {{ recap.day }} · {{ learning.journey.timezone }}</text
+        >{{ t('learning.kjm') }}{{ recap.independentCorrect }} · {{ recap.day }} · {{ learning.journey.timezone }}</text
       >
       <view v-for="module in recap.modules" :key="module.id" class="review-module">
         <view
-          ><text class="review-module-title">{{ module.label }}</text
-          ><text class="review-meta">{{ module.next }}</text></view
+          ><text class="review-module-title">{{ learningText(module.label) }}</text
+          ><text class="review-meta">{{ learningText(module.next) }}</text></view
         >
-        <text class="review-module-state">{{ module.completed ? '已提交' : '待完成' }}</text>
+        <text class="review-module-state">{{ module.completed ? t('learning.kbr') : t('learning.kuu') }}</text>
       </view>
       <view class="button-row">
-        <button
+        <BaseButton
           class="primary"
-          role="button"
-          tabindex="0"
           data-test="recap-confirm"
           :disabled="locked || !!recap.confirmed"
           :aria-disabled="locked || !!recap.confirmed"
+          variant="primary"
           @tap="confirm"
         >
-          {{ recap.confirmed ? '复盘已保存' : '完成本次复盘' }}
-        </button>
+          {{ recap.confirmed ? t('learning.koh') : t('learning.k88') }}
+        </BaseButton>
         <text v-if="range === 'day'" class="review-meta">{{
-          recap.complete ? '今日模块已全部提交' : '未完成模块仍保留在今日路线'
+          recap.complete ? t('learning.kql') : t('learning.kei')
         }}</text>
       </view>
       <view v-if="recap.confirmed" class="review-next">
-        <text class="section-title">下一批训练</text>
+        <text class="section-title">{{ t('learning.kuv') }}</text>
         <view v-for="module in recap.modules.filter((m) => m.completed)" :key="module.id" class="review-module">
           <view
             ><text class="review-module-title"
-              >{{ module.label }} · {{ nextSizes[module.id] || module.suggestedSize }}题</text
+              >{{ learningText(module.label) }} · {{ nextSizes[module.id] || module.suggestedSize
+              }}{{ t('learning.ko0') }}</text
             >
-            <text class="review-meta">{{ module.next }} · 依据 {{ module.evidenceIds.length }} 份原答</text>
+            <text class="review-meta"
+              >{{ learningText(module.next) }}{{ t('learning.k38') }}{{ module.evidenceIds.length
+              }}{{ t('learning.ki5') }}</text
+            >
             <label class="review-size"
-              ><text>题量</text
-              ><input
-                :value="nextSizes[module.id] || module.suggestedSize"
+              ><text>{{ t('learning.k4t') }}</text
+              ><BaseInput
+                :model-value="nextSizes[module.id] || module.suggestedSize"
                 type="number"
-                :aria-label="`${module.label}下一批题量`"
+                :label="t('learning.kpa', { v0: learningText(module.label) })"
                 @input="nextSizes[module.id] = Number(inputValue($event))"
             /></label>
           </view>
-          <button
-            role="button"
-            tabindex="0"
+          <BaseButton
             :disabled="locked || !!planned(module.id)"
             :aria-disabled="locked || !!planned(module.id)"
+            variant="quiet"
             @tap="plan(module)"
           >
-            {{ planned(module.id) ? '已安排明日' : '安排明日训练' }}
-          </button>
+            {{ planned(module.id) ? t('learning.kjg') : t('learning.k53') }}
+          </BaseButton>
         </view>
       </view>
     </template>
-    <text v-else class="review-meta">提交训练后即可复盘</text>
-    <view v-if="learning.journeyInsights.comparisons.length" class="review-calendar" data-test="journey-comparison">
-      <text class="section-title">前后训练对比</text>
+    <BaseEmpty v-else state="empty" :title="t('learning.kgu')" mascot-size="small" pose="sleep" />
+    <BaseCard
+      v-if="learning.journeyInsights.comparisons.length"
+      class="review-calendar"
+      data-test="journey-comparison"
+      padding="none"
+    >
+      <text class="section-title">{{ t('learning.kcy') }}</text>
       <view v-for="row in learning.journeyInsights.comparisons" :key="row.moduleId" class="comparison-row">
-        <text class="review-module-title">{{ row.label }}</text>
+        <text class="review-module-title">{{ learningText(row.label) }}</text>
         <view class="comparison-columns">
           <view
             ><text class="review-meta">{{ row.previousDay }}</text
             ><text class="comparison-number">{{ row.previous.correct }} / {{ row.previous.reliable }}</text>
             <text class="review-meta"
-              >{{ row.previous.questions }}题 · 待核对 {{ row.previous.pending }} · 提示 {{ row.previous.helped }}</text
+              >{{ row.previous.questions }}{{ t('learning.k1v') }}{{ row.previous.pending }}{{ t('learning.km')
+              }}{{ row.previous.helped }}</text
             ></view
           >
           <view
             ><text class="review-meta">{{ row.currentDay }}</text
             ><text class="comparison-number">{{ row.current.correct }} / {{ row.current.reliable }}</text>
             <text class="review-meta"
-              >{{ row.current.questions }}题 · 待核对 {{ row.current.pending }} · 提示 {{ row.current.helped }}</text
+              >{{ row.current.questions }}{{ t('learning.k1v') }}{{ row.current.pending }}{{ t('learning.km')
+              }}{{ row.current.helped }}</text
             ></view
           >
         </view>
         <text v-if="row.percentagePointDelta !== null" class="review-meta"
-          >训练正确率差异 {{ row.percentagePointDelta > 0 ? '+' : ''
-          }}{{ row.percentagePointDelta.toFixed(1) }} 个百分点</text
+          >{{ t('learning.km1') }}{{ row.percentagePointDelta > 0 ? '+' : '' }}{{ row.percentagePointDelta.toFixed(1)
+          }}{{ t('learning.ksl') }}</text
         >
-        <text class="review-meta">{{ row.conditions }}。记录差异不等同能力变化。</text>
+        <text class="review-meta">{{ learningText(row.conditions) }}{{ t('learning.k7t') }}</text>
       </view>
-    </view>
-    <view
+    </BaseCard>
+    <BaseCard
       v-if="learning.journeyInsights.consolidation.length"
       class="review-calendar"
       data-test="journey-consolidation"
+      padding="none"
     >
-      <text class="section-title">集中巩固</text>
+      <text class="section-title">{{ t('learning.k7e') }}</text>
       <view v-for="row in learning.journeyInsights.consolidation" :key="row.id" class="review-module">
         <view
           ><text class="review-module-title">{{ row.name }}</text
-          ><text class="review-meta">{{ row.label }} · 依据 {{ row.evidenceIds.length }} 份原答</text>
+          ><text class="review-meta"
+            >{{ learningText(row.label) }}{{ t('learning.k38') }}{{ row.evidenceIds.length
+            }}{{ t('learning.ki5') }}</text
+          >
           <text v-if="row.kind === 'reliable'" class="review-meta"
-            >可靠错答 {{ row.wrong }} · 部分正确 {{ row.partial }}</text
+            >{{ t('learning.kti') }}{{ row.wrong }}{{ t('learning.ko3') }}{{ row.partial }}</text
           ></view
         >
-        <button role="button" tabindex="0" :disabled="locked" :aria-disabled="locked" @tap="consolidate(row)">
-          {{ row.kind === 'pending' ? '查看原答' : '开始巩固检验' }}
-        </button>
+        <BaseButton :disabled="locked" :aria-disabled="locked" variant="quiet" @tap="consolidate(row)">
+          {{ row.kind === 'pending' ? t('learning.kml') : t('learning.ku6') }}
+        </BaseButton>
       </view>
-    </view>
-    <view class="review-calendar">
-      <button role="button" tabindex="0" :aria-expanded="handoffVisible" @tap="handoffVisible = !handoffVisible">
-        {{ handoffVisible ? '收起接续摘要' : '生成接续摘要' }}
-      </button>
-      <textarea
+    </BaseCard>
+    <BaseCard class="review-calendar" padding="none">
+      <BaseButton :aria-expanded="handoffVisible" variant="quiet" @tap="handoffVisible = !handoffVisible">
+        {{ handoffVisible ? t('learning.kuc') : t('learning.ksc') }}
+      </BaseButton>
+      <BaseInput
         v-if="handoffVisible"
-        :value="learning.journeyInsights.handoff"
+        :model-value="learning.journeyInsights.handoff"
         readonly
-        aria-label="当前目标接续摘要"
         class="handoff-text"
-      ></textarea>
-    </view>
-    <view class="review-calendar">
-      <text class="section-title">近7天学习活动</text>
-      <view class="calendar-days" aria-label="近7天学习活动">
+        :label="t('learning.khb')"
+        multiline
+      />
+    </BaseCard>
+    <BaseCard class="review-calendar" padding="none">
+      <text class="section-title">{{ t('learning.krm') }}</text>
+      <view class="calendar-days" :aria-label="t('learning.krm')">
         <view v-for="day in activity" :key="day.day" class="calendar-day">
           <text>{{ day.day.slice(5) }}</text
-          ><text>{{ day.answers }} 份原答</text><text>{{ day.completed ? '复盘完成' : '—' }}</text>
+          ><text>{{ day.answers }}{{ t('learning.ki5') }}</text
+          ><text>{{ day.completed ? t('learning.knz') : '—' }}</text>
         </view>
       </view>
-    </view>
-    <view class="review-calendar">
-      <text class="section-title">复习与后续安排</text>
+    </BaseCard>
+    <BaseCard class="review-calendar" padding="none">
+      <text class="section-title">{{ t('learning.ka2') }}</text>
       <view v-for="group in future" :key="group.id" class="review-module">
         <view
-          ><text class="review-module-title">{{ moduleName(group.moduleId) }} · {{ group.day }}</text>
+          ><text class="review-module-title">{{ learningText(moduleName(group.moduleId)) }} · {{ group.day }}</text>
           <text class="review-meta"
-            >{{ group.questionKeys.length }}题 · {{ group.submittedBy ? '已提交' : '待提交' }}</text
+            >{{ group.questionKeys.length }}{{ t('learning.kg5')
+            }}{{ group.submittedBy ? t('learning.kbr') : t('learning.k8j') }}</text
           ></view
         >
-        <button role="button" tabindex="0" @tap="learning.selectTraining(group.id)">查看题组</button>
+        <BaseButton variant="quiet" @tap="learning.selectTraining(group.id)">{{ t('learning.kg7') }}</BaseButton>
       </view>
       <view v-for="review in reviews" :key="review.id" class="review-module">
         <view
           ><text class="review-module-title">{{ questionPrompt(review.questionKey) }}</text>
           <text class="review-meta"
-            >{{ dateLabel(review.due) }} · {{ review.due <= Date.now() ? '到期复测' : '未来复测' }}</text
+            >{{ learningText(dateLabel(review.due)) }} ·
+            {{ review.due <= Date.now() ? t('learning.k7j') : t('learning.kbq') }}</text
           ></view
         >
-        <button role="button" tabindex="0" @tap="openReview(review)">回到复测题</button>
+        <BaseButton variant="quiet" @tap="openReview(review)">{{ t('learning.k5w') }}</BaseButton>
       </view>
-      <text v-if="!reviews.length && !future.length" class="review-meta">暂无复习安排</text>
-    </view>
-    <text v-if="message" class="review-feedback" :class="{ warning: failed }" :role="failed ? 'alert' : 'status'">{{
-      message
-    }}</text>
+      <BaseEmpty
+        v-if="!reviews.length && !future.length"
+        state="empty"
+        :title="t('learning.kjf')"
+        mascot-size="small"
+        pose="sleep"
+      />
+    </BaseCard>
+    <view v-if="message" class="review-feedback"
+      ><BaseEmpty v-if="failed" state="error" :title="learningText(message)" mascot-size="small" /><text v-else>{{
+        learningText(message)
+      }}</text></view
+    >
   </view>
 </template>
 <script setup>
+import BaseEmpty from '@/components/base/base-empty/base-empty.vue';
+import BaseSegmented from '@/components/base/base-segmented/base-segmented.vue';
+import YoziMascot from '@/components/base/yozi-mascot/yozi-mascot.vue';
+import { learningText } from '@/i18n/learning.js';
+import { t } from '@/i18n/index.js';
+import BaseButton from '@/components/base/base-button/base-button.vue';
+import BaseInput from '@/components/base/base-input/base-input.vue';
+import BaseCard from '@/components/base/base-card/base-card.vue';
+
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import { useConversationLearningStore } from '@/stores/modules/conversation-learning.js';
 import { dayKey } from '@/services/learning/learning-domain.js';
@@ -272,111 +305,98 @@ onUnmounted(() => unbind());
 </script>
 <style scoped>
 .journey-review {
-  margin-top: 28px;
-  padding-top: 24px;
-  border-top: 1px solid var(--space-line);
+  margin-top: var(--s-8);
+  padding-top: var(--s-6);
+  border-top: var(--border-thin) solid var(--line);
 }
 .review-heading,
 .review-module {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 16px;
+  gap: var(--s-4);
 }
 .review-summary {
   display: block;
-  font-size: 16px;
+  font-size: var(--size-body);
   line-height: 1.75;
-  margin-top: 16px;
+  margin-top: var(--s-4);
 }
 .review-meta {
   display: block;
-  font-size: 12px;
-  color: var(--space-muted);
+  font-size: var(--size-caption);
+  color: var(--ink-3);
   line-height: 1.7;
-  margin-top: 6px;
+  margin-top: var(--s-2);
   overflow-wrap: anywhere;
 }
 .review-module {
-  margin: 16px 0;
-  padding: 12px 0;
-  border-bottom: 1px solid var(--space-line);
+  margin: var(--s-4) 0;
+  padding: var(--s-3) 0;
+  border-bottom: var(--border-thin) solid var(--line);
 }
 .review-module > view {
   min-width: 0;
   flex: 1;
 }
 .review-module-title {
-  font-size: 16px;
+  font-size: var(--size-body);
   line-height: 1.75;
   overflow-wrap: anywhere;
 }
 .review-module-state {
-  font-size: 12px;
+  font-size: var(--size-caption);
   flex-shrink: 0;
 }
 .review-next,
 .review-calendar {
-  margin-top: 28px;
+  margin-top: var(--s-8);
 }
 .review-size {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 12px;
-  margin-top: 8px;
-}
-.review-size input {
-  width: 72px;
-  min-height: 44px;
-  padding: 8px;
-  border: 1px solid var(--space-line);
-  border-radius: 12px;
+  gap: var(--s-2);
+  font-size: var(--size-caption);
+  margin-top: var(--s-2);
 }
 .calendar-days {
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));
-  gap: 8px;
-  margin-top: 16px;
+  gap: var(--s-2);
+  margin-top: var(--s-4);
 }
 .calendar-day {
   display: grid;
-  gap: 8px;
-  font-size: 12px;
+  gap: var(--s-2);
+  font-size: var(--size-caption);
   line-height: 1.5;
   font-variant-numeric: tabular-nums;
 }
 .comparison-row {
-  padding: 16px 0;
-  border-bottom: 1px solid var(--space-line);
+  padding: var(--s-4) 0;
+  border-bottom: var(--border-thin) solid var(--line);
 }
 .comparison-columns {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px;
-  margin: 12px 0;
+  gap: var(--s-4);
+  margin: var(--s-3) 0;
 }
 .comparison-number {
   display: block;
-  font-size: 24px;
+  font-size: var(--size-title-2);
   line-height: 1.5;
   font-variant-numeric: tabular-nums;
 }
 .handoff-text {
   width: 100%;
-  min-height: 220px;
-  box-sizing: border-box;
-  font-size: 14px;
-  line-height: 1.75;
-  margin-top: 16px;
-  padding: 12px;
-  color: inherit;
+  margin-top: var(--s-4);
 }
 .review-feedback {
   display: block;
-  font-size: 14px;
+  font-size: var(--size-small);
   line-height: 1.7;
-  margin-top: 16px;
+  margin-top: var(--s-4);
 }
 @media (max-width: 520px) {
   .review-heading {
@@ -385,7 +405,7 @@ onUnmounted(() => unbind());
   }
   .calendar-days {
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 16px;
+    gap: var(--s-4);
   }
   .review-module {
     flex-wrap: wrap;

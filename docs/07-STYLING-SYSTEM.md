@@ -49,6 +49,8 @@ H5 复用 public/fonts 的本地 Epilogue Black、DM Sans Regular 与 DM Sans Me
 
 [src/i18n/index.js](../src/i18n/index.js) 提供轻量 `t(key, params)`、只读响应式 `currentLanguage`、`setLanguage(locale)`、`initI18n()`；不引入 vue-i18n。业务语言包按 messages/shell、messages/settings 模块组织，支持 zh-CN 与 en。模板使用 `$t('key')`；Composition API 导入 `t`，在模板或 computed 中调用以随语言即时刷新。插值写作 `{name}`，缺少键时显示键名，缺少参数时保留占位符，不插入 HTML。
 
+功能分包通过 `registerMessages(namespace, { 'zh-CN': {...}, en: {...} })` 注册词典。键可写完整命名空间或相对键；重复相同注册幂等，先选语言或先挂载文字也会在注册后即时刷新。未注册或缺少键时安全回退键名。主包保留外壳、公共组件及其必要文案；完整学习词典只由 `pages/learning/messages.js` 在学习分包入口导入并注册，不能由通用 i18n 模块反向导入。后续页面分包沿用此方式，并核对微信实际输出目录与主包字节。
+
 语言只取本机保存的 `yozi_language`，没有则使用 zh-CN；不跟随系统语言，避免英文系统下出现中英混排。保存失败不修改当前语言。内部对 uni 使用 zh-Hans / en，与产品 zh-CN / en 明确映射。
 
 pages.json 的页面标题和导航文字使用 `%pages.xxx%` / `%nav.xxx%`；[src/locale/zh-Hans.json](../src/locale/zh-Hans.json) 与 [src/locale/en.json](../src/locale/en.json) 是 uni 内置页面国际化资源，也由 shell 模块复用。全局页面显示桥接刷新当前导航标题，现有 CustomTabbar 文案响应式更新。“我的”页提供“语言 / Language”：选择仅改草稿，点击保存后切换，取消保留原选择。当前接入范围为页面标题、底部导航与语言设置；其他正文随各页改版迁移。
@@ -87,6 +89,22 @@ pages.json 的页面标题和导航文字使用 `%pages.xxx%` / `%nav.xxx%`；[s
 - [mascot-motion.js](../src/design/mascot-motion.js) 简单登记可见实例，同屏只允许一个播放，后来登记者优先。不可见/页面onHide/应用后台停止播放并释放资格，卸载清理观察器与全局监听。H5 用 IntersectionObserver、visibilitychange，小程序/App 用 uni.createIntersectionObserver、onHide/onShow 与应用显隐 API。
 - 系统 prefers-reduced-motion、应用偏好 `yozi_reduce_motion` 或组件 reducedMotion 开启时显示静态姿势。应用通过 `setMascotReducedMotion()` 明确保存，读取与生命周期变化不写偏好。H5 作答输入聚焦与 BaseInput 原生 focus/blur 暂停循环，单次结果反馈仍可完成。
 - 256px WebP 使用本轮提供的清理后原文件；512px放在非 static 资产目录并经条件编译排除微信，只供 H5/App/桌面大图。构建审计必须确认实际产物、主包余量与图片字节；达到微信1.85MB迁移阈值时，将 read/sleep/point/curious 移入实际消费者的分包，不以路径声明代替产物检查。
+
+## 学习主界面
+
+第3批沿设计板 `#pages` 的桌面学习页实施，范围为 learning 页面及其业务组件；Playful / Future 落地页仍保留原布局。桌面使用 BaseCard 玻璃侧栏，品牌与唯一主要操作“开始新对话”在顶部，原导航、搜索、最近会话与资料入口保持。导航、最近会话与资料使用图标加文字的左对齐列表行，选中浅色填充，资料标题单行省略。窄屏改为抽屉，初始焦点放在关闭按钮，支持键盘圈定、Esc 关闭及焦点返回；底栏沿公共导航。
+
+页头保留标题、日期和 BaseTag 模型状态，圆点与文字共同表达连接结果。消息使用 BaseBubble，助手头像为小号静态吉祥物。题目放在纸面 BaseCard，BaseOptions 显示字母及默认、已选、正确、错误、待核对五态；多选使用复选语义。选项只修改草稿，“要个提示”使用轻量按钮，“提交答案”使用主要按钮，明确提交才保存原答。每张题卡只有一个操作容器：左侧小号轻量按钮横向换行，右侧唯一主要按钮提交；原有动作显示与禁用条件保持。提交结果标签与小号吉祥物放在操作区上方。主观结果仍为杏色待核对，不升级为正确。
+
+今天统计使用 BaseStat，任务保留分母，可靠作答与待核对分开；进度条只反映已有事实。输入条使用玻璃 BaseCard 与 multiline BaseInput，导入为轻量图标按钮，发送为主要图标按钮，默认一行高，使用 `autoGrow` 与 `maxRows=5` 随内容增高，禁止拖拽调整；导入和发送对齐底部。页面按实测输入条高度预留阅读空间，窄屏再计入底栏与安全区。原有草稿、键盘发送及禁用规则保持。路线、整批训练、复盘、提醒、实验室与资料操作复用公共控件；范围与模式切换用 BaseSegmented，筛选用平面 BaseChip，加载、空白与错误用 BaseEmpty，确认沿 CustomModal。
+
+公共组件仅补齐既有场景所需能力：BaseOptions 支持多选；BaseInput 支持数值、只读、隐藏标签、原生 input 事件与仅键盘聚焦描边；BaseButton 支持图标与文字的同行插槽布局以及 `align="start"`、`selected` 列表状态；BaseTag 支持状态圆点同行。H5 输入使用真实 DOM 控件以保持草稿显示、聚焦与只读行为；按钮、选项、分段、芯片与复选控件绑定原生键盘事件，防止 uni-app 自定义元素漏接或重复执行。学习页面只负责令牌布局，不定义按钮、选项、输入、气泡、统计或弹窗的另一套材质。侧栏搜索静止及鼠标聚焦不显示键盘焦点框；键盘聚焦显示令牌规定的2px焦点。私人资料卡为纸面，关闭为轻量图标按钮。操作区最多一个主要按钮，触区至少44px。
+
+吉祥物：空会话挥手一次后待机；回复中循环思考，回复完成或出错立即停止；可靠正确庆祝一次，可靠错误鼓励一次，待核对静态阅读；明确完成当日复盘庆祝一次，无任务或暂停静态休息。助手气泡头像始终静止，公共调度保证同屏最多一个动作；作答输入聚焦暂停循环，减少动态只保留姿势。
+
+本批界面及无障碍文字走 `t()`，zh-CN 为默认，只有明确选择 English 才切英文。学习词典与已知界面标签映射见 [分包语言注册](../src/pages/learning/messages.js) 和 [学习文案适配](../src/i18n/learning.js)；平台回执及系统观察标签只在显示时翻译，弹窗默认文字使用公共词条；题目、模型回复、原答与用户自述资料不翻译，保存内容不变。
+
+学习界面的结构、控件与视觉数值以本节为准，替代下方“2026-10-10：连续对话目录、内嵌进度与品牌字形”“2026-10-10：学习路线与复盘沿现有阅读面”“2026-10-08：双线执行的页面与状态设计清单”中的旧控件和旧视觉数值。其保存、定位、权限、判分及复盘合同继续适用，既有条目保留。
 
 ## 既有功能界面合同
 

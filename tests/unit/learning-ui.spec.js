@@ -1,4 +1,12 @@
 import { observeLearningDialogs } from '../setup.js';
+
+function matchesLearningControl(button, label) {
+  const expected = label === '提交作答' ? '提交答案' : label === '提示' ? '要个提示' : label;
+  if (button.text().trim() === expected || button.attributes('aria-label') === expected) return true;
+  const key = button.find('.base-option__key');
+  const text = button.find('.base-option__label');
+  return key.exists() && text.exists() && `${key.text().trim()}. ${text.text().trim()}` === expected;
+}
 import CustomModal from '@/components/common/CustomModal.vue';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createPinia, getActivePinia, setActivePinia } from 'pinia';
@@ -92,7 +100,7 @@ it.each([
     const raw = 'A clear independent explanation.  Another point.\n\n'.repeat(40);
     expect(raw.length).toBeGreaterThan(1000);
     await input.setValue(raw);
-    const submit = wrapper.findAll('button').find((b) => b.text() === '提交作答');
+    const submit = wrapper.findAll('button').find((b) => matchesLearningControl(b, '提交作答'));
     await submit.trigger('tap');
     await flushPromises();
     expect(store.state.attempts.at(-1)).toMatchObject({ answer: raw, grade: { status: 'pending' } });
@@ -217,13 +225,13 @@ it.each(['writing', 'science', 'vocabulary'])(
     store.focus(target.questionKey);
     const overview = mount(LearningOverview, { props: { view: 'plan', initialExpanded: true }, global: { stubs } });
     const wrapper = mount(LearningPage, { global: { stubs: { ...stubs, LearningLab: true } } });
-    const submit = () => wrapper.findAll('button').find((button) => button.text().trim() === '提交作答');
+    const submit = () => wrapper.findAll('button').find((button) => matchesLearningControl(button, '提交作答'));
     try {
       if (kind === 'writing') await wrapper.find('textarea[aria-label="中文叙事作答"]').setValue('合成待提交草稿。');
       else
         await wrapper
           .findAll('button')
-          .find((button) => button.text().trim() === store.activeQuestion.options[0])
+          .find((button) => matchesLearningControl(button, store.activeQuestion.options[0]))
           .trigger('tap');
       const saved = store.exportData();
       expect(submit().attributes('disabled')).toBeDefined();
@@ -299,7 +307,7 @@ it('词义未来题选择只填草稿，到期后实际提交保存review；自�
   expect(store.state.attempts).toHaveLength(beforeOpen);
   plan.unmount();
   const wrapper = mount(LearningPage, { global: { stubs: { ...stubs, LearningLab: true } } });
-  const button = (label) => wrapper.findAll('button').find((b) => b.text().trim() === label);
+  const button = (label) => wrapper.findAll('button').find((b) => matchesLearningControl(b, label));
   try {
     const q = store.activeQuestion;
     expect(button('变式练习')).toBeUndefined();
@@ -347,7 +355,8 @@ describe('选择项与明确保存', () => {
         }
       }
     });
-    const button = (label, root = wrapper) => root.findAll('button').find((item) => item.text().trim() === label);
+    const button = (label, root = wrapper) =>
+      root.findAll('button').find((item) => matchesLearningControl(item, label));
     return { store, wrapper, button };
   }
   function choice(store, id = 'choice-ui', options = ['A. 向右', 'B. 向左', 'C. 不变']) {
@@ -465,12 +474,12 @@ describe('选择项与明确保存', () => {
       await p.button('A. 向右').trigger('tap');
       await p.button('B. 向左').trigger('tap');
       expect(p.wrapper.get('textarea[aria-label="消息或作答"]').element.value).toBe('B');
-      await p.wrapper.get('[role="checkbox"]').trigger('tap');
+      await p.wrapper.get('[data-test="multiple-answers"]').trigger('tap');
       await p.button('A. 向右').trigger('tap');
       expect(p.wrapper.get('textarea[aria-label="消息或作答"]').element.value).toBe('A、B');
-      await p.wrapper.get('[role="checkbox"]').trigger('tap');
+      await p.wrapper.get('[data-test="multiple-answers"]').trigger('tap');
       expect(p.wrapper.get('textarea[aria-label="消息或作答"]').element.value).toBe('A');
-      await p.wrapper.get('[role="checkbox"]').trigger('tap');
+      await p.wrapper.get('[data-test="multiple-answers"]').trigger('tap');
       await p.button('C. 不变').trigger('tap');
       expect(p.store.exportData()).toBe(before);
       await p.button('提交作答').trigger('tap');
@@ -565,7 +574,7 @@ it('合并已经成功后新的学习事实清理过时回执，不误报旧备�
     data: { goal: '合成恢复记录' }
   }).state;
   const wrapper = mount(LearningPage, { global: { stubs: { ...stubs, LearningLab: true } } });
-  const button = (label) => wrapper.findAll('button').find((b) => b.text().trim() === label);
+  const button = (label) => wrapper.findAll('button').find((b) => matchesLearningControl(b, label));
   const close = observeLearningDialogs(wrapper, (dialog) => dialog.success({ confirm: true }));
   try {
     await button('记录与隐私').trigger('tap');
@@ -597,7 +606,7 @@ describe('同步等待与冲突确认', () => {
     store.start('12 + 8');
     store.submit('19', true, 'page-sync-original-answer');
     const wrapper = mount(LearningPage, { global: { stubs } });
-    const button = (name) => wrapper.findAll('button').find((item) => item.text().trim() === name);
+    const button = (name) => wrapper.findAll('button').find((item) => matchesLearningControl(item, name));
     const dialogs = [];
     const stop = observeLearningDialogs(wrapper, (dialog) => dialogs.push(dialog));
     return { store, wrapper, button, dialogs, stop };
@@ -805,7 +814,7 @@ describe('网页备份文件与明确恢复', () => {
     store.submit('19', true, 'browser-file-original-answer');
     store.commit('task.stop', { conversationId: store.active.id });
     const wrapper = mount(LearningPage, { global: { stubs } });
-    const button = (name) => wrapper.findAll('button').find((item) => item.text().trim() === name);
+    const button = (name) => wrapper.findAll('button').find((item) => matchesLearningControl(item, name));
     const dialogs = [];
     const stop = observeLearningDialogs(wrapper, (dialog) => dialogs.push(dialog));
     const original = store.exportData();
@@ -965,7 +974,7 @@ describe('备份预览的输入和页面边界', () => {
     const store = useConversationLearningStore();
     store.start('12 + 8');
     const wrapper = mount(LearningPage, { global: { stubs } });
-    const button = (name) => wrapper.findAll('button').find((item) => item.text().trim() === name);
+    const button = (name) => wrapper.findAll('button').find((item) => matchesLearningControl(item, name));
     const open = async () => {
       await button('记录与隐私').trigger('tap');
       await button('恢复备份').trigger('tap');
@@ -1480,7 +1489,7 @@ describe('学习空间的实际入口与目录', () => {
         }
       }
     });
-    const button = (label) => wrapper.findAll('button').find((node) => node.text().trim() === label);
+    const button = (label) => wrapper.findAll('button').find((node) => matchesLearningControl(node, label));
     return { wrapper, button };
   }
   it('资料空状态、禁用与写入失败在操作附近展示，重试成功才清空正文', async () => {
@@ -2012,7 +2021,7 @@ describe('学习空间的实际入口与目录', () => {
         }
       }
     });
-    const button = (label) => wrapper.findAll('button').find((node) => node.text().trim() === label);
+    const button = (label) => wrapper.findAll('button').find((node) => matchesLearningControl(node, label));
     await button('记录与隐私').trigger('tap');
     await button('恢复备份').trigger('tap');
     await wrapper.find('[aria-label="学习记录 JSON 备份"]').setValue(content);
@@ -2060,7 +2069,7 @@ describe('学习空间的实际入口与目录', () => {
         }
       }
     });
-    const button = (label) => wrapper.findAll('button').find((node) => node.text().trim() === label);
+    const button = (label) => wrapper.findAll('button').find((node) => matchesLearningControl(node, label));
     await wrapper.find('.composer textarea').setValue('20');
     store.busy = true;
     await flushPromises();
@@ -2094,7 +2103,7 @@ describe('学习空间的实际入口与目录', () => {
     observeLearningDialogs(wrapper, (state) => {
       dialog = state;
     });
-    const button = (label) => wrapper.findAll('button').find((node) => node.text().trim() === label);
+    const button = (label) => wrapper.findAll('button').find((node) => matchesLearningControl(node, label));
     await button('记录与隐私').trigger('tap');
     await button('同步学习记录').trigger('tap');
     expect(dialog.title).toBe('登录后同步学习记录');
@@ -2334,14 +2343,14 @@ describe('学习空间的实际入口与目录', () => {
         reason: '用户选择逐步'
       });
       const wrapper = mount(LearningPage, { global: { stubs: { ...stubs, PrivacyPopup: true, CustomTabbar: true } } });
-      const control = (label) => wrapper.findAll('button').find((b) => b.text().trim() === label);
+      const control = (label) => wrapper.findAll('button').find((b) => matchesLearningControl(b, label));
       const chooseCorrect = async () => {
         const option = wrapper.get('[aria-label="答案选项"]').findAll('button')[
           'ABCD'.indexOf(store.activeQuestion.validation.answer)
         ];
         const before = store.exportData();
         await option.trigger('tap');
-        expect(option.attributes('aria-pressed')).toBe('true');
+        expect(option.attributes('aria-checked')).toBe('true');
         expect(store.exportData()).toBe(before);
       };
       try {
@@ -2421,14 +2430,14 @@ describe('学习空间的实际入口与目录', () => {
     );
     wrapper.unmount();
   });
-  it('目录打开聚焦搜索，Escape 关闭并恢复原按钮焦点', async () => {
+  it('目录打开聚焦关闭按钮，Escape 关闭并恢复原按钮焦点', async () => {
     const wrapper = mount(LearningShell, { attachTo: document.body, global: { stubs } });
     await wrapper.find('.mobile-menu').trigger('tap');
     await flushPromises();
     expect(wrapper.find('.space-sidebar').classes()).toContain('sidebar-open');
-    expect(document.activeElement).toBe(wrapper.find('.search-input').element);
+    expect(document.activeElement).toBe(wrapper.find('.sidebar-close').element);
     expect(wrapper.find('.space-main').attributes()).toHaveProperty('inert');
-    await wrapper.find('.search-input').trigger('keydown', { key: 'Escape' });
+    await wrapper.find('.sidebar-close').trigger('keydown', { key: 'Escape' });
     await flushPromises();
     expect(wrapper.find('.space-sidebar').classes()).not.toContain('sidebar-open');
     expect(document.activeElement).toBe(wrapper.find('.mobile-menu').element);

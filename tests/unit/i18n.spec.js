@@ -9,7 +9,8 @@ import {
   resolveLanguage,
   normalizeLanguage,
   LANGUAGE_KEY,
-  installI18n
+  installI18n,
+  registerMessages
 } from '@/i18n/index.js';
 import { formatDate, formatTime, formatNumber } from '@/i18n/format.js';
 import shell, { PAGE_TITLE_KEYS } from '@/i18n/messages/shell.js';
@@ -119,6 +120,63 @@ describe('lightweight i18n', () => {
     expect(initI18n()).toBe('zh-CN');
     expect(setLanguage('en')).toBe(true);
     expect(currentLanguage.value).toBe('en');
+  });
+});
+
+describe('subpackage message registration', () => {
+  it('returns a readable key before a feature registers, without loading its dictionary', () => {
+    expect(() => t('unregisteredLesson.title')).not.toThrow();
+    expect(t('unregisteredLesson.title')).toBe('unregisteredLesson.title');
+    expect(t('learning.hint')).toBe('learning.hint');
+  });
+  it('refreshes already rendered text on registration and on both language switches', async () => {
+    const label = computed(() => t('registeredLesson.title', { count: 2 }));
+    expect(label.value).toBe('registeredLesson.title');
+    expect(
+      registerMessages('registeredLesson', {
+        'zh-CN': { title: '学习 {count} 项' },
+        en: { title: 'Learn {count} topics' }
+      })
+    ).toBe(true);
+    await nextTick();
+    expect(label.value).toBe('学习 2 项');
+    setLanguage('en');
+    expect(label.value).toBe('Learn 2 topics');
+    setLanguage('zh-CN');
+    expect(label.value).toBe('学习 2 项');
+  });
+  it('registers after English is chosen and treats identical repeat registrations as a no-op', () => {
+    setLanguage('en');
+    const dictionary = { 'zh-CN': { title: '开始' }, en: { title: 'Start' } };
+    registerMessages('idempotentLesson', dictionary);
+    let evaluations = 0;
+    const label = computed(() => {
+      evaluations++;
+      return t('idempotentLesson.title');
+    });
+    expect(label.value).toBe('Start');
+    registerMessages('idempotentLesson', structuredClone(dictionary));
+    expect(label.value).toBe('Start');
+    expect(evaluations).toBe(1);
+  });
+  it('keeps namespaces separate, supports qualified keys, and falls back to Chinese', () => {
+    registerMessages('firstLesson', {
+      'zh-CN': { title: '第一课', 'firstLesson.help': '帮助' },
+      en: { title: 'First lesson' }
+    });
+    registerMessages('secondLesson', { 'zh-CN': { title: '第二课' }, en: { title: 'Second lesson' } });
+    setLanguage('en');
+    expect(t('firstLesson.title')).toBe('First lesson');
+    expect(t('secondLesson.title')).toBe('Second lesson');
+    expect(t('firstLesson.help')).toBe('帮助');
+    expect(t('nav.practice')).toBe('Practice');
+  });
+  it('rejects malformed registration atomically without changing existing text', () => {
+    registerMessages('validatedLesson', { 'zh-CN': { title: '保留' }, en: { title: 'Keep' } });
+    expect(registerMessages('validatedLesson', { 'zh-CN': { title: '替换', invalid: 0 } })).toBe(false);
+    expect(t('validatedLesson.title')).toBe('保留');
+    expect(registerMessages('', {})).toBe(false);
+    expect(registerMessages('bad.name', {})).toBe(false);
   });
 });
 

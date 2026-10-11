@@ -1,5 +1,12 @@
 <template>
-  <view class="base-segmented" :class="{ 'is-block': block }" role="tablist" :aria-label="label" @keydown="keydown">
+  <view
+    ref="root"
+    class="base-segmented"
+    :class="{ 'is-block': block }"
+    role="tablist"
+    :aria-label="label"
+    @keydown="keydown"
+  >
     <button
       v-for="(item, index) in options"
       :key="item.value"
@@ -16,6 +23,7 @@
   </view>
 </template>
 <script setup>
+import { onMounted, onBeforeUnmount, ref } from 'vue';
 const props = defineProps({
   modelValue: { type: [String, Number], default: '' },
   options: { type: Array, default: () => [] },
@@ -23,6 +31,16 @@ const props = defineProps({
   block: Boolean
 });
 const emit = defineEmits(['update:modelValue']);
+const root = ref(null);
+let keyboardElement;
+onMounted(() => {
+  // #ifdef H5
+  keyboardElement = root.value?.$el || root.value;
+  keyboardElement?.addEventListener?.('keydown', keydown);
+  // #endif
+});
+onBeforeUnmount(() => keyboardElement?.removeEventListener?.('keydown', keydown));
+
 function tabIndex(index) {
   const selected = props.options.findIndex((item) => item.value === props.modelValue && !item.disabled);
   return index === (selected < 0 ? props.options.findIndex((item) => !item.disabled) : selected) ? 0 : -1;
@@ -32,6 +50,7 @@ function select(index) {
   if (option && !option.disabled) emit('update:modelValue', option.value);
 }
 function keydown(event) {
+  if (event.defaultPrevented) return;
   const controls = [...event.currentTarget.querySelectorAll('[role="tab"]')];
   const index = controls.indexOf(event.target.closest('[role="tab"]'));
   if (index < 0 || !['ArrowLeft', 'ArrowRight', 'Home', 'End', 'Enter', ' '].includes(event.key)) return;
