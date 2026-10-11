@@ -8,6 +8,7 @@ export const PAGE_TITLE_KEYS = {
   'pages/index/index': 'pages.home',
   'pages/practice/index': 'pages.practice',
   'pages/profile/index': 'pages.profile',
+  'platforms/h5/components': 'pages.components',
   'pages/practice-sub/do-quiz': 'pages.quiz',
   'pages/practice-sub/question-bank': 'pages.bank',
   'pages/login/index': 'pages.login',

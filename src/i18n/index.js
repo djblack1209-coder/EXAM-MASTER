@@ -1,6 +1,7 @@
 import { ref, readonly } from 'vue';
 import shell, { PAGE_TITLE_KEYS } from './messages/shell.js';
 import settings from './messages/settings.js';
+import components from './messages/components.js';
 
 export const LANGUAGE_KEY = 'yozi_language';
 export const LANGUAGE_OPTIONS = Object.freeze([
@@ -9,7 +10,10 @@ export const LANGUAGE_OPTIONS = Object.freeze([
 ]);
 const language = ref('zh-CN');
 export const currentLanguage = readonly(language);
-const messages = { 'zh-CN': { ...shell['zh-CN'], ...settings['zh-CN'] }, en: { ...shell.en, ...settings.en } };
+const messages = {
+  'zh-CN': { ...shell['zh-CN'], ...settings['zh-CN'], ...components['zh-CN'] },
+  en: { ...shell.en, ...settings.en, ...components.en }
+};
 let listening = false;
 
 export function normalizeLanguage(value) {

@@ -14,9 +14,6 @@
       @touchend="handleTouchEnd"
       @touchcancel="handleTouchCancel"
     >
-      <view class="tabbar-sheen" />
-      <view class="tabbar-glider" :style="gliderStyle" />
-
       <view
         v-for="(item, index) in tabList"
         :id="`e2e-tabbar-${item.path.split('/')[2]}`"
@@ -34,7 +31,12 @@
         @tap="switchTab(item.path, index)"
       >
         <view class="icon-wrapper">
-          <image :src="visualActiveIndex === index ? item.selectedIcon : item.icon" class="tab-icon" mode="aspectFit" />
+          <BaseIcon
+            class="tab-icon"
+            :name="item.icon"
+            :selected="visualActiveIndex === index"
+            :tone="visualActiveIndex === index ? 'violet-ink' : 'ink-3'"
+          />
           <view v-if="item.showDot" class="red-dot" />
         </view>
         <text class="tab-label">{{ item.text }}</text>
@@ -51,7 +53,7 @@ import { logger } from '@/utils/logger.js';
 import config from '@/config/index.js';
 import { safeNavigateTo } from '@/utils/safe-navigate';
 import { getWindowInfo } from '@/utils/core/system.js';
-import { getAssetUrl } from '@/config/static-assets.js';
+import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 import { vibrateLight } from '@/utils/helpers/haptic.js';
 import { useThemeStore } from '@/stores/modules/theme.js';
 import { bindLearningKeyboard } from '@/services/learning/keyboard-controls.js';
@@ -133,24 +135,21 @@ const tabList = computed(() => {
     {
       text: t('nav.home'),
       path: '/pages/index/index',
-      icon: getAssetUrl('tabbar', 'home'),
-      selectedIcon: getAssetUrl('tabbar', 'home-active'),
+      icon: 'home',
       showDot: false,
       isTabBar: true
     },
     {
       text: t('nav.practice'),
       path: '/pages/practice/index',
-      icon: getAssetUrl('tabbar', 'practice'),
-      selectedIcon: getAssetUrl('tabbar', 'practice-active'),
+      icon: 'list',
       showDot: mistakeDot.value,
       isTabBar: true
     },
     {
       text: t('nav.profile'),
       path: '/pages/profile/index',
-      icon: getAssetUrl('tabbar', 'profile'),
-      selectedIcon: getAssetUrl('tabbar', 'profile-active'),
+      icon: 'user',
       showDot: false,
       isTabBar: true
     }
@@ -182,21 +181,9 @@ const isDarkMode = computed(() => props.isDark || themeStore.isDark);
 
 const capsuleStyle = computed(() => {
   if (safeAreaBottom.value > 0) {
-    return { marginBottom: `calc(22rpx + ${safeAreaBottom.value}px)` };
+    return { marginBottom: `calc(var(--s-3) + ${safeAreaBottom.value}px)` };
   }
   return {};
-});
-
-const gliderStyle = computed(() => {
-  const tabCount = Math.max(tabList.value.length, 1);
-  const offset = isDragging.value ? dragOffset.value : 0;
-  const translate = `calc(${visualActiveIndex.value * 100}% + ${offset}px)`;
-
-  return {
-    width: `calc((100% - 16rpx) / ${tabCount})`,
-    transform: `translate3d(${translate}, 0, 0)`,
-    transitionDuration: isDragging.value ? '0ms' : '320ms'
-  };
 });
 
 watch(
@@ -432,236 +419,75 @@ onBeforeUnmount(() => {
   bottom: 0;
   left: 0;
   z-index: 999;
-  background: transparent;
   pointer-events: none;
 }
-
 .tabbar-capsule {
-  position: relative;
   box-sizing: border-box;
   display: flex;
   align-items: center;
-  width: calc(100vw - 56rpx);
-  min-width: 300rpx;
-  max-width: 650rpx;
-  height: 118rpx;
-  margin-right: auto;
-  margin-bottom: calc(22rpx + constant(safe-area-inset-bottom, 0px));
-  margin-bottom: calc(22rpx + env(safe-area-inset-bottom, 0px));
-  margin-left: auto;
-  padding: 8rpx;
-  overflow: hidden;
+  width: calc(100vw - var(--s-8));
+  max-width: calc(var(--dialog-width) + var(--s-6));
+  height: calc(var(--control-height) + var(--s-4));
+  margin: 0 auto calc(var(--s-3) + env(safe-area-inset-bottom, 0px));
+  padding: var(--s-1);
   pointer-events: auto;
-  border-radius: 999rpx;
-  background: linear-gradient(160deg, rgba(255, 255, 255, 0.88), rgba(238, 231, 247, 0.68)), rgba(255, 255, 255, 0.58);
-  box-shadow:
-    0 26rpx 70rpx rgba(51, 40, 66, 0.18),
-    0 10rpx 26rpx rgba(51, 40, 66, 0.1),
-    inset 0 1rpx 0 rgba(255, 255, 255, 0.9),
-    inset 0 -1rpx 0 rgba(51, 40, 66, 0.06);
-  backdrop-filter: blur(20px) saturate(132%);
-  -webkit-backdrop-filter: blur(20px) saturate(132%);
+  border: var(--border-thin) solid var(--glass-line);
+  border-radius: var(--r-pill);
+  background: var(--glass);
+  box-shadow: var(--lift-2);
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   touch-action: pan-x;
-  transition-property: transform, opacity, box-shadow;
-  transition-duration: 240ms;
-  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
 }
-
-.tabbar-capsule.dragging {
-  transform: scale(1.012);
-}
-
-.tabbar-capsule.dark-mode {
-  background: linear-gradient(145deg, rgba(45, 37, 63, 0.92), rgba(33, 26, 46, 0.84)), rgba(33, 26, 46, 0.9);
-  box-shadow:
-    0 28rpx 70rpx rgba(0, 0, 0, 0.34),
-    inset 0 1rpx 0 rgba(255, 255, 255, 0.1),
-    inset 0 -1rpx 0 rgba(0, 0, 0, 0.2);
-}
-
-.tabbar-sheen {
-  position: absolute;
-  top: 8rpx;
-  right: 30rpx;
-  left: 30rpx;
-  height: 34rpx;
-  border-radius: 999rpx;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.76), rgba(255, 255, 255, 0));
-  opacity: 0.7;
-  pointer-events: none;
-}
-
-.tabbar-glider {
-  position: absolute;
-  box-sizing: border-box;
-  top: 8rpx;
-  bottom: 8rpx;
-  left: 8rpx;
-  z-index: 0;
-  border-radius: 999rpx;
-  background:
-    radial-gradient(circle at 30% 16%, rgba(255, 255, 255, 0.92), transparent 34%),
-    linear-gradient(135deg, #f4effb 0%, #dcc8f3 48%, #bcb2ea 100%);
-  box-shadow:
-    0 14rpx 32rpx rgba(51, 40, 66, 0.15),
-    inset 0 1rpx 0 rgba(255, 255, 255, 0.82),
-    inset 0 -2rpx 4rpx rgba(51, 40, 66, 0.07);
-  pointer-events: none;
-  transition-property: transform, opacity;
-  transition-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.tabbar-glider::after {
-  content: '';
-  position: absolute;
-  right: 34rpx;
-  bottom: 10rpx;
-  left: 34rpx;
-  height: 7rpx;
-  border-radius: 999rpx;
-  background: #785bbc;
-  box-shadow: 0 6rpx 16rpx rgba(120, 91, 188, 0.24);
-}
-
 .tab-item {
   position: relative;
-  z-index: 1;
-  box-sizing: border-box;
   display: flex;
   flex: 1;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-width: 0;
-  height: 100%;
-  border-radius: 999rpx;
-  transform: scale(1);
-  transition-property: transform, opacity;
-  transition-duration: 220ms;
-  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  gap: var(--s-1);
+  min-height: var(--touch-min);
+  color: var(--ink-3);
+  background: transparent;
+  border-radius: var(--r-pill);
 }
-
 .tab-item.active {
-  transform: scale(1.055);
+  color: var(--violet-ink);
 }
-
-.tab-item.pressing,
-.tab-item:active {
-  transform: scale(0.94);
-}
-
 .icon-wrapper {
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 54rpx;
-  height: 54rpx;
-  margin-bottom: 4rpx;
 }
-
-.tab-icon {
-  width: 48rpx;
-  height: 48rpx;
-  opacity: 0.66;
-  filter: brightness(0) saturate(100%);
-  transform: translate3d(0, 0, 0) scale(1);
-  transition-property: transform, opacity, filter;
-  transition-duration: 240ms;
-  transition-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.tab-item.active .tab-icon {
-  opacity: 1;
-  filter: brightness(0) saturate(100%);
-  transform: translate3d(0, -3rpx, 0) scale(1.14);
-}
-
 .tab-label {
-  max-width: 92rpx;
-  overflow: hidden;
-  color: rgba(51, 40, 66, 0.68);
-  font-size: 23rpx;
-  font-weight: 650;
-  line-height: 1.14;
-  text-align: center;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  transition-property: color, opacity, transform;
-  transition-duration: 220ms;
-  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  font: var(--weight-semibold) var(--size-caption)/var(--leading-caption) var(--font-ui);
 }
-
-.tab-item.active .tab-label {
-  color: #332842;
-  transform: translate3d(0, -1rpx, 0);
-}
-
-.dark-mode .tab-label {
-  color: rgba(248, 244, 255, 0.72);
-}
-
-.dark-mode .tab-item.active .tab-label {
-  color: #332842;
-}
-
-.dark-mode .tab-icon {
-  filter: brightness(0) invert(1) opacity(0.72);
-}
-
-.dark-mode .tab-item.active .tab-icon {
-  filter: brightness(0) opacity(1);
-}
-
 .red-dot {
   position: absolute;
-  top: -4rpx;
-  right: -6rpx;
-  width: 16rpx;
-  height: 16rpx;
-  border: 3rpx solid rgba(255, 255, 255, 0.9);
-  border-radius: 50%;
-  background-color: #ef4444;
-  box-shadow: 0 4rpx 10rpx rgba(239, 68, 68, 0.28);
-}
-
-.dark-mode .red-dot {
-  border-color: rgba(33, 26, 46, 0.92);
+  top: 0;
+  right: calc(-1 * var(--s-1));
+  width: var(--s-2);
+  height: var(--s-2);
+  border: var(--border-selected) solid var(--paper);
+  border-radius: var(--r-pill);
+  background: var(--coral-fill);
 }
 .tab-item:focus-visible {
-  outline: 2px solid #785bbc;
-  outline-offset: -2px;
+  outline: var(--border-selected) solid var(--focus);
+  outline-offset: calc(-1 * var(--border-selected));
 }
-.dark-mode .tab-item:focus-visible {
-  outline-color: #c9b1ee;
-}
-.tab-item.active .tab-label {
-  font-weight: 700;
-}
-.tabbar-capsule.reduce-motion,
-.tabbar-capsule.reduce-motion .tabbar-glider,
-.tabbar-capsule.reduce-motion .tab-item,
-.tabbar-capsule.reduce-motion .tab-icon,
-.tabbar-capsule.reduce-motion .tab-label {
-  animation: none !important;
-  transition: none !important;
-}
-.tabbar-capsule.reduce-motion .tab-item,
-.tabbar-capsule.reduce-motion .tab-label {
-  transform: none !important;
-}
-@media (prefers-reduced-motion: reduce) {
-  .tabbar-capsule,
-  .tabbar-glider,
-  .tab-item,
-  .tab-icon,
-  .tab-label {
-    animation: none !important;
-    transition: none !important;
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+  .tabbar-capsule {
+    background: var(--paper);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
   }
-  .tab-item,
-  .tab-label {
-    transform: none !important;
+}
+@supports not (backdrop-filter: blur(1px)) {
+  .tabbar-capsule {
+    background: var(--paper);
   }
 }
 </style>

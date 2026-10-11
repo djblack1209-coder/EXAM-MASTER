@@ -91,6 +91,21 @@ function copyCustomTabBar() {
   };
 }
 
+// The installed MP parser does not apply uni's platform-page filter when
+// generating app.json. Filter the compiler's virtual JSON before it imports pages.
+function guardYoziPreviewRoute(isH5) {
+  return {
+    name: 'yozi-preview-route-guard',
+    enforce: 'pre',
+    transform(code, id) {
+      if (isH5 || !id.endsWith('pages-json-js')) return null;
+      const pages = JSON.parse(code);
+      pages.pages = pages.pages.filter((page) => page.path !== 'platforms/h5/components');
+      return { code: JSON.stringify(pages), map: null };
+    }
+  };
+}
+
 function emitAppPackManifest() {
   return {
     name: 'emit-app-pack-manifest',
@@ -263,6 +278,7 @@ export default defineConfig(({ command, mode }) => {
     base: isAppPlus ? './' : '/',
 
     plugins: [
+      guardYoziPreviewRoute(isH5),
       uni(),
       copyCustomTabBar(),
       emitAppPackManifest(),
@@ -359,6 +375,9 @@ export default defineConfig(({ command, mode }) => {
     define: {
       __YOZI_TOKENS__: JSON.stringify(readYoziTokens()),
       'process.env.NODE_ENV': JSON.stringify(mode),
+      __YOZI_PREVIEW__: JSON.stringify(
+        isH5 && (command === 'serve' || (isolatedBuild && env.VITE_YOZI_COMPONENT_PREVIEW === '1'))
+      ),
       'process.env.SENTRY_DSN': JSON.stringify(env.VITE_SENTRY_DSN || ''),
       __APP_VERSION__: JSON.stringify(env.npm_package_version || '1.0.0'),
       __BUILD_TIME__: JSON.stringify(new Date().toISOString()),

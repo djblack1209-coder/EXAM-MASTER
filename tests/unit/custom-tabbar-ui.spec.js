@@ -21,18 +21,20 @@ describe('custom tabbar visual interaction contract', () => {
     expect(source).toContain('handleTouchEnd');
   });
 
-  it('uses a moving glass indicator instead of only coloring active items', () => {
-    expect(source).toContain('tabbar-glider');
-    expect(source).toContain('gliderStyle');
-    expect(source).toContain('translate3d');
+  it('uses only selected Lucide fill and brand text, without the retired glass slider', () => {
+    expect(source).toContain(':selected="visualActiveIndex === index"');
+    expect(source).toContain("'violet-ink'");
+    expect(source).not.toContain('tabbar-glider');
+    expect(source).not.toContain('gliderStyle');
   });
 
-  it('keeps compositor-friendly transitions for tabbar motion', () => {
+  it('keeps the navigation surface still and uses shared glass tokens', () => {
     const styleBlock = source.split('<style lang="scss" scoped>')[1] || '';
 
     expect(styleBlock).not.toMatch(/transition:\s*all\b/);
-    expect(styleBlock).toContain('transition-property: transform');
-    expect(styleBlock).toContain('cubic-bezier(0.34, 1.56, 0.64, 1)');
+    expect(styleBlock).toContain('background: var(--glass)');
+    expect(styleBlock).toContain('color: var(--violet-ink)');
+    expect(styleBlock).not.toMatch(/transform:.*scale/);
   });
 
   it('refreshes the actual route before calculating swipe target', () => {

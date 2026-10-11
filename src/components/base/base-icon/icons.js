@@ -4,6 +4,21 @@
  */
 
 import { SVG_DATA } from './svg-data.js';
+import { BOARD_ICONS } from './board-icons.js';
+import { tokens } from '@/design/tokens.js';
+
+const BOARD_MAP = Object.fromEntries(
+  Object.entries(BOARD_ICONS).map(([name, paths]) => [
+    name,
+    `data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">${paths}</svg>`)}`
+  ])
+);
+const BRANDS = {
+  wechat: '/static/brand/wechat.svg',
+  apple: '/static/brand/apple.svg',
+  google: '/static/brand/google-g.svg',
+  'google-g': '/static/brand/google-g.svg'
+};
 
 // 主包页面使用的核心图标（内联 data URI，消除文件依赖）
 const INLINE = {
@@ -63,6 +78,19 @@ const INLINE = {
 
 // 别名映射
 const ALIASES = {
+  'arrow-up': 'up',
+  'chevron-right': 'right',
+  'chevron-left': 'left',
+  'chevron-down': 'down',
+  'book-open': 'book',
+  'file-text': 'doc',
+  paperclip: 'clip',
+  smartphone: 'phone',
+  'alert-circle': 'alert',
+  close: 'x',
+  cross: 'x',
+  'chart-bar': 'chart',
+  calendar: 'cal',
   'category-mistakes': 'target',
   'category-hot': 'target',
   'category-practice': 'book',
@@ -78,10 +106,27 @@ const ALIASES = {
  * @param {string} [theme='light'] - 主题模式 'light' | 'dark'
  * @param {string} [color] - 自定义颜色（如 '#1CB0F6'），会替换 SVG 中的 currentColor
  */
-export function getIconPath(name, fallback, theme, color) {
+export function getIconPath(name, fallback, theme, color, selected = false) {
+  if (BRANDS[name]) return BRANDS[name];
   const realName = ALIASES[name] || name;
-  let uri = INLINE[realName] || INLINE[name] || SVG_DATA[realName] || SVG_DATA[name] || fallback || INLINE['info'];
+  let uri =
+    BOARD_MAP[realName] ||
+    BOARD_MAP[name] ||
+    INLINE[realName] ||
+    INLINE[name] ||
+    SVG_DATA[realName] ||
+    SVG_DATA[name] ||
+    fallback ||
+    INLINE['info'];
   if (!uri) return uri;
+  if (uri.startsWith('data:image/svg+xml,')) {
+    let svg = decodeURIComponent(uri.slice(uri.indexOf(',') + 1));
+    svg = svg.replace(/stroke-width="[^"]+"/g, 'stroke-width="1.75"');
+    if (selected) svg = svg.replace('fill="none"', 'fill="currentColor" fill-opacity=".16"');
+    const ink = color || tokens[theme === 'dark' ? 'dark' : 'light']['--ink'];
+    svg = svg.replace(/currentColor/g, ink);
+    return `data:image/svg+xml,${encodeURIComponent(svg)}`;
+  }
   // 优先级：显式传入的 color > 深色模式白色 > 默认 currentColor（黑色）
   if (color) {
     // 将 '#' 转为 URL 编码 '%23'，确保 data URI 合法
@@ -96,7 +141,12 @@ export function getIconPath(name, fallback, theme, color) {
 
 // 导出合并后的完整图标集（动态更新：SVG_DATA 异步加载完成后 ICON_MAP 自动包含）
 export function getIconMap() {
-  return { ...SVG_DATA, ...INLINE };
+  return { ...SVG_DATA, ...INLINE, ...BOARD_MAP, ...BRANDS };
+}
+// Only registry-owned SVG markup is exposed; caller text is never inserted as markup.
+export function getIconMarkup(name, selected = false) {
+  const uri = getIconPath(name, undefined, 'light', 'currentColor', selected);
+  return uri?.startsWith('data:image/svg+xml,') ? decodeURIComponent(uri.slice(uri.indexOf(',') + 1)) : '';
 }
 export const ICON_MAP = INLINE; // 初始仅包含内联图标，SVG_DATA 加载后通过 getIconPath 兜底
 export const ICON_MAP_DARK = ICON_MAP;

@@ -4,7 +4,9 @@
     "custom": {
       "^wd-(.*)": "wot-design-uni/components/wd-$1/wd-$1.vue",
       "^OfflineIndicator$": "@/components/common/offline-indicator.vue",
-      "^BaseIcon$": "@/components/base/base-icon/base-icon.vue"
+      "^BaseIcon$": "@/components/base/base-icon/base-icon.vue",
+      "^wd-button$": "@/components/base/base-button/wot-button.vue",
+      "^wd-loading$": "@/components/base/base-loading/base-loading.vue"
     }
   },
   "pages": [
@@ -38,6 +40,13 @@
         "navigationBarTitleText": "%pages.profile%",
         "navigationStyle": "custom",
         "navigationBarBackgroundColor": "#F5F7FA"
+      }
+    },
+    {
+      "path": "platforms/h5/components",
+      "style": {
+        "navigationBarTitleText": "%pages.components%",
+        "navigationStyle": "custom"
       }
     }
   ],

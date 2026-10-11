@@ -2139,7 +2139,7 @@ import { BRAND } from '@/config/brand.js';
 import { onShow, onHide, onLoad, onBackPress } from '@dcloudio/uni-app';
 import LearningShell from '@/components/business/learning/learning-shell.vue';
 import CustomModal from '@/components/common/CustomModal.vue';
-import WdLoading from 'wot-design-uni/components/wd-loading/wd-loading.vue';
+import WdLoading from '@/components/base/base-loading/base-loading.vue';
 import { createLearningDialog } from '@/services/learning/learning-dialog.js';
 // #ifdef MP-WEIXIN
 import PrivacyPopup from '@/components/common/privacy-popup.vue';

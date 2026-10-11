@@ -77,7 +77,12 @@
             :aria-current="active === item.id ? 'page' : undefined"
             @tap="openView(item.id)"
           >
-            <BaseIcon :name="item.icon" :size="36" :color="iconColor" />
+            <BaseIcon
+              :name="item.icon"
+              :size="36"
+              :selected="active === item.id"
+              :tone="active === item.id ? 'violet-ink' : 'ink-3'"
+            />
             <text>{{ item.label }}</text>
             <text v-if="item.id === 'mistake' && learning.summary.mistakes.length" class="nav-count">
               {{ learning.summary.mistakes.length }}
@@ -210,7 +215,12 @@
         :aria-current="active === item.id ? 'page' : undefined"
         @tap="openView(item.id)"
       >
-        <BaseIcon :name="item.icon" :size="38" :color="iconColor" />
+        <BaseIcon
+          :name="item.icon"
+          :size="38"
+          :selected="active === item.id"
+          :tone="active === item.id ? 'violet-ink' : 'ink-3'"
+        />
         <text>{{ item.label }}</text>
       </button>
     </view>

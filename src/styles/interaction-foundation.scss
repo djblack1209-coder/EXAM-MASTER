@@ -76,3 +76,15 @@ h3,
 .brand-name {
   font-family: var(--font-display);
 }
+
+/* Canonical flat controls do not acquire the legacy global button downstroke. */
+.base-chip:active,
+.base-option:active,
+.base-segmented button:active,
+.base-list-row:active,
+.base-button:not(.base-button--primary):active,
+.tab-item:active,
+.learning-space .space-nav-item:active,
+.learning-space .mobile-dock button:active {
+  transform: none !important;
+}

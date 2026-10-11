@@ -46,6 +46,14 @@ const appJson = readJson(appJsonPath);
 if (!Array.isArray(appJson.pages) || appJson.pages.length === 0) {
   fail('app.json pages is empty or invalid.');
 }
+const previewRoute = 'platforms/h5/components';
+const routes = [
+  ...appJson.pages,
+  ...(appJson.subPackages || []).flatMap((pkg) => (pkg.pages || []).map((page) => `${pkg.root}/${page}`))
+];
+if (routes.includes(previewRoute) || existsSync(resolve(outputRoot, `${previewRoute}.js`))) {
+  fail('H5 component review page is reachable in the WeChat artifact.');
+}
 
 const pageIndexJson = readJson(indexJsonPath);
 const usingComponents = pageIndexJson.usingComponents || {};

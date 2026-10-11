@@ -1,72 +1,80 @@
 <template>
-  <view class="base-card apple-glass-card" :class="[paddingClass, { 'is-hoverable': hoverable }]">
-    <view v-if="title || $slots.header" class="base-card__header">
-      <slot name="header">
-        <text v-if="title" class="base-card__title">{{ title }}</text>
-        <text v-if="subtitle" class="base-card__subtitle">{{ subtitle }}</text>
-      </slot>
-    </view>
-    <view class="base-card__body">
-      <slot></slot>
-    </view>
-    <view v-if="$slots.footer" class="base-card__footer">
-      <slot name="footer"></slot>
-    </view>
+  <view class="base-card" :class="[paddingClass, `base-card--${surface}`, { 'is-hoverable': hoverable }]">
+    <view v-if="title || $slots.header" class="base-card__header"
+      ><slot name="header"
+        ><text v-if="title" class="base-card__title">{{ title }}</text
+        ><text v-if="subtitle" class="base-card__subtitle">{{ subtitle }}</text></slot
+      ></view
+    >
+    <view class="base-card__body"><slot></slot></view
+    ><view v-if="$slots.footer" class="base-card__footer"><slot name="footer"></slot></view>
   </view>
 </template>
-
 <script setup>
 import { computed } from 'vue';
-
 const props = defineProps({
   title: { type: String, default: '' },
   subtitle: { type: String, default: '' },
-  padding: { type: String, default: 'medium' }, // none, small, medium, large
-  hoverable: { type: Boolean, default: false }
+  padding: { type: String, default: 'medium' },
+  hoverable: Boolean,
+  surface: { type: String, default: 'paper', validator: (value) => ['paper', 'glass'].includes(value) }
 });
-
 const paddingClass = computed(() => `padding-${props.padding}`);
 </script>
-
-<style lang="scss" scoped>
+<style scoped lang="scss">
 .base-card {
-  border-radius: var(--ds-radius-xl, 32rpx);
-  overflow: hidden;
-
-  &.padding-none .base-card__body {
-    padding: 0;
+  background: var(--paper);
+  color: var(--ink);
+  border-radius: var(--r-lg);
+  box-shadow: var(--lift-1);
+  min-width: 0;
+  font-family: var(--font-ui);
+}
+.base-card--glass {
+  background: var(--glass);
+  border: var(--border-thin) solid var(--glass-line);
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  box-shadow: var(--lift-2);
+}
+.base-card__body {
+  padding: var(--s-5);
+}
+.padding-none .base-card__body {
+  padding: 0;
+}
+.padding-small .base-card__body {
+  padding: var(--s-3);
+}
+.padding-large .base-card__body {
+  padding: var(--s-6);
+}
+.base-card__header {
+  padding: var(--s-5) var(--s-5) 0;
+}
+.base-card__title {
+  display: block;
+  font: var(--weight-bold) var(--size-title-3)/var(--leading-title-3) var(--font-ui);
+}
+.base-card__subtitle {
+  display: block;
+  margin-top: var(--s-2);
+  color: var(--ink-3);
+  font-size: var(--size-small);
+}
+.base-card__footer {
+  padding: 0 var(--s-5) var(--s-5);
+}
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+  .base-card--glass {
+    background: var(--paper);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
   }
-  &.padding-small .base-card__body {
-    padding: var(--ds-spacing-sm, 16rpx);
-  }
-  &.padding-medium .base-card__body {
-    padding: var(--ds-spacing-md, 24rpx);
-  }
-  &.padding-large .base-card__body {
-    padding: var(--ds-spacing-lg, 32rpx);
-  }
-
-  &__header {
-    padding: var(--ds-spacing-md) var(--ds-spacing-md) 0;
-  }
-  &__title {
-    font-size: 32rpx;
-    font-weight: bold;
-    color: var(--text-primary);
-  }
-  &__subtitle {
-    font-size: 24rpx;
-    color: var(--text-sub);
-    margin-top: 8rpx;
-    display: block;
-  }
-  &__footer {
-    padding: 0 var(--ds-spacing-md) var(--ds-spacing-md);
-  }
-
-  &.is-hoverable:active {
-    transform: scale(0.98);
-    transition: transform 0.2s;
+}
+@supports not (backdrop-filter: blur(1px)) {
+  .base-card--glass {
+    background: var(--paper);
   }
 }
 </style>
