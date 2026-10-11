@@ -53,7 +53,9 @@
     </view>
     <view class="intro">
       <text v-if="reference" class="hi">Hi, I’m</text>
-      <text class="name" role="heading" aria-level="1">{{ reference ? 'Ayush' : BRAND.english }}</text>
+      <text class="name" :class="{ 'brand-wordmark': !reference }" role="heading" aria-level="1">{{
+        reference ? 'Ayush' : BRAND.english
+      }}</text>
       <view v-if="reference" class="role">
         <text>A Product Designer experienced in building products,</text>
         <text>with a problem solving and creative mindset.</text>

@@ -1,5 +1,5 @@
 <template>
-  <view ref="learningRoot" class="learning-overview">
+  <view ref="learningRoot" class="learning-overview" :class="{ 'is-inline': inline }" data-test="learning-checkpoint">
     <view v-if="showNavigation" class="learning-links">
       <button
         v-for="item in ['对话', '错题', '计划', '统计']"
@@ -13,8 +13,23 @@
       </button>
     </view>
     <view class="overview-heading">
-      <text class="overview-title">今日学习</text>
+      <text class="overview-title">{{ inline ? '今天' : range === 'day' ? '今日学习' : '学习记录' }}</text>
       <text class="overview-date">{{ stats.day.slice(5).replace('-', ' / ') }}</text>
+    </view>
+    <view v-if="!inline" class="button-row" aria-label="学习统计范围">
+      <button
+        v-for="item in [
+          { id: 'day', label: '今天' },
+          { id: 'history', label: '全部历史' }
+        ]"
+        :key="item.id"
+        role="button"
+        tabindex="0"
+        :aria-pressed="range === item.id"
+        @tap="range = item.id"
+      >
+        {{ item.label }}
+      </button>
     </view>
     <view
       class="learning-summary"
@@ -25,11 +40,27 @@
       data-learning-toggle="true"
       @tap="expanded = !expanded"
     >
-      <view class="summary-line">
-        <text>今日任务</text>
-        <view>
-          <text class="summary-count">{{ stats.tasks.numerator }} / {{ stats.tasks.denominator }}</text>
-          <text class="summary-rate">{{ percent(stats.tasks.rate) }}</text>
+      <view class="overview-metrics">
+        <view class="overview-metric overview-task">
+          <text class="metric-label">已完成任务</text>
+          <view class="metric-value"
+            ><text class="summary-count">{{ stats.tasks.numerator }}</text
+            ><text class="metric-denominator">/ {{ stats.tasks.denominator }}</text></view
+          >
+        </view>
+        <view class="overview-metric">
+          <text class="metric-label">可靠作答</text>
+          <view class="metric-value"
+            ><text class="summary-count">{{ stats.totalReliableAnswers }}</text
+            ><text class="metric-denominator">{{ ' 次' }}</text></view
+          >
+        </view>
+        <view class="overview-metric">
+          <text class="metric-label">待核对</text>
+          <view class="metric-value"
+            ><text class="summary-count">{{ stats.pending }}</text
+            ><text class="metric-denominator">{{ ' 次' }}</text></view
+          >
         </view>
       </view>
       <view
@@ -41,21 +72,24 @@
         aria-valuemin="0"
         aria-label="今日任务进度"
       >
-        <view :style="{ width: `${stats.tasks.rate * 100}%` }" />
+        <view :style="{ transform: `scaleX(${stats.tasks.rate || 0})` }" />
       </view>
+      <text v-else class="metric-empty">尚未安排任务</text>
       <view class="summary-line">
-        <text>有效作答</text>
-        <text class="summary-count">{{ stats.validAnswers }} 次</text>
+        <text>可靠正确 {{ stats.reliableCorrectAnswers }} / {{ stats.totalReliableAnswers }}</text>
+        <text>首答错题 {{ stats.first.numerator }} / {{ stats.first.denominator }}</text>
       </view>
-      <view class="summary-line">
-        <text>首答错题</text>
-        <view>
-          <text class="summary-count">{{ stats.first.numerator }} / {{ stats.first.denominator }}</text>
-          <text class="summary-rate">{{ percent(stats.first.rate) }}</text>
-        </view>
+      <view
+        v-if="answerCount"
+        class="answer-distribution"
+        role="img"
+        :aria-label="`${answerCount}次作答，已校验${stats.totalReliableAnswers}次，待核对${stats.pending}次`"
+      >
+        <view class="answer-checked" :style="{ width: `${(stats.totalReliableAnswers / answerCount) * 100}%` }" />
+        <view class="answer-pending" :style="{ width: `${(stats.pending / answerCount) * 100}%` }" />
       </view>
       <view class="summary-foot">
-        <text>待核对 {{ stats.pending }} 次</text>
+        <text>{{ answerCount ? '作答核对进度' : '尚无作答' }}</text>
         <text>{{ expanded ? '收起依据' : '查看依据' }}</text>
         <BaseIcon
           :name="expanded ? 'chevron-up' : 'chevron-down'"
@@ -72,12 +106,12 @@
           <text class="learning-label">今天的任务</text>
           <button role="button" tabindex="0" size="mini" @tap="editPlan">编辑计划</button>
         </view>
-        <view v-if="!learning.currentPlan?.tasks.length" class="record-empty">
+        <view v-if="!currentTasks.length" class="record-empty">
           <BaseIcon name="calendar" :size="48" :color="theme.isDark ? '#c5a8ec' : '#7658ad'" />
           <text>暂无任务</text>
           <button role="button" tabindex="0" size="mini" @tap="openView('learning')">从对话开始</button>
         </view>
-        <view v-for="task in learning.currentPlan?.tasks || []" :key="task.id" class="learning-row task-row">
+        <view v-for="task in currentTasks" :key="task.id" class="learning-row task-row">
           <view class="task-indicator" :class="{ completed: task.completedBy }">
             <BaseIcon v-if="task.completedBy" name="check" :size="28" :color="theme.isDark ? '#c5a8ec' : '#7658ad'" />
           </view>
@@ -185,7 +219,7 @@
           <text class="knowledge-state">{{ entry.status }}</text>
         </view>
         <template v-if="learning.teachingProgress.rows.length">
-          <text class="learning-label detail-heading">练习表现</text>
+          <text class="learning-label detail-heading">练习表现 · 历史观察</text>
           <view
             v-for="entry in learning.teachingProgress.rows.slice(-6).reverse()"
             :key="entry.id"
@@ -264,7 +298,7 @@ import RubricEvidence from '@/components/business/learning/rubric-evidence.vue';
 import { createLearningDialog } from '@/services/learning/learning-dialog.js';
 import { useThemeStore } from '@/stores/modules/theme.js';
 import { useConversationLearningStore } from '@/stores/modules/conversation-learning.js';
-import { effectiveGrade, questionKey, knowledgeScope } from '@/services/learning/learning-domain.js';
+import { effectiveGrade, questionKey, knowledgeScope, dayKey } from '@/services/learning/learning-domain.js';
 import { safeNavigateTo } from '@/utils/safe-navigate';
 const learning = useConversationLearningStore();
 const calendarReader = learning.observeCalendar();
@@ -273,10 +307,13 @@ const learningRoot = ref(null);
 let unbindKeyboard = () => undefined;
 const props = defineProps({
   initialExpanded: Boolean,
+  inline: Boolean,
+  conversationId: { type: String, default: '' },
   showNavigation: { type: Boolean, default: true },
   view: { type: String, default: 'all' }
 });
 const expanded = ref(props.initialExpanded);
+const range = ref('day');
 const message = ref('');
 const messageError = ref(false);
 let overviewAlive = true,
@@ -329,7 +366,22 @@ const showTasks = computed(() => ['all', 'plan'].includes(props.view));
 const showMistakes = computed(() => ['all', 'mistake'].includes(props.view));
 const showKnowledge = computed(() => ['all', 'study-detail'].includes(props.view));
 const showPending = computed(() => ['all', 'mistake', 'study-detail'].includes(props.view));
-const stats = computed(() => learning.summary);
+const stats = computed(() =>
+  learning.scopedSummary(props.inline ? 'day' : range.value, props.conversationId || undefined)
+);
+const answerCount = computed(() => stats.value.totalReliableAnswers + stats.value.pending);
+const currentTasks = computed(() => {
+  const tasks = learning.state.plans.find((p) => p.id === stats.value.tasks.planId)?.tasks || [];
+  const session = learning.state.conversations.find((c) => c.id === props.conversationId);
+  if (!session) return tasks;
+  const keys = new Set([
+    session.activeQuestionKey,
+    ...session.messages.map((m) => m.questionKey),
+    ...learning.state.attempts.filter((a) => a.conversationId === session.id).map((a) => a.questionKey),
+    ...(session.trainingGroups || []).flatMap((g) => g.questionKeys)
+  ]);
+  return tasks.filter((t) => keys.has(t.questionKey));
+});
 const methodNames = {
   explain: '直接讲解',
   question: '引导提问',
@@ -353,7 +405,14 @@ const observationNames = {
   due_review: '到期独立复测正确',
   original_redo: '原题再次正确，不等同长期掌握'
 };
-const pendingAttempts = computed(() => learning.state.attempts.filter((a) => effectiveGrade(a).status !== 'reliable'));
+const pendingAttempts = computed(() =>
+  learning.state.attempts.filter(
+    (a) =>
+      effectiveGrade(a).status !== 'reliable' &&
+      (!props.conversationId || a.conversationId === props.conversationId) &&
+      (range.value === 'history' || dayKey(a.at, stats.value.timezone) === stats.value.day)
+  )
+);
 const priorPlans = computed(() =>
   learning.state.plans.filter((p) => p.day === stats.value.day && p.id !== stats.value.tasks.planId)
 );
@@ -386,7 +445,6 @@ const upcomingRetests = computed(() => {
   }
   return tasks.sort((a, b) => a.day.localeCompare(b.day));
 });
-const percent = (rate) => (rate === null ? '尚无样本' : `${(rate * 100).toFixed(1)}%`);
 const questionPrompt = (key) => learning.state.questions.find((q) => questionKey(q) === key)?.prompt || key;
 const knowledgeLabel = (scope) => {
   const question = learning.state.questions.find((q) => !q.knowledgePoint && knowledgeScope(q) === scope);
@@ -488,6 +546,15 @@ onUnmounted(() => {
   color: var(--space-ink, #080909);
   font-size: 14px;
 }
+.learning-overview.is-inline {
+  margin: 24px 0;
+  padding: 24px;
+  border-radius: 16px;
+  background: var(--yozi-solid);
+  box-shadow: none;
+  transform: none;
+  text-align: left;
+}
 .learning-overview button {
   min-height: 44px;
   margin: 0;
@@ -538,19 +605,54 @@ onUnmounted(() => {
   font-weight: 500;
 }
 .overview-date {
-  font-size: 10px;
+  font-size: 12px;
   color: var(--space-muted, #62576d);
 }
 .learning-summary {
   cursor: pointer;
-  border-radius: 10px;
+  border-radius: 12px;
+  margin-top: 20px;
+  text-align: left;
+}
+.overview-metrics {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr 1fr;
+  gap: 20px;
+}
+.overview-metric {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+.metric-label {
+  font-size: 13px;
+  color: var(--space-muted, #62576d);
+}
+.metric-value {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+.metric-denominator {
+  color: var(--space-muted, #62576d);
+  font-size: 16px;
+  font-variant-numeric: tabular-nums;
+}
+.metric-empty {
+  display: block;
+  margin-top: 16px;
+  color: var(--space-muted, #62576d);
+  font-size: 12px;
 }
 .summary-line {
   display: flex;
   justify-content: space-between;
   gap: 10px;
   padding: 10px 0;
-  font-size: 12px;
+  font-size: 13px;
+  margin-top: 14px;
+  flex-wrap: wrap;
 }
 .summary-line > view {
   display: flex;
@@ -558,30 +660,50 @@ onUnmounted(() => {
   gap: 12px;
 }
 .summary-count {
-  font-size: 14px;
+  font-size: 32px;
+  line-height: 1.15;
   font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
 }
 .summary-rate {
   font-size: 10px;
   color: var(--space-muted, #62576d);
 }
 .task-progress {
-  height: 3px;
-  background: rgba(238, 231, 247, 0.2);
-  border-radius: 3px;
+  height: 6px;
+  margin-top: 18px;
+  background: var(--space-line, #dbd5e6);
+  border-radius: 6px;
   overflow: hidden;
 }
 .task-progress > view {
   height: 100%;
+  width: 100%;
+  transform-origin: left;
   background: var(--space-sage, #7658ad);
   border-radius: 3px;
+}
+.answer-distribution {
+  display: flex;
+  height: 6px;
+  gap: 3px;
+  overflow: hidden;
+  border-radius: 6px;
+  margin-top: 4px;
+}
+.answer-checked {
+  background: var(--space-sage, #7658ad);
+}
+.answer-pending {
+  background: var(--space-muted, #62576d);
+  opacity: 0.4;
 }
 .summary-foot {
   display: flex;
   gap: 6px;
   align-items: center;
   margin-top: 10px;
-  font-size: 10px;
+  font-size: 12px;
   color: var(--space-muted, #62576d);
 }
 .summary-foot > text:nth-child(2) {
@@ -700,6 +822,18 @@ onUnmounted(() => {
   }
 }
 @media (max-width: 520px) {
+  .learning-overview.is-inline {
+    padding: 18px;
+  }
+  .overview-metrics {
+    gap: 12px;
+  }
+  .summary-count {
+    font-size: 28px;
+  }
+  .metric-denominator {
+    font-size: 14px;
+  }
   .task-row {
     flex-wrap: wrap;
   }

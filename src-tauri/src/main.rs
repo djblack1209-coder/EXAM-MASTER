@@ -16,6 +16,9 @@ use std::{
 use tauri::{AppHandle, Manager, State};
 use tauri_plugin_dialog::DialogExt;
 use tauri_plugin_opener::OpenerExt;
+mod notifications;
+use notifications::{begin_learning_notifications, learning_notification_permission, replace_learning_notifications,
+    take_learning_notification_actions, LearningNotifications};
 
 const MAX_BYTES: u64 = 48_000_000;
 const MATERIAL_MAX_BYTES: u64 = 10 * 1024 * 1024;
@@ -577,6 +580,8 @@ fn focus_desktop_after_oauth(app: AppHandle) -> Result<(), String> {
 }
 
 fn main() {
+    // 通知可能在系统启动应用时到达，代理必须先于 Tauri 的就绪回调安装。
+    notifications::bootstrap();
     tauri::Builder::default()
         .plugin(tauri_plugin_single_instance::init(|app, _, _| {
             if let Some(window) = app.get_webview_window("main") {
@@ -590,7 +595,9 @@ fn main() {
                 .build(),
         )
         .manage(LearningFiles::default())
+        .manage(LearningNotifications::default())
         .setup(|app| {
+            notifications::initialize(app.handle().clone());
             let config = app
                 .config()
                 .app
@@ -598,7 +605,13 @@ fn main() {
                 .iter()
                 .find(|w| w.label == "main")
                 .ok_or("main window configuration missing")?;
-            tauri::WebviewWindowBuilder::from_config(app, config)?
+            let builder = tauri::WebviewWindowBuilder::from_config(app, config)?;
+            #[cfg(target_os = "macos")]
+            let builder = if app.config().identifier == "cn.wangshiliang.wenli.qa.journey" {
+                // 仅受限本机候选标识采用独立WebKit资料域；正式入口和用户资料域不变。
+                builder.data_store_identifier([0x51, 0x92, 0x20, 0x26, 0x10, 0x10, 0x42, 0x72, 0x91, 0x29, 0x35, 0x73, 0x88, 0x91, 0x13, 0x07])
+            } else { builder };
+            builder
                 .on_navigation(trusted_navigation)
                 .on_new_window(|_, _| tauri::webview::NewWindowResponse::Deny)
                 .build()?;
@@ -614,7 +627,11 @@ fn main() {
             discard_learning_material,
             create_desktop_oauth_proof,
             open_desktop_oauth,
-            focus_desktop_after_oauth
+            focus_desktop_after_oauth,
+            begin_learning_notifications,
+            learning_notification_permission,
+            replace_learning_notifications,
+            take_learning_notification_actions
         ])
         .run(tauri::generate_context!())
         .expect("Yozi AI desktop could not start");

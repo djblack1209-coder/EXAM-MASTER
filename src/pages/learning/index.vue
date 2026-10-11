@@ -147,7 +147,7 @@
           @tap="learning.sharingAllowed = !learning.sharingAllowed"
         >
           {{ learning.sharingAllowed ? '☑' : '☐' }}
-          允许发送当前目标、最近消息和当前题目，不发送整份资料
+          允许发送当前目标、学习路线、最近消息和当前题目，不发送整份资料
         </button>
         <button
           role="checkbox"
@@ -419,16 +419,6 @@
           </button>
         </view>
       </view>
-      <view v-if="learning.active" class="session-progress" aria-live="polite">
-        <text data-test="task-status">{{
-          [learning.taskContext?.label, learning.taskContext?.stage, learning.taskContext?.edition, taskEvaluationLabel]
-            .filter(Boolean)
-            .join(' · ')
-        }}</text>
-        <text>今日任务 {{ learning.summary.tasks.numerator }}/{{ learning.summary.tasks.denominator }}</text>
-        <text>有效作答 {{ learning.summary.validAnswers }} 次</text>
-        <text>错题 {{ learning.summary.mistakes.length }} · 待核对 {{ learning.summary.pending }}</text>
-      </view>
       <view v-if="learning.active" class="conversation-area">
         <view class="conversation-toolbar">
           <view>
@@ -477,16 +467,53 @@
           </button>
         </view>
         <view
-          v-for="message in visibleMessages"
-          :id="message.id"
-          :key="message.id"
-          class="message"
-          :class="message.role"
+          v-for="chapter in visibleChapters"
+          :id="`learning-day-${chapter.day}`"
+          :key="chapter.day"
+          class="conversation-day"
+          :aria-label="`${chapter.day}学习记录`"
+          tabindex="-1"
         >
-          <text class="message-role">{{ roleLabel(message.role) }}</text>
-          <text class="message-content" selectable>{{ message.content }}</text>
+          <view class="conversation-day-heading">
+            <text>{{ chapter.day }}</text>
+            <view class="conversation-day-rule" aria-hidden="true" />
+          </view>
+          <view v-if="chapter.groups.length" class="chapter-modules" aria-label="本日模块记录">
+            <button
+              v-for="group in chapter.groups"
+              :key="group.id"
+              role="button"
+              tabindex="0"
+              :disabled="learning.busy"
+              :aria-disabled="learning.busy"
+              @tap="learning.locateConversation(learning.active.id, chapter.day, group.id)"
+            >
+              <text>{{ group.label }}</text>
+              <text class="chapter-module-count"
+                >{{ group.questionKeys.length }}题 · {{ group.submittedBy ? '已提交' : '未提交' }}</text
+              >
+              <BaseIcon name="arrow-right" :size="26" :color="iconColor" />
+            </button>
+          </view>
+          <view
+            v-for="message in chapter.messages"
+            :id="message.id"
+            :key="message.id"
+            class="message"
+            :class="message.role"
+            :aria-label="roleLabel(message.role)"
+          >
+            <LearningMessage v-if="message.role === 'assistant'" :content="message.content" />
+            <text v-else class="message-content" selectable>{{ message.content }}</text>
+          </view>
         </view>
-        <view v-if="learning.activeQuestion" id="active-learning-question" class="question-block">
+        <LearningOverview :show-navigation="false" :inline="true" :conversation-id="learning.active.id" />
+        <view id="learning-journey-workspace" tabindex="-1"><LearningJourney :inline="true" /></view>
+        <view
+          v-if="learning.activeQuestion && !learning.batchTrainingActive"
+          id="active-learning-question"
+          class="question-block"
+        >
           <text class="subtle">
             {{ learning.activeQuestion.scope === 'generated' ? '练习' : '我的资料' }} ·
             {{ learning.activeQuestion.validation ? '已校验' : '待核对' }}
@@ -930,13 +957,23 @@
           :next-task="learning.startSentenceTask"
           :schedule-retest="learning.scheduleSentenceRetest"
         />
-        <view class="composer">
+        <view id="learning-composer" class="composer">
           <textarea
             :value="draft"
             class="field"
-            :aria-label="learning.activeQuestion?.writingExercise ? `${activeWritingGenre.label}作答` : '消息或作答'"
+            :aria-label="
+              learning.batchTrainingActive
+                ? '训练提问'
+                : learning.activeQuestion?.writingExercise
+                  ? `${activeWritingGenre.label}作答`
+                  : '消息或作答'
+            "
             :placeholder="
-              learning.activeQuestion?.writingExercise ? `写你的${activeWritingGenre.label}` : '提问或写下答案'
+              learning.batchTrainingActive
+                ? '提问或调整这组训练'
+                : learning.activeQuestion?.writingExercise
+                  ? `写你的${activeWritingGenre.label}`
+                  : '提问或写下答案'
             "
             placeholder-class="space-placeholder"
             :maxlength="
@@ -957,10 +994,12 @@
               :aria-disabled="!draft.trim()"
               @tap="send"
             >
-              {{ learning.activeQuestion?.writingExercise ? '提问' : '发送' }}
+              {{ learning.batchTrainingActive || learning.activeQuestion?.writingExercise ? '提问' : '发送' }}
             </button>
             <button
-              v-if="learning.activeQuestion && !learning.activeQuestion.sentenceExercise"
+              v-if="
+                learning.activeQuestion && !learning.batchTrainingActive && !learning.activeQuestion.sentenceExercise
+              "
               role="button"
               tabindex="0"
               size="mini"
@@ -989,6 +1028,7 @@
       </view>
       <LearningLab
         v-if="
+          !learning.batchTrainingActive &&
           !learning.activeQuestion?.sentenceExercise &&
           !learning.activeQuestion?.oatutorExercise &&
           ![DENSITY_TRANSFER_CONTRACT, PRESSURE_TRANSFER_CONTRACT].includes(
@@ -1056,7 +1096,7 @@
           </view>
           <text v-if="rhythmFeedback" class="subtle" role="status">{{ rhythmFeedback }}</text>
         </view>
-        <LearningOverview :show-navigation="false" />
+        <LearningOverview v-if="!learning.active" :show-navigation="false" />
       </view>
       <view class="workspace-tools">
         <view class="button-row">
@@ -2101,6 +2141,8 @@ import PrivacyPopup from '@/components/common/privacy-popup.vue';
 // #endif
 import { learningRhythms, currentRhythm } from '@/services/learning/learning-rhythm.js';
 import LearningOverview from '@/components/business/learning/learning-overview.vue';
+import LearningJourney from '@/components/business/learning/learning-journey.vue';
+import LearningMessage from '@/components/business/learning/learning-message.vue';
 import LearningLab from '@/components/business/learning/learning-lab.vue';
 import DensityPractice from '@/components/business/learning/density-practice.vue';
 import {
@@ -2319,21 +2361,70 @@ watch(
   }
 );
 const messageStart = ref(0);
-const visibleMessages = computed(
-  () => learning.active?.messages.slice(messageStart.value, messageStart.value + 50) || []
+const visibleChapters = computed(() =>
+  learning.timeline
+    .map((chapter) => ({
+      ...chapter,
+      messages: chapter.messages.filter(
+        (message) => message.index >= messageStart.value && message.index < messageStart.value + 50
+      )
+    }))
+    .filter(
+      (chapter) =>
+        chapter.messages.length ||
+        chapter.day === learning.conversationLocation?.day ||
+        chapter.day === learning.timeline.at(-1)?.day
+    )
+);
+watch(
+  () => learning.conversationLocation,
+  async (location) => {
+    if (!location || location.conversationId !== learning.active?.id) return;
+    if (location.messageId) {
+      const index = learning.active.messages.findIndex((m) => m.id === location.messageId);
+      if (index >= 0) messageStart.value = Math.max(0, index - 10);
+    } else if (!location.day) messageStart.value = Math.max(0, learning.active.messages.length - 50);
+    await nextTick();
+    if (learning.conversationLocation !== location) return;
+    const id = location.groupId
+      ? 'learning-journey-workspace'
+      : location.day
+        ? `learning-day-${location.day}`
+        : 'learning-composer';
+    // #ifdef H5
+    const target = document.getElementById(id);
+    target?.scrollIntoView({ block: 'start', behavior: 'auto' });
+    target?.focus?.({ preventScroll: true });
+    // #endif
+    // #ifndef H5
+    const query = uni.createSelectorQuery();
+    query.select(`#${id}`).boundingClientRect();
+    query.selectViewport().scrollOffset();
+    query.exec(([rect, viewport]) => {
+      if (rect && learning.conversationLocation === location)
+        uni.pageScrollTo({ scrollTop: Math.max(0, rect.top + (viewport?.scrollTop || 0)), duration: 0 });
+    });
+    // #endif
+  },
+  { immediate: true }
 );
 function locateQuestionMessages() {
   const messages = learning.active?.messages || [];
   const last = messages.map((m) => m.questionKey).lastIndexOf(learning.active?.activeQuestionKey);
   messageStart.value = Math.max(0, (last < 0 ? messages.length : last + 1) - 50);
 }
-watch([() => learning.selectedConversationId, () => learning.active?.activeQuestionKey], locateQuestionMessages, {
-  immediate: true
-});
+watch(
+  [() => learning.selectedConversationId, () => learning.active?.activeQuestionKey],
+  () => {
+    if (!learning.conversationLocation?.day) locateQuestionMessages();
+  },
+  { immediate: true }
+);
 watch(
   () => learning.active?.messages.length || 0,
   (length, before) => {
-    if (messageStart.value + 50 >= before) messageStart.value = Math.max(0, length - 50);
+    if (!learning.conversationLocation?.day && messageStart.value + 50 >= before)
+      messageStart.value = Math.max(0, length - 50);
   }
 );
 const learningRoot = ref(null);
@@ -2390,14 +2481,6 @@ const objectiveFromLabel = computed(() =>
   objectiveKind.value === 'literal' ? '要查的字段' : objectiveKind.value === 'share_percent' ? '部分字段' : '基期字段'
 );
 const objectiveToLabel = computed(() => (objectiveKind.value === 'share_percent' ? '整体字段' : '现期字段'));
-const taskEvaluationLabel = computed(
-  () =>
-    ({
-      independent_rule: '已校验',
-      ai_assisted_only: '待核对',
-      pending_reference: '待核对'
-    })[learning.taskContext?.evaluation] || '待核对'
-);
 const draft = ref('');
 function textInputValue(event) {
   return event?.detail?.value ?? event?.target?.value ?? '';
@@ -2982,7 +3065,7 @@ function newConversation() {
 async function send() {
   const input = draft.value.trim();
   if (!input) return;
-  await run(() => learning.send(input));
+  await run(() => learning.send(input, { discussionOnly: learning.batchTrainingActive }));
   // Failed local writes must leave the answer available for retry; preserve new typing during a model request.
   if (!feedback.value && draft.value.trim() === input) draft.value = '';
 }
@@ -4135,14 +4218,51 @@ onUnmounted(() => {
   padding: 12px 0;
   overflow-wrap: anywhere;
 }
-.session-progress {
+.conversation-day {
+  scroll-margin-top: 88px;
+}
+.conversation-day-heading {
   display: flex;
+  align-items: center;
   gap: 16px;
-  flex-wrap: wrap;
-  font-size: 11px;
+  margin: 28px 0 16px;
   color: var(--space-muted);
-  padding: 10px 0;
-  border-bottom: 1px solid var(--space-line);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+.conversation-day-rule {
+  height: 1px;
+  flex: 1;
+  background: var(--space-line);
+}
+.chapter-modules {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 16px;
+}
+.learning-space .chapter-modules button {
+  width: 100%;
+  margin: 0;
+  padding: 12px 0;
+  gap: 12px;
+  justify-content: flex-start;
+  text-align: left;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  white-space: normal;
+}
+.chapter-module-count {
+  margin-left: auto;
+  color: var(--space-muted);
+  font-size: 12px;
+  white-space: nowrap;
+}
+#learning-journey-workspace {
+  scroll-margin-top: 88px;
+}
+.today-layout.in-session {
+  grid-template-columns: 1fr;
 }
 .welcome-copy {
   padding: 4px 0 24px;

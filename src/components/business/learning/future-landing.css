@@ -176,6 +176,14 @@
   transform: translateX(calc(-50% + 8.1 * var(--t)));
   margin: 0;
 }
+.future-stage .name.brand-wordmark {
+  font-family: Epilogue, 'DM Sans', sans-serif;
+  font-weight: 900;
+  font-size: calc(68 * var(--t));
+  letter-spacing: -0.035em;
+  line-height: 1.1;
+  transform: translateX(-50%);
+}
 .future-stage .role > text,
 .future-stage .role > span,
 .future-stage .role > uni-text {

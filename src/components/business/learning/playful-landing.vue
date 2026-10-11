@@ -189,7 +189,7 @@ onUnmounted(() => {
   font-weight: 900;
   font-size: 3.4vw;
   line-height: 1;
-  letter-spacing: -0.06em;
+  letter-spacing: -0.035em;
 }
 .playful-contact {
   position: absolute;

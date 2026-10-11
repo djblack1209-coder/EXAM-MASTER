@@ -13,6 +13,9 @@ import { NAV_BAR_COLORS } from '@/composables/useTheme.js';
 import { useThemeStore } from '@/stores/modules/theme.js';
 import { restoreUserParams as restoreFsrsParams } from '@/services/fsrs-service.js';
 import { storageService } from '@/services/storageService.js';
+import { useConversationLearningStore } from '@/stores/modules/conversation-learning.js';
+import { learningNotificationsFor } from '@/services/learning/learning-notifications.js';
+let notificationRuntime = null;
 
 export default {
   onLaunch() {
@@ -40,6 +43,8 @@ export default {
 
     // 执行静默登录
     this.performSilentLogin();
+    notificationRuntime = learningNotificationsFor(useConversationLearningStore(this.$pinia));
+    notificationRuntime.initialize().catch(() => undefined);
   },
   onError(error) {
     // 委托给统一错误处理器（避免重复注册 uni.onError）
@@ -52,10 +57,16 @@ export default {
   onShow() {
     // 重开时同时恢复共享状态、页面颜色和原生导航栏。
     this.switchTheme(getCurrentTheme());
+    notificationRuntime?.show();
   },
   onHide() {
+    notificationRuntime?.hide();
     // 应用进入后台 — uni-app 生命周期钩子
     // 当前无需额外操作：主题/用户状态已在各自 store 中实时持久化
+  },
+  beforeUnmount() {
+    notificationRuntime?.dispose();
+    notificationRuntime = null;
   },
   methods: {
     /**

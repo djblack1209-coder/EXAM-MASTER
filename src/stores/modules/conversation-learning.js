@@ -8,6 +8,18 @@ import {
   sentenceRetestReady
 } from '../../../laf-backend/functions/_shared/learning-sentence.js';
 import { rhythmOperations } from '@/services/learning/learning-rhythm.js';
+import {
+  describeJourney,
+  trainingReport,
+  journeyRecap,
+  journeyDate,
+  deriveJourneyInsights,
+  conversationTimeline,
+  dailyConversationContext,
+  JOURNEY_MODULES
+} from '../../../laf-backend/functions/_shared/learning-journey.js';
+import { createJourneyQuestions } from '@/services/learning/journey-training.js';
+import { reminderJobs } from '../../../laf-backend/functions/_shared/learning-reminders.js';
 import { createLearningCalendar } from '@/services/learning/learning-calendar.js';
 import { conversationStrategy } from '../../../laf-backend/functions/_shared/learning-strategy.js';
 import { ENERGY_VISUAL_CONTRACT, ENERGY_TEMPLATE } from '../../../laf-backend/functions/_shared/learning-visual.js';
@@ -138,6 +150,22 @@ export function learningId(prefix = 'learn') {
 }
 export const useConversationLearningStore = defineStore('conversation-learning', () => {
   const state = ref(learningRepository.read());
+  let notificationObserver = null,
+    notificationRefreshTimer = null;
+  function attachNotifications(observer) {
+    notificationObserver = observer;
+  }
+  watch(
+    () => JSON.stringify([state.value.owner, recordContext(), state.value.revision]),
+    () => {
+      if (!notificationObserver) return;
+      if (notificationRefreshTimer !== null) clearTimeout(notificationRefreshTimer);
+      notificationRefreshTimer = setTimeout(() => {
+        notificationRefreshTimer = null;
+        notificationObserver.refresh().catch(() => undefined);
+      }, 250);
+    }
+  );
   const selectedConversationId = ref(state.value.conversations.at(-1)?.id || null);
   const busy = ref(false);
   const error = ref('');
@@ -279,6 +307,31 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     { flush: 'sync' }
   );
   const active = computed(() => state.value.conversations.find((c) => c.id === selectedConversationId.value));
+  const conversationLocation = shallowRef(null);
+  const timeline = computed(() => conversationTimeline(state.value, selectedConversationId.value, { dayKey }));
+  watch(
+    [() => JSON.stringify([state.value.owner, recordContext()]), selectedConversationId],
+    () => {
+      conversationLocation.value = null;
+    },
+    { flush: 'sync' }
+  );
+  function locateConversation(conversationId, day = null, groupId = null) {
+    if (busy.value) return;
+    const session = state.value.conversations.find((c) => c.id === conversationId);
+    assert(session, 'NOT_FOUND', '学习目标不存在');
+    const chapters = conversationTimeline(state.value, conversationId, { dayKey });
+    const chapter = day ? chapters.find((entry) => entry.day === day) : null;
+    assert(!day || chapter, 'NOT_FOUND', '学习日期不存在');
+    const group = groupId ? chapter?.groups.find((g) => g.id === groupId) : null;
+    assert(!groupId || group, 'NOT_FOUND', '模块记录不存在');
+    selectedConversationId.value = conversationId;
+    if (group) selectedTrainingId.value = group.id;
+    const message = group
+      ? chapter.messages.find((m) => group.questionKeys.includes(m.questionKey))
+      : chapter?.messages[0];
+    conversationLocation.value = { conversationId, day, groupId, messageId: message?.id || null };
+  }
   const activeStrategy = computed(() => conversationStrategy(state.value, selectedConversationId.value));
   const activeQuestion = computed(() =>
     state.value.questions.find((q) => questionKey(q) === active.value?.activeQuestionKey)
@@ -328,6 +381,332 @@ export const useConversationLearningStore = defineStore('conversation-learning',
   });
   const observeCalendar = () => calendar.observe();
   const summary = computed(() => summarizeLearning(state.value, calendarTime.value));
+  const todaySummary = computed(() => summarizeLearning(state.value, calendarTime.value, { range: 'day' }));
+  const journey = computed(() =>
+    describeJourney(state.value, selectedConversationId.value, calendarTime.value, { dayKey, effectiveGrade })
+  );
+  const journeySummary = computed(() =>
+    active.value
+      ? summarizeLearning(state.value, calendarTime.value, {
+          range: 'day',
+          conversationId: active.value.id,
+          timezone: active.value.journey?.timezone || state.value.timezone
+        })
+      : null
+  );
+  const scopedSummary = (range = 'day', conversationId) =>
+    summarizeLearning(state.value, calendarTime.value, {
+      range,
+      ...(conversationId
+        ? {
+            conversationId,
+            timezone:
+              state.value.conversations.find((c) => c.id === conversationId)?.journey?.timezone || state.value.timezone
+          }
+        : {})
+    });
+  function journeyContext() {
+    return JSON.stringify([recordContext(), selectedConversationId.value, state.value.revision]);
+  }
+  function configureJourney(expectedContext, config) {
+    idleRecords();
+    refresh();
+    assert(expectedContext === journeyContext() && active.value, 'CONTEXT_CHANGED', '学习已变化，请重新核对目标');
+    return commit('journey.configure', { conversationId: active.value.id, ...config });
+  }
+  const selectedTrainingId = ref(null);
+  watch(
+    selectedConversationId,
+    () => {
+      selectedTrainingId.value = null;
+    },
+    { flush: 'sync' }
+  );
+  const trainingGroup = computed(() =>
+    selectedTrainingId.value === 'question-only'
+      ? null
+      : active.value?.trainingGroups?.find((g) => g.id === selectedTrainingId.value) ||
+        active.value?.trainingGroups?.at(-1) ||
+        null
+  );
+  const trainingResult = computed(() =>
+    trainingGroup.value
+      ? trainingReport(state.value, active.value.id, trainingGroup.value.id, { effectiveGrade })
+      : null
+  );
+  const batchTrainingActive = computed(() => Boolean(trainingGroup.value && trainingGroup.value.mode !== 'guided'));
+  const dailyRecap = computed(() =>
+    journey.value
+      ? journeyRecap(state.value, active.value.id, 'day', journey.value.day, null, { effectiveGrade })
+      : null
+  );
+  const journeyInsights = computed(() =>
+    journey.value
+      ? deriveJourneyInsights(state.value, active.value.id, journey.value.day, { effectiveGrade, dayKey })
+      : { comparisons: [], consolidation: [], handoff: '' }
+  );
+  function startWeakness(expectedContext, attemptId) {
+    requireJourney(expectedContext);
+    assert(
+      journeyInsights.value.consolidation.some((row) => row.evidenceIds.includes(attemptId)),
+      'CONTEXT_CHANGED',
+      '巩固依据已变化，请重新查看'
+    );
+    const attempt = state.value.attempts.find((a) => a.id === attemptId && a.conversationId === active.value.id);
+    assert(attempt, 'NOT_FOUND', '原答不存在');
+    focus(attempt.questionKey, active.value.id);
+    selectedTrainingId.value = 'question-only';
+    if (effectiveGrade(attempt).status !== 'reliable') return { questionKey: attempt.questionKey, pending: true };
+    return generateVariant();
+  }
+  const weeklyRecap = computed(() =>
+    journey.value
+      ? journeyRecap(state.value, active.value.id, 'week', journey.value.day, null, { effectiveGrade })
+      : null
+  );
+  const moduleRecap = computed(() =>
+    trainingGroup.value && journey.value
+      ? journeyRecap(state.value, active.value.id, 'module', trainingGroup.value.day, trainingGroup.value.id, {
+          effectiveGrade
+        })
+      : null
+  );
+  function confirmRecap(expectedContext, kind = 'day') {
+    requireJourney(expectedContext);
+    const recap = kind === 'module' ? moduleRecap.value : kind === 'week' ? weeklyRecap.value : dailyRecap.value;
+    assert(recap?.submitted, 'PRECONDITION', '请先提交训练后复盘');
+    if (recap.confirmed) return recap.confirmed;
+    return commit('recap.confirm', {
+      conversationId: active.value.id,
+      kind,
+      day: recap.day,
+      groupId: recap.groupId,
+      signature: recap.signature,
+      explicit: true
+    });
+  }
+  function planNextTraining(expectedContext, moduleId, size) {
+    requireJourney(expectedContext);
+    const day = new Date((journeyDate(journey.value.day) + 1) * 86400000).toISOString().slice(0, 10);
+    return startTraining(journeyContext(), moduleId, size, day);
+  }
+  function configureReminder(expectedContext, config) {
+    requireJourney(expectedContext, true);
+    return commit('reminder.set', { conversationId: active.value.id, ...config });
+  }
+  function reminderQueue(at = Date.now()) {
+    return reminderJobs(state.value, at, { dayKey });
+  }
+  const notificationContext = () => JSON.stringify(learningRepository.notificationConsentContext());
+  function prepareNotificationConsent() {
+    idleRecords();
+    learningRepository.prepareAsyncAction();
+    return notificationContext();
+  }
+  function reminderReceipt(job, status, channel, expectedLifecycle) {
+    refresh();
+    assert(
+      !expectedLifecycle || recordContext() === expectedLifecycle,
+      'CONTEXT_CHANGED',
+      '账户或记录已变化，旧通知回执未保存'
+    );
+    return commit(
+      'reminder.receipt',
+      {
+        conversationId: job.conversationId,
+        reminderId: job.reminderId,
+        generation: job.generation,
+        day: job.day,
+        status,
+        channel
+      },
+      `${job.id}:${channel}:${status}`
+    );
+  }
+  function openReminder(job) {
+    refresh();
+    const session = state.value.conversations.find((c) => c.id === job.conversationId);
+    assert(
+      Number.isFinite(job.dueAt) &&
+        reminderQueue(job.dueAt).some(
+          (current) =>
+            current.id === job.id &&
+            current.conversationId === job.conversationId &&
+            current.reminderId === job.reminderId &&
+            current.generation === job.generation &&
+            current.kind === job.kind &&
+            current.day === job.day &&
+            current.dueAt === job.dueAt &&
+            (current.questionKey || null) === (job.questionKey || null)
+        ),
+      'CONTEXT_CHANGED',
+      '提醒已修改、学习已停止或完成，或属于其他账户'
+    );
+    selectedConversationId.value = session.id;
+    if (job.questionKey) {
+      const group = session.trainingGroups?.find((g) => !g.submittedBy && g.questionKeys.includes(job.questionKey));
+      const dueReview = state.value.reviews.some(
+        (r) => !r.cancelled && r.questionKey === job.questionKey && r.due <= Date.now()
+      );
+      focus(job.questionKey, session.id, dueReview && !group ? 'review' : undefined);
+      selectedTrainingId.value = group ? group.id : 'question-only';
+    } else selectedTrainingId.value = null;
+    return session;
+  }
+  function requireJourney(expectedContext, allowStopped = false) {
+    idleRecords();
+    refresh();
+    assert(
+      expectedContext === journeyContext() && active.value?.journey,
+      'CONTEXT_CHANGED',
+      '学习已变化，请重新核对题组'
+    );
+    assert(allowStopped || !active.value.stopped, 'STOPPED', '当前学习已停止');
+  }
+  function commitJourneyBatch(operations) {
+    const outcome = learningRepository.commitBatch(operations, state.value.revision);
+    state.value = outcome.state;
+    uni.$emit('conversationLearningUpdated');
+    return outcome;
+  }
+  function startTraining(expectedContext, moduleId, size = 5, plannedDay) {
+    requireJourney(expectedContext);
+    const program = active.value.journey;
+    const day = plannedDay || dayKey(Date.now(), program.timezone);
+    const existing = active.value.trainingGroups?.find(
+      (g) => g.day === day && g.moduleId === moduleId && !g.submittedBy
+    );
+    if (existing) {
+      selectedTrainingId.value = existing.id;
+      return existing;
+    }
+    const id = learningId('training');
+    const count = program.mode === 'guided' ? 1 : size;
+    const questions = createJourneyQuestions(state.value, active.value.id, moduleId, count, id);
+    const keys = questions.map(questionKey);
+    const module = JOURNEY_MODULES.find((m) => m.id === moduleId);
+    const at = Date.now(),
+      conversationId = active.value.id;
+    const tasks = state.value.plans.filter((p) => p.day === day).at(-1)?.tasks || [];
+    assert(tasks.length + keys.length <= 100, 'RESOURCE_LIMIT', '当日计划最多100项任务');
+    commitJourneyBatch([
+      ...questions.map((question, index) => ({ id: `${id}:q${index}`, type: 'question.add', at, data: { question } })),
+      {
+        id,
+        type: 'training.open',
+        at,
+        data: {
+          conversationId,
+          moduleId,
+          questionKeys: keys,
+          day,
+          minutes: Math.max(1, Math.min(Math.floor(program.minutes / program.moduleIds.length), module.minutes))
+        }
+      },
+      {
+        id: `${id}:plan`,
+        type: 'plan.set',
+        at,
+        data: {
+          day,
+          reason: `用户明确安排${module.label}训练`,
+          tasks: [
+            ...tasks,
+            ...keys.map((key, index) => ({
+              id: `${id}:task${index}`,
+              title: `${module.label} · 第${index + 1}题`,
+              questionKey: key,
+              condition: 'submitted'
+            }))
+          ]
+        }
+      },
+      { id: `${id}:focus`, type: 'question.focus', at, data: { conversationId, questionKey: keys[0] } }
+    ]);
+    selectedTrainingId.value = id;
+    return active.value.trainingGroups.find((g) => g.id === id);
+  }
+  function selectTraining(groupId) {
+    assert(
+      active.value?.trainingGroups?.some((g) => g.id === groupId),
+      'NOT_FOUND',
+      '题组不存在'
+    );
+    selectedTrainingId.value = groupId;
+  }
+  function submitTraining(expectedContext, groupId, answers) {
+    requireJourney(expectedContext, true);
+    const group = active.value.trainingGroups?.find((g) => g.id === groupId);
+    assert(
+      group &&
+        Array.isArray(answers) &&
+        answers.length === group.questionKeys.length &&
+        answers.every((value) => typeof value === 'string' && value.trim()),
+      'INVALID_INPUT',
+      '请完成全部题目再统一交卷'
+    );
+    if (group.submittedBy) {
+      assert(
+        group.attemptIds.every((id, index) => state.value.attempts.find((a) => a.id === id)?.answer === answers[index]),
+        'IDEMPOTENCY_CONFLICT',
+        '这组原答已保存，修改请另行重做'
+      );
+      return trainingReport(state.value, active.value.id, groupId, { effectiveGrade });
+    }
+    assert(!active.value.stopped, 'STOPPED', '当前学习已停止');
+    const conversationId = active.value.id,
+      at = Date.now();
+    const attemptIds = group.questionKeys.map((_, index) => `${groupId}:answer${index}`);
+    const before = state.value;
+    const outcome = commitJourneyBatch([
+      ...group.questionKeys.flatMap((key, index) => [
+        {
+          id: `${groupId}:submit-focus${index}`,
+          type: 'question.focus',
+          at,
+          data: { conversationId, questionKey: key }
+        },
+        {
+          id: attemptIds[index],
+          type: 'attempt.submit',
+          at,
+          data: { conversationId, answer: answers[index], explicit: true, trainingGroupId: groupId }
+        }
+      ]),
+      {
+        id: `${groupId}:complete`,
+        type: 'training.complete',
+        at,
+        data: { conversationId, groupId, attemptIds, explicit: true }
+      }
+    ]);
+    // 后续FSRS仍沿同一可靠作答政策；整批原答成功后才建立调度。
+    for (const id of attemptIds) {
+      const attempt = state.value.attempts.find((a) => a.id === id);
+      if (attempt && !before.attempts.some((a) => a.id === id)) scheduleAttempt(attempt);
+    }
+    selectedTrainingId.value = groupId;
+    return trainingReport(outcome.state, conversationId, groupId, { effectiveGrade });
+  }
+  function openTrainingFeedback(expectedContext, groupId, key) {
+    requireJourney(expectedContext);
+    const group = active.value.trainingGroups?.find(
+      (g) => g.id === groupId && g.submittedBy && g.questionKeys.includes(key)
+    );
+    assert(group, 'PRECONDITION', '请先完成整批交卷');
+    focus(key);
+    const segment = activeQuestion.value.scienceExercise
+      ? {
+          method: 'explain',
+          helped: true,
+          level: 3,
+          content: scienceVisualHelpContent(activeQuestion.value.scienceExercise.input)
+        }
+      : localTeaching(activeQuestion.value, 'explain');
+    if (!segment) return '本题原答已保存，表达与评分仍待核对。';
+    deliverTeaching(segment, `${groupId}:explain:${group.questionKeys.indexOf(key)}`);
+    return segment.content;
+  }
   const taskContext = computed(() => learningTaskContext(state.value, selectedConversationId.value));
   const canDiagnose = computed(() =>
     Boolean(
@@ -397,6 +776,8 @@ export const useConversationLearningStore = defineStore('conversation-learning',
   };
   if (typeof window !== 'undefined') window.addEventListener('storage', storageChanged);
   onScopeDispose(() => {
+    if (notificationRefreshTimer !== null) clearTimeout(notificationRefreshTimer);
+    notificationObserver?.dispose();
     calendar.dispose();
     if (typeof window !== 'undefined') window.removeEventListener('storage', storageChanged);
     for (const event of authEvents) uni.$off?.(event, refresh);
@@ -1298,6 +1679,16 @@ export const useConversationLearningStore = defineStore('conversation-learning',
         `${id}:observation`
       );
     }
+    const training = active.value?.trainingGroups?.find(
+      (g) =>
+        g.mode === 'guided' && !g.submittedBy && g.questionKeys.length === 1 && g.questionKeys[0] === result.questionKey
+    );
+    if (training)
+      commit(
+        'training.complete',
+        { conversationId: active.value.id, groupId: training.id, attemptIds: [result.id], explicit: true },
+        `${training.id}:complete`
+      );
     return result;
   }
   async function send(raw, options = {}) {
@@ -1366,20 +1757,55 @@ export const useConversationLearningStore = defineStore('conversation-learning',
       notice('请独立完成这道变式。', `${id}:independent-check`);
       return result;
     }
+    if (active.value.journey && !options.visual && !options.feedbackAttemptId) {
+      const request = raw.trim().replace(/[。！!]+$/u, '');
+      if (/^(?:查看)?(?:今天|今日|本周|本模块)复盘$/u.test(request)) {
+        const recap = request.includes('本周')
+          ? weeklyRecap.value
+          : request.includes('本模块')
+            ? moduleRecap.value
+            : dailyRecap.value;
+        notice(
+          recap?.submitted
+            ? `已提交 ${recap.submitted} 题；可靠正确 ${recap.correct}；部分正确 ${recap.partial}；待核对 ${recap.pending}。\n${recap.modules.map((m) => `${m.label}：${m.next}`).join('\n')}`
+            : '提交训练后即可复盘。',
+          `${id}:offline`
+        );
+        return;
+      }
+      if (/^(?:完成|保存)(?:今天|今日|本周|本模块)复盘$/u.test(request)) {
+        confirmRecap(
+          journeyContext(),
+          request.includes('本周') ? 'week' : request.includes('本模块') ? 'module' : 'day'
+        );
+        notice('本次复盘已保存。', `${id}:offline`);
+        return;
+      }
+      if (/^(?:开始整批训练|继续今日学习|开始下一模块)$/u.test(request)) {
+        assert(!active.value.stopped, 'STOPPED', '当前任务已停止，请先明确继续');
+        const module = journey.value.current;
+        if (module) startTraining(journeyContext(), module.id, module.id.startsWith('writing-') ? 1 : 5);
+        notice(module ? `已打开${module.label}题组。` : '今日模块已提交，可以进行复盘。', `${id}:offline`);
+        return;
+      }
+    }
     const directive = options.visual ? null : userDirective(raw, state.value, selectedConversationId.value);
     if (directive) {
       commit(directive.type, directive.data, `${id}:directive`);
       notice(
-        directive.type === 'task.stop'
-          ? '当前任务已停止。'
-          : directive.type === 'strategy.auto'
-            ? '已恢复自动教法。'
-            : directive.type === 'task.resume'
-              ? '已继续学习。'
-              : '已切换教法。',
+        directive.type === 'journey.configure'
+          ? '训练节奏已保存，新题组按此节奏开始。'
+          : directive.type === 'task.stop'
+            ? '当前任务已停止。'
+            : directive.type === 'strategy.auto'
+              ? '已恢复自动教法。'
+              : directive.type === 'task.resume'
+                ? '已继续学习。'
+                : '已切换教法。',
         `${id}:updated`
       );
-      if (['task.stop', 'task.resume', 'strategy.auto', 'plan.set'].includes(directive.type)) return;
+      if (['task.stop', 'task.resume', 'strategy.auto', 'plan.set', 'journey.configure'].includes(directive.type))
+        return;
       if (active.value.stopped) return;
     } else if (active.value.stopped) {
       notice('已停止，请先继续任务。', `${id}:stopped`);
@@ -1388,6 +1814,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
       activeQuestion.value &&
       !options.visual &&
       !options.feedbackAttemptId &&
+      !options.discussionOnly &&
       !activeQuestion.value.writingExercise
     ) {
       const result = submit(raw, false, `${id}:answer`);
@@ -1465,22 +1892,33 @@ export const useConversationLearningStore = defineStore('conversation-learning',
       options.feedbackAttemptId && activeQuestion.value?.vocabularyReview?.phase === 'usage'
         ? vocabularyUseFeedbackBasis(activeQuestion.value, state.value)
         : null;
+    const dailyContext = dailyConversationContext(state.value, conversationId, Date.now(), { dayKey, effectiveGrade });
     const payload = {
       requestId: id,
       requestBinding: binding,
       modelId: modelId.value,
       shareConsent: sharingAllowed.value,
       ...(options.visual ? { images: [options.image], imageShareConsent: true } : {}),
-      messages: active.value.messages
-        .filter((m) => ['user', 'assistant'].includes(m.role))
-        .slice(-10)
-        .map(({ role, content }) => ({ role, content: content.slice(0, 1800) })),
+      messages: dailyContext.messages,
       learningContext: {
         owner,
         goal: active.value.goal,
         task: active.value.task || normalizeLearningTask(),
         capabilities: { ...taskContext.value, visualization: ENERGY_VISUAL_CONTRACT },
-        profile: state.value.profile.slice(-6).map(({ field, value, source, scope, evidenceIds }) => ({
+        profile: [
+          ...state.value.profile.slice(active.value.journey ? -5 : -6),
+          ...(active.value.journey
+            ? [
+                {
+                  field: 'preference',
+                  source: 'self_report',
+                  scope: `对话 ${conversationId}`,
+                  evidenceIds: [],
+                  value: `${active.value.journey.mode === 'guided' ? '单题带练' : active.value.journey.mode === 'timed' ? '限时训练、统一交卷' : '整批训练、统一交卷'}；目标：${active.value.journey.title}；每天${active.value.journey.minutes}分钟；今日路线：${journey.value.modules.map((m) => `${m.label} ${m.status}`).join('，')}。请按此节奏反馈，题组由明确开始的宿主任务提供。`
+                }
+              ]
+            : [])
+        ].map(({ field, value, source, scope, evidenceIds }) => ({
           field,
           value: value.slice(0, 400),
           source,
@@ -1534,8 +1972,9 @@ export const useConversationLearningStore = defineStore('conversation-learning',
             })()
           : null,
         summary: {
-          first: summary.value.first,
-          tasks: summary.value.tasks,
+          continuity: dailyContext.continuity,
+          first: (journeySummary.value || summary.value).first,
+          tasks: (journeySummary.value || summary.value).tasks,
           teaching: observeTeaching(state.value, {
             conversationId,
             scope: activeQuestion.value ? knowledgeScope(activeQuestion.value) : undefined,
@@ -2823,7 +3262,37 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     state,
     active,
     activeQuestion,
+    timeline,
+    conversationLocation,
+    locateConversation,
     summary,
+    todaySummary,
+    scopedSummary,
+    journey,
+    journeySummary,
+    journeyContext,
+    configureJourney,
+    trainingGroup,
+    trainingResult,
+    batchTrainingActive,
+    startTraining,
+    submitTraining,
+    selectTraining,
+    openTrainingFeedback,
+    dailyRecap,
+    journeyInsights,
+    startWeakness,
+    weeklyRecap,
+    moduleRecap,
+    confirmRecap,
+    planNextTraining,
+    configureReminder,
+    reminderQueue,
+    reminderReceipt,
+    openReminder,
+    notificationContext,
+    prepareNotificationConsent,
+    attachNotifications,
     taskContext,
     teachingProgress,
     visualRequest,
