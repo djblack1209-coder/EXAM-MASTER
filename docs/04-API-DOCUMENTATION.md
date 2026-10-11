@@ -2,6 +2,26 @@
 
 接口与工具的当前合同，按业务主题分组。各合同的实现阶段与验收数字见 [12](12-CHANGELOG.md) 与 [08](08-TESTING-INFRA.md)；2026-10-10 前按日期排列的原版本见 git 提交 `77093a22`。
 
+## 学习路线、整批训练与提醒
+
+`learning-journey-v1` 沿现有学习事件保存，不新增公网端点。`journey.configure` 只接受当前conversationId、160字以内title、有效startDay、1—365天durationDays、每日5—720分钟minutes、guided/batch/timed和1—8个已支持moduleIds。明确保存才生效；调整保留原时区和停止，已有题组保持自己的配置版本。
+
+`training.open` 绑定当前目标已保存且未作答的1—20个不同questionKeys、模块、日期及1—180分钟；每目标最多100组。Store先完整校验题目/原答/帮助，再由repository `commitBatch` 一次保存。`training.complete` 必须explicit=true，attemptIds按原题序逐项属于同目标/版本；未答、未来日期、停止、陈旧上下文及部分失败整批拒绝。未交卷题组的单题提交返回BATCH_REQUIRED，整批讨论不自动作答；计时只反馈，不自动交卷。
+
+`recap.confirm` 绑定module/day/week、实际groupIds/evidenceIds及当前signature，须明确确认且已有交卷；每目标最多500条。完整模块提交和日终明确复盘才计完成学习日。`deriveJourneyInsights`只读真实样本、帮助及effectiveGrade；差异卡保留双方分母，abilityChangeVerified=false。巩固绑定有效原答，可靠题创建独立变式，待核对题返回原答；后续题量仍由用户确认。
+
+`summarizeLearning` 可选day/history及conversationId/timezone；旧默认仍为历史统计，今日、当前目标和全部历史分别筛选，不混用分母。
+
+`conversationTimeline` 按原目标的学习时区只读派生日期、完整消息索引和题组。`locateConversation(conversationId,day,groupId)` 只改变当前页面的定位，校验目标/日期/模块，忙碌时拒绝；不创建子会话、不裁剪保存正文、不新增题目聚焦事件、不解除停止。切换账户或记录身份清除临时定位。
+
+`dailyConversationContext` 只取所选目标当日的user/assistant正文：最近最多10条，每条最多1800字符，总计最多8000字符。`learning-daily-context-v1` 接续摘要只含目标/日期/原时区/停止、历史可靠与待核对分母、帮助、模块和最多3个证据编号，不带旧日完整聊天、不证明掌握；缺少原文时先询问。云端最终contextText仍最多12000字符，超限在模型调用/扣量前拒绝；本机safeContext的8000字符和总输入24000字符限制保持。以上输入裁剪不改变本机完整记录、公开备份或同步格式。
+
+`learning-reminder-v1` 的reminder.set只接受study/review/recap、00:00—23:59、1—7个不同重复日、有效时区和enabled，每目标最多三类。每次修改换generation；队列依原时区生成未来7日，夏令时不存在的时刻不猜测。停止/已交卷学习日/完成复盘及当前复测资格排除旧任务。返回前重算原dueAt对应队列，逐项匹配目标、提醒、代次、种类、日期、时间和原题；无效点击不切换目标、不写回执、不解除停止、不作答。
+
+系统桥仅四命令：begin_learning_notifications、learning_notification_permission、replace_learning_notifications、take_learning_notification_actions；只供本地main窗口。每次安排绑定会话token/单调sequence、明确授权及最多64个未来8日内任务；文案固定，无任意URL/命令执行。取消须cancelled=true与acceptedIds完整回执，平台接纳不等于显示。macOS代理在应用完成启动前注册，早到点击保留于有界队列；前端等待初始路由和启动页完成，再重验账户/记录生命周期及原任务。等待期间停止、改期、换账户或实际恢复均拒绝旧点击。
+
+授权只留本终端账户/记录身份，不随备份同步；reminder.receipt只记录accepted/failed/unknown/opened及web/macos，导入为historyOnly，不冒充当前投递或可靠判分。网页仅应用打开且已授权时发送，未知/失败不自动重复；正常退出保留已授权系统安排。Windows及移动后台通知尚未接入，原鉴权、授权、预算与公共题源门禁保持。
+
 ## 学习业务与通用工具
 
 ### 学习业务

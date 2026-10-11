@@ -229,8 +229,9 @@ function copyH5PwaIcons({ enableUpdates = false } = {}) {
 
 // https://vitejs.dev/config/
 export default defineConfig(({ command, mode }) => {
-  // 加载环境变量
-  const env = loadEnv(mode, process.cwd(), '');
+  // 隔离核验只使用命令显式传入的配置，避免加载日常私有连接信息。
+  const isolatedBuild = process.env.WENLI_ISOLATED_BUILD === '1';
+  const env = isolatedBuild ? { ...process.env } : loadEnv(mode, process.cwd(), '');
   const platform = process.env.UNI_PLATFORM || env.UNI_PLATFORM || '';
   guardHBuilderMiniProgramHelpers(platform);
 
@@ -529,7 +530,7 @@ export default defineConfig(({ command, mode }) => {
     envPrefix: 'VITE_',
 
     // 环境目录
-    envDir: process.cwd(),
+    envDir: isolatedBuild ? false : process.cwd(),
 
     // 日志级别
     logLevel: isDevelopment ? 'info' : 'warn',

@@ -1,5 +1,9 @@
 # 源码导航
 
+学习路线与整批训练：[共享路线/复盘/两日证据](../laf-backend/functions/_shared/learning-journey.js)、[提醒日期与资格](../laf-backend/functions/_shared/learning-reminders.js)、[受限题目工厂适配](../src/services/learning/journey-training.js)，沿原reducer、Store和repository保存。界面为[路线](../src/components/business/learning/learning-journey.vue)、[题组](../src/components/business/learning/training-group.vue)、[复盘与巩固](../src/components/business/learning/journey-review.vue)、[提醒](../src/components/business/learning/journey-reminders.vue)和[安全消息排版](../src/components/business/learning/learning-message.vue)。
+
+通知运行时：[全局控制器](../src/services/learning/learning-notifications.js)由App生命周期初始化；[Rust受限命令](../src-tauri/src/notifications.rs)与[macOS系统代理](../src-tauri/src/notifications.m)保留冷启动点击，等待初始路由/启动页完成后再重验原任务资格。回归见[提醒](../tests/unit/learning-reminders.spec.js)、[原子训练](../tests/unit/learning-training.spec.js)、[路线](../tests/unit/learning-journey.spec.js)、[界面](../tests/unit/learning-journey-ui.spec.js)。
+
 二次先修诊断：在[既有诊断模块](../laf-backend/functions/_shared/learning-prerequisite.js)增加独立二次合同，按完整原答与精确解集差异选小题，原v1/v2/条件诊断不变。[40项人工固定期望](../tests/fixtures/learning/quadratic-diagnosis-v1.json)、[专项回归](../tests/unit/learning-quadratic-diagnosis.spec.js)与[既有评测器](../scripts/build/evaluate-learning.mjs)验证边界/漏段/符号/零点/重根/无实根、伪造与更正、完整原题变式、删除、停止和恢复。页面沿原入口就近显示诊断依据；不新增服务或组件体系。
 
 二次不等式：沿[共享精确代数入口](../laf-backend/functions/_shared/learning-algebra.js)增加显式二次合同和完整零点分段；复用[数轴](../src/components/business/learning/number-line.vue)、原 Store/reducer、教学、备份与同步归一化。[40项人工固定期望](../tests/fixtures/learning/quadratic-inequality-v1.json)、[专项回归](../tests/unit/learning-quadratic-inequality.spec.js)和[原评测器](../scripts/build/evaluate-learning.mjs)核对双段/单点/全空集、边界、旧合同与安全降级。不新增数学/诊断服务；旧一次先修不套用二次题。

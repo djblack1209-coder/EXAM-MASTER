@@ -54,6 +54,12 @@ App连接器不增集合、学习版本或工具权限。transport id仅关联�
 
 版本 1，包含 owner、revision、timezone、conversations、materials、questions、attempts、plans、events、executions、profile、strategy、reviews；可选 materialDeletions 与旧版本兼容。客户端分用户保存 conversation_learning_v1，旧键不改名；服务端 learning_states 存 user_id / revision / state。
 
+路线增量仍为逻辑版本1和同一learning_states：会话可有journey（目标/配置版本/原时区）、trainingGroups（稳定questionKeys/日期/模式/时间/configVersion/submittedBy/attemptIds）、recaps（范围/题组/原答依据/签名/完整状态）。原答沿原attempts绑定trainingGroupId；原子交卷事件保存成功才形成完整题组，不另存一套成绩或能力提升事实。日间对比、巩固卡和接续摘要均从有效原答派生，不作为独立权威写入。
+
+日期/模块目录与每日模型接续仍是同一目标的只读投影，不增加数据库集合、事件或逻辑版本。Store的conversationLocation只在当前页面内存保存；50条消息视图分页、更早日期展开及每日输入限额均不截断保存的messages/events，也不把各日另存为子会话。`learning-daily-context-v1` 的分母与证据编号不是新的成绩、能力或长期掌握事实；授权/停止和完整导出保持原合同。
+
+会话可有reminders与最多200条reminderReceipts。提醒保存id/generation/version/kind/time/repeatDays/timezone/enabled；回执只表达终端接纳/失败/未知/用户点击，导入或同步归一化为historyOnly，不证明本机已重新安排。学习时区和通知时区分开，设置/暂停换代。终端许可learning_notification_consent_v1绑定账户及撤销标记，不进学习导出/同步；原生会话序号、待领取点击和启动等待队列仅运行时内存。
+
 题目使用 id@version，保留来源/原件/页码或区域/修改记录、scope、uncertainties、validation、parentQuestionKey。作答关联会话、题版本、原答、提示、时间、taskId、判分和纠正；first、redo、revision、variant、review 分开。来源真实与答案正确分别验证，AI 辅助评估不覆盖可靠判分。
 
 事件含稳定id、type、at、data和执行结果。重复标识同内容复用，异内容拒绝。资料与错题保持私人；publishable=false不能绕过公共题库门禁。当前逻辑状态序列化上限600万UTF-16字符/2万操作；设备实际容量可更低，不承诺无限历史归档。

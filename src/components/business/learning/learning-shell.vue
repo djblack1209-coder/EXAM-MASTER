@@ -83,10 +83,6 @@
             </text>
           </button>
         </view>
-        <view class="library-heading">
-          <text>最近学习</text>
-          <text class="library-count">{{ learning.state.conversations.length }}</text>
-        </view>
         <view class="library-search">
           <BaseIcon name="search" :size="30" :color="iconColor" />
           <input
@@ -100,21 +96,61 @@
             confirm-hold
           />
         </view>
-        <view class="recent-list">
-          <button
-            v-for="conversation in recent"
-            :key="conversation.id"
-            class="recent-item"
-            :class="{ current: learning.selectedConversationId === conversation.id }"
-            role="button"
-            tabindex="0"
-            :disabled="learning.busy"
-            :aria-disabled="learning.busy"
-            @tap="resume(conversation.id)"
-          >
-            <BaseIcon name="chat" :size="30" :color="iconColor" />
-            <text>{{ conversation.goal }}</text>
-          </button>
+        <view class="recent-list" aria-label="学习会话目录">
+          <view v-for="conversation in recent" :key="conversation.id" class="recent-conversation">
+            <button
+              class="recent-item"
+              :class="{ current: learning.selectedConversationId === conversation.id }"
+              role="button"
+              tabindex="0"
+              :disabled="learning.busy"
+              :aria-disabled="learning.busy"
+              @tap="resume(conversation.id)"
+            >
+              <BaseIcon name="chat" :size="30" :color="iconColor" />
+              <text>{{ conversation.goal }}</text>
+            </button>
+            <view v-if="learning.selectedConversationId === conversation.id" class="conversation-directory">
+              <view v-for="chapter in directoryDays" :key="chapter.day" class="directory-day">
+                <button
+                  class="directory-date"
+                  role="button"
+                  tabindex="0"
+                  :disabled="learning.busy"
+                  :aria-disabled="learning.busy"
+                  @tap="locate(conversation.id, chapter.day)"
+                >
+                  {{ chapter.day.slice(5).replace('-', ' / ') }}
+                </button>
+                <button
+                  v-for="group in chapter.groups"
+                  :key="group.id"
+                  class="directory-module"
+                  role="button"
+                  tabindex="0"
+                  :disabled="learning.busy"
+                  :aria-disabled="learning.busy"
+                  :aria-label="`定位${chapter.day}的${group.label}，保留完整会话`"
+                  @tap="locate(conversation.id, chapter.day, group.id)"
+                >
+                  <text>{{ group.label }}</text>
+                  <BaseIcon name="arrow-right" :size="24" :color="iconColor" />
+                </button>
+              </view>
+              <button
+                v-if="learning.timeline.length > directoryDayLimit"
+                class="directory-earlier"
+                role="button"
+                tabindex="0"
+                :disabled="learning.busy"
+                :aria-disabled="learning.busy"
+                data-test="earlier-learning-days"
+                @tap="directoryDayLimit += 7"
+              >
+                更早日期
+              </button>
+            </view>
+          </view>
           <text v-if="!recent.length" class="sidebar-empty">
             {{ query ? '未找到对话' : '暂无对话' }}
           </text>
@@ -204,6 +240,11 @@ const menuOpen = ref(false);
 const menuLeaving = ref(false);
 const reducedMotion = ref(true);
 const query = ref('');
+const directoryDayLimit = ref(7);
+const directoryDays = computed(() => learning.timeline.slice(-directoryDayLimit.value));
+watch([() => learning.recordContext(), () => learning.selectedConversationId], () => {
+  directoryDayLimit.value = 7;
+});
 const platformInsets = ref({});
 // #ifdef MP-WEIXIN
 try {
@@ -297,7 +338,12 @@ function newSession() {
 }
 function resume(id) {
   if (learning.busy) return;
-  learning.selectedConversationId = id;
+  learning.locateConversation(id);
+  menuOpen.value = false;
+  if (getCurrentPages().at(-1)?.route !== 'pages/learning/index') safeNavigateTo('/pages/learning/index');
+}
+function locate(id, day, groupId = null) {
+  learning.locateConversation(id, day, groupId);
   menuOpen.value = false;
   if (getCurrentPages().at(-1)?.route !== 'pages/learning/index') safeNavigateTo('/pages/learning/index');
 }
@@ -331,3 +377,38 @@ onUnmounted(() => {
   element?.removeEventListener?.('keydown', escapeMenu);
 });
 </script>
+<style scoped>
+.conversation-directory {
+  padding: 4px 0 12px 16px;
+}
+.learning-space .directory-date,
+.learning-space .directory-module,
+.learning-space .directory-earlier {
+  width: 100%;
+  min-height: 44px;
+  margin: 0;
+  padding: 8px 12px;
+  justify-content: space-between;
+  text-align: left;
+  background: transparent;
+  box-shadow: none;
+  border: 0;
+  border-radius: 12px;
+}
+.learning-space .directory-date,
+.learning-space .directory-earlier {
+  color: var(--space-muted);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+.learning-space .directory-module {
+  font-size: 13px;
+}
+.directory-module text {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.directory-day + .directory-day {
+  margin-top: 4px;
+}
+</style>

@@ -7,6 +7,8 @@ export {
 } from './learning-material-layout.js';
 import { normalizeComputeReference, computeReferenceText } from './learning-compute-contract.js';
 import { normalizeGrammarReference, grammarReferenceText } from './learning-grammar-contract.js';
+import { applyJourneyOperation } from './learning-journey.js';
+import { applyReminderOperation } from './learning-reminders.js';
 import { validateQuizOriginalQuestion } from './learning-quiz-original.js';
 import { normalizeOatutorQuestion, applyOatutorOperation, oatutorHelpForQuestion } from './learning-oatutor.js';
 import { HISTORY_LIMITS } from './learning-history.js';
@@ -336,6 +338,7 @@ export function normalizePrivateSyncOperation(raw) {
     }
   }
   if (op.type === 'assessment.review') op.type = 'assessment.correct';
+  if (op.type === 'reminder.receipt') op.data.historyOnly = true;
   return op;
 }
 const text = (value, max = 8000) => {
@@ -995,9 +998,24 @@ export function classifyResponse(raw, question) {
   return 'clarify';
 }
 export function summarizeLearning(state, time = Date.now(), options = {}) {
-  const day = options.day || dayKey(time, state.timezone);
+  const timezone = options.timezone || state.timezone;
+  const day = options.day || dayKey(time, timezone);
+  assert(!options.range || ['day', 'history'].includes(options.range), 'INVALID_INPUT', '统计范围不支持');
+  const session = options.conversationId ? state.conversations.find((c) => c.id === options.conversationId) : null;
+  assert(!options.conversationId || session, 'NOT_FOUND', '统计目标不存在');
+  const attempts = state.attempts.filter(
+    (a) => (!session || a.conversationId === session.id) && (options.range !== 'day' || dayKey(a.at, timezone) === day)
+  );
+  const scopedKeys = session
+    ? new Set([
+        session.activeQuestionKey,
+        ...session.messages.map((m) => m.questionKey),
+        ...state.attempts.filter((a) => a.conversationId === session.id).map((a) => a.questionKey),
+        ...(session.trainingGroups || []).flatMap((g) => g.questionKeys)
+      ])
+    : null;
   const firstByQuestion = new Map();
-  for (const attempt of state.attempts) {
+  for (const attempt of attempts) {
     // 首次正式作答的口径不会因重做或更正新增分母。
     if (attempt.kind === 'first' && !firstByQuestion.has(attempt.questionKey))
       firstByQuestion.set(attempt.questionKey, attempt);
@@ -1007,13 +1025,14 @@ export function summarizeLearning(state, time = Date.now(), options = {}) {
   const partial = first.filter((attempt) => effectiveGrade(attempt).outcome === 'partial');
   const plans = state.plans.filter((plan) => plan.day === day);
   const plan = options.planId ? plans.find((item) => item.id === options.planId) : plans.at(-1);
-  const completed = plan?.tasks.filter((task) => task.completedBy).length || 0;
-  const denominator = plan?.tasks.length || 0;
-  const mistakes = state.attempts.filter(
+  const tasks = (plan?.tasks || []).filter((task) => !scopedKeys || scopedKeys.has(task.questionKey));
+  const completed = tasks.filter((task) => task.completedBy).length;
+  const denominator = tasks.length;
+  const mistakes = attempts.filter(
     (attempt) => effectiveGrade(attempt).status === 'reliable' && effectiveGrade(attempt).outcome === 'wrong'
   );
   const knowledge = {};
-  for (const attempt of state.attempts) {
+  for (const attempt of attempts) {
     const question = state.questions.find((item) => questionKey(item) === attempt.questionKey);
     const key = knowledgeScope(question);
     if (effectiveGrade(attempt).status !== 'reliable') continue;
@@ -1031,7 +1050,7 @@ export function summarizeLearning(state, time = Date.now(), options = {}) {
   }
   return {
     day,
-    timezone: state.timezone,
+    timezone,
     first: {
       numerator: wrong.length,
       denominator: first.length,
@@ -1048,16 +1067,15 @@ export function summarizeLearning(state, time = Date.now(), options = {}) {
       rate: denominator ? completed / denominator : null
     },
     mistakes,
-    pending: state.attempts.filter((a) => effectiveGrade(a).status !== 'reliable').length,
-    validAnswers: state.attempts.filter(
-      (a) => effectiveGrade(a).status === 'reliable' && dayKey(a.at, state.timezone) === day
-    ).length,
-    totalReliableAnswers: state.attempts.filter((a) => effectiveGrade(a).status === 'reliable').length,
-    reliableCorrectAnswers: state.attempts.filter(
+    pending: attempts.filter((a) => effectiveGrade(a).status !== 'reliable').length,
+    validAnswers: attempts.filter((a) => effectiveGrade(a).status === 'reliable' && dayKey(a.at, timezone) === day)
+      .length,
+    totalReliableAnswers: attempts.filter((a) => effectiveGrade(a).status === 'reliable').length,
+    reliableCorrectAnswers: attempts.filter(
       (a) => effectiveGrade(a).status === 'reliable' && effectiveGrade(a).outcome === 'correct'
     ).length,
     knowledge,
-    due: state.reviews.filter((r) => r.due <= time && !r.cancelled)
+    due: state.reviews.filter((r) => r.due <= time && !r.cancelled && (!scopedKeys || scopedKeys.has(r.questionKey)))
   };
 }
 
@@ -1102,6 +1120,22 @@ function reduceLearningOperation(original, operation, owned = false, budget = nu
     return session;
   };
   switch (operation.type) {
+    case 'reminder.set':
+    case 'reminder.receipt': {
+      result = applyReminderOperation(state, { ...operation, id: opId, at: now, data }, { assert, dayKey });
+      break;
+    }
+    case 'journey.configure':
+    case 'training.open':
+    case 'training.complete':
+    case 'recap.confirm': {
+      result = applyJourneyOperation(
+        state,
+        { ...operation, id: opId, at: now, data },
+        { assert, dayKey, questionKey, effectiveGrade }
+      );
+      break;
+    }
     case 'conversation.start': {
       const goal = text(data.goal, 1000);
       const conversation = {
@@ -1617,6 +1651,13 @@ function reduceLearningOperation(original, operation, owned = false, budget = nu
     }
     case 'attempt.submit': {
       const session = current();
+      const training = session.trainingGroups?.find((g) => g.questionKeys.includes(session.activeQuestionKey));
+      assert(
+        !training || training.submittedBy || training.mode === 'guided' || data.trainingGroupId === training.id,
+        'BATCH_REQUIRED',
+        '这组训练需要统一交卷，单题草稿未提交'
+      );
+      assert(!training || dayKey(now, training.timezone) >= training.day, 'NOT_DUE', '此题组尚未到安排日期');
       assert(!session.stopped, 'STOPPED', '当前任务已停止');
       const q = state.questions.find((item) => questionKey(item) === session.activeQuestionKey);
       assert(q, 'PRECONDITION', '作答需要绑定明确题目');
@@ -1649,7 +1690,7 @@ function reduceLearningOperation(original, operation, owned = false, budget = nu
       );
       const validatedAnswer = text(data.answer);
       const answer =
-        q.oatutorExercise || EXTENDED_WRITING_CONTRACTS.includes(q.writingExercise?.contract)
+        q.oatutorExercise || training || EXTENDED_WRITING_CONTRACTS.includes(q.writingExercise?.contract)
           ? data.answer
           : validatedAnswer;
       if (

@@ -3,6 +3,7 @@ import { getUserId } from '../auth-storage.js';
 import {
   emptyLearningState,
   applyLearningOperation,
+  createLearningOperationBatch,
   assert,
   operationFingerprint,
   inspectMaterialDeletion,
@@ -140,6 +141,7 @@ export function createLearningRepository(
     assertWriteAccess,
     lifecycleRevision: observeLifecycle,
     lifecycleContext: () => [owner(), observeLifecycle()],
+    notificationConsentContext: () => [owner(), lifecycleMarker()?.generation || 'initial'],
     prepareAsyncAction() {
       this.assertWriteAccess();
       if (!lifecycleMarker()) invalidateLifecycle(false);
@@ -170,6 +172,25 @@ export function createLearningRepository(
         assert(storage.save(LEARNING_KEY, outcome.state, true), 'STORAGE_FAILED', '学习记录保存失败，未宣称执行成功');
       }
       return outcome;
+    },
+    commitBatch(operations, expectedRevision) {
+      assertWriteAccess();
+      const before = read();
+      assert(before.revision === expectedRevision, 'CONFLICT', '学习记录已更新，请重新核对整批作答');
+      assert(Array.isArray(operations) && operations.length >= 1 && operations.length <= 100,
+        'RESOURCE_LIMIT', '学习批次最多100个操作');
+      assert(operations.every((op) => ['question.add', 'question.focus', 'attempt.submit', 'plan.set',
+        'training.open', 'training.complete', 'review.schedule', 'recap.confirm', 'message.add'].includes(op.type)),
+      'FORBIDDEN', '学习批次包含不支持的操作');
+      const batch = createLearningOperationBatch(before, operations.length);
+      const results = operations.map((operation) => batch.apply(operation));
+      const after = batch.finish();
+      if (after.revision !== before.revision) {
+        preparedHistory = null;
+        assert(storage.save(`${LEARNING_KEY}_recovery`, before, true), 'STORAGE_FAILED', '无法创建恢复副本');
+        assert(storage.save(LEARNING_KEY, after, true), 'STORAGE_FAILED', '整批保存失败，原记录保留，请重试');
+      }
+      return { state: after, results: results.map((r) => r.result), reused: results.every((r) => r.reused) };
     },
     previewMaterialDeletion(materialId) {
       const current = read();

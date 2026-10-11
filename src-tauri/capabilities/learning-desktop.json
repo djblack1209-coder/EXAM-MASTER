@@ -15,6 +15,12 @@
     "allow-discard-learning-material",
     "allow-create-desktop-oauth-proof",
     "allow-open-desktop-oauth",
-    "allow-focus-desktop-after-oauth"
+    "allow-focus-desktop-after-oauth",
+    "allow-begin-learning-notifications",
+    "allow-learning-notification-permission",
+    "allow-replace-learning-notifications",
+    "allow-take-learning-notification-actions",
+    "core:event:allow-listen",
+    "core:event:allow-unlisten"
   ]
 }

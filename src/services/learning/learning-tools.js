@@ -208,6 +208,21 @@ export function userDirective(raw, state, conversationId) {
     return { type: 'strategy.auto', data: { conversationId, source: 'self_report' } };
   if (/^(?:继续当前任务|恢复当前任务)$/u.test(request))
     return { type: 'task.resume', data: { conversationId, source: 'self_report' } };
+  const rhythm = /^(?:以后|保持|切换到|使用)?(整批训练|单题带练|限时训练)(?:[,，]\s*统一批改)?$/u.exec(request);
+  const journey = state.conversations.find((c) => c.id === conversationId)?.journey;
+  if (rhythm && journey)
+    return {
+      type: 'journey.configure',
+      data: {
+        conversationId,
+        title: journey.title,
+        startDay: journey.startDay,
+        durationDays: journey.durationDays,
+        minutes: journey.minutes,
+        moduleIds: journey.moduleIds,
+        mode: { 整批训练: 'batch', 单题带练: 'guided', 限时训练: 'timed' }[rhythm[1]]
+      }
+    };
   const common = {
     conversationId,
     reason: `用户明确要求：${value.slice(0, 160)}`,

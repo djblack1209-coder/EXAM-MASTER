@@ -658,6 +658,12 @@
   opacity: 1;
   filter: none;
 }
+.learning-space .brand-name {
+  font-family: Epilogue, 'DM Sans', sans-serif;
+  font-weight: 900;
+  font-size: 18px;
+  letter-spacing: -0.025em;
+}
 .learning-space .space-header {
   background: var(--yozi-glass);
   backdrop-filter: blur(24px) saturate(1.15);
