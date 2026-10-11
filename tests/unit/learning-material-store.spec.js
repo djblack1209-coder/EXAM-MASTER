@@ -439,7 +439,7 @@ describe('私人资料和实际 Store 纵向闭环', () => {
     try {
       const input = wrapper.find('textarea');
       await input.setValue('19');
-      const send = wrapper.findAll('button').find((button) => button.text() === '发送');
+      const send = wrapper.findAll('button').find((button) => button.attributes('aria-label') === '发送');
       commit.mockImplementationOnce(() => {
         throw new Error('另一窗口正在保存学习记录');
       });

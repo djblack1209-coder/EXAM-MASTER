@@ -1,553 +1,503 @@
 <template>
   <view v-if="source" class="diagram-conditions">
-    <button
-      role="button"
-      tabindex="0"
+    <BaseButton
       :aria-expanded="opened"
       :disabled="stopped || busy"
       :aria-disabled="stopped || busy"
+      variant="quiet"
       @tap="toggle"
     >
-      {{ confirmed ? '修改原图条件' : '按原图演示' }}
-    </button>
-    <button role="button" tabindex="0" @tap="previewOriginal">查看原图</button>
-    <text v-if="confirmed" class="subtle" role="status">原图条件已确认</text>
+      {{ confirmed ? t('learning.kr8') : t('learning.k3u') }}
+    </BaseButton>
+    <BaseButton variant="quiet" @tap="previewOriginal">{{ t('learning.kj6') }}</BaseButton>
+    <text v-if="confirmed" class="subtle" role="status">{{ t('learning.kj0') }}</text>
     <view v-if="opened" class="diagram-form">
-      <text class="diagram-label">原图{{ source.binding.page ? ` · 第${source.binding.page}页` : '' }}</text>
-      <image class="diagram-image" :src="source.image" mode="aspectFit" aria-label="当前题目的原页图" />
-      <view class="diagram-options" aria-label="演示概念">
-        <button
+      <text class="diagram-label"
+        >{{ t('learning.koc') }}{{ source.binding.page ? t('learning.k4j', { v0: source.binding.page }) : '' }}</text
+      >
+      <image class="diagram-image" :src="source.image" mode="aspectFit" :aria-label="t('learning.k8h')" />
+      <view class="diagram-options" :aria-label="t('learning.kt2')">
+        <BaseChip
           v-for="item in templates"
           :key="item.value"
-          role="button"
-          tabindex="0"
-          :aria-pressed="template === item.value"
           :class="{ selected: template === item.value }"
           :disabled="stopped || busy"
-          @tap="chooseTemplate(item.value)"
+          :model-value="template === item.value"
+          @update:model-value="chooseTemplate(item.value)"
         >
-          {{ item.label }}
-        </button>
+          {{ learningText(item.label) }}
+        </BaseChip>
       </view>
       <template v-if="template === 'distance_displacement'">
         <view v-for="field in distanceFields" :key="field.value" class="diagram-field">
-          <text class="diagram-label">{{ field.label }}</text>
+          <text class="diagram-label">{{ learningText(field.label) }}</text>
           <view class="diagram-options">
-            <button
+            <BaseButton
               v-for="n in field.choices"
               :key="n"
-              role="button"
-              tabindex="0"
               :disabled="stopped || busy"
+              variant="quiet"
               @tap="set(field.value, String(n))"
             >
               {{ n }}
-            </button>
+            </BaseButton>
           </view>
-          <input
-            :value="draft[field.value]"
+          <BaseInput
+            :model-value="draft[field.value]"
             type="number"
             maxlength="5"
-            :aria-label="field.label"
             :disabled="stopped || busy"
-            placeholder="数值"
+            :placeholder="t('learning.k9h')"
+            :label="field.label"
             @input="set(field.value, $event.target?.value ?? $event.detail?.value ?? '')"
           />
-          <view class="diagram-options" :aria-label="`${field.label}单位`">
-            <button
+          <view class="diagram-options" :aria-label="t('learning.kge', { v0: learningText(field.label) })">
+            <BaseChip
               v-for="unit in ['m', 'cm']"
               :key="unit"
-              role="button"
-              tabindex="0"
               :disabled="stopped || busy"
-              :aria-pressed="draft[field.unit] === unit"
               :class="{ selected: draft[field.unit] === unit }"
-              @tap="set(field.unit, unit)"
+              :model-value="draft[field.unit] === unit"
+              @update:model-value="set(field.unit, unit)"
             >
               {{ unit }}
-            </button>
+            </BaseChip>
           </view>
         </view>
       </template>
       <template v-else-if="template === 'velocity_time_graph'">
         <view class="diagram-field">
-          <text class="diagram-label">时间单位</text>
+          <text class="diagram-label">{{ t('learning.k24') }}</text>
           <view class="diagram-options">
-            <button
+            <BaseChip
               v-for="unit in ['s', 'ms']"
               :key="unit"
-              role="button"
-              tabindex="0"
               :disabled="stopped || busy"
-              :aria-pressed="draft.timeUnit === unit"
               :class="{ selected: draft.timeUnit === unit }"
-              @tap="set('timeUnit', unit)"
+              :model-value="draft.timeUnit === unit"
+              @update:model-value="set('timeUnit', unit)"
             >
               {{ unit }}
-            </button>
+            </BaseChip>
           </view>
-          <text class="diagram-label">速度单位</text>
+          <text class="diagram-label">{{ t('learning.kk2') }}</text>
           <view class="diagram-options">
-            <button
+            <BaseChip
               v-for="unit in ['m/s', 'cm/s']"
               :key="unit"
-              role="button"
-              tabindex="0"
               :disabled="stopped || busy"
-              :aria-pressed="draft.velocityUnit === unit"
               :class="{ selected: draft.velocityUnit === unit }"
-              @tap="set('velocityUnit', unit)"
+              :model-value="draft.velocityUnit === unit"
+              @update:model-value="set('velocityUnit', unit)"
             >
               {{ unit }}
-            </button>
+            </BaseChip>
           </view>
-          <text class="diagram-label">速度正方向</text>
+          <text class="diagram-label">{{ t('learning.kiz') }}</text>
           <view class="diagram-options">
-            <button
+            <BaseChip
               v-for="item in [
                 { value: 'right', label: '向右' },
                 { value: 'left', label: '向左' },
                 { value: 'unknown', label: '无法确定' }
               ]"
               :key="item.value"
-              role="button"
-              tabindex="0"
               :disabled="stopped || busy"
-              :aria-pressed="draft.positiveDirection === item.value"
               :class="{ selected: draft.positiveDirection === item.value }"
-              @tap="set('positiveDirection', item.value)"
+              :model-value="draft.positiveDirection === item.value"
+              @update:model-value="set('positiveDirection', item.value)"
             >
-              {{ item.label }}
-            </button>
+              {{ learningText(item.label) }}
+            </BaseChip>
           </view>
-          <text class="diagram-label">折点之间</text>
+          <text class="diagram-label">{{ t('learning.kdy') }}</text>
           <view class="diagram-options">
-            <button
+            <BaseChip
               v-for="item in [
                 { value: 'linear', label: '直线' },
                 { value: 'curve', label: '曲线' },
                 { value: 'unknown', label: '无法确定' }
               ]"
               :key="item.value"
-              role="button"
-              tabindex="0"
               :disabled="stopped || busy"
-              :aria-pressed="draft.lineKind === item.value"
               :class="{ selected: draft.lineKind === item.value }"
-              @tap="set('lineKind', item.value)"
+              :model-value="draft.lineKind === item.value"
+              @update:model-value="set('lineKind', item.value)"
             >
-              {{ item.label }}
-            </button>
+              {{ learningText(item.label) }}
+            </BaseChip>
           </view>
         </view>
         <view v-for="(point, index) in draft.points" :key="index" class="diagram-field">
-          <text class="diagram-label">折点 {{ index + 1 }}</text>
-          <text class="diagram-label">时间</text>
+          <text class="diagram-label">{{ t('learning.kb3') }}{{ index + 1 }}</text>
+          <text class="diagram-label">{{ t('learning.kgr') }}</text>
           <view class="diagram-options">
-            <button
+            <BaseButton
               v-for="n in [0, 1, 2, 3, 5, 8]"
               :key="n"
-              role="button"
-              tabindex="0"
               :disabled="stopped || busy"
+              variant="quiet"
               @tap="setPoint(index, 'time', String(n))"
             >
               {{ n }}
-            </button>
+            </BaseButton>
           </view>
-          <input
-            :value="point.time"
+          <BaseInput
+            :model-value="point.time"
             type="digit"
             maxlength="8"
-            :aria-label="`折点${index + 1}时间`"
             :disabled="stopped || busy"
-            placeholder="时间"
+            :placeholder="t('learning.kgr')"
+            :label="t('learning.kr1', { v0: index + 1 })"
             @input="setPoint(index, 'time', $event.target?.value ?? $event.detail?.value ?? '')"
           />
-          <text class="diagram-label">带符号速度</text>
+          <text class="diagram-label">{{ t('learning.kog') }}</text>
           <view class="diagram-options">
-            <button
+            <BaseButton
               v-for="n in [-2, -1, 0, 1, 2]"
               :key="n"
-              role="button"
-              tabindex="0"
               :disabled="stopped || busy"
+              variant="quiet"
               @tap="setPoint(index, 'velocity', String(n))"
             >
               {{ n }}
-            </button>
+            </BaseButton>
           </view>
-          <input
-            :value="point.velocity"
+          <BaseInput
+            :model-value="point.velocity"
             type="text"
             maxlength="8"
-            :aria-label="`折点${index + 1}速度`"
             :disabled="stopped || busy"
-            placeholder="速度，保留正负号"
+            :placeholder="t('learning.k20')"
+            :label="t('learning.kr', { v0: index + 1 })"
             @input="setPoint(index, 'velocity', $event.target?.value ?? $event.detail?.value ?? '')"
           />
         </view>
         <view class="diagram-options">
-          <button
+          <BaseButton
             v-if="draft.points.length < 4"
-            role="button"
-            tabindex="0"
             :disabled="stopped || busy"
+            variant="quiet"
             @tap="changePoints(true)"
+            >{{ t('learning.kin') }}</BaseButton
           >
-            添加折点
-          </button>
-          <button
+          <BaseButton
             v-if="draft.points.length > 2"
-            role="button"
-            tabindex="0"
             :disabled="stopped || busy"
+            variant="quiet"
             @tap="changePoints(false)"
+            >{{ t('learning.k9v') }}</BaseButton
           >
-            移除末折点
-          </button>
         </view>
       </template>
       <template v-else>
         <view class="diagram-field">
-          <text class="diagram-label">质量</text>
+          <text class="diagram-label">{{ t('learning.kg1') }}</text>
           <view class="diagram-options">
-            <button
+            <BaseButton
               v-for="n in [1, 2, 4, 10]"
               :key="n"
-              role="button"
-              tabindex="0"
               :disabled="stopped || busy"
+              variant="quiet"
               @tap="set('massKg', String(n))"
             >
               {{ n }}
-            </button>
+            </BaseButton>
           </view>
-          <input
-            :value="draft.massKg"
+          <BaseInput
+            :model-value="draft.massKg"
             :type="motionTemplate ? 'digit' : 'number'"
             :maxlength="motionTemplate ? 8 : 5"
-            aria-label="原图质量"
             :disabled="stopped || busy"
-            placeholder="数值"
+            :placeholder="t('learning.k9h')"
+            :label="t('learning.k37')"
             @input="set('massKg', $event.target?.value ?? $event.detail?.value ?? '')"
           />
-          <view class="diagram-options" aria-label="质量单位">
-            <button
+          <view class="diagram-options" :aria-label="t('learning.kg8')">
+            <BaseChip
               v-for="unit in ['kg', 'g']"
               :key="unit"
-              role="button"
-              tabindex="0"
               :disabled="stopped || busy"
-              :aria-pressed="draft.massUnit === unit"
               :class="{ selected: draft.massUnit === unit }"
-              @tap="set('massUnit', unit)"
+              :model-value="draft.massUnit === unit"
+              @update:model-value="set('massUnit', unit)"
             >
               {{ unit }}
-            </button>
+            </BaseChip>
           </view>
         </view>
         <view v-if="template !== 'changing_net_force'" class="diagram-field">
-          <text class="diagram-label">合力</text>
+          <text class="diagram-label">{{ t('learning.k96') }}</text>
           <view class="diagram-options">
-            <button
+            <BaseButton
               v-for="n in [0, 2, 4, 8]"
               :key="n"
-              role="button"
-              tabindex="0"
               :disabled="stopped || busy"
+              variant="quiet"
               @tap="set('netForceN', String(n))"
             >
               {{ n }}
-            </button>
-            <button
-              role="button"
-              tabindex="0"
+            </BaseButton>
+            <BaseChip
               :disabled="stopped || busy"
-              :aria-pressed="draft.forceUnit === 'N'"
               :class="{ selected: draft.forceUnit === 'N' }"
-              @tap="set('forceUnit', 'N')"
+              :model-value="draft.forceUnit === 'N'"
+              @update:model-value="set('forceUnit', 'N')"
             >
               N
-            </button>
+            </BaseChip>
           </view>
-          <input
-            :value="draft.netForceN"
+          <BaseInput
+            :model-value="draft.netForceN"
             :type="motionTemplate ? 'digit' : 'number'"
             :maxlength="motionTemplate ? 8 : 5"
-            aria-label="原图合力"
             :disabled="stopped || busy"
-            placeholder="数值"
+            :placeholder="t('learning.k9h')"
+            :label="t('learning.k9l')"
             @input="set('netForceN', $event.target?.value ?? $event.detail?.value ?? '')"
           />
         </view>
         <view class="diagram-field">
-          <text class="diagram-label">初始状态</text>
+          <text class="diagram-label">{{ t('learning.kjs') }}</text>
           <view class="diagram-options">
-            <button
+            <BaseChip
               v-for="item in initialStates"
               :key="item.value"
-              role="button"
-              tabindex="0"
               :disabled="stopped || busy"
-              :aria-pressed="draft.initialState === item.value"
               :class="{ selected: draft.initialState === item.value }"
-              @tap="set('initialState', item.value)"
+              :model-value="draft.initialState === item.value"
+              @update:model-value="set('initialState', item.value)"
             >
-              {{ item.label }}
-            </button>
+              {{ learningText(item.label) }}
+            </BaseChip>
           </view>
-          <text class="diagram-label">力的条件</text>
+          <text class="diagram-label">{{ t('learning.kjv') }}</text>
           <view class="diagram-options">
-            <button
+            <BaseChip
               v-for="item in forces"
               :key="item.value"
-              role="button"
-              tabindex="0"
               :disabled="stopped || busy"
-              :aria-pressed="draft.forceKind === item.value"
               :class="{ selected: draft.forceKind === item.value }"
-              @tap="set('forceKind', item.value)"
+              :model-value="draft.forceKind === item.value"
+              @update:model-value="set('forceKind', item.value)"
             >
-              {{ item.label }}
-            </button>
+              {{ learningText(item.label) }}
+            </BaseChip>
           </view>
         </view>
         <template v-if="motionTemplate">
           <template v-if="template === 'work_kinetic_energy'">
-            <text class="diagram-label">物体模型</text>
-            <view class="diagram-options" aria-label="物体模型">
-              <button
+            <text class="diagram-label">{{ t('learning.k31') }}</text>
+            <view class="diagram-options" :aria-label="t('learning.k31')">
+              <BaseChip
                 v-for="item in [
                   { value: 'particle', label: '可视为质点' },
                   { value: 'other', label: '转动或形变' },
                   { value: 'unknown', label: '无法确定' }
                 ]"
                 :key="item.value"
-                role="button"
-                tabindex="0"
                 :disabled="stopped || busy"
-                :aria-pressed="draft.bodyKind === item.value"
                 :class="{ selected: draft.bodyKind === item.value }"
-                @tap="set('bodyKind', item.value)"
+                :model-value="draft.bodyKind === item.value"
+                @update:model-value="set('bodyKind', item.value)"
               >
-                {{ item.label }}
-              </button>
+                {{ learningText(item.label) }}
+              </BaseChip>
             </view>
-            <text class="diagram-label">参考系</text>
-            <view class="diagram-options" aria-label="参考系">
-              <button
+            <text class="diagram-label">{{ t('learning.ksi') }}</text>
+            <view class="diagram-options" :aria-label="t('learning.ksi')">
+              <BaseChip
                 v-for="item in [
                   { value: 'inertial', label: '惯性系' },
                   { value: 'other', label: '加速参考系' },
                   { value: 'unknown', label: '无法确定' }
                 ]"
                 :key="item.value"
-                role="button"
-                tabindex="0"
                 :disabled="stopped || busy"
-                :aria-pressed="draft.frameKind === item.value"
                 :class="{ selected: draft.frameKind === item.value }"
-                @tap="set('frameKind', item.value)"
+                :model-value="draft.frameKind === item.value"
+                @update:model-value="set('frameKind', item.value)"
               >
-                {{ item.label }}
-              </button>
+                {{ learningText(item.label) }}
+              </BaseChip>
             </view>
-            <text class="diagram-label">质量</text>
-            <view class="diagram-options" aria-label="质量条件">
-              <button
+            <text class="diagram-label">{{ t('learning.kg1') }}</text>
+            <view class="diagram-options" :aria-label="t('learning.kcm')">
+              <BaseChip
                 v-for="item in [
                   { value: 'constant', label: '不变' },
                   { value: 'changing', label: '变化' },
                   { value: 'unknown', label: '无法确定' }
                 ]"
                 :key="item.value"
-                role="button"
-                tabindex="0"
                 :disabled="stopped || busy"
-                :aria-pressed="draft.massKind === item.value"
                 :class="{ selected: draft.massKind === item.value }"
-                @tap="set('massKind', item.value)"
+                :model-value="draft.massKind === item.value"
+                @update:model-value="set('massKind', item.value)"
               >
-                {{ item.label }}
-              </button>
+                {{ learningText(item.label) }}
+              </BaseChip>
             </view>
-            <text class="diagram-label">运动范围</text>
-            <view class="diagram-options" aria-label="运动范围">
-              <button
+            <text class="diagram-label">{{ t('learning.k73') }}</text>
+            <view class="diagram-options" :aria-label="t('learning.k73')">
+              <BaseChip
                 v-for="item in [
                   { value: 'linear', label: '直线' },
                   { value: 'multidimensional', label: '多维' },
                   { value: 'unknown', label: '无法确定' }
                 ]"
                 :key="item.value"
-                role="button"
-                tabindex="0"
                 :disabled="stopped || busy"
-                :aria-pressed="draft.motionKind === item.value"
                 :class="{ selected: draft.motionKind === item.value }"
-                @tap="set('motionKind', item.value)"
+                :model-value="draft.motionKind === item.value"
+                @update:model-value="set('motionKind', item.value)"
               >
-                {{ item.label }}
-              </button>
+                {{ learningText(item.label) }}
+              </BaseChip>
             </view>
           </template>
           <view v-if="draft.initialState !== 'rest'" class="diagram-field">
-            <text class="diagram-label">初速度大小</text>
+            <text class="diagram-label">{{ t('learning.kuz') }}</text>
             <view class="diagram-options">
-              <button
+              <BaseButton
                 v-for="n in [0.5, 1, 2, 4]"
                 :key="n"
-                role="button"
-                tabindex="0"
                 :disabled="stopped || busy"
+                variant="quiet"
                 @tap="set('initialVelocityMps', String(n))"
               >
                 {{ n }}
-              </button>
+              </BaseButton>
             </view>
-            <input
-              :value="draft.initialVelocityMps"
+            <BaseInput
+              :model-value="draft.initialVelocityMps"
               type="digit"
               maxlength="8"
-              aria-label="初速度大小"
               :disabled="stopped || busy"
-              placeholder="数值"
+              :placeholder="t('learning.k9h')"
+              :label="t('learning.kuz')"
               @input="set('initialVelocityMps', $event.target?.value ?? $event.detail?.value ?? '')"
             />
-            <view class="diagram-options" aria-label="初速度单位">
-              <button
+            <view class="diagram-options" :aria-label="t('learning.knn')">
+              <BaseChip
                 v-for="unit in ['m/s', 'cm/s']"
                 :key="unit"
-                role="button"
-                tabindex="0"
                 :disabled="stopped || busy"
-                :aria-pressed="draft.velocityUnit === unit"
                 :class="{ selected: draft.velocityUnit === unit }"
-                @tap="set('velocityUnit', unit)"
+                :model-value="draft.velocityUnit === unit"
+                @update:model-value="set('velocityUnit', unit)"
               >
                 {{ unit }}
-              </button>
+              </BaseChip>
             </view>
-            <view class="diagram-options" aria-label="初速度方向">
-              <button
+            <view class="diagram-options" :aria-label="t('learning.koa')">
+              <BaseChip
                 v-for="item in [
                   { value: 'left', label: '向左' },
                   { value: 'right', label: '向右' }
                 ]"
                 :key="item.value"
-                role="button"
-                tabindex="0"
                 :disabled="stopped || busy"
-                :aria-pressed="draft.velocityDirection === item.value"
                 :class="{ selected: draft.velocityDirection === item.value }"
-                @tap="set('velocityDirection', item.value)"
+                :model-value="draft.velocityDirection === item.value"
+                @update:model-value="set('velocityDirection', item.value)"
               >
-                {{ item.label }}
-              </button>
+                {{ learningText(item.label) }}
+              </BaseChip>
             </view>
           </view>
           <view v-if="['accelerated_motion', 'work_kinetic_energy'].includes(template)" class="diagram-field">
-            <text class="diagram-label">持续时间</text>
+            <text class="diagram-label">{{ t('learning.kck') }}</text>
             <view class="diagram-options">
-              <button
+              <BaseButton
                 v-for="n in [2, 4, 6, 10]"
                 :key="n"
-                role="button"
-                tabindex="0"
                 :disabled="stopped || busy"
+                variant="quiet"
                 @tap="set('physicalSeconds', String(n))"
               >
                 {{ n }}
-              </button>
-              <button
-                role="button"
-                tabindex="0"
+              </BaseButton>
+              <BaseChip
                 :disabled="stopped || busy"
-                :aria-pressed="draft.timeUnit === 's'"
                 :class="{ selected: draft.timeUnit === 's' }"
-                @tap="set('timeUnit', 's')"
+                :model-value="draft.timeUnit === 's'"
+                @update:model-value="set('timeUnit', 's')"
               >
                 s
-              </button>
+              </BaseChip>
             </view>
-            <input
-              :value="draft.physicalSeconds"
+            <BaseInput
+              :model-value="draft.physicalSeconds"
               type="number"
               maxlength="2"
-              aria-label="持续时间"
               :disabled="stopped || busy"
-              placeholder="数值"
+              :placeholder="t('learning.k9h')"
+              :label="t('learning.kck')"
               @input="set('physicalSeconds', $event.target?.value ?? $event.detail?.value ?? '')"
             />
           </view>
           <template v-if="template === 'changing_net_force'">
             <view v-for="(segment, index) in draft.segments" :key="index" class="diagram-field">
-              <text class="diagram-label">第{{ index + 1 }}段</text>
+              <text class="diagram-label">{{ t('learning.kq6') }}{{ index + 1 }}{{ t('learning.knv') }}</text>
               <view class="diagram-options">
-                <button
+                <BaseButton
                   v-for="n in [1, 2, 3]"
                   :key="n"
-                  role="button"
-                  tabindex="0"
                   :disabled="stopped || busy"
+                  variant="quiet"
                   @tap="setSegment(index, 'seconds', String(n))"
                 >
-                  {{ n }}秒
-                </button>
-                <button
-                  role="button"
-                  tabindex="0"
+                  {{ n }}{{ t('learning.kss') }}</BaseButton
+                >
+                <BaseChip
                   :disabled="stopped || busy"
-                  :aria-pressed="segment.timeUnit === 's'"
                   :class="{ selected: segment.timeUnit === 's' }"
-                  @tap="setSegment(index, 'timeUnit', 's')"
+                  :model-value="segment.timeUnit === 's'"
+                  @update:model-value="setSegment(index, 'timeUnit', 's')"
                 >
                   s
-                </button>
+                </BaseChip>
               </view>
-              <input
-                :value="segment.seconds"
+              <BaseInput
+                :model-value="segment.seconds"
                 type="number"
                 maxlength="2"
-                :aria-label="`第${index + 1}段持续时间`"
                 :disabled="stopped || busy"
-                placeholder="持续时间"
+                :placeholder="t('learning.kck')"
+                :label="t('learning.k6z', { v0: index + 1 })"
                 @input="setSegment(index, 'seconds', $event.target?.value ?? $event.detail?.value ?? '')"
               />
               <view class="diagram-options">
-                <button
+                <BaseButton
                   v-for="n in [0, 0.5, 1, 2]"
                   :key="n"
-                  role="button"
-                  tabindex="0"
                   :disabled="stopped || busy"
+                  variant="quiet"
                   @tap="setSegment(index, 'netForceN', String(n))"
                 >
                   {{ n }}
-                </button>
-                <button
-                  role="button"
-                  tabindex="0"
+                </BaseButton>
+                <BaseChip
                   :disabled="stopped || busy"
-                  :aria-pressed="segment.forceUnit === 'N'"
                   :class="{ selected: segment.forceUnit === 'N' }"
-                  @tap="setSegment(index, 'forceUnit', 'N')"
+                  :model-value="segment.forceUnit === 'N'"
+                  @update:model-value="setSegment(index, 'forceUnit', 'N')"
                 >
                   N
-                </button>
+                </BaseChip>
               </view>
-              <input
-                :value="segment.netForceN"
+              <BaseInput
+                :model-value="segment.netForceN"
                 type="digit"
                 maxlength="8"
-                :aria-label="`第${index + 1}段合力`"
                 :disabled="stopped || busy"
-                placeholder="合力"
+                :placeholder="t('learning.k96')"
+                :label="t('learning.kjw', { v0: index + 1 })"
                 @input="setSegment(index, 'netForceN', $event.target?.value ?? $event.detail?.value ?? '')"
               />
-              <view class="diagram-options" :aria-label="`第${index + 1}段合力方向`">
-                <button
+              <view class="diagram-options" :aria-label="t('learning.kvg', { v0: index + 1 })">
+                <BaseChip
                   v-for="item in segment.netForceN === '0'
                     ? [{ value: 'none', label: '无方向' }]
                     : [
@@ -555,55 +505,56 @@
                         { value: 'right', label: '向右' }
                       ]"
                   :key="item.value"
-                  role="button"
-                  tabindex="0"
                   :disabled="stopped || busy"
-                  :aria-pressed="segment.direction === item.value"
                   :class="{ selected: segment.direction === item.value }"
-                  @tap="setSegment(index, 'direction', item.value)"
+                  :model-value="segment.direction === item.value"
+                  @update:model-value="setSegment(index, 'direction', item.value)"
                 >
-                  {{ item.label }}
-                </button>
+                  {{ learningText(item.label) }}
+                </BaseChip>
               </view>
             </view>
-            <button role="button" tabindex="0" :disabled="stopped || busy" @tap="changeSegments">
-              {{ draft.segments.length === 2 ? '添加第三段' : '移除第三段' }}
-            </button>
+            <BaseButton :disabled="stopped || busy" variant="quiet" @tap="changeSegments">
+              {{ draft.segments.length === 2 ? t('learning.k3i') : t('learning.kld') }}
+            </BaseButton>
           </template>
         </template>
       </template>
       <text v-if="!['changing_net_force', 'velocity_time_graph'].includes(template)" class="diagram-label">{{
-        template === 'distance_displacement' ? '去程方向' : '合力方向'
+        template === 'distance_displacement' ? t('learning.kt') : t('learning.kc9')
       }}</text>
       <view v-if="!['changing_net_force', 'velocity_time_graph'].includes(template)" class="diagram-options">
-        <button
+        <BaseChip
           v-for="item in directions"
           :key="item.value"
-          role="button"
-          tabindex="0"
           :disabled="stopped || busy"
-          :aria-pressed="draft.direction === item.value"
           :class="{ selected: draft.direction === item.value }"
-          @tap="set('direction', item.value)"
+          :model-value="draft.direction === item.value"
+          @update:model-value="set('direction', item.value)"
         >
-          {{ item.label }}
-        </button>
+          {{ learningText(item.label) }}
+        </BaseChip>
       </view>
-      <text v-if="error" class="warning" role="alert">{{ error }}</text>
-      <button
+      <BaseEmpty v-if="error" state="error" :title="learningText(error)" mascot-size="small" />
+      <BaseButton
         class="primary"
-        role="button"
-        tabindex="0"
         :disabled="stopped || busy"
         :aria-disabled="stopped || busy"
+        variant="primary"
         @tap="confirm"
+        >{{ t('learning.ka7') }}</BaseButton
       >
-        确认条件并演示
-      </button>
     </view>
   </view>
 </template>
 <script setup>
+import BaseEmpty from '@/components/base/base-empty/base-empty.vue';
+import { learningText } from '@/i18n/learning.js';
+import { t } from '@/i18n/index.js';
+import BaseButton from '@/components/base/base-button/base-button.vue';
+import BaseChip from '@/components/base/base-chip/base-chip.vue';
+import BaseInput from '@/components/base/base-input/base-input.vue';
+
 import { computed, ref, watch, nextTick, onUnmounted } from 'vue';
 import { sourceDiagram, confirmedDiagramRecipe } from '../../../../laf-backend/functions/_shared/learning-diagram.js';
 const props = defineProps({
@@ -833,44 +784,25 @@ onUnmounted(closeOriginal);
 .diagram-field {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: var(--s-3);
 }
 .diagram-conditions {
-  border-top: 1px solid var(--space-line);
-  padding-top: 12px;
+  border-top: var(--border-thin) solid var(--line);
+  padding-top: var(--s-3);
 }
 .diagram-image {
   width: 100%;
-  height: 240px;
-  border-radius: 12px;
-  background: var(--yozi-solid);
+  height: var(--mascot-large);
+  border-radius: var(--s-3);
+  background: var(--paper);
 }
 .diagram-options {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
-}
-.diagram-options button {
-  margin: 0;
-  min-width: 44px;
-  min-height: 44px;
-  font-size: 14px;
+  gap: var(--s-2);
 }
 .diagram-label {
-  font-size: 14px;
-  font-weight: 600;
-}
-.diagram-field input {
-  width: 100%;
-  min-height: 44px;
-  padding: 8px 12px;
-  box-sizing: border-box;
-  background: var(--yozi-glass);
-  border: 1px solid var(--space-line);
-  border-radius: 12px;
-  color: var(--space-text);
-}
-.selected {
-  background: var(--space-user, var(--yozi-solid)) !important;
+  font-size: var(--size-small);
+  font-weight: var(--weight-semibold);
 }
 </style>

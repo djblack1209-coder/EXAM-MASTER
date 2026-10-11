@@ -1,107 +1,109 @@
 <template>
-  <view ref="root" class="oatutor-practice" aria-label="函数运算分步带练">
-    <text class="title">函数运算带练</text>
-    <view class="actions" aria-label="选择函数任务">
-      <button
+  <view ref="root" class="oatutor-practice" :aria-label="t('learning.kqp')">
+    <text class="title">{{ t('learning.kh8') }}</text>
+    <view class="actions" :aria-label="t('learning.kva')">
+      <BaseChip
         v-for="task in OATUTOR_TASKS"
         :key="task.id"
-        role="button"
-        tabindex="0"
-        :aria-pressed="selected === task.id"
         :class="{ selected: selected === task.id }"
         :disabled="locked"
         :aria-disabled="locked"
-        @tap="selected = task.id"
+        :model-value="selected === task.id"
+        @update:model-value="selected = task.id"
       >
-        {{ task.label }}
-      </button>
-      <button
-        role="button"
-        tabindex="0"
+        {{ learningText(task.label) }}
+      </BaseChip>
+      <BaseButton
         :disabled="locked || selected === exercise.itemId"
         :aria-disabled="locked || selected === exercise.itemId"
+        variant="quiet"
         @tap="openTask"
+        >{{ t('learning.kc6') }}</BaseButton
       >
-        打开这题
-      </button>
     </view>
-    <text class="note">分步作答保留为待核对；阅读提示会记为本题帮助。</text>
+    <text class="note">{{ t('learning.k8x') }}</text>
     <view v-for="node in progress" :key="node.id" class="step">
-      <button
-        role="button"
-        tabindex="0"
+      <BaseButton
         :aria-expanded="node.opened"
         :aria-controls="`oatutor-step-${node.id}`"
         :disabled="locked || !node.available"
         :aria-disabled="locked || !node.available"
+        variant="quiet"
         @tap="act('open', node.id)"
       >
-        {{ `第${node.id}步 · ${node.title}`
-        }}{{ node.complete ? (node.type === 'hint' ? ' · 已读' : ' · 已作答') : '' }}
-      </button>
-      <text v-if="!node.available" class="note">完成前一步后打开</text>
+        {{ t('learning.kbb', { v0: node.id, v1: node.title })
+        }}{{ node.complete ? (node.type === 'hint' ? t('learning.kir') : t('learning.kj1')) : '' }}
+      </BaseButton>
+      <text v-if="!node.available" class="note">{{ t('learning.kn7') }}</text>
       <view v-if="node.opened" :id="`oatutor-step-${node.id}`" class="step-body">
         <text class="prompt">{{ node.prompt }}</text>
         <template v-if="node.type === 'scaffold'">
           <text v-if="node.attempts.length" class="note" role="status"
-            >已保存 · 待核对：{{ node.attempts.at(-1).answer }}</text
+            >{{ t('learning.k5h') }}{{ node.attempts.at(-1).answer }}</text
           >
-          <textarea
-            :value="drafts[node.id] || ''"
+          <BaseInput
+            :model-value="drafts[node.id] || ''"
             :maxlength="1000"
             :disabled="locked"
-            :aria-label="`第${node.id}步作答`"
-            placeholder="写下这一步"
+            :placeholder="t('learning.kiw')"
+            :label="t('learning.kqu', { v0: node.id })"
+            multiline
             @input="edit(node.id, $event)"
-          ></textarea>
+          />
           <view class="actions">
-            <button
-              role="button"
-              tabindex="0"
+            <BaseButton
               :disabled="locked || !canSubmit(node)"
               :aria-disabled="locked || !canSubmit(node)"
+              variant="quiet"
               @tap="save(node)"
+              >{{ t('learning.kuw') }}{{ node.id }}{{ t('learning.k9k') }}</BaseButton
             >
-              提交第{{ node.id }}步
-            </button>
-            <button
+            <BaseButton
               v-if="node.attempts.length"
-              role="button"
-              tabindex="0"
               :disabled="locked"
               :aria-disabled="locked"
+              variant="quiet"
               @tap="act('reference', node.id)"
+              >{{ t('learning.ke7') }}{{ node.id }}{{ t('learning.k30') }}</BaseButton
             >
-              读第{{ node.id }}步参考
-            </button>
           </view>
-          <text v-if="node.referenceRead" class="reference">本步参考：{{ node.reference }}</text>
+          <text v-if="node.referenceRead" class="reference">{{ t('learning.kt7') }}{{ node.reference }}</text>
         </template>
       </view>
     </view>
-    <button
-      role="button"
-      tabindex="0"
+    <BaseButton
       :disabled="locked || !mainAttempt"
       :aria-disabled="locked || !mainAttempt"
+      variant="quiet"
       @tap="act('final')"
+      >{{ t('learning.kau') }}</BaseButton
     >
-      读本题参考
-    </button>
-    <text v-if="!mainAttempt" class="note">先在下方提交本题原答</text>
+    <text v-if="!mainAttempt" class="note">{{ t('learning.kie') }}</text>
     <text v-if="finalReference" class="reference">{{ finalReference }}</text>
-    <text v-if="stopped" class="note">已停止</text>
-    <text v-if="error" class="note" role="alert">{{ error }}</text>
-    <button role="button" tabindex="0" :aria-expanded="showSource" @tap="showSource = !showSource">来源与改动</button>
+    <text v-if="stopped" class="note">{{ t('learning.keb') }}</text>
+    <BaseEmpty v-if="error" state="error" :title="learningText(error)" mascot-size="small" />
+    <BaseButton :aria-expanded="showSource" variant="quiet" @tap="showSource = !showSource">{{
+      t('learning.kfb')
+    }}</BaseButton>
     <view v-if="showSource" class="source">
       <text>{{ attribution }}</text>
-      <text>内容版本 {{ exercise.packVersion }} · 上游 {{ question.source.revision.slice(0, 8) }}</text>
+      <text
+        >{{ t('learning.k7w') }}{{ exercise.packVersion }}{{ t('learning.kee')
+        }}{{ question.source.revision.slice(0, 8) }}</text
+      >
       <text v-for="(change, i) in question.source.exerciseSnapshot.changes" :key="i">{{ change }}</text>
       <text v-for="file in question.source.files" :key="file.path">{{ file.url }}</text>
     </view>
   </view>
 </template>
 <script setup>
+import BaseEmpty from '@/components/base/base-empty/base-empty.vue';
+import { learningText } from '@/i18n/learning.js';
+import { t } from '@/i18n/index.js';
+import BaseChip from '@/components/base/base-chip/base-chip.vue';
+import BaseButton from '@/components/base/base-button/base-button.vue';
+import BaseInput from '@/components/base/base-input/base-input.vue';
+
 import { computed, ref, watch, onMounted, onUnmounted } from 'vue';
 import { bindLearningKeyboard } from '@/services/learning/keyboard-controls.js';
 import {
@@ -192,60 +194,33 @@ onUnmounted(() => unbind());
 </script>
 <style scoped>
 .oatutor-practice {
-  padding: 20px;
-  margin: 20px 0;
-  border: 1px solid var(--space-line);
-  border-radius: 24px;
-  background: var(--yozi-solid);
-  color: var(--space-text);
+  padding: var(--s-5);
+  margin: var(--s-5) 0;
+  border: var(--border-thin) solid var(--line);
+  border-radius: var(--s-6);
+  background: var(--paper);
+  color: var(--ink);
   overflow-wrap: anywhere;
 }
 .title {
   display: block;
-  font-size: 20px;
+  font-size: var(--size-title-3);
   font-weight: 650;
-  margin-bottom: 12px;
+  margin-bottom: var(--s-3);
 }
 .actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
-  margin: 12px 0;
-}
-button {
-  min-width: 44px;
-  min-height: 44px;
-  max-width: 100%;
-  margin: 0;
-  padding: 8px 14px;
-  color: inherit;
-  background: var(--space-button, var(--yozi-solid));
-  border: 1px solid var(--space-line);
-  border-radius: 16px;
-  box-shadow: 0 4px 0 var(--space-line);
-  font: inherit;
-  line-height: 1.5;
-  white-space: normal;
-  overflow-wrap: anywhere;
-}
-button.selected {
-  background: var(--space-user, var(--yozi-solid));
-}
-button[disabled] {
-  opacity: 0.5;
-}
-button:focus-visible,
-textarea:focus-visible {
-  outline: 2px solid var(--space-primary, #7050b0);
-  outline-offset: 3px;
+  gap: var(--s-3);
+  margin: var(--s-3) 0;
 }
 .step {
-  margin: 16px 0;
-  padding-top: 12px;
-  border-top: 1px solid var(--space-line);
+  margin: var(--s-4) 0;
+  padding-top: var(--s-3);
+  border-top: var(--border-thin) solid var(--line);
 }
 .step-body {
-  margin-top: 12px;
+  margin-top: var(--s-3);
 }
 .prompt,
 .note,
@@ -254,33 +229,20 @@ textarea:focus-visible {
   display: block;
   white-space: pre-wrap;
   line-height: 1.65;
-  margin: 10px 0;
+  margin: var(--s-3) 0;
 }
 .note,
 .source {
-  font-size: 14px;
-  color: var(--space-muted);
+  font-size: var(--size-small);
+  color: var(--ink-3);
 }
 .reference {
-  padding: 12px;
-  border-left: 3px solid var(--space-primary, #7050b0);
-}
-textarea {
-  display: block;
-  width: 100%;
-  box-sizing: border-box;
-  min-height: 90px;
-  max-height: 180px;
-  padding: 12px;
-  border: 1px solid var(--space-line);
-  border-radius: 14px;
-  background: var(--yozi-solid);
-  color: inherit;
-  font: inherit;
+  padding: var(--s-3);
+  border-left: var(--s-1) solid var(--violet);
 }
 @media (max-width: 520px) {
   .oatutor-practice {
-    padding: 14px;
+    padding: var(--s-4);
   }
 }
 </style>

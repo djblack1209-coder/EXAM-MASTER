@@ -346,11 +346,11 @@ it('实际页面要求定位移除勾选和再次确认，取消保留、确认�
     expect(JSON.parse(wrapper.find('[aria-label="待办定位 JSON"]').element.value).entry.id).toBe(entry().id);
     expect(findButton(wrapper, '确认仅移除本机待办').attributes('disabled')).toBeDefined();
     const acknowledgement = wrapper.find('[data-test="locator-removal-ack"]');
-    await acknowledgement.trigger('change', { detail: { value: ['saved'] } });
+    await acknowledgement.trigger('tap');
     expect(findButton(wrapper, '确认仅移除本机待办').attributes('disabled')).toBeUndefined();
-    await acknowledgement.trigger('change', { detail: { value: [] } });
+    await acknowledgement.trigger('tap');
     expect(findButton(wrapper, '确认仅移除本机待办').attributes('disabled')).toBeDefined();
-    await acknowledgement.trigger('change', { detail: { value: ['saved'] } });
+    await acknowledgement.trigger('tap');
     await findButton(wrapper, '确认仅移除本机待办').trigger('tap');
     modal.success({ confirm: false });
     await flushPromises();

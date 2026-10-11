@@ -4,72 +4,78 @@
     <PlayfulLanding v-else @open="open" />
     <slot></slot>
   </view>
-  <LearningShell v-else active="learning" title="开始学习" @materials="openMaterials">
+  <LearningShell v-else active="learning" :title="t('learning.kms')" @materials="openMaterials">
     <template #controls
-      ><button class="quiet-button" role="button" tabindex="0" @tap="showGoal = false">返回首页</button></template
+      ><BaseButton class="quiet-button" variant="quiet" @tap="showGoal = false">{{
+        t('learning.kh0')
+      }}</BaseButton></template
     >
-    <view class="landing-welcome"><text class="landing-title">今天，想学会什么？</text></view>
-    <view class="landing-start">
-      <textarea
-        :value="goal"
+    <view class="landing-welcome"
+      ><text class="landing-title">{{ t('learning.kht') }}</text></view
+    >
+    <BaseCard class="landing-start" surface="glass" padding="none">
+      <BaseInput
+        :model-value="goal"
         class="field"
-        aria-label="学习目标"
-        placeholder="输入问题，或选一个主题"
-        placeholder-class="space-placeholder"
+        :placeholder="t('learning.kbo')"
         maxlength="1000"
+        :label="t('learning.kfl')"
+        multiline
         @input="goal = $event.detail?.value ?? $event.target?.value ?? ''"
-      ></textarea>
-      <view class="button-row" aria-label="学习主题">
-        <button
+      />
+      <view class="button-row" :aria-label="t('learning.kqm')">
+        <BaseChip
           v-for="topic in topics"
           :key="topic"
-          role="button"
-          tabindex="0"
-          :aria-pressed="goal === topic"
           :class="{ chosen: goal === topic }"
-          @tap="goal = topic"
+          :model-value="goal === topic"
+          @update:model-value="goal = topic"
         >
-          {{ topic }}
-        </button>
+          {{ learningText(topic) }}
+        </BaseChip>
       </view>
       <view class="landing-actions">
-        <button
+        <BaseButton
           class="primary"
-          role="button"
-          tabindex="0"
           :disabled="learning.busy || !goal.trim()"
           :aria-disabled="learning.busy || !goal.trim()"
+          variant="primary"
           @tap="start"
-        >
-          开始学习
-          <BaseIcon name="arrow-right" :size="32" color="#ffffff" />
-        </button>
+          >{{ t('learning.kms') }}<BaseIcon name="arrow-right" tone="ink-3" />
+        </BaseButton>
       </view>
-    </view>
+    </BaseCard>
     <view class="landing-below" :class="{ 'landing-below-single': !latest }">
-      <view v-if="latest" class="continue-panel">
-        <text class="section-title">最近学习</text>
-        <button class="continue-session" role="button" tabindex="0" @tap="resume">
+      <BaseCard v-if="latest" class="continue-panel" padding="none">
+        <text class="section-title">{{ t('learning.k40') }}</text>
+        <BaseButton class="continue-session" variant="quiet" @tap="resume">
           <view class="continue-copy">
             <text class="continue-title">{{ latest.goal }}</text>
           </view>
-          <BaseIcon name="arrow-right" :size="40" color="#7658ad" />
-        </button>
-      </view>
+          <BaseIcon name="arrow-right" tone="ink-3" />
+        </BaseButton>
+      </BaseCard>
       <LearningOverview :show-navigation="false" />
     </view>
     <view class="landing-footer">
-      <button class="quiet-button" role="button" tabindex="0" @tap="emit('legacy')">
-        历史题库记录
-        <BaseIcon name="arrow-right" :size="26" color="#7658ad" />
-      </button>
+      <BaseButton class="quiet-button" variant="quiet" @tap="emit('legacy')"
+        >{{ t('learning.k1j') }}<BaseIcon name="arrow-right" tone="ink-3" />
+      </BaseButton>
     </view>
-    <text v-if="error" class="warning feedback" role="alert">{{ error }}</text>
+    <BaseEmpty v-if="error" state="error" :title="learningText(error)" mascot-size="small" />
 
     <slot></slot>
   </LearningShell>
 </template>
 <script setup>
+import { learningText } from '@/i18n/learning.js';
+import { t } from '@/i18n/index.js';
+import BaseEmpty from '@/components/base/base-empty/base-empty.vue';
+import BaseCard from '@/components/base/base-card/base-card.vue';
+import BaseButton from '@/components/base/base-button/base-button.vue';
+import BaseInput from '@/components/base/base-input/base-input.vue';
+import BaseChip from '@/components/base/base-chip/base-chip.vue';
+
 import { computed, ref } from 'vue';
 import LearningShell from './learning-shell.vue';
 import LearningOverview from './learning-overview.vue';
@@ -136,76 +142,52 @@ function resume() {
 </script>
 <style scoped>
 .landing-welcome {
-  padding: 14px 0 28px;
+  padding: var(--s-4) 0 var(--s-8);
 }
 .landing-title {
   white-space: pre-line;
   display: block;
-  font-size: 42px;
+  font-size: var(--size-number);
   letter-spacing: -0.03em;
   line-height: 1.3;
-  font-weight: 300;
+  font-weight: var(--weight-regular);
 }
 .landing-start {
-  padding: 24px;
-  background: var(--space-glass);
-  border-radius: 24px;
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-}
-.landing-start .field {
-  margin: 12px 0;
-  background: transparent;
-  border: 0;
-  padding: 0;
-  height: 70px;
+  padding: var(--s-6);
 }
 .landing-actions {
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  gap: 16px;
-  margin-top: 12px;
-  margin-bottom: 14px;
+  gap: var(--s-4);
+  margin-top: var(--s-3);
+  margin-bottom: var(--s-4);
 }
 .landing-start .button-row {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
-}
-.landing-start .button-row button {
-  margin: 0;
-  font-size: 12px;
-}
-.landing-start .button-row button.chosen {
-  background: var(--space-user, var(--yozi-solid));
-  border: 1px solid var(--primary);
+  gap: var(--s-2);
 }
 .landing-below {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 16px;
-  margin-top: 20px;
+  gap: var(--s-4);
+  margin-top: var(--s-5);
 }
 .landing-below-single {
   grid-template-columns: 1fr;
 }
 .continue-panel {
-  padding: 20px;
-  border-radius: 24px;
-  background: var(--space-glass);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
+  padding: var(--s-5);
 }
 .continue-panel .section-title {
-  font-size: 16px;
+  font-size: var(--size-body);
 }
 .learning-space .continue-session {
   width: 100%;
-  background: transparent;
   justify-content: space-between;
   text-align: left;
-  padding: 20px 0;
+  padding: var(--s-5) 0;
 }
 .continue-session .continue-copy {
   flex: 1;
@@ -213,22 +195,21 @@ function resume() {
 }
 .continue-title {
   display: block;
-  font-size: 18px;
+  font-size: var(--size-title-3);
   overflow-wrap: anywhere;
-  margin-bottom: 8px;
+  margin-bottom: var(--s-2);
 }
 .landing-footer {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 16px;
-  margin-top: 24px;
-  font-size: 11px;
-  color: var(--space-muted);
+  gap: var(--s-4);
+  margin-top: var(--s-6);
+  font-size: var(--size-caption);
+  color: var(--ink-3);
 }
 .learning-space .account-link {
-  border-radius: 24px;
-  font-size: 12px;
+  font-size: var(--size-caption);
 }
 @media (max-width: 1100px) {
   .landing-below {
@@ -238,31 +219,22 @@ function resume() {
 @media (max-width: 520px) {
   .landing-title {
     white-space: pre-line;
-    font-size: 34px;
+    font-size: var(--size-number);
   }
   .landing-start {
-    padding: 20px;
+    padding: var(--s-5);
   }
   .landing-actions {
     align-items: flex-start;
     flex-direction: column;
-    gap: 12px;
-  }
-  .landing-actions button {
-    align-self: flex-end;
+    gap: var(--s-3);
   }
   .landing-footer {
     align-items: flex-start;
     flex-direction: column;
-    gap: 8px;
+    gap: var(--s-2);
   }
 }
 @media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
-  .landing-start,
-  .continue-panel {
-    background: var(--space-glass);
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-  }
 }
 </style>

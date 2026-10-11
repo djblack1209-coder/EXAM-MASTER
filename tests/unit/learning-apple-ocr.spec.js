@@ -113,7 +113,7 @@ describe('Apple识别选择与私人资料合同', () => {
         .find((w) => w.text() === '解析设置')
         .trigger('tap');
       await wrapper
-        .findAll('label')
+        .findAll('[role="checkbox"]')
         .find((w) => w.text().includes('识别图片文字'))
         .trigger('tap');
       expect(wrapper.get('[data-test="apple-readiness-status"]').text()).toContain('准备中');
@@ -339,7 +339,7 @@ describe('Apple识别选择与私人资料合同', () => {
         .findAll('button')
         .find((w) => w.text().trim() === '解析设置')
         .trigger('tap');
-      const label = wrapper.findAll('label').find((w) => w.text().includes('识别图片文字'));
+      const label = wrapper.findAll('[role="checkbox"]').find((w) => w.text().includes('识别图片文字'));
       await label.trigger('tap');
       const controls = wrapper.find('[data-test="ocr-engine-choice"]');
       controls.findAll('button').forEach((button) => expect(button.attributes('role')).toBe('button'));

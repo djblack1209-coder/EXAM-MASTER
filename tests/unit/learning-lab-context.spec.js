@@ -41,7 +41,8 @@ function lab(props = {}) {
   return w;
 }
 const button = (w, label) => w.findAll('button').find((b) => b.text() === label);
-const selected = (w, label) => button(w, label).attributes('aria-pressed') === 'true';
+const selected = (w, label) =>
+  (button(w, label).attributes('aria-selected') ?? button(w, label).attributes('aria-pressed')) === 'true';
 const request = (w, id = 'visual-1', extra = {}) => ({
   id,
   owner: w.props('state').owner,

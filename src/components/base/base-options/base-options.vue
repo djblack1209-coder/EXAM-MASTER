@@ -1,12 +1,19 @@
 <template>
-  <view class="base-options" role="radiogroup" :aria-label="label" @keydown="keydown">
+  <view
+    ref="root"
+    class="base-options"
+    :role="multiple ? 'group' : 'radiogroup'"
+    :aria-label="label"
+    @keydown="keydown"
+  >
     <button
       v-for="(option, index) in options"
       :key="option.value"
       class="base-option"
       :data-state="state(option)"
-      role="radio"
-      :aria-checked="modelValue === option.value"
+      :data-value="option.value"
+      :role="multiple ? 'checkbox' : 'radio'"
+      :aria-checked="selected(option)"
       :disabled="disabled || option.disabled"
       :aria-disabled="Boolean(disabled || option.disabled)"
       :tabindex="tabIndex(index)"
@@ -25,21 +32,36 @@
   </view>
 </template>
 <script setup>
-import { getCurrentInstance } from 'vue';
+import { getCurrentInstance, onMounted, onBeforeUnmount, ref } from 'vue';
 import { t } from '@/i18n/index.js';
 import BaseIcon from '../base-icon/base-icon.vue';
 const props = defineProps({
   options: { type: Array, default: () => [] },
-  modelValue: { type: [String, Number], default: '' },
+  modelValue: { type: [String, Number, Array], default: '' },
   label: { type: String, required: true },
-  disabled: Boolean
+  disabled: Boolean,
+  multiple: Boolean
 });
 const emit = defineEmits(['update:modelValue']);
 const id = getCurrentInstance().uid;
+const root = ref(null);
+let keyboardElement;
+onMounted(() => {
+  // #ifdef H5
+  keyboardElement = root.value?.$el || root.value;
+  keyboardElement?.addEventListener?.('keydown', keydown);
+  // #endif
+});
+onBeforeUnmount(() => keyboardElement?.removeEventListener?.('keydown', keydown));
+function selected(option) {
+  return props.multiple
+    ? Array.isArray(props.modelValue) && props.modelValue.includes(option.value)
+    : props.modelValue === option.value;
+}
 function state(option) {
   return ['correct', 'wrong', 'pending'].includes(option.state)
     ? option.state
-    : option.value === props.modelValue
+    : selected(option)
       ? 'selected'
       : 'default';
 }
@@ -49,16 +71,27 @@ function optionKey(index) {
 }
 function choose(index) {
   const option = props.options[index];
-  if (option && !props.disabled && !option.disabled) emit('update:modelValue', option.value);
+  if (option && !props.disabled && !option.disabled) {
+    const values = Array.isArray(props.modelValue) ? props.modelValue : [];
+    emit(
+      'update:modelValue',
+      props.multiple
+        ? selected(option)
+          ? values.filter((value) => value !== option.value)
+          : [...values, option.value]
+        : option.value
+    );
+  }
 }
 function tabIndex(index) {
   if (props.disabled) return -1;
-  const selected = props.options.findIndex((item) => item.value === props.modelValue && !item.disabled);
-  return index === (selected < 0 ? props.options.findIndex((item) => !item.disabled) : selected) ? 0 : -1;
+  const selectedIndex = props.options.findIndex((item) => selected(item) && !item.disabled);
+  return index === (selectedIndex < 0 ? props.options.findIndex((item) => !item.disabled) : selectedIndex) ? 0 : -1;
 }
 function keydown(event) {
-  const controls = [...event.currentTarget.querySelectorAll('[role="radio"]')];
-  const index = controls.indexOf(event.target.closest('[role="radio"]'));
+  if (event.defaultPrevented) return;
+  const controls = [...event.currentTarget.querySelectorAll('[role="radio"], [role="checkbox"]')];
+  const index = controls.indexOf(event.target.closest('[role="radio"], [role="checkbox"]'));
   if (
     index < 0 ||
     props.disabled ||
@@ -79,7 +112,7 @@ function keydown(event) {
         (eligible.indexOf(index) + (['ArrowRight', 'ArrowDown'].includes(event.key) ? 1 : -1) + eligible.length) %
           eligible.length
       ];
-  choose(next);
+  if (!props.multiple || ['Enter', ' '].includes(event.key)) choose(next);
   controls[next]?.focus();
 }
 </script>

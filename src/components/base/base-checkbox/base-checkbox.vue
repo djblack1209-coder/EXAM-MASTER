@@ -1,5 +1,6 @@
 <template>
   <view
+    ref="root"
     class="base-checkbox"
     role="checkbox"
     :aria-checked="modelValue"
@@ -14,13 +15,25 @@
   </view>
 </template>
 <script setup>
+import { onMounted, onBeforeUnmount, ref } from 'vue';
 import BaseIcon from '../base-icon/base-icon.vue';
 const props = defineProps({ modelValue: Boolean, disabled: Boolean });
 const emit = defineEmits(['update:modelValue']);
+const root = ref(null);
+let keyboardElement;
+onMounted(() => {
+  // #ifdef H5
+  keyboardElement = root.value?.$el || root.value;
+  keyboardElement?.addEventListener?.('keydown', keydown);
+  // #endif
+});
+onBeforeUnmount(() => keyboardElement?.removeEventListener?.('keydown', keydown));
+
 function toggle(event) {
   if (!props.disabled && !event?.target?.closest?.('a, [role="link"]')) emit('update:modelValue', !props.modelValue);
 }
 function keydown(event) {
+  if (event.defaultPrevented) return;
   if (event.target !== event.currentTarget || !['Enter', ' '].includes(event.key)) return;
   event.preventDefault();
   event.stopPropagation();

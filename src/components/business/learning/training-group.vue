@@ -1,11 +1,13 @@
 <template>
-  <view v-if="report" ref="root" class="training-panel" data-test="training-group">
+  <BaseCard v-if="report" ref="root" class="training-panel" data-test="training-group" padding="none">
     <view class="training-heading">
       <view
-        ><text class="training-title">{{ report.module.label }} · {{ report.questionKeys.length }}题</text>
+        ><text class="training-title"
+          >{{ learningText(report.module.label) }} · {{ report.questionKeys.length }}{{ t('learning.ko0') }}</text
+        >
         <text class="training-meta"
-          >{{ report.day }} · {{ report.mode === 'timed' ? '限时训练' : '整批训练' }} · 建议
-          {{ report.minutes }} 分钟</text
+          >{{ report.day }} · {{ report.mode === 'timed' ? t('learning.kgj') : t('learning.k4r') }}{{ t('learning.k4d')
+          }}{{ report.minutes }}{{ t('learning.k4n') }}</text
         ></view
       >
       <text v-if="report.mode === 'timed' && !report.submittedBy" class="training-clock" role="timer">{{
@@ -13,124 +15,142 @@
       }}</text>
     </view>
     <template v-if="!report.submittedBy">
-      <view class="answer-sheet" aria-label="整批答题卡">
-        <text class="training-meta">已答 {{ answered }} / {{ report.questionKeys.length }}</text>
+      <view class="answer-sheet" :aria-label="t('learning.kjt')">
+        <text class="training-meta">{{ t('learning.kv') }}{{ answered }} / {{ report.questionKeys.length }}</text>
         <view class="answer-sheet-grid">
-          <button
+          <BaseButton
             v-for="(row, index) in report.rows"
             :key="row.questionKey"
-            role="button"
-            tabindex="0"
-            :aria-label="`定位第${index + 1}题${answers[index]?.trim() ? '，已填草稿' : '，未答'}`"
+            :aria-label="
+              t('learning.kp7', {
+                v0: index + 1,
+                v1: answers[index]?.trim() ? t('learning.draftFilled') : t('learning.unanswered')
+              })
+            "
             :class="{ chosen: answers[index]?.trim() }"
+            variant="quiet"
             @tap="locate(index)"
           >
             {{ index + 1 }}
-          </button>
+          </BaseButton>
         </view>
       </view>
-      <view
+      <BaseCard
         v-for="(row, index) in report.rows"
         :id="`training-question-${index}`"
         :key="row.questionKey"
         class="training-question"
+        padding="none"
       >
         <text class="training-question-label"
-          >第 {{ index + 1 }} 题 · {{ row.question.knowledgePoint || report.module.label }}</text
+          >{{ t('learning.kq6') }}{{ index + 1 }}{{ t('learning.kg5')
+          }}{{ learningText(row.question.knowledgePoint || report.module.label) }}</text
         >
         <text class="training-prompt" selectable>{{ row.question.prompt }}</text>
-        <button role="button" tabindex="0" :disabled="locked" :aria-disabled="locked" @tap="discuss(row.questionKey)">
-          问这题
-        </button>
-        <view v-if="row.question.options?.length" class="training-options">
-          <button
-            v-for="(option, optionIndex) in row.question.options"
-            :key="optionIndex"
-            role="button"
-            tabindex="0"
-            :aria-pressed="answers[index] === choiceValue(option, optionIndex)"
-            :disabled="locked"
-            :aria-disabled="locked"
-            :class="{ chosen: answers[index] === choiceValue(option, optionIndex) }"
-            @tap="setAnswer(index, choiceValue(option, optionIndex))"
-          >
-            {{ option }}
-          </button>
-        </view>
+        <BaseButton :disabled="locked" :aria-disabled="locked" variant="quiet" @tap="discuss(row.questionKey)">{{
+          t('learning.k9a')
+        }}</BaseButton>
+        <BaseOptions
+          v-if="row.question.options?.length"
+          :options="
+            row.question.options.map((option, i) => ({
+              value: choiceValue(option, i),
+              label: option.replace(/^[A-H][.、．]\s*/i, ''),
+              key: choiceValue(option, i)
+            }))
+          "
+          :model-value="answers[index] || ''"
+          :label="t('learning.answerOptions')"
+          :disabled="locked"
+          @update:model-value="setAnswer(index, $event)"
+        />
         <label v-else class="training-answer">
-          <text>{{ row.question.answerType === 'subjective' ? '写作草稿' : '作答草稿' }}</text>
-          <textarea
-            :value="answers[index] || ''"
-            :aria-label="`训练第${index + 1}题作答`"
+          <text>{{ row.question.answerType === 'subjective' ? t('learning.klu') : t('learning.kob') }}</text>
+          <BaseInput
+            :model-value="answers[index] || ''"
             :maxlength="answerLimit(row.question)"
             :disabled="locked"
             :aria-disabled="locked"
             :class="{ 'writing-answer': row.question.answerType === 'subjective' }"
+            :label="t('learning.kow', { v0: index + 1 })"
+            multiline
             @input="setAnswer(index, inputValue($event))"
-          ></textarea>
+          />
         </label>
-      </view>
+      </BaseCard>
       <view class="training-submit-row">
-        <text class="training-meta">{{ report.questionKeys.length - answered }} 题未答</text>
-        <button
+        <text class="training-meta">{{ report.questionKeys.length - answered }}{{ t('learning.k2s') }}</text>
+        <BaseButton
           class="primary"
-          role="button"
-          tabindex="0"
           data-test="training-submit"
           :disabled="locked || answered !== report.questionKeys.length || !due"
           :aria-disabled="locked || answered !== report.questionKeys.length || !due"
+          variant="primary"
           @tap="submit"
+          >{{ t('learning.kf9') }}</BaseButton
         >
-          统一交卷并批改
-        </button>
       </view>
-      <text v-if="!due" class="training-meta">{{ report.day }} 到期后可提交</text>
+      <text v-if="!due" class="training-meta">{{ report.day }}{{ t('learning.kqy') }}</text>
     </template>
     <template v-else>
-      <view class="training-results" aria-label="整批作答结果">
-        <view
-          ><text>可靠正确</text
-          ><text class="training-result-number"
-            >{{ report.correct }} / {{ report.submitted - report.pending }}</text
-          ></view
-        >
-        <view
-          ><text>部分正确</text><text class="training-result-number">{{ report.partial }}</text></view
-        >
-        <view
-          ><text>待核对</text><text class="training-result-number">{{ report.pending }}</text></view
-        >
+      <view class="training-results" :aria-label="t('learning.batchResults')">
+        <BaseStat
+          :label="t('learning.reliableCorrect')"
+          :value="report.correct"
+          :denominator="report.submitted - report.pending"
+        />
+        <BaseStat :label="t('learning.partial')" :value="report.partial" />
+        <BaseStat :label="t('learning.pending')" :value="report.pending" />
       </view>
       <text class="training-meta"
-        >独立正确 {{ report.independentCorrect }} · 提示后作答 {{ report.helped }} · 本组已提交</text
+        >{{ t('learning.kjm') }}{{ report.independentCorrect }}{{ t('learning.kmi') }}{{ report.helped
+        }}{{ t('learning.ks6') }}</text
       >
       <view v-for="row in report.rows" :key="row.questionKey" class="training-result-row">
         <view class="training-result-heading"
-          ><text>第 {{ row.index + 1 }} 题 · {{ row.question.knowledgePoint || report.module.label }}</text>
-          <text>{{ outcomeLabel(row.grade) }}</text></view
+          ><text
+            >{{ t('learning.kq6') }}{{ row.index + 1 }}{{ t('learning.kg5')
+            }}{{ learningText(row.question.knowledgePoint || report.module.label) }}</text
+          >
+          <BaseTag
+            :tone="row.grade.status !== 'reliable' ? 'apricot' : row.grade.outcome === 'correct' ? 'mint' : 'coral'"
+            >{{ learningText(outcomeLabel(row.grade)) }}</BaseTag
+          ></view
         >
         <text class="training-prompt" selectable>{{ row.question.prompt }}</text>
-        <text class="training-original" selectable>原答：{{ row.attempt.answer }}</text>
+        <text class="training-original" selectable>{{ t('learning.kcd') }}{{ row.attempt.answer }}</text>
         <text class="training-meta">{{
-          row.grade.status === 'reliable' ? `判分依据：${row.grade.basis}` : '原答已保存，反馈待核对'
+          row.grade.status === 'reliable' ? t('learning.k3n', { v0: row.grade.basis }) : t('learning.kpv')
         }}</text>
         <view class="button-row">
-          <button role="button" tabindex="0" :disabled="locked" :aria-disabled="locked" @tap="explain(row.questionKey)">
-            查看解析
-          </button>
-          <button role="button" tabindex="0" @tap="openQuestion(row.questionKey)">回到原题</button>
+          <BaseButton :disabled="locked" :aria-disabled="locked" variant="quiet" @tap="explain(row.questionKey)">{{
+            t('learning.kdu')
+          }}</BaseButton>
+          <BaseButton variant="quiet" @tap="openQuestion(row.questionKey)">{{ t('learning.kd9') }}</BaseButton>
         </view>
         <text v-if="explanations[row.questionKey]" class="training-explanation" selectable>{{
           explanations[row.questionKey]
         }}</text>
       </view>
     </template>
-    <text v-if="message" :class="{ warning: failed }" :role="failed ? 'alert' : 'status'" class="training-message">{{
-      message
-    }}</text>
-  </view>
+    <view v-if="message" class="training-message"
+      ><BaseEmpty v-if="failed" state="error" :title="learningText(message)" mascot-size="small" /><text v-else>{{
+        learningText(message)
+      }}</text></view
+    >
+  </BaseCard>
 </template>
 <script setup>
+import BaseEmpty from '@/components/base/base-empty/base-empty.vue';
+import BaseOptions from '@/components/base/base-options/base-options.vue';
+import BaseStat from '@/components/base/base-stat/base-stat.vue';
+import BaseTag from '@/components/base/base-tag/base-tag.vue';
+import { learningText } from '@/i18n/learning.js';
+import { t } from '@/i18n/index.js';
+import BaseCard from '@/components/base/base-card/base-card.vue';
+import BaseButton from '@/components/base/base-button/base-button.vue';
+import BaseInput from '@/components/base/base-input/base-input.vue';
+
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import { onShow, onHide } from '@dcloudio/uni-app';
 import { useConversationLearningStore } from '@/stores/modules/conversation-learning.js';
@@ -247,9 +267,8 @@ onUnmounted(() => {
 </script>
 <style scoped>
 .training-panel {
-  margin-top: 28px;
-  padding-top: 24px;
-  border-top: 1px solid var(--space-line);
+  margin-top: var(--s-8);
+  padding-top: var(--s-6);
 }
 .training-heading,
 .training-result-heading,
@@ -257,133 +276,106 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
+  gap: var(--s-4);
 }
 .training-title {
   display: block;
-  font-size: 22px;
-  font-weight: 600;
+  font-size: var(--size-title-2);
+  font-weight: var(--weight-semibold);
   line-height: 1.4;
 }
 .training-meta {
   display: block;
-  font-size: 12px;
+  font-size: var(--size-caption);
   line-height: 1.7;
-  color: var(--space-muted);
-  margin: 8px 0;
+  color: var(--ink-3);
+  margin: var(--s-2) 0;
   overflow-wrap: anywhere;
 }
-.training-clock,
-.training-result-number {
-  font-size: 24px;
-  font-variant-numeric: tabular-nums;
-}
 .answer-sheet {
-  margin: 20px 0 24px;
+  margin: var(--s-5) 0 var(--s-6);
 }
 .answer-sheet-grid {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
-}
-.answer-sheet-grid button {
-  min-width: 44px;
+  gap: var(--s-2);
 }
 .training-question,
 .training-result-row {
-  margin-top: 24px;
-  padding-top: 20px;
-  border-top: 1px solid var(--space-line);
+  margin-top: var(--s-6);
+  padding-top: var(--s-5);
+  border-top: var(--border-thin) solid var(--line);
 }
 .training-question-label {
   display: block;
-  font-size: 14px;
-  font-weight: 600;
-  margin-bottom: 12px;
+  font-size: var(--size-small);
+  font-weight: var(--weight-semibold);
+  margin-bottom: var(--s-3);
 }
 .training-prompt,
 .training-original,
 .training-explanation {
   display: block;
-  font-size: 16px;
+  font-size: var(--size-body);
   line-height: 1.75;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
   max-width: 70ch;
 }
 .training-original {
-  margin-top: 12px;
+  margin-top: var(--s-3);
 }
 .training-explanation {
-  margin-top: 16px;
+  margin-top: var(--s-4);
 }
 .training-answer {
   display: grid;
-  gap: 8px;
-  font-size: 14px;
-  margin-top: 16px;
-}
-.training-answer textarea {
-  width: 100%;
-  min-height: 88px;
-  padding: 12px;
-  box-sizing: border-box;
-  border: 1px solid var(--space-line);
-  border-radius: 12px;
-  color: inherit;
-  font: inherit;
-  line-height: 1.75;
+  gap: var(--s-2);
+  font-size: var(--size-small);
+  margin-top: var(--s-4);
 }
 .training-answer .writing-answer {
-  min-height: 180px;
+  min-height: var(--mascot-large);
 }
 .training-options {
   display: grid;
-  gap: 8px;
-  margin-top: 16px;
-}
-.training-options button {
-  text-align: left;
-  justify-content: flex-start;
-  white-space: normal;
+  gap: var(--s-2);
+  margin-top: var(--s-4);
 }
 .training-submit-row {
-  margin-top: 24px;
+  margin-top: var(--s-6);
 }
 .training-results {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
-  margin: 20px 0;
+  gap: var(--s-3);
+  margin: var(--s-5) 0;
 }
 .training-results > view {
   display: grid;
-  gap: 8px;
-  font-size: 12px;
+  gap: var(--s-2);
+  font-size: var(--size-caption);
 }
 .training-result-heading {
-  font-size: 14px;
-  font-weight: 600;
-  margin-bottom: 12px;
+  font-size: var(--size-small);
+  font-weight: var(--weight-semibold);
+  margin-bottom: var(--s-3);
   flex-wrap: wrap;
 }
 .training-message {
   display: block;
-  margin-top: 16px;
-  font-size: 14px;
+  margin-top: var(--s-4);
+  font-size: var(--size-small);
   line-height: 1.7;
 }
 @media (max-width: 520px) {
   .training-title {
-    font-size: 20px;
+    font-size: var(--size-title-3);
   }
   .training-heading,
   .training-submit-row {
     align-items: flex-start;
     flex-direction: column;
-  }
-  .training-result-number {
-    font-size: 20px;
   }
 }
 </style>

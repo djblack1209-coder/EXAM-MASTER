@@ -1,122 +1,110 @@
 <template>
-  <view ref="root" class="sentence-builder" aria-label="英文句子组织">
-    <view class="sentence-frame" aria-label="我的句子" aria-live="polite">
+  <view ref="root" class="sentence-builder" :aria-label="t('learning.kho')">
+    <view class="sentence-frame" :aria-label="t('learning.k1c')" aria-live="polite">
       <text>{{ exercise.prefix }}</text>
-      <button
+      <BaseChip
         v-for="(id, index) in selected"
         :key="id"
-        role="button"
-        tabindex="0"
-        :aria-label="`第${index + 1}个词块：${tileText(id)}`"
-        :aria-pressed="activeIndex === index"
+        :aria-label="t('learning.krq', { v0: index + 1, v1: tileText(id) })"
         :class="{ chosen: activeIndex === index }"
         :disabled="locked"
         :aria-disabled="locked"
-        @tap="activate(index)"
+        :model-value="activeIndex === index"
+        @update:model-value="activate(index)"
       >
-        {{ tileText(id) }}
-      </button>
+        {{ learningText(tileText(id)) }}
+      </BaseChip>
       <text v-for="index in exercise.slots - selected.length" :key="`blank-${index}`" class="empty-slot">_____</text>
       <text>{{ exercise.suffix }}</text>
     </view>
-    <view class="tile-bank" aria-label="可选词块">
-      <button
+    <view class="tile-bank" :aria-label="t('learning.k6f')">
+      <BaseButton
         v-for="tile in exercise.tiles"
         :key="tile.id"
-        role="button"
-        tabindex="0"
         :disabled="locked || selected.includes(tile.id) || selected.length === exercise.slots"
         :aria-disabled="locked || selected.includes(tile.id) || selected.length === exercise.slots"
+        variant="quiet"
         @tap="choose(tile.id)"
       >
         {{ tile.text }}
-      </button>
+      </BaseButton>
     </view>
-    <view class="sentence-actions" aria-label="调整词块">
-      <button
-        role="button"
-        tabindex="0"
+    <view class="sentence-actions" :aria-label="t('learning.ko9')">
+      <BaseButton
         :disabled="locked || activeIndex <= 0"
         :aria-disabled="locked || activeIndex <= 0"
-        aria-label="词块向左移"
+        :aria-label="t('learning.ki')"
+        variant="quiet"
         @tap="move(-1)"
       >
-        <BaseIcon name="arrow-left" :size="24" />
-      </button>
-      <button
-        role="button"
-        tabindex="0"
+        <BaseIcon name="arrow-left" tone="ink-3" />
+      </BaseButton>
+      <BaseButton
         :disabled="locked || activeIndex < 0 || activeIndex >= selected.length - 1"
         :aria-disabled="locked || activeIndex < 0 || activeIndex >= selected.length - 1"
-        aria-label="词块向右移"
+        :aria-label="t('learning.ki7')"
+        variant="quiet"
         @tap="move(1)"
       >
-        <BaseIcon name="arrow-right" :size="24" />
-      </button>
-      <button
-        role="button"
-        tabindex="0"
+        <BaseIcon name="arrow-right" tone="ink-3" />
+      </BaseButton>
+      <BaseButton
         :disabled="locked || activeIndex < 0"
         :aria-disabled="locked || activeIndex < 0"
+        variant="quiet"
         @tap="remove"
+        >{{ t('learning.k3f') }}</BaseButton
       >
-        撤回词块
-      </button>
-      <button
-        role="button"
-        tabindex="0"
+      <BaseButton
         :disabled="locked || !selected.length"
         :aria-disabled="locked || !selected.length"
+        variant="quiet"
         @tap="clear"
+        >{{ t('learning.khm') }}</BaseButton
       >
-        重新排列
-      </button>
     </view>
     <view class="sentence-actions">
-      <button
+      <BaseButton
         class="primary"
-        role="button"
-        tabindex="0"
         :disabled="locked || !ready || !complete || unchanged"
         :aria-disabled="locked || !ready || !complete || unchanged"
+        variant="primary"
         @tap="save"
+        >{{ t('learning.kbf') }}</BaseButton
       >
-        提交句子
-      </button>
-      <button role="button" tabindex="0" :disabled="locked" :aria-disabled="locked" @tap="showHelp">看句子提示</button>
-      <button
+      <BaseButton :disabled="locked" :aria-disabled="locked" variant="quiet" @tap="showHelp">{{
+        t('learning.km7')
+      }}</BaseButton>
+      <BaseButton
         v-if="attempt || hint"
-        role="button"
-        tabindex="0"
         :disabled="locked"
         :aria-disabled="locked"
+        variant="quiet"
         @tap="run(() => nextTask(context))"
+        >{{ t('learning.k6y') }}</BaseButton
       >
-        独立新句子
-      </button>
-      <button
+      <BaseButton
         v-if="attempt"
-        role="button"
-        tabindex="0"
         :disabled="locked || !!retest"
         :aria-disabled="locked || !!retest"
+        variant="quiet"
         @tap="run(() => scheduleRetest(context))"
       >
-        {{ retest ? `已安排 ${retest.day.slice(5).replace('-', '/')}` : '明日复测' }}
-      </button>
+        {{ retest ? t('learning.kf0', { v0: retest.day.slice(5).replace('-', '/') }) : t('learning.k2m') }}
+      </BaseButton>
     </view>
-    <text v-if="stopped" class="sentence-note">已停止</text>
+    <text v-if="stopped" class="sentence-note">{{ t('learning.keb') }}</text>
     <text v-else-if="!ready && exercise.dueDay" class="sentence-note"
-      >{{ exercise.dueDay.slice(5).replace('-', '/') }}复测</text
+      >{{ exercise.dueDay.slice(5).replace('-', '/') }}{{ t('learning.kd5') }}</text
     >
     <text v-if="hint" class="sentence-note" role="status">{{ hint }}</text>
     <text v-if="result" class="sentence-note" role="status">{{ result }}</text>
-    <text v-if="error" class="sentence-note" role="alert">{{ error }}</text>
-    <text class="sentence-note">原创练习 · 只核对本题组合</text>
+    <BaseEmpty v-if="error" state="error" :title="learningText(error)" mascot-size="small" />
+    <text class="sentence-note">{{ t('learning.kon') }}</text>
     <!-- #ifdef H5 -->
-    <a class="sentence-source" :href="SENTENCE_BASIS.teachingUrl" target="_blank" rel="noopener noreferrer"
-      >官方任务形式 · 2026</a
-    >
+    <a class="sentence-source" :href="SENTENCE_BASIS.teachingUrl" target="_blank" rel="noopener noreferrer">{{
+      t('learning.kn3')
+    }}</a>
     <!-- #endif -->
     <!-- #ifndef H5 -->
     <text class="sentence-note" selectable>{{ SENTENCE_BASIS.teachingUrl }}</text>
@@ -125,6 +113,12 @@
 </template>
 
 <script setup>
+import BaseEmpty from '@/components/base/base-empty/base-empty.vue';
+import { learningText } from '@/i18n/learning.js';
+import { t } from '@/i18n/index.js';
+import BaseChip from '@/components/base/base-chip/base-chip.vue';
+import BaseButton from '@/components/base/base-button/base-button.vue';
+
 import { computed, ref, watch, onMounted, onUnmounted } from 'vue';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 import { bindLearningKeyboard } from '@/services/learning/keyboard-controls.js';
@@ -249,12 +243,12 @@ onUnmounted(() => unbind());
 
 <style scoped>
 .sentence-builder {
-  padding: 20px;
-  margin: 20px 0;
-  border: 1px solid var(--space-line);
-  border-radius: 24px;
-  background: var(--yozi-solid);
-  color: var(--space-text);
+  padding: var(--s-5);
+  margin: var(--s-5) 0;
+  border: var(--border-thin) solid var(--line);
+  border-radius: var(--s-6);
+  background: var(--paper);
+  color: var(--ink);
   overflow-wrap: anywhere;
 }
 .sentence-frame,
@@ -263,63 +257,32 @@ onUnmounted(() => unbind());
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 16px;
+  gap: var(--s-3);
+  margin-bottom: var(--s-4);
 }
 .sentence-frame {
-  min-height: 64px;
-  font-size: 18px;
+  min-height: var(--s-14);
+  font-size: var(--size-title-3);
   line-height: 1.6;
-}
-.sentence-builder button {
-  min-width: 44px;
-  min-height: 44px;
-  margin: 0;
-  padding: 8px 14px;
-  max-width: 100%;
-  color: inherit;
-  background: var(--space-button, var(--yozi-solid));
-  border: 1px solid var(--space-line);
-  border-radius: 16px;
-  box-shadow: 0 4px 0 var(--space-line);
-  font: inherit;
-  line-height: 1.5;
-  white-space: normal;
-  overflow-wrap: anywhere;
-}
-.sentence-builder button.chosen {
-  background: var(--space-user, var(--yozi-solid));
-}
-.sentence-builder button.primary {
-  background: var(--space-primary, #7050b0);
-  color: var(--space-primary-text, #fff);
-}
-.sentence-builder button[disabled] {
-  opacity: 0.5;
-}
-.sentence-builder button:focus-visible,
-.sentence-source:focus-visible {
-  outline: 2px solid var(--space-focus, #7050b0);
-  outline-offset: 4px;
 }
 .sentence-note {
   display: block;
-  margin: 12px 0;
+  margin: var(--s-3) 0;
   line-height: 1.6;
 }
 .empty-slot {
-  min-width: 44px;
-  color: var(--space-muted);
+  min-width: var(--touch-min);
+  color: var(--ink-3);
 }
 .sentence-source {
   display: inline-flex;
   align-items: center;
-  min-height: 44px;
+  min-height: var(--touch-min);
   color: inherit;
 }
 @media (max-width: 480px) {
   .sentence-builder {
-    padding: 16px;
+    padding: var(--s-4);
   }
 }
 @media (prefers-reduced-motion: reduce) {

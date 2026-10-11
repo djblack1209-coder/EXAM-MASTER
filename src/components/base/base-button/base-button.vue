@@ -1,7 +1,17 @@
 <template>
   <button
+    ref="root"
     class="base-button"
-    :class="[`base-button--${variant}`, { 'is-small': small, 'is-block': block, 'is-icon': iconOnly }]"
+    :class="[
+      `base-button--${variant}`,
+      {
+        'is-small': small,
+        'is-block': block,
+        'is-icon': iconOnly,
+        'is-start': align === 'start',
+        'is-selected': selected
+      }
+    ]"
     role="button"
     :tabindex="blocked ? -1 : 0"
     :disabled="blocked"
@@ -13,11 +23,13 @@
   >
     <view v-if="loading" class="base-button__spinner" aria-hidden="true" />
     <BaseIcon v-else-if="icon" :name="icon" :tone="tone" />
-    <text v-if="!iconOnly">{{ loading ? loadingText || t('ui.loading') : '' }}<slot v-if="!loading"></slot></text>
+    <view v-if="!iconOnly" class="base-button__content"
+      >{{ loading ? loadingText || t('ui.loading') : '' }}<slot v-if="!loading"></slot
+    ></view>
   </button>
 </template>
 <script setup>
-import { computed } from 'vue';
+import { computed, onMounted, onUpdated, onBeforeUnmount, ref } from 'vue';
 import { t } from '@/i18n/index.js';
 import BaseIcon from '../base-icon/base-icon.vue';
 const props = defineProps({
@@ -27,6 +39,8 @@ const props = defineProps({
     validator: (value) => ['primary', 'secondary', 'quiet', 'danger', 'apple', 'google', 'wechat'].includes(value)
   },
   small: Boolean,
+  align: { type: String, default: 'center', validator: (value) => ['center', 'start'].includes(value) },
+  selected: Boolean,
   block: Boolean,
   iconOnly: Boolean,
   disabled: Boolean,
@@ -35,7 +49,22 @@ const props = defineProps({
   icon: { type: String, default: '' },
   loadingText: { type: String, default: '' }
 });
-const emit = defineEmits(['tap']);
+const emit = defineEmits(['tap', 'click']);
+const root = ref(null);
+let keyboardElement;
+function bindKeyboard() {
+  // #ifdef H5
+  const element = root.value?.$el || root.value;
+  if (element !== keyboardElement) {
+    keyboardElement?.removeEventListener?.('keydown', keydown);
+    keyboardElement = element;
+    keyboardElement?.addEventListener?.('keydown', keydown);
+  }
+  // #endif
+}
+onMounted(bindKeyboard);
+onUpdated(bindKeyboard);
+onBeforeUnmount(() => keyboardElement?.removeEventListener?.('keydown', keydown));
 const blocked = computed(() => props.disabled || props.loading);
 const tone = computed(
   () =>
@@ -49,9 +78,16 @@ const tone = computed(
     })[props.variant] || 'ink'
 );
 function activate(event) {
-  if (!blocked.value) emit('tap', event);
+  if (blocked.value) return;
+  emit('tap', event);
+  // uni-app compiles H5 callers' @tap to a component click listener.
+  // Declare and emit it so pointer and keyboard activation share one path.
+  // #ifdef H5
+  emit('click', event);
+  // #endif
 }
 function keydown(event) {
+  if (event.defaultPrevented) return;
   if (!['Enter', ' '].includes(event.key)) return;
   event.preventDefault();
   event.stopPropagation();
@@ -67,6 +103,7 @@ function keydown(event) {
   box-sizing: border-box;
   height: var(--control-height);
   min-height: var(--touch-min);
+  min-width: var(--touch-min);
   padding: 0 var(--button-pad);
   margin: 0;
   border: 0;
@@ -78,6 +115,25 @@ function keydown(event) {
     transform var(--t-press) var(--ease),
     box-shadow var(--t-press) var(--ease),
     background-color var(--t-state) var(--ease);
+}
+.base-button__content {
+  display: inline-flex;
+  align-items: center;
+  justify-content: inherit;
+  gap: var(--s-2);
+  min-width: 0;
+}
+.base-button.is-start,
+.base-button.is-start .base-button__content {
+  justify-content: flex-start;
+  text-align: left;
+}
+.base-button.is-start .base-button__content {
+  flex: 1;
+}
+.base-button--quiet.is-selected {
+  background: var(--violet-soft);
+  color: var(--violet-ink);
 }
 .base-button::after {
   border: 0;

@@ -2,9 +2,9 @@
   <view class="base-stat"
     ><text class="base-stat__label">{{ label }}</text
     ><view class="base-stat__number"
-      ><text>{{ formatNumber(value) }}</text
+      ><text class="summary-count">{{ formatNumber(value) }}</text
       ><text v-if="denominator !== null" class="base-stat__unit">/ {{ formatNumber(denominator) }}</text
-      ><text v-else-if="unit" class="base-stat__unit">{{ unit }}</text></view
+      ><text v-else-if="unit" class="base-stat__unit">{{ ` ${unit}` }}</text></view
     ></view
   >
 </template>

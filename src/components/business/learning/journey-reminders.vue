@@ -1,113 +1,113 @@
 <template>
   <view v-if="learning.journey" ref="root" class="journey-reminders" data-test="journey-reminders">
     <view class="reminder-heading"
-      ><text class="section-title">学习提醒</text>
-      <button role="button" tabindex="0" :aria-expanded="editing" @tap="edit">
-        {{ editing ? '收起设置' : '设置提醒' }}
-      </button></view
+      ><text class="section-title">{{ t('learning.kjj') }}</text>
+      <BaseButton :aria-expanded="editing" variant="quiet" @tap="edit">
+        {{ editing ? t('learning.k3x') : t('learning.kgy') }}
+      </BaseButton></view
     >
     <view v-if="editing" class="reminder-form">
-      <view class="button-row" aria-label="提醒类型">
-        <button
+      <view class="button-row" :aria-label="t('learning.kjz')">
+        <BaseChip
           v-for="kind in REMINDER_KINDS"
           :key="kind.id"
-          role="button"
-          tabindex="0"
-          :aria-pressed="form.kind === kind.id"
           :class="{ chosen: form.kind === kind.id }"
-          @tap="form.kind = kind.id"
+          :model-value="form.kind === kind.id"
+          @update:model-value="form.kind = kind.id"
         >
-          {{ kind.label }}
-        </button>
+          {{ learningText(kind.label) }}
+        </BaseChip>
       </view>
-      <view class="button-row" aria-label="常用提醒时间">
-        <button
+      <view class="button-row" :aria-label="t('learning.km6')">
+        <BaseChip
           v-for="time in ['08:00', '14:00', '20:00']"
           :key="time"
-          role="button"
-          tabindex="0"
-          :aria-pressed="form.time === time"
-          @tap="form.time = time"
+          :model-value="form.time === time"
+          @update:model-value="form.time = time"
         >
           {{ time }}
-        </button>
-        <button role="button" tabindex="0" @tap="nearbyTime">填入3分钟后的时刻</button>
+        </BaseChip>
+        <BaseButton variant="quiet" @tap="nearbyTime">{{ t('learning.kbw') }}</BaseButton>
       </view>
       <label
-        ><text>提醒时间</text><input v-model="form.time" aria-label="提醒时间" placeholder="HH:mm" maxlength="5"
+        ><text>{{ t('learning.k97') }}</text
+        ><BaseInput v-model="form.time" placeholder="HH:mm" maxlength="5" :label="t('learning.k97')"
       /></label>
-      <label><text>时区</text><input v-model="form.timezone" aria-label="提醒时区" maxlength="80" /></label>
-      <view class="button-row" aria-label="提醒重复日">
-        <button
+      <label
+        ><text>{{ t('learning.kux') }}</text
+        ><BaseInput v-model="form.timezone" maxlength="80" :label="t('learning.kb7')"
+      /></label>
+      <view class="button-row" :aria-label="t('learning.kmb')">
+        <BaseChip
           v-for="(label, day) in weekdays"
           :key="day"
-          role="button"
-          tabindex="0"
-          :aria-pressed="form.repeatDays.includes(day)"
           :class="{ chosen: form.repeatDays.includes(day) }"
-          @tap="toggleDay(day)"
+          :model-value="form.repeatDays.includes(day)"
+          @update:model-value="toggleDay(day)"
         >
-          {{ label }}
-        </button>
+          {{ learningText(label) }}
+        </BaseChip>
       </view>
       <view class="button-row"
-        ><button
+        ><BaseButton
           class="primary"
-          role="button"
-          tabindex="0"
           :disabled="busy"
           :aria-disabled="busy"
           data-test="reminder-save"
+          variant="primary"
           @tap="save"
-        >
-          保存提醒</button
-        ><button role="button" tabindex="0" @tap="editing = false">取消</button></view
+          >{{ t('learning.kq7') }}</BaseButton
+        ><BaseButton variant="quiet" @tap="editing = false">{{ t('learning.k8s') }}</BaseButton></view
       >
     </view>
     <view v-for="reminder in learning.active.reminders || []" :key="reminder.id" class="reminder-row">
       <view
-        ><text>{{ kindName(reminder.kind) }} · {{ reminder.time }}</text>
+        ><text>{{ learningText(kindName(reminder.kind)) }} · {{ reminder.time }}</text>
         <text class="reminder-meta"
           >{{ reminder.timezone }} · {{ reminder.repeatDays.map((d) => weekdays[d]).join('、') }} ·
-          {{ reminder.enabled ? '已保存' : '已暂停' }}</text
+          {{ reminder.enabled ? t('learning.kok') : t('learning.kv5') }}</text
         ></view
       >
-      <button role="button" tabindex="0" :disabled="busy" :aria-disabled="busy" @tap="toggle(reminder)">
-        {{ reminder.enabled ? '暂停' : '启用' }}
-      </button>
+      <BaseButton :disabled="busy" :aria-disabled="busy" variant="quiet" @tap="toggle(reminder)">
+        {{ reminder.enabled ? t('learning.k1x') : t('learning.kpf') }}
+      </BaseButton>
     </view>
     <text v-for="receipt in latestReceipts" :key="receipt.id" class="reminder-meta"
-      >{{ kindName(receipt.kind) }} · {{ receipt.day }} ·
-      {{ receipt.historyOnly ? '历史终端回执' : receiptLabel(receipt.status) }}</text
+      >{{ learningText(kindName(receipt.kind)) }} · {{ receipt.day }} ·
+      {{ receipt.historyOnly ? t('learning.k1') : receiptLabel(receipt.status) }}</text
     >
     <view class="button-row"
-      ><button
-        role="button"
-        tabindex="0"
+      ><BaseButton
         :disabled="busy || channel === 'unsupported'"
         :aria-disabled="busy || channel === 'unsupported'"
         data-test="reminder-permission"
+        variant="quiet"
         @tap="allow"
+        >{{ t('learning.k8k') }}{{ channel === 'macos' ? t('learning.k8g') : t('learning.kfq')
+        }}{{ t('learning.kex') }}</BaseButton
       >
-        允许{{ channel === 'macos' ? '系统定时' : '应用内' }}通知
-      </button>
-      <button v-if="channel === 'macos'" role="button" tabindex="0" :disabled="busy" :aria-disabled="busy" @tap="check">
-        核对系统安排
-      </button></view
+      <BaseButton v-if="channel === 'macos'" :disabled="busy" :aria-disabled="busy" variant="quiet" @tap="check">{{
+        t('learning.khk')
+      }}</BaseButton></view
     >
     <text class="reminder-meta">{{
-      channel === 'macos'
-        ? '系统定时覆盖未来7天，重开自动接续；退出后仍可触发，显示取决于系统通知设置。'
-        : channel === 'web'
-          ? '应用打开时提醒；退出后的系统定时通知需要macOS桌面端。'
-          : '此终端尚未接入系统通知，提醒设置仍可保存。'
+      channel === 'macos' ? t('learning.kk8') : channel === 'web' ? t('learning.kfc') : t('learning.ke3')
     }}</text>
-    <text v-if="message" class="reminder-feedback" :class="{ warning: failed }" :role="failed ? 'alert' : 'status'">{{
-      message
-    }}</text>
+    <view v-if="message" class="reminder-feedback"
+      ><BaseEmpty v-if="failed" state="error" :title="learningText(message)" mascot-size="small" /><text v-else>{{
+        learningText(message)
+      }}</text></view
+    >
   </view>
 </template>
 <script setup>
+import BaseEmpty from '@/components/base/base-empty/base-empty.vue';
+import { learningText } from '@/i18n/learning.js';
+import { t } from '@/i18n/index.js';
+import BaseButton from '@/components/base/base-button/base-button.vue';
+import BaseChip from '@/components/base/base-chip/base-chip.vue';
+import BaseInput from '@/components/base/base-input/base-input.vue';
+
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import { useConversationLearningStore } from '@/stores/modules/conversation-learning.js';
 import { REMINDER_KINDS } from '../../../../laf-backend/functions/_shared/learning-reminders.js';
@@ -249,57 +249,51 @@ onUnmounted(() => {
 </script>
 <style scoped>
 .journey-reminders {
-  margin-top: 28px;
-  padding-top: 24px;
-  border-top: 1px solid var(--space-line);
+  margin-top: var(--s-8);
+  padding-top: var(--s-6);
+  border-top: var(--border-thin) solid var(--line);
 }
 .reminder-heading,
 .reminder-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
+  gap: var(--s-4);
 }
 .reminder-form {
   display: grid;
-  gap: 16px;
-  margin-top: 20px;
+  gap: var(--s-4);
+  margin-top: var(--s-5);
 }
 .reminder-form label {
   display: grid;
-  gap: 8px;
-  font-size: 14px;
-}
-.reminder-form input {
-  min-height: 44px;
-  padding: 10px 12px;
-  border: 1px solid var(--space-line);
-  border-radius: 12px;
+  gap: var(--s-2);
+  font-size: var(--size-small);
 }
 .reminder-row {
-  margin: 16px 0;
-  padding: 12px 0;
-  border-bottom: 1px solid var(--space-line);
+  margin: var(--s-4) 0;
+  padding: var(--s-3) 0;
+  border-bottom: var(--border-thin) solid var(--line);
 }
 .reminder-row > view {
   min-width: 0;
   flex: 1;
-  font-size: 16px;
+  font-size: var(--size-body);
   line-height: 1.75;
 }
 .reminder-meta {
   display: block;
-  font-size: 12px;
-  color: var(--space-muted);
+  font-size: var(--size-caption);
+  color: var(--ink-3);
   line-height: 1.7;
-  margin-top: 8px;
+  margin-top: var(--s-2);
   overflow-wrap: anywhere;
 }
 .reminder-feedback {
   display: block;
-  font-size: 14px;
+  font-size: var(--size-small);
   line-height: 1.7;
-  margin-top: 16px;
+  margin-top: var(--s-4);
 }
 @media (max-width: 520px) {
   .reminder-heading {

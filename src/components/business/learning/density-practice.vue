@@ -2,28 +2,26 @@
   <view v-if="visible" class="density-practice">
     <text class="density-heading">{{ heading }}</text>
     <view class="density-actions">
-      <button
-        role="button"
+      <BaseButton
         :tabindex="unavailable ? -1 : 0"
         :disabled="unavailable"
         :aria-disabled="unavailable"
+        variant="quiet"
         @tap="readMethod"
+        >{{ t('learning.kcg') }}</BaseButton
       >
-        看计算方法
-      </button>
-      <button
-        role="button"
+      <BaseButton
         :tabindex="unavailable ? -1 : 0"
         :disabled="unavailable"
         :aria-disabled="unavailable"
+        variant="quiet"
         @tap="independent"
+        >{{ t('learning.k2a') }}</BaseButton
       >
-        换条件独立作答
-      </button>
     </view>
     <text v-if="methodVisible" class="density-method" role="status">{{ method }}</text>
-    <text v-if="error" role="alert">{{ error }}</text>
-    <text v-if="!input" role="alert">本题计算条件无法读取。</text>
+    <BaseEmpty v-if="error" state="error" :title="learningText(error)" mascot-size="small" />
+    <BaseEmpty v-if="!input" state="error" :title="t('learning.kd4')" mascot-size="small" />
     <view v-if="methodVisible" class="density-source">
       <!-- #ifdef H5 -->
       <a :href="basis.url" target="_blank" rel="noopener noreferrer">{{ sourceLabel }}</a>
@@ -35,6 +33,11 @@
   </view>
 </template>
 <script setup>
+import BaseEmpty from '@/components/base/base-empty/base-empty.vue';
+import { learningText } from '@/i18n/learning.js';
+import { t } from '@/i18n/index.js';
+import BaseButton from '@/components/base/base-button/base-button.vue';
+
 import { computed, ref, watch } from 'vue';
 import {
   densityInput,
@@ -110,34 +113,24 @@ watch(
 </script>
 <style scoped>
 .density-practice {
-  padding: 16px;
+  padding: var(--s-4);
 }
 .density-heading {
   display: block;
-  font-weight: 700;
+  font-weight: var(--weight-bold);
 }
 .density-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
-  margin: 12px 0;
-}
-.density-actions button {
-  min-width: 44px;
-  min-height: 44px;
-  margin: 0;
-  font: inherit;
-}
-.density-actions button:focus-visible {
-  outline: 2px solid var(--primary-color, #7659d9);
-  outline-offset: 2px;
+  gap: var(--s-2);
+  margin: var(--s-3) 0;
 }
 .density-method {
   display: block;
   line-height: 1.7;
 }
 .density-source {
-  margin-top: 8px;
+  margin-top: var(--s-2);
   overflow-wrap: anywhere;
 }
 </style>

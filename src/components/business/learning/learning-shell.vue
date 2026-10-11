@@ -11,9 +11,6 @@
     }"
     :style="platformInsets"
   >
-    <view v-if="theme.visualStyle === 'future'" class="space-backdrop" aria-hidden="true">
-      <image class="space-backdrop-image" :src="FUTURE_ASSETS.still" mode="aspectFill" />
-    </view>
     <view class="space-frame">
       <button
         v-if="menuOpen || menuLeaving"
@@ -23,20 +20,22 @@
         tabindex="-1"
         :disabled="menuLeaving"
         :aria-disabled="menuLeaving"
-        aria-label="关闭学习目录"
+        :aria-label="t('learning.kh3')"
         @tap="closeMenu"
       ></button>
-      <view
+      <BaseCard
+        surface="glass"
+        padding="none"
         class="space-sidebar"
         :class="{ 'sidebar-open': menuOpen, 'sidebar-leaving': menuLeaving }"
         :inert="menuLeaving || undefined"
       >
         <view class="brand-row">
-          <button
+          <BaseButton
             class="brand-link"
-            role="button"
-            tabindex="0"
-            aria-label="返回学习空间首页"
+            align="start"
+            :aria-label="t('learning.kej')"
+            variant="quiet"
             @tap="safeNavigateTo('/pages/index/index')"
           >
             <image
@@ -50,184 +49,203 @@
                 {{ BRAND.name }}
               </text>
             </view>
-          </button>
-          <button class="sidebar-close" role="button" tabindex="0" aria-label="关闭学习目录" @tap="closeMenu">
-            <BaseIcon name="close" :size="36" :color="iconColor" />
-          </button>
+          </BaseButton>
+          <BaseButton
+            ref="closeButton"
+            class="sidebar-close"
+            icon-only
+            icon="close"
+            :label="t('learning.closeDirectory')"
+            :aria-label="t('learning.kh3')"
+            variant="quiet"
+            @tap="closeMenu"
+          />
         </view>
-        <button
+        <BaseButton
           class="new-session"
-          role="button"
-          tabindex="0"
+          block
           :disabled="learning.busy"
           :aria-disabled="learning.busy"
+          variant="primary"
+          icon="plus"
           @tap="newSession"
         >
-          <BaseIcon name="plus" :size="32" :color="theme.isDark ? '#20172f' : '#ffffff'" />
-          <text>开始新对话</text>
-        </button>
+          <text>{{ t('learning.k8t') }}</text>
+        </BaseButton>
         <view class="desktop-navigation" :aria-label="t('nav.learningViews')">
-          <button
+          <BaseButton
             v-for="item in navigation"
             :key="item.id"
             class="space-nav-item"
+            align="start"
+            :selected="active === item.id"
             :class="{ selected: active === item.id }"
-            role="button"
-            tabindex="0"
             :aria-current="active === item.id ? 'page' : undefined"
+            variant="quiet"
             @tap="openView(item.id)"
           >
             <BaseIcon
               :name="item.icon"
-              :size="36"
               :selected="active === item.id"
               :tone="active === item.id ? 'violet-ink' : 'ink-3'"
             />
-            <text>{{ item.label }}</text>
+            <text class="sidebar-label">{{ learningText(item.label) }}</text>
             <text v-if="item.id === 'mistake' && learning.summary.mistakes.length" class="nav-count">
               {{ learning.summary.mistakes.length }}
             </text>
-          </button>
+          </BaseButton>
         </view>
         <view class="library-search">
-          <BaseIcon name="search" :size="30" :color="iconColor" />
-          <input
+          <BaseInput
             ref="searchInput"
             v-model="query"
-            class="search-input"
-            aria-label="搜索学习对话"
-            placeholder="搜索学习对话"
-            placeholder-class="space-placeholder"
+            input-class="search-input"
+            hide-label
+            focus-visible-only
+            :placeholder="t('learning.ki6')"
             maxlength="120"
-            confirm-hold
+            :label="t('learning.ki6')"
           />
         </view>
-        <view class="recent-list" aria-label="学习会话目录">
+        <view class="recent-list" :aria-label="t('learning.k5p')">
           <view v-for="conversation in recent" :key="conversation.id" class="recent-conversation">
-            <button
+            <BaseButton
               class="recent-item"
+              align="start"
+              :selected="learning.selectedConversationId === conversation.id"
               :class="{ current: learning.selectedConversationId === conversation.id }"
-              role="button"
-              tabindex="0"
               :disabled="learning.busy"
               :aria-disabled="learning.busy"
+              variant="quiet"
               @tap="resume(conversation.id)"
             >
-              <BaseIcon name="chat" :size="30" :color="iconColor" />
-              <text>{{ conversation.goal }}</text>
-            </button>
+              <BaseIcon name="chat" tone="ink-3" />
+              <text class="sidebar-label">{{ conversation.goal }}</text>
+            </BaseButton>
             <view v-if="learning.selectedConversationId === conversation.id" class="conversation-directory">
               <view v-for="chapter in directoryDays" :key="chapter.day" class="directory-day">
-                <button
+                <BaseButton
                   class="directory-date"
-                  role="button"
-                  tabindex="0"
+                  align="start"
                   :disabled="learning.busy"
                   :aria-disabled="learning.busy"
+                  variant="quiet"
                   @tap="locate(conversation.id, chapter.day)"
                 >
                   {{ chapter.day.slice(5).replace('-', ' / ') }}
-                </button>
-                <button
+                </BaseButton>
+                <BaseButton
                   v-for="group in chapter.groups"
                   :key="group.id"
                   class="directory-module"
-                  role="button"
-                  tabindex="0"
+                  align="start"
                   :disabled="learning.busy"
                   :aria-disabled="learning.busy"
-                  :aria-label="`定位${chapter.day}的${group.label}，保留完整会话`"
+                  :aria-label="t('learning.kv1', { v0: chapter.day, v1: learningText(group.label) })"
+                  variant="quiet"
                   @tap="locate(conversation.id, chapter.day, group.id)"
                 >
-                  <text>{{ group.label }}</text>
-                  <BaseIcon name="arrow-right" :size="24" :color="iconColor" />
-                </button>
+                  <text>{{ learningText(group.label) }}</text>
+                  <BaseIcon name="arrow-right" tone="ink-3" />
+                </BaseButton>
               </view>
-              <button
+              <BaseButton
                 v-if="learning.timeline.length > directoryDayLimit"
                 class="directory-earlier"
-                role="button"
-                tabindex="0"
+                align="start"
                 :disabled="learning.busy"
                 :aria-disabled="learning.busy"
                 data-test="earlier-learning-days"
+                variant="quiet"
                 @tap="directoryDayLimit += 7"
+                >{{ t('learning.kjp') }}</BaseButton
               >
-                更早日期
-              </button>
             </view>
           </view>
-          <text v-if="!recent.length" class="sidebar-empty">
-            {{ query ? '未找到对话' : '暂无对话' }}
-          </text>
+          <BaseEmpty
+            v-if="!recent.length"
+            state="empty"
+            :title="query ? t('learning.keu') : t('learning.k22')"
+            mascot-size="small"
+          />
         </view>
-        <button class="library-materials" role="button" tabindex="0" @tap="openMaterials">
-          <BaseIcon name="folder" :size="34" :color="iconColor" />
+        <BaseButton class="library-materials" align="start" variant="quiet" @tap="openMaterials">
+          <BaseIcon name="folder" tone="ink-3" />
           <view class="material-copy">
-            <text>私人资料</text>
+            <text class="sidebar-label">{{ t('learning.k5u') }}</text>
             <text v-if="learning.state.materials.length" class="sidebar-caption"
-              >{{ learning.state.materials.length }} 份</text
+              >{{ learning.state.materials.length }}{{ t('learning.kkd') }}</text
             >
           </view>
-          <BaseIcon name="arrow-right" :size="28" :color="iconColor" />
-        </button>
+          <BaseIcon name="arrow-right" tone="ink-3" />
+        </BaseButton>
         <view class="sidebar-footer">
-          <button
-            role="button"
-            tabindex="0"
+          <BaseButton
+            :label="theme.isDark ? t('learning.kfr') : t('learning.kev')"
             class="theme-button"
-            :aria-label="theme.isDark ? '切换浅色阅读' : '切换深色阅读'"
+            icon-only
+            :icon="theme.isDark ? 'sun' : 'moon'"
+            :aria-label="theme.isDark ? t('learning.kfr') : t('learning.kev')"
+            variant="quiet"
             @tap="theme.toggleTheme()"
-          >
-            <BaseIcon :name="theme.isDark ? 'sun' : 'moon'" :size="32" :color="iconColor" />
-          </button>
+          />
         </view>
-      </view>
+      </BaseCard>
       <view class="space-main" :inert="menuOpen || undefined">
         <view class="space-header">
           <view class="space-heading">
-            <button
+            <BaseButton
               ref="menuButton"
               class="mobile-menu"
-              role="button"
-              tabindex="0"
-              aria-label="打开学习目录"
+              icon-only
+              icon="menu"
+              :label="t('learning.openDirectory')"
+              :aria-label="t('learning.ksq')"
               :aria-expanded="menuOpen"
+              variant="quiet"
               @tap="menuOpen = !menuOpen"
-            >
-              <BaseIcon name="menu" :size="40" :color="iconColor" />
-            </button>
+            />
             <text class="space-title">{{ title || t('pages.learning') }}</text>
-            <text class="space-date">{{ dateLabel }}</text>
+            <BaseTag tone="neutral">{{ dateLabel }}</BaseTag>
           </view>
           <view class="space-header-actions"><slot name="controls"></slot></view>
         </view>
         <view class="space-content"><slot></slot></view>
       </view>
     </view>
-    <view class="mobile-dock" :aria-label="t('nav.learningViews')" :inert="menuOpen || undefined">
-      <button
+    <BaseCard
+      surface="glass"
+      padding="none"
+      class="mobile-dock"
+      :aria-label="t('nav.learningViews')"
+      :inert="menuOpen || undefined"
+    >
+      <BaseButton
         v-for="item in navigation"
         :key="item.id"
-        role="button"
-        tabindex="0"
         :class="{ selected: active === item.id }"
         :aria-current="active === item.id ? 'page' : undefined"
+        variant="quiet"
         @tap="openView(item.id)"
       >
         <BaseIcon
           :name="item.icon"
-          :size="38"
           :selected="active === item.id"
           :tone="active === item.id ? 'violet-ink' : 'ink-3'"
         />
-        <text>{{ item.label }}</text>
-      </button>
-    </view>
-    <text v-if="error" class="space-error" role="alert">{{ error }}</text>
+        <text>{{ learningText(item.label) }}</text>
+      </BaseButton>
+    </BaseCard>
+    <BaseEmpty v-if="error" state="error" :title="learningText(error)" />
   </view>
 </template>
 <script setup>
+import BaseCard from '@/components/base/base-card/base-card.vue';
+import BaseEmpty from '@/components/base/base-empty/base-empty.vue';
+import { learningText } from '@/i18n/learning.js';
+import BaseButton from '@/components/base/base-button/base-button.vue';
+import BaseInput from '@/components/base/base-input/base-input.vue';
+
 import { computed, ref, onMounted, onUnmounted, nextTick, watch } from 'vue';
 import { useConversationLearningStore } from '@/stores/modules/conversation-learning.js';
 import { useThemeStore } from '@/stores/modules/theme.js';
@@ -235,8 +253,9 @@ import { safeNavigateTo } from '@/utils/safe-navigate';
 import { bindLearningKeyboard } from '@/services/learning/keyboard-controls.js';
 import { bindBusinessMotion } from '@/design/business-motion.js';
 import { BRAND } from '@/config/brand.js';
-import { FUTURE_ASSETS } from '@/design/future-motion.js';
 import { t } from '@/i18n/index.js';
+import { formatDate } from '@/i18n/format.js';
+import BaseTag from '@/components/base/base-tag/base-tag.vue';
 const props = defineProps({
   active: { type: String, default: 'learning' },
   title: { type: String, default: '' }
@@ -244,9 +263,9 @@ const props = defineProps({
 const emit = defineEmits(['materials', 'new']);
 const learning = useConversationLearningStore();
 const theme = useThemeStore();
-const iconColor = computed(() => (theme.isDark ? '#f0eefa' : '#080909'));
 const root = ref(null);
 const menuButton = ref(null);
+const closeButton = ref(null);
 const searchInput = ref(null);
 const menuOpen = ref(false);
 const menuLeaving = ref(false);
@@ -283,7 +302,7 @@ const recent = computed(() =>
     .filter((item) => item.goal.toLocaleLowerCase().includes(query.value.trim().toLocaleLowerCase()))
     .slice(0, 8)
 );
-const dateLabel = computed(() => `${learning.summary.day.slice(5).replace('-', '月')}日`);
+const dateLabel = computed(() => formatDate(learning.summary.day + 'T12:00:00'));
 let unbind = () => undefined;
 let releaseMotion = () => undefined;
 let menuExitTimer = null;
@@ -301,8 +320,7 @@ watch(menuOpen, async (open) => {
   }
   await nextTick();
   // #ifdef H5
-  const element = searchInput.value?.$el || searchInput.value;
-  (element?.querySelector?.('input') || element)?.focus?.();
+  (closeButton.value?.$el || closeButton.value)?.focus?.();
   // #endif
 });
 async function closeMenu() {
@@ -322,7 +340,7 @@ function escapeMenu(event) {
   if (event.key === 'Tab') {
     const element = root.value?.$el || root.value;
     const controls = [
-      ...(element?.querySelectorAll?.('.sidebar-open input, .sidebar-open [role="button"]') || [])
+      ...(element?.querySelectorAll?.('.sidebar-open input, .sidebar-open button, .sidebar-open [role="button"]') || [])
     ].filter((node) => node.getClientRects().length && !node.hasAttribute('disabled'));
     const first = controls[0];
     const last = controls.at(-1);
@@ -389,38 +407,3 @@ onUnmounted(() => {
   element?.removeEventListener?.('keydown', escapeMenu);
 });
 </script>
-<style scoped>
-.conversation-directory {
-  padding: 4px 0 12px 16px;
-}
-.learning-space .directory-date,
-.learning-space .directory-module,
-.learning-space .directory-earlier {
-  width: 100%;
-  min-height: 44px;
-  margin: 0;
-  padding: 8px 12px;
-  justify-content: space-between;
-  text-align: left;
-  background: transparent;
-  box-shadow: none;
-  border: 0;
-  border-radius: 12px;
-}
-.learning-space .directory-date,
-.learning-space .directory-earlier {
-  color: var(--space-muted);
-  font-size: 12px;
-  font-variant-numeric: tabular-nums;
-}
-.learning-space .directory-module {
-  font-size: 13px;
-}
-.directory-module text {
-  min-width: 0;
-  overflow-wrap: anywhere;
-}
-.directory-day + .directory-day {
-  margin-top: 4px;
-}
-</style>

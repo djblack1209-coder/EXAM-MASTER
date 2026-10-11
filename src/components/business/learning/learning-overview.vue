@@ -1,67 +1,57 @@
 <template>
-  <view ref="learningRoot" class="learning-overview" :class="{ 'is-inline': inline }" data-test="learning-checkpoint">
+  <BaseCard
+    ref="learningRoot"
+    class="learning-overview"
+    :class="{ 'is-inline': inline }"
+    data-test="learning-checkpoint"
+    padding="none"
+  >
     <view v-if="showNavigation" class="learning-links">
-      <button
+      <BaseButton
         v-for="item in ['对话', '错题', '计划', '统计']"
         :key="item"
-        role="button"
-        tabindex="0"
-        size="mini"
+        variant="quiet"
         @tap="openView({ 对话: 'learning', 错题: 'mistake', 计划: 'plan', 统计: 'study-detail' }[item])"
       >
-        {{ item }}
-      </button>
+        {{ learningText(item) }}
+      </BaseButton>
     </view>
     <view class="overview-heading">
-      <text class="overview-title">{{ inline ? '今天' : range === 'day' ? '今日学习' : '学习记录' }}</text>
+      <text class="overview-title">{{
+        inline ? t('learning.k2p') : range === 'day' ? t('learning.kn5') : t('learning.kmz')
+      }}</text>
       <text class="overview-date">{{ stats.day.slice(5).replace('-', ' / ') }}</text>
     </view>
-    <view v-if="!inline" class="button-row" aria-label="学习统计范围">
-      <button
-        v-for="item in [
-          { id: 'day', label: '今天' },
-          { id: 'history', label: '全部历史' }
-        ]"
-        :key="item.id"
-        role="button"
-        tabindex="0"
-        :aria-pressed="range === item.id"
-        @tap="range = item.id"
-      >
-        {{ item.label }}
-      </button>
-    </view>
+    <BaseSegmented
+      v-if="!inline"
+      v-model="range"
+      :label="t('learning.statRange')"
+      :options="[
+        { value: 'day', label: t('learning.today') },
+        { value: 'history', label: t('learning.history') }
+      ]"
+    />
     <view
       class="learning-summary"
       role="button"
       tabindex="0"
       :aria-expanded="expanded"
-      aria-label="展开或收起学习记录依据"
+      :aria-label="t('learning.ka3')"
       data-learning-toggle="true"
       @tap="expanded = !expanded"
     >
       <view class="overview-metrics">
-        <view class="overview-metric overview-task">
-          <text class="metric-label">已完成任务</text>
-          <view class="metric-value"
-            ><text class="summary-count">{{ stats.tasks.numerator }}</text
-            ><text class="metric-denominator">/ {{ stats.tasks.denominator }}</text></view
-          >
-        </view>
-        <view class="overview-metric">
-          <text class="metric-label">可靠作答</text>
-          <view class="metric-value"
-            ><text class="summary-count">{{ stats.totalReliableAnswers }}</text
-            ><text class="metric-denominator">{{ ' 次' }}</text></view
-          >
-        </view>
-        <view class="overview-metric">
-          <text class="metric-label">待核对</text>
-          <view class="metric-value"
-            ><text class="summary-count">{{ stats.pending }}</text
-            ><text class="metric-denominator">{{ ' 次' }}</text></view
-          >
-        </view>
+        <BaseStat
+          :label="t('learning.tasksDone')"
+          :value="stats.tasks.numerator"
+          :denominator="stats.tasks.denominator"
+        />
+        <BaseStat
+          :label="t('learning.reliableAnswers')"
+          :value="stats.totalReliableAnswers"
+          :unit="t('learning.times')"
+        />
+        <BaseStat :label="t('learning.pending')" :value="stats.pending" :unit="t('learning.times')" />
       </view>
       <view
         v-if="stats.tasks.denominator"
@@ -70,226 +60,218 @@
         :aria-valuenow="stats.tasks.numerator"
         :aria-valuemax="stats.tasks.denominator"
         aria-valuemin="0"
-        aria-label="今日任务进度"
+        :aria-label="t('learning.krj')"
       >
         <view :style="{ transform: `scaleX(${stats.tasks.rate || 0})` }" />
       </view>
-      <text v-else class="metric-empty">尚未安排任务</text>
+      <YoziMascot v-if="!stats.tasks.denominator" pose="sleep" play="none" size="small" /><text
+        v-if="!stats.tasks.denominator"
+        class="metric-empty"
+        >{{ t('learning.kkx') }}</text
+      >
       <view class="summary-line">
-        <text>可靠正确 {{ stats.reliableCorrectAnswers }} / {{ stats.totalReliableAnswers }}</text>
-        <text>首答错题 {{ stats.first.numerator }} / {{ stats.first.denominator }}</text>
+        <text>{{ t('learning.k8w') }}{{ stats.reliableCorrectAnswers }} / {{ stats.totalReliableAnswers }}</text>
+        <text>{{ t('learning.ko2') }}{{ stats.first.numerator }} / {{ stats.first.denominator }}</text>
       </view>
       <view
         v-if="answerCount"
         class="answer-distribution"
         role="img"
-        :aria-label="`${answerCount}次作答，已校验${stats.totalReliableAnswers}次，待核对${stats.pending}次`"
+        :aria-label="t('learning.kfk', { v0: answerCount, v1: stats.totalReliableAnswers, v2: stats.pending })"
       >
         <view class="answer-checked" :style="{ width: `${(stats.totalReliableAnswers / answerCount) * 100}%` }" />
         <view class="answer-pending" :style="{ width: `${(stats.pending / answerCount) * 100}%` }" />
       </view>
       <view class="summary-foot">
-        <text>{{ answerCount ? '作答核对进度' : '尚无作答' }}</text>
-        <text>{{ expanded ? '收起依据' : '查看依据' }}</text>
-        <BaseIcon
-          :name="expanded ? 'chevron-up' : 'chevron-down'"
-          :size="26"
-          :color="theme.isDark ? '#d2c8e5' : '#62576d'"
-        />
+        <text>{{ answerCount ? t('learning.ktl') : t('learning.k9e') }}</text>
+        <text>{{ expanded ? t('learning.kmv') : t('learning.ks4') }}</text>
+        <BaseIcon :name="expanded ? 'chevron-up' : 'chevron-down'" tone="ink-3" />
       </view>
-      <text v-if="stats.first.partial" class="subtle">首答部分正确 {{ stats.first.partial }} 次</text>
+      <text v-if="stats.first.partial" class="subtle"
+        >{{ t('learning.kpi') }}{{ stats.first.partial }}{{ t('learning.kbd') }}</text
+      >
     </view>
     <view v-if="expanded" class="learning-details">
-      <text class="subtle">{{ stats.day }} · {{ timezoneLabel }}</text>
+      <text class="subtle">{{ stats.day }} · {{ learningText(timezoneLabel) }}</text>
       <template v-if="showTasks">
         <view class="detail-heading">
-          <text class="learning-label">今天的任务</text>
-          <button role="button" tabindex="0" size="mini" @tap="editPlan">编辑计划</button>
+          <text class="learning-label">{{ t('learning.khr') }}</text>
+          <BaseButton variant="quiet" @tap="editPlan">{{ t('learning.kn8') }}</BaseButton>
         </view>
         <view v-if="!currentTasks.length" class="record-empty">
-          <BaseIcon name="calendar" :size="48" :color="theme.isDark ? '#c5a8ec' : '#7658ad'" />
-          <text>暂无任务</text>
-          <button role="button" tabindex="0" size="mini" @tap="openView('learning')">从对话开始</button>
+          <BaseEmpty state="empty" :title="t('learning.k2f')" mascot-size="small" />
+          <BaseButton variant="quiet" @tap="openView('learning')">{{ t('learning.k62') }}</BaseButton>
         </view>
         <view v-for="task in currentTasks" :key="task.id" class="learning-row task-row">
           <view class="task-indicator" :class="{ completed: task.completedBy }">
-            <BaseIcon v-if="task.completedBy" name="check" :size="28" :color="theme.isDark ? '#c5a8ec' : '#7658ad'" />
+            <BaseIcon v-if="task.completedBy" name="check" tone="ink-3" />
           </view>
           <view class="row-content">
             <text>{{ task.title }}</text>
-            <text v-if="task.privacyRemoved" class="subtle">已移除</text>
+            <text v-if="task.privacyRemoved" class="subtle">{{ t('learning.k91') }}</text>
             <text v-else class="subtle">
               {{
                 task.condition === 'manual'
                   ? task.completedBy
-                    ? '已确认'
-                    : '待确认'
+                    ? t('learning.kq0')
+                    : t('learning.k4f')
                   : task.condition === 'independent_correct'
                     ? task.completedBy
-                      ? '已通过'
-                      : '待检验'
+                      ? t('learning.k8d')
+                      : t('learning.k33')
                     : task.completedBy
-                      ? '已提交'
-                      : '待提交'
+                      ? t('learning.kbr')
+                      : t('learning.k8j')
               }}
             </text>
           </view>
-          <button
+          <BaseButton
             v-if="!task.privacyRemoved && task.questionKey"
-            role="button"
-            tabindex="0"
-            size="mini"
+            variant="quiet"
             @tap="openQuestion(task.questionKey)"
+            >{{ t('learning.kll') }}</BaseButton
           >
-            继续此题
-          </button>
-          <button
+          <BaseButton
             v-else-if="!task.privacyRemoved && task.condition === 'manual' && !task.completedBy"
-            role="button"
-            tabindex="0"
-            size="mini"
+            variant="quiet"
             @tap="complete(task.id)"
+            >{{ t('learning.ktg') }}</BaseButton
           >
-            记录完成
-          </button>
         </view>
-        <text v-for="plan in priorPlans" :key="plan.id" class="subtle">
-          历史计划 {{ plan.version }} · {{ plan.tasks.filter((t) => t.completedBy).length }}/{{ plan.tasks.length }}
+        <text v-for="plan in priorPlans" :key="plan.id" class="subtle"
+          >{{ t('learning.kkf') }}{{ plan.version }} · {{ plan.tasks.filter((t) => t.completedBy).length }}/{{
+            plan.tasks.length
+          }}
         </text>
         <view v-for="task in upcomingRetests" :key="task.id" class="learning-row">
           <view class="learning-row-main">
-            <text>{{ task.label }} · {{ task.day.slice(5).replace('-', '/') }}</text>
+            <text>{{ learningText(task.label) }} · {{ task.day.slice(5).replace('-', '/') }}</text>
             <text class="subtle">{{ task.title }}</text>
           </view>
-          <button
-            role="button"
-            tabindex="0"
-            size="mini"
-            @tap="openQuestion(task.questionKey, task.conversationId, 'review')"
-          >
-            回到复测题
-          </button>
+          <BaseButton variant="quiet" @tap="openQuestion(task.questionKey, task.conversationId, 'review')">{{
+            t('learning.k5w')
+          }}</BaseButton>
         </view>
       </template>
       <template v-if="showMistakes">
-        <text class="learning-label detail-heading">错题</text>
+        <text class="learning-label detail-heading">{{ t('learning.kr9') }}</text>
         <view v-if="!stats.mistakes.length" class="record-empty">
-          <BaseIcon name="book-open" :size="48" :color="theme.isDark ? '#c5a8ec' : '#7658ad'" />
-          <text>暂无已校验的错题</text>
+          <BaseEmpty state="empty" :title="t('learning.k45')" mascot-size="small" />
         </view>
         <view v-for="attempt in stats.mistakes" :key="attempt.id" class="learning-row">
           <text class="record-question">{{ questionPrompt(attempt.questionKey) }}</text>
-          <text class="subtle">
-            原答：{{ attempt.answer }} · {{ attempt.kind }} · 提示 {{ attempt.hints.length }} 次
-          </text>
-          <text class="subtle">判分依据：{{ effectiveGrade(attempt).basis }}</text>
+          <text class="subtle"
+            >{{ t('learning.kcd') }}{{ attempt.answer }} · {{ t(`learning.attemptKind.${attempt.kind}`)
+            }}{{ t('learning.km') }}{{ attempt.hints.length }}{{ t('learning.kbd') }}</text
+          >
+          <text class="subtle">{{ t('learning.kfe') }}{{ effectiveGrade(attempt).basis }}</text>
           <view class="record-actions">
-            <button
-              role="button"
-              tabindex="0"
-              size="mini"
-              @tap="openQuestion(attempt.questionKey, attempt.conversationId)"
-            >
-              返回原题与对话
-              <BaseIcon name="arrow-right" :size="28" :color="theme.isDark ? '#c5a8ec' : '#7658ad'" />
-            </button>
-            <button role="button" tabindex="0" size="mini" @tap="dispute(attempt.id)">这次判分有误</button>
+            <BaseButton variant="quiet" @tap="openQuestion(attempt.questionKey, attempt.conversationId)"
+              >{{ t('learning.k3k') }}<BaseIcon name="arrow-right" tone="ink-3" />
+            </BaseButton>
+            <BaseButton variant="quiet" @tap="dispute(attempt.id)">{{ t('learning.kcn') }}</BaseButton>
           </view>
         </view>
-        <text class="learning-label detail-heading">到期复测</text>
-        <text v-if="!stats.due.length" class="subtle">暂无到期题目</text>
+        <text class="learning-label detail-heading">{{ t('learning.k7j') }}</text>
+        <BaseEmpty v-if="!stats.due.length" state="empty" :title="t('learning.k7s')" mascot-size="small" />
         <view v-for="review in stats.due" :key="review.id" class="learning-row">
           <text>{{ questionPrompt(review.questionKey) }}</text>
-          <button role="button" tabindex="0" size="mini" @tap="openQuestion(review.questionKey, null, 'review')">
-            开始独立复测
-          </button>
+          <BaseButton variant="quiet" @tap="openQuestion(review.questionKey, null, 'review')">{{
+            t('learning.kma')
+          }}</BaseButton>
         </view>
       </template>
       <template v-if="showKnowledge">
-        <text class="learning-label detail-heading">理解到哪一步了</text>
+        <text class="learning-label detail-heading">{{ t('learning.k9x') }}</text>
         <view v-if="!Object.keys(stats.knowledge).length" class="record-empty">
-          <BaseIcon name="target" :size="48" :color="theme.isDark ? '#c5a8ec' : '#7658ad'" />
-          <text>尚未检验</text>
+          <BaseEmpty state="empty" :title="t('learning.kbj')" mascot-size="small" />
         </view>
         <view v-for="(entry, key) in stats.knowledge" :key="key" class="learning-row knowledge-row">
           <view class="row-content">
-            <text>{{ knowledgeLabel(key) }}</text>
-            <text class="subtle">依据 {{ entry.evidenceIds.length }} 次作答</text>
+            <text>{{ learningText(knowledgeLabel(key)) }}</text>
+            <text class="subtle">{{ t('learning.kpw') }}{{ entry.evidenceIds.length }}{{ t('learning.kbt') }}</text>
           </view>
-          <text class="knowledge-state">{{ entry.status }}</text>
+          <text class="knowledge-state">{{ learningText(entry.status) }}</text>
         </view>
         <template v-if="learning.teachingProgress.rows.length">
-          <text class="learning-label detail-heading">练习表现 · 历史观察</text>
+          <text class="learning-label detail-heading">{{ t('learning.k6g') }}</text>
           <view
             v-for="entry in learning.teachingProgress.rows.slice(-6).reverse()"
             :key="entry.id"
             class="learning-row"
           >
             <text>{{ entry.scope }} · {{ methodNames[entry.method] || entry.method }}</text>
-            <text class="subtle">{{ observationNames[entry.status] }}{{ entry.historyOnly ? ' · 历史记录' : '' }}</text>
             <text class="subtle"
-              >可靠后续 {{ entry.followups.reliable }} 次 · 待核对 {{ entry.followups.pending }} 次 · 提示后正确
-              {{ entry.followups.helpedCorrect }} 次 · 独立变式 {{ entry.followups.independentTransfer }} 次 · 到期复测
-              {{ entry.followups.dueReview }} 次</text
+              >{{ learningText(observationNames[entry.status]) }}{{ entry.historyOnly ? t('learning.kb1') : '' }}</text
             >
-            <button role="button" tabindex="0" size="mini" @tap="openQuestion(entry.questionKey, entry.conversationId)">
-              回看教学与作答
-            </button>
+            <text class="subtle"
+              >{{ t('learning.kf7') }}{{ entry.followups.reliable }}{{ t('learning.kqx') }}{{ entry.followups.pending
+              }}{{ t('learning.kl0') }}{{ entry.followups.helpedCorrect }}{{ t('learning.kto')
+              }}{{ entry.followups.independentTransfer }}{{ t('learning.kw') }}{{ entry.followups.dueReview
+              }}{{ t('learning.kbd') }}</text
+            >
+            <BaseButton variant="quiet" @tap="openQuestion(entry.questionKey, entry.conversationId)">{{
+              t('learning.k1w')
+            }}</BaseButton>
           </view>
         </template>
       </template>
       <template v-if="showPending && stats.pending">
-        <text class="learning-label detail-heading">待核对作答</text>
+        <text class="learning-label detail-heading">{{ t('learning.kuo') }}</text>
         <view v-for="attempt in pendingAttempts" :key="attempt.id" class="learning-row">
-          <text>{{ questionPrompt(attempt.questionKey) }} · 原答 {{ attempt.answer }}</text>
+          <text>{{ questionPrompt(attempt.questionKey) }}{{ t('learning.k74') }}{{ attempt.answer }}</text>
           <view v-for="assessment in attempt.assistance || []" :key="assessment.id">
-            <text class="subtle">AI 反馈 · 待核对：{{ assessment.feedback }}</text>
+            <text class="subtle">{{ t('learning.k6i') }}{{ assessment.feedback }}</text>
             <template v-if="['subjective-rubric-v1', 'subjective-rubric-v2'].includes(assessment.contract)">
               <text class="subtle"
-                >AI 评分 · 待核对 {{ assessment.score === null ? '未定分' : assessment.score }} /
+                >{{ t('learning.kmr') }}{{ assessment.score === null ? t('learning.ki1') : assessment.score }} /
                 {{ assessment.maxScore }}</text
               >
               <RubricEvidence :attempt="attempt" :assessment="assessment" :context-key="learning.recordContext()" />
             </template>
           </view>
-          <button
-            role="button"
-            tabindex="0"
-            size="mini"
-            @tap="openQuestion(attempt.questionKey, attempt.conversationId)"
-          >
-            回看作答和依据
-          </button>
+          <BaseButton variant="quiet" @tap="openQuestion(attempt.questionKey, attempt.conversationId)">{{
+            t('learning.k6d')
+          }}</BaseButton>
         </view>
       </template>
     </view>
-    <text
+    <view
       v-if="message"
       class="subtle overview-feedback"
-      :class="{ 'is-error': messageError }"
-      :role="messageError ? 'alert' : 'status'"
       data-test="assessment-feedback"
+      :role="messageError ? 'alert' : 'status'"
+      ><BaseEmpty v-if="messageError" state="error" :title="learningText(message)" mascot-size="small" /><text v-else>{{
+        learningText(message)
+      }}</text></view
     >
-      {{ message }}
-    </text>
     <CustomModal
       :key="dialogState.id"
       :visible="dialogState.visible"
-      :title="dialogState.title"
-      :content="dialogState.content"
+      :title="learningText(dialogState.title)"
+      :content="learningText(dialogState.content)"
       :editable="dialogState.editable"
-      :placeholder-text="dialogState.placeholderText"
-      :confirm-text="dialogState.confirmText"
-      :cancel-text="dialogState.cancelText"
+      :placeholder-text="learningText(dialogState.placeholderText)"
+      :confirm-text="learningText(dialogState.confirmText)"
+      :cancel-text="learningText(dialogState.cancelText)"
       :type="dialogState.type"
       :is-dark="theme.isDark"
       @confirm="dialogState.confirm"
       @cancel="dialogState.cancel"
       @closed="dialogState.closed"
     />
-  </view>
+  </BaseCard>
 </template>
 <script setup>
+import BaseEmpty from '@/components/base/base-empty/base-empty.vue';
+import YoziMascot from '@/components/base/yozi-mascot/yozi-mascot.vue';
+import BaseStat from '@/components/base/base-stat/base-stat.vue';
+import BaseSegmented from '@/components/base/base-segmented/base-segmented.vue';
+import { learningText } from '@/i18n/learning.js';
+import { t } from '@/i18n/index.js';
+import BaseCard from '@/components/base/base-card/base-card.vue';
+import BaseButton from '@/components/base/base-button/base-button.vue';
+
 import { bindLearningKeyboard } from '@/services/learning/keyboard-controls.js';
 import { computed, ref, shallowRef, watch, onMounted, onUnmounted } from 'vue';
 import { onShow, onHide, onBackPress } from '@dcloudio/uni-app';
@@ -540,249 +522,188 @@ onUnmounted(() => {
 <style scoped>
 .learning-overview {
   margin: 0;
-  padding: 20px;
-  border-radius: 24px;
-  background: var(--space-glass, #ffffff);
-  color: var(--space-ink, #080909);
-  font-size: 14px;
+  padding: var(--s-5);
+  color: var(--ink);
+  font-size: var(--size-small);
 }
 .learning-overview.is-inline {
-  margin: 24px 0;
-  padding: 24px;
-  border-radius: 16px;
-  background: var(--yozi-solid);
-  box-shadow: none;
-  transform: none;
+  margin: var(--s-6) 0;
+  padding: var(--s-6);
   text-align: left;
-}
-.learning-overview button {
-  min-height: 44px;
-  margin: 0;
-  padding: 8px 14px;
-  border: 1px solid var(--space-line, #dbd5e6);
-  border-radius: 12px;
-  background: var(--yozi-glass);
-  box-shadow: var(--yozi-control-shadow);
-  font-family: inherit;
-  line-height: 1.65;
-  color: inherit;
-  transition:
-    background-color 180ms ease,
-    color 180ms ease;
-}
-.learning-overview button::after {
-  border: 0;
-}
-.learning-overview button:active:not([disabled]) {
-  background: var(--space-notice, #eee7f7);
-  transition-duration: 100ms;
-}
-.learning-overview button:focus-visible,
-.learning-summary:focus-visible {
-  outline: 2px solid var(--space-sage, #7658ad);
-  outline-offset: 2px;
 }
 .learning-links {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 16px;
-}
-.learning-links button {
-  background: var(--space-notice, #eee7f7);
-  font-size: 12px;
-  border-radius: 12px;
-  min-height: 44px;
+  gap: var(--s-2);
+  margin-bottom: var(--s-4);
 }
 .overview-heading {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
+  margin-bottom: var(--s-4);
 }
 .overview-title {
-  font-size: 16px;
-  font-weight: 500;
+  font-size: var(--size-body);
+  font-weight: var(--weight-medium);
 }
 .overview-date {
-  font-size: 12px;
-  color: var(--space-muted, #62576d);
+  font-size: var(--size-caption);
+  color: var(--ink-3);
 }
 .learning-summary {
   cursor: pointer;
-  border-radius: 12px;
-  margin-top: 20px;
+  border-radius: var(--s-3);
+  margin-top: var(--s-5);
   text-align: left;
 }
 .overview-metrics {
   display: grid;
   grid-template-columns: 1.2fr 1fr 1fr;
-  gap: 20px;
+  gap: var(--s-5);
 }
 .overview-metric {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--s-2);
   min-width: 0;
 }
 .metric-label {
-  font-size: 13px;
-  color: var(--space-muted, #62576d);
-}
-.metric-value {
-  display: flex;
-  align-items: baseline;
-  gap: 6px;
-}
-.metric-denominator {
-  color: var(--space-muted, #62576d);
-  font-size: 16px;
-  font-variant-numeric: tabular-nums;
+  font-size: var(--size-small);
+  color: var(--ink-3);
 }
 .metric-empty {
   display: block;
-  margin-top: 16px;
-  color: var(--space-muted, #62576d);
-  font-size: 12px;
+  margin-top: var(--s-4);
+  color: var(--ink-3);
+  font-size: var(--size-caption);
 }
 .summary-line {
   display: flex;
   justify-content: space-between;
-  gap: 10px;
-  padding: 10px 0;
-  font-size: 13px;
-  margin-top: 14px;
+  gap: var(--s-3);
+  padding: var(--s-3) 0;
+  font-size: var(--size-small);
+  margin-top: var(--s-4);
   flex-wrap: wrap;
 }
 .summary-line > view {
   display: flex;
   align-items: center;
-  gap: 12px;
-}
-.summary-count {
-  font-size: 32px;
-  line-height: 1.15;
-  font-variant-numeric: tabular-nums;
-  letter-spacing: -0.02em;
+  gap: var(--s-3);
 }
 .summary-rate {
-  font-size: 10px;
-  color: var(--space-muted, #62576d);
+  font-size: var(--size-caption);
+  color: var(--ink-3);
 }
 .task-progress {
-  height: 6px;
-  margin-top: 18px;
-  background: var(--space-line, #dbd5e6);
-  border-radius: 6px;
+  height: var(--s-2);
+  margin-top: var(--s-5);
+  background: var(--line);
+  border-radius: var(--s-2);
   overflow: hidden;
 }
 .task-progress > view {
   height: 100%;
   width: 100%;
   transform-origin: left;
-  background: var(--space-sage, #7658ad);
-  border-radius: 3px;
+  background: var(--brand);
+  border-radius: var(--r-pill);
 }
 .answer-distribution {
   display: flex;
-  height: 6px;
-  gap: 3px;
+  height: var(--s-2);
+  gap: var(--s-1);
   overflow: hidden;
-  border-radius: 6px;
-  margin-top: 4px;
+  border-radius: var(--s-2);
+  margin-top: var(--s-1);
 }
 .answer-checked {
-  background: var(--space-sage, #7658ad);
+  background: var(--violet-ink);
 }
 .answer-pending {
-  background: var(--space-muted, #62576d);
-  opacity: 0.4;
+  background: var(--apricot-fill);
 }
 .summary-foot {
   display: flex;
-  gap: 6px;
+  gap: var(--s-2);
   align-items: center;
-  margin-top: 10px;
-  font-size: 12px;
-  color: var(--space-muted, #62576d);
+  margin-top: var(--s-3);
+  font-size: var(--size-caption);
+  color: var(--ink-3);
 }
 .summary-foot > text:nth-child(2) {
   margin-left: auto;
 }
 .learning-details {
-  margin-top: 18px;
-  padding-top: 18px;
-  border-top: 1px solid var(--space-line, #dbd5e6);
+  margin-top: var(--s-5);
+  padding-top: var(--s-5);
+  border-top: var(--border-thin) solid var(--line);
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--s-2);
 }
 .detail-heading {
-  margin-top: 24px;
-  margin-bottom: 6px;
+  margin-top: var(--s-6);
+  margin-bottom: var(--s-2);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: var(--s-3);
 }
 .learning-label {
-  font-size: 16px;
-  font-weight: 500;
+  font-size: var(--size-body);
+  font-weight: var(--weight-medium);
 }
 .learning-row {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  padding: 20px 0;
-  border-bottom: 1px solid var(--space-line, #dbd5e6);
-}
-.learning-row button {
-  margin: 0;
-  align-self: flex-start;
-  font-size: 12px;
+  gap: var(--s-3);
+  padding: var(--s-5) 0;
+  border-bottom: var(--border-thin) solid var(--line);
 }
 .record-question {
-  font-size: 18px;
+  font-size: var(--size-title-3);
   line-height: 1.7;
 }
 .record-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: var(--s-2);
 }
 .subtle {
-  color: var(--space-muted, #62576d);
-  font-size: 12px;
+  color: var(--ink-3);
+  font-size: var(--size-caption);
   line-height: 1.8;
 }
 .record-empty {
   display: flex;
   align-items: flex-start;
   flex-direction: column;
-  gap: 10px;
-  padding: 24px 0;
+  gap: var(--s-3);
+  padding: var(--s-6) 0;
 }
 .record-empty > text:not(.subtle) {
-  font-size: 15px;
+  font-size: var(--size-body);
 }
 .task-row,
 .knowledge-row {
   flex-direction: row;
   align-items: center;
-  gap: 14px;
+  gap: var(--s-4);
 }
 .task-indicator {
-  width: 24px;
-  height: 24px;
+  width: var(--s-6);
+  height: var(--s-6);
   border-radius: 50%;
-  box-shadow: inset 0 0 0 1px var(--space-line, #7658ad);
+  box-shadow: none;
   flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 .task-indicator.completed {
-  background: rgba(201, 177, 238, 0.15);
+  background: var(--paper-sunk);
 }
 .row-content {
   min-width: 0;
@@ -793,58 +714,42 @@ onUnmounted(() => {
   overflow-wrap: anywhere;
 }
 .knowledge-state {
-  border-radius: 24px;
-  padding: 8px 12px;
-  font-size: 12px;
-  background: rgba(229, 217, 245, 0.16);
+  border-radius: var(--s-6);
+  padding: var(--s-2) var(--s-3);
+  font-size: var(--size-caption);
+  background: var(--paper-sunk);
   white-space: nowrap;
 }
 .overview-feedback {
   display: block;
-  margin-top: 16px;
+  margin-top: var(--s-4);
 }
 .overview-feedback.is-error {
-  padding: 12px;
-  border: 1px solid var(--space-line, #dbd5e6);
-  border-radius: 12px;
-  background: var(--space-notice, #eee7f7);
-  color: var(--space-ink, #080909);
+  padding: var(--s-3);
+  border: var(--border-thin) solid var(--line);
+  border-radius: var(--s-3);
+  background: var(--violet-soft);
+  color: var(--ink);
 }
 @media (hover: hover) {
-  .learning-overview button:hover:not([disabled]) {
-    background: var(--space-notice, #eee7f7);
-  }
 }
 @media (prefers-reduced-motion: reduce) {
-  .learning-overview button {
-    animation: none !important;
-    transition: none !important;
-  }
 }
 @media (max-width: 520px) {
   .learning-overview.is-inline {
-    padding: 18px;
+    padding: var(--s-5);
   }
   .overview-metrics {
-    gap: 12px;
-  }
-  .summary-count {
-    font-size: 28px;
-  }
-  .metric-denominator {
-    font-size: 14px;
+    gap: var(--s-3);
   }
   .task-row {
     flex-wrap: wrap;
   }
   .task-row .row-content {
-    flex-basis: calc(100% - 42px);
-  }
-  .task-row button {
-    margin-left: 38px;
+    flex-basis: calc(100% - var(--s-4));
   }
   .record-question {
-    font-size: 16px;
+    font-size: var(--size-body);
   }
   .knowledge-state {
     max-width: 50%;
