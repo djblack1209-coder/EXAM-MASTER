@@ -51,7 +51,7 @@ export const useThemeStore = defineStore('theme', () => {
    * 职责：更新 store 状态 → 持久化 → 渲染 DOM CSS 变量 → 通知订阅者
    * @param {boolean} dark - true 为深色模式，false 为浅色模式
    */
-  const setDarkMode = (dark) => {
+  const setDarkMode = (dark, { persist = true } = {}) => {
     isDark.value = dark;
     // 深色模式自动切换到 Bitget，浅色模式自动切换到 Wise
     themeType.value = dark ? 'bitget' : 'wise';
@@ -59,8 +59,10 @@ export const useThemeStore = defineStore('theme', () => {
     const mode = dark ? 'dark' : 'light';
 
     // 1. 持久化
-    storageService.save('theme_mode', mode);
-    storageService.save('theme_type', themeType.value);
+    if (persist) {
+      storageService.save('theme_mode', mode);
+      storageService.save('theme_type', themeType.value);
+    }
 
     // 2. 渲染 DOM CSS 变量（委托 theme-engine 的纯渲染函数）
     applyTheme(mode);

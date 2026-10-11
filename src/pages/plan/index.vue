@@ -1,11 +1,11 @@
 <template>
-  <LearningShell v-if="!showLegacy" active="plan" title="学习计划">
+  <LearningShell v-if="!showLegacy" active="plan" :title="$t('pages.plan')">
     <LearningOverview :initial-expanded="true" :show-navigation="false" view="plan" />
     <view class="legacy-entry">
       <button class="quiet-button" role="button" tabindex="0" @tap="toggleLegacy">历史题库记录</button>
     </view>
   </LearningShell>
-  <view v-else :class="['container', { 'dark-mode': isDark }]">
+  <view v-else :class="['container', { 'dark-mode': isDark, 'theme-light': !isDark }]">
     <view class="aurora-bg" />
 
     <!-- 骨架屏 -->
@@ -26,7 +26,7 @@
     <view v-if="!isLoading" class="header-nav" :style="{ paddingTop: statusBarHeight + 'px' }">
       <view class="nav-content" :style="{ paddingRight: capsuleSafeRight + 'px' }">
         <view class="nav-back" @tap="goBack"><BaseIcon name="arrow-left" :size="32" /></view>
-        <text class="nav-title"> 学习计划 </text>
+        <text class="nav-title">{{ $t('pages.plan') }}</text>
         <view class="nav-add" @tap="showLegacy ? createPlan() : safeNavigateTo('/pages/learning/index')">
           <text class="nav-add-text"> + </text>
         </view>

@@ -1,0 +1,195 @@
+/* Yozi 设计板唯一令牌来源。数值对应 board-src.html 的令牌表与 .y-btn--primary。 */
+@use './legacy-aliases' as legacy;
+
+@mixin yozi-light {
+  --font-display: 'Epilogue', 'PingFang SC', 'Noto Sans SC', system-ui, sans-serif;
+  --font-ui: 'DM Sans', 'PingFang SC', 'Noto Sans SC', system-ui, sans-serif;
+
+  --canvas: #f2effb;
+  --glow-1: #e2d9fc;
+  --glow-2: #dce8ff;
+  --paper: #ffffff;
+  --paper-sunk: #f6f4fc;
+  --line: #e7e2f6;
+  --line-strong: #d4ccee;
+  --ink: #1d1a3b;
+  --ink-2: #48446e;
+  --ink-3: #65618a;
+  --ink-4: #a19dc0;
+  --violet: #7352ec;
+  --violet-ink: #5b3bd6;
+  --violet-soft: #eee9ff;
+  --violet-soft-2: #ddd3ff;
+  --blue: #4f86f7;
+  --blue-soft: #e5eeff;
+  --brand: linear-gradient(135deg, #9273f5, #5e8ef7);
+  --mint: #12704a;
+  --mint-fill: #3fbf85;
+  --mint-soft: #e1f5ea;
+  --coral: #b42a45;
+  --coral-fill: #ec5f75;
+  --coral-soft: #fce6ea;
+  --apricot: #9a5b00;
+  --apricot-fill: #f2a23a;
+  --apricot-soft: #fff0d9;
+  --clay-face: #7352ec;
+  --clay-face-hover: #6a48e6;
+  --clay-edge: #4f33bf;
+  --clay-hi: rgba(255, 255, 255, 0.28);
+  --clay-glow: rgba(83, 52, 200, 0.42);
+  --on-clay: #ffffff;
+  --danger-face: #d9435c;
+  --danger-edge: #a42c42;
+  --on-danger: #ffffff;
+  --glass: rgba(255, 255, 255, 0.62);
+  --glass-line: rgba(255, 255, 255, 0.78);
+  --lift-1: 0 1px 2px rgba(29, 26, 59, 0.05), 0 8px 24px -12px rgba(29, 26, 59, 0.16);
+  --lift-2: 0 16px 40px -18px rgba(29, 26, 59, 0.3);
+  --lift-3: 0 28px 70px -24px rgba(29, 26, 59, 0.42);
+  --scrim: rgba(29, 26, 59, 0.42);
+  --focus: #5b3bd6;
+  --toast-bg: #1d1a3b;
+  --toast-fg: #ffffff;
+  --brand-wechat: #07c160;
+  --apple-bg: #000000;
+  --apple-fg: #ffffff;
+  --google-bg: #ffffff;
+  --google-fg: #1f1f1f;
+  --google-line: #747775;
+
+  --r-xs: 8px;
+  --r-sm: 12px;
+  --r-md: 16px;
+  --r-lg: 24px;
+  --r-xl: 32px;
+  --r-pill: 999px;
+  --t-press: 110ms;
+  --t-state: 180ms;
+  --t-enter: 280ms;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --size-display: 44px;
+  --leading-display: 48px;
+  --size-title-1: 30px;
+  --leading-title-1: 36px;
+  --size-title-2: 22px;
+  --leading-title-2: 30px;
+  --size-title-3: 18px;
+  --leading-title-3: 26px;
+  --size-body: 16px;
+  --leading-body: 28px;
+  --size-small: 14px;
+  --leading-small: 20px;
+  --size-caption: 12px;
+  --leading-caption: 16px;
+  --size-number: 32px;
+  --leading-number: 32px;
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-5: 20px;
+  --s-6: 24px;
+  --s-8: 32px;
+  --s-10: 40px;
+  --s-14: 56px;
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+  --weight-extrabold: 800;
+  --weight-black: 900;
+  --tracking-display: -0.035em;
+  --tracking-title: -0.03em;
+  --tracking-section: -0.025em;
+  --press-y: 3px;
+  --control-height: 48px;
+  --control-icon: 20px;
+  --clay-shadow: inset 0 1px 0 var(--clay-hi), 0 4px 0 var(--clay-edge), 0 12px 20px -10px var(--clay-glow);
+  --clay-shadow-press: inset 0 1px 0 var(--clay-hi), 0 1px 0 var(--clay-edge), 0 4px 10px -6px var(--clay-glow);
+
+  color-scheme: light;
+}
+@mixin yozi-dark {
+  --canvas: #110f27;
+  --glow-1: #2a1f5c;
+  --glow-2: #14295a;
+  --paper: #1c1938;
+  --paper-sunk: #161331;
+  --line: #2c2853;
+  --line-strong: #3b366b;
+  --ink: #f2f0ff;
+  --ink-2: #cfcbee;
+  --ink-3: #a39fcb;
+  --ink-4: #6f6b98;
+  --violet: #8f74ff;
+  --violet-ink: #bba9ff;
+  --violet-soft: #2a2363;
+  --violet-soft-2: #372e7e;
+  --blue: #7ea6ff;
+  --blue-soft: #1c2b5c;
+  --mint: #63d9a3;
+  --mint-soft: #12362c;
+  --coral: #ff8a9b;
+  --coral-soft: #3d1726;
+  --apricot: #ffc067;
+  --apricot-soft: #3a2a10;
+  --clay-face: #a08bff;
+  --clay-face-hover: #ae9cff;
+  --clay-edge: #6447d6;
+  --clay-hi: rgba(255, 255, 255, 0.45);
+  --clay-glow: rgba(0, 0, 0, 0.5);
+  --on-clay: #16123a;
+  --danger-face: #ff8798;
+  --danger-edge: #c24b5f;
+  --on-danger: #2a0a12;
+  --glass: rgba(28, 25, 56, 0.66);
+  --glass-line: rgba(255, 255, 255, 0.08);
+  --lift-1: 0 0 0 1px #2c2853, 0 8px 24px -12px rgba(0, 0, 0, 0.6);
+  --lift-2: 0 0 0 1px #2c2853, 0 16px 40px -18px rgba(0, 0, 0, 0.7);
+  --lift-3: 0 0 0 1px #3b366b, 0 28px 70px -24px rgba(0, 0, 0, 0.8);
+  --scrim: rgba(8, 6, 20, 0.6);
+  --focus: #c7b8ff;
+  --toast-bg: #f2f0ff;
+  --toast-fg: #16123a;
+  --apple-bg: #ffffff;
+  --apple-fg: #000000;
+  --google-bg: #131314;
+  --google-fg: #e3e3e3;
+  --google-line: #8e918f;
+  color-scheme: dark;
+}
+
+/* H5 / Tauri 根节点及微信 / App 的 page 共用同一令牌。 */
+:root,
+page {
+  @include yozi-light;
+  @include legacy.properties;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']),
+  page:not(.theme-light) {
+    @include yozi-dark;
+    @include legacy.properties;
+  }
+}
+/* 显式浅色优先于系统深色；类机制覆盖小程序 page 默认值。 */
+:root[data-theme='light'],
+:root[data-theme='light'] page,
+.theme-light,
+.space-light,
+.page-light {
+  @include yozi-light;
+  @include legacy.properties;
+}
+:root[data-theme='dark'],
+:root[data-theme='dark'] page,
+.theme-dark,
+.space-dark,
+.dark,
+.dark-mode,
+.page-dark {
+  @include yozi-light;
+  @include yozi-dark;
+  @include legacy.properties;
+}

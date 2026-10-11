@@ -1,5 +1,5 @@
 <template>
-  <LearningShell v-if="!showLegacy" active="study-detail" title="学习足迹">
+  <LearningShell v-if="!showLegacy" active="study-detail" :title="$t('pages.stats')">
     <LearningOverview :initial-expanded="true" :show-navigation="false" view="study-detail" />
     <view class="legacy-entry">
       <button class="quiet-button" role="button" tabindex="0" @tap="toggleLegacy">历史题库记录</button>
@@ -14,7 +14,7 @@
             <BaseIcon name="arrow-left" :size="36" />
           </text>
         </view>
-        <text class="navbar-title" :class="{ 'title-visible': scrolled }"> 学习详情 </text>
+        <text class="navbar-title" :class="{ 'title-visible': scrolled }">{{ $t('pages.stats') }}</text>
         <view class="navbar-right">
           <!-- 主题切换按钮 -->
           <view class="theme-toggle" @tap="toggleTheme">
@@ -62,7 +62,7 @@
             class="empty-state-container"
           >
             <view class="page-header">
-              <text class="page-title"> 学习详情 </text>
+              <text class="page-title">{{ $t('pages.stats') }}</text>
             </view>
             <view class="empty-state-card">
               <!-- 学习旅程空状态插图 -->
@@ -77,7 +77,7 @@
           <template v-else>
             <!-- 页面标题 -->
             <view class="page-header">
-              <text class="page-title"> 学习详情 </text>
+              <text class="page-title">{{ $t('pages.stats') }}</text>
             </view>
 
             <view class="ai-insight-card">

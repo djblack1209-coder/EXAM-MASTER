@@ -1689,7 +1689,7 @@ describe('学习空间的实际入口与目录', () => {
       expect(document.documentElement.getAttribute('data-theme')).toBe('dark');
       applyTheme('light');
       expect(document.documentElement.getAttribute('data-theme')).toBe('light');
-      expect(document.documentElement.style.getPropertyValue('--bg-card')).toBe('rgba(246, 243, 255, 0.86)');
+      expect(document.documentElement.style.getPropertyValue('--bg-card')).toBe('');
     } finally {
       readPreference.mockRestore();
     }

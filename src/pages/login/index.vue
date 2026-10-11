@@ -1,5 +1,5 @@
 <template>
-  <view ref="root" class="login-container" :class="{ 'dark-mode': isDark }">
+  <view ref="root" class="login-container" :class="{ 'dark-mode': isDark, 'theme-light': !isDark }">
     <!-- 微信隐私保护弹窗 -->
     <PrivacyPopup />
     <!-- 背景装饰 -->

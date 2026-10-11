@@ -1,18 +1,10 @@
 .learning-space {
-  --space-ink: #080909;
-  --space-muted: #62576d;
-  --space-paper: #785bbc;
-  --space-paper-ink: #ffffff;
-  --space-sage: #7658ad;
-  --space-glass: #ffffff;
-  --space-line: #dbd5e6;
-  --space-focus: #7350a0;
   min-height: 100vh;
   padding: 36px 40px;
   box-sizing: border-box;
   color: var(--space-ink);
   background: #f0eefa;
-  font-family: 'Helvetica Neue', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  font-family: var(--font-ui);
   font-size: 14px;
   line-height: 1.65;
   position: relative;
@@ -20,8 +12,6 @@
   caret-color: var(--space-focus);
 }
 .space-dark {
-  --space-glass: rgba(30, 33, 27, 0.88);
-  --space-paper: #d8dbcb;
   background: #303329;
 }
 .space-backdrop {
@@ -443,10 +433,8 @@
 }
 @supports ((backdrop-filter: blur(12px)) or (-webkit-backdrop-filter: blur(12px))) {
   .learning-space {
-    --space-glass: #ffffff;
   }
   .space-dark {
-    --space-glass: rgba(30, 33, 27, 0.82);
   }
   .learning-space .panel,
   .learning-space .question-block,
@@ -595,8 +583,6 @@
 }
 @media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
   .learning-space {
-    --space-glass: #ffffff;
-    --space-muted: #080909;
   }
   .space-backdrop {
     background: var(--space-composer);
@@ -631,19 +617,7 @@
 
 /* Yozi AI material layers keep the existing learning layout and facts. */
 .learning-space {
-  font-family: 'DM Sans', 'PingFang SC', 'Microsoft YaHei', sans-serif;
-  --space-ink: #272039;
-  --space-muted: #62576d;
-  --space-paper: #7050b0;
-  --space-paper-ink: #ffffff;
-  --space-sage: #7658ad;
-  --space-focus: #7050b0;
-  --space-line: rgba(129, 104, 177, 0.24);
-  --space-glass: var(--yozi-reading);
-  --space-notice: rgba(224, 215, 247, 0.72);
-  --space-user: #ded2f5;
-  --space-composer: var(--yozi-floating);
-  --space-warning-bg: #ffedd6;
+  font-family: var(--font-ui);
   background: var(--yozi-background);
 }
 .learning-space .space-frame {
@@ -713,16 +687,6 @@
   background: var(--yozi-background);
 }
 .learning-space.space-dark {
-  --space-ink: #f8f4ff;
-  --space-muted: #d2c8e5;
-  --space-line: rgba(213, 196, 248, 0.22);
-  --space-paper: #c9b1ee;
-  --space-paper-ink: #20172f;
-  --space-focus: #ddcafa;
-  --space-sage: #c5a8ec;
-  --space-user: #4a395e;
-  --space-notice: rgba(68, 53, 89, 0.88);
-  --space-warning-bg: #563623;
 }
 .learning-space .warning {
   color: #854a16;
@@ -949,7 +913,6 @@
 /* Material fallbacks follow all variants, including Future and explicit dark. */
 @media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
   .learning-space {
-    --space-glass: var(--yozi-solid);
     --space-composer: var(--yozi-solid);
   }
   .learning-space .space-frame,
@@ -967,7 +930,6 @@
 }
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
   .learning-space {
-    --space-glass: var(--yozi-solid);
     --space-composer: var(--yozi-solid);
   }
   .learning-space .space-frame,

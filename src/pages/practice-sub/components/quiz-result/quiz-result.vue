@@ -584,8 +584,8 @@ const motivationalText = computed(() => {
   height: 108rpx;
   margin: 120rpx auto 0;
   border-radius: 999rpx;
-  color: #10281a;
-  background: linear-gradient(135deg, #9fe870 0%, #75ddff 100%);
+  color: var(--on-clay);
+  background: var(--clay-face);
   box-shadow: 0 20rpx 60rpx rgba(52, 211, 153, 0.28);
   animation: celebration-bounce 0.8s ease-out;
 }
@@ -594,7 +594,7 @@ const motivationalText = computed(() => {
   width: 82rpx;
   height: 82rpx;
   margin-top: -16rpx;
-  color: #10281a;
+  color: var(--on-clay);
 }
 @keyframes highscore-appear {
   0% {
@@ -891,9 +891,9 @@ const motivationalText = computed(() => {
     box-shadow 0.18s ease;
 }
 .primary-btn {
-  background: linear-gradient(135deg, #9fe870 0%, #75ddff 100%);
-  color: #10281a;
-  box-shadow: 0 12rpx 28rpx rgba(31, 122, 77, 0.16);
+  background: var(--clay-face);
+  color: var(--on-clay);
+  box-shadow: var(--clay-shadow);
   border-radius: 20rpx;
 }
 .secondary-btn {
@@ -911,7 +911,7 @@ const motivationalText = computed(() => {
   border-radius: 20rpx;
 }
 .btn-hover {
-  transform: scale(0.98);
+  transform: translateY(var(--press-y));
   opacity: 0.9;
   box-shadow: none;
 }

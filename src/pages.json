@@ -11,7 +11,7 @@
     {
       "path": "pages/splash/index",
       "style": {
-        "navigationBarTitleText": "Yozi AI",
+        "navigationBarTitleText": "%pages.splash%",
         "navigationStyle": "custom",
         "navigationBarBackgroundColor": "#F5F7FA"
       }
@@ -19,7 +19,7 @@
     {
       "path": "pages/index/index",
       "style": {
-        "navigationBarTitleText": "",
+        "navigationBarTitleText": "%pages.home%",
         "navigationStyle": "custom",
         "navigationBarBackgroundColor": "#F5F7FA"
       }
@@ -27,7 +27,7 @@
     {
       "path": "pages/practice/index",
       "style": {
-        "navigationBarTitleText": "智能刷题",
+        "navigationBarTitleText": "%pages.practice%",
         "navigationStyle": "custom",
         "navigationBarBackgroundColor": "#F5F7FA"
       }
@@ -35,7 +35,7 @@
     {
       "path": "pages/profile/index",
       "style": {
-        "navigationBarTitleText": "个人中心",
+        "navigationBarTitleText": "%pages.profile%",
         "navigationStyle": "custom",
         "navigationBarBackgroundColor": "#F5F7FA"
       }
@@ -48,7 +48,7 @@
         {
           "path": "do-quiz",
           "style": {
-            "navigationBarTitleText": "刷题进行中",
+            "navigationBarTitleText": "%pages.quiz%",
             "navigationStyle": "custom",
             "navigationBarBackgroundColor": "#F5F7FA"
           }
@@ -56,7 +56,7 @@
         {
           "path": "question-bank",
           "style": {
-            "navigationBarTitleText": "考研题库",
+            "navigationBarTitleText": "%pages.bank%",
             "navigationStyle": "custom",
             "navigationBarBackgroundColor": "#F5F7FA"
           }
@@ -69,7 +69,7 @@
         {
           "path": "index",
           "style": {
-            "navigationBarTitleText": "登录",
+            "navigationBarTitleText": "%pages.login%",
             "navigationStyle": "custom",
             "navigationBarBackgroundColor": "#F5F7FA"
           }
@@ -77,7 +77,7 @@
         {
           "path": "onboarding",
           "style": {
-            "navigationBarTitleText": "开始使用",
+            "navigationBarTitleText": "%pages.onboarding%",
             "navigationStyle": "custom",
             "navigationBarBackgroundColor": "#F5F7FA"
           }
@@ -85,7 +85,7 @@
         {
           "path": "wechat-callback",
           "style": {
-            "navigationBarTitleText": "微信登录",
+            "navigationBarTitleText": "%pages.wechat%",
             "navigationStyle": "custom",
             "navigationBarBackgroundColor": "#F5F7FA"
           }
@@ -93,7 +93,7 @@
         {
           "path": "qq-callback",
           "style": {
-            "navigationBarTitleText": "QQ登录",
+            "navigationBarTitleText": "%pages.qq%",
             "navigationStyle": "custom",
             "navigationBarBackgroundColor": "#F5F7FA"
           }
@@ -106,7 +106,7 @@
         {
           "path": "privacy",
           "style": {
-            "navigationBarTitleText": "隐私政策",
+            "navigationBarTitleText": "%pages.privacy%",
             "navigationStyle": "custom",
             "navigationBarBackgroundColor": "#F5F7FA"
           }
@@ -114,7 +114,7 @@
         {
           "path": "terms",
           "style": {
-            "navigationBarTitleText": "用户协议",
+            "navigationBarTitleText": "%pages.terms%",
             "navigationStyle": "custom",
             "navigationBarBackgroundColor": "#F5F7FA"
           }
@@ -127,7 +127,7 @@
         {
           "path": "index",
           "style": {
-            "navigationBarTitleText": "错题本",
+            "navigationBarTitleText": "%pages.mistake%",
             "navigationStyle": "custom",
             "navigationBarBackgroundColor": "#F5F7FA"
           }
@@ -140,7 +140,7 @@
         {
           "path": "index",
           "style": {
-            "navigationBarTitleText": "我的收藏",
+            "navigationBarTitleText": "%pages.favorite%",
             "navigationStyle": "custom",
             "navigationBarBackgroundColor": "#F5F7FA"
           }
@@ -154,7 +154,7 @@
           "path": "index",
           "style": {
             "navigationStyle": "custom",
-            "navigationBarTitleText": "对话学习",
+            "navigationBarTitleText": "%pages.learning%",
             "navigationBarBackgroundColor": "#F5F7FA"
           }
         }
@@ -166,7 +166,7 @@
         {
           "path": "index",
           "style": {
-            "navigationBarTitleText": "学习计划",
+            "navigationBarTitleText": "%pages.plan%",
             "navigationStyle": "custom",
             "navigationBarBackgroundColor": "#F5F7FA"
           }
@@ -179,7 +179,7 @@
         {
           "path": "index",
           "style": {
-            "navigationBarTitleText": "学习统计",
+            "navigationBarTitleText": "%pages.stats%",
             "navigationStyle": "custom",
             "navigationBarBackgroundColor": "#F5F7FA"
           }
@@ -195,7 +195,7 @@
   },
   "globalStyle": {
     "navigationBarTextStyle": "black",
-    "navigationBarTitleText": "Yozi AI",
+    "navigationBarTitleText": "%pages.home%",
     "navigationBarBackgroundColor": "#F5F7FA",
     "backgroundColor": "#F5F7FA",
     "backgroundTextStyle": "dark",
@@ -204,25 +204,25 @@
   "uniIdRouter": {},
   "tabBar": {
     "custom": true,
-    "color": "#8E8E93",
-    "selectedColor": "#34C759",
+    "color": "#65618A",
+    "selectedColor": "#7352EC",
     "backgroundColor": "#FFFFFF",
     "list": [
       {
         "pagePath": "pages/index/index",
-        "text": "首页",
+        "text": "%nav.home%",
         "iconPath": "static/tabbar/home.png",
         "selectedIconPath": "static/tabbar/home-active.png"
       },
       {
         "pagePath": "pages/practice/index",
-        "text": "刷题",
+        "text": "%nav.practice%",
         "iconPath": "static/tabbar/practice.png",
         "selectedIconPath": "static/tabbar/practice-active.png"
       },
       {
         "pagePath": "pages/profile/index",
-        "text": "我的",
+        "text": "%nav.profile%",
         "iconPath": "static/tabbar/profile.png",
         "selectedIconPath": "static/tabbar/profile-active.png"
       }

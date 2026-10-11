@@ -1,465 +1,85 @@
-/**
- * E2E Audit: Theme Engine & Empty State & UI Consistency
- * Batch 5 - Director-level audit
- */
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+/** Runtime theme contract: identifiers only; palette behavior is tested in yozi-token-mapping. */
+import { beforeEach, afterEach, describe, it, expect, vi } from 'vitest';
+import { applyTheme, getCurrentTheme, watchTheme } from '@/design/theme-runtime.js';
+import { storageService } from '@/services/storageService.js';
+vi.mock('@/services/storageService.js', () => ({ storageService: { get: vi.fn(() => null) } }));
 
-vi.mock('@/utils/logger.js', () => ({
-  logger: { log: vi.fn(), warn: vi.fn(), error: vi.fn(), info: vi.fn() }
-}));
-vi.mock('@/utils/core/performance.js', () => ({
-  perfMonitor: { trackApi: vi.fn(), trackRender: vi.fn(), getReport: vi.fn(() => ({})) }
-}));
-vi.mock('@/services/storageService.js', () => {
-  const storageService = { save: vi.fn(), get: vi.fn(), remove: vi.fn() };
-  return { default: storageService, storageService };
+beforeEach(() => {
+  vi.clearAllMocks();
+  storageService.get.mockReturnValue(null);
+  document.documentElement.style.cssText = '';
+  document.documentElement.removeAttribute('data-theme');
+  vi.stubGlobal('uni', { getStorageSync: vi.fn(() => ''), getAppBaseInfo: vi.fn(() => ({})) });
+  vi.stubGlobal('window', { matchMedia: vi.fn(() => ({ matches: false })) });
 });
+afterEach(() => vi.unstubAllGlobals());
 
-// ============================================================
-// PART 1: Theme Token Correctness
-// ============================================================
-describe('[Audit] Theme Token Correctness', () => {
-  let tokens;
-  beforeEach(async () => {
-    const mod = await import('@/design/theme-runtime.js');
-    tokens = mod.tokens;
+describe('theme render and preference contract', () => {
+  it.each(['light', 'dark'])('sets %s identifier without overriding tokens or injecting animation styles', (theme) => {
+    applyTheme(theme);
+    expect(document.documentElement.getAttribute('data-theme')).toBe(theme);
+    expect(document.documentElement.style.cssText).toBe('');
+    expect(document.getElementById('v0-animations')).toBeNull();
   });
-
-  it('light and dark both define the same set of CSS variable keys', () => {
-    const lightKeys = Object.keys(tokens.light).sort();
-    const darkKeys = Object.keys(tokens.dark).sort();
-    expect(lightKeys).toEqual(darkKeys);
+  it.each([undefined, 'unknown', null])('falls back to light for %s', (value) => {
+    applyTheme(value);
+    expect(document.documentElement.getAttribute('data-theme')).toBe('light');
   });
-
-  it('all keys start with "--"', () => {
-    for (const key of Object.keys(tokens.light)) {
-      expect(key.startsWith('--')).toBe(true);
-    }
-    for (const key of Object.keys(tokens.dark)) {
-      expect(key.startsWith('--')).toBe(true);
-    }
+  it('switches repeatedly without stale inline values', () => {
+    for (let n = 0; n < 10; n++) applyTheme(n % 2 ? 'light' : 'dark');
+    expect(document.documentElement.getAttribute('data-theme')).toBe('light');
+    expect(document.documentElement.style.cssText).toBe('');
   });
-
-  it('no token value is empty string or undefined', () => {
-    for (const [k, v] of Object.entries(tokens.light)) {
-      expect(v, `light ${k}`).toBeTruthy();
-    }
-    for (const [k, v] of Object.entries(tokens.dark)) {
-      expect(v, `dark ${k}`).toBeTruthy();
-    }
-  });
-
-  it('dark bg-body is deep violet and light bg-body uses a lavender surface', () => {
-    expect(tokens.light['--bg-body']).toBe('#f0eefa');
-    expect(tokens.dark['--bg-body']).toBe('#211a2e');
-  });
-
-  it('reading cards use the thick Yozi glass surfaces in both themes', () => {
-    expect(tokens.dark['--bg-card']).toBe('rgba(46, 38, 65, 0.9)');
-    expect(tokens.light['--bg-card']).toBe('rgba(246, 243, 255, 0.86)');
-  });
-
-  it('dark text-primary is bright white and light text-primary is near-black', () => {
-    expect(tokens.dark['--text-primary']).toBe('#ffffff');
-    expect(tokens.light['--text-primary']).toBe('#080909');
-  });
-
-  it('brand color differs: light uses violet, dark uses soft lavender', () => {
-    expect(tokens.light['--brand-color']).toBe('#785bbc');
-    expect(tokens.dark['--brand-color']).toBe('#c9b1ee');
-  });
-
-  it('danger color: light=#ef4444 (red), dark=#f87171 (soft red)', () => {
-    expect(tokens.light['--danger']).toBe('#ef4444');
-    expect(tokens.dark['--danger']).toBe('#f87171');
-  });
-});
-
-// ============================================================
-// PART 2: Dark Mode Font Weight Bump
-// ============================================================
-describe('[Audit] Dark Mode Font Weight Bump', () => {
-  let tokens;
-  beforeEach(async () => {
-    const mod = await import('@/design/theme-runtime.js');
-    tokens = mod.tokens;
-  });
-
-  it('dark medium weight (600) > light medium weight (500)', () => {
-    expect(Number(tokens.dark['--font-weight-medium'])).toBeGreaterThan(Number(tokens.light['--font-weight-medium']));
-  });
-
-  it('dark semibold weight (700) > light semibold weight (600)', () => {
-    expect(Number(tokens.dark['--font-weight-semibold'])).toBeGreaterThan(
-      Number(tokens.light['--font-weight-semibold'])
-    );
-  });
-
-  it('dark bold weight (800) > light bold weight (700)', () => {
-    expect(Number(tokens.dark['--font-weight-bold'])).toBeGreaterThan(Number(tokens.light['--font-weight-bold']));
-  });
-
-  it('dark extrabold weight (900) > light extrabold weight (800)', () => {
-    expect(Number(tokens.dark['--font-weight-extrabold'])).toBeGreaterThan(
-      Number(tokens.light['--font-weight-extrabold'])
-    );
-  });
-
-  it('regular weight stays 400 in both modes', () => {
-    expect(tokens.light['--font-weight-regular']).toBe('400');
-    expect(tokens.dark['--font-weight-regular']).toBe('400');
-  });
-});
-
-// ============================================================
-// PART 3: Dark Mode Shadow Removal & Glow Enhancement
-// ============================================================
-describe('[Audit] Dark Mode Shadow & Glow', () => {
-  let tokens;
-  beforeEach(async () => {
-    const mod = await import('@/design/theme-runtime.js');
-    tokens = mod.tokens;
-  });
-
-  it('dark shadow-1/2/3 use deeper shadows (not none)', () => {
-    expect(tokens.dark['--shadow-1']).toContain('rgba');
-    expect(tokens.dark['--shadow-2']).toContain('rgba');
-    expect(tokens.dark['--shadow-3']).toContain('rgba');
-  });
-
-  it('light shadow-1/2/3 are actual box-shadow values', () => {
-    expect(tokens.light['--shadow-1']).toContain('rgba');
-    expect(tokens.light['--shadow-2']).toContain('rgba');
-    expect(tokens.light['--shadow-3']).toContain('rgba');
-  });
-
-  it('dark glow-brand is stronger (more spread) than light', () => {
-    const darkGlow = tokens.dark['--shadow-glow-brand'];
-    const lightGlow = tokens.light['--shadow-glow-brand'];
-    expect(darkGlow.split(',').length).toBeGreaterThan(lightGlow.split(',').length);
-  });
-
-  it('dark glow-brand-strong has >= layers vs light', () => {
-    const darkStrong = tokens.dark['--shadow-glow-brand-strong'];
-    const lightStrong = tokens.light['--shadow-glow-brand-strong'];
-    expect(darkStrong.split(',').length).toBeGreaterThanOrEqual(lightStrong.split(',').length);
-  });
-});
-
-// ============================================================
-// PART 4: Dark Mode Animation Slowdown
-// ============================================================
-describe('[Audit] Dark Mode Animation Timing', () => {
-  let tokens;
-  beforeEach(async () => {
-    const mod = await import('@/design/theme-runtime.js');
-    tokens = mod.tokens;
-  });
-
-  it('dark transition-fast (0.2s) > light transition-fast (0.15s)', () => {
-    expect(parseFloat(tokens.dark['--transition-fast'])).toBeGreaterThan(parseFloat(tokens.light['--transition-fast']));
-  });
-
-  it('dark transition (0.4s) > light transition (0.3s)', () => {
-    expect(parseFloat(tokens.dark['--transition'])).toBeGreaterThan(parseFloat(tokens.light['--transition']));
-  });
-
-  it('dark transition-slow (0.6s) > light transition-slow (0.5s)', () => {
-    expect(parseFloat(tokens.dark['--transition-slow'])).toBeGreaterThan(parseFloat(tokens.light['--transition-slow']));
-  });
-
-  it('dark easing uses smoother curve than light', () => {
-    expect(tokens.dark['--ease']).not.toBe(tokens.light['--ease']);
-    expect(tokens.dark['--ease']).toContain('0.25');
-  });
-
-  it('dark ease-in-out differs from light', () => {
-    expect(tokens.dark['--ease-in-out']).not.toBe(tokens.light['--ease-in-out']);
-  });
-});
-
-// ============================================================
-// PART 5: Cross-Mode Consistency (Radius & Spacing)
-// ============================================================
-describe('[Audit] Cross-Mode Consistency', () => {
-  let tokens;
-  beforeEach(async () => {
-    const mod = await import('@/design/theme-runtime.js');
-    tokens = mod.tokens;
-  });
-
-  it('radius tokens are identical between light and dark', () => {
-    const radiusKeys = Object.keys(tokens.light).filter((k) => k.startsWith('--radius'));
-    expect(radiusKeys.length).toBeGreaterThan(0);
-    for (const key of radiusKeys) {
-      expect(tokens.dark[key], key).toBe(tokens.light[key]);
-    }
-  });
-
-  it('spacing tokens are identical between light and dark', () => {
-    const spacingKeys = Object.keys(tokens.light).filter((k) => k.startsWith('--spacing'));
-    expect(spacingKeys.length).toBeGreaterThan(0);
-    for (const key of spacingKeys) {
-      expect(tokens.dark[key], key).toBe(tokens.light[key]);
-    }
-  });
-
-  it('line-height tokens are identical between light and dark', () => {
-    const lhKeys = Object.keys(tokens.light).filter((k) => k.startsWith('--line-height'));
-    for (const key of lhKeys) {
-      expect(tokens.dark[key], key).toBe(tokens.light[key]);
-    }
-  });
-
-  it('letter-spacing tokens are identical between light and dark', () => {
-    const lsKeys = Object.keys(tokens.light).filter((k) => k.startsWith('--letter-spacing'));
-    for (const key of lsKeys) {
-      expect(tokens.dark[key], key).toBe(tokens.light[key]);
-    }
-  });
-
-  it('8-point grid: all radius values are multiples of 4', () => {
-    const radiusKeys = Object.keys(tokens.light).filter((k) => k.startsWith('--radius'));
-    for (const key of radiusKeys) {
-      const val = parseInt(tokens.light[key]);
-      if (!isNaN(val) && val < 9999) {
-        expect(val % 4, key + '=' + val).toBe(0);
-      }
-    }
-  });
-
-  it('8-point grid: all spacing values are multiples of 4', () => {
-    const spacingKeys = Object.keys(tokens.light).filter((k) => k.startsWith('--spacing'));
-    for (const key of spacingKeys) {
-      const val = parseInt(tokens.light[key]);
-      expect(val % 4, key + '=' + val).toBe(0);
-    }
-  });
-});
-
-// ============================================================
-// PART 6: applyTheme DOM Injection
-// ============================================================
-describe('[Audit] applyTheme DOM Injection', () => {
-  let applyTheme, tokens;
-
-  beforeEach(async () => {
-    vi.resetModules();
-    const mod = await import('@/design/theme-runtime.js');
-    applyTheme = mod.applyTheme;
-    tokens = mod.tokens;
-    const existing = document.getElementById('v0-animations');
-    if (existing) existing.remove();
-    document.documentElement.style.cssText = '';
-  });
-
-  it('applies light tokens as CSS custom properties on :root', () => {
-    applyTheme('light');
-    const root = document.documentElement;
-    expect(root.style.getPropertyValue('--bg-body')).toBe('#f0eefa');
-    expect(root.style.getPropertyValue('--text-primary')).toBe('#080909');
-    expect(root.style.getPropertyValue('--brand-color')).toBe('#785bbc');
-  });
-
-  it('applies dark tokens as CSS custom properties on :root', () => {
-    applyTheme('dark');
-    const root = document.documentElement;
-    expect(root.style.getPropertyValue('--bg-body')).toBe('#211a2e');
-    expect(root.style.getPropertyValue('--text-primary')).toBe('#ffffff');
-    expect(root.style.getPropertyValue('--brand-color')).toBe('#c9b1ee');
-  });
-
-  it('injects v0-animations style element into head', () => {
-    applyTheme('light');
-    const styleEl = document.getElementById('v0-animations');
-    expect(styleEl).not.toBeNull();
-    expect(styleEl.tagName).toBe('STYLE');
-    expect(styleEl.textContent).toContain('@keyframes float');
-    expect(styleEl.textContent).toContain('@keyframes pulse-glow');
-  });
-
-  it('reuses existing v0-animations style element on re-apply', () => {
-    applyTheme('light');
-    const first = document.getElementById('v0-animations');
-    applyTheme('dark');
-    const second = document.getElementById('v0-animations');
-    expect(first).toBe(second);
-  });
-
-  it('falls back to light tokens for unknown theme name', () => {
-    applyTheme('neon');
-    const root = document.documentElement;
-    expect(root.style.getPropertyValue('--bg-body')).toBe('#f0eefa');
-  });
-
-  it('defaults to light when called with no argument', () => {
-    applyTheme();
-    const root = document.documentElement;
-    expect(root.style.getPropertyValue('--bg-body')).toBe('#f0eefa');
-  });
-
-  it('switching from dark to light replaces all variables', () => {
-    applyTheme('dark');
-    expect(document.documentElement.style.getPropertyValue('--shadow-1')).toContain('rgba');
-    applyTheme('light');
-    expect(document.documentElement.style.getPropertyValue('--shadow-1')).toContain('rgba');
-  });
-
-  it('applies ALL token keys (no missing properties)', () => {
-    applyTheme('light');
-    const root = document.documentElement;
-    const lightKeys = Object.keys(tokens.light);
-    for (const key of lightKeys) {
-      const val = root.style.getPropertyValue(key);
-      expect(val, 'missing ' + key).toBeTruthy();
-    }
-  });
-});
-
-// ============================================================
-// PART 7: getCurrentTheme Fallback
-// NOTE: In test env (happy-dom), #ifdef/#ifndef are just comments,
-// so BOTH MP-WEIXIN and non-MP-WEIXIN blocks execute sequentially.
-// The MP-WEIXIN try block runs first and returns before localStorage
-// is ever checked. This is an audit finding: the conditional
-// compilation means localStorage path is unreachable when both
-// blocks coexist.
-// ============================================================
-describe('[Audit] getCurrentTheme Fallback', () => {
-  let getCurrentTheme;
-
-  beforeEach(async () => {
-    vi.resetModules();
-    const mod = await import('@/design/theme-runtime.js');
-    getCurrentTheme = mod.getCurrentTheme;
-    window.localStorage.clear();
-  });
-
-  afterEach(() => {
-    window.localStorage.clear();
-  });
-
-  it('MP-WEIXIN path: returns dark when uni.getAppBaseInfo reports dark', () => {
-    // In test env, MP-WEIXIN block runs first
-    uni.getAppBaseInfo = vi.fn(() => ({ theme: 'dark' }));
-    const theme = getCurrentTheme();
-    expect(theme).toBe('dark');
-  });
-
-  it('MP-WEIXIN path: returns light when uni.getAppBaseInfo reports light', () => {
-    uni.getAppBaseInfo = vi.fn(() => ({ theme: 'light' }));
+  it('uses explicit storage preference before system', () => {
+    storageService.get.mockReturnValue('light');
+    uni.getAppBaseInfo.mockReturnValue({ theme: 'dark' });
     expect(getCurrentTheme()).toBe('light');
   });
-
-  it('MP-WEIXIN path: returns light when theme is undefined', () => {
-    uni.getAppBaseInfo = vi.fn(() => ({}));
-    expect(getCurrentTheme()).toBe('light');
+  it('supports legacy raw uni preferences', () => {
+    uni.getStorageSync.mockReturnValue('dark');
+    expect(getCurrentTheme()).toBe('dark');
   });
-
-  it('MP-WEIXIN path: returns light when getAppBaseInfo throws', () => {
-    uni.getAppBaseInfo = vi.fn(() => {
-      throw new Error('not supported');
+  it.each(['light', 'dark'])('follows uni system theme %s when no preference exists', (theme) => {
+    uni.getAppBaseInfo.mockReturnValue({ theme });
+    expect(getCurrentTheme()).toBe(theme);
+  });
+  it('uses browser system preference when native information is absent', () => {
+    window.matchMedia.mockReturnValue({ matches: true });
+    expect(getCurrentTheme()).toBe('dark');
+  });
+  it('uses browser fallback when native APIs fail', () => {
+    uni.getStorageSync.mockImplementation(() => {
+      throw Error('unsupported');
     });
-    // catch block returns 'light'
-    expect(getCurrentTheme()).toBe('light');
+    window.matchMedia.mockReturnValue({ matches: true });
+    expect(getCurrentTheme()).toBe('dark');
   });
-
-  it('[AUDIT FINDING] localStorage path is unreachable when both #ifdef blocks coexist', () => {
-    // This documents the behavior: even with localStorage set to 'dark',
-    // the MP-WEIXIN block returns first with 'light' (from getAppBaseInfo)
-    uni.getAppBaseInfo = vi.fn(() => ({}));
-    window.localStorage.setItem('theme_mode', 'dark');
-    const theme = getCurrentTheme();
-    // Returns 'light' from MP-WEIXIN path, NOT 'dark' from localStorage
-    expect(theme).toBe('light');
+  it('defaults to light when all system information is absent', () => expect(getCurrentTheme()).toBe('light'));
+  it('registers and releases the exact native theme callback', () => {
+    uni.onThemeChange = vi.fn();
+    uni.offThemeChange = vi.fn();
+    const listener = vi.fn();
+    const release = watchTheme(listener);
+    const handler = uni.onThemeChange.mock.calls[0][0];
+    handler({ theme: 'dark' });
+    expect(listener).toHaveBeenCalledWith('dark');
+    release();
+    expect(uni.offThemeChange).toHaveBeenCalledWith(handler);
   });
-});
-
-// ============================================================
-// PART 8: applyTheme DOM 渲染验证
-// （toggleTheme 已移至 useThemeStore.setDarkMode，此处仅测试纯渲染函数 applyTheme）
-// ============================================================
-describe('[Audit] applyTheme DOM Rendering', () => {
-  let applyTheme;
-
-  beforeEach(async () => {
-    vi.resetModules();
-    document.documentElement.style.cssText = '';
-    window.localStorage.clear();
-    const mod = await import('@/design/theme-runtime.js');
-    applyTheme = mod.applyTheme;
+  it('registers and releases browser media listener', () => {
+    const media = { matches: false, addEventListener: vi.fn(), removeEventListener: vi.fn() };
+    window.matchMedia.mockReturnValue(media);
+    const listener = vi.fn();
+    const release = watchTheme(listener);
+    const handler = media.addEventListener.mock.calls[0][1];
+    media.matches = true;
+    handler();
+    expect(listener).toHaveBeenCalledWith('dark');
+    release();
+    expect(media.removeEventListener).toHaveBeenCalledWith('change', handler);
   });
-
-  it('applies dark theme tokens to DOM', () => {
-    applyTheme('dark');
-    expect(document.documentElement.style.getPropertyValue('--bg-body')).toBe('#211a2e');
-  });
-
-  it('applies light theme tokens to DOM', () => {
-    applyTheme('dark');
-    applyTheme('light');
-    expect(document.documentElement.style.getPropertyValue('--bg-body')).toBe('#f0eefa');
-  });
-
-  it('rapid apply does not corrupt DOM state', () => {
-    for (let i = 0; i < 10; i++) {
-      applyTheme(i % 2 === 0 ? 'dark' : 'light');
-    }
-    // 最后一次是 i=9 → light
-    expect(document.documentElement.style.getPropertyValue('--text-primary')).toBe('#080909');
-  });
-
-  it('defaults to light when given invalid theme', () => {
-    applyTheme('invalid');
-    expect(document.documentElement.style.getPropertyValue('--bg-body')).toBe('#f0eefa');
-  });
-});
-
-// ============================================================
-// PART 9: v0Animations Content Audit
-// ============================================================
-describe('[Audit] v0Animations Content', () => {
-  let v0Animations;
-
-  beforeEach(async () => {
-    const mod = await import('@/design/theme-runtime.js');
-    v0Animations = mod.v0Animations;
-  });
-
-  it('contains all required keyframe animations', () => {
-    const required = ['float', 'float-delayed', 'pulse-glow', 'breathe', 'fadeInUp', 'slideUp'];
-    for (const name of required) {
-      expect(v0Animations, 'missing @keyframes ' + name).toContain('@keyframes ' + name);
-    }
-  });
-
-  it('contains utility animation classes', () => {
-    const classes = [
-      '.animate-float',
-      '.animate-float-delayed',
-      '.animate-pulse-glow',
-      '.animate-breathe',
-      '.animate-fade-in-up'
-    ];
-    for (const cls of classes) {
-      expect(v0Animations).toContain(cls);
-    }
-  });
-
-  it('uses will-change for performance optimization', () => {
-    expect(v0Animations).toContain('will-change: transform');
-    expect(v0Animations).toContain('will-change: box-shadow');
-    expect(v0Animations).toContain('will-change: opacity');
-  });
-
-  it('contains glassmorphism utility', () => {
-    expect(v0Animations).toContain('.glass');
-    expect(v0Animations).toContain('backdrop-filter');
-  });
-
-  it('contains card hover and 3D effects', () => {
-    expect(v0Animations).toContain('.card-hover-effect');
-    expect(v0Animations).toContain('.card-3d');
-    expect(v0Animations).toContain('perspective');
+  it('is safe in the native service layer without DOM', () => {
+    vi.stubGlobal('document', undefined);
+    expect(() => applyTheme('dark')).not.toThrow();
   });
 });

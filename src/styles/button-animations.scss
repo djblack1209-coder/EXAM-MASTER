@@ -15,15 +15,6 @@
 /* ============================================
    CSS Variables for Animations
    ============================================ */
-:root,
-page {
-  /* Animation Timing */
-  --btn-transition-fast: 0.1s;
-  --btn-transition-normal: 0.15s;
-
-  /* Animation Easing */
-  --btn-ease-out: cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
 
 /* ============================================
    Base Button Feedback Mixin
@@ -46,7 +37,7 @@ page {
   transition: transform var(--btn-transition-fast) var(--btn-ease-out);
 
   &:active {
-    transform: scale(0.97);
+    transform: translateY(var(--press-y));
   }
 }
 
@@ -104,7 +95,7 @@ page {
 
 /* 用于小程序的 hover-class（9处引用） */
 .hover-scale {
-  transform: scale(0.95);
+  transform: translateY(var(--press-y));
 }
 
 /* ============================================

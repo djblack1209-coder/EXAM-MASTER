@@ -1,4 +1,5 @@
 import { BRAND } from './src/config/brand.js';
+import { readYoziTokens } from './scripts/build/read-yozi-tokens.mjs';
 import { publicImageMatch, publicFontMatch, appShellNavigationAllowlist } from './scripts/build/pwa-cache-policy.mjs';
 import { defineConfig, loadEnv } from 'vite';
 import uniModule from '@dcloudio/vite-plugin-uni';
@@ -356,6 +357,7 @@ export default defineConfig(({ command, mode }) => {
 
     // 环境变量定义
     define: {
+      __YOZI_TOKENS__: JSON.stringify(readYoziTokens()),
       'process.env.NODE_ENV': JSON.stringify(mode),
       'process.env.SENTRY_DSN': JSON.stringify(env.VITE_SENTRY_DSN || ''),
       __APP_VERSION__: JSON.stringify(env.npm_package_version || '1.0.0'),

@@ -25,8 +25,10 @@ describe('quiz result action dock guard', () => {
     expect(source).toContain('.dark-mode .secondary-btn');
   });
 
-  it('keeps the report action hierarchy restrained and financial-app aligned', () => {
-    expect(source).toContain('linear-gradient(135deg, #9fe870 0%, #75ddff 100%)');
+  it('keeps the report action hierarchy aligned with the shared clay palette', () => {
+    expect(source).toContain('background: var(--clay-face)');
+    expect(source).toContain('color: var(--on-clay)');
+    expect(source).toContain('box-shadow: var(--clay-shadow)');
     expect(source).toContain('class="action-btn tertiary-btn"');
     expect(source).toContain('.tertiary-btn');
     expect(source).not.toContain('box-shadow: 0 6rpx 0 #1899d6');

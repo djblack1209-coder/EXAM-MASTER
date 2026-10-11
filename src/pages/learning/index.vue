@@ -1,5 +1,10 @@
 <template>
-  <LearningShell active="learning" title="对话学习" @materials="showMaterial = true" @new="newConversation">
+  <LearningShell
+    active="learning"
+    :title="$t('pages.learning')"
+    @materials="showMaterial = true"
+    @new="newConversation"
+  >
     <!-- #ifdef MP-WEIXIN -->
     <PrivacyPopup />
     <!-- #endif -->

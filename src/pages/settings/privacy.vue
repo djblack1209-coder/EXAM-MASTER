@@ -1,12 +1,12 @@
 <template>
-  <view ref="keyboardRoot" class="page-container" :class="{ 'dark-mode': isDark }">
+  <view ref="keyboardRoot" class="page-container" :class="{ 'dark-mode': isDark, 'theme-light': !isDark }">
     <view class="top-nav">
       <button class="nav-back" role="button" aria-label="返回" tabindex="0" @tap="goBack">
         <text class="back-icon">
           <BaseIcon name="arrow-left" :size="20" />
         </text>
       </button>
-      <text class="nav-title"> 隐私政策 </text>
+      <text class="nav-title">{{ $t('pages.privacy') }}</text>
     </view>
 
     <scroll-view scroll-y class="content-scroll">

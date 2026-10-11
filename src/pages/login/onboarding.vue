@@ -236,13 +236,6 @@ function skipOnboarding() {
 </script>
 
 <style lang="scss" scoped>
-$primary: var(--primary, #785bbc);
-$ink: var(--text-primary, #080909);
-$muted: var(--text-secondary, #62576d);
-$paper: var(--bg-page, #f0eefa);
-$surface: var(--bg-card, #ffffff);
-$line: var(--border, rgba(98, 87, 109, 0.12));
-
 .onboarding-page {
   box-sizing: border-box;
   min-height: 100vh;
