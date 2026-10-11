@@ -11,6 +11,7 @@ vi.mock('@/services/api/domains/_request-core.js', () => ({
 beforeEach(() => {
   setActivePinia(createPinia());
   vi.clearAllMocks();
+  uni.setStorageSync('yozi_login_region', 'CN');
 });
 
 describe('网站微信沿现有认证 Store 与 API 登录', () => {
@@ -21,7 +22,7 @@ describe('网站微信沿现有认证 Store 与 API 登录', () => {
     expect(await store.loginByWechatWeb('isolated-web-code')).toEqual(response);
     expect(mocks.request).toHaveBeenCalledExactlyOnceWith(
       '/login',
-      { type: 'wechat_web', code: 'isolated-web-code' },
+      { type: 'wechat_web', code: 'isolated-web-code', region: 'CN' },
       { skipAuth: true, maxRetries: 0, coldStartRetries: 0, redactErrors: true, suppressAuthFailure: true }
     );
     expect(store.token).toBe('');

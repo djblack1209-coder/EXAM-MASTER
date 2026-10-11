@@ -239,53 +239,54 @@ mistake-manager的列表和冲突读取不使用通用短时缓存，避免上�
 
 ## 账户与登录
 
-### QQ 应用归属与平台身份
+### 地区、创建账户与年龄确认
 
-`POST /login` 的 `type=qq` 只接受 `h5`（省略平台时兼容）、`app`、`mp-qq`。网页与小程序只提交有界一次性 code，网页带发起时保存的相同 redirectUri；不能改用客户端 accessToken。App SDK 仅经现有 Store/API 提交 `{accessToken, platform:"app"}`，不获取或上传客户端资料/角色，不以客户端 openid 创建身份；120 秒共享期限涵盖 provider 与 SDK 等待，重复/迟到回调只结束一次，页面/账户变化后不交换或保存旧会话。
+`POST /login` 保留邮箱与微信合同，新增 `apple`、`google`、`phone`、`age_confirm` 和只读 `capabilities`。新的账户必须明确声明 `region: US|CN`；已有身份登录不重复创建或确认年龄。美国普通 H5/App 提供 Apple、Google、邮箱、+1 手机号，中国提供 +86 手机号、微信、邮箱，iOS 可另加 Apple；微信小程序只保留已配置微信、手机号和邮箱。客户端按本机地区/时区推断，失败默认中国，无 IP 定位；只有明确选择才保存地区，语言独立且默认中文。
 
-网站服务端配置为 `QQ_APPID/QQ_SECRET`，移动 SDK 凭证必须对应独立 `QQ_MOBILE_APPID`，小程序独立使用 `QQ_MINI_APPID/QQ_MINI_SECRET`。两个小程序新字段均为空时兼容完整旧 QQ 配置；填写任一新字段后必须填写完整，不能混合旧密钥。缺移动配置不借用网站 AppID。固定 QQ HTTPS 请求各限 10 秒/64 KiB，不跟随重定向；token 参数精确编码，支持 JSON 及受限旧 JSONP/form 回执。网站和 App 均须核对 QQ `/me.client_id` 与服务端对应 AppID 完全一致，以及合法 openid/unionid，核验前不写账户。[QQ 官方回执](https://wiki.connect.qq.com/获取用户openid_oauth2-0)。
+美国流程在收集登录凭据前中性询问出生年份和月份。`{type:"age_confirm", region:"US", year, month}` 在内存计算年龄；因不收集生日当天，13 岁生日月份结束后放行。未满条件返回 `AGE_BLOCKED`，不创建账户、不写生日或任何个人记录；客户端清空全部身份草稿，并锁定本次运行会话，本机仅保存 `{blocked:true, expiresAt}`，24 小时过期，无生日、身份或账户。内存锁不会因返回或期间过期释放。中国区不显示年龄步骤，未成年人规则另待客户决定。
 
-只有服务端一致的 qq_unionid 可以衔接已有账户；平台身份分开存储，已绑定身份冲突返回 409，不自动合并。资料仅从核验后服务端固定接口读取并筛选，供应商 token/小程序 session_key 不落库或响应；原始描述、凭据网址和账户标识不进入新 QQ 登录日志。客户端仅保留完全匹配的固定 QQ 业务提示，夹带详情时仍拒绝显示；原零自动重试、鉴权及限流保持。
+通过时服务器签发随机十分钟一次性 `ageTicket`，短期库仅存 ticket 哈希、用途、`over13`、`confirmedAt`、期限和使用状态，不保存出生年月。美国新账户创建前原子消费票据；缺失、伪造、过期或重放返回 `AGE_CONFIRMATION_REQUIRED`，客户端布尔值不能替代。用户记录只新增 `registration_region`、`age_over13:true`、`age_confirmed_at`；CN 仅记录地区。新身份仍按既有唯一索引处理并发冲突；Apple/Google 的邮箱不用于查找、写入或自动合并其他登录账户。
 
-相关 8 组 189 项、当前各端构建、真实隔离 Mongo 索引与并发检查，以及不可变归档实际启动均通过；合成供应商回执不证明真实 QQ 授权，App/小程序 SDK 与真实授权另验。腾讯私有主库限定身份迁移随后已独立接受。Tauri 仍沿原明确未接入提示和邮箱入口。身份迁移事实见[05](05-DATABASE-SCHEMAS.md)，客户操作见[09](09-DEPLOYMENT-GUIDE.md)。
+### Apple 与 Google
 
-### 受保护的身份索引迁移
+`{type:"capabilities",platform:"h5"|"app"|"mp-weixin",wechatMode}` 只返回公开客户端配置及是否具备微信配置，未配置第三方即隐藏。`{type:"apple"|"google",action:"begin",platform,region}` 由后端签发十分钟随机 nonce/session；随后 `{type,platform,region,session,identityToken,ageTicket?}` 校验签名、固定发行人、对应平台的严格单一 audience、exp/iat/nbf、nonce、sub，Google 还要求布尔 `email_verified:true`。session 绑定提供商/平台/客户端，校验后原子消费，重放拒绝；签名算法只接受 RS256/ES256，使用 Node crypto，不安装依赖。
 
-既有管理员函数 `db-create-indexes` 在原管理密钥校验之后接受 `scope:"user-identities"`，当前本地源码只创建 users 的九项身份唯一索引（含新增网站微信约束），不重命名原邮箱索引、不迁移账户或其他集合。腾讯上一批已接受的范围仍为八项，本批增量尚未应用。省略 scope 或 `all` 保持完整迁移兼容；其他值返回 400，未授权请求在范围解析和数据库操作前拒绝。身份范围任何一项失败返回 `code:1 / success:false` 与固定消息，不把原始重复身份、供应商标识或驱动错误写入响应/日志；重复执行已存在的同定义索引仍成功。完整迁移的旧警告流程保留，不能把警告当成身份范围成功。
+JWKS 只从 Apple `https://appleid.apple.com/auth/keys` 和 Google `https://www.googleapis.com/oauth2/v3/certs` 获取，5 秒超时、64 KiB 上限、不跟随重定向、五分钟缓存及合并在途请求，不采用令牌提供的 jku/x5u/发现地址。依据 [Apple 身份验证](https://developer.apple.com/documentation/signinwithapple/verifying-a-user) 与 [Google OpenID Connect](https://developers.google.com/identity/openid-connect/openid-connect)。H5 在明确登录时加载官方 Apple JS/Google Identity Services；App 使用 uni-app OAuth provider，供应商 SDK 必须返回绑定 nonce 的 ID token，否则后端拒绝，不能以 access token 或客户端资料替代。Tauri 无已验证的相应 SDK，隐藏这两项。
 
-独立后端继续不公开该函数的 HTTP 路由，管理 JWT 不能代替原管理密钥。腾讯私有主库已通过冻结维护租约中的限定迁移与独立回退演练；这项索引验收不证明公网入口或真实第三方授权可用。[实际索引与范围](05-DATABASE-SCHEMAS.md)，[部署和回退事实](09A-LAF-BACKEND-DEPLOYMENT.md)。
+仅在受保护服务端环境配置变量名：`APPLE_WEB_CLIENT_ID`、`APPLE_WEB_REDIRECT_URI`、`APPLE_APP_CLIENT_ID`、`GOOGLE_WEB_CLIENT_ID`、`GOOGLE_APP_CLIENT_ID`。未配置即关闭，Apple H5 返回地址必须为 HTTPS 且与请求网页同源。这些 ID/返回地址为公开配置，私钥/密钥不得进入前端；本轮未读取环境文件或取得任何真实开发者配置。
 
-### 网页登录回调
+### 手机号与关闭的短信通道
 
-普通浏览器微信网站登录沿原 `/login`，请求仅为 `{type:"wechat_web",code}`，使用服务端独立 `WX_WEB_APPID/WX_WEB_SECRET`；缺配置拒绝，不借用公众号、小程序或移动凭据。前端 Auth Store 导出 `loginByWechatWeb`，沿现有 API 禁用网络/冷启动自动重试并脱敏错误；成功回执由回调页完成账户/页面一致性检查后才保存身份。请求 `wechat_h5` 继续为公众号，移动和小程序原合同保持。
+`{type:"phone",action:"send",region,prefix:"+1"|"+86",phone,idempotencyKey}` 校验美国十位 NANP 号码或中国十一位手机号码、地区与区号一致、16–128 字符幂等键。全局登录仍限每 IP 5 次/分钟，年龄确认、能力查询与登录共享同一桶；频控键用 JWT_SECRET 的 HMAC，数据库与内存回退均不保存明文 IP。正式切换需核验旧计数向新键的过渡，不得借切换重置有效窗口；短信实现另限号码每小时五次和至少六十秒间隔，确定性号码哈希主键原子争用避免并发重复发送。同一幂等请求复用结果，失败/结果不确定不自动重发。
 
-H5 发起时将 `wechatMode`（`website` 或 `h5`）绑定到原同源随机授权上下文；普通浏览器使用网站 `qrconnect/snsapi_login`，微信内使用公众号 `snsapi_userinfo`。返回只信任初次保存的模式，回调参数不能改应用类型；旧上下文未含模式时兼容公众号，未知模式拒绝。网站公开 AppID 与同源完整返回地址分别由 `VITE_WX_WEB_APP_ID/VITE_WX_WEB_REDIRECT_URI` 提供。本轮本机真实 Mongo 与合成网页返回通过，真实微信授权仍待应用审核、配置和发布，见[客户指南](15-MANUAL-SETUP-GUIDE.md)。
+未登录阶段不生成分析会话、用户画像、事件或留存记录；已登录账户沿原有路径，退出后停止新增分析写入。平台运行所需的设备能力读取不用于保存生日或账户资料。
 
-平台登记入口为同源静态文件 `/oauth/qq.html` 与 `/oauth/wechat.html`，不能登记 `/#/pages/login/...`。入口先移除普通查询与片段，只把 code、state、error、error_description 交给固定的现有页面；重复参数全部保留，由既有校验拒绝，其他重定向参数不转发。静态页不交换凭据、不写身份、不发送网络请求，使用同源脚本、限制性 CSP 和 no-referrer。H5 与桌面网页产物包含这些文件，微信/App 不复制。QQ 服务器的来源回退也改为 `/oauth/qq.html`；显式地址含片段、URL 凭据或未许可主机时在上游调用前拒绝，不换地址继续交换。服务端配置仍由运营维护，必须与平台及客户端完全一致。
+验证码以 crypto 随机六位生成，保存 HMAC-SHA256 哈希与随机盐，无明文验证码或手机号；五分钟有效，最多五次校验，尝试数与消费均原子更新。登录提交 `{type:"phone",region,prefix,phone,verifyCode,ageTicket?}`，验证后沿既有账户创建/JWT 及年龄合同。
 
-QQ 与微信继续通过已有 Auth Store 调用 `/login`，QQ 的 `redirectUri` 使用发起授权时保存的同一地址，不由回调页重新猜测。客户端授权上下文保存在既有全局 `qq_oauth_state` / `wx_oauth_state` 键，包含随机 state、origin、redirectUri 和 createdAt，最长十分钟；旧字符串记录须重新发起登录。发起与返回页面必须同源，缺配置、安全随机源或存储失败时不跳转。
+服务端开关名称为 `AUTH_SMS_ENABLED` 与 `AUTH_SMS_AUTHORIZED`，未配置即关闭。**当前没有真实短信适配器，设置开关也不能发短信**；发送始终 `SMS_DISABLED`。只有单测注入内存合成通道验证成功链路，实际运行不调用任何短信服务。关闭状态前端显示“短信暂未开放，请使用其他登录方式。”；未来开通还须客户授权、适配器与真实验收，本批不包含。
 
-回调页已登记在登录分包，使用页面 onLoad 参数并核对 URL 普通查询与 hash 查询。缺失、重复、冲突、过期或取消的授权均先消费校验上下文再拒绝，不交换凭据；回调参数从地址栏移除，页面不记录授权码或 state。离开页面或请求期间账户变化后，不保存迟到身份；成功后仍沿既有加密存储、用户隔离及事件通知。后端 QQ 回调域名、鉴权和限流合同不变。
+### 错误与退役方式
 
-Tauri 主窗口继续仅加载本地页面。桌面 QQ/微信网站授权已接系统浏览器与一次领取回执，沿现有 Store/API 使用 `POST /login`、`type=desktop_oauth`，不加载远程特权页面。[腾讯文档](https://wiki.connect.qq.com/使用authorization_code获取access_token)明确不支持 App 内嵌 H5 登录。真实供应商审核、正式回调发布与公网业务仍须独立验收。
+| 错误码                                                                                        | 语义                             |
+| --------------------------------------------------------------------------------------------- | -------------------------------- |
+| `SMS_DISABLED` / `PROVIDER_DISABLED`（503）                                                   | 未配置、未授权或无通道，暂未开放 |
+| `SMS_UNAVAILABLE` / `PROVIDER_UNAVAILABLE`（503）                                             | 通道或公钥暂不可用               |
+| `INVALID_PHONE` / `INVALID_BIRTH_MONTH` / `INVALID_REGION` / `INVALID_IDEMPOTENCY_KEY`（400） | 输入无效                         |
+| `REGION_REQUIRED`（400）                                                                      | 新账户缺地区                     |
+| `AGE_BLOCKED` / `AGE_CONFIRMATION_REQUIRED`（403）                                            | 年龄拒绝或缺少有效服务器票据     |
+| `INVALID_IDENTITY_TOKEN` / `IDENTITY_REPLAY` / `INVALID_PHONE_CODE`（401）                    | 凭据无效或已消费                 |
+| `RATE_LIMITED`（429）或既有登录429                                                            | 限流/频控                        |
+| `UNSUPPORTED_LOGIN`（400）                                                                    | 不支持的登录方式，包括 QQ        |
 
-桌面接续合同：`begin` 仅接受 provider/challenge；原生系统生成 32 字节随机 verifier，其十六进制字符串的 SHA256 为 challenge。verifier 只留桌面当前动作内存，不进入授权 URL、存储或日志。服务端随机会话最长十分钟，绑定平台、应用、固定 HTTPS 回调、发起桌面 Origin 与 challenge；先核对保留期限索引再创建，默认 `DESKTOP_OAUTH_ENABLED=false`。原生命令只打开固定 QQ/微信网站授权主机、路径、scope 与严格参数；普通网页即使有编译标志也没有原生权限。
+凭据请求仍零自动重试，并仅透传固定白名单错误码；正文错误不含供应商 token、密钥、生日或原始诊断。`type:"qq"` 及桌面 `provider:"qq"` 明确拒绝，QQ 按钮、路由、静态回调、OAuth 工具及服务端分支删除。旧 QQ 账户字段、数据和数据库现有索引不删除、不迁移；历史验证记录继续保留，不代表 QQ 仍开放。
 
-浏览器在现有回调页以 `complete` 提交 provider/state 与 code 或固定 error。服务端核对注册回调 Origin/应用，再原子占用一次授权码交换；浏览器只收到 `desktopReady`，不会保存问理身份、改其原账户或跳转到已登录首页。短期库仅暂存经认证加密的账户引用，不保存 JWT 或供应商令牌。取消或到期后，晚到换码结果不能恢复 ready。
+### 微信回调、桌面接续与索引
 
-桌面 `poll/cancel` 必须携带原 sessionId/verifier 并来自发起 Origin。每 IP 每分钟 30 次，在读取会话前限制；其他登录尝试保持原 5 次/分钟。客户端等待至少三秒，只对明确 pending 继续，错误、页面隐藏/卸载、账户切换或超时停止并尝试取消，不自动重开或重放。页面隐藏采用单调代次，快速返回不能重新接纳旧结果。领取通过原子 ready→consumed 仅成功一次、清空加密结果，再读取当前用户状态签发问理凭据；账户停用、篡改、过期或重复领取拒绝。成功后聚焦原普通窗口，再沿原身份保存与用户隔离返回；浏览器回执不是桌面已登录证明。本合同是应用接续校验，不宣称供应商 PKCE 或标准设备授权协议。
+微信小程序、移动应用、公众号、网站仍使用各自独立配置及 openid/AppID；只采纳服务端核验身份/unionid，冲突拒绝覆盖。网站 `wechat_web` 与公众号 `wechat_h5` 沿同源随机最长十分钟且一次消费的 `wx_oauth_state`，`wechatMode` 绑定发起动作；静态 `/oauth/wechat.html` 保留 code/state 重复检查，删除其他重定向参数。回调页面/账户变化后不保存迟到身份；成功后仍加密存储、按用户隔离，学习同步需原有独立授权。
 
-`wechat_h5` 对应公众号微信内网页授权；`wechat` 无 platform 或 `platform=mp-weixin` 对应小程序 code2session（旧客户端 `weixin` 别名继续兼容，当前 Store 已使用 `wechat`），`platform=app` 对应开放平台移动应用。未知类型或平台返回 400，不回退小程序。移动 App 使用官方 SDK 的 `onlyAuthorize=true`，沿现有 Store/API 仅发送一次性 code 与 platform，不取客户端 access_token、openid、昵称或角色；SDK 等待上限 120 秒，重复/迟到回调只结算一次，页面卸载或账户变化后不继续换码、不保存迟到身份。[DCloud 官方说明](https://uniapp.dcloud.net.cn/tutorial/app-oauth-weixin.html)。
+`desktop_oauth` 仅保留微信，默认 `DESKTOP_OAUTH_ENABLED=false`；系统生成 verifier/challenge，固定网页回调、精确原生 Origin、十分钟期限、原子 phase 与一次领取保持。浏览器回调不保存桌面身份；原生打开器只接受固定微信授权地址。真实微信/原生装配、应用审核和公网返回仍须独立验收。
 
-服务器独立使用 `WX_MOBILE_APPID/WX_MOBILE_SECRET`，公众号仍用 `WX_GZH_APPID/WX_GZH_SECRET`；缺对应配置直接拒绝，密钥不进入客户端。两种 OAuth 复用固定微信 HTTPS 换码/资料地址，code 限 10—200 位字母数字/下划线/连字符，每次请求 10 秒、响应 64 KiB，拒绝重定向和非 200/畸形凭据。服务器重验 openid/unionid 的一致性；移动身份为 `wx_mobile_appid + app_openid`，不与同值小程序/公众号 openid 混用，只有一致的服务端 unionid 才衔接已有账户。已有绑定冲突返回 409，不自动合并。供应商令牌只在服务端内存使用，响应仅返回问理 JWT 与允许的账户字段，上游错误对象/描述/含凭据网址不进入日志或响应。登录 API 在既有请求层显式禁止网络/冷启动自动重放；失败回执只保留数字状态和固定消息，不附原始错误/响应体。未认证登录失败不广播已有账户失效，客户端不把凭证、供应商描述或账户标识写入登录开发日志；用户重新发起才再次发送凭证。
-
-上述移动分支已通过本地源码、编译产物、合成上游与真实隔离 Mongo 并发检查；唯一索引及实际迁移见[05](05-DATABASE-SCHEMAS.md)。腾讯新候选暂存与私有主库限定迁移已独立接受，公网入口尚未切换；原生 SDK 装配、真实微信授权和普通浏览器扫码仍未验收。客户操作与字段映射见[09](09-DEPLOYMENT-GUIDE.md)。
-
-凭据错误保留客户端完全匹配的固定邮箱业务提示；新用户须先验邮箱的回执重建为已有“该邮箱未注册，请先注册”，沿原表单切换。密码强度错误仅重建固定提示，未知描述不显示；“未设置密码”不归为验证码错误。邮箱登录和验证码发送在显示结果前关闭加载状态，finally 仅解除提交状态，避免立即清掉刚显示的成功或失败提示。最新 Mac 独立包在普通窗口用合成 HTTP 实际验证：协议未确认零请求，三次明确登录各一个 POST，首次失败后至少 95 秒没有自动重试，服务繁忙/注册接续/密码错误提示可见，不展示原始错误；该范围不含真实账户、SMTP 或供应商授权。
-
-### 本机桌面合同补验
-
-最新桌面前端在独立 Tauri 候选实际完成系统 JSON 读取、预览/确认合并、取消和系统保存。完整原答在学习页与概览共用原只读合同；阅读前后 37,555 字节公开备份逐字相同，旧 v1 保持未定位且停止后可读。v3 英文字段的首答错、带一条提示的订正对、无提示变式对分别保留可靠判分与来源；原四作答、六资料、前 27 事件保持。停止任务正常退出重开后，63,635 字节完整备份逐字相同。属于本机合成合同和确定性字面判分，真实模型语义、设备与正式发布仍分别验收。[本轮范围](12-CHANGELOG.md)、[桌面构建边界](09-DEPLOYMENT-GUIDE.md)。
+管理员 `db-create-indexes` 的 `user-identities` 现在创建八项有效身份索引（微信五项、Apple/Google 两项复合唯一、手机号一项），不创建新的 QQ 索引，也不删除数据库已有索引或重命名 email_1。`regional-auth` 还为 auth_confirmations 与 phone_codes 增加 `expires_at` TTL（0秒）索引；管理员鉴权、失败固定响应、禁止公开路由继续保持。本轮未执行任何服务器迁移；发布前需受保护维护、前态与独立回退。已有 QQ 恢复回执只能按其冻结定义用于历史恢复，不是本批新创建定义。
 
 ## 刷题、原答与回执
 

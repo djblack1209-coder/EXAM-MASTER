@@ -52,24 +52,6 @@ const userIdentityIndexes: UserIdentityIndex[] = [
   { key: { openid: 1 }, options: { unique: true, sparse: true, name: 'idx_openid_unique' } },
   { key: { h5_openid: 1 }, options: { unique: true, sparse: true, name: 'idx_h5_openid_unique' } },
   { key: { unionid: 1 }, options: { unique: true, sparse: true, name: 'idx_unionid_unique' } },
-  { key: { qq_openid: 1 }, options: { unique: true, sparse: true, name: 'idx_qq_openid_unique' } },
-  { key: { qq_unionid: 1 }, options: { unique: true, sparse: true, name: 'idx_qq_unionid_unique' } },
-  {
-    key: { qq_mobile_appid: 1, qq_mobile_openid: 1 },
-    options: {
-      unique: true,
-      name: 'idx_qq_mobile_identity_unique',
-      partialFilterExpression: { qq_mobile_appid: { $type: 'string' }, qq_mobile_openid: { $type: 'string' } }
-    }
-  },
-  {
-    key: { qq_mini_appid: 1, qq_mini_openid: 1 },
-    options: {
-      unique: true,
-      name: 'idx_qq_mini_identity_unique',
-      partialFilterExpression: { qq_mini_appid: { $type: 'string' }, qq_mini_openid: { $type: 'string' } }
-    }
-  },
   {
     key: { wx_web_appid: 1, web_openid: 1 },
     options: {
@@ -77,7 +59,19 @@ const userIdentityIndexes: UserIdentityIndex[] = [
       name: 'idx_wx_web_identity_unique',
       partialFilterExpression: { wx_web_appid: { $type: 'string' }, web_openid: { $type: 'string' } }
     }
-  }
+  },
+  ...['apple', 'google'].map((provider) => ({
+    key: { [`${provider}_client_id`]: 1, [`${provider}_sub`]: 1 } as Record<string, 1>,
+    options: {
+      unique: true as const,
+      name: `idx_${provider}_identity_unique`,
+      partialFilterExpression: {
+        [`${provider}_client_id`]: { $type: 'string' as const },
+        [`${provider}_sub`]: { $type: 'string' as const }
+      }
+    }
+  })),
+  { key: { phone: 1 }, options: { unique: true, sparse: true, name: 'idx_phone_unique' } }
 ];
 
 export function getUserIdentityIndexes(): UserIdentityIndex[] {
@@ -123,8 +117,20 @@ export default async function (ctx) {
     }
 
     const scope = ctx.body?.scope;
-    if (scope !== undefined && scope !== 'all' && scope !== 'user-identities' && scope !== 'desktop-oauth') {
+    if (
+      scope !== undefined &&
+      scope !== 'all' &&
+      scope !== 'user-identities' &&
+      scope !== 'desktop-oauth' &&
+      scope !== 'regional-auth'
+    ) {
       return { code: 400, success: false, message: '索引迁移范围无效', requestId };
+    }
+    if (scope === 'regional-auth') {
+      await createUserIdentityIndexes();
+      for (const name of ['auth_confirmations', 'phone_codes'])
+        await db.collection(name).createIndex({ expires_at: 1 }, { name: 'idx_auth_expiry', expireAfterSeconds: 0 });
+      return { code: 0, success: true, message: '地区登录索引已配置', requestId };
     }
     if (scope === 'desktop-oauth') {
       try {

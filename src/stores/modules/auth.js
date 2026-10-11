@@ -5,6 +5,7 @@
  * @module stores/auth
  */
 
+import { readLoginRegion } from '@/services/auth-region.js';
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import config from '@/config/index.js';
@@ -76,7 +77,7 @@ export const useAuthStore = defineStore('auth', () => {
       // 2. 调用 Laf 登录接口（skipAuth: true 避免登录请求携带过期 token）
       // [AUDIT R432] 改用 auth.api.js 的 apiLogin，消除 _request-core 直接依赖
       try {
-        const res = await apiLogin({ type: 'wechat', code });
+        const res = await apiLogin({ region: readLoginRegion(), type: 'wechat', code });
 
         if (res.code === 0 && res.data && res.data.userId) {
           const userId = res.data.userId;
@@ -233,7 +234,7 @@ export const useAuthStore = defineStore('auth', () => {
    */
   const loginByWechat = async (params) => {
     try {
-      return await apiLogin({ type: 'wechat', ...params });
+      return await apiLogin({ region: readLoginRegion(), type: 'wechat', ...params });
     } catch (err) {
       logger.warn('[AuthStore] loginByWechat 未完成');
       throw err; // 重新抛出让调用方处理
@@ -246,7 +247,7 @@ export const useAuthStore = defineStore('auth', () => {
    */
   const loginByWechatH5 = async (code) => {
     try {
-      return await apiLogin({ type: 'wechat_h5', code });
+      return await apiLogin({ region: readLoginRegion(), type: 'wechat_h5', code });
     } catch (err) {
       logger.warn('[AuthStore] loginByWechatH5 未完成');
       throw err; // 重新抛出让调用方处理
@@ -255,36 +256,10 @@ export const useAuthStore = defineStore('auth', () => {
 
   const loginByWechatWeb = async (code) => {
     try {
-      return await apiLogin({ type: 'wechat_web', code });
+      return await apiLogin({ region: readLoginRegion(), type: 'wechat_web', code });
     } catch (err) {
       logger.warn('[AuthStore] loginByWechatWeb 未完成');
       throw err;
-    }
-  };
-
-  /**
-   * QQ 登录（小程序 / App / H5）
-   * @param {Object} params - H5/小程序一次性 code；App 仅 accessToken 与 platform: 'app'
-   */
-  const loginByQQ = async (params) => {
-    try {
-      return await apiLogin({ type: 'qq', ...params });
-    } catch (err) {
-      logger.warn('[AuthStore] loginByQQ 未完成');
-      throw err; // 重新抛出让调用方处理
-    }
-  };
-
-  /**
-   * QQ H5 网页授权登录
-   * @param {Object} params - { code, redirectUri }
-   */
-  const loginByQQH5 = async (params) => {
-    try {
-      return await apiLogin({ type: 'qq', ...params });
-    } catch (err) {
-      logger.warn('[AuthStore] loginByQQH5 未完成');
-      throw err; // 重新抛出让调用方处理
     }
   };
 
@@ -294,7 +269,7 @@ export const useAuthStore = defineStore('auth', () => {
    */
   const loginByEmail = async (params) => {
     try {
-      return await apiLogin({ type: 'email', ...params });
+      return await apiLogin({ region: readLoginRegion(), type: 'email', ...params });
     } catch (err) {
       logger.error('[AuthStore] loginByEmail 失败:', err);
       throw err; // 重新抛出让调用方处理
@@ -320,13 +295,12 @@ export const useAuthStore = defineStore('auth', () => {
     syncLoginStatus,
     _setUserInfoRef,
     $reset,
+    regionalLogin: apiLogin,
     // B1: 新增登录/认证 action
     sendEmailCode,
     loginByWechat,
     loginByWechatH5,
     loginByWechatWeb,
-    loginByQQ,
-    loginByQQH5,
     loginByEmail,
     desktopOAuth: (params) => apiDesktopOAuth(params)
   };

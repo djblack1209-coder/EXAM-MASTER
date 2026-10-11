@@ -1,39 +1,17 @@
-/**
- * 统一登录云函数
- *
- * 功能：
- * 1. 微信登录：接收微信 code，换取 openid
- * 2. QQ 登录：支持 H5 OAuth / App OAuth / QQ 小程序 code
- * 3. ✅ B001: 邮箱登录：邮箱 + 验证码 / 邮箱 + 密码
- * 4. 查询或创建用户
- * 5. 生成 JWT token
- * 6. 返回用户信息
- *
- * 环境变量要求：
- * - WX_APPID: 微信小程序 AppID
- * - WX_SECRET: 微信小程序密钥
- * - QQ_APPID/QQ_SECRET: QQ互联网站应用（小程序旧配置兼容）
- * - QQ_MOBILE_APPID: QQ互联移动应用 AppID（SDK token 必须核验归属）
- * - QQ_MINI_APPID/QQ_MINI_SECRET: QQ小程序独立配置
- * - QQ_REDIRECT_URI: QQ H5 OAuth 回调地址（可选，建议配置）
- * - JWT_SECRET: JWT签名密钥
- *
- * 请求参数：
- * - type: string (可选) - 登录类型: 'wechat'(默认) | 'wechat_h5' | 'wechat_web' | 'qq' | 'email'
- * - code: string (微信登录必填) - 微信登录凭证
- * - email: string (邮箱登录必填) - 邮箱地址
- * - verifyCode: string (邮箱验证码登录必填) - 验证码
- * - password: string (邮箱密码登录可选) - 密码
- *
- * 返回格式：
- * { code: 0, data: { userId, token, userInfo }, message: 'success' }
- *
- * @version 3.0.0
- * @author EXAM-MASTER Team
- */
-
 import cloud from '@lafjs/cloud';
 import crypto from 'crypto';
+import {
+  LoginError,
+  fail,
+  confirmAge,
+  registrationFields,
+  beginProvider,
+  providerConfig,
+  providerIdentity,
+  sendPhoneCode,
+  normalizePhone,
+  verifyPhoneCode
+} from './_shared/regional-auth.js';
 import { perfMonitor } from './_shared/perf-monitor.js';
 import { createLogger, checkRateLimitDistributed } from './_shared/api-response.js';
 import { verifyJWT as verifySharedJWT } from './_shared/auth.js';
@@ -56,13 +34,6 @@ const WX_WEB_APPID = process.env.WX_WEB_APPID || '';
 const WX_WEB_SECRET = process.env.WX_WEB_SECRET || '';
 const WX_WEB_REDIRECT_URI = process.env.WX_WEB_REDIRECT_URI || '';
 const DESKTOP_OAUTH_ENABLED = process.env.DESKTOP_OAUTH_ENABLED === 'true';
-// QQ 网站、移动应用和小程序分别核对配置，移动应用不得借用网站 AppID。
-const QQ_APPID = process.env.QQ_APPID || '';
-const QQ_SECRET = process.env.QQ_SECRET || '';
-const QQ_REDIRECT_URI = process.env.QQ_REDIRECT_URI || '';
-const QQ_MOBILE_APPID = process.env.QQ_MOBILE_APPID || '';
-const QQ_MINI_APPID = process.env.QQ_MINI_APPID || '';
-const QQ_MINI_SECRET = process.env.QQ_MINI_SECRET || '';
 // ✅ B017: JWT_SECRET 必须通过环境变量配置，不再提供任何硬编码默认值
 const JWT_SECRET = process.env.JWT_SECRET || '';
 if (!process.env.JWT_SECRET) {
@@ -75,11 +46,6 @@ const JWT_EXPIRES_IN = 7 * 24 * 60 * 60 * 1000; // 7天
 const ENV_CHECK_RESULTS: { key: string; present: boolean }[] = [
   { key: 'WX_APPID', present: !!process.env.WX_APPID },
   { key: 'WX_SECRET', present: !!process.env.WX_SECRET },
-  { key: 'QQ_APPID', present: !!process.env.QQ_APPID },
-  { key: 'QQ_SECRET', present: !!process.env.QQ_SECRET },
-  { key: 'QQ_MOBILE_APPID', present: !!QQ_MOBILE_APPID },
-  { key: 'QQ_MINI_APPID', present: !!QQ_MINI_APPID },
-  { key: 'QQ_MINI_SECRET', present: !!QQ_MINI_SECRET },
   { key: 'JWT_SECRET', present: !!process.env.JWT_SECRET },
   { key: 'WX_GZH_APPID', present: !!process.env.WX_GZH_APPID },
   { key: 'WX_GZH_SECRET', present: !!process.env.WX_GZH_SECRET },
@@ -462,7 +428,8 @@ async function findOrCreateUserByIdentity(
   queries: Array<Record<string, unknown>>,
   createOverrides: Record<string, unknown>,
   requestId: string,
-  label: string
+  label: string,
+  registration: any
 ): Promise<{ user: { data: Record<string, unknown> }; isNewUser: boolean }> {
   const existing = await findFirstUserByQueries(queries);
   if (existing?.data) {
@@ -470,7 +437,8 @@ async function findOrCreateUserByIdentity(
   }
 
   try {
-    const created = await createNewUser(createOverrides, requestId, label);
+    const fields = await registrationFields(registration, db.collection('auth_confirmations'));
+    const created = await createNewUser({ ...createOverrides, ...fields }, requestId, label);
     return { user: created, isNewUser: true };
   } catch (error) {
     if (!isDuplicateKeyError(error)) {
@@ -496,6 +464,8 @@ export default async function (ctx) {
   logger.info(`[${requestId}] 登录请求开始`);
 
   try {
+    if (loginType === 'qq' || ctx.body?.provider === 'qq')
+      return { ...fail('UNSUPPORTED_LOGIN'), message: '不支持的登录方式', requestId };
     // 缺少密钥时仅拒绝当前请求，不阻断其他云函数模块加载
     if (!JWT_SECRET) {
       return {
@@ -518,8 +488,10 @@ export default async function (ctx) {
     if (loginType === 'desktop_oauth' && ['poll', 'cancel'].includes(ctx.body?.action)) {
       return await desktopLogin(ctx, requestId, startTime);
     }
+    // Keep one shared per-IP bucket without persisting the IP during age screening.
+    const clientLimitKey = crypto.createHmac('sha256', JWT_SECRET).update(clientIp).digest('hex');
     const distributedRateLimit = await checkRateLimitDistributed(
-      `login:${clientIp}`,
+      `login:${clientLimitKey}`,
       LOGIN_RATE_LIMIT_MAX,
       LOGIN_RATE_LIMIT_WINDOW
     );
@@ -536,7 +508,7 @@ export default async function (ctx) {
 
     // DB 限流不可用时，降级到本地防暴力破解策略（含封禁窗口）
     if (distributedRateLimit.source === 'memory') {
-      rateLimitResult = checkLoginRateLimit(clientIp);
+      rateLimitResult = checkLoginRateLimit(clientLimitKey);
     }
 
     if (!rateLimitResult.allowed) {
@@ -558,8 +530,8 @@ export default async function (ctx) {
       return await desktopLogin(ctx, requestId, startTime);
     } else if (loginType === 'email') {
       return await handleEmailLogin(ctx, requestId, startTime);
-    } else if (loginType === 'qq') {
-      return await handleQQLogin(ctx, requestId, startTime);
+    } else if (['apple', 'google', 'phone', 'age_confirm', 'capabilities'].includes(loginType)) {
+      return await regionalLogin(ctx, requestId);
     } else if (loginType === 'wechat_h5') {
       // E007: H5微信浏览器 OAuth 网页授权登录
       return await handleWechatOAuthLogin(ctx, requestId, startTime, 'h5');
@@ -574,8 +546,9 @@ export default async function (ctx) {
       }
       return await handleWechatLogin(ctx, requestId, startTime);
     }
-    return { code: 400, success: false, message: '不支持的登录方式', requestId };
+    return { ...fail('UNSUPPORTED_LOGIN'), message: '不支持的登录方式', requestId };
   } catch (error) {
+    if (error instanceof LoginError) return { ...fail(error.errorCode, error.code), requestId };
     const duration = Date.now() - startTime;
     endPerf({ error: true });
     // 数据库错误可能包含唯一键中的私人身份；仅保留本次请求定位。
@@ -619,18 +592,17 @@ async function desktopLogin(ctx, requestId: string, startTime: number) {
     nativeOrigins: String(process.env.ALLOWED_ORIGINS || '')
       .split(',')
       .map((value) => value.trim()),
-    config: (provider) =>
-      provider === 'qq'
-        ? QQ_APPID && QQ_SECRET && QQ_REDIRECT_URI && isAllowedRedirectDomain(QQ_REDIRECT_URI)
-          ? { appId: QQ_APPID, redirectUri: QQ_REDIRECT_URI }
-          : null
-        : WX_WEB_APPID && WX_WEB_SECRET && WX_WEB_REDIRECT_URI
-          ? { appId: WX_WEB_APPID, redirectUri: WX_WEB_REDIRECT_URI }
-          : null,
-    exchange: (provider, code, redirectUri) =>
-      provider === 'qq'
-        ? handleQQLogin({ ...ctx, body: { type: 'qq', code, platform: 'h5', redirectUri } }, requestId, startTime)
-        : handleWechatOAuthLogin({ ...ctx, body: { type: 'wechat_web', code } }, requestId, startTime, 'website'),
+    config: () =>
+      WX_WEB_APPID && WX_WEB_SECRET && WX_WEB_REDIRECT_URI
+        ? { appId: WX_WEB_APPID, redirectUri: WX_WEB_REDIRECT_URI }
+        : null,
+    exchange: (_provider, code) =>
+      handleWechatOAuthLogin(
+        { ...ctx, body: { type: 'wechat_web', code, region: 'CN' } },
+        requestId,
+        startTime,
+        'website'
+      ),
     pollAllowed: async (ip) => (await checkRateLimitDistributed(`desktop-poll:${ip}`, 30, 60_000)).allowed,
     issue: async (userId, isNewUser) => {
       const user = (await cloud.database().collection('users').doc(userId).get())?.data;
@@ -784,7 +756,7 @@ async function handleEmailLogin(ctx, requestId: string, startTime: number) {
     overrides.password_hash = await hashPasswordScrypt(password, salt);
   }
 
-  const { user, isNewUser } = await findOrCreateUserByIdentity([{ email }], overrides, requestId, '邮箱');
+  const { user, isNewUser } = await findOrCreateUserByIdentity([{ email }], overrides, requestId, '邮箱', ctx.body);
   const userData = user.data as Record<string, any>;
   if (!isNewUser) {
     // 老用户更新登录时间
@@ -954,270 +926,6 @@ function parseQueryStringPayload(raw: string): Record<string, string> {
   return Object.fromEntries(params.entries());
 }
 
-function parseQQCallbackPayload(raw: string): Record<string, unknown> | null {
-  if (!raw || typeof raw !== 'string') return null;
-
-  const match = raw.trim().match(/^callback\s*\(\s*(\{[\s\S]*\})\s*\)\s*;?$/);
-  const candidate = match?.[1] || raw.trim();
-  try {
-    const data = JSON.parse(candidate);
-    return data && typeof data === 'object' && !Array.isArray(data) ? data : null;
-  } catch {
-    return null;
-  }
-}
-
-/**
- * 允许的 QQ OAuth 回调域名白名单
- * 防止开放重定向攻击：客户端传入的 redirect_uri 必须匹配已知域名
- */
-const ALLOWED_REDIRECT_DOMAINS = ['245334.xyz', 'nf98ia8qnt.sealosbja.site', '101.43.41.96', 'localhost', '127.0.0.1'];
-
-/** 检查可登记回调的 URL 语法；客户端地址还须在既有主机白名单内。 */
-function isAllowedRedirectDomain(urlStr: string, requireAllowedDomain = true): boolean {
-  try {
-    const url = new URL(urlStr);
-    if (!['http:', 'https:'].includes(url.protocol) || url.hash || url.username || url.password) return false;
-    return (
-      !requireAllowedDomain ||
-      ALLOWED_REDIRECT_DOMAINS.some((d) => url.hostname === d || url.hostname.endsWith(`.${d}`))
-    );
-  } catch {
-    return false;
-  }
-}
-
-function resolveQQRedirectUri(ctx: any, bodyRedirectUri: unknown): string {
-  // 显式地址无效时拒绝，不换成另一个地址继续交换已绑定的授权码。
-  if (bodyRedirectUri !== undefined && bodyRedirectUri !== null && bodyRedirectUri !== '') {
-    return typeof bodyRedirectUri === 'string' && isAllowedRedirectDomain(bodyRedirectUri) ? bodyRedirectUri : '';
-  }
-
-  if (QQ_REDIRECT_URI) {
-    return isAllowedRedirectDomain(QQ_REDIRECT_URI, false) ? QQ_REDIRECT_URI : '';
-  }
-
-  const origin = ctx.headers?.origin || ctx.headers?.Origin;
-  if (typeof origin === 'string' && /^https?:\/\//.test(origin) && isAllowedRedirectDomain(origin)) {
-    return `${new URL(origin).origin}/oauth/qq.html`;
-  }
-
-  return '';
-}
-
-async function getQQOAuthBody(url: string, requestId: string): Promise<unknown | null> {
-  try {
-    const response = await cloud.fetch({
-      url,
-      method: 'GET',
-      timeout: 10000,
-      maxRedirects: 0,
-      maxContentLength: 65536
-    });
-    return response.status === 200 ? response.data : null;
-  } catch {
-    logger.warn(`[${requestId}] QQ 授权上游请求未完成`);
-    return null;
-  }
-}
-
-function qqOAuthObject(body: unknown): Record<string, unknown> | null {
-  if (typeof body === 'string') return parseQQCallbackPayload(body);
-  return body && typeof body === 'object' && !Array.isArray(body) ? (body as Record<string, unknown>) : null;
-}
-
-function validOAuthToken(value: unknown): value is string {
-  return typeof value === 'string' && /^[\x21-\x7e]{1,2048}$/.test(value);
-}
-
-async function handleQQLogin(ctx, requestId: string, startTime: number) {
-  const body = ctx.body || {};
-  const platform = body.platform === undefined || body.platform === '' ? 'h5' : body.platform;
-  if (!['h5', 'app', 'mp-qq'].includes(platform)) {
-    return { code: 400, success: false, message: 'QQ 登录平台无效', requestId };
-  }
-  const mobile = platform === 'app',
-    mini = platform === 'mp-qq';
-  // 小程序保留旧配置兼容；显式填写任一新配置后必须填写完整，不能混合密钥。
-  const separateMini = !!(QQ_MINI_APPID || QQ_MINI_SECRET);
-  const appId = mobile ? QQ_MOBILE_APPID : mini && separateMini ? QQ_MINI_APPID : QQ_APPID;
-  const secret = mini && separateMini ? QQ_MINI_SECRET : QQ_SECRET;
-  if (!appId || (!mobile && !secret)) {
-    return { code: 500, success: false, message: '服务配置错误：缺少对应 QQ 应用配置，请联系管理员', requestId };
-  }
-  const code = typeof body.code === 'string' ? body.code.trim() : '';
-  let accessToken = mobile && typeof body.accessToken === 'string' ? body.accessToken : '';
-  if (
-    (mobile && !validOAuthToken(accessToken)) ||
-    (!mobile && (!/^[a-zA-Z0-9_-]{6,200}$/.test(code) || body.accessToken !== undefined))
-  ) {
-    return { code: 400, success: false, message: 'QQ 登录凭证无效，请重新登录', requestId };
-  }
-  if (mobile && body.openid !== undefined && !validOAuthIdentity(body.openid)) {
-    return { code: 400, success: false, message: 'QQ 登录参数无效', requestId };
-  }
-  let openid: string,
-    unionid = '';
-  const failed = () => ({ code: 401, success: false, message: 'QQ 登录校验失败，请重新登录', requestId });
-  if (mini) {
-    const url =
-      'https://api.q.qq.com/sns/jscode2session?' +
-      new URLSearchParams({
-        appid: appId,
-        secret,
-        js_code: code,
-        grant_type: 'authorization_code'
-      });
-    const data = qqOAuthObject(await getQQOAuthBody(url, requestId));
-    if (
-      !data ||
-      (data.errcode !== undefined && data.errcode !== 0) ||
-      !validOAuthIdentity(data.openid) ||
-      (data.unionid !== undefined && !validOAuthIdentity(data.unionid))
-    )
-      return failed();
-    openid = data.openid;
-    unionid = typeof data.unionid === 'string' ? data.unionid : '';
-  } else {
-    if (!mobile) {
-      const redirectUri = resolveQQRedirectUri(ctx, body.redirectUri);
-      if (!redirectUri) return { code: 400, success: false, message: 'QQ 回调地址无效，请检查配置', requestId };
-      const url =
-        'https://graph.qq.com/oauth2.0/token?' +
-        new URLSearchParams({
-          grant_type: 'authorization_code',
-          client_id: appId,
-          client_secret: secret,
-          code,
-          redirect_uri: redirectUri,
-          fmt: 'json'
-        });
-      const tokenBody = await getQQOAuthBody(url, requestId);
-      const data =
-        qqOAuthObject(tokenBody) || (typeof tokenBody === 'string' ? parseQueryStringPayload(tokenBody) : null);
-      if (
-        !data ||
-        (data.error !== undefined && data.error !== 0 && data.error !== '0') ||
-        !validOAuthToken(data.access_token)
-      )
-        return failed();
-      accessToken = data.access_token;
-    }
-    const meUrl =
-      'https://graph.qq.com/oauth2.0/me?' +
-      new URLSearchParams({
-        access_token: accessToken,
-        unionid: '1',
-        fmt: 'json'
-      });
-    const data = qqOAuthObject(await getQQOAuthBody(meUrl, requestId));
-    // /me 的 client_id 由 QQ 返回，是授权归属本项目应用的必要证据。
-    if (
-      !data ||
-      (data.error !== undefined && data.error !== 0 && data.error !== '0') ||
-      data.client_id !== appId ||
-      !validOAuthIdentity(data.openid) ||
-      (data.unionid !== undefined && !validOAuthIdentity(data.unionid))
-    )
-      return failed();
-    openid = data.openid;
-    unionid = typeof data.unionid === 'string' ? data.unionid : '';
-    if (mobile && body.openid !== undefined && body.openid !== openid) return failed();
-  }
-
-  const openidKey = mobile ? 'qq_mobile_openid' : mini ? 'qq_mini_openid' : 'qq_openid';
-  const appidKey = mobile ? 'qq_mobile_appid' : mini ? 'qq_mini_appid' : null;
-  const identity: Record<string, unknown> = { [openidKey]: openid, ...(appidKey ? { [appidKey]: appId } : {}) };
-  const byIdentity = await findFirstUserByQueries([identity]);
-  const byUnionid = unionid ? await findFirstUserByQueries([{ qq_unionid: unionid }]) : null;
-  const conflicting = (user: Record<string, any>) =>
-    (user.qq_unionid && unionid && user.qq_unionid !== unionid) ||
-    (user[openidKey] && (user[openidKey] !== openid || (appidKey && user[appidKey] !== appId)));
-  if (
-    (byIdentity && byUnionid && String(byIdentity.data._id) !== String(byUnionid.data._id)) ||
-    (byIdentity && conflicting(byIdentity.data)) ||
-    (byUnionid && conflicting(byUnionid.data))
-  ) {
-    return { code: 409, success: false, message: 'QQ 账户关联冲突，请联系管理员', requestId };
-  }
-
-  // 资料仅来自已核验应用/身份的服务端请求；客户端资料与角色不参与身份写入。
-  let profile: Record<string, unknown> = {};
-  if (!mini) {
-    const url =
-      'https://graph.qq.com/user/get_user_info?' +
-      new URLSearchParams({
-        access_token: accessToken,
-        oauth_consumer_key: appId,
-        openid
-      });
-    const data = qqOAuthObject(await getQQOAuthBody(url, requestId));
-    if (data?.ret === 0) profile = data;
-  }
-  const nickname =
-    typeof profile.nickname === 'string' && profile.nickname.length <= 128 && !/[\x00-\x1f\x7f]/.test(profile.nickname)
-      ? profile.nickname
-      : '';
-  const rawAvatar = profile.figureurl_qq_2 || profile.figureurl_2;
-  let avatar = '';
-  if (typeof rawAvatar === 'string' && rawAvatar.length <= 2048) {
-    try {
-      const url = new URL(rawAvatar);
-      if (['https:', 'http:'].includes(url.protocol) && !url.username && !url.password) avatar = url.href;
-    } catch {
-      /* 不接受不明确的头像地址。 */
-    }
-  }
-  const overrides: Record<string, unknown> = {
-    ...identity,
-    ...(unionid ? { qq_unionid: unionid } : {}),
-    ...(nickname ? { nickname } : {}),
-    ...(avatar ? { avatar_url: avatar } : {})
-  };
-  const queries: Array<Record<string, unknown>> = unionid ? [{ qq_unionid: unionid }, identity] : [identity];
-  const { user, isNewUser } = await findOrCreateUserByIdentity(queries, overrides, requestId, 'QQ');
-  const userData = user.data as Record<string, any>;
-  // 唯一索引争用后的回查也必须复核归属，不能覆盖冲突账户。
-  if (!isNewUser && conflicting(userData)) {
-    return { code: 409, success: false, message: 'QQ 账户关联冲突，请联系管理员', requestId };
-  }
-  if (!isNewUser) {
-    const patch: Record<string, unknown> = { ...identity, updated_at: Date.now() };
-    if (unionid && !userData.qq_unionid) patch.qq_unionid = unionid;
-    if (nickname && String(userData.nickname || '').startsWith('考研学子')) patch.nickname = nickname;
-    if (avatar && !userData.avatar_url) patch.avatar_url = avatar;
-    await usersCollection.doc(String(userData._id)).update(patch);
-    Object.assign(userData, patch);
-  }
-  const userId = String(userData._id);
-  const token = generateJWT({ userId, qq_openid: openid, role: userData.role });
-  const duration = Date.now() - startTime;
-  logger.info(`[${requestId}] QQ登录成功，耗时: ${duration}ms`);
-  return {
-    code: 0,
-    data: {
-      userId,
-      token,
-      isNewUser,
-      userInfo: {
-        _id: userId,
-        id: userId,
-        nickname: userData.nickname,
-        avatar_url: userData.avatar_url,
-        role: userData.role,
-        streak_days: userData.streak_days,
-        total_study_days: userData.total_study_days,
-        total_questions: userData.total_questions,
-        correct_questions: userData.correct_questions,
-        settings: userData.settings
-      }
-    },
-    message: isNewUser ? '注册成功' : '登录成功',
-    requestId,
-    duration
-  };
-}
-
 // ==================== 微信登录处理（原有逻辑） ====================
 async function handleWechatLogin(ctx, requestId: string, startTime: number) {
   // 1. 参数校验（后端必须再校验一遍，不信任前端）
@@ -1313,7 +1021,8 @@ async function handleWechatLogin(ctx, requestId: string, startTime: number) {
     [{ openid }, ...(unionid ? [{ unionid }] : [])],
     { openid, unionid: unionid || null },
     requestId,
-    '微信'
+    '微信',
+    ctx.body
   );
   const userData = user.data as Record<string, any>;
 
@@ -1503,7 +1212,7 @@ async function handleWechatOAuthLogin(ctx, requestId: string, startTime: number,
   const existing = byIdentity || byUnionid;
   const { user, isNewUser } = existing
     ? { user: existing, isNewUser: false }
-    : await findOrCreateUserByIdentity(queries, overrides, requestId, label);
+    : await findOrCreateUserByIdentity(queries, overrides, requestId, label, ctx.body);
   const userData = user.data as Record<string, any>;
   // 唯一键冲突后的回查也必须核对绑定，不能通过并发路径覆盖别人的身份。
   if (
@@ -1591,4 +1300,75 @@ function generateJWT(payload) {
  */
 export function verifyJWT(token) {
   return verifySharedJWT(token);
+}
+
+async function regionalLogin(ctx: any, requestId: string) {
+  const body = ctx.body || {},
+    sessions = db.collection('auth_confirmations');
+  if (body.type === 'capabilities') {
+    const apple = providerConfig('apple', body.platform),
+      google = providerConfig('google', body.platform);
+    const origin = ctx.headers?.origin || ctx.headers?.Origin;
+    const appleAllowed = apple && (body.platform !== 'h5' || new URL(apple.redirectUri).origin === origin);
+    return {
+      code: 0,
+      data: {
+        apple: appleAllowed ? apple : null,
+        google,
+        wechat:
+          body.platform === 'mp-weixin'
+            ? !!(WX_APPID && WX_SECRET)
+            : body.platform === 'app'
+              ? !!(WX_MOBILE_APPID && WX_MOBILE_SECRET)
+              : body.wechatMode === 'h5'
+                ? !!(WX_GZH_APPID && WX_GZH_SECRET)
+                : !!(WX_WEB_APPID && WX_WEB_SECRET),
+        sms: false
+      }
+    };
+  }
+  if (body.type === 'age_confirm') return confirmAge(body, sessions);
+  if (!['US', 'CN'].includes(body.region)) return fail('INVALID_REGION');
+  let identity: Record<string, unknown>;
+  if (body.type === 'phone') {
+    normalizePhone(body.prefix, body.phone);
+    // Deliberately no real SMS adapter; flags alone cannot enable a transport.
+    if (body.action === 'send')
+      return sendPhoneCode(body, {
+        collection: db.collection('phone_codes'),
+        limit: checkRateLimitDistributed,
+        secret: JWT_SECRET,
+        enabled: process.env.AUTH_SMS_ENABLED === 'true',
+        authorized: process.env.AUTH_SMS_AUTHORIZED === 'true'
+      });
+    if (process.env.AUTH_SMS_ENABLED !== 'true' || process.env.AUTH_SMS_AUTHORIZED !== 'true')
+      return fail('SMS_DISABLED', 503);
+    if ((body.region === 'US' ? '+1' : '+86') !== body.prefix) return fail('INVALID_REGION');
+    identity = { phone: await verifyPhoneCode(body, db.collection('phone_codes'), JWT_SECRET) };
+  } else {
+    const provider = body.type as 'apple' | 'google';
+    if (body.action === 'begin') return beginProvider(provider, body.platform, sessions);
+    identity = await providerIdentity(body, sessions, (options) => cloud.fetch(options));
+  }
+  const { user, isNewUser } = await findOrCreateUserByIdentity([identity], identity, requestId, body.type, body);
+  const data = user.data as any;
+  if (data.is_deleted === true || ['blocked', 'deleted'].includes(data.status)) return fail('ACCOUNT_UNAVAILABLE', 401);
+  const userId = String(data._id);
+  if (!isNewUser) await usersCollection.doc(userId).update({ updated_at: Date.now() });
+  return {
+    code: 0,
+    data: {
+      userId,
+      token: generateJWT({ userId, role: data.role }),
+      isNewUser,
+      userInfo: {
+        _id: userId,
+        id: userId,
+        nickname: data.nickname,
+        avatar_url: data.avatar_url,
+        role: data.role,
+        settings: data.settings
+      }
+    }
+  };
 }

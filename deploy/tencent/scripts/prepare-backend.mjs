@@ -103,6 +103,27 @@ export function assertIdentityDefinitions(definitions, { legacy = false } = {}) 
       partialFilterExpression: { [first]: { $type: 'string' }, [second]: { $type: 'string' } }
     }
   });
+  // Current creation definitions; frozen earlier QQ receipts remain readable
+  // through the exact historical definitions below for protected recovery.
+  if (
+    !legacy &&
+    Array.isArray(definitions) &&
+    definitions.some((row) => row.options?.name === 'idx_apple_identity_unique')
+  ) {
+    const regional = [
+      composite('idx_wx_mobile_identity_unique', 'wx_mobile_appid', 'app_openid'),
+      ...['openid', 'h5_openid', 'unionid'].map((field) => ({
+        key: { [field]: 1 },
+        options: { name: 'idx_' + field + '_unique', unique: true, sparse: true }
+      })),
+      composite('idx_wx_web_identity_unique', 'wx_web_appid', 'web_openid'),
+      composite('idx_apple_identity_unique', 'apple_client_id', 'apple_sub'),
+      composite('idx_google_identity_unique', 'google_client_id', 'google_sub'),
+      { key: { phone: 1 }, options: { name: 'idx_phone_unique', unique: true, sparse: true } }
+    ];
+    assert.deepEqual(definitions, regional);
+    return;
+  }
   const expected = [
     composite('idx_wx_mobile_identity_unique', 'wx_mobile_appid', 'app_openid'),
     ...['openid', 'h5_openid', 'unionid', 'qq_openid', 'qq_unionid'].map((field) => ({
@@ -221,11 +242,22 @@ export function assertIdentityPredecessor(previous, next) {
   assert.ok(previous.contractVersion === undefined || previous.contractVersion === stageContract);
   assertIdentityDefinitions(previous.definitions, { legacy: previous.contractVersion === undefined });
   assertIdentityDefinitions(next.definitions);
-  for (const definition of previous.definitions)
+  const regional = next.definitions.some((row) => row.options.name === 'idx_apple_identity_unique');
+  const retired = new Set([
+    'idx_qq_openid_unique',
+    'idx_qq_unionid_unique',
+    'idx_qq_mobile_identity_unique',
+    'idx_qq_mini_identity_unique'
+  ]);
+  // Retire only QQ creation definitions. Recovery still requires every original
+  // actual index to remain unchanged through assertIdentityRecoveryShape.
+  for (const definition of previous.definitions) {
+    if (regional && retired.has(definition.options.name)) continue;
     assert.deepEqual(
       next.definitions.find((row) => row.options.name === definition.options.name),
       definition
     );
+  }
   assert.equal(previous.scope, 'user-identities');
   assert.equal(previous.actualScopedMigrationAndIdempotency, true);
   assert.equal(previous.userDocumentsModified, false);
@@ -731,15 +763,32 @@ async function validateStageIndexes(names, env, db) {
     'desktop_oauth_sessions',
     'users'
   ]);
-  const specifications = [
-    ['idx_wx_mobile_identity_unique', 'wx_mobile_appid', 'app_openid'],
-    ['idx_qq_mobile_identity_unique', 'qq_mobile_appid', 'qq_mobile_openid'],
-    ['idx_qq_mini_identity_unique', 'qq_mini_appid', 'qq_mini_openid'],
-    ['idx_wx_web_identity_unique', 'wx_web_appid', 'web_openid']
-  ];
   const users = db.collection('users');
   const indexes = await users.indexes();
-  assert.equal(indexes.length, 11);
+  const regional = indexes.some((row) => row.name === 'idx_apple_identity_unique');
+  // Older frozen candidates retain their exact historical probe during recovery.
+  const specifications = [
+    ['idx_wx_mobile_identity_unique', 'wx_mobile_appid', 'app_openid'],
+    ['idx_wx_web_identity_unique', 'wx_web_appid', 'web_openid'],
+    ...(regional
+      ? [
+          ['idx_apple_identity_unique', 'apple_client_id', 'apple_sub'],
+          ['idx_google_identity_unique', 'google_client_id', 'google_sub']
+        ]
+      : [
+          ['idx_qq_mobile_identity_unique', 'qq_mobile_appid', 'qq_mobile_openid'],
+          ['idx_qq_mini_identity_unique', 'qq_mini_appid', 'qq_mini_openid']
+        ])
+  ];
+  assert.equal(indexes.length, regional ? 10 : 11);
+  if (regional) {
+    const phone = indexes.find((row) => row.name === 'idx_phone_unique');
+    assert.deepEqual(phone?.key, { phone: 1 });
+    assert.equal(phone?.unique, true);
+    assert.equal(phone?.sparse, true);
+    await users.insertOne({ _id: crypto.randomUUID(), phone: '+12025550123' });
+    await assert.rejects(() => users.insertOne({ _id: crypto.randomUUID(), phone: '+12025550123' }), { code: 11000 });
+  }
   assert.ok(indexes.some((row) => row.name === 'email_1' && row.unique && row.sparse));
   assert.ok(!indexes.some((row) => row.name === 'idx_email'));
   for (const [name, appField, identityField] of specifications) {
@@ -759,7 +808,7 @@ async function validateStageIndexes(names, env, db) {
     { _id: crypto.randomUUID(), nickname: 'synthetic-no-identity' },
     { _id: crypto.randomUUID(), nickname: 'synthetic-no-identity' }
   ]);
-  assert.equal(await users.countDocuments({ qq_unionid: null }), await users.countDocuments());
+  if (!regional) assert.equal(await users.countDocuments({ qq_unionid: null }), await users.countDocuments());
   assert.equal(await db.collection('questions').countDocuments(), 0);
   const retention = db.collection('desktop_oauth_sessions');
   const retentionBefore = { exists: false, count: 0, indexes: [] };

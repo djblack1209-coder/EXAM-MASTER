@@ -5,7 +5,7 @@ const HEX = /^[a-f0-9]{64}$/;
 const message = '账户或页面已变化，请重新登录';
 
 export async function loginDesktopOAuth(provider, exchange, isCurrent = () => true, onOpened) {
-  if (!isDesktopRuntime() || !['qq', 'wechat'].includes(provider)) throw new Error('此操作需要Yozi AI桌面应用');
+  if (!isDesktopRuntime() || !['wechat'].includes(provider)) throw new Error('此操作需要Yozi AI桌面应用');
   if (!isCurrent()) throw new Error(message);
   const proof = await invoke('create_desktop_oauth_proof').catch(() => {
     throw new Error('当前环境不支持安全授权，请使用邮箱登录');

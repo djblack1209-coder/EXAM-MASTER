@@ -30,7 +30,6 @@ function fixture() {
   const verifier = 'ab'.repeat(32);
   const challenge = crypto.createHash('sha256').update(verifier).digest('hex');
   const configs: any = {
-    qq: { appId: 'test_qq_123', redirectUri: 'https://learning.example.com/oauth/qq.html' },
     wechat: { appId: 'test_wx_123', redirectUri: 'https://learning.example.com/oauth/wechat.html' }
   };
   const deps = {
@@ -61,8 +60,8 @@ function fixture() {
       },
       deps
     );
-  const begin = (provider = 'qq') => call({ action: 'begin', provider, challenge });
-  const finish = (id: string, provider = 'qq', extra: any = {}) =>
+  const begin = (provider = 'wechat') => call({ action: 'begin', provider, challenge });
+  const finish = (id: string, provider = 'wechat', extra: any = {}) =>
     call(
       {
         action: 'complete',
@@ -91,28 +90,25 @@ function fixture() {
 }
 
 describe('desktop OAuth bound handover', () => {
-  it.each(['qq', 'wechat'])(
-    'browser gets no token; %s desktop claims once using its original proof',
-    async (provider) => {
-      const f = fixture();
-      const started = await f.begin(provider);
-      const id = started.data!.sessionId;
-      const url = new URL(started.data!.authorizationUrl);
-      expect(url.searchParams.get('state')).toBe(`desktop_${id}`);
-      expect(url.searchParams.get('redirect_uri')).toBe(f.configs[provider].redirectUri);
-      expect(JSON.stringify(started)).not.toContain(f.verifier);
-      expect((await f.poll(id)).data).toMatchObject({ status: 'pending', interval: 3 });
-      const completed = await f.finish(id, provider);
-      expect(completed).toMatchObject({ code: 0, data: { desktopReady: true } });
-      const serialized = JSON.stringify([completed, [...f.records.values()]]);
-      for (const secret of ['private-user-fixture', 'private-jwt-fixture', f.verifier])
-        expect(serialized).not.toContain(secret);
-      const results = await Promise.all([f.poll(id), f.poll(id)]);
-      expect(results.map((r) => r.code).sort()).toEqual([0, 409]);
-      expect(f.deps.issue).toHaveBeenCalledTimes(1);
-      expect(f.records.get(id).result).toBeNull();
-    }
-  );
+  it.each(['wechat'])('browser gets no token; %s desktop claims once using its original proof', async (provider) => {
+    const f = fixture();
+    const started = await f.begin(provider);
+    const id = started.data!.sessionId;
+    const url = new URL(started.data!.authorizationUrl);
+    expect(url.searchParams.get('state')).toBe(`desktop_${id}`);
+    expect(url.searchParams.get('redirect_uri')).toBe(f.configs[provider].redirectUri);
+    expect(JSON.stringify(started)).not.toContain(f.verifier);
+    expect((await f.poll(id)).data).toMatchObject({ status: 'pending', interval: 3 });
+    const completed = await f.finish(id, provider);
+    expect(completed).toMatchObject({ code: 0, data: { desktopReady: true } });
+    const serialized = JSON.stringify([completed, [...f.records.values()]]);
+    for (const secret of ['private-user-fixture', 'private-jwt-fixture', f.verifier])
+      expect(serialized).not.toContain(secret);
+    const results = await Promise.all([f.poll(id), f.poll(id)]);
+    expect(results.map((r) => r.code).sort()).toEqual([0, 409]);
+    expect(f.deps.issue).toHaveBeenCalledTimes(1);
+    expect(f.records.get(id).result).toBeNull();
+  });
   it('parallel browser finishes exchange one credential once', async () => {
     const f = fixture(),
       start = await f.begin(),
@@ -127,7 +123,7 @@ describe('desktop OAuth bound handover', () => {
       const f = fixture(),
         id = (await f.begin()).data!.sessionId;
       const result = await f.call(
-        { action: 'complete', provider: 'qq', state: `desktop_${id}`, code: 'test_code' },
+        { action: 'complete', provider: 'wechat', state: `desktop_${id}`, code: 'test_code' },
         origin
       );
       expect(result.code).toBe(403);
@@ -138,8 +134,8 @@ describe('desktop OAuth bound handover', () => {
   it('provider/config switching cannot consume the valid originating request', async () => {
     const f = fixture(),
       id = (await f.begin()).data!.sessionId;
-    expect((await f.finish(id, 'wechat')).code).toBe(403);
-    f.configs.qq.appId = 'changed-app';
+    expect((await f.finish(id, 'qq')).code).toBe(403);
+    f.configs.wechat.appId = 'changed-app';
     expect((await f.finish(id)).code).toBe(403);
     expect(f.records.get(id).phase).toBe('pending');
     expect(f.deps.exchange).not.toHaveBeenCalled();
@@ -221,15 +217,18 @@ describe('desktop OAuth bound handover', () => {
   });
   it.each(['https://learning.example.com', '', 'null'])('browser %s cannot create a native session', async (origin) => {
     const f = fixture();
-    expect((await f.call({ action: 'begin', provider: 'qq', challenge: f.challenge }, origin)).code).toBe(403);
+    expect((await f.call({ action: 'begin', provider: 'wechat', challenge: f.challenge }, origin)).code).toBe(403);
     expect(f.deps.collection.add).not.toHaveBeenCalled();
   });
   it('GET, unknown fields and malformed proofs fail before supplier calls or writes', async () => {
     const f = fixture();
     for (const [body, method] of [
-      [{ action: 'begin', provider: 'qq', challenge: f.challenge }, 'GET'],
-      [{ action: 'begin', provider: 'qq', challenge: f.challenge, redirectUri: 'https://evil.example.com/' }, 'POST'],
-      [{ action: 'begin', provider: 'qq', challenge: 'a' }, 'POST']
+      [{ action: 'begin', provider: 'wechat', challenge: f.challenge }, 'GET'],
+      [
+        { action: 'begin', provider: 'wechat', challenge: f.challenge, redirectUri: 'https://evil.example.com/' },
+        'POST'
+      ],
+      [{ action: 'begin', provider: 'wechat', challenge: 'a' }, 'POST']
     ] as const) {
       expect((await f.call(body, 'tauri://localhost', method)).code).toBe(400);
     }
@@ -239,7 +238,7 @@ describe('desktop OAuth bound handover', () => {
   it('supplier cancellation is consumed once and stops desktop polling', async () => {
     const f = fixture(),
       id = (await f.begin()).data!.sessionId;
-    expect((await f.finish(id, 'qq', { error: 'access_denied' })).message).toBe('用户取消授权');
+    expect((await f.finish(id, 'wechat', { error: 'access_denied' })).message).toBe('用户取消授权');
     expect((await f.poll(id)).message).toBe('用户取消授权');
     expect((await f.finish(id)).code).toBe(409);
     expect(f.deps.exchange).not.toHaveBeenCalled();
@@ -263,14 +262,14 @@ describe('desktop OAuth bound handover', () => {
     expect(f.records.get(id).phase).toBe('pending');
   });
   it.each([
-    'http://learning.example.com/oauth/qq.html',
+    'http://learning.example.com/oauth/wechat.html',
     'https://learning.example.com/#/callback',
-    'https://127.0.0.1/oauth/qq.html',
-    'https://10.1.1.1/oauth/qq.html',
-    'https://user@learning.example.com/oauth/qq.html',
-    'https://learning.example.com:5000/oauth/qq.html'
+    'https://127.0.0.1/oauth/wechat.html',
+    'https://10.1.1.1/oauth/wechat.html',
+    'https://user@learning.example.com/oauth/wechat.html',
+    'https://learning.example.com:5000/oauth/wechat.html'
   ])('rejects unsafe registered callback %s', (value) => {
-    expect(desktopCallbackOrigin('qq', value)).toBeNull();
-    expect(() => desktopAuthorizationUrl('qq', { appId: 'test', redirectUri: value }, '00'.repeat(32))).toThrow();
+    expect(desktopCallbackOrigin('wechat', value)).toBeNull();
+    expect(() => desktopAuthorizationUrl('wechat', { appId: 'test', redirectUri: value }, '00'.repeat(32))).toThrow();
   });
 });

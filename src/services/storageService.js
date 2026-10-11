@@ -241,8 +241,6 @@ const GLOBAL_KEYS = new Set([
   // 登录前状态
   'redirect_after_login',
   'wx_oauth_state',
-  'qq_oauth_state',
-  'qq_oauth_origin',
   // 应用级 UI/设置
   'theme_mode',
   'theme_type',

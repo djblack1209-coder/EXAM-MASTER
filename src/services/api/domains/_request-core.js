@@ -120,6 +120,7 @@ export function normalizeResponse(raw, context = '') {
     success: isSuccess,
     message,
     data,
+    ...(raw.errorCode ? { errorCode: raw.errorCode } : {}),
     ...(raw.error ? { error: raw.error } : {})
   };
 }
@@ -151,12 +152,6 @@ const PUBLIC_AUTH_ERROR_MESSAGES = new Map([
   ['验证码已过期，请重新获取', '验证码已过期，请重新获取'],
   ['验证失败次数过多，请5分钟后再试', '验证失败次数过多，请5分钟后再试'],
   ['密码强度不足，请按要求设置密码', '密码强度不足，请按要求设置密码'],
-  ['QQ 登录校验失败，请重新登录', 'QQ 登录校验失败，请重新登录'],
-  ['QQ 登录凭证无效，请重新登录', 'QQ 登录凭证无效，请重新登录'],
-  ['QQ 登录参数无效', 'QQ 登录参数无效'],
-  ['QQ 登录平台无效', 'QQ 登录平台无效'],
-  ['QQ 回调地址无效，请检查配置', 'QQ 回调地址无效，请检查配置'],
-  ['QQ 账户关联冲突，请联系管理员', 'QQ 账户关联冲突，请联系管理员'],
   ['桌面授权未配置，请使用邮箱登录', '桌面授权未配置，请使用邮箱登录'],
   ['桌面授权未完成，请重新登录', '桌面授权未完成，请重新登录'],
   ['桌面授权已过期，请重新登录', '桌面授权已过期，请重新登录'],
@@ -195,6 +190,29 @@ export function normalizeError(error, context = '', { redact = false } = {}) {
         : '未知错误';
 
   if (redact) {
+    const allowedCodes = new Set([
+      'SMS_DISABLED',
+      'SMS_UNAVAILABLE',
+      'PROVIDER_DISABLED',
+      'PROVIDER_UNAVAILABLE',
+      'RATE_LIMITED',
+      'AGE_BLOCKED',
+      'AGE_CONFIRMATION_REQUIRED',
+      'INVALID_BIRTH_MONTH',
+      'INVALID_PHONE',
+      'INVALID_PHONE_CODE',
+      'INVALID_IDENTITY_TOKEN',
+      'IDENTITY_REPLAY',
+      'REGION_REQUIRED',
+      'INVALID_REGION',
+      'UNSUPPORTED_LOGIN',
+      'ACCOUNT_UNAVAILABLE'
+    ]);
+    const errorCode = allowedCodes.has(error?.errorCode)
+      ? error.errorCode
+      : allowedCodes.has(rawMessage)
+        ? rawMessage
+        : undefined;
     const code = error?.code || error?.statusCode;
     const publicMessage =
       typeof rawMessage === 'string'
@@ -216,6 +234,7 @@ export function normalizeError(error, context = '', { redact = false } = {}) {
     return {
       code: Number.isSafeInteger(code) && code >= -2 && code <= 599 ? code : -1,
       success: false,
+      ...(errorCode ? { errorCode } : {}),
       message: publicMessage || message || fallback,
       data: null
     };

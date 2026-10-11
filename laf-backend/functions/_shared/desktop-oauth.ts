@@ -7,7 +7,7 @@ const POLL_INTERVAL = 3000;
 const HEX = /^[a-f0-9]{64}$/;
 const STATES = ['pending', 'exchanging', 'ready', 'failed', 'cancelled', 'consumed'];
 
-type Provider = 'qq' | 'wechat';
+type Provider = 'wechat';
 type ProviderConfig = { appId: string; redirectUri: string };
 type Dependencies = {
   collection: any;
@@ -52,14 +52,12 @@ export function desktopAuthorizationUrl(provider: Provider, config: ProviderConf
     !desktopCallbackOrigin(provider, config.redirectUri)
   )
     throw new Error('desktop configuration invalid');
-  const url = new URL(
-    provider === 'qq' ? 'https://graph.qq.com/oauth2.0/authorize' : 'https://open.weixin.qq.com/connect/qrconnect'
-  );
-  url.searchParams.set(provider === 'qq' ? 'client_id' : 'appid', config.appId);
+  const url = new URL('https://open.weixin.qq.com/connect/qrconnect');
+  url.searchParams.set('appid', config.appId);
   url.searchParams.set('response_type', 'code');
   url.searchParams.set('redirect_uri', config.redirectUri);
   url.searchParams.set('state', `desktop_${id}`);
-  url.searchParams.set('scope', provider === 'qq' ? 'get_user_info' : 'snsapi_login');
+  url.searchParams.set('scope', 'snsapi_login');
   if (provider === 'wechat') url.hash = 'wechat_redirect';
   return url.href;
 }
@@ -96,7 +94,7 @@ export async function handleDesktopOAuth(ctx: any, deps: Dependencies) {
     if (!(await deps.pollAllowed(ip))) return fail(429, '请求过于频繁，请稍后再试');
   }
   if (action === 'begin') {
-    if (!['qq', 'wechat'].includes(body.provider) || typeof body.challenge !== 'string' || !HEX.test(body.challenge)) {
+    if (!['wechat'].includes(body.provider) || typeof body.challenge !== 'string' || !HEX.test(body.challenge)) {
       return fail(400, '桌面授权参数无效');
     }
     const provider = body.provider as Provider;

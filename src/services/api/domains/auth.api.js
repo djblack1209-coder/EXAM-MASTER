@@ -1,6 +1,6 @@
 /**
  * 认证服务 API
- * 职责：用户登录（微信/QQ/邮箱）、邮箱验证码发送
+ * 职责：用户登录（微信/Apple/Google/手机号/邮箱）、邮箱验证码发送
  *
  * @module services/api/domains/auth
  */
@@ -12,8 +12,8 @@ import { request, normalizeError } from './_request-core.js';
 /**
  * 统一登录接口
  * @param {Object} params - 登录参数
- * @param {string} params.type - 登录类型: 'wechat' | 'qq' | 'email'
- * @param {string} params.code - 微信/QQ登录凭证
+ * @param {string} params.type - 登录类型: 'wechat' | 'apple' | 'google' | 'phone' | 'email'
+ * @param {string} params.code - 微信登录凭证
  * @param {string} params.email - 邮箱地址
  * @param {string} params.password - 密码
  * @param {string} params.verifyCode - 验证码（注册时需要）
@@ -73,7 +73,7 @@ export async function desktopOAuth(params) {
  */
 export async function sendEmailCode(email) {
   try {
-    logger.log('[LafService] 📧 发送验证码:', { email });
+    logger.log('[LafService] 邮箱验证码请求');
 
     const response = await request(
       '/send-email-code',

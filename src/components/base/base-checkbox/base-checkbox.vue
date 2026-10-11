@@ -33,6 +33,9 @@ function toggle(event) {
   if (!props.disabled && !event?.target?.closest?.('a, [role="link"]')) emit('update:modelValue', !props.modelValue);
 }
 function keydown(event) {
+  // #ifdef H5
+  if (!event.currentTarget?.addEventListener) return;
+  // #endif
   if (event.defaultPrevented) return;
   if (event.target !== event.currentTarget || !['Enter', ' '].includes(event.key)) return;
   event.preventDefault();

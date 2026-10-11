@@ -189,10 +189,25 @@ describe('request core', () => {
   });
 });
 
-describe('QQ 登录错误保留固定提示并隐藏上游详情', () => {
+describe('退役 QQ 提示不再进入固定文案白名单', () => {
+  it('只保留固定地区登录错误码，上游详情与任意错误码不泄露', async () => {
+    const { normalizeError } = await import('@/services/api/domains/_request-core.js');
+    for (const errorCode of ['SMS_DISABLED', 'AGE_CONFIRMATION_REQUIRED', 'UNSUPPORTED_LOGIN']) {
+      const result = normalizeError(
+        { code: 403, errorCode, message: 'private-provider-detail', token: 'private-token' },
+        '',
+        { redact: true }
+      );
+      expect(result.errorCode).toBe(errorCode);
+      expect(JSON.stringify(result)).not.toContain('private-');
+    }
+    expect(normalizeError({ errorCode: 'private-provider-detail' }, '', { redact: true })).not.toHaveProperty(
+      'errorCode'
+    );
+  });
   it.each([
-    [401, 'QQ 登录校验失败，请重新登录', 'QQ 登录校验失败，请重新登录'],
-    [409, 'QQ 账户关联冲突，请联系管理员', 'QQ 账户关联冲突，请联系管理员'],
+    [401, 'QQ 登录校验失败，请重新登录', '登录验证失败，请重新登录'],
+    [409, 'QQ 账户关联冲突，请联系管理员', '操作失败，请重试'],
     [401, 'QQ 登录校验失败，请重新登录 TEST_ONLY_private_token', '登录验证失败，请重新登录']
   ])('%s 错误仅匹配完整业务文案', async (code, message, expected) => {
     uni.request.mockImplementation(({ success }) => {

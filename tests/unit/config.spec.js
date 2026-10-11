@@ -62,7 +62,6 @@ describe('config/index.js', () => {
         'isDev',
         'isProd',
         'wx',
-        'qq',
         'api',
         'ai',
         'app',
@@ -79,6 +78,7 @@ describe('config/index.js', () => {
         'retry',
         '_source'
       ];
+      expect(config).not.toHaveProperty('qq');
       requiredKeys.forEach((key) => {
         expect(config).toHaveProperty(key);
       });

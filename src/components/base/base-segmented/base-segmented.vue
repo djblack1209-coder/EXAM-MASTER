@@ -50,6 +50,10 @@ function select(index) {
   if (option && !option.disabled) emit('update:modelValue', option.value);
 }
 function keydown(event) {
+  // uni H5 also emits a wrapped event; only the native DOM listener owns keys.
+  // #ifdef H5
+  if (!event.currentTarget?.querySelectorAll) return;
+  // #endif
   if (event.defaultPrevented) return;
   const controls = [...event.currentTarget.querySelectorAll('[role="tab"]')];
   const index = controls.indexOf(event.target.closest('[role="tab"]'));

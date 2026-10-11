@@ -55,85 +55,7 @@ export async function loginNativeWechat(runtime, exchange, isCurrent) {
   return response;
 }
 
-// QQ SDK 取得 token，服务端须再核验 /me 的 client_id；不信任客户端资料或 openid。
-export function requestNativeQQCredential(runtime) {
-  if (isDesktopRuntime() || typeof runtime?.getProvider !== 'function' || typeof runtime?.login !== 'function') {
-    return Promise.reject(new Error('当前设备不支持QQ登录'));
-  }
-  return new Promise((resolve, reject) => {
-    let stage = 'provider';
-    let finished = false;
-    const finish = (error, token) => {
-      if (finished) return;
-      finished = true;
-      clearTimeout(timer);
-      if (error) reject(error);
-      else resolve(token);
-    };
-    const timer = setTimeout(() => finish(new Error('QQ授权已超时，请重新登录')), 120_000);
-    try {
-      runtime.getProvider({
-        service: 'oauth',
-        success: (result) => {
-          if (finished || stage !== 'provider') return;
-          if (!Array.isArray(result?.provider) || !result.provider.includes('qq')) {
-            finish(new Error('请先安装QQ客户端'));
-            return;
-          }
-          stage = 'login';
-          try {
-            runtime.login({
-              provider: 'qq',
-              success: (result) => {
-                const token = result?.authResult?.access_token;
-                if (typeof token !== 'string' || !/^[\x21-\x7e]{1,2048}$/.test(token)) {
-                  finish(new Error('获取QQ登录凭证失败，请重新登录'));
-                  return;
-                }
-                finish(null, token);
-              },
-              fail: (error) => {
-                const message = typeof error?.errMsg === 'string' ? error.errMsg : '';
-                finish(
-                  new Error(
-                    /cancel|取消/i.test(message)
-                      ? '已取消QQ登录'
-                      : /deny|denied|拒绝/i.test(message)
-                        ? '用户拒绝授权'
-                        : 'QQ登录失败，请重试'
-                  )
-                );
-              }
-            });
-          } catch {
-            finish(new Error('QQ登录失败，请重试'));
-          }
-        },
-        fail: () => {
-          if (stage === 'provider') finish(new Error('当前设备不支持QQ登录'));
-        }
-      });
-    } catch {
-      finish(new Error('QQ登录失败，请重试'));
-    }
-  });
-}
-
-export async function loginNativeQQ(runtime, exchange, isCurrent) {
-  const accessToken = await requestNativeQQCredential(runtime);
-  if (!isCurrent()) throw new Error('页面或账户已变化，请重新登录');
-  let response;
-  try {
-    response = await exchange({ accessToken, platform: 'app' });
-  } catch {
-    throw new Error('登录请求失败，请重试');
-  }
-  if (!isCurrent()) throw new Error('页面或账户已变化，请重新登录');
-  return response;
-}
-
 function providerInfo(provider) {
-  if (provider === 'qq') return { key: 'qq_oauth_state', name: 'QQ', route: 'qq-callback' };
   if (provider === 'wechat') return { key: 'wx_oauth_state', name: '微信', route: 'wechat-callback' };
   throw new Error('不支持的授权方式');
 }
@@ -186,20 +108,15 @@ export function beginWebOAuth(provider, appId, configuredRedirect = '', { wechat
     throw new Error('无法保存授权校验信息，请重新登录');
   }
   const authUrl = new URL(
-    provider === 'qq'
-      ? 'https://graph.qq.com/oauth2.0/authorize'
-      : wechatMode === 'website'
-        ? 'https://open.weixin.qq.com/connect/qrconnect'
-        : 'https://open.weixin.qq.com/connect/oauth2/authorize'
+    wechatMode === 'website'
+      ? 'https://open.weixin.qq.com/connect/qrconnect'
+      : 'https://open.weixin.qq.com/connect/oauth2/authorize'
   );
-  authUrl.searchParams.set(provider === 'qq' ? 'client_id' : 'appid', appId);
+  authUrl.searchParams.set('appid', appId);
   authUrl.searchParams.set('response_type', 'code');
   authUrl.searchParams.set('redirect_uri', redirectUri);
   authUrl.searchParams.set('state', state);
-  authUrl.searchParams.set(
-    'scope',
-    provider === 'qq' ? 'get_user_info' : wechatMode === 'website' ? 'snsapi_login' : 'snsapi_userinfo'
-  );
+  authUrl.searchParams.set('scope', wechatMode === 'website' ? 'snsapi_login' : 'snsapi_userinfo');
   if (provider === 'wechat') authUrl.hash = 'wechat_redirect';
   return authUrl.href;
 }
@@ -248,7 +165,6 @@ export function consumeWebOAuth(provider, options = {}) {
   const context = storageService.get(info.key);
   // Claim even denied, malformed or expired callbacks before any network request.
   if (!storageService.remove(info.key, true)) throw new Error('无法清除授权校验信息，请重新登录');
-  if (provider === 'qq') storageService.remove('qq_oauth_origin', true);
   requireWebOAuth(provider);
   const page = currentUrl();
   let params;

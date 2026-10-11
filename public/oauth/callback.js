@@ -2,7 +2,7 @@
 
 (() => {
   const page = new URL(window.location.href);
-  const provider = page.pathname.match(/\/oauth\/(qq|wechat)\.html$/)?.[1];
+  const provider = page.pathname.match(/\/oauth\/(wechat)\.html$/)?.[1];
   const application = new URL('../', page);
   const parameters = new URLSearchParams();
   // Preserve duplicates so the existing callback validator rejects them.
@@ -19,7 +19,7 @@
     window.location.replace(application.href);
     return;
   }
-  application.hash = provider ? `/pages/login/${provider === 'qq' ? 'qq' : 'wechat'}-callback` : '/pages/login/index';
+  application.hash = provider ? `/pages/login/wechat-callback` : '/pages/login/index';
   if (provider && parameters.size) application.hash += `?${parameters}`;
   // Only a fixed page on this origin can receive the response. No network or storage access here.
   window.location.replace(application.href);

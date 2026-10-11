@@ -80,6 +80,9 @@ class AnalyticsService {
    */
   init(options = {}) {
     if (this.isInitialized) return;
+    // Registration/age screening must not create an anonymous analytics profile.
+    // Existing signed-in accounts retain their established analytics flow.
+    if (!storageService.get('EXAM_USER_ID', null)) return;
 
     // 合并配置
     this.config = { ...this.config, ...options };
@@ -116,6 +119,7 @@ class AnalyticsService {
    * @param {number} priority - 优先级
    */
   track(eventName, data = {}, priority = EVENT_PRIORITY.NORMAL) {
+    if (!storageService.get('EXAM_USER_ID', null)) return;
     const event = {
       id: this._generateEventId(),
       name: eventName,
@@ -247,6 +251,7 @@ class AnalyticsService {
    * 设置用户属性
    */
   setUserProperties(properties) {
+    if (!storageService.get('EXAM_USER_ID', null)) return;
     const profile = storageService.get(STORAGE_KEYS.USER_PROFILE, {});
     const updatedProfile = { ...profile, ...properties, updatedAt: Date.now() };
     storageService.save(STORAGE_KEYS.USER_PROFILE, updatedProfile);
@@ -390,6 +395,7 @@ class AnalyticsService {
    * 批量上报
    */
   _uploadBatch() {
+    if (!storageService.get('EXAM_USER_ID', null)) return;
     if (this.eventQueue.length === 0) return;
 
     const eventsToUpload = this.eventQueue.splice(0, this.config.batchSize);
@@ -400,6 +406,7 @@ class AnalyticsService {
    * 上报事件
    */
   async _uploadEvents(events) {
+    if (!storageService.get('EXAM_USER_ID', null)) return;
     if (events.length === 0) return;
 
     try {

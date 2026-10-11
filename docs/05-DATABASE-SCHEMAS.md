@@ -14,13 +14,11 @@
 
 现有管理员迁移新增独立 `scope=desktop-oauth`，只创建 `{expires_at:1}`、`expireAfterSeconds:0`、名称 `idx_desktop_oauth_expiry`；管理员鉴权先于范围处理，不顺带执行用户或完整迁移。开启前核对实际索引，缺失或无法读取时 begin 拒绝创建记录。TTL 后台清理不保证准点，因此每次动作另检查严格 deadline；备份恢复或延迟删除不能延长授权有效期。真实本机认证 Mongo 的索引幂等、权限拒绝、并发单次领取、取消/过期/当前账户重查及实际过期清理已验证；腾讯私有主库的限定应用、实际撤销新空集合和独立后检已接受，实际只有两项索引与零记录。桌面分支保持默认关闭，真实授权与原生成功领取另验，客户无需手工修库。
 
-## QQ 账户身份
+## 地区登录身份与年龄隐私
 
-网站保留 `qq_openid`；移动应用使用 `qq_mobile_appid + qq_mobile_openid`，小程序使用 `qq_mini_appid + qq_mini_openid`。同值 openid 不代表同平台/应用账户，只有服务器已核验的一致 `qq_unionid` 可以关联；冲突拒绝覆盖，缺 unionid 不写 null。客户端昵称、角色或 openid 不作为身份依据，供应商 token/session_key 不落库。
+当前新建身份索引见[04 登录合同](04-API-DOCUMENTATION.md#微信回调桌面接续与索引)，共八项。Apple 使用 apple_client_id + apple_sub，Google 使用 google_client_id + google_sub，均为完整字符串身份的复合唯一索引；手机号 phone 为 unique+sparse。Google/Apple 邮箱不参与账户合并。已有 QQ 账户、字段及服务器既有索引原样保留，只停止登录和新增 QQ 索引；上方私有主库事实是历史验收，不回写。
 
-现有管理员 `db-create-indexes` 增加 `idx_qq_mobile_identity_unique` 与 `idx_qq_mini_identity_unique`，分别为对应 AppID/openid 复合键，unique 且只在两个字段均为 string 时参与。开启新分支前必须在受保护迁移中核对实际索引；警告不作为成功。本机 Mongo 8.2.5 临时库实际验证未授权迁移拒绝、两个索引、并发首登单账户、跨平台/应用隔离、两种重复身份 11000 拒绝、错误应用凭证无写入及冲突前后记录完全一致，进程与数据已清理。[接口](04-API-DOCUMENTATION.md)。
-
-旧 App/小程序若只有混用的 qq_openid，不能仅凭同值 openid 自动改归属；须依已核验 unionid 或受保护迁移确认。当前已接受腾讯新私有库为空账户库，不宣称恢复这些旧账户或历史。当前不可变候选已在腾讯 Mongo 9.0.2 的事务临时库实际创建两个 QQ 复合身份索引，重复 11000 拒绝、跨应用独立、缺身份可共存通过，临时库清理；主库的限定索引迁移随后接受并验证，真实 QQ 授权仍未验收，见[09A](09A-LAF-BACKEND-DEPLOYMENT.md)。
+美国创建只记录 registration_region、age_over13 和 age_confirmed_at，不存出生年份、月份或日期。auth_confirmations 的年龄票据只存哈希和确认事实，OAuth 会话仅存必要 nonce/客户端/用途与使用状态，十分钟到期；phone_codes 只存号码哈希主键、验证码 HMAC/盐、尝试数、频控/幂等及使用状态。两集合使用 expires_at 的零秒 TTL 索引；到期判断不依赖异步 TTL 清理。迁移未在服务器执行。
 
 ## 微信账户身份
 
