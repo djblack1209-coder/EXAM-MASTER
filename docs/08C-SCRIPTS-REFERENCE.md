@@ -10,7 +10,7 @@
 
 ## 隔离构建约定
 
-标准 `npm run build:*` 会写正式目录 `dist/build/`。阶段核验使用底层 uni 构建并显式设置 `UNI_INPUT_DIR=src` 与 `UNI_OUTPUT_DIR=<tmp 内证据目录>`，桌面前端再加 `WENLI_DESKTOP=1`；之后依次运行既有 CDN 复制、`inject-mp-weixin-privacy.mjs`（同样传隔离的 `UNI_OUTPUT_DIR`）、微信主包全文件/媒体预算审计和 App 产物审计。`verify-app-artifacts.mjs` 的命令行会忽略 `--app-dir`，检查候选目录时须导入 `verifyAppArtifacts` 并传入实际路径。
+常规 uni 前端构建（H5、微信/QQ 小程序、App及桌面前端）默认写 `dist/build/<平台>/`。Apple Vision 构建写 `tmp/apple-vision-builds/build-*/`，App 插件构建写 `tmp/app-connector-packages/build-*/Wenli-Connector/`，后端默认编译/打包写 `laf-backend/standalone/dist/`；隔离后端输出见下文。微信构建前的 `scripts/build/generate-compressed-bank-modules.mjs` 会删除源码下旧生成目录 `src/pages/practice-sub/flashcard-banks/`，并重写 `src/pages/practice-sub/bank-data-table.js`；仅设置输出目录不能隔离这些源码副作用，核验须使用隔离源码工作目录。阶段核验使用底层 uni 构建并显式设置 `UNI_INPUT_DIR=src` 与 `UNI_OUTPUT_DIR=<tmp 内证据目录>`，桌面前端再加 `WENLI_DESKTOP=1`；之后依次运行既有 CDN 复制、`inject-mp-weixin-privacy.mjs`（同样传隔离的 `UNI_OUTPUT_DIR`）、微信主包全文件/媒体预算审计和 App 产物审计。`verify-app-artifacts.mjs` 的命令行会忽略 `--app-dir`，检查候选目录时须导入 `verifyAppArtifacts` 并传入实际路径。
 
 仅本机连接的核验构建再显式设置 `WENLI_ISOLATED_BUILD=1`，Vite跳过私有环境文件；`VITE_API_BASE_URL` 等客户端白名单配置须由命令明确传入，备用地址可为空。默认构建仍沿原配置。当前授权UI同步复用 `journey-candidate/verify-h5.mjs --ui-sync`，连接回环4382/固定隔离27189；`dist/build/h5-ui-sync` 为临时本机绑定产物，不能部署。核验浏览器/Node进程的测试时钟与系统时钟分别记录，不放宽未来记录校验。
 
@@ -38,7 +38,7 @@ learning-records.before-signing.json与learning-records.after-signing.json完整
 
 - `npm run test:app:material` → `node scripts/build/verify-app-material.mjs`：真实JDK/Foundation文件/NSFileCoordinator与阻塞管道验收；唯一忽略临时目录、合成资料，无网络/费用，完成清理，保留源码哈希报告。需要macOS/实际Java，`WENLI_TEST_JAVA_HOME`可指定既有工具链；不下载SDK，不代表移动设备。
 
-**阶段进度图**：用本机已有 OpenJDK 与 [PlantUML 官方](https://plantuml.com/download) MIT 版 1.2026.8 独立 JAR（SHA256 `3629c9cd017c7f73e6450396eea0040216c7e1eef8473ce33cc1aad469dab2f9`）渲染 [图源](diagrams/13-progress.puml) 为 [进度图](diagrams/13-progress.png)；采用[活动图语法](https://plantuml.com/activity-diagram-beta)，禁用远程资源，不新增 Graphviz 或常驻服务。
+**阶段进度图**：用本机已有 OpenJDK 与 [PlantUML 官方](https://plantuml.com/download) MIT 版 1.2026.8 独立 JAR（SHA256 `3629c9cd017c7f73e6450396eea0040216c7e1eef8473ce33cc1aad469dab2f9`）渲染 [图源](diagrams/13-progress.puml) 为 [进度图](diagrams/13-progress.png)；采用[活动图语法](https://plantuml.com/activity-diagram-beta)，禁用远程资源及图内源代码元数据，不新增 Graphviz 或常驻服务。
 
 **演示渲染**：`node scripts/build/render-learning-visual.mjs --check --engine manim` / `--engine blender` 只探测已有工具，不安装依赖或联网。缺引擎返回 `RENDERER_UNAVAILABLE` / 退出2。本机 Manim 不可用，既有 Blender 可用；视频实际来自后者，不能把固定 Manim 源码导出称为 Manim 渲染验收。
 
@@ -48,7 +48,7 @@ learning-records.before-signing.json与learning-records.after-signing.json完整
 
 ## 题库来源修复工具
 
-`answer_evidence_repair.py --restore-politics-reference` 必须同时给出 `--question-source`、`--answer-source`，沿 `--target`/`--write`，不能与 companion 修复混用；只接受两份已登记 raw-inbox PDF 的实际 SHA256。可选 `--supplement-source` 仅限登记的 2023 考研政治补充参考 PDF（10 页、≤1 MiB），只补 10/11 题；已补充的候选再执行时必须显式带同一补充来源。结果 `sourceRole=publisher_reference`、`scoringAuthority=false`、`rightsStatus=not_verified`，两个公共门禁继续以 `reference_only_authority` 拒绝。
+`answer_evidence_repair.py --restore-politics-reference` 必须同时给出 `--question-source`、`--answer-source`，沿 `--target`/`--write`，不能与 companion 修复混用；只接受两份已登记 raw-inbox PDF 的实际 SHA256，政治主来源题目/答案 PDF 各限 32 MiB。可选 `--supplement-source` 仅限登记的 2023 考研政治补充参考 PDF（10 页、≤1 MiB），只补 10/11 题；已补充的候选再执行时必须显式带同一补充来源。结果 `sourceRole=publisher_reference`、`scoringAuthority=false`、`rightsStatus=not_verified`，两个公共门禁继续以 `reference_only_authority` 拒绝。
 
 `english_passage_repair.py` 沿 `--target/--source-pdf/--write` 提供 `--restore-cloze-evidence`（2006/2007/2010 完形）与 `--restore-section-evidence`（2007/2010 翻译/排序），证明为 `cloze-source-v1` / `english-section-source-v1`，源文件限本机 raw-inbox 登记 PDF、16 MiB。所有修复工具都是干跑零写、整批失败不写、原子替换并保留旧证据历史。
 
@@ -76,6 +76,10 @@ learning-records.before-signing.json与learning-records.after-signing.json完整
 桌面授权使用已锁定的官方 `tauri-plugin-opener`、系统随机数和 SHA-256 依赖。仅提供生成一次会话证明、打开 QQ/微信固定授权地址及聚焦原窗口的本机命令；关闭插件的通用点击接管，不授予网页通用浏览器、文件路径或 shell 权限。编译与原生测试可通过明确的 `CARGO_TARGET_DIR` 放入本轮忽略目录，完成后按上述范围收尾，不改正式 App/DMG。配置与实际范围见[09](09-DEPLOYMENT-GUIDE.md)。
 
 2026-10-05 候选复用底层 uni 构建命令，以 `WENLI_DESKTOP=1` 和明确 `UNI_OUTPUT_DIR` 输出桌面前端，再运行既有 CDN 复制；标准 `desktop.mjs web` 会写正式目录，不用于这项隔离核验。Tauri 使用独立 `CARGO_TARGET_DIR`、空前置构建钩子、绝对前端路径和 `--bundles app --no-sign -- --offline --locked`，只生成本机 App。独立应用标识/应用目录与 macOS 14+ WebKit UUID 保护正式用户存储；锁定版配置宏将 UUID 数组错误生成 Vec 而报 E0308，后续只在临时源码副本增加一行官方 `WebviewWindowBuilder.data_store_identifier([u8; 16])`，保留原导航/权限，未改上游或依赖。旧失败日志、适配 diff/config 与最新候选归属复用原 `server.json`。[构建及实操范围](12-CHANGELOG.md)。
+
+## 内容包维护
+
+固定内容与适配分别位于 learning-oatutor-content 和 learning-oatutor；更新内容包必须新增明确版本，重新核验依赖、来源与语义，保留旧记录所需版本，不覆盖旧快照，不把上游答案转为可靠评分。回退入口仍须支持旧版本读取/重放，并保留来源及 CC 署名。
 
 ## 私人资料解析器与全平台入口
 
@@ -194,7 +198,7 @@ App连接器新增两个命令（运行条件/SDK边界见[09B](09B-APP-CONNECTO
 | `audit:backend:runtime`              | `node scripts/build/audit-backend-runtime.mjs`                                                                                                                                                                                                                                                                                                                                                                          | 本地检查或产物；审查源码与输出路径       |
 | `test:backend:http`                  | `node scripts/build/verify-backend-http.mjs`                                                                                                                                                                                                                                                                                                                                                                            | 本地检查或产物；审查源码与输出路径       |
 
-格式统一使用 Prettier / ESLint / Ruff，但不机械重写第三方 vendored 内容。read-only repository-health 不删除文件，不执行扫描发现的脚本；动态注册与条件平台仍需人工检查。发布门禁保持现有失败语义，报告成功不等于 canPublish=true。
+格式统一使用 Prettier / ESLint / Ruff，但不机械重写第三方 vendored 内容。repository-health 扫描 Git 列出的工作区源码、Markdown 和 package.json 脚本入口，排除忽略数据与第三方目录；会创建 `tmp/maintenance/` 并写入 `repository-health.json`，不删除文件、不执行扫描发现的脚本。链接检查只验证本地目标路径存在，不验证锚点；动态注册与条件平台仍需人工检查。发布门禁保持现有失败语义，报告成功不等于 canPublish=true。
 
 ## 本轮开发依赖安全适配
 
