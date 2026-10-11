@@ -49,8 +49,8 @@
         <view v-else-if="step === 'age'" class="login-stack age-form">
           <text class="login-title">{{ t('login.birth') }}</text
           ><text class="login-subtitle">{{ t('login.birthHelp') }}</text>
-          <BaseInput v-model="year" :label="t('login.year')" inputmode="numeric" :maxlength="4" />
-          <BaseInput v-model="month" :label="t('login.month')" inputmode="numeric" :maxlength="2" />
+          <BaseInput v-model="year" :label="t('login.year')" :options="birthYears" />
+          <BaseInput v-model="month" :label="t('login.month')" :options="birthMonths" />
           <text class="login-subtitle">{{ t('login.birthPrivacy') }}</text>
           <BaseButton variant="primary" block :loading="busy" :disabled="busy || !agreedToTerms" @tap="submitAge">{{
             t('login.continue')
@@ -74,6 +74,7 @@
             :maxlength="6"
             :disabled="busy || !agreedToTerms"
             :resend-seconds="phoneCooldown"
+            :verification-sent="phoneSent"
             @resend="sendPhone"
           />
           <BaseButton variant="primary" block :loading="busy" :disabled="busy || !agreedToTerms" @tap="submitPhone">{{
@@ -187,6 +188,12 @@ const region = ref(readLoginRegion()),
   step = ref('methods'),
   busy = ref(false),
   error = ref('');
+const birthYears = Array.from({ length: 121 }, (_, index) => {
+  const value = new Date().getFullYear() - index;
+  return { value: String(value), label: String(value) };
+});
+const birthMonths = Array.from({ length: 12 }, (_, index) => ({ value: String(index + 1), label: String(index + 1) }));
+const phoneSent = ref(false);
 const year = ref(''),
   month = ref(''),
   phone = ref(''),
@@ -281,6 +288,7 @@ function clearDrafts() {
   year.value = '';
   month.value = '';
   phone.value = '';
+  phoneSent.value = false;
   phoneCode.value = '';
   emailForm.value = { email: '', password: '', code: '' };
   ageTicket = '';
@@ -412,7 +420,10 @@ async function sendPhone() {
       ...registration()
     })
   );
-  if (response?.code === 0) phoneCooldown.value = response.data?.retryAfter || 60;
+  if (response?.code === 0) {
+    phoneSent.value = true;
+    phoneCooldown.value = response.data?.retryAfter || 60;
+  }
 }
 function randomRequestId() {
   const bytes = new Uint8Array(16);
@@ -548,6 +559,7 @@ function saveLoginInfo(data) {
   uni.$emit('userInfoUpdated', userInfo);
   emailForm.value = { email: '', password: '', code: '' };
   phone.value = '';
+  phoneSent.value = false;
   phoneCode.value = '';
   ageTicket = '';
   const valid = current();

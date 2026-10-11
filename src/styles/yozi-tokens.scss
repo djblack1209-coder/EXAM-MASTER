@@ -118,6 +118,11 @@
   --glass-blur: 20px;
   --glass-saturate: 160%;
   --dialog-width: 380px;
+  --page-content-width: calc(var(--dialog-width) * 3);
+  --tabbar-height: calc(var(--control-height) + var(--s-4));
+  --tabbar-gap: var(--s-3);
+  --yozi-safe-bottom: env(safe-area-inset-bottom, 0px);
+  --tabbar-reserve: calc(var(--tabbar-height) + var(--tabbar-gap) + var(--yozi-safe-bottom) + var(--s-4));
   --textarea-height: 104px;
   --bubble-width: 78%;
   --bubble-radius: 20px;

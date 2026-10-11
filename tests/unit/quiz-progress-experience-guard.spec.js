@@ -10,20 +10,19 @@ const source = readFileSync(
 );
 
 describe('quiz progress experience guard', () => {
-  it('keeps a clear progress meter with percent and moving thumb', () => {
-    expect(source).toContain('class="progress-meter-wrap"');
-    expect(source).toContain('class="progress-percent"');
-    expect(source).toContain('{{ progressPercent }}%');
-    expect(source).toContain('class="progress-meter-thumb"');
-    expect(source).toContain(':style="{ left: progressPercent + \'%\' }"');
-    expect(source).toContain('transition: left 280ms cubic-bezier(0.16, 1, 0.3, 1)');
+  it('keeps the current question denominator and shared navigation controls', () => {
+    expect(source).toContain('<BaseStat');
+    expect(source).toContain(':value="safeCurrent"');
+    expect(source).toContain(':denominator="safeTotal"');
+    expect(source).toContain('<BaseButton');
+    expect(source).toContain('variant="quiet"');
   });
 
   it('keeps answer distribution visible without counting neutral reviews as wrong', () => {
     expect(source).toContain("status.startsWith('legacy_')");
     expect(source).toContain('getQuizAnswerRecordOutcome(item)');
-    expect(source).toContain('`${legacy} 旧记录`');
-    expect(source).toContain('.dot-reviewed');
+    expect(source).toContain("t('quiz.progress.legacy'");
+    expect(source).toContain('dot-${status}');
   });
 
   it('renders legacy true/false self ratings as reviews without changing their stored flags', () => {
@@ -45,13 +44,12 @@ describe('quiz progress experience guard', () => {
     expect(source).toContain('v-for="idx in safeTotal"');
     expect(source).toContain('const progressAriaLabel = computed');
     expect(source).toContain(':aria-label="progressAriaLabel"');
-    expect(source).toContain('第 {{ safeCurrent }} / {{ safeTotal }} 题');
+    expect(source).toContain("t('quiz.progress.aria'");
   });
 
-  it('keeps dark-mode coverage for progress details', () => {
-    expect(source).toContain('.dark-mode .progress-meter');
-    expect(source).toContain('.dark-mode .progress-meter-thumb');
-    expect(source).toContain('.dark-mode .progress-percent');
-    expect(source).toContain('.dark-mode .dot-reviewed');
+  it('uses the shared themed control implementation', () => {
+    expect(source).toContain('@/components/base/base-button/base-button.vue');
+    expect(source).toContain('@/components/base/base-stat/base-stat.vue');
+    expect(source).not.toMatch(/#[0-9a-f]{3,8}\b/i);
   });
 });

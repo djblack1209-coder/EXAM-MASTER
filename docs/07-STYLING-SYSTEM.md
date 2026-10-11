@@ -53,7 +53,7 @@ H5 复用 public/fonts 的本地 Epilogue Black、DM Sans Regular 与 DM Sans Me
 
 语言只取本机保存的 `yozi_language`，没有则使用 zh-CN；不跟随系统语言，避免英文系统下出现中英混排。保存失败不修改当前语言。内部对 uni 使用 zh-Hans / en，与产品 zh-CN / en 明确映射。
 
-pages.json 的页面标题和导航文字使用 `%pages.xxx%` / `%nav.xxx%`；[src/locale/zh-Hans.json](../src/locale/zh-Hans.json) 与 [src/locale/en.json](../src/locale/en.json) 是 uni 内置页面国际化资源，也由 shell 模块复用。全局页面显示桥接刷新当前导航标题，现有 CustomTabbar 文案响应式更新。“我的”页提供“语言 / Language”：选择仅改草稿，点击保存后切换，取消保留原选择。当前接入范围为页面标题、底部导航与语言设置；其他正文随各页改版迁移。
+pages.json 的页面标题和导航文字使用 `%pages.xxx%` / `%nav.xxx%`；[src/locale/zh-Hans.json](../src/locale/zh-Hans.json) 与 [src/locale/en.json](../src/locale/en.json) 是 uni 内置页面国际化资源，也由 shell 模块复用。全局页面显示桥接刷新当前导航标题，现有 CustomTabbar 文案响应式更新。“我的”页提供随当前语言显示的“语言”设置：选择仅改草稿，点击保存后切换，取消保留原选择。当前接入范围为页面标题、底部导航与语言设置；其他正文随各页改版迁移。
 
 [src/i18n/format.js](../src/i18n/format.js) 提供 `formatDate`、`formatTime`、`formatNumber`，使用 zh-CN / en-US。中文采用年/月/日与24小时，英文采用月/日/年与12小时；数字按千位分组。Intl 缺失或构造失败时使用同语义后备，非法日期/非有限数字显示空串。日期沿调用方提供的时间，不自行变更学习事实时区。
 
@@ -63,18 +63,18 @@ pages.json 的页面标题和导航文字使用 `%pages.xxx%` / `%nav.xxx%`；[s
 
 ## 公共组件
 
-现行组件位于 [src/components/base](../src/components/base/)，复用既有 BaseIcon、BaseCard、BaseEmpty；浮层继续使用 [CustomModal.vue](../src/components/common/CustomModal.vue)。各类只有一个渲染实现，Wot 通过现行主题变量与按钮/加载薄包装接入，不修改依赖源码。页面自己的旧按钮、选项、统计、输入和弹窗在第3/4批逐页迁移；本批不变更业务页面布局或登录方式。
+现行组件位于 [src/components/base](../src/components/base/)，复用既有 BaseIcon、BaseCard、BaseEmpty；浮层继续使用 [CustomModal.vue](../src/components/common/CustomModal.vue)。各类只有一个渲染实现，Wot 通过现行主题变量与按钮/加载薄包装接入，不修改依赖源码。页面自己的旧按钮、选项、统计、输入和弹窗在第3/4批逐页迁移；各页按下方现行章节接入。
 
-| 组件                                  | 现行用法                                                                                                                                                                                                                                                                                        |
-| ------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| BaseButton                            | variant 为 primary、secondary、quiet、danger、apple、google、wechat；small/block/iconOnly/icon/label/loading/disabled 与 `@tap`。每个区域最多一个 primary，图标按钮必须有 label；loading 显示随文字颜色的小转圈（减少动态时静止），loading/disabled 阻止触摸与键盘动作。                        |
-| BaseChip / BaseSegmented / BaseTag    | Chip 布尔 v-model、aria-pressed；Segmented 用 v-model、options（value/label/disabled）、label，单个选中标记与左右/Home/End/Enter/Space；Tag 五种 tone 为 violet、mint、coral、apricot、neutral。筛选与标签没有立体底边。                                                                        |
-| BaseOptions                           | 必填 label、options（value/label/state/disabled）；v-model 仅更新草稿。default/selected/correct/wrong/pending 五态：前四态圆点显示 A/B/C/D 字母（可传 key 覆盖），已选/正确/错误另有状态文字，pending 用笔形图标与杏色虚线；radio 语义与方向/Home/End/Enter/Space。结果与已选分别取调用方事实。 |
-| BaseInput / BaseCheckbox              | Input 的 v-model/label/help/error/multiline/prefix/verification/resendSeconds；帮助/错误与输入关联，验证码仅发出 resend 请求，倒计时按截止时刻计算。Checkbox 用 v-model/disabled/slot 与 aria-checked，政策链接不会顺带同意。                                                                   |
-| BaseStat / BaseBubble / BaseCard      | Stat 用 label/value/denominator/unit，保留分母；Bubble author 为 user/assistant，角色有可访问名称；Card surface 为 paper 或 glass，沿用 header/body/footer slot，玻璃在减少透明/高对比/不支持 blur 时回实色。                                                                                   |
-| BaseEmpty / BaseLoading               | Empty state 为 empty、loading、error；title/desc/showButton/buttonText/pose/mascotSize。统一 YoziMascot，错误为 alert，等待为 status；Loading 只是 Wot 兼容包装。旧 icon 参数保留兼容，不输出字符图标。                                                                                         |
-| CustomModal / BaseToast / BaseListRow | Modal 保留 visible/confirm/cancel/closed 与编辑正文合同；position 为 center 或 bottom，maskClosable/escapeClosable/closeButton；圈定/恢复焦点与可配置关闭。Toast 用 visible/message/duration 与 update:visible；ListRow 用 label/value/icon/actionable/disabled。                               |
-| BaseIcon                              | 补齐设计板 Lucide 图形，统一线宽1.75；selected 仅添加0.16浅填充，tone 取令牌，沿用旧数字 rpx size API。微信、Apple、Google 保留官方形状/颜色，许可在 static/licenses。                                                                                                                          |
+| 组件                                  | 现行用法                                                                                                                                                                                                                                                                                                                           |
+| ------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| BaseButton                            | variant 为 primary、secondary、quiet、danger、apple、google、wechat；small/block/iconOnly/icon/label/loading/disabled 与 `@tap`，dangerSecondary 为危险次要操作。每个区域最多一个 primary，图标按钮必须有 label；loading 显示随文字颜色的小转圈（减少动态时静止），loading/disabled 阻止触摸与键盘动作。                           |
+| BaseChip / BaseSegmented / BaseTag    | Chip 布尔 v-model、aria-pressed；Segmented 用 v-model、options（value/label/disabled）、label，单个选中标记与左右/Home/End/Enter/Space；Tag 五种 tone 为 violet、mint、coral、apricot、neutral。筛选与标签没有立体底边。                                                                                                           |
+| BaseOptions                           | 必填 label、options（value/label/state/disabled）；v-model 仅更新草稿。default/selected/correct/wrong/pending 五态：前四态圆点显示 A/B/C/D 字母（可传 key 覆盖），已选/正确/错误另有状态文字，pending 用笔形图标与杏色虚线；radio 语义与方向/Home/End/Enter/Space。结果与已选分别取调用方事实。                                    |
+| BaseInput / BaseCheckbox              | Input 的 v-model/label/help/error/multiline/prefix/options/verification/verificationSent/resendSeconds；帮助/错误与输入关联，options 使用平台选择器；验证码未发送显示获取验证码，成功发送后才倒计时或重新发送，仅发出 resend 请求，倒计时按截止时刻计算。Checkbox 用 v-model/disabled/slot 与 aria-checked，政策链接不会顺带同意。 |
+| BaseStat / BaseBubble / BaseCard      | Stat 用 label/value/denominator/unit，保留分母；Bubble author 为 user/assistant，角色有可访问名称；Card surface 为 paper 或 glass，沿用 header/body/footer slot，玻璃在减少透明/高对比/不支持 blur 时回实色。                                                                                                                      |
+| BaseEmpty / BaseLoading               | Empty state 为 empty、loading、error；title/desc/showButton/buttonText/pose/mascotSize。统一 YoziMascot，错误为 alert，等待为 status；Loading 只是 Wot 兼容包装。旧 icon 参数保留兼容，不输出字符图标。                                                                                                                            |
+| CustomModal / BaseToast / BaseListRow | Modal 保留 visible/confirm/cancel/closed 与编辑正文合同；position 为 center 或 bottom，maskClosable/escapeClosable/closeButton；圈定/恢复焦点与可配置关闭。Toast 用 visible/message/duration 与 update:visible；ListRow 用 label/value/icon/actionable/disabled。                                                                  |
+| BaseIcon                              | 补齐设计板 Lucide 图形，统一线宽1.75；selected 仅添加0.16浅填充，tone 取令牌，沿用旧数字 rpx size API。微信、Apple、Google 保留官方形状/颜色，许可在 static/licenses。                                                                                                                                                             |
 
 底栏与学习侧栏只以图标浅填充和品牌文字表明当前页面；滑动切换、实际路由与缓存页状态仍由原控制器负责。按钮、图标触区及可聚焦控件至少44px，焦点描边2px。组件内部默认文案与状态替代文字全部由 `t()` 提供，中英文即时响应。
 
@@ -100,7 +100,7 @@ pages.json 的页面标题和导航文字使用 `%pages.xxx%` / `%nav.xxx%`；[s
 
 公共组件仅补齐既有场景所需能力：BaseOptions 支持多选；BaseInput 支持数值、只读、隐藏标签、原生 input 事件与仅键盘聚焦描边；BaseButton 支持图标与文字的同行插槽布局以及 `align="start"`、`selected` 列表状态；BaseTag 支持状态圆点同行。H5 输入使用真实 DOM 控件以保持草稿显示、聚焦与只读行为；按钮、选项、分段、芯片与复选控件绑定原生键盘事件，防止 uni-app 自定义元素漏接或重复执行。学习页面只负责令牌布局，不定义按钮、选项、输入、气泡、统计或弹窗的另一套材质。侧栏搜索静止及鼠标聚焦不显示键盘焦点框；键盘聚焦显示令牌规定的2px焦点。私人资料卡为纸面，关闭为轻量图标按钮。操作区最多一个主要按钮，触区至少44px。
 
-吉祥物：空会话挥手一次后待机；回复中循环思考，回复完成或出错立即停止；可靠正确庆祝一次，可靠错误鼓励一次，待核对静态阅读；明确完成当日复盘庆祝一次，无任务或暂停静态休息。助手气泡头像始终静止，公共调度保证同屏最多一个动作；作答输入聚焦暂停循环，减少动态只保留姿势。
+吉祥物：空会话挥手一次后待机；回复中循环思考，回复完成或出错立即停止；可靠正确庆祝一次，可靠错误鼓励一次，待核对静态阅读；明确完成当日复盘庆祝一次，空白计划或暂停任务在对应状态区静态休息；统计卡不放吉祥物。助手气泡头像始终静止，公共调度保证同屏最多一个动作；作答输入聚焦暂停循环，减少动态只保留姿势。
 
 本批界面及无障碍文字走 `t()`，zh-CN 为默认，只有明确选择 English 才切英文。学习词典与已知界面标签映射见 [分包语言注册](../src/pages/learning/messages.js) 和 [学习文案适配](../src/i18n/learning.js)；平台回执及系统观察标签只在显示时翻译，弹窗默认文字使用公共词条；题目、模型回复、原答与用户自述资料不翻译，保存内容不变。
 
@@ -110,9 +110,24 @@ pages.json 的页面标题和导航文字使用 `%pages.xxx%` / `%nav.xxx%`；[s
 
 登录分包沿设计板 `#global` 与 `#pages`，使用公共 BaseButton 官方 apple/google/wechat 变体、BaseInput 区号/验证码、BaseCheckbox 政策同意、BaseSegmented 地区切换、纸面/玻璃 BaseCard 与 YoziMascot。顶部地区美国/中国，右侧独立语言切换；默认地区仅从设备地区/时区推断，失败中国，只在明确选择后本机保存。语言仍默认中文，地区不改语言。
 
-美国显示已配置且平台可用的 Apple/Google、邮箱和 +1 手机号；中国显示 +86 手机号、已配置微信、邮箱，iOS/macOS 可加可用 Apple。微信小程序只显示微信/手机号/邮箱。未配置或无 provider 的方法隐藏，无灰色占位。QQ 不提供。首次美国创建先中性问出生年份和月份，只有明确“继续”才确认；不提示门槛以影响填写，不存出生年月。未通过后清空草稿并锁定本次会话，返回不能改年龄重试，拒绝说明才显示年龄范围。
+美国显示已配置且平台可用的 Apple/Google、邮箱和 +1 手机号；中国显示 +86 手机号、已配置微信、邮箱，iOS/macOS 可加可用 Apple。微信小程序只显示微信/手机号/邮箱。未配置或无 provider 的方法隐藏，无灰色占位。QQ 不提供。首次美国创建先中性用两个选择器询问出生年份和月份；年份从当年倒序至120年前，只有明确“继续”才确认；不提示门槛以影响填写，不存出生年月。未通过后清空草稿并锁定本次会话，返回不能改年龄重试，拒绝说明才显示年龄范围。
 
 登录同意默认不勾选，未同意无法登录或发送验证码；政策链接可独立键盘打开且不顺带同意。手机号使用 +1/+86 前缀与公共验证码输入，短信未开放短句后可回其他方式；邮箱保留密码遮蔽/明确显示、注册验证码和错误恢复，供应商错误只映射固定双语短句。页面只定义令牌布局，不另建控件材质；44px、2px焦点、减少动态与页面离开后的迟到身份拒绝适用。onboarding 保留原目标草稿/明确保存及核对来源状态，迁移公共控件。登录与 onboarding 文案只由 pages/login/messages.js 注册，不入微信主包。[接口与隐私](04-API-DOCUMENTATION.md#账户与登录)。
+
+## 其余页面
+
+首页既有统计入口、刷题、题库、答题、收藏、错题与报告、计划、学习详情和优化卡、我的及隐私授权使用第2批公共控件与唯一令牌；学习外壳与原路由继续保留。页面样式只安排布局，纸面阅读、玻璃导航和深浅色由公共令牌提供；不另写按钮、选项、输入、统计、加载或弹层材质。
+
+- 带底栏的首页、刷题与我的在滚动内容末端使用统一yozi-tabbar-space：底栏高度、悬浮间隙、设备安全区与内容间距只由公共派生令牌定义，页面不另算高度；底栏与正文均居中。答题顶部进度与可见题卡同宽居中。
+- 图标与文字的标题/状态行统一横向居中，按钮label只提供可访问名称、可见文字只渲染一次。结果弹层标题使用公共title slot，不重复输出状态标题。统计卡不放吉祥物；我的不放口号卡，空状态姿势仍在对应BaseEmpty中使用。
+- 作答与参考选项使用 BaseOptions，字母、已选、可靠正确/错误、待核对分别显示；选择只改草稿，明确提交才保留原答。答题卡的数字入口使用公共按钮，原跳题锁定和答题记录保持。
+- 加载、空白与失败使用 BaseEmpty；筛选使用平面 BaseChip，互斥范围与模式使用 BaseSegmented。每个区域最多一个主要按钮，辅助与危险操作使用次要样式；退出为 dangerSecondary。控件触区至少44px，焦点2px。
+- 笔记、文件夹、确认、报告、答题卡与交卷结果使用 CustomModal；保留键盘圈定、Esc可关闭弹层及焦点返回。微信隐私弹层禁止遮罩/Esc取消，仍由原同意或拒绝合同结束授权，平台返回协议名保持原文。
+- 统计使用 BaseStat并保留可得分母；历史正确率与计划百分比用文字解释原范围，不升级为可靠掌握。设置使用 BaseListRow，选择仅改草稿、明确保存才切换。上传照片优先，缺失或失败使用现有本地Clay头像，吉祥物只代表学习助手。
+- 空白/错误/加载按公共状态姿势；计划为空用休息姿势，交卷可靠正确多于错误时庆祝一次，否则鼓励一次。待核对与旧判定不冒充可靠正确。同屏最多一个在动，减少动态保留静态姿势。
+- 界面文字走t()，默认中文；English固定文字不残留中文，题目、用户内容及平台协议名保持原文。dashboard只提供主包必要文案，quiz/favorite/mistake/plan/study与登录词典只在自己的分包注册。出生年月选择仅用于本次年龄确认，不保存生日；短信发送成功后才显示倒计时。
+
+本节优先于旧条目中同类控件的外观描述：`2026-10-08：双线执行的页面与状态设计清单`、`Colors`、`Typography`、`Layout`、`Elevation & Depth`、`Shapes`、`Components`、`Do's and Don'ts`、`2026-10-04：原生精确占比的实际效果`。这些旧条目的功能、权限和统计合同仍然有效。Playful/Future落地页的旧外观留第5批；本地合成截图与产物不替代微信/App设备或真实授权。
 
 ## 既有功能界面合同
 

@@ -6,8 +6,10 @@ const source = readFileSync(resolve(process.cwd(), 'src/pages/practice-sub/do-qu
 
 describe('do quiz result surface guard', () => {
   it('keeps backdrop taps separate from the next-question action', () => {
-    expect(source).toContain('class="result-backdrop" @tap.stop />');
-    expect(source).not.toContain('class="result-backdrop" @tap.stop="closeResult"');
+    expect(source).toContain('<CustomModal');
+    expect(source).toContain(':visible="showResult"');
+    expect(source).toContain('@cancel="showResult = false"');
+    expect(source).not.toContain('class="result-backdrop"');
   });
 
   it('places the next action in a dedicated bottom action row', () => {
@@ -22,21 +24,24 @@ describe('do quiz result surface guard', () => {
 
   it('keeps result content scrollable while the primary action remains stable', () => {
     expect(source).toContain('class="result-content-scroll"');
-    expect(source).toContain('max-height: calc(78vh - env(safe-area-inset-bottom))');
-    expect(source).toContain('max-height: 52vh');
-    expect(source).toContain('bottom: calc(120rpx + env(safe-area-inset-bottom))');
+    expect(source).toContain('class="result-action-row"');
+    const modal = readFileSync(resolve(process.cwd(), 'src/components/common/CustomModal.vue'), 'utf8');
+    expect(modal).toContain('overflow-y: auto');
+    expect(modal).toContain('env(safe-area-inset-bottom)');
   });
 
   it('keeps accessibility and disabled state contracts on the primary action', () => {
-    expect(source).toContain(":aria-disabled=\"isNavigating ? 'true' : 'false'\"");
-    expect(source).toContain(':class="{ disabled: isNavigating }"');
-    expect(source).toContain('.result-primary-action.disabled');
+    expect(source).toContain('id="e2e-quiz-next-btn"');
+    expect(source).toContain(':disabled="isNavigating"');
+    const button = readFileSync(resolve(process.cwd(), 'src/components/base/base-button/base-button.vue'), 'utf8');
+    expect(button).toContain(':aria-disabled="blocked"');
+    expect(button).toContain(':tabindex="blocked ? -1 : 0"');
   });
 
   it('keeps header status visual separate from the primary action', () => {
     expect(source).toContain('class="result-status-mark"');
-    expect(source).toContain('.result-pop.correct .result-status-mark');
-    expect(source).toContain('.result-pop.wrong .result-status-mark');
+    expect(source).toContain("resultStatus === 'pending'");
+    expect(source).toContain('result-primary-action');
     expect(source).not.toContain('class="result-icon-btn result-primary-action"');
   });
 });

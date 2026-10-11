@@ -37,7 +37,9 @@
       <view v-if="icon" class="modal-icon-wrapper" aria-hidden="true"
         ><BaseIcon :name="icon || iconMap[type] || 'info'"
       /></view>
-      <text :id="titleId" class="modal-title">{{ title || t('ui.dialogTitle') }}</text>
+      <view :id="titleId" class="modal-title"
+        ><slot name="title">{{ title || t('ui.dialogTitle') }}</slot></view
+      >
       <slot
         ><text v-if="content && !editable" :id="contentId" class="modal-content">{{ content }}</text></slot
       >

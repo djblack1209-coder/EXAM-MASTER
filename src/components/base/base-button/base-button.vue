@@ -9,15 +9,18 @@
         'is-block': block,
         'is-icon': iconOnly,
         'is-start': align === 'start',
-        'is-selected': selected
+        'is-selected': selected,
+        'is-danger-secondary': dangerSecondary
       }
     ]"
+    :open-type="openType"
     role="button"
     :tabindex="blocked ? -1 : 0"
     :disabled="blocked"
     :aria-disabled="blocked"
     :aria-busy="loading"
     :aria-label="label || (iconOnly ? t('ui.action') : undefined)"
+    @agreeprivacyauthorization="emit('agreeprivacyauthorization', $event)"
     @tap="activate"
     @keydown="keydown"
   >
@@ -38,7 +41,9 @@ const props = defineProps({
     default: 'primary',
     validator: (value) => ['primary', 'secondary', 'quiet', 'danger', 'apple', 'google', 'wechat'].includes(value)
   },
+  openType: { type: String, default: '' },
   small: Boolean,
+  dangerSecondary: Boolean,
   align: { type: String, default: 'center', validator: (value) => ['center', 'start'].includes(value) },
   selected: Boolean,
   block: Boolean,
@@ -49,7 +54,7 @@ const props = defineProps({
   icon: { type: String, default: '' },
   loadingText: { type: String, default: '' }
 });
-const emit = defineEmits(['tap', 'click']);
+const emit = defineEmits(['tap', 'click', 'agreeprivacyauthorization']);
 const root = ref(null);
 let keyboardElement;
 function bindKeyboard() {
@@ -172,6 +177,11 @@ function keydown(event) {
 .base-button--danger {
   background: var(--danger-face);
   color: var(--on-danger);
+}
+.base-button--danger.is-danger-secondary {
+  background: var(--paper);
+  color: var(--coral);
+  box-shadow: inset 0 0 0 var(--border-control) var(--coral);
 }
 .base-button--apple {
   background: var(--apple-bg);

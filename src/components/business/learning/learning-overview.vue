@@ -13,7 +13,7 @@
         variant="quiet"
         @tap="openView({ 对话: 'learning', 错题: 'mistake', 计划: 'plan', 统计: 'study-detail' }[item])"
       >
-        {{ learningText(item) }}
+        {{ t({ 对话: 'ui.navChat', 错题: 'ui.navMistake', 计划: 'ui.navPlan', 统计: 'ui.navStats' }[item]) }}
       </BaseButton>
     </view>
     <view class="overview-heading">
@@ -64,11 +64,7 @@
       >
         <view :style="{ transform: `scaleX(${stats.tasks.rate || 0})` }" />
       </view>
-      <YoziMascot v-if="!stats.tasks.denominator" pose="sleep" play="none" size="small" /><text
-        v-if="!stats.tasks.denominator"
-        class="metric-empty"
-        >{{ t('learning.kkx') }}</text
-      >
+      <text v-if="!stats.tasks.denominator" class="metric-empty">{{ t('learning.kkx') }}</text>
       <view class="summary-line">
         <text>{{ t('learning.k8w') }}{{ stats.reliableCorrectAnswers }} / {{ stats.totalReliableAnswers }}</text>
         <text>{{ t('learning.ko2') }}{{ stats.first.numerator }} / {{ stats.first.denominator }}</text>
@@ -82,7 +78,7 @@
         <view class="answer-checked" :style="{ width: `${(stats.totalReliableAnswers / answerCount) * 100}%` }" />
         <view class="answer-pending" :style="{ width: `${(stats.pending / answerCount) * 100}%` }" />
       </view>
-      <view class="summary-foot">
+      <view class="summary-foot yozi-icon-row">
         <text>{{ answerCount ? t('learning.ktl') : t('learning.k9e') }}</text>
         <text>{{ expanded ? t('learning.kmv') : t('learning.ks4') }}</text>
         <BaseIcon :name="expanded ? 'chevron-up' : 'chevron-down'" tone="ink-3" />
@@ -264,7 +260,6 @@
 </template>
 <script setup>
 import BaseEmpty from '@/components/base/base-empty/base-empty.vue';
-import YoziMascot from '@/components/base/yozi-mascot/yozi-mascot.vue';
 import BaseStat from '@/components/base/base-stat/base-stat.vue';
 import BaseSegmented from '@/components/base/base-segmented/base-segmented.vue';
 import { learningText } from '@/i18n/learning.js';

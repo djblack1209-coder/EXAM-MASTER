@@ -10,8 +10,8 @@ describe('settings legal and privacy scope', () => {
   it('exposes direct profile entries for privacy policy and user agreement', () => {
     expect(profileSource).toContain("goTo('/pages/settings/privacy')");
     expect(profileSource).toContain("goTo('/pages/settings/terms')");
-    expect(profileSource).toContain('隐私政策');
-    expect(profileSource).toContain('用户协议');
+    expect(profileSource).toContain("t('dashboard.copy106')");
+    expect(profileSource).toContain("t('dashboard.copy107')");
   });
 
   it('keeps privacy policy aligned with the lightweight quiz product scope', () => {

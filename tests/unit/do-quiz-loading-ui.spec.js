@@ -9,8 +9,8 @@ describe('do quiz loading experience', () => {
 
   it('shows a dedicated loading surface while the first question is being prepared', () => {
     expect(source).toContain('v-if="showQuizLoading"');
-    expect(source).toContain('quiz-loading-overlay');
-    expect(source).toContain('quiz-loading-skeleton');
+    expect(source).toContain('<BaseEmpty');
+    expect(source).toContain('state="loading"');
   });
 
   it('does not keep the loading surface visible over blocking modals', () => {

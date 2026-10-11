@@ -18,20 +18,19 @@ describe('quiz result action dock guard', () => {
   });
 
   it('keeps a stable bottom dock with safe-area and dark-mode coverage', () => {
-    expect(source).toContain('.action-dock');
-    expect(source).toContain('padding-bottom: calc(22rpx + env(safe-area-inset-bottom, 0px))');
-    expect(source).toContain('border-top: 1rpx solid rgba(15, 23, 42, 0.08)');
-    expect(source).toContain('.dark-mode .action-dock');
-    expect(source).toContain('.dark-mode .secondary-btn');
+    expect(source).toContain('class="action-dock"');
+    expect(source).toContain('position="bottom"');
+    expect(source).toContain(':is-dark="isDark"');
+    const modal = readFileSync(resolve(process.cwd(), 'src/components/common/CustomModal.vue'), 'utf8');
+    expect(modal).toContain('env(safe-area-inset-bottom)');
   });
 
   it('keeps the report action hierarchy aligned with the shared clay palette', () => {
-    expect(source).toContain('background: var(--clay-face)');
-    expect(source).toContain('color: var(--on-clay)');
-    expect(source).toContain('box-shadow: var(--clay-shadow)');
-    expect(source).toContain('class="action-btn tertiary-btn"');
-    expect(source).toContain('.tertiary-btn');
-    expect(source).not.toContain('box-shadow: 0 6rpx 0 #1899d6');
+    expect(source).toContain('<BaseButton');
+    const button = readFileSync(resolve(process.cwd(), 'src/components/base/base-button/base-button.vue'), 'utf8');
+    expect(button).toContain('background: var(--clay-face)');
+    expect(button).toContain('box-shadow: var(--clay-shadow)');
+    expect(source).toContain('variant="secondary"');
     expect(source).not.toContain('background: #1cb0f6');
   });
 });
