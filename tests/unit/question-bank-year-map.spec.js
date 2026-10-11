@@ -1,3 +1,6 @@
+import { createPinia, setActivePinia } from 'pinia';
+import { beforeEach } from 'vitest';
+beforeEach(() => setActivePinia(createPinia()));
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { mount } from '@vue/test-utils';
@@ -15,11 +18,11 @@ describe('question bank public-course year map', () => {
     expect(source).toContain('selectedYearSlots');
     expect(source).toContain('selectedYearSlot.clickable');
     expect(source).toContain('loadAndStartSlot');
-    expect(source).toContain('status-organizing');
-    expect(source).toContain('status-missing');
+    expect(source).toContain('uiText(slot.statusLabel)');
+    expect(source).toContain(':model-value="selectedYearSlot?.id === slot.id"');
     expect(source).toContain('selectedYearSlot.disabledReason');
     expect(source).toContain('const organizingCount');
-    expect(source).toContain('正式 ${ready} · 整理中 ${organizing} · 待入库 ${missing}');
+    expect(source).toContain("t('quiz.copy117'");
   });
 
   it('keeps every track on its real release-scope year map and marks verified banks as clickable', () => {

@@ -6,15 +6,18 @@ const source = readFileSync(resolve(process.cwd(), 'src/pages/practice/index.vue
 
 describe('practice readiness card guard', () => {
   it('surfaces public-course bank readiness in user-facing language', () => {
-    expect(source).not.toContain('题库就绪度');
-    expect(source).toContain('readinessTitle');
-    expect(source).toContain('readinessPercent');
-    expect(source).toContain('readinessSummary.publishedSlots');
-    expect(source).toContain('readinessSummary.pendingSlots');
-    expect(source).toContain('readinessSummary.missingSlots');
-    expect(source).toContain('正式</text>');
-    expect(source).toContain('整理中</text>');
-    expect(source).toContain('待入库</text>');
+    for (const field of [
+      'readinessTitle',
+      'readinessPercent',
+      'readinessSummary.publishedSlots',
+      'readinessSummary.pendingSlots',
+      'readinessSummary.missingSlots'
+    ])
+      expect(source).toContain(field);
+    expect(source).toContain('<BaseStat');
+    expect(source).toContain(
+      'readinessSummary.publishedSlots + readinessSummary.pendingSlots + readinessSummary.missingSlots'
+    );
   });
 
   it('uses the neutral coverage contract instead of backend release wording', () => {
@@ -30,9 +33,9 @@ describe('practice readiness card guard', () => {
 
   it('keeps readiness card styled in the shared Yozi material system', () => {
     expect(source).toContain('class="readiness-card"');
-    expect(source).toContain('.readiness-progress-fill');
-    expect(source).toContain('background: var(--yozi-button)');
-    expect(source).toContain('.dark-mode .readiness-card');
-    expect(source).toContain('.dark-mode .readiness-track-line');
+    expect(source).toContain('@/styles/yozi-pages.scss');
+    const layout = readFileSync(resolve(process.cwd(), 'src/styles/yozi-pages.scss'), 'utf8');
+    expect(layout).toContain('var(--paper)');
+    expect(layout).toContain('var(--ink)');
   });
 });

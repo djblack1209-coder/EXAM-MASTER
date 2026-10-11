@@ -13,6 +13,11 @@ import MistakePage from '@/pages/mistake/index.vue';
 import { modal } from '@/utils/modal.js';
 import { useConversationLearningStore } from '@/stores/modules/conversation-learning.js';
 
+vi.mock('@/composables/usePageDialog.js', async (importOriginal) => {
+  const actual = await importOriginal();
+  return { usePageDialog: () => ({ ...actual.usePageDialog(), modal }) };
+});
+
 const hooks = vi.hoisted(() => ({ load: [], show: [] }));
 vi.mock('@dcloudio/uni-app', () => ({
   onLoad: (callback) => hooks.load.push(callback),
@@ -47,7 +52,7 @@ const record = (id = 'original-multi') => ({
   desc: '历史解析'
 });
 const button = (wrapper, text) => wrapper.findAll('button').find((b) => b.text().trim() === text);
-const stubs = { BaseIcon: true };
+const stubs = { BaseIcon: true, WdPopup: { props: ['modelValue'], template: '<div v-if="modelValue"><slot /></div>' } };
 it('history sync keeps failure/partial results visible and blocks repeated sends while loading', async () => {
   uni.setStorageSync('EXAM_USER_ID', 'feedback-owner');
   storageService.save('mistake_book', [{ ...record('local_feedback'), sync_status: 'pending' }], true);
@@ -188,7 +193,7 @@ it('legacy card labels every unprefixed option by its actual index', () => {
     global: { stubs }
   });
   try {
-    expect(wrapper.findAll('.opt-idx').map((option) => option.text())).toEqual(['A', 'B', 'C', 'D']);
+    expect(wrapper.findAll('.base-option__key').map((option) => option.text())).toEqual(['A', 'B', 'C', 'D']);
   } finally {
     wrapper.unmount();
   }

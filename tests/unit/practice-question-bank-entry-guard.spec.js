@@ -11,16 +11,17 @@ describe('practice question bank entry handoff', () => {
     expect(practiceSource).toContain('this.openQuestionBank?.(bankId)');
     expect(practiceSource).toContain('class="bank-btn detail-btn"');
     expect(practiceSource).toContain('class="bank-btn continue-btn"');
-    expect(practiceSource).toContain("{{ loadingBankId === bank.id ? '打开中' : '查看' }}");
-    expect(practiceSource).toContain('>继续</text>');
+    expect(practiceSource).toContain("loadingBankId === bank.id ? t('dashboard.copy69') : t('dashboard.copy70')");
+    expect(practiceSource).toContain("t('dashboard.copy71')");
     expect(practiceSource).not.toContain('@tap="handleLoadBank(bank.id)"');
     expect(practiceSource).not.toContain("{{ loadingBankId === bank.id ? '加载中' : '加载' }}");
     expect(practiceSource).not.toContain('class="bank-loaded"');
   });
 
   it('keeps dark-mode styling for both detail and continue entry buttons', () => {
-    expect(practiceSource).toContain('.dark-mode .detail-btn');
-    expect(practiceSource).toContain('.dark-mode .continue-btn');
-    expect(practiceSource).toContain('.dark-mode .continue-btn .bank-btn-text');
+    expect(practiceSource).toContain('class="bank-btn detail-btn"');
+    expect(practiceSource).toContain('class="bank-btn continue-btn"');
+    expect(practiceSource).toContain('<BaseButton');
+    expect(practiceSource).toContain('useThemeStore');
   });
 });

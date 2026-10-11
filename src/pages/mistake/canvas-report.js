@@ -10,18 +10,21 @@
  * @param {boolean} isDark - 是否深色模式
  * @returns {Object} 主题色配置对象
  */
+import { tokens } from '@/design/tokens.js';
+
 export function getCanvasTheme(isDark) {
+  const p = tokens[isDark ? 'dark' : 'light'];
   return {
-    bgColor: isDark ? '#1a1a1a' : '#ffffff',
-    bgStart: isDark ? '#0F1A0A' : '#E8F5E9',
-    bgEnd: isDark ? '#1E3A0F' : '#FFFFFF',
-    titleColor: isDark ? '#2ECC71' : '#27AE60',
-    mainText: isDark ? '#F1F5F9' : '#1A1A1A',
-    subText: isDark ? '#94A3B8' : '#666666',
-    borderColor: isDark ? '#333333' : '#E0E0E0',
-    cardBg: isDark ? 'rgba(30, 58, 15, 0.8)' : 'rgba(255, 255, 255, 0.8)',
-    accent: '#2ECC71',
-    dividerColor: isDark ? 'rgba(255, 255, 255, 0.1)' : '#E0E0E0'
+    bgColor: p['--canvas'],
+    bgStart: p['--violet-soft'],
+    bgEnd: p['--paper'],
+    titleColor: p['--violet-ink'],
+    mainText: p['--ink'],
+    subText: p['--ink-3'],
+    borderColor: p['--line'],
+    cardBg: p['--paper'],
+    accent: p['--violet'],
+    dividerColor: p['--line']
   };
 }
 
@@ -38,8 +41,8 @@ export function getCanvasTheme(isDark) {
  */
 export function drawStyledCard(ctx, x, y, w, h, r, fill, isDark = false) {
   ctx.save();
-  const shadowOpacity = isDark ? 0.3 : 0.1;
-  ctx.setShadow(0, 4, 20, `rgba(0, 0, 0, ${shadowOpacity})`);
+
+  ctx.setShadow(0, 4, 20, tokens[isDark ? 'dark' : 'light']['--scrim']);
   ctx.beginPath();
   ctx.setFillStyle(fill);
   ctx.moveTo(x + r, y);
@@ -194,7 +197,7 @@ export function drawRadarChart(ctx, x, y, r, data, theme) {
   ctx.stroke();
 
   // 4. 数据点
-  ctx.setFillStyle('#FFFFFF');
+  ctx.setFillStyle(tokens.light['--paper']);
   ctx.setStrokeStyle(theme.accent);
   ctx.setLineWidth(2);
   for (let i = 0; i < numPoints; i++) {
@@ -270,7 +273,7 @@ export function canvasToImage(canvasId, component) {
  * @param {string} [options.color='#333'] - 文字颜色
  * @param {string} [options.align='left'] - 对齐方式
  */
-export function drawLabel(ctx, text, x, y, { fontSize = 28, color = '#333', align = 'left' } = {}) {
+export function drawLabel(ctx, text, x, y, { fontSize = 28, color = tokens.light['--ink'], align = 'left' } = {}) {
   ctx.save();
   ctx.setFillStyle(color);
   ctx.setFontSize(fontSize);

@@ -36,7 +36,9 @@ describe('quiz result progress semantics guard', () => {
         diagnosisSummary: '旧缓存声称稳定掌握',
         hasNextRecommendation: true
       },
-      global: { stubs: { BaseIcon: true } }
+      global: {
+        stubs: { BaseIcon: true, WdPopup: { props: ['modelValue'], template: '<div v-if="modelValue"><slot /></div>' } }
+      }
     });
     try {
       await flushPromises();
@@ -64,7 +66,9 @@ describe('quiz result progress semantics guard', () => {
     ].map((r, index) => ({ ...r, index }));
     const wrapper = mount(QuizResult, {
       props: { visible: true, questions: records.map(() => ({ category: '混合记录' })), answeredQuestions: records },
-      global: { stubs: { BaseIcon: true } }
+      global: {
+        stubs: { BaseIcon: true, WdPopup: { props: ['modelValue'], template: '<div v-if="modelValue"><slot /></div>' } }
+      }
     });
     try {
       await flushPromises();

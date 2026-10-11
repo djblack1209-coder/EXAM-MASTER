@@ -104,7 +104,7 @@ function keydown(event) {
 .base-segmented button::after {
   border: 0;
 }
-.base-segmented [aria-selected='true'] {
+.base-segmented button[aria-selected='true'] {
   background: var(--paper);
   color: var(--ink);
   box-shadow: var(--lift-1);

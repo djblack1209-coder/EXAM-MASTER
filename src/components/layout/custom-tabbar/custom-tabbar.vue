@@ -52,7 +52,7 @@ import { storageService } from '@/services/storageService.js';
 import { logger } from '@/utils/logger.js';
 import config from '@/config/index.js';
 import { safeNavigateTo } from '@/utils/safe-navigate';
-import { getWindowInfo } from '@/utils/core/system.js';
+import { getTabbarSafeAreaStyle } from '@/utils/core/system.js';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 import { vibrateLight } from '@/utils/helpers/haptic.js';
 import { useThemeStore } from '@/stores/modules/theme.js';
@@ -119,7 +119,7 @@ const themeStore = useThemeStore();
 
 const mistakeDot = ref(false);
 const currentRoute = ref('');
-const safeAreaBottom = ref(0);
+const safeAreaStyle = ref({});
 const optimisticIndex = ref(null);
 const pressedIndex = ref(null);
 const touchStartX = ref(0);
@@ -179,12 +179,7 @@ const visualActiveIndex = computed(() => {
 
 const isDarkMode = computed(() => props.isDark || themeStore.isDark);
 
-const capsuleStyle = computed(() => {
-  if (safeAreaBottom.value > 0) {
-    return { marginBottom: `calc(var(--s-3) + ${safeAreaBottom.value}px)` };
-  }
-  return {};
-});
+const capsuleStyle = computed(() => safeAreaStyle.value);
 
 watch(
   () => props.isDark,
@@ -263,15 +258,7 @@ function handleTouchCancel() {
 }
 
 function detectSafeArea() {
-  try {
-    const winInfo = getWindowInfo();
-    const insetBottom = Number(winInfo.safeAreaInsets?.bottom || 0);
-    const legacyBottom = winInfo.safeArea ? Number(winInfo.screenHeight - winInfo.safeArea.bottom) : 0;
-    const bottom = insetBottom || legacyBottom || 0;
-    safeAreaBottom.value = Math.max(0, Math.min(bottom, 48));
-  } catch (e) {
-    logger.warn('[CustomTabbar] safe area failed:', e);
-  }
+  safeAreaStyle.value = getTabbarSafeAreaStyle();
 }
 
 function detectCurrentRoute() {
@@ -414,6 +401,10 @@ onBeforeUnmount(() => {
 
 <style lang="scss" scoped>
 .tabbar-position-wrapper {
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  padding-inline: var(--s-4);
   position: fixed;
   right: 0;
   bottom: 0;
@@ -425,10 +416,10 @@ onBeforeUnmount(() => {
   box-sizing: border-box;
   display: flex;
   align-items: center;
-  width: calc(100vw - var(--s-8));
+  width: 100%;
   max-width: calc(var(--dialog-width) + var(--s-6));
-  height: calc(var(--control-height) + var(--s-4));
-  margin: 0 auto calc(var(--s-3) + env(safe-area-inset-bottom, 0px));
+  height: var(--tabbar-height);
+  margin: 0 0 calc(var(--tabbar-gap) + var(--yozi-safe-bottom));
   padding: var(--s-1);
   pointer-events: auto;
   border: var(--border-thin) solid var(--glass-line);

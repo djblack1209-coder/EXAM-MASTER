@@ -1,5 +1,10 @@
 <template>
-  <view ref="keyboardRoot" class="page" :class="{ 'dark-mode': isDark, 'theme-light': !isDark }">
+  <view
+    ref="keyboardRoot"
+    class="yozi-page page has-tabbar"
+    :style="tabBarStyle"
+    :class="{ 'dark-mode': isDark, 'theme-light': !isDark }"
+  >
     <!-- 自定义导航栏 -->
     <view class="nav-bar" :style="{ paddingTop: statusBarHeight + 'px' }">
       <view class="nav-content">
@@ -8,47 +13,34 @@
     </view>
 
     <!-- 主内容 -->
-    <scroll-view scroll-y class="main-scroll" :style="{ paddingTop: statusBarHeight + 44 + 'px' }">
+    <scroll-view scroll-y class="main-scroll">
       <!-- 可用题库列表 -->
       <view class="section practice-hero-section">
         <view class="practice-hero">
-          <text class="practice-title">{{ practiceHeroTitle }}</text>
+          <text class="practice-title">{{ uiText(practiceHeroTitle) }}</text>
           <view class="practice-signal-row">
-            <view class="practice-signal">
-              <text class="signal-value">{{ loadedBankCount }}</text>
-              <text class="signal-label">已载入</text>
-            </view>
-            <view class="practice-signal">
-              <text class="signal-value">{{ totalQuestions }}</text>
-              <text class="signal-label">题目</text>
-            </view>
-            <view class="practice-signal">
-              <text class="signal-value">{{ trackCount }}</text>
-              <text class="signal-label">轨道</text>
-            </view>
+            <BaseStat :label="t('dashboard.copy55')" :value="Number(loadedBankCount) || 0" />
+            <BaseStat :label="t('dashboard.copy56')" :value="Number(totalQuestions) || 0" />
+            <BaseStat :label="t('dashboard.copy57')" :value="Number(trackCount) || 0" />
           </view>
 
           <view class="practice-command-row">
-            <view
+            <BaseButton
               class="practice-command primary"
-              role="button"
-              tabindex="0"
               data-learning-toggle
-              hover-class="btn-hover"
+              variant="primary"
               @tap="hasBank || hasQuizResume ? goDoQuiz({ resume: true }) : chooseImportSource()"
+              ><text>{{
+                hasQuizResume ? t('dashboard.copy58') : hasBank ? t('dashboard.copy59') : t('dashboard.copy60')
+              }}</text></BaseButton
             >
-              <text>{{ hasQuizResume ? '继续训练' : hasBank ? '开始训练' : '历年真题' }}</text>
-            </view>
-            <view
+            <BaseButton
               class="practice-command secondary"
-              role="button"
-              tabindex="0"
               data-learning-toggle
-              hover-class="btn-hover"
+              variant="secondary"
               @tap="chooseImportSource"
+              ><text>{{ t('dashboard.copy61') }}</text></BaseButton
             >
-              <text>真题库</text>
-            </view>
           </view>
         </view>
       </view>
@@ -56,10 +48,15 @@
       <!-- #ifdef H5 -->
       <view v-if="guestDemoEnabled && !hasBank" class="section">
         <view class="card demo-entry">
-          <text class="section-title">示例题 · 3 道</text>
-          <button class="demo-start" :loading="startingDemo" :disabled="startingDemo" @tap="startDemo">
-            开始本地演示
-          </button>
+          <text class="section-title">{{ t('dashboard.copy62') }}</text>
+          <BaseButton
+            class="demo-start"
+            :loading="startingDemo"
+            :disabled="startingDemo"
+            variant="primary"
+            @tap="startDemo"
+            >{{ t('dashboard.copy63') }}</BaseButton
+          >
         </view>
       </view>
       <!-- #endif -->
@@ -67,146 +64,120 @@
       <view class="section">
         <view class="section-head navigator-head">
           <view>
-            <text class="section-title">题库</text>
+            <text class="section-title">{{ t('dashboard.copy16') }}</text>
           </view>
-          <text class="section-meta">{{ bankAvailabilityText }}</text>
+          <text class="section-meta">{{ uiText(bankAvailabilityText) }}</text>
         </view>
 
         <view class="readiness-card">
           <view class="readiness-head">
             <view>
-              <text class="readiness-title">{{ readinessTitle }}</text>
+              <text class="readiness-title">{{ uiText(readinessTitle) }}</text>
             </view>
-            <text class="readiness-percent">{{ readinessPercent }}%</text>
+            <BaseStat
+              :label="t('dashboard.copy64')"
+              :value="readinessSummary.publishedSlots"
+              :denominator="
+                readinessSummary.publishedSlots + readinessSummary.pendingSlots + readinessSummary.missingSlots
+              "
+            />
           </view>
           <view class="readiness-progress">
             <view class="readiness-progress-fill" :style="{ width: readinessPercent + '%' }" />
           </view>
           <view class="readiness-metrics">
-            <view class="readiness-metric">
-              <text class="readiness-value">{{ readinessSummary.publishedSlots }}</text>
-              <text class="readiness-label">正式</text>
-            </view>
-            <view class="readiness-metric">
-              <text class="readiness-value">{{ readinessSummary.pendingSlots }}</text>
-              <text class="readiness-label">整理中</text>
-            </view>
-            <view class="readiness-metric">
-              <text class="readiness-value">{{ readinessSummary.missingSlots }}</text>
-              <text class="readiness-label">待入库</text>
-            </view>
+            <BaseStat :label="t('dashboard.copy64')" :value="Number(readinessSummary.publishedSlots) || 0" />
+            <BaseStat :label="t('dashboard.copy65')" :value="Number(readinessSummary.pendingSlots) || 0" />
+            <BaseStat :label="t('dashboard.copy66')" :value="Number(readinessSummary.missingSlots) || 0" />
           </view>
           <view class="readiness-track-line">
-            <text>{{ selectedTrackReadinessText }}</text>
+            <text>{{ uiText(selectedTrackReadinessText) }}</text>
           </view>
         </view>
 
         <view class="subject-tabs">
-          <view
+          <BaseChip
             v-for="subject in navigationTree"
             :key="subject.id"
-            class="subject-tab"
-            role="button"
-            tabindex="0"
             data-learning-toggle
-            :class="{ active: selectedSubject?.id === subject.id }"
-            @tap="selectSubject(subject.id)"
+            :model-value="selectedSubject?.id === subject.id"
+            @update:model-value="selectSubject(subject.id)"
+            ><text>{{ uiText(subject.label) }}</text></BaseChip
           >
-            <text>{{ subject.label }}</text>
-          </view>
         </view>
 
         <view class="track-rail">
-          <view
+          <BaseChip
             v-for="track in selectedSubject?.tracks || []"
             :key="track.id"
-            class="track-pill"
-            role="button"
-            tabindex="0"
             data-learning-toggle
-            :class="{ active: selectedTrack?.id === track.id }"
-            @tap="selectTrack(track.id)"
+            :model-value="selectedTrack?.id === track.id"
+            @update:model-value="selectTrack(track.id)"
+            ><text class="track-code">{{ track.code }}</text
+            ><text class="track-label">{{ uiText(track.label) }}</text
+            ><text class="track-count">{{ track.banks.length }}</text></BaseChip
           >
-            <text class="track-code">{{ track.code }}</text>
-            <text class="track-label">{{ track.label }}</text>
-            <text class="track-count">{{ track.banks.length }}</text>
-          </view>
         </view>
 
         <view class="mode-row">
-          <view
+          <BaseChip
             v-for="mode in selectedModes"
             :key="mode.id"
-            class="mode-chip"
-            role="button"
-            tabindex="0"
             data-learning-toggle
-            :aria-pressed="selectedModeId === mode.id ? 'true' : 'false'"
-            :class="{ active: selectedModeId === mode.id }"
-            @tap="selectMode(mode.id)"
+            :model-value="selectedModeId === mode.id"
+            @update:model-value="selectMode(mode.id)"
+            ><text>{{ uiText(mode.label) }}</text></BaseChip
           >
-            <text>{{ mode.label }}</text>
-          </view>
         </view>
       </view>
 
       <view class="section">
         <view class="section-head">
           <view>
-            <text class="section-title">{{ selectedTrack?.label || '公共课' }}</text>
-            <text class="section-hint">{{ selectedModeLabel }}</text>
+            <text class="section-title">{{ uiText(selectedTrack?.label || t('dashboard.copy67')) }}</text>
+            <text class="section-hint">{{ uiText(selectedModeLabel) }}</text>
           </view>
-          <text class="section-meta">{{ selectedTrackReleaseLabel }}</text>
+          <text class="section-meta">{{ uiText(selectedTrackReleaseLabel) }}</text>
         </view>
 
         <view v-if="selectedBanks.length > 0" class="bank-list">
           <view v-for="bank in selectedBanks" :key="bank.id" class="card bank-card">
             <view class="bank-info">
-              <text class="bank-track">{{ bank.year }} 真题</text>
-              <text class="bank-name">{{ bank.name }}</text>
-              <text v-if="bank.releaseLabel" class="bank-release-label">{{ bank.releaseLabel }}</text>
+              <text class="bank-track">{{ t('dashboard.copy68', { v0: bank.year }) }}</text>
+              <text class="bank-name">{{ uiText(bank.name) }}</text>
+              <text v-if="bank.releaseLabel" class="bank-release-label">{{ uiText(bank.releaseLabel) }}</text>
             </view>
-            <view
+            <BaseButton
               v-if="!isBankLoaded(bank.id)"
               class="bank-btn detail-btn"
-              role="button"
-              tabindex="0"
+              :disabled="loadingBankId === bank.id"
               data-learning-toggle
-              :class="{ disabled: loadingBankId === bank.id }"
-              :aria-disabled="loadingBankId === bank.id ? 'true' : 'false'"
-              hover-class="btn-hover"
+              variant="secondary"
               @tap="openBankDetail(bank.id)"
+              ><text class="bank-btn-text">{{
+                loadingBankId === bank.id ? t('dashboard.copy69') : t('dashboard.copy70')
+              }}</text></BaseButton
             >
-              <text class="bank-btn-text">{{ loadingBankId === bank.id ? '打开中' : '查看' }}</text>
-            </view>
-            <view
+            <BaseButton
               v-else
               class="bank-btn continue-btn"
-              role="button"
-              tabindex="0"
+              :disabled="loadingBankId === bank.id"
               data-learning-toggle
-              hover-class="btn-hover"
+              variant="secondary"
               @tap="openBankDetail(bank.id)"
+              ><text class="bank-btn-text">{{ t('dashboard.copy71') }}</text></BaseButton
             >
-              <text class="bank-btn-text">继续</text>
-            </view>
           </view>
         </view>
 
-        <view v-else class="empty-track-card">
-          <text class="empty-track-title">{{ emptyTrackTitle }}</text>
-          <text class="empty-track-desc">{{ emptyTrackDesc }}</text>
-          <view
-            class="empty-track-action"
-            role="button"
-            tabindex="0"
-            data-learning-toggle
-            hover-class="btn-hover"
-            @tap="chooseImportSource"
-          >
-            <text>查看真题目录</text>
-          </view>
-        </view>
+        <BaseEmpty
+          v-else
+          :title="emptyTrackTitle"
+          :desc="emptyTrackDesc"
+          show-button
+          :button-text="t('dashboard.directory')"
+          @action="chooseImportSource"
+        />
       </view>
 
       <!-- 已加载统计 + 操作按钮 -->
@@ -214,15 +185,17 @@
         <view class="training-plan-card">
           <view class="training-plan-head">
             <view>
-              <text class="training-title">{{ todayTraining.trackLabel }} · {{ todayTraining.focus }}</text>
+              <text class="training-title"
+                >{{ uiText(todayTraining.trackLabel) }} · {{ uiText(todayTraining.focus) }}</text
+              >
             </view>
             <text class="training-minutes">{{ todayTraining.minutes }}min</text>
           </view>
           <view class="training-status-row">
             <text class="training-status" :class="`status-${todayTraining.status}`">
-              {{ trainingStatusLabel(todayTraining.status) }}
+              {{ uiText(trainingStatusLabel(todayTraining.status)) }}
             </text>
-            <text class="training-meta">{{ trainingCoverageText }}</text>
+            <text class="training-meta">{{ uiText(trainingCoverageText) }}</text>
           </view>
           <view class="training-week-row">
             <view
@@ -231,35 +204,35 @@
               class="training-day"
               :class="[{ active: task.day === todayTraining.day }, `status-${task.status}`]"
             >
-              <text class="training-day-label">{{ task.label }}</text>
-              <text class="training-day-track">{{ task.trackLabel }}</text>
+              <text class="training-day-label">{{ uiText(task.label) }}</text>
+              <text class="training-day-track">{{ uiText(task.trackLabel) }}</text>
             </view>
           </view>
         </view>
 
         <view v-if="hasBank" class="card status-card">
-          <text class="status-text">已加载 {{ totalQuestions }} 题</text>
+          <text class="status-text">{{ t('dashboard.copy72', { v0: totalQuestions }) }}</text>
           <view class="progress-mini">
             <view class="progress-bar-sm">
               <view class="progress-fill-sm" :style="{ width: progressPercent + '%' }" />
             </view>
-            <text class="progress-label">已做 {{ progressPercent }}%</text>
+            <text class="progress-label">{{ t('dashboard.copy73', { v0: progressPercent }) }}</text>
           </view>
         </view>
 
         <!-- 开始刷题 -->
-        <view v-if="hasBank" class="action-btn primary-btn" hover-class="btn-hover" @tap="goDoQuiz">
-          <text class="action-btn-text">开始刷题</text>
-        </view>
+        <BaseButton v-if="hasBank" class="action-btn primary-btn" variant="primary" @tap="goDoQuiz"
+          ><text class="action-btn-text">{{ t('dashboard.copy74') }}</text></BaseButton
+        >
 
         <!-- 智能复习 -->
-        <view v-if="hasBank" class="action-btn secondary-btn" hover-class="btn-hover" @tap="goSmartReview">
-          <text class="action-btn-text secondary-text">智能复习</text>
-        </view>
+        <BaseButton v-if="hasBank" class="action-btn secondary-btn" variant="secondary" @tap="goSmartReview"
+          ><text class="action-btn-text secondary-text">{{ t('dashboard.copy75') }}</text></BaseButton
+        >
       </view>
 
       <!-- 底部占位 -->
-      <view :style="{ height: tabBarHeight + 96 + 'px' }" />
+      <view class="yozi-tabbar-space" aria-hidden="true" />
     </scroll-view>
 
     <!-- 底部导航栏 -->
@@ -268,6 +241,16 @@
 </template>
 
 <script>
+import { getTabbarSafeAreaStyle } from '@/utils/core/system.js';
+import BaseStat from '@/components/base/base-stat/base-stat.vue';
+import '@/i18n/messages/dashboard.js';
+import { t, translateRegisteredText } from '@/i18n/index.js';
+import { useThemeStore } from '@/stores/modules/theme.js';
+import BaseEmpty from '@/components/base/base-empty/base-empty.vue';
+import BaseChip from '@/components/base/base-chip/base-chip.vue';
+import BaseButton from '@/components/base/base-button/base-button.vue';
+import '@/styles/yozi-pages.scss';
+
 import { BRAND } from '@/config/brand.js';
 import CustomTabbar from '@/components/layout/custom-tabbar/custom-tabbar.vue';
 import { useFlashcardBank } from '@/composables/useFlashcardBank.js';
@@ -284,7 +267,7 @@ import { isGuestDemoEnabled, startGuestDemoPractice } from '@/utils/practice/dem
 import { getRecoverableQuizProgress } from '@/composables/useQuizAutoSave.js';
 
 export default {
-  components: { CustomTabbar },
+  components: { BaseStat, BaseButton, BaseChip, BaseEmpty, CustomTabbar },
 
   setup() {
     const dynamicMixinHelper = useDynamicMixin();
@@ -318,11 +301,11 @@ export default {
     return {
       hasQuizResume: false,
       statusBarHeight: 44,
-      tabBarHeight: 90,
+      tabBarStyle: {},
       loadingBankId: null,
       guestDemoEnabled: isGuestDemoEnabled(),
       startingDemo: false,
-      isDark: false,
+
       selectedSubjectKey: '',
       selectedTrackId: '',
       selectedModeId: 'past_exam'
@@ -330,6 +313,9 @@ export default {
   },
 
   computed: {
+    isDark() {
+      return useThemeStore().isDark;
+    },
     navigationTree() {
       const profile = storageService.get('exam_profile', null) || {};
       return getPracticeNavigationTree(profile);
@@ -354,15 +340,17 @@ export default {
     },
 
     practiceHeroTitle() {
-      return '今日刷题';
+      return t('dashboard.copy76');
     },
 
     practiceHeroSubtitle() {
-      return '选择一套真题，直接进入训练。英语卷优先显示完整文章，再做选择。';
+      return t('dashboard.copy77');
     },
 
     bankAvailabilityText() {
-      return this.availableBankCount > 0 ? `${this.availableBankCount} 个可用题库` : '暂无可用题库';
+      return this.availableBankCount > 0
+        ? t('dashboard.copy78', { v0: this.availableBankCount })
+        : t('dashboard.copy79');
     },
 
     publicCourseCoverage() {
@@ -387,22 +375,22 @@ export default {
     },
 
     readinessTitle() {
-      if (this.readinessPercent >= 80) return '核心真题已基本可练';
-      if (this.readinessPercent > 0) return '已开放部分正式题库';
-      return '正式题库正在整理';
+      if (this.readinessPercent >= 80) return t('dashboard.copy80');
+      if (this.readinessPercent > 0) return t('dashboard.copy81');
+      return t('dashboard.copy82');
     },
 
     selectedTrackReadinessText() {
       const coverage = this.selectedTrackCoverage;
-      const label = this.selectedTrack?.label || '当前方向';
-      if (!coverage) return `${label} 正在同步题库状态`;
+      const label = this.uiText(this.selectedTrack?.label || t('dashboard.direction'));
+      if (!coverage) return t('dashboard.copy83', { v0: label });
       if (coverage.publishedCount > 0) {
-        return `${label} 已开放 ${coverage.publishedCount}/${coverage.requiredCount} 套正式真题`;
+        return t('dashboard.copy84', { v0: label, v1: coverage.publishedCount, v2: coverage.requiredCount });
       }
       if (coverage.pendingCount > 0) {
-        return `${label} 有 ${coverage.pendingCount} 套整理中`;
+        return t('dashboard.copy85', { v0: label, v1: coverage.pendingCount });
       }
-      return `${label} 暂无可练整卷`;
+      return t('dashboard.copy86', { v0: label });
     },
 
     selectedSubject() {
@@ -429,24 +417,24 @@ export default {
     },
 
     selectedModeLabel() {
-      return this.selectedModes.find((mode) => mode.id === this.selectedModeId)?.label || '历年真题';
+      return this.selectedModes.find((mode) => mode.id === this.selectedModeId)?.label || t('dashboard.copy60');
     },
 
     selectedTrackReleaseLabel() {
       const coverage = this.selectedTrackCoverage;
       if (!coverage) return this.selectedModeLabel;
       if (coverage.publishedCount > 0) {
-        return `${coverage.publishedCount} 套可练`;
+        return t('dashboard.copy87', { v0: coverage.publishedCount });
       }
       return this.selectedModeLabel;
     },
 
     emptyTrackTitle() {
-      return '该方向暂无可练题库';
+      return t('dashboard.copy88');
     },
 
     emptyTrackDesc() {
-      return '该方向的真题会按年份整理为整卷练习，材料和答案说明完善后开放。';
+      return t('dashboard.copy89');
     },
 
     publicCoursePlan() {
@@ -463,7 +451,7 @@ export default {
 
     trainingCoverageText() {
       const summary = this.publicCoursePlan.summary || {};
-      return `${summary.publishedSlots || 0}/${summary.requiredSlots || 0} 槽位已开放`;
+      return t('dashboard.copy90', { v0: summary.publishedSlots || 0, v1: summary.requiredSlots || 0 });
     }
   },
 
@@ -501,12 +489,16 @@ export default {
 
   onShareAppMessage() {
     return {
-      title: `${BRAND.name} — 练习`,
+      title: t('dashboard.copy91', { v0: BRAND.name }),
       path: '/pages/practice/index'
     };
   },
 
   methods: {
+    t,
+    uiText(value) {
+      return translateRegisteredText('dashboard', value);
+    },
     async startDemo() {
       if (this.startingDemo || this.hasBank || !this.guestDemoEnabled) return;
       this.startingDemo = true;
@@ -531,7 +523,7 @@ export default {
       }
 
       if (!silent) {
-        uni.showToast({ title: '功能初始化失败，请稍后重试', icon: 'none' });
+        uni.showToast({ title: t('dashboard.copy92'), icon: 'none' });
       }
 
       return undefined;
@@ -611,8 +603,7 @@ export default {
         const info = uni.getWindowInfo();
         const statusBarHeight = Number(info.statusBarHeight || 0);
         this.statusBarHeight = statusBarHeight > 0 ? statusBarHeight : 16;
-        const safeBottom = info.safeAreaInsets?.bottom || 0;
-        this.tabBarHeight = 60 + 12 + safeBottom;
+        this.tabBarStyle = getTabbarSafeAreaStyle();
       } catch (_e) {
         logger.warn('[Practice] layout init failed');
       }
@@ -620,7 +611,7 @@ export default {
 
     syncTheme(mode) {
       const resolved = mode || storageService.get('theme_mode', 'light');
-      this.isDark = resolved === 'dark';
+      void resolved;
     },
 
     async openBankDetail(bankId) {
@@ -640,7 +631,7 @@ export default {
       }
       this.refreshBankStatus?.();
       if (!this.hasBank) {
-        toast.info('请先加载题库');
+        toast.info(t('dashboard.copy93'));
         return;
       }
       safeNavigateTo('/pages/practice-sub/do-quiz');
@@ -649,7 +640,7 @@ export default {
     goSmartReview() {
       this.refreshBankStatus?.();
       if (!this.hasBank) {
-        toast.info('请先加载题库');
+        toast.info(t('dashboard.copy93'));
         return;
       }
       // 智能复习：跳转到 do-quiz 的复习模式
@@ -657,933 +648,11 @@ export default {
     },
 
     trainingStatusLabel(status) {
-      if (status === 'ready') return '今日可练';
-      if (status === 'pending') return '整理中';
-      if (status === 'review') return '复盘';
-      return '待补齐';
+      if (status === 'ready') return t('dashboard.copy94');
+      if (status === 'pending') return t('dashboard.copy65');
+      if (status === 'review') return t('dashboard.copy95');
+      return t('dashboard.copy96');
     }
   }
 };
 </script>
-
-<style lang="scss" scoped>
-.page [role='button'] {
-  min-height: 44px;
-  touch-action: manipulation;
-}
-.page [role='button']:focus-visible {
-  outline: 2px solid var(--primary);
-  outline-offset: 2px;
-}
-
-.demo-entry {
-  display: flex;
-  flex-direction: column;
-  gap: 20rpx;
-}
-
-.demo-start {
-  width: 100%;
-  margin: 0;
-
-  font-size: 12px;
-  font-size: max(12px, 28rpx);
-  font-weight: 600;
-
-  @include em-mobile-primary-action;
-}
-
-.page {
-  @include em-mobile-canvas;
-  color: $text-main;
-}
-
-/* 导航栏 */
-.nav-bar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 100;
-  @include em-mobile-topbar;
-}
-.nav-content {
-  height: 44px;
-  display: flex;
-  align-items: center;
-  padding: 0 $spacing-page;
-}
-.nav-title {
-  font-size: 36rpx;
-  font-weight: 700;
-  color: $primary-deep;
-}
-
-.main-scroll {
-  height: 100vh;
-  box-sizing: border-box;
-}
-
-.section {
-  padding: 0 $spacing-page;
-  margin-bottom: $spacing-section;
-}
-.section:first-child {
-  padding-top: 28rpx;
-}
-
-.practice-hero {
-  @include em-mobile-deep-panel(36rpx, 38rpx);
-}
-
-.practice-hero::after {
-  content: '';
-  position: absolute;
-  right: 30rpx;
-  top: 28rpx;
-  width: 108rpx;
-  height: 108rpx;
-  border-radius: 30rpx;
-  background: linear-gradient(145deg, rgba(178, 255, 106, 0.2), rgba(117, 221, 255, 0.16));
-}
-
-.practice-kicker {
-  position: relative;
-  z-index: 1;
-  display: block;
-  color: rgba(255, 255, 255, 0.6);
-  font-size: 12px;
-  font-size: max(12px, 18rpx);
-  font-weight: 900;
-  letter-spacing: 0;
-}
-
-.practice-title {
-  position: relative;
-  z-index: 1;
-  display: block;
-  margin-top: 14rpx;
-  color: #ffffff;
-  font-size: 48rpx;
-  font-weight: 760;
-  line-height: 1.12;
-}
-
-.practice-subtitle {
-  position: relative;
-  z-index: 1;
-  display: block;
-  max-width: 590rpx;
-  margin-top: 18rpx;
-  color: rgba(255, 255, 255, 0.68);
-  font-size: 12px;
-  font-size: max(12px, 26rpx);
-  line-height: 1.55;
-}
-
-.practice-signal-row {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  margin-top: 30rpx;
-}
-
-.practice-signal {
-  flex: 1;
-  padding: 18rpx 14rpx;
-  border-radius: 22rpx;
-  background: rgba(255, 255, 255, 0.09);
-  border: 1rpx solid rgba(255, 255, 255, 0.1);
-}
-
-.practice-signal + .practice-signal {
-  margin-left: 12rpx;
-}
-
-.signal-value {
-  @include em-mobile-number;
-  display: block;
-  color: #ffffff;
-  font-size: 34rpx;
-  font-weight: 760;
-  line-height: 1;
-}
-
-.signal-label {
-  display: block;
-  margin-top: 8rpx;
-  color: rgba(255, 255, 255, 0.54);
-  font-size: 12px;
-  font-size: max(12px, 21rpx);
-  font-weight: 600;
-}
-
-.practice-command-row {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  align-items: center;
-  margin-top: 30rpx;
-}
-
-.practice-command {
-  @include em-mobile-pressable;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 72rpx;
-  padding: 22rpx 32rpx;
-  border-radius: 999rpx;
-  font-size: 12px;
-  font-size: max(12px, 27rpx);
-  font-weight: 900;
-}
-
-.practice-command.primary {
-  @include em-mobile-primary-action;
-}
-
-.practice-command.secondary {
-  margin-left: 14rpx;
-  background: rgba(255, 255, 255, 0.12);
-  color: rgba(255, 255, 255, 0.86);
-  box-shadow: inset 0 1rpx 0 rgba(255, 255, 255, 0.16);
-}
-
-.section-head {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  margin-bottom: 16rpx;
-}
-
-.navigator-head {
-  align-items: flex-start;
-}
-
-.section-title {
-  font-size: 32rpx;
-  font-weight: 600;
-  color: $text-main;
-  margin-bottom: 16rpx;
-  display: block;
-}
-
-.section-head .section-title {
-  margin-bottom: 0;
-}
-
-.section-meta {
-  color: $text-weak;
-  font-size: 12px;
-  font-size: max(12px, 23rpx);
-}
-
-.section-hint {
-  display: block;
-  margin-top: 6rpx;
-  color: $text-weak;
-  font-size: 12px;
-  font-size: max(12px, 22rpx);
-}
-
-.subject-tabs {
-  display: flex;
-  padding: 8rpx;
-  border-radius: 28rpx;
-  background: #e9eaee;
-  box-shadow: none;
-}
-
-.subject-tab {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 72rpx;
-  border-radius: 22rpx;
-  color: $text-sub;
-  font-size: 12px;
-  font-size: max(12px, 26rpx);
-  font-weight: 750;
-}
-
-.subject-tab.active {
-  background: #ffffff;
-  color: $text-main;
-  box-shadow: 0 8rpx 18rpx rgba(15, 23, 42, 0.08);
-}
-
-.readiness-card {
-  box-sizing: border-box;
-  margin-bottom: 18rpx;
-  padding: 26rpx;
-
-  border-radius: 24px;
-
-  background: var(--yozi-reading);
-
-  border: 0;
-
-  box-shadow: var(--yozi-shadow);
-}
-
-.readiness-head {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 18rpx;
-}
-
-.readiness-kicker {
-  display: block;
-  color: $text-weak;
-  font-size: 12px;
-  font-size: max(12px, 19rpx);
-  font-weight: 900;
-}
-
-.readiness-title {
-  display: block;
-  margin-top: 8rpx;
-  color: $text-main;
-  font-size: 29rpx;
-  font-weight: 850;
-  line-height: 1.35;
-}
-
-.readiness-percent {
-  @include em-mobile-number;
-  flex-shrink: 0;
-  color: #1f7a4d;
-  font-size: 42rpx;
-  font-weight: 850;
-  line-height: 1;
-}
-
-.readiness-progress {
-  height: 12rpx;
-  margin-top: 22rpx;
-  overflow: hidden;
-  border-radius: 999rpx;
-  background: rgba(31, 122, 77, 0.09);
-}
-
-.readiness-progress-fill {
-  height: 100%;
-  border-radius: inherit;
-  background: var(--yozi-button);
-  transition: width 0.28s ease;
-}
-
-.readiness-metrics {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10rpx;
-  margin-top: 18rpx;
-}
-
-.readiness-metric {
-  min-width: 0;
-  padding: 14rpx 12rpx;
-  border-radius: 18rpx;
-  background: rgba(20, 32, 23, 0.04);
-}
-
-.readiness-value {
-  @include em-mobile-number;
-  display: block;
-  color: $text-main;
-  font-size: 12px;
-  font-size: max(12px, 28rpx);
-  font-weight: 850;
-  line-height: 1;
-}
-
-.readiness-label {
-  display: block;
-  margin-top: 7rpx;
-  color: $text-weak;
-  font-size: 12px;
-  font-size: max(12px, 20rpx);
-  font-weight: 750;
-}
-
-.readiness-track-line {
-  margin-top: 16rpx;
-  padding-top: 16rpx;
-  border-top: 1rpx solid rgba(15, 23, 42, 0.06);
-}
-
-.readiness-track-line text {
-  color: $text-sub;
-  font-size: 12px;
-  font-size: max(12px, 23rpx);
-  font-weight: 700;
-  line-height: 1.45;
-}
-
-.track-rail {
-  display: flex;
-  margin-top: 18rpx;
-  overflow-x: auto;
-  white-space: nowrap;
-}
-
-.track-pill {
-  display: inline-flex;
-  align-items: center;
-  min-width: 212rpx;
-  margin-right: 14rpx;
-  padding: 18rpx 20rpx;
-
-  border-radius: 12px;
-
-  background: var(--yozi-glass);
-
-  border: 0;
-
-  box-shadow: var(--yozi-control-shadow);
-
-  min-height: 44px;
-}
-
-.track-pill.active {
-  background: var(--yozi-button);
-
-  box-shadow: var(--yozi-button-shadow);
-}
-
-.track-code {
-  color: $text-weak;
-  font-size: 12px;
-  font-size: max(12px, 21rpx);
-  font-weight: 900;
-}
-
-.track-label {
-  margin-left: 10rpx;
-  color: $text-main;
-  font-size: 12px;
-  font-size: max(12px, 25rpx);
-  font-weight: 850;
-}
-
-.track-count {
-  margin-left: 12rpx;
-  padding: 4rpx 10rpx;
-  border-radius: 999rpx;
-  background: rgba(31, 122, 77, 0.1);
-  color: var(--primary);
-  font-size: 12px;
-  font-size: max(12px, 20rpx);
-  font-weight: 900;
-}
-
-.track-pill.active .track-code,
-.track-pill.active .track-label {
-  color: #f8fff2;
-}
-
-.track-pill.active .track-count {
-  background: rgba(255, 255, 255, 0.16);
-  color: #ffffff;
-}
-
-.mode-row {
-  display: flex;
-  flex-wrap: wrap;
-  margin-top: 18rpx;
-}
-
-.mode-chip {
-  min-height: 44px;
-  box-sizing: border-box;
-  display: flex;
-  align-items: center;
-  margin-right: 12rpx;
-  margin-bottom: 12rpx;
-  padding: 13rpx 18rpx;
-  border-radius: 999rpx;
-  background: var(--muted);
-  color: $text-sub;
-  font-size: 12px;
-  font-size: max(12px, 23rpx);
-  font-weight: 700;
-}
-
-.mode-chip.active {
-  background: var(--bg-active);
-  color: var(--text-main);
-}
-
-.training-plan-card {
-  box-sizing: border-box;
-  padding: 30rpx 28rpx;
-  margin-bottom: 24rpx;
-
-  border-radius: 24px;
-
-  background: var(--yozi-reading);
-
-  border: 0;
-
-  box-shadow: var(--yozi-shadow);
-}
-
-.training-plan-head {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 18rpx;
-}
-
-.training-kicker {
-  display: block;
-  color: $text-weak;
-  font-size: 12px;
-  font-size: max(12px, 20rpx);
-  font-weight: 900;
-}
-
-.training-title {
-  display: block;
-  margin-top: 8rpx;
-  color: $text-main;
-  font-size: 30rpx;
-  font-weight: 850;
-  line-height: 1.34;
-}
-
-.training-minutes {
-  flex-shrink: 0;
-  padding: 8rpx 14rpx;
-  border-radius: 999rpx;
-  background: rgba(31, 122, 77, 0.1);
-  color: var(--primary);
-  font-size: 12px;
-  font-size: max(12px, 22rpx);
-  font-weight: 900;
-}
-
-.training-status-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16rpx;
-  margin-top: 18rpx;
-}
-
-.training-status,
-.training-meta {
-  font-size: 12px;
-  font-size: max(12px, 22rpx);
-  font-weight: 760;
-}
-
-.training-status {
-  padding: 6rpx 12rpx;
-  border-radius: 999rpx;
-  background: #f2f3f5;
-  color: $text-sub;
-}
-
-.training-status.status-ready {
-  background: rgba(31, 122, 77, 0.1);
-  color: var(--primary);
-}
-
-.training-status.status-pending {
-  background: rgba(255, 149, 0, 0.12);
-  color: #9a5b00;
-}
-
-.training-status.status-review {
-  background: rgba(0, 113, 227, 0.1);
-  color: #0068d6;
-}
-
-.training-meta {
-  color: $text-weak;
-}
-
-.training-week-row {
-  display: grid;
-  grid-template-columns: repeat(7, minmax(0, 1fr));
-  gap: 8rpx;
-  margin-top: 18rpx;
-}
-
-.training-day {
-  min-height: 78rpx;
-  padding: 8rpx 4rpx;
-  border-radius: 18rpx;
-  background: #f6f7f9;
-  text-align: center;
-  border: 1rpx solid transparent;
-}
-
-.training-day.active {
-  border-color: rgba(31, 122, 77, 0.26);
-  background: rgba(31, 122, 77, 0.08);
-}
-
-.training-day.status-pending {
-  background: rgba(255, 149, 0, 0.08);
-}
-
-.training-day.status-missing {
-  opacity: 0.62;
-}
-
-.training-day-label,
-.training-day-track {
-  display: block;
-  white-space: nowrap;
-}
-
-.training-day-label {
-  color: $text-weak;
-  font-size: 12px;
-  font-size: max(12px, 18rpx);
-  font-weight: 800;
-}
-
-.training-day-track {
-  margin-top: 5rpx;
-  color: $text-main;
-  font-size: 12px;
-  font-size: max(12px, 19rpx);
-  font-weight: 850;
-}
-
-.card {
-  @include em-mobile-glass-surface($radius-lg, $spacing-card);
-}
-
-/* 题库列表 */
-.bank-list {
-  display: flex;
-  flex-direction: column;
-}
-
-.bank-card {
-  @include em-mobile-pressable;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 16rpx;
-  transition-property: transform, opacity;
-  transition-duration: 160ms;
-  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.bank-info {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  margin-right: 20rpx;
-}
-
-.bank-name {
-  font-size: 30rpx;
-  font-weight: 800;
-  color: $text-main;
-}
-
-.bank-release-label {
-  display: inline-flex;
-  align-self: flex-start;
-  margin-top: 10rpx;
-  padding: 5rpx 12rpx;
-  border-radius: 999rpx;
-  background: rgba(31, 122, 77, 0.1);
-  color: #1f7a4d;
-  font-size: 12px;
-  font-size: max(12px, 20rpx);
-  font-weight: 850;
-}
-
-.bank-track {
-  color: $text-weak;
-  font-size: 12px;
-  font-size: max(12px, 18rpx);
-  font-weight: 900;
-  letter-spacing: 0;
-  margin-bottom: 8rpx;
-}
-
-.bank-btn {
-  @include em-mobile-pressable;
-  padding: 12rpx 28rpx;
-  border-radius: $radius-sm;
-  flex-shrink: 0;
-}
-
-.detail-btn {
-  @include em-mobile-primary-action;
-}
-
-.continue-btn {
-  background: $primary-light;
-}
-
-.bank-btn-text {
-  font-size: 12px;
-  font-size: max(12px, 26rpx);
-  font-weight: 500;
-
-  color: var(--yozi-button-ink);
-}
-
-.continue-btn .bank-btn-text {
-  color: $action-green;
-}
-
-.empty-track-card {
-  @include em-mobile-glass-surface($radius-lg, 32rpx);
-
-  background: var(--yozi-reading);
-
-  border: 0;
-
-  border-radius: 24px;
-
-  box-shadow: var(--yozi-shadow);
-}
-
-.empty-track-title {
-  display: block;
-  color: $text-main;
-  font-size: 30rpx;
-  font-weight: 850;
-}
-
-.empty-track-desc {
-  display: block;
-  margin-top: 10rpx;
-  color: $text-sub;
-  font-size: 12px;
-  font-size: max(12px, 24rpx);
-  line-height: 1.5;
-}
-
-.empty-track-action {
-  @include em-mobile-pressable;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 72rpx;
-  margin-top: 22rpx;
-
-  font-size: 12px;
-  font-size: max(12px, 25rpx);
-  font-weight: 850;
-
-  @include em-mobile-primary-action;
-}
-
-.empty-track-action text {
-  color: #ffffff;
-}
-
-/* 状态卡片 */
-.status-card {
-  margin-bottom: 24rpx;
-}
-
-.status-text {
-  @include em-mobile-number;
-  font-size: 30rpx;
-  font-weight: 600;
-  color: $text-main;
-  display: block;
-  margin-bottom: 16rpx;
-}
-
-.progress-mini {
-  display: flex;
-  align-items: center;
-}
-
-.progress-bar-sm {
-  flex: 1;
-  height: 12rpx;
-  background: rgba(31, 122, 77, 0.1);
-  border-radius: 99rpx;
-  overflow: hidden;
-}
-
-.progress-fill-sm {
-  height: 100%;
-  background: $primary;
-  border-radius: 99rpx;
-  transition: width 0.3s ease;
-}
-
-.progress-label {
-  margin-left: 16rpx;
-  font-size: 12px;
-  font-size: max(12px, 24rpx);
-  color: $text-sub;
-  white-space: nowrap;
-}
-
-/* 按钮 */
-.action-btn {
-  @include em-mobile-pressable;
-  border-radius: $radius-sm;
-  padding: 24rpx;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-bottom: 16rpx;
-}
-
-.primary-btn {
-  @include em-mobile-primary-action;
-}
-
-.secondary-btn {
-  background: var(--yozi-glass);
-
-  border: 0;
-
-  box-shadow: var(--yozi-control-shadow);
-
-  border-radius: 12px;
-
-  min-height: 44px;
-}
-
-.action-btn-text {
-  font-size: 32rpx;
-  font-weight: 600;
-  color: $primary-deep;
-}
-
-.secondary-text {
-  color: $text-main;
-}
-
-.btn-hover {
-  opacity: 0.85;
-  transform: scale(0.98);
-}
-
-/* ==================== Dark Theme Guardrail ==================== */
-.page.dark-mode {
-  color: var(--text-main);
-
-  background: var(--yozi-background);
-}
-
-.dark-mode .nav-bar {
-  background: var(--yozi-floating);
-
-  box-shadow: var(--yozi-shadow);
-}
-
-.dark-mode .nav-title,
-.dark-mode .practice-title,
-.dark-mode .section-title,
-.dark-mode .signal-value,
-.dark-mode .track-label,
-.dark-mode .training-title,
-.dark-mode .readiness-title,
-.dark-mode .readiness-value,
-.dark-mode .training-day-track,
-.dark-mode .bank-name,
-.dark-mode .empty-track-title,
-.dark-mode .status-text,
-.dark-mode .secondary-text {
-  color: #f5f7fb;
-}
-
-.dark-mode .practice-hero,
-.dark-mode .card,
-.dark-mode .training-plan-card,
-.dark-mode .readiness-card,
-.dark-mode .track-pill,
-.dark-mode .empty-track-card,
-.dark-mode .secondary-btn {
-  background: var(--yozi-reading);
-  border-color: rgba(255, 255, 255, 0.08);
-
-  box-shadow: var(--yozi-shadow);
-
-  border: 0;
-}
-
-.dark-mode .subject-tabs,
-.dark-mode .practice-signal,
-.dark-mode .training-day,
-.dark-mode .readiness-metric,
-.dark-mode .mode-chip,
-.dark-mode .training-status,
-.dark-mode .practice-command.secondary {
-  background: rgba(255, 255, 255, 0.07);
-}
-
-.dark-mode .practice-subtitle,
-.dark-mode .section-hint,
-.dark-mode .section-meta,
-.dark-mode .signal-label,
-.dark-mode .training-meta,
-.dark-mode .readiness-kicker,
-.dark-mode .readiness-label,
-.dark-mode .readiness-track-line text,
-.dark-mode .empty-track-desc,
-.dark-mode .progress-label {
-  color: rgba(245, 247, 251, 0.62);
-}
-
-.dark-mode .subject-tab.active {
-  background: rgba(0, 224, 255, 0.12);
-  color: #75ddff;
-  box-shadow: none;
-}
-
-.dark-mode .track-pill.active,
-.dark-mode .primary-btn,
-.dark-mode .practice-command.primary,
-.dark-mode .detail-btn,
-.dark-mode .empty-track-action {
-  background: var(--yozi-button);
-
-  box-shadow: var(--yozi-button-shadow);
-}
-
-.dark-mode .continue-btn {
-  background: rgba(35, 134, 91, 0.18);
-}
-
-.dark-mode .track-pill.active .track-code,
-.dark-mode .track-pill.active .track-label,
-.dark-mode .primary-btn .action-btn-text,
-.dark-mode .practice-command.primary text,
-.dark-mode .detail-btn .bank-btn-text,
-.dark-mode .empty-track-action text {
-  color: #10131a;
-}
-
-.dark-mode .continue-btn .bank-btn-text {
-  color: #7ee0ac;
-}
-
-.dark-mode .progress-bar-sm {
-  background: rgba(255, 255, 255, 0.1);
-}
-
-.dark-mode .readiness-percent {
-  color: #75ddff;
-}
-
-.dark-mode .readiness-progress {
-  background: rgba(255, 255, 255, 0.1);
-}
-
-.dark-mode .readiness-track-line {
-  border-top-color: rgba(255, 255, 255, 0.08);
-}
-</style>

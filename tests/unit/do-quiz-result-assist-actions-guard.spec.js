@@ -6,25 +6,21 @@ const source = readFileSync(resolve(process.cwd(), 'src/pages/practice-sub/do-qu
 
 describe('do quiz result assist actions guard', () => {
   it('keeps secondary result actions inside the result surface', () => {
-    const assistRowIndex = source.indexOf('class="result-assist-row"');
-    const actionRowIndex = source.indexOf('class="result-action-row"');
-
-    expect(assistRowIndex).toBeGreaterThan(-1);
-    expect(actionRowIndex).toBeGreaterThan(assistRowIndex);
-    expect(source).toContain('@tap.stop="handleResultOpenNote"');
-    expect(source).toContain('@tap.stop="handleResultToggleFavorite"');
-    expect(source).toContain('@tap.stop="handleOpenAnswerSheet"');
-    expect(source).toContain('<text class="result-assist-label">笔记</text>');
-    expect(source).toContain("{{ isCurrentFavorited ? '已收藏' : '收藏' }}");
-    expect(source).toContain('<text class="result-assist-label">答题卡</text>');
+    const assist = source.indexOf('class="result-assist-row"');
+    expect(assist).toBeGreaterThan(-1);
+    expect(source.indexOf('class="result-action-row"')).toBeGreaterThan(assist);
+    for (const event of ['handleResultOpenNote', 'handleResultToggleFavorite', 'handleOpenAnswerSheet'])
+      expect(source).toContain('@tap.stop="' + event + '"');
+    expect(source).toContain("t('quiz.copy36')");
+    expect(source).toContain("t('quiz.copy39')");
   });
 
   it('locks background question actions while feedback is active', () => {
     expect(source).toContain('isQuestionActionLocked()');
     expect(source).toContain('return this.showResult || this.isAnalyzing || this.isNavigating');
-    expect(source).toContain("'is-action-locked': isQuestionActionLocked");
+    expect(source).toContain(':disabled="isQuestionActionLocked"');
     expect(source).toContain('if (this.isQuestionActionLocked && !options.allowDuringResult)');
-    expect(source).toContain("toast.info('请先完成当前题目的反馈')");
+    expect(source).toContain("toast.info(t('quiz.copy95'))");
   });
 
   it('only lets result-surface actions bypass the feedback lock', () => {
@@ -38,8 +34,9 @@ describe('do quiz result assist actions guard', () => {
 
   it('keeps note tag chips free of visible icon text', () => {
     expect(source).not.toContain('{{ tag.icon }} {{ tag.name }}');
-    expect(source).toContain('class="note-tag-dot"');
-    expect(source).toContain(':style="{ background: tag.color }"');
-    expect(source).toContain('{{ tag.name }}');
+    expect(source).toContain('<BaseChip');
+    expect(source).toContain('selectedNoteTags.includes(tag.id)');
+    expect(source).toContain('uiText(tag.name)');
+    expect(source).not.toContain(':style="{ background: tag.color }"');
   });
 });

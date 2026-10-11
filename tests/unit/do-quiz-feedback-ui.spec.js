@@ -6,9 +6,10 @@ const doQuizSource = readFileSync(resolve(process.cwd(), 'src/pages/practice-sub
 
 describe('do quiz formal feedback experience', () => {
   it('folds unrelated wrong options after answering', () => {
-    expect(doQuizSource).toContain("'option-folded': isOptionFolded(idx)");
-    expect(doQuizSource).toContain('option-item.option-folded');
-    expect(doQuizSource).toContain('!this.isOptionSelected(idx)');
+    expect(doQuizSource).toContain('<BaseOptions');
+    expect(doQuizSource).toContain("this.resultStatus === 'pending'");
+    expect(doQuizSource).toContain('this.isCorrectOption(value)');
+    expect(doQuizSource).toContain(':disabled="isAnalyzing || isNavigating || hasAnswered || showResult"');
   });
 
   it('shows a knowledge card in the result surface', () => {

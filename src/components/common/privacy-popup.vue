@@ -4,40 +4,40 @@
   此组件响应该事件，展示隐私弹窗，用户点击同意后通过 agreePrivacyAuthorization 授权
 -->
 <template>
-  <!-- #ifdef MP-WEIXIN -->
-  <view v-if="showPopup" class="privacy-mask">
-    <view class="privacy-dialog">
-      <view class="privacy-handle" />
-      <text class="privacy-eyebrow"> Privacy </text>
-      <view class="privacy-title"> 用户隐私保护提示 </view>
-      <view class="privacy-content">
-        <text>在使用当前小程序服务之前，请仔细阅读</text>
-        <text class="privacy-link" @tap="openPrivacyContract">
-          {{ privacyContractName }}
-        </text>
-        <text>。如你同意，请点击"同意"开始使用。</text>
-      </view>
-      <view class="privacy-actions">
-        <button id="reject-btn" class="privacy-btn privacy-btn-reject" @tap="handleReject">拒绝</button>
-        <button
-          id="agree-btn"
-          class="privacy-btn privacy-btn-agree"
-          open-type="agreePrivacyAuthorization"
-          @agreeprivacyauthorization="handleAgree"
-        >
-          同意
-        </button>
-      </view>
-    </view>
-  </view>
-  <!-- #endif -->
+  <CustomModal
+    v-if="showPopup"
+    :visible="showPopup"
+    position="bottom"
+    :is-dark="theme.isDark"
+    :title="t('privacy.title')"
+    :show-actions="false"
+    :mask-closable="false"
+    :escape-closable="false"
+  >
+    <text>{{ t('privacy.before') }}</text
+    ><BaseButton variant="quiet" @tap="openPrivacyContract">{{ privacyContractName }}</BaseButton
+    ><text>{{ t('privacy.after') }}</text>
+    <template #footer
+      ><view class="privacy-actions"
+        ><BaseButton id="reject-btn" variant="secondary" @tap="handleReject">{{ t('privacy.reject') }}</BaseButton
+        ><BaseButton id="agree-btn" open-type="agreePrivacyAuthorization" @agreeprivacyauthorization="handleAgree">{{
+          t('privacy.agree')
+        }}</BaseButton></view
+      ></template
+    >
+  </CustomModal>
 </template>
 
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from 'vue';
+import { t } from '@/i18n/index.js';
+import { useThemeStore } from '@/stores/modules/theme.js';
+import CustomModal from './CustomModal.vue';
+import BaseButton from '@/components/base/base-button/base-button.vue';
+const theme = useThemeStore();
 
 const showPopup = ref(false);
-const privacyContractName = ref('《用户隐私保护指引》');
+const privacyContractName = ref(t('privacy.contract'));
 let resolvePrivacyAuthorization = null;
 let _privacyHandler = null;
 
@@ -104,133 +104,10 @@ function openPrivacyContract() {
 </script>
 
 <style scoped>
-.privacy-mask {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(9, 18, 12, 0.32);
-  z-index: 99999;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.privacy-dialog {
-  width: 620rpx;
-  background-color: var(--em3d-card-bg);
-  border: 2rpx solid var(--em3d-border);
-  border-radius: 36rpx;
-  padding: 18rpx 34rpx 30rpx;
-  box-sizing: border-box;
-  box-shadow: 0 var(--em3d-depth-md) 0 var(--em3d-border-shadow);
-}
-
-.privacy-handle {
-  width: 84rpx;
-  height: 8rpx;
-  border-radius: 999rpx;
-  background: rgba(0, 0, 0, 0.12);
-  margin: 6rpx auto 18rpx;
-}
-
-.privacy-eyebrow {
-  display: block;
-  text-align: center;
-  margin-bottom: 8rpx;
-  font-size: 20rpx;
-  letter-spacing: 3rpx;
-  text-transform: uppercase;
-  color: var(--text-sub);
-}
-
-.privacy-title {
-  text-align: center;
-  font-size: 34rpx;
-  font-weight: 600;
-  color: var(--text-main);
-  margin-bottom: 22rpx;
-}
-
-.privacy-content {
-  font-size: 28rpx;
-  color: var(--text-sub);
-  line-height: 1.7;
-  margin-bottom: 36rpx;
-  text-align: left;
-}
-
-.privacy-link {
-  color: var(--success-dark);
-  font-weight: 600;
-}
-
 .privacy-actions {
   display: flex;
-  /* gap: 20rpx; -- replaced for Android WebView compat */
-}
-.privacy-btn {
-  flex: 1;
-  height: 80rpx;
-  line-height: 80rpx;
-  text-align: center;
-  border-radius: 999rpx;
-  font-size: 30rpx;
-  font-weight: 600;
-  border: none;
-  padding: 0;
-  margin: 0;
-}
-
-.privacy-btn::after {
-  border: none;
-}
-
-.privacy-btn-reject {
-  background-color: var(--em3d-card-bg);
-  color: var(--text-main);
-  border: 2rpx solid var(--em3d-border);
-  box-shadow: 0 var(--em3d-depth-sm) 0 var(--em3d-border-shadow);
-}
-
-.privacy-btn-agree {
-  background: var(--cta-primary-bg);
-  color: var(--cta-primary-text);
-  border: 1px solid var(--cta-primary-border);
-  box-shadow: var(--cta-primary-shadow);
-}
-
-/* 暗色模式适配 */
-.dark-mode .privacy-mask {
-  background: rgba(3, 8, 14, 0.52);
-}
-
-.dark-mode .privacy-dialog {
-  background-color: var(--em3d-card-bg);
-  border-color: var(--em3d-border);
-}
-
-.dark-mode .privacy-handle {
-  background: rgba(255, 255, 255, 0.16);
-}
-
-.dark-mode .privacy-eyebrow,
-.dark-mode .privacy-content {
-  color: rgba(255, 255, 255, 0.68);
-}
-
-.dark-mode .privacy-title {
-  color: var(--text-inverse);
-}
-
-.dark-mode .privacy-link {
-  color: var(--info-blue);
-}
-
-.dark-mode .privacy-btn-reject {
-  background-color: var(--em3d-card-bg);
-  color: var(--text-inverse);
-  border-color: var(--em3d-border);
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--s-3);
 }
 </style>

@@ -1,15 +1,20 @@
 <template>
-  <view class="container" :class="{ 'dark-mode': isDark, 'theme-light': !isDark, 'wot-theme-dark': isDark }">
+  <view class="yozi-page container" :class="{ 'dark-mode': isDark, 'theme-light': !isDark, 'wot-theme-dark': isDark }">
     <view class="aurora-bg" />
 
-    <view class="nav-header" :style="{ paddingTop: statusBarHeight + 'px', height: navBarHeight + 'px' }">
-      <view class="nav-content" :style="{ paddingRight: capsuleMargin + 'px', height: '44px' }">
-        <view class="back-area" hover-class="item-hover" @tap="handleExit">
-          <BaseIcon name="arrow-left" :size="36" />
-          <text id="e2e-quiz-progress" class="progress-text" @tap.stop="handleOpenAnswerSheet">
-            {{ currentIndex + 1 }} / {{ questions.length }}
-          </text>
-        </view>
+    <view class="nav-header" :style="{ paddingTop: statusBarHeight + 'px' }">
+      <view class="nav-content" :style="{ paddingRight: capsuleMargin + 'px' }">
+        <view class="back-area"
+          ><BaseButton
+            variant="quiet"
+            icon="arrow-left"
+            icon-only
+            :label="t('quiz.copy46')"
+            @tap="handleExit"
+          /><BaseButton id="e2e-quiz-progress" variant="quiet" :label="t('quiz.copy39')" @tap="handleOpenAnswerSheet"
+            >{{ currentIndex + 1 }} / {{ questions.length }}</BaseButton
+          ></view
+        >
         <QuizProgress :total="questions.length" :current="currentIndex" :answered="answeredQuestions" />
         <!-- 单题计时器显示 -->
         <view class="timer-group">
@@ -19,14 +24,14 @@
             :class="{ warning: showTimeWarning, danger: questionTimeRemaining <= 10 }"
           >
             <view class="timer-icon">
-              <BaseIcon name="timer" :size="28" />
+              <BaseIcon name="timer" />
             </view>
             <text class="question-time">
               {{ formatTime(questionTimeRemaining) }}
             </text>
           </view>
           <view class="timer-box">
-            <text class="total-label"> 总 </text>
+            <text class="total-label">{{ t('quiz.copy0') }}</text>
             <text>{{ formatTime(seconds) }}</text>
           </view>
         </view>
@@ -35,14 +40,16 @@
 
     <!-- 学习节奏管理：连续学习休息提醒 -->
     <view v-if="showBreakReminder" class="break-reminder-bar">
-      <text class="break-reminder-text">你已连续学习 {{ Math.floor(seconds / 60) }} 分钟，适当休息效率更高</text>
+      <text class="break-reminder-text">{{ t('quiz.copy1', { v0: Math.floor(seconds / 60) }) }}</text>
       <view class="break-reminder-actions">
-        <text class="break-dismiss" @tap="showBreakReminder = false">继续</text>
+        <BaseButton class="break-dismiss" variant="secondary" @tap="showBreakReminder = false">{{
+          t('quiz.copy2')
+        }}</BaseButton>
       </view>
     </view>
 
     <view v-if="comboFeedback" class="combo-feedback" :class="`level-${comboFeedback.level}`">
-      <text class="combo-title">{{ comboFeedback.title }}</text>
+      <text class="combo-title">{{ uiText(comboFeedback.title) }}</text>
       <text class="combo-desc">{{ comboFeedback.desc }}</text>
     </view>
 
@@ -50,23 +57,11 @@
       id="e2e-quiz-scroll"
       :scroll-y="!showResult"
       class="quiz-scroll"
-      :style="{ paddingTop: navBarHeight + 'px' }"
       @touchstart="onTouchStart"
       @touchmove="onTouchMove"
       @touchend="onTouchEnd"
     >
-      <view v-if="showQuizLoading" class="quiz-loading-overlay glass-card">
-        <view class="quiz-loading-orbit">
-          <view class="quiz-loading-dot" />
-          <view class="quiz-loading-dot secondary" />
-        </view>
-        <text class="quiz-loading-title">正在准备题目</text>
-        <view class="quiz-loading-skeleton">
-          <view class="quiz-loading-line long" />
-          <view class="quiz-loading-line" />
-          <view class="quiz-loading-line short" />
-        </view>
-      </view>
+      <BaseEmpty v-if="showQuizLoading" state="loading" :title="t('quiz.copy3')" />
 
       <!-- Phase 3-4: 卡片堆叠 — 下一题预览（第二层） -->
       <view
@@ -76,7 +71,7 @@
       >
         <view class="glass-card question-card">
           <view class="q-header">
-            <view class="q-tag">{{ questions[currentIndex + 1].type || '单选题' }}</view>
+            <view class="q-tag">{{ questions[currentIndex + 1].type || t('quiz.copy4') }}</view>
           </view>
           <view class="q-content-preview">{{ (questions[currentIndex + 1].question || '').substring(0, 60) }}...</view>
         </view>
@@ -108,44 +103,40 @@
         >
           <view class="q-header">
             <view class="q-tag">
-              {{ currentQuestion.source === 'guest_demo' ? '示例 · ' : '' }}{{ questionTypeLabel }}
+              {{ currentQuestion.source === 'guest_demo' ? t('quiz.copy5') : '' }}{{ uiText(questionTypeLabel) }}
             </view>
             <view class="q-actions">
               <!-- 笔记按钮 -->
-              <view
+              <BaseButton
                 class="note-btn"
-                :class="{ 'has-notes': currentQuestionNotes.length > 0, 'is-action-locked': isQuestionActionLocked }"
-                hover-class="item-hover"
+                :disabled="isQuestionActionLocked"
+                :label="t('quiz.copy36')"
+                variant="secondary"
                 @tap.stop="handleOpenNote()"
-              >
-                <view class="note-icon">
-                  <BaseIcon name="note" :size="28" />
-                </view>
-                <text v-if="currentQuestionNotes.length > 0" class="note-count">
+                ><view class="note-icon"> <BaseIcon name="note" /> </view
+                ><text v-if="currentQuestionNotes.length > 0" class="note-count">
                   {{ currentQuestionNotes.length }}
-                </text>
-              </view>
-              <!-- 收藏按钮 -->
-              <view
-                class="favorite-btn"
-                :class="{ 'is-favorited': isCurrentFavorited, 'is-action-locked': isQuestionActionLocked }"
-                hover-class="item-hover"
-                @tap.stop="handleToggleFavorite()"
+                </text></BaseButton
               >
-                <view class="favorite-icon">
-                  <BaseIcon :name="isCurrentFavorited ? 'star' : 'star-outline'" :size="28" />
-                </view>
-              </view>
+              <!-- 收藏按钮 -->
+              <BaseButton
+                class="favorite-btn"
+                :disabled="isQuestionActionLocked"
+                :label="t('quiz.copy38')"
+                variant="secondary"
+                @tap.stop="handleToggleFavorite()"
+                ><view class="favorite-icon"> <BaseIcon :name="isCurrentFavorited ? 'star' : 'star-outline'" /> </view
+              ></BaseButton>
             </view>
           </view>
           <view v-if="currentQuestionPassage" class="q-passage-card">
             <view class="q-passage-head">
               <view class="q-passage-title-block">
-                <text class="q-passage-kicker">{{ currentQuestion.section || '阅读材料' }}</text>
-                <text class="q-passage-tip">点选关键句，保存为第 {{ currentQuestionNumberText }} 题依据</text>
+                <text class="q-passage-kicker">{{ currentQuestion.section || t('quiz.copy6') }}</text>
+                <text class="q-passage-tip">{{ t('quiz.copy7', { v0: currentQuestionNumberText }) }}</text>
               </view>
               <text v-if="currentQuestion.paperName || currentQuestion.year" class="q-passage-meta">
-                {{ currentQuestion.paperName || `${currentQuestion.year}年真题` }}
+                {{ currentQuestion.paperName || t('quiz.copy8', { v0: currentQuestion.year }) }}
               </text>
             </view>
             <view v-if="currentQuestionFixedSequence.length" class="q-fixed-sequence">
@@ -177,8 +168,10 @@
               <RichText v-else class="q-passage-content" :content="currentQuestionPassage" />
             </scroll-view>
             <view v-if="currentPassageAnnotationText" class="q-passage-annotation">
-              <text>{{ currentPassageAnnotationText }}</text>
-              <text class="q-passage-clear" @tap="clearCurrentPassageAnnotations">清除</text>
+              <text>{{ uiText(currentPassageAnnotationText) }}</text>
+              <BaseButton class="q-passage-clear" variant="secondary" @tap="clearCurrentPassageAnnotations">{{
+                t('quiz.copy9')
+              }}</BaseButton>
             </view>
           </view>
           <RichText class="q-content" :content="currentQuestion.question" />
@@ -198,7 +191,7 @@
               <image
                 class="q-source-image"
                 :src="image.src"
-                :alt="image.alt || image.caption || '试卷原页'"
+                :alt="image.alt || image.caption || t('quiz.copy10')"
                 mode="widthFix"
                 lazy-load
                 show-menu-by-longpress
@@ -208,84 +201,50 @@
           </view>
         </view>
 
-        <view v-if="hasSelectableOptions" class="options-list">
-          <view
-            v-for="(opt, idx) in currentQuestion.options"
-            :id="`e2e-quiz-option-${idx}`"
-            :key="idx"
-            :class="[
-              'glass-card',
-              'option-item',
-              {
-                selected: isOptionSelected(idx),
-                correct: hasAnswered && isCorrectOption(idx),
-                wrong: hasAnswered && isOptionSelected(idx) && !isCorrectOption(idx),
-                'option-folded': isOptionFolded(idx),
-                'option-muted-after-answer': isOptionDeemphasized(idx),
-                disabled: isAnalyzing || isNavigating || hasAnswered
-              }
-            ]"
-            hover-class="option-hover"
-            role="button"
-            :aria-label="`${getOptionLabel(idx)}. ${opt}`"
-            :aria-pressed="isOptionSelected(idx)"
-            :aria-disabled="isAnalyzing || isNavigating || hasAnswered"
-            :tabindex="isAnalyzing || isNavigating || hasAnswered ? -1 : 0"
-            @tap="selectOption(idx)"
-            @keydown.enter.prevent="selectOption(idx)"
-            @keydown.space.prevent="selectOption(idx)"
-          >
-            <view class="opt-index">
-              {{ getOptionLabel(idx) }}
-            </view>
-            <RichText class="opt-text" :content="opt" />
-            <view v-if="hasAnswered" class="select-indicator">
-              <BaseIcon v-if="isCorrectOption(idx)" name="check" :size="28" />
-              <BaseIcon v-else-if="isOptionSelected(idx) && !isCorrectOption(idx)" name="cross" :size="28" />
-              <view v-else-if="isOptionSelected(idx)" class="indicator-circle" />
-            </view>
-          </view>
-          <wd-button
-            v-if="!hasAnswered"
+        <view v-if="hasSelectableOptions" class="options-list"
+          ><BaseOptions
+            :label="t('quiz.copy11')"
+            :options="quizOptions"
+            :model-value="userChoice === null ? '' : userChoice"
+            :multiple="quizMultiple"
+            :disabled="isAnalyzing || isNavigating || hasAnswered || showResult"
+            @update:model-value="selectQuizDraft"
+            ><template #option="{ option }"><RichText :content="option.label" /></template></BaseOptions
+          ><BaseButton
             id="e2e-quiz-submit-choice"
-            custom-class="choice-submit"
-            :disabled="!canSubmitChoice"
-            role="button"
-            :aria-disabled="!canSubmitChoice"
-            :tabindex="canSubmitChoice ? 0 : -1"
-            @click="submitChoice"
-            @keydown.enter.prevent="submitChoice"
-            @keydown.space.prevent="submitChoice"
-          >
-            提交作答
-          </wd-button>
-        </view>
+            class="choice-submit"
+            :disabled="!hasAnswered && !canSubmitChoice"
+            @tap="hasAnswered ? (showResult = true) : submitChoice()"
+            >{{ hasAnswered ? t('quiz.feedback') : t('quiz.copy12') }}</BaseButton
+          ></view
+        >
 
         <view v-if="currentAnswerRecord && !showResult" class="answer-sync" role="status" aria-live="polite">
-          <text>{{ answerSyncText }}</text>
-          <wd-button v-if="canRetryAnswerSync" size="small" @click="retryAnswerSync">重试同步</wd-button>
+          <text>{{ uiText(answerSyncText) }}</text>
+          <BaseButton v-if="canRetryAnswerSync" variant="secondary" @tap="retryAnswerSync">{{
+            t('quiz.copy13')
+          }}</BaseButton>
         </view>
 
         <!-- 经典闪卡：查看参考与独立自评记录。 -->
         <view v-if="isFlashcardMode" class="flashcard-area">
           <!-- 翻转前：显示"翻转查看答案"按钮 -->
           <view v-if="!flashcardFlipped" class="flashcard-reveal">
-            <view class="flashcard-hint">想好答案了吗？</view>
-            <view class="flashcard-reveal-btn" hover-class="item-hover" @tap="flipFlashcard">
-              <BaseIcon name="eye" :size="32" />
-              <text class="flashcard-reveal-text">翻转查看答案</text>
-            </view>
+            <view class="flashcard-hint">{{ t('quiz.copy14') }}</view>
+            <BaseButton class="flashcard-reveal-btn" variant="secondary" @tap="flipFlashcard"
+              ><BaseIcon name="eye" /><text class="flashcard-reveal-text">{{ t('quiz.copy15') }}</text></BaseButton
+            >
           </view>
 
           <!-- 翻转后：显示答案 + FSRS 四级评分 -->
           <view v-else class="flashcard-answer-area">
             <view class="flashcard-answer-card glass-card">
-              <view class="flashcard-answer-label">
-                <BaseIcon name="check" :size="24" />
-                <text>参考答案</text>
+              <view class="flashcard-answer-label yozi-icon-row">
+                <BaseIcon name="check" />
+                <text>{{ t('quiz.copy16') }}</text>
               </view>
               <scroll-view scroll-y class="flashcard-answer-scroll">
-                <RichText class="flashcard-answer-content" :content="currentQuestion.answer || '暂无答案'" />
+                <RichText class="flashcard-answer-content" :content="currentQuestion.answer || t('quiz.copy17')" />
                 <view v-if="currentAnswerImages.length" class="q-image-list answer-images">
                   <view
                     v-for="(image, imageIndex) in currentAnswerImages"
@@ -295,7 +254,7 @@
                     <image
                       class="q-source-image"
                       :src="image.src"
-                      :alt="image.alt || image.caption || '答案原页'"
+                      :alt="image.alt || image.caption || t('quiz.copy18')"
                       mode="widthFix"
                       lazy-load
                       show-menu-by-longpress
@@ -304,8 +263,11 @@
                   </view>
                 </view>
               </scroll-view>
-              <view v-if="currentQuestion.desc && currentQuestion.desc !== '暂无解析'" class="flashcard-explanation">
-                <text class="flashcard-explanation-label">解析</text>
+              <view
+                v-if="currentQuestion.desc && currentQuestion.desc !== t('quiz.copy19')"
+                class="flashcard-explanation"
+              >
+                <text class="flashcard-explanation-label">{{ t('quiz.copy20') }}</text>
                 <RichText class="flashcard-explanation-content" :content="currentQuestion.desc" />
               </view>
             </view>
@@ -316,60 +278,34 @@
               aria-live="polite"
               class="flashcard-rate-hint"
             >
-              <text>{{ recordingObservation ? '保存中…' : observationError }}</text>
-              <button v-if="!referenceSaved && !recordingObservation" @tap="flipFlashcard">重试保存查看记录</button>
+              <text>{{ recordingObservation ? t('quiz.copy21') : observationError }}</text>
+              <BaseButton
+                v-if="!referenceSaved && !recordingObservation"
+                class="flashcard-reveal-btn"
+                variant="secondary"
+                @tap="flipFlashcard"
+                >{{ t('quiz.copy22') }}</BaseButton
+              >
             </view>
             <!-- 记忆自评不直接安排可靠复习。 -->
-            <view class="flashcard-rate-hint">根据记忆情况自评：</view>
+            <view class="flashcard-rate-hint">{{ t('quiz.copy23') }}</view>
             <view class="fsrs-rating-row flashcard-rating">
-              <view
-                class="fsrs-rating-btn fsrs-again"
-                role="button"
-                :tabindex="referenceSaved && !recordingObservation ? 0 : -1"
-                :aria-disabled="!referenceSaved || recordingObservation"
-                @tap="rateFlashcardAndNext(1)"
-                @keydown.enter.prevent="rateFlashcardAndNext(1)"
-                @keydown.space.prevent="rateFlashcardAndNext(1)"
+              <BaseButton class="fsrs-rating-btn fsrs-again" variant="secondary" @tap="rateFlashcardAndNext(1)"
+                ><text class="fsrs-rating-label">{{ t('quiz.copy24') }}</text
+                ><text class="fsrs-rating-interval">{{ getFlashcardInterval('again') }}</text></BaseButton
               >
-                <text class="fsrs-rating-label">忘了</text>
-                <text class="fsrs-rating-interval">{{ getFlashcardInterval('again') }}</text>
-              </view>
-              <view
-                class="fsrs-rating-btn fsrs-hard"
-                role="button"
-                :tabindex="referenceSaved && !recordingObservation ? 0 : -1"
-                :aria-disabled="!referenceSaved || recordingObservation"
-                @tap="rateFlashcardAndNext(2)"
-                @keydown.enter.prevent="rateFlashcardAndNext(2)"
-                @keydown.space.prevent="rateFlashcardAndNext(2)"
+              <BaseButton class="fsrs-rating-btn fsrs-hard" variant="secondary" @tap="rateFlashcardAndNext(2)"
+                ><text class="fsrs-rating-label">{{ t('quiz.copy25') }}</text
+                ><text class="fsrs-rating-interval">{{ getFlashcardInterval('hard') }}</text></BaseButton
               >
-                <text class="fsrs-rating-label">模糊</text>
-                <text class="fsrs-rating-interval">{{ getFlashcardInterval('hard') }}</text>
-              </view>
-              <view
-                class="fsrs-rating-btn fsrs-good"
-                role="button"
-                :tabindex="referenceSaved && !recordingObservation ? 0 : -1"
-                :aria-disabled="!referenceSaved || recordingObservation"
-                @tap="rateFlashcardAndNext(3)"
-                @keydown.enter.prevent="rateFlashcardAndNext(3)"
-                @keydown.space.prevent="rateFlashcardAndNext(3)"
+              <BaseButton class="fsrs-rating-btn fsrs-good" variant="secondary" @tap="rateFlashcardAndNext(3)"
+                ><text class="fsrs-rating-label">{{ t('quiz.copy26') }}</text
+                ><text class="fsrs-rating-interval">{{ getFlashcardInterval('good') }}</text></BaseButton
               >
-                <text class="fsrs-rating-label">记得</text>
-                <text class="fsrs-rating-interval">{{ getFlashcardInterval('good') }}</text>
-              </view>
-              <view
-                class="fsrs-rating-btn fsrs-easy"
-                role="button"
-                :tabindex="referenceSaved && !recordingObservation ? 0 : -1"
-                :aria-disabled="!referenceSaved || recordingObservation"
-                @tap="rateFlashcardAndNext(4)"
-                @keydown.enter.prevent="rateFlashcardAndNext(4)"
-                @keydown.space.prevent="rateFlashcardAndNext(4)"
+              <BaseButton class="fsrs-rating-btn fsrs-easy" variant="secondary" @tap="rateFlashcardAndNext(4)"
+                ><text class="fsrs-rating-label">{{ t('quiz.copy27') }}</text
+                ><text class="fsrs-rating-interval">{{ getFlashcardInterval('easy') }}</text></BaseButton
               >
-                <text class="fsrs-rating-label">简单</text>
-                <text class="fsrs-rating-interval">{{ getFlashcardInterval('easy') }}</text>
-              </view>
             </view>
           </view>
         </view>
@@ -382,104 +318,77 @@
     <!-- AI解析在结果弹窗内异步加载，用户可随时点击下一题 -->
 
     <!-- 结果弹窗背景遮罩 -->
-    <view v-if="showResult" class="result-backdrop" @tap.stop />
 
     <!-- 结果弹窗 -->
-    <view v-if="showResult" :class="['result-pop', resultStatus]">
-      <view class="result-header">
-        <view class="result-status-mark">
-          <BaseIcon
-            :name="resultStatus === 'pending' ? 'info' : resultStatus === 'correct' ? 'check' : 'cross'"
-            :size="30"
-          />
+    <CustomModal
+      :visible="showResult"
+      position="bottom"
+      :show-actions="false"
+      :is-dark="isDark"
+      close-button
+      escape-closable
+      :title="
+        t(resultStatus === 'pending' ? 'quiz.copy28' : resultStatus === 'correct' ? 'quiz.copy29' : 'quiz.copy30')
+      "
+      @cancel="showResult = false"
+      ><template #title>
+        <view class="result-header yozi-icon-row">
+          <view class="result-status-mark">
+            <BaseIcon :name="resultStatus === 'pending' ? 'info' : resultStatus === 'correct' ? 'check' : 'cross'" />
+          </view>
+          <text class="status-title">
+            {{
+              uiText(
+                resultStatus === 'pending'
+                  ? t('quiz.copy28')
+                  : resultStatus === 'correct'
+                    ? t('quiz.copy29')
+                    : t('quiz.copy30')
+              )
+            }}
+          </text>
         </view>
-        <text class="status-title">
-          {{ resultStatus === 'pending' ? '已记录，待核对' : resultStatus === 'correct' ? '回答正确' : '再想想' }}
-        </text>
-      </view>
+      </template>
+      <view :class="['result-pop', resultStatus]">
+        <scroll-view scroll-y class="result-content-scroll">
+          <view v-if="currentAnswerRecord" class="answer-sync" role="status" aria-live="polite">
+            <text>{{ uiText(answerSyncText) }}</text>
+            <BaseButton v-if="canRetryAnswerSync" variant="secondary" @tap="retryAnswerSync">{{
+              t('quiz.copy13')
+            }}</BaseButton>
+          </view>
 
-      <scroll-view scroll-y class="result-content-scroll">
-        <view v-if="currentAnswerRecord" class="answer-sync" role="status" aria-live="polite">
-          <text>{{ answerSyncText }}</text>
-          <wd-button v-if="canRetryAnswerSync" size="small" @click="retryAnswerSync">重试同步</wd-button>
-        </view>
-
-        <view v-if="resultStatus === 'wrong' || resultStatus === 'pending'" class="ai-analysis-scroll">
-          <view class="analysis-tag">
-            <view class="sparkle-icon">
-              <BaseIcon name="sparkle" :size="28" />
+          <view v-if="resultStatus === 'wrong' || resultStatus === 'pending'" class="ai-analysis-scroll">
+            <view class="analysis-tag yozi-icon-row">
+              <view class="sparkle-icon">
+                <BaseIcon name="sparkle" />
+              </view>
+              <text>{{ t('quiz.copy20') }}</text>
+              <!-- ✅ [P0重构] 内联AI加载指示器 -->
+              <text v-if="resultStatus === 'wrong' && !aiComment" class="ai-loading-hint">{{ t('quiz.copy31') }}</text>
             </view>
-            <text>解析</text>
-            <!-- ✅ [P0重构] 内联AI加载指示器 -->
-            <text v-if="resultStatus === 'wrong' && !aiComment" class="ai-loading-hint">分析中...</text>
-          </view>
-          <!-- AI 个人历史微反馈 — 基于错题历史的一句话上下文提醒 -->
-          <view v-if="personalHint" class="personal-hint-bar">
-            <text class="personal-hint-text">{{ personalHint }}</text>
-          </view>
-          <view class="answer-display">
-            <text class="answer-label">{{ resultStatus === 'pending' ? '参考答案：' : '正确答案：' }}</text>
-            <text class="answer-value">
-              {{ currentQuestion ? currentQuestion.answer : 'A' }}
-            </text>
-          </view>
-          <view v-if="currentAnswerImages.length" class="q-image-list result-answer-images">
-            <view
-              v-for="(image, imageIndex) in currentAnswerImages"
-              :key="`${currentQuestion.id || currentIndex}-result-answer-image-${imageIndex}`"
-              class="q-image-card"
-            >
-              <image
-                class="q-source-image"
-                :src="image.src"
-                :alt="image.alt || image.caption || '答案原页'"
-                mode="widthFix"
-                lazy-load
-                show-menu-by-longpress
-              />
-              <text v-if="image.caption" class="q-image-caption">{{ image.caption }}</text>
+            <!-- AI 个人历史微反馈 — 基于错题历史的一句话上下文提醒 -->
+            <view v-if="personalHint" class="personal-hint-bar">
+              <text class="personal-hint-text">{{ personalHint }}</text>
             </view>
-          </view>
-          <view v-if="knowledgeCard" class="knowledge-card">
-            <view class="knowledge-card-head">
-              <text class="knowledge-label">考点</text>
-              <text class="knowledge-title">{{ knowledgeCard.title }}</text>
+            <view class="answer-display">
+              <text class="answer-label">{{
+                uiText(resultStatus === 'pending' ? t('quiz.copy32') : t('quiz.copy33'))
+              }}</text>
+              <text class="answer-value">
+                {{ currentQuestion ? currentQuestion.answer : 'A' }}
+              </text>
             </view>
-            <view v-if="knowledgeCard.tags.length" class="knowledge-tags">
-              <text v-for="tag in knowledgeCard.tags" :key="tag" class="knowledge-tag">{{ tag }}</text>
-            </view>
-            <RichText v-if="knowledgeCard.detail" class="knowledge-detail" :content="knowledgeCard.detail" />
-          </view>
-          <RichText
-            class="analysis-body"
-            :content="aiComment || (currentQuestion ? currentQuestion.desc : '暂无解析')"
-          />
-        </view>
-
-        <view v-else class="ai-analysis-brief">
-          <view v-if="knowledgeCard" class="knowledge-card compact">
-            <view class="knowledge-card-head">
-              <text class="knowledge-label">考点</text>
-              <text class="knowledge-title">{{ knowledgeCard.title }}</text>
-            </view>
-            <view v-if="knowledgeCard.tags.length" class="knowledge-tags">
-              <text v-for="tag in knowledgeCard.tags" :key="tag" class="knowledge-tag">{{ tag }}</text>
-            </view>
-            <RichText v-if="knowledgeCard.detail" class="knowledge-detail" :content="knowledgeCard.detail" />
-          </view>
-          <view v-else>
-            <text class="label">解析：</text>
-            <RichText :content="aiComment || (currentQuestion ? currentQuestion.desc : '暂无解析')" />
             <view v-if="currentAnswerImages.length" class="q-image-list result-answer-images">
               <view
                 v-for="(image, imageIndex) in currentAnswerImages"
-                :key="`${currentQuestion.id || currentIndex}-brief-answer-image-${imageIndex}`"
+                :key="`${currentQuestion.id || currentIndex}-result-answer-image-${imageIndex}`"
                 class="q-image-card"
               >
                 <image
                   class="q-source-image"
                   :src="image.src"
-                  :alt="image.alt || image.caption || '答案原页'"
+                  :alt="image.alt || image.caption || t('quiz.copy18')"
                   mode="widthFix"
                   lazy-load
                   show-menu-by-longpress
@@ -487,84 +396,111 @@
                 <text v-if="image.caption" class="q-image-caption">{{ image.caption }}</text>
               </view>
             </view>
+            <view v-if="knowledgeCard" class="knowledge-card">
+              <view class="knowledge-card-head">
+                <text class="knowledge-label">{{ t('quiz.copy34') }}</text>
+                <text class="knowledge-title">{{ knowledgeCard.title }}</text>
+              </view>
+              <view v-if="knowledgeCard.tags.length" class="knowledge-tags">
+                <text v-for="tag in knowledgeCard.tags" :key="tag" class="knowledge-tag">{{ tag }}</text>
+              </view>
+              <RichText v-if="knowledgeCard.detail" class="knowledge-detail" :content="knowledgeCard.detail" />
+            </view>
+            <RichText
+              class="analysis-body"
+              :content="aiComment || (currentQuestion ? currentQuestion.desc : t('quiz.copy19'))"
+            />
           </view>
+
+          <view v-else class="ai-analysis-brief">
+            <view v-if="knowledgeCard" class="knowledge-card compact">
+              <view class="knowledge-card-head">
+                <text class="knowledge-label">{{ t('quiz.copy34') }}</text>
+                <text class="knowledge-title">{{ knowledgeCard.title }}</text>
+              </view>
+              <view v-if="knowledgeCard.tags.length" class="knowledge-tags">
+                <text v-for="tag in knowledgeCard.tags" :key="tag" class="knowledge-tag">{{ tag }}</text>
+              </view>
+              <RichText v-if="knowledgeCard.detail" class="knowledge-detail" :content="knowledgeCard.detail" />
+            </view>
+            <view v-else>
+              <text class="label">{{ t('quiz.copy35') }}</text>
+              <RichText :content="aiComment || (currentQuestion ? currentQuestion.desc : t('quiz.copy19'))" />
+              <view v-if="currentAnswerImages.length" class="q-image-list result-answer-images">
+                <view
+                  v-for="(image, imageIndex) in currentAnswerImages"
+                  :key="`${currentQuestion.id || currentIndex}-brief-answer-image-${imageIndex}`"
+                  class="q-image-card"
+                >
+                  <image
+                    class="q-source-image"
+                    :src="image.src"
+                    :alt="image.alt || image.caption || t('quiz.copy18')"
+                    mode="widthFix"
+                    lazy-load
+                    show-menu-by-longpress
+                  />
+                  <text v-if="image.caption" class="q-image-caption">{{ image.caption }}</text>
+                </view>
+              </view>
+            </view>
+          </view>
+
+          <!-- 新增: FSRS 记忆引擎状态展示 -->
+          <MemoryStatsRow v-if="memoryState" :memory-state="memoryState" />
+
+          <!-- 新增: AI Tutor 智能体辅导反馈 -->
+          <TutorFeedbackCard v-if="tutorFeedback" :feedback="tutorFeedback" />
+        </scroll-view>
+
+        <view class="result-assist-row">
+          <BaseButton class="result-assist-btn" variant="secondary" @tap.stop="handleResultOpenNote"
+            ><view class="result-assist-icon"> <BaseIcon name="note" /> </view
+            ><text class="result-assist-label">{{ t('quiz.copy36') }}</text
+            ><text v-if="currentQuestionNotes.length > 0" class="result-assist-badge">
+              {{ currentQuestionNotes.length }}
+            </text></BaseButton
+          >
+          <BaseButton class="result-assist-btn" variant="secondary" @tap.stop="handleResultToggleFavorite"
+            ><view class="result-assist-icon"> <BaseIcon :name="isCurrentFavorited ? 'star' : 'star-outline'" /> </view
+            ><text class="result-assist-label">{{
+              isCurrentFavorited ? t('quiz.copy37') : t('quiz.copy38')
+            }}</text></BaseButton
+          >
+          <BaseButton class="progress-text" variant="secondary" @tap.stop="handleOpenAnswerSheet"
+            ><view class="result-assist-icon"> <BaseIcon name="book-open" /> </view
+            ><text class="result-assist-label">{{ t('quiz.copy39') }}</text></BaseButton
+          >
         </view>
 
-        <!-- 新增: FSRS 记忆引擎状态展示 -->
-        <MemoryStatsRow v-if="memoryState" :memory-state="memoryState" />
-
-        <!-- 新增: AI Tutor 智能体辅导反馈 -->
-        <TutorFeedbackCard v-if="tutorFeedback" :feedback="tutorFeedback" />
-      </scroll-view>
-
-      <view class="result-assist-row">
-        <view
-          class="result-assist-btn"
-          :class="{ active: currentQuestionNotes.length > 0 }"
-          hover-class="result-assist-hover"
-          role="button"
-          @tap.stop="handleResultOpenNote"
-        >
-          <view class="result-assist-icon">
-            <BaseIcon name="note" :size="26" />
-          </view>
-          <text class="result-assist-label">笔记</text>
-          <text v-if="currentQuestionNotes.length > 0" class="result-assist-badge">
-            {{ currentQuestionNotes.length }}
-          </text>
+        <view class="result-action-row">
+          <BaseButton
+            id="e2e-quiz-next-btn"
+            class="result-next-btn result-primary-action"
+            :disabled="isNavigating"
+            variant="primary"
+            @tap.stop="closeResult"
+            ><view class="result-action-icon">
+              <BaseIcon :name="resultStatus === 'correct' ? 'check' : 'arrow-right'" /> </view
+            ><text class="result-primary-label">
+              {{
+                uiText(
+                  isNavigating ? t('quiz.copy40') : resultStatus === 'correct' ? t('quiz.copy41') : t('quiz.copy2')
+                )
+              }}
+            </text></BaseButton
+          >
         </view>
-        <view
-          class="result-assist-btn"
-          :class="{ active: isCurrentFavorited }"
-          hover-class="result-assist-hover"
-          role="button"
-          @tap.stop="handleResultToggleFavorite"
-        >
-          <view class="result-assist-icon">
-            <BaseIcon :name="isCurrentFavorited ? 'star' : 'star-outline'" :size="26" />
-          </view>
-          <text class="result-assist-label">{{ isCurrentFavorited ? '已收藏' : '收藏' }}</text>
-        </view>
-        <view
-          class="result-assist-btn"
-          hover-class="result-assist-hover"
-          role="button"
-          @tap.stop="handleOpenAnswerSheet"
-        >
-          <view class="result-assist-icon">
-            <BaseIcon name="book-open" :size="26" />
-          </view>
-          <text class="result-assist-label">答题卡</text>
-        </view>
-      </view>
-
-      <view class="result-action-row">
-        <view
-          id="e2e-quiz-next-btn"
-          class="result-next-btn result-primary-action"
-          :class="{ disabled: isNavigating }"
-          hover-class="result-primary-action-hover"
-          role="button"
-          :aria-disabled="isNavigating ? 'true' : 'false'"
-          @tap.stop="closeResult"
-        >
-          <view class="result-action-icon">
-            <BaseIcon :name="resultStatus === 'correct' ? 'check' : 'arrow-right'" :size="30" />
-          </view>
-          <text class="result-primary-label">
-            {{ isNavigating ? '加载中' : resultStatus === 'correct' ? '下一题' : '继续' }}
-          </text>
-        </view>
-      </view>
-    </view>
+      </view></CustomModal
+    >
 
     <!-- ✅ 自定义弹窗：题库为空 -->
     <CustomModal
       :visible="showEmptyBankModal"
       type="upload"
-      :title="resumeUnavailable ? '续答暂不可用' : '题库空空如也'"
-      :content="resumeUnavailable ? '请返回刷题中心重试，原记录已保留。' : '请先到刷题中心加载题库，再开始练习。'"
-      :confirm-text="resumeUnavailable ? '返回' : '去加载'"
+      :title="resumeUnavailable ? t('quiz.copy42') : t('quiz.copy43')"
+      :content="resumeUnavailable ? t('quiz.copy44') : t('quiz.copy45')"
+      :confirm-text="resumeUnavailable ? t('quiz.copy46') : t('quiz.copy47')"
       :show-cancel="false"
       :is-dark="isDark"
       @confirm="handleEmptyBankConfirm"
@@ -574,10 +510,10 @@
     <CustomModal
       :visible="showResumeModal"
       type="info"
-      title="检测到未完成的练习"
+      :title="t('quiz.copy48')"
       :content="resumeModalContent"
-      confirm-text="继续答题"
-      cancel-text="重新开始"
+      :confirm-text="t('quiz.copy49')"
+      :cancel-text="t('quiz.copy50')"
       :show-cancel="true"
       :is-dark="isDark"
       @confirm="handleResumeConfirm"
@@ -588,14 +524,10 @@
     <CustomModal
       :visible="showExitModal"
       type="warning"
-      title="确认退出？"
-      :content="
-        answeredQuestions.length > 0
-          ? `已完成 ${answeredQuestions.length} 道题，进度将自动保存，下次可继续答题。`
-          : '确定要退出吗？'
-      "
-      confirm-text="确认退出"
-      cancel-text="继续答题"
+      :title="t('quiz.copy51')"
+      :content="answeredQuestions.length > 0 ? t('quiz.copy52', { v0: answeredQuestions.length }) : t('quiz.copy53')"
+      :confirm-text="t('quiz.copy54')"
+      :cancel-text="t('quiz.copy49')"
       :show-cancel="true"
       :is-dark="isDark"
       @confirm="handleExitConfirm"
@@ -621,43 +553,41 @@
     />
 
     <!-- ✅ 笔记输入弹窗 -->
-    <view v-if="showNoteModal" class="note-modal-overlay" @tap="showNoteModal = false">
-      <view class="note-modal" @tap.stop>
-        <view class="note-modal-header">
-          <text class="note-modal-title"> 添加笔记 </text>
-          <view class="note-modal-close" hover-class="item-hover" @tap="showNoteModal = false">
-            <BaseIcon name="close" :size="28" />
-          </view>
-        </view>
-        <textarea
+    <CustomModal
+      :visible="showNoteModal"
+      :title="t('quiz.copy55')"
+      :is-dark="isDark"
+      :show-actions="false"
+      close-button
+      mask-closable
+      @cancel="showNoteModal = false"
+      ><view class="yozi-page-content"
+        ><BaseInput
           v-model="noteContent"
-          class="note-textarea"
-          placeholder="记录你的学习心得..."
+          :label="t('quiz.copy56')"
+          multiline
+          :placeholder="t('quiz.copy57')"
           :maxlength="500"
-        ></textarea>
-        <view class="note-tags">
-          <view
+        /><view class="note-tags"
+          ><BaseChip
             v-for="tag in availableNoteTags"
             :key="tag.id"
-            class="note-tag"
-            :class="{ selected: selectedNoteTags.includes(tag.id) }"
-            :style="{ borderColor: tag.color }"
-            hover-class="item-hover"
-            @tap="toggleNoteTag(tag.id)"
-          >
-            <view class="note-tag-dot" :style="{ background: tag.color }" />
-            <text>{{ tag.name }}</text>
-          </view>
-        </view>
-        <view class="note-modal-footer">
-          <wd-button plain custom-class="note-cancel-btn" @click="showNoteModal = false">取消</wd-button>
-          <wd-button custom-class="note-save-btn" @click="handleSaveNote">保存</wd-button>
-        </view>
-      </view>
-    </view>
+            :model-value="selectedNoteTags.includes(tag.id)"
+            @update:model-value="toggleNoteTag(tag.id)"
+            >{{ uiText(tag.name) }}</BaseChip
+          ></view
+        ><view class="button-row"
+          ><BaseButton class="note-modal-overlay" variant="secondary" @tap="showNoteModal = false">{{
+            t('quiz.copy58')
+          }}</BaseButton
+          ><BaseButton class="note-save-btn" @tap="handleSaveNote">{{ t('quiz.copy59') }}</BaseButton></view
+        ></view
+      ></CustomModal
+    >
 
     <AnswerSheet
       :visible="showAnswerSheet"
+      :is-dark="isDark"
       :questions="questions"
       :current-index="currentIndex"
       :answered-questions="answeredQuestions"
@@ -669,11 +599,36 @@
     <!-- 离线状态指示器 -->
     <OfflineIndicator :auto-show="true" position="top" :auto-hide-delay="0" />
   </view>
+  <CustomModal
+    v-if="pageDialog"
+    :visible="true"
+    :title="pageDialog.title"
+    :content="pageDialog.content"
+    :editable="pageDialog.editable"
+    :placeholder-text="pageDialog.placeholderText"
+    :confirm-text="pageDialog.confirmText"
+    :cancel-text="pageDialog.cancelText"
+    :show-cancel="pageDialog.showCancel !== false"
+    :type="pageDialog.confirmColor ? 'error' : 'info'"
+    escape-closable
+    @confirm="settleDialog(true, $event)"
+    @cancel="settleDialog(false)"
+  />
 </template>
 
 <script>
+import '@/pages/practice-sub/messages.js';
+import { t, translateRegisteredText } from '@/i18n/index.js';
+import { useThemeStore } from '@/stores/modules/theme.js';
+import BaseEmpty from '@/components/base/base-empty/base-empty.vue';
+import BaseInput from '@/components/base/base-input/base-input.vue';
+import BaseOptions from '@/components/base/base-options/base-options.vue';
+import BaseChip from '@/components/base/base-chip/base-chip.vue';
+import BaseButton from '@/components/base/base-button/base-button.vue';
+import '@/styles/yozi-pages.scss';
+
 import { BRAND } from '@/config/brand.js';
-import { modal } from '@/utils/modal.js';
+import { usePageDialog } from '@/composables/usePageDialog.js';
 import { toast } from '@/utils/toast.js';
 import { storageService } from '@/services/storageService.js';
 import CustomModal from '@/components/common/CustomModal.vue';
@@ -825,6 +780,11 @@ function rejectQuizResume(page) {
 
 export default {
   components: {
+    BaseButton,
+    BaseChip,
+    BaseOptions,
+    BaseInput,
+    BaseEmpty,
     CustomModal,
     BaseIcon,
     MemoryStatsRow,
@@ -837,9 +797,13 @@ export default {
 
   // ✅ [P0重构] 桥接 useQuizEngine — 核心状态和纯逻辑由 composable 管理
   setup() {
+    const { pageDialog, settleDialog, modal: pageModal } = usePageDialog();
     const engine = useQuizEngine({ smartPicker: true, adaptiveMode: true });
     const reviewStore = useReviewStore();
     return {
+      pageDialog,
+      settleDialog,
+      pageModal,
       quizEngine: engine,
       engineGetOptionLabel: engine.getOptionLabel,
       engineIsCorrectOption: engine.isCorrectOption,
@@ -893,7 +857,7 @@ export default {
       diagnosisSummary: '', // 诊断摘要
       hasNextRecommendation: false, // ✅ [P1] AI是否已推荐下一组题目
       nextRecommendationIds: [], // ✅ [P1] AI推荐的下一组题目ID
-      isDark: false,
+
       // ✅ 防重复点击状态
       isNavigating: false, // 防止快速连续点击"下一题"
       // ✅ 检查点 5.3: 自适应学习状态
@@ -948,6 +912,29 @@ export default {
     };
   },
   computed: {
+    isDark() {
+      return useThemeStore().isDark;
+    },
+    quizMultiple() {
+      return isQuizMultiChoice(this.currentQuestion);
+    },
+    quizOptions() {
+      return (this.currentQuestion?.options || []).map((label, value) => ({
+        value,
+        label,
+        key: this.getOptionLabel(value),
+        state:
+          this.hasAnswered && this.isOptionSelected(value)
+            ? this.resultStatus === 'pending'
+              ? 'pending'
+              : this.isCorrectOption(value)
+                ? 'correct'
+                : 'wrong'
+            : this.hasAnswered && this.resultStatus !== 'pending' && this.isCorrectOption(value)
+              ? 'correct'
+              : 'default'
+      }));
+    },
     currentAnswerRecord() {
       return this.answeredQuestions.find(
         (item) =>
@@ -959,11 +946,11 @@ export default {
     answerSyncText() {
       const record = this.currentAnswerRecord;
       if (!record) return '';
-      if (this.syncingAttemptIds.includes(record.attemptId)) return '正在同步…';
-      if (record.submission?.status === 'received') return '已同步，判分待核对';
-      if (record.submission?.status === 'local_only' && record.submission.localSaved) return '仅保存在本机';
-      if (record.submission?.localSaved) return '已保存在本机，同步未完成';
-      return '保存状态待确认';
+      if (this.syncingAttemptIds.includes(record.attemptId)) return t('quiz.copy60');
+      if (record.submission?.status === 'received') return t('quiz.copy61');
+      if (record.submission?.status === 'local_only' && record.submission.localSaved) return t('quiz.copy62');
+      if (record.submission?.localSaved) return t('quiz.copy63');
+      return t('quiz.copy64');
     },
     canRetryAnswerSync() {
       const record = this.currentAnswerRecord;
@@ -999,7 +986,7 @@ export default {
       if (!q) return null;
 
       return normalizeQuizQuestion(q, this.currentIndex, {
-        defaultQuestion: '题目加载中...',
+        defaultQuestion: t('quiz.copy65'),
         resolveEloRating: (question) => getQuestionEloRating(question, this.eloState.questionRatings)
       });
     },
@@ -1069,7 +1056,7 @@ export default {
     currentPassageAnnotationText() {
       const selected = this.currentPassageAnnotations;
       if (!selected.length) return '';
-      return `已标注 ${selected.length} 个片段作为第 ${this.currentQuestionNumberText} 题依据`;
+      return t('quiz.copy66', { v0: selected.length, v1: this.currentQuestionNumberText });
     },
     knowledgeCard() {
       if (!this.currentQuestion) return null;
@@ -1085,7 +1072,7 @@ export default {
         .map((item) => String(item).trim())
         .filter(Boolean);
       const uniqueTags = Array.from(new Set(tags)).slice(0, 4);
-      const title = uniqueTags[0] || this.questionTypeLabel || '当前题目';
+      const title = uniqueTags[0] || this.questionTypeLabel || t('quiz.currentQuestion');
       const explicitDetail =
         this.currentQuestion.knowledgeSummary ||
         this.currentQuestion.knowledge_summary ||
@@ -1100,7 +1087,7 @@ export default {
       return {
         title,
         tags: uniqueTags.slice(1),
-        detail: detail && detail !== '暂无解析' ? detail : ''
+        detail: detail && detail !== t('quiz.copy19') ? detail : ''
       };
     },
     // 是否为闪卡模式（分析题或经典闪卡，无选项可选）
@@ -1161,7 +1148,7 @@ export default {
   // [F2-FIX] 微信分享配置
   onShareAppMessage() {
     return {
-      title: `智能刷题 - ${BRAND.name} 考研备考`,
+      title: t('quiz.copy67', { v0: BRAND.name }),
       path: '/pages/practice/index',
       imageUrl: ASSETS.appShareCover
     };
@@ -1175,12 +1162,9 @@ export default {
     this.sessionId = `quiz_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
 
     // ✅ F024: 统一使用 storageService 读取主题
-    this.isDark = storageService.get('theme_mode', 'light') === 'dark';
 
     // E005: 注册主题监听一次（在 onLoad 而非 onShow，避免重复绑定）
-    this._themeHandler = (mode) => {
-      this.isDark = mode === 'dark';
-    };
+    this._themeHandler = () => undefined;
     uni.$on('themeUpdate', this._themeHandler);
 
     // ✅ 初始化滑动手势
@@ -1251,7 +1235,6 @@ export default {
   onShow() {
     if (!quizRecordOwnerMatches(this)) return rejectQuizResume(this);
     // 主题监听已在 onLoad 注册，仅刷新当前值
-    this.isDark = storageService.get('theme_mode', 'light') === 'dark';
     // ✅ P1-1: 恢复计时器（onHide 时已暂停）
     if (this.questions && this.questions.length > 0 && !this.timer) {
       this.startTimer();
@@ -1294,6 +1277,19 @@ export default {
     this.saveCurrentProgress(true);
   },
   methods: {
+    t,
+    uiText(value) {
+      return translateRegisteredText('quiz', value);
+    },
+    selectQuizDraft(next) {
+      if (this.quizMultiple) {
+        const previous = Array.isArray(this.userChoice) ? this.userChoice : [];
+        const changed = [...new Set([...previous, ...next])].find(
+          (value) => previous.includes(value) !== next.includes(value)
+        );
+        if (changed !== undefined) this.selectOption(changed);
+      } else this.selectOption(next);
+    },
     // [AUDIT FIX R264] 安全的 setTimeout 包装，组件卸载时自动清理
     _safeTimeout(fn, delay) {
       const id = setTimeout(() => {
@@ -1325,7 +1321,10 @@ export default {
         this.resumeOwnerId = getUserId() || '';
         const minutes = Math.floor(progress.seconds / 60);
         const seconds = Math.floor(progress.seconds % 60);
-        this.resumeModalContent = `上次答到第 ${progress.currentIndex + 1} 题，用时 ${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}。是否继续？`;
+        this.resumeModalContent = t('quiz.resume', {
+          number: progress.currentIndex + 1,
+          time: String(minutes).padStart(2, '0') + ':' + String(seconds).padStart(2, '0')
+        });
         pauseQuestionTimer(this.questionTimerToken);
         this.showResumeModal = true;
       } else {
@@ -1371,7 +1370,7 @@ export default {
             sessionId: this.sessionId,
             observationId: this.referenceObservationId
           });
-          this.observationError = this.referenceSaved ? '' : '查看记录未确认，请重试';
+          this.observationError = this.referenceSaved ? '' : t('quiz.viewUnconfirmed');
         }
 
         const submittedChoice =
@@ -1402,7 +1401,7 @@ export default {
             .catch(() => {
               logger.warn('[do-quiz] 原作答仍保留，本地学习记录待恢复');
               if (!this.quizPageClosed && this.sessionId === sessionId && (getUserId() || '') === owner) {
-                toast.info('作答已保留，学习记录待恢复');
+                toast.info(t('quiz.copy68'));
               }
             });
         }
@@ -1413,7 +1412,7 @@ export default {
           answeredCount: this.answeredQuestions.length
         });
 
-        toast.success('进度已恢复');
+        toast.success(t('quiz.copy69'));
       }
       this.startTimer();
       if (!this.hasAnswered) this.startQuestionTimer(progress?.questionTiming?.elapsedMs || 0);
@@ -1523,7 +1522,7 @@ export default {
           this.questionBankFingerprint = '';
           this.resumeUnavailable = true;
           this.showEmptyBankModal = true;
-          toast.info('重练入口已变化，请返回历史记录重新选择');
+          toast.info(t('quiz.copy70'));
           return;
         }
         this.questions = questions.map((question, index) => normalizePracticeQuestion(question, index));
@@ -1549,17 +1548,17 @@ export default {
         try {
           singleQ = storageService.get('temp_practice_question', null, { migrateLegacy: false, throwOnError: true });
         } catch (_error) {
-          return unavailable('原题暂不可读取，请返回重试');
+          return unavailable(t('quiz.copy71'));
         }
         const selected = readSinglePracticeHandoff(singleQ, this.singlePracticeId, getUserId() || '');
-        if (!selected) return unavailable('原题资料不完整，请返回重新选择');
+        if (!selected) return unavailable(t('quiz.copy72'));
         accept(selected, 'temp_practice_question');
         return;
       }
       if (this.mode === 'temp_bank') {
         const raw = storageService.get('temp_practice_questions', [], { migrateLegacy: false });
         const selected = prepareQuizSelection(raw);
-        if (!selected) return unavailable('原题资料不完整，请返回重新选择');
+        if (!selected) return unavailable(t('quiz.copy72'));
         accept(selected, 'temp_practice_questions');
         return;
       }
@@ -1574,9 +1573,9 @@ export default {
             this.paperId
           );
         } catch (_error) {
-          return unavailable('复习原题暂不可读取，请返回重试');
+          return unavailable(t('quiz.copy73'));
         }
-        if (!selected) return unavailable('复习入口已变化，请返回重新选择');
+        if (!selected) return unavailable(t('quiz.copy74'));
         accept(selected);
         return;
       }
@@ -1585,12 +1584,12 @@ export default {
       if (this.paperId) {
         const raw = Array.isArray(bank) ? bank.filter((q) => q?.paperId === this.paperId) : [];
         const selected = prepareQuizSelection(raw);
-        if (!selected) return unavailable('本卷题目未完整载入，请返回题库重试');
+        if (!selected) return unavailable(t('quiz.copy75'));
         accept(selected);
         return;
       }
       if (this._smartReviewMode) {
-        return unavailable('请返回重新选择复习题目');
+        return unavailable(t('quiz.copy76'));
       }
 
       // 普通组题只使用有完整原件的题目；显示默认值不进入原件快照。
@@ -1926,7 +1925,7 @@ export default {
         this.saveCurrentProgress(true);
         playFlipSound();
       } catch (_error) {
-        if (current()) this.observationError = '查看记录未保存，请重试';
+        if (current()) this.observationError = t('quiz.viewUnsaved');
       } finally {
         if (current()) this.recordingObservation = false;
       }
@@ -1991,7 +1990,7 @@ export default {
         this.recordingObservation = false;
         await this.toNext();
       } catch (_error) {
-        if (current()) this.observationError = '自评未保存，请重试';
+        if (current()) this.observationError = t('quiz.rateUnsaved');
       } finally {
         if (current()) this.recordingObservation = false;
       }
@@ -2033,7 +2032,7 @@ export default {
             logger.log('[do-quiz] ✅ 插入复习题:', recommendation.reason);
 
             // 显示复习提示
-            toast.info('复习时间到！', 1500);
+            toast.info(t('quiz.copy77'), 1500);
           }
         }
 
@@ -2075,7 +2074,7 @@ export default {
           this.updateFavoriteStatus();
           this.saveCurrentProgress(true);
           this.isNavigating = false;
-          toast.info('还有未作答的题目');
+          toast.info(t('quiz.copy78'));
           return;
         }
         // ✅ P0-3: 练习完成，清除进度
@@ -2167,8 +2166,8 @@ export default {
             .map((w) => w.knowledgePoint)
             .join('、');
           this.diagnosisSummary = d.overallLevel
-            ? `${d.overallLevel}（${d.accuracy || 0}%）${weakStr ? '\n薄弱点：' + weakStr : ''}\n${d.encouragement || ''}`
-            : '诊断完成';
+            ? `${d.overallLevel}（${d.accuracy || 0}%）${weakStr ? '\n' + t('quiz.weakPoints') + weakStr : ''}\n${d.encouragement || ''}`
+            : t('quiz.diagnosed');
         }
 
         // 处理推荐结果 — AI自动推荐下一组
@@ -2188,13 +2187,13 @@ export default {
 
     // ✅ [P1重构] 完成弹窗主按钮 — 根据是否有推荐决定行为
     handleCompleteAction() {
-      if (!quizRecordOwnerMatches(this)) return toast.info('账户已变化，请返回重新选择');
+      if (!quizRecordOwnerMatches(this)) return toast.info(t('quiz.copy79'));
       if (this.hasNextRecommendation && this.nextRecommendationIds.length > 0) {
         const result = storageService.prepareQuizReview({
           ids: this.nextRecommendationIds,
           expectedOwner: this.quizOwnerId
         });
-        if (!result.success) return toast.info('下一组原题未确认保存，请返回重新选择');
+        if (!result.success) return toast.info(t('quiz.copy80'));
         this.showCompleteModal = false;
         safeRedirectTo(result.url);
       } else {
@@ -2211,11 +2210,11 @@ export default {
         return;
       }
       if (this.diagnosisId) {
-        modal.show({
-          title: '练习诊断',
-          content: this.diagnosisSummary || '诊断已完成，请继续复习错题并保持练习节奏。',
-          confirmText: '开始复习',
-          cancelText: '返回',
+        this.pageModal.show({
+          title: t('quiz.copy81'),
+          content: this.diagnosisSummary || t('quiz.copy82'),
+          confirmText: t('quiz.copy83'),
+          cancelText: t('quiz.copy46'),
           success: (res) => {
             if (res.confirm) {
               safeNavigateTo('/pages/practice-sub/do-quiz?mode=smart_review');
@@ -2226,7 +2225,7 @@ export default {
         });
       } else if (this.diagnosisLoading) {
         // 还在诊断中，等一下
-        toast.info('AI 正在分析中，请稍候...');
+        toast.info(t('quiz.copy84'));
         this.showCompleteModal = true;
       } else {
         // 诊断失败，直接返回
@@ -2259,13 +2258,13 @@ export default {
     async handleDiagnosis() {
       if (!quizRecordOwnerMatches(this) || this.quizPageClosed) return;
       if (summarizeQuizProgress({ answeredQuestions: this.answeredQuestions }).gradedCount === 0) {
-        toast.info('参考作答和自评不能生成可靠诊断');
+        toast.info(t('quiz.copy85'));
         safeNavigateTo('/pages/study-detail/index');
         return;
       }
       if (this.diagnosisLoading) return;
       if (!this.sessionId) {
-        toast.info('会话数据不足，无法诊断');
+        toast.info(t('quiz.copy86'));
         this.handleCompleteConfirm();
         return;
       }
@@ -2276,11 +2275,16 @@ export default {
         if (res.success && res.data) {
           this.showCompleteModal = false;
           const d = res.data.diagnosis || {};
-          modal.show({
-            title: `诊断结果：${d.overallLevel || '完成'}`,
-            content: `正确率 ${d.accuracy || 0}%\n${d.encouragement || '继续加油！'}\n\n薄弱点：${(d.weakPoints || []).map((w) => w.knowledgePoint).join('、') || '无'}\n\n建议：${d.studyPlan?.immediate || '复习错题'}`,
-            confirmText: '开始复习',
-            cancelText: '返回',
+          this.pageModal.show({
+            title: t('quiz.copy87', { v0: d.overallLevel || t('quiz.copy88') }),
+            content: t('quiz.copy89', {
+              v0: d.accuracy || 0,
+              v1: d.encouragement || t('quiz.copy90'),
+              v2: (d.weakPoints || []).map((w) => w.knowledgePoint).join('、') || t('quiz.copy91'),
+              v3: d.studyPlan?.immediate || t('quiz.copy92')
+            }),
+            confirmText: t('quiz.copy83'),
+            cancelText: t('quiz.copy46'),
             success: (modalRes) => {
               if (modalRes.confirm) {
                 safeNavigateTo('/pages/mistake/index');
@@ -2290,11 +2294,11 @@ export default {
             }
           });
         } else {
-          toast.info(res.message || '诊断失败');
+          toast.info(res.message || t('quiz.copy93'));
         }
       } catch (e) {
         logger.warn('[do-quiz] AI诊断失败:', e);
-        toast.info('诊断失败，请稍后重试');
+        toast.info(t('quiz.copy94'));
       } finally {
         this.diagnosisLoading = false;
       }
@@ -2437,7 +2441,7 @@ export default {
       if (!quizRecordOwnerMatches(this)) return rejectQuizResume(this);
       if (!this.currentQuestion) return;
       if (this.isQuestionActionLocked && !options.allowDuringResult) {
-        toast.info('请先完成当前题目的反馈');
+        toast.info(t('quiz.copy95'));
         return;
       }
 
@@ -2449,7 +2453,7 @@ export default {
       );
       if (!quizRecordOwnerMatches(this) || this.quizPageClosed) return;
       this.isCurrentFavorited = result.isFavorited;
-      if (!result.success) toast.info(result.message || '收藏未保存，请重试');
+      if (!result.success) toast.info(result.message || t('quiz.copy96'));
 
       playClickSound();
 
@@ -2561,7 +2565,7 @@ export default {
         onTimeout: (_data) => {
           // 超时处理
           if (currentBinding() && !this.hasAnswered) {
-            toast.info('时间到！');
+            toast.info(t('quiz.copy97'));
           }
         }
       });
@@ -2682,7 +2686,7 @@ export default {
       this.isOfflineMode = !status.isOnline && status.available;
 
       if (this.isOfflineMode) {
-        toast.info('已切换到离线模式');
+        toast.info(t('quiz.copy98'));
       }
 
       logger.log('[do-quiz] 离线状态:', status);
@@ -2694,7 +2698,7 @@ export default {
     handleOpenNote(options = {}) {
       if (!this.currentQuestion) return;
       if (this.isQuestionActionLocked && !options.allowDuringResult) {
-        toast.info('请先完成当前题目的反馈');
+        toast.info(t('quiz.copy95'));
         return;
       }
 
@@ -2728,7 +2732,7 @@ export default {
     // ✅ 保存笔记
     handleSaveNote() {
       if (!this.noteContent.trim()) {
-        toast.info('请输入笔记内容');
+        toast.info(t('quiz.copy99'));
         return;
       }
 
@@ -2741,7 +2745,7 @@ export default {
       });
 
       if (result.success) {
-        toast.success('笔记已保存');
+        toast.success(t('quiz.copy100'));
 
         // 更新当前题目的笔记列表
         this.currentQuestionNotes = getNotesByQuestion(this.currentQuestion.id || this.currentQuestion.question);
@@ -2750,7 +2754,7 @@ export default {
         this.noteContent = '';
         this.selectedNoteTags = [];
       } else {
-        toast.info('保存失败');
+        toast.info(t('quiz.copy101'));
       }
     },
 
@@ -2764,7 +2768,7 @@ export default {
     // ✅ 答题卡跳转到指定题目
     handleJumpToQuestion(index) {
       if (this.isAnswerSheetJumpLocked) {
-        toast.info('请先完成当前题目的反馈');
+        toast.info(t('quiz.copy95'));
         return;
       }
       if (index < 0 || index >= this.questions.length || index === this.currentIndex) {
@@ -2780,2058 +2784,3 @@ export default {
   }
 };
 </script>
-
-<style lang="scss" scoped>
-/* [AUDIT FIX R135] */
-/* 容器样式 */
-.container {
-  min-height: 100%;
-  min-height: 100vh;
-
-  background: var(--yozi-background);
-  position: relative;
-  overflow: hidden;
-  color: #1d1d1f;
-}
-
-.container.dark-mode {
-  background: var(--yozi-background);
-  color: #f5f7fb;
-}
-
-/* 极光背景 */
-.aurora-bg {
-  display: none;
-}
-
-.combo-feedback {
-  position: fixed;
-  top: calc(132rpx + env(safe-area-inset-top));
-  left: 50%;
-  z-index: 420;
-  min-width: 240rpx;
-  max-width: 540rpx;
-  padding: 18rpx 28rpx;
-  border-radius: 999rpx;
-  border: 1rpx solid rgba(15, 23, 42, 0.08);
-  background: rgba(255, 255, 255, 0.9);
-  box-shadow:
-    0 18rpx 44rpx rgba(15, 23, 42, 0.14),
-    inset 0 1rpx 0 rgba(255, 255, 255, 0.92);
-  transform: translateX(-50%);
-  animation: comboFloat 1.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  pointer-events: none;
-}
-
-.combo-title,
-.combo-desc {
-  display: block;
-  text-align: center;
-}
-
-.combo-title {
-  font-size: 28rpx;
-  font-weight: 860;
-  color: #10281a;
-  line-height: 1.2;
-  font-variant-numeric: tabular-nums;
-}
-
-.combo-desc {
-  margin-top: 4rpx;
-  font-size: 20rpx;
-  font-weight: 650;
-  color: rgba(16, 40, 26, 0.66);
-  line-height: 1.3;
-}
-
-.combo-feedback.level-2,
-.combo-feedback.level-3,
-.combo-feedback.level-4 {
-  border-color: rgba(117, 221, 255, 0.34);
-  background: linear-gradient(135deg, rgba(159, 232, 112, 0.94) 0%, rgba(117, 221, 255, 0.94) 100%);
-}
-
-.dark-mode .combo-feedback {
-  border-color: rgba(255, 255, 255, 0.1);
-  background: rgba(34, 37, 45, 0.92);
-  box-shadow:
-    0 18rpx 46rpx rgba(0, 0, 0, 0.34),
-    inset 0 1rpx 0 rgba(255, 255, 255, 0.08);
-}
-
-.dark-mode .combo-feedback.level-2,
-.dark-mode .combo-feedback.level-3,
-.dark-mode .combo-feedback.level-4 {
-  background:
-    linear-gradient(135deg, rgba(14, 165, 233, 0.86) 0%, rgba(34, 211, 238, 0.82) 100%), rgba(20, 24, 32, 0.94);
-}
-
-.dark-mode .combo-title {
-  color: #f5f7fb;
-}
-
-.dark-mode .combo-desc {
-  color: rgba(245, 247, 251, 0.7);
-}
-
-@keyframes comboFloat {
-  0% {
-    opacity: 0;
-    transform: translate(-50%, 16rpx) scale(0.96);
-  }
-  16% {
-    opacity: 1;
-    transform: translate(-50%, 0) scale(1);
-  }
-  78% {
-    opacity: 1;
-    transform: translate(-50%, -4rpx) scale(1);
-  }
-  100% {
-    opacity: 0;
-    transform: translate(-50%, -18rpx) scale(0.98);
-  }
-}
-
-/* 导航栏 */
-.nav-header {
-  position: fixed;
-  top: 0;
-  width: 100%;
-  z-index: 100;
-  background: rgba(245, 245, 247, 0.92);
-  box-shadow: 0 1rpx 0 rgba(0, 0, 0, 0.06);
-}
-
-.dark-mode .nav-header {
-  background: rgba(16, 19, 26, 0.84);
-  box-shadow: 0 1rpx 0 rgba(255, 255, 255, 0.08);
-}
-.nav-content {
-  height: 50px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 30rpx;
-}
-.back-area {
-  display: flex;
-  align-items: center;
-  @include em-flex-gap(10rpx, row);
-}
-.back-icon {
-  font-size: 36rpx;
-  color: var(--text-primary);
-  font-weight: bold;
-}
-.progress-text {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 104rpx;
-  font-size: 28rpx;
-  font-weight: 700;
-  color: #1d1d1f;
-  white-space: nowrap;
-  line-height: 1;
-}
-
-.dark-mode .progress-text {
-  color: #f5f7fb;
-}
-.timer-box {
-  font-size: 24rpx;
-  color: #5f6672;
-  background: #ffffff;
-  padding: 4rpx 20rpx;
-  border-radius: 20rpx;
-  display: flex;
-  align-items: center;
-  @include em-flex-gap(8rpx, row);
-}
-
-.dark-mode .timer-box,
-.dark-mode .question-timer-box {
-  color: #f5f7fb;
-  background: rgba(255, 255, 255, 0.07);
-  border-color: rgba(255, 255, 255, 0.08);
-}
-.timer-icon {
-  font-size: 24rpx;
-}
-
-/* 计时器组 */
-.timer-group {
-  display: flex;
-  align-items: center;
-  @include em-flex-gap(12rpx, row);
-}
-
-.total-label {
-  font-size: 24rpx;
-  color: var(--text-sub);
-  opacity: 0.7;
-}
-
-/* 单题计时器 */
-.question-timer-box {
-  font-size: 26rpx;
-  font-weight: 700;
-  color: #1d1d1f;
-  background: #ffffff;
-  border: 1rpx solid rgba(0, 0, 0, 0.06);
-  padding: 6rpx 24rpx;
-  border-radius: 24rpx;
-  display: flex;
-  align-items: center;
-  @include em-flex-gap(8rpx, row);
-  transition: all 0.3s ease;
-}
-
-.question-timer-box .timer-icon {
-  font-size: 26rpx;
-}
-
-.question-timer-box .question-time {
-  min-width: 80rpx;
-  text-align: center;
-}
-
-/* 时间警告状态 */
-.question-timer-box.warning {
-  background: #fff7e6;
-  color: #9a5b00;
-  animation: timerPulse 1s ease-in-out infinite;
-}
-
-/* 时间危险状态 */
-.question-timer-box.danger {
-  background: #fff1f0;
-  color: #b42318;
-  animation: timerShake 0.5s ease-in-out infinite;
-}
-
-@keyframes timerPulse {
-  0%,
-  100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.05);
-  }
-}
-
-@keyframes timerShake {
-  0%,
-  100% {
-    transform: translateX(0);
-  }
-  25% {
-    transform: translateX(-4rpx);
-  }
-  75% {
-    transform: translateX(4rpx);
-  }
-}
-
-/* 滚动区域 */
-.quiz-scroll {
-  height: 100%;
-  height: 100vh;
-  padding: 0 28rpx;
-  box-sizing: border-box;
-  position: relative;
-  z-index: 1;
-}
-
-/* 玻璃卡片通用样式 */
-.glass-card {
-  background: var(--yozi-reading);
-
-  border: 0;
-
-  border-radius: 24px;
-  padding: 36rpx;
-  margin-bottom: 24rpx;
-
-  box-shadow: var(--yozi-shadow);
-}
-
-.dark-mode .glass-card {
-  background: var(--yozi-reading);
-  border-color: rgba(255, 255, 255, 0.08);
-
-  box-shadow: var(--yozi-shadow);
-
-  border: 0;
-
-  border-radius: 24px;
-}
-
-.quiz-loading-overlay {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  margin-top: 28rpx;
-  overflow: hidden;
-}
-
-.quiz-loading-orbit {
-  position: relative;
-  width: 70rpx;
-  height: 70rpx;
-  margin-bottom: 28rpx;
-  border: 2rpx solid rgba(31, 122, 77, 0.18);
-  border-radius: 50%;
-}
-
-.quiz-loading-dot {
-  position: absolute;
-  top: 8rpx;
-  left: 50%;
-  width: 18rpx;
-  height: 18rpx;
-  margin-left: -9rpx;
-  border-radius: 50%;
-  background: #1f7a4d;
-  transform-origin: 9rpx 27rpx;
-  animation: quizLoadingOrbit 1.1s linear infinite;
-}
-
-.quiz-loading-dot.secondary {
-  top: auto;
-  bottom: 8rpx;
-  opacity: 0.32;
-  animation-delay: -0.55s;
-}
-
-.quiz-loading-title {
-  font-size: 36rpx;
-  font-weight: 760;
-  color: #1d1d1f;
-  line-height: 1.28;
-}
-
-.quiz-loading-subtitle {
-  margin-top: 10rpx;
-  color: #5f6672;
-  font-size: 26rpx;
-  line-height: 1.5;
-}
-
-.quiz-loading-skeleton {
-  width: 100%;
-  margin-top: 34rpx;
-}
-
-.quiz-loading-line {
-  width: 72%;
-  height: 18rpx;
-  margin-top: 18rpx;
-  border-radius: 999rpx;
-  background: linear-gradient(90deg, rgba(31, 122, 77, 0.08), rgba(31, 122, 77, 0.18), rgba(31, 122, 77, 0.08));
-  background-size: 220% 100%;
-  animation: quizLoadingPulse 1.25s ease-in-out infinite;
-}
-
-.quiz-loading-line.long {
-  width: 92%;
-}
-
-.quiz-loading-line.short {
-  width: 48%;
-}
-
-@keyframes quizLoadingOrbit {
-  from {
-    transform: rotate(0deg) translateY(-27rpx);
-  }
-  to {
-    transform: rotate(360deg) translateY(-27rpx);
-  }
-}
-
-@keyframes quizLoadingPulse {
-  0% {
-    background-position: 120% 0;
-    opacity: 0.58;
-  }
-  50% {
-    opacity: 1;
-  }
-  100% {
-    background-position: -120% 0;
-    opacity: 0.58;
-  }
-}
-
-/* Phase 3-4: 卡片堆叠样式 */
-.stack-card {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  pointer-events: none;
-}
-.stack-card .glass-card {
-  opacity: 0.7;
-}
-.q-content-preview {
-  font-size: 28rpx;
-  color: var(--text-secondary);
-  line-height: 1.5;
-  overflow: hidden;
-  max-height: 80rpx;
-}
-
-/* 3D 卡片翻转效果 */
-.question-container {
-  perspective: 1200rpx;
-}
-
-.question-card {
-  position: relative;
-  overflow: visible;
-  transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1);
-  transform-style: preserve-3d;
-  backface-visibility: hidden;
-}
-
-.question-card::before {
-  content: '';
-  position: absolute;
-  top: 18rpx;
-  right: 28rpx;
-  left: 28rpx;
-  height: 1rpx;
-  border-radius: 999rpx;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.72), transparent);
-  pointer-events: none;
-}
-
-.question-card.card-answered {
-  animation: none;
-}
-
-.question-card.card-correct {
-  border-color: rgba(52, 199, 89, 0.34);
-  animation: correctGlow 420ms ease-out;
-}
-
-.question-card.card-wrong {
-  border-color: rgba(255, 59, 48, 0.34);
-  animation: wrongGlow 420ms ease-out;
-}
-
-@keyframes cardFlipPulse {
-  0% {
-    transform: rotateY(0deg) scale(1);
-  }
-  30% {
-    transform: rotateY(12deg) scale(0.97);
-  }
-  60% {
-    transform: rotateY(-6deg) scale(1.01);
-  }
-  100% {
-    transform: rotateY(0deg) scale(1);
-  }
-}
-
-@keyframes correctGlow {
-  0% {
-    box-shadow: 0 0 0 0 rgba(52, 199, 89, 0.5);
-  }
-  50% {
-    box-shadow: 0 0 40rpx 10rpx rgba(52, 199, 89, 0.3);
-  }
-  100% {
-    box-shadow: 0 0 0 0 rgba(52, 199, 89, 0);
-  }
-}
-
-@keyframes wrongGlow {
-  0% {
-    box-shadow: 0 0 0 0 rgba(255, 59, 48, 0.5);
-  }
-  50% {
-    box-shadow: 0 0 40rpx 10rpx rgba(255, 59, 48, 0.3);
-  }
-  100% {
-    box-shadow: 0 0 0 0 rgba(255, 59, 48, 0);
-  }
-}
-
-/* 题目卡片 */
-.question-card .q-tag {
-  display: inline-block;
-  background: var(--violet-soft);
-  color: #1f7a4d;
-  font-size: 24rpx;
-  font-weight: 700;
-  padding: 8rpx 18rpx;
-  border-radius: 999rpx;
-  margin-bottom: 20rpx;
-}
-
-.dark-mode .question-card .q-tag {
-  background: rgba(0, 224, 255, 0.12);
-  color: #75ddff;
-}
-.question-card .q-content {
-  font-size: 34rpx;
-  font-weight: 700;
-  line-height: 1.6;
-  color: #1d1d1f;
-  display: block;
-}
-
-.dark-mode .question-card .q-content {
-  color: #f5f7fb;
-}
-
-.q-translation-target {
-  margin-top: 20rpx;
-  padding: 24rpx;
-  border-radius: 16rpx;
-  background: var(--yozi-solid);
-  color: var(--foreground);
-  font-size: 32rpx;
-  line-height: 1.7;
-  text-decoration: underline;
-  text-underline-offset: 4px;
-}
-
-.q-passage-card {
-  margin-bottom: 28rpx;
-  padding: 24rpx;
-  border: 1rpx solid rgba(0, 0, 0, 0.06);
-  border-radius: 22rpx;
-
-  background: var(--muted);
-}
-
-.dark-mode .q-passage-card,
-.dark-mode .q-passage-segment,
-.dark-mode .q-fixed-sequence-item,
-.dark-mode .q-image-card {
-  background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(255, 255, 255, 0.08);
-}
-
-.dark-mode .q-passage-content,
-.dark-mode .knowledge-title,
-.dark-mode .knowledge-detail {
-  color: #f5f7fb;
-}
-
-.q-passage-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16rpx;
-  margin-bottom: 14rpx;
-}
-
-.q-passage-title-block {
-  min-width: 0;
-  flex: 1;
-}
-
-.q-passage-kicker {
-  display: block;
-  color: #8e8e93;
-  font-size: 21rpx;
-  font-weight: 760;
-}
-
-.q-passage-tip {
-  display: block;
-  margin-top: 6rpx;
-  color: #8e8e93;
-  font-size: 21rpx;
-  font-weight: 650;
-  line-height: 1.35;
-}
-
-.q-passage-meta {
-  flex-shrink: 0;
-  color: #8e8e93;
-  font-size: 20rpx;
-  font-weight: 700;
-}
-
-.q-fixed-sequence {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 10rpx;
-  margin-bottom: 16rpx;
-}
-
-.q-fixed-sequence-item {
-  min-width: 52rpx;
-  padding: 8rpx 12rpx;
-  border: 1rpx solid rgba(0, 0, 0, 0.08);
-  border-radius: 999rpx;
-  background: #ffffff;
-  color: #5f6672;
-  text-align: center;
-  font-size: 21rpx;
-  font-weight: 760;
-}
-
-.q-fixed-sequence-item.locked {
-  border-color: rgba(31, 122, 77, 0.22);
-  background: var(--violet-soft);
-  color: #1f7a4d;
-}
-
-.q-passage-scroll {
-  max-height: 620rpx;
-}
-
-.q-passage-segments {
-  display: flex;
-  flex-direction: column;
-  gap: 12rpx;
-}
-
-.q-passage-segment {
-  display: flex;
-  align-items: flex-start;
-  gap: 14rpx;
-  padding: 16rpx 18rpx;
-  border: 1rpx solid transparent;
-  border-radius: 18rpx;
-  background: #ffffff;
-}
-
-.q-passage-segment.active {
-  border-color: rgba(31, 122, 77, 0.32);
-  background: var(--violet-soft);
-}
-
-.q-segment-marker {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  width: 38rpx;
-  height: 38rpx;
-  border-radius: 50%;
-  background: #f2f3f5;
-  color: #5f6672;
-  font-size: 20rpx;
-  font-weight: 800;
-}
-
-.q-passage-segment.active .q-segment-marker {
-  background: #1f7a4d;
-  color: #fff;
-}
-
-.q-passage-content {
-  display: block;
-  color: #1d1d1f;
-  font-size: 27rpx;
-  line-height: 1.72;
-}
-
-.q-passage-annotation {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16rpx;
-  margin-top: 16rpx;
-  padding-top: 14rpx;
-  border-top: 1rpx solid rgba(0, 0, 0, 0.06);
-  color: #5f6672;
-  font-size: 22rpx;
-  font-weight: 700;
-}
-
-.q-passage-clear {
-  flex-shrink: 0;
-  color: #1f7a4d;
-}
-
-.q-image-list {
-  display: flex;
-  flex-direction: column;
-  gap: 18rpx;
-  margin-top: 24rpx;
-}
-
-.q-image-list.answer-images,
-.q-image-list.result-answer-images {
-  margin-top: 20rpx;
-}
-
-.q-image-card {
-  overflow: hidden;
-  border: 1rpx solid rgba(0, 0, 0, 0.08);
-  border-radius: 18rpx;
-
-  background: var(--muted);
-}
-
-.q-source-image {
-  display: block;
-  width: 100%;
-  background: #ffffff;
-}
-
-.q-image-caption {
-  display: block;
-  padding: 12rpx 16rpx;
-  border-top: 1rpx solid rgba(0, 0, 0, 0.06);
-  color: #5f6672;
-  font-size: 22rpx;
-  font-weight: 650;
-  line-height: 1.4;
-}
-
-/* 选项列表 */
-.options-list {
-  margin-top: 20rpx;
-}
-.option-item {
-  display: flex;
-  align-items: center;
-  min-height: max(44px, 96rpx);
-  padding: 28rpx 32rpx;
-  background: rgba(255, 255, 255, 0.92);
-  border: 1rpx solid rgba(15, 23, 42, 0.08);
-  border-radius: 24rpx;
-  transition:
-    transform 170ms cubic-bezier(0.16, 1, 0.3, 1),
-    opacity 170ms ease,
-    border-color 170ms ease,
-    background-color 170ms ease,
-    box-shadow 170ms ease;
-  position: relative;
-}
-.option-item:focus-visible {
-  outline: 2px solid var(--yozi-focus, #7367f0);
-  outline-offset: 2px;
-}
-.choice-submit {
-  display: block;
-  width: 100%;
-  min-height: 44px;
-  margin-top: 16px;
-  background: var(--yozi-button);
-  color: var(--yozi-button-ink);
-  box-shadow: var(--yozi-button-shadow);
-}
-.choice-submit:focus-visible {
-  outline: 2px solid var(--yozi-focus, #7367f0);
-  outline-offset: 2px;
-}
-.option-item:active {
-  transform: scale(0.975);
-}
-.option-item.selected {
-  border-color: var(--violet);
-  background: var(--violet-soft);
-  box-shadow: var(--lift-1);
-}
-.option-item.correct {
-  border-color: #34c759;
-  background: rgba(52, 199, 89, 0.08);
-  box-shadow: 0 14rpx 34rpx rgba(52, 199, 89, 0.12);
-}
-.option-item.wrong {
-  border-color: #ff3b30;
-  background: rgba(255, 59, 48, 0.08);
-  box-shadow: 0 14rpx 34rpx rgba(255, 59, 48, 0.1);
-}
-.option-item.option-folded {
-  max-height: 64rpx;
-  padding-top: 16rpx;
-  padding-bottom: 16rpx;
-  opacity: 0.34;
-  box-shadow: none;
-}
-.option-item.option-folded .opt-text {
-  max-height: 36rpx;
-  overflow: hidden;
-  color: #8e8e93;
-}
-.option-item.option-muted-after-answer {
-  background: rgba(255, 255, 255, 0.72);
-}
-.option-item.disabled {
-  opacity: 0.46;
-  pointer-events: none;
-}
-.opt-index {
-  font-weight: 760;
-  color: #1d1d1f;
-  background: #f2f3f5;
-  font-size: 32rpx;
-  flex-shrink: 0;
-  width: 56rpx;
-  height: 56rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  margin-right: 20rpx;
-}
-
-.option-item.correct .opt-index {
-  color: #ffffff;
-  background: #34c759;
-}
-
-.option-item.wrong .opt-index {
-  color: #ffffff;
-  background: #ff3b30;
-}
-.opt-text {
-  flex: 1;
-  font-size: 30rpx;
-  color: #1d1d1f;
-  font-weight: 500;
-  line-height: 1.5;
-  word-break: break-all;
-}
-
-.dark-mode .option-item {
-  background: rgba(34, 37, 45, 0.86);
-  border-color: rgba(255, 255, 255, 0.08);
-}
-
-.dark-mode .option-item.selected {
-  border-color: rgba(0, 224, 255, 0.4);
-  background: rgba(0, 224, 255, 0.09);
-}
-
-.dark-mode .opt-index {
-  color: #f5f7fb;
-  background: rgba(255, 255, 255, 0.08);
-}
-
-.dark-mode .opt-text {
-  color: #f5f7fb;
-}
-.select-indicator {
-  width: 40rpx;
-  height: 40rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 32rpx;
-  color: var(--primary);
-  flex-shrink: 0;
-}
-
-/* 智能反馈图层动画 */
-.ai-feedback-layer {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 200;
-  background: var(--overlay);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-.scan-line {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 6rpx;
-  background: linear-gradient(90deg, transparent, var(--primary), transparent);
-  will-change: transform, opacity;
-  animation: scanMove 2s infinite;
-}
-@keyframes scanMove {
-  0% {
-    transform: translateY(0);
-    opacity: 0;
-  }
-  50% {
-    opacity: 1;
-  }
-  100% {
-    transform: translateY(100vh);
-    opacity: 0;
-  }
-}
-
-.thinking-box {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  @include em-flex-gap(30rpx);
-}
-.pulse-ring {
-  width: 140rpx;
-  height: 140rpx;
-  border: 4rpx solid var(--primary);
-  border-radius: 50%;
-  animation: ringPulse 1.5s infinite;
-}
-@keyframes ringPulse {
-  0% {
-    transform: scale(0.8);
-    opacity: 0.8;
-  }
-  100% {
-    transform: scale(1.6);
-    opacity: 0;
-  }
-}
-.ai-text {
-  margin-top: 20rpx;
-  font-weight: bold;
-  color: var(--primary);
-  font-size: 28rpx;
-}
-
-/* 结果弹窗 */
-.result-pop {
-  position: fixed;
-  /* 适配 iPhone 14/15 Pro 底部安全区域：使用 env() 动态计算 bottom 值 */
-  bottom: calc(120rpx + constant(safe-area-inset-bottom));
-  bottom: calc(120rpx + env(safe-area-inset-bottom));
-  left: 30rpx;
-  right: 30rpx;
-  z-index: 300;
-  padding: 34rpx;
-  max-height: calc(78vh - env(safe-area-inset-bottom));
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-
-  background: var(--yozi-floating);
-  border: 1rpx solid rgba(15, 23, 42, 0.08);
-  border-radius: 32rpx;
-
-  box-shadow: var(--yozi-shadow);
-  animation: slideUpResult 0.35s cubic-bezier(0.32, 0.72, 0, 1) forwards;
-
-  /* FSRS 按钮色彩变量 — 基于全局语义色的半透明变体 */
-  --fsrs-again-bg: color-mix(in srgb, var(--danger) 30%, transparent);
-  --fsrs-again-border: color-mix(in srgb, var(--danger) 50%, transparent);
-  --fsrs-hard-bg: color-mix(in srgb, var(--warning) 30%, transparent);
-  --fsrs-hard-border: color-mix(in srgb, var(--warning) 50%, transparent);
-  --fsrs-good-bg: color-mix(in srgb, var(--success) 25%, transparent);
-  --fsrs-good-border: color-mix(in srgb, var(--success) 40%, transparent);
-  --fsrs-easy-bg: color-mix(in srgb, var(--info) 25%, transparent);
-  --fsrs-easy-border: color-mix(in srgb, var(--info) 40%, transparent);
-}
-
-.dark-mode .result-pop {
-  background: rgba(34, 37, 45, 0.94);
-  border-color: rgba(255, 255, 255, 0.1);
-  box-shadow:
-    0 -10rpx 46rpx rgba(0, 0, 0, 0.42),
-    inset 0 1rpx 0 rgba(255, 255, 255, 0.08);
-}
-@keyframes slideUpResult {
-  from {
-    transform: translateY(100%);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-/* 结果弹窗背景遮罩 */
-.result-backdrop {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.18);
-  z-index: 299;
-  animation: fadeInBackdrop 0.2s ease forwards;
-}
-@keyframes fadeInBackdrop {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-.result-pop.correct {
-  color: #1d1d1f;
-}
-.result-pop.wrong {
-  color: #1d1d1f;
-}
-
-.result-header {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  @include em-flex-gap(18rpx, row);
-  margin-bottom: 22rpx;
-  position: relative;
-}
-
-.result-status-mark {
-  width: 64rpx;
-  height: 64rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  flex-shrink: 0;
-  background: rgba(15, 23, 42, 0.06);
-  color: #1d1d1f;
-}
-
-.result-primary-action {
-  width: 100%;
-
-  @include em-mobile-primary-action;
-}
-
-.result-pop.correct .result-status-mark {
-  background: rgba(159, 232, 112, 0.2);
-  color: #1f7a4d;
-}
-
-.result-pop.wrong .result-status-mark {
-  background: rgba(255, 123, 114, 0.15);
-  color: #b42318;
-}
-
-.dark-mode .result-status-mark {
-  background: rgba(255, 255, 255, 0.08);
-  color: #f5f7fb;
-}
-
-.dark-mode .result-pop.correct .result-status-mark {
-  background: rgba(159, 232, 112, 0.16);
-  color: #9fe870;
-}
-
-.dark-mode .result-pop.wrong .result-status-mark {
-  background: rgba(255, 123, 114, 0.18);
-  color: #ffb4ab;
-}
-
-.result-pop.correct .result-primary-action {
-  background: var(--yozi-button);
-
-  box-shadow: var(--yozi-button-shadow);
-}
-
-.result-pop.correct .result-action-icon,
-.result-pop.correct .result-primary-label {
-  color: var(--yozi-button-ink);
-}
-
-.result-pop.wrong .result-primary-action {
-  background: var(--yozi-button);
-
-  box-shadow: var(--yozi-button-shadow);
-}
-
-.dark-mode .result-pop.wrong .result-primary-action,
-.dark-mode .result-pop.correct .result-primary-action {
-  box-shadow: 0 14rpx 34rpx rgba(0, 0, 0, 0.22);
-}
-
-.result-primary-action-hover,
-.result-primary-action:active {
-  transform: translateY(2px);
-  opacity: 0.9;
-
-  box-shadow:
-    inset 0 2px 4px rgba(30, 15, 65, 0.16),
-    0 2px 0 var(--yozi-button-edge);
-
-  transition-duration: 100ms;
-}
-
-.result-primary-action.disabled {
-  opacity: 0.72;
-}
-
-.result-action-row {
-  position: relative;
-  z-index: 2;
-  margin-top: 20rpx;
-  padding-top: 24rpx;
-  border-top: 1rpx solid rgba(15, 23, 42, 0.08);
-}
-
-.dark-mode .result-action-row {
-  border-top-color: rgba(255, 255, 255, 0.08);
-}
-
-.result-next-btn {
-  min-height: 44px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  @include em-flex-gap(12rpx, row);
-
-  transition:
-    transform 180ms ease,
-    box-shadow 180ms ease;
-}
-
-.result-action-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  color: #ffffff;
-}
-
-.result-primary-label {
-  font-size: 28rpx;
-  font-weight: 700;
-
-  color: var(--yozi-button-ink);
-}
-
-.answer-sync {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16rpx;
-  padding: 16rpx 8rpx;
-  font-size: 24rpx;
-  color: var(--text-secondary);
-  :deep(button) {
-    min-height: 44px;
-  }
-}
-
-.result-assist-row {
-  position: relative;
-  z-index: 2;
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12rpx;
-  margin-top: 22rpx;
-}
-
-.result-assist-btn {
-  min-width: 0;
-  min-height: 76rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8rpx;
-  padding: 0 14rpx;
-  border: 1rpx solid rgba(15, 23, 42, 0.08);
-  border-radius: 20rpx;
-  background: rgba(255, 255, 255, 0.68);
-  color: #3f4652;
-  transition:
-    transform 0.18s ease,
-    opacity 0.18s ease,
-    background 0.18s ease;
-}
-
-.result-assist-btn.active {
-  border-color: rgba(31, 122, 77, 0.22);
-  background: rgba(159, 232, 112, 0.14);
-  color: #1f7a4d;
-}
-
-.result-assist-hover,
-.result-assist-btn:active {
-  transform: scale(0.97);
-  opacity: 0.86;
-}
-
-.result-assist-icon {
-  width: 32rpx;
-  height: 32rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.result-assist-label {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  font-size: 23rpx;
-  font-weight: 750;
-}
-
-.result-assist-badge {
-  min-width: 28rpx;
-  height: 28rpx;
-  padding: 0 7rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 999rpx;
-  background: rgba(31, 122, 77, 0.12);
-  color: #1f7a4d;
-  font-size: 18rpx;
-  font-weight: 850;
-}
-
-.dark-mode .result-assist-btn {
-  border-color: rgba(255, 255, 255, 0.08);
-  background: rgba(255, 255, 255, 0.06);
-  color: rgba(245, 247, 251, 0.76);
-}
-
-.dark-mode .result-assist-btn.active {
-  border-color: rgba(117, 221, 255, 0.24);
-  background: rgba(0, 224, 255, 0.1);
-  color: #75ddff;
-}
-
-.dark-mode .result-assist-badge {
-  background: rgba(117, 221, 255, 0.12);
-  color: #75ddff;
-}
-
-.status-title {
-  position: relative;
-  z-index: 1;
-  font-size: 36rpx;
-  font-weight: 760;
-  flex: 1;
-  text-align: left;
-}
-
-.dark-mode .status-title,
-.dark-mode .ai-analysis-brief,
-.dark-mode .analysis-body,
-.dark-mode .answer-display {
-  color: #f5f7fb;
-}
-
-.result-content-scroll {
-  position: relative;
-  z-index: 1;
-  min-height: 0;
-  max-height: 52vh;
-  flex: 1;
-}
-
-/* 智能深度诊断区域 */
-.ai-analysis-scroll {
-  position: relative;
-  z-index: 1;
-  padding: 4rpx 0 10rpx;
-}
-.analysis-tag {
-  display: flex;
-  align-items: center;
-  @include em-flex-gap(10rpx, row);
-  margin-bottom: 20rpx;
-  padding: 10rpx 20rpx;
-  background: #f2f3f5;
-  border-radius: 18rpx;
-}
-
-.dark-mode .analysis-tag {
-  background: rgba(255, 255, 255, 0.07);
-}
-.sparkle-icon {
-  font-size: 28rpx;
-}
-.analysis-tag text {
-  font-size: 24rpx;
-  font-weight: 600;
-  opacity: 0.9;
-  color: #5f6672;
-}
-.analysis-body {
-  font-size: 28rpx;
-  line-height: 1.8;
-  white-space: pre-wrap;
-  word-wrap: break-word;
-  display: block;
-  padding: 0 20rpx;
-  color: #1d1d1f;
-}
-/* AI个人历史微反馈 */
-.personal-hint-bar {
-  margin: 8rpx 20rpx 16rpx;
-  padding: 12rpx 16rpx;
-  background: color-mix(in srgb, var(--warning) 10%, transparent);
-  border-radius: 12rpx;
-  border-left: 4rpx solid var(--warning, #f59e0b);
-}
-.personal-hint-text {
-  font-size: 24rpx;
-  color: var(--warning, #b45309);
-  line-height: 1.5;
-}
-.dark-mode .personal-hint-bar {
-  background: rgba(245, 158, 11, 0.15);
-}
-.dark-mode .personal-hint-text {
-  color: var(--warning, #fbbf24);
-}
-/* 学习节奏：休息提醒条 */
-.break-reminder-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 16rpx 30rpx;
-  background: linear-gradient(135deg, rgba(99, 102, 241, 0.12), rgba(168, 85, 247, 0.12));
-  border-bottom: 1rpx solid rgba(99, 102, 241, 0.2);
-}
-.break-reminder-text {
-  font-size: 24rpx;
-  color: var(--text-accent, #6366f1);
-  flex: 1;
-}
-.break-dismiss {
-  font-size: 24rpx;
-  color: var(--text-accent, #6366f1);
-  font-weight: 600;
-  padding: 6rpx 20rpx;
-  border-radius: 12rpx;
-  background: rgba(99, 102, 241, 0.15);
-}
-.dark-mode .break-reminder-text {
-  color: var(--text-accent, #a78bfa);
-}
-.dark-mode .break-dismiss {
-  color: var(--text-accent, #a78bfa);
-  background: rgba(99, 102, 241, 0.2);
-}
-.answer-display {
-  display: flex;
-  align-items: center;
-  @include em-flex-gap(10rpx, row);
-  margin-bottom: 20rpx;
-  padding: 0 20rpx;
-}
-.answer-label {
-  font-size: 24rpx;
-  color: #8e8e93;
-}
-.answer-value {
-  font-size: 32rpx;
-  font-weight: 700;
-  color: #1f7a4d;
-}
-
-.dark-mode .answer-label {
-  color: rgba(245, 247, 251, 0.58);
-}
-
-.dark-mode .answer-value {
-  color: #75ddff;
-}
-
-.knowledge-card {
-  margin: 0 20rpx 22rpx;
-  padding: 22rpx;
-  border: 1rpx solid rgba(31, 122, 77, 0.12);
-  border-radius: 20rpx;
-  background: rgba(31, 122, 77, 0.06);
-}
-
-.dark-mode .knowledge-card {
-  border-color: rgba(0, 224, 255, 0.14);
-  background: rgba(0, 224, 255, 0.08);
-}
-
-.dark-mode .knowledge-tag {
-  background: rgba(255, 255, 255, 0.08);
-  color: rgba(245, 247, 251, 0.74);
-}
-
-.knowledge-card.compact {
-  margin: 0 0 20rpx;
-}
-
-.knowledge-card-head {
-  display: flex;
-  align-items: baseline;
-  gap: 12rpx;
-}
-
-.knowledge-label {
-  flex-shrink: 0;
-  padding: 4rpx 10rpx;
-  border-radius: 999rpx;
-  background: rgba(31, 122, 77, 0.12);
-  color: #1f7a4d;
-  font-size: 20rpx;
-  font-weight: 850;
-}
-
-.knowledge-title {
-  min-width: 0;
-  color: #1d1d1f;
-  font-size: 27rpx;
-  font-weight: 760;
-  line-height: 1.35;
-}
-
-.knowledge-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8rpx;
-  margin-top: 14rpx;
-}
-
-.knowledge-tag {
-  padding: 5rpx 10rpx;
-  border-radius: 999rpx;
-  background: #ffffff;
-  color: #5f6672;
-  font-size: 20rpx;
-  font-weight: 700;
-}
-
-.knowledge-detail {
-  display: block;
-  margin-top: 14rpx;
-  color: #3f4652;
-  font-size: 25rpx;
-  line-height: 1.64;
-}
-
-.ai-analysis-brief {
-  position: relative;
-  z-index: 1;
-  font-size: 26rpx;
-  margin-bottom: 30rpx;
-  line-height: 1.5;
-  color: #1d1d1f;
-}
-.ai-analysis-brief .label {
-  font-weight: 700;
-  margin-right: 10rpx;
-  color: #5f6672;
-}
-
-.footer-placeholder {
-  height: 300rpx;
-  /* 适配 iPhone 底部安全区域 */
-  padding-bottom: constant(safe-area-inset-bottom);
-  padding-bottom: env(safe-area-inset-bottom, 0px);
-}
-
-/* ==================== 新增样式：收藏按钮 ==================== */
-.q-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 20rpx;
-}
-
-.q-actions {
-  display: flex;
-  align-items: center;
-  @include em-flex-gap(16rpx, row);
-}
-
-.favorite-btn {
-  width: 60rpx;
-  height: 60rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  background: rgba(255, 150, 0, 0.12);
-  transition: all 0.3s ease;
-}
-
-.favorite-btn:active {
-  transform: scale(0.9);
-}
-
-.favorite-btn.is-favorited {
-  background: rgba(255, 150, 0, 0.2);
-}
-
-.favorite-btn.is-favorited .favorite-icon {
-  color: var(--warning);
-}
-
-.favorite-btn.is-action-locked,
-.note-btn.is-action-locked {
-  opacity: 0.52;
-  transform: none;
-}
-
-.favorite-icon {
-  font-size: 32rpx;
-  color: var(--text-sub);
-  transition: all 0.3s ease;
-}
-
-/* ==================== 新增样式：答题动画 ==================== */
-@keyframes correctPulse {
-  0% {
-    transform: scale(1);
-    opacity: 1;
-  }
-  30% {
-    transform: scale(1.05);
-  }
-  60% {
-    transform: scale(0.98);
-  }
-  100% {
-    transform: scale(1);
-    opacity: 1;
-  }
-}
-
-@keyframes wrongShake {
-  0%,
-  100% {
-    transform: translateX(0);
-  }
-  10%,
-  30%,
-  50%,
-  70%,
-  90% {
-    transform: translateX(-8rpx);
-  }
-  20%,
-  40%,
-  60%,
-  80% {
-    transform: translateX(8rpx);
-  }
-}
-
-.quiz-correct-animation {
-  animation: none;
-}
-
-.quiz-correct-animation .question-card {
-  animation:
-    correctPulse 360ms cubic-bezier(0.16, 1, 0.3, 1),
-    correctGlow 420ms ease-out;
-}
-
-.quiz-wrong-animation {
-  animation: none;
-}
-
-.quiz-wrong-animation .question-card {
-  animation:
-    wrongShake 360ms cubic-bezier(0.36, 0.07, 0.19, 0.97),
-    wrongGlow 420ms ease-out;
-}
-
-/* ==================== 新增样式：滑动提示 ==================== */
-.swipe-hint {
-  position: absolute;
-  bottom: 200rpx;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 24rpx;
-  color: var(--text-sub);
-  opacity: 0.6;
-  display: flex;
-  align-items: center;
-  @include em-flex-gap(10rpx, row);
-}
-
-.swipe-hint-icon {
-  font-size: 28rpx;
-}
-
-/* ==================== 新增样式：笔记按钮 ==================== */
-.note-btn {
-  width: 60rpx;
-  height: 60rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  background: var(--bg-secondary);
-  transition: all 0.3s ease;
-  position: relative;
-}
-
-.note-btn:active {
-  transform: scale(0.9);
-}
-
-.note-btn.has-notes {
-  background: linear-gradient(135deg, var(--primary), var(--primary));
-}
-
-.note-btn.has-notes .note-icon {
-  filter: brightness(1.2);
-}
-
-.note-icon {
-  font-size: 28rpx;
-}
-
-.note-count {
-  position: absolute;
-  top: -4rpx;
-  right: -4rpx;
-  min-width: 28rpx;
-  height: 28rpx;
-  background: var(--danger);
-  color: var(--text-inverse, #fff);
-  font-size: 20rpx;
-  font-weight: bold;
-  border-radius: 14rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 6rpx;
-}
-
-/* ==================== 新增样式：笔记弹窗 ==================== */
-.note-modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: var(--overlay, rgba(0, 0, 0, 0.5));
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 40rpx;
-}
-
-.note-modal {
-  width: 100%;
-  max-width: 600rpx;
-  background: var(--bg-card);
-  border-radius: 32rpx;
-  padding: 40rpx;
-  box-shadow: var(--shadow-xl);
-}
-
-.note-modal-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 30rpx;
-}
-
-.note-modal-title {
-  font-size: 36rpx;
-  font-weight: bold;
-  color: var(--text-primary);
-}
-
-.note-modal-close {
-  width: 48rpx;
-  height: 48rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 32rpx;
-  color: var(--text-sub);
-}
-
-.note-textarea {
-  width: 100%;
-  height: 200rpx;
-  background: var(--bg-secondary);
-  border: 1px solid var(--border);
-  border-radius: 16rpx;
-  padding: 20rpx;
-  font-size: 28rpx;
-  color: var(--text-primary);
-  margin-bottom: 24rpx;
-  box-sizing: border-box;
-}
-
-.note-tags {
-  display: flex;
-  flex-wrap: wrap;
-  @include em-flex-gap(16rpx, row);
-  margin-bottom: 30rpx;
-}
-
-.note-tag {
-  display: flex;
-  align-items: center;
-  gap: 8rpx;
-  padding: 10rpx 20rpx;
-  border: 2rpx solid var(--border);
-  border-radius: 20rpx;
-  font-size: 24rpx;
-  color: var(--text-sub);
-  background: var(--bg-secondary);
-  transition: all 0.2s ease;
-}
-
-.note-tag-dot {
-  width: 12rpx;
-  height: 12rpx;
-  border-radius: 999rpx;
-  flex-shrink: 0;
-}
-
-.note-tag.selected {
-  background: var(--primary);
-  color: var(--text-primary-foreground);
-  border-color: var(--primary);
-}
-
-.note-modal-footer {
-  display: flex;
-  @include em-flex-gap(20rpx, row);
-}
-
-.note-cancel-btn {
-  flex: 1;
-  height: 80rpx;
-  background: var(--bg-secondary);
-  color: var(--text-sub);
-  font-size: 28rpx;
-  border-radius: 16rpx;
-  border: none;
-}
-
-.note-save-btn {
-  flex: 1;
-  height: 80rpx;
-  background: var(--cta-primary-bg);
-  color: var(--cta-primary-text);
-  font-size: 28rpx;
-  font-weight: bold;
-  border-radius: 16rpx;
-  border: 1rpx solid var(--cta-primary-border);
-  box-shadow: var(--cta-primary-shadow);
-}
-
-/* hover-class 反馈 */
-.item-hover {
-  opacity: 0.7;
-}
-
-.option-hover {
-  opacity: 0.85;
-  transform: scale(0.98);
-}
-
-/* FSRS 智能评分按钮（答对/答错各显示2个） */
-.fsrs-rating-row {
-  display: flex;
-  /* gap: 16rpx; -- replaced for Android WebView compat */
-  margin-top: 20rpx;
-}
-.fsrs-rating-btn + .fsrs-rating-btn {
-  margin-left: 16rpx;
-}
-
-.fsrs-rating-btn {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 20rpx 8rpx;
-  border-radius: 20rpx;
-  min-height: 100rpx;
-  margin: 0;
-  line-height: 1.3;
-  transition:
-    transform 0.15s,
-    opacity 0.15s;
-}
-
-.fsrs-rating-btn::after {
-  border: 0;
-}
-
-.fsrs-rating-btn:active {
-  transform: scale(0.95);
-  opacity: 0.85;
-}
-
-.result-pop .fsrs-rating-btn {
-  background: rgba(255, 255, 255, 0.92);
-  border-color: rgba(255, 255, 255, 0.72);
-}
-
-.result-pop .fsrs-rating-label {
-  color: #1a1d26;
-}
-
-.result-pop .fsrs-rating-interval {
-  color: rgba(26, 29, 38, 0.68);
-}
-
-.fsrs-again {
-  background: rgba(255, 75, 75, 0.12);
-  border: 1rpx solid rgba(255, 59, 48, 0.16);
-  box-shadow: none;
-}
-
-.fsrs-hard {
-  background: rgba(255, 150, 0, 0.12);
-  border: 1rpx solid rgba(255, 149, 0, 0.16);
-  box-shadow: none;
-}
-
-.fsrs-good {
-  background: rgba(88, 204, 2, 0.12);
-  border: 1rpx solid rgba(52, 199, 89, 0.16);
-  box-shadow: none;
-}
-
-.fsrs-easy {
-  background: rgba(28, 176, 246, 0.12);
-  border: 1rpx solid rgba(31, 122, 77, 0.16);
-  box-shadow: none;
-}
-
-.fsrs-rating-label {
-  font-size: 28rpx;
-  font-weight: 700;
-}
-
-.fsrs-again .fsrs-rating-label {
-  color: var(--danger);
-}
-.fsrs-hard .fsrs-rating-label {
-  color: var(--warning);
-}
-.fsrs-good .fsrs-rating-label {
-  color: #58cc02;
-}
-.fsrs-easy .fsrs-rating-label {
-  color: var(--info);
-}
-
-.fsrs-rating-interval {
-  font-size: 22rpx;
-  color: var(--text-secondary);
-  margin-top: 6rpx;
-}
-
-/* ==================== 经典闪卡模式 ==================== */
-.flashcard-area {
-  padding: 0 30rpx 40rpx;
-}
-
-/* 翻转前：查看答案按钮 */
-.flashcard-reveal {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 60rpx 0;
-}
-
-.flashcard-hint {
-  font-size: 28rpx;
-  color: var(--text-secondary);
-  margin-bottom: 30rpx;
-}
-
-.flashcard-reveal-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 28rpx 60rpx;
-
-  @include em-mobile-primary-action;
-}
-
-.flashcard-reveal-btn:active {
-  transform: translateY(2px);
-
-  box-shadow:
-    inset 0 2px 4px rgba(30, 15, 65, 0.16),
-    0 2px 0 var(--yozi-button-edge);
-
-  transition-duration: 100ms;
-}
-
-.flashcard-reveal-text {
-  font-size: 32rpx;
-  font-weight: 700;
-
-  color: var(--yozi-button-ink);
-  margin-left: 12rpx;
-}
-
-.flashcard-reveal-btn .base-icon {
-  color: var(--yozi-button-ink);
-}
-
-/* 翻转后：答案卡片 */
-.flashcard-answer-area {
-  animation: flashcardReveal 0.35s ease-out;
-}
-
-@keyframes flashcardReveal {
-  from {
-    opacity: 0;
-    transform: translateY(20rpx) scale(0.97);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-.flashcard-answer-card {
-  padding: 30rpx;
-  border-left: 6rpx solid #1f7a4d;
-}
-
-.flashcard-answer-label {
-  display: flex;
-  align-items: center;
-  font-size: 26rpx;
-  font-weight: 700;
-  color: #1f7a4d;
-  margin-bottom: 20rpx;
-}
-
-.flashcard-answer-label text {
-  margin-left: 8rpx;
-}
-
-.flashcard-answer-scroll {
-  max-height: 500rpx;
-}
-
-.flashcard-answer-content {
-  font-size: 28rpx;
-  line-height: 1.8;
-  white-space: pre-wrap;
-  word-wrap: break-word;
-  color: var(--text-primary);
-}
-
-.flashcard-explanation {
-  margin-top: 24rpx;
-  padding-top: 24rpx;
-  border-top: 1rpx solid var(--overlay);
-}
-
-.flashcard-explanation-label {
-  font-size: 24rpx;
-  font-weight: 600;
-  color: var(--text-secondary);
-  margin-bottom: 12rpx;
-  display: block;
-}
-
-.flashcard-explanation-content {
-  font-size: 26rpx;
-  line-height: 1.7;
-  color: var(--text-secondary);
-  white-space: pre-wrap;
-  word-wrap: break-word;
-}
-
-/* 闪卡模式评分提示 */
-.flashcard-rate-hint {
-  font-size: 24rpx;
-  color: var(--text-secondary);
-  text-align: center;
-  margin-top: 30rpx;
-  margin-bottom: 12rpx;
-}
-
-/* 闪卡模式四级评分按钮（全部显示，不分对错） */
-.flashcard-rating {
-  margin-top: 0;
-}
-
-.flashcard-rating .fsrs-rating-btn {
-  min-height: 110rpx;
-}
-
-/* 暗色模式适配 */
-.dark-mode .flashcard-reveal-btn {
-  background: var(--yozi-button);
-
-  box-shadow: var(--yozi-button-shadow);
-}
-
-.dark-mode .flashcard-answer-card {
-  border-left-color: #00a65e;
-}
-
-.dark-mode .flashcard-answer-label {
-  color: #58cc02;
-}
-
-.dark-mode .q-image-card {
-  border-color: rgba(255, 255, 255, 0.12);
-  background: #111827;
-}
-
-.dark-mode .q-image-caption {
-  border-top-color: rgba(255, 255, 255, 0.12);
-  color: #cbd5e1;
-}
-
-/* ✅ 完成庆祝动画 */
-@keyframes celebrateScale {
-  0% {
-    transform: scale(0.8);
-    opacity: 0;
-  }
-  50% {
-    transform: scale(1.05);
-  }
-  100% {
-    transform: scale(1);
-    opacity: 1;
-  }
-}
-
-@keyframes celebrateStars {
-  0% {
-    transform: rotate(0deg) scale(0);
-    opacity: 0;
-  }
-  50% {
-    transform: rotate(180deg) scale(1.2);
-    opacity: 1;
-  }
-  100% {
-    transform: rotate(360deg) scale(1);
-    opacity: 0.8;
-  }
-}
-
-.complete-celebrate {
-  animation: celebrateScale 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-}
-
-/* 完美全对时的特殊效果 */
-.perfect-score-glow {
-  position: relative;
-}
-.perfect-score-glow::after {
-  content: '';
-  position: absolute;
-  inset: -20rpx;
-  border-radius: 50rpx;
-  background: radial-gradient(circle, rgba(255, 215, 0, 0.3) 0%, transparent 70%);
-  animation: celebrateStars 2s ease-in-out infinite;
-  pointer-events: none;
-}
-</style>

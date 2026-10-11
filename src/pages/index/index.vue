@@ -2,14 +2,19 @@
   <LearningLanding v-if="!showLegacyDashboard" @legacy="openLegacyDashboard">
     <PrivacyPopup />
   </LearningLanding>
-  <view v-else class="page" :class="{ 'dark-mode': isDark, 'theme-light': !isDark }">
+  <view
+    v-else
+    class="yozi-page page has-tabbar"
+    :style="tabBarStyle"
+    :class="{ 'dark-mode': isDark, 'theme-light': !isDark }"
+  >
     <!-- 微信隐私保护弹窗 -->
     <PrivacyPopup />
 
     <!-- 自定义导航栏 -->
     <view class="nav-bar" :style="{ paddingTop: statusBarHeight + 'px' }">
       <view class="nav-content">
-        <text class="nav-title">{{ BRAND.name }}</text>
+        <text class="nav-title">{{ uiText(BRAND.name) }}</text>
       </view>
     </view>
 
@@ -17,98 +22,72 @@
     <scroll-view
       scroll-y
       class="main-scroll"
-      :style="{ paddingTop: statusBarHeight + 44 + 'px' }"
       refresher-enabled
       :refresher-triggered="isRefreshing"
       @refresherrefresh="onRefresh"
     >
-      <view v-if="isPageLoading || pageError" class="section shell-state-section">
-        <view class="shell-state-card" :class="{ error: pageError }">
-          <view class="shell-state-copy">
-            <text class="shell-state-title" role="status">{{ pageError ? '记录暂不可读' : '正在读取记录' }}</text>
-          </view>
-          <button
-            v-if="pageError"
-            class="shell-state-action"
-            role="button"
-            tabindex="0"
-            hover-class="btn-hover"
-            @tap="retryLoadData"
-          >
-            <text>重试</text>
-          </button>
-          <view v-else class="shell-state-meter">
-            <view class="shell-state-meter-fill" />
-          </view>
-        </view>
-      </view>
+      <BaseEmpty
+        v-if="isPageLoading || pageError"
+        :state="pageError ? 'error' : 'loading'"
+        :title="pageError ? t('dashboard.copy0') : t('dashboard.copy1')"
+        :show-button="Boolean(pageError)"
+        @action="retryLoadData"
+      />
 
-      <button class="dashboard-return" @tap="showLegacyDashboard = false">返回学习空间</button>
+      <BaseButton class="dashboard-return" variant="secondary" @tap="showLegacyDashboard = false">{{
+        t('dashboard.copy2')
+      }}</BaseButton>
       <LearningOverview />
       <!-- 品牌冲击首屏 -->
       <view class="section hero-section">
         <view class="hero-panel">
-          <text class="hero-title">学习记录</text>
+          <text class="hero-title">{{ t('dashboard.copy3') }}</text>
 
-          <view class="dashboard-tabs">
-            <view
-              v-for="tab in dashboardTabs"
-              :key="tab.id"
-              class="dashboard-tab"
-              :class="{ active: activeDashboardTab === tab.id }"
-              hover-class="btn-hover"
-              @tap="selectDashboardTab(tab.id)"
-            >
-              <text>{{ tab.label }}</text>
-            </view>
-          </view>
+          <BaseSegmented
+            :model-value="activeDashboardTab"
+            :options="dashboardTabs.map((tab) => ({ value: tab.id, label: uiText(tab.label) }))"
+            :label="t('dashboard.copy3')"
+            @update:model-value="selectDashboardTab"
+          />
 
           <view v-if="!hasSharedLearning" class="today-focus-panel">
             <view class="today-focus-copy">
-              <text class="today-focus-title">{{ focusPanelTitle }}</text>
+              <text class="today-focus-title">{{ uiText(focusPanelTitle) }}</text>
             </view>
-            <view class="mastery-orb">
-              <text class="mastery-orb-value">{{ todayProgressPercent }}%</text>
-              <text class="mastery-orb-label">今日</text>
-            </view>
+            <BaseStat :label="t('dashboard.copy4')" :value="displayTodayCount" :denominator="displayDailyGoal" />
           </view>
 
           <view class="paper-stage">
             <view class="paper-stage-head">
               <view>
-                <text class="paper-title">近年真题整卷进度</text>
+                <text class="paper-title">{{ t('dashboard.copy5') }}</text>
               </view>
               <view v-if="!hasSharedLearning" class="paper-score">
                 <text class="paper-score-value">{{ displayTotalQuestions }}</text>
-                <text class="paper-score-label">已练题</text>
+                <text class="paper-score-label">{{ t('dashboard.copy6') }}</text>
               </view>
             </view>
 
             <view class="paper-lane">
               <view v-for="paper in paperProgressCards" :key="paper.label" class="paper-pill" :class="paper.state">
-                <text class="paper-pill-label">{{ paper.label }}</text>
+                <text class="paper-pill-label">{{ uiText(paper.label) }}</text>
                 <text class="paper-pill-value">{{ paper.value }}</text>
               </view>
             </view>
 
             <view class="paper-foot">
-              <text>{{ loadedPaperCount }} 套已加载</text>
+              <text>{{ t('dashboard.copy7', { v0: loadedPaperCount }) }}</text>
             </view>
           </view>
 
-          <view class="onboarding-entry" hover-class="btn-hover" @tap="goOnboarding">
-            <view class="onboarding-entry-copy">
-              <text class="onboarding-entry-title">备考设置</text>
-            </view>
-            <view class="onboarding-entry-mark">
-              <text>设置</text>
-            </view>
-          </view>
+          <BaseButton class="onboarding-entry" variant="secondary" @tap="goOnboarding">{{
+            t('dashboard.copy8')
+          }}</BaseButton>
 
           <view class="hero-action-row">
-            <view class="hero-primary" hover-class="btn-hover" @tap="goLearning">
-              <text class="hero-primary-text">开始对话学习</text>
-            </view>
+            <BaseButton class="hero-primary" variant="primary" @tap="goLearning"
+              ><text class="hero-primary-text">{{ t('dashboard.copy10') }}</text></BaseButton
+            >
           </view>
         </view>
       </view>
@@ -117,33 +96,24 @@
       <view v-if="!hasSharedLearning" class="section">
         <view class="card progress-card">
           <view class="card-header">
-            <text class="card-title">今日进度</text>
-            <text class="streak-badge">{{ streakDays }} 天连续学习</text>
+            <text class="card-title">{{ t('dashboard.copy11') }}</text>
+            <text class="streak-badge">{{ t('dashboard.copy12', { v0: streakDays }) }}</text>
           </view>
-          <view class="progress-bar-wrap">
-            <view class="progress-bar">
-              <view class="progress-fill" :style="{ width: todayProgressPercent + '%' }" />
-            </view>
-            <text class="progress-text">{{ displayTodayCount }} / {{ displayDailyGoal }}</text>
-          </view>
+          <BaseStat :label="t('dashboard.copy11')" :value="displayTodayCount" :denominator="displayDailyGoal" />
         </view>
       </view>
 
       <!-- 统计网格 -->
-      <view v-if="!hasSharedLearning" class="section stats-row">
-        <view class="stat-card">
-          <text class="stat-value">{{ displayTotalQuestions }}</text>
-          <text class="stat-label">累计有效作答</text>
-        </view>
-        <view class="stat-card">
-          <text class="stat-value">{{ displayAccuracy }}</text>
-          <text class="stat-label">{{ hasSharedLearning ? '正确率' : '近期旧判对' }}</text>
-        </view>
-      </view>
+      <view v-if="!hasSharedLearning" class="section stats-row"
+        ><BaseStat :label="t('dashboard.copy13')" :value="displayTotalQuestions" /><BaseListRow
+          :label="t('dashboard.copy14')"
+          :value="String(displayAccuracy)"
+          :actionable="false"
+      /></view>
 
       <!-- 最近学习 -->
       <view v-if="recentActivities.length > 0" class="section">
-        <text class="section-title">最近学习</text>
+        <text class="section-title">{{ t('dashboard.copy15') }}</text>
         <view class="card">
           <view
             v-for="(item, idx) in recentActivities"
@@ -153,7 +123,7 @@
           >
             <view class="activity-left">
               <text class="activity-name">{{ item.name }}</text>
-              <text class="activity-time">{{ item.time }}</text>
+              <text class="activity-time">{{ uiText(item.time) }}</text>
             </view>
             <text class="activity-progress">{{ item.progress }}</text>
           </view>
@@ -161,7 +131,7 @@
       </view>
 
       <!-- 底部占位 -->
-      <view :style="{ height: tabBarHeight + 96 + 'px' }" />
+      <view class="yozi-tabbar-space" aria-hidden="true" />
     </scroll-view>
 
     <!-- 底部导航栏 -->
@@ -170,6 +140,17 @@
 </template>
 
 <script>
+import { getTabbarSafeAreaStyle } from '@/utils/core/system.js';
+import '@/i18n/messages/dashboard.js';
+import { t, translateRegisteredText } from '@/i18n/index.js';
+import { useThemeStore } from '@/stores/modules/theme.js';
+import BaseListRow from '@/components/base/base-list-row/base-list-row.vue';
+import BaseStat from '@/components/base/base-stat/base-stat.vue';
+import BaseEmpty from '@/components/base/base-empty/base-empty.vue';
+import BaseSegmented from '@/components/base/base-segmented/base-segmented.vue';
+import BaseButton from '@/components/base/base-button/base-button.vue';
+import '@/styles/yozi-pages.scss';
+
 import { BRAND } from '@/config/brand.js';
 import LearningOverview from '@/components/business/learning/learning-overview.vue';
 import LearningLanding from '@/components/business/learning/learning-landing.vue';
@@ -186,6 +167,11 @@ import { getPracticeNavigationTree } from '@/config/bank-registry.js';
 
 export default {
   components: {
+    BaseButton,
+    BaseSegmented,
+    BaseEmpty,
+    BaseStat,
+    BaseListRow,
     LearningOverview,
     LearningLanding,
     CustomTabbar,
@@ -198,7 +184,7 @@ export default {
       showLegacyDashboard: false,
       // 布局
       statusBarHeight: 44,
-      tabBarHeight: 90,
+      tabBarStyle: {},
       isRefreshing: false,
       isPageLoading: true,
       pageError: '',
@@ -211,18 +197,21 @@ export default {
       loadedPaperCount: 0,
       accuracy: 0,
       recentActivities: [],
-      isDark: false,
+
       activeDashboardTab: 'today',
       dashboardTabs: [
-        { id: 'today', label: '今日' },
-        { id: 'bank', label: '题库' },
-        { id: 'review', label: '复习' }
+        { id: 'today', label: t('dashboard.copy4') },
+        { id: 'bank', label: t('dashboard.copy16') },
+        { id: 'review', label: t('dashboard.copy17') }
       ],
       paperProgressCards: []
     };
   },
 
   computed: {
+    isDark() {
+      return useThemeStore().isDark;
+    },
     sharedLearning() {
       return useConversationLearningStore();
     },
@@ -257,11 +246,11 @@ export default {
     },
     greeting() {
       const h = new Date().getHours();
-      if (h < 6) return '夜深了';
-      if (h < 12) return '上午好';
-      if (h < 14) return '中午好';
-      if (h < 18) return '下午好';
-      return '晚上好';
+      if (h < 6) return t('dashboard.copy18');
+      if (h < 12) return t('dashboard.copy19');
+      if (h < 14) return t('dashboard.copy20');
+      if (h < 18) return t('dashboard.copy21');
+      return t('dashboard.copy22');
     },
 
     todayProgressPercent() {
@@ -274,9 +263,9 @@ export default {
     },
 
     navStatusText() {
-      if (this.todayProgressPercent >= 100) return '今日完成';
-      if (this.totalQuestions > 0) return '训练可用';
-      return '待导入题库';
+      if (this.todayProgressPercent >= 100) return t('dashboard.copy23');
+      if (this.totalQuestions > 0) return t('dashboard.copy24');
+      return t('dashboard.copy25');
     },
 
     remainingToday() {
@@ -284,35 +273,35 @@ export default {
     },
 
     masteryStateText() {
-      if (this.isNewUser) return '准备开始';
-      if (this.todayProgressPercent >= 100) return '已完成';
-      if (this.todayProgressPercent >= 60) return '推进中';
-      return '待启动';
+      if (this.isNewUser) return t('dashboard.copy26');
+      if (this.todayProgressPercent >= 100) return t('dashboard.copy27');
+      if (this.todayProgressPercent >= 60) return t('dashboard.copy28');
+      return t('dashboard.copy29');
     },
 
     todayMomentumText() {
-      if (this.isNewUser) return '先导入正式题库，完成第一轮训练';
-      if (this.todayProgressPercent >= 100) return '今天目标已达成，可以进入错题巩固';
-      return `再完成 ${this.remainingToday} 题，形成今天的记忆闭环`;
+      if (this.isNewUser) return t('dashboard.copy30');
+      if (this.todayProgressPercent >= 100) return t('dashboard.copy31');
+      return t('dashboard.copy32', { v0: this.remainingToday });
     },
 
     focusPanelTitle() {
-      if (this.activeDashboardTab === 'bank') return '题库记录';
-      if (this.activeDashboardTab === 'review') return '复习记录';
-      return '今日任务';
+      if (this.activeDashboardTab === 'bank') return t('dashboard.copy33');
+      if (this.activeDashboardTab === 'review') return t('dashboard.copy34');
+      return t('dashboard.copy35');
     },
 
     todayFocusCards() {
       return [
-        { label: '剩余题量', value: this.remainingToday },
-        { label: '连续天数', value: `${this.streakDays}d` },
-        { label: this.hasSharedLearning ? '正确率' : '近期旧判对', value: this.displayAccuracy }
+        { label: t('dashboard.copy36'), value: this.remainingToday },
+        { label: t('dashboard.copy37'), value: `${this.streakDays}d` },
+        { label: this.hasSharedLearning ? t('dashboard.copy38') : t('dashboard.copy39'), value: this.displayAccuracy }
       ];
     },
 
     paperStageCaption() {
-      if (this.loadedPaperCount > 0) return '继续按年份完成整卷训练。';
-      return '先选择一套可练真题，建立第一条训练记录。';
+      if (this.loadedPaperCount > 0) return t('dashboard.copy40');
+      return t('dashboard.copy41');
     }
   },
 
@@ -348,6 +337,10 @@ export default {
   },
 
   methods: {
+    t,
+    uiText(value) {
+      return translateRegisteredText('dashboard', value);
+    },
     openLegacyDashboard() {
       this.showLegacyDashboard = true;
       this.loadData();
@@ -360,8 +353,7 @@ export default {
         const info = uni.getWindowInfo();
         const statusBarHeight = Number(info.statusBarHeight || 0);
         this.statusBarHeight = statusBarHeight > 0 ? statusBarHeight : 16;
-        const safeBottom = info.safeAreaInsets?.bottom || 0;
-        this.tabBarHeight = 60 + 12 + safeBottom;
+        this.tabBarStyle = getTabbarSafeAreaStyle();
       } catch (_e) {
         logger.warn('[Index] layout init failed, using defaults');
       }
@@ -369,7 +361,7 @@ export default {
 
     syncTheme(mode) {
       const resolved = mode || storageService.get('theme_mode', 'light');
-      this.isDark = resolved === 'dark';
+      void resolved;
     },
 
     loadData() {
@@ -443,12 +435,12 @@ export default {
 
     buildPaperProgressCards(loadedPapers = []) {
       const tracks = [
-        { id: 'english1', label: '英语一', keys: ['english1', 'english-'] },
-        { id: 'english2', label: '英语二', keys: ['english2'] },
-        { id: 'politics', label: '政治', keys: ['politics'] },
-        { id: 'math1', label: '数学一', keys: ['math1', 'math-'] },
-        { id: 'math2', label: '数学二', keys: ['math2'] },
-        { id: 'math3', label: '数学三', keys: ['math3'] }
+        { id: 'english1', label: t('dashboard.copy42'), keys: ['english1', 'english-'] },
+        { id: 'english2', label: t('dashboard.copy43'), keys: ['english2'] },
+        { id: 'politics', label: t('dashboard.copy44'), keys: ['politics'] },
+        { id: 'math1', label: t('dashboard.copy45'), keys: ['math1', 'math-'] },
+        { id: 'math2', label: t('dashboard.copy46'), keys: ['math2'] },
+        { id: 'math3', label: t('dashboard.copy47'), keys: ['math3'] }
       ];
       const loadedText = loadedPapers.join(' ').toLowerCase();
       const profile = storageService.get('exam_profile', null) || {};
@@ -463,7 +455,12 @@ export default {
         const state = isLoaded ? 'ready' : readyTrackIds.has(track.id) ? 'available' : 'pending';
         return {
           label: track.label,
-          value: state === 'ready' ? '已加载' : state === 'available' ? '可练' : '未就绪',
+          value:
+            state === 'ready'
+              ? t('dashboard.copy48')
+              : state === 'available'
+                ? t('dashboard.copy49')
+                : t('dashboard.copy50'),
           state
         };
       });
@@ -473,12 +470,12 @@ export default {
       if (!ts) return '';
       const diff = Date.now() - ts;
       const min = Math.floor(diff / 60000);
-      if (min < 1) return '刚刚';
-      if (min < 60) return min + '分钟前';
+      if (min < 1) return t('dashboard.copy51');
+      if (min < 60) return min + t('dashboard.copy52');
       const hr = Math.floor(min / 60);
-      if (hr < 24) return hr + '小时前';
+      if (hr < 24) return hr + t('dashboard.copy53');
       const day = Math.floor(hr / 24);
-      if (day < 7) return day + '天前';
+      if (day < 7) return day + t('dashboard.copy54');
       return new Date(ts).toLocaleDateString('zh-CN', { month: 'short', day: 'numeric' });
     },
 
@@ -511,818 +508,3 @@ export default {
   }
 };
 </script>
-
-<style lang="scss" scoped>
-/* ==================== 设计规范变量 ==================== */
-
-/* ==================== 页面 ==================== */
-.page {
-  @include em-mobile-canvas;
-}
-
-/* ==================== 导航栏 ==================== */
-.nav-bar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 100;
-  @include em-mobile-topbar;
-}
-
-.nav-content {
-  height: 44px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 $spacing-page;
-}
-
-.nav-title {
-  font-size: 30rpx;
-  font-weight: 900;
-  color: $primary-dark;
-  letter-spacing: 1.6rpx;
-}
-
-.nav-status {
-  padding: 6rpx 14rpx;
-  border: 1rpx solid rgba(22, 51, 0, 0.12);
-  border-radius: 999rpx;
-  background: rgba(159, 232, 112, 0.22);
-  color: $primary-dark;
-  font-size: 18rpx;
-  font-weight: 800;
-  letter-spacing: 1.2rpx;
-}
-
-/* ==================== 滚动区域 ==================== */
-.main-scroll {
-  height: 100vh;
-  box-sizing: border-box;
-}
-
-/* ==================== 通用 ==================== */
-.section {
-  padding: 0 $spacing-page;
-  margin-bottom: $spacing-section;
-}
-
-.shell-state-section {
-  padding-top: 22rpx;
-  margin-bottom: 18rpx;
-}
-
-.shell-state-card {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 22rpx 24rpx;
-
-  border: 0;
-
-  border-radius: 24px;
-
-  background: var(--yozi-reading);
-
-  box-shadow: var(--yozi-shadow);
-}
-
-.shell-state-card.error {
-  border-color: rgba(239, 68, 68, 0.14);
-
-  background: var(--yozi-reading);
-  box-shadow: 0 14rpx 36rpx rgba(239, 68, 68, 0.08);
-}
-
-.shell-state-copy {
-  flex: 1;
-  min-width: 0;
-  padding-right: 18rpx;
-}
-
-.shell-state-title {
-  display: block;
-  color: $text-main;
-  font-size: 25rpx;
-  font-weight: 850;
-  line-height: 1.25;
-}
-
-.shell-state-desc {
-  display: block;
-  margin-top: 6rpx;
-  color: $text-sub;
-  font-size: 21rpx;
-  line-height: 1.42;
-}
-
-.shell-state-action {
-  @include em-mobile-pressable;
-  flex-shrink: 0;
-  padding: 12rpx 18rpx;
-  border-radius: 999rpx;
-  background: rgba(22, 51, 0, 0.08);
-}
-
-.shell-state-action text {
-  color: $primary-dark;
-  font-size: 21rpx;
-  font-weight: 850;
-}
-
-.shell-state-meter {
-  position: relative;
-  flex-shrink: 0;
-  width: 96rpx;
-  height: 10rpx;
-  overflow: hidden;
-  border-radius: 999rpx;
-  background: rgba(22, 51, 0, 0.08);
-}
-
-.shell-state-meter-fill {
-  width: 42rpx;
-  height: 100%;
-  border-radius: inherit;
-  background: $action-green;
-  animation: shellStateMeter 1.1s ease-in-out infinite;
-}
-
-@keyframes shellStateMeter {
-  0% {
-    transform: translateX(-48rpx);
-  }
-  50% {
-    transform: translateX(38rpx);
-  }
-  100% {
-    transform: translateX(104rpx);
-  }
-}
-
-.section-title {
-  font-size: 32rpx;
-  font-weight: 600;
-  color: $text-main;
-  margin-bottom: 16rpx;
-  display: block;
-}
-
-.card {
-  @include em-mobile-glass-surface($radius-lg, $spacing-card);
-}
-
-/* ==================== 品牌冲击首屏 ==================== */
-.hero-section {
-  padding-top: 28rpx;
-}
-
-.hero-panel {
-  @include em-mobile-deep-panel(38rpx, 34rpx);
-}
-
-.hero-panel::before {
-  content: '';
-  position: absolute;
-  right: -90rpx;
-  top: -110rpx;
-  width: 360rpx;
-  height: 360rpx;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(178, 255, 106, 0.26) 0%, rgba(178, 255, 106, 0) 68%);
-}
-
-.hero-panel::after {
-  content: '';
-  position: absolute;
-  left: 42rpx;
-  right: 42rpx;
-  bottom: 38rpx;
-  height: 1rpx;
-  background: linear-gradient(90deg, transparent, rgba(159, 232, 112, 0.7), transparent);
-}
-
-.hero-topline,
-.dashboard-tabs,
-.today-focus-panel,
-.focus-chip-row,
-.paper-stage,
-.hero-metric-strip,
-.onboarding-entry,
-.hero-action-row,
-.hero-title,
-.hero-subtitle {
-  position: relative;
-  z-index: 1;
-}
-
-.hero-topline {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 34rpx;
-}
-
-.hero-kicker {
-  color: rgba(255, 255, 255, 0.62);
-  font-size: 18rpx;
-  font-weight: 900;
-  letter-spacing: 2.4rpx;
-}
-
-.hero-state {
-  padding: 8rpx 16rpx;
-  border-radius: 999rpx;
-  background: rgba(159, 232, 112, 0.18);
-  color: $primary;
-  font-size: 20rpx;
-  font-weight: 900;
-  letter-spacing: 1rpx;
-}
-
-.hero-title {
-  display: block;
-  max-width: 560rpx;
-  color: #ffffff;
-  font-size: 48rpx;
-  font-weight: 900;
-  line-height: 1.16;
-}
-
-.hero-subtitle {
-  display: block;
-  max-width: 560rpx;
-  margin-top: 18rpx;
-  color: rgba(255, 255, 255, 0.68);
-  font-size: 26rpx;
-  line-height: 1.55;
-}
-
-.dashboard-tabs {
-  display: flex;
-  margin-top: 26rpx;
-  padding: 7rpx;
-  border-radius: 999rpx;
-  background: rgba(255, 255, 255, 0.1);
-  box-shadow: inset 0 1rpx 0 rgba(255, 255, 255, 0.1);
-}
-
-.dashboard-tab {
-  @include em-mobile-pressable;
-  display: flex;
-  flex: 1;
-  align-items: center;
-  justify-content: center;
-  min-height: 58rpx;
-  border-radius: 999rpx;
-  color: rgba(255, 255, 255, 0.58);
-  font-size: 23rpx;
-  font-weight: 850;
-}
-
-.dashboard-tab.active {
-  background: rgba(255, 255, 255, 0.9);
-  color: $primary-dark;
-  box-shadow: 0 12rpx 28rpx rgba(0, 0, 0, 0.12);
-}
-
-.today-focus-panel {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: 18rpx;
-  padding: 24rpx;
-  border-radius: 30rpx;
-  background: rgba(255, 255, 255, 0.11);
-  box-shadow:
-    inset 0 1rpx 0 rgba(255, 255, 255, 0.12),
-    0 18rpx 44rpx rgba(0, 0, 0, 0.08);
-}
-
-.today-focus-copy {
-  flex: 1;
-  min-width: 0;
-  padding-right: 22rpx;
-}
-
-.today-focus-kicker {
-  display: block;
-  color: rgba(255, 255, 255, 0.44);
-  font-size: 17rpx;
-  font-weight: 900;
-  letter-spacing: 1.9rpx;
-}
-
-.today-focus-title {
-  display: block;
-  margin-top: 8rpx;
-  color: rgba(255, 255, 255, 0.94);
-  font-size: 34rpx;
-  font-weight: 900;
-  line-height: 1.18;
-}
-
-.today-focus-desc {
-  display: block;
-  margin-top: 8rpx;
-  color: rgba(255, 255, 255, 0.62);
-  font-size: 22rpx;
-  line-height: 1.45;
-}
-
-.mastery-orb {
-  flex-shrink: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: 136rpx;
-  height: 136rpx;
-  border-radius: 999rpx;
-  background:
-    radial-gradient(
-      circle at 34% 26%,
-      rgba(255, 255, 255, 0.88) 0,
-      rgba(255, 255, 255, 0.18) 34%,
-      rgba(178, 255, 106, 0.18) 100%
-    ),
-    rgba(255, 255, 255, 0.08);
-  box-shadow:
-    0 16rpx 34rpx rgba(0, 0, 0, 0.16),
-    inset 0 1rpx 0 rgba(255, 255, 255, 0.32);
-}
-
-.mastery-orb-value {
-  @include em-mobile-number;
-  color: #f8fff2;
-  font-size: 34rpx;
-  font-weight: 950;
-  line-height: 1;
-}
-
-.mastery-orb-label {
-  margin-top: 6rpx;
-  color: rgba(255, 255, 255, 0.54);
-  font-size: 18rpx;
-  font-weight: 800;
-}
-
-.focus-chip-row {
-  display: flex;
-  margin-top: 14rpx;
-}
-
-.focus-chip {
-  flex: 1;
-  padding: 14rpx 12rpx;
-  border-radius: 22rpx;
-  background: rgba(255, 255, 255, 0.08);
-}
-
-.focus-chip + .focus-chip {
-  margin-left: 12rpx;
-}
-
-.focus-chip-value {
-  @include em-mobile-number;
-  display: block;
-  color: #ffffff;
-  font-size: 30rpx;
-  font-weight: 900;
-}
-
-.focus-chip-label {
-  display: block;
-  margin-top: 5rpx;
-  color: rgba(255, 255, 255, 0.52);
-  font-size: 19rpx;
-  font-weight: 650;
-}
-
-.paper-stage {
-  margin-top: 28rpx;
-  padding: 24rpx;
-  border-radius: 30rpx;
-  background: rgba(255, 255, 255, 0.075);
-  box-shadow:
-    inset 0 1rpx 0 rgba(255, 255, 255, 0.12),
-    0 18rpx 44rpx rgba(0, 0, 0, 0.08);
-}
-
-.paper-stage-head {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-}
-
-.paper-kicker {
-  display: block;
-  color: rgba(255, 255, 255, 0.42);
-  font-size: 17rpx;
-  font-weight: 900;
-  letter-spacing: 2rpx;
-}
-
-.paper-title {
-  display: block;
-  margin-top: 6rpx;
-  color: rgba(255, 255, 255, 0.9);
-  font-size: 27rpx;
-  font-weight: 850;
-}
-
-.paper-score {
-  min-width: 104rpx;
-  padding: 10rpx 14rpx;
-  border-radius: 22rpx;
-  background: rgba(255, 255, 255, 0.1);
-  text-align: center;
-}
-
-.paper-score-value {
-  display: block;
-  color: $primary;
-  font-size: 30rpx;
-  font-weight: 900;
-  line-height: 1;
-}
-
-.paper-score-label {
-  display: block;
-  margin-top: 4rpx;
-  color: rgba(255, 255, 255, 0.55);
-  font-size: 18rpx;
-}
-
-.paper-lane {
-  display: flex;
-  flex-wrap: wrap;
-  margin-top: 18rpx;
-  gap: 12rpx;
-}
-
-.paper-pill {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  min-width: 138rpx;
-  min-height: 76rpx;
-  padding: 12rpx 16rpx;
-  border-radius: 20rpx;
-  background: rgba(255, 255, 255, 0.08);
-  box-shadow: inset 0 1rpx 0 rgba(255, 255, 255, 0.1);
-}
-
-.paper-pill.ready {
-  background: rgba(159, 232, 112, 0.16);
-}
-
-.paper-pill.available {
-  background: rgba(117, 221, 255, 0.14);
-}
-
-.paper-pill-label {
-  color: rgba(255, 255, 255, 0.9);
-  font-size: 22rpx;
-  font-weight: 850;
-}
-
-.paper-pill-value {
-  margin-top: 5rpx;
-  color: rgba(255, 255, 255, 0.54);
-  font-size: 18rpx;
-  font-weight: 700;
-}
-
-.paper-foot {
-  display: flex;
-  justify-content: space-between;
-  padding-top: 8rpx;
-  color: rgba(255, 255, 255, 0.55);
-  font-size: 20rpx;
-  line-height: 1.4;
-}
-
-.hero-metric-strip {
-  display: flex;
-  margin-top: 20rpx;
-}
-
-.hero-metric {
-  flex: 1;
-  padding: 16rpx 12rpx;
-  border-radius: 22rpx;
-  background: rgba(255, 255, 255, 0.075);
-}
-
-.hero-metric + .hero-metric {
-  margin-left: 12rpx;
-}
-
-.metric-label {
-  display: block;
-  color: rgba(255, 255, 255, 0.58);
-  font-size: 22rpx;
-}
-
-.metric-value {
-  @include em-mobile-number;
-  display: block;
-  margin-top: 6rpx;
-  color: #ffffff;
-  font-size: 34rpx;
-  font-weight: 900;
-}
-
-.onboarding-entry {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: 18rpx;
-  padding: 18rpx 20rpx;
-  border-radius: 24rpx;
-  background: rgba(255, 255, 255, 0.08);
-}
-
-.onboarding-entry-copy {
-  display: flex;
-  flex-direction: column;
-}
-
-.onboarding-entry-title {
-  color: rgba(255, 255, 255, 0.9);
-  font-size: 24rpx;
-  font-weight: 800;
-}
-
-.onboarding-entry-desc {
-  margin-top: 5rpx;
-  color: rgba(255, 255, 255, 0.5);
-  font-size: 20rpx;
-}
-
-.onboarding-entry-mark {
-  padding: 9rpx 14rpx;
-  border-radius: 999rpx;
-  background: rgba(159, 232, 112, 0.16);
-}
-
-.onboarding-entry-mark text {
-  color: $primary;
-  font-size: 18rpx;
-  font-weight: 900;
-  letter-spacing: 1rpx;
-}
-
-.hero-action-row {
-  display: flex;
-  align-items: center;
-  margin-top: 34rpx;
-}
-
-.hero-primary {
-  @include em-mobile-primary-action;
-  @include em-mobile-pressable;
-  padding: 22rpx 30rpx;
-}
-
-.hero-primary-text {
-  color: $primary-dark;
-  font-size: 28rpx;
-  font-weight: 900;
-}
-
-.hero-note {
-  flex: 1;
-  margin-left: 22rpx;
-  color: rgba(255, 255, 255, 0.62);
-  font-size: 22rpx;
-  line-height: 1.45;
-}
-
-/* ==================== 今日进度卡片 ==================== */
-.progress-card {
-  background: var(--yozi-reading);
-
-  border: 0;
-
-  border-radius: 24px;
-
-  box-shadow: var(--yozi-shadow);
-}
-
-.card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 24rpx;
-}
-
-.card-title {
-  font-size: 30rpx;
-  font-weight: 600;
-  color: $text-main;
-}
-
-.streak-badge {
-  font-size: 24rpx;
-  color: $primary-dark;
-  background: var(--violet-soft);
-  padding: 6rpx 16rpx;
-  border-radius: 99rpx;
-  font-weight: 500;
-}
-
-.progress-bar-wrap {
-  display: flex;
-  align-items: center;
-}
-
-.progress-bar {
-  flex: 1;
-  height: 16rpx;
-  background: var(--violet-soft);
-  border-radius: 99rpx;
-  overflow: hidden;
-}
-
-.progress-fill {
-  height: 100%;
-  background: $action-green;
-  border-radius: 99rpx;
-  transition: width 0.3s ease;
-  min-width: 0;
-}
-
-.progress-text {
-  margin-left: 20rpx;
-  font-size: 28rpx;
-  font-weight: 600;
-  color: $text-main;
-  white-space: nowrap;
-}
-
-/* ==================== 统计网格 ==================== */
-.stats-row {
-  display: flex;
-}
-
-.stat-card {
-  @include em-mobile-glass-surface($radius-lg, $spacing-card);
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.stat-card + .stat-card {
-  margin-left: 20rpx;
-}
-
-.stat-value {
-  @include em-mobile-number;
-  font-size: 48rpx;
-  font-weight: 700;
-  color: $text-main;
-  line-height: 1.2;
-}
-
-.stat-kicker {
-  margin-bottom: 8rpx;
-  color: rgba(22, 51, 0, 0.42);
-  font-size: 18rpx;
-  font-weight: 900;
-  letter-spacing: 1.4rpx;
-}
-
-.stat-label {
-  font-size: 24rpx;
-  color: $text-sub;
-  margin-top: 8rpx;
-}
-
-/* ==================== 最近学习 ==================== */
-.activity-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 20rpx 0;
-}
-
-.activity-border {
-  border-bottom: 1rpx solid rgba(0, 0, 0, 0.06);
-}
-
-.activity-left {
-  display: flex;
-  flex-direction: column;
-}
-
-.activity-name {
-  font-size: 28rpx;
-  font-weight: 500;
-  color: $text-main;
-}
-
-.activity-time {
-  font-size: 22rpx;
-  color: $text-weak;
-  margin-top: 4rpx;
-}
-
-.activity-progress {
-  font-size: 30rpx;
-  font-weight: 600;
-  color: $action-green;
-}
-
-.btn-hover {
-  opacity: 0.85;
-  transform: scale(0.98);
-}
-
-/* ==================== Dark Theme Guardrail ==================== */
-.page.dark-mode {
-  color: var(--text-main);
-
-  background: var(--yozi-background);
-}
-
-.dark-mode .nav-bar {
-  background: var(--yozi-floating);
-
-  box-shadow: var(--yozi-shadow);
-}
-
-.dark-mode .nav-title,
-.dark-mode .section-title,
-.dark-mode .card-title,
-.dark-mode .stat-value,
-.dark-mode .activity-name,
-.dark-mode .progress-text {
-  color: #f5f7fb;
-}
-
-.dark-mode .nav-status {
-  border-color: rgba(0, 224, 255, 0.18);
-  background: rgba(0, 224, 255, 0.12);
-  color: #75ddff;
-}
-
-.dark-mode .card,
-.dark-mode .stat-card,
-.dark-mode .shell-state-card {
-  background: var(--yozi-reading);
-
-  border: 0;
-
-  box-shadow: var(--yozi-shadow);
-}
-
-.dark-mode .shell-state-card.error {
-  border-color: rgba(255, 120, 120, 0.18);
-
-  background: var(--yozi-reading);
-}
-
-.dark-mode .shell-state-title {
-  color: #f5f7fb;
-}
-
-.dark-mode .shell-state-desc {
-  color: rgba(245, 247, 251, 0.58);
-}
-
-.dark-mode .shell-state-action {
-  background: rgba(159, 232, 112, 0.14);
-}
-
-.dark-mode .shell-state-action text {
-  color: #9fe870;
-}
-
-.dark-mode .shell-state-meter {
-  background: rgba(255, 255, 255, 0.1);
-}
-
-.dark-mode .progress-card {
-  background: var(--yozi-reading);
-
-  border: 0;
-
-  border-radius: 24px;
-
-  box-shadow: var(--yozi-shadow);
-}
-
-.dark-mode .progress-bar {
-  background: rgba(255, 255, 255, 0.1);
-}
-
-.dark-mode .stat-kicker,
-.dark-mode .stat-label,
-.dark-mode .activity-time {
-  color: rgba(245, 247, 251, 0.58);
-}
-</style>

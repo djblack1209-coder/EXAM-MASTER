@@ -1,3 +1,6 @@
+import { createPinia, setActivePinia } from 'pinia';
+import { beforeEach } from 'vitest';
+beforeEach(() => setActivePinia(createPinia()));
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { mount } from '@vue/test-utils';
@@ -10,15 +13,11 @@ const source = readFileSync(resolve(process.cwd(), 'src/pages/practice-sub/quest
 
 describe('question bank slot readiness detail', () => {
   it('keeps selected year slots explicit about status and next action', () => {
-    const template = source.split('<script setup>')[0];
-    expect(template).not.toContain('slot-readiness-panel');
-    expect(template).toContain('selectedYearSlot.statusLabel');
-    expect(template).toContain('selectedYearSlot.disabledReason');
-    expect(source).toContain('buildYearSlotReadiness');
-    expect(source).toContain('selectedYearSlotReadiness');
-    expect(source).toContain('slot-action-disabled');
-    expect(source).toContain('整理中，暂不可开始');
-    expect(source).toContain('待入库后开放');
+    for (const field of ['buildYearSlotReadiness', 'selectedYearSlotReadiness', 'slot-action-disabled'])
+      expect(source).toContain(field);
+    const copy = readFileSync(resolve(process.cwd(), 'src/pages/practice-sub/messages.js'), 'utf8');
+    expect(copy).toContain('整理中，暂不可开始');
+    expect(copy).toContain('待入库后开放');
   });
 
   it('keeps the readiness copy user-facing instead of exposing backend workflow terms', () => {

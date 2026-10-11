@@ -5,6 +5,19 @@
 
 import { logger } from '../logger.js';
 
+/** Native safe-area measurement shared by tab content and the floating bar. */
+export function getTabbarSafeAreaStyle() {
+  try {
+    const info = uni.getWindowInfo();
+    const bottom = Number(
+      info.safeAreaInsets?.bottom ?? (info.safeArea ? info.screenHeight - info.safeArea.bottom : 0)
+    );
+    return Number.isFinite(bottom) && bottom > 0 ? { '--yozi-safe-bottom': `${bottom}px` } : {};
+  } catch {
+    return {};
+  }
+}
+
 /**
  * 获取状态栏高度
  * @returns {number} 状态栏高度（px）

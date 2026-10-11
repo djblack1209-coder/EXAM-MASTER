@@ -1830,7 +1830,7 @@ describe('学习空间的实际入口与目录', () => {
     const wrapper = mount(ProfilePage, { global: { stubs: { ...stubs, CustomTabbar: true } } });
     try {
       expect(wrapper.find('.stats-card').text()).toContain('近期旧判对');
-      expect(wrapper.findAll('.stats-card .stat-val')[1].text()).toBe(expected);
+      expect(wrapper.find('.stats-card .base-list-row__value').text()).toBe(expected);
     } finally {
       wrapper.unmount();
     }

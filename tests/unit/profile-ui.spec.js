@@ -7,6 +7,7 @@ describe('profile page static UI contract', () => {
 
   it('does not render escaped HTML entities for menu arrows', () => {
     expect(source).not.toContain('<text class="menu-arrow">></text>');
-    expect(source).toContain('<text class="menu-arrow">›</text>');
+    expect(source).toContain('<BaseListRow');
+    expect(source).toContain("goTo('/pages/settings/privacy')");
   });
 });

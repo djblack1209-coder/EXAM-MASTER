@@ -1,3 +1,6 @@
+import { createPinia, setActivePinia } from 'pinia';
+import { beforeEach } from 'vitest';
+beforeEach(() => setActivePinia(createPinia()));
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { mount } from '@vue/test-utils';
@@ -56,13 +59,16 @@ describe('question bank local sync status', () => {
   });
 
   it('guards local sync state wiring and dark-mode styling', () => {
-    expect(source).toContain('localPaperStats');
-    expect(source).toContain('buildLocalPaperStats');
-    expect(source).toContain('refreshLocalPaperStats');
-    expect(source).toContain('getPaperLocalState');
-    expect(source).toContain('local-sync-strip');
-    expect(source).toContain('paper-local-row');
-    expect(source).toContain('.dark-mode .local-sync-strip');
-    expect(source).toContain('.dark-mode .paper-local-pill.synced');
+    for (const field of [
+      'localPaperStats',
+      'buildLocalPaperStats',
+      'refreshLocalPaperStats',
+      'getPaperLocalState',
+      'local-sync-strip',
+      'paper-local-row'
+    ])
+      expect(source).toContain(field);
+    expect(source).toContain('useThemeStore');
+    expect(source).toContain('@/styles/yozi-pages.scss');
   });
 });

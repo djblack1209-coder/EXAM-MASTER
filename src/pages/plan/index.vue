@@ -1,35 +1,40 @@
 <template>
-  <LearningShell v-if="!showLegacy" active="plan" :title="$t('pages.plan')">
+  <LearningShell v-if="!showLegacy" class="yozi-page" active="plan" :title="$t('pages.plan')">
     <LearningOverview :initial-expanded="true" :show-navigation="false" view="plan" />
     <view class="legacy-entry">
-      <button class="quiet-button" role="button" tabindex="0" @tap="toggleLegacy">历史题库记录</button>
+      <BaseButton class="quiet-button" variant="secondary" @tap="toggleLegacy">{{ t('plan.copy0') }}</BaseButton>
     </view>
   </LearningShell>
-  <view v-else :class="['container', { 'dark-mode': isDark, 'theme-light': !isDark }]">
+  <view v-else class="yozi-page" :class="['container', { 'dark-mode': isDark, 'theme-light': !isDark }]">
     <view class="aurora-bg" />
 
     <!-- 骨架屏 -->
     <!-- #ifdef APP-PLUS -->
-    <PlanSkeleton v-if="isLoading" :is-dark="isDark" />
+    <BaseEmpty v-if="isLoading" :is-dark="isDark" state="loading" />
     <!-- #endif -->
     <!-- #ifndef APP-PLUS -->
     <!-- #ifndef APP-NVUE -->
     <transition name="skeleton-fade">
-      <PlanSkeleton v-if="isLoading" :is-dark="isDark" />
+      <BaseEmpty v-if="isLoading" :is-dark="isDark" state="loading" />
     </transition>
     <!-- #endif -->
     <!-- #ifdef APP-NVUE -->
-    <PlanSkeleton v-if="isLoading" :is-dark="isDark" />
+    <BaseEmpty v-if="isLoading" :is-dark="isDark" state="loading" />
     <!-- #endif -->
     <!-- #endif -->
 
     <view v-if="!isLoading" class="header-nav" :style="{ paddingTop: statusBarHeight + 'px' }">
       <view class="nav-content" :style="{ paddingRight: capsuleSafeRight + 'px' }">
-        <view class="nav-back" @tap="goBack"><BaseIcon name="arrow-left" :size="32" /></view>
+        <BaseButton class="nav-back" variant="secondary" @tap="goBack"><BaseIcon name="arrow-left" /></BaseButton>
         <text class="nav-title">{{ $t('pages.plan') }}</text>
-        <view class="nav-add" @tap="showLegacy ? createPlan() : safeNavigateTo('/pages/learning/index')">
-          <text class="nav-add-text"> + </text>
-        </view>
+        <BaseButton
+          class="nav-add"
+          variant="secondary"
+          icon="plus"
+          icon-only
+          :label="t('plan.copy1')"
+          @tap="showLegacy ? createPlan() : safeNavigateTo('/pages/learning/index')"
+        />
       </view>
     </view>
 
@@ -37,30 +42,29 @@
       v-if="!isLoading"
       scroll-y
       class="main-scroll"
-      :style="{ paddingTop: statusBarHeight + 50 + 'px' }"
       refresher-enabled
       :refresher-triggered="isRefreshing"
       @refresherrefresh="onPullRefresh"
     >
       <LearningOverview :initial-expanded="true" />
-      <button size="mini" @tap="toggleLegacy">
-        {{ showLegacy ? '收起历史视图' : '历史题库记录' }}
-      </button>
+      <BaseButton class="quiet-button" variant="secondary" @tap="toggleLegacy">{{
+        showLegacy ? t('plan.copy2') : t('plan.copy0')
+      }}</BaseButton>
       <template v-if="showLegacy">
         <view class="hero-card">
-          <text class="hero-title"> 把备考安排成清晰的一周节奏 </text>
+          <text class="hero-title">{{ t('plan.copy3') }}</text>
           <view class="hero-actions">
-            <view class="hero-cta" @tap="createPlan">
-              <text class="hero-cta-text"> 新建计划 </text>
-            </view>
+            <BaseButton class="hero-cta" variant="primary" @tap="createPlan"
+              ><text class="hero-cta-text">{{ t('plan.copy4') }}</text></BaseButton
+            >
           </view>
         </view>
 
         <view v-if="intelligentReminders.length > 0" class="reminder-card">
           <view class="section-heading">
-            <view class="section-title-row">
-              <BaseIcon name="robot" :size="30" class="reminder-icon" />
-              <text class="section-title"> 智能提醒 </text>
+            <view class="section-title-row yozi-icon-row">
+              <BaseIcon name="robot" class="reminder-icon" />
+              <text class="section-title">{{ t('plan.copy5') }}</text>
             </view>
           </view>
           <view class="reminder-list">
@@ -71,10 +75,10 @@
               :class="reminder.priority"
             >
               <text class="reminder-message">
-                {{ reminder.message }}
+                {{ uiText(reminder.message) }}
               </text>
               <text class="reminder-time">
-                {{ reminder.time }}
+                {{ uiText(reminder.time) }}
               </text>
             </view>
           </view>
@@ -84,56 +88,52 @@
         <view v-if="aiPlan || aiPlanLoading" class="ai-plan-section">
           <view class="section-heading">
             <view class="section-title-row">
-              <text class="section-title">AI 自适应计划</text>
+              <text class="section-title">{{ t('plan.copy6') }}</text>
             </view>
           </view>
 
-          <view v-if="aiPlanLoading" class="ai-plan-loading">
-            <text class="ai-plan-loading-text">AI 正在分析你的学习数据，生成个性化计划...</text>
-          </view>
+          <BaseEmpty v-if="aiPlanLoading" state="loading" :title="t('plan.copy7')" pose="sleep" />
 
           <view v-else-if="aiPlan && aiPlan.days" class="ai-plan-days">
             <view v-if="aiPlan.phase" class="ai-plan-phase">
-              <text class="phase-text">当前阶段：{{ aiPlan.phase }}</text>
+              <text class="phase-text">{{ t('plan.copy8', { v0: aiPlan.phase }) }}</text>
             </view>
-            <view
+            <BaseButton
               v-for="(day, idx) in aiPlan.days"
               :key="idx"
               class="ai-day-card"
-              :class="{ today: idx === 0 }"
+              variant="secondary"
               @tap="startAIPlanDay(day)"
-            >
-              <view class="day-header">
-                <text class="day-label">{{ idx === 0 ? '今天' : `第${idx + 1}天` }}</text>
-                <text v-if="day.focusSubject" class="day-focus">{{ day.focusSubject }}</text>
-              </view>
-              <view v-if="day.tasks" class="day-tasks">
+              ><view class="day-header">
+                <text class="day-label">{{ idx === 0 ? t('plan.copy9') : t('plan.copy10', { v0: idx + 1 }) }}</text>
+                <text v-if="day.focusSubject" class="day-focus">{{ day.focusSubject }}</text> </view
+              ><view v-if="day.tasks" class="day-tasks">
                 <view v-for="(task, ti) in day.tasks.slice(0, 3)" :key="ti" class="day-task-item">
                   <text class="task-dot" :class="[task.type === 'review' ? 'review' : 'practice']" />
                   <text class="task-name">{{ task.name || task.knowledgePoint }}</text>
-                  <text v-if="task.minutes" class="task-time">{{ task.minutes }}分钟</text>
-                </view>
-              </view>
-              <view v-if="idx === 0" class="day-cta">
-                <text class="day-cta-text">开始今日任务</text>
-              </view>
-            </view>
+                  <text v-if="task.minutes" class="task-time">{{ t('plan.copy11', { v0: task.minutes }) }}</text>
+                </view> </view
+              ><view v-if="idx === 0" class="day-cta">
+                <text class="day-cta-text">{{ t('plan.copy12') }}</text>
+              </view></BaseButton
+            >
           </view>
         </view>
 
         <BaseEmpty
           v-if="plans.length === 0"
+          pose="sleep"
           icon="calendar"
-          title="还没有学习计划"
-          desc="创建一个学习计划，让备考更有条理！"
+          :title="t('plan.copy13')"
+          :desc="t('plan.copy14')"
           :show-button="true"
-          button-text="创建学习计划"
+          :button-text="t('plan.copy15')"
           :is-dark="isDark"
           @action="createPlan"
         />
 
         <view v-if="plans.length > 0" class="section-heading plans-heading">
-          <text class="section-title"> 当前进行中的计划 </text>
+          <text class="section-title">{{ t('plan.copy16') }}</text>
         </view>
 
         <view v-for="(plan, index) in plans" :key="plan.id || index" class="plan-card">
@@ -143,7 +143,7 @@
             </text>
             <view class="plan-badge" :class="plan.status">
               <text class="plan-badge-text">
-                {{ getStatusText(plan.status) }}
+                {{ uiText(getStatusText(plan.status)) }}
               </text>
             </view>
           </view>
@@ -152,29 +152,29 @@
             {{ plan.goal }}
           </text>
 
-          <view v-if="plan.analytics" class="plan-analytics">
-            <view class="analytics-row">
-              <view class="analytics-item">
-                <text class="analytics-label"> 完成率 </text>
-                <text class="analytics-value"> {{ plan.analytics.completionRate }}% </text>
-              </view>
-              <view class="analytics-item">
-                <text class="analytics-label"> 趋势 </text>
-                <text class="analytics-value" :class="getTrendClass(plan.analytics.progressTrend.trend)">
-                  {{ plan.analytics.progressTrend.trend > 0 ? '+' : '' }}{{ plan.analytics.progressTrend.trend }}%
-                </text>
-              </view>
-              <view class="analytics-item">
-                <text class="analytics-label"> 预计完成 </text>
-                <text class="analytics-value"> {{ plan.analytics.progressTrend.projected }}% </text>
-              </view>
-            </view>
-
+          <view v-if="plan.analytics" class="plan-analytics"
+            ><view class="analytics-row"
+              ><BaseStat
+                v-if="plan.tasks?.length"
+                :label="t('plan.copy25')"
+                :value="plan.tasks.filter((task) => task.completed).length"
+                :denominator="plan.tasks.length" /><BaseListRow
+                v-else
+                :label="t('plan.completionNote')"
+                :value="plan.analytics.completionRate + '%'"
+                :actionable="false" /><BaseListRow
+                :label="t('plan.trendNote')"
+                :value="plan.analytics.progressTrend.trend + '%'"
+                :actionable="false" /><BaseListRow
+                :label="t('plan.projectedNote')"
+                :value="plan.analytics.progressTrend.projected + '%'"
+                :actionable="false"
+            /></view>
             <view
               v-if="plan.analytics.recommendedAdjustments && plan.analytics.recommendedAdjustments.length > 0"
               class="adjustments-section"
             >
-              <text class="adjustments-title"> 智能建议 </text>
+              <text class="adjustments-title">{{ t('plan.copy20') }}</text>
               <view
                 v-for="(adjustment, adjIndex) in plan.analytics.recommendedAdjustments"
                 :key="adjIndex"
@@ -182,7 +182,7 @@
                 :class="adjustment.priority"
               >
                 <text class="adjustment-message">
-                  {{ adjustment.message }}
+                  {{ uiText(adjustment.message) }}
                 </text>
               </view>
             </view>
@@ -190,25 +190,25 @@
 
           <view class="plan-meta-grid">
             <view class="meta-item">
-              <text class="meta-label"> 开始日期 </text>
+              <text class="meta-label">{{ t('plan.copy21') }}</text>
               <text class="meta-value">
                 {{ plan.startDate }}
               </text>
             </view>
             <view class="meta-item">
-              <text class="meta-label"> 结束日期 </text>
+              <text class="meta-label">{{ t('plan.copy22') }}</text>
               <text class="meta-value">
                 {{ plan.endDate }}
               </text>
             </view>
             <view class="meta-item">
-              <text class="meta-label"> 每日时长 </text>
+              <text class="meta-label">{{ t('plan.copy23') }}</text>
               <text class="meta-value">
                 {{ plan.dailyDuration }}
               </text>
             </view>
             <view class="meta-item">
-              <text class="meta-label"> 提醒时间 </text>
+              <text class="meta-label">{{ t('plan.copy24') }}</text>
               <text class="meta-value">
                 {{ plan.reminderTime }}
               </text>
@@ -216,16 +216,18 @@
           </view>
 
           <view v-if="plan.tasks && plan.tasks.length > 0" class="task-stats">
-            <text class="task-stats-label"> 任务进度 </text>
+            <text class="task-stats-label">{{ t('plan.copy25') }}</text>
             <view class="task-progress-bar">
               <view class="task-progress-fill" :style="{ width: (plan.progress || 0) + '%' }" />
             </view>
             <text class="task-stats-text">
-              {{ plan.tasks ? plan.tasks.reduce((n, t) => n + (t.completed ? 1 : 0), 0) : 0 }}/{{
-                plan.tasks ? plan.tasks.length : 0
-              }}
-              个任务
-            </text>
+              {{
+                t('plan.copy26', {
+                  v0: plan.tasks ? plan.tasks.reduce((n, t) => n + (t.completed ? 1 : 0), 0) : 0,
+                  v1: plan.tasks ? plan.tasks.length : 0
+                })
+              }}</text
+            >
           </view>
 
           <view class="plan-footer">
@@ -236,28 +238,59 @@
             </view>
             <view class="priority-tag" :class="plan.priority">
               <text class="tag-text">
-                {{ getPriorityText(plan.priority) }}
+                {{ uiText(getPriorityText(plan.priority)) }}
               </text>
             </view>
           </view>
 
           <view class="plan-actions">
-            <text class="action-btn cta" @tap="viewPlanDetail(plan)"> 查看详情 </text>
-            <text class="action-btn" @tap="adjustPlan(plan.id)"> 智能调整 </text>
-            <text class="action-btn danger" @tap="deletePlan(plan.id || index)"> 删除 </text>
+            <BaseButton class="action-btn cta" variant="secondary" @tap="viewPlanDetail(plan)">{{
+              t('plan.copy27')
+            }}</BaseButton>
+            <BaseButton class="action-btn" variant="secondary" @tap="adjustPlan(plan.id)">{{
+              t('plan.copy28')
+            }}</BaseButton>
+            <BaseButton class="action-btn danger" variant="secondary" @tap="deletePlan(plan.id || index)">{{
+              t('plan.copy29')
+            }}</BaseButton>
           </view>
         </view>
       </template>
     </scroll-view>
   </view>
+  <CustomModal
+    v-if="pageDialog"
+    :visible="true"
+    :title="pageDialog.title"
+    :content="pageDialog.content"
+    :editable="pageDialog.editable"
+    :placeholder-text="pageDialog.placeholderText"
+    :confirm-text="pageDialog.confirmText"
+    :cancel-text="pageDialog.cancelText"
+    :show-cancel="pageDialog.showCancel !== false"
+    :type="pageDialog.confirmColor ? 'error' : 'info'"
+    escape-closable
+    @confirm="settleDialog(true, $event)"
+    @cancel="settleDialog(false)"
+  />
 </template>
 
 <script setup>
+import CustomModal from '@/components/common/CustomModal.vue';
+const uiText = (value) => translateRegisteredText('plan', value);
+import '@/pages/plan/messages.js';
+import { t, translateRegisteredText } from '@/i18n/index.js';
+import { useThemeStore } from '@/stores/modules/theme.js';
+import BaseStat from '@/components/base/base-stat/base-stat.vue';
+import BaseListRow from '@/components/base/base-list-row/base-list-row.vue';
+import BaseButton from '@/components/base/base-button/base-button.vue';
+import '@/styles/yozi-pages.scss';
+
 import LearningOverview from '@/components/business/learning/learning-overview.vue';
 import LearningShell from '@/components/business/learning/learning-shell.vue';
 import { useConversationLearningStore } from '@/stores/modules/conversation-learning.js';
 
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 const learning = useConversationLearningStore();
 const showLegacy = ref(false);
 function toggleLegacy() {
@@ -265,24 +298,24 @@ function toggleLegacy() {
   if (showLegacy.value) loadPlans(true);
 }
 import { onLoad, onShow, onUnload } from '@dcloudio/uni-app';
-import { modal } from '@/utils/modal.js';
+import { usePageDialog } from '@/composables/usePageDialog.js';
+const { pageDialog, settleDialog, modal } = usePageDialog();
 import { toast } from '@/utils/toast.js';
-import { storageService } from '@/services/storageService.js';
 import BaseEmpty from '@/components/base/base-empty/base-empty.vue';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
-import PlanSkeleton from './components/plan-skeleton/plan-skeleton.vue';
 import { intelligentPlanManager } from './intelligent-plan-manager.js';
 import { logger } from '@/utils/logger.js';
 import { getStatusBarHeight, getCapsuleSafeRight } from '@/utils/core/system.js';
 import { safeNavigateTo, safeNavigateBack } from '@/utils/safe-navigate';
 import { requireLogin, isUserLoggedIn } from '@/utils/auth/loginGuard.js';
+import { storageService } from '@/services/storageService.js';
 import { useStudyEngineStore } from '@/stores/modules/study-engine.js';
 
 // ---- 响应式状态 ----
 const isRefreshing = ref(false);
 const statusBarHeight = ref(44);
 const capsuleSafeRight = ref(20);
-const isDark = ref(false);
+const isDark = computed(() => useThemeStore().isDark);
 const isLoading = ref(true);
 const plans = ref([]);
 const intelligentReminders = ref([]);
@@ -302,11 +335,10 @@ onLoad(() => {
   capsuleSafeRight.value = getCapsuleSafeRight();
   studyEngineStore = useStudyEngineStore();
 
-  const savedTheme = storageService.get('theme_mode', 'light');
-  isDark.value = savedTheme === 'dark';
+  void 0;
 
-  _themeHandler = (mode) => {
-    isDark.value = mode === 'dark';
+  _themeHandler = (_mode) => {
+    void 0;
   };
   uni.$on('themeUpdate', _themeHandler);
 });
@@ -410,7 +442,7 @@ function startAIPlanDay(day) {
 /** 创建计划 */
 function createPlan() {
   if (learning.state.plans.length || learning.state.attempts.length) return safeNavigateTo('/pages/learning/index');
-  requireLogin(() => safeNavigateTo('/pages/practice/index'), { message: '请先登录后创建计划' });
+  requireLogin(() => safeNavigateTo('/pages/practice/index'), { message: t('plan.copy30') });
 }
 
 /** 返回上一页 */
@@ -424,13 +456,13 @@ function goBack() {
 function getStatusText(status) {
   switch (status) {
     case 'not_started':
-      return '未开始';
+      return t('plan.copy31');
     case 'in_progress':
-      return '进行中';
+      return t('plan.copy32');
     case 'completed':
-      return '已完成';
+      return t('plan.copy33');
     default:
-      return '未知';
+      return t('plan.copy34');
   }
 }
 
@@ -438,21 +470,14 @@ function getStatusText(status) {
 function getPriorityText(priority) {
   switch (priority) {
     case 'low':
-      return '低优先级';
+      return t('plan.copy35');
     case 'medium':
-      return '中优先级';
+      return t('plan.copy36');
     case 'high':
-      return '高优先级';
+      return t('plan.copy37');
     default:
-      return '未知';
+      return t('plan.copy34');
   }
-}
-
-/** 获取趋势样式类名 */
-function getTrendClass(trend) {
-  if (trend > 0) return 'positive';
-  if (trend < 0) return 'negative';
-  return 'neutral';
 }
 
 /** 查看计划详情 */
@@ -462,26 +487,26 @@ function viewPlanDetail(plan) {
   const tasksTotal = plan.tasks ? plan.tasks.length : 0;
   const lines = [
     plan.name,
-    `目标：${plan.goal || '未设置'}`,
+    t('plan.goalLine', { value: plan.goal || t('plan.notSet') }),
     `${plan.startDate} → ${plan.endDate}`,
-    `每日 ${plan.dailyDuration || '未设置'}`,
-    tasksTotal > 0 ? `任务进度：${tasksDone}/${tasksTotal}` : null,
-    plan.analytics ? `完成率：${plan.analytics.completionRate}%` : null
+    t('plan.dailyLine', { value: plan.dailyDuration || t('plan.notSet') }),
+    tasksTotal > 0 ? t('plan.taskLine', { done: tasksDone, total: tasksTotal }) : null,
+    plan.analytics ? t('plan.completionLine', { value: plan.analytics.completionRate }) : null
   ]
     .filter(Boolean)
     .join('\n');
   modal.show({
-    title: '计划详情',
+    title: t('plan.copy38'),
     content: lines,
     showCancel: false,
-    confirmText: '关闭'
+    confirmText: t('plan.copy39')
   });
 }
 
 /** 智能调整计划 */
 function adjustPlan(planId) {
   if (!isUserLoggedIn()) {
-    toast.info('请先登录后调整计划');
+    toast.info(t('plan.copy40'));
     return;
   }
   logger.log('[Plan] 智能调整计划:', planId);
@@ -491,715 +516,34 @@ function adjustPlan(planId) {
   const adjustedPlan = intelligentPlanManager.adjustPlan(planId, learningProgress);
 
   if (adjustedPlan) {
-    toast.success('计划已智能调整');
+    toast.success(t('plan.copy41'));
     loadPlans();
   } else {
-    toast.info('调整失败');
+    toast.info(t('plan.copy42'));
   }
 }
 
 /** 删除计划 */
 function deletePlan(planId) {
   if (!isUserLoggedIn()) {
-    toast.info('请先登录后删除计划');
+    toast.info(t('plan.copy43'));
     return;
   }
   modal.show({
-    title: '删除计划',
-    content: '确定要删除这个学习计划吗？',
+    title: t('plan.copy44'),
+    content: t('plan.copy45'),
     confirmColor: 'var(--danger)',
     success: (res) => {
       if (res.confirm) {
         const success = intelligentPlanManager.deletePlan(planId);
         if (success) {
-          toast.success('计划已删除');
+          toast.success(t('plan.copy46'));
           loadPlans();
         } else {
-          toast.info('删除失败');
+          toast.info(t('plan.copy47'));
         }
       }
     }
   });
 }
 </script>
-
-<style lang="scss" scoped>
-.container {
-  min-height: 100%;
-  min-height: 100vh;
-
-  background: var(--yozi-background);
-  position: relative;
-  overflow: hidden;
-  transition: background 0.3s;
-}
-
-.aurora-bg {
-  position: absolute;
-  top: -120rpx;
-  left: -80rpx;
-  width: 100%;
-  height: 620rpx;
-  background:
-    radial-gradient(circle at 18% 24%, rgba(107, 208, 150, 0.34) 0%, transparent 40%),
-    radial-gradient(circle at 82% 10%, rgba(255, 255, 255, 0.42) 0%, transparent 28%);
-  filter: blur(70px);
-  opacity: 0.95;
-  z-index: 0;
-}
-
-.header-nav {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  z-index: 100;
-
-  border-bottom: 0;
-  @include em-mobile-topbar;
-}
-
-.nav-content {
-  height: 50px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 30rpx;
-}
-
-.nav-back,
-.nav-add {
-  width: 44px;
-
-  height: 44px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  border-radius: 12px;
-
-  background: var(--yozi-glass);
-
-  border: 0;
-
-  box-shadow: var(--yozi-control-shadow);
-}
-
-.nav-back {
-  font-size: 36rpx;
-  color: var(--text-main);
-  font-weight: 700;
-
-  width: 44px;
-
-  height: 44px;
-
-  border-radius: 12px;
-
-  background: var(--yozi-glass);
-
-  border: 0;
-
-  box-shadow: var(--yozi-control-shadow);
-}
-
-.nav-title {
-  font-size: 32rpx;
-  font-weight: 620;
-  color: var(--text-main);
-}
-
-.nav-add-text {
-  font-size: 40rpx;
-  line-height: 1;
-  color: var(--text-main);
-  font-weight: 600;
-}
-
-.main-scroll {
-  height: 100%;
-  height: 100vh;
-  padding: 30rpx 30rpx 96rpx;
-  box-sizing: border-box;
-  position: relative;
-  z-index: 1;
-}
-
-.hero-card,
-.reminder-card,
-.plan-card {
-  margin-bottom: 30rpx;
-  padding: 30rpx;
-
-  border-radius: 24px;
-  background-color: var(--em3d-card-bg);
-
-  border: 0;
-
-  box-shadow: var(--yozi-shadow);
-
-  background: var(--yozi-reading);
-}
-
-.hero-card {
-  padding: 36rpx 32rpx;
-
-  background: var(--yozi-reading);
-
-  border: 0;
-
-  border-radius: 24px;
-
-  box-shadow: var(--yozi-shadow);
-}
-
-.hero-eyebrow,
-.section-eyebrow {
-  display: block;
-  margin-bottom: 10rpx;
-  font-size: 24rpx;
-  letter-spacing: 3rpx;
-  text-transform: uppercase;
-  color: var(--text-secondary);
-}
-
-.hero-title {
-  display: block;
-  font-size: 44rpx;
-  line-height: 1.2;
-  font-weight: 800;
-  color: var(--text-primary);
-}
-
-.hero-subtitle {
-  display: block;
-  margin-top: 16rpx;
-  font-size: 26rpx;
-  line-height: 1.6;
-  color: var(--text-sub);
-}
-
-.hero-actions {
-  margin-top: 28rpx;
-}
-
-.hero-cta {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 200rpx;
-  padding: 22rpx 34rpx;
-
-  border: none;
-
-  @include em-mobile-primary-action;
-}
-
-.hero-cta:active {
-  transform: translateY(2px);
-
-  box-shadow:
-    inset 0 2px 4px rgba(30, 15, 65, 0.16),
-    0 2px 0 var(--yozi-button-edge);
-
-  transition-duration: 100ms;
-}
-
-.hero-cta-text {
-  font-size: 26rpx;
-  font-weight: 800;
-
-  color: var(--yozi-button-ink);
-}
-
-.section-heading {
-  margin-bottom: 18rpx;
-}
-
-.section-title-row {
-  display: flex;
-  align-items: center;
-  /* gap: 10rpx; -- replaced for Android WebView compat */
-}
-
-.section-title {
-  font-size: 34rpx;
-  font-weight: 800;
-  color: var(--text-primary);
-}
-
-.plans-heading {
-  margin-top: 6rpx;
-}
-
-.reminder-icon {
-  color: var(--text-main);
-}
-
-.reminder-item {
-  padding: 18rpx 20rpx;
-  border-radius: 22rpx;
-  margin-bottom: 12rpx;
-  background: rgba(255, 255, 255, 0.56);
-  border: 2rpx solid rgba(255, 255, 255, 0.44);
-}
-
-.reminder-item.high {
-  background: rgba(255, 99, 90, 0.12);
-}
-
-.reminder-item.medium {
-  background: rgba(255, 204, 0, 0.12);
-}
-
-.reminder-message {
-  display: block;
-  margin-bottom: 8rpx;
-  font-size: 24rpx;
-  line-height: 1.5;
-  color: var(--text-main);
-}
-
-.reminder-time {
-  font-size: 24rpx;
-  color: var(--text-sub);
-}
-
-.plan-header {
-  display: flex;
-  /* gap: 16rpx; -- replaced for Android WebView compat */
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 20rpx;
-}
-
-.plan-name {
-  flex: 1;
-  margin-right: 20rpx;
-  font-size: 32rpx;
-  font-weight: 800;
-  color: var(--text-primary);
-}
-
-.plan-badge,
-.category-tag,
-.priority-tag {
-  padding: 10rpx 18rpx;
-  border-radius: 999rpx;
-  border: 2rpx solid rgba(255, 255, 255, 0.44);
-  background: rgba(255, 255, 255, 0.62);
-}
-
-.plan-badge-text,
-.tag-text {
-  font-size: 24rpx;
-  font-weight: 800;
-}
-
-.plan-badge {
-  color: var(--text-sub);
-}
-
-.plan-badge.in_progress {
-  background: var(--em3d-primary-light);
-  color: var(--success, #34c759);
-}
-
-.plan-badge.completed {
-  background: color-mix(in srgb, var(--info) 12%, transparent);
-  color: var(--info, #0a84ff);
-}
-
-.plan-goal {
-  display: block;
-  margin-bottom: 24rpx;
-  font-size: 25rpx;
-  line-height: 1.7;
-  color: var(--text-sub);
-}
-
-.plan-analytics {
-  margin-bottom: 30rpx;
-  padding: 20rpx;
-  background: rgba(255, 255, 255, 0.54);
-  border-radius: 24rpx;
-  border: 2rpx solid rgba(255, 255, 255, 0.42);
-}
-
-.analytics-row {
-  display: flex;
-  justify-content: space-between;
-  /* gap: 12rpx; -- replaced for Android WebView compat */
-  margin-bottom: 20rpx;
-}
-
-.analytics-item {
-  flex: 1;
-  text-align: center;
-}
-
-.analytics-label {
-  display: block;
-  margin-bottom: 8rpx;
-  font-size: 22rpx;
-  color: var(--text-sub);
-}
-
-.analytics-value {
-  font-size: 28rpx;
-  font-weight: 800;
-  color: var(--text-primary);
-}
-
-.analytics-value.positive {
-  color: var(--success, #34c759);
-}
-
-.analytics-value.negative {
-  color: var(--danger, var(--danger));
-}
-
-.analytics-value.neutral {
-  color: var(--warning, #ff9f0a);
-}
-
-.adjustments-title {
-  display: block;
-  margin-bottom: 12rpx;
-  font-size: 24rpx;
-  font-weight: 620;
-  color: var(--text-main);
-}
-
-.adjustment-item {
-  padding: 14rpx 16rpx;
-  border-radius: 16rpx;
-  margin-bottom: 8rpx;
-  background: rgba(255, 255, 255, 0.48);
-}
-
-.adjustment-item.high {
-  background: rgba(255, 99, 90, 0.12);
-}
-
-.adjustment-item.medium {
-  background: rgba(255, 204, 0, 0.12);
-}
-
-.adjustment-message {
-  font-size: 22rpx;
-  line-height: 1.5;
-  color: var(--text-main);
-}
-
-.plan-meta-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  /* gap: 16rpx; -- replaced for Android WebView compat */
-  margin-bottom: 22rpx;
-}
-.plan-meta-grid > view:nth-child(even) {
-  margin-left: 16rpx;
-}
-.plan-meta-grid > view:nth-child(n + 3) {
-  margin-top: 16rpx;
-}
-
-.meta-item,
-.task-stats,
-.action-btn {
-  background: rgba(255, 255, 255, 0.52);
-  border: 2rpx solid rgba(255, 255, 255, 0.42);
-}
-
-.meta-item {
-  padding: 18rpx 20rpx;
-  border-radius: 22rpx;
-}
-
-.meta-label {
-  display: block;
-  margin-bottom: 8rpx;
-  font-size: 22rpx;
-  color: var(--text-sub);
-  letter-spacing: 1rpx;
-}
-
-.meta-value {
-  display: block;
-  font-size: 26rpx;
-  font-weight: 800;
-  color: var(--text-primary);
-}
-
-.task-stats {
-  margin-bottom: 24rpx;
-  padding: 20rpx 22rpx;
-  border-radius: 24rpx;
-}
-
-.task-stats-label {
-  display: block;
-  margin-bottom: 12rpx;
-  font-size: 24rpx;
-  font-weight: 620;
-  color: var(--text-main);
-}
-
-.task-progress-bar {
-  height: 10rpx;
-  margin-bottom: 10rpx;
-  border-radius: 999rpx;
-  background: rgba(255, 255, 255, 0.5);
-  overflow: hidden;
-}
-
-.task-progress-fill {
-  height: 100%;
-  border-radius: 999rpx;
-  background: var(--em3d-primary-light);
-  transition: width 0.3s ease;
-}
-
-.task-stats-text {
-  font-size: 22rpx;
-  color: var(--text-sub);
-}
-
-.plan-footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  /* gap: 16rpx; -- replaced for Android WebView compat */
-  padding-top: 20rpx;
-  margin-bottom: 20rpx;
-  border-top: 2rpx solid var(--em3d-border);
-}
-
-.category-tag {
-  color: var(--text-main);
-}
-
-.priority-tag.low {
-  color: var(--success, #34c759);
-}
-
-.priority-tag.medium {
-  background: rgba(255, 204, 0, 0.12);
-  color: var(--warning, #ff9f0a);
-}
-
-.priority-tag.high {
-  background: rgba(255, 99, 90, 0.12);
-  color: var(--danger, var(--danger));
-}
-
-.plan-actions {
-  display: flex;
-  /* gap: 12rpx; -- replaced for Android WebView compat */
-  padding-top: 20rpx;
-  border-top: 2rpx solid var(--em3d-border);
-}
-
-.action-btn {
-  flex: 1;
-  text-align: center;
-  padding: 16rpx 20rpx;
-  border-radius: 999rpx;
-  font-size: 24rpx;
-  color: var(--text-main);
-}
-
-.action-btn.cta {
-  border-color: transparent;
-
-  @include em-mobile-primary-action;
-}
-
-.action-btn.cta:active {
-  transform: translateY(2px);
-
-  box-shadow:
-    inset 0 2px 4px rgba(30, 15, 65, 0.16),
-    0 2px 0 var(--yozi-button-edge);
-
-  transition-duration: 100ms;
-}
-
-.action-btn.danger {
-  background: rgba(255, 99, 90, 0.12);
-  color: var(--danger, var(--danger));
-}
-
-.action-btn:active,
-.nav-back:active,
-.nav-add:active,
-.hero-cta:active {
-  transform: translateY(2px);
-  opacity: 0.88;
-
-  box-shadow:
-    inset 0 2px 4px rgba(30, 15, 65, 0.16),
-    0 2px 0 var(--yozi-button-edge);
-
-  transition-duration: 100ms;
-}
-
-.container.dark-mode .aurora-bg {
-  background:
-    radial-gradient(circle at 18% 24%, rgba(10, 132, 255, 0.18) 0%, transparent 42%),
-    radial-gradient(circle at 82% 10%, rgba(95, 170, 255, 0.14) 0%, transparent 30%) !important;
-  opacity: 0.9;
-  filter: blur(110px);
-}
-
-.container.dark-mode .nav-back,
-.container.dark-mode .nav-add,
-.container.dark-mode .reminder-item,
-.container.dark-mode .plan-analytics,
-.container.dark-mode .meta-item,
-.container.dark-mode .task-stats,
-.container.dark-mode .category-tag,
-.container.dark-mode .priority-tag,
-.container.dark-mode .action-btn {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.1);
-}
-
-.container.dark-mode .action-btn.cta {
-  background: var(--yozi-button);
-  border-color: var(--cta-primary-border);
-
-  border: 0;
-
-  box-shadow: var(--yozi-button-shadow);
-}
-
-.container.dark-mode .hero-card,
-.container.dark-mode .reminder-card,
-.container.dark-mode .plan-card {
-  background: var(--yozi-reading);
-
-  border: 0;
-
-  border-radius: 24px;
-
-  box-shadow: var(--yozi-shadow);
-}
-
-.skeleton-fade-leave-active {
-  transition: opacity 0.35s ease-out;
-}
-
-.skeleton-fade-leave-to {
-  opacity: 0;
-}
-
-/* AI 自适应计划 */
-.ai-plan-section {
-  margin: 0 0 30rpx 0;
-}
-.ai-plan-loading {
-  text-align: center;
-  padding: 30px 0;
-}
-.ai-plan-loading-text {
-  font-size: 13px;
-  color: var(--text-sub, #64748b);
-}
-.ai-plan-phase {
-  margin-bottom: 12px;
-}
-.phase-text {
-  font-size: 13px;
-  color: var(--color-primary, #34d399);
-  font-weight: 600;
-}
-.ai-day-card {
-  background: var(--yozi-reading);
-
-  border: 0;
-
-  border-radius: 24px;
-  padding: 16px;
-  margin-bottom: 12px;
-
-  box-shadow: var(--yozi-shadow);
-}
-.ai-day-card.today {
-  border-color: #58cc02;
-  box-shadow: 0 0 0 1px rgba(88, 204, 2, 0.2);
-}
-.ai-day-card:active {
-  opacity: 0.9;
-  transform: scale(0.99);
-}
-.day-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 10px;
-}
-.day-label {
-  font-size: 15px;
-  font-weight: 800;
-  color: var(--text-primary);
-}
-.day-focus {
-  font-size: 12px;
-  color: #58cc02;
-  background: rgba(88, 204, 2, 0.12);
-  padding: 2px 10px;
-  border-radius: 10px;
-}
-.day-tasks {
-  margin-bottom: 8px;
-}
-.day-task-item {
-  display: flex;
-  align-items: center;
-  padding: 6px 0;
-}
-.task-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  margin-right: 10px;
-  flex-shrink: 0;
-}
-.task-dot.review {
-  background: var(--warning, #f59e0b); /* [AUDIT FIX R190] */
-}
-.task-dot.practice {
-  background: var(--success, #34d399); /* [AUDIT FIX R191] */
-}
-.task-name {
-  flex: 1;
-  font-size: 13px;
-  color: var(--text-primary);
-}
-.task-time {
-  font-size: 12px;
-  color: var(--text-secondary);
-  margin-left: 8px;
-}
-.day-cta {
-  text-align: center;
-  padding: 10px;
-  background: #58cc02;
-  border-radius: 12px;
-  margin-top: 8px;
-  box-shadow: 0 6rpx 0 #46a302;
-}
-.day-cta:active {
-  transform: translateY(3rpx);
-  box-shadow: 0 3rpx 0 #46a302;
-}
-.day-cta-text {
-  font-size: 14px;
-  font-weight: 800;
-  color: var(--text-inverse);
-}
-/* [AUDIT FIX R194] 移除3个冗余 .dark-mode 覆盖块 — .day-label/.task-name 已使用 --text-primary 自动切换 */
-/* [AUDIT FIX R195] .ai-day-card dark override 已由 --bg-card/--border-color 处理 */
-</style>

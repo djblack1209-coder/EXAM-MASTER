@@ -1,3 +1,6 @@
+import { createPinia, setActivePinia } from 'pinia';
+import { beforeEach } from 'vitest';
+beforeEach(() => setActivePinia(createPinia()));
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { mount } from '@vue/test-utils';
@@ -74,12 +77,10 @@ describe('question bank list hierarchy', () => {
   });
 
   it('guards secondary-list hierarchy and dark-mode styling', () => {
-    expect(source).toContain('secondaryReadyBanks');
-    expect(source).toContain('paper-list-head');
-    expect(source).toContain('更多可练整卷');
-    expect(source).toContain('更多可练整卷');
-    expect(source).toContain('v-else-if="!recommendedSlot"');
-    expect(source).toContain('.dark-mode .paper-list-title');
-    expect(source).toContain('.dark-mode .paper-list-sub');
+    for (const field of ['secondaryReadyBanks', 'paper-list-head', 'v-else-if="!recommendedSlot"'])
+      expect(source).toContain(field);
+    expect(source).toContain("t('quiz.copy112')");
+    expect(source).toContain('@/styles/yozi-pages.scss');
+    expect(source).toContain('useThemeStore');
   });
 });

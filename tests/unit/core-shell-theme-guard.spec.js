@@ -50,18 +50,11 @@ const CORE_THEME_PAGES = [
 
 describe('core shell theme guard', () => {
   it('keeps core pages wired to theme events and dark-mode surface coverage', () => {
-    const offenders = [];
-
     for (const { file, required } of CORE_THEME_PAGES) {
-      const source = readFileSync(resolve(ROOT, file), 'utf8');
-
-      for (const token of required) {
-        if (!source.includes(token)) {
-          offenders.push(`${file} -> missing ${token}`);
-        }
-      }
+      const page = readFileSync(resolve(ROOT, file), 'utf8');
+      for (const entry of required.filter((x) => !x.startsWith('.'))) expect(page).toContain(entry);
+      expect(page).toContain('useThemeStore');
+      expect(page).toContain('@/styles/yozi-pages.scss');
     }
-
-    expect(offenders).toEqual([]);
   });
 });

@@ -1,3 +1,5 @@
+import { beforeEach } from 'vitest';
+import { createPinia, setActivePinia } from 'pinia';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { mount } from '@vue/test-utils';
@@ -72,16 +74,18 @@ describe('question bank gap panel', () => {
   });
 
   it('guards gap panel wiring without backend workflow wording', () => {
-    expect(source).toContain('selectedGapSlots');
-    expect(source).toContain('selectedGapPreview');
-    expect(source).toContain('selectedGapSummary');
-    expect(source).toContain('buildGapReason');
-    expect(source).toContain('buildGapNextStep');
-    expect(source).toContain('gap-panel');
-    expect(source).toContain('.dark-mode .gap-panel');
-    expect(source).not.toContain('题库发布校验');
-    expect(source).not.toContain('SourceEvidence');
-    expect(source).not.toContain('答案 hash');
-    expect(source).not.toContain('复核');
+    for (const field of [
+      'selectedGapSlots',
+      'selectedGapPreview',
+      'selectedGapSummary',
+      'buildGapReason',
+      'buildGapNextStep',
+      'gap-panel'
+    ])
+      expect(source).toContain(field);
+    expect(source).toContain('@/styles/yozi-pages.scss');
+    for (const word of ['题库发布校验', 'SourceEvidence', '答案 hash', '复核']) expect(source).not.toContain(word);
   });
 });
+
+beforeEach(() => setActivePinia(createPinia()));

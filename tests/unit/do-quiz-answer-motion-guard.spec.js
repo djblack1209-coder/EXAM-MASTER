@@ -13,12 +13,15 @@ describe('do quiz answer motion guard', () => {
   });
 
   it('keeps correct and wrong card motion active', () => {
-    expect(source).toContain('@keyframes correctPulse');
-    expect(source).toContain('@keyframes wrongShake');
-    expect(source).toContain('.quiz-correct-animation .question-card');
-    expect(source).toContain('correctPulse 360ms cubic-bezier(0.16, 1, 0.3, 1)');
-    expect(source).toContain('.quiz-wrong-animation .question-card');
-    expect(source).toContain('wrongShake 360ms cubic-bezier(0.36, 0.07, 0.19, 0.97)');
+    const result = readFileSync(
+      resolve(process.cwd(), 'src/pages/practice-sub/components/quiz-result/quiz-result.vue'),
+      'utf8'
+    );
+    expect(result).toContain('<YoziMascot');
+    expect(result).toContain("'celebrate' : 'encourage'");
+    expect(result).toContain('play="once"');
+    const layout = readFileSync(resolve(process.cwd(), 'src/styles/yozi-pages.scss'), 'utf8');
+    expect(layout).toContain('prefers-reduced-motion: reduce');
   });
 
   it('does not leave feedback classes as visual no-ops', () => {

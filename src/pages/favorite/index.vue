@@ -1,106 +1,74 @@
 <template>
-  <view :class="['container', { 'dark-mode': isDark, 'theme-light': !isDark }]">
+  <view class="yozi-page" :class="['container', { 'dark-mode': isDark, 'theme-light': !isDark }]">
     <view class="aurora-bg" />
 
     <!-- 导航栏 -->
     <view class="header-nav apple-glass" :style="{ paddingTop: statusBarHeight + 'px' }">
       <view class="nav-content">
-        <view
-          class="nav-back"
-          role="button"
-          tabindex="0"
-          aria-label="返回"
-          @tap="goBack"
-          @keydown.enter.prevent="goBack"
-          @keydown.space.prevent="goBack"
-          ><BaseIcon name="arrow-left" :size="32"
-        /></view>
+        <BaseButton class="nav-back" variant="secondary" @tap="goBack"><BaseIcon name="arrow-left" /></BaseButton>
         <text class="nav-title">{{ $t('pages.favorite') }}</text>
         <view class="nav-actions">
-          <text class="nav-action" @tap="openFolderModal()"> + </text>
+          <BaseButton
+            class="nav-action"
+            variant="secondary"
+            icon="plus"
+            icon-only
+            :label="t('favorite.copy0')"
+            @tap="openFolderModal()"
+          />
         </view>
       </view>
     </view>
 
     <!-- ✅ F018: 加载状态 -->
-    <view v-if="isLoading" class="loading-state" :style="{ paddingTop: statusBarHeight + 60 + 'px' }">
-      <view class="loading-spinner" />
-      <text class="loading-text"> 加载中... </text>
-    </view>
+    <BaseEmpty v-if="isLoading" state="loading" class="loading-state" />
 
     <scroll-view
       v-else
       scroll-y
       class="main-scroll"
-      :style="{ paddingTop: statusBarHeight + 50 + 'px' }"
       refresher-enabled
       :refresher-triggered="isRefreshing"
       @scrolltolower="loadMoreFavorites"
       @refresherrefresh="onPullRefresh"
     >
-      <view v-if="loadError" role="alert" class="empty-text">{{ loadError }}</view>
+      <BaseEmpty v-if="loadError" state="error" :title="loadError" show-button @action="onPullRefresh" />
       <!-- 统计卡片 -->
       <view class="stats-row apple-glass-card">
-        <view class="stat-item">
-          <text class="stat-value">
-            {{ totalFavorites }}
-          </text>
-          <text class="stat-label"> 总收藏 </text>
-        </view>
-        <view class="stat-item">
-          <text class="stat-value">
-            {{ reviewedCount }}
-          </text>
-          <text class="stat-label"> 旧复习标记 </text>
-        </view>
-        <view class="stat-item">
-          <text class="stat-value">
-            {{ needReviewCount }}
-          </text>
-          <text class="stat-label"> 可靠复习待办 </text>
-        </view>
-        <view class="stat-item">
-          <text class="stat-value">
-            {{ withNoteCount }}
-          </text>
-          <text class="stat-label"> 有笔记 </text>
-        </view>
+        <BaseStat :label="t('favorite.copy1')" :value="Number(totalFavorites) || 0" />
+        <BaseStat :label="t('favorite.copy2')" :value="Number(reviewedCount) || 0" :denominator="totalFavorites" />
+        <BaseStat :label="t('favorite.copy3')" :value="Number(needReviewCount) || 0" :denominator="totalFavorites" />
+        <BaseStat :label="t('favorite.copy4')" :value="Number(withNoteCount) || 0" :denominator="totalFavorites" />
       </view>
 
       <!-- 收藏夹列表 -->
       <view class="folder-section">
         <view class="section-header">
-          <text class="section-title"> 收藏夹 </text>
-          <text class="section-action" @tap="openFolderModal()"> + 新建 </text>
+          <text class="section-title">{{ t('favorite.copy5') }}</text>
+          <BaseButton class="nav-action" variant="secondary" @tap="openFolderModal()">{{
+            t('favorite.copy6')
+          }}</BaseButton>
         </view>
         <view class="folder-grid">
           <!-- 全部收藏 -->
-          <view
-            class="folder-card apple-glass-card"
-            :class="{ active: currentFolderId === null }"
-            @tap="selectFolder(null)"
+          <BaseChip :model-value="currentFolderId === null" @update:model-value="selectFolder(null)"
+            ><BaseIcon name="books" class="folder-icon" /><text class="folder-name">{{ t('favorite.copy7') }}</text
+            ><text class="folder-count"> {{ t('favorite.copy8', { v0: totalFavorites }) }}</text></BaseChip
           >
-            <BaseIcon name="books" :size="36" class="folder-icon" />
-            <text class="folder-name"> 全部收藏 </text>
-            <text class="folder-count"> {{ totalFavorites }} 题 </text>
-          </view>
-          <view
-            v-for="folder in folders"
-            :key="folder.id"
-            class="folder-card apple-glass-card"
-            :class="{ active: currentFolderId === folder.id }"
-            @tap="selectFolder(folder.id)"
-            @longpress="showFolderActions(folder)"
-          >
-            <BaseIcon :name="folder.icon" :size="36" class="folder-icon" />
-            <text class="folder-name">
-              {{ folder.name }}
-            </text>
-            <text class="folder-count"> {{ folder.count }} 题 </text>
-            <view v-if="!folder.isDefault" class="folder-delete" @tap.stop="confirmDeleteFolder(folder)">
-              <BaseIcon name="close" :size="20" />
-            </view>
-          </view>
+          <view v-for="folder in folders" :key="folder.id" class="folder-choice"
+            ><BaseChip
+              :model-value="currentFolderId === folder.id"
+              @update:model-value="selectFolder(folder.id)"
+              @longpress="showFolderActions(folder)"
+              ><BaseIcon :name="folder.icon" />{{ builtinFolderText(folder) }} · {{ folder.count }}</BaseChip
+            ><BaseButton
+              v-if="!folder.isDefault"
+              variant="quiet"
+              icon="x"
+              icon-only
+              :label="t('favorite.copy40')"
+              @tap="confirmDeleteFolder(folder)"
+          /></view>
         </view>
       </view>
 
@@ -110,20 +78,15 @@
           <text class="section-title">
             {{ currentFolderName }}
           </text>
-          <view class="sort-btn apple-glass-pill" @tap="toggleSort">
-            <BaseIcon name="sort" :size="24" class="sort-icon" />
-            <text class="sort-text">
-              {{ sortLabel }}
-            </text>
-          </view>
+          <BaseButton class="sort-btn" variant="secondary" @tap="toggleSort"
+            ><BaseIcon name="sort" class="sort-icon" /><text class="sort-text">
+              {{ uiText(sortLabel) }}
+            </text></BaseButton
+          >
         </view>
 
         <!-- 空状态 -->
-        <view v-if="filteredFavorites.length === 0" class="empty-box">
-          <BaseIcon name="star-outline" :size="80" class="empty-icon" />
-          <text class="empty-title"> 暂无收藏 </text>
-          <text class="empty-text"> 刷题时点击星标即可收藏题目 </text>
-        </view>
+        <BaseEmpty v-if="filteredFavorites.length === 0" :title="t('favorite.copy9')" :desc="t('favorite.copy10')" />
 
         <!-- 题目列表 (F007: 增量渲染，避免一次性渲染全部DOM) -->
         <view v-for="item in displayedFavorites" :key="item.id" class="favorite-card apple-group-card">
@@ -132,8 +95,20 @@
               {{ item.category }}
             </view>
             <view class="card-actions">
-              <BaseIcon name="folder" :size="28" @tap.stop="moveToFolder(item)" />
-              <BaseIcon name="delete" :size="28" @tap.stop="removeFavorite(item)" />
+              <BaseButton
+                variant="quiet"
+                icon="folder"
+                icon-only
+                :label="t('favorite.move')"
+                @tap.stop="moveToFolder(item)"
+              />
+              <BaseButton
+                variant="quiet"
+                icon="delete"
+                icon-only
+                :label="t('favorite.remove')"
+                @tap.stop="removeFavorite(item)"
+              />
             </view>
           </view>
 
@@ -142,55 +117,54 @@
           </text>
           <text v-if="favoriteMaterial(item)" class="material-preview">{{ favoriteMaterial(item) }}</text>
 
-          <view v-if="showOptions[item.id]" class="options-list">
-            <text class="analysis-label">参考答案待核对</text>
-            <view
-              v-for="(opt, i) in item.options"
-              :key="i"
-              class="option-row"
-              :class="{
-                correct:
-                  item.quizOriginal &&
-                  typeof item.answer === 'string' &&
-                  item.answer.includes('ABCDEFGHIJKLMNOPQRSTUVWXYZ'[i])
-              }"
-            >
-              <text class="opt-idx">
-                {{ 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'[i] }}
-              </text>
-              <text class="opt-text">
-                {{ opt }}
-              </text>
-            </view>
-          </view>
+          <view v-if="showOptions[item.id]" class="options-list"
+            ><BaseTag tone="apricot">{{ t('favorite.copy12') }}</BaseTag
+            ><BaseOptions
+              :label="t('favorite.copy13')"
+              :options="
+                item.options.map((label, value) => ({
+                  label,
+                  value,
+                  state:
+                    item.quizOriginal &&
+                    typeof item.answer === 'string' &&
+                    item.answer.includes('ABCDEFGHIJKLMNOPQRSTUVWXYZ'[value])
+                      ? 'pending'
+                      : 'default'
+                }))
+              "
+              disabled
+          /></view>
 
           <view v-if="showOptions[item.id] && item.analysis" class="analysis-box">
-            <text class="analysis-label"> 解析： </text>
+            <text class="analysis-label">{{ t('favorite.copy14') }}</text>
             <text class="analysis-text">
               {{ item.analysis }}
             </text>
           </view>
 
           <view class="card-footer">
-            <text class="time-text"> 收藏于 {{ formatDate(item.createdAt) }} </text>
+            <text class="time-text">{{ t('favorite.copy15', { v0: formatDate(item.createdAt) }) }} </text>
             <view class="footer-actions">
-              <button class="action-btn apple-glass-pill" @tap="toggleOptions(item.id)">
-                {{ showOptions[item.id] ? '收起' : '查看答案' }}
-              </button>
-              <button class="action-btn primary apple-cta" @tap="practiceQuestion(item)">练习此题</button>
+              <BaseButton class="action-btn" variant="secondary" @tap="toggleOptions(item.id)">{{
+                showOptions[item.id] ? t('favorite.copy16') : t('favorite.copy17')
+              }}</BaseButton>
+              <BaseButton class="action-btn primary" variant="primary" @tap="practiceQuestion(item)">{{
+                t('favorite.copy18')
+              }}</BaseButton>
             </view>
           </view>
 
           <!-- 笔记区域 -->
           <view v-if="item.note" class="note-section">
-            <text class="note-label"> <BaseIcon name="note" :size="22" /> 我的笔记 </text>
+            <text class="note-label yozi-icon-row"> <BaseIcon name="note" />{{ t('favorite.copy19') }}</text>
             <text class="note-content">
               {{ item.note }}
             </text>
           </view>
-          <view v-else class="add-note" @tap="openNoteModal(item)">
-            <text class="add-note-text"> + 添加笔记 </text>
-          </view>
+          <BaseButton v-else class="add-note" variant="secondary" @tap="openNoteModal(item)"
+            ><text class="add-note-text">{{ t('favorite.copy20') }}</text></BaseButton
+          >
         </view>
       </view>
 
@@ -198,91 +172,143 @@
     </scroll-view>
 
     <!-- 新建收藏夹弹窗 -->
-    <view v-if="showFolderModal" class="modal-overlay" @tap="showFolderModal = false">
-      <view class="modal-content apple-glass-card" @tap.stop>
-        <view class="modal-header">
-          <text class="modal-title"> 新建收藏夹 </text>
-          <view class="modal-close" @tap="showFolderModal = false"><BaseIcon name="close" :size="24" /></view>
-        </view>
-        <view class="modal-body">
-          <input v-model="newFolderName" class="modal-input" placeholder="输入收藏夹名称" maxlength="10" />
-          <view class="icon-picker">
-            <text class="picker-label"> 选择图标 </text>
-            <view class="icon-grid">
-              <view
-                v-for="icon in folderIcons"
-                :key="icon"
-                class="icon-option"
-                :class="{ selected: newFolderIcon === icon }"
-                @tap="newFolderIcon = icon"
-              >
-                <BaseIcon :name="icon" :size="32" />
-              </view>
-            </view>
-          </view>
-        </view>
-        <view class="modal-footer">
-          <button class="modal-btn secondary" @tap="showFolderModal = false">取消</button>
-          <button class="modal-btn primary" @tap="createFolder">创建</button>
-        </view>
-      </view>
-    </view>
+    <CustomModal
+      :visible="showFolderModal"
+      :title="t('favorite.copy21')"
+      :is-dark="isDark"
+      :show-actions="false"
+      close-button
+      mask-closable
+      @cancel="showFolderModal = false"
+      ><view class="yozi-page-content"
+        ><BaseInput
+          v-model="newFolderName"
+          :label="t('favorite.copy22')"
+          :placeholder="t('favorite.copy23')"
+          :maxlength="10"
+        /><view class="icon-grid"
+          ><BaseChip
+            v-for="icon in folderIcons"
+            :key="icon"
+            :model-value="newFolderIcon === icon"
+            :label="icon"
+            @update:model-value="newFolderIcon = icon"
+            ><BaseIcon :name="icon" /></BaseChip></view
+        ><view class="button-row"
+          ><BaseButton class="modal-overlay" variant="secondary" @tap="showFolderModal = false">{{
+            t('favorite.copy24')
+          }}</BaseButton
+          ><BaseButton class="modal-btn primary" @tap="createFolder">{{ t('favorite.copy25') }}</BaseButton></view
+        ></view
+      ></CustomModal
+    >
 
     <!-- 移动到收藏夹弹窗 -->
-    <view v-if="showMoveModal" class="modal-overlay" @tap="showMoveModal = false">
-      <view class="modal-content apple-glass-card" @tap.stop>
-        <view class="modal-header">
-          <text class="modal-title"> 移动到 </text>
-          <view class="modal-close" @tap="showMoveModal = false"><BaseIcon name="close" :size="24" /></view>
-        </view>
-        <view class="modal-body">
-          <view
-            v-for="folder in folders"
-            :key="folder.id"
-            class="folder-option"
-            :class="{ disabled: folder.id === movingItem?.folderId }"
-            @tap="confirmMove(folder.id)"
-          >
-            <BaseIcon :name="folder.icon" :size="36" class="folder-option-icon" />
-            <text class="folder-option-name">
-              {{ folder.name }}
-            </text>
-            <text class="folder-option-count"> {{ folder.count }} 题 </text>
-          </view>
-        </view>
-      </view>
-    </view>
+    <CustomModal
+      :visible="showMoveModal"
+      :title="t('favorite.copy26')"
+      :is-dark="isDark"
+      :show-actions="false"
+      close-button
+      mask-closable
+      @cancel="showMoveModal = false"
+      ><view class="yozi-page-content"
+        ><BaseListRow
+          v-for="folder in folders"
+          :key="folder.id"
+          :label="builtinFolderText(folder)"
+          :icon="folder.icon"
+          :disabled="folder.id === movingItem?.folderId"
+          @tap="confirmMove(folder.id)" /></view
+    ></CustomModal>
 
     <!-- 笔记编辑弹窗 -->
-    <view v-if="showNoteModal" class="modal-overlay" @tap="showNoteModal = false">
-      <view class="modal-content apple-glass-card" @tap.stop>
-        <view class="modal-header">
-          <text class="modal-title"> 添加笔记 </text>
-          <view class="modal-close" @tap="showNoteModal = false"><BaseIcon name="close" :size="24" /></view>
-        </view>
-        <view class="modal-body">
-          <textarea
-            v-model="noteContent"
-            class="note-textarea"
-            placeholder="记录你的学习心得..."
-            maxlength="500"
-          ></textarea>
-        </view>
-        <view class="modal-footer">
-          <button class="modal-btn secondary" @tap="showNoteModal = false">取消</button>
-          <button class="modal-btn primary" @tap="saveNote">保存</button>
-        </view>
-      </view>
-    </view>
+    <CustomModal
+      :visible="showNoteModal"
+      :title="t('favorite.copy27')"
+      :is-dark="isDark"
+      :show-actions="false"
+      close-button
+      mask-closable
+      @cancel="showNoteModal = false"
+      ><view class="yozi-page-content"
+        ><BaseInput
+          v-model="noteContent"
+          :label="t('favorite.copy28')"
+          multiline
+          :placeholder="t('favorite.copy29')"
+          :maxlength="500"
+        /><view class="button-row"
+          ><BaseButton class="modal-overlay" variant="secondary" @tap="showNoteModal = false">{{
+            t('favorite.copy24')
+          }}</BaseButton
+          ><BaseButton class="modal-btn primary" @tap="saveNote">{{ t('favorite.copy30') }}</BaseButton></view
+        ></view
+      ></CustomModal
+    >
   </view>
+  <CustomModal
+    :visible="!!actionFolder"
+    :title="actionFolder ? builtinFolderText(actionFolder) : ''"
+    :show-actions="false"
+    close-button
+    escape-closable
+    @cancel="actionFolder = null"
+    ><BaseButton
+      variant="secondary"
+      @tap="
+        renameFolderPrompt(actionFolder);
+        actionFolder = null;
+      "
+      >{{ t('favorite.rename') }}</BaseButton
+    ><BaseButton
+      variant="secondary"
+      danger-secondary
+      @tap="
+        confirmDeleteFolder(actionFolder);
+        actionFolder = null;
+      "
+      >{{ t('favorite.deleteFolder') }}</BaseButton
+    ></CustomModal
+  >
+  <CustomModal
+    v-if="pageDialog"
+    :visible="true"
+    :title="pageDialog.title"
+    :content="pageDialog.content"
+    :editable="pageDialog.editable"
+    :placeholder-text="pageDialog.placeholderText"
+    :confirm-text="pageDialog.confirmText"
+    :cancel-text="pageDialog.cancelText"
+    :show-cancel="pageDialog.showCancel !== false"
+    :type="pageDialog.confirmColor ? 'error' : 'info'"
+    escape-closable
+    @confirm="settleDialog(true, $event)"
+    @cancel="settleDialog(false)"
+  />
 </template>
 
 <script setup>
+import BaseStat from '@/components/base/base-stat/base-stat.vue';
+const uiText = (value) => translateRegisteredText('favorite', value);
+import '@/pages/favorite/messages.js';
+import { t, translateRegisteredText } from '@/i18n/index.js';
+import { useThemeStore } from '@/stores/modules/theme.js';
+import BaseTag from '@/components/base/base-tag/base-tag.vue';
+import BaseListRow from '@/components/base/base-list-row/base-list-row.vue';
+import BaseEmpty from '@/components/base/base-empty/base-empty.vue';
+import BaseInput from '@/components/base/base-input/base-input.vue';
+import BaseOptions from '@/components/base/base-options/base-options.vue';
+import BaseChip from '@/components/base/base-chip/base-chip.vue';
+import BaseButton from '@/components/base/base-button/base-button.vue';
+import CustomModal from '@/components/common/CustomModal.vue';
+import '@/styles/yozi-pages.scss';
+
 import { ref, reactive, computed } from 'vue';
 import { onLoad, onShow, onUnload } from '@dcloudio/uni-app';
-import { modal } from '@/utils/modal.js';
+import { usePageDialog } from '@/composables/usePageDialog.js';
+const { pageDialog, settleDialog, modal } = usePageDialog();
 import { toast } from '@/utils/toast.js';
-import { storageService } from '@/services/storageService.js';
 import { getUserId } from '@/services/auth-storage.js';
 import { safeNavigateTo, safeNavigateBack } from '@/utils/safe-navigate';
 import { useFavoriteStore } from '@/stores/modules/favorite.js';
@@ -296,7 +322,7 @@ const favoriteStore = useFavoriteStore();
 // ── 响应式状态 ──
 const isRefreshing = ref(false);
 const statusBarHeight = ref(44);
-const isDark = ref(false);
+const isDark = computed(() => useThemeStore().isDark);
 const loadError = ref('');
 const viewOwner = ref(getUserId() || '');
 const isLoading = ref(true); // ✅ F018: 加载状态
@@ -315,6 +341,7 @@ const sortOrder = ref('desc');
 
 // 弹窗状态
 const showFolderModal = ref(false);
+const actionFolder = ref(null);
 const showMoveModal = ref(false);
 const showNoteModal = ref(false);
 
@@ -346,11 +373,17 @@ let _themeHandler = null;
 
 // ── 计算属性 ──
 
+function builtinFolderText(folder) {
+  const names = { default: '默认收藏', important: '重点题目', review: '待复习', difficult: '难题攻克' };
+  const keys = { default: 'defaultFolder', important: 'important', review: 'review', difficult: 'difficult' };
+  return names[folder.id] === folder.name ? t('favorite.' + keys[folder.id]) : folder.name;
+}
+
 /** 当前选中收藏夹的名称 */
 const currentFolderName = computed(() => {
-  if (!currentFolderId.value) return '全部收藏';
+  if (!currentFolderId.value) return t('favorite.copy7');
   const folder = folders.value.find((f) => f.id === currentFolderId.value);
-  return folder ? folder.name : '全部收藏';
+  return folder ? builtinFolderText(folder) : t('favorite.copy7');
 });
 
 /** 按收藏夹 + 排序条件过滤后的收藏列表 */
@@ -378,9 +411,9 @@ const displayedFavorites = computed(() => {
 /** 排序按钮文案 */
 const sortLabel = computed(() => {
   if (sortBy.value === 'createdAt') {
-    return sortOrder.value === 'desc' ? '最新' : '最早';
+    return sortOrder.value === 'desc' ? t('favorite.copy31') : t('favorite.copy32');
   }
-  return '排序';
+  return t('favorite.copy33');
 });
 
 /** 总收藏数 */
@@ -452,7 +485,7 @@ async function loadData() {
     favorites.value = [];
     folders.value = [];
     stats.value = { totalCount: 0 };
-    loadError.value = '收藏暂不可读取，原记录已保留';
+    loadError.value = t('favorite.unavailable');
   } finally {
     if ((getUserId() || '') === expected) isLoading.value = false;
   }
@@ -460,7 +493,7 @@ async function loadData() {
 
 function owned(expected) {
   if (expected !== (getUserId() || '')) {
-    toast.info('账户已变化，请重新选择');
+    toast.info(t('favorite.copy34'));
     loadData();
     return false;
   }
@@ -512,31 +545,22 @@ function formatDate(timestamp) {
   const date = new Date(timestamp);
   const month = date.getMonth() + 1;
   const day = date.getDate();
-  return `${month}月${day}日`;
+  return t('favorite.copy35', { v0: month, v1: day });
 }
 
 /** 显示收藏夹操作菜单（长按触发） */
 function showFolderActions(folder) {
   if (folder.isDefault) {
-    toast.info('默认收藏夹不可操作');
+    toast.info(t('favorite.copy36'));
     return;
   }
-  uni.showActionSheet({
-    itemList: ['重命名', '删除收藏夹'],
-    success: (res) => {
-      if (res.tapIndex === 0) {
-        renameFolderPrompt(folder);
-      } else if (res.tapIndex === 1) {
-        confirmDeleteFolder(folder);
-      }
-    }
-  });
+  actionFolder.value = folder;
 }
 
 /** 重命名收藏夹 */
 function renameFolderPrompt(folder) {
   modal.show({
-    title: '重命名收藏夹',
+    title: t('favorite.copy37'),
     editable: true,
     placeholderText: folder.name,
     success: (res) => {
@@ -544,9 +568,9 @@ function renameFolderPrompt(folder) {
         if (!owned(folder.favoriteOwnerId)) return;
         const result = favoriteStore.renameFolder(folder.id, res.content.trim(), folder.favoriteOwnerId);
         if (result.success) {
-          toast.success('重命名成功');
+          toast.success(t('favorite.copy38'));
           loadData();
-        } else toast.info(result.error || '保存失败');
+        } else toast.info(result.error || t('favorite.copy39'));
       }
     }
   });
@@ -555,17 +579,17 @@ function renameFolderPrompt(folder) {
 /** 确认删除收藏夹 */
 function confirmDeleteFolder(folder) {
   modal.show({
-    title: '删除收藏夹',
-    content: `确定要删除"${folder.name}"吗？其中的收藏将移至默认收藏夹。`,
+    title: t('favorite.copy40'),
+    content: t('favorite.copy41', { v0: folder.name }),
     success: (res) => {
       if (res.confirm) {
         if (!owned(folder.favoriteOwnerId)) return;
         const result = favoriteStore.deleteFolder(folder.id, folder.favoriteOwnerId);
         if (result.success) {
-          toast.success('删除成功');
+          toast.success(t('favorite.copy42'));
           loadData();
         } else {
-          toast.info(result.error || '删除失败');
+          toast.info(result.error || t('favorite.copy43'));
         }
       }
     }
@@ -579,7 +603,7 @@ function openFolderModal() {
 /** 创建收藏夹 */
 function createFolder() {
   if (!newFolderName.value.trim()) {
-    toast.info('请输入收藏夹名称');
+    toast.info(t('favorite.copy44'));
     return;
   }
 
@@ -593,13 +617,13 @@ function createFolder() {
   );
 
   if (result.success) {
-    toast.success('创建成功');
+    toast.success(t('favorite.copy45'));
     showFolderModal.value = false;
     newFolderName.value = '';
     newFolderIcon.value = 'folder';
     loadData();
   } else {
-    toast.info(result.error || '创建失败');
+    toast.info(result.error || t('favorite.copy46'));
   }
 }
 
@@ -617,30 +641,30 @@ function confirmMove(folderId) {
   const result = favoriteStore.moveToFolder(movingItem.value.id, folderId, movingItem.value.favoriteOwnerId);
 
   if (result.success) {
-    toast.success('移动成功');
+    toast.success(t('favorite.copy47'));
     showMoveModal.value = false;
     movingItem.value = null;
     loadData();
   } else {
-    toast.info(result.error || '移动失败');
+    toast.info(result.error || t('favorite.copy48'));
   }
 }
 
 /** 删除收藏 */
 function removeFavorite(item) {
   modal.show({
-    title: '确认取消收藏',
-    content: '确定要取消收藏这道题吗？',
+    title: t('favorite.copy49'),
+    content: t('favorite.copy50'),
     success: async (res) => {
       if (res.confirm) {
         if (!owned(item.favoriteOwnerId)) return;
         const result = await favoriteStore.removeFromFavorite(item.id, item.favoriteOwnerId);
         if (!owned(item.favoriteOwnerId)) return;
         if (result.success) {
-          toast.success('已取消收藏');
+          toast.success(t('favorite.copy51'));
           loadData();
         } else {
-          toast.info(result.message || '取消收藏失败');
+          toast.info(result.message || t('favorite.copy52'));
         }
       }
     }
@@ -666,13 +690,13 @@ function saveNote() {
   );
 
   if (result.success) {
-    toast.success('保存成功');
+    toast.success(t('favorite.copy53'));
     showNoteModal.value = false;
     editingItem.value = null;
     noteContent.value = '';
     loadData();
   } else {
-    toast.info('保存失败');
+    toast.info(t('favorite.copy39'));
   }
 }
 
@@ -683,7 +707,7 @@ function practiceQuestion(item) {
     referenceViewed: showOptions[item.id] === true
   });
   if (!result.success) {
-    toast.info(result.error || '练习未保存，请重试');
+    toast.info(result.error || t('favorite.copy54'));
     return;
   }
   if (!owned(result.ownerId)) return;
@@ -696,12 +720,11 @@ onLoad(() => {
   initSystemUI();
   loadData();
 
-  const savedTheme = storageService.get('theme_mode', 'light');
-  isDark.value = savedTheme === 'dark';
+  void 0;
 
   // ✅ F024: 监听主题实时切换
-  _themeHandler = (mode) => {
-    isDark.value = mode === 'dark';
+  _themeHandler = (_mode) => {
+    void 0;
   };
   uni.$on('themeUpdate', _themeHandler);
 });
@@ -714,712 +737,3 @@ onUnload(() => {
   uni.$off('themeUpdate', _themeHandler);
 });
 </script>
-
-<style lang="scss" scoped>
-.container {
-  min-height: 100%;
-  min-height: 100vh;
-  background: var(--bg-secondary, #f5f5f7);
-}
-
-.aurora-bg {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 400rpx;
-  background: var(--gradient-aurora);
-  filter: blur(60px);
-  z-index: 0;
-}
-
-/* 导航栏 */
-.header-nav {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 100;
-  background-color: var(--em3d-card-bg);
-  border-bottom: 1rpx solid var(--em3d-border);
-  box-shadow: 0 var(--em3d-depth-sm) 0 var(--em3d-border-shadow);
-}
-
-.nav-content {
-  height: 44px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 20rpx;
-}
-
-.nav-back {
-  font-size: 40rpx;
-  color: var(--text-primary);
-  padding: 10rpx 20rpx;
-}
-
-.nav-title {
-  font-size: 36rpx;
-  font-weight: 600;
-  color: var(--text-primary);
-}
-
-.nav-actions {
-  padding: 10rpx 20rpx;
-}
-
-.nav-action {
-  font-size: 44rpx;
-  color: var(--primary);
-}
-
-/* 主滚动区域 */
-.main-scroll {
-  height: 100%;
-  height: 100vh;
-  padding: 0 20rpx;
-  box-sizing: border-box;
-}
-
-/* 统计卡片 */
-.stats-row {
-  position: relative;
-  overflow: hidden;
-  display: flex;
-  justify-content: space-around;
-  background-color: var(--em3d-card-bg);
-  border: 2rpx solid var(--em3d-border);
-  border-radius: 28rpx;
-  padding: 24rpx 16rpx;
-  margin-bottom: 30rpx;
-  box-shadow: 0 var(--em3d-depth-md) 0 var(--em3d-border-shadow);
-}
-
-.stat-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  /* gap: 8rpx; -- replaced for Android WebView compat */
-}
-
-.stat-value {
-  font-size: 36rpx;
-  font-weight: 700;
-  color: var(--primary);
-}
-
-.stat-label {
-  font-size: 22rpx;
-  color: var(--text-sub);
-}
-
-/* 收藏夹区域 */
-.folder-section {
-  margin-bottom: 30rpx;
-}
-
-.section-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 20rpx;
-}
-
-.section-action {
-  font-size: 24rpx;
-  color: var(--text-secondary);
-  padding: 8rpx 16rpx;
-}
-
-.section-title {
-  font-size: 28rpx;
-  font-weight: 600;
-  color: var(--text-primary);
-}
-
-.folder-grid {
-  display: flex;
-  flex-wrap: wrap;
-  /* gap: 16rpx; -- replaced for Android WebView compat */
-}
-
-.folder-card {
-  margin-right: 16rpx;
-  margin-bottom: 16rpx;
-  flex: 0 0 calc(25% - 12rpx);
-  background-color: var(--em3d-card-bg);
-  border: 2rpx solid var(--em3d-border);
-  border-radius: 24rpx;
-  padding: 20rpx 16rpx;
-  text-align: center;
-  transition: all 0.2s ease;
-  position: relative;
-  box-shadow: 0 var(--em3d-depth-sm) 0 var(--em3d-border-shadow);
-  overflow: hidden;
-}
-
-.folder-card:nth-child(4n) {
-  margin-right: 0;
-}
-
-.folder-card.active {
-  border-color: var(--cta-primary-border);
-  background: var(--cta-primary-bg);
-  box-shadow: var(--cta-primary-shadow);
-}
-
-.folder-delete {
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 64rpx;
-  height: 64rpx;
-  padding: 12rpx;
-  font-size: 24rpx;
-  color: var(--text-sub);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(255, 255, 255, 0.72);
-  border-radius: 50%;
-  box-sizing: border-box;
-}
-
-.folder-icon {
-  font-size: 36rpx;
-  display: block;
-  margin-bottom: 8rpx;
-}
-
-.folder-name {
-  font-size: 24rpx;
-  color: var(--text-primary);
-  display: block;
-  margin-bottom: 4rpx;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.folder-count {
-  font-size: 22rpx;
-  color: var(--text-sub);
-}
-
-/* 收藏列表区域 */
-.material-preview {
-  display: block;
-  margin: 12rpx 0;
-  color: var(--text-secondary, #646b7a);
-  font-size: 24rpx;
-  line-height: 1.6;
-}
-
-.favorites-section {
-  margin-bottom: 30rpx;
-}
-
-/* F016: 移除重复的 .section-header（已在 line 782 定义） */
-
-.sort-btn {
-  display: flex;
-  align-items: center;
-  /* gap: 8rpx; -- replaced for Android WebView compat */
-  padding: 8rpx 16rpx;
-  min-height: 72rpx;
-  background: rgba(255, 255, 255, 0.68);
-  border-radius: 999rpx;
-  border: 1rpx solid rgba(255, 255, 255, 0.5);
-  box-shadow: 0 var(--em3d-depth-sm) 0 var(--em3d-border-shadow);
-}
-
-.sort-icon {
-  font-size: 24rpx;
-  color: var(--text-sub);
-}
-
-.sort-text {
-  font-size: 22rpx;
-  color: var(--text-sub);
-}
-
-/* 空状态 */
-.empty-box {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 80rpx 40rpx;
-  text-align: center;
-}
-
-.empty-icon {
-  font-size: 80rpx;
-  margin-bottom: 20rpx;
-}
-
-.empty-title {
-  font-size: 32rpx;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin-bottom: 12rpx;
-}
-
-.empty-text {
-  font-size: 26rpx;
-  color: var(--text-sub);
-}
-
-/* 收藏卡片 */
-.favorite-card {
-  position: relative;
-  overflow: hidden;
-  background-color: var(--em3d-card-bg);
-  border: 2rpx solid var(--em3d-border);
-  border-radius: 28rpx;
-  padding: 24rpx;
-  margin-bottom: 20rpx;
-  box-shadow: 0 var(--em3d-depth-md) 0 var(--em3d-border-shadow);
-}
-
-.card-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 16rpx;
-}
-
-.card-tag {
-  font-size: 20rpx;
-  color: var(--text-primary);
-  background: rgba(255, 255, 255, 0.7);
-  padding: 8rpx 16rpx;
-  border-radius: 999rpx;
-  border: 1rpx solid rgba(255, 255, 255, 0.5);
-}
-
-.card-actions {
-  display: flex;
-  /* gap: 16rpx; -- replaced for Android WebView compat */
-}
-
-.card-actions > view + view {
-  margin-left: 16rpx;
-}
-
-.action-icon {
-  font-size: 28rpx;
-  padding: 8rpx;
-}
-
-.question-text {
-  font-size: 30rpx;
-  color: var(--text-primary);
-  line-height: 1.6;
-  margin-bottom: 20rpx;
-  display: block;
-}
-
-/* 选项列表 */
-.options-list {
-  margin-bottom: 20rpx;
-}
-
-.option-row {
-  display: flex;
-  align-items: flex-start;
-  padding: 16rpx;
-  background: rgba(255, 255, 255, 0.58);
-  border-radius: 20rpx;
-  margin-bottom: 12rpx;
-  border: 1rpx solid rgba(255, 255, 255, 0.44);
-}
-
-.option-row.correct {
-  background: var(--success-light);
-}
-
-.opt-idx {
-  width: 40rpx;
-  font-weight: 600;
-  color: var(--text-sub);
-  flex-shrink: 0;
-}
-
-.option-row.correct .opt-idx {
-  color: var(--success);
-}
-
-.opt-text {
-  flex: 1;
-  font-size: 26rpx;
-  color: var(--text-primary);
-  line-height: 1.5;
-}
-
-/* 解析区域 */
-.analysis-box {
-  background: rgba(255, 255, 255, 0.54);
-  border-radius: 20rpx;
-  padding: 16rpx;
-  margin-bottom: 20rpx;
-  border: 1rpx solid rgba(255, 255, 255, 0.44);
-}
-
-.analysis-label {
-  font-size: 24rpx;
-  font-weight: 600;
-  color: var(--primary);
-  margin-bottom: 8rpx;
-  display: block;
-}
-
-.analysis-text {
-  font-size: 26rpx;
-  color: var(--text-sub);
-  line-height: 1.6;
-}
-
-/* 卡片底部 */
-.card-footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.time-text {
-  font-size: 22rpx;
-  color: var(--text-sub);
-}
-
-.footer-actions {
-  display: flex;
-  /* gap: 12rpx; -- replaced for Android WebView compat */
-}
-
-.action-btn + .action-btn {
-  margin-left: 12rpx;
-}
-
-.action-btn {
-  font-size: 22rpx;
-  padding: 10rpx 20rpx;
-  border-radius: 999rpx;
-  background: rgba(255, 255, 255, 0.68);
-  color: var(--text-primary);
-  border: 1rpx solid rgba(255, 255, 255, 0.5);
-  box-shadow: 0 var(--em3d-depth-sm) 0 var(--em3d-border-shadow);
-}
-
-.action-btn.primary {
-  background: var(--cta-primary-bg);
-  color: var(--cta-primary-text);
-  border: 1rpx solid var(--cta-primary-border);
-  box-shadow: var(--cta-primary-shadow);
-}
-
-.action-btn::after {
-  border: none;
-}
-
-/* 笔记区域 */
-.note-section {
-  margin-top: 16rpx;
-  padding: 16rpx;
-  background: linear-gradient(160deg, rgba(255, 250, 234, 0.72), rgba(255, 244, 204, 0.58));
-  border-radius: 20rpx;
-  border: 1rpx solid rgba(255, 214, 102, 0.26);
-}
-
-.note-label {
-  font-size: 22rpx;
-  color: var(--warning);
-  margin-bottom: 8rpx;
-  display: block;
-}
-
-.note-content {
-  font-size: 24rpx;
-  color: var(--text-primary);
-  line-height: 1.5;
-}
-
-.add-note {
-  margin-top: 16rpx;
-  padding: 12rpx;
-  text-align: center;
-  border: 2rpx dashed var(--em3d-border);
-  border-radius: 20rpx;
-}
-
-.add-note-text {
-  font-size: 24rpx;
-  color: var(--text-sub);
-}
-
-/* 弹窗样式 */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: var(--overlay);
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 40rpx;
-}
-
-.modal-content {
-  width: 100%;
-  max-width: 600rpx;
-  background-color: var(--em3d-card-bg);
-  border-radius: 28rpx;
-  overflow: hidden;
-  border: 1rpx solid var(--em3d-border);
-  box-shadow:
-    0 8rpx 0 var(--em3d-border-shadow),
-    0 16rpx 40rpx rgba(0, 0, 0, 0.15);
-}
-
-.modal-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 24rpx;
-  border-bottom: 2rpx solid var(--border);
-}
-
-.modal-title {
-  font-size: 32rpx;
-  font-weight: 600;
-  color: var(--text-primary);
-}
-
-.modal-close {
-  font-size: 40rpx;
-  color: var(--text-sub);
-  padding: 8rpx;
-}
-
-.modal-body {
-  padding: 24rpx;
-}
-
-.modal-input {
-  width: 100%;
-  height: 80rpx;
-  background: rgba(255, 255, 255, 0.68);
-  border: 2rpx solid rgba(255, 255, 255, 0.5);
-  border-radius: 999rpx;
-  padding: 0 20rpx;
-  font-size: 28rpx;
-  color: var(--text-primary);
-  box-sizing: border-box;
-}
-
-.icon-picker {
-  margin-top: 24rpx;
-}
-
-.picker-label {
-  font-size: 24rpx;
-  color: var(--text-sub);
-  margin-bottom: 12rpx;
-  display: block;
-}
-
-.icon-grid {
-  display: flex;
-  flex-wrap: wrap;
-  /* gap: 16rpx; -- replaced for Android WebView compat */
-}
-
-.icon-option {
-  margin-right: 16rpx;
-  margin-bottom: 16rpx;
-  width: 60rpx;
-  height: 60rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 32rpx;
-  background: rgba(255, 255, 255, 0.66);
-  border: 2rpx solid rgba(255, 255, 255, 0.5);
-  border-radius: 18rpx;
-}
-
-.icon-option.selected {
-  border-color: var(--cta-primary-border);
-  background: var(--cta-primary-bg);
-}
-
-.modal-footer {
-  display: flex;
-  /* gap: 16rpx; -- replaced for Android WebView compat */
-  padding: 24rpx;
-  border-top: 2rpx solid var(--em3d-border);
-}
-
-.modal-btn + .modal-btn {
-  margin-left: 16rpx;
-}
-
-.modal-btn {
-  flex: 1;
-  height: 80rpx;
-  border-radius: 999rpx;
-  font-size: 28rpx;
-  border: none;
-}
-
-.modal-btn.secondary {
-  background: rgba(255, 255, 255, 0.7);
-  color: var(--text-primary);
-  border: 1rpx solid rgba(255, 255, 255, 0.5);
-}
-
-.modal-btn.primary {
-  background: var(--cta-primary-bg);
-  color: var(--cta-primary-text);
-  border: 1rpx solid var(--cta-primary-border);
-  box-shadow: var(--cta-primary-shadow);
-}
-
-.modal-btn::after {
-  border: none;
-}
-
-/* 收藏夹选项 */
-.folder-option {
-  display: flex;
-  align-items: center;
-  padding: 20rpx;
-  border-bottom: 2rpx solid var(--em3d-border);
-}
-
-.folder-option:last-child {
-  border-bottom: none;
-}
-
-.folder-option.disabled {
-  opacity: 0.5;
-  pointer-events: none;
-}
-
-.folder-option-icon {
-  font-size: 36rpx;
-  margin-right: 16rpx;
-}
-
-.folder-option-name {
-  flex: 1;
-  font-size: 28rpx;
-  color: var(--text-primary);
-}
-
-.folder-option-count {
-  font-size: 24rpx;
-  color: var(--text-sub);
-}
-
-/* 笔记输入框 */
-.note-textarea {
-  width: 100%;
-  height: 200rpx;
-  background: rgba(255, 255, 255, 0.68);
-  border: 2rpx solid rgba(255, 255, 255, 0.5);
-  border-radius: 24rpx;
-  padding: 16rpx;
-  font-size: 28rpx;
-  color: var(--text-primary);
-  box-sizing: border-box;
-}
-
-/* 加载状态 */
-.loading-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 120rpx 0;
-}
-
-.loading-spinner {
-  width: 60rpx;
-  height: 60rpx;
-  border: 4rpx solid var(--border, var(--border));
-  border-top-color: var(--primary, #4f46e5);
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-  margin-bottom: 20rpx;
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.loading-text {
-  font-size: 26rpx;
-  color: var(--text-sub, #999);
-}
-
-.safe-area {
-  height: 100rpx;
-}
-
-/* 暗黑模式覆盖 */
-.dark-mode .aurora-bg {
-  opacity: 0.3;
-}
-
-.dark-mode .note-section {
-  background: linear-gradient(135deg, rgba(255, 193, 7, 0.05), rgba(255, 152, 0, 0.05));
-}
-
-/* 深色模式文字颜色覆盖 */
-.dark-mode .nav-back,
-.dark-mode .nav-title,
-.dark-mode .section-title,
-.dark-mode .folder-name,
-.dark-mode .empty-title,
-.dark-mode .question-text,
-.dark-mode .opt-text,
-.dark-mode .note-content,
-.dark-mode .modal-title,
-.dark-mode .modal-input,
-.dark-mode .folder-option-name,
-.dark-mode .note-textarea,
-.dark-mode .card-tag {
-  color: var(--text-main, #ffffff);
-}
-
-.dark-mode .action-btn,
-.dark-mode .modal-btn.secondary {
-  color: var(--text-main, #ffffff);
-  border-color: var(--border, rgba(255, 255, 255, 0.1));
-}
-
-.dark-mode .folder-count,
-.dark-mode .empty-desc,
-.dark-mode .card-info {
-  color: var(--text-sub, #9ca3af);
-}
-
-.dark-mode .folder-card,
-.dark-mode .question-card,
-.dark-mode .modal-body {
-  background: var(--bg-card, #1c1c1e);
-  border-color: var(--border, rgba(255, 255, 255, 0.1));
-}
-
-.dark-mode .modal-input,
-.dark-mode .note-textarea {
-  background: var(--bg-secondary, #2c2c2e);
-  border-color: var(--border, rgba(255, 255, 255, 0.1));
-}
-</style>

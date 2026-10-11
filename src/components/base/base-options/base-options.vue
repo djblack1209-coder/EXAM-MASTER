@@ -24,7 +24,11 @@
         <BaseIcon v-if="state(option) === 'pending'" name="pen" tone="apricot" />
         <text v-else>{{ option.key || optionKey(index) }}</text>
       </view>
-      <text class="base-option__label">{{ option.label }}</text>
+      <view class="base-option__label"
+        ><slot name="option" :option="option"
+          ><text>{{ option.label }}</text></slot
+        ></view
+      >
       <text v-if="state(option) !== 'default'" :id="`yozi-option-${id}-${index}`" class="base-option__status">{{
         t(`ui.option.${state(option)}`)
       }}</text>
@@ -138,6 +142,11 @@ function keydown(event) {
 }
 .base-option::after {
   border: 0;
+}
+.base-option[disabled] {
+  opacity: 1;
+  color: var(--ink);
+  background: var(--paper);
 }
 .base-option__key {
   display: flex;

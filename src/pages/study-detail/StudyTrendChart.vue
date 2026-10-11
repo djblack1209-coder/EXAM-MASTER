@@ -1,61 +1,28 @@
 <template>
-  <view class="study-trend-chart">
-    <!-- 时间范围选择 -->
-    <view class="range-selector">
-      <view
-        v-for="range in ranges"
-        :key="range.value"
-        class="range-item"
-        :class="{ active: selectedRange === range.value }"
-        @tap="selectRange(range.value)"
-      >
-        <text class="range-text">
-          {{ range.label }}
-        </text>
-      </view>
-    </view>
-
-    <!-- 图表区域 -->
-    <view class="chart-wrapper">
-      <canvas
+  <view class="study-trend-chart"
+    ><BaseSegmented
+      :model-value="selectedRange"
+      :options="ranges"
+      :label="t('study.rangeLabel')"
+      @update:model-value="selectRange" /><view class="chart-wrapper"
+      ><canvas
         id="trendChart"
         canvas-id="trendChart"
         class="trend-canvas"
         :style="{ width: canvasWidth + 'px', height: canvasHeight + 'px' }"
-      ></canvas>
-    </view>
-
-    <!-- 数据摘要 -->
-    <view class="summary-row">
-      <view class="summary-item">
-        <text class="summary-value">
-          {{ totalMinutes }}
-        </text>
-        <text class="summary-label"> 总时长(分钟) </text>
-      </view>
-      <view class="summary-item">
-        <text class="summary-value">
-          {{ avgMinutes }}
-        </text>
-        <text class="summary-label"> 日均(分钟) </text>
-      </view>
-      <view class="summary-item">
-        <view class="trend-indicator" :class="trendDirection">
-          <text class="trend-arrow">
-            <BaseIcon v-if="trendDirection === 'up'" name="trend-up" :size="32" />
-            <BaseIcon v-else-if="trendDirection === 'down'" name="trend-down" :size="32" />
-            <BaseIcon v-else name="arrow-right" :size="32" />
-          </text>
-          <text class="trend-percent"> {{ trendPercent }}% </text>
-        </view>
-        <text class="summary-label"> 趋势 </text>
-      </view>
-    </view>
-  </view>
+        :aria-label="t('study.chartLabel')"
+      ></canvas></view
+    ><view class="stats-row"
+      ><BaseStat :label="t('study.totalMinutes')" :value="totalMinutes" /><BaseStat
+        :label="t('study.averageMinutes')"
+        :value="avgMinutes" /></view
+    ><BaseListRow
+      :label="t('study.trend')"
+      :value="t('study.trendValue', { direction: t('study.' + trendDirection), percent: trendPercent })"
+  /></view>
 </template>
-
 <script setup>
-import { ref, watch, onMounted, onBeforeUnmount, getCurrentInstance, nextTick } from 'vue';
+import { computed, ref, watch, onMounted, onBeforeUnmount, getCurrentInstance, nextTick } from 'vue';
 
 const props = defineProps({
   // 学习记录数据 { 'YYYY-MM-DD': minutes }
@@ -67,14 +34,19 @@ const props = defineProps({
 
 const emit = defineEmits(['range-change']);
 
+import { t, currentLanguage } from '@/i18n/index.js';
+import { tokens } from '@/design/tokens.js';
+import { useThemeStore } from '@/stores/modules/theme.js';
+import BaseSegmented from '@/components/base/base-segmented/base-segmented.vue';
+import BaseStat from '@/components/base/base-stat/base-stat.vue';
+import BaseListRow from '@/components/base/base-list-row/base-list-row.vue';
+const theme = useThemeStore();
+const palette = computed(() => tokens[theme.isDark ? 'dark' : 'light']);
+const size = (name) => parseFloat(palette.value[name]);
 const selectedRange = ref(7);
-const ranges = [
-  { label: '7天', value: 7 },
-  { label: '14天', value: 14 },
-  { label: '30天', value: 30 }
-];
-const canvasWidth = ref(300);
-const canvasHeight = ref(200);
+const ranges = computed(() => [7, 14, 30].map((value) => ({ value, label: t('study.range', { count: value }) })));
+const canvasWidth = ref(size('--dialog-width'));
+const canvasHeight = ref(size('--s-10') * 5);
 const chartData = ref([]);
 const totalMinutes = ref(0);
 const avgMinutes = ref(0);
@@ -102,6 +74,11 @@ watch(selectedRange, () => {
   });
 });
 
+watch([() => theme.isDark, currentLanguage], () => {
+  prepareChartData();
+  nextTick(drawChart);
+});
+
 // 定时器追踪，防止组件卸载后执行回调
 let _chartTimer = null;
 
@@ -126,8 +103,8 @@ function initCanvas() {
     .select('.chart-wrapper')
     .boundingClientRect((rect) => {
       if (rect) {
-        canvasWidth.value = rect.width - 32; // 减去 padding
-        canvasHeight.value = 200;
+        canvasWidth.value = rect.width - size('--s-4') * 2; // 减去 padding
+        canvasHeight.value = size('--s-10') * 5;
       }
       prepareChartData();
       nextTick(() => {
@@ -210,7 +187,7 @@ function drawChart() {
 
   const width = canvasWidth.value;
   const height = canvasHeight.value;
-  const padding = { top: 20, right: 20, bottom: 40, left: 40 };
+  const padding = { top: size('--s-5'), right: size('--s-5'), bottom: size('--s-10'), left: size('--s-10') };
   const chartWidth = width - padding.left - padding.right;
   const chartHeight = height - padding.top - padding.bottom;
 
@@ -242,8 +219,8 @@ function drawChart() {
  */
 function drawGrid(ctx, padding, chartWidth, chartHeight, maxValue) {
   const gridLines = 4;
-  ctx.setStrokeStyle('rgba(200, 200, 200, 0.3)');
-  ctx.setLineWidth(1);
+  ctx.setStrokeStyle(palette.value['--line']);
+  ctx.setLineWidth(size('--border-thin'));
 
   for (let i = 0; i <= gridLines; i++) {
     const y = padding.top + (chartHeight / gridLines) * i;
@@ -254,8 +231,8 @@ function drawGrid(ctx, padding, chartWidth, chartHeight, maxValue) {
 
     // Y轴标签
     const value = Math.round(maxValue - (maxValue / gridLines) * i);
-    ctx.setFillStyle('#999');
-    ctx.setFontSize(10);
+    ctx.setFillStyle(palette.value['--ink-3']);
+    ctx.setFontSize(size('--size-caption'));
     ctx.setTextAlign('right');
     ctx.fillText(value.toString(), padding.left - 5, y + 3);
   }
@@ -275,8 +252,8 @@ function drawLineAndArea(ctx, padding, chartWidth, chartHeight, maxValue, _minVa
 
   // 绘制渐变面积
   const gradient = ctx.createLinearGradient(0, padding.top, 0, padding.top + chartHeight);
-  gradient.addColorStop(0, 'rgba(0, 122, 255, 0.3)');
-  gradient.addColorStop(1, 'rgba(0, 122, 255, 0.05)');
+  gradient.addColorStop(0, palette.value['--violet-soft-2']);
+  gradient.addColorStop(1, palette.value['--paper']);
 
   ctx.beginPath();
   ctx.moveTo(points[0].x, padding.top + chartHeight);
@@ -288,8 +265,8 @@ function drawLineAndArea(ctx, padding, chartWidth, chartHeight, maxValue, _minVa
 
   // 绘制折线
   ctx.beginPath();
-  ctx.setStrokeStyle('#007AFF');
-  ctx.setLineWidth(2);
+  ctx.setStrokeStyle(palette.value['--violet']);
+  ctx.setLineWidth(size('--border-selected'));
   ctx.setLineCap('round');
   ctx.setLineJoin('round');
 
@@ -313,17 +290,17 @@ function drawDataPoints(ctx, padding, chartWidth, chartHeight, maxValue, _minVal
 
     // 外圈
     ctx.beginPath();
-    ctx.arc(x, y, 6, 0, Math.PI * 2);
-    ctx.setFillStyle('#FFFFFF');
+    ctx.arc(x, y, size('--s-3') / 2, 0, Math.PI * 2);
+    ctx.setFillStyle(palette.value['--paper']);
     ctx.fill();
-    ctx.setStrokeStyle('#007AFF');
-    ctx.setLineWidth(2);
+    ctx.setStrokeStyle(palette.value['--violet']);
+    ctx.setLineWidth(size('--border-selected'));
     ctx.stroke();
 
     // 内圈
     ctx.beginPath();
-    ctx.arc(x, y, 3, 0, Math.PI * 2);
-    ctx.setFillStyle('#007AFF');
+    ctx.arc(x, y, size('--s-3') / 4, 0, Math.PI * 2);
+    ctx.setFillStyle(palette.value['--violet']);
     ctx.fill();
   });
 }
@@ -332,8 +309,8 @@ function drawDataPoints(ctx, padding, chartWidth, chartHeight, maxValue, _minVal
  * 绘制X轴标签
  */
 function drawXLabels(ctx, padding, chartWidth, chartHeight) {
-  ctx.setFillStyle('#999');
-  ctx.setFontSize(10);
+  ctx.setFillStyle(palette.value['--ink-3']);
+  ctx.setFontSize(size('--size-caption'));
   ctx.setTextAlign('center');
 
   // 根据数据量决定显示哪些标签
@@ -370,135 +347,20 @@ function formatDate(date) {
  * 获取日期标签
  */
 function getDateLabel(date) {
-  const month = date.getMonth() + 1;
-  const day = date.getDate();
-  return `${month}/${day}`;
+  return new Intl.DateTimeFormat(currentLanguage.value, { month: 'numeric', day: 'numeric' }).format(date);
 }
 </script>
-
-<style lang="scss" scoped>
+<style scoped>
 .study-trend-chart {
   width: 100%;
 }
-
-/* 时间范围选择器 */
-.range-selector {
-  display: flex;
-  /* gap: 16rpx; -- replaced for Android WebView compat */
-  margin-bottom: 24rpx;
-}
-
-.range-item {
-  flex: 1;
-  padding: 16rpx 24rpx;
-  text-align: center;
-  background: var(--bg-card);
-  border-radius: 999rpx;
-  transition: all 0.2s ease;
-  border: 2rpx solid rgba(0, 0, 0, 0.04);
-  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
-
-  &.active {
-    background: #58cc02;
-    border-color: #46a302;
-    box-shadow: 0 8rpx 0 #46a302;
-
-    .range-text {
-      color: var(--text-inverse);
-    }
-  }
-
-  &:active {
-    transform: scale(0.98);
-  }
-}
-
-.range-text {
-  font-size: 24rpx;
-  color: var(--text-secondary);
-  font-weight: 600;
-}
-
-/* 图表区域 */
 .chart-wrapper {
-  width: 100%;
-  padding: 16rpx;
-  background: var(--bg-card);
-  border-radius: 24rpx;
-  border: 2rpx solid rgba(0, 0, 0, 0.04);
+  padding: var(--s-4);
+  overflow: hidden;
 }
-
-.trend-canvas {
-  width: 100%;
-  height: 200px;
-}
-
-/* 数据摘要 */
-.summary-row {
+.stats-row {
   display: flex;
-  justify-content: space-around;
-  margin-top: 24rpx;
-  padding-top: 24rpx;
-  border-top: 1px solid var(--em3d-border);
-}
-
-.summary-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  /* gap: 8rpx; -- replaced for Android WebView compat */
-  background: var(--bg-card);
-  border-radius: 20rpx;
-  padding: 16rpx 20rpx;
-  border: 2rpx solid rgba(0, 0, 0, 0.04);
-}
-
-.summary-value {
-  font-size: 36rpx;
-  font-weight: 800;
-  color: #58cc02;
-}
-
-.summary-label {
-  font-size: 22rpx;
-  color: var(--text-secondary);
-  font-weight: 600;
-}
-
-/* 趋势指示器 */
-.trend-indicator {
-  display: flex;
-  align-items: center;
-  /* gap: 4rpx; -- replaced for Android WebView compat */
-  &.up {
-    .trend-arrow,
-    .trend-percent {
-      color: var(--ds-color-success, #34c759);
-    }
-  }
-
-  &.down {
-    .trend-arrow,
-    .trend-percent {
-      color: var(--ds-color-error, var(--danger));
-    }
-  }
-
-  &.stable {
-    .trend-arrow,
-    .trend-percent {
-      color: var(--text-sub, #666);
-    }
-  }
-}
-
-.trend-arrow {
-  font-size: 32rpx;
-  font-weight: 700;
-}
-
-.trend-percent {
-  font-size: 32rpx;
-  font-weight: 700;
+  gap: var(--s-3);
+  flex-wrap: wrap;
 }
 </style>

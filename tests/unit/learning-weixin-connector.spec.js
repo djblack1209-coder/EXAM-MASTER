@@ -314,6 +314,7 @@ describe('微信文件权限与逐次发送许可', () => {
       global: {
         stubs: {
           LearningShell: { template: '<div><slot /></div>' },
+          WdPopup: { props: ['modelValue'], template: '<div v-if="modelValue"><slot /></div>' },
           BaseIcon: true,
           LearningOverview: true,
           NumberLine: true

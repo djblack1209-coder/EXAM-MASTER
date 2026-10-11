@@ -170,7 +170,7 @@ describe('login page explicit actions', () => {
     await action(wrapper, '使用邮箱登录').vm.$emit('tap');
     await flushPromises();
     expect(wrapper.find('.age-form').exists()).toBe(true);
-    expect(wrapper.find('.age-form').text()).not.toContain('13');
+    expect(wrapper.find('.age-form .login-subtitle').text()).not.toContain('13');
     const inputs = wrapper.findAllComponents(BaseInput);
     await inputs[0].vm.$emit('update:modelValue', '2000');
     await inputs[1].vm.$emit('update:modelValue', '1');

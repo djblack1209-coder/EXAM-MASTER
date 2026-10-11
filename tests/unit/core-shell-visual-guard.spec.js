@@ -4,55 +4,13 @@ import { describe, expect, it } from 'vitest';
 
 const ROOT = resolve(process.cwd());
 
-const CORE_VISUAL_EXPECTATIONS = [
-  {
-    file: 'src/pages/index/index.vue',
-    required: [
-      '@include em-mobile-canvas',
-      '@include em-mobile-topbar',
-      '@include em-mobile-glass-surface',
-      '@include em-mobile-pressable',
-      "height: tabBarHeight + 96 + 'px'"
-    ]
-  },
-  {
-    file: 'src/pages/practice/index.vue',
-    required: [
-      '@include em-mobile-canvas',
-      '@include em-mobile-topbar',
-      '@include em-mobile-deep-panel',
-      '@include em-mobile-glass-surface',
-      '@include em-mobile-primary-action',
-      '@include em-mobile-pressable',
-      "height: tabBarHeight + 96 + 'px'"
-    ]
-  },
-  {
-    file: 'src/pages/profile/index.vue',
-    required: [
-      '@include em-mobile-canvas',
-      '@include em-mobile-topbar',
-      '@include em-mobile-glass-surface',
-      '@include em-mobile-pressable',
-      "height: tabBarHeight + 96 + 'px'"
-    ]
-  }
-];
-
 describe('core shell visual guard', () => {
   it('keeps core pages on the shared lightweight financial visual language', () => {
-    const offenders = [];
-
-    for (const { file, required } of CORE_VISUAL_EXPECTATIONS) {
-      const source = readFileSync(resolve(ROOT, file), 'utf8');
-
-      for (const token of required) {
-        if (!source.includes(token)) {
-          offenders.push(`${file} -> missing ${token}`);
-        }
-      }
+    for (const file of ['index', 'practice', 'profile']) {
+      const page = readFileSync(resolve(ROOT, 'src/pages/' + file + '/index.vue'), 'utf8');
+      expect(page).toContain('@/styles/yozi-pages.scss');
+      expect(page).toContain('BaseButton');
+      expect(page).not.toContain('@include em-mobile-pressable');
     }
-
-    expect(offenders).toEqual([]);
   });
 });

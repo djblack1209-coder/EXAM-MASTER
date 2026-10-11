@@ -154,9 +154,9 @@ describe('learning interface states preserve learning facts', () => {
     expect(wrapper.emitted('update:modelValue')).toEqual([[['A', 'B']]]);
     expect(wrapper.emitted('submit')).toBeUndefined();
   });
-  it('empty today uses a static rest pose; reduced motion prevents the greeting from moving', async () => {
+  it('statistics do not contain a mascot; reduced motion prevents the greeting from moving', async () => {
     const overview = render(LearningOverview);
-    expect(pose(overview, 'sleep').props('play')).toBe('none');
+    expect(overview.findComponent(YoziMascot).exists()).toBe(false);
     setMascotReducedMotion(true, { persist: false });
     const wrapper = render();
     await flushPromises();

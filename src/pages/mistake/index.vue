@@ -1,20 +1,20 @@
 <template>
-  <LearningShell v-if="!showLegacy" active="mistake" :title="$t('pages.mistake')">
+  <LearningShell v-if="!showLegacy" class="yozi-page" active="mistake" :title="$t('pages.mistake')">
     <LearningOverview :initial-expanded="true" :show-navigation="false" view="mistake" />
     <view class="legacy-entry">
-      <button class="quiet-button" role="button" tabindex="0" @tap="toggleLegacy">历史题库记录</button>
+      <BaseButton class="quiet-button" variant="secondary" @tap="toggleLegacy">{{ t('mistake.copy0') }}</BaseButton>
     </view>
   </LearningShell>
-  <view v-else :class="['container', { 'dark-mode': isDark, 'theme-light': !isDark }]">
+  <view v-else class="yozi-page" :class="['container', { 'dark-mode': isDark, 'theme-light': !isDark }]">
     <view class="aurora-bg" />
 
     <!-- 骨架屏 -->
-    <MistakeSkeleton v-if="isInitLoading" :is-dark="isDark" />
+    <BaseEmpty v-if="isInitLoading" :is-dark="isDark" state="loading" />
 
     <!-- 导航栏 - 添加设计系统工具类 -->
     <view v-if="!isInitLoading" class="header-nav" :style="{ paddingTop: statusBarHeight + 'px' }">
       <view class="nav-content ds-flex ds-flex-between" :style="{ paddingRight: capsuleSafeRight + 'px' }">
-        <view class="nav-back ds-touchable" @tap="goBack"><BaseIcon name="arrow-left" :size="32" /></view>
+        <BaseButton class="nav-back" variant="secondary" @tap="goBack"><BaseIcon name="arrow-left" /></BaseButton>
         <text class="nav-title ds-text-lg ds-font-semibold">{{ $t('pages.mistake') }}</text>
         <view class="nav-actions">
           <!-- 移除垃圾桶图标 -->
@@ -27,139 +27,130 @@
       v-if="!isInitLoading"
       scroll-y
       class="main-scroll"
-      :style="{ paddingTop: statusBarHeight + 50 + 'px' }"
       refresher-enabled
       :refresher-triggered="isRefreshing"
       @scrolltolower="loadMore"
       @refresherrefresh="onPullRefresh"
     >
       <LearningOverview :initial-expanded="true" />
-      <button size="mini" @tap="toggleLegacy">
-        {{ showLegacy ? '收起历史视图' : '历史题库记录' }}
-      </button>
-      <button
-        role="button"
-        tabindex="0"
-        size="mini"
+      <BaseButton class="quiet-button" variant="secondary" @tap="toggleLegacy">{{
+        showLegacy ? t('mistake.copy1') : t('mistake.copy0')
+      }}</BaseButton>
+      <BaseButton
         :disabled="isPendingSyncing"
         :aria-busy="isPendingSyncing"
+        variant="secondary"
         @tap="confirmPendingSync"
-        @keydown.enter.prevent="confirmPendingSync"
-        @keydown.space.prevent="confirmPendingSync"
+        >{{ t('mistake.copy2') }}</BaseButton
       >
-        同步历史待办
-      </button>
       <view v-if="syncFeedback" role="status" aria-live="polite" data-test="legacy-sync-feedback" class="sync-feedback">
         {{ syncFeedback }}
       </view>
       <template v-if="showLegacy">
         <!-- 统计卡片区域 -->
         <view v-if="mistakes.length > 0" class="stats-grid">
-          <StatsCard title="已载入旧条目" :value="mistakes.length" icon="note" :is-dark="isDark" />
+          <StatsCard :title="t('mistake.copy3')" :value="mistakes.length" icon="note" :is-dark="isDark" />
           <StatsCard
-            title="旧重复错误"
+            :title="t('mistake.copy4')"
             :value="pendingReviewCount"
             icon="refresh"
-            change="原记录次数≥2"
+            :change="t('mistake.copy5')"
             change-type="neutral"
             :is-dark="isDark"
           />
         </view>
 
         <!-- ✅ P1: 重练模式提示 -->
-        <view v-if="isReviewMode && mistakes.length > 0" class="review-mode-banner">
-          <BaseIcon name="refresh" :size="40" class="review-icon" />
+        <view v-if="isReviewMode && mistakes.length > 0" class="review-mode-banner yozi-icon-row">
+          <BaseIcon name="refresh" class="review-icon" />
           <view class="review-info">
-            <text class="review-title"> 错题重练模式 </text>
-            <text class="review-desc"> {{ filteredReviewMistakes.length }} 道待重练 </text>
+            <text class="review-title">{{ t('mistake.copy6') }}</text>
+            <text class="review-desc"> {{ t('mistake.copy7', { v0: filteredReviewMistakes.length }) }}</text>
           </view>
-          <button class="start-review-btn" @tap="startSequentialReview">开始重练</button>
+          <BaseButton class="start-review-btn" variant="primary" @tap="startSequentialReview">{{
+            t('mistake.copy8')
+          }}</BaseButton>
         </view>
 
         <!-- 错题筛选栏 -->
         <view v-if="mistakes.length > 0" class="review-filter-bar">
           <scroll-view scroll-x :show-scrollbar="false" class="filter-scroll">
-            <view :class="['filter-chip', { active: reviewFilter === 'all' }]" @tap="reviewFilter = 'all'">
-              <text class="filter-text"> 全部 </text>
-            </view>
-            <view :class="['filter-chip', { active: reviewFilter === 'high_freq' }]" @tap="reviewFilter = 'high_freq'">
-              <text class="filter-text"> 高频错题 </text>
-            </view>
-            <view :class="['filter-chip', { active: reviewFilter === 'recent' }]" @tap="reviewFilter = 'recent'">
-              <text class="filter-text"> 最近错题 </text>
-            </view>
-            <view
-              :class="['filter-chip cluster-chip', { active: reviewFilter === 'cluster' }]"
-              @tap="switchToClusterView"
+            <BaseChip :model-value="reviewFilter === 'all'" @update:model-value="reviewFilter = 'all'"
+              ><text class="filter-text">{{ t('mistake.copy9') }}</text></BaseChip
             >
-              <text class="filter-text"> 历史分组 </text>
-            </view>
-            <view
+            <BaseChip :model-value="reviewFilter === 'high_freq'" @update:model-value="reviewFilter = 'high_freq'"
+              ><text class="filter-text">{{ t('mistake.copy10') }}</text></BaseChip
+            >
+            <BaseChip :model-value="reviewFilter === 'recent'" @update:model-value="reviewFilter = 'recent'"
+              ><text class="filter-text">{{ t('mistake.copy11') }}</text></BaseChip
+            >
+            <BaseChip :model-value="reviewFilter === 'cluster'" @update:model-value="switchToClusterView"
+              ><text class="filter-text">{{ t('mistake.copy12') }}</text></BaseChip
+            >
+            <BaseChip
               v-for="cat in mistakeCategories"
               :key="cat"
-              :class="['filter-chip', { active: reviewFilter === 'cat_' + cat }]"
-              @tap="reviewFilter = 'cat_' + cat"
+              :model-value="reviewFilter === 'cat_' + cat"
+              @update:model-value="reviewFilter = 'cat_' + cat"
+              ><text class="filter-text"> {{ cat }} </text></BaseChip
             >
-              <text class="filter-text"> {{ cat }} </text>
-            </view>
           </scroll-view>
         </view>
 
         <!-- 模式切换 - 优化布局 -->
-        <view v-if="mistakes.length > 0" class="mode-switch glass-card ds-flex ds-gap-xs">
-          <view
-            :class="['mode-item', 'ds-flex-center', 'ds-touchable', { active: mode === 'quiz' }]"
-            @tap="switchMode('quiz')"
-          >
-            <text class="ds-text-sm ds-font-medium"> 刷题模式 </text>
-          </view>
-          <view
-            :class="['mode-item', 'ds-flex-center', 'ds-touchable', { active: mode === 'recite' }]"
-            @tap="switchMode('recite')"
-          >
-            <text class="ds-text-sm ds-font-medium"> 背诵模式 </text>
-          </view>
-        </view>
+        <BaseSegmented
+          v-if="mistakes.length > 0"
+          :model-value="mode"
+          :options="[
+            { value: 'quiz', label: t('mistake.copy13') },
+            { value: 'recite', label: t('mistake.copy14') }
+          ]"
+          :label="t('pages.mistake')"
+          @update:model-value="switchMode"
+        />
 
         <!-- 空状态 - 优化样式 -->
-        <view v-if="mistakes.length === 0 && !isInitLoading" class="empty-box ds-flex-col ds-flex-center">
-          <BaseIcon name="celebrate" :size="160" class="empty-icon" />
-          <text class="empty-title ds-text-lg ds-font-bold"> 暂无历史错题 </text>
-          <text class="empty-text ds-text-sm"> 这里尚未记录旧版练习错题，不代表已经掌握。 </text>
-          <view class="go-practice-btn ds-touchable" @tap="goBack">
-            <BaseIcon name="pen" :size="28" /><text>去刷题</text>
-          </view>
-        </view>
+        <BaseEmpty
+          v-if="mistakes.length === 0 && !isInitLoading"
+          state="empty"
+          :title="t('mistake.copy15')"
+          show-button
+          :button-text="t('pages.practice')"
+          @action="goBack"
+        />
 
         <!-- 历史分组视图（AI 分析模式） -->
         <view v-if="reviewFilter === 'cluster'" class="cluster-view">
-          <view v-if="clusterLoading" class="cluster-loading">
-            <view v-for="i in 3" :key="i" class="loading-dot" />
-            <text class="cluster-loading-text">正在读取旧条目…</text>
-          </view>
-          <view v-else-if="errorClusters.length === 0" class="cluster-empty">
-            <text class="cluster-empty-text">暂无可分组的旧条目</text>
-          </view>
+          <BaseEmpty v-if="clusterLoading" state="loading" :title="t('mistake.copy16')" />
+          <BaseEmpty v-else-if="errorClusters.length === 0" state="empty" :title="t('mistake.copy17')" />
           <view v-else>
             <view v-for="cluster in errorClusters" :key="cluster.clusterId" class="cluster-card glass-card">
               <view class="cluster-header">
                 <view class="cluster-badge" :class="[cluster.countBand]">
-                  <text class="cluster-badge-text"> 旧标签 </text>
+                  <text class="cluster-badge-text">{{ t('mistake.copy18') }}</text>
                 </view>
-                <text class="cluster-type">{{ cluster.errorTypeName }}</text>
-                <text class="cluster-count">{{ cluster.questionCount }}条 · 可重练 {{ cluster.reviewableCount }}</text>
+                <text class="cluster-type">{{ uiText(cluster.errorTypeName) }}</text>
+                <text class="cluster-count">{{
+                  t('mistake.copy19', { v0: cluster.questionCount, v1: cluster.reviewableCount })
+                }}</text>
               </view>
               <view v-if="cluster.knowledgePoints && cluster.knowledgePoints.length > 0" class="cluster-kps">
                 <text v-for="kp in cluster.knowledgePoints" :key="kp" class="kp-tag">{{ kp }}</text>
               </view>
-              <button class="train-btn" :disabled="!cluster.reviewableCount" @tap="startClusterTraining(cluster)">
-                重练完整条目
-                {{
-                  cluster.knowledgePoints && cluster.knowledgePoints[0]
-                    ? cluster.knowledgePoints[0]
-                    : cluster.errorTypeName
-                }}
-              </button>
+              <BaseButton
+                class="train-btn"
+                :disabled="!cluster.reviewableCount"
+                variant="primary"
+                @tap="startClusterTraining(cluster)"
+                >{{
+                  t('mistake.copy20', {
+                    v0:
+                      cluster.knowledgePoints && cluster.knowledgePoints[0]
+                        ? cluster.knowledgePoints[0]
+                        : cluster.errorTypeName
+                  })
+                }}</BaseButton
+              >
             </view>
           </view>
         </view>
@@ -180,16 +171,16 @@
 
         <!-- 一键清空按钮（显示在列表最底部） - 优化样式 -->
         <view v-if="mistakes.length > 0 && !isLoading && reviewFilter !== 'cluster'" class="clear-all-section">
-          <button
-            class="clear-all-btn ds-flex ds-flex-center ds-gap-xs ds-touchable"
+          <BaseButton
+            class="clear-all-btn"
             :disabled="isClearing"
+            variant="danger"
+            danger-secondary
             @tap="clearAllMistakes"
+            ><BaseIcon name="delete" class="clear-all-icon" /><text class="clear-all-text ds-text-sm ds-font-semibold">
+              {{ isClearing ? t('mistake.copy21') : t('mistake.copy22') }}
+            </text></BaseButton
           >
-            <BaseIcon name="delete" :size="36" class="clear-all-icon" />
-            <text class="clear-all-text ds-text-sm ds-font-semibold">
-              {{ isClearing ? '移除中...' : '移除已载入条目' }}
-            </text>
-          </button>
         </view>
 
         <view class="safe-area" />
@@ -208,9 +199,35 @@
     <!-- 离线状态指示器 -->
     <OfflineIndicator :auto-show="true" position="top" :auto-hide-delay="5000" />
   </view>
+  <CustomModal
+    v-if="pageDialog"
+    :visible="true"
+    :title="pageDialog.title"
+    :content="pageDialog.content"
+    :editable="pageDialog.editable"
+    :placeholder-text="pageDialog.placeholderText"
+    :confirm-text="pageDialog.confirmText"
+    :cancel-text="pageDialog.cancelText"
+    :show-cancel="pageDialog.showCancel !== false"
+    :type="pageDialog.confirmColor ? 'error' : 'info'"
+    escape-closable
+    @confirm="settleDialog(true, $event)"
+    @cancel="settleDialog(false)"
+  />
 </template>
 
 <script setup>
+import CustomModal from '@/components/common/CustomModal.vue';
+const uiText = (value) => translateRegisteredText('mistake', value);
+import '@/pages/mistake/messages.js';
+import { t, translateRegisteredText } from '@/i18n/index.js';
+import { useThemeStore } from '@/stores/modules/theme.js';
+import BaseSegmented from '@/components/base/base-segmented/base-segmented.vue';
+import BaseEmpty from '@/components/base/base-empty/base-empty.vue';
+import BaseChip from '@/components/base/base-chip/base-chip.vue';
+import BaseButton from '@/components/base/base-button/base-button.vue';
+import '@/styles/yozi-pages.scss';
+
 import LearningOverview from '@/components/business/learning/learning-overview.vue';
 import LearningShell from '@/components/business/learning/learning-shell.vue';
 import { useConversationLearningStore } from '@/stores/modules/conversation-learning.js';
@@ -223,10 +240,10 @@ function toggleLegacy() {
   if (showLegacy.value) loadData(true);
 }
 import { onLoad, onShow, onUnload } from '@dcloudio/uni-app';
-import { modal } from '@/utils/modal.js';
+import { usePageDialog } from '@/composables/usePageDialog.js';
+const { pageDialog, settleDialog, modal } = usePageDialog();
 import { toast } from '@/utils/toast.js';
 import { storageService } from '@/services/storageService.js';
-import MistakeSkeleton from './components/mistake-skeleton/mistake-skeleton.vue';
 import StatsCard from './StatsCard.vue';
 // ✅ 统一日志工具（生产环境自动禁用）
 import { logger } from '@/utils/logger.js';
@@ -255,7 +272,7 @@ const loadedOwnerId = ref(null);
 const clustersOwnerId = ref(null);
 const mode = ref('quiz'); // 'quiz' 或 'recite'
 const userInfo = ref({});
-const isDark = ref(false);
+const isDark = computed(() => useThemeStore().isDark);
 const currentPage = ref(1);
 const hasMore = ref(true);
 const isLoading = ref(false);
@@ -374,7 +391,7 @@ function loadMore() {
 
 // 加载用户信息
 function loadUserInfo() {
-  userInfo.value = storageService.get('userInfo', { nickName: '考研人' });
+  userInfo.value = storageService.get('userInfo', { nickName: t('mistake.examUser') });
 }
 
 // 自动同步待同步的错题
@@ -382,20 +399,20 @@ function confirmPendingSync() {
   if (isPendingSyncing.value) return;
   const owner = loadedOwnerId.value;
   const token = getToken() || '';
-  if (owner !== (getUserId() || '')) return toast.info('账户已变化，请重新打开历史记录');
+  if (owner !== (getUserId() || '')) return toast.info(t('mistake.copy23'));
   const records = storageService.get('mistake_book', [], { migrateLegacy: false });
   const pending = records.filter((item) => ['pending', 'local_only'].includes(item?.sync_status));
   if (!pending.length) {
-    syncFeedback.value = '暂无历史同步待办';
+    syncFeedback.value = t('mistake.noSync');
     return;
   }
   const snapshot = JSON.parse(JSON.stringify(pending));
   modal.show({
-    title: '同步历史待办',
-    content: `将当前账户已确认的 ${snapshot.length} 条历史原文发送至本项目后端。原参考仍待核对。`,
+    title: t('mistake.copy2'),
+    content: t('mistake.copy24', { v0: snapshot.length }),
     success: (res) => {
       if (!res.confirm) return;
-      if (owner !== (getUserId() || '') || token !== (getToken() || '')) return toast.info('账户已变化，请重新确认');
+      if (owner !== (getUserId() || '') || token !== (getToken() || '')) return toast.info(t('mistake.copy25'));
       syncPendingMistakes(snapshot, owner, token);
     }
   });
@@ -405,23 +422,23 @@ async function syncPendingMistakes(expectedRecords, owner, token) {
   const generation = ++syncGeneration;
   const current = () => generation === syncGeneration && owner === (getUserId() || '') && token === (getToken() || '');
   isPendingSyncing.value = true;
-  syncFeedback.value = '同步中…';
-  toast.loading('同步中...');
+  syncFeedback.value = t('mistake.syncing');
+  toast.loading(t('mistake.copy26'));
   try {
     logger.log('[mistake-book] 开始自动同步待同步错题...');
     const result = await storageService.syncPendingMistakes({ expectedRecords });
     if (!current()) return;
-    if (result.success === false) syncFeedback.value = result.error || '同步未确认，原待办保留';
+    if (result.success === false) syncFeedback.value = result.error || t('mistake.unconfirmed');
     else if (result.synced > 0) {
       const remaining = (result.failed || 0) + (result.conflicts || 0);
       syncFeedback.value = remaining
-        ? `已确认 ${result.synced} 条，还有 ${remaining} 条未完成。`
-        : `已确认 ${result.synced} 条历史原件。`;
+        ? t('mistake.syncPartial', { done: result.synced, remaining })
+        : t('mistake.syncDone', { done: result.synced });
       await loadData(true);
-    } else syncFeedback.value = '暂无历史同步待办';
+    } else syncFeedback.value = t('mistake.noSync');
   } catch (error) {
     logger.error('[mistake-book] 同步待同步错题异常:', error);
-    if (current()) syncFeedback.value = '同步未确认，原待办保留';
+    if (current()) syncFeedback.value = t('mistake.unconfirmed');
   } finally {
     if (generation === syncGeneration) {
       toast.hide();
@@ -532,7 +549,7 @@ function goBack() {
 function startSequentialReview() {
   const source = isReviewMode.value ? filteredReviewMistakes.value : mistakes.value;
   if (source.length === 0) {
-    toast.info('暂无错题');
+    toast.info(t('mistake.copy27'));
     return;
   }
 
@@ -546,10 +563,10 @@ function startSequentialReview() {
 
 function openLegacyReview(result) {
   if (!result.success) {
-    toast.info(result.message || '这些旧条目暂不能重练，原记录已保留');
+    toast.info(result.message || t('mistake.copy28'));
     return;
   }
-  if (result.skipped || result.deferred) toast.info(`本次重练${result.count}条，其余原记录已保留`);
+  if (result.skipped || result.deferred) toast.info(t('mistake.copy29', { v0: result.count }));
   safeNavigateTo(result.url);
 }
 
@@ -560,28 +577,31 @@ function clearAllMistakes() {
     snapshot = JSON.stringify(mistakes.value);
   const ids = mistakes.value.map((row) => row.id ?? row._id);
   if (ids.some((id) => !['string', 'number'].includes(typeof id)) || new Set(ids.map(String)).size !== ids.length)
-    return toast.info('存在缺失或重复编号，原记录保留，请重新加载');
+    return toast.info(t('mistake.copy30'));
   const current = () => owner === (getUserId() || '') && snapshot === JSON.stringify(mistakes.value);
-  if (!current()) return toast.info('账户或列表已变化，请重新加载');
+  if (!current()) return toast.info(t('mistake.copy31'));
   modal.show({
-    title: '移除已载入条目',
-    content: `仅移除当前已载入的 ${ids.length} 条历史记录，其他条目保留。移除后无法恢复。`,
+    title: t('mistake.copy22'),
+    content: t('mistake.copy32', { v0: ids.length }),
     confirmColor: 'var(--danger)',
     success: async (res) => {
       if (!res.confirm) return;
-      if (!current()) return toast.info('账户或列表已变化，请重新确认');
+      if (!current()) return toast.info(t('mistake.copy33'));
       isClearing.value = true;
       try {
         const result = await storageService.batchRemoveMistakes(ids);
         if (!current()) return;
-        if (!result.success) return toast.info(result.error || '移除未确认，原记录保留');
+        if (!result.success) return toast.info(result.error || t('mistake.copy34'));
         const removed = new Set(ids.map(String));
         mistakes.value = mistakes.value.filter((row) => !removed.has(String(row.id ?? row._id)));
         toast.success(
-          `已移除本次 ${ids.length} 条${result.source === 'local' ? '本机记录，云端结果未确认' : '历史记录'}`
+          t('mistake.copy35', {
+            v0: ids.length,
+            v1: result.source === 'local' ? t('mistake.copy36') : t('mistake.copy37')
+          })
         );
       } catch (_error) {
-        toast.info('移除未确认，请重新加载原列表');
+        toast.info(t('mistake.copy38'));
       } finally {
         isClearing.value = false;
       }
@@ -617,7 +637,7 @@ async function loadErrorClusters() {
     }
   } catch (error) {
     logger.error('[mistake-book] 错题聚类加载失败:', error);
-    toast.info('历史分组暂时不可用');
+    toast.info(t('mistake.copy39'));
   } finally {
     clusterLoading.value = false;
   }
@@ -645,16 +665,16 @@ async function removeMistake(mistake) {
     mistakes.value.filter((row) => String(row.id ?? row._id) === String(id)).length !== 1 ||
     !['string', 'number'].includes(typeof id)
   )
-    return toast.info('条目或账户已变化，请重新加载');
+    return toast.info(t('mistake.copy40'));
 
   modal.show({
-    title: '移除题目',
-    content: '仅移除这条历史记录，学习掌握状态保持独立。移除后无法恢复。',
+    title: t('mistake.copy41'),
+    content: t('mistake.copy42'),
     confirmColor: 'var(--danger)',
     success: async (res) => {
       if (res.confirm) {
-        if (!current()) return toast.info('条目或账户已变化，请重新确认');
-        toast.loading('删除中...');
+        if (!current()) return toast.info(t('mistake.copy43'));
+        toast.loading(t('mistake.copy44'));
 
         try {
           // 使用云端方法删除
@@ -665,18 +685,18 @@ async function removeMistake(mistake) {
             // 从列表中移除
             mistakes.value = mistakes.value.filter((item) => (item.id ?? item._id) !== id);
             logger.log(`[mistake-book] ✅ 删除成功，列表剩余 ${mistakes.value.length} 条错题`);
-            toast.success('已移除');
+            toast.success(t('mistake.copy45'));
           } else {
             // 保存失败不丢弃原记录或替换尚未加载的其他条目。
             logger.warn(`[mistake-book] 移除未确认: ${result.error}`);
-            toast.info('移除未确认，原记录保留，请重新加载');
+            toast.info(t('mistake.copy46'));
           }
         } catch (error) {
           logger.error('[mistake-book] 删除错题异常:', error);
           // 降级到本地删除
           mistakes.value.splice(index, 1);
           storageService.save('mistake_book', mistakes.value, true);
-          toast.info('已移除（本地）');
+          toast.info(t('mistake.copy47'));
         } finally {
           toast.hide();
         }
@@ -693,12 +713,12 @@ onLoad((options) => {
   capsuleSafeRight.value = getCapsuleSafeRight();
 
   // 初始化主题
-  const savedTheme = storageService.get('theme_mode', 'light');
-  isDark.value = savedTheme === 'dark';
+
+  void 0;
 
   // F003: 存储回调引用，确保 $off 只移除自己的监听器
-  _themeHandler = (themeMode) => {
-    isDark.value = themeMode === 'dark';
+  _themeHandler = (_themeMode) => {
+    void 0;
   };
   uni.$on('themeUpdate', _themeHandler);
 
@@ -732,554 +752,3 @@ onUnload(() => {
   resetPendingSync();
 });
 </script>
-
-<style lang="scss" scoped>
-.sync-feedback {
-  margin: 12rpx 30rpx;
-  color: var(--text-secondary);
-  line-height: 1.5;
-}
-/* 统计卡片网格 */
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  /* gap: 24rpx; -- replaced for Android WebView compat */
-  padding: 0 30rpx;
-  margin-bottom: 30rpx;
-}
-.stats-grid > view:nth-child(even) {
-  margin-left: 24rpx;
-}
-.stats-grid > view:nth-child(n + 3) {
-  margin-top: 24rpx;
-}
-
-.container {
-  min-height: 100%;
-  min-height: 100vh;
-  background: var(--background);
-  position: relative;
-  overflow: hidden;
-}
-
-.aurora-bg {
-  position: absolute;
-  top: 0;
-  width: 100%;
-  height: 500rpx;
-  background: radial-gradient(circle at 18% 20%, rgba(255, 75, 75, 0.12) 0%, transparent 70%);
-  filter: blur(80px);
-  opacity: 0.8;
-  z-index: 0;
-}
-
-.header-nav {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  z-index: 100;
-  background: var(--bg-glass);
-
-  .nav-content {
-    height: 50px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 30rpx;
-
-    .nav-back {
-      font-size: 36rpx;
-      color: var(--text-primary);
-      font-weight: bold;
-    }
-
-    .nav-title {
-      font-size: 34rpx;
-      font-weight: 600;
-      color: var(--text-primary);
-    }
-
-    .nav-placeholder {
-      width: 36rpx;
-    }
-
-    .nav-actions {
-      display: flex;
-      align-items: center;
-    }
-
-    .nav-clear-btn {
-      display: flex;
-      align-items: center;
-      /* gap: 8rpx; -- replaced for Android WebView compat */
-      padding: 8rpx 16rpx;
-      border-radius: 20rpx;
-      background: var(--danger-light);
-      transition: all 0.2s;
-
-      &:active {
-        background: var(--danger-light);
-        transform: scale(0.95);
-      }
-
-      .clear-icon {
-        font-size: 28rpx;
-      }
-
-      .clear-text {
-        font-size: 24rpx;
-        color: var(--danger);
-        font-weight: 500;
-      }
-    }
-  }
-}
-
-.main-scroll {
-  height: 100%;
-  height: 100vh;
-  padding: 30rpx;
-  box-sizing: border-box;
-  position: relative;
-  z-index: 1;
-}
-
-.glass-card {
-  background: var(--yozi-reading);
-
-  border: 0;
-
-  border-radius: 24px;
-  padding: 30rpx;
-  margin-bottom: 30rpx;
-
-  box-shadow: var(--yozi-shadow);
-}
-
-.mode-switch {
-  display: flex;
-  padding: 10rpx;
-  border-radius: 20rpx;
-  /* gap: 10rpx; -- replaced for Android WebView compat */
-  .mode-item {
-    flex: 1;
-    padding: 20rpx 40rpx;
-    border-radius: 20rpx;
-    font-size: 26rpx;
-    text-align: center;
-    transition: 0.3s;
-    color: var(--text-sub);
-
-    &.active {
-      background: var(--cta-primary-bg);
-      color: var(--cta-primary-text);
-      border: 1rpx solid var(--cta-primary-border);
-      font-weight: bold;
-      box-shadow: var(--cta-primary-shadow);
-    }
-  }
-}
-
-.empty-box {
-  text-align: center;
-  padding-top: 150rpx;
-  padding-bottom: 100rpx;
-
-  .empty-icon {
-    font-size: 160rpx;
-    display: block;
-    margin-bottom: 30rpx;
-    animation: bounce 2s ease-in-out infinite;
-  }
-
-  @keyframes bounce {
-    0%,
-    100% {
-      transform: translateY(0);
-    }
-    50% {
-      transform: translateY(-20rpx);
-    }
-  }
-
-  .empty-title {
-    color: var(--text-primary);
-    font-size: 40rpx;
-    font-weight: 800;
-    margin-bottom: 16rpx;
-    display: block;
-  }
-
-  .empty-text {
-    color: var(--text-secondary);
-    font-size: 28rpx;
-    margin-bottom: 16rpx;
-    display: block;
-  }
-
-  .empty-hint {
-    color: var(--text-secondary);
-    font-size: 24rpx;
-    opacity: 0.7;
-    margin-bottom: 60rpx;
-    display: block;
-  }
-
-  .go-practice-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    /* gap: 12rpx; -- replaced for Android WebView compat */
-    padding: 24rpx 64rpx;
-    background: var(--danger);
-    color: var(--text-inverse);
-    border-radius: 50rpx;
-    font-weight: 700;
-    font-size: 30rpx;
-    border: none;
-    box-shadow: 0 8rpx 0 #cc3333;
-    transition: all 0.3s ease;
-  }
-
-  .go-practice-btn:active {
-    transform: scale(0.95);
-    opacity: 0.9;
-  }
-}
-
-/* 重练模式横幅 */
-.review-mode-banner {
-  display: flex;
-  align-items: center;
-  /* gap: 20rpx; -- replaced for Android WebView compat */
-  padding: 24rpx 30rpx;
-  margin: 0 0 30rpx 0;
-  background: var(--theme-primary-light);
-  border: 1rpx solid var(--brand-glow);
-  border-radius: 24rpx;
-
-  .review-icon {
-    font-size: 40rpx;
-    flex-shrink: 0;
-  }
-
-  .review-info {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    /* gap: 6rpx; -- replaced for Android WebView compat */
-  }
-
-  .review-title {
-    font-size: 28rpx;
-    font-weight: 600;
-    color: var(--text-primary, #333);
-  }
-
-  .review-desc {
-    font-size: 24rpx;
-    color: var(--text-sub, #999);
-  }
-
-  .start-review-btn {
-    padding: 14rpx 32rpx;
-    background: var(--cta-primary-bg);
-    color: var(--cta-primary-text);
-    border-radius: 20rpx;
-    font-size: 26rpx;
-    font-weight: 600;
-    border: 1rpx solid var(--cta-primary-border);
-    box-shadow: var(--cta-primary-shadow);
-    flex-shrink: 0;
-
-    &::after {
-      border: none;
-    }
-  }
-}
-
-.fab-btn {
-  position: fixed;
-  bottom: 60rpx;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 300rpx;
-  height: 90rpx;
-  background: var(--bg-card);
-  color: var(--text-primary);
-  border-radius: 45rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  /* gap: 10rpx; -- replaced for Android WebView compat */
-  font-size: 28rpx;
-  box-shadow: var(--shadow-lg);
-  z-index: 99;
-}
-
-.safe-area {
-  height: 200rpx;
-}
-
-/* 一键清空按钮区域（列表底部） */
-.clear-all-section {
-  padding: 40rpx 30rpx;
-  display: flex;
-  justify-content: center;
-}
-
-.clear-all-btn {
-  width: 100%;
-  max-width: 600rpx;
-  height: 88rpx;
-  padding: 0 32rpx;
-  background: var(--danger-light);
-  border: 2rpx solid var(--danger);
-  border-radius: 44rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  /* gap: 12rpx; -- replaced for Android WebView compat */
-  transition: all 0.2s;
-  box-shadow: var(--shadow-sm);
-}
-
-.clear-all-btn:active {
-  background: var(--danger-light);
-  transform: scale(0.98);
-  box-shadow: var(--shadow-xs);
-}
-
-.clear-all-btn::after {
-  border: none;
-}
-
-.clear-all-icon {
-  font-size: 36rpx;
-  line-height: var(--line-height-normal);
-}
-
-.clear-all-text {
-  font-size: 30rpx;
-  color: var(--danger);
-  font-weight: 600;
-  white-space: nowrap;
-}
-
-/* [AUDIT FIX R201] 移除20个冗余 .dark-mode 覆盖块 — 基础规则已使用 CSS 变量自动适配暗色模式 */
-
-/* ✅ 1.7: 错题筛选栏 */
-.review-filter-bar {
-  padding: 0 30rpx;
-  margin-bottom: 24rpx;
-}
-
-.filter-scroll {
-  white-space: nowrap;
-}
-
-.filter-chip {
-  display: inline-block;
-  padding: 16rpx 28rpx;
-  border-radius: 24rpx;
-  background: var(--bg-card);
-  border: 2rpx solid rgba(0, 0, 0, 0.04);
-  transition: all 0.2s;
-  margin-right: 12rpx;
-}
-
-.filter-chip.active {
-  background: var(--danger);
-  border-color: var(--danger);
-}
-
-.filter-chip.active .filter-text {
-  color: var(--text-inverse);
-}
-
-.filter-text {
-  font-size: 24rpx;
-  font-weight: 600;
-  color: var(--text-secondary);
-}
-
-/* [AUDIT FIX R201] 筛选栏 .dark-mode 块已移除 — var(--bg-card)/var(--border-light)/var(--text-sub) 已自动适配 */
-
-/* === 历史分组视图 === */
-.cluster-view {
-  padding: 0 0 30rpx;
-}
-
-.cluster-loading {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 60rpx 0;
-}
-
-.cluster-loading .loading-dot {
-  width: 12rpx;
-  height: 12rpx;
-  border-radius: 50%;
-  background: var(--color-primary, #0f5f34);
-  margin-right: 8rpx;
-  animation: clusterDotBounce 1.4s ease-in-out infinite;
-}
-.cluster-loading .loading-dot:nth-child(2) {
-  animation-delay: 0.2s;
-}
-.cluster-loading .loading-dot:nth-child(3) {
-  animation-delay: 0.4s;
-}
-
-@keyframes clusterDotBounce {
-  0%,
-  80%,
-  100% {
-    opacity: 0.3;
-    transform: scale(0.8);
-  }
-  40% {
-    opacity: 1;
-    transform: scale(1.2);
-  }
-}
-
-.cluster-loading-text {
-  font-size: 26rpx;
-  color: var(--text-sub);
-  margin-left: 12rpx;
-}
-
-.cluster-empty {
-  text-align: center;
-  padding: 60rpx 0;
-}
-.cluster-empty-text {
-  font-size: 28rpx;
-  color: var(--text-sub);
-}
-
-.cluster-card {
-  margin-bottom: 24rpx;
-}
-
-.cluster-header {
-  display: flex;
-  align-items: center;
-  margin-bottom: 16rpx;
-}
-
-.cluster-badge {
-  padding: 4rpx 16rpx;
-  border-radius: 16rpx;
-  margin-right: 12rpx;
-}
-.cluster-badge.high {
-  background: color-mix(in srgb, var(--danger) 15%, transparent); /* [AUDIT FIX R196] */
-}
-.cluster-badge.high .cluster-badge-text {
-  color: var(--danger); /* [AUDIT FIX R196] */
-}
-.cluster-badge.medium {
-  background: color-mix(in srgb, var(--warning) 15%, transparent); /* [AUDIT FIX R197] */
-}
-.cluster-badge.medium .cluster-badge-text {
-  color: var(--warning); /* [AUDIT FIX R197] */
-}
-.cluster-badge.low {
-  background: color-mix(in srgb, var(--text-tertiary) 15%, transparent); /* [AUDIT FIX R198] */
-}
-.cluster-badge.low .cluster-badge-text {
-  color: var(--text-tertiary); /* [AUDIT FIX R198] */
-}
-
-.cluster-badge-text {
-  font-size: 24rpx;
-  font-weight: 600;
-}
-
-.cluster-type {
-  font-size: 30rpx;
-  font-weight: 800;
-  color: var(--text-primary);
-  flex: 1;
-}
-
-.cluster-count {
-  font-size: 24rpx;
-  color: var(--text-secondary);
-  font-weight: 600;
-}
-
-.cluster-kps {
-  display: flex;
-  flex-wrap: wrap;
-  margin-bottom: 12rpx;
-}
-
-.kp-tag {
-  font-size: 24rpx;
-  padding: 4rpx 14rpx;
-  border-radius: 12rpx;
-  background: var(--bg-secondary, var(--muted));
-  color: var(--text-sub);
-  margin-right: 8rpx;
-  margin-bottom: 8rpx;
-}
-
-.cluster-suggestion {
-  font-size: 26rpx;
-  color: var(--text-primary);
-  line-height: 1.6;
-  margin-bottom: 12rpx;
-  display: block;
-}
-
-.cluster-trend {
-  margin-bottom: 16rpx;
-}
-.trend-text {
-  font-size: 24rpx;
-}
-.trend-text.increasing {
-  color: var(--danger); /* [AUDIT FIX R199] */
-}
-.trend-text.decreasing {
-  color: var(--success); /* [AUDIT FIX R199] */
-}
-.trend-text.stable {
-  color: var(--text-tertiary); /* [AUDIT FIX R199] */
-}
-
-.train-btn {
-  width: 100%;
-  padding: 20rpx;
-  border-radius: 24rpx;
-  background: var(--danger);
-  color: var(--text-inverse);
-  font-size: 28rpx;
-  font-weight: 700;
-  border: none;
-  box-shadow: 0 8rpx 0 #cc3333;
-}
-.train-btn::after {
-  border: none;
-}
-.train-btn:active {
-  opacity: 0.85;
-  transform: scale(0.98);
-}
-
-.cluster-chip {
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--success) 10%, transparent),
-    color-mix(in srgb, var(--info-blue) 10%, transparent)
-  ) !important; /* [AUDIT FIX R200] */
-  border-color: color-mix(in srgb, var(--success) 30%, transparent) !important; /* [AUDIT FIX R200] */
-}
-
-/* [AUDIT FIX R201] 聚类 .dark-mode 块已移除 — .cluster-card 继承 .glass-card var(--bg-card), .kp-tag 使用 var(--bg-secondary) */
-</style>

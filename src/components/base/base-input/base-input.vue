@@ -14,6 +14,42 @@
       }"
       :style="autoGrow ? { '--field-max-rows': maxRows } : undefined"
     >
+      <!-- #ifdef H5 -->
+      <component
+        :is="'select'"
+        v-if="options.length && !nativePlatform"
+        :id="id"
+        class="base-field__input"
+        :value="modelValue"
+        :disabled="disabled"
+        :aria-label="label"
+        @change="input"
+        @focus="focus"
+        @blur="blur"
+        ><option value="" disabled>{{ placeholder || t('ui.select') }}</option>
+        <option v-for="item in options" :key="item.value" :value="item.value">{{ item.label }}</option></component
+      >
+      <!-- #endif -->
+      <!-- #ifndef H5 -->
+      <picker
+        v-if="options.length && nativePlatform"
+        mode="selector"
+        :range="options"
+        range-key="label"
+        :value="
+          Math.max(
+            0,
+            options.findIndex((item) => String(item.value) === String(modelValue))
+          )
+        "
+        :disabled="disabled"
+        class="base-field__input"
+        @change="emit('update:modelValue', options[Number($event.detail.value)]?.value || '')"
+        ><view>{{
+          options.find((item) => String(item.value) === String(modelValue))?.label || placeholder || t('ui.select')
+        }}</view></picker
+      >
+      <!-- #endif -->
       <text v-if="prefix" class="base-field__prefix">{{ prefix }}</text>
       <!-- #ifdef H5 -->
       <component
@@ -66,7 +102,7 @@
       <!-- #ifdef H5 -->
       <component
         :is="'input'"
-        v-if="!multiline && !nativePlatform"
+        v-if="!multiline && !nativePlatform && !options.length"
         :id="id"
         :class="['base-field__input', inputClass]"
         :value="modelValue"
@@ -89,7 +125,7 @@
       <!-- #endif -->
       <!-- #ifndef H5 -->
       <input
-        v-if="!multiline && nativePlatform"
+        v-if="!multiline && nativePlatform && !options.length"
         :id="id"
         :class="['base-field__input', inputClass]"
         :value="modelValue"
@@ -155,6 +191,8 @@ const props = defineProps({
   nativeFocus: Boolean,
   disabled: Boolean,
   verification: Boolean,
+  verificationSent: { type: Boolean, default: true },
+  options: { type: Array, default: () => [] },
   resendSeconds: { type: Number, default: 0 },
   maxlength: { type: Number, default: -1 },
   help: { type: String, default: '' },
@@ -216,7 +254,9 @@ nativePlatform = false;
 const remaining = ref(0);
 const descriptionId = computed(() => (props.help || props.error ? `${id}-description` : undefined));
 const resendLabel = computed(() =>
-  remaining.value > 0 ? t('ui.resendCountdown', { seconds: remaining.value }) : t('ui.resend')
+  remaining.value > 0
+    ? t('ui.resendCountdown', { seconds: remaining.value })
+    : t(props.verificationSent ? 'ui.resend' : 'ui.getCode')
 );
 let timer;
 watch(

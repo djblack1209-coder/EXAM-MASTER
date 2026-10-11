@@ -1,0 +1,341 @@
+/* Remaining functional pages: layout only; controls use the shared base components. */
+.yozi-page {
+  min-height: 100vh;
+  background: var(--canvas);
+  color: var(--ink);
+  font: var(--weight-regular) var(--size-body)/var(--leading-body) var(--font-ui);
+  overflow-x: clip;
+}
+.yozi-page,
+.yozi-page-content {
+  box-sizing: border-box;
+  :where(.nav-bar, .header-nav, .nav-header, .navbar, .transparent-navbar) {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--glass);
+    backdrop-filter: blur(var(--glass-blur));
+    border-bottom: var(--border-thin) solid var(--glass-line);
+  }
+  :where(
+    .nav-content,
+    .navbar-content,
+    .navbar-inner,
+    .paper-stage-head,
+    .section-head,
+    .section-header,
+    .card-header,
+    .card-footer,
+    .plan-header,
+    .q-header,
+    .profile-top
+  ) {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: var(--s-3);
+    padding: var(--s-3) var(--s-4);
+  }
+  :where(.nav-title, .navbar-title, .hero-title, .practice-title, .page-title) {
+    font: var(--weight-bold) var(--size-title-1)/var(--leading-title-1) var(--font-display);
+    color: var(--ink);
+  }
+  :where(.section-title, .card-title, .plan-name, .fsrs-title, .bank-name, .slot-title) {
+    display: block;
+    font: var(--weight-bold) var(--size-title-3)/var(--leading-title-3) var(--font-ui);
+  }
+  :where(.main-scroll, .scroll-body, .scroll-container, .quiz-scroll) {
+    display: block;
+    box-sizing: border-box;
+    max-width: var(--page-content-width);
+    margin-inline: auto;
+    min-height: 100vh;
+    padding-inline: var(--s-4);
+    scroll-padding-top: calc(var(--control-height) + var(--s-6));
+    padding-bottom: calc(var(--s-14) * 2 + env(safe-area-inset-bottom));
+  }
+  :where(
+    .section,
+    .folder-section,
+    .favorites-section,
+    .paper-hero,
+    .question-container,
+    .fsrs-section,
+    .chart-section,
+    .heatmap-section,
+    .accuracy-section
+  ) {
+    margin-block: var(--s-6);
+  }
+  :where(
+    .card,
+    .hero-panel,
+    .practice-hero,
+    .readiness-card,
+    .training-plan-card,
+    .favorite-card,
+    .mistake-card,
+    .plan-card,
+    .reminder-card,
+    .recommended-panel,
+    .slot-detail,
+    .fsrs-card,
+    .question-card,
+    .knowledge-card,
+    .ai-insight-card,
+    .category-section,
+    .motivational,
+    .next-steps,
+    .profile-command-card
+  ) {
+    box-sizing: border-box;
+    padding: var(--s-5);
+    border-radius: var(--r-md);
+    background: var(--paper);
+    box-shadow: var(--lift-1);
+    margin-block: var(--s-4);
+  }
+  :where(
+    .stats-row,
+    .stats-grid,
+    .stats-card,
+    .practice-signal-row,
+    .readiness-metrics,
+    .hero-metrics,
+    .overview-cards,
+    .sheet-summary,
+    .sheet-insight-row,
+    .plan-meta-grid,
+    .analytics-row
+  ) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-6);
+    padding-block: var(--s-4);
+  }
+  :where(
+    .button-row,
+    .hero-actions,
+    .hero-action-row,
+    .practice-command-row,
+    .footer-actions,
+    .actions,
+    .result-assist-row,
+    .result-action-row,
+    .action-dock,
+    .language-actions,
+    .modal-footer,
+    .note-tags,
+    .subject-tabs,
+    .track-row,
+    .track-rail,
+    .mode-row,
+    .folder-grid,
+    .icon-grid,
+    .sheet-legend,
+    .filter-scroll,
+    .training-week-row
+  ) {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--s-3);
+    margin-block: var(--s-3);
+  }
+  :where(
+    .options-list,
+    .bank-list,
+    .result-container,
+    .fsrs-card,
+    .modal-body,
+    .report-text-body,
+    .learning-overview,
+    .result-content-scroll,
+    .result-scroll
+  ) {
+    display: grid;
+    gap: var(--s-4);
+    min-width: 0;
+  }
+  :where(
+    .question-text,
+    .q-content,
+    .question-content,
+    .analysis-text,
+    .note-content,
+    .report-text-content,
+    .plan-goal
+  ) {
+    display: block;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    color: var(--ink);
+  }
+  :where(
+    .section-meta,
+    .section-hint,
+    .activity-time,
+    .time-text,
+    .fsrs-subtitle,
+    .fsrs-progress-text,
+    .review-desc,
+    .material-preview,
+    .summary-muted
+  ) {
+    color: var(--ink-3);
+    font-size: var(--size-small);
+  }
+  :where(.q-tag, .card-tag, .paper-section, .plan-badge, .fsrs-badge, .knowledge-tag) {
+    display: inline-flex;
+    padding: var(--s-1) var(--s-2);
+    background: var(--violet-soft);
+    color: var(--violet-ink);
+    border-radius: var(--r-sm);
+    font-size: var(--size-caption);
+  }
+  :where(.analysis-box, .note-section, .answer-display, .q-passage-card, .report-text-fallback) {
+    padding: var(--s-4);
+    margin-block: var(--s-3);
+    border-radius: var(--r-sm);
+    background: var(--paper-sunk);
+  }
+  :where(.profile-copy, .bank-info, .slot-title-block, .day-tasks) {
+    display: grid;
+    gap: var(--s-2);
+  }
+  .avatar {
+    width: var(--s-14);
+    height: var(--s-14);
+    border-radius: var(--r-pill);
+  }
+  :where(.q-source-image, .report-image) {
+    width: 100%;
+    max-width: 100%;
+  }
+  .q-passage-scroll {
+    max-height: calc(var(--s-14) * 6);
+    overflow-y: auto;
+  }
+  .sheet-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(var(--touch-min), 1fr));
+    gap: var(--s-3);
+  }
+  .sheet-grid-scroll {
+    max-height: calc(var(--s-14) * 5);
+    overflow-y: auto;
+  }
+  .report-canvas {
+    position: fixed;
+    left: -200%;
+    pointer-events: none;
+  }
+  .stat-divider,
+  .aurora-bg,
+  .nav-placeholder,
+  .sheet-handle,
+  .stat-icon,
+  .fsrs-icon {
+    display: none;
+  }
+  .fsrs-curve-chart {
+    display: flex;
+    align-items: flex-end;
+    height: calc(var(--s-14) * 2);
+    gap: var(--s-1);
+  }
+  .fsrs-bar {
+    flex: 1;
+    background: var(--mint);
+  }
+  .fsrs-curve-labels {
+    display: flex;
+    justify-content: space-between;
+    color: var(--ink-3);
+  }
+  .stack-card {
+    display: none;
+  }
+  .loading-state {
+    padding-top: calc(var(--s-14) * 2);
+  }
+}
+.yozi-page-content {
+  color: var(--ink);
+  font: var(--weight-regular) var(--size-body)/var(--leading-body) var(--font-ui);
+}
+
+.yozi-page .folder-choice,
+.yozi-page .back-area {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+}
+@media (prefers-reduced-motion: reduce) {
+  .yozi-page .question-container {
+    transform: none !important;
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+.report-canvas {
+  position: absolute;
+  visibility: hidden;
+  pointer-events: none;
+}
+.yozi-page .nav-header {
+  position: sticky;
+  top: 0;
+}
+.yozi-page .nav-header .nav-content {
+  height: auto;
+}
+.yozi-page .nav-header .quiz-progress {
+  order: 3;
+}
+.yozi-page .timer-group,
+.yozi-page .question-timer-box,
+.yozi-page .timer-box,
+.yozi-page .back-area {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+}
+.yozi-page #language-picker,
+.yozi-page .language-value {
+  min-height: var(--touch-min);
+  display: flex;
+  align-items: center;
+}
+
+.yozi-page :where(.stats-grid, .hero-card, .plan-card, .ai-insight-card, .heatmap-section, .fsrs-section, .menu-card) {
+  scroll-margin-top: calc(var(--control-height) + var(--s-6));
+}
+
+/* Fixed navigation has a matching in-flow reserve inside every tab scroll view. */
+.yozi-page.has-tabbar :where(.main-scroll, .scroll-body, .scroll-container) {
+  padding-bottom: 0;
+}
+.yozi-tabbar-space {
+  display: block;
+  flex: none;
+  height: var(--tabbar-reserve);
+}
+.yozi-page .nav-header .nav-content {
+  box-sizing: border-box;
+  width: calc(100% - var(--s-4) * 2);
+  max-width: calc(var(--page-content-width) - var(--s-4) * 2);
+  margin-inline: auto;
+  padding-left: 0;
+}
+.yozi-icon-row {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  min-width: 0;
+}
+.yozi-icon-row > :where(.base-icon, .result-status-mark, .sparkle-icon, .tutor-avatar) {
+  flex: none;
+}

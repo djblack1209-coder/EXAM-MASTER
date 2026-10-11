@@ -1,3 +1,4 @@
+import { createPinia, setActivePinia } from 'pinia';
 import { mount } from '@vue/test-utils';
 import { flushPromises } from '@vue/test-utils';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -161,3 +162,5 @@ describe('question bank start flow', () => {
     }
   );
 });
+
+beforeEach(() => setActivePinia(createPinia()));

@@ -2,11 +2,14 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { mount, flushPromises } from '@vue/test-utils';
 import { nextTick } from 'vue';
+import { createPinia, setActivePinia } from 'pinia';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import QuestionBankPage from '@/pages/practice-sub/question-bank.vue';
 import storageService from '@/services/storageService.js';
 import { loadBankData } from '@/pages/practice-sub/bank-data-loader.js';
 import { toast } from '@/utils/toast.js';
+
+beforeEach(() => setActivePinia(createPinia()));
 
 vi.mock('@/pages/practice-sub/bank-data-loader.js', () => ({
   loadBankData: vi.fn()
@@ -118,17 +121,16 @@ describe('question bank recommended start entry', () => {
   });
 
   it('guards recommendation wiring, dark-mode coverage, and user-facing wording', () => {
-    expect(source).toContain('recommendedSlot');
-    expect(source).toContain('recommendedLocalState');
-    expect(source).not.toContain('recommendedSlotRecommendation');
-    expect(source).toContain('recommendedSlot.name');
-    expect(source).toContain('recommendedActionText');
-    expect(source).toContain('@tap="loadAndStartSlot(recommendedSlot)"');
-    expect(source).toContain('.dark-mode .recommended-panel');
-    expect(source).toContain('.dark-mode .recommended-action');
-    expect(source).not.toContain('题库发布校验');
-    expect(source).not.toContain('SourceEvidence');
-    expect(source).not.toContain('答案 hash');
-    expect(source).not.toContain('复核');
+    for (const field of [
+      'recommendedSlot',
+      'recommendedLocalState',
+      'recommendedSlot.name',
+      'recommendedActionText',
+      '@tap="loadAndStartSlot(recommendedSlot)"'
+    ])
+      expect(source).toContain(field);
+    expect(source).toContain('useThemeStore');
+    expect(source).toContain('<BaseButton');
+    for (const word of ['题库发布校验', 'SourceEvidence', '答案 hash', '复核']) expect(source).not.toContain(word);
   });
 });
