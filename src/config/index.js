@@ -38,8 +38,6 @@ const CLIENT_ENV = {
   VITE_WX_GZH_APP_ID: import.meta.env.VITE_WX_GZH_APP_ID,
   VITE_WX_WEB_APP_ID: import.meta.env.VITE_WX_WEB_APP_ID,
   VITE_WX_WEB_REDIRECT_URI: import.meta.env.VITE_WX_WEB_REDIRECT_URI,
-  VITE_QQ_APP_ID: import.meta.env.VITE_QQ_APP_ID,
-  VITE_QQ_REDIRECT_URI: import.meta.env.VITE_QQ_REDIRECT_URI,
   VITE_API_BASE_URL: import.meta.env.VITE_API_BASE_URL,
   VITE_API_FALLBACK_URL: import.meta.env.VITE_API_FALLBACK_URL,
   VITE_API_TIMEOUT: import.meta.env.VITE_API_TIMEOUT,
@@ -187,26 +185,6 @@ const config = {
     // 普通浏览器使用开放平台网站应用，公开 ID/同源静态回调不含 AppSecret。
     webAppId: getEnv('VITE_WX_WEB_APP_ID', ''),
     webRedirectUri: getEnv('VITE_WX_WEB_REDIRECT_URI', '')
-  },
-
-  // ==================== QQ登录配置 ====================
-
-  /**
-   * QQ互联配置
-   */
-  qq: {
-    /**
-     * QQ互联 AppID
-     * 配置方式：VITE_QQ_APP_ID=your_qq_app_id
-     * ⚠️ 必须通过环境变量配置，不再提供硬编码默认值
-     */
-    appId: getEnv('VITE_QQ_APP_ID', ''),
-
-    /**
-     * QQ OAuth 回调地址
-     * 配置方式：VITE_QQ_REDIRECT_URI=https://your-domain.com/oauth/qq.html（同源、无 #）
-     */
-    redirectUri: getEnv('VITE_QQ_REDIRECT_URI', '')
   },
 
   // ==================== API 配置 ====================
@@ -706,7 +684,7 @@ if (config.debug.enabled) {
     { key: 'VITE_WX_APP_ID', label: '微信AppID', value: config.wx.appId }
   ];
   // [v1.2.0 审核修复] 将安全密钥从 optional 提升为 required，防止空值运行
-  const optionalKeys = [{ key: 'VITE_QQ_APP_ID', label: 'QQ AppID', value: config.qq.appId }];
+  const optionalKeys = [];
   const missing = requiredKeys.filter((k) => !k.value);
   const warnings = optionalKeys.filter((k) => {
     return !CLIENT_ENV[k.key];

@@ -17,7 +17,12 @@ vi.mock('@dcloudio/uni-app', () => ({
   onHide: (callback) => mocks.hide.push(callback)
 }));
 vi.mock('@/services/desktop/oauth.js', () => ({ loginDesktopOAuth: mocks.desktop }));
-vi.mock('@/stores/modules/auth', () => ({ useAuthStore: () => ({ desktopOAuth: mocks.exchange }) }));
+vi.mock('@/stores/modules/auth', () => ({
+  useAuthStore: () => ({
+    desktopOAuth: mocks.exchange,
+    regionalLogin: async () => ({ code: 0, data: { wechat: true } })
+  })
+}));
 vi.mock('@/utils/toast.js', () => ({
   toast: { info: mocks.info, success: mocks.success, hide: vi.fn(), loading: vi.fn() }
 }));
@@ -31,6 +36,7 @@ beforeEach(() => {
   mocks.hide.length = 0;
   setActivePinia(createPinia());
   uni.clearStorageSync();
+  uni.setStorageSync('yozi_login_region', 'CN');
   localStorage.clear();
   vi.stubGlobal('uni', { ...uni, getProvider: vi.fn(({ success }) => success?.({ provider: [] })) });
   vi.stubGlobal('__WENLI_DESKTOP__', true);
@@ -75,8 +81,9 @@ describe('desktop login page lifetime', () => {
         });
       });
       const wrapper = openLogin();
+      await vi.advanceTimersByTimeAsync(0);
       await wrapper.find('#e2e-login-agreement').trigger('tap');
-      const button = wrapper.findAll('.wechat-btn').find((node) => node.text().includes('微信扫码登录'));
+      const button = wrapper.findAll('.wechat-btn').find((node) => node.text().includes('微信登录'));
       await button.trigger('tap');
       expect(mocks.desktop).toHaveBeenCalledOnce();
       expect(current()).toBe(true);
@@ -96,10 +103,11 @@ describe('desktop login page lifetime', () => {
   it('an accepted identity is saved but hiding and returning cancels its delayed navigation', async () => {
     mocks.desktop.mockResolvedValueOnce(ready);
     const wrapper = openLogin();
+    await vi.advanceTimersByTimeAsync(0);
     await wrapper.find('#e2e-login-agreement').trigger('tap');
     await wrapper
       .findAll('.wechat-btn')
-      .find((node) => node.text().includes('微信扫码登录'))
+      .find((node) => node.text().includes('微信登录'))
       .trigger('tap');
     await vi.advanceTimersByTimeAsync(0);
     expect(getToken()).toBe('isolated-page-token');

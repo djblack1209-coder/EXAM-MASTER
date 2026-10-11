@@ -1,15 +1,12 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createPinia, setActivePinia } from 'pinia';
 import { mount } from '@vue/test-utils';
-import QQCallback from '@/pages/login/qq-callback.vue';
 import WechatCallback from '@/pages/login/wechat-callback.vue';
 import {
   beginWebOAuth,
   consumeWebOAuth,
   requestNativeWechatCode,
-  loginNativeWechat,
-  requestNativeQQCredential,
-  loginNativeQQ
+  loginNativeWechat
 } from '@/pages/login/oauth-utils.js';
 import { storageService } from '@/services/storageService.js';
 import { getToken, getUserId } from '@/services/auth-storage.js';
@@ -79,7 +76,6 @@ afterEach(() => {
 });
 
 for (const [provider, component, call, key, wechatMode = 'h5'] of [
-  ['qq', QQCallback, mocks.qq, 'qq_oauth_state'],
   ['wechat', WechatCallback, mocks.wechat, 'wx_oauth_state'],
   ['wechat', WechatCallback, mocks.wechatWeb, 'wx_oauth_state', 'website']
 ]) {
@@ -198,10 +194,7 @@ for (const [provider, component, call, key, wechatMode = 'h5'] of [
 }
 
 describe('桌面系统浏览器回调', () => {
-  for (const [provider, component] of [
-    ['qq', QQCallback],
-    ['wechat', WechatCallback]
-  ]) {
+  for (const [provider, component] of [['wechat', WechatCallback]]) {
     it(`${provider} 只提交一次授权结果并提示返回桌面，不保存或覆盖浏览器身份`, async () => {
       const state = `desktop_${'ab'.repeat(32)}`;
       location.href = `https://245334.xyz/#/pages/login/${provider}-callback?code=isolated-desktop-code&state=${state}`;
@@ -295,7 +288,7 @@ describe('授权发起边界', () => {
     expect(storageService.get('wx_oauth_state')).toBeFalsy();
     expect(() => beginWebOAuth('wechat', 'isolated-app', '', { wechatMode: 'unknown' })).toThrow('授权方式');
   });
-  it.each(['qq', 'wechat'])('给 %s 平台的注册回调使用无片段的实际入口', (provider) => {
+  it.each(['wechat'])('给 %s 平台的注册回调使用无片段的实际入口', (provider) => {
     const authorization = new URL(beginWebOAuth(provider, 'isolated-app'));
     const callback = new URL(authorization.searchParams.get('redirect_uri'));
     expect(callback.origin).toBe(location.origin);
@@ -303,37 +296,37 @@ describe('授权发起边界', () => {
     expect(callback.pathname).toBe(`/oauth/${provider}.html`);
   });
   it('拒绝带片段的旧注册回调，且不保存授权上下文', () => {
-    expect(() => beginWebOAuth('qq', 'isolated-app', `${location.origin}/#/pages/login/qq-callback`)).toThrow(
+    expect(() => beginWebOAuth('wechat', 'isolated-app', `${location.origin}/#/pages/login/wechat-callback`)).toThrow(
       '回调地址'
     );
-    expect(storageService.get('qq_oauth_state')).toBeFalsy();
+    expect(storageService.get('wx_oauth_state')).toBeFalsy();
   });
   it('网页回调页面均已登记到实际客户端路由', () => {
     const pages = JSON.parse(readFileSync('src/pages.json', 'utf8'));
     const routes = pages.subPackages.flatMap((group) => group.pages.map((page) => `${group.root}/${page.path}`));
-    expect(routes).toContain('pages/login/qq-callback');
+    expect(routes).not.toContain('pages/login/qq-callback');
     expect(routes).toContain('pages/login/wechat-callback');
   });
   it('普通网页不会仅凭编译标志取得桌面能力', () => {
     vi.stubGlobal('__WENLI_DESKTOP__', true);
-    expect(new URL(beginWebOAuth('qq', 'isolated-app')).origin).toBe('https://graph.qq.com');
+    expect(new URL(beginWebOAuth('wechat', 'isolated-app')).origin).toBe('https://open.weixin.qq.com');
   });
   it('真实桌面拒绝嵌入网页授权，且不保存待回调状态', () => {
     vi.stubGlobal('__WENLI_DESKTOP__', true);
     window.__TAURI_INTERNALS__ = { invoke: vi.fn() };
-    expect(() => beginWebOAuth('qq', 'isolated-app')).toThrow('请使用邮箱登录');
-    expect(storageService.get('qq_oauth_state')).toBeFalsy();
+    expect(() => beginWebOAuth('wechat', 'isolated-app')).toThrow('请使用邮箱登录');
+    expect(storageService.get('wx_oauth_state')).toBeFalsy();
     expect(window.__TAURI_INTERNALS__.invoke).not.toHaveBeenCalled();
   });
   it('回调跨域或无法生成随机校验值时不跳转、不保存', () => {
-    expect(() => beginWebOAuth('qq', 'isolated-app', 'https://other.example/callback')).toThrow('当前页面不一致');
+    expect(() => beginWebOAuth('wechat', 'isolated-app', 'https://other.example/callback')).toThrow('当前页面不一致');
     vi.stubGlobal('crypto', undefined);
-    expect(() => beginWebOAuth('qq', 'isolated-app')).toThrow('安全授权');
-    expect(storageService.get('qq_oauth_state')).toBeFalsy();
+    expect(() => beginWebOAuth('wechat', 'isolated-app')).toThrow('安全授权');
+    expect(storageService.get('wx_oauth_state')).toBeFalsy();
   });
   it('上下文存储失败不发起授权', () => {
     vi.spyOn(storageService, 'save').mockReturnValue(false);
-    expect(() => beginWebOAuth('qq', 'isolated-app')).toThrow('无法保存');
+    expect(() => beginWebOAuth('wechat', 'isolated-app')).toThrow('无法保存');
   });
 });
 
@@ -358,10 +351,7 @@ describe('平台返回到真实静态入口再进入现有页面', () => {
     expect(new URL(location.href).search).toBe('');
     return { redirectUri };
   }
-  for (const [provider, component, call] of [
-    ['qq', QQCallback, mocks.qq],
-    ['wechat', WechatCallback, mocks.wechat]
-  ]) {
+  for (const [provider, component, call] of [['wechat', WechatCallback, mocks.wechat]]) {
     it(`${provider} 静态入口保留一次校验并在成功后清除授权参数`, async () => {
       const { redirectUri } = relay(provider, '&redirect=https%3A%2F%2Funtrusted.example');
       expect(location.href).not.toContain('untrusted.example');
@@ -506,158 +496,5 @@ describe('移动微信仅取授权码且不接受迟到身份', () => {
         }
       })
     ).rejects.toThrow('登录失败');
-  });
-});
-
-describe('移动 QQ 凭证只交换一次且不接受迟到身份', () => {
-  function sdk({ delayProvider = false } = {}) {
-    let providerCallbacks, loginCallbacks;
-    const runtime = {
-      getProvider: vi.fn((options) => {
-        providerCallbacks = options;
-        if (!delayProvider) options.success({ provider: ['qq'] });
-      }),
-      login: vi.fn((options) => {
-        loginCallbacks = options;
-      }),
-      getUserInfo: vi.fn()
-    };
-    return { runtime, provider: () => providerCallbacks, callbacks: () => loginCallbacks };
-  }
-  it('SDK 仅提供 token，服务端沿现有 Store 验证应用/身份；不上传客户端资料', async () => {
-    const native = sdk();
-    const exchange = vi.fn().mockResolvedValue({ code: 0, data: { token: 'own-session', userId: 'own-user' } });
-    const pending = loginNativeQQ(native.runtime, exchange, () => true);
-    expect(native.callbacks()).toMatchObject({ provider: 'qq' });
-    expect(native.callbacks()).not.toHaveProperty('onlyAuthorize');
-    native.callbacks().success({
-      authResult: { access_token: 'TEST_ONLY_token+&=?', openid: 'untrusted-openid' },
-      userInfo: { role: 'admin' },
-      code: 'unused-code'
-    });
-    expect(await pending).toMatchObject({ code: 0 });
-    expect(exchange).toHaveBeenCalledExactlyOnceWith({ accessToken: 'TEST_ONLY_token+&=?', platform: 'app' });
-    expect(native.runtime.getUserInfo).not.toHaveBeenCalled();
-  });
-  it.each([undefined, '', 'has space', 'line\nbreak', 'a'.repeat(2049), 123])(
-    '无效 SDK token 不进入业务请求',
-    async (access_token) => {
-      const native = sdk();
-      const exchange = vi.fn();
-      const pending = loginNativeQQ(native.runtime, exchange, () => true);
-      native.callbacks().success({ authResult: { access_token }, code: 'must-not-fallback' });
-      await expect(pending).rejects.toThrow('登录凭证失败');
-      expect(exchange).not.toHaveBeenCalled();
-    }
-  );
-  it.each([
-    ['cancel TEST_ONLY_private_token', '已取消QQ登录'],
-    ['deny TEST_ONLY_private_token', '用户拒绝授权'],
-    ['TEST_ONLY_private_token', 'QQ登录失败']
-  ])('SDK 失败只显示固定消息', async (errMsg, message) => {
-    const native = sdk();
-    const pending = requestNativeQQCredential(native.runtime);
-    native.callbacks().fail({ errMsg });
-    await expect(pending).rejects.toThrow(message);
-    await expect(pending).rejects.not.toThrow('TEST_ONLY_private_token');
-  });
-  it.each(['provider', 'login'])('等待 %s 超过 120 秒安全结束，迟到回调不能登录', async (stage) => {
-    vi.useFakeTimers();
-    const native = sdk({ delayProvider: stage === 'provider' });
-    const exchange = vi.fn();
-    const pending = loginNativeQQ(native.runtime, exchange, () => true);
-    const rejected = expect(pending).rejects.toThrow('超时');
-    await vi.advanceTimersByTimeAsync(120_000);
-    await rejected;
-    native.provider().success({ provider: ['qq'] });
-    native.callbacks()?.success({ authResult: { access_token: 'late-private-token' } });
-    await Promise.resolve();
-    expect(exchange).not.toHaveBeenCalled();
-    expect(vi.getTimerCount()).toBe(0);
-    if (stage === 'provider') expect(native.runtime.login).not.toHaveBeenCalled();
-  });
-  it('重复 provider/SDK 回调只提交一次，迟到 provider 失败不撤销在途 SDK', async () => {
-    vi.useFakeTimers();
-    const native = sdk();
-    const exchange = vi.fn().mockResolvedValue({ code: 0 });
-    const pending = loginNativeQQ(native.runtime, exchange, () => true);
-    native.provider().success({ provider: ['qq'] });
-    native.provider().fail({ errMsg: 'late-provider-error' });
-    native.callbacks().success({ authResult: { access_token: 'TEST_ONLY_first_token' } });
-    native.callbacks().success({ authResult: { access_token: 'TEST_ONLY_late_token' } });
-    native.callbacks().fail({ errMsg: 'cancel' });
-    await pending;
-    expect(native.runtime.login).toHaveBeenCalledTimes(1);
-    expect(exchange).toHaveBeenCalledExactlyOnceWith({ accessToken: 'TEST_ONLY_first_token', platform: 'app' });
-    expect(vi.getTimerCount()).toBe(0);
-  });
-  it('SDK 返回前账户/页面改变，不继续交换 token', async () => {
-    const native = sdk();
-    const exchange = vi.fn();
-    const pending = loginNativeQQ(native.runtime, exchange, () => false);
-    native.callbacks().success({ authResult: { access_token: 'TEST_ONLY_token' } });
-    await expect(pending).rejects.toThrow('页面或账户已变化');
-    expect(exchange).not.toHaveBeenCalled();
-  });
-  it('服务器响应到达前账户变化，旧会话不传给保存调用方', async () => {
-    const native = sdk();
-    let current = true,
-      respond;
-    const exchange = vi.fn(
-      () =>
-        new Promise((resolve) => {
-          respond = resolve;
-        })
-    );
-    const pending = loginNativeQQ(native.runtime, exchange, () => current);
-    native.callbacks().success({ authResult: { access_token: 'TEST_ONLY_token' } });
-    await Promise.resolve();
-    current = false;
-    respond({ code: 0, data: { token: 'late-token', userId: 'late-user' } });
-    await expect(pending).rejects.toThrow('页面或账户已变化');
-    expect(getToken()).toBeNull();
-  });
-  it('网络错误不显示原始 SDK/token 数据', async () => {
-    const native = sdk();
-    const pending = loginNativeQQ(
-      native.runtime,
-      () => Promise.reject(new Error('TEST_ONLY_private_token')),
-      () => true
-    );
-    native.callbacks().success({ authResult: { access_token: 'TEST_ONLY_token' } });
-    await expect(pending).rejects.toThrow('登录请求失败');
-    await expect(pending).rejects.not.toThrow('TEST_ONLY_private_token');
-  });
-  it('未包含 QQ provider 时不调用 SDK，不能伪造业务会话', async () => {
-    const native = sdk({ delayProvider: true });
-    const pending = requestNativeQQCredential(native.runtime);
-    native.provider().success({ provider: [] });
-    await expect(pending).rejects.toThrow('请先安装QQ客户端');
-    expect(native.runtime.login).not.toHaveBeenCalled();
-  });
-  it('Tauri/缺 SDK/同步 SDK 异常均安全结束，不输出原始错误', async () => {
-    vi.stubGlobal('__WENLI_DESKTOP__', true);
-    window.__TAURI_INTERNALS__ = { invoke: vi.fn() };
-    const native = sdk();
-    await expect(requestNativeQQCredential(native.runtime)).rejects.toThrow('不支持QQ');
-    expect(native.runtime.getProvider).not.toHaveBeenCalled();
-    delete window.__TAURI_INTERNALS__;
-    vi.unstubAllGlobals();
-    await expect(requestNativeQQCredential({})).rejects.toThrow('不支持QQ');
-    await expect(
-      requestNativeQQCredential({
-        login: vi.fn(),
-        getProvider: () => {
-          throw new Error('TEST_ONLY_private_error');
-        }
-      })
-    ).rejects.toThrow('QQ登录失败');
-    const throwing = sdk({ delayProvider: true });
-    throwing.runtime.login = () => {
-      throw new Error('TEST_ONLY_private_error');
-    };
-    const pending = requestNativeQQCredential(throwing.runtime);
-    throwing.provider().success({ provider: ['qq'] });
-    await expect(pending).rejects.toThrow('QQ登录失败');
   });
 });

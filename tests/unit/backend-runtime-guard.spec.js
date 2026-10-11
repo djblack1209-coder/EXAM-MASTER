@@ -411,6 +411,63 @@ describe('backend preparation admission', () => {
     ])
       expect(() => assertIdentityPredecessor({ ...previous, ...change }, next)).toThrow();
   });
+  it('regional creation retires only QQ definitions while all original QQ indexes remain protected', () => {
+    const historical = identityDefinitions();
+    const regional = historical
+      .filter((row) => !row.options.name.startsWith('idx_qq_'))
+      .concat(
+        ['apple', 'google'].map((provider) => ({
+          key: { [`${provider}_client_id`]: 1, [`${provider}_sub`]: 1 },
+          options: {
+            name: `idx_${provider}_identity_unique`,
+            unique: true,
+            partialFilterExpression: {
+              [`${provider}_client_id`]: { $type: 'string' },
+              [`${provider}_sub`]: { $type: 'string' }
+            }
+          }
+        })),
+        { key: { phone: 1 }, options: { name: 'idx_phone_unique', unique: true, sparse: true } }
+      );
+    const previous = {
+      transaction: 'b'.repeat(32),
+      preparedTransaction: 'a'.repeat(32),
+      candidateSha: 'c'.repeat(64),
+      contractVersion: 'wenli-backend-stage-v2',
+      definitions: historical,
+      scope: 'user-identities',
+      afterSnapshot: { databaseSha256: 'd'.repeat(64) },
+      actualScopedMigrationAndIdempotency: true,
+      userDocumentsModified: false,
+      publicEntrySwitched: false,
+      upstreamProviderCalls: 0,
+      upstreamModelCalls: 0
+    };
+    expect(() =>
+      assertIdentityPredecessor(previous, {
+        preparedTransaction: previous.preparedTransaction,
+        definitions: regional,
+        beforeSnapshot: previous.afterSnapshot
+      })
+    ).not.toThrow();
+    const before = originalUserIndexes().concat(historical.map(actualIndex));
+    const after = before.concat(regional.slice(-3).map(actualIndex));
+    expect(assertIdentityRecoveryShape(before, after, regional)).toEqual([
+      'idx_apple_identity_unique',
+      'idx_google_identity_unique',
+      'idx_phone_unique'
+    ]);
+    expect(() =>
+      assertIdentityRecoveryShape(
+        before,
+        after.filter((row) => row.name !== 'idx_qq_openid_unique'),
+        regional
+      )
+    ).toThrow();
+    const invalid = structuredClone(regional);
+    invalid.at(-1).options.unique = false;
+    expect(() => assertIdentityDefinitions(invalid)).toThrow();
+  });
   it('current stage receipts fingerprint shared auth modules and refuse symlinked payloads', () => {
     const root = fs.mkdtempSync(path.resolve('tmp/backend-stage-fingerprint-'));
     try {

@@ -3,16 +3,11 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 async function loadLoginHandler({
   jwtSecret = 'unit_test_jwt',
   rateLimitAllowed = true,
-  qqRedirectUri = '',
   users = [],
   mobileAppId = 'unit_wx_mobile_appid',
   mobileSecret = 'unit_mobile_secret+&=?',
   webAppId = 'unit_wx_web_appid',
   webSecret = 'unit_web_secret+&=?',
-  qqMobileAppId = 'unit_qq_mobile_appid',
-  qqMiniAppId = 'unit_qq_mini_appid',
-  qqMiniSecret = 'unit_qq_mini_secret+&=?',
-  qqWebSecret = 'unit_qq_secret+&=?',
   indexMigration = false,
   adminSecret = 'unit_admin_secret_for_scoped_indexes'
 } = {}) {
@@ -28,12 +23,6 @@ async function loadLoginHandler({
     WX_MOBILE_SECRET: process.env.WX_MOBILE_SECRET,
     WX_WEB_APPID: process.env.WX_WEB_APPID,
     WX_WEB_SECRET: process.env.WX_WEB_SECRET,
-    QQ_APPID: process.env.QQ_APPID,
-    QQ_SECRET: process.env.QQ_SECRET,
-    QQ_REDIRECT_URI: process.env.QQ_REDIRECT_URI,
-    QQ_MOBILE_APPID: process.env.QQ_MOBILE_APPID,
-    QQ_MINI_APPID: process.env.QQ_MINI_APPID,
-    QQ_MINI_SECRET: process.env.QQ_MINI_SECRET,
     ADMIN_SECRET: process.env.ADMIN_SECRET
   };
 
@@ -50,12 +39,6 @@ async function loadLoginHandler({
   process.env.WX_MOBILE_SECRET = mobileSecret;
   process.env.WX_WEB_APPID = webAppId;
   process.env.WX_WEB_SECRET = webSecret;
-  process.env.QQ_APPID = 'unit_qq_appid';
-  process.env.QQ_SECRET = qqWebSecret;
-  process.env.QQ_REDIRECT_URI = qqRedirectUri;
-  process.env.QQ_MOBILE_APPID = qqMobileAppId;
-  process.env.QQ_MINI_APPID = qqMiniAppId;
-  process.env.QQ_MINI_SECRET = qqMiniSecret;
   process.env.ADMIN_SECRET = adminSecret;
 
   const logger = { info: vi.fn(), warn: vi.fn(), error: vi.fn() };
@@ -125,26 +108,14 @@ async function loadLoginHandler({
     else process.env.WX_GZH_APPID = originalEnv.WX_GZH_APPID;
     if (originalEnv.WX_GZH_SECRET === undefined) delete process.env.WX_GZH_SECRET;
     else process.env.WX_GZH_SECRET = originalEnv.WX_GZH_SECRET;
-    for (const key of [
-      'QQ_APPID',
-      'QQ_SECRET',
-      'QQ_REDIRECT_URI',
-      'QQ_MOBILE_APPID',
-      'QQ_MINI_APPID',
-      'QQ_MINI_SECRET',
-      'WX_MOBILE_APPID',
-      'WX_MOBILE_SECRET',
-      'WX_WEB_APPID',
-      'WX_WEB_SECRET',
-      'ADMIN_SECRET'
-    ]) {
+    for (const key of ['WX_MOBILE_APPID', 'WX_MOBILE_SECRET', 'WX_WEB_APPID', 'WX_WEB_SECRET', 'ADMIN_SECRET']) {
       if (originalEnv[key] === undefined) delete process.env[key];
       else process.env[key] = originalEnv[key];
     }
   };
 
   return {
-    handler: mod.default,
+    handler: (ctx) => mod.default({ ...ctx, body: { region: 'CN', ...ctx.body } }),
     restoreEnv,
     fetch: cloudMock.default.fetch,
     records,
@@ -220,15 +191,15 @@ describe('受保护用户身份索引范围', () => {
     try {
       const result = await setup.handler(context());
       expect(result).toMatchObject({ code: 0, success: true });
-      expect(setup.collection.createIndex).toHaveBeenCalledTimes(9);
+      expect(setup.collection.createIndex).toHaveBeenCalledTimes(8);
       expect(setup.collectionFactory.mock.calls.every(([name]) => name === 'users')).toBe(true);
       const names = setup.collection.createIndex.mock.calls.map(([, options]) => options.name);
       expect(names).toEqual(
         expect.arrayContaining([
           'idx_wx_mobile_identity_unique',
-          'idx_qq_mobile_identity_unique',
-          'idx_qq_mini_identity_unique',
-          'idx_qq_unionid_unique',
+          'idx_apple_identity_unique',
+          'idx_google_identity_unique',
+          'idx_phone_unique',
           'idx_wx_web_identity_unique'
         ])
       );
@@ -257,7 +228,7 @@ describe('受保护用户身份索引范围', () => {
       definitions[0].key.wx_mobile_appid = -1;
       definitions[0].options.partialFilterExpression.app_openid.$type = 'number';
       definitions.pop();
-      expect(setup.getUserIdentityIndexes()).toHaveLength(9);
+      expect(setup.getUserIdentityIndexes()).toHaveLength(8);
       expect(setup.getUserIdentityIndexes()[0].key.wx_mobile_appid).toBe(1);
       expect(setup.getUserIdentityIndexes()[0].options.partialFilterExpression.app_openid.$type).toBe('string');
       const result = await setup.handler({ headers: context().headers, body: {} });
@@ -317,64 +288,6 @@ describe('[安全审计] login 错误响应形态一致性', () => {
       expect(result.code).toBe(429);
       expect(result.success).toBe(false);
       expect(result.requestId).toBeTruthy();
-    } finally {
-      restoreEnv();
-    }
-  });
-});
-
-describe('QQ 网页授权使用可登记且一致的回调地址', () => {
-  it.each([
-    ['origin', '', undefined, 'https://exam.245334.xyz/oauth/qq.html'],
-    ['configured', 'https://exam.245334.xyz/oauth/qq.html', undefined, 'https://exam.245334.xyz/oauth/qq.html'],
-    ['saved', '', 'https://exam.245334.xyz/oauth/qq.html?version=1', 'https://exam.245334.xyz/oauth/qq.html?version=1']
-  ])('%s 回调按原值发送给供应商', async (_name, qqRedirectUri, redirectUri, expected) => {
-    const { handler, restoreEnv, fetch } = await loadLoginHandler({ qqRedirectUri });
-    fetch.mockResolvedValue({ status: 200, data: 'access_token=' });
-    try {
-      const result = await handler({
-        body: { type: 'qq', platform: 'h5', code: 'test_only_qq_code', redirectUri },
-        headers: _name === 'origin' ? { origin: 'https://exam.245334.xyz' } : {}
-      });
-      expect(result.code).toBe(401);
-      expect(fetch).toHaveBeenCalledTimes(1);
-      expect(new URL(fetch.mock.calls[0][0].url).searchParams.get('redirect_uri')).toBe(expected);
-    } finally {
-      restoreEnv();
-    }
-  });
-
-  it.each([
-    ['fragment', 'https://exam.245334.xyz/#/pages/login/qq-callback'],
-    ['credentials', 'https://user:pass@exam.245334.xyz/oauth/qq.html'],
-    ['unapproved host', 'https://exam.245334.xyz.attacker.invalid/oauth/qq.html']
-  ])('显式 %s 地址在上游调用前拒绝', async (_name, redirectUri) => {
-    const { handler, restoreEnv, fetch } = await loadLoginHandler({
-      qqRedirectUri: 'https://exam.245334.xyz/oauth/qq.html'
-    });
-    try {
-      const result = await handler({
-        body: { type: 'qq', platform: 'h5', code: 'test_only_qq_code', redirectUri },
-        headers: { origin: 'https://exam.245334.xyz' }
-      });
-      expect(result.code).toBe(400);
-      expect(fetch).not.toHaveBeenCalled();
-    } finally {
-      restoreEnv();
-    }
-  });
-
-  it('旧的带片段服务端配置在上游调用前拒绝', async () => {
-    const { handler, restoreEnv, fetch } = await loadLoginHandler({
-      qqRedirectUri: 'https://exam.245334.xyz/#/pages/login/qq-callback'
-    });
-    try {
-      const result = await handler({
-        body: { type: 'qq', platform: 'h5', code: 'test_only_qq_code' },
-        headers: {}
-      });
-      expect(result.code).toBe(400);
-      expect(fetch).not.toHaveBeenCalled();
     } finally {
       restoreEnv();
     }
@@ -652,25 +565,6 @@ describe('微信移动应用的一次性授权码与服务端身份', () => {
   });
 });
 
-const qqAppBody = { type: 'qq', platform: 'app', accessToken: 'TEST_ONLY_token+&=?' };
-const qqWebBody = {
-  type: 'qq',
-  platform: 'h5',
-  code: 'isolated-qq-web-code',
-  redirectUri: 'https://exam.245334.xyz/oauth/qq.html'
-};
-function qqReplies(
-  fetch,
-  { appId = 'unit_qq_mobile_appid', openid = 'provider-qq-openid', unionid, profile = {}, webToken } = {}
-) {
-  if (webToken !== undefined) fetch.mockResolvedValueOnce({ status: 200, data: webToken });
-  fetch.mockResolvedValueOnce({
-    status: 200,
-    data: { client_id: appId, openid, ...(unionid !== undefined ? { unionid } : {}) }
-  });
-  fetch.mockResolvedValueOnce({ status: 200, data: { ret: 0, nickname: 'QQ学习者', ...profile } });
-}
-
 describe('网站微信扫码与独立应用身份', () => {
   const websiteBody = { type: 'wechat_web', code: 'isolated-website-code' };
   it.each([{ webAppId: '' }, { webSecret: '' }])('缺网站配置时不借用公众号或移动应用', async (config) => {
@@ -805,363 +699,19 @@ describe('网站微信扫码与独立应用身份', () => {
   });
 });
 
-describe('QQ 授权归属与平台身份隔离', () => {
-  it.each([
-    { access_token: 'TEST_ONLY_token+&=?' },
-    'access_token=TEST_ONLY_token%2B%26%3D%3F&expires_in=7776000',
-    'callback({"access_token":"TEST_ONLY_token+&=?"});'
-  ])('网站兼容 QQ 官方/旧响应格式且每次核验应用 ID', async (webToken) => {
-    const run = await loadLoginHandler();
-    qqReplies(run.fetch, { appId: 'unit_qq_appid', webToken });
+describe('retired QQ rejects every former credential shape', () => {
+  it.each(['h5', 'app', 'mp-qq'])('rejects %s without provider requests or data changes', async (platform) => {
+    const setup = await loadLoginHandler();
     try {
-      const response = await run.handler({ body: qqWebBody, headers: {} });
-      expect(response.code).toBe(0);
-      expect(run.records[0]).toMatchObject({ qq_openid: 'provider-qq-openid', role: 'user' });
-      expect(run.records[0]).not.toHaveProperty('qq_mobile_openid');
-      const tokenUrl = new URL(run.fetch.mock.calls[0][0].url);
-      expect(tokenUrl.origin + tokenUrl.pathname).toBe('https://graph.qq.com/oauth2.0/token');
-      expect(Object.fromEntries(tokenUrl.searchParams)).toEqual({
-        grant_type: 'authorization_code',
-        client_id: 'unit_qq_appid',
-        client_secret: 'unit_qq_secret+&=?',
-        code: qqWebBody.code,
-        redirect_uri: qqWebBody.redirectUri,
-        fmt: 'json'
-      });
-      const meUrl = new URL(run.fetch.mock.calls[1][0].url);
-      expect(Object.fromEntries(meUrl.searchParams)).toEqual({
-        access_token: qqAppBody.accessToken,
-        unionid: '1',
-        fmt: 'json'
-      });
-      for (const [request] of run.fetch.mock.calls)
-        expect(request).toMatchObject({ timeout: 10000, maxRedirects: 0, maxContentLength: 65536 });
-    } finally {
-      run.restoreEnv();
-    }
-  });
-  it.each([undefined, 123, 'unit_qq_appid', 'other-mobile-app'])(
-    '移动 token 的回执应用 ID %s 不匹配即拒绝',
-    async (client_id) => {
-      const run = await loadLoginHandler();
-      run.fetch.mockResolvedValueOnce({ status: 200, data: { client_id, openid: 'provider-qq-openid' } });
-      try {
-        expect((await run.handler({ body: qqAppBody, headers: {} })).code).toBe(401);
-        expect(run.fetch).toHaveBeenCalledTimes(1);
-        expect(run.collection.where).not.toHaveBeenCalled();
-        expect(run.collection.add).not.toHaveBeenCalled();
-      } finally {
-        run.restoreEnv();
-      }
-    }
-  );
-  it('移动应用不采纳客户端角色/资料，服务器用精确编码 token 查询自己的应用', async () => {
-    const run = await loadLoginHandler({ users: [{ _id: 'web-user', qq_openid: 'provider-qq-openid', role: 'user' }] });
-    qqReplies(run.fetch, {
-      profile: {
-        role: 'admin',
-        password: 'TEST_ONLY_provider_password',
-        figureurl_qq_2: 'https://qlogo.example/avatar.png'
-      }
-    });
-    try {
-      const response = await run.handler({
-        body: {
-          ...qqAppBody,
-          role: 'admin',
-          unionid: 'forged-union',
-          userInfo: { role: 'admin', nickname: 'forged-profile' }
-        },
+      const result = await setup.handler({
+        body: { type: 'qq', platform, code: 'fixture-code', accessToken: 'fixture-token' },
         headers: {}
       });
-      expect(response.code).toBe(0);
-      expect(response.data.userId).not.toBe('web-user');
-      expect(response.data.userInfo).toMatchObject({ nickname: 'QQ学习者', role: 'user' });
-      expect(run.records[1]).toMatchObject({
-        qq_mobile_appid: 'unit_qq_mobile_appid',
-        qq_mobile_openid: 'provider-qq-openid'
-      });
-      expect(run.records[1]).not.toHaveProperty('qq_openid');
-      expect(jwtPayload(response.data.token)).toMatchObject({
-        userId: response.data.userId,
-        qq_openid: 'provider-qq-openid',
-        role: 'user'
-      });
-      const profileUrl = new URL(run.fetch.mock.calls[1][0].url);
-      expect(Object.fromEntries(profileUrl.searchParams)).toEqual({
-        access_token: qqAppBody.accessToken,
-        oauth_consumer_key: 'unit_qq_mobile_appid',
-        openid: 'provider-qq-openid'
-      });
-      const exposed = JSON.stringify([response, run.records, Object.values(run.logger).flatMap((fn) => fn.mock.calls)]);
-      for (const value of [qqAppBody.accessToken, 'forged-union', 'forged-profile', 'TEST_ONLY_provider_password'])
-        expect(exposed).not.toContain(value);
-      expect(JSON.stringify(Object.values(run.logger).flatMap((fn) => fn.mock.calls))).not.toContain(
-        response.data.userId
-      );
+      expect(result).toMatchObject({ code: 400, errorCode: 'UNSUPPORTED_LOGIN', success: false });
+      expect(setup.fetch).not.toHaveBeenCalled();
+      expect(setup.collection.add).not.toHaveBeenCalled();
     } finally {
-      run.restoreEnv();
-    }
-  });
-  it('openid 客户端提示与 QQ 回执不一致时拒绝，不能覆盖现有身份', async () => {
-    const run = await loadLoginHandler();
-    qqReplies(run.fetch);
-    try {
-      expect((await run.handler({ body: { ...qqAppBody, openid: 'forged-openid' }, headers: {} })).code).toBe(401);
-      expect(run.collection.add).not.toHaveBeenCalled();
-    } finally {
-      run.restoreEnv();
-    }
-  });
-  it.each([undefined, '', 'has space', 'line\nbreak', 'a'.repeat(2049), 123])(
-    '非法移动凭证在上游调用前拒绝',
-    async (accessToken) => {
-      const run = await loadLoginHandler();
-      try {
-        expect((await run.handler({ body: { ...qqAppBody, accessToken }, headers: {} })).code).toBe(400);
-        expect(run.fetch).not.toHaveBeenCalled();
-        expect(run.collection.add).not.toHaveBeenCalled();
-      } finally {
-        run.restoreEnv();
-      }
-    }
-  );
-  it.each([
-    [{ ...qqAppBody, platform: 'unknown' }, {}, 400],
-    [{ ...qqAppBody, platform: null }, {}, 400],
-    [qqAppBody, { qqMobileAppId: '' }, 500],
-    [qqWebBody, { qqWebSecret: '' }, 500],
-    [{ ...qqWebBody, accessToken: '' }, {}, 400],
-    [{ ...qqWebBody, code: 'code&token=forged' }, {}, 400],
-    [{ type: 'qq', platform: 'mp-qq', code: 'isolated-mini-code' }, { qqMiniSecret: '' }, 500],
-    [{ type: 'qq', platform: 'mp-qq', code: 'isolated-mini-code' }, { qqMiniAppId: '' }, 500]
-  ])('未知平台、不完整配置或混用凭据不借用其他平台', async (body, config, code) => {
-    const run = await loadLoginHandler(config);
-    try {
-      expect((await run.handler({ body, headers: {} })).code).toBe(code);
-      expect(run.fetch).not.toHaveBeenCalled();
-      expect(run.collection.add).not.toHaveBeenCalled();
-    } finally {
-      run.restoreEnv();
-    }
-  });
-  it.each([
-    { status: 302, data: { client_id: 'unit_qq_mobile_appid', openid: 'provider-qq-openid' } },
-    { status: 200, data: 'prefix callback({"client_id":"unit_qq_mobile_appid","openid":"provider-qq-openid"});' },
-    { status: 200, data: { client_id: 'unit_qq_mobile_appid', openid: {} } },
-    { status: 200, data: { client_id: 'unit_qq_mobile_appid', openid: 'provider-qq-openid', unionid: null } },
-    { status: 200, data: { error: 100001, error_description: 'TEST_ONLY_private_description' } }
-  ])('非成功或不明确上游回执仅返回固定提示', async (provider) => {
-    const run = await loadLoginHandler();
-    run.fetch.mockResolvedValueOnce(provider);
-    try {
-      const response = await run.handler({ body: qqAppBody, headers: {} });
-      expect(response).toMatchObject({ code: 401, message: 'QQ 登录校验失败，请重新登录' });
-      expect(JSON.stringify([response, Object.values(run.logger).flatMap((fn) => fn.mock.calls)])).not.toContain(
-        'TEST_ONLY_private_description'
-      );
-      expect(run.collection.add).not.toHaveBeenCalled();
-    } finally {
-      run.restoreEnv();
-    }
-  });
-  it('HTTP 错误和重复 token 参数不泄露凭据，也不能取得业务会话', async () => {
-    const run = await loadLoginHandler();
-    try {
-      run.fetch.mockRejectedValueOnce(new Error('TEST_ONLY_private_url?access_token=TEST_ONLY_private_token'));
-      expect((await run.handler({ body: qqAppBody, headers: {} })).code).toBe(401);
-      run.fetch.mockResolvedValueOnce({ status: 200, data: 'access_token=one&access_token=two' });
-      expect((await run.handler({ body: qqWebBody, headers: {} })).code).toBe(401);
-      expect(run.fetch).toHaveBeenCalledTimes(2);
-      expect(JSON.stringify(Object.values(run.logger).flatMap((fn) => fn.mock.calls))).not.toContain(
-        'TEST_ONLY_private_'
-      );
-      expect(run.collection.add).not.toHaveBeenCalled();
-    } finally {
-      run.restoreEnv();
-    }
-  });
-  it.each([
-    [{}, 'unit_qq_mini_appid', 'unit_qq_mini_secret+&=?'],
-    [{ qqMiniAppId: '', qqMiniSecret: '' }, 'unit_qq_appid', 'unit_qq_secret+&=?']
-  ])('小程序独立配置及完整旧配置兼容均按小程序身份保存', async (config, appid, secret) => {
-    const run = await loadLoginHandler(config);
-    run.fetch.mockResolvedValueOnce({
-      status: 200,
-      data: { openid: 'provider-qq-openid', session_key: 'TEST_ONLY_private_session' }
-    });
-    try {
-      const response = await run.handler({
-        body: { type: 'qq', platform: 'mp-qq', code: 'isolated-mini-code' },
-        headers: {}
-      });
-      expect(response.code).toBe(0);
-      expect(run.fetch).toHaveBeenCalledTimes(1);
-      const url = new URL(run.fetch.mock.calls[0][0].url);
-      expect(url.origin + url.pathname).toBe('https://api.q.qq.com/sns/jscode2session');
-      expect(Object.fromEntries(url.searchParams)).toEqual({
-        appid,
-        secret,
-        js_code: 'isolated-mini-code',
-        grant_type: 'authorization_code'
-      });
-      expect(run.records[0]).toMatchObject({ qq_mini_appid: appid, qq_mini_openid: 'provider-qq-openid' });
-      expect(run.records[0]).not.toHaveProperty('qq_openid');
-      expect(JSON.stringify([response, run.records])).not.toContain('TEST_ONLY_private_session');
-    } finally {
-      run.restoreEnv();
-    }
-  });
-  it('相同 openid 的移动/小程序/网站和其他应用独立保存，缺 unionid 不写 null', async () => {
-    const run = await loadLoginHandler({
-      users: [
-        { _id: 'other-app', qq_mobile_appid: 'other-mobile-app', qq_mobile_openid: 'provider-qq-openid', role: 'user' }
-      ]
-    });
-    try {
-      qqReplies(run.fetch);
-      const mobile = await run.handler({ body: qqAppBody, headers: {} });
-      qqReplies(run.fetch, { appId: 'unit_qq_appid', webToken: { access_token: qqAppBody.accessToken } });
-      const web = await run.handler({ body: qqWebBody, headers: {} });
-      run.fetch.mockResolvedValueOnce({ status: 200, data: { openid: 'provider-qq-openid' } });
-      const mini = await run.handler({
-        body: { type: 'qq', platform: 'mp-qq', code: 'isolated-mini-code' },
-        headers: {}
-      });
-      expect(new Set([mobile.data.userId, web.data.userId, mini.data.userId, 'other-app']).size).toBe(4);
-      expect(run.records.every((user) => !Object.hasOwn(user, 'qq_unionid'))).toBe(true);
-      qqReplies(run.fetch);
-      const repeated = await run.handler({ body: qqAppBody, headers: {} });
-      expect(repeated.data.userId).toBe(mobile.data.userId);
-      expect(repeated.data.isNewUser).toBe(false);
-      expect(run.records).toHaveLength(4);
-    } finally {
-      run.restoreEnv();
-    }
-  });
-  it('仅服务器确认的 unionid 衔接账户，自定昵称和角色保留', async () => {
-    const run = await loadLoginHandler({
-      users: [
-        {
-          _id: 'known-user',
-          qq_openid: 'web-openid',
-          qq_unionid: 'server-qq-union',
-          nickname: '我的昵称',
-          role: 'user'
-        }
-      ]
-    });
-    qqReplies(run.fetch, { unionid: 'server-qq-union' });
-    try {
-      const response = await run.handler({ body: { ...qqAppBody, unionid: 'forged-union' }, headers: {} });
-      expect(response.data).toMatchObject({ userId: 'known-user', userInfo: { nickname: '我的昵称', role: 'user' } });
-      expect(run.records[0].qq_openid).toBe('web-openid');
-      expect(run.records[0].qq_mobile_openid).toBe('provider-qq-openid');
-      expect(run.collection.add).not.toHaveBeenCalled();
-    } finally {
-      run.restoreEnv();
-    }
-  });
-  it.each([
-    [
-      {
-        _id: 'identity',
-        qq_mobile_appid: 'unit_qq_mobile_appid',
-        qq_mobile_openid: 'provider-qq-openid',
-        qq_unionid: 'different-union',
-        role: 'user'
-      }
-    ],
-    [
-      {
-        _id: 'union',
-        qq_unionid: 'server-qq-union',
-        qq_mobile_appid: 'unit_qq_mobile_appid',
-        qq_mobile_openid: 'different-openid',
-        role: 'user'
-      }
-    ],
-    [
-      {
-        _id: 'identity',
-        qq_mobile_appid: 'unit_qq_mobile_appid',
-        qq_mobile_openid: 'provider-qq-openid',
-        role: 'user'
-      },
-      { _id: 'union', qq_unionid: 'server-qq-union', role: 'admin' }
-    ]
-  ])('服务器 unionid 和已绑定身份冲突时保全所有账户', async (...users) => {
-    const run = await loadLoginHandler({ users });
-    const before = structuredClone(run.records);
-    qqReplies(run.fetch, { unionid: 'server-qq-union' });
-    try {
-      expect((await run.handler({ body: qqAppBody, headers: {} })).code).toBe(409);
-      expect(run.records).toEqual(before);
-      expect(run.collection.add).not.toHaveBeenCalled();
-      expect(run.collection.doc).not.toHaveBeenCalled();
-    } finally {
-      run.restoreEnv();
-    }
-  });
-  it('已有默认昵称更新后，实际响应也呈现已保存的服务端资料', async () => {
-    const run = await loadLoginHandler({
-      users: [
-        {
-          _id: 'known-user',
-          qq_mobile_appid: 'unit_qq_mobile_appid',
-          qq_mobile_openid: 'provider-qq-openid',
-          nickname: '考研学子ABCD',
-          role: 'user',
-          avatar_url: ''
-        }
-      ]
-    });
-    qqReplies(run.fetch, { profile: { figureurl_qq_2: 'https://qlogo.example/avatar.png' } });
-    try {
-      const response = await run.handler({ body: qqAppBody, headers: {} });
-      expect(response.data.userInfo).toMatchObject({
-        nickname: 'QQ学习者',
-        avatar_url: 'https://qlogo.example/avatar.png'
-      });
-      expect(run.records[0]).toMatchObject({ nickname: 'QQ学习者', avatar_url: 'https://qlogo.example/avatar.png' });
-    } finally {
-      run.restoreEnv();
-    }
-  });
-  it.each([
-    ['matching', undefined, 0],
-    ['conflicting', 'different-union', 409]
-  ])('并发唯一键争用后的 %s 身份回查仍核对应用和 unionid', async (_name, racedUnionid, expected) => {
-    const run = await loadLoginHandler();
-    qqReplies(run.fetch, { unionid: 'server-qq-union' });
-    run.collection.add.mockImplementationOnce(async () => {
-      run.records.push({
-        _id: 'raced-user',
-        qq_mobile_appid: 'unit_qq_mobile_appid',
-        qq_mobile_openid: 'provider-qq-openid',
-        role: 'user',
-        ...(racedUnionid ? { qq_unionid: racedUnionid } : {})
-      });
-      throw new Error('E11000 duplicate key');
-    });
-    try {
-      const response = await run.handler({ body: qqAppBody, headers: {} });
-      expect(response.code).toBe(expected);
-      expect(run.records).toHaveLength(1);
-      if (expected === 0) expect(response.data.userId).toBe('raced-user');
-      else expect(response).not.toHaveProperty('data.token');
-    } finally {
-      run.restoreEnv();
-    }
-  });
-  it('QQ 新流程仍须通过既有登录限流', async () => {
-    const run = await loadLoginHandler({ rateLimitAllowed: false });
-    try {
-      expect((await run.handler({ body: qqAppBody, headers: {} })).code).toBe(429);
-      expect(run.fetch).not.toHaveBeenCalled();
-      expect(run.collection.add).not.toHaveBeenCalled();
-    } finally {
-      run.restoreEnv();
+      setup.restoreEnv();
     }
   });
 });

@@ -17,8 +17,10 @@ use tauri::{AppHandle, Manager, State};
 use tauri_plugin_dialog::DialogExt;
 use tauri_plugin_opener::OpenerExt;
 mod notifications;
-use notifications::{begin_learning_notifications, learning_notification_permission, replace_learning_notifications,
-    take_learning_notification_actions, LearningNotifications};
+use notifications::{
+    begin_learning_notifications, learning_notification_permission, replace_learning_notifications,
+    take_learning_notification_actions, LearningNotifications,
+};
 
 const MAX_BYTES: u64 = 48_000_000;
 const MATERIAL_MAX_BYTES: u64 = 10 * 1024 * 1024;
@@ -478,12 +480,6 @@ fn valid_desktop_oauth_url(provider: &str, raw: &str) -> bool {
         return false;
     };
     let (host, path, app_key, scope) = match provider {
-        "qq" => (
-            "graph.qq.com",
-            "/oauth2.0/authorize",
-            "client_id",
-            "get_user_info",
-        ),
         "wechat" => (
             "open.weixin.qq.com",
             "/connect/qrconnect",
@@ -498,7 +494,6 @@ fn valid_desktop_oauth_url(provider: &str, raw: &str) -> bool {
         || url.port().is_some()
         || !url.username().is_empty()
         || url.password().is_some()
-        || (provider == "qq" && url.fragment().is_some())
         || (provider == "wechat" && url.fragment() != Some("wechat_redirect"))
     {
         return false;
@@ -609,8 +604,13 @@ fn main() {
             #[cfg(target_os = "macos")]
             let builder = if app.config().identifier == "cn.wangshiliang.wenli.qa.journey" {
                 // 仅受限本机候选标识采用独立WebKit资料域；正式入口和用户资料域不变。
-                builder.data_store_identifier([0x51, 0x92, 0x20, 0x26, 0x10, 0x10, 0x42, 0x72, 0x91, 0x29, 0x35, 0x73, 0x88, 0x91, 0x13, 0x07])
-            } else { builder };
+                builder.data_store_identifier([
+                    0x51, 0x92, 0x20, 0x26, 0x10, 0x10, 0x42, 0x72, 0x91, 0x29, 0x35, 0x73, 0x88,
+                    0x91, 0x13, 0x07,
+                ])
+            } else {
+                builder
+            };
             builder
                 .on_navigation(trusted_navigation)
                 .on_new_window(|_, _| tauri::webview::NewWindowResponse::Deny)
@@ -737,31 +737,23 @@ mod tests {
     #[test]
     fn desktop_browser_opener_accepts_only_bound_provider_urls() {
         let state = format!("desktop_{}", "ab".repeat(32));
-        let qq = format!("https://graph.qq.com/oauth2.0/authorize?client_id=test_app&response_type=code&redirect_uri=https%3A%2F%2Flearning.example.com%2Foauth%2Fqq.html&state={state}&scope=get_user_info");
-        assert!(valid_desktop_oauth_url("qq", &qq));
+        let wx = format!("https://open.weixin.qq.com/connect/qrconnect?appid=test_app&response_type=code&redirect_uri=https%3A%2F%2Flearning.example.com%2Foauth%2Fwechat.html&state={state}&scope=snsapi_login#wechat_redirect");
         for bad in [
-            qq.replace("graph.qq.com", "graph.qq.com.evil"),
-            qq.replace("https://graph.qq.com", "http://graph.qq.com"),
-            qq.replace("get_user_info", "unknown"),
-            qq.replace("desktop_", "web_"),
-            qq.replace("learning.example.com", "127.0.0.1"),
-            format!("{qq}&state={state}"),
-            format!("{qq}&extra=1"),
-            format!("{qq}#fragment"),
+            wx.replace("open.weixin.qq.com", "open.weixin.qq.com.evil"),
+            wx.replace("https://open.weixin.qq.com", "http://open.weixin.qq.com"),
+            wx.replace("snsapi_login", "unknown"),
+            wx.replace("desktop_", "web_"),
+            wx.replace("learning.example.com", "127.0.0.1"),
+            wx.replace(
+                "#wechat_redirect",
+                &format!("&state={state}#wechat_redirect"),
+            ),
+            wx.replace("#wechat_redirect", "&extra=1#wechat_redirect"),
             "file:///tmp/test.html".into(),
         ] {
-            assert!(!valid_desktop_oauth_url("qq", &bad));
+            assert!(!valid_desktop_oauth_url("wechat", &bad));
         }
-        assert!(!valid_desktop_oauth_url("wechat", &qq));
-        let wx = qq
-            .replace(
-                "graph.qq.com/oauth2.0/authorize",
-                "open.weixin.qq.com/connect/qrconnect",
-            )
-            .replace("client_id", "appid")
-            .replace("get_user_info", "snsapi_login")
-            .replace("%2Fqq.html", "%2Fwechat.html")
-            + "#wechat_redirect";
+        assert!(!valid_desktop_oauth_url("qq", &wx));
         assert!(valid_desktop_oauth_url("wechat", &wx));
         assert!(!valid_desktop_oauth_url(
             "wechat",

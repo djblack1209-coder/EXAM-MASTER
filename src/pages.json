@@ -98,14 +98,6 @@
             "navigationStyle": "custom",
             "navigationBarBackgroundColor": "#F5F7FA"
           }
-        },
-        {
-          "path": "qq-callback",
-          "style": {
-            "navigationBarTitleText": "%pages.qq%",
-            "navigationStyle": "custom",
-            "navigationBarBackgroundColor": "#F5F7FA"
-          }
         }
       ]
     },

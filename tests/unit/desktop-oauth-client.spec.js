@@ -9,7 +9,7 @@ vi.mock('@/services/api/domains/_request-core.js', () => ({ request: mocks.reque
 const verifier = 'ab'.repeat(32);
 const challenge = 'cd'.repeat(32);
 const sessionId = 'ef'.repeat(32);
-const authorizationUrl = 'https://graph.qq.com/oauth2.0/authorize?isolated-unit-test';
+const authorizationUrl = 'https://open.weixin.qq.com/connect/qrconnect?isolated-unit-test';
 const start = { code: 0, data: { sessionId, authorizationUrl, expiresIn: 9, interval: 3 } };
 const ready = { code: 0, data: { userId: 'isolated-desktop-user', token: 'isolated-desktop-session' } };
 
@@ -37,7 +37,7 @@ function exchangeWith(...replies) {
   return exchange;
 }
 function pendingResult(exchange, current) {
-  return loginDesktopOAuth('qq', exchange, current).then(
+  return loginDesktopOAuth('wechat', exchange, current).then(
     (value) => ({ value }),
     (error) => ({ error })
   );
@@ -47,13 +47,16 @@ describe('desktop browser handover', () => {
   it('opens once, polls only after the supplied interval, focuses the existing window and leaves identity storage to the page', async () => {
     const exchange = exchangeWith({ code: 0, data: { status: 'pending', interval: 3 } }, ready);
     const onOpened = vi.fn();
-    const pending = loginDesktopOAuth('qq', exchange, () => true, onOpened).then(
+    const pending = loginDesktopOAuth('wechat', exchange, () => true, onOpened).then(
       (value) => ({ value }),
       (error) => ({ error })
     );
     await vi.advanceTimersByTimeAsync(0);
-    expect(exchange).toHaveBeenCalledExactlyOnceWith({ action: 'begin', provider: 'qq', challenge });
-    expect(mocks.invoke).toHaveBeenNthCalledWith(2, 'open_desktop_oauth', { provider: 'qq', url: authorizationUrl });
+    expect(exchange).toHaveBeenCalledExactlyOnceWith({ action: 'begin', provider: 'wechat', challenge });
+    expect(mocks.invoke).toHaveBeenNthCalledWith(2, 'open_desktop_oauth', {
+      provider: 'wechat',
+      url: authorizationUrl
+    });
     expect(onOpened).toHaveBeenCalledOnce();
     expect(JSON.stringify(exchange.mock.calls[0])).not.toContain(verifier);
     await vi.advanceTimersByTimeAsync(2999);

@@ -20,6 +20,7 @@ import LearningPage from '@/pages/learning/index.vue';
 import ProfilePage from '@/pages/profile/index.vue';
 import OnboardingPage from '@/pages/login/onboarding.vue';
 import LoginPage from '@/pages/login/index.vue';
+import { useAuthStore } from '@/stores/modules/auth.js';
 import CustomTabbar from '@/components/layout/custom-tabbar/custom-tabbar.vue';
 import { useThemeStore } from '@/stores/modules/theme.js';
 import { useStudyStore } from '@/stores/modules/study.js';
@@ -1834,61 +1835,54 @@ describe('学习空间的实际入口与目录', () => {
       wrapper.unmount();
     }
   });
-  it('登录入口 Enter 与 Space 激活同一操作，未勾选协议不触发认证请求', async () => {
-    const previousProvider = uni.getProvider;
-    uni.getProvider = vi.fn(({ success }) => success({ provider: [] }));
+  it('登录入口 Enter 与 Space 不绕过协议，QQ 不再出现', async () => {
+    uni.setStorageSync('yozi_login_region', 'CN');
+    const api = vi.spyOn(useAuthStore(), 'regionalLogin').mockResolvedValue({ code: 0, data: { wechat: true } });
     const wrapper = mount(LoginPage, { global: { stubs: { ...stubs, PrivacyPopup: true } } });
-    const bridge = (item) => {
-      item.element.addEventListener('click', () => item.element.dispatchEvent(new Event('tap', { bubbles: true })));
-      return item;
-    };
     try {
-      const wechat = bridge(wrapper.findAll('.wechat-btn')[1]);
-      expect(wechat.attributes('role')).toBe('button');
-      expect(wechat.attributes('tabindex')).toBe('0');
-      await wechat.trigger('keydown', { key: 'Enter' });
-      await wechat.trigger('keydown', { key: 'Enter', repeat: true });
       await flushPromises();
-      expect(uni.showToast).toHaveBeenCalledOnce();
-      expect(uni.request).not.toHaveBeenCalled();
-      expect(wrapper.find('#e2e-login-agreement').attributes('aria-checked')).toBe('false');
-      const qq = bridge(wrapper.find('.qq-btn'));
-      await qq.trigger('keydown', { key: ' ' });
-      expect(uni.showToast).toHaveBeenCalledTimes(2);
-      expect(uni.request).not.toHaveBeenCalled();
-      await bridge(wrapper.find('#e2e-login-email-entry')).trigger('keydown', { key: 'Enter' });
-      expect(wrapper.find('#e2e-login-email').exists()).toBe(true);
-      expect(wrapper.find('#e2e-login-email-entry').exists()).toBe(false);
+      api.mockClear();
+      expect(wrapper.find('.qq-btn').exists()).toBe(false);
+      const email = wrapper.find('.email-btn');
+      expect(email.attributes('aria-disabled')).toBe('true');
+      await email.trigger('keydown', { key: 'Enter' });
+      await email.trigger('keydown', { key: ' ' });
+      expect(api).not.toHaveBeenCalled();
+      expect(wrapper.find('.email-form').exists()).toBe(false);
+      await wrapper.find('#e2e-login-agreement').trigger('keydown', { key: ' ' });
+      await email.trigger('keydown', { key: 'Enter' });
+      await flushPromises();
+      expect(wrapper.find('.email-form').exists()).toBe(true);
     } finally {
       wrapper.unmount();
-      if (previousProvider) uni.getProvider = previousProvider;
-      else delete uni.getProvider;
+      api.mockRestore();
     }
   });
   it('登录密码可键盘切换，空邮箱验证码按钮禁用且不发送请求', async () => {
-    const previousProvider = uni.getProvider;
-    uni.getProvider = vi.fn(({ success }) => success({ provider: [] }));
+    uni.setStorageSync('yozi_login_region', 'CN');
+    const api = vi.spyOn(useAuthStore(), 'regionalLogin').mockResolvedValue({ code: 0, data: {} });
+    const send = vi.spyOn(useAuthStore(), 'sendEmailCode');
     const wrapper = mount(LoginPage, { global: { stubs: { ...stubs, PrivacyPopup: true } } });
-    const bridge = (item) => {
-      item.element.addEventListener('click', () => item.element.dispatchEvent(new Event('tap', { bubbles: true })));
-      return item;
-    };
     try {
-      await wrapper.find('#e2e-login-email-entry').trigger('tap');
-      await bridge(wrapper.find('#e2e-login-toggle-password')).trigger('keydown', { key: ' ' });
-      expect(wrapper.find('#e2e-login-toggle-password').attributes('aria-label')).toBe('隐藏登录密码');
-      await bridge(wrapper.find('#e2e-login-toggle-register')).trigger('keydown', { key: 'Enter' });
-      const send = bridge(wrapper.find('#e2e-login-send-code'));
-      expect(send.attributes('disabled')).toBeDefined();
-      expect(send.attributes('aria-disabled')).toBe('true');
-      await send.trigger('keydown', { key: 'Enter' });
       await flushPromises();
-      expect(uni.request).not.toHaveBeenCalled();
-      expect(wrapper.find('#e2e-login-agreement').attributes('aria-checked')).toBe('false');
+      await wrapper.find('#e2e-login-agreement').trigger('keydown', { key: ' ' });
+      await wrapper.find('.email-btn').trigger('keydown', { key: 'Enter' });
+      const toggle = wrapper.find('[aria-label="显示密码"]');
+      await toggle.trigger('keydown', { key: ' ' });
+      expect(wrapper.find('[aria-label="隐藏密码"]').exists()).toBe(true);
+      await wrapper
+        .findAll('button')
+        .find((b) => b.text() === '创建账户')
+        .trigger('keydown', { key: 'Enter' });
+      const resend = wrapper.find('.email-form .base-field__group .base-button--quiet');
+      expect(resend.attributes('aria-disabled')).toBe('true');
+      await resend.trigger('keydown', { key: 'Enter' });
+      await flushPromises();
+      expect(send).not.toHaveBeenCalled();
     } finally {
       wrapper.unmount();
-      if (previousProvider) uni.getProvider = previousProvider;
-      else delete uni.getProvider;
+      api.mockRestore();
+      send.mockRestore();
     }
   });
   it('账户优先保留用户头像，加载失败才使用本地卡通头像，新头像可重新加载', async () => {
@@ -1966,6 +1960,8 @@ describe('学习空间的实际入口与目录', () => {
     expect(wrapper.text()).not.toContain('2027 考研公共课');
     loadHooks.callbacks.at(-1)({});
     await flushPromises();
+    expect(storageService.get('onboarding_completed')).not.toBe(true);
+    await wrapper.find('.base-button--primary').trigger('tap');
     expect(storageService.get('onboarding_completed')).toBe(true);
     expect(storageService.get('exam_profile')).toEqual(existing);
     expect(storageService.get('daily_goal')).toBe(40);
@@ -1980,6 +1976,7 @@ describe('学习空间的实际入口与目录', () => {
     const wrapper = mount(OnboardingPage, { global: { stubs } });
     try {
       loadHooks.callbacks.at(-1)({});
+      await wrapper.find('.base-button--primary').trigger('tap');
       const navigation = uni.switchTab.mock.calls.at(-1)[0];
       wrapper.unmount();
       navigation.success?.();
@@ -2000,7 +1997,7 @@ describe('学习空间的实际入口与目录', () => {
     loadHooks.callbacks.at(-1)({ source: 'home' });
     await flushPromises();
     expect(wrapper.text()).toContain('2027 考研公共课');
-    for (let step = 0; step < 4; step += 1) await wrapper.find('.primary-btn').trigger('tap');
+    for (let step = 0; step < 4; step += 1) await wrapper.find('.base-button--primary').trigger('tap');
     expect(storageService.get('exam_profile')).toMatchObject({
       exam: 'kaoyan',
       tracks: ['politics', 'english1', 'math1']
