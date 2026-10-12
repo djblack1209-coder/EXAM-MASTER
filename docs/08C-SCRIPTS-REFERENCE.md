@@ -1,6 +1,6 @@
 # Scripts Reference
 
-Last updated: 2026-04-29
+Last updated: 2026-05-01
 
 ## Core quality gates
 
@@ -8,13 +8,13 @@ Last updated: 2026-04-29
 - `npm test`: full Vitest suite.
 - `npm run build:h5`: H5 build validation.
 - `npm run build:mp-weixin`: WeChat mini-program build validation.
-- `npm run test:qa:full-regression`: delivery-grade chain gate (lint/format/laf strict/build/tests/e2e/maestro/secrets/prod-audit/mp-usage).
-- `npm run test:qa:full-regression:clean`: wrapper gate, auto-runs under Node 20.17.0 and ensures Playwright Chromium.
+- `npm run audit:mobile:h5-viewports`: H5 mobile viewport smoke after `build:h5`; covers critical mobile routes, screenshots, console errors, horizontal overflow, and blocking startup toasts.
+- `npx vitest run tests/unit/mobile-ux-flow-contract.spec.js tests/unit/mobile-shell-contract.spec.js tests/unit/quiz-session-contract.spec.js tests/unit/question-bank-handoff.spec.js`: focused mobile UX contract gate for user-facing copy boundaries, law-illegal graph structure, zoomable knowledge graph, mode-chip entries, review handoffs, question-bank queues, and quiz-session data identity.
 
 ## App 构建
 
-- `npm run app:build:android`: 构建 Android APK
-- `npm run app:build:ios`: 构建 iOS IPA
+- `npm run build:app`: App build validation.
+- `npm run dev:app`: App development build.
 
 ## Laf backend safety gates
 
@@ -38,6 +38,8 @@ Notes:
 
 - `npm run audit:deep-scan`: deep project scan report.
 - `npm run audit:ui-quality`: UI quality gate report.
+- `npm run audit:mobile:h5-viewports`: H5 mobile route smoke with screenshots and first-screen blockers.
+- `npm run audit:mobile:inventory`: writes `data/mobile-module-inventory.json` from `src/pages.json` and page files.
 - `npm run audit:mp-main-usage`: mini-program main-package usage audit.
 - `npm run deps:audit`: npm dependency audit (full tree, non-blocking).
 - `npm run deps:audit:prod`: npm dependency audit for production dependencies only (non-blocking).
@@ -103,12 +105,6 @@ Notes:
 
 - The image key must be supplied through `IMAGE_API_KEY`; never commit or paste it into scripts.
 - Transparent assets use chroma-key fallback and local alpha removal when the model does not return a native alpha PNG.
-
-## Visual regression scripts
-
-- `npm run test:visual`: Playwright visual checks.
-- `npm run test:visual:update`: update snapshots.
-- `npm run test:visual:ui`: open Playwright UI.
 
 ## Generated report outputs
 

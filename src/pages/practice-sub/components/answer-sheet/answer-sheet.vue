@@ -59,6 +59,7 @@
 
 <script setup>
 import { computed } from 'vue';
+import { summarizeQuizAnswers } from '@/services/quiz-session-contract.js';
 
 const props = defineProps({
   visible: { type: Boolean, default: false },
@@ -69,21 +70,15 @@ const props = defineProps({
 
 const emit = defineEmits(['jump', 'close']);
 
-const answeredMap = computed(() => {
-  const map = {};
-  props.answeredQuestions.forEach((item) => {
-    map[item.index] = item.isCorrect;
-  });
-  return map;
-});
+const answerSummary = computed(() => summarizeQuizAnswers(props.answeredQuestions));
 
-const answeredCount = computed(() => props.answeredQuestions.length);
+const answeredMap = computed(() => answerSummary.value.answeredByIndex);
 
-const accuracy = computed(() => {
-  if (answeredCount.value === 0) return 0;
-  const correct = props.answeredQuestions.filter((a) => a.isCorrect).length;
-  return Math.round((correct / answeredCount.value) * 100);
-});
+const answeredCount = computed(() => answerSummary.value.answeredCount);
+
+const accuracy = computed(() =>
+  answeredCount.value > 0 ? Math.round((answerSummary.value.correctCount / answeredCount.value) * 100) : 0
+);
 
 function cellClass(idx) {
   if (idx === props.currentIndex) return 'cell-current';

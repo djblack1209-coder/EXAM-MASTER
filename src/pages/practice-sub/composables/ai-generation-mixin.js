@@ -26,7 +26,7 @@ export const aiGenerationMixin = {
   methods: {
     // ==================== 文件导入 ====================
     chooseImportSource() {
-      toast.info('小程序版使用内置题库，资料加工请在离线管线完成');
+      toast.info('小程序版暂不支持资料导入，请先查看题库');
       safeNavigateTo('/pages/practice-sub/question-bank');
     },
 
@@ -264,7 +264,7 @@ export const aiGenerationMixin = {
     // ==================== 智能题目生成 ====================
     startAI() {
       if (!this.fullFileContent && !this.fileName) {
-        return toast.info('请先导入资料');
+        return toast.info('请先查看题库');
       }
 
       this.isLooping = true;
@@ -503,7 +503,7 @@ export const aiGenerationMixin = {
 
     resumeGeneration() {
       if (!this.fileName && !this.fullFileContent) {
-        return toast.info('请先导入资料');
+        return toast.info('请先查看题库');
       }
       this.isPaused = false;
       this.isLooping = true;

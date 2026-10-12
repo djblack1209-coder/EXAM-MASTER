@@ -28,11 +28,11 @@
         <text class="brand-exam">EXAM</text>
         <text class="brand-master">-MASTER</text>
       </view>
-      <text class="app-slogan">真题训练、错题复习、知识图谱，一条路径完成</text>
+      <text class="app-slogan">示例体验、刷题训练、知识图谱，一条路径完成</text>
       <view class="login-proof-row">
-        <text class="proof-chip">公共课题库</text>
-        <text class="proof-chip">限时刷题</text>
-        <text class="proof-chip">FSRS复习</text>
+        <text class="proof-chip">考研题库</text>
+        <text class="proof-chip">示例限时练</text>
+        <text class="proof-chip">错题复习</text>
       </view>
     </view>
 
@@ -104,7 +104,7 @@
         @tap="handleE2EMockLogin"
       >
         <view class="btn-icon e2e-icon">
-          <text>E2E</text>
+          <text>测试</text>
         </view>
         <text class="btn-text"> 测试一键登录 </text>
         <BaseIcon name="arrow-right" :size="24" class="btn-arrow" />
@@ -669,9 +669,9 @@ const handleWechatH5Login = () => {
     }
 
     const currentOrigin = typeof location !== 'undefined' ? location.origin : '';
-    const hashMode = typeof location !== 'undefined' ? location.href.includes('#') : false;
+    const fragmentRouteMode = typeof location !== 'undefined' ? location.href.includes('#') : false;
     let callbackUrl;
-    if (hashMode) {
+    if (fragmentRouteMode) {
       callbackUrl = `${currentOrigin}/#/pages/login/wechat-callback`;
     } else {
       callbackUrl = `${currentOrigin}/pages/login/wechat-callback`;
@@ -800,10 +800,10 @@ const handleQQLogin = async () => {
       return;
     }
     const currentOrigin = typeof location !== 'undefined' ? location.origin : '';
-    const hashMode = typeof location !== 'undefined' ? location.href.includes('#') : false;
+    const fragmentRouteMode = typeof location !== 'undefined' ? location.href.includes('#') : false;
     const callbackUrl =
       config.qq.redirectUri ||
-      (hashMode ? `${currentOrigin}/#/pages/login/qq-callback` : `${currentOrigin}/pages/login/qq-callback`);
+      (fragmentRouteMode ? `${currentOrigin}/#/pages/login/qq-callback` : `${currentOrigin}/pages/login/qq-callback`);
 
     const redirectUri = encodeURIComponent(callbackUrl);
     // E007: 使用 crypto.getRandomValues() 生成安全的 OAuth state

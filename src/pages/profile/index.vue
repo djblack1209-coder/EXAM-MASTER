@@ -78,8 +78,8 @@
       <!-- APP引流横幅 -->
       <view class="section">
         <view class="card app-banner">
-          <text class="banner-title">知识神经图谱即将接入</text>
-          <text class="banner-desc">把每一次答题映射到知识点、薄弱链路和下一轮复习任务。</text>
+          <text class="banner-title">知识图谱沉淀中</text>
+          <text class="banner-desc">首页已展示知识图谱预览，个人画像会随答题记录逐步补全。</text>
         </view>
       </view>
 

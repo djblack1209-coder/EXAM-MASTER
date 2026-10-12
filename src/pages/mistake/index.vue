@@ -106,11 +106,11 @@
         </view>
       </view>
 
-      <!-- 知识点聚类视图（AI 分析模式） -->
+      <!-- 知识点聚类视图 -->
       <view v-if="reviewFilter === 'cluster'" class="cluster-view">
         <view v-if="clusterLoading" class="cluster-loading">
           <view v-for="i in 3" :key="i" class="loading-dot" />
-          <text class="cluster-loading-text">AI 正在分析错题模式...</text>
+          <text class="cluster-loading-text">正在整理错题模式...</text>
         </view>
         <view v-else-if="errorClusters.length === 0" class="cluster-empty">
           <text class="cluster-empty-text">暂无足够数据生成聚类分析</text>
@@ -197,6 +197,7 @@ import { onLoad, onShow, onUnload } from '@dcloudio/uni-app';
 import { modal } from '@/utils/modal.js';
 import { toast } from '@/utils/toast.js';
 import { storageService } from '@/services/storageService.js';
+import { shouldRestoreLegacyReviewBank } from '@/services/quiz-session-contract.js';
 import MistakeSkeleton from './components/mistake-skeleton/mistake-skeleton.vue';
 import StatsCard from './StatsCard.vue';
 // ✅ 统一日志工具（生产环境自动禁用）
@@ -434,7 +435,15 @@ function goBack() {
 function _restoreOriginalBank() {
   try {
     const backup = storageService.get('v30_bank_backup', []);
-    if (backup.length > 0) {
+    const currentBank = storageService.get('v30_bank', []);
+    const reviewQuestions = storageService.get('temp_review_questions', []);
+    if (
+      shouldRestoreLegacyReviewBank({
+        currentBank,
+        backupBank: backup,
+        reviewQuestions
+      })
+    ) {
       storageService.save('v30_bank', backup);
       logger.log('[mistake-book] ✅ 原题库已恢复');
     }
@@ -509,15 +518,8 @@ function startSequentialReview() {
 
   logger.log('[mistake-book] ✅ 有效错题数量:', reviewQuestions.length);
 
-  // 问题51修复：使用正确的存储键名，并同时更新题库
+  // 使用独立临时队列交给 do-quiz，避免覆盖正式题库缓存
   storageService.save('temp_review_questions', reviewQuestions);
-
-  // 同时将错题临时写入题库，确保 do-quiz 页面能读取
-  const currentBank = storageService.get('v30_bank', []);
-  if (currentBank.length > 0) {
-    storageService.save('v30_bank_backup', currentBank); // 备份原题库
-  }
-  storageService.save('v30_bank', reviewQuestions); // 临时替换为错题
   storageService.save('is_review_mode', true); // 标记为复习模式
 
   safeNavigateTo('/pages/practice-sub/do-quiz?mode=review', {
@@ -671,11 +673,6 @@ function startClusterTraining(cluster) {
   }
 
   storageService.save('temp_review_questions', reviewQuestions);
-  const currentBank = storageService.get('v30_bank', []);
-  if (currentBank.length > 0) {
-    storageService.save('v30_bank_backup', currentBank);
-  }
-  storageService.save('v30_bank', reviewQuestions);
   storageService.save('is_review_mode', true);
 
   safeNavigateTo('/pages/practice-sub/do-quiz?mode=review', {

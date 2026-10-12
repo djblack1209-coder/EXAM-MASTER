@@ -28,6 +28,24 @@ describe('storageService', () => {
   });
 
   describe('save / get 基础操作', () => {
+    it('H5 启动期 uni 仍是占位对象时降级到兼容存储', async () => {
+      const originalUni = globalThis.uni;
+      vi.resetModules();
+      globalThis.uni = {};
+      localStorage.clear();
+
+      try {
+        const { storageService: h5BootStorage } = await import('@/services/storageService.js');
+        const result = h5BootStorage.save('theme_mode', 'light');
+
+        expect(result).toBe(true);
+        expect(localStorage.getItem('__exam_storage__:theme_mode')).toBe(JSON.stringify({ value: 'light' }));
+      } finally {
+        globalThis.uni = originalUni;
+        vi.resetModules();
+      }
+    });
+
     it('save 存储普通数据', () => {
       const result = storageService.save('test_key', 'test_value');
       expect(result).toBe(true);

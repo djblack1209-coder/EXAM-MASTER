@@ -73,11 +73,11 @@
             <text class="page-subtitle"> 查看您的学习数据和进度 </text>
           </view>
 
-          <!-- AI 学习洞察 — 一句人话总结数据背后的含义 -->
+          <!-- 学习洞察 — 一句人话总结数据背后的含义 -->
           <view v-if="aiInsight" class="ai-insight-card">
             <view class="insight-header">
               <BaseIcon name="sparkle" :size="20" class="insight-icon" />
-              <text class="insight-label">AI 学习洞察</text>
+              <text class="insight-label">学习洞察</text>
             </view>
             <text class="insight-text">{{ aiInsight }}</text>
             <view v-if="aiWeakPoints.length > 0" class="insight-weak">

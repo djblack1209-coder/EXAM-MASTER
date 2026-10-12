@@ -4,12 +4,18 @@ import {
   buildQuizCompletionContent,
   buildQuizKnowledgeFeedback,
   buildQuizAnswerRecord,
+  getQuizQuestionId,
   getQuizOptionLabel,
   getQuizQuestionTypeLabel,
   hasQuizSelectableOptions,
   isCorrectQuizOption,
+  isPublishedPracticeBankSource,
   isQuizFlashcardMode,
+  isReleasedPracticeBankSource,
   normalizeQuizQuestion,
+  selectQuizQuestionsByIds,
+  shouldRestoreLegacyReviewBank,
+  summarizeQuizAnswers,
   summarizeQuizProgress,
   upsertQuizAnswerRecord
 } from '@/services/quiz-session-contract.js';
@@ -123,6 +129,115 @@ describe('quiz session contract', () => {
       neutralCount: 1,
       progressRate: 0.75,
       accuracy: 50
+    });
+  });
+
+  it('selects quiz questions by id with one bank pass while preserving requested order', () => {
+    const idReads = [];
+    const bank = Array.from({ length: 5 }, (_, index) => {
+      const question = { title: `Question ${index}` };
+      Object.defineProperty(question, 'id', {
+        enumerable: true,
+        get() {
+          idReads.push(index);
+          return `q${index}`;
+        }
+      });
+      return question;
+    });
+
+    const selected = selectQuizQuestionsByIds(bank, ['q3', 'q1', 'missing', 'q3']);
+
+    expect(selected.map((item) => item.title)).toEqual(['Question 3', 'Question 1', 'Question 3']);
+    expect(idReads).toHaveLength(bank.length);
+  });
+
+  it('uses all supported question identity fields for review handoff', () => {
+    const bank = [
+      { questionId: 'card_1', title: 'FSRS card id' },
+      { question_id: 'card_2', title: 'backend question id' },
+      { id: 'card_3', title: 'normalized id' },
+      { _id: 'card_4', title: 'database id' }
+    ];
+
+    expect(getQuizQuestionId(bank[0])).toBe('card_1');
+    expect(selectQuizQuestionsByIds(bank, ['card_2', 'card_4', 'card_1']).map((item) => item.title)).toEqual([
+      'backend question id',
+      'database id',
+      'FSRS card id'
+    ]);
+    expect(normalizeQuizQuestion({ question_id: 'card_5', title: 'normalized backend id' }, 0).id).toBe('card_5');
+    expect(
+      buildQuizAnswerRecord({
+        question: { questionId: 'card_6', question: 'answer identity' },
+        index: 0
+      }).questionId
+    ).toBe('card_6');
+  });
+
+  it('classifies practice bank sources for released training and published-bank browsing', () => {
+    expect(isReleasedPracticeBankSource({ type: 'published_registry' })).toBe(true);
+    expect(isReleasedPracticeBankSource({ type: 'guest_demo' })).toBe(true);
+    expect(isReleasedPracticeBankSource({ type: 'local_only' })).toBe(false);
+    expect(isReleasedPracticeBankSource(null)).toBe(false);
+
+    expect(isPublishedPracticeBankSource({ type: 'published_registry' })).toBe(true);
+    expect(isPublishedPracticeBankSource({ type: 'guest_demo' })).toBe(false);
+    expect(isPublishedPracticeBankSource({ type: 'local_only' })).toBe(false);
+  });
+
+  it('restores a legacy review backup only when the current bank was replaced by review questions', () => {
+    const backupBank = [{ id: 'official_1', question: 'official bank question' }];
+    const reviewQuestions = [
+      { id: 'mistake_1', question: 'review question 1', answer: 'A', isReview: true },
+      { id: 'mistake_2', question: 'review question 2', answer: 'B', isReview: true }
+    ];
+
+    expect(
+      shouldRestoreLegacyReviewBank({
+        currentBank: reviewQuestions,
+        backupBank,
+        reviewQuestions
+      })
+    ).toBe(true);
+
+    expect(
+      shouldRestoreLegacyReviewBank({
+        currentBank: [{ id: 'official_2', question: 'current released bank question', answer: 'C' }],
+        backupBank,
+        reviewQuestions
+      })
+    ).toBe(false);
+
+    expect(
+      shouldRestoreLegacyReviewBank({
+        currentBank: reviewQuestions,
+        backupBank: [],
+        reviewQuestions
+      })
+    ).toBe(false);
+  });
+
+  it('summarizes answer records and builds an answered index map in one contract call', () => {
+    const summary = summarizeQuizAnswers([
+      { index: 0, isCorrect: true, timeSpent: 2000 },
+      { index: 1, isCorrect: false, timeSpent: 4000 },
+      { index: 2, isCorrect: null }
+    ]);
+
+    expect(summary).toEqual({
+      answeredByIndex: {
+        0: true,
+        1: false,
+        2: null
+      },
+      answeredCount: 3,
+      correctCount: 1,
+      wrongCount: 1,
+      neutralCount: 1,
+      gradedCount: 2,
+      totalTimeMs: 6000,
+      averageTimeMs: 2000
     });
   });
 

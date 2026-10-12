@@ -5,6 +5,7 @@ import {
   buildKnowledgeGraph,
   deriveKnowledgeVisualState,
   getKnowledgeNodeTrail,
+  normalizeKnowledgeTracks,
   resolveQuestionKnowledge
 } from '@/config/knowledge-graph.js';
 import { useLearningTrajectoryStore } from '@/stores/modules/learning-trajectory-store.js';
@@ -36,6 +37,51 @@ describe('public-course knowledge graph', () => {
     );
 
     expect(nodeIds).toEqual(['topic:math:calculus:limit']);
+  });
+
+  it('adds the law-illegal professional track when the profile major needs it', () => {
+    const graph = buildKnowledgeGraph({ tracks: ['politics', 'english1'], major: '法律非法学' });
+    const nodeIds = graph.nodes.map((item) => item.id);
+
+    expect(graph.tracks).toEqual(['english1', 'politics', 'law_illegal']);
+    expect(nodeIds).toContain('subject:law_illegal');
+    expect(nodeIds).toContain('module:law:civil');
+    expect(nodeIds).toContain('topic:law:civil:contract');
+    expect(nodeIds).toContain('micro:law:contract:formation');
+    expect(nodeIds).not.toContain('track:english2');
+    expect(nodeIds).not.toContain('subject:math');
+    expect(nodeIds).not.toContain('track:math1');
+  });
+
+  it('normalizes law-illegal profiles to English I, politics, and professional courses', () => {
+    expect(normalizeKnowledgeTracks({ major: '法律非法学' })).toEqual(['english1', 'politics', 'law_illegal']);
+    expect(normalizeKnowledgeTracks({ tracks: ['math1', 'english2', 'law_illegal'] })).toEqual([
+      'english1',
+      'politics',
+      'law_illegal'
+    ]);
+  });
+
+  it('maps English grammar and explicit knowledge labels to atomic nodes', () => {
+    expect(
+      resolveQuestionKnowledge(
+        {
+          subject: '英语',
+          question: 'The sentence is testing present continuous: is studying now.'
+        },
+        { tracks: ['english1'] }
+      )
+    ).toEqual(['micro:english:grammar:present-continuous']);
+
+    expect(
+      resolveQuestionKnowledge(
+        {
+          subject: '英语',
+          knowledge_points: ['现在进行时']
+        },
+        { tracks: ['english1'] }
+      )
+    ).toEqual(['micro:english:grammar:present-continuous']);
   });
 
   it('derives visual mastery states for neural graph rendering', () => {

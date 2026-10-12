@@ -122,7 +122,7 @@ export const learningStatsMixin = {
       requireLogin(async () => {
         if (!this.hasBank) {
           this.showPracticeModesModal = false;
-          return toast.info('请先导入题库');
+          return toast.info('当前暂无可练题，请查看题库');
         }
 
         try {

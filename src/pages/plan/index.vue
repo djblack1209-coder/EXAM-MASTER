@@ -72,17 +72,17 @@
         </view>
       </view>
 
-      <!-- AI 自适应学习计划 -->
+      <!-- 自适应学习计划 -->
       <view v-if="aiPlan || aiPlanLoading" class="ai-plan-section">
         <view class="section-heading">
-          <text class="section-eyebrow">AI Adaptive Plan</text>
+          <text class="section-eyebrow">动态计划</text>
           <view class="section-title-row">
-            <text class="section-title">AI 自适应计划</text>
+            <text class="section-title">自适应计划</text>
           </view>
         </view>
 
         <view v-if="aiPlanLoading" class="ai-plan-loading">
-          <text class="ai-plan-loading-text">AI 正在分析你的学习数据，生成个性化计划...</text>
+          <text class="ai-plan-loading-text">正在整理你的学习数据，生成个性化计划...</text>
         </view>
 
         <view v-else-if="aiPlan && aiPlan.days" class="ai-plan-days">

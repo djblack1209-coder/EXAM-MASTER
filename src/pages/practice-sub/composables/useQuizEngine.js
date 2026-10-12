@@ -21,7 +21,9 @@ import {
   buildQuizCompletionContent,
   getQuizOptionLabel,
   isCorrectQuizOption,
-  normalizeQuizQuestion
+  isReleasedPracticeBankSource,
+  normalizeQuizQuestion,
+  selectQuizQuestionsByIds
 } from '@/services/quiz-session-contract.js';
 
 /**
@@ -86,9 +88,9 @@ export function useQuizEngine(options = {}) {
   // ---- core methods ----
 
   /**
-   * 加载题目（支持 single / smart_review / 普通模式）
+   * 加载题目（支持 single / review / smart_review / 普通模式）
    * @param {Object} [params]
-   * @param {'normal'|'single'|'smart_review'} [params.mode='normal']
+   * @param {'normal'|'single'|'review'|'smart_review'} [params.mode='normal']
    * @returns {boolean} 是否成功加载到题目
    */
   function loadQuestions(params = {}) {
@@ -106,15 +108,26 @@ export function useQuizEngine(options = {}) {
       return false;
     }
 
+    // 错题重练模式：使用错题本传入的临时队列，不依赖正式题库
+    if (mode === 'review') {
+      const reviewQuestions = storageService.get('temp_review_questions', []);
+      if (Array.isArray(reviewQuestions) && reviewQuestions.length > 0) {
+        questions.value = reviewQuestions.map((q, i) => _normalizeQuestion(q, i));
+        answerStartTime.value = Date.now();
+        return true;
+      }
+      return false;
+    }
+
     // 智能复习模式
     if (mode === 'smart_review') {
       const reviewIds = uni.getStorageSync('smart_review_ids') || [];
       if (reviewIds.length > 0) {
+        const bankSource = storageService.get('v30_bank_source', null);
+        if (!isReleasedPracticeBankSource(bankSource)) return false;
+
         const bank = storageService.get('v30_bank', []);
-        const reviewQuestions = reviewIds
-          .map((id) => bank.find((q) => (q.id || q._id) === id))
-          .filter(Boolean)
-          .map((q, i) => _normalizeQuestion(q, i));
+        const reviewQuestions = selectQuizQuestionsByIds(bank, reviewIds).map((q, i) => _normalizeQuestion(q, i));
         if (reviewQuestions.length > 0) {
           questions.value = reviewQuestions;
           uni.removeStorageSync('smart_review_ids');
@@ -128,6 +141,8 @@ export function useQuizEngine(options = {}) {
     // 普通模式：从本地题库加载
     const bank = storageService.get('v30_bank', []);
     if (!bank || bank.length === 0) return false;
+    const bankSource = storageService.get('v30_bank_source', null);
+    if (!isReleasedPracticeBankSource(bankSource)) return false;
 
     let list = bank.map((q, i) => _normalizeQuestion(q, i)).filter((q) => q.question && !/^题目 \d+$/.test(q.question));
 

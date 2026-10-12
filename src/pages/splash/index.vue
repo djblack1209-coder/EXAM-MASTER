@@ -11,7 +11,7 @@
       <text class="brand-name"><text class="brand-exam">Exam</text> <text class="brand-master">Master</text></text>
 
       <!-- 品牌副标题 -->
-      <text class="brand-slogan">AI 助力，一战成硕</text>
+      <text class="brand-slogan">稳步推进，一战成硕</text>
     </view>
 
     <!-- 加载进度暗示：三个脉动圆点 -->

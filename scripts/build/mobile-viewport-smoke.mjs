@@ -26,6 +26,13 @@ export const MOBILE_VIEWPORTS = [
   { width: 430, height: 932, name: 'iphone-large' }
 ];
 
+export const BLOCKING_TOAST_TEXTS = ['保存失败，请检查存储空间'];
+
+export function findBlockingToastText(pageText = '') {
+  const text = String(pageText || '');
+  return BLOCKING_TOAST_TEXTS.find((message) => text.includes(message)) || null;
+}
+
 function contentType(filePath) {
   if (filePath.endsWith('.html')) return 'text/html; charset=utf-8';
   if (filePath.endsWith('.js')) return 'text/javascript; charset=utf-8';
@@ -95,11 +102,13 @@ async function runSmoke() {
         });
 
         await page.goto(`http://127.0.0.1:${port}/#${route}`, { waitUntil: 'networkidle' });
-        const overflow = await page.evaluate(() => ({
+        const pageState = await page.evaluate(() => ({
           scrollWidth: document.body.scrollWidth,
           innerWidth: window.innerWidth,
-          title: document.title
+          title: document.title,
+          text: document.body.innerText || ''
         }));
+        const blockingToastText = findBlockingToastText(pageState.text);
 
         const screenshotDir = path.join(OUTPUT_ROOT, viewport.name);
         fs.mkdirSync(screenshotDir, { recursive: true });
@@ -111,8 +120,11 @@ async function runSmoke() {
         if (consoleErrors.length > 0) {
           failures.push({ viewport: viewport.name, route, code: 'console_error', detail: consoleErrors });
         }
-        if (overflow.scrollWidth > overflow.innerWidth + 1) {
-          failures.push({ viewport: viewport.name, route, code: 'horizontal_overflow', detail: overflow });
+        if (pageState.scrollWidth > pageState.innerWidth + 1) {
+          failures.push({ viewport: viewport.name, route, code: 'horizontal_overflow', detail: pageState });
+        }
+        if (blockingToastText) {
+          failures.push({ viewport: viewport.name, route, code: 'blocking_toast', detail: { text: blockingToastText } });
         }
         await page.close();
       }

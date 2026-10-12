@@ -67,8 +67,8 @@
         <view v-if="knowledgeInsights.focusNodes.length > 0" class="knowledge-insight-section glass-card">
           <view class="knowledge-insight-head">
             <view>
-              <text class="knowledge-kicker">KNOWLEDGE MAP</text>
-              <text class="section-title knowledge-title">知识神经定位</text>
+              <text class="knowledge-kicker">知识图谱</text>
+              <text class="section-title knowledge-title">知识定位</text>
             </view>
             <view class="knowledge-summary-pill">
               <text>{{ knowledgeInsights.summary.averageMastery }}%</text>
@@ -100,7 +100,7 @@
           </view>
 
           <view class="knowledge-action" hover-class="btn-hover" @tap="emit('goWeakTraining')">
-            <text>按薄弱链路继续练</text>
+            <text>按薄弱知识点继续练</text>
             <BaseIcon name="chevron-right" :size="22" />
           </view>
         </view>
@@ -122,11 +122,11 @@
           <text class="motivational-text">{{ motivationalText }}</text>
         </view>
 
-        <!-- AI 推荐下一步 -->
+        <!-- 下一步推荐 -->
         <view v-if="nextSteps.length > 0 || loadingNextSteps" class="next-steps glass-card">
-          <text class="section-title">AI 推荐下一步</text>
+          <text class="section-title">下一步练什么</text>
           <view v-if="loadingNextSteps" class="next-steps-loading">
-            <text class="loading-text">分析中...</text>
+            <text class="loading-text">正在整理...</text>
           </view>
           <view v-else>
             <view
@@ -194,6 +194,7 @@ import { getAssetUrl } from '@/config/static-assets.js';
 import { logger } from '@/utils/logger.js';
 import { buildSessionKnowledgeInsights } from '@/config/knowledge-graph.js';
 import { storageService } from '@/services/storageService.js';
+import { summarizeQuizAnswers } from '@/services/quiz-session-contract.js';
 
 const studyEngineStore = useStudyEngineStore();
 
@@ -220,18 +221,19 @@ const emit = defineEmits([
 ]);
 
 // --- 基础统计 ---
+const answerSummary = computed(() => summarizeQuizAnswers(props.answeredQuestions));
 const totalCount = computed(() => props.questions.length);
-const correctCount = computed(() => props.answeredQuestions.filter((a) => a.isCorrect).length);
-const wrongCount = computed(() => totalCount.value - correctCount.value);
+const correctCount = computed(() => answerSummary.value.correctCount);
+const gradedCount = computed(() => answerSummary.value.gradedCount);
+const wrongCount = computed(() => answerSummary.value.wrongCount);
 const accuracy = computed(() => {
-  if (totalCount.value === 0) return 0;
-  return Math.round((correctCount.value / totalCount.value) * 100);
+  if (gradedCount.value === 0) return 0;
+  return Math.round((correctCount.value / gradedCount.value) * 100);
 });
 
 const avgTimeDisplay = computed(() => {
-  if (props.answeredQuestions.length === 0) return '0s';
-  const totalMs = props.answeredQuestions.reduce((sum, a) => sum + (a.timeSpent || 0), 0);
-  const avgSec = Math.round(totalMs / props.answeredQuestions.length / 1000);
+  if (answerSummary.value.answeredCount === 0) return '0s';
+  const avgSec = Math.round(answerSummary.value.averageTimeMs / 1000);
   return avgSec >= 60 ? `${Math.floor(avgSec / 60)}m${avgSec % 60}s` : `${avgSec}s`;
 });
 
@@ -275,7 +277,7 @@ function onXpCoinsEnd() {
   showXpCoins.value = false;
 }
 
-// --- AI 推荐下一步 ---
+// --- 下一步推荐 ---
 const nextSteps = ref([]);
 const loadingNextSteps = ref(false);
 
@@ -327,7 +329,7 @@ async function loadNextSteps() {
         const weak = result.data.summary;
         steps.unshift({
           icon: 'sparkle',
-          title: `AI建议: 攻克${weak.weakestPoint}`,
+          title: `继续攻克${weak.weakestPoint}`,
           subtitle: `${weak.weakCount}个薄弱点待突破，平均掌握度${weak.avgMastery}%`,
           action: 'ai-plan',
           priority: 'urgent'
@@ -387,7 +389,7 @@ watch(
           displayAccuracy.value = v;
         });
       }, 300);
-      // 异步加载 AI 推荐下一步
+      // 异步加载下一步推荐
       loadNextSteps();
     }
   },
@@ -415,6 +417,7 @@ const ringStyle = computed(() => {
 const categoryBreakdown = computed(() => {
   const map = {};
   props.answeredQuestions.forEach((a, idx) => {
+    if (a.isCorrect !== true && a.isCorrect !== false) return;
     const q = props.questions[a.index ?? idx];
     if (!q) return;
     const cat = q.category || '未分类';

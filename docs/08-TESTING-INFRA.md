@@ -1,6 +1,12 @@
 # Testing Infrastructure
 
-> Auto-generated: 2026-03-22 | Last updated: 2026-03-26 (Round 51 全量测试绿灯)
+> Auto-generated: 2026-03-22 | Last updated: 2026-05-01 (移动端收口验收)
+>
+> **2026-05-01 移动端收口验收**:
+>
+> - **95 个测试文件全部通过，1074 个测试 0 失败**
+> - 新增移动 UX 契约：用户可见文案边界、示例题/正式训练区分、法律非法学课程归一化、缩放知识图谱、模式按钮真实入口、智能复习队列、错题复习隔离、动态题号交接和核心路由注册。
+> - 当前发布前移动质量门：`npm run lint`、`npm test`、`npm run build:h5`、`npm run audit:mobile:h5-viewports`、`npm run build:mp-weixin`、`npm run audit:wechat:artifacts`、`npm run audit:mp-main-usage`、`git diff --check`。
 >
 > **Round 51 变更 (全量绿灯)**:
 >
@@ -57,7 +63,7 @@ EXAM-MASTER has a comprehensive multi-layer testing setup:
 | Nodemailer        | `tests/__mocks__/nodemailer.js`              | Mock email sending          |
 | Tencent Cloud SDK | `tests/__mocks__/tencentcloud-sdk-nodejs.js` | Mock Tencent services       |
 
-### Test Files (~50 spec files)
+### Test Files (95 spec files, 2026-05-01)
 
 **Core Feature Tests:**
 
@@ -77,6 +83,14 @@ EXAM-MASTER has a comprehensive multi-layer testing setup:
 - `real-utils.spec.js` — Real utility tests
 - `api.spec.js` — API layer
 - `ai-router.spec.js` — AI routing logic
+
+**Mobile UX Contract Tests:**
+
+- `mobile-ux-flow-contract.spec.js` — locks user-facing UX boundaries: core pages must not expose backend processing vocabulary, no-bank CTAs must clearly use 示例题 or `/pages/practice-sub/question-bank`, the practice graph must stay zoomable with atomic dots, law-illegal users must see the right course structure, smart-review CTAs must prepare a review queue before entering quiz, and shared shell/empty-state actions must point to registered routes.
+- `quiz-session-contract.spec.js` — includes review-handoff data contracts: question identity fields (`questionId`/`question_id`/`id`/`_id`), safe legacy review-bank restore, and neutral flashcard answer summaries.
+- `mobile-viewport-smoke.spec.js` — validates the mobile viewport smoke gate, including blocking startup toast detection.
+- `question-bank-handoff.spec.js` — keeps question-bank random practice aligned with `TEMP_PRACTICE_QUESTIONS_KEY` and `mode=temp_bank`.
+- `mobile-shell-contract.spec.js` — keeps the mobile shell primary fallback on the question-bank route instead of hidden historical pages.
 
 **Integration Tests:**
 
@@ -147,6 +161,7 @@ npm run lint                          # ESLint
 npm run format:check                  # Prettier check
 npm run audit:laf:function-sources -- --strict  # Backend function audit
 npm run build:h5                      # H5 build
+npm run audit:mobile:h5-viewports      # H5 mobile viewport smoke and blocker screenshots
 npm run test                          # Unit tests (Vitest)
 npm run audit:secrets:tracked         # Secret scanning
 npm run deps:audit:prod               # Dependency vulnerabilities
@@ -173,7 +188,7 @@ npm run audit:mp-main-usage           # MP main package size
 
 ### Unit Tests (Vitest)
 
-- **Current Status**: All passing (91 suites, 1168 tests)
+- **Current Status**: All passing (95 suites, 1074 tests)
 - **Historical Issues (已修复)**:
   - `JWT_SECRET` 环境变量已通过 `.env.test` 配置。
   - `social.service.js` 已重命名为 `social.api.js`，import 路径已对齐。
@@ -182,7 +197,4 @@ npm run audit:mp-main-usage           # MP main package size
 
 ### Known Infrastructure Gaps & Improvements Needed
 
-1. **Test Environment Variables**: The testing suite currently lacks a proper `.env.test` setup, specifically missing mock values for `JWT_SECRET`, which completely invalidates security and API unit tests.
-2. **Missing Mocks**: Certain global variables like `logger` used in services are not being mocked or provided in the Vitest test context.
-3. **Outdated Imports**: Need automated tools to verify test imports when files are refactored (e.g., `useQuizAutoSave.js`).
-4. **Backend Unit Coverage Gap**: Specifically, errors like `TypeError: query.count is not a function` in `group-service` went uncaught by backend TypeScript compilation and unit tests, indicating a gap in backend-specific testing logic.
+No mobile-closeout blocker is tracked here as of 2026-05-01. Keep backend/cloud release gates separate from the mobile UX contract gate so a skipped cloud credential check cannot be mistaken for mobile acceptance evidence.

@@ -23,16 +23,16 @@
           <text class="practice-subtitle">{{ practiceHeroSubtitle }}</text>
           <view class="practice-signal-row">
             <view class="practice-signal">
-              <text class="signal-value">{{ loadedBankCount }}</text>
-              <text class="signal-label">已加载</text>
+              <text class="signal-value">{{ primaryBankMetricValue }}</text>
+              <text class="signal-label">{{ primaryBankMetricLabel }}</text>
             </view>
             <view class="practice-signal">
               <text class="signal-value">{{ totalQuestions }}</text>
-              <text class="signal-label">可训练题</text>
+              <text class="signal-label">{{ questionMetricLabel }}</text>
             </view>
             <view class="practice-signal">
               <text class="signal-value">{{ trackCount }}</text>
-              <text class="signal-label">公共课轨道</text>
+              <text class="signal-label">学习轨道</text>
             </view>
           </view>
 
@@ -40,30 +40,27 @@
             <view
               class="practice-command primary"
               hover-class="btn-hover"
-              @tap="hasBank ? goDoQuiz() : chooseImportSource()"
+              @tap="handlePracticePrimaryAction"
             >
-              <text>{{ hasBank ? '进入限时训练' : '导入资料解析' }}</text>
+              <text>{{ practicePrimaryActionText }}</text>
             </view>
             <view class="practice-command secondary" hover-class="btn-hover" @tap="chooseImportSource">
-              <text>题库发布台</text>
+              <text>题库</text>
             </view>
           </view>
         </view>
       </view>
 
       <view v-if="!hasPublishedBanks" class="section">
-        <view class="release-guard-card">
-          <view class="release-guard-copy">
-            <text class="release-guard-kicker">PUBLIC RELEASE GUARD</text>
-            <text class="release-guard-title">官方真题题库暂未公开</text>
-            <text class="release-guard-desc">
-              当前仅开放公共课轨道和知识地图预览。题源证据、答案 hash、解析校验全部通过后，题库才会进入训练流。
-            </text>
-          </view>
-          <view class="release-guard-grid">
-            <view v-for="item in releaseGuardItems" :key="item.code" class="release-guard-step">
-              <text class="release-guard-step-code">{{ item.code }}</text>
-              <text class="release-guard-step-label">{{ item.label }}</text>
+        <view class="quiet-empty-card">
+          <text class="quiet-empty-title">暂无可练真题</text>
+          <text class="quiet-empty-desc">可以先体验示例题，或查看完整知识体系。</text>
+          <view class="quiet-empty-actions">
+            <view class="quiet-empty-action primary" hover-class="btn-hover" @tap="handlePracticePrimaryAction">
+              <text>体验示例题</text>
+            </view>
+            <view class="quiet-empty-action" hover-class="btn-hover" @tap="selectMode('knowledge_graph')">
+              <text>看知识图谱</text>
             </view>
           </view>
         </view>
@@ -72,7 +69,7 @@
       <view v-if="focusedKnowledgeNode" class="section">
         <view class="focus-card">
           <view class="focus-copy">
-            <text class="focus-kicker">KNOWLEDGE LINK</text>
+            <text class="focus-kicker">知识定位</text>
             <text class="focus-title">{{ focusedKnowledgeNode.label }}</text>
             <text class="focus-trail">{{ focusedKnowledgeTrailText }}</text>
           </view>
@@ -90,8 +87,8 @@
       <view class="section">
         <view class="section-head navigator-head">
           <view>
-            <text class="section-title">公共课导航</text>
-            <text class="section-hint">科目 / 版本 / 训练模式</text>
+            <text class="section-title">学习导航</text>
+            <text class="section-hint">选择科目和训练方式</text>
           </view>
           <text class="section-meta">{{ bankAvailabilityText }}</text>
         </view>
@@ -138,66 +135,82 @@
       <view class="section">
         <view class="section-head">
           <view>
-            <text class="section-title">{{ selectedTrack?.label || '公共课' }}</text>
+            <text class="section-title">{{ currentPracticeSectionTitle }}</text>
             <text class="section-hint">{{ selectedModeLabel }}</text>
           </view>
-          <text class="section-meta">{{ selectedTrackReleaseLabel }}</text>
+          <text class="section-meta">{{ currentPracticeSectionMeta }}</text>
         </view>
 
         <view v-if="isKnowledgeGraphMode" id="knowledge-graph-section" class="knowledge-map-panel">
           <view class="knowledge-map-head">
             <view>
-              <text class="knowledge-map-kicker">KNOWLEDGE MAP</text>
+              <text class="knowledge-map-kicker">知识图谱</text>
               <text class="knowledge-map-title">{{ knowledgeGraphSummaryText }}</text>
             </view>
-            <view class="knowledge-map-track-badge">
-              <text>{{ selectedTrack?.code || 'PUBLIC' }}</text>
+            <view class="knowledge-map-controls">
+              <view class="knowledge-map-control" hover-class="btn-hover" @tap="zoomKnowledgeGraph(-1)">
+                <text>-</text>
+              </view>
+              <text class="knowledge-map-zoom">{{ knowledgeGraphZoomLabel }}</text>
+              <view class="knowledge-map-control" hover-class="btn-hover" @tap="zoomKnowledgeGraph(1)">
+                <text>+</text>
+              </view>
             </view>
           </view>
 
-          <view class="knowledge-map-status-row">
-            <view v-for="item in knowledgeGraphLegend" :key="item.state" class="knowledge-map-status">
-              <view class="knowledge-map-status-dot" :class="`state-${item.state}`" />
-              <text>{{ item.label }}</text>
-            </view>
-          </view>
-
-          <view class="knowledge-map-path">
+          <scroll-view class="knowledge-system-scroll" scroll-x scroll-y>
             <view
-              v-for="module in knowledgeGraphModules"
-              :key="module.id"
-              class="knowledge-module-card"
-              :class="{ focused: module.focused }"
+              class="knowledge-system-canvas"
+              :style="{
+                width: knowledgeSystemGraph.width + 'rpx',
+                height: knowledgeSystemGraph.height + 'rpx',
+                transform: `scale(${knowledgeGraphZoom})`
+              }"
             >
-              <view class="knowledge-module-rail">
-                <view class="knowledge-module-dot" :class="`state-${module.state}`" />
-                <view v-if="!module.isLast" class="knowledge-module-line" />
-              </view>
-              <view class="knowledge-module-body">
-                <view class="knowledge-module-top">
-                  <view class="knowledge-module-copy">
-                    <text class="knowledge-module-name">{{ module.label }}</text>
-                    <text class="knowledge-module-meta">{{ module.metaText }}</text>
-                  </view>
-                  <text class="knowledge-module-state">{{ module.stateLabel }}</text>
-                </view>
-                <view class="knowledge-topic-row">
-                  <view v-for="topic in module.topics" :key="topic.id" class="knowledge-topic-chip">
-                    <text>{{ topic.label }}</text>
-                  </view>
-                  <view v-if="module.extraTopicCount > 0" class="knowledge-topic-chip muted">
-                    <text>+{{ module.extraTopicCount }}</text>
-                  </view>
-                </view>
+              <view
+                v-for="line in knowledgeSystemGraph.lines"
+                :key="line.id"
+                class="knowledge-system-line"
+                :style="line.style"
+              />
+              <view
+                v-for="node in knowledgeSystemGraph.nodes"
+                :key="node.id"
+                class="knowledge-system-node"
+                :class="[`level-${node.level}`, `state-${node.state}`, { active: activeKnowledgeNode?.id === node.id }]"
+                :style="node.style"
+                @tap="selectKnowledgeGraphNode(node)"
+              >
+                <text v-if="!node.atomic" class="knowledge-system-label">{{ node.label }}</text>
+                <view v-else class="knowledge-atom-dot" />
               </view>
             </view>
+          </scroll-view>
+
+          <view v-if="activeKnowledgeNode" class="knowledge-node-detail">
+            <view>
+              <text class="knowledge-node-detail-title">{{ activeKnowledgeNode.label }}</text>
+              <text class="knowledge-node-detail-path">{{ activeKnowledgeNode.pathText }}</text>
+            </view>
+            <view
+              v-if="activeKnowledgeNode.trainable"
+              class="knowledge-node-detail-action"
+              hover-class="btn-hover"
+              @tap="startKnowledgeNodeTraining"
+            >
+              <text>练习</text>
+            </view>
+          </view>
+
+          <view v-else class="knowledge-map-hint">
+            <text>左右拖动查看全图；点一下末端小点查看细节。</text>
           </view>
         </view>
 
         <view v-else-if="selectedBanks.length > 0" class="bank-list">
           <view v-for="bank in selectedBanks" :key="bank.id" class="card bank-card">
             <view class="bank-info">
-              <text class="bank-track">{{ bank.year }} PAST EXAM</text>
+              <text class="bank-track">{{ bank.year }} 历年真题</text>
               <text class="bank-name">{{ bank.name }}</text>
               <text class="bank-desc">{{ bank.description }}</text>
             </view>
@@ -218,22 +231,8 @@
         <view v-else class="empty-track-card">
           <text class="empty-track-title">{{ emptyTrackTitle }}</text>
           <text class="empty-track-desc">{{ emptyTrackDesc }}</text>
-          <view class="empty-track-stats">
-            <view v-for="item in selectedTrackStats" :key="item.label" class="empty-track-stat">
-              <text class="empty-track-stat-value">{{ item.value }}</text>
-              <text class="empty-track-stat-label">{{ item.label }}</text>
-            </view>
-          </view>
           <view class="empty-track-action" hover-class="btn-hover" @tap="selectMode('knowledge_graph')">
             <text>查看知识地图</text>
-          </view>
-        </view>
-
-        <view v-if="pendingBanks.length > 0" class="pending-list">
-          <text class="pending-title">清洗队列</text>
-          <view v-for="bank in pendingBanks" :key="bank.id" class="pending-item">
-            <text class="pending-name">{{ bank.name }}</text>
-            <text class="pending-reason">{{ bank.disabledReason || '等待答案校验' }}</text>
           </view>
         </view>
       </view>
@@ -241,7 +240,7 @@
       <!-- 已加载统计 + 操作按钮 -->
       <view class="section">
         <view v-if="hasBank" class="card status-card">
-          <text class="status-text">已加载 {{ totalQuestions }} 题</text>
+          <text class="status-text">{{ bankStatusText }}</text>
           <view class="progress-mini">
             <view class="progress-bar-sm">
               <view class="progress-fill-sm" :style="{ width: progressPercent + '%' }" />
@@ -251,12 +250,17 @@
         </view>
 
         <!-- 开始刷题 -->
-        <view v-if="hasBank" class="action-btn primary-btn" hover-class="btn-hover" @tap="goDoQuiz">
-          <text class="action-btn-text">开始刷题</text>
+        <view v-if="hasBank" class="action-btn primary-btn" hover-class="btn-hover" @tap="handleLoadedBankAction">
+          <text class="action-btn-text">{{ bottomPracticeActionText }}</text>
         </view>
 
         <!-- 智能复习 -->
-        <view v-if="hasBank" class="action-btn secondary-btn" hover-class="btn-hover" @tap="goSmartReview">
+        <view
+          v-if="hasBank && isPublishedRegistryBank"
+          class="action-btn secondary-btn"
+          hover-class="btn-hover"
+          @tap="goSmartReview"
+        >
           <text class="action-btn-text secondary-text">智能复习</text>
         </view>
       </view>
@@ -278,25 +282,275 @@ import { useDynamicMixin } from '@/composables/useDynamicMixin.js';
 import { getPracticeNavigationTree } from '@/config/bank-registry.js';
 import {
   buildKnowledgeGraph,
+  deriveKnowledgeVisualState,
+  getKnowledgeTrackMeta,
   getKnowledgeNodeTrail,
   KNOWLEDGE_NODES,
-  PUBLIC_COURSE_TRACKS,
   resolveQuestionKnowledge
 } from '@/config/knowledge-graph.js';
+import { useLearningTrajectoryStore } from '@/stores/modules/learning-trajectory-store.js';
 import { storageService } from '@/services/storageService.js';
+import { getQuizQuestionId, isReleasedPracticeBankSource } from '@/services/quiz-session-contract.js';
 import { safeNavigateTo } from '@/utils/safe-navigate';
+import { safeImport } from '@/utils/helpers/safe-import.js';
+import { startGuestDemoPractice } from '@/utils/practice/demo-bank.js';
 import { logger } from '@/utils/logger.js';
 
-const KNOWLEDGE_MAP_LEGEND = [
-  { state: 'strong', label: '已掌握' },
-  { state: 'watch', label: '需复盘' },
-  { state: 'unknown', label: '待训练' }
-];
+const KNOWLEDGE_GRAPH_ZOOM_LEVELS = [0.72, 0.9, 1.08];
+const KNOWLEDGE_GRAPH_LEVEL_X = [32, 258, 510, 762, 1014];
+const KNOWLEDGE_GRAPH_NODE_SIZE = {
+  0: { width: 170, height: 70 },
+  1: { width: 156, height: 64 },
+  2: { width: 164, height: 58 },
+  3: { width: 146, height: 52 },
+  4: { width: 34, height: 34 }
+};
+const KNOWLEDGE_GRAPH_MIN_HEIGHT = 520;
 
-function knowledgeStateLabel(state = '') {
-  if (state === 'strong') return '当前定位';
-  if (state === 'watch') return '重点复盘';
-  return '待训练';
+function averageLayout(values = []) {
+  if (!values.length) return 0;
+  return values.reduce((sum, value) => sum + value, 0) / values.length;
+}
+
+function graphStateForNode(node, nodeStates = {}, focusedIds = new Set()) {
+  if (focusedIds.has(node.id)) return 'strong';
+  return deriveKnowledgeVisualState(nodeStates[node.id] || {}).state;
+}
+
+function majorLabelFromProfile(profile = {}) {
+  return profile.major || profile.targetMajor || profile.examTrack || '考研备考';
+}
+
+function knowledgePathLabelForNode(item, tracks = []) {
+  if (!item) return '';
+
+  const trackId = item.type === 'track' ? item.id?.replace('track:', '') : '';
+  if (trackId === 'law_illegal') return '专业课';
+  if (trackId && tracks.includes(trackId)) return getKnowledgeTrackMeta(trackId)?.label || item.label;
+
+  if (item.type === 'subject') {
+    const itemTracks = Array.isArray(item.tracks) ? item.tracks : [];
+    const matchingTracks = tracks.filter((candidateTrackId) => itemTracks.includes(candidateTrackId));
+    if (matchingTracks.length === 1) {
+      const selectedTrackId = matchingTracks[0];
+      if (selectedTrackId === 'law_illegal') return '专业课';
+      return getKnowledgeTrackMeta(selectedTrackId)?.label || item.label;
+    }
+  }
+
+  return item.label;
+}
+
+function buildNodePathText(node, rootLabel, tracks = []) {
+  if (!node?.sourceId) return rootLabel;
+  const trail = getKnowledgeNodeTrail(node.sourceId)
+    .map((item) => knowledgePathLabelForNode(item, tracks))
+    .filter((label, index, labels) => label && label !== labels[index - 1]);
+  return [rootLabel, ...trail].filter(Boolean).join(' / ');
+}
+
+function buildKnowledgeSystemGraph({ graph, profile, nodeStates, focusedNode }) {
+  const sourceNodes = graph.nodes || [];
+  const byParent = new Map();
+  sourceNodes.forEach((nodeItem) => {
+    if (!nodeItem.parentId) return;
+    const list = byParent.get(nodeItem.parentId) || [];
+    list.push(nodeItem);
+    byParent.set(nodeItem.parentId, list);
+  });
+
+  const rootLabel = majorLabelFromProfile(profile);
+  const focusedIds = new Set((focusedNode?.trail || []).map((item) => item.id));
+  if (focusedNode?.nodeId) focusedIds.add(focusedNode.nodeId);
+  const layoutNodes = [];
+  const nodeMeta = new Map();
+  let cursorY = 76;
+
+  function childrenOf(parentId, type) {
+    return (byParent.get(parentId) || []).filter((item) => !type || item.type === type);
+  }
+
+  function addLayoutNode(source, level, centerY, options = {}) {
+    const size = KNOWLEDGE_GRAPH_NODE_SIZE[level] || KNOWLEDGE_GRAPH_NODE_SIZE[3];
+    const sourceId = source.sourceId || source.id;
+    const node = {
+      id: source.id,
+      sourceId,
+      label: source.label,
+      level,
+      atomic: level >= 4,
+      trainable: Boolean(sourceId && level > 0),
+      state: source.sourceNode ? graphStateForNode(source.sourceNode, nodeStates, focusedIds) : 'unknown',
+      pathText: '',
+      style: {
+        left: `${KNOWLEDGE_GRAPH_LEVEL_X[level]}rpx`,
+        top: `${centerY - size.height / 2}rpx`,
+        width: `${size.width}rpx`,
+        height: `${size.height}rpx`
+      },
+      ...options
+    };
+    node.pathText = buildNodePathText(node, rootLabel, graph.tracks);
+    layoutNodes.push(node);
+    nodeMeta.set(node.id, {
+      x: KNOWLEDGE_GRAPH_LEVEL_X[level],
+      y: centerY,
+      width: size.width
+    });
+    return node;
+  }
+
+  function addSourceNode(sourceNode, level, centerY) {
+    return addLayoutNode(
+      {
+        id: sourceNode.id,
+        sourceId: sourceNode.id,
+        label: sourceNode.label,
+        sourceNode
+      },
+      level,
+      centerY
+    );
+  }
+
+  const courseItems = (graph.tracks || [])
+    .map((trackId) => {
+      const trackMeta = getKnowledgeTrackMeta(trackId);
+      const sourceNode =
+        sourceNodes.find((item) => item.id === `track:${trackId}`) ||
+        sourceNodes.find((item) => item.type === 'subject' && item.tracks?.includes(trackId));
+      if (!sourceNode) return null;
+      return {
+        id: `course:${trackId}`,
+        sourceId: sourceNode.id,
+        label: trackId === 'law_illegal' ? '专业课' : trackMeta?.label || sourceNode.label,
+        trackId,
+        sourceNode
+      };
+    })
+    .filter(Boolean);
+
+  const courses = [];
+  const lines = [];
+
+  courseItems.forEach((course) => {
+    const courseAnchorY = 118 + courses.length * 92;
+    const modules = sourceNodes.filter((item) => item.type === 'module' && item.tracks?.includes(course.trackId));
+    const moduleYs = [];
+
+    modules.forEach((moduleNode) => {
+      const topics = childrenOf(moduleNode.id, 'topic');
+      const topicYs = [];
+
+      topics.forEach((topicNode) => {
+        const microNodes = childrenOf(topicNode.id, 'micro');
+        const microYs = [];
+
+        if (microNodes.length) {
+          microNodes.forEach((microNode) => {
+            const microY = cursorY;
+            addSourceNode(microNode, 4, microY);
+            microYs.push(microY);
+            cursorY += 44;
+          });
+        } else {
+          microYs.push(cursorY);
+          cursorY += 56;
+        }
+
+        const topicY = averageLayout(microYs);
+        addSourceNode(topicNode, 3, topicY);
+        topicYs.push(topicY);
+      });
+
+      const moduleY = topicYs.length ? averageLayout(topicYs) : cursorY;
+      addSourceNode(moduleNode, 2, moduleY);
+      moduleYs.push(moduleY);
+      if (!topicYs.length) cursorY += 70;
+      cursorY += 18;
+    });
+
+    const courseY = moduleYs.length ? averageLayout(moduleYs) : courseAnchorY;
+    courses.push(addLayoutNode(course, 1, courseAnchorY));
+    if (!moduleYs.length) cursorY += 82;
+    cursorY = Math.max(cursorY + 28, courseY + 76);
+  });
+
+  const rootY = averageLayout(courses.map((item) => nodeMeta.get(item.id)?.y || 0)) || 110;
+  const rootNode = addLayoutNode({ id: 'major:current', label: rootLabel, sourceId: '' }, 0, rootY, {
+    trainable: false,
+    state: 'strong'
+  });
+
+  layoutNodes.forEach((node) => {
+    if (node.id === rootNode.id) return;
+    const source = sourceNodes.find((item) => item.id === node.sourceId);
+    let parentId = '';
+    if (node.level === 1) parentId = rootNode.id;
+    else if (node.level === 2 && source?.tracks?.length) {
+      const parentCourse = courseItems.find((course) => source.tracks.includes(course.trackId));
+      parentId = parentCourse?.id || '';
+    }
+    else if (source?.parentId) parentId = source.parentId;
+    const from = nodeMeta.get(parentId);
+    const to = nodeMeta.get(node.id);
+    if (!from || !to) return;
+    const x1 = from.x + from.width;
+    const y1 = from.y;
+    const x2 = to.x;
+    const y2 = to.y;
+    const dx = x2 - x1;
+    const dy = y2 - y1;
+    const length = Math.max(1, Math.sqrt(dx * dx + dy * dy));
+    lines.push({
+      id: `${parentId}->${node.id}`,
+      style: {
+        left: `${x1}rpx`,
+        top: `${y1}rpx`,
+        width: `${length}rpx`,
+        transform: `rotate(${Math.atan2(dy, dx)}rad)`
+      }
+    });
+  });
+
+  return {
+    nodes: layoutNodes,
+    lines,
+    width: 1120,
+    height: Math.max(KNOWLEDGE_GRAPH_MIN_HEIGHT, cursorY + 80)
+  };
+}
+
+function buildDueReviewIds(allQuestions = [], getDueCards, limit = 20) {
+  if (!Array.isArray(allQuestions) || typeof getDueCards !== 'function') return [];
+  return getDueCards(allQuestions).map(getQuizQuestionId).filter(Boolean).slice(0, limit);
+}
+
+const TRAINING_MODE_META = {
+  past_exam: {
+    routeMode: '',
+    primaryText: '进入历年真题',
+    bottomText: '开始历年真题'
+  },
+  timed_sprint: {
+    routeMode: 'timed_sprint',
+    primaryText: '进入限时冲刺',
+    bottomText: '开始限时冲刺'
+  },
+  weakness: {
+    routeMode: 'smart_review',
+    primaryText: '开始薄弱点强化',
+    bottomText: '开始薄弱点强化'
+  },
+  knowledge_graph: {
+    routeMode: '',
+    primaryText: '查看知识地图',
+    bottomText: '查看知识地图'
+  }
+};
+
+function getTrainingModeMeta(modeId) {
+  return TRAINING_MODE_META[modeId] || TRAINING_MODE_META.past_exam;
 }
 
 export default {
@@ -304,6 +558,7 @@ export default {
 
   setup() {
     const dynamicMixinHelper = useDynamicMixin();
+    const learningTrajectoryStore = useLearningTrajectoryStore();
     const { loading, availableBanks, loadedBankIds: loadedIds, loadFlashcardBank } = useFlashcardBank();
 
     const { hasBank, totalQuestions, progressPercent, isPageLoading, refreshBankStatus } = useBankStatus();
@@ -318,6 +573,7 @@ export default {
       progressPercent,
       isPageLoading,
       refreshBankStatus,
+      learningTrajectoryStore,
       dynamicMixinHelper,
       dynamicMethodsCache: dynamicMixinHelper.dynamicMethodsCache
     };
@@ -332,6 +588,9 @@ export default {
       selectedTrackId: '',
       selectedModeId: 'past_exam',
       focusedKnowledgeNode: null,
+      activeKnowledgeNode: null,
+      knowledgeGraphZoomIndex: 1,
+      bankSource: null,
       scrollIntoViewId: ''
     };
   },
@@ -360,31 +619,75 @@ export default {
       return this.availableBankCount > 0;
     },
 
+    isGuestDemoBank() {
+      return this.hasBank && this.bankSource?.type === 'guest_demo';
+    },
+
+    isPublishedRegistryBank() {
+      return this.hasBank && this.bankSource?.type === 'published_registry';
+    },
+
+    primaryBankMetricValue() {
+      if (this.isGuestDemoBank) return this.totalQuestions;
+      if (this.isPublishedRegistryBank) return this.loadedBankCount;
+      return this.totalQuestions;
+    },
+
+    primaryBankMetricLabel() {
+      if (this.isGuestDemoBank) return '示例题';
+      if (this.isPublishedRegistryBank) return '可练';
+      return '未开放';
+    },
+
+    questionMetricLabel() {
+      if (this.isGuestDemoBank) return '示例题';
+      if (this.isPublishedRegistryBank) return '可训练题';
+      return '本地题';
+    },
+
     practiceHeroKicker() {
-      return this.hasPublishedBanks ? 'TRAINING CONTROL' : 'RELEASE REVIEW';
+      if (this.isGuestDemoBank) return '示例练习';
+      return this.hasPublishedBanks ? '训练' : '练习';
     },
 
     practiceHeroTitle() {
-      return this.hasPublishedBanks ? '真题训练中枢' : '题库校验中';
+      if (this.isGuestDemoBank) return '示例题体验';
+      return this.hasPublishedBanks ? '刷题中心' : '先熟悉答题节奏';
     },
 
     practiceHeroSubtitle() {
-      if (this.hasPublishedBanks) {
-        return '按公共课、考试版本和训练模式进入题库。错题、速度和复习间隔会同步进知识地图。';
+      if (this.isGuestDemoBank) {
+        return '用一组示例题快速熟悉做题、计时和复习入口。';
       }
-      return '公共课导航和知识地图已就绪；正式真题会在题源、答案和解析校验完成后开放训练。';
+      if (this.hasPublishedBanks) {
+        return '选择科目和训练方式，错题会自动进入复习。';
+      }
+      return '先看知识体系，也可以用示例题体验完整流程。';
     },
 
     bankAvailabilityText() {
-      return this.hasPublishedBanks ? `${this.availableBankCount} 个可用题库` : '题库校验中';
+      if (this.isGuestDemoBank) return '示例模式';
+      return this.hasPublishedBanks ? `${this.availableBankCount} 套可练` : '暂无真题';
     },
 
-    releaseGuardItems() {
-      return [
-        { code: '01', label: '题源证据' },
-        { code: '02', label: '答案校验' },
-        { code: '03', label: '真机验收' }
-      ];
+    practicePrimaryActionText() {
+      if (this.isGuestDemoBank) return '继续示例练习';
+      if (this.isPublishedRegistryBank) return this.selectedTrainingModeMeta.primaryText;
+      if (this.hasBank) return '查看题库';
+      if (this.hasPublishedBanks) return '查看可用题库';
+      return '体验示例题';
+    },
+
+    bankStatusText() {
+      if (this.isGuestDemoBank) return `示例题 ${this.totalQuestions} 题`;
+      if (this.isPublishedRegistryBank) return `可训练题 ${this.totalQuestions} 题`;
+      return `本地题库 ${this.totalQuestions} 题，暂不可练`;
+    },
+
+    bottomPracticeActionText() {
+      if (this.isGuestDemoBank) return '继续示例题';
+      if (this.isPublishedRegistryBank) return this.selectedTrainingModeMeta.bottomText;
+      return '查看题库';
     },
 
     selectedSubject() {
@@ -402,10 +705,6 @@ export default {
       return this.selectedTrack?.banks || [];
     },
 
-    pendingBanks() {
-      return this.selectedTrack?.pendingBanks || [];
-    },
-
     selectedTrackCoverage() {
       return this.selectedTrack?.coverage || null;
     },
@@ -418,103 +717,73 @@ export default {
       return this.selectedModes.find((mode) => mode.id === this.selectedModeId)?.label || '历年真题';
     },
 
+    selectedTrainingModeMeta() {
+      return getTrainingModeMeta(this.selectedModeId);
+    },
+
     selectedTrackReleaseLabel() {
       const coverage = this.selectedTrackCoverage;
       if (!coverage) return this.selectedModeLabel;
       if (coverage.publishedCount > 0) {
-        return `${coverage.publishedCount}/${coverage.requiredCount} 已发布`;
+        return `${coverage.publishedCount} 套可练`;
       }
-      if (coverage.pendingCount > 0) {
-        return `${coverage.pendingCount} 套清洗中`;
-      }
-      return '等待入库';
+      return '暂无真题';
     },
 
-    selectedTrackStats() {
-      const coverage = this.selectedTrackCoverage || {};
-      return [
-        { label: '已发布', value: coverage.publishedCount || 0 },
-        { label: '清洗中', value: coverage.pendingCount || 0 },
-        { label: '待入库年份', value: coverage.missingYears?.length || 0 }
-      ];
+    currentPracticeSectionTitle() {
+      if (this.isKnowledgeGraphMode) return majorLabelFromProfile(this.knowledgeGraphProfile);
+      return this.selectedTrack?.label || '学习内容';
+    },
+
+    currentPracticeSectionMeta() {
+      if (this.isKnowledgeGraphMode) return `${this.knowledgeGraphModel.tracks.length} 条主线`;
+      return this.selectedTrackReleaseLabel;
     },
 
     emptyTrackTitle() {
-      if (this.pendingBanks.length > 0) return '该轨道正在清洗';
-      return '该轨道等待入库';
+      return '暂无可练真题';
     },
 
     emptyTrackDesc() {
-      if (this.pendingBanks.length > 0) {
-        return '题目、答案和解析未完成校验前不会发布到刷题中心，避免错误答案污染复习轨迹。';
-      }
-      return '当前轨道还没有进入 Source Manifest 的可校验资料，先用知识地图确认考试范围和知识层级。';
+      return '先查看知识体系，或切换到示例题体验完整流程。';
     },
 
     isKnowledgeGraphMode() {
       return this.selectedModeId === 'knowledge_graph';
     },
 
+    knowledgeGraphProfile() {
+      const examProfile = storageService.get('exam_profile', null) || {};
+      const schoolInfo = storageService.get('user_school_info', null) || {};
+      return {
+        ...examProfile,
+        major: examProfile.major || examProfile.targetMajor || schoolInfo.major || examProfile.examTrack || '考研备考'
+      };
+    },
+
     knowledgeGraphModel() {
-      const profile = { tracks: [this.selectedTrack?.id].filter(Boolean) };
-      return buildKnowledgeGraph(profile);
+      return buildKnowledgeGraph(this.knowledgeGraphProfile);
     },
 
-    knowledgeGraphLegend() {
-      return KNOWLEDGE_MAP_LEGEND;
-    },
-
-    knowledgeGraphModules() {
-      const focusTrailIds = new Set((this.focusedKnowledgeNode?.trail || []).map((item) => item.id));
-      const focusNodeId = this.focusedKnowledgeNode?.nodeId || '';
-      const nodes = this.knowledgeGraphModel.nodes;
-      const topicsByModule = new Map();
-      const microByTopic = new Map();
-
-      nodes
-        .filter((node) => node.type === 'topic')
-        .forEach((topic) => {
-          const list = topicsByModule.get(topic.parentId) || [];
-          list.push(topic);
-          topicsByModule.set(topic.parentId, list);
-        });
-
-      nodes
-        .filter((node) => node.type === 'micro')
-        .forEach((micro) => {
-          const list = microByTopic.get(micro.parentId) || [];
-          list.push(micro);
-          microByTopic.set(micro.parentId, list);
-        });
-
-      const modules = nodes.filter((node) => node.type === 'module');
-
-      return modules.map((module, index) => {
-        const topics = topicsByModule.get(module.id) || [];
-        const focused = module.id === focusNodeId || focusTrailIds.has(module.id);
-        const weakCandidate =
-          !focused && topics.some((topic) => topic.id === focusNodeId || focusTrailIds.has(topic.id));
-        const state = focused ? 'strong' : weakCandidate ? 'watch' : 'unknown';
-        const microCount = topics.reduce((sum, topic) => sum + (microByTopic.get(topic.id)?.length || 0), 0);
-        const visibleTopics = topics.slice(0, 4);
-
-        return {
-          id: module.id,
-          state,
-          focused,
-          label: module.label,
-          stateLabel: knowledgeStateLabel(state),
-          metaText: `${topics.length} 个专题 · ${microCount} 个微知识点`,
-          topics: visibleTopics,
-          extraTopicCount: Math.max(0, topics.length - visibleTopics.length),
-          isLast: index === modules.length - 1
-        };
+    knowledgeSystemGraph() {
+      return buildKnowledgeSystemGraph({
+        graph: this.knowledgeGraphModel,
+        profile: this.knowledgeGraphProfile,
+        nodeStates: this.learningTrajectoryStore?.nodeStates || {},
+        focusedNode: this.focusedKnowledgeNode
       });
     },
 
     knowledgeGraphSummaryText() {
-      const trackLabel = this.selectedTrack?.label || '公共课';
-      return `${trackLabel} · ${this.knowledgeGraphModules.length} 个模块`;
+      return `${majorLabelFromProfile(this.knowledgeGraphProfile)}知识体系`;
+    },
+
+    knowledgeGraphZoom() {
+      return KNOWLEDGE_GRAPH_ZOOM_LEVELS[this.knowledgeGraphZoomIndex] || 0.9;
+    },
+
+    knowledgeGraphZoomLabel() {
+      return `${Math.round(this.knowledgeGraphZoom * 100)}%`;
     },
 
     focusedKnowledgeTrailText() {
@@ -526,16 +795,20 @@ export default {
   onLoad() {
     this.initLayout();
     this.refreshBankStatus();
+    this.refreshBankSource();
     this.restoreFocusedKnowledgeNode();
     this.ensureNavigationSelection();
+    this.consumePreferredMode();
     this.preloadPracticeSubPackage();
   },
 
   onShow() {
     // 每次切回刷新题库状态（可能在do-quiz中答了题）
     this.refreshBankStatus();
+    this.refreshBankSource();
     this.restoreFocusedKnowledgeNode();
     this.ensureNavigationSelection();
+    this.consumePreferredMode();
   },
 
   onReady() {
@@ -588,6 +861,10 @@ export default {
       });
     },
 
+    refreshBankSource() {
+      this.bankSource = storageService.get('v30_bank_source', null);
+    },
+
     chooseImportSource() {
       const cached = this.dynamicMethodsCache?.chooseImportSource;
       if (typeof cached === 'function') {
@@ -595,6 +872,34 @@ export default {
       }
       safeNavigateTo('/pages/practice-sub/question-bank');
       return undefined;
+    },
+
+    handlePracticePrimaryAction() {
+      if (this.isGuestDemoBank) {
+        this.goDoQuiz();
+        return;
+      }
+
+      if (this.isPublishedRegistryBank) {
+        this.handleLoadedBankAction();
+        return;
+      }
+
+      if (this.hasBank) {
+        this.chooseImportSource();
+        return;
+      }
+
+      if (!this.hasPublishedBanks) {
+        startGuestDemoPractice({ destination: 'quiz' });
+        return;
+      }
+
+      this.chooseImportSource();
+    },
+
+    hasReleasedPracticeBank() {
+      return this.hasBank && isReleasedPracticeBankSource(this.bankSource);
     },
 
     ensureNavigationSelection() {
@@ -643,6 +948,15 @@ export default {
       this.selectTrackForFocusedNode();
     },
 
+    selectKnowledgeGraphNode(node) {
+      this.activeKnowledgeNode = node;
+    },
+
+    zoomKnowledgeGraph(direction) {
+      const nextIndex = this.knowledgeGraphZoomIndex + Number(direction || 0);
+      this.knowledgeGraphZoomIndex = Math.max(0, Math.min(KNOWLEDGE_GRAPH_ZOOM_LEVELS.length - 1, nextIndex));
+    },
+
     selectTrackForFocusedNode() {
       if (!this.focusedKnowledgeNode) return;
       const trail = this.focusedKnowledgeNode.trail || [];
@@ -660,8 +974,10 @@ export default {
         candidateTracks.find((id) => id === this.selectedTrackId) ||
         candidateTracks.find((id) => availableTracks.includes(id)) ||
         '';
-      const trackMeta = PUBLIC_COURSE_TRACKS.find((item) => item.id === trackId);
-      const subjectId = subjectNode?.id?.replace('subject:', '') || trackMeta?.subject || '';
+      const trackMeta = getKnowledgeTrackMeta(trackId);
+      const subjectFromTrail = subjectNode?.id?.replace('subject:', '');
+      const subjectId =
+        trackMeta?.subject || (subjectFromTrail === 'law_illegal' ? 'professional' : subjectFromTrail) || '';
 
       if (subjectId && this.navigationTree.some((subject) => subject.id === subjectId)) {
         this.selectedSubjectKey = subjectId;
@@ -676,6 +992,7 @@ export default {
 
     selectSubject(subjectId) {
       this.selectedSubjectKey = subjectId;
+      this.activeKnowledgeNode = null;
       const subject = this.navigationTree.find((item) => item.id === subjectId);
       const track = subject?.tracks?.find((item) => item.banks.length > 0) || subject?.tracks?.[0];
       this.selectedTrackId = track?.id || '';
@@ -684,6 +1001,7 @@ export default {
 
     selectTrack(trackId) {
       this.selectedTrackId = trackId;
+      this.activeKnowledgeNode = null;
       const track = this.selectedSubject?.tracks?.find((item) => item.id === trackId);
       this.selectedModeId = track?.modes?.[0]?.id || 'past_exam';
     },
@@ -693,6 +1011,15 @@ export default {
       if (modeId === 'knowledge_graph') {
         this.scrollKnowledgeGraphIntoView();
       }
+    },
+
+    consumePreferredMode() {
+      const preferredMode = storageService.get('practice_preferred_mode', '');
+      if (preferredMode !== 'knowledge_graph') return;
+      storageService.remove('practice_preferred_mode');
+      this.selectedModeId = 'knowledge_graph';
+      this.activeKnowledgeNode = null;
+      this.scrollKnowledgeGraphIntoView();
     },
 
     scrollKnowledgeGraphIntoView() {
@@ -723,6 +1050,7 @@ export default {
         this.loadingBankId = bankId;
         await this.loadFlashcardBank(bankId);
         this.refreshBankStatus();
+        this.refreshBankSource();
       } catch (e) {
         logger.error('[Practice] load bank failed:', e);
         uni.showToast({ title: '加载失败，请重试', icon: 'none' });
@@ -732,25 +1060,70 @@ export default {
     },
 
     goDoQuiz() {
-      safeNavigateTo('/pages/practice-sub/do-quiz');
+      if (!this.hasReleasedPracticeBank()) {
+        this.chooseImportSource();
+        return;
+      }
+
+      const routeMode = this.selectedTrainingModeMeta.routeMode;
+      const query = routeMode && routeMode !== 'smart_review' ? `?mode=${routeMode}` : '';
+      safeNavigateTo(`/pages/practice-sub/do-quiz${query}`);
+    },
+
+    handleLoadedBankAction() {
+      if (this.selectedModeId === 'weakness') {
+        this.goSmartReview();
+        return;
+      }
+      if (this.selectedModeId === 'knowledge_graph') {
+        this.scrollKnowledgeGraphIntoView();
+        return;
+      }
+      this.goDoQuiz();
     },
 
     goSmartReview() {
-      // 智能复习：跳转到 do-quiz 的复习模式
-      safeNavigateTo('/pages/practice-sub/do-quiz?mode=smart_review');
+      if (!this.hasReleasedPracticeBank()) {
+        this.chooseImportSource();
+        return;
+      }
+
+      const allQuestions = storageService.get('v30_bank', []);
+      safeImport(import('@/services/fsrs-service.js'))
+        .then((fsrsMod) => {
+          const getDueCards = fsrsMod.getDueCards || fsrsMod.default?.getDueCards;
+          const reviewIds = buildDueReviewIds(allQuestions, getDueCards);
+
+          if (reviewIds.length > 0) {
+            uni.setStorageSync('smart_review_ids', reviewIds);
+            safeNavigateTo('/pages/practice-sub/do-quiz?mode=smart_review');
+            return;
+          }
+
+          safeNavigateTo('/pages/mistake/index?mode=review');
+        })
+        .catch(() => {
+          safeNavigateTo('/pages/mistake/index?mode=review');
+        });
     },
 
     startKnowledgeNodeTraining() {
-      if (!this.focusedKnowledgeNode?.nodeId) return;
+      const targetNodeId = this.activeKnowledgeNode?.sourceId || this.focusedKnowledgeNode?.nodeId;
+      if (!targetNodeId) return;
+      if (!this.hasReleasedPracticeBank()) {
+        uni.showToast({ title: '当前暂无可练题', icon: 'none' });
+        this.chooseImportSource();
+        return;
+      }
+
       const bank = storageService.get('v30_bank', []);
-      const profile = { tracks: [this.selectedTrack?.id].filter(Boolean) };
-      const targetNodeId = this.focusedKnowledgeNode.nodeId;
+      const profile = this.knowledgeGraphProfile;
       const matchedIds = bank
         .filter((question) => {
           const nodeIds = resolveQuestionKnowledge(question, profile);
           return nodeIds.some((nodeId) => getKnowledgeNodeTrail(nodeId).some((node) => node.id === targetNodeId));
         })
-        .map((question) => question.id || question._id)
+        .map(getQuizQuestionId)
         .filter(Boolean);
 
       if (!matchedIds.length) {
@@ -765,6 +1138,7 @@ export default {
     clearFocusedKnowledgeNode() {
       storageService.remove('practice_focus_knowledge_node');
       this.focusedKnowledgeNode = null;
+      this.activeKnowledgeNode = null;
       this.selectedModeId = 'past_exam';
     }
   }
@@ -939,80 +1313,55 @@ $spacing-section: 24rpx;
   box-shadow: inset 0 1rpx 0 rgba(255, 255, 255, 0.12);
 }
 
-.release-guard-card {
-  display: flex;
-  align-items: stretch;
-  justify-content: space-between;
-  padding: 30rpx;
-  border-radius: 30rpx;
-  background: #182015;
-  box-shadow: 0 18rpx 42rpx rgba(20, 32, 23, 0.14);
+.quiet-empty-card {
+  padding: 28rpx;
+  border-radius: 26rpx;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1rpx solid rgba(20, 32, 23, 0.06);
+  box-shadow: 0 12rpx 30rpx rgba(20, 32, 23, 0.06);
 }
 
-.release-guard-copy {
-  flex: 1;
-  min-width: 0;
-  padding-right: 22rpx;
-}
-
-.release-guard-kicker {
+.quiet-empty-title {
   display: block;
-  color: rgba(234, 251, 226, 0.58);
-  font-size: 18rpx;
-  font-weight: 900;
-  letter-spacing: 1.8rpx;
-}
-
-.release-guard-title {
-  display: block;
-  margin-top: 10rpx;
-  color: #f7fff1;
-  font-size: 34rpx;
-  font-weight: 900;
+  color: $primary-deep;
+  font-size: 30rpx;
+  font-weight: 850;
   line-height: 1.2;
 }
 
-.release-guard-desc {
+.quiet-empty-desc {
   display: block;
-  margin-top: 10rpx;
-  color: rgba(247, 255, 241, 0.72);
+  margin-top: 8rpx;
+  color: $text-sub;
   font-size: 23rpx;
-  line-height: 1.48;
+  line-height: 1.42;
 }
 
-.release-guard-grid {
-  flex-shrink: 0;
-  width: 196rpx;
+.quiet-empty-actions {
   display: flex;
-  flex-direction: column;
+  margin-top: 20rpx;
 }
 
-.release-guard-step {
+.quiet-empty-action {
+  @include em-mobile-pressable;
   display: flex;
   align-items: center;
-  min-height: 48rpx;
-  padding: 8rpx 10rpx;
-  border-radius: 16rpx;
-  background: rgba(255, 255, 255, 0.08);
+  justify-content: center;
+  min-height: 64rpx;
+  padding: 0 24rpx;
+  border-radius: 999rpx;
+  background: rgba(20, 32, 23, 0.06);
+  color: $primary-deep;
+  font-size: 24rpx;
+  font-weight: 820;
 }
 
-.release-guard-step + .release-guard-step {
-  margin-top: 10rpx;
+.quiet-empty-action + .quiet-empty-action {
+  margin-left: 12rpx;
 }
 
-.release-guard-step-code {
-  width: 38rpx;
-  color: $primary;
-  font-size: 20rpx;
-  font-weight: 900;
-}
-
-.release-guard-step-label {
-  flex: 1;
-  min-width: 0;
-  color: rgba(247, 255, 241, 0.86);
-  font-size: 22rpx;
-  font-weight: 800;
+.quiet-empty-action.primary {
+  @include em-mobile-primary-action;
 }
 
 .focus-card {
@@ -1270,166 +1619,210 @@ $spacing-section: 24rpx;
   line-height: 1.18;
 }
 
-.knowledge-map-track-badge {
+.knowledge-map-controls {
+  display: flex;
+  align-items: center;
   flex-shrink: 0;
-  min-width: 84rpx;
-  padding: 13rpx 18rpx;
+  margin-left: 18rpx;
+  padding: 6rpx;
+  border-radius: 999rpx;
+  background: rgba(20, 32, 23, 0.06);
+}
+
+.knowledge-map-control {
+  @include em-mobile-pressable;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 54rpx;
+  height: 54rpx;
+  border-radius: 999rpx;
+  background: rgba(255, 255, 255, 0.78);
+  color: $primary-deep;
+  font-size: 32rpx;
+  font-weight: 900;
+}
+
+.knowledge-map-zoom {
+  min-width: 76rpx;
+  color: rgba(20, 32, 23, 0.58);
+  font-size: 21rpx;
+  font-weight: 850;
+  text-align: center;
+}
+
+.knowledge-system-scroll {
+  width: 100%;
+  height: 560rpx;
+  margin-top: 24rpx;
+  border-radius: 24rpx;
+  background: linear-gradient(180deg, rgba(248, 255, 244, 0.86), rgba(255, 255, 255, 0.72));
+  border: 1rpx solid rgba(20, 32, 23, 0.06);
+  overflow: hidden;
+}
+
+.knowledge-system-canvas {
+  position: relative;
+  transform-origin: 0 0;
+}
+
+.knowledge-system-line {
+  position: absolute;
+  height: 3rpx;
+  border-radius: 999rpx;
+  background: rgba(20, 32, 23, 0.12);
+  transform-origin: 0 50%;
+}
+
+.knowledge-system-node {
+  @include em-mobile-pressable;
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  border-radius: 999rpx;
+  background: rgba(255, 255, 255, 0.92);
+  border: 2rpx solid rgba(20, 32, 23, 0.08);
+  box-shadow: 0 10rpx 24rpx rgba(20, 32, 23, 0.07);
+  transition:
+    transform 160ms cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 160ms ease,
+    border-color 160ms ease;
+}
+
+.knowledge-system-node.active {
+  border-color: rgba(24, 169, 87, 0.42);
+  box-shadow: 0 14rpx 32rpx rgba(24, 169, 87, 0.16);
+  transform: scale(1.04);
+}
+
+.knowledge-system-node.level-0 {
+  border-radius: 28rpx;
+  background: $primary-deep;
+  border-color: transparent;
+}
+
+.knowledge-system-node.level-1 {
+  background: rgba(159, 232, 112, 0.94);
+}
+
+.knowledge-system-node.level-2 {
+  background: rgba(255, 255, 255, 0.96);
+}
+
+.knowledge-system-node.level-3 {
+  background: rgba(250, 252, 247, 0.96);
+}
+
+.knowledge-system-node.level-4 {
+  width: 34rpx;
+  height: 34rpx;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+
+.knowledge-system-node.state-strong {
+  border-color: rgba(24, 169, 87, 0.35);
+}
+
+.knowledge-system-node.state-watch {
+  border-color: rgba(255, 184, 77, 0.46);
+}
+
+.knowledge-system-node.state-weak {
+  border-color: rgba(255, 90, 95, 0.42);
+}
+
+.knowledge-system-label {
+  display: -webkit-box;
+  max-width: 100%;
+  padding: 0 16rpx;
+  overflow: hidden;
+  color: $primary-deep;
+  font-size: 23rpx;
+  font-weight: 850;
+  line-height: 1.18;
+  text-align: center;
+  text-overflow: ellipsis;
+  word-break: break-all;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.knowledge-system-node.level-0 .knowledge-system-label {
+  color: #ffffff;
+  font-size: 25rpx;
+}
+
+.knowledge-atom-dot {
+  width: 20rpx;
+  height: 20rpx;
+  border-radius: 999rpx;
+  background: #dfe8dc;
+  border: 5rpx solid rgba(255, 255, 255, 0.94);
+  box-shadow: 0 5rpx 14rpx rgba(20, 32, 23, 0.14);
+}
+
+.knowledge-system-node.state-strong .knowledge-atom-dot {
+  background: $primary;
+}
+
+.knowledge-system-node.state-watch .knowledge-atom-dot {
+  background: #ffd166;
+}
+
+.knowledge-system-node.state-weak .knowledge-atom-dot {
+  background: #ff5a5f;
+}
+
+.knowledge-node-detail {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 18rpx;
+  padding: 22rpx 24rpx;
+  border-radius: 24rpx;
+  background: rgba(255, 255, 255, 0.84);
+  border: 1rpx solid rgba(20, 32, 23, 0.06);
+}
+
+.knowledge-node-detail-title {
+  display: block;
+  color: $primary-deep;
+  font-size: 28rpx;
+  font-weight: 900;
+  line-height: 1.2;
+}
+
+.knowledge-node-detail-path {
+  display: block;
+  max-width: 510rpx;
+  margin-top: 8rpx;
+  color: $text-sub;
+  font-size: 21rpx;
+  line-height: 1.35;
+}
+
+.knowledge-node-detail-action {
+  @include em-mobile-pressable;
+  flex-shrink: 0;
+  margin-left: 18rpx;
+  padding: 16rpx 24rpx;
   border-radius: 999rpx;
   background: $primary-deep;
   color: #ffffff;
   font-size: 22rpx;
-  font-weight: 900;
-  text-align: center;
-}
-
-.knowledge-map-status-row {
-  display: flex;
-  flex-wrap: wrap;
-  margin-top: 22rpx;
-}
-
-.knowledge-map-status {
-  display: flex;
-  align-items: center;
-  margin-right: 18rpx;
-  margin-bottom: 10rpx;
-  color: $text-sub;
-  font-size: 22rpx;
-  font-weight: 700;
-}
-
-.knowledge-map-status-dot,
-.knowledge-module-dot {
-  width: 18rpx;
-  height: 18rpx;
-  border-radius: 999rpx;
-  border: 3rpx solid rgba(20, 32, 23, 0.1);
-}
-
-.knowledge-map-status-dot {
-  margin-right: 8rpx;
-}
-
-.state-strong {
-  background: $primary;
-}
-
-.state-watch {
-  background: #ffd166;
-}
-
-.state-unknown {
-  background: #dfe8dc;
-}
-
-.knowledge-map-path {
-  margin-top: 8rpx;
-}
-
-.knowledge-module-card {
-  display: flex;
-  align-items: stretch;
-  min-height: 132rpx;
-}
-
-.knowledge-module-rail {
-  position: relative;
-  width: 34rpx;
-  display: flex;
-  justify-content: center;
-  padding-top: 30rpx;
-}
-
-.knowledge-module-line {
-  position: absolute;
-  top: 54rpx;
-  bottom: -12rpx;
-  left: 50%;
-  width: 3rpx;
-  border-radius: 999rpx;
-  background: rgba(20, 32, 23, 0.12);
-  transform: translateX(-50%);
-}
-
-.knowledge-module-body {
-  flex: 1;
-  min-width: 0;
-  margin-left: 14rpx;
-  margin-bottom: 16rpx;
-  padding: 24rpx;
-  border-radius: 24rpx;
-  background: rgba(255, 255, 255, 0.82);
-  border: 1rpx solid rgba(20, 32, 23, 0.06);
-  box-shadow: 0 8rpx 22rpx rgba(20, 32, 23, 0.05);
-}
-
-.knowledge-module-card.focused .knowledge-module-body {
-  background: rgba(248, 255, 243, 0.95);
-  border-color: rgba(24, 169, 87, 0.22);
-}
-
-.knowledge-module-top {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-}
-
-.knowledge-module-copy {
-  flex: 1;
-  min-width: 0;
-}
-
-.knowledge-module-name {
-  display: block;
-  color: $primary-deep;
-  font-size: 29rpx;
-  font-weight: 900;
-  line-height: 1.28;
-}
-
-.knowledge-module-meta {
-  display: block;
-  margin-top: 8rpx;
-  color: $text-weak;
-  font-size: 22rpx;
-  line-height: 1.35;
-}
-
-.knowledge-module-state {
-  flex-shrink: 0;
-  margin-left: 18rpx;
-  padding: 8rpx 14rpx;
-  border-radius: 999rpx;
-  background: rgba(20, 32, 23, 0.06);
-  color: rgba(20, 32, 23, 0.64);
-  font-size: 21rpx;
   font-weight: 850;
 }
 
-.knowledge-module-card.focused .knowledge-module-state {
-  background: rgba(159, 232, 112, 0.36);
-  color: $primary-deep;
-}
-
-.knowledge-topic-row {
-  display: flex;
-  flex-wrap: wrap;
+.knowledge-map-hint {
   margin-top: 16rpx;
-}
-
-.knowledge-topic-chip {
-  margin-right: 10rpx;
-  margin-bottom: 10rpx;
-  padding: 9rpx 14rpx;
-  border-radius: 999rpx;
-  background: rgba(20, 32, 23, 0.055);
-  color: $text-sub;
-  font-size: 22rpx;
-  font-weight: 720;
-}
-
-.knowledge-topic-chip.muted {
   color: $text-weak;
+  font-size: 22rpx;
+  line-height: 1.45;
 }
 
 .card {
@@ -1526,38 +1919,6 @@ $spacing-section: 24rpx;
   line-height: 1.5;
 }
 
-.empty-track-stats {
-  display: flex;
-  margin-top: 22rpx;
-}
-
-.empty-track-stat {
-  flex: 1;
-  padding: 16rpx 12rpx;
-  border-radius: 18rpx;
-  background: rgba(20, 32, 23, 0.045);
-}
-
-.empty-track-stat + .empty-track-stat {
-  margin-left: 10rpx;
-}
-
-.empty-track-stat-value {
-  display: block;
-  color: $primary-deep;
-  font-size: 30rpx;
-  font-weight: 900;
-  line-height: 1;
-}
-
-.empty-track-stat-label {
-  display: block;
-  margin-top: 8rpx;
-  color: $text-weak;
-  font-size: 20rpx;
-  font-weight: 750;
-}
-
 .empty-track-action {
   @include em-mobile-primary-action;
   @include em-mobile-pressable;
@@ -1573,40 +1934,6 @@ $spacing-section: 24rpx;
 
 .empty-track-action text {
   color: $primary-deep;
-}
-
-.pending-list {
-  margin-top: 18rpx;
-  padding: 24rpx;
-  border-radius: 24rpx;
-  background: rgba(20, 32, 23, 0.045);
-}
-
-.pending-title {
-  display: block;
-  color: rgba(20, 32, 23, 0.46);
-  font-size: 20rpx;
-  font-weight: 900;
-  letter-spacing: 1.2rpx;
-}
-
-.pending-item {
-  display: flex;
-  flex-direction: column;
-  margin-top: 14rpx;
-}
-
-.pending-name {
-  color: $text-main;
-  font-size: 25rpx;
-  font-weight: 800;
-}
-
-.pending-reason {
-  margin-top: 5rpx;
-  color: $text-weak;
-  font-size: 22rpx;
-  line-height: 1.4;
 }
 
 /* 状态卡片 */

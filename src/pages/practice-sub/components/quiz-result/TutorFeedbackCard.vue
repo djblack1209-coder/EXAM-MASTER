@@ -6,7 +6,7 @@
           <view class="tutor-avatar">
             <BaseIcon name="robot" :size="32" color="var(--em-brand)" />
           </view>
-          <text class="tutor-title">AI Tutor 导师点评</text>
+          <text class="tutor-title">答题点评</text>
         </view>
       </template>
       <view class="tutor-body">

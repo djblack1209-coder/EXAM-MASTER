@@ -7,7 +7,7 @@
         <view class="back-area" hover-class="item-hover" @tap="handleExit">
           <BaseIcon name="arrow-left" :size="36" />
           <text id="e2e-quiz-progress" class="progress-text" @tap.stop="showAnswerSheet = true">
-            {{ currentIndex + 1 }} / {{ questions.length }}
+            {{ quizProgressLabel }}
           </text>
         </view>
         <QuizProgress :total="questions.length" :current="currentIndex" :answered="answeredQuestions" />
@@ -372,7 +372,7 @@
       <!-- 新增: FSRS 记忆引擎状态展示 -->
       <MemoryStatsRow v-if="memoryState" :memory-state="memoryState" />
 
-      <!-- 新增: AI Tutor 智能体辅导反馈 -->
+      <!-- 答题点评反馈 -->
       <TutorFeedbackCard v-if="tutorFeedback" :feedback="tutorFeedback" />
     </view>
 
@@ -381,8 +381,8 @@
       :visible="showEmptyBankModal"
       type="upload"
       title="题库空空如也"
-      content="请先到刷题中心加载题库，再开始练习。"
-      confirm-text="去加载"
+      content="当前没有可训练题。可以先查看题库，或体验示例题熟悉流程。"
+      confirm-text="查看题库"
       :show-cancel="false"
       :is-dark="isDark"
       @confirm="handleEmptyBankConfirm"
@@ -433,9 +433,9 @@
       @close="handleCompleteConfirm"
       @continue-next="handleCompleteAction"
       @go-mistakes="navigateFromResult('/pages/mistake/index')"
-      @go-weak-training="navigateFromResult('/pages/practice-sub/do-quiz?mode=smart_review')"
+      @go-weak-training="startResultFocusedReview"
       @go-new-practice="handleCompleteConfirm"
-      @go-a-i-plan="navigateFromResult('/pages/practice-sub/do-quiz?mode=smart_review')"
+      @go-a-i-plan="startResultFocusedReview"
     />
 
     <!-- ✅ 笔记输入弹窗 -->
@@ -507,7 +507,7 @@ import { getStatusBarHeight, getWindowInfo } from '@/utils/core/system.js';
 // ✅ 检查点 5.3: 自适应学习引擎（懒加载：仅在 isAdaptiveMode 时动态导入）
 // ✅ 导入题目收藏模块（通过 Store，自动走后端或本地）
 import { useFavoriteStore } from '@/stores/modules/favorite.js';
-// ✅ [P3] FSRS复习日程预览
+// 复习日程预览
 import { scheduleMistakeReview } from './utils/mistake-fsrs-scheduler.js';
 // ✅ 导入滑动手势模块
 import {
@@ -582,12 +582,18 @@ import {
   buildQuizCompletionContent,
   buildQuizAnswerRecord,
   getQuizOptionLabel,
+  getQuizQuestionId,
   getQuizQuestionTypeLabel,
   hasQuizSelectableOptions,
   isCorrectQuizOption,
+  isReleasedPracticeBankSource,
   isQuizFlashcardMode,
   buildQuizKnowledgeFeedback,
   normalizeQuizQuestion,
+  selectQuizQuestionsByIds,
+  shouldRestoreLegacyReviewBank,
+  summarizeQuizAnswers,
+  TEMP_PRACTICE_QUESTIONS_KEY,
   upsertQuizAnswerRecord
 } from '@/services/quiz-session-contract.js';
 import {
@@ -719,7 +725,7 @@ export default {
       selectedNoteTags: [], // 选中的笔记标签
       showAnswerSheet: false, // 答题卡显示状态
       showLevelUp: false, // 升级特效显示状态
-      mode: '', // 刷题模式：'' | 'single' | 'temp_bank' | 'smart_review'
+      mode: '', // 刷题模式：'' | 'single' | 'temp_bank' | 'smart_review' | 'timed_sprint'
       eloState: { userRating: 1500, questionRatings: {} },
       pendingTimers: [] // [AUDIT FIX R264] setTimeout 追踪，防止内存泄漏
     };
@@ -727,6 +733,11 @@ export default {
   computed: {
     showQuizLoading() {
       return !this.currentQuestion && !this.showEmptyBankModal && !this.showResumeModal && !this.showCompleteModal;
+    },
+    quizProgressLabel() {
+      const total = this.questions.length;
+      if (total <= 0) return '0 / 0';
+      return `${Math.min(this.currentIndex + 1, total)} / ${total}`;
     },
     completeModalContent() {
       return buildQuizCompletionContent({
@@ -828,6 +839,10 @@ export default {
     if (query.mode === 'smart_review') {
       this._smartReviewMode = true;
     }
+    if (query.mode === 'timed_sprint') {
+      this.isAdaptiveMode = false;
+      this.questionTimerEnabled = true;
+    }
     this.eloState = readEloState(storageService);
 
     // E005: 延迟重计算，让 UI 先渲染
@@ -840,7 +855,7 @@ export default {
       // ✅ 检查点 5.1: 追踪开始刷题事件
       analytics.trackStartPractice({
         questionCount: this.questions.length,
-        mode: this.isAdaptiveMode ? 'adaptive' : 'normal'
+        mode: this.mode || (this.isAdaptiveMode ? 'adaptive' : 'normal')
       });
 
       // ✅ 游戏化：会话开始（连续学习检查 + 每日挑战 + 首次练习XP）
@@ -911,7 +926,15 @@ export default {
         const isReview = storageService.get('is_review_mode', false);
         if (isReview) {
           const backup = storageService.get('v30_bank_backup', []);
-          if (backup.length > 0) {
+          const currentBank = storageService.get('v30_bank', []);
+          const reviewQuestions = storageService.get('temp_review_questions', []);
+          if (
+            shouldRestoreLegacyReviewBank({
+              currentBank,
+              backupBank: backup,
+              reviewQuestions
+            })
+          ) {
             storageService.save('v30_bank', backup);
           }
           storageService.remove('is_review_mode');
@@ -1024,6 +1047,11 @@ export default {
       this.capsuleMargin = 20;
       // #endif
     },
+
+    isReleasedPracticeBankSource(bankSource) {
+      return isReleasedPracticeBankSource(bankSource);
+    },
+
     async loadQuestions() {
       // ✅ mode=single：从收藏页传入的单题练习
       if (this._singleMode) {
@@ -1031,7 +1059,7 @@ export default {
         if (singleQ) {
           this.questions = [
             {
-              id: singleQ.id || 'single_q',
+              id: getQuizQuestionId(singleQ) || 'single_q',
               question: singleQ.question,
               options:
                 Array.isArray(singleQ.options) && singleQ.options.length >= 4
@@ -1050,12 +1078,38 @@ export default {
         }
       }
 
+      // mode=review：错题本传入的临时重练队列，不依赖正式题库
+      if (this.mode === 'review') {
+        const reviewQuestions = storageService.get('temp_review_questions', []);
+        if (Array.isArray(reviewQuestions) && reviewQuestions.length > 0) {
+          this.questions = reviewQuestions.map((q, index) => ({
+            id: getQuizQuestionId(q) || `review_${index}`,
+            question: q.question || q.title || `错题 ${index + 1}`,
+            options:
+              Array.isArray(q.options) && q.options.length >= 2
+                ? q.options
+                : ['A. 选项A', 'B. 选项B', 'C. 选项C', 'D. 选项D'],
+            answer: (q.answer || 'A').toString().toUpperCase().charAt(0),
+            desc: q.desc || q.description || q.explanation || q.analysis || '暂无解析',
+            category: q.category || '错题重练',
+            type: q.type || '单选',
+            difficulty: q.difficulty || 2,
+            source: q.source || 'mistake_review',
+            knowledgeNodeIds: q.knowledgeNodeIds || q.knowledge_points || [],
+            knowledge_points: q.knowledge_points || q.knowledgeNodeIds || [],
+            isReview: true
+          }));
+          this.startTimer();
+          return;
+        }
+      }
+
       // ✅ [零摩擦] mode=temp_bank：从拍照搜题直接进入练习
       if (this.mode === 'temp_bank') {
-        const tempQuestions = storageService.get('temp_practice_questions', []);
+        const tempQuestions = storageService.get(TEMP_PRACTICE_QUESTIONS_KEY, []);
         if (tempQuestions.length > 0) {
           this.questions = tempQuestions.map((q, index) => ({
-            id: q.id || `temp_${index}`,
+            id: getQuizQuestionId(q) || `temp_${index}`,
             question: q.question || '',
             options: Array.isArray(q.options) && q.options.length >= 2 ? q.options : [],
             answer: (q.answer || 'A').toString().toUpperCase().charAt(0),
@@ -1067,7 +1121,7 @@ export default {
             knowledgeNodeIds: q.knowledgeNodeIds || q.knowledge_points || [],
             knowledge_points: q.knowledge_points || q.knowledgeNodeIds || []
           }));
-          storageService.remove('temp_practice_questions');
+          storageService.remove(TEMP_PRACTICE_QUESTIONS_KEY);
           this.startTimer();
           return;
         }
@@ -1077,27 +1131,30 @@ export default {
       if (this._smartReviewMode) {
         const reviewIds = uni.getStorageSync('smart_review_ids') || [];
         if (reviewIds.length > 0) {
+          const bankSource = storageService.get('v30_bank_source', null);
+          if (!this.isReleasedPracticeBankSource(bankSource)) {
+            this.showEmptyBankModal = true;
+            return;
+          }
+
           const bank = storageService.get('v30_bank', []);
-          const reviewQuestions = reviewIds
-            .map((id) => bank.find((q) => (q.id || q._id) === id))
-            .filter(Boolean)
-            .map((q, index) => ({
-              id: q.id || q._id || `review_${index}`,
-              question: q.question || q.title || `题目 ${index + 1}`,
-              options:
-                Array.isArray(q.options) && q.options.length >= 4
-                  ? q.options
-                  : ['A. 选项A', 'B. 选项B', 'C. 选项C', 'D. 选项D'],
-              answer: (q.answer || 'A').toString().toUpperCase().charAt(0),
-              desc: q.desc || q.description || q.explanation || q.analysis || '暂无解析',
-              category: q.category || '未分类',
-              type: q.type || '单选',
-              difficulty: q.difficulty || 2,
-              source: q.source || '',
-              year: q.year || '',
-              knowledgeNodeIds: q.knowledgeNodeIds || q.knowledge_points || [],
-              knowledge_points: q.knowledge_points || q.knowledgeNodeIds || []
-            }));
+          const reviewQuestions = selectQuizQuestionsByIds(bank, reviewIds).map((q, index) => ({
+            id: getQuizQuestionId(q) || `review_${index}`,
+            question: q.question || q.title || `题目 ${index + 1}`,
+            options:
+              Array.isArray(q.options) && q.options.length >= 4
+                ? q.options
+                : ['A. 选项A', 'B. 选项B', 'C. 选项C', 'D. 选项D'],
+            answer: (q.answer || 'A').toString().toUpperCase().charAt(0),
+            desc: q.desc || q.description || q.explanation || q.analysis || '暂无解析',
+            category: q.category || '未分类',
+            type: q.type || '单选',
+            difficulty: q.difficulty || 2,
+            source: q.source || '',
+            year: q.year || '',
+            knowledgeNodeIds: q.knowledgeNodeIds || q.knowledge_points || [],
+            knowledge_points: q.knowledge_points || q.knowledgeNodeIds || []
+          }));
           if (reviewQuestions.length > 0) {
             this.questions = reviewQuestions;
             uni.removeStorageSync('smart_review_ids');
@@ -1118,10 +1175,16 @@ export default {
         return;
       }
 
+      const bankSource = storageService.get('v30_bank_source', null);
+      if (!this.isReleasedPracticeBankSource(bankSource)) {
+        this.showEmptyBankModal = true;
+        return;
+      }
+
       // 验证并标准化题目数据
       let questions = bank
         .map((q, index) => ({
-          id: q.id || `q_${index}`,
+          id: getQuizQuestionId(q) || `q_${index}`,
           question: q.question || q.title || `题目 ${index + 1}`,
           options:
             Array.isArray(q.options) && q.options.length >= 4
@@ -1199,8 +1262,8 @@ export default {
       return `${m < 10 ? '0' + m : m}:${rs < 10 ? '0' + rs : rs}`;
     },
     getCompletionNextReviewDelayMs() {
-      const wrongCount = (this.answeredQuestions || []).filter((answer) => answer.isCorrect === false).length;
-      if (wrongCount <= 0) return null;
+      const answerSummary = summarizeQuizAnswers(this.answeredQuestions);
+      if (answerSummary.wrongCount <= 0) return null;
 
       try {
         const previewMistake = { fsrs_due: Date.now() };
@@ -1560,7 +1623,7 @@ export default {
         // ✅ 检查点 5.1: 追踪完成练习事件
         analytics.trackConversion('COMPLETE_SESSION', {
           totalQuestions: this.questions.length,
-          correctCount: this.answeredQuestions.filter((a) => a.isCorrect).length,
+          correctCount: summarizeQuizAnswers(this.answeredQuestions).correctCount,
           totalTime: this.seconds
         });
 
@@ -1603,7 +1666,7 @@ export default {
     // ✅ 处理题库为空确认
     handleEmptyBankConfirm() {
       this.showEmptyBankModal = false;
-      safeNavigateTo('/pages/practice/index');
+      safeNavigateTo('/pages/practice-sub/question-bank');
     },
 
     // ✅ 处理恢复进度确认
@@ -1649,7 +1712,7 @@ export default {
         // 处理推荐结果 — AI自动推荐下一组
         if (recRes.status === 'fulfilled' && recRes.value.success && recRes.value.data) {
           const ids = (recRes.value.data.questions || recRes.value.data || [])
-            .map((q) => q.id || q._id)
+            .map(getQuizQuestionId)
             .filter(Boolean);
           if (ids.length > 0) {
             this.nextRecommendationIds = ids;
@@ -1665,15 +1728,59 @@ export default {
 
     // ✅ [P1重构] 完成弹窗主按钮 — 根据是否有推荐决定行为
     handleCompleteAction() {
+      this.startResultFocusedReview();
+    },
+
+    buildCurrentWrongReviewQuestions() {
+      const seen = new Set();
+      return (this.answeredQuestions || [])
+        .filter((answer) => answer?.isCorrect === false)
+        .map((answer, fallbackIndex) => {
+          const index = Number.isFinite(Number(answer.index)) ? Number(answer.index) : fallbackIndex;
+          const question = this.questions[index];
+          if (!question) return null;
+
+          const id = getQuizQuestionId(question) || `session_review_${index}`;
+          if (seen.has(id)) return null;
+          seen.add(id);
+
+          return {
+            ...question,
+            id,
+            question: question.question || question.title || `错题 ${fallbackIndex + 1}`,
+            options:
+              Array.isArray(question.options) && question.options.length >= 2
+                ? question.options
+                : ['A. 选项A', 'B. 选项B', 'C. 选项C', 'D. 选项D'],
+            answer: (question.answer || 'A').toString().toUpperCase().charAt(0),
+            desc: question.desc || question.description || question.explanation || question.analysis || '暂无解析',
+            category: question.category || '错题重练',
+            type: question.type || '单选',
+            difficulty: question.difficulty || 2,
+            source: question.source || 'session_review',
+            isReview: true
+          };
+        })
+        .filter(Boolean);
+    },
+
+    startResultFocusedReview() {
+      this.showCompleteModal = false;
       if (this.hasNextRecommendation && this.nextRecommendationIds.length > 0) {
-        // AI已推荐下一组，直接开始
-        this.showCompleteModal = false;
         uni.setStorageSync('smart_review_ids', this.nextRecommendationIds);
         uni.redirectTo({ url: '/pages/practice-sub/do-quiz?mode=smart_review' });
-      } else {
-        // 没有推荐，查看诊断报告
-        this.viewDiagnosisReport();
+        return;
       }
+
+      const reviewQuestions = this.buildCurrentWrongReviewQuestions();
+      if (reviewQuestions.length > 0) {
+        storageService.save('temp_review_questions', reviewQuestions);
+        storageService.save('is_review_mode', true);
+        uni.redirectTo({ url: '/pages/practice-sub/do-quiz?mode=review' });
+        return;
+      }
+
+      safeNavigateTo('/pages/mistake/index');
     },
 
     // ✅ 查看诊断报告
@@ -1683,11 +1790,11 @@ export default {
         modal.show({
           title: '练习诊断',
           content: this.diagnosisSummary || '诊断已完成，请继续复习错题并保持练习节奏。',
-          confirmText: '开始复习',
+          confirmText: this.hasNextRecommendation ? '开始复习' : '复习错题',
           cancelText: '返回',
           success: (res) => {
             if (res.confirm) {
-              safeNavigateTo('/pages/practice-sub/do-quiz?mode=smart_review');
+              this.startResultFocusedReview();
             } else {
               safeNavigateBack();
             }
@@ -2339,6 +2446,7 @@ export default {
   font-size: 28rpx;
   font-weight: 700;
   color: var(--text-primary);
+  white-space: nowrap;
 }
 .timer-box {
   font-size: 24rpx;

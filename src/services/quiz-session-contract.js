@@ -14,6 +14,16 @@ const KNOWLEDGE_STATE_LABELS = {
   weak: '薄弱点'
 };
 
+export const TEMP_PRACTICE_QUESTIONS_KEY = 'temp_practice_questions';
+
+export function isPublishedPracticeBankSource(bankSource) {
+  return bankSource?.type === 'published_registry';
+}
+
+export function isReleasedPracticeBankSource(bankSource) {
+  return isPublishedPracticeBankSource(bankSource) || bankSource?.type === 'guest_demo';
+}
+
 function asArray(value) {
   if (Array.isArray(value)) return value;
   if (value == null || value === '') return [];
@@ -42,6 +52,7 @@ function normalizeAnswer(question, type) {
 export function normalizeQuizQuestion(question, index = 0, options = {}) {
   if (!question) return null;
 
+  const id = getQuizQuestionId(question) || `q_${index}`;
   const type = question.type || options.defaultType || '单选';
   const rawOptions = Array.isArray(question.options) ? question.options : [];
   const shouldFillOptions = Boolean(options.fillMissingChoiceOptions) && !isEvidenceOnlyType(type);
@@ -61,7 +72,7 @@ export function normalizeQuizQuestion(question, index = 0, options = {}) {
 
   return {
     ...question,
-    id: question.id || question._id || `q_${index}`,
+    id,
     question: question.question || question.title || options.defaultQuestion || `题目 ${index + 1}`,
     options: normalizedOptions,
     answer: normalizeAnswer(question, type),
@@ -113,7 +124,7 @@ export function buildQuizAnswerRecord(input = {}) {
   const question = input.question || {};
   const now = input.now == null ? Date.now() : input.now;
   const record = {
-    questionId: question.id || question._id || input.questionId || '',
+    questionId: getQuizQuestionId(question) || input.questionId || '',
     index: Number(input.index || 0),
     userChoice: input.userChoice,
     isCorrect: input.isCorrect,
@@ -128,6 +139,23 @@ export function buildQuizAnswerRecord(input = {}) {
   });
 
   return record;
+}
+
+function getQuizAnswerRecordKey(record = {}) {
+  return `${Number(record.index || 0)}\u0000${record.questionId || ''}`;
+}
+
+function dedupeQuizAnswerRecords(records = []) {
+  const byQuestion = new Map();
+  (records || []).forEach((record) => {
+    const normalized = {
+      ...record,
+      index: Number(record.index || 0),
+      questionId: record.questionId || ''
+    };
+    byQuestion.set(getQuizAnswerRecordKey(normalized), normalized);
+  });
+  return Array.from(byQuestion.values());
 }
 
 export function upsertQuizAnswerRecord(records = [], record = {}) {
@@ -154,25 +182,108 @@ export function upsertQuizAnswerRecord(records = [], record = {}) {
   return next;
 }
 
+export function summarizeQuizAnswers(answeredQuestions = []) {
+  const summary = {
+    answeredByIndex: {},
+    answeredCount: 0,
+    correctCount: 0,
+    wrongCount: 0,
+    neutralCount: 0,
+    gradedCount: 0,
+    totalTimeMs: 0,
+    averageTimeMs: 0
+  };
+
+  (answeredQuestions || []).forEach((record) => {
+    const index = Number(record?.index || 0);
+    const isCorrect = record?.isCorrect;
+    summary.answeredByIndex[index] = isCorrect;
+    summary.answeredCount++;
+
+    if (isCorrect === true) {
+      summary.correctCount++;
+      summary.gradedCount++;
+    } else if (isCorrect === false) {
+      summary.wrongCount++;
+      summary.gradedCount++;
+    } else {
+      summary.neutralCount++;
+    }
+
+    const timeSpent = Number(record?.timeSpent || 0);
+    if (Number.isFinite(timeSpent) && timeSpent > 0) {
+      summary.totalTimeMs += timeSpent;
+    }
+  });
+
+  summary.averageTimeMs = summary.answeredCount > 0 ? Math.round(summary.totalTimeMs / summary.answeredCount) : 0;
+  return summary;
+}
+
 export function summarizeQuizProgress({ questions = [], answeredQuestions = [], currentIndex = 0 } = {}) {
-  const deduped = (answeredQuestions || []).reduce((acc, record) => upsertQuizAnswerRecord(acc, record), []);
+  const deduped = dedupeQuizAnswerRecords(answeredQuestions);
   const total = questions.length;
-  const correctCount = deduped.filter((record) => record.isCorrect === true).length;
-  const wrongCount = deduped.filter((record) => record.isCorrect === false).length;
-  const neutralCount = deduped.length - correctCount - wrongCount;
-  const gradedCount = correctCount + wrongCount;
+  const answerSummary = summarizeQuizAnswers(deduped);
 
   return {
     total,
     currentIndex,
-    answeredCount: deduped.length,
-    gradedCount,
-    correctCount,
-    wrongCount,
-    neutralCount,
-    progressRate: total > 0 ? deduped.length / total : 0,
-    accuracy: gradedCount > 0 ? Math.round((correctCount / gradedCount) * 100) : 0
+    answeredCount: answerSummary.answeredCount,
+    gradedCount: answerSummary.gradedCount,
+    correctCount: answerSummary.correctCount,
+    wrongCount: answerSummary.wrongCount,
+    neutralCount: answerSummary.neutralCount,
+    progressRate: total > 0 ? answerSummary.answeredCount / total : 0,
+    accuracy:
+      answerSummary.gradedCount > 0 ? Math.round((answerSummary.correctCount / answerSummary.gradedCount) * 100) : 0
   };
+}
+
+export function getQuizQuestionId(question = {}) {
+  const id = question?.questionId ?? question?.question_id ?? question?.id ?? question?._id ?? '';
+  return id == null ? '' : id;
+}
+
+export function selectQuizQuestionsByIds(bank = [], ids = []) {
+  if (!Array.isArray(bank) || !Array.isArray(ids) || bank.length === 0 || ids.length === 0) return [];
+
+  const questionById = new Map();
+  bank.forEach((question) => {
+    const id = getQuizQuestionId(question);
+    if (id !== '' && !questionById.has(id)) {
+      questionById.set(id, question);
+    }
+  });
+
+  return ids.map((id) => questionById.get(id)).filter(Boolean);
+}
+
+function questionIdentity(question = {}) {
+  const id = getQuizQuestionId(question);
+  const text = question.question || question.title || question.content || '';
+  const answer = question.answer || question.correct_answer || question.correctAnswer || '';
+  return `${id}\u0000${text}\u0000${answer}`;
+}
+
+function isLegacyReviewQuestion(question = {}) {
+  return (
+    question.isReview === true ||
+    question.source === 'mistake_review' ||
+    question.category === '错题重练' ||
+    question.category === '针对训练'
+  );
+}
+
+export function shouldRestoreLegacyReviewBank({ currentBank = [], backupBank = [], reviewQuestions = [] } = {}) {
+  if (!Array.isArray(backupBank) || backupBank.length === 0) return false;
+  if (!Array.isArray(currentBank) || !Array.isArray(reviewQuestions)) return false;
+  if (currentBank.length === 0 || reviewQuestions.length === 0) return false;
+  if (currentBank.length !== reviewQuestions.length) return false;
+  if (!currentBank.every(isLegacyReviewQuestion)) return false;
+
+  return currentBank.every(
+    (question, index) => questionIdentity(question) === questionIdentity(reviewQuestions[index])
+  );
 }
 
 function formatNextReviewDelay(delayMs) {
