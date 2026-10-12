@@ -138,6 +138,8 @@ attempt.assistance 的 `subjective-rubric-v1` 记录 rubricId、questionKey、�
 
 新宿主assess事件增加data.rubricContract=`subjective-rubric-v2`；未声明或明确v1的历史事件按原合同重放，逻辑事件版本仍为1。v2 assistance增加attemptId、evidencePolicy=`original-answer-range-v1`；每维度保留evidence原文字符串，同时保存从原答重建的evidenceLocations（quote/start/end、按Unicode码点显示的startCharacter/endCharacter、occurrence/occurrences、before/after）。start/end为UTF-16半开范围；附近原文最多前后各24码点，无额外上传。输入不接受自带附近正文；同步/备份忽略派生位置并按实际事件重算，隐私删除清除原答、范围、附近正文及相关副本。重复引用未定位或同范围重复、原文/范围不符继续拒绝；未校对疑义不留确定维度分值，所有评分仍待人工语义核对。
 
+新明确写作原答的事件类型为 `attempt.submit-original-v1`，完整字符串与事件正文一致；旧 `attempt.submit` 保持历史裁剪或既有原串例外，不重新解释旧答案。引用范围始终以该次已保存原答为依据：旧裁剪答案的UTF-16位置与新完整答案的位置分别保留。新类型不改题目/量表/逻辑状态版本，无确认标记整批失败且不持久保存；同ID重试不能改类型或正文。未知新事件的旧端重放拒绝不等于旧快照全面安全拒绝，程序恢复仍配套对应资料及元数据回执。
+
 重复评估事件复用；不同评估可保留多个意见，不能据一致性升级权威。备份/同步按事件重放结构和业务校验，不能信任派生分值或reliable标签。仅修订维度的同题版本继承原帮助；存在旧尝试时新作答为重做，重复修订不制造新首答。资料删除沿用关联题源清理这些评分、原答和事件。
 
 ## 代数题目与判分证据

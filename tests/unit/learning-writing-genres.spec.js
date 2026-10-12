@@ -45,6 +45,18 @@ function setup(genre) {
   store.start(WRITING_GENRES.find((item) => item.id === genre).goal, { track: 'junior', stage: '八年级', edition: '' });
   return store;
 }
+describe('各写作入口的明确原文提交', () => {
+  it('基础体裁保留首尾空白，仍待核对且不安排可靠复习', () => {
+    const store = setup('narrative');
+    const original = '\r\n \tI learned to plan my time and finish the task.\n\t ';
+    store.submit(original, true, 'guided-original-whitespace');
+    expect(store.state.attempts[0]).toMatchObject({ answer: original, grade: { status: 'pending' } });
+    expect(store.state.events.find((event) => event.id === 'guided-original-whitespace').type).toBe(
+      'attempt.submit-original-v1'
+    );
+    expect(store.state.reviews).toEqual([]);
+  });
+});
 describe('USGS英文正文全文与固定段落帮助', () => {
   const id = 'usgs-water-cycle-full-en-v1';
   it('保留7小节8段正文和末段，许可仅限署名机构制作文字，不夹入第三方图注', () => {

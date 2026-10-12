@@ -348,6 +348,13 @@ const text = (value, max = 8000) => {
 const questionKey = (q) => `${q.id}@${q.version}`;
 const effectiveGrade = (a) => a.corrections?.at(-1)?.grade || a.grade;
 export { effectiveGrade, questionKey };
+export const ORIGINAL_ANSWER_OPERATION = 'attempt.submit-original-v1';
+export function attemptSubmissionType(question, previousType) {
+  if (['attempt.submit', ORIGINAL_ANSWER_OPERATION].includes(previousType)) return previousType;
+  return question?.writingExercise || question?.vocabularyReview?.phase === 'usage'
+    ? ORIGINAL_ANSWER_OPERATION
+    : 'attempt.submit';
+}
 
 // 隐私删除保留无正文的墓碑和计划分母。原始操作也要脱敏，否则导出、同步或恢复会重新带回资料。
 export function inspectMaterialDeletion(state, materialId) {
@@ -1649,7 +1656,8 @@ function reduceLearningOperation(original, operation, owned = false, budget = nu
       result = { messageId: opId, executionId, helped: data.helped };
       break;
     }
-    case 'attempt.submit': {
+    case 'attempt.submit':
+    case ORIGINAL_ANSWER_OPERATION: {
       const session = current();
       const training = session.trainingGroups?.find((g) => g.questionKeys.includes(session.activeQuestionKey));
       assert(
@@ -1661,6 +1669,16 @@ function reduceLearningOperation(original, operation, owned = false, budget = nu
       assert(!session.stopped, 'STOPPED', '当前任务已停止');
       const q = state.questions.find((item) => questionKey(item) === session.activeQuestionKey);
       assert(q, 'PRECONDITION', '作答需要绑定明确题目');
+      assert(
+        operation.type !== ORIGINAL_ANSWER_OPERATION || data.explicit === true,
+        'SUBMISSION_CONFIRMATION_REQUIRED',
+        '原文作答需要明确提交，当前记录保留'
+      );
+      assert(
+        operation.type !== ORIGINAL_ANSWER_OPERATION || q.writingExercise || q.vocabularyReview?.phase === 'usage',
+        'PRECONDITION',
+        '原文提交仅用于写作或明确的词语造句'
+      );
       assert(!q.vocabularyExercise, 'PRECONDITION', '请在原写作中确认认词选择');
       assert(
         !q.vocabularyReview || q.vocabularyReview.conversationId === session.id,
@@ -1690,7 +1708,10 @@ function reduceLearningOperation(original, operation, owned = false, budget = nu
       );
       const validatedAnswer = text(data.answer);
       const answer =
-        q.oatutorExercise || training || EXTENDED_WRITING_CONTRACTS.includes(q.writingExercise?.contract)
+        operation.type === ORIGINAL_ANSWER_OPERATION ||
+        q.oatutorExercise ||
+        training ||
+        EXTENDED_WRITING_CONTRACTS.includes(q.writingExercise?.contract)
           ? data.answer
           : validatedAnswer;
       if (

@@ -4,9 +4,11 @@
 
 ## 当前候选与本机资源
 
+当前原答保护阶段沿 `verification.json.writingOriginalFix`：后端为 `backend-original-answer/`，旧 `backend/` 仅保留历史模型回执及旧重放拒绝证据，不用于新原答事件验收。四端输出、既有源码镜像及Rust缓存复用；最新日常归档仍为 `desktop-candidate.zip`，独立身份为 `native-field-qa.zip`，各自完整读回、试还原与实际重开通过。ZIP恢复高精度时间戳须应用对应回执的逐文件十进制纳秒清单；程序与资料配对，不能只验签名。日常最近成功回滚程序为原配对目录 `Yozi AI.original-answer.app.zip`，原学习资料导出仍沿同目录不可变基线。
+
 2026-10-12 地区控件修复复用同一构建目录与原生缓存，四端前端与两种原生身份实际核验通过；本机语法实际HTTP和网页回执沿 `verification.json` 的 `grammarHttpBoundaries`，控件修复、首次错误构建目录后的回滚和当前候选沿 `regionControlFix`。日常程序须从带原资料UUID适配的既有隔离镜像构建；仓库根构建即使签名通过，也不会因此接回原资料。当前归档在实际更新、公开完整导出及普通重开通过后才提升。
 
-本轮私有目录模型验收复用 `verify-learning-live.mjs --catalog <本机私有目录> --provider <已审核供应商> --backend-dir tmp/stage1-mobile-20261011/backend --tasks <单一任务>`，显式固定隔离Mongo URI并核对27189/4383无其他消费者。每次一个供应商请求，无自动重试/回退，不执行目录HTML或读取.env；记录沿 `verification.json.freeCatalogContinuation` 和 `free-catalog-zhipu-20261012/` 内各供应商/任务目录，目录名保留初始归属。接口深重放不读取模型目录、不增加模型调用；日常原资料及真实产品界面模型验收分别成立。
+本轮私有目录模型验收复用 `verify-learning-live.mjs --catalog <本机私有目录> --provider <已审核供应商> --backend-dir tmp/stage1-mobile-20261011/backend-original-answer --tasks <单一任务>`，显式固定隔离Mongo URI并核对27189/4383无其他消费者。每次一个供应商请求，无自动重试/回退，不执行目录HTML或读取.env；记录沿 `verification.json.freeCatalogContinuation` 和 `free-catalog-zhipu-20261012/` 内各供应商/任务目录，目录名保留初始归属。接口深重放不读取模型目录、不增加模型调用；日常原资料及真实产品界面模型验收分别成立。
 
 当前候选已接续至 `tmp/stage1-mobile-20261011/`：前端 `dist/build/{h5,mp-weixin,app,desktop}`、后端 `backend/`、共享依赖的隔离构建源码 `build-source/`；当前签名程序归档固定为 `desktop-candidate.zip`，不保留可启动候选App。当前程序摘要及归档清单见该目录 `native-candidate-receipt.json`，原日常资料的逐字前后/重开核验和配对试还原见 `verification.json`。上一阶段成功程序在 `tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-before/stage1-mobile-20261011/native/Yozi AI.stage1.app.zip`，与该目录原资料导出配对；更早原程序归档保留为必要恢复基线。以下旧候选及运行时只按仍有效的回退用途保留，不作为当前产物。
 

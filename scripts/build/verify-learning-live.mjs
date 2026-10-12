@@ -18,7 +18,9 @@ import {
   summarizeLearning,
   createMaterialObjectiveQuestion,
   createMaterialObjectiveVariant,
-  learningTaskContext
+  learningTaskContext,
+  attemptSubmissionType,
+  normalizePrivateSyncOperation
 } from '../../src/services/learning/learning-domain.js';
 import { parsePastedMaterial, questionFromMaterial } from '../../src/services/learning/material-intake.js';
 import { parseExactNumberAnswer } from '../../laf-backend/functions/_shared/learning-algebra.js';
@@ -234,6 +236,8 @@ async function check(name, action) {
 }
 async function verifyWritingFeedback(kind = 'writing') {
   const usage = kind === 'vocabulary-use';
+  const addPrivateQuestion = (question) =>
+    apply('question.add', normalizePrivateSyncOperation({ type: 'question.add', data: { question } }).data);
   const conversationId = apply(
     'conversation.start',
     { goal: usage ? '英文说明写作' : '英文通知写作', task: { track: 'junior', stage: '八年级', edition: '' } },
@@ -243,7 +247,7 @@ async function verifyWritingFeedback(kind = 'writing') {
     useBasis = null;
   if (usage) {
     const parent = createWritingQuestion('vocabulary_use_live_writing', conversationId, 'explanation', 0);
-    const parentKey = apply('question.add', { question: parent }).questionKey;
+    const parentKey = addPrivateQuestion(parent).questionKey;
     apply('question.focus', { conversationId, questionKey: parentKey });
     const originKey = apply(
       'vocabulary.open',
@@ -258,7 +262,7 @@ async function verifyWritingFeedback(kind = 'writing') {
     );
     question = createVocabularyReviewQuestion('vocabulary_use_live_question', origin, originAttempt.attemptId, 'usage');
   }
-  const key = apply('question.add', { question }).questionKey;
+  const key = addPrivateQuestion(question).questionKey;
   if (usage) {
     useBasis = vocabularyUseFeedbackBasis(question, state);
     question = { ...question, rubric: useBasis.rubric };
@@ -273,7 +277,11 @@ async function verifyWritingFeedback(kind = 'writing') {
     : 'Our reading club will meet in Friday at 3 pm in the classroom.\n' +
       'Please bring a notebook and share a story you enjoy. We will read together and discuss our favourite books. ' +
       'Everyone is welcome to join us. Tell your classmates about the meeting and come on time. We look forward to seeing you there.';
-  const attempt = apply('attempt.submit', { conversationId, answer, explicit: true }, 'notice_live_attempt');
+  const attempt = apply(
+    attemptSubmissionType(question),
+    { conversationId, answer, explicit: true },
+    'notice_live_attempt'
+  );
   await check('完整合成原答先明确保存，未进入可靠首答或复习', async () => {
     assert.equal(attempt.answer, answer);
     assert.equal(attempt.grade.status, 'pending');
@@ -439,12 +447,49 @@ async function verifyWritingFeedback(kind = 'writing') {
     assert.equal((await post('/learning-sync', body)).success, true);
     const replayed = await post('/learning-sync', { action: 'pull' });
     assert.equal(replayed.success, true);
-    assert.deepEqual(replayed.data.state.attempts, state.attempts);
+    for (const field of [
+      'conversations',
+      'questions',
+      'materials',
+      'attempts',
+      'plans',
+      'executions',
+      'reviews',
+      'events'
+    ])
+      assert.deepEqual(
+        replayed.data.state[field],
+        state[field],
+        `Synced writing ${field} must preserve every saved fact`
+      );
+    assert.equal(replayed.data.state.owner, state.owner);
+    assert.equal(replayed.data.state.timezone, state.timezone);
+    assert.deepEqual(replayed.data.state.strategy, state.strategy);
+    assert.deepEqual(replayed.data.state.profile, state.profile);
     assert.equal(replayed.data.state.conversations[0].stopped, true);
     assert.equal(summarizeLearning(replayed.data.state).first.denominator, 0);
     const again = await post('/learning-sync', body);
     assert.equal(again.success, true);
-    assert.deepEqual(again.data.state.events, replayed.data.state.events);
+    for (const field of [
+      'conversations',
+      'questions',
+      'materials',
+      'attempts',
+      'plans',
+      'executions',
+      'reviews',
+      'events'
+    ])
+      assert.deepEqual(
+        again.data.state[field],
+        replayed.data.state[field],
+        `Repeated writing ${field} must remain identical`
+      );
+    assert.equal(again.data.state.revision, replayed.data.state.revision);
+    assert.equal(again.data.state.owner, replayed.data.state.owner);
+    assert.equal(again.data.state.timezone, replayed.data.state.timezone);
+    assert.deepEqual(again.data.state.strategy, replayed.data.state.strategy);
+    assert.deepEqual(again.data.state.profile, replayed.data.state.profile);
   });
   await check('单次供应商收据含真实用量，平台权益不扣、未知成本仍待结算', async () => {
     const usage = await post('/learning-models', { action: 'usage' });
