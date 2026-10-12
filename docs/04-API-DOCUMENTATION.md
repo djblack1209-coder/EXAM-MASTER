@@ -601,15 +601,15 @@ App连接器须明确声明`materialParse.contract=yozi-material-parse-v1`与100
 
 对话题卡的“计算参考”在已有原答且属于可解析方程时可用。用户确认“计算并阅读”后调用；收到的版本、许可、解集和身份须重新校验，随后通过现有 teaching.deliver 原子保存消息与本题帮助，再显示结果。origin=upstream_reference，内容由规范数据重建，同一原答已读结果复用；保存失败不显示为成功。帮助记录可按既有明确授权同步/恢复，后续作答会保留已获帮助事实。原答、pending判分、可靠统计和FSRS不因参考升级。
 
-接口结果仍固定 gradingAuthority=false/persisted=false/requiresHelpRecord=true；持久化发生在客户端已有帮助操作中。请求无模型、付费或供应商调用。当前仅本机候选/隔离后端与H5验收，日常App、生产和真实设备未更新。[验证](08-TESTING-INFRA.md)、[隐私](14-MODEL-PRIVACY-COST.md)。
+接口结果仍固定 gradingAuthority=false/persisted=false/requiresHelpRecord=true；持久化发生在客户端已有帮助操作中。请求无模型、付费或供应商调用。本机候选/隔离后端与前序H5已有分项验收；最新计算进程及HTTP证据见08，日常App实际联通、生产和真实设备仍待验。[验证](08-TESTING-INFRA.md)、[隐私](14-MODEL-PRIVACY-COST.md)。
 
 ### SymPy宿主适配合同
 
 新增宿主内部sympy-reference-v1，仅为当前已保存的方程与原答计算参考。宿主提供已验证状态、当前认证身份、对话和页面epoch；scope严格绑定ownerId/conversationId/questionKey/attemptId，必须是当前题目版本及最近一次原答。题目全文/来源与原答摘要、状态revision、epoch形成确定请求编号，同一上下文重试一致；账户/切题/改答/停止及停止后继续的revision变化均拒收迟到结果。调用方还须将取消信号接到自己的页面/任务生命周期，本模块不是认证入口或持久化幂等账本。
 
-Python子进程只收既有安全解析器生成的有理系数/定义域，原答和题面不发送到worker，不使用parse_expr/sympify/eval或Shell。输出严格核对SymPy版本、数域、集合形状、大小和gradingAuthority=false，固定source/许可由宿主补充。结果persisted=false/requiresHelpRecord=true；显示前仍须走原题帮助写入与生命周期复核，未改原答、可靠评分、FSRS或统计。源码已接入认证`POST /learning-compute`及客户端明确帮助入口，服务默认关闭，设备/生产未验收；不自动计算。
+Python子进程只收既有安全解析器生成的有理系数/定义域，原答和题面不发送到worker，不使用parse_expr/sympify/eval或Shell。JSON容量、结构、数域、有理系数/次数/限制条件及零分母先用标准库校验，再加载固定版本SymPy/mpmath；无效请求不承担可选内核的导入成本。输出严格核对SymPy版本、数域、集合形状、大小和gradingAuthority=false，固定source/许可由宿主补充。结果persisted=false/requiresHelpRecord=true；显示前仍须走原题帮助写入与生命周期复核，未改原答、可靠评分、FSRS或统计。源码已接入认证`POST /learning-compute`及客户端明确帮助入口，服务默认关闭，设备/生产未验收；不自动计算。
 
-候选CPU上限3秒、总时长5秒、输入/输出各16KiB、RSS192MiB按100ms采样；Linux另设512MiB地址空间上限。macOS的RSS监测不等于硬内存沙箱，Linux硬上限尚未实机验收。取消/超时先TERM，200ms仍未退出才终止自有子进程，等close后返回；监测失败拒绝，正常退出与ps采样竞态只等待25ms退出事件。冷启动成本和最终实测见[验证](08-TESTING-INFRA.md)，不是产品性能承诺。
+Python worker及RSS监测命令均只传固定PATH/LANG环境，不继承宿主凭据变量。候选CPU上限3秒、总时长5秒、输入/输出各16KiB、RSS192MiB按100ms采样；Linux另设512MiB地址空间上限。macOS的RSS监测不等于硬内存沙箱，Linux硬上限尚未实机验收。取消/超时先TERM，200ms仍未退出才终止自有子进程，等close后返回；监测失败拒绝，正常退出与ps采样竞态只等待25ms退出事件。冷启动成本和最终实测见[验证](08-TESTING-INFRA.md)，不是产品性能承诺。
 
 ### 精确代数内部合同
 
