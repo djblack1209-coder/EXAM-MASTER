@@ -86,26 +86,26 @@ export function executeLearningTool(repository, call, context) {
     const session = repository.read().conversations.find((c) => c.id === context.conversationId);
     assert(session && !session.stopped, 'STOPPED', '没有当前学习任务或任务已停止，未生成新演示');
   }
-  if (call.name === 'plan') {
-    const state = repository.read();
-    assert(
-      Array.isArray(call.arguments.tasks) && call.arguments.tasks.length <= 20,
-      'RESOURCE_LIMIT',
-      '模型每次最多组织20项任务'
-    );
-    assert(
-      call.arguments.tasks.every(
-        (t) => !t.questionKey || state.questions.some((q) => questionKey(q) === t.questionKey)
-      ),
-      'INVALID_INPUT',
-      '计划不能关联不存在的题目'
-    );
-  }
   const started = Date.now();
   let result;
   let operationReused = false;
   let legacyAssessmentReplay = false;
   try {
+    if (call.name === 'plan') {
+      const state = repository.read();
+      assert(
+        Array.isArray(call.arguments.tasks) && call.arguments.tasks.length <= 20,
+        'RESOURCE_LIMIT',
+        '模型每次最多组织20项任务'
+      );
+      assert(
+        call.arguments.tasks.every(
+          (t) => !t.questionKey || state.questions.some((q) => questionKey(q) === t.questionKey)
+        ),
+        'INVALID_INPUT',
+        '计划不能关联不存在的题目'
+      );
+    }
     if (call.name === 'visualize') result = visualRecipe(call.arguments);
     else if (call.name === 'progress') {
       const state = repository.read();

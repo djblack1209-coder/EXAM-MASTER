@@ -546,6 +546,68 @@ describe('私人资料和实际 Store 纵向闭环', () => {
     });
     expect(candidate.uncertainties).toHaveLength(1);
   });
+  it('无题干标签时保留原资料，候选题干与选项不混入明确答案、作答及批注区域', () => {
+    const segment = {
+      content:
+        '求速度。\nA.3m/s\nB.4m/s\n答案：PRIVATE_ANSWER\nC.答案区域中的选项\n补充答案依据\n我答：PRIVATE_ATTEMPT\n教师批注：PRIVATE_ANNOTATION',
+      reviewRequired: false
+    };
+    const original = segment.content;
+    const candidate = structureMaterialCandidate(segment);
+    expect(candidate).toMatchObject({
+      prompt: '求速度。\nA.3m/s\nB.4m/s',
+      options: ['A.3m/s', 'B.4m/s'],
+      reference: 'PRIVATE_ANSWER',
+      userAnswer: 'PRIVATE_ATTEMPT',
+      annotation: 'PRIVATE_ANNOTATION',
+      rolesConfirmed: false
+    });
+    expect(segment.content).toBe(original);
+    expect(structureMaterialCandidate({ content: '答案：PRIVATE_ONLY' }).prompt).toBe('');
+  });
+  it.each(['', '题目：'])('候选%s题干发送边界保留来源，独立参考、导入作答和批注不进入模型请求', async (label) => {
+    uni.setStorageSync('EXAM_USER_ID', 'material-context-owner');
+    uni.setStorageSync('EXAM_TOKEN', 'isolated-placeholder-token');
+    const store = useConversationLearningStore();
+    store.start('理解速度');
+    const text = `${label}求速度。\nA.3m/s\nB.4m/s\n答案：PRIVATE_ANSWER\n我答：PRIVATE_ATTEMPT\n教师批注：PRIVATE_ANNOTATION`;
+    store.importText(text);
+    const material = store.state.materials.at(-1);
+    const segment = material.segments[0];
+    const candidate = structureMaterialCandidate(segment);
+    store.structureQuestion(material.id, { ...candidate, segmentId: segment.id, type: 'choice' });
+    store.modelId = 'explicit-model';
+    store.selectedMode = 'cloud';
+    store.sharingAllowed = true;
+    const transport = vi.spyOn(uni, 'request').mockImplementation((options) => {
+      const payload = options.data;
+      expect(payload.learningContext.question).toMatchObject({
+        prompt: candidate.prompt,
+        options: ['A.3m/s', 'B.4m/s'],
+        source: { materialId: material.id, segmentId: segment.id, kind: 'private_material' }
+      });
+      expect(JSON.stringify(payload)).not.toContain('PRIVATE_');
+      options.success({ data: { success: true, data: { message: '先确定时间与距离的单位。', tools: [] } } });
+      return { abort: vi.fn() };
+    });
+    try {
+      await store.send('讨论题意', { discussionOnly: true });
+      expect(transport).toHaveBeenCalledOnce();
+      expect(store.error).toBe('');
+      expect(store.state.materials.at(-1).segments[0].content).toBe(text);
+      expect(store.activeQuestion).toMatchObject({
+        reference: { content: 'PRIVATE_ANSWER', verified: false },
+        importedAnswer: 'PRIVATE_ATTEMPT',
+        teacherAnnotation: 'PRIVATE_ANNOTATION',
+        validation: null
+      });
+      expect(store.state.attempts).toHaveLength(0);
+      expect(store.active.pendingHints).toHaveLength(1);
+    } finally {
+      transport.mockRestore();
+      store.$dispose();
+    }
+  });
   it('直接讲解实际执行并记录提示，修正与重做不同；调整目标影响后续任务', async () => {
     const store = useConversationLearningStore();
     store.start('12 + 8');
