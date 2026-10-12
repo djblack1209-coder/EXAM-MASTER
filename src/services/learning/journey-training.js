@@ -4,6 +4,7 @@ import { createWritingQuestion, nextWritingTask } from '../../../laf-backend/fun
 import { createScienceQuestion } from '../../../laf-backend/functions/_shared/learning-science.js';
 import { DENSITY_TEMPLATE } from '../../../laf-backend/functions/_shared/learning-density.js';
 import { PRESSURE_TEMPLATE } from '../../../laf-backend/functions/_shared/learning-pressure.js';
+import { ENERGY_TEMPLATE, VELOCITY_GRAPH_TEMPLATE } from '../../../laf-backend/functions/_shared/learning-visual.js';
 import { JOURNEY_MODULES } from '../../../laf-backend/functions/_shared/learning-journey.js';
 
 export function createJourneyQuestions(state, conversationId, moduleId, count, groupId) {
@@ -48,19 +49,75 @@ export function createJourneyQuestions(state, conversationId, moduleId, count, g
         direction: n % 2 ? 'left' : 'right'
       });
     } else if (moduleId === 'science-density') {
-      question = createScienceQuestion(id, conversationId, {
-        template: DENSITY_TEMPLATE,
-        target: 'density',
-        massG: 120 + n * 10,
-        volumeCm3: 50
-      });
+      const massG = 120 + (n % 100) * 10,
+        densityGcm3 = 2 + (n % 5),
+        tasks = [
+          { target: 'density', massG, volumeCm3: 50 },
+          { target: 'mass', densityGcm3, volumeCm3: 50 },
+          { target: 'volume', massG, densityGcm3 },
+          { target: 'density_si', massG, volumeCm3: 50 }
+        ];
+      question = createScienceQuestion(id, conversationId, { template: DENSITY_TEMPLATE, ...tasks[n % 4] });
     } else if (moduleId === 'science-pressure') {
+      const normalForceN = 72 + (n % 100),
+        pressurePa = 20000 + (n % 10) * 10000,
+        tasks = [
+          { target: 'pressure', normalForceN, areaCm2: 24 },
+          { target: 'force', pressurePa, areaCm2: 24 },
+          { target: 'area', normalForceN, pressurePa },
+          { target: 'pressure_kpa', normalForceN, areaCm2: 24 }
+        ];
       question = createScienceQuestion(id, conversationId, {
         template: PRESSURE_TEMPLATE,
-        target: 'pressure',
         uniformContact: true,
-        normalForceN: 72 + n,
-        areaCm2: 24
+        ...tasks[n % 4]
+      });
+    } else if (moduleId === 'science-force') {
+      question = createScienceQuestion(id, conversationId, {
+        template: 'constant_net_force',
+        massKg: 1 + (n % 20),
+        netForceN: 1 + (n % 12),
+        direction: n % 2 ? 'left' : 'right'
+      });
+    } else if (moduleId === 'science-motion') {
+      const common = { massKg: 2 + (n % 4), initialVelocityMps: n % 2 ? -2 : 2 };
+      question = createScienceQuestion(
+        id,
+        conversationId,
+        n % 2
+          ? {
+              template: 'changing_net_force',
+              ...common,
+              segments: [
+                { seconds: 2, netForceN: 4 + (n % 6), direction: 'right' },
+                { seconds: 2, netForceN: 2 + (n % 5), direction: 'left' }
+              ]
+            }
+          : {
+              template: 'accelerated_motion',
+              ...common,
+              netForceN: 4 + (n % 6),
+              direction: 'left',
+              physicalSeconds: 2 + (Math.floor(n / 12) % 3)
+            }
+      );
+    } else if (moduleId === 'science-velocity-graph') {
+      question = createScienceQuestion(id, conversationId, {
+        template: VELOCITY_GRAPH_TEMPLATE,
+        points: [
+          { time: 0, velocity: 2 + (n % 8) },
+          { time: 2, velocity: -(2 + (n % 6)) },
+          { time: 4, velocity: 0 }
+        ]
+      });
+    } else if (moduleId === 'science-energy') {
+      question = createScienceQuestion(id, conversationId, {
+        template: ENERGY_TEMPLATE,
+        massKg: 2 + (n % 4),
+        initialVelocityMps: 3 - (n % 3),
+        netForceN: 2 + (n % 6),
+        direction: n % 2 ? 'right' : 'left',
+        physicalSeconds: 2 + (Math.floor(n / 12) % 3)
       });
     }
     assert(question, 'CAPABILITY_UNAVAILABLE', '当前模块无法生成可核对题面');

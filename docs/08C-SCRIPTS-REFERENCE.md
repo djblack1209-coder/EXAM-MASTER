@@ -4,6 +4,10 @@
 
 ## 当前候选与本机资源
 
+当前候选已接续至 `tmp/stage1-mobile-20261011/`：前端 `dist/build/{h5,mp-weixin,app,desktop}`、后端 `backend/`、共享依赖的隔离构建源码 `build-source/`；当前签名程序归档固定为 `desktop-candidate.zip`，不保留可启动候选App。当前程序摘要及归档清单见该目录 `native-candidate-receipt.json`，原日常资料的逐字前后/重开核验和配对试还原见 `verification.json`。上一阶段成功程序在 `tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-before/stage1-mobile-20261011/native/Yozi AI.stage1.app.zip`，与该目录原资料导出配对；更早原程序归档保留为必要恢复基线。以下旧候选及运行时只按仍有效的回退用途保留，不作为当前产物。
+
+2026-10-12 的App连接器 `--build-only` 预检确认本机Apple SDK和配对iPhone/iPad可见，但DCloud Android类路径及iOS `DCUniModule.h` 未配置，未装配出插件。只阻塞对应原生设备验收；不绕过历史下载限制、不升级/恢复/重新配对设备。微信预算脚本按cwd下的 `dist/build/mp-weixin` 检查，不接受 `UNI_OUTPUT_DIR`；隔离候选须在上述阶段目录运行。临时Vite回放必须显式 `configFile:false`、`envDir:false`、`optimizeDeps:{noDiscovery:true,include:[]}`，避免默认环境加载和全仓入口扫描。
+
 本机验收产物都在忽略目录 `tmp/visual-build-20261001/resume-rubric-evidence-20261004/`，资源身份与回收记录沿其中的 `server.json`。当前前端与后端候选为 `journey-candidate/`（`dist/build/{h5,h5-ui-sync,desktop,mp-weixin,app}`、`backend`、实际两日恢复备份与原生归档），上一完整候选 `grammar-help-candidate/` 保留为回退，`bank-original-candidate/backend` 为必要后端基线；更早 `remaining-view-candidate/dist/` 已由两份候选覆盖，核对无消费者后已回收。Mac 原生构建继续复用 Rust 缓存 `desktop-material-prerequisite-target/`；独立 `cn.wangshiliang.wenli.qa.journey` 核验后归档为 `journey-candidate/desktop-qa.zip`，核验App已撤销注册并回收，不保留第二个可见入口。日常程序先仅更新可执行文件，后经客户明确授权修复同身份本机签名；完整重开记录及日常身份的退出提醒/一次返回均已核对，配对恢复链在`yozi-before/learning-journey/native/`。可选运行时在 `languagetool-trial/`、`docling-trial/`、`sympy-trial/`，阶段进度图渲染器在 `plantuml-renderer/`，Apple Vision CLI 在 `tmp/apple-vision-builds/`。日常程序 `/Users/blackdj/Applications/Yozi AI.app` 的回滚归档在 `yozi-before/*/native/`，按"最近两份已试还原"及必要增量依赖链保留。
 
 2026-10-10 整理时，已被以上候选覆盖的 29 份旧候选构建和 4 份更早的原生回滚归档（共约 9.7 GB）移入废纸篓 `~/.Trash/EXAM-MASTER-cleanup-20261010/`，清单在 `tmp/cleanup-20261010/trash-manifest.tsv`；清空废纸篓前可原样移回。

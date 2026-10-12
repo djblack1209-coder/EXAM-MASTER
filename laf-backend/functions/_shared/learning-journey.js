@@ -26,7 +26,23 @@ export const JOURNEY_MODULES = Object.freeze([
   },
   { id: 'science-distance', subject: '物理', label: '路程与位移', goal: '区分总路程与有符号位移', minutes: 15 },
   { id: 'science-density', subject: '物理', label: '密度与单位', goal: '按原条件检验质量、体积与密度', minutes: 15 },
-  { id: 'science-pressure', subject: '物理', label: '压强与单位', goal: '按受力与接触条件检验压强', minutes: 15 }
+  { id: 'science-pressure', subject: '物理', label: '压强与单位', goal: '按受力与接触条件检验压强', minutes: 15 },
+  { id: 'science-force', subject: '物理', label: '恒定合力', goal: '比较相同合力下质量与加速度', minutes: 15 },
+  {
+    id: 'science-motion',
+    subject: '物理',
+    label: '初速度与分段运动',
+    goal: '按初速度与合力计算路程和位移',
+    minutes: 20
+  },
+  {
+    id: 'science-velocity-graph',
+    subject: '物理',
+    label: '速度—时间图',
+    goal: '区分正负面积、路程与位移',
+    minutes: 20
+  },
+  { id: 'science-energy', subject: '物理', label: '功与动能', goal: '按固定参考系比较总功与动能变化', minutes: 20 }
 ]);
 
 export function journeyDate(value) {
@@ -476,9 +492,11 @@ export function applyJourneyOperation(state, operation, helpers) {
       '题组须绑定已保存且未作答的题目'
     );
     assert(
-      questions.every((q) => !q.writingExercise || q.writingExercise.conversationId === session.id),
+      questions.every((q) =>
+        [q.writingExercise, q.scienceExercise].every((exercise) => !exercise || exercise.conversationId === session.id)
+      ),
       'FORBIDDEN',
-      '写作题属于另一目标'
+      '题目属于另一目标'
     );
     const groups = session.trainingGroups || [];
     assert(groups.length < 100, 'RESOURCE_LIMIT', '本目标题组已达100组，请导出记录');

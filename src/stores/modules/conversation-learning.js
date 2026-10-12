@@ -422,13 +422,15 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     },
     { flush: 'sync' }
   );
-  const trainingGroup = computed(() =>
-    selectedTrainingId.value === 'question-only'
-      ? null
-      : active.value?.trainingGroups?.find((g) => g.id === selectedTrainingId.value) ||
-        active.value?.trainingGroups?.at(-1) ||
-        null
-  );
+  const trainingGroup = computed(() => {
+    if (selectedTrainingId.value === 'question-only') return null;
+    const groups = active.value?.trainingGroups || [];
+    const selected = groups.find((group) => group.id === selectedTrainingId.value);
+    if (selected) return selected;
+    // 重开后的临时选择为空，沿已保存焦点恢复；独立变式不被旧整批结果遮住。
+    const key = active.value?.activeQuestionKey;
+    return key ? groups.find((group) => group.questionKeys.includes(key)) || null : groups.at(-1) || null;
+  });
   const trainingResult = computed(() =>
     trainingGroup.value
       ? trainingReport(state.value, active.value.id, trainingGroup.value.id, { effectiveGrade })

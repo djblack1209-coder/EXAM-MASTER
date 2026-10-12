@@ -8,6 +8,7 @@ import LearningPage from '@/pages/learning/index.vue';
 import LearningOverview from '@/components/business/learning/learning-overview.vue';
 import { useConversationLearningStore } from '@/stores/modules/conversation-learning.js';
 import { learningWriteLease } from '@/services/learning/learning-write-lease.js';
+import { setLanguage } from '@/i18n/index.js';
 let wrapper;
 beforeEach(() => {
   uni.clearStorageSync();
@@ -20,6 +21,7 @@ afterEach(() => {
   learningWriteLease.release();
   vi.restoreAllMocks();
   vi.useRealTimers();
+  setLanguage('zh-CN');
   uni.clearStorageSync();
 });
 const stubs = {
@@ -179,6 +181,38 @@ describe('学习路线的明确操作与阅读', () => {
     expect(s.state.attempts.map((a) => a.answer)).toEqual(['12', '16']);
     expect(wrapper.text()).toContain('整批原答已保存');
     expect(wrapper.findAll('[data-test="training-submit"]')).toHaveLength(0);
+  });
+
+  it('英文物理路线入口只改草稿，保存后可打开速度图题组且题面不被翻译', async () => {
+    const s = useConversationLearningStore();
+    s.start('Original physics goal');
+    setLanguage('en');
+    wrapper = mount(LearningJourney, { global: { stubs } });
+    const before = s.exportData();
+    await wrapper.find('button').trigger('tap');
+    const chips = wrapper.findAll('.journey-module-options button');
+    expect(chips).toHaveLength(19);
+    for (const label of [
+      'Constant net force',
+      'Initial velocity and motion in stages',
+      'Velocity–time graph',
+      'Work and kinetic energy',
+      'Density and units',
+      'Pressure and units'
+    ]) {
+      expect(chips.some((b) => b.text().includes(label))).toBe(true);
+    }
+    await chips.find((b) => b.text().includes('Integer addition')).trigger('tap');
+    await chips.find((b) => b.text().includes('Velocity–time graph')).trigger('tap');
+    expect(s.exportData()).toBe(before);
+    await wrapper.find('[data-test="journey-save"]').trigger('tap');
+    await flushPromises();
+    expect(s.active.journey.moduleIds).toEqual(['science-velocity-graph']);
+    await wrapper.find('[data-test="journey-module-science-velocity-graph"]').trigger('tap');
+    await flushPromises();
+    expect(s.state.attempts).toHaveLength(0);
+    expect(s.state.questions[0].prompt).toContain('规定向右为正');
+    expect(wrapper.text()).toContain(s.state.questions[0].prompt);
   });
 
   it('教学标题、要点和对照表可扫读，模型HTML和脚本仍作为普通文字', () => {
