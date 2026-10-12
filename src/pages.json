@@ -15,7 +15,10 @@
       "style": {
         "navigationBarTitleText": "%pages.splash%",
         "navigationStyle": "custom",
-        "navigationBarBackgroundColor": "#F5F7FA"
+        "navigationBarBackgroundColor": "@navBackground",
+        "navigationBarTextStyle": "@navText",
+        "backgroundColor": "@pageBackground",
+        "backgroundTextStyle": "@backgroundText"
       }
     },
     {
@@ -23,7 +26,10 @@
       "style": {
         "navigationBarTitleText": "%pages.home%",
         "navigationStyle": "custom",
-        "navigationBarBackgroundColor": "#F5F7FA"
+        "navigationBarBackgroundColor": "@navBackground",
+        "navigationBarTextStyle": "@navText",
+        "backgroundColor": "@pageBackground",
+        "backgroundTextStyle": "@backgroundText"
       }
     },
     {
@@ -31,7 +37,10 @@
       "style": {
         "navigationBarTitleText": "%pages.practice%",
         "navigationStyle": "custom",
-        "navigationBarBackgroundColor": "#F5F7FA"
+        "navigationBarBackgroundColor": "@navBackground",
+        "navigationBarTextStyle": "@navText",
+        "backgroundColor": "@pageBackground",
+        "backgroundTextStyle": "@backgroundText"
       }
     },
     {
@@ -39,14 +48,21 @@
       "style": {
         "navigationBarTitleText": "%pages.profile%",
         "navigationStyle": "custom",
-        "navigationBarBackgroundColor": "#F5F7FA"
+        "navigationBarBackgroundColor": "@navBackground",
+        "navigationBarTextStyle": "@navText",
+        "backgroundColor": "@pageBackground",
+        "backgroundTextStyle": "@backgroundText"
       }
     },
     {
       "path": "platforms/h5/components",
       "style": {
         "navigationBarTitleText": "%pages.components%",
-        "navigationStyle": "custom"
+        "navigationStyle": "custom",
+        "navigationBarBackgroundColor": "@navBackground",
+        "navigationBarTextStyle": "@navText",
+        "backgroundColor": "@pageBackground",
+        "backgroundTextStyle": "@backgroundText"
       }
     }
   ],
@@ -59,7 +75,10 @@
           "style": {
             "navigationBarTitleText": "%pages.quiz%",
             "navigationStyle": "custom",
-            "navigationBarBackgroundColor": "#F5F7FA"
+            "navigationBarBackgroundColor": "@navBackground",
+            "navigationBarTextStyle": "@navText",
+            "backgroundColor": "@pageBackground",
+            "backgroundTextStyle": "@backgroundText"
           }
         },
         {
@@ -67,7 +86,10 @@
           "style": {
             "navigationBarTitleText": "%pages.bank%",
             "navigationStyle": "custom",
-            "navigationBarBackgroundColor": "#F5F7FA"
+            "navigationBarBackgroundColor": "@navBackground",
+            "navigationBarTextStyle": "@navText",
+            "backgroundColor": "@pageBackground",
+            "backgroundTextStyle": "@backgroundText"
           }
         }
       ]
@@ -80,7 +102,10 @@
           "style": {
             "navigationBarTitleText": "%pages.login%",
             "navigationStyle": "custom",
-            "navigationBarBackgroundColor": "#F5F7FA"
+            "navigationBarBackgroundColor": "@navBackground",
+            "navigationBarTextStyle": "@navText",
+            "backgroundColor": "@pageBackground",
+            "backgroundTextStyle": "@backgroundText"
           }
         },
         {
@@ -88,7 +113,10 @@
           "style": {
             "navigationBarTitleText": "%pages.onboarding%",
             "navigationStyle": "custom",
-            "navigationBarBackgroundColor": "#F5F7FA"
+            "navigationBarBackgroundColor": "@navBackground",
+            "navigationBarTextStyle": "@navText",
+            "backgroundColor": "@pageBackground",
+            "backgroundTextStyle": "@backgroundText"
           }
         },
         {
@@ -96,7 +124,10 @@
           "style": {
             "navigationBarTitleText": "%pages.wechat%",
             "navigationStyle": "custom",
-            "navigationBarBackgroundColor": "#F5F7FA"
+            "navigationBarBackgroundColor": "@navBackground",
+            "navigationBarTextStyle": "@navText",
+            "backgroundColor": "@pageBackground",
+            "backgroundTextStyle": "@backgroundText"
           }
         }
       ]
@@ -109,7 +140,10 @@
           "style": {
             "navigationBarTitleText": "%pages.privacy%",
             "navigationStyle": "custom",
-            "navigationBarBackgroundColor": "#F5F7FA"
+            "navigationBarBackgroundColor": "@navBackground",
+            "navigationBarTextStyle": "@navText",
+            "backgroundColor": "@pageBackground",
+            "backgroundTextStyle": "@backgroundText"
           }
         },
         {
@@ -117,7 +151,10 @@
           "style": {
             "navigationBarTitleText": "%pages.terms%",
             "navigationStyle": "custom",
-            "navigationBarBackgroundColor": "#F5F7FA"
+            "navigationBarBackgroundColor": "@navBackground",
+            "navigationBarTextStyle": "@navText",
+            "backgroundColor": "@pageBackground",
+            "backgroundTextStyle": "@backgroundText"
           }
         }
       ]
@@ -130,7 +167,10 @@
           "style": {
             "navigationBarTitleText": "%pages.mistake%",
             "navigationStyle": "custom",
-            "navigationBarBackgroundColor": "#F5F7FA"
+            "navigationBarBackgroundColor": "@navBackground",
+            "navigationBarTextStyle": "@navText",
+            "backgroundColor": "@pageBackground",
+            "backgroundTextStyle": "@backgroundText"
           }
         }
       ]
@@ -143,7 +183,10 @@
           "style": {
             "navigationBarTitleText": "%pages.favorite%",
             "navigationStyle": "custom",
-            "navigationBarBackgroundColor": "#F5F7FA"
+            "navigationBarBackgroundColor": "@navBackground",
+            "navigationBarTextStyle": "@navText",
+            "backgroundColor": "@pageBackground",
+            "backgroundTextStyle": "@backgroundText"
           }
         }
       ]
@@ -156,7 +199,10 @@
           "style": {
             "navigationStyle": "custom",
             "navigationBarTitleText": "%pages.learning%",
-            "navigationBarBackgroundColor": "#F5F7FA"
+            "navigationBarBackgroundColor": "@navBackground",
+            "navigationBarTextStyle": "@navText",
+            "backgroundColor": "@pageBackground",
+            "backgroundTextStyle": "@backgroundText"
           }
         }
       ]
@@ -169,7 +215,10 @@
           "style": {
             "navigationBarTitleText": "%pages.plan%",
             "navigationStyle": "custom",
-            "navigationBarBackgroundColor": "#F5F7FA"
+            "navigationBarBackgroundColor": "@navBackground",
+            "navigationBarTextStyle": "@navText",
+            "backgroundColor": "@pageBackground",
+            "backgroundTextStyle": "@backgroundText"
           }
         }
       ]
@@ -182,7 +231,10 @@
           "style": {
             "navigationBarTitleText": "%pages.stats%",
             "navigationStyle": "custom",
-            "navigationBarBackgroundColor": "#F5F7FA"
+            "navigationBarBackgroundColor": "@navBackground",
+            "navigationBarTextStyle": "@navText",
+            "backgroundColor": "@pageBackground",
+            "backgroundTextStyle": "@backgroundText"
           }
         }
       ]
@@ -195,19 +247,19 @@
     }
   },
   "globalStyle": {
-    "navigationBarTextStyle": "black",
+    "navigationBarTextStyle": "@navText",
     "navigationBarTitleText": "%pages.home%",
-    "navigationBarBackgroundColor": "#F5F7FA",
-    "backgroundColor": "#F5F7FA",
-    "backgroundTextStyle": "dark",
+    "navigationBarBackgroundColor": "@navBackground",
+    "backgroundColor": "@pageBackground",
+    "backgroundTextStyle": "@backgroundText",
     "enablePullDownRefresh": false
   },
   "uniIdRouter": {},
   "tabBar": {
     "custom": true,
-    "color": "#65618A",
-    "selectedColor": "#7352EC",
-    "backgroundColor": "#FFFFFF",
+    "color": "@tabText",
+    "selectedColor": "@tabSelected",
+    "backgroundColor": "@tabBackground",
     "list": [
       {
         "pagePath": "pages/index/index",

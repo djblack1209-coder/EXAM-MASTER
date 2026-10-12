@@ -1,5 +1,5 @@
 <template>
-  <view class="yozi-page" :class="['container', { 'dark-mode': isDark, 'theme-light': !isDark }]">
+  <view class="yozi-page" :style="$yoziInsets" :class="['container', { 'dark-mode': isDark, 'theme-light': !isDark }]">
     <view class="aurora-bg" />
 
     <!-- 导航栏 -->

@@ -1,7 +1,11 @@
 /** 主题运行时只切换标识；色值与组件动画全部来自 yozi-tokens.scss。 */
+import { applyNativeTheme } from './native-theme.js';
 import { storageService } from '@/services/storageService.js';
 
 export function applyTheme(theme = 'light') {
+  // #ifndef H5
+  applyNativeTheme(theme);
+  // #endif
   // #ifdef H5
   if (typeof document !== 'undefined' && document.documentElement) {
     document.documentElement.setAttribute('data-theme', theme === 'dark' ? 'dark' : 'light');

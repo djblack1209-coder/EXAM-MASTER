@@ -5,7 +5,7 @@
   <view
     v-else
     class="yozi-page page has-tabbar"
-    :style="tabBarStyle"
+    :style="[tabBarStyle, $yoziInsets]"
     :class="{ 'dark-mode': isDark, 'theme-light': !isDark }"
   >
     <!-- 微信隐私保护弹窗 -->

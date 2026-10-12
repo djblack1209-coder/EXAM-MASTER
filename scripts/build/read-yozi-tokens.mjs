@@ -14,3 +14,21 @@ export function readYoziTokens() {
   const light = read('light');
   return { light, dark: { ...light, ...read('dark') } };
 }
+
+/** Declarative native fallback, generated from the same source as runtime colors. */
+export function readYoziNativeTheme(tokens = readYoziTokens()) {
+  return Object.fromEntries(
+    ['light', 'dark'].map((theme) => [
+      theme,
+      {
+        navBackground: tokens[theme]['--canvas'],
+        navText: theme === 'dark' ? 'white' : 'black',
+        pageBackground: tokens[theme]['--canvas'],
+        backgroundText: theme === 'dark' ? 'light' : 'dark',
+        tabText: tokens[theme]['--ink-3'],
+        tabSelected: tokens[theme]['--violet-ink'],
+        tabBackground: tokens[theme]['--paper']
+      }
+    ])
+  );
+}

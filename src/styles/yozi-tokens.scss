@@ -67,6 +67,8 @@
   --t-press: 110ms;
   --t-state: 180ms;
   --t-enter: 280ms;
+  --landing-marquee-time: 82s;
+  --landing-sky-opacity: 0.18;
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
   --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
   --size-display: 44px;
@@ -158,6 +160,7 @@
   color-scheme: light;
 }
 @mixin yozi-dark {
+  --landing-sky-opacity: 0.08;
   --canvas: #110f27;
   --glow-1: #2a1f5c;
   --glow-2: #14295a;

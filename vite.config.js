@@ -1,5 +1,5 @@
 import { BRAND } from './src/config/brand.js';
-import { readYoziTokens } from './scripts/build/read-yozi-tokens.mjs';
+import { readYoziTokens, readYoziNativeTheme } from './scripts/build/read-yozi-tokens.mjs';
 import { publicImageMatch, publicFontMatch, appShellNavigationAllowlist } from './scripts/build/pwa-cache-policy.mjs';
 import { defineConfig, loadEnv } from 'vite';
 import uniModule from '@dcloudio/vite-plugin-uni';
@@ -245,6 +245,8 @@ function copyH5PwaIcons({ enableUpdates = false } = {}) {
 
 // https://vitejs.dev/config/
 export default defineConfig(({ command, mode }) => {
+  // Uni reads this file during config; do not maintain a second native palette.
+  fs.writeFileSync(path.resolve(__dirname, 'src/theme.json'), JSON.stringify(readYoziNativeTheme(), null, 2) + '\n');
   // 隔离核验只使用命令显式传入的配置，避免加载日常私有连接信息。
   const isolatedBuild = process.env.WENLI_ISOLATED_BUILD === '1';
   const env = isolatedBuild ? { ...process.env } : loadEnv(mode, process.cwd(), '');

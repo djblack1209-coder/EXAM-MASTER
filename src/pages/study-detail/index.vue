@@ -5,7 +5,7 @@
       <BaseButton class="quiet-button" variant="secondary" @tap="toggleLegacy">{{ t('study.copy0') }}</BaseButton>
     </view>
   </LearningShell>
-  <view v-else class="yozi-page" :class="['study-detail-page', themeClass]">
+  <view v-else class="yozi-page" :style="$yoziInsets" :class="['study-detail-page', themeClass]">
     <!-- 透明导航栏 -->
     <view class="transparent-navbar" :class="{ 'navbar-solid': scrolled }">
       <view class="navbar-content">

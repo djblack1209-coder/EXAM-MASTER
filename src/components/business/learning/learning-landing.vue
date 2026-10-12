@@ -31,7 +31,7 @@
           :model-value="goal === topic"
           @update:model-value="goal = topic"
         >
-          {{ learningText(topic) }}
+          {{ translateRegisteredText('landing', topic) }}
         </BaseChip>
       </view>
       <view class="landing-actions">
@@ -69,7 +69,7 @@
 </template>
 <script setup>
 import { learningText } from '@/i18n/learning.js';
-import { t } from '@/i18n/index.js';
+import { t, translateRegisteredText } from '@/i18n/index.js';
 import BaseEmpty from '@/components/base/base-empty/base-empty.vue';
 import BaseCard from '@/components/base/base-card/base-card.vue';
 import BaseButton from '@/components/base/base-button/base-button.vue';

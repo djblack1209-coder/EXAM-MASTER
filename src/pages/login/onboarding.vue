@@ -1,5 +1,5 @@
 <template>
-  <view class="onboarding-page">
+  <view class="onboarding-page" :class="themeStore.isDark ? 'theme-dark' : 'theme-light'" :style="$yoziInsets">
     <BaseCard surface="glass">
       <view class="onboarding-stack">
         <YoziMascot pose="wave" play="once" size="medium" />
@@ -48,6 +48,8 @@
   </view>
 </template>
 <script setup>
+import { useThemeStore } from '@/stores/modules/theme.js';
+const themeStore = useThemeStore();
 import './messages.js';
 import { t } from '@/i18n/index.js';
 import BaseButton from '@/components/base/base-button/base-button.vue';
@@ -212,4 +214,12 @@ function skipOnboarding() {
   gap: var(--s-3);
   justify-content: space-between;
 }
+</style>
+
+<style scoped>
+/* #ifdef MP-WEIXIN */
+.onboarding-page {
+  padding-top: calc(var(--yozi-nav-top, 0px) + var(--s-8));
+}
+/* #endif */
 </style>

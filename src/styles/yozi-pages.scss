@@ -339,3 +339,16 @@
 .yozi-icon-row > :where(.base-icon, .result-status-mark, .sparkle-icon, .tutor-avatar) {
   flex: none;
 }
+
+/* #ifdef MP-WEIXIN */
+.yozi-page :where(.nav-bar, .header-nav, .nav-header, .navbar, .transparent-navbar) {
+  background: var(--paper);
+  backdrop-filter: none;
+}
+.yozi-page :where(.nav-content, .navbar-content, .navbar-inner) {
+  padding-right: calc(var(--yozi-capsule-right, 0px) + var(--s-3));
+}
+.study-detail-page .transparent-navbar {
+  padding-top: var(--yozi-status-top, 0px);
+}
+/* #endif */
