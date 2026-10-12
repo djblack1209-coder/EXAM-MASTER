@@ -52,6 +52,7 @@
 .desktop-navigation,
 .recent-list {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--s-1);
 }
 .brand-link,
