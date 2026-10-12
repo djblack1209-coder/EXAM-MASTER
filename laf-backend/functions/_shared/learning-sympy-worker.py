@@ -6,19 +6,11 @@ import sys
 resource.setrlimit(resource.RLIMIT_CPU, (3, 3))
 if sys.platform == "linux":
     resource.setrlimit(resource.RLIMIT_AS, (512 * 1024 * 1024, 512 * 1024 * 1024))
-sys.path.insert(0, sys.argv[1])
-from sympy import Poly, Rational, Symbol, __version__  # noqa: E402
-import mpmath  # noqa: E402
-
-if __version__ != "1.14.0" or mpmath.__version__ != "1.3.0":
-    raise ValueError("upstream_version")
-x = Symbol("x", real=True)
 
 
-def polynomial(value):
+def validate_polynomial(value):
     if not isinstance(value, list) or not 1 <= len(value) <= 7:
         raise ValueError("polynomial_limit")
-    pairs = []
     for pair in value:
         if (
             not isinstance(pair, list)
@@ -28,19 +20,17 @@ def polynomial(value):
             or not 1 <= pair[1] <= 10**9
         ):
             raise ValueError("rational_limit")
-        pairs.append(Rational(pair[0], pair[1]))
-    return Poly.from_list(list(reversed(pairs)), gens=x)
 
 
-def expression(value):
+def validate_expression(value):
     if not isinstance(value, dict) or set(value) != {"numerator", "denominator", "restrictions"}:
         raise ValueError("expression_shape")
     if not isinstance(value["restrictions"], list) or len(value["restrictions"]) > 16:
         raise ValueError("restriction_limit")
-    n, d = polynomial(value["numerator"]), polynomial(value["denominator"])
-    if d.is_zero:
+    for polynomial in [value["numerator"], value["denominator"], *value["restrictions"]]:
+        validate_polynomial(polynomial)
+    if any(all(pair[0] == 0 for pair in p) for p in [value["denominator"], *value["restrictions"]]):
         raise ValueError("undefined_expression")
-    return n, d, [polynomial(p) for p in value["restrictions"]]
 
 
 raw = sys.stdin.buffer.read(16385)
@@ -53,6 +43,31 @@ if (
     or r["domain"] not in {"real", "positive", "integer"}
 ):
     raise ValueError("request_shape")
+validate_expression(r["left"])
+validate_expression(r["right"])
+
+# Reject malformed requests before paying the optional runtime's import cost.
+sys.path.insert(0, sys.argv[1])
+from sympy import Poly, Rational, Symbol, __version__  # noqa: E402
+import mpmath  # noqa: E402
+
+if __version__ != "1.14.0" or mpmath.__version__ != "1.3.0":
+    raise ValueError("upstream_version")
+x = Symbol("x", real=True)
+
+
+def polynomial(value):
+    return Poly.from_list([Rational(pair[0], pair[1]) for pair in reversed(value)], gens=x)
+
+
+def expression(value):
+    return (
+        polynomial(value["numerator"]),
+        polynomial(value["denominator"]),
+        [polynomial(p) for p in value["restrictions"]],
+    )
+
+
 a, b, ar = expression(r["left"])
 c, d, cr = expression(r["right"])
 numerator = a * d - c * b

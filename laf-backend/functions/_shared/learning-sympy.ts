@@ -151,7 +151,7 @@ export function runSympyWorker(input: unknown, runtime: Runtime, signal?: AbortS
       memoryProbe = execFile(
         '/bin/ps',
         ['-o', 'rss=', '-p', String(child.pid)],
-        { timeout: 500, maxBuffer: 1024 },
+        { timeout: 500, maxBuffer: 1024, env: { PATH: '/usr/bin:/bin', LANG: 'C.UTF-8' } },
         (error, stdout) => {
           memoryProbe = undefined;
           if (finished || errorCode || child.exitCode !== null || child.signalCode !== null) return;

@@ -2,6 +2,10 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { EventEmitter } from 'node:events';
 import { PassThrough } from 'node:stream';
+import { mkdtempSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { createAlgebraQuestion } from '../../laf-backend/functions/_shared/learning-algebra.js';
 import { applyLearningOperation, emptyLearningState } from '../../laf-backend/functions/_shared/learning-domain.js';
 import {
@@ -47,6 +51,106 @@ const output = () => ({
   excluded: [],
   gradingAuthority: false
 });
+
+describe.skipIf(process.platform === 'win32')(
+  'worker rejects invalid inputs before loading its optional runtime',
+  () => {
+    it.each([
+      [
+        'code coefficient',
+        'rational_limit',
+        (input: any) => {
+          input.left.numerator[0][0] = '__import__("builtins").print("UNEXPECTED_EXECUTION")';
+        }
+      ],
+      [
+        'boolean coefficient',
+        'rational_limit',
+        (input: any) => {
+          input.left.numerator[0][0] = true;
+        }
+      ],
+      [
+        'oversized coefficient',
+        'rational_limit',
+        (input: any) => {
+          input.left.numerator[0][0] = 1000000001;
+        }
+      ],
+      [
+        'zero rational denominator',
+        'rational_limit',
+        (input: any) => {
+          input.left.numerator[0][1] = 0;
+        }
+      ],
+      [
+        'degree limit',
+        'polynomial_limit',
+        (input: any) => {
+          input.left.numerator = Array.from({ length: 8 }, () => [1, 1]);
+        }
+      ],
+      [
+        'restriction limit',
+        'restriction_limit',
+        (input: any) => {
+          input.left.restrictions = Array.from({ length: 17 }, () => [[1, 1]]);
+        }
+      ],
+      [
+        'unknown domain',
+        'request_shape',
+        (input: any) => {
+          input.domain = 'complex';
+        }
+      ]
+    ])('rejects %s with no installed SymPy dependency', async (_label, errorCode, change) => {
+      const { spawnSync } = await vi.importActual<typeof import('node:child_process')>('node:child_process');
+      const packages = mkdtempSync(join(tmpdir(), 'yozi-sympy-validation-'));
+      const input = {
+        left: {
+          numerator: [
+            [-2, 1],
+            [0, 1],
+            [1, 1]
+          ],
+          denominator: [[1, 1]],
+          restrictions: []
+        },
+        right: { numerator: [[0, 1]], denominator: [[1, 1]], restrictions: [] },
+        domain: 'real'
+      };
+      (change as (value: any) => void)(input);
+      try {
+        const result = spawnSync(
+          '/usr/bin/python3',
+          [
+            '-I',
+            '-S',
+            '-B',
+            fileURLToPath(new URL('../../laf-backend/functions/_shared/learning-sympy-worker.py', import.meta.url)),
+            packages
+          ],
+          {
+            input: JSON.stringify(input),
+            encoding: 'utf8',
+            env: { PATH: '/usr/bin:/bin', LANG: 'C.UTF-8' },
+            timeout: 2000,
+            maxBuffer: 16384
+          }
+        );
+        expect(result.error).toBeUndefined();
+        expect(result.status).toBe(1);
+        expect(result.stdout).toBe('');
+        expect(result.stderr).toContain(`ValueError: ${errorCode}`);
+        expect(result.stderr).not.toContain('ModuleNotFoundError');
+      } finally {
+        rmSync(packages, { recursive: true });
+      }
+    });
+  }
+);
 function child() {
   const c: any = new EventEmitter();
   Object.assign(c, {
@@ -262,6 +366,19 @@ describe('bounded worker and late result handling', () => {
     await vi.advanceTimersByTimeAsync(5000);
     await rejected;
     expect(p.kill).toHaveBeenCalledWith('SIGTERM');
+  });
+  it('keeps the resource monitor environment independent of host credentials', async () => {
+    vi.useFakeTimers();
+    const p = child();
+    processes.execFile.mockImplementation((_a, _b, _c, callback) => {
+      queueMicrotask(() => callback(null, '1024'));
+      return { kill: vi.fn() };
+    });
+    const done = runSympyWorker({}, runtime);
+    await vi.advanceTimersByTimeAsync(100);
+    expect(processes.execFile.mock.calls[0][2].env).toEqual({ PATH: '/usr/bin:/bin', LANG: 'C.UTF-8' });
+    p.finish();
+    await done;
   });
   it.each([
     ['999999', null, 'MEMORY_LIMIT'],
