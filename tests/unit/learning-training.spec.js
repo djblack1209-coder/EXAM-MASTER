@@ -1,11 +1,13 @@
 import { beforeEach, afterEach, describe, expect, it, vi } from 'vitest';
+import { toRaw } from 'vue';
 import { createPinia, setActivePinia, getActivePinia } from 'pinia';
 import { useConversationLearningStore } from '@/stores/modules/conversation-learning.js';
 import { prepareLearningRestore } from '@/services/learning/learning-backup.js';
 import { emptyLearningState } from '@/services/learning/learning-domain.js';
 import { learningWriteLease } from '@/services/learning/learning-write-lease.js';
 import { dailyConversationContext } from '../../laf-backend/functions/_shared/learning-journey.js';
-import { dayKey, effectiveGrade } from '@/services/learning/learning-domain.js';
+import { dayKey, effectiveGrade, gradeAnswer } from '@/services/learning/learning-domain.js';
+import { createJourneyQuestions } from '@/services/learning/journey-training.js';
 import { generateLearningTurn } from '@/services/api/domains/learning.api.js';
 vi.mock('@/services/api/domains/learning.api.js', async (original) => ({
   ...(await original()),
@@ -159,7 +161,11 @@ describe('整批训练的实际学习记录', () => {
     'writing-material_argument',
     'science-distance',
     'science-density',
-    'science-pressure'
+    'science-pressure',
+    'science-force',
+    'science-motion',
+    'science-velocity-graph',
+    'science-energy'
   ])('%s模块沿现有题面合同创建且不预先写入原答', (moduleId) => {
     const s = setup([moduleId]);
     const group = s.startTraining(s.journeyContext(), moduleId, 1);
@@ -169,6 +175,44 @@ describe('整批训练的实际学习记录', () => {
     expect(question.prompt.length).toBeGreaterThan(8);
     expect(question.publishable).toBe(false);
     expect(question.validation === null).toBe(moduleId.startsWith('writing-'));
+  });
+
+  it.each([
+    ['science-force', '大小减半，方向相同'],
+    ['science-motion', '路程2m，位移0m'],
+    ['science-velocity-graph', '路程4m，位移-2m'],
+    ['science-energy', '合力总功-8J，末动能1J']
+  ])('%s整批沿独立规则交卷、巩固和恢复，原答与停止保持', (moduleId, handCheckedFirst) => {
+    const s = setup([moduleId]);
+    const group = s.startTraining(s.journeyContext(), moduleId, 20);
+    const questions = group.questionKeys.map((key) => s.state.questions.find((q) => `${q.id}@${q.version}` === key));
+    expect(s.state.attempts).toHaveLength(0);
+    expect(new Set(questions.map((q) => q.prompt)).size).toBe(20);
+    const firstAnswer = questions[0].options.find((option) => option.slice(3) === handCheckedFirst)?.[0];
+    expect(firstAnswer).toBeTruthy();
+    const answers = questions.map((q) => q.validation.answer);
+    answers[0] = firstAnswer;
+    answers[19] = questions[19].options.find((option) => option[0] !== answers[19])[0];
+    s.submitTraining(s.journeyContext(), group.id, answers);
+    expect(s.state.attempts.map((a) => a.answer)).toEqual(answers);
+    expect(s.dailyRecap).toMatchObject({ submitted: 20, correct: 19, wrong: 1, pending: 0 });
+    const accepted = s.exportData();
+    s.submitTraining(s.journeyContext(), group.id, answers);
+    expect(s.exportData()).toBe(accepted);
+    const restored = prepareLearningRestore(emptyLearningState(s.state.owner, s.state.timezone), accepted);
+    expect(restored.state.attempts.map((a) => a.answer)).toEqual(answers);
+    expect(restored.state.conversations.at(-1).trainingGroups).toEqual(s.active.trainingGroups);
+    expect(restored.state.questions.map((q) => q.scienceExercise)).toEqual(questions.map((q) => q.scienceExercise));
+    const wrong = s.state.attempts.at(-1);
+    s.startWeakness(s.journeyContext(), wrong.id);
+    expect(s.activeQuestion.parentQuestionKey).toBe(wrong.questionKey);
+    expect(s.activeQuestion.scienceExercise.input).not.toEqual(questions[19].scienceExercise.input);
+    expect(s.state.attempts).toHaveLength(20);
+    s.commit('task.stop', { conversationId: s.active.id });
+    const stopped = s.exportData();
+    expect(() => s.startTraining(s.journeyContext(), moduleId, 1)).toThrow();
+    expect(() => s.submit('A', true)).toThrow();
+    expect(s.exportData()).toBe(stopped);
   });
 
   it('未来题组、停止及切换目标后的旧交卷拒绝写入', () => {
@@ -186,6 +230,89 @@ describe('整批训练的实际学习记录', () => {
     const changed = s.exportData();
     expect(() => s.submitTraining(old, group.id, ['12', '16'])).toThrow();
     expect(s.exportData()).toBe(changed);
+  });
+
+  it('另一目标的科学题不能装入当前题组，失败不改原目标或题目', () => {
+    const s = setup(['science-motion']);
+    const original = s.startTraining(s.journeyContext(), 'science-motion', 1);
+    s.start('另一物理目标');
+    s.configureJourney(s.journeyContext(), {
+      title: '另一物理目标',
+      startDay: '2026-10-10',
+      durationDays: 7,
+      minutes: 30,
+      mode: 'batch',
+      moduleIds: ['science-motion']
+    });
+    const before = s.exportData();
+    expect(() =>
+      s.commit('training.open', {
+        conversationId: s.active.id,
+        moduleId: 'science-motion',
+        questionKeys: original.questionKeys,
+        day: '2026-10-10',
+        minutes: 15
+      })
+    ).toThrow('另一目标');
+    expect(s.exportData()).toBe(before);
+  });
+
+  it('独立巩固后普通重开仍显示原焦点，旧整批结果不能遮住变式或改变停止记录', () => {
+    const s = setup(['science-energy']);
+    const group = s.startTraining(s.journeyContext(), 'science-energy', 2);
+    s.submitTraining(s.journeyContext(), group.id, ['A', 'B']);
+    s.startWeakness(s.journeyContext(), s.state.attempts.at(-1).id);
+    const key = s.active.activeQuestionKey;
+    expect(s.trainingGroup).toBeNull();
+    s.commit('task.stop', { conversationId: s.active.id });
+    const before = s.exportData();
+    s.$dispose();
+    learningWriteLease.release();
+    setActivePinia(createPinia());
+    const reopened = useConversationLearningStore();
+    expect(reopened.active.activeQuestionKey).toBe(key);
+    expect(reopened.trainingGroup).toBeNull();
+    expect(reopened.batchTrainingActive).toBe(false);
+    expect(reopened.active.stopped).toBe(true);
+    expect(reopened.exportData()).toBe(before);
+  });
+
+  it.each([
+    ['science-density', ['density', 'mass', 'volume', 'density_si'], ['2.4g/cm³', '150g', '35cm³', '3000kg/m³']],
+    ['science-pressure', ['pressure', 'force', 'area', 'pressure_kpa'], ['30000Pa', '72N', '18.5cm²', '31.25kPa']]
+  ])('%s题组轮转原有四项任务，首轮结果按独立单位计算核对', (moduleId, targets, firstFour) => {
+    const s = setup([moduleId]);
+    const group = s.startTraining(s.journeyContext(), moduleId, 20);
+    const questions = group.questionKeys.map((key) => s.state.questions.find((q) => `${q.id}@${q.version}` === key));
+    expect(questions.map((q) => q.scienceExercise.input.target)).toEqual(
+      Array.from({ length: 20 }, (_, i) => targets[i % 4])
+    );
+    const answers = questions.map((q) => q.validation.answer);
+    for (let i = 0; i < 4; i++) {
+      answers[i] = questions[i].options.find((option) => option.slice(3) === firstFour[i])?.[0];
+      expect(answers[i]).toBeTruthy();
+    }
+    s.submitTraining(s.journeyContext(), group.id, answers);
+    expect(s.dailyRecap).toMatchObject({ submitted: 20, correct: 20, wrong: 0, pending: 0 });
+    expect(s.state.attempts.map((a) => a.answer)).toEqual(answers);
+  });
+
+  it.each([
+    'science-density',
+    'science-pressure',
+    'science-force',
+    'science-motion',
+    'science-velocity-graph',
+    'science-energy'
+  ])('%s在第100组仍只生成原规则接受的有界题面，不改现有记录', (moduleId) => {
+    const s = setup([moduleId]);
+    const state = structuredClone(toRaw(s.state));
+    state.conversations.at(-1).trainingGroups = Array.from({ length: 99 }, () => ({ moduleId }));
+    const before = JSON.stringify(state);
+    const questions = createJourneyQuestions(state, s.active.id, moduleId, 20, 'last-group');
+    expect(questions).toHaveLength(20);
+    expect(questions.every((q) => gradeAnswer(q, q.validation.answer).status === 'reliable')).toBe(true);
+    expect(JSON.stringify(state)).toBe(before);
   });
 
   it('复盘从整批原答生成，未提交模块不完成学习日，主观原答保持待核对且不推进FSRS', () => {

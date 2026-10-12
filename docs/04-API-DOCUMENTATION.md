@@ -8,6 +8,8 @@
 
 `training.open` 绑定当前目标已保存且未作答的1—20个不同questionKeys、模块、日期及1—180分钟；每目标最多100组。Store先完整校验题目/原答/帮助，再由repository `commitBatch` 一次保存。`training.complete` 必须explicit=true，attemptIds按原题序逐项属于同目标/版本；未答、未来日期、停止、陈旧上下文及部分失败整批拒绝。未交卷题组的单题提交返回BATCH_REQUIRED，整批讨论不自动作答；计时只反馈，不自动交卷。
 
+路线提供19个有界模块，新增恒定合力、初速度与分段运动、速度—时间图、功与动能，复用既有科学题目工厂及固定规则判分。密度轮换密度/质量/体积/国际单位，压强轮换压强/压力/面积/千帕；第100题组仍在工厂参数边界内。题目保持私人、不可发布，不推定全课程质量或长期掌握。`training.open` 同时校验写作和科学练习的conversationId，跨目标绑定整批拒绝；上述题数、模块数及题组数限制保持。
+
 `recap.confirm` 绑定module/day/week、实际groupIds/evidenceIds及当前signature，须明确确认且已有交卷；每目标最多500条。完整模块提交和日终明确复盘才计完成学习日。`deriveJourneyInsights`只读真实样本、帮助及effectiveGrade；差异卡保留双方分母，abilityChangeVerified=false。巩固绑定有效原答，可靠题创建独立变式，待核对题返回原答；后续题量仍由用户确认。
 
 `summarizeLearning` 可选day/history及conversationId/timezone；旧默认仍为历史统计，今日、当前目标和全部历史分别筛选，不混用分母。
