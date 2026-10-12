@@ -188,6 +188,7 @@ export function createLearningRepository(
             'question.add',
             'question.focus',
             'attempt.submit',
+            'attempt.submit-original-v1',
             'plan.set',
             'training.open',
             'training.complete',

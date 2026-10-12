@@ -1,6 +1,8 @@
 import {
   assert,
   questionKey,
+  attemptSubmissionType,
+  ORIGINAL_ANSWER_OPERATION,
   knowledgeScope,
   summarizeLearning,
   effectiveGrade,
@@ -117,7 +119,7 @@ export function executeLearningTool(repository, call, context) {
     } else if (call.name === 'method' && lockedMethod)
       result = conversationStrategy(repository.read(), context.conversationId);
     else {
-      const type = {
+      let type = {
         focus: 'question.focus',
         submit: 'attempt.submit',
         hint: 'hint.add',
@@ -128,6 +130,12 @@ export function executeLearningTool(repository, call, context) {
       }[call.name];
       // 模型不能替用户提交答案。submit 只由明确的用户作答触发。
       assert(call.name !== 'submit' || context.origin === 'user', 'FORBIDDEN', '模型不能代替用户作答');
+      if (call.name === 'submit') {
+        const state = repository.read();
+        const session = state.conversations.find((item) => item.id === context.conversationId);
+        const question = state.questions.find((item) => questionKey(item) === session?.activeQuestionKey);
+        type = attemptSubmissionType(question, state.events.find((event) => event.id === call.id)?.type);
+      }
       const assessmentState = call.name === 'assess' ? repository.read() : null;
       const assessmentKey = assessmentState?.attempts.find((a) => a.id === call.arguments.attemptId)?.questionKey;
       const assessmentQuestion = assessmentState?.questions.find((q) => questionKey(q) === assessmentKey);
@@ -147,6 +155,7 @@ export function executeLearningTool(repository, call, context) {
         data: {
           ...call.arguments,
           conversationId: context.conversationId,
+          ...(call.name === 'submit' && type === ORIGINAL_ANSWER_OPERATION ? { explicit: true } : {}),
           ...(call.name === 'method' ? { deliveryManaged: true } : {}),
           ...(call.name === 'method' ? { source: 'model' } : {}),
           ...(call.name === 'assess' ? { model: context.model || 'model' } : {}),
@@ -156,6 +165,8 @@ export function executeLearningTool(repository, call, context) {
       result = outcome.result;
       operationReused = outcome.reused;
     }
+    if (call.name === 'submit' && result.clarification)
+      return { success: false, clarification: true, result, executionId: null };
     const priorReceipt = operationReused && repository.read().events.find((e) => e.id === `${call.id}:receipt`);
     if (priorReceipt)
       assert(

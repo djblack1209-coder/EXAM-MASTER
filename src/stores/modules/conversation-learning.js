@@ -85,6 +85,7 @@ import {
 import {
   summarizeLearning,
   questionKey,
+  attemptSubmissionType,
   knowledgeScope,
   effectiveGrade,
   assert,
@@ -1615,7 +1616,9 @@ export const useConversationLearningStore = defineStore('conversation-learning',
   }
   function submit(answer, explicit = false, id = learningId('answer'), options = {}) {
     const result = commit(
-      'attempt.submit',
+      explicit === true
+        ? attemptSubmissionType(activeQuestion.value, state.value.events.find((event) => event.id === id)?.type)
+        : 'attempt.submit',
       { conversationId: selectedConversationId.value, answer, explicit, ...options },
       id
     );

@@ -793,6 +793,8 @@ HTTP发现新材料复测在未传客户端kind时会按parent题默认记varian
 
 ### 写作体裁、当前情境与原答
 
+新明确写作及词语使用原答采用事件类型 `attempt.submit-original-v1`，保留输入正文的首尾空白；只允许已有写作题或明确词语使用题，必须 `explicit:true`，空白正文、原长度、停止、归属及判分边界保持。旧 `attempt.submit` 的重放规则冻结，同ID重试沿已有类型和数据指纹，不回写旧原答或引用偏移；题目、量表与学习状态版本不变。模型仍不能提交，用户工具只由宿主内部给新类型标记明确提交，参数白名单不增加；旧澄清返回不生成成功收据。旧后端对未知新事件重放返回 `UNKNOWN_TOOL`，该证据不涵盖旧快照读写，降级需配套原资料备份。
+
 `guided-writing-v1` 在原通知之外加入英文说明与中文叙事，各有四个有限原创情境：旧纸回收/节水/旧书交换/步行，借伞/找书/扶同学/照顾植物。英文50–80词、中文80–150字，正式原答最多1000字符；generated/project_original、不可发布，无客观validation/expectedAnswer。写作元信息保存contract、genreId、taskId、conversationId、phase、dueDay、plannedDay、plannedTimezone，题面/来源/维度与规范任务重建，未知字段、体裁、情境、错配与跨对话拒绝。旧`english-notice-v1`创建结果及已有记录保持，旧客户端不能由未知合同自行降级或宣称新体裁可用。
 
 新量表来源为`project_original`，四维各5分：英文为信息/读者/组织/语言，中文为事情/细节/顺序/表达；总分20只是本项目辅助规则，不是官方作文评分或课程标准。normalizeRubric支持该来源类别，其他维度/引用/分数/权限边界不放宽。主观原答和模型辅助继续pending/待核对，不能进入可靠首答、词汇掌握或FSRS。

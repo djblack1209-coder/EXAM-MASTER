@@ -7,6 +7,7 @@ import {
   applyLearningOperation,
   emptyLearningState,
   questionKey,
+  attemptSubmissionType,
   normalizePrivateSyncOperation
 } from '@/services/learning/learning-domain.js';
 import {
@@ -16,6 +17,8 @@ import {
 } from '../../laf-backend/functions/_shared/learning-writing.js';
 import LearningLab from '@/components/business/learning/learning-lab.vue';
 import LearningOverview from '@/components/business/learning/learning-overview.vue';
+import { prepareLearningRestore } from '@/services/learning/learning-backup.js';
+import { executeLearningTool, createArithmeticQuestion } from '@/services/learning/learning-tools.js';
 const api = vi.hoisted(() => ({ generate: vi.fn(), result: vi.fn() }));
 vi.mock('@dcloudio/uni-app', () => ({ onShow: vi.fn(), onHide: vi.fn(), onLoad: vi.fn(), onBackPress: vi.fn() }));
 vi.mock('@/services/api/domains/learning.api.js', async (original) => ({
@@ -120,6 +123,256 @@ describe('原创通知的正式作答与撤去支架', () => {
     const store = setup(),
       before = store.exportData();
     expect(() => store.submit('x'.repeat(1001), true)).toThrow('1000');
+    expect(store.exportData()).toBe(before);
+  });
+  it('明确提交保留通知原答的首尾空白与逐字引用位置', () => {
+    const store = setup();
+    const original = `\r\n \t${answer}\n\t `;
+    store.submit(original, true, 'notice-original-whitespace');
+    const saved = store.state.attempts[0];
+    expect(saved.answer).toBe(original);
+    expect(saved.answer.indexOf('Our reading club')).toBe(4);
+    expect(saved.grade.status).toBe('pending');
+    expect(store.summary.first.denominator).toBe(0);
+    expect(store.state.reviews).toEqual([]);
+    expect(store.state.events.find((event) => event.id === saved.id).data.answer).toBe(original);
+    expect(() => store.submit(' \r\n\t ', true, 'notice-empty-whitespace')).toThrow('内容为空');
+    expect(store.state.attempts).toHaveLength(1);
+  });
+  it('旧通知事件与旧显式引用偏移在恢复和重放时保持原规则', () => {
+    const store = setup();
+    const original = `\r\n \t${answer}\n\t `;
+    let state = applyLearningOperation(clone(store.state), {
+      id: 'legacy-notice-answer',
+      type: 'attempt.submit',
+      data: { conversationId: store.active.id, answer: original, explicit: true }
+    }).state;
+    expect(state.attempts[0].answer).toBe(answer);
+    expect(state.events.at(-1).data.answer).toBe(original);
+    const repo = {
+      read: () => state,
+      commit(operation) {
+        const outcome = applyLearningOperation(state, operation);
+        state = outcome.state;
+        return outcome;
+      }
+    };
+    const quote = 'reading',
+      start = answer.indexOf(quote);
+    executeLearningTool(
+      repo,
+      {
+        id: 'legacy-notice-assessment',
+        name: 'assess',
+        arguments: {
+          attemptId: 'legacy-notice-answer',
+          rubricId: store.activeQuestion.rubric.id,
+          outcome: 'uncertain',
+          feedback: '仅核对原文位置，语义未验证。',
+          dimensions: store.activeQuestion.rubric.criteria.map((criterion) => ({
+            criterionId: criterion.id,
+            score: null,
+            feedback: '原位置保持。',
+            evidence: [{ quote, start, end: start + quote.length }]
+          }))
+        }
+      },
+      {
+        conversationId: store.active.id,
+        permissions: ['learn'],
+        calls: 0,
+        maxCalls: 1,
+        deadline: Date.now() + 5000,
+        origin: 'model',
+        model: 'synthetic-not-a-real-model'
+      }
+    );
+    const expected = clone(state.attempts);
+    expect(expected[0].assistance[0].dimensions[0].evidenceLocations[0].start).toBe(4);
+    const restored = prepareLearningRestore(emptyLearningState('guest', state.timezone), JSON.stringify(state));
+    expect(restored.state.attempts).toEqual(expected);
+    let replayed = emptyLearningState('guest', state.timezone);
+    for (const event of state.events)
+      replayed = applyLearningOperation(replayed, normalizePrivateSyncOperation(event)).state;
+    expect(replayed.attempts).toEqual(expected);
+    const legacy = state.events.find((event) => event.id === 'legacy-notice-answer');
+    const repeated = applyLearningOperation(state, {
+      ...legacy,
+      type: attemptSubmissionType(store.activeQuestion, legacy.type)
+    });
+    expect(repeated.reused).toBe(true);
+    expect(repeated.state).toBe(state);
+    expect(repeated.result.answer).toBe(answer);
+  });
+  it('新通知原答往返、重复和新显式引用位置逐字保持', async () => {
+    const store = setup(),
+      original = `\r\n \t${answer}\n\t `;
+    store.submit(original, true, 'notice-original-roundtrip');
+    expect(store.state.events.find((event) => event.id === 'notice-original-roundtrip').type).toBe(
+      'attempt.submit-original-v1'
+    );
+    cloud(store);
+    api.generate.mockImplementation(async (body) => response(body));
+    await store.requestWritingFeedback();
+    const before = clone(store.state.attempts);
+    expect(before[0].assistance[0].dimensions[0].evidenceLocations[0]).toMatchObject({
+      quote: 'reading',
+      start: 8,
+      end: 15
+    });
+    expect(before[0].answer).toBe(original);
+    expect(before[0].grade.status).toBe('pending');
+    const restored = prepareLearningRestore(emptyLearningState('guest', store.state.timezone), store.exportData());
+    expect(restored.state.attempts).toEqual(before);
+    const again = prepareLearningRestore(restored.state, store.exportData());
+    expect(again.imported).toBe(0);
+    expect(again.state.attempts).toEqual(before);
+  });
+  it('同ID的旧提交仍复用旧原答，新提交另记原串', () => {
+    const store = setup(),
+      original = `\r\n \t${answer}\n\t `;
+    learningRepository.commit({
+      id: 'notice-existing-id',
+      type: 'attempt.submit',
+      data: { conversationId: store.active.id, answer: original, explicit: true }
+    });
+    store.refresh();
+    expect(store.submit(original, true, 'notice-existing-id').answer).toBe(answer);
+    expect(store.state.events.find((event) => event.id === 'notice-existing-id').type).toBe('attempt.submit');
+    const before = store.exportData();
+    store.submit(original, true, 'notice-existing-id');
+    expect(store.exportData()).toBe(before);
+    store.submit(original, true, 'notice-new-original-id');
+    expect(store.state.attempts).toHaveLength(2);
+    expect(store.state.attempts[0].answer).toBe(answer);
+    expect(store.state.attempts[1]).toMatchObject({ answer: original, kind: 'redo' });
+    expect(store.state.events.find((event) => event.id === 'notice-new-original-id').type).toBe(
+      'attempt.submit-original-v1'
+    );
+  });
+  it('原串版本仍保留明确提交、停止、题型和模型权限边界', () => {
+    const store = setup(),
+      before = clone(store.state);
+    const operation = {
+      id: 'notice-original-boundary',
+      type: 'attempt.submit-original-v1',
+      data: { conversationId: store.active.id, answer, explicit: false }
+    };
+    expect(() => applyLearningOperation(before, operation)).toThrow(
+      expect.objectContaining({ code: 'SUBMISSION_CONFIRMATION_REQUIRED' })
+    );
+    expect(before.attempts).toEqual([]);
+    const stopped = applyLearningOperation(before, {
+      id: 'notice-stopped-boundary',
+      type: 'task.stop',
+      data: { conversationId: store.active.id }
+    }).state;
+    expect(() =>
+      applyLearningOperation(stopped, { ...operation, data: { ...operation.data, explicit: true } })
+    ).toThrow(expect.objectContaining({ code: 'STOPPED' }));
+    const question = createArithmeticQuestion('nonwriting-original-boundary', '12 + 8');
+    let numeric = applyLearningOperation(before, {
+      id: 'nonwriting-q',
+      type: 'question.add',
+      data: { question }
+    }).state;
+    numeric = applyLearningOperation(numeric, {
+      id: 'nonwriting-focus',
+      type: 'question.focus',
+      data: { conversationId: store.active.id, questionKey: questionKey(question) }
+    }).state;
+    expect(() =>
+      applyLearningOperation(numeric, { ...operation, data: { ...operation.data, answer: '20', explicit: true } })
+    ).toThrow(expect.objectContaining({ code: 'PRECONDITION' }));
+    expect(() =>
+      executeLearningTool(
+        learningRepository,
+        { id: 'model-original-forbidden', name: 'submit', arguments: { answer } },
+        {
+          conversationId: store.active.id,
+          permissions: ['learn'],
+          calls: 0,
+          maxCalls: 1,
+          deadline: Date.now() + 5000,
+          origin: 'model'
+        }
+      )
+    ).toThrow(expect.objectContaining({ code: 'FORBIDDEN', message: '模型不能代替用户作答' }));
+    expect(learningRepository.read().attempts).toEqual([]);
+    expect(learningRepository.read().reviews).toEqual([]);
+  });
+  it('宿主确认的用户提交工具保存原串，同ID复用且不接受越权参数', () => {
+    const store = setup(),
+      original = `\r\n \t${answer}\n\t `;
+    const call = { id: 'notice-original-user-tool', name: 'submit', arguments: { answer: original } };
+    const context = () => ({
+      conversationId: store.active.id,
+      permissions: ['learn'],
+      calls: 0,
+      maxCalls: 1,
+      deadline: Date.now() + 5000,
+      origin: 'user'
+    });
+    expect(executeLearningTool(learningRepository, call, context()).success).toBe(true);
+    const state = learningRepository.read();
+    expect(state.attempts[0].answer).toBe(original);
+    expect(state.events.find((event) => event.id === call.id).type).toBe('attempt.submit-original-v1');
+    executeLearningTool(learningRepository, call, context());
+    expect(learningRepository.read()).toEqual(state);
+    expect(() =>
+      executeLearningTool(
+        learningRepository,
+        { ...call, id: 'notice-original-user-tool-extra', arguments: { ...call.arguments, explicit: true } },
+        context()
+      )
+    ).toThrow(expect.objectContaining({ code: 'FORBIDDEN', message: '工具参数超出权限' }));
+  });
+  it('旧未确认工具结果不重写历史，当前返回澄清而不再宣称提交成功', () => {
+    const store = setup();
+    const call = { id: 'legacy-notice-clarification', name: 'submit', arguments: { answer } };
+    learningRepository.commit({
+      id: call.id,
+      type: 'attempt.submit',
+      data: { ...call.arguments, conversationId: store.active.id }
+    });
+    learningRepository.commit({
+      id: `${call.id}:receipt`,
+      type: 'execution.record',
+      data: { tool: 'submit', version: '1.0', status: 'success', durationMs: 0 }
+    });
+    const before = learningRepository.read();
+    const result = executeLearningTool(learningRepository, call, {
+      conversationId: store.active.id,
+      permissions: ['learn'],
+      calls: 0,
+      maxCalls: 1,
+      deadline: Date.now() + 5000,
+      origin: 'user'
+    });
+    expect(result).toMatchObject({ success: false, clarification: true, executionId: null });
+    expect(learningRepository.read()).toEqual(before);
+    expect(learningRepository.read().attempts).toEqual([]);
+  });
+  it('批次里的未确认原文操作会原子拒绝，前面的操作也不保存', () => {
+    const store = setup(),
+      before = store.exportData();
+    expect(() =>
+      learningRepository.commitBatch(
+        [
+          {
+            id: 'unconfirmed-batch-message',
+            type: 'message.add',
+            data: { conversationId: store.active.id, role: 'user', content: '合成批次正文' }
+          },
+          {
+            id: 'unconfirmed-batch-original',
+            type: 'attempt.submit-original-v1',
+            data: { conversationId: store.active.id, answer, explicit: false }
+          }
+        ],
+        store.state.revision
+      )
+    ).toThrow(expect.objectContaining({ code: 'SUBMISSION_CONFIRMATION_REQUIRED' }));
     expect(store.exportData()).toBe(before);
   });
   it('先保存原答，再换四项条件；旧帮助留在原题，新题无支架', () => {
