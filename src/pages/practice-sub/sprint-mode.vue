@@ -80,7 +80,7 @@
         <!-- ==================== 紧急模式横幅 ==================== -->
         <view v-if="pressureTier === 'emergency'" class="emergency-banner glass-card">
           <BaseIcon name="warning" :size="32" />
-          <text class="emergency-text">最后 {{ daysRemaining }} 天！集中火力攻克 Top 5 高 ROI 知识点</text>
+          <text class="emergency-text">最后 {{ daysRemaining }} 天！集中攻克最关键的 5 个知识点</text>
         </view>
 
         <!-- ==================== 知识点卡片列表 ==================== -->
@@ -94,7 +94,7 @@
           <view class="card-head">
             <text class="card-kp">{{ item.name }}</text>
             <view class="roi-pill" :class="'roi-' + roiLevel(item.roi)">
-              <text class="roi-score">ROI {{ item.roi }}</text>
+              <text class="roi-score">优先级 {{ item.roi }}</text>
             </view>
           </view>
 
@@ -150,13 +150,13 @@
         <view v-if="!hasExamDate" class="empty-state">
           <image class="hero-cartoon-icon" src="/static/icons/target-bullseye.png" mode="aspectFit" alt="目标靶心" />
           <text class="empty-title">请先设置考试日期</text>
-          <text class="empty-sub">设置后 AI 将生成最优冲刺优先级</text>
+          <text class="empty-sub">设置后会按剩余时间安排冲刺顺序</text>
         </view>
 
         <view v-else-if="displayItems.length === 0 && hasExamDate" class="empty-state">
           <BaseIcon name="sparkle" :size="96" />
           <text class="empty-title">题库数据不足</text>
-          <text class="empty-sub">请先导入学习资料生成题库</text>
+          <text class="empty-sub">当前题量不足，先完成几组练习后再来看</text>
         </view>
       </template>
 
@@ -242,12 +242,12 @@ const heroTitle = computed(() => {
 /** 策略描述文本 */
 const strategyText = computed(() => {
   if (pressureTier.value === 'emergency') {
-    return '只攻 Top 5 高 ROI 知识点，其余全部放弃';
+    return '只攻最关键的 5 个知识点，其余暂时放下';
   }
   if (pressureTier.value === 'high') {
-    return '聚焦高 ROI 知识点，低 ROI 建议战略放弃';
+    return '聚焦更容易提分的知识点，低收益内容暂缓';
   }
-  return '按 ROI 优先级有序推进，兼顾广度和深度';
+  return '按提分优先级有序推进，兼顾广度和深度';
 });
 
 /** 按显示优先级筛选后的列表 */

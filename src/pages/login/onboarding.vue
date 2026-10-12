@@ -14,23 +14,23 @@
 
     <view class="panel">
       <view v-if="step === 0" class="step">
-        <text class="eyebrow">START PATH</text>
+        <text class="eyebrow">备考路径</text>
         <text class="title">先确定你的备考路径</text>
-        <text class="desc">小程序会根据路径分配公共课题库、每日目标和知识图谱节点。</text>
+        <text class="desc">后续科目、每日目标和知识图谱都会按这里展开。</text>
 
         <view class="exam-card selected">
           <view class="exam-card-main">
             <text class="exam-name">2027 考研公共课</text>
-            <text class="exam-desc">政治、英语、数学按你选择的版本进入训练</text>
+            <text class="exam-desc">按你选择的科目进入复习轨道</text>
           </view>
           <text class="exam-status">已选择</text>
         </view>
       </view>
 
       <view v-else-if="step === 1" class="step">
-        <text class="eyebrow">PUBLIC COURSES</text>
-        <text class="title">选择你要训练的公共课</text>
-        <text class="desc">后续题库、错题复习和知识图谱都按这里的轨道归档。</text>
+        <text class="eyebrow">考试科目</text>
+        <text class="title">选择你的考试科目</text>
+        <text class="desc">题库、错题和图谱会按所选科目归档。</text>
 
         <view v-for="group in trackGroups" :key="group.subject" class="track-group">
           <text class="track-title">{{ group.label }}</text>
@@ -49,9 +49,9 @@
       </view>
 
       <view v-else-if="step === 2" class="step">
-        <text class="eyebrow">DAILY RHYTHM</text>
+        <text class="eyebrow">每日强度</text>
         <text class="title">设定每天的训练强度</text>
-        <text class="desc">建议从 25 题开始，既能形成节奏，也不会让前几天过载。</text>
+        <text class="desc">建议从 25 题开始，先建立稳定节奏。</text>
 
         <view class="goal-grid">
           <view
@@ -69,14 +69,14 @@
       </view>
 
       <view v-else class="step">
-        <text class="eyebrow">KNOWLEDGE MAP</text>
+        <text class="eyebrow">知识图谱</text>
         <text class="title">知识图谱会从第一题开始点亮</text>
-        <text class="desc">答对、答错、用时都会沉淀到对应知识节点，用来安排下一轮复习。</text>
+        <text class="desc">每次练习都会落到对应节点，用来安排下一轮复习。</text>
 
         <view class="map-preview">
           <view v-for="line in previewLines" :key="line.id" class="map-line" :style="line.style" />
           <view
-            v-for="node in previewNodes"
+            v-for="node in selectedPreviewNodes"
             :key="node.id"
             class="map-node"
             :class="node.tone"
@@ -89,7 +89,7 @@
         <view class="summary-card">
           <text class="summary-label">已配置</text>
           <text class="summary-value">{{ selectedTrackLabels.join(' / ') }}</text>
-          <text class="summary-sub">{{ dailyGoal }} 题/天，优先进入限时训练</text>
+          <text class="summary-sub">{{ dailyGoal }} 题/天，优先按薄弱知识点复习</text>
         </view>
       </view>
     </view>
@@ -137,6 +137,11 @@ const trackGroups = [
       { id: 'math2', label: '数学二 302' },
       { id: 'math3', label: '数学三 303' }
     ]
+  },
+  {
+    subject: 'professional',
+    label: '专业课',
+    options: [{ id: 'law_illegal', label: '法律非法学' }]
   }
 ];
 
@@ -147,13 +152,26 @@ const goalOptions = [
   { count: 60, label: '冲刺', time: '约 45 分钟' }
 ];
 
-const previewNodes = [
-  { id: 'p', label: '政治', x: 14, y: 42, tone: 'primed' },
-  { id: 'e', label: '英语', x: 42, y: 20, tone: 'unknown' },
-  { id: 'm', label: '数学', x: 72, y: 45, tone: 'strong' },
-  { id: 'r', label: '阅读', x: 36, y: 68, tone: 'watch' },
-  { id: 'c', label: '高数', x: 62, y: 78, tone: 'unknown' }
-];
+const previewNodeBlueprints = {
+  default: [
+    { id: 'politics-subject', label: '政治', x: 14, y: 42, tone: 'primed' },
+    { id: 'english-subject', label: '英语', x: 42, y: 20, tone: 'unknown' },
+    { id: 'math-subject', label: '数学', x: 72, y: 45, tone: 'strong' },
+    { id: 'english-reading', label: '阅读', x: 36, y: 68, tone: 'watch' },
+    { id: 'math-core', label: '核心章', x: 62, y: 78, tone: 'unknown' }
+  ],
+  law: [
+    { id: 'law-root', label: '法硕', x: 14, y: 42, tone: 'primed' },
+    { id: 'english-subject', label: '英语一', x: 42, y: 20, tone: 'unknown' },
+    { id: 'politics-subject', label: '政治', x: 42, y: 68, tone: 'watch' },
+    { id: 'law-subject', label: '专业课', x: 72, y: 45, tone: 'strong' },
+    { id: 'law-core', label: '法理', x: 62, y: 78, tone: 'unknown' }
+  ]
+};
+
+const selectedPreviewNodes = computed(() =>
+  selectedTracks.value.includes('law_illegal') ? previewNodeBlueprints.law : previewNodeBlueprints.default
+);
 
 const previewLines = [
   { id: 'a', style: { left: '22%', top: '42%', width: '170rpx', transform: 'rotate(-22deg)' } },
@@ -183,9 +201,20 @@ function selectTrack(subject, id) {
     return;
   }
 
+  if (subject === 'professional') {
+    selectedTracks.value = selectedTracks.value.includes(id)
+      ? selectedTracks.value.filter((trackId) => trackId !== id)
+      : ['politics', 'english1', id];
+    return;
+  }
+
+  const withoutProfessional = selectedTracks.value.includes('law_illegal')
+    ? selectedTracks.value.filter((trackId) => trackId !== 'law_illegal')
+    : selectedTracks.value;
+
   const group = trackGroups.find((item) => item.subject === subject);
   const groupIds = new Set((group?.options || []).map((item) => item.id));
-  selectedTracks.value = selectedTracks.value.filter((trackId) => !groupIds.has(trackId));
+  selectedTracks.value = withoutProfessional.filter((trackId) => !groupIds.has(trackId));
   selectedTracks.value.push(id);
 }
 
@@ -205,7 +234,8 @@ function saveOnboardingData(completed = true) {
   const profile = {
     exam: 'kaoyan',
     targetYear: 2027,
-    tracks: selectedTracks.value
+    tracks: selectedTracks.value,
+    major: selectedTracks.value.includes('law_illegal') ? '法律非法学' : ''
   };
   storageService.save('onboarding_completed', completed);
   storageService.save('exam_type', 'kaoyan');

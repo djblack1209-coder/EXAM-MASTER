@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest';
 
-import { MOBILE_SMOKE_ROUTES, MOBILE_VIEWPORTS } from '../../scripts/build/mobile-viewport-smoke.mjs';
+import {
+  BLOCKING_TOAST_TEXTS,
+  MOBILE_SMOKE_ROUTES,
+  MOBILE_VIEWPORTS,
+  findBlockingToastText
+} from '../../scripts/build/mobile-viewport-smoke.mjs';
 
 describe('mobile viewport smoke config', () => {
   it('covers the mobile shell critical path', () => {
@@ -23,5 +28,11 @@ describe('mobile viewport smoke config', () => {
       { width: 390, height: 844, name: 'iphone-regular' },
       { width: 430, height: 932, name: 'iphone-large' }
     ]);
+  });
+
+  it('fails on blocking startup toasts that hide first-screen content', () => {
+    expect(BLOCKING_TOAST_TEXTS).toContain('保存失败，请检查存储空间');
+    expect(findBlockingToastText('首页\n保存失败，请检查存储空间\n今日任务')).toBe('保存失败，请检查存储空间');
+    expect(findBlockingToastText('首页\n今日任务')).toBeNull();
   });
 });

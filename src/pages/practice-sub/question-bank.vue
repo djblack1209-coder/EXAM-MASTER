@@ -19,36 +19,30 @@
     >
       <view class="intake-panel">
         <view class="intake-copy">
-          <text class="intake-kicker">RESOURCE INTAKE</text>
-          <text class="intake-title">资料导入与题库发布台</text>
-          <text class="intake-desc">上传解析、清洗进度和公开发布状态统一收口，页面只消费可审计结果。</text>
+          <text class="intake-kicker">题库</text>
+          <text class="intake-title">考研题库</text>
+          <text class="intake-desc">可练题目会按科目分类显示。暂无真题时，可以先回到刷题中心体验示例题。</text>
         </view>
         <view class="intake-metrics">
           <view class="intake-metric">
-            <text class="metric-value">{{ intakeSnapshot.imports.total }}</text>
-            <text class="metric-label">导入记录</text>
+            <text class="metric-value">{{ totalCount }}</text>
+            <text class="metric-label">可练题量</text>
           </view>
           <view class="intake-metric">
-            <text class="metric-value">{{ intakeSnapshot.bank.totalQuestions }}</text>
-            <text class="metric-label">本地题量</text>
+            <text class="metric-value">{{ categories.length }}</text>
+            <text class="metric-label">科目分类</text>
           </view>
           <view class="intake-metric">
-            <text class="metric-value">{{ releaseCoverageText }}</text>
-            <text class="metric-label">发布覆盖</text>
+            <text class="metric-value">{{ questionList.length }}</text>
+            <text class="metric-label">当前列表</text>
           </view>
-        </view>
-        <view class="intake-status-row">
-          <view class="intake-status-pill" :class="'status-' + intakeSnapshot.generation.status">
-            <text>{{ intakeSnapshot.generation.label }}</text>
-          </view>
-          <text class="intake-status-copy">{{ latestImportText }}</text>
         </view>
       </view>
 
       <!-- 题库总览 -->
       <view class="stats-header">
         <text class="stats-total">共 {{ totalCount }} 题</text>
-        <text class="stats-sub">按科目分类浏览，点击开始练习</text>
+        <text class="stats-sub">{{ questionBankSubtitle }}</text>
       </view>
 
       <!-- 分类卡片 -->
@@ -79,7 +73,7 @@
       <view v-if="!loading && categories.length === 0" class="empty-state">
         <BaseIcon name="book" :size="56" />
         <text class="empty-text">暂无题库数据</text>
-        <text class="empty-sub">资料入口已统一到题库发布台，清洗通过后才进入训练流</text>
+        <text class="empty-sub">有可练题后会按科目显示；也可以先体验示例题。</text>
       </view>
 
       <!-- 筛选栏 -->
@@ -108,7 +102,7 @@
 
       <!-- 题目列表 -->
       <view v-if="selectedCategory && questionList.length > 0" class="question-list">
-        <view v-for="(q, idx) in questionList" :key="q._id" class="q-item">
+        <view v-for="(q, idx) in questionList" :key="getQuizQuestionId(q) || idx" class="q-item">
           <view class="q-header">
             <text class="q-index">#{{ (currentPage - 1) * pageSize + idx + 1 }}</text>
             <view class="q-tags">
@@ -137,7 +131,7 @@
           alt="搜索无结果"
         />
         <text class="empty-text">该分类暂无题目</text>
-        <text class="empty-sub">可通过"资料导入"或管理后台添加题目</text>
+        <text class="empty-sub">可以切换分类，或先回到刷题中心体验示例题。</text>
       </view>
 
       <!-- 加载状态 -->
@@ -152,10 +146,9 @@
 
 <script setup>
 import { computed, ref, onMounted, onBeforeUnmount } from 'vue';
-import { safeNavigateBack } from '@/utils/safe-navigate';
+import { safeNavigateBack, safeNavigateTo } from '@/utils/safe-navigate';
 import { useReviewStore } from '@/stores/modules/review.js';
-import { useResourceStore } from '@/stores/modules/resource.js';
-import { formatIntakeStatusLabel } from '@/services/resource-intake-contract.js';
+import { getQuizQuestionId, TEMP_PRACTICE_QUESTIONS_KEY } from '@/services/quiz-session-contract.js';
 import { getStatusBarHeight } from '@/utils/core/system.js';
 import storageService from '@/services/storageService.js';
 import { toast } from '@/utils/toast.js';
@@ -174,7 +167,6 @@ onBeforeUnmount(() => {
 });
 
 const reviewStore = useReviewStore();
-const resourceStore = useResourceStore();
 
 const statusBarHeight = ref(getStatusBarHeight());
 const loading = ref(false);
@@ -186,12 +178,9 @@ const questionList = ref([]);
 const currentPage = ref(1);
 const pageSize = 20;
 const hasMore = ref(false);
-const intakeSnapshot = computed(() => resourceStore.intakeSnapshot);
-const releaseCoverageText = computed(() => `${Math.round(intakeSnapshot.value.release.coverageRate * 100)}%`);
-const latestImportText = computed(() => {
-  const active = intakeSnapshot.value.generation.activeRecord;
-  if (!active) return '暂无导入任务';
-  return `${active.name} · ${formatIntakeStatusLabel(active.status)}`;
+const questionBankSubtitle = computed(() => {
+  if (totalCount.value > 0) return '按科目分类浏览，选择分类后开始练习';
+  return '暂无可练题；可以先去刷题中心体验示例题';
 });
 
 const difficultyOptions = [
@@ -295,7 +284,7 @@ async function startPractice() {
     if (res?.success && res.data && res.data.length > 0) {
       // 将题目格式化为 v30_bank 兼容格式并存入临时练习
       const formatted = res.data.map((q, i) => ({
-        id: q._id || `qb_${i}`,
+        id: getQuizQuestionId(q) || `qb_${i}`,
         question: q.question || q.content || '',
         options: q.options || [],
         answer: q.answer || 'A',
@@ -308,11 +297,9 @@ async function startPractice() {
       }));
 
       // 存入临时练习题目
-      storageService.save('v30_temp_practice', formatted);
+      storageService.save(TEMP_PRACTICE_QUESTIONS_KEY, formatted);
 
-      uni.navigateTo({
-        url: '/pages/practice-sub/do-quiz?source=question-bank&mode=normal'
-      });
+      safeNavigateTo('/pages/practice-sub/do-quiz?source=question-bank&mode=temp_bank');
     } else {
       toast.info('该分类暂无题目');
     }
@@ -324,7 +311,6 @@ async function startPractice() {
 }
 
 onMounted(() => {
-  resourceStore.refreshIntakeSnapshot();
   loadStats();
 });
 </script>

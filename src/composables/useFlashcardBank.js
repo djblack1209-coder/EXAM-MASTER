@@ -41,6 +41,12 @@ export function useFlashcardBank() {
         set: (key, value) => storageService.save(key, value)
       };
       const result = importFlashcardsToBank(data, adapter);
+      storageService.save('v30_bank_source', {
+        type: 'published_registry',
+        bankId,
+        questionCount: result.imported,
+        loadedAt: new Date().toISOString()
+      });
 
       // 记录已加载的题库
       const loaded = storageService.get('loaded_flashcard_banks', []) || [];

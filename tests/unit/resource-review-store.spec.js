@@ -30,12 +30,19 @@ describe('resource and review stores', () => {
       { id: 'q1', question: '英语阅读', category: '英语', difficulty: 'easy', source: '2000真题' },
       { id: 'q2', question: '数学极限', category: '数学', difficulty: 'medium', source: '2001真题' }
     ]);
+    uni.removeStorageSync('v30_bank_source');
     uni.setStorageSync('imported_files', [
       { id: 'upload_001', name: 'english.pdf', status: 'completed', source: '本地文件', date: '2026-04-30' }
     ]);
   });
 
-  it('review store exposes question-bank page APIs with local fallback', async () => {
+  it('review store exposes published question-bank cache as the local fallback', async () => {
+    uni.setStorageSync('v30_bank_source', {
+      type: 'published_registry',
+      bankId: 'english-2000',
+      loadedAt: '2026-05-01T00:00:00.000Z'
+    });
+
     const { useReviewStore } = await import('@/stores/modules/review.js');
     const store = useReviewStore();
 
@@ -50,6 +57,28 @@ describe('resource and review stores', () => {
     expect(questions.data.list[0]._id).toBe('q1');
     expect(random.data).toHaveLength(1);
     expect(random.data[0].category).toBe('数学');
+  });
+
+  it('does not expose legacy local or demo banks through the release-status page fallback', async () => {
+    const { useReviewStore } = await import('@/stores/modules/review.js');
+    const store = useReviewStore();
+
+    const legacyStats = await store.fetchQuestionBankStats();
+    const legacyQuestions = await store.browseQuestions({ category: '英语', page: 1, pageSize: 20 });
+    const legacyRandom = await store.fetchQuestionBankRandom({ category: '数学', count: 1 });
+
+    expect(legacyStats.data.total).toBe(0);
+    expect(legacyStats.data.categories).toEqual([]);
+    expect(legacyQuestions.data.list).toEqual([]);
+    expect(legacyRandom.data).toEqual([]);
+
+    uni.setStorageSync('v30_bank_source', { type: 'guest_demo' });
+
+    const demoStats = await store.fetchQuestionBankStats();
+    const demoRandom = await store.fetchQuestionBankRandom({ count: 1 });
+
+    expect(demoStats.data.total).toBe(0);
+    expect(demoRandom.data).toEqual([]);
   });
 
   it('resource store exposes resource page APIs and refreshes intake snapshot', async () => {

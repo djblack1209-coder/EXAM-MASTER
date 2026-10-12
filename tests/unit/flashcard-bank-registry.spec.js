@@ -30,6 +30,20 @@ describe('published flashcard bank registry', () => {
     expect(english.tracks[0].modes.find((mode) => mode.id === 'knowledge_graph')?.label).toBe('知识地图');
   });
 
+  it('shows law-illegal users English I, politics, and professional-course knowledge entries', () => {
+    const tree = getPracticeNavigationTree({ tracks: ['math1', 'english2', 'law_illegal'] });
+    const subjects = tree.map((item) => item.id);
+    const tracks = tree.flatMap((subject) => subject.tracks.map((track) => track.id));
+    const professional = tree.find((item) => item.id === 'professional');
+
+    expect(subjects).toEqual(['english', 'politics', 'professional']);
+    expect(tracks).toEqual(['english1', 'politics', 'law_illegal']);
+    expect(professional.label).toBe('专业课');
+    expect(professional.tracks[0].label).toBe('法律非法学');
+    expect(professional.tracks[0].banks).toEqual([]);
+    expect(professional.tracks[0].modes).toEqual([{ id: 'knowledge_graph', label: '知识地图' }]);
+  });
+
   it('builds a public-course year coverage matrix from published and pending banks', () => {
     const coverage = buildPublicCourseCoverage({ minYear: 2024, maxYear: 2026 });
 

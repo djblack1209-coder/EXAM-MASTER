@@ -10,6 +10,7 @@ import {
   filterBankQuestions,
   sampleBankQuestions
 } from '@/services/resource-intake-contract.js';
+import { isPublishedPracticeBankSource } from '@/services/quiz-session-contract.js';
 import { storageService } from '@/services/storageService.js';
 import { logger } from '@/utils/logger.js';
 
@@ -19,6 +20,12 @@ function isOk(res) {
 
 function localBank() {
   return storageService.get('v30_bank', []) || [];
+}
+
+function localPublishedBank() {
+  const bankSource = storageService.get('v30_bank_source', null);
+  if (!isPublishedPracticeBankSource(bankSource)) return [];
+  return localBank();
 }
 
 export const useReviewStore = defineStore('review', {
@@ -72,7 +79,7 @@ export const useReviewStore = defineStore('review', {
         this.loading = false;
       }
 
-      this.questionBankStats = buildQuestionBankStats(localBank());
+      this.questionBankStats = buildQuestionBankStats(localPublishedBank());
       return { success: true, data: this.questionBankStats, source: 'local' };
     },
 
@@ -99,7 +106,7 @@ export const useReviewStore = defineStore('review', {
         this.loading = false;
       }
 
-      const data = filterBankQuestions(localBank(), params);
+      const data = filterBankQuestions(localPublishedBank(), params);
       this.questionBankList = data.list;
       return { success: true, data, source: 'local' };
     },
@@ -119,7 +126,7 @@ export const useReviewStore = defineStore('review', {
         this.loading = false;
       }
 
-      return { success: true, data: sampleBankQuestions(localBank(), params), source: 'local' };
+      return { success: true, data: sampleBankQuestions(localPublishedBank(), params), source: 'local' };
     }
   }
 });

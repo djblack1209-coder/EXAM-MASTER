@@ -5,13 +5,13 @@ function finiteNumber(value, fallback = 0) {
 
 function buildPrimaryAction({ review, bank }) {
   const dueCount = finiteNumber(review?.dueCount);
-  const publishedQuestions = finiteNumber(bank?.publishedQuestions ?? bank?.totalQuestions);
+  const publishedQuestions = finiteNumber(bank?.publishedQuestions);
 
   if (dueCount > 0) {
     return {
       type: 'review',
       label: '继续复习',
-      route: '/pages/practice-sub/do-quiz?mode=review',
+      route: '/pages/mistake/index?mode=review',
       priority: 100
     };
   }
@@ -27,8 +27,8 @@ function buildPrimaryAction({ review, bank }) {
 
   return {
     type: 'import',
-    label: '导入资料',
-    route: '/pages/resource/index',
+    label: '查看题库',
+    route: '/pages/practice-sub/question-bank',
     priority: 60
   };
 }
@@ -39,7 +39,7 @@ function buildStatusBadges({ intake, review, network }) {
   const streakDays = finiteNumber(review?.streakDays);
   const syncPending = finiteNumber(network?.syncPending);
 
-  if (generating > 0) badges.push({ tone: 'info', label: `清洗中 ${generating}` });
+  if (generating > 0) badges.push({ tone: 'info', label: `准备中 ${generating}` });
   if (streakDays > 0) badges.push({ tone: 'success', label: `连续 ${streakDays} 天` });
   if (network?.online === false) badges.push({ tone: 'warning', label: '离线' });
   if (syncPending > 0) badges.push({ tone: 'warning', label: `待同步 ${syncPending}` });
@@ -59,7 +59,7 @@ export function buildMobileShellSnapshot({ user = {}, intake = {}, review = {}, 
     metrics: {
       dueCount: finiteNumber(review.dueCount),
       totalQuestions: finiteNumber(bank.totalQuestions),
-      publishedQuestions: finiteNumber(bank.publishedQuestions ?? bank.totalQuestions)
+      publishedQuestions: finiteNumber(bank.publishedQuestions)
     }
   };
 }

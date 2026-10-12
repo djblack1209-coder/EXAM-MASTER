@@ -21,4 +21,14 @@ describe('do quiz loading experience', () => {
     expect(computedBlock).toContain('!this.showResumeModal');
     expect(computedBlock).toContain('!this.showCompleteModal');
   });
+
+  it('keeps the empty-bank progress label truthful and unwrapped', () => {
+    const computedBlock = source.match(/quizProgressLabel\(\)[\s\S]*?\n    }/)?.[0] || '';
+    const progressStyles = source.match(/\.progress-text \{[\s\S]*?\n\}/)?.[0] || '';
+
+    expect(source).toContain('{{ quizProgressLabel }}');
+    expect(computedBlock).toContain('total <= 0');
+    expect(computedBlock).toContain("'0 / 0'");
+    expect(progressStyles).toContain('white-space: nowrap');
+  });
 });

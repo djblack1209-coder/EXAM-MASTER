@@ -133,7 +133,7 @@ class PracticeModeManager {
 
     const bank = storageService.get('v30_bank', []);
     if (bank.length === 0) {
-      throw new Error('题库为空，请先导入资料');
+      throw new Error('题库为空，请先查看题库');
     }
 
     let questions = [...bank];

@@ -3,7 +3,7 @@
  * 所有可用的闪卡题库在此注册，APP启动时按需加载
  * 新增题库只需：1.放JSON到flashcard-banks/ 2.在此注册
  */
-import { PUBLIC_COURSE_TRACKS } from './knowledge-graph.js';
+import { PUBLIC_COURSE_TRACKS, getKnowledgeTrackMeta, normalizeKnowledgeTracks } from './knowledge-graph.js';
 
 // 题库注册表（懒加载，用到时才import）
 const BANK_REGISTRY = [
@@ -16,7 +16,7 @@ const BANK_REGISTRY = [
     name: '2025考研政治真题',
     description: '16道单选 + 17道多选 + 5道分析题',
     enabled: false,
-    disabledReason: '答案清洗未完成，发布前不得进入刷题中心',
+    disabledReason: '当前暂无可练题',
     // 动态导入，不会增加首屏加载体积
     loader: () => import('./flashcard-banks/politics-2025.json')
   },
@@ -29,7 +29,7 @@ const BANK_REGISTRY = [
     name: '2024考研政治真题',
     description: '22道单选 + 8道多选 + 5道分析题',
     enabled: false,
-    disabledReason: '缺少 SourceEvidence 与答案证据 hash，发布前不得进入刷题中心',
+    disabledReason: '当前暂无可练题',
     loader: () => import('./flashcard-banks/politics-2024.json')
   },
   {
@@ -41,7 +41,7 @@ const BANK_REGISTRY = [
     name: '2025考研英语真题',
     description: '阅读理解 + 完形填空 + 词汇 + 翻译 + 写作',
     enabled: false,
-    disabledReason: '缺少 SourceEvidence 与答案证据 hash，发布前不得进入刷题中心',
+    disabledReason: '当前暂无可练题',
     loader: () => import('./flashcard-banks/english-2025.json')
   },
   {
@@ -53,7 +53,7 @@ const BANK_REGISTRY = [
     name: '2025考研数学真题',
     description: '高等数学 + 线性代数 + 概率统计',
     enabled: false,
-    disabledReason: '缺少 SourceEvidence 与答案证据 hash，发布前不得进入刷题中心',
+    disabledReason: '当前暂无可练题',
     loader: () => import('./flashcard-banks/math-2025.json')
   }
   // 后续新增题库在这里添加
@@ -65,14 +65,42 @@ const DEFAULT_COVERAGE_END_YEAR = 2026;
 function getSubjectLabel(subjectKey) {
   if (subjectKey === 'politics') return '考研政治';
   if (subjectKey === 'english') return '考研英语';
+  if (subjectKey === 'professional') return '专业课';
   return '考研数学';
 }
 
 function getSelectedTracks(profile) {
-  if (Array.isArray(profile.tracks) && profile.tracks.length > 0) {
-    return profile.tracks;
+  return normalizeKnowledgeTracks(profile);
+}
+
+function getPracticeModes(trackId) {
+  if (trackId === 'law_illegal') {
+    return [{ id: 'knowledge_graph', label: '知识地图' }];
   }
-  return PUBLIC_COURSE_TRACKS.map((track) => track.id);
+  return [
+    { id: 'past_exam', label: '历年真题' },
+    { id: 'timed_sprint', label: '限时冲刺' },
+    { id: 'weakness', label: '薄弱点强化' },
+    { id: 'knowledge_graph', label: '知识地图' }
+  ];
+}
+
+function buildEmptyTrackCoverage(track) {
+  return {
+    subject: track.subject,
+    track: track.id,
+    code: track.code,
+    label: track.label,
+    requiredYears: [],
+    publishedYears: [],
+    pendingYears: [],
+    missingYears: [],
+    publishedCount: 0,
+    pendingCount: 0,
+    requiredCount: 0,
+    coverageRate: 0,
+    releaseState: 'empty'
+  };
 }
 
 /**
@@ -200,8 +228,8 @@ export function getBanksBySubject(subject) {
 }
 
 /**
- * 生成刷题页多级导航树：科目 -> 公共课轨道 -> 题库。
- * 当前小程序可先消费这个轻量结构，后续后端完整题库发布后只需扩展 registry。
+ * 生成刷题页多级导航树：科目 -> 学习轨道 -> 题库。
+ * 当前小程序可先消费这个轻量结构，后续扩展 registry 即可补充更多题库。
  */
 export function getPracticeNavigationTree(profile = {}) {
   const selectedTracks = getSelectedTracks(profile);
@@ -210,7 +238,10 @@ export function getPracticeNavigationTree(profile = {}) {
     buildPublicCourseCoverage({ tracks: selectedTracks, banks }).tracks.map((track) => [track.track, track])
   );
 
-  return PUBLIC_COURSE_TRACKS.filter((track) => selectedTracks.includes(track.id)).reduce((subjects, track) => {
+  return selectedTracks.reduce((subjects, trackId) => {
+    const track = getKnowledgeTrackMeta(trackId);
+    if (!track) return subjects;
+
     let subject = subjects.find((item) => item.id === track.subject);
     if (!subject) {
       subject = {
@@ -228,15 +259,10 @@ export function getPracticeNavigationTree(profile = {}) {
       banks: banks.filter((bank) => bank.track === track.id && bank.enabled !== false),
       pendingBanks: banks.filter((bank) => bank.track === track.id && bank.enabled === false),
       coverage: {
-        ...coverageByTrack.get(track.id),
+        ...(coverageByTrack.get(track.id) || buildEmptyTrackCoverage(track)),
         groupSourceRequired: false
       },
-      modes: [
-        { id: 'past_exam', label: '历年真题' },
-        { id: 'timed_sprint', label: '限时冲刺' },
-        { id: 'weakness', label: '薄弱点强化' },
-        { id: 'knowledge_graph', label: '知识地图' }
-      ]
+      modes: getPracticeModes(track.id)
     });
     return subjects;
   }, []);

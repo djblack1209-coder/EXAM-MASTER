@@ -16,11 +16,19 @@ import { toast } from '@/utils/toast.js';
 /**
  * @param {Object} deps - 外部响应式依赖
  * @param {import('vue').Ref<boolean>} deps.hasBank
+ * @param {import('vue').Ref<Object|null>} deps.bankSource
  * @param {import('vue').Ref<number>} deps.totalQuestions
  * @param {import('vue').Ref<number>} deps.mistakeCount
  */
 export function usePracticeNavigation(deps = {}) {
   const isNavigating = ref(false);
+
+  function isReleasedPracticeBank() {
+    return (
+      Boolean(deps.hasBank?.value) &&
+      (deps.bankSource?.value?.type === 'published_registry' || deps.bankSource?.value?.type === 'guest_demo')
+    );
+  }
 
   function _resetNav() {
     setTimeout(() => {
@@ -34,9 +42,10 @@ export function usePracticeNavigation(deps = {}) {
 
     requireLogin(
       () => {
-        if (!deps.hasBank?.value) {
+        if (!isReleasedPracticeBank()) {
           isNavigating.value = false;
-          return toast.info('请先导入题库');
+          toast.info('当前暂无可练题，请查看题库');
+          return safeNavigateTo('/pages/practice-sub/question-bank');
         }
         analytics.track('button_click', {
           buttonName: '开始刷题',
@@ -63,9 +72,10 @@ export function usePracticeNavigation(deps = {}) {
 
     requireLogin(
       () => {
-        if (!deps.hasBank?.value) {
+        if (!isReleasedPracticeBank()) {
           isNavigating.value = false;
-          return toast.info('请先导入题库');
+          toast.info('当前暂无可练题，请查看题库');
+          return safeNavigateTo('/pages/practice-sub/question-bank');
         }
         toast.info('小程序版已下线 PK 对战，请使用刷题练习');
         _resetNav();
@@ -105,7 +115,7 @@ export function usePracticeNavigation(deps = {}) {
   function goAITutor() {
     requireLogin(
       () => {
-        toast.info('小程序版已关闭 AI 导师，请先查看题目解析');
+        toast.info('先查看题目解析');
       },
       { message: '请先登录后使用智能辅导', loginUrl: '/pages/login/index' }
     );

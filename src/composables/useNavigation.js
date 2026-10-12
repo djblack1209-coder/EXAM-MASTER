@@ -15,6 +15,19 @@ export function useNavigation() {
   const showEmptyBankModal = ref(false);
   const showLoginModal = ref(false);
 
+  function getPracticeBankState() {
+    const bank = storageService.get('v30_bank', []);
+    const bankSource = storageService.get('v30_bank_source', null);
+    return {
+      bank: Array.isArray(bank) ? bank : [],
+      bankSource
+    };
+  }
+
+  function isReleasedPracticeBank(bankSource) {
+    return bankSource?.type === 'published_registry' || bankSource?.type === 'guest_demo';
+  }
+
   function openLoginModal() {
     showLoginModal.value = true;
   }
@@ -24,24 +37,31 @@ export function useNavigation() {
     isNavigating.value = true;
     vibrateLight();
 
-    const bank = storageService.get('v30_bank', []);
+    const { bank, bankSource } = getPracticeBankState();
     if (bank.length === 0) {
       isNavigating.value = false;
       showEmptyBankModal.value = true;
-    } else {
-      uni.switchTab({
-        url: '/pages/practice/index',
-        fail: (err) => {
-          logger.error('[useNavigation] switchTab fail:', err);
-          uni.reLaunch({ url: '/pages/practice/index' });
-        },
-        complete: () => {
-          setTimeout(() => {
-            isNavigating.value = false;
-          }, 500);
-        }
-      });
+      return;
     }
+
+    if (!isReleasedPracticeBank(bankSource)) {
+      isNavigating.value = false;
+      safeNavigateTo('/pages/practice-sub/question-bank');
+      return;
+    }
+
+    uni.switchTab({
+      url: '/pages/practice/index',
+      fail: (err) => {
+        logger.error('[useNavigation] switchTab fail:', err);
+        uni.reLaunch({ url: '/pages/practice/index' });
+      },
+      complete: () => {
+        setTimeout(() => {
+          isNavigating.value = false;
+        }, 500);
+      }
+    });
   }
 
   function navToMockExam() {
@@ -49,16 +69,27 @@ export function useNavigation() {
     isNavigating.value = true;
     vibrateLight();
 
-    const bank = storageService.get('v30_bank', []);
+    const { bank, bankSource } = getPracticeBankState();
     if (bank.length === 0) {
       isNavigating.value = false;
       showEmptyBankModal.value = true;
+    } else if (!isReleasedPracticeBank(bankSource)) {
+      isNavigating.value = false;
+      uni.showModal({
+        title: '当前暂无可练题',
+        content: '可以先查看题库，或用示例题熟悉答题流程。',
+        confirmText: '查看题库',
+        cancelText: '稍后再说',
+        success: (res) => {
+          if (res.confirm) safeNavigateTo('/pages/practice-sub/question-bank');
+        }
+      });
     } else if (bank.length < 10) {
       isNavigating.value = false;
       uni.showModal({
         title: '题目数量不足',
         content: `当前题库仅有 ${bank.length} 道题，建议至少 10 道题目后再进行模拟考试。`,
-        confirmText: '加载题库',
+        confirmText: '查看题库',
         cancelText: '先刷题',
         success: (res) => {
           if (res.confirm) safeNavigateTo('/pages/practice-sub/question-bank');
@@ -103,8 +134,8 @@ export function useNavigation() {
   function handleTutorial() {
     uni.showModal({
       title: '快速上手教程',
-      content: '1. 在刷题中心加载内置题库\n2. 开始刷题，错题自动收录\n3. 使用智能复习持续巩固',
-      confirmText: '去加载',
+      content: '1. 先体验示例题熟悉答题流程\n2. 在刷题中心查看知识图谱\n3. 有可练题后按科目开始训练',
+      confirmText: '查看题库',
       cancelText: '稍后再说',
       success: (res) => {
         if (res.confirm) safeNavigateTo('/pages/practice-sub/question-bank');

@@ -16,10 +16,10 @@ describe('mobile shell contract', () => {
     expect(snapshot.primaryAction).toEqual({
       type: 'review',
       label: '继续复习',
-      route: '/pages/practice-sub/do-quiz?mode=review',
+      route: '/pages/mistake/index?mode=review',
       priority: 100
     });
-    expect(snapshot.statusBadges).toContainEqual({ tone: 'info', label: '清洗中 1' });
+    expect(snapshot.statusBadges).toContainEqual({ tone: 'info', label: '准备中 1' });
     expect(snapshot.statusBadges).toContainEqual({ tone: 'success', label: '连续 5 天' });
   });
 
@@ -32,7 +32,24 @@ describe('mobile shell contract', () => {
     });
 
     expect(snapshot.primaryAction.type).toBe('import');
+    expect(snapshot.primaryAction.route).toBe('/pages/practice-sub/question-bank');
     expect(snapshot.statusBadges).toContainEqual({ tone: 'warning', label: '离线' });
     expect(snapshot.statusBadges).toContainEqual({ tone: 'warning', label: '待同步 3' });
+  });
+
+  it('does not treat legacy local-only banks as published practice', () => {
+    const snapshot = buildMobileShellSnapshot({
+      review: { dueCount: 0 },
+      bank: { totalQuestions: 12 },
+      network: { online: true }
+    });
+
+    expect(snapshot.primaryAction).toEqual({
+      type: 'import',
+      label: '查看题库',
+      route: '/pages/practice-sub/question-bank',
+      priority: 60
+    });
+    expect(snapshot.metrics.publishedQuestions).toBe(0);
   });
 });

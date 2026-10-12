@@ -13,7 +13,7 @@
       <view class="modal-body">
         <view class="manage-info">
           <text class="info-text"> 当前题库共有 {{ totalQuestions }} 道题目 </text>
-          <text class="info-sub"> 清空后需重新导入资料生成 </text>
+          <text class="info-sub"> 清空后需要重新选择可练题库 </text>
         </view>
       </view>
       <view class="modal-footer">

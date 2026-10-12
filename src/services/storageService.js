@@ -134,7 +134,23 @@ function createUniCompat() {
 }
 
 const globalRef = typeof globalThis !== 'undefined' ? globalThis : {};
-const uni = globalRef['uni'] || createUniCompat();
+const uniCompat = createUniCompat();
+const REQUIRED_STORAGE_METHODS = [
+  'getStorageSync',
+  'setStorageSync',
+  'removeStorageSync',
+  'clearStorageSync',
+  'getStorageInfoSync'
+];
+
+function hasStorageBackend(candidate) {
+  return Boolean(candidate && REQUIRED_STORAGE_METHODS.every((method) => typeof candidate[method] === 'function'));
+}
+
+function getStorageBackend() {
+  const currentUni = globalRef['uni'];
+  return hasStorageBackend(currentUni) ? currentUni : uniCompat;
+}
 
 // ✅ B021: 敏感数据加密存储
 // 需要加密存储的键名列表
@@ -367,22 +383,23 @@ class StorageService {
    */
   save(key, value, silent = false) {
     try {
+      const storage = getStorageBackend();
       const rk = resolveKey(key);
       // ✅ B021: 敏感数据加密后存储
       if (isSensitiveKey(key)) {
         const encrypted = obfuscate(value);
         if (encrypted !== null) {
-          uni.setStorageSync(`_enc_${rk}`, encrypted);
+          storage.setStorageSync(`_enc_${rk}`, encrypted);
           // 清理旧的明文存储（迁移期间）
           try {
-            uni.removeStorageSync(rk);
+            storage.removeStorageSync(rk);
           } catch {
             /* ignore */
           }
           return true;
         }
       }
-      uni.setStorageSync(rk, value);
+      storage.setStorageSync(rk, value);
       return true;
     } catch (error) {
       logger.error(`[StorageService] 保存失败: ${key}`, error);
@@ -431,16 +448,17 @@ class StorageService {
    */
   get(key, defaultValue = null) {
     try {
+      const storage = getStorageBackend();
       const rk = resolveKey(key);
       // ✅ B021: 优先读取加密存储的敏感数据
       if (isSensitiveKey(key)) {
-        const encrypted = uni.getStorageSync(`_enc_${rk}`);
+        const encrypted = storage.getStorageSync(`_enc_${rk}`);
         if (encrypted && encrypted !== '') {
           const decrypted = deobfuscate(encrypted);
           if (decrypted !== null) return decrypted;
         }
         // 回退：读取旧的明文存储（兼容迁移期间）
-        const plainValue = uni.getStorageSync(rk);
+        const plainValue = storage.getStorageSync(rk);
         if (plainValue !== '' && plainValue !== null && plainValue !== undefined) {
           // 自动迁移：将明文数据加密后重新存储
           this.save(key, plainValue, true);
@@ -448,14 +466,14 @@ class StorageService {
         }
         // 二次回退：读取无前缀的旧数据（用户隔离迁移期间）
         if (rk !== key) {
-          const legacyEnc = uni.getStorageSync(`_enc_${key}`);
+          const legacyEnc = storage.getStorageSync(`_enc_${key}`);
           if (legacyEnc && legacyEnc !== '') {
             const dec = deobfuscate(legacyEnc);
             if (dec !== null) {
               // 自动迁移到带前缀的 key
               this.save(key, dec, true);
               try {
-                uni.removeStorageSync(`_enc_${key}`);
+                storage.removeStorageSync(`_enc_${key}`);
               } catch {
                 /* ignore */
               }
@@ -465,17 +483,17 @@ class StorageService {
         }
         return defaultValue;
       }
-      const value = uni.getStorageSync(rk);
+      const value = storage.getStorageSync(rk);
       // uni.getStorageSync 在 key 不存在时返回空字符串，需要判断
       if (value === '' || value === null || value === undefined) {
         // 回退：读取无前缀的旧数据（用户隔离迁移期间）
         if (rk !== key) {
-          const legacyValue = uni.getStorageSync(key);
+          const legacyValue = storage.getStorageSync(key);
           if (legacyValue !== '' && legacyValue !== null && legacyValue !== undefined) {
             // 自动迁移到带前缀的 key
             this.save(key, legacyValue, true);
             try {
-              uni.removeStorageSync(key);
+              storage.removeStorageSync(key);
             } catch {
               /* ignore */
             }
@@ -499,12 +517,13 @@ class StorageService {
    */
   remove(key, silent = false) {
     try {
+      const storage = getStorageBackend();
       const rk = resolveKey(key);
-      uni.removeStorageSync(rk);
+      storage.removeStorageSync(rk);
       // ✅ B021: 同时清理加密存储
       if (isSensitiveKey(key)) {
         try {
-          uni.removeStorageSync(`_enc_${rk}`);
+          storage.removeStorageSync(`_enc_${rk}`);
         } catch {
           /* ignore */
         }
@@ -512,13 +531,13 @@ class StorageService {
       // 清理旧的无前缀数据（迁移期间）
       if (rk !== key) {
         try {
-          uni.removeStorageSync(key);
+          storage.removeStorageSync(key);
         } catch {
           /* ignore */
         }
         if (isSensitiveKey(key)) {
           try {
-            uni.removeStorageSync(`_enc_${key}`);
+            storage.removeStorageSync(`_enc_${key}`);
           } catch {
             /* ignore */
           }
@@ -542,11 +561,12 @@ class StorageService {
    */
   clear(silent = false, options = {}) {
     try {
+      const storage = getStorageBackend();
       const preserveGlobal = options.preserveGlobal !== false;
       const preserveKeys = Array.isArray(options.preserveKeys) ? options.preserveKeys : [];
 
       if (!preserveGlobal && preserveKeys.length === 0) {
-        uni.clearStorageSync();
+        storage.clearStorageSync();
         clearPendingWrites();
         return true;
       }
@@ -566,10 +586,10 @@ class StorageService {
         keep.add(`_enc_${key}`);
       }
 
-      const keys = uni.getStorageInfoSync().keys || [];
+      const keys = storage.getStorageInfoSync().keys || [];
       for (const key of keys) {
         if (keep.has(key)) continue;
-        uni.removeStorageSync(key);
+        storage.removeStorageSync(key);
       }
 
       clearPendingWrites();
@@ -590,21 +610,22 @@ class StorageService {
    */
   has(key) {
     try {
+      const storage = getStorageBackend();
       const rk = resolveKey(key);
       // ✅ B021: 检查加密存储
       if (isSensitiveKey(key)) {
-        const encrypted = uni.getStorageSync(`_enc_${rk}`);
+        const encrypted = storage.getStorageSync(`_enc_${rk}`);
         if (encrypted !== '' && encrypted !== null && encrypted !== undefined) return true;
       }
-      const value = uni.getStorageSync(rk);
+      const value = storage.getStorageSync(rk);
       if (value !== '' && value !== null && value !== undefined) return true;
       // 回退：检查无前缀的旧数据（迁移期间）
       if (rk !== key) {
         if (isSensitiveKey(key)) {
-          const legacyEnc = uni.getStorageSync(`_enc_${key}`);
+          const legacyEnc = storage.getStorageSync(`_enc_${key}`);
           if (legacyEnc !== '' && legacyEnc !== null && legacyEnc !== undefined) return true;
         }
-        const legacyValue = uni.getStorageSync(key);
+        const legacyValue = storage.getStorageSync(key);
         if (legacyValue !== '' && legacyValue !== null && legacyValue !== undefined) return true;
       }
       return false;
@@ -625,7 +646,8 @@ class StorageService {
 
     let migrated = 0;
     try {
-      const allKeys = uni.getStorageInfoSync().keys || [];
+      const storage = getStorageBackend();
+      const allKeys = storage.getStorageInfoSync().keys || [];
       for (const rawKey of allKeys) {
         // 跳过已有前缀的、全局的、加密前缀的
         if (rawKey.startsWith('u_')) continue;
@@ -633,15 +655,15 @@ class StorageService {
 
         const prefixedKey = `u_${uid}_${rawKey}`;
         // 如果带前缀的 key 已存在，不覆盖（用户可能已有新数据）
-        const existing = uni.getStorageSync(prefixedKey);
+        const existing = storage.getStorageSync(prefixedKey);
         if (existing !== '' && existing !== null && existing !== undefined) continue;
 
-        const value = uni.getStorageSync(rawKey);
+        const value = storage.getStorageSync(rawKey);
         if (value === '' || value === null || value === undefined) continue;
 
-        uni.setStorageSync(prefixedKey, value);
+        storage.setStorageSync(prefixedKey, value);
         try {
-          uni.removeStorageSync(rawKey);
+          storage.removeStorageSync(rawKey);
         } catch {
           /* ignore */
         }
@@ -653,13 +675,13 @@ class StorageService {
         if (GLOBAL_KEYS.has(sKey)) continue;
         const oldEncKey = `_enc_${sKey}`;
         const newEncKey = `_enc_u_${uid}_${sKey}`;
-        const encVal = uni.getStorageSync(oldEncKey);
+        const encVal = storage.getStorageSync(oldEncKey);
         if (encVal === '' || encVal === null || encVal === undefined) continue;
-        const existingEnc = uni.getStorageSync(newEncKey);
+        const existingEnc = storage.getStorageSync(newEncKey);
         if (existingEnc !== '' && existingEnc !== null && existingEnc !== undefined) continue;
-        uni.setStorageSync(newEncKey, encVal);
+        storage.setStorageSync(newEncKey, encVal);
         try {
-          uni.removeStorageSync(oldEncKey);
+          storage.removeStorageSync(oldEncKey);
         } catch {
           /* ignore */
         }
@@ -687,13 +709,14 @@ class StorageService {
 
     let cleared = 0;
     try {
+      const storage = getStorageBackend();
       const prefix = `u_${userId}_`;
       const encPrefix = `_enc_u_${userId}_`;
-      const allKeys = uni.getStorageInfoSync().keys || [];
+      const allKeys = storage.getStorageInfoSync().keys || [];
       for (const key of allKeys) {
         if (key.startsWith(prefix) || key.startsWith(encPrefix)) {
           try {
-            uni.removeStorageSync(key);
+            storage.removeStorageSync(key);
             cleared++;
           } catch {
             /* ignore */
@@ -715,7 +738,7 @@ class StorageService {
    */
   getAllKeys() {
     try {
-      return uni.getStorageInfoSync().keys || [];
+      return getStorageBackend().getStorageInfoSync().keys || [];
     } catch (error) {
       logger.error('[StorageService] 获取所有键名失败', error);
       return [];
@@ -728,7 +751,7 @@ class StorageService {
    */
   getStorageInfo() {
     try {
-      return uni.getStorageInfoSync();
+      return getStorageBackend().getStorageInfoSync();
     } catch (error) {
       logger.error('[StorageService] 获取存储信息失败', error);
       return { keys: [], currentSize: 0, limitSize: 0 };

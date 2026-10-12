@@ -22,7 +22,7 @@
           <view class="brain-ring r2" />
           <text class="brain-emoji">复习</text>
         </view>
-        <text class="loading-text">AI 正在安排今日复习...</text>
+        <text class="loading-text">正在整理今日复习...</text>
       </view>
 
       <view v-else>
@@ -41,7 +41,7 @@
             <view class="hero-title-row">
               <text class="hero-title">今日复习计划</text>
             </view>
-            <text class="hero-sub">基于 FSRS-5 最优间隔重复算法</text>
+            <text class="hero-sub">先补最容易忘的内容</text>
             <view class="hero-tags">
               <view class="hero-tag tag-urgent">
                 <view class="tag-dot dot-red" />
@@ -78,7 +78,7 @@
             <text class="section-title">急需加强</text>
             <text class="section-badge badge-red">{{ urgentCount }}</text>
           </view>
-          <text class="section-hint">AI 诊断标记的高频错误知识点</text>
+          <text class="section-hint">高频错误知识点优先处理</text>
           <view
             v-for="(item, idx) in urgentItems"
             :key="item._id"
@@ -207,7 +207,7 @@
 <script setup>
 import { toast } from '@/utils/toast.js';
 import { ref, computed, onMounted, nextTick } from 'vue';
-import { safeNavigateBack } from '@/utils/safe-navigate';
+import { safeNavigateBack, safeNavigateTo } from '@/utils/safe-navigate';
 import { useReviewStore } from '@/stores/modules/review.js';
 import { initTheme } from '@/composables/useTheme.js';
 import { logger } from '@/utils/logger.js';
@@ -438,7 +438,7 @@ function startBatchReview() {
 }
 
 function goPractice() {
-  safeNavigateBack();
+  safeNavigateTo('/pages/practice/index');
 }
 function goBack() {
   safeNavigateBack();

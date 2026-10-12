@@ -255,14 +255,14 @@
           </view>
         </view>
 
-        <!-- 清除缓存 -->
+        <!-- 清理本地数据 -->
         <view
           id="e2e-settings-clear-cache"
           class="setting-item ds-flex ds-flex-between ds-touchable"
           @tap="handleClearCache"
         >
           <view class="setting-info">
-            <text class="setting-title ds-text-sm ds-font-medium"> 清除缓存数据 </text>
+            <text class="setting-title ds-text-sm ds-font-medium"> 清理本地数据 </text>
             <text class="setting-desc ds-text-xs"> 释放存储空间 </text>
           </view>
           <text class="cache-size ds-text-xs">
@@ -634,7 +634,7 @@ const toggleDark3d = (val) => {
 const handleClearCache = () => {
   modal.show({
     title: '提示',
-    content: '确定清理缓存吗？（登录信息和主题设置将保留）',
+    content: '确定清理本地数据吗？（登录信息和主题设置将保留）',
     success: (res) => {
       if (res.confirm) {
         storageService.clear(true, {
@@ -642,7 +642,7 @@ const handleClearCache = () => {
           preserveKeys: ['user_school_info', 'target_schools']
         });
         loadData();
-        toast.success('缓存已清理');
+        toast.success('本地数据已清理');
       }
     }
   });
