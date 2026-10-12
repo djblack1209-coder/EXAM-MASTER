@@ -233,7 +233,7 @@ describe('learning i18n', () => {
     await flushPromises();
     expect(wrapper.text()).toContain('Completed independently this time');
     expect(wrapper.text()).toContain('本次独立完成');
-    const hint = wrapper.findAllComponents(BaseButton).find((button) => button.text() === 'Give me a hint');
+    const hint = wrapper.findAllComponents(BaseButton).find((button) => button.text() === 'Record a hint used');
     await hint.trigger('tap');
     await flushPromises();
     const modal = wrapper.findAllComponents(CustomModal).find((component) => component.props('visible'));
@@ -278,6 +278,42 @@ describe('learning i18n', () => {
     expect(pose(result, 'celebrate').props('size')).toBe('small');
     expect(result.element.compareDocumentPosition(actions.element) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     expect(store.state.attempts).toHaveLength(1);
+  });
+  it.each(['zh-CN', 'en'])(
+    'the %s hint button delivers actual help without asking the learner to supply it',
+    async (language) => {
+      const store = useConversationLearningStore();
+      store.start('12 + 8');
+      const wrapper = render();
+      setLanguage(language);
+      await flushPromises();
+      const label = language === 'en' ? 'Give me a hint' : '要个提示';
+      await wrapper
+        .findAll('button')
+        .find((button) => button.text().trim() === label)
+        .trigger('tap');
+      await flushPromises();
+      expect(store.active.pendingHints).toHaveLength(1);
+      expect(store.active.pendingHints[0]).toMatchObject({ level: 1 });
+      expect(store.active.pendingHints[0].content).not.toContain('20');
+      expect(wrapper.text()).toContain(store.active.pendingHints[0].content);
+      expect(wrapper.getComponent(CustomModal).props('visible')).toBe(false);
+      expect(store.state.attempts).toHaveLength(0);
+      expect(store.state.events.filter((event) => event.type === 'teaching.deliver')).toHaveLength(1);
+    }
+  );
+  it('disables help requests and manual help records when the task is stopped', async () => {
+    const store = useConversationLearningStore();
+    store.start('12 + 8');
+    const wrapper = render();
+    await store.send('停止当前任务');
+    await flushPromises();
+    const hint = wrapper.findAll('button').find((button) => button.text().trim() === '要个提示');
+    expect(hint.attributes('disabled')).toBeDefined();
+    const record = wrapper.findAll('button').find((button) => button.text().trim() === '记录使用的提示');
+    expect(record.attributes('disabled')).toBeDefined();
+    expect(store.active.pendingHints).toHaveLength(0);
+    expect(store.active.stopped).toBe(true);
   });
   it('uses one-row auto-growing input for the composer without changing draft-only entry', async () => {
     const store = useConversationLearningStore();

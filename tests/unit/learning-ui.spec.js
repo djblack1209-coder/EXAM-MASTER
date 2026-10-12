@@ -1,7 +1,7 @@
 import { observeLearningDialogs } from '../setup.js';
 
 function matchesLearningControl(button, label) {
-  const expected = label === '提交作答' ? '提交答案' : label === '提示' ? '要个提示' : label;
+  const expected = label === '提交作答' ? '提交答案' : label;
   if (button.text().trim() === expected || button.attributes('aria-label') === expected) return true;
   const key = button.find('.base-option__key');
   const text = button.find('.base-option__label');
@@ -1595,7 +1595,7 @@ describe('学习空间的实际入口与目录', () => {
     const conversationId = store.active.id;
     const { wrapper, button } = dialogPage();
     try {
-      await button('提示').trigger('tap');
+      await button('记录使用的提示').trigger('tap');
       const modal = wrapper.getComponent(CustomModal);
       expect(modal.props('editable')).toBe(true);
       expect(modal.get('.confirm-btn').attributes('disabled')).toBeDefined();
@@ -1606,7 +1606,7 @@ describe('学习空间的实际入口与目录', () => {
       const hints = store.state.events.filter((event) => event.type === 'hint.add');
       expect(hints).toHaveLength(1);
       expect(hints[0].data).toMatchObject({ conversationId, content });
-      await button('提示').trigger('tap');
+      await button('记录使用的提示').trigger('tap');
       const old = wrapper.vm.dialogState;
       store.start('7 + 9');
       old.confirm('旧对话未提交的输入');
@@ -1648,7 +1648,7 @@ describe('学习空间的实际入口与目录', () => {
     const conversationId = store.active.id;
     const { wrapper, button } = dialogPage();
     try {
-      await button('提示').trigger('tap');
+      await button('记录使用的提示').trigger('tap');
       const old = wrapper.vm.dialogState;
       store.correctQuestion(store.activeQuestion, { prompt: '另一版题干', uncertainties: [] }, '合成题目版本切换');
       expect(store.active.id).toBe(conversationId);
@@ -1665,7 +1665,7 @@ describe('学习空间的实际入口与目录', () => {
     store.start('12 + 8');
     const { wrapper, button } = dialogPage();
     try {
-      await button('提示').trigger('tap');
+      await button('记录使用的提示').trigger('tap');
       const old = wrapper.vm.dialogState;
       if (kind === 'hide') {
         loadHooks.hideCallbacks.at(-1)();
@@ -1677,7 +1677,7 @@ describe('学习空间的实际入口与目录', () => {
       await flushPromises();
       expect(wrapper.getComponent(CustomModal).props('visible')).toBe(false);
       expect(store.state.events.some((event) => event.type === 'hint.add')).toBe(false);
-      await button('提示').trigger('tap');
+      await button('记录使用的提示').trigger('tap');
       expect(wrapper.getComponent(CustomModal).props('visible')).toBe(true);
     } finally {
       wrapper.unmount();

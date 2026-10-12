@@ -8,6 +8,8 @@
 
 随后材料/编排增量已更新上述四端前端目录，后端共享合同没有变化。正常重开后公开保存可用，取得新鲜备份并完成当前源码试还原、同身份原子更新、更新后与普通重开后导出逐字对照；签名归档由 `desktop-candidate.next.zip` 提升为固定 `desktop-candidate.zip`，全部文件/权限读回通过。物理阶段成功程序保留在同恢复目录 `Yozi AI.physics.app.zip`，与 `learning-records.before.json` 配对；所有新鲜导出确认与此完整资料逐字相同后，仅回收重复副本，观察时间和原路径留于机器回执。此前保存禁用在本轮三次公开保存中未重现，根因仍未证明。客户确认DCloud SDK尚未准备，对应设备门禁保持。
 
+最新提示按钮增量继续复用该目录与原生缓存。当前固定归档对应签名程序 `a1ef7c5f51e7f2a7825da953e9fb0ee1de9cc9ad36c825bb33a0382032a597dc`，上一材料/编排程序独立回滚为同恢复目录的 `Yozi AI.material.app.zip`，与原 `learning-records.before.json` 配对。独立字段核验归档为 `tmp/stage1-mobile-20261011/native-field-qa.zip`，对应QA资料域51922026-1010-4272-9129-357388911307；当前完整事实在该目录 `native-field-after.json`，重开逐字核对及试还原见既有机器回执。QA与日常可启动临时包均已回收，不保留第二个可见入口；当前缓存中的raw程序是日常身份，不能混用QA身份。两种身份的公开资料分别核验，不将合成7答并入日常32答。
+
 原生恢复的纳秒时间不得经JavaScript Number中转：本轮精确后检发现4处回执数值舍入，已对照未改动的 `backup-receipt.json` 原始sourceManifest恢复，9项路径的模式、纳秒时间及扩展属性核对通过。候选回执的mtimeNs改为十进制字符串，恢复时显式 `int(mtimeNs)`，或直接由Python读取原sourceManifest；原元数据只用于模式/时间/属性，当前文件内容按候选manifest摘要校验，不用旧程序摘要代替新程序。
 
 2026-10-12 的App连接器 `--build-only` 预检确认本机Apple SDK和配对iPhone/iPad可见，但DCloud Android类路径及iOS `DCUniModule.h` 未配置，未装配出插件。只阻塞对应原生设备验收；不绕过历史下载限制、不升级/恢复/重新配对设备。微信预算脚本按cwd下的 `dist/build/mp-weixin` 检查，不接受 `UNI_OUTPUT_DIR`；隔离候选须在上述阶段目录运行。临时Vite回放必须显式 `configFile:false`、`envDir:false`、`optimizeDeps:{noDiscovery:true,include:[]}`，避免默认环境加载和全仓入口扫描。

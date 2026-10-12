@@ -634,7 +634,20 @@
             /><BaseTag :tone="answerMascot.tone">{{ t(answerMascot.label) }}</BaseTag></view
           ><view class="question-actions"
             ><view class="question-secondary" role="group" :aria-label="t('learning.questionActions')"
-              ><BaseButton small variant="quiet" @tap="hint">{{ t('learning.hint') }}</BaseButton
+              ><BaseButton
+                small
+                variant="quiet"
+                :disabled="learning.busy || learning.active?.stopped"
+                :aria-disabled="learning.busy || learning.active?.stopped"
+                @tap="sendDirective('提示')"
+                >{{ t('learning.hint') }}</BaseButton
+              ><BaseButton
+                small
+                variant="quiet"
+                :disabled="learning.busy || learning.active?.stopped"
+                :aria-disabled="learning.busy || learning.active?.stopped"
+                @tap="recordHint"
+                >{{ t('learning.k8') }}</BaseButton
               ><template v-if="learning.activeQuestion.prerequisite"
                 ><BaseButton
                   small
@@ -3116,13 +3129,13 @@ function connectLocal() {
     feedback.value = '已连接；允许发送学习内容后即可使用。';
   });
 }
-function hint() {
+function recordHint() {
   const conversationId = learning.selectedConversationId;
   const questionKey = learning.active?.activeQuestionKey;
   showLearningDialog({
-    title: '记录使用的提示',
+    title: t('learning.k8'),
     editable: true,
-    placeholderText: '填写你使用的提示',
+    placeholderText: t('learning.k58'),
     isCurrent: () =>
       learning.selectedConversationId === conversationId && learning.active?.activeQuestionKey === questionKey,
     success: (res) => {
