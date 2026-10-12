@@ -16,12 +16,67 @@ import {
   normalizeQuizQuestion,
   normalizeLegacyReviewQuestion,
   readLegacyReviewHandoff,
+  selectQuizQuestionsById,
   summarizeQuizProgress,
   upsertQuizAnswerRecord
 } from '@/services/quiz-session-contract.js';
 import { calculateCorrectStreak } from '@/pages/practice-sub/utils/session-feedback.js';
 
 describe('quiz session contract', () => {
+  it('indexes a large bank once while preserving exact selected order and original validation', () => {
+    const reads = new Map();
+    const bank = Array.from({ length: 2000 }, (_, index) => ({
+      get id() {
+        reads.set(index, (reads.get(index) || 0) + 1);
+        return index;
+      },
+      question: `原题 ${index}`,
+      options: ['甲', '乙'],
+      answer: 'B'
+    }));
+    const selected = selectQuizQuestionsById(bank, [1999, 0]);
+    expect(selected.map((q) => q.id)).toEqual([1999, 0]);
+    expect(selected[0].quizOriginal.fields.answer).toBe('B');
+    expect([...reads].filter(([id]) => id !== 0 && id !== 1999).every(([, count]) => count === 1)).toBe(true);
+    expect(selectQuizQuestionsById(bank, ['0'])).toBeNull();
+    expect(selectQuizQuestionsById(bank, [0, 'missing'])).toBeNull();
+    expect(selectQuizQuestionsById(bank, [0, 0])).toBeNull();
+    expect(selectQuizQuestionsById([...bank, { ...bank[0] }], [0])).toBeNull();
+  });
+
+  it('merges repeated answers with the existing upsert semantics without granting grading authority', () => {
+    const records = [
+      { index: 0, questionId: 0, isCorrect: true, source: 'reference_match', ownerId: 'owner-a' },
+      { index: 0, questionId: 0, isCorrect: false },
+      { index: 0, questionId: '0', isCorrect: true },
+      { index: 1, questionId: 'self', isCorrect: true, userChoice: 'flashcard_rating_3' },
+      { index: 1, questionId: 'self', timeSpent: 4000 },
+      { index: 'invalid', questionId: 'invalid', isCorrect: true },
+      { index: 'invalid', questionId: 'invalid', isCorrect: false }
+    ];
+    const before = JSON.stringify(records);
+    const valid = records.slice(0, 5);
+    const deduped = valid.reduce((acc, record) => upsertQuizAnswerRecord(acc, record), []);
+    expect(summarizeQuizProgress({ answeredQuestions: valid })).toEqual(
+      summarizeQuizProgress({ answeredQuestions: deduped })
+    );
+    expect(summarizeQuizProgress({ answeredQuestions: records })).toMatchObject({
+      answeredCount: 5,
+      pendingCount: 1,
+      reviewedCount: 1,
+      legacyCorrectCount: 2,
+      legacyWrongCount: 1,
+      gradedCount: 0,
+      accuracy: null,
+      scoringAuthority: false
+    });
+    expect(JSON.stringify(records)).toBe(before);
+    expect(
+      summarizeQuizProgress({
+        answeredQuestions: [...records, { index: 0, questionId: 'invalid', source: 'reference_match' }]
+      })
+    ).toMatchObject({ answeredCount: 5, pendingCount: 2, legacyCorrectCount: 1, legacyWrongCount: 1 });
+  });
   it('preserves complete legacy multiple-choice references and full original material', () => {
     const raw = {
       id: 'old-multi',

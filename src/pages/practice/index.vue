@@ -29,9 +29,17 @@
               class="practice-command primary"
               data-learning-toggle
               variant="primary"
-              @tap="hasBank || hasQuizResume ? goDoQuiz({ resume: true }) : chooseImportSource()"
+              @tap="
+                hasBank || hasQuizResume || selectedModeId === 'weakness'
+                  ? goDoQuiz({ resume: true })
+                  : chooseImportSource()
+              "
               ><text>{{
-                hasQuizResume ? t('dashboard.copy58') : hasBank ? t('dashboard.copy59') : t('dashboard.copy60')
+                hasQuizResume
+                  ? t('dashboard.copy58')
+                  : hasBank || selectedModeId === 'weakness'
+                    ? uiText(selectedModeLabel)
+                    : t('dashboard.copy60')
               }}</text></BaseButton
             >
             <BaseButton
@@ -221,12 +229,16 @@
         </view>
 
         <!-- 开始刷题 -->
-        <BaseButton v-if="hasBank" class="action-btn primary-btn" variant="primary" @tap="goDoQuiz"
-          ><text class="action-btn-text">{{ t('dashboard.copy74') }}</text></BaseButton
+        <BaseButton
+          v-if="hasBank || selectedModeId === 'weakness'"
+          class="action-btn primary-btn"
+          variant="primary"
+          @tap="goDoQuiz"
+          ><text class="action-btn-text">{{ uiText(selectedModeLabel) }}</text></BaseButton
         >
 
         <!-- 智能复习 -->
-        <BaseButton v-if="hasBank" class="action-btn secondary-btn" variant="secondary" @tap="goSmartReview"
+        <BaseButton class="action-btn secondary-btn" variant="secondary" @tap="goSmartReview"
           ><text class="action-btn-text secondary-text">{{ t('dashboard.copy75') }}</text></BaseButton
         >
       </view>
@@ -629,22 +641,22 @@ export default {
         safeNavigateTo('/pages/practice-sub/do-quiz?resume=true');
         return;
       }
+      if (this.selectedModeId === 'weakness') {
+        safeNavigateTo('/pages/mistake/index?mode=review');
+        return;
+      }
       this.refreshBankStatus?.();
       if (!this.hasBank) {
         toast.info(t('dashboard.copy93'));
         return;
       }
-      safeNavigateTo('/pages/practice-sub/do-quiz');
+      const query = this.selectedModeId === 'timed_sprint' ? '?mode=timed_sprint' : '';
+      safeNavigateTo(`/pages/practice-sub/do-quiz${query}`);
     },
 
     goSmartReview() {
-      this.refreshBankStatus?.();
-      if (!this.hasBank) {
-        toast.info(t('dashboard.copy93'));
-        return;
-      }
-      // 智能复习：跳转到 do-quiz 的复习模式
-      safeNavigateTo('/pages/practice-sub/do-quiz?mode=smart_review');
+      // 现行复习由可靠错题与到期任务选择，不用旧自评推断复习队列。
+      safeNavigateTo('/pages/mistake/index?mode=review');
     },
 
     trainingStatusLabel(status) {

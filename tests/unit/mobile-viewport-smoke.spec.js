@@ -1,10 +1,20 @@
-import { describe, expect, it } from 'vitest';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { existsSync } from 'node:fs';
 import { mkdtemp, writeFile, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { request } from 'node:http';
+import { chromium } from 'playwright';
 
-import { MOBILE_SMOKE_ROUTES, MOBILE_VIEWPORTS, serveStatic } from '../../scripts/build/mobile-viewport-smoke.mjs';
+import {
+  BLOCKING_TOAST_TEXTS,
+  MOBILE_SMOKE_ROUTES,
+  MOBILE_ROUTE_READY_SELECTORS,
+  MOBILE_VIEWPORTS,
+  findBlockingToastText,
+  serveStatic,
+  verifyMobileRoute
+} from '../../scripts/build/mobile-viewport-smoke.mjs';
 
 function readMedia(url, headers = {}, method = 'GET') {
   return new Promise((resolve, reject) => {
@@ -27,6 +37,7 @@ describe('mobile viewport smoke config', () => {
       '/pages/splash/index',
       '/pages/login/onboarding',
       '/pages/index/index',
+      '/pages/learning/index',
       '/pages/practice/index',
       '/pages/practice-sub/question-bank',
       '/pages/practice-sub/do-quiz',
@@ -42,6 +53,13 @@ describe('mobile viewport smoke config', () => {
       { width: 390, height: 844, name: 'iphone-regular' },
       { width: 430, height: 932, name: 'iphone-large' }
     ]);
+  });
+
+  it('rejects a storage failure covering the first screen while allowing ordinary page copy', () => {
+    expect(BLOCKING_TOAST_TEXTS).toContain('保存失败，请检查存储空间');
+    expect(findBlockingToastText('首页\n保存失败，请检查存储空间\n今日任务')).toBe('保存失败，请检查存储空间');
+    expect(findBlockingToastText('首页\n今日任务')).toBeNull();
+    expect(findBlockingToastText(null)).toBeNull();
   });
 
   it('serves video byte ranges so actual homepage frame seeking can work', async () => {
@@ -71,5 +89,248 @@ describe('mobile viewport smoke config', () => {
       await new Promise((resolve) => server.close(resolve));
       await rm(root, { recursive: true, force: true });
     }
+  });
+});
+
+describe('mobile entry initialization checks with synthetic pages', () => {
+  let browser;
+  let root;
+  let server;
+  let baseUrl;
+  const route = '/pages/practice/index';
+  const readyMarkup = '<button class="practice-command primary">开始练习</button>';
+
+  beforeAll(async () => {
+    root = await mkdtemp(path.join(tmpdir(), 'exam-mobile-entry-'));
+    const served = await serveStatic(root);
+    server = served.server;
+    baseUrl = `http://127.0.0.1:${served.port}`;
+    browser = await chromium.launch({
+      channel:
+        process.env.WENLI_MOBILE_SMOKE_BROWSER_CHANNEL || (existsSync(chromium.executablePath()) ? undefined : 'chrome')
+    });
+  });
+
+  afterAll(async () => {
+    try {
+      await browser?.close();
+    } finally {
+      server?.closeAllConnections();
+      if (server) await new Promise((resolve) => server.close(resolve));
+      if (root) await rm(root, { recursive: true, force: true });
+    }
+  });
+
+  async function check(html, options = {}, configure = () => {}) {
+    await writeFile(
+      path.join(root, 'index.html'),
+      `<!doctype html><html><head><link rel="icon" href="data:,"></head><body>${html}</body></html>`
+    );
+    const page = await browser.newPage({ viewport: MOBILE_VIEWPORTS[0] });
+    try {
+      await configure(page);
+      return await verifyMobileRoute(page, { baseUrl, route, readyTimeoutMs: 250, observationMs: 120, ...options });
+    } finally {
+      await page.close();
+    }
+  }
+
+  it('defines a visible readiness contract for every smoke entry', () => {
+    expect(Object.keys(MOBILE_ROUTE_READY_SELECTORS)).toEqual(MOBILE_SMOKE_ROUTES);
+    expect(Object.values(MOBILE_ROUTE_READY_SELECTORS).every((selector) => selector.length > 0)).toBe(true);
+  });
+
+  it('accepts a ready entry at the requested route', async () => {
+    await expect(check(readyMarkup)).resolves.toMatchObject({ url: `${baseUrl}/#${route}` });
+  });
+
+  it('accepts the initial learning goal form before a conversation has a composer', async () => {
+    await expect(
+      check(
+        '<main class="learning-page"><section class="goal-panel"><textarea aria-label="学习目标"></textarea></section></main>',
+        {
+          route: '/pages/learning/index'
+        }
+      )
+    ).resolves.toMatchObject({ url: `${baseUrl}/#/pages/learning/index` });
+  });
+
+  it('allows an aborted image removed by the native tab bar replacement', async () => {
+    await expect(
+      check(
+        `${readyMarkup}<img src="/retired.png"><script>document.querySelector('img').remove()</script>`,
+        {},
+        (page) => page.route('**/retired.png', (request) => request.abort('aborted'))
+      )
+    ).resolves.toMatchObject({ url: `${baseUrl}/#${route}` });
+  });
+
+  it('still rejects an aborted image used by the visible entry', async () => {
+    await expect(
+      check(`${readyMarkup}<img src="/visible.png" width="40" height="40">`, {}, (page) =>
+        page.route('**/visible.png', (request) => request.abort('aborted'))
+      )
+    ).rejects.toMatchObject({
+      failures: expect.arrayContaining([{ code: 'critical_resource_failed', detail: expect.any(Object) }])
+    });
+  });
+
+  it('records external decoration explicitly blocked by the offline harness', async () => {
+    const url = 'https://cdn.dcloud.net.cn/img/shadow-grey.png';
+    await expect(
+      check(`${readyMarkup}<img src="${url}">`, { blockedExternalResources: new Map([[url, 'image']]) }, (page) =>
+        page.route('https://cdn.dcloud.net.cn/**', (request) => request.abort('blockedbyclient'))
+      )
+    ).resolves.toMatchObject({ expectedBlockedResources: [url] });
+  });
+
+  it.each(['untracked-image', 'script'])('does not hide an external %s failure', async (kind) => {
+    const url = `https://offline.invalid/${kind}`;
+    const html = kind === 'script' ? `<script src="${url}"></script>` : `<img src="${url}">`;
+    await expect(
+      check(
+        `${readyMarkup}${html}`,
+        { blockedExternalResources: new Map(kind === 'script' ? [[url, 'script']] : []) },
+        (page) => page.route('https://offline.invalid/**', (request) => request.abort('blockedbyclient'))
+      )
+    ).rejects.toMatchObject({
+      failures: expect.arrayContaining([{ code: 'console_error', detail: expect.any(String) }])
+    });
+  });
+
+  it('rejects an external script sharing its blocked URL with an image', async () => {
+    const url = 'https://cdn.dcloud.net.cn/img/shadow-grey.png';
+    const blockedExternalResources = new Map();
+    await expect(
+      check(
+        `${readyMarkup}<script async src="${url}"></script><img src="${url}">`,
+        { blockedExternalResources },
+        (page) =>
+          page.route('https://cdn.dcloud.net.cn/**', async (request) => {
+            const type = request.request().resourceType();
+            blockedExternalResources.set(url, type);
+            if (type === 'script') await new Promise((resolve) => setTimeout(resolve, 70));
+            await request.abort('blockedbyclient');
+          })
+      )
+    ).rejects.toMatchObject({
+      failures: expect.arrayContaining([{ code: 'critical_external_resource_failed', detail: expect.any(Object) }])
+    });
+  });
+
+  it('rejects an aborted visible pseudo-element background', async () => {
+    await expect(
+      check(
+        `${readyMarkup}<style>.hero::before{content:'';display:block;width:40px;height:40px;background-image:url('/pseudo.png')}</style><div class="hero"></div>`,
+        {},
+        (page) => page.route('**/pseudo.png', (request) => request.abort('aborted'))
+      )
+    ).rejects.toMatchObject({
+      failures: expect.arrayContaining([{ code: 'critical_resource_failed', detail: expect.any(Object) }])
+    });
+  });
+
+  it('rejects an otherwise clean blank page', async () => {
+    await expect(check('')).rejects.toMatchObject({
+      failures: expect.arrayContaining([{ code: 'page_not_ready', detail: expect.any(String) }])
+    });
+  });
+
+  it('rejects a hidden entry and a shell stuck in loading', async () => {
+    for (const html of [
+      `<div style="display:none">${readyMarkup}</div>`,
+      `${readyMarkup}<div class="base-state--loading">加载中</div>`
+    ]) {
+      await expect(check(html)).rejects.toMatchObject({
+        failures: expect.arrayContaining([{ code: 'page_not_ready', detail: expect.any(String) }])
+      });
+    }
+  });
+
+  it('catches a blank initialization crash before any application error handler or console.error exists', async () => {
+    await expect(check('<script>throw new Error("early init crash")</script>')).rejects.toMatchObject({
+      failures: expect.arrayContaining([
+        { code: 'page_error', detail: 'early init crash' },
+        { code: 'page_not_ready', detail: expect.any(String) }
+      ])
+    });
+  });
+
+  it.each([
+    ['script', '<script src="/missing.js"></script>'],
+    ['stylesheet', '<link rel="stylesheet" href="/missing.css">']
+  ])('rejects a same-origin %s HTTP failure even if the entry renders', async (_type, markup) => {
+    await expect(check(`${readyMarkup}${markup}`)).rejects.toMatchObject({
+      failures: expect.arrayContaining([
+        { code: 'critical_resource_failed', detail: { url: expect.stringContaining('/missing.'), status: 404 } }
+      ])
+    });
+  });
+
+  it('rejects a transport failure for a same-origin bootstrap resource', async () => {
+    await expect(
+      check(`${readyMarkup}<script src="/boot.js"></script>`, {}, (page) =>
+        page.route('**/boot.js', (request) => request.abort('failed'))
+      )
+    ).rejects.toMatchObject({
+      failures: expect.arrayContaining([
+        { code: 'critical_resource_failed', detail: { url: `${baseUrl}/boot.js`, error: expect.any(Object) } }
+      ])
+    });
+  });
+
+  it('rejects a rendered entry redirected to the wrong final route during observation', async () => {
+    await expect(
+      check(`${readyMarkup}<script>setTimeout(() => { location.hash = '/pages/profile/index'; }, 60)</script>`)
+    ).rejects.toMatchObject({
+      failures: expect.arrayContaining([
+        { code: 'unexpected_route', detail: { expected: route, actual: `${baseUrl}/#/pages/profile/index` } }
+      ])
+    });
+  });
+
+  it('validates splash readiness and its expected onboarding transition', async () => {
+    await expect(
+      check(
+        '<div class="splash-container"><span class="brand-name">Yozi</span></div><script>setTimeout(() => { document.body.innerHTML = \'<div class="onboarding-page"><button class="base-button--primary">开始</button></div>\'; location.hash = \'/pages/login/onboarding\'; }, 500)</script>',
+        { route: '/pages/splash/index', readyTimeoutMs: 1500 }
+      )
+    ).resolves.toMatchObject({ url: `${baseUrl}/#/pages/login/onboarding` });
+  });
+
+  it('rejects a splash that never reaches onboarding', async () => {
+    await expect(
+      check('<div class="splash-container"><span class="brand-name">Yozi</span></div>', {
+        route: '/pages/splash/index'
+      })
+    ).rejects.toMatchObject({
+      failures: expect.arrayContaining([{ code: 'page_not_ready', detail: expect.any(String) }])
+    });
+  });
+
+  it('retains a storage failure toast that appears and disappears between snapshots', async () => {
+    const html = `${readyMarkup}<script>setTimeout(() => { const toast = document.createElement('div'); toast.textContent = '保存失败，请检查存储空间'; document.body.append(toast); toast.remove(); }, 60)</script>`;
+    await expect(check(html)).rejects.toMatchObject({
+      failures: expect.arrayContaining([{ code: 'blocking_toast', detail: { text: '保存失败，请检查存储空间' } }])
+    });
+  });
+
+  it('does not treat failure copy inside a script as a displayed toast', async () => {
+    await expect(
+      check(`${readyMarkup}<script>window.fixtureCopy = '保存失败，请检查存储空间';</script>`)
+    ).resolves.toMatchObject({ url: `${baseUrl}/#${route}` });
+  });
+
+  it('keeps runtime and resource listeners active after entry readiness', async () => {
+    await expect(
+      check(
+        `${readyMarkup}<script>setTimeout(() => { fetch('/late.json'); throw new Error('late crash'); }, 60)</script>`
+      )
+    ).rejects.toMatchObject({
+      failures: expect.arrayContaining([
+        { code: 'page_error', detail: 'late crash' },
+        { code: 'critical_resource_failed', detail: { url: `${baseUrl}/late.json`, status: 404 } }
+      ])
+    });
   });
 });

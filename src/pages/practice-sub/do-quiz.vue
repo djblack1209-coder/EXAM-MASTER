@@ -11,9 +11,9 @@
             icon-only
             :label="t('quiz.copy46')"
             @tap="handleExit"
-          /><BaseButton id="e2e-quiz-progress" variant="quiet" :label="t('quiz.copy39')" @tap="handleOpenAnswerSheet"
-            >{{ currentIndex + 1 }} / {{ questions.length }}</BaseButton
-          ></view
+          /><BaseButton id="e2e-quiz-progress" variant="quiet" :label="t('quiz.copy39')" @tap="handleOpenAnswerSheet">{{
+            quizProgressLabel
+          }}</BaseButton></view
         >
         <QuizProgress :total="questions.length" :current="currentIndex" :answered="answeredQuestions" />
         <!-- 单题计时器显示 -->
@@ -903,7 +903,7 @@ export default {
       selectedNoteTags: [], // 选中的笔记标签
       passageAnnotations: {},
       showAnswerSheet: false, // 答题卡显示状态
-      mode: '', // 刷题模式：'' | 'single' | 'temp_bank' | 'smart_review'
+      mode: '', // 刷题模式：'' | 'single' | 'temp_bank' | 'smart_review' | 'timed_sprint'
       legacyReviewId: '',
       singlePracticeId: '',
       smartReviewId: '',
@@ -969,6 +969,12 @@ export default {
     },
     showQuizLoading() {
       return !this.currentQuestion && !this.showEmptyBankModal && !this.showResumeModal && !this.showCompleteModal;
+    },
+    quizProgressLabel() {
+      const total = this.questions.length;
+      if (total <= 0) return '0 / 0';
+      const index = Number(this.currentIndex);
+      return `${Math.max(1, Math.min((Number.isFinite(index) ? Math.floor(index) : 0) + 1, total))} / ${total}`;
     },
     completeModalContent() {
       return buildQuizCompletionContent({
@@ -1209,6 +1215,11 @@ export default {
     this.smartReviewId = this.mode === 'smart_review' ? query.reviewId || '' : '';
     this.paperId = query.paperId || query.paper_id || '';
     this.forceResumeProgress = query.resume === 'true';
+    if (!this.forceResumeProgress && this.mode === 'timed_sprint') {
+      this.isAdaptiveMode = false;
+      this.smartPickerEnabled = false;
+      this.questionTimerEnabled = true;
+    }
     if (query.mode === 'single') {
       this._singleMode = true;
     }
@@ -1500,6 +1511,11 @@ export default {
         }
         this.questions = progress.questions;
         this.mode = progress.context?.mode === 'normal' ? '' : progress.context?.mode || '';
+        if (this.mode === 'timed_sprint') {
+          this.isAdaptiveMode = false;
+          this.smartPickerEnabled = false;
+          this.questionTimerEnabled = true;
+        }
         this.paperId = progress.context?.paperId || '';
         this._singleMode = this.mode === 'single';
         this.singlePracticeId = this._singleMode ? progress.context?.handoffId || '' : '';
@@ -1594,6 +1610,7 @@ export default {
 
       // 普通组题只使用有完整原件的题目；显示默认值不进入原件快照。
       let questions = Array.isArray(bank) ? bank.map(prepareQuizQuestion).filter(Boolean) : [];
+      if (this.mode === 'timed_sprint') questions = questions.slice(0, 20);
       this.questionBankFingerprint = this.buildQuestionBankFingerprint(questions);
 
       // ✅ 使用智能组题算法优化题目序列（懒加载）
@@ -1615,7 +1632,7 @@ export default {
         logger.log('[do-quiz] ✅ 自适应学习模式已启用，题目序列已优化');
       }
 
-      this.questions = this.applyEloMatching(questions);
+      this.questions = this.mode === 'timed_sprint' ? questions : this.applyEloMatching(questions);
 
       if (this.questions.length === 0) {
         // ✅ 使用自定义弹窗

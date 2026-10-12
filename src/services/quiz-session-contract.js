@@ -167,10 +167,13 @@ export function prepareQuizSelection(records) {
 
 export function selectQuizQuestionsById(bank, ids) {
   if (!Array.isArray(bank) || !Array.isArray(ids) || ids.length === 0) return null;
-  const selected = ids.map((id) => {
-    const matches = bank.filter((q) => (q?.id ?? q?._id) === id);
-    return matches.length === 1 ? matches[0] : null;
-  });
+  const byId = new Map();
+  for (const question of bank) {
+    const id = question?.id ?? question?._id;
+    // 重复编号仍拒绝；不能用首条命中掩盖冲突，也不改原题编号的类型。
+    byId.set(id, byId.has(id) ? null : question);
+  }
+  const selected = ids.map((id) => byId.get(id));
   return prepareQuizSelection(selected);
 }
 
@@ -616,7 +619,27 @@ export function getQuizAnswerRecordOutcome(record) {
 }
 
 export function summarizeQuizProgress({ questions = [], answeredQuestions = [], currentIndex = 0 } = {}) {
-  const deduped = (answeredQuestions || []).reduce((acc, record) => upsertQuizAnswerRecord(acc, record), []);
+  const byIndex = new Map();
+  const deduped = [];
+  for (const record of answeredQuestions || []) {
+    const normalized = { ...record, index: Number(record.index || 0), questionId: record.questionId ?? '' };
+    // 与 upsert 严格相等一致；旧 NaN 索引在后续查找中按0解释，NaN查询本身从不命中。
+    const position =
+      Number.isNaN(normalized.index) || Number.isNaN(normalized.questionId)
+        ? undefined
+        : byIndex.get(normalized.index)?.get(normalized.questionId);
+    if (position === undefined) {
+      const indexKey = Number(normalized.index || 0);
+      if (!byIndex.has(indexKey)) byIndex.set(indexKey, new Map());
+      const byQuestion = byIndex.get(indexKey);
+      if (!Number.isNaN(normalized.questionId) && !byQuestion.has(normalized.questionId)) {
+        byQuestion.set(normalized.questionId, deduped.length);
+      }
+      deduped.push(normalized);
+    } else {
+      deduped[position] = { ...deduped[position], ...normalized };
+    }
+  }
   const outcomes = deduped.map(getQuizAnswerRecordOutcome);
   const count = (value) => outcomes.filter((outcome) => outcome === value).length;
   const legacyCorrectCount = count('legacy_correct');

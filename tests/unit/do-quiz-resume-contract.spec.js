@@ -422,6 +422,42 @@ describe('do quiz resume contract', () => {
     expect(page.paperId).toBe('english1-2007');
   });
 
+  it('keeps a bounded timed group in original order and resumes its saved mode without fresh selection', async () => {
+    uni.clearStorageSync();
+    const bank = paperBank('timed-original', 23);
+    storageService.save('v30_bank', bank, true);
+    const page = {
+      ...quizContext('', 'timed_sprint'),
+      initSystemUI: vi.fn(),
+      initSwipeGesture: vi.fn(),
+      loadPassageAnnotations: vi.fn(),
+      _safeTimeout: vi.fn(),
+      applyEloMatching: vi.fn()
+    };
+    DoQuizPage.onLoad.call(page, { mode: 'timed_sprint' });
+    expect(page).toMatchObject({ isAdaptiveMode: false, smartPickerEnabled: false, questionTimerEnabled: true });
+    const before = JSON.stringify(global.__mockStorage);
+    await DoQuizPage.methods.loadQuestions.call(page);
+    expect(page.questions.map((q) => q.id)).toEqual(bank.slice(0, 20).map((q) => q.id));
+    expect(page.questions[0].quizOriginal.fields.passageSegments).toEqual(bank[0].passageSegments);
+    expect(page.applyEloMatching).not.toHaveBeenCalled();
+    expect(JSON.stringify(global.__mockStorage)).toBe(before);
+    expect(useQuizEngine().loadQuestions({ mode: 'timed_sprint' })).toBe(true);
+    saveQuizProgress(
+      { questions: page.questions, currentIndex: 1, seconds: 7, hasAnswered: false, answeredQuestions: [] },
+      true,
+      DoQuizPage.computed.quizProgressContext.call(page)
+    );
+    storageService.save('v30_bank', [bank[22]], true);
+    const resumed = quizContext('', '');
+    resumed.forceResumeProgress = true;
+    await DoQuizPage.methods.loadQuestions.call(resumed);
+    expect(resumed.mode).toBe('timed_sprint');
+    expect(resumed.isAdaptiveMode).toBe(false);
+    expect(resumed.smartPickerEnabled).toBe(false);
+    expect(resumed.questions).toEqual(page.questions);
+  });
+
   it('preserves explicit resume on an H5 route retry with missing framework query arguments', () => {
     const before = location.hash;
     try {
