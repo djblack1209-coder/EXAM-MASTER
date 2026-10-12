@@ -200,6 +200,67 @@ function setup(platform = 'h5') {
     }
   };
 }
+it('合法提示后无效计划保留部分成功、失败收据和重开重试的幂等边界', async () => {
+  const harness = setup(),
+    { store } = harness;
+  store.start('12 + 8');
+  const question = store.activeQuestion;
+  const originalPlans = JSON.stringify(store.state.plans);
+  const tools = [
+    { name: 'hint', arguments: { content: '先把个位相加，再看十位。', level: 1 } },
+    { name: 'plan', arguments: { tasks: [{ title: '独立检验', questionKey: 'missing:1' }] } }
+  ];
+  const send = store.send('帮我组织下一步', { id: 'partial-tools', discussionOnly: true });
+  await flushPromises();
+  harness.preview();
+  harness.complete({ message: '提示与计划都已保存。', tools });
+  await send;
+  expect(store.activeQuestion).toEqual(question);
+  expect(store.active.pendingHints).toHaveLength(1);
+  expect(JSON.stringify(store.state.plans)).toBe(originalPlans);
+  expect(store.state.attempts).toHaveLength(0);
+  expect(store.active.messages.some((m) => m.content === '提示与计划都已保存。')).toBe(false);
+  expect(store.state.executions).toEqual([
+    expect.objectContaining({ id: 'partial-tools:tool:0:receipt', tool: 'hint', status: 'success' }),
+    expect.objectContaining({
+      id: 'partial-tools:tool:1:failure',
+      tool: 'plan',
+      status: 'failed',
+      errorCode: 'INVALID_INPUT'
+    })
+  ]);
+  expect(store.error).toContain('已保存1项操作');
+  const snapshot = store.exportData();
+  setActivePinia(createPinia());
+  const reopened = useConversationLearningStore();
+  stores.push(reopened);
+  reopened.selectedMode = 'cloud';
+  reopened.modelId = 'fixture';
+  reopened.sharingAllowed = true;
+  vi.spyOn(uni, 'request').mockImplementation((options) => {
+    expect(options.data).toEqual({ action: 'result', requestId: 'partial-tools' });
+    options.success({
+      data: {
+        success: true,
+        reused: true,
+        data: {
+          requestId: 'partial-tools',
+          requestBinding: harness.request.requestBinding,
+          modelId: 'fixture',
+          model: 'explicit',
+          message: '提示与计划都已保存。',
+          tools
+        }
+      }
+    });
+    return { abort: vi.fn() };
+  });
+  await expect(reopened.recoverModelResult()).rejects.toThrow('已保存1项操作');
+  expect(reopened.exportData()).toBe(snapshot);
+  expect(reopened.error).toContain('后续操作未完成');
+  expect(reopened.active.pendingHints).toHaveLength(1);
+  expect(harness.fetch).toHaveBeenCalledOnce();
+});
 it('预览只在临时区域出现，完整终止前无计划/工具/教学事实；重复消息不重扣', async () => {
   const harness = setup(),
     { store } = harness;

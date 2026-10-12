@@ -86,10 +86,18 @@ export function structureMaterialCandidate(segment) {
       .find((line) => pattern.test(line))
       ?.replace(pattern, '')
       .trim() || '';
-  const prompt = role(/^(?:题目|问题|题干)[：:]\s*/);
+  const questionMarker = /^\s*(?:题目|问题|题干)[：:]\s*/;
+  const prompt = role(questionMarker);
+  const questionStart = lines.findIndex((line) => questionMarker.test(line));
+  const candidateLines = lines.slice(Math.max(0, questionStart));
+  const metadataStart = candidateLines.findIndex((line) =>
+    /^\s*(?:我答|用户作答|学生作答|教师批注|批注|参考答案|标准答案|答案)[：:]/.test(line)
+  );
+  // 原片段完整保留；明确的答案/作答/批注区域及其续行不回退为候选题干或选项。
+  const questionLines = metadataStart < 0 ? candidateLines : candidateLines.slice(0, metadataStart);
   return {
-    prompt: prompt || segment.content,
-    options: lines.filter((line) => /^[A-H][.、．]\s*/.test(line)),
+    prompt: prompt || questionLines.join('\n').trim(),
+    options: questionLines.filter((line) => /^[A-H][.、．]\s*/.test(line)),
     userAnswer: role(/^(?:我答|用户作答|学生作答)[：:]\s*/),
     annotation: role(/^(?:教师批注|批注)[：:]\s*/),
     reference: role(/^(?:参考答案|标准答案|答案)[：:]\s*/),

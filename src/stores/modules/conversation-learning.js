@@ -2091,24 +2091,36 @@ export const useConversationLearningStore = defineStore('conversation-learning',
       lockedMethod: request.lockedMethod,
       signal
     };
-    for (const [index, call] of (data.tools || []).entries()) {
-      assert(
-        ['progress', 'visualize', 'method', 'hint', 'assess', 'plan'].includes(call.name),
-        'FORBIDDEN',
-        '模型工具未获授权'
-      );
-      const outcome = executeLearningTool(learningRepository, { ...call, id: `${id}:tool:${index}` }, context);
+    try {
+      for (const [index, call] of (data.tools || []).entries()) {
+        assert(
+          ['progress', 'visualize', 'method', 'hint', 'assess', 'plan'].includes(call.name),
+          'FORBIDDEN',
+          '模型工具未获授权'
+        );
+        const outcome = executeLearningTool(learningRepository, { ...call, id: `${id}:tool:${index}` }, context);
+        refresh();
+        if (call.name === 'visualize')
+          visualRequest.value = {
+            id: `${id}:tool:${index}`,
+            recipe: outcome.result,
+            conversationId,
+            questionKey: requestedQuestionKey,
+            owner: state.value.owner,
+            learningContext: writingContext(),
+            context: recordContext()
+          };
+      }
+    } catch (e) {
       refresh();
-      if (call.name === 'visualize')
-        visualRequest.value = {
-          id: `${id}:tool:${index}`,
-          recipe: outcome.result,
-          conversationId,
-          questionKey: requestedQuestionKey,
-          owner: state.value.owner,
-          learningContext: writingContext(),
-          context: recordContext()
-        };
+      const saved = state.value.events.filter(
+        (event) =>
+          event.id.startsWith(`${id}:tool:`) &&
+          ['hint.add', 'strategy.set', 'assessment.assist', 'plan.set'].includes(event.type)
+      ).length;
+      // 只从实际保存的事件说明部分成功，不能显示模型事先声称的整体成功。
+      if (saved) e.message = `已保存${saved}项操作，后续操作未完成：${e.message}`;
+      throw e;
     }
     // 不信任工具执行前生成的成功宣称；教学文本仅表达建议，实际状态在固定进度视图显示。
     const safeMessage = safeLearningMessage(reading ? visualReadingText(reading) : data.message);
@@ -2274,6 +2286,10 @@ export const useConversationLearningStore = defineStore('conversation-learning',
       applyModelResult(result.data, { ...pending, id: pending.requestId }, requestController.signal);
       error.value = '';
       return result;
+    } catch (e) {
+      if (state.value.owner === owner && selectedConversationId.value === pending.conversationId)
+        error.value = e.message || '模型任务未完成';
+      throw e;
     } finally {
       if (controller === requestController) {
         busy.value = false;
