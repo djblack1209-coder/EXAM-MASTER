@@ -42,7 +42,9 @@
         "dSYMs": false
       },
       "sdkConfigs": {}
-    }
+    },
+    "darkmode": true,
+    "themeLocation": "theme.json"
   },
   "mp-weixin": {
     "appid": "wxd634d50ad63e14ed",
@@ -76,7 +78,9 @@
     "requiredPrivateInfos": [],
     "optimization": {
       "subPackages": true
-    }
+    },
+    "darkmode": true,
+    "themeLocation": "theme.json"
   },
   "mp-alipay": {
     "usingComponents": true,
@@ -104,7 +108,9 @@
       "port": 5173,
       "https": false,
       "proxy": {}
-    }
+    },
+    "darkmode": true,
+    "themeLocation": "theme.json"
   },
   "locale": "zh-Hans",
   "fallbackLocale": "zh-Hans"

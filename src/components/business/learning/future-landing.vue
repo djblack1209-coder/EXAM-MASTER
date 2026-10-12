@@ -2,7 +2,11 @@
   <view
     ref="stage"
     class="future-stage"
-    :class="{ 'entrance-pending': entrancePending, 'motion-paused': !interactive }"
+    :class="[
+      theme.isDark ? 'theme-dark' : 'theme-light',
+      { 'entrance-pending': entrancePending, 'motion-paused': !interactive || mascotReducedMotion }
+    ]"
+    :style="$yoziInsets"
   >
     <!-- #ifdef H5 -->
     <view class="sky" aria-hidden="true">
@@ -11,7 +15,6 @@
         ref="skyVideo"
         class="future-sky-video"
         aria-hidden="true"
-        autoplay
         muted
         loop
         playsinline
@@ -36,67 +39,57 @@
     <view class="scene-assembly" aria-hidden="true">
       <view class="skirt" />
       <!-- #ifdef H5 -->
-      <img
-        class="scene"
-        :src="reference ? FUTURE_ASSETS.scene : '/static/brand/learning-projector.webp'"
-        alt="A holographic desk projector showing a design workspace"
-        draggable="false"
-      />
+      <img class="scene" :src="'/static/brand/learning-projector.webp'" alt="" draggable="false" />
       <!-- #endif -->
       <!-- #ifndef H5 -->
-      <image
-        class="scene"
-        :src="reference ? FUTURE_ASSETS.scene : '/static/brand/learning-projector.webp'"
-        mode="widthFix"
-      />
+      <image class="scene" :src="'/static/brand/learning-projector.webp'" mode="widthFix" />
       <!-- #endif -->
     </view>
     <view class="intro">
-      <text v-if="reference" class="hi">Hi, I’m</text>
-      <text class="name" :class="{ 'brand-wordmark': !reference }" role="heading" aria-level="1">{{
-        reference ? 'Ayush' : BRAND.english
-      }}</text>
-      <view v-if="reference" class="role">
-        <text>A Product Designer experienced in building products,</text>
-        <text>with a problem solving and creative mindset.</text>
-      </view>
+      <text class="name brand-wordmark" role="heading" aria-level="1">{{ BRAND.english }}</text>
+      <view class="future-mascot"
+        ><YoziMascot pose="wave" size="medium" play="auto" :reduced-motion="!interactive"
+      /></view>
     </view>
-    <view class="future-nav" aria-label="主导航">
-      <button class="nav-link home" role="button" tabindex="0" @tap="open('web')">
-        {{ reference ? 'Home' : '首页' }}
-      </button>
-      <button class="nav-link n1" role="button" tabindex="0" @tap="open('start')">
-        {{ reference ? 'Works' : '学习' }}
-      </button>
-      <button class="nav-link n2" role="button" tabindex="0" @tap="open('materials')">
-        {{ reference ? 'About me' : '私人资料' }}
-      </button>
-      <button class="nav-link n3" role="button" tabindex="0" @tap="open('plan')">
-        {{ reference ? 'Resume' : '复习计划' }}
-      </button>
-      <view class="mode">
-        <text class="label">{{ reference ? 'Interactive\nMode' : '动效' }}</text>
-        <button
-          class="switch"
-          data-learning-toggle
-          role="switch"
-          tabindex="0"
-          :aria-checked="interactive"
-          aria-label="交互动效"
-          @tap="interactive = !interactive"
+    <BaseCard class="future-nav" surface="glass" padding="small" :aria-label="t('landing.navigation')">
+      <view class="future-nav-items"
+        ><BaseButton class="nav-link home" variant="quiet" align="start" @tap="open('web')">{{
+          t('landing.home')
+        }}</BaseButton>
+        <BaseButton
+          class="nav-link n1"
+          variant="primary"
+          :label="t('landing.start')"
+          icon="arrow-right"
+          @tap="open('start')"
+          >{{ t('landing.start') }}</BaseButton
         >
-          <text class="on">ON</text><text class="off">OFF</text><view class="knob" />
-        </button>
-      </view>
-    </view>
+        <BaseButton class="nav-link n2" variant="quiet" align="start" @tap="open('materials')">{{
+          t('landing.materials')
+        }}</BaseButton>
+        <BaseButton class="nav-link n3" variant="quiet" align="start" @tap="open('plan')">{{
+          t('landing.plan')
+        }}</BaseButton>
+        <view class="mode"
+          ><BaseChip v-model="interactive" :disabled="mascotReducedMotion">{{ t('landing.motion') }}</BaseChip></view
+        >
+      </view></BaseCard
+    >
   </view>
 </template>
 <script setup>
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
 import { BRAND } from '@/config/brand.js';
 import { FUTURE_ASSETS, bindFutureSky, runFutureEntrance } from '@/design/future-motion.js';
-import { bindLearningKeyboard } from '@/services/learning/keyboard-controls.js';
-const props = defineProps({ reference: { type: Boolean, default: false } });
+import { t } from '@/i18n/index.js';
+import '@/i18n/messages/landing.js';
+import { useThemeStore } from '@/stores/modules/theme.js';
+import { mascotReducedMotion } from '@/design/mascot-motion.js';
+import BaseButton from '@/components/base/base-button/base-button.vue';
+import BaseCard from '@/components/base/base-card/base-card.vue';
+import BaseChip from '@/components/base/base-chip/base-chip.vue';
+import YoziMascot from '@/components/base/yozi-mascot/yozi-mascot.vue';
+const theme = useThemeStore();
 const emit = defineEmits(['open']);
 const stage = ref(null);
 const skyVideo = ref(null);
@@ -106,37 +99,39 @@ let useEntrance = false;
 useEntrance = true;
 // #endif
 const entrancePending = ref(useEntrance);
-const ticker = computed(() => (props.reference ? 'BRANDING·PRODUCT·UI/UX·' : 'LEARNING·PRACTICE·REVIEW·').repeat(5));
+const ticker = computed(() => t('landing.ticker').repeat(5));
 let skyControl;
 let stopEntrance = () => undefined;
-let unbindKeyboard = () => undefined;
 let disposed = false;
 function open(target) {
-  if (!props.reference) emit('open', target);
+  emit('open', target);
 }
-watch(interactive, (value) => skyControl?.setEnabled(value));
+watch([interactive, mascotReducedMotion], ([value, reduced]) => {
+  skyControl?.setEnabled(value && !reduced);
+  if (!value || reduced) stopEntrance();
+});
 onMounted(async () => {
   // #ifdef H5
   await nextTick();
   if (disposed) return;
   const element = stage.value?.$el || stage.value;
-  unbindKeyboard = bindLearningKeyboard(element);
   const video = skyVideo.value?.$el || skyVideo.value;
   if (video) {
     video.muted = true;
     skyControl = bindFutureSky(video);
+    skyControl.setEnabled(interactive.value && !mascotReducedMotion.value);
   }
   if (element?.querySelector)
     stopEntrance = runFutureEntrance(element, () => {
       entrancePending.value = false;
     });
+  if (mascotReducedMotion.value) stopEntrance();
   // #endif
 });
 onUnmounted(() => {
   disposed = true;
   skyControl?.dispose();
   stopEntrance();
-  unbindKeyboard();
 });
 </script>
 <style src="./future-landing.css"></style>

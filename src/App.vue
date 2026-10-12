@@ -724,3 +724,20 @@ uni-tabbar,
 }
 /* #endif */
 </style>
+
+<style lang="scss">
+/* #ifdef MP-WEIXIN */
+page {
+  font-family: 'PingFang SC', 'Noto Sans SC', system-ui, sans-serif;
+}
+.nav-bar .nav-content {
+  padding-right: calc(var(--yozi-capsule-right, 0px) + var(--s-3));
+}
+.login-top {
+  padding-top: max(var(--yozi-nav-top, 0px), env(safe-area-inset-top));
+}
+.future-stage .intro {
+  top: max(var(--yozi-nav-top, 0px), env(safe-area-inset-top));
+}
+/* #endif */
+</style>

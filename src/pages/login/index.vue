@@ -1,5 +1,9 @@
 <template>
-  <view class="login-page" :class="{ 'dark-mode': themeStore.isDark }">
+  <view
+    class="login-page"
+    :class="{ 'dark-mode': themeStore.isDark, 'theme-light': !themeStore.isDark }"
+    :style="$yoziInsets"
+  >
     <PrivacyPopup />
     <view class="login-top">
       <BaseButton variant="quiet" icon="arrow-left" icon-only :label="t('login.back')" @tap="back" />
@@ -618,7 +622,8 @@ onMounted(async () => {
   justify-content: space-between;
   max-width: 960px;
   margin: 0 auto;
-  padding-top: env(safe-area-inset-top);
+  padding-top: max(var(--yozi-nav-top, 0px), env(safe-area-inset-top));
+  flex-wrap: wrap;
 }
 .login-content {
   max-width: 420px;

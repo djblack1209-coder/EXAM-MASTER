@@ -78,3 +78,13 @@ const paddingClass = computed(() => `padding-${props.padding}`);
   }
 }
 </style>
+
+<style lang="scss" scoped>
+/* #ifdef MP-WEIXIN */
+.base-card--glass {
+  background: var(--paper);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+/* #endif */
+</style>

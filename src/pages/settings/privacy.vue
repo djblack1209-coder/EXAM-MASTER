@@ -1,5 +1,10 @@
 <template>
-  <view ref="keyboardRoot" class="page-container" :class="{ 'dark-mode': isDark, 'theme-light': !isDark }">
+  <view
+    ref="keyboardRoot"
+    class="page-container"
+    :style="$yoziInsets"
+    :class="{ 'dark-mode': isDark, 'theme-light': !isDark }"
+  >
     <view class="top-nav">
       <button class="nav-back" role="button" aria-label="返回" tabindex="0" @tap="goBack">
         <text class="back-icon">
@@ -199,4 +204,19 @@ function goBack() {
 .section-text:last-child {
   margin-bottom: 0;
 }
+</style>
+
+<style scoped>
+/* #ifdef MP-WEIXIN */
+.top-nav {
+  padding-top: var(--yozi-status-top, 0px);
+  padding-right: calc(var(--yozi-capsule-right, 0px) + var(--s-3));
+  height: calc(var(--yozi-status-top, 0px) + var(--control-height) + var(--s-4));
+  background: var(--paper);
+  backdrop-filter: none;
+}
+.content-scroll {
+  height: calc(100vh - var(--yozi-status-top, 0px) - var(--control-height) - var(--s-4));
+}
+/* #endif */
 </style>

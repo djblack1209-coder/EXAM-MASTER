@@ -1,5 +1,10 @@
 <template>
-  <view ref="keyboardRoot" class="yozi-page" :class="['qb-page', { 'dark-mode': isDark, 'theme-light': !isDark }]">
+  <view
+    ref="keyboardRoot"
+    class="yozi-page"
+    :style="$yoziInsets"
+    :class="['qb-page', { 'dark-mode': isDark, 'theme-light': !isDark }]"
+  >
     <view class="navbar">
       <view class="navbar-inner" :style="{ paddingTop: statusBarHeight + 'px' }">
         <BaseButton class="nav-back" data-learning-toggle variant="secondary" @tap="goBack"

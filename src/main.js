@@ -3,6 +3,8 @@ import { createPinia } from 'pinia';
 import App from './App.vue';
 import { globalErrorHandler } from '@/utils/error/global-error-handler.js';
 import { logger } from '@/utils/logger.js';
+import { applyTheme, getCurrentTheme } from '@/design/theme-runtime.js';
+import { readNativeInsets } from '@/design/native-theme.js';
 import { installI18n } from '@/i18n/index.js';
 
 export function createApp() {
@@ -11,6 +13,14 @@ export function createApp() {
 
   app.use(pinia);
   installI18n(app);
+  app.config.globalProperties.$yoziInsets = readNativeInsets();
+  // #ifndef H5
+  app.mixin({
+    onShow() {
+      applyTheme(getCurrentTheme());
+    }
+  });
+  // #endif
 
   // 初始化全局错误处理器
   globalErrorHandler.init({

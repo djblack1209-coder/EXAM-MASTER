@@ -2,7 +2,7 @@
   <view
     ref="keyboardRoot"
     class="yozi-page page has-tabbar"
-    :style="tabBarStyle"
+    :style="[tabBarStyle, $yoziInsets]"
     :class="{ 'dark-mode': isDark, 'theme-light': !isDark }"
   >
     <!-- 自定义导航栏 -->

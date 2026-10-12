@@ -2,7 +2,7 @@
   <view
     ref="root"
     class="yozi-page page has-tabbar"
-    :style="tabBarStyle"
+    :style="[tabBarStyle, $yoziInsets]"
     :class="{ 'dark-mode': isDark, 'theme-light': !isDark, 'reduce-motion': reducedMotion }"
   >
     <!-- 自定义导航栏 -->
