@@ -65,6 +65,8 @@ pages.json 的页面标题和导航文字使用 `%pages.xxx%` / `%nav.xxx%`；[s
 
 ## 公共组件
 
+BaseSegmented 的 `disabled` 是组件自身的 Boolean 属性，默认可用。组禁用时全部选项退出 Tab 顺序，指针与键盘选择均拒绝；解除后恢复选项原有焦点顺序，单项禁用继续保留。空闲状态不将 `disabled="false"` 透传给根节点，避免全局 `[disabled]` 样式误挡地区切换；登录处理器仍独立检查忙碌状态。选区不改变语言或提交学习事实。
+
 现行组件位于 [src/components/base](../src/components/base/)，复用既有 BaseIcon、BaseCard、BaseEmpty；浮层继续使用 [CustomModal.vue](../src/components/common/CustomModal.vue)。各类只有一个渲染实现，Wot 通过现行主题变量与按钮/加载薄包装接入，不修改依赖源码。页面自己的旧按钮、选项、统计、输入和弹窗在第3/4批逐页迁移；各页按下方现行章节接入。
 
 | 组件                                  | 现行用法                                                                                                                                                                                                                                                                                                                           |

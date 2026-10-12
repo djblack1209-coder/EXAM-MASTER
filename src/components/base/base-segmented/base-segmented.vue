@@ -5,6 +5,7 @@
     :class="{ 'is-block': block }"
     role="tablist"
     :aria-label="label"
+    :aria-disabled="disabled"
     @keydown="keydown"
   >
     <button
@@ -14,8 +15,8 @@
       role="tab"
       :aria-selected="modelValue === item.value"
       :tabindex="tabIndex(index)"
-      :disabled="item.disabled"
-      :aria-disabled="Boolean(item.disabled)"
+      :disabled="disabled || item.disabled"
+      :aria-disabled="disabled || Boolean(item.disabled)"
       @tap="select(index)"
     >
       {{ item.label }}
@@ -28,6 +29,7 @@ const props = defineProps({
   modelValue: { type: [String, Number], default: '' },
   options: { type: Array, default: () => [] },
   label: { type: String, required: true },
+  disabled: Boolean,
   block: Boolean
 });
 const emit = defineEmits(['update:modelValue']);
@@ -42,19 +44,20 @@ onMounted(() => {
 onBeforeUnmount(() => keyboardElement?.removeEventListener?.('keydown', keydown));
 
 function tabIndex(index) {
+  if (props.disabled) return -1;
   const selected = props.options.findIndex((item) => item.value === props.modelValue && !item.disabled);
   return index === (selected < 0 ? props.options.findIndex((item) => !item.disabled) : selected) ? 0 : -1;
 }
 function select(index) {
   const option = props.options[index];
-  if (option && !option.disabled) emit('update:modelValue', option.value);
+  if (!props.disabled && option && !option.disabled) emit('update:modelValue', option.value);
 }
 function keydown(event) {
   // uni H5 also emits a wrapped event; only the native DOM listener owns keys.
   // #ifdef H5
   if (!event.currentTarget?.querySelectorAll) return;
   // #endif
-  if (event.defaultPrevented) return;
+  if (props.disabled || event.defaultPrevented) return;
   const controls = [...event.currentTarget.querySelectorAll('[role="tab"]')];
   const index = controls.indexOf(event.target.closest('[role="tab"]'));
   if (index < 0 || !['ArrowLeft', 'ArrowRight', 'Home', 'End', 'Enter', ' '].includes(event.key)) return;

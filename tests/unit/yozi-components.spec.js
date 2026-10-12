@@ -143,6 +143,41 @@ describe('canonical controls and drafts', () => {
     await w.findAll('button')[0].trigger('keydown', { key: 'End' });
     expect(w.emitted('update:modelValue').at(-1)).toEqual(['all']);
   });
+  it('segmented accepts idle selection and blocks pointer and keyboard selection while disabled', async () => {
+    const w = render(BaseSegmented, {
+      options: [
+        { value: 'US', label: '美国' },
+        { value: 'CN', label: '中国' },
+        { value: 'closed', label: '关闭', disabled: true }
+      ],
+      modelValue: 'US',
+      label: '地区',
+      disabled: false
+    });
+    // A fallthrough disabled="false" still matches the global [disabled] style.
+    expect(w.attributes('disabled')).toBeUndefined();
+    const tabs = w.findAll('[role="tab"]');
+    await tabs[1].trigger('tap');
+    await tabs[2].trigger('tap');
+    expect(w.emitted('update:modelValue')).toEqual([['CN']]);
+    await w.setProps({ disabled: true });
+    expect(tabs.every((tab) => tab.attributes('disabled') !== undefined)).toBe(true);
+    expect(tabs.map((tab) => tab.attributes('tabindex'))).toEqual(['-1', '-1', '-1']);
+    // Test Utils skips trigger() on disabled buttons; dispatch reaches the guards.
+    tabs[0].element.dispatchEvent(new Event('tap', { bubbles: true }));
+    tabs[0].element.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true, cancelable: true }));
+    await nextTick();
+    expect(w.emitted('update:modelValue')).toHaveLength(1);
+    await w.setProps({ disabled: false });
+    expect(w.attributes('disabled')).toBeUndefined();
+    expect(tabs[2].attributes('disabled')).toBeDefined();
+    expect(tabs.map((tab) => tab.attributes('tabindex'))).toEqual(['0', '-1', '-1']);
+    tabs[1].element.dispatchEvent(new Event('tap', { bubbles: true }));
+    tabs[0].element.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true, cancelable: true }));
+    await nextTick();
+    expect(w.emitted('update:modelValue')).toEqual([['CN'], ['CN'], ['CN']]);
+    expect(document.activeElement).toBe(tabs[1].element);
+  });
   it.each(['neutral', 'violet', 'mint', 'coral', 'apricot'])('renders the %s flat tag', (tone) =>
     expect(render(BaseTag, { tone }, { default: 'Status' }).classes()).toContain(`base-tag--${tone}`)
   );
