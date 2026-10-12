@@ -26,7 +26,6 @@ export const aiGenerationMixin = {
   methods: {
     // ==================== 文件导入 ====================
     chooseImportSource() {
-      toast.info('小程序版使用内置题库，资料加工请在离线管线完成');
       safeNavigateTo('/pages/practice-sub/question-bank');
     },
 

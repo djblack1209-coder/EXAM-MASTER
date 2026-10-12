@@ -1,5 +1,12 @@
 // @ts-nocheck
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { enableAutoUnmount, mount } from '@vue/test-utils';
+import { createPinia } from 'pinia';
+
+vi.mock('@/utils/practice/demo-bank.js', () => ({
+  isGuestDemoEnabled: () => false,
+  startGuestDemoPractice: vi.fn()
+}));
 
 vi.mock('@/utils/logger.js', () => ({
   logger: {
@@ -13,12 +20,129 @@ vi.mock('@/utils/logger.js', () => ({
 import PracticePage from '@/pages/practice/index.vue';
 import storageService from '@/services/storageService.js';
 import { saveQuizProgress } from '@/composables/useQuizAutoSave.js';
+import { aiGenerationMixin } from '@/pages/practice-sub/composables/ai-generation-mixin.js';
+
+enableAutoUnmount(afterEach);
+
+function mountPractice({ hasBank = false, hasQuizResume = false } = {}) {
+  if (hasBank) storageService.save('v30_bank', [{ id: 'fixture', question: '合成题' }]);
+  const wrapper = mount(
+    {
+      ...PracticePage,
+      computed: {
+        ...PracticePage.computed,
+        navigationTree: () => [
+          {
+            id: 'subject',
+            tracks: [
+              {
+                id: 'track',
+                banks: [],
+                modes: [
+                  { id: 'past_exam', label: '普通练习' },
+                  { id: 'timed_sprint', label: '限时练习' },
+                  { id: 'weakness', label: '错题强化' }
+                ]
+              }
+            ]
+          }
+        ],
+        publicCoursePlan: () => ({ today: {}, weeklyTasks: [] })
+      }
+    },
+    {
+      data: () => ({ hasQuizResume }),
+      global: { plugins: [createPinia()], stubs: { BaseStat: true, BaseEmpty: true, CustomTabbar: true } }
+    }
+  );
+  wrapper.vm.hasBank = hasBank;
+  return wrapper;
+}
+
+describe('practice template mode entry', () => {
+  it('selects weakness as a draft, then opens review through both start buttons without a bank', async () => {
+    const wrapper = mountPractice();
+    const before = JSON.stringify(global.__mockStorage);
+    expect(wrapper.find('.action-btn.primary-btn').exists()).toBe(false);
+    await wrapper.get('.mode-row').findAll('button')[2].trigger('tap');
+    expect(uni.navigateTo).not.toHaveBeenCalled();
+    expect(JSON.stringify(global.__mockStorage)).toBe(before);
+    expect(wrapper.get('.practice-command.primary').text()).toContain('错题强化');
+    await wrapper.get('.practice-command.primary').trigger('tap');
+    await wrapper.get('.action-btn.primary-btn').trigger('tap');
+    expect(uni.navigateTo.mock.calls.map(([options]) => options.url)).toEqual([
+      '/pages/mistake/index?mode=review',
+      '/pages/mistake/index?mode=review'
+    ]);
+    expect(uni.showToast).not.toHaveBeenCalled();
+    expect(JSON.stringify(global.__mockStorage)).toBe(before);
+  });
+
+  it('exposes independent review without a bank and keeps ordinary/timed entry in the directory', async () => {
+    const wrapper = mountPractice();
+    await wrapper.get('.action-btn.secondary-btn').trigger('tap');
+    expect(uni.navigateTo.mock.calls.at(-1)[0].url).toBe('/pages/mistake/index?mode=review');
+    for (const index of [0, 1]) {
+      await wrapper.get('.mode-row').findAll('button')[index].trigger('tap');
+      expect(wrapper.find('.action-btn.primary-btn').exists()).toBe(false);
+      await wrapper.get('.practice-command.primary').trigger('tap');
+      expect(uni.navigateTo.mock.calls.at(-1)[0].url).toBe('/pages/practice-sub/question-bank');
+    }
+  });
+
+  it('preserves explicit continuation priority while weakness start begins review', async () => {
+    saveQuizProgress(
+      {
+        questions: [
+          { id: 'saved-a', question: '合成续答题一' },
+          { id: 'saved-b', question: '合成续答题二' }
+        ],
+        currentIndex: 1,
+        seconds: 30,
+        hasAnswered: false,
+        answeredQuestions: []
+      },
+      true
+    );
+    const wrapper = mountPractice({ hasQuizResume: true });
+    const before = JSON.stringify(global.__mockStorage);
+    await wrapper.get('.mode-row').findAll('button')[2].trigger('tap');
+    await wrapper.get('.practice-command.primary').trigger('tap');
+    expect(uni.navigateTo.mock.calls.at(-1)[0].url).toBe('/pages/practice-sub/do-quiz?resume=true');
+    await wrapper.get('.action-btn.primary-btn').trigger('tap');
+    expect(uni.navigateTo.mock.calls.at(-1)[0].url).toBe('/pages/mistake/index?mode=review');
+    expect(JSON.stringify(global.__mockStorage)).toBe(before);
+  });
+
+  it.each([
+    ['past_exam', 0, ''],
+    ['timed_sprint', 1, '?mode=timed_sprint']
+  ])('keeps %s start checking the bank after the button was rendered', async (_mode, index, query) => {
+    const wrapper = mountPractice({ hasBank: true });
+    await wrapper.get('.mode-row').findAll('button')[index].trigger('tap');
+    await wrapper.get('.action-btn.primary-btn').trigger('tap');
+    expect(uni.navigateTo.mock.calls.at(-1)[0].url).toBe(`/pages/practice-sub/do-quiz${query}`);
+    uni.navigateTo.mockClear();
+    storageService.save('v30_bank', []);
+    await wrapper.get('.action-btn.primary-btn').trigger('tap');
+    expect(uni.navigateTo).not.toHaveBeenCalled();
+    expect(uni.showToast).toHaveBeenCalledWith(expect.objectContaining({ title: '请先加载题库' }));
+  });
+});
 
 describe('practice 动态方法加载', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     global.__mockStorage = {};
     uni.loadSubPackage = undefined;
+  });
+
+  it('opens the paper directory without retired processing copy or data writes', () => {
+    const before = JSON.stringify(global.__mockStorage);
+    aiGenerationMixin.methods.chooseImportSource.call({});
+    expect(uni.navigateTo.mock.calls.at(-1)[0].url).toBe('/pages/practice-sub/question-bank');
+    expect(uni.showToast).not.toHaveBeenCalled();
+    expect(JSON.stringify(global.__mockStorage)).toBe(before);
   });
 
   it('continues the saved complete session rather than starting a newly picked group', () => {
@@ -62,6 +186,22 @@ describe('practice 动态方法加载', () => {
     const before = JSON.stringify(global.__mockStorage);
     PracticePage.methods.goDoQuiz.call({ hasBank: true, refreshBankStatus: vi.fn() }, { resume: true });
     expect(uni.navigateTo.mock.calls.at(-1)[0].url).toBe('/pages/practice-sub/do-quiz');
+    expect(JSON.stringify(global.__mockStorage)).toBe(before);
+  });
+
+  it('keeps mode selection as a draft and enters the chosen flow only on explicit start', () => {
+    const context = { hasBank: true, selectedModeId: 'past_exam', refreshBankStatus: vi.fn() };
+    const before = JSON.stringify(global.__mockStorage);
+    PracticePage.methods.selectMode.call(context, 'timed_sprint');
+    expect(uni.navigateTo).not.toHaveBeenCalled();
+    expect(JSON.stringify(global.__mockStorage)).toBe(before);
+    PracticePage.methods.goDoQuiz.call(context);
+    expect(uni.navigateTo.mock.calls.at(-1)[0].url).toBe('/pages/practice-sub/do-quiz?mode=timed_sprint');
+    context.selectedModeId = 'weakness';
+    PracticePage.methods.goDoQuiz.call(context);
+    expect(uni.navigateTo.mock.calls.at(-1)[0].url).toBe('/pages/mistake/index?mode=review');
+    PracticePage.methods.goSmartReview.call(context);
+    expect(uni.navigateTo.mock.calls.at(-1)[0].url).toBe('/pages/mistake/index?mode=review');
     expect(JSON.stringify(global.__mockStorage)).toBe(before);
   });
 

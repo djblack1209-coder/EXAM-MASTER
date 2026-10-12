@@ -27,6 +27,8 @@ Yozi AI 面向全球，先面向在美华人学生与家庭试点，界面中文
 
 H5 与 Tauri 通过根节点 `data-theme="light|dark"` 切换；无显式偏好时遵循系统。微信和 App 使用 page 基础值与现有 dark-mode / space-dark 以及显式 theme-light / space-light 类。用户保存的选择优先于系统，初始化与系统变化不写入用户偏好。原生导航 API 的实色由 [read-yozi-tokens.mjs](../scripts/build/read-yozi-tokens.mjs) 在构建时从同一 SCSS 源提取；运行时不注入另一份颜色或动画样式。
 
+2026-10-11日常Mac已取得真实首屏与学习页浅深色画面，恢复原深色偏好，原答与停止状态保持。当前原生侧栏选中会话项越过侧栏边缘，需按既定侧栏规则独立复核和修正；本次程序/资料验收不替代Claude及客户的完整原生视觉验收。[当前画面与范围](12-CHANGELOG.md#2026-10-11接管后阶段1功能收口与日常app更新)。
+
 H5 复用 public/fonts 的本地 Epilogue Black、DM Sans Regular 与 DM Sans Medium 字体，保留原许可。不得下载新字体或把字体加入微信主包；缺字体的平台使用系统后备。现有场景页面的独立字体与硬编码在对应页面改版时迁移，不以令牌接入宣称整站视觉已经统一。
 
 ## 过渡别名层

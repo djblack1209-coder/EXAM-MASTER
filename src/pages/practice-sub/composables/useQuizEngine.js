@@ -120,6 +120,7 @@ export function useQuizEngine(options = {}) {
     }
     const bank = storageService.get('v30_bank', [], { migrateLegacy: false });
     let list = Array.isArray(bank) ? bank.map(prepareQuizQuestion).filter(Boolean) : [];
+    if (mode === 'timed_sprint') return accept(list.length ? list.slice(0, maxQuestions) : null);
 
     if (smartPicker && list.length > 0) {
       list = pickQuestions(list, {

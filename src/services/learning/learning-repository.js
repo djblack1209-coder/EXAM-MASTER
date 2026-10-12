@@ -177,11 +177,28 @@ export function createLearningRepository(
       assertWriteAccess();
       const before = read();
       assert(before.revision === expectedRevision, 'CONFLICT', '学习记录已更新，请重新核对整批作答');
-      assert(Array.isArray(operations) && operations.length >= 1 && operations.length <= 100,
-        'RESOURCE_LIMIT', '学习批次最多100个操作');
-      assert(operations.every((op) => ['question.add', 'question.focus', 'attempt.submit', 'plan.set',
-        'training.open', 'training.complete', 'review.schedule', 'recap.confirm', 'message.add'].includes(op.type)),
-      'FORBIDDEN', '学习批次包含不支持的操作');
+      assert(
+        Array.isArray(operations) && operations.length >= 1 && operations.length <= 100,
+        'RESOURCE_LIMIT',
+        '学习批次最多100个操作'
+      );
+      assert(
+        operations.every((op) =>
+          [
+            'question.add',
+            'question.focus',
+            'attempt.submit',
+            'plan.set',
+            'training.open',
+            'training.complete',
+            'review.schedule',
+            'recap.confirm',
+            'message.add'
+          ].includes(op.type)
+        ),
+        'FORBIDDEN',
+        '学习批次包含不支持的操作'
+      );
       const batch = createLearningOperationBatch(before, operations.length);
       const results = operations.map((operation) => batch.apply(operation));
       const after = batch.finish();

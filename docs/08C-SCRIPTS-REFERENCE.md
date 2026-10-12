@@ -26,6 +26,10 @@ learning-records.before-signing.json与learning-records.after-signing.json完整
 
 完整回归使用现有 Vitest 串行参数，原 20 秒容量门槛不放宽；相关回归与完整回归分别记录，不把较早的全量结果当成后续改动的证据。
 
+`audit:mobile:h5-viewports` 复用已安装 Playwright，检查 4 种手机尺寸与 9 个入口（包含对话学习），在导航前监听运行异常、关键资源失败及瞬时存储提示，并核对可见就绪控件、最终路由与横向溢出。学习页无当前对话时验证目标输入区，有对话时验证作答区；启动页必须正常转入引导页。可用 `WENLI_MOBILE_SMOKE_H5_DIR` / `WENLI_MOBILE_SMOKE_OUTPUT_DIR` 指定隔离产物与回执；缺少 Playwright 自带浏览器时，可显式设置 `WENLI_MOBILE_SMOKE_BROWSER_CHANNEL=chrome` 复用已安装 Chrome，不下载或安装。测试使用独立浏览器资料域，只放行当前回环预览地址；仅将已明确阻断的DCloud装饰图片单列，外网脚本与未登记资源失败仍拒绝。取消图片必须在DOM及前后伪元素中均无引用才单列，不能忽略仍在使用的图片。浏览器启动失败必须报告失败，不能当成页面验收通过。
+
+本轮已接纳的Mac与四端候选在`tmp/stage1-mobile-20261011/`，日常同身份更新和公开资料逐字对照见该目录`verification.md/json`；配对程序/资料回滚沿`yozi-before/stage1-mobile-20261011/native/`。与上述历史功能候选分别保留；原生截图已取得，完整视觉和其他设备仍另行验收。
+
 ## 可选本机服务（默认关闭）
 
 **LanguageTool 语法帮助**：后端设置 `LEARNING_LANGUAGE_TOOL_ENABLED=true` 和 `LEARNING_LANGUAGE_TOOL_URL=http://127.0.0.1:51740/v2/check` 才启用。运行时为固定官方包 LanguageTool 6.6（`languagetool-trial/LanguageTool-6.6`，原 COPYING 与各库/词典许可保留），用现有 Java 17+ 运行 `languagetool-server.jar` 的 HTTPServer：256 MiB 堆、96 MiB 元空间、2 处理器，无 public/allow-origin。已验配置 `grammar-server.properties`：`maxTextLength=2000`、`maxCheckTimeMillis=15000`、`maxCheckThreads=2`、`maxWorkQueueSize=2`。堆限制不等于总内存，健康接口不代表规则冷加载完成；冷加载曾触及 15 秒上限，仍在诊断。更新时先固定官方包、核对许可与接口，不直接改上游，也不用公开语法服务代替本机合同。
