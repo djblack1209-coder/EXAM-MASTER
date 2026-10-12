@@ -547,10 +547,10 @@ async function verifyTaskSuite(selected = ['postgraduate', 'civil', 'ielts', 'to
           {
             role: 'user',
             content:
-              '请针对我的原答讲解。严格返回规定JSON，以hint工具记一级提示，以plan工具安排当前已知题目的独立复测。不要新建题，不要替我提交作答，不宣称工具已执行或官方分数。' +
               (scenario.name
-                ? 'message最后单独一行写“计算核对：<本题精确百分数>”，须带%，循环小数写分数，不四舍五入。此行只核对计算，不改变原答或判分。'
-                : '')
+                ? '本次需要独立核对合成材料的精确计算。JSON的message字符串最后必须单独一行，格式为“计算核对：<本题精确百分数>”；替换占位符，带%，不加Markdown或后续文字。循环小数须写为单一a/b%，不用带分数、括号或近似小数，不四舍五入。此行只核对计算，不改变原答或判分。'
+                : '') +
+              '请针对我的原答讲解。严格返回规定JSON，以hint工具记一级提示，以plan工具安排当前已知题目的独立复测。不要新建题，不要替我提交作答，不宣称工具已执行或官方分数。'
           }
         ],
         learningContext: {
@@ -1013,6 +1013,17 @@ try {
       assert.equal(cloud.success, true);
       assert.equal(cloud.data.state.attempts.length, state.attempts.length);
       assert.deepEqual(summarizeLearning(cloud.data.state).first, summarizeLearning(state).first);
+      for (const field of [
+        'conversations',
+        'questions',
+        'materials',
+        'attempts',
+        'plans',
+        'executions',
+        'reviews',
+        'events'
+      ])
+        assert.deepEqual(cloud.data.state[field], state[field], `Synced ${field} must preserve every saved fact`);
       for (const scenario of report.scenarios || []) {
         const replayed = cloud.data.state.questions.find((q) => `${q.id}@${q.version}` === scenario.originalKey);
         assert.equal(replayed.source.materialId, scenario.source.materialId);
