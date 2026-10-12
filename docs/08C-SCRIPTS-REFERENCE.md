@@ -6,7 +6,9 @@
 
 当前候选已接续至 `tmp/stage1-mobile-20261011/`：前端 `dist/build/{h5,mp-weixin,app,desktop}`、后端 `backend/`、共享依赖的隔离构建源码 `build-source/`；当前签名程序归档固定为 `desktop-candidate.zip`，不保留可启动候选App。当前程序摘要及归档清单见该目录 `native-candidate-receipt.json`，原日常资料的逐字前后/重开核验和配对试还原见 `verification.json`。上一阶段成功程序在 `tmp/visual-build-20261001/resume-rubric-evidence-20261004/yozi-before/stage1-mobile-20261011/native/Yozi AI.stage1.app.zip`，与该目录原资料导出配对；更早原程序归档保留为必要恢复基线。以下旧候选及运行时只按仍有效的回退用途保留，不作为当前产物。
 
-随后材料/编排增量已更新上述四端前端目录，后端共享合同没有变化；签名原生候选暂存 `desktop-candidate.next.zip`，全部文件/权限读回通过。日常原生导出在两个已知目录均显示保存禁用，已正常取消；尚无本轮新鲜资料导出，因此未替换日常程序，也未把 `.next.zip` 提升为当前原生已验归档。当前 `desktop-candidate.zip` 和日常入口仍对应物理阶段；该阶段成功程序另归档至同恢复目录 `Yozi AI.physics.app.zip`，供后续升级的配对回滚。客户确认DCloud SDK尚未准备，对应设备门禁保持。
+随后材料/编排增量已更新上述四端前端目录，后端共享合同没有变化。正常重开后公开保存可用，取得新鲜备份并完成当前源码试还原、同身份原子更新、更新后与普通重开后导出逐字对照；签名归档由 `desktop-candidate.next.zip` 提升为固定 `desktop-candidate.zip`，全部文件/权限读回通过。物理阶段成功程序保留在同恢复目录 `Yozi AI.physics.app.zip`，与 `learning-records.before.json` 配对；所有新鲜导出确认与此完整资料逐字相同后，仅回收重复副本，观察时间和原路径留于机器回执。此前保存禁用在本轮三次公开保存中未重现，根因仍未证明。客户确认DCloud SDK尚未准备，对应设备门禁保持。
+
+原生恢复的纳秒时间不得经JavaScript Number中转：本轮精确后检发现4处回执数值舍入，已对照未改动的 `backup-receipt.json` 原始sourceManifest恢复，9项路径的模式、纳秒时间及扩展属性核对通过。候选回执的mtimeNs改为十进制字符串，恢复时显式 `int(mtimeNs)`，或直接由Python读取原sourceManifest；原元数据只用于模式/时间/属性，当前文件内容按候选manifest摘要校验，不用旧程序摘要代替新程序。
 
 2026-10-12 的App连接器 `--build-only` 预检确认本机Apple SDK和配对iPhone/iPad可见，但DCloud Android类路径及iOS `DCUniModule.h` 未配置，未装配出插件。只阻塞对应原生设备验收；不绕过历史下载限制、不升级/恢复/重新配对设备。微信预算脚本按cwd下的 `dist/build/mp-weixin` 检查，不接受 `UNI_OUTPUT_DIR`；隔离候选须在上述阶段目录运行。临时Vite回放必须显式 `configFile:false`、`envDir:false`、`optimizeDeps:{noDiscovery:true,include:[]}`，避免默认环境加载和全仓入口扫描。
 
