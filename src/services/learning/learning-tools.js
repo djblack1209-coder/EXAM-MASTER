@@ -12,6 +12,13 @@ import { algebraTeaching } from '../../../laf-backend/functions/_shared/learning
 import { conditionTeaching } from '../../../laf-backend/functions/_shared/learning-condition.js';
 import { conditionProbeTeaching } from '../../../laf-backend/functions/_shared/learning-condition-probe.js';
 import { fieldProbeTeaching } from '../../../laf-backend/functions/_shared/learning-field-probe.js';
+import {
+  createExactArithmeticQuestion,
+  exactArithmeticTeaching
+} from '../../../laf-backend/functions/_shared/learning-arithmetic.js';
+export { createExactArithmeticVariant } from '../../../laf-backend/functions/_shared/learning-arithmetic.js';
+import { createFractionQuestion, fractionTeaching } from '../../../laf-backend/functions/_shared/learning-fraction.js';
+export { createFractionVariant } from '../../../laf-backend/functions/_shared/learning-fraction.js';
 import { RUBRIC_CONTRACT, RUBRIC_EVIDENCE_CONTRACT } from '../../../laf-backend/functions/_shared/learning-rubric.js';
 export {
   createConditionQuestion,
@@ -402,6 +409,10 @@ export function localTeaching(question, method, level = 1) {
   if (condition) return condition;
   const algebra = algebraTeaching(question, method, level);
   if (algebra) return algebra;
+  const arithmetic = exactArithmeticTeaching(question, method, level);
+  const fraction = fractionTeaching(question, method, level);
+  if (fraction) return fraction;
+  if (arithmetic) return arithmetic;
   if (!question || question.source?.kind !== 'executable') return null;
   const match = /^计算 ([+-]?\d{1,5}) ([+×*]) ([+-]?\d{1,5})。$/.exec(question.prompt);
   if (!match) return null;
@@ -501,6 +512,10 @@ export function createArithmeticChallenge(id, parent) {
 }
 
 export function createArithmeticQuestion(id, goal, difficulty = 'self_report', parent = null) {
+  const fraction = createFractionQuestion(id, goal, difficulty, parent);
+  if (fraction) return fraction;
+  const exact = createExactArithmeticQuestion(id, goal, difficulty, parent);
+  if (exact) return exact;
   // 有限的可执行验题工具，演示教学机制，不宣称覆盖全学科。
   const match = /^\s*([+-]?\d{1,5})\s*([+×*])\s*([+-]?\d{1,5})\s*[=？?]?\s*$/.exec(goal);
   if (!match) return null;

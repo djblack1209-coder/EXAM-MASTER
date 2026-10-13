@@ -102,6 +102,8 @@ import {
   userDirective,
   nextStrategy,
   createArithmeticQuestion,
+  createExactArithmeticVariant,
+  createFractionVariant,
   createConditionQuestion,
   createConditionVariant,
   createArithmeticChallenge,
@@ -2938,7 +2940,9 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     const algebra =
       createConditionVariant(variantId, original) ||
       createPrerequisiteVariant(variantId, original, activeQuestion.value) ||
-      createAlgebraVariant(variantId, original);
+      createAlgebraVariant(variantId, original) ||
+      createFractionVariant(variantId, original, activeStrategy.value.difficulty) ||
+      createExactArithmeticVariant(variantId, original, activeStrategy.value.difficulty);
     if (algebra) return addQuestion(algebra);
     const originalGoal = /^计算 ([+-]?\d{1,5}) ([+×*]) ([+-]?\d{1,5})。$/.exec(original.prompt);
     assert(

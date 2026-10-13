@@ -1,7 +1,7 @@
 // @vitest-environment node
 import { afterEach, describe, expect, it } from 'vitest';
 import { createRequire } from 'node:module';
-import { execFileSync } from 'node:child_process';
+import { execFileSync, spawnSync } from 'node:child_process';
 import { createServer } from 'node:http';
 import { once } from 'node:events';
 import {
@@ -22,12 +22,136 @@ const require = createRequire(import.meta.url);
 const qs = require('qs');
 const serialize = require('serialize-javascript');
 const Jimp = require('jimp');
+const selector = require('postcss-selector-parser');
+const sourceMap = require('source-map-js');
+const postcss = require('postcss');
+const scopedStyle = require('@dcloudio/uni-cli-shared/dist/postcss/plugins/stylePluginScoped.js').default;
+const vue = require('vue');
+const serverRenderer = require('@vue/server-renderer');
 let fixture;
 afterEach(() => {
   if (fixture) rmSync(fixture, { recursive: true, force: true });
   fixture = undefined;
 });
 describe('开发工具链升级的真实依赖兼容', () => {
+  it.each(['\r', '\n', '\t', '\f', ' '])('真实SSR拒绝%s拆分属性，合法中文与转义值保持', (space) => {
+    const attributes = serverRenderer.ssrRenderAttrs({
+      [`data-first${space}data-second`]: 'marker',
+      'data-safe': '<课堂>&"'
+    });
+    expect(attributes).not.toContain('data-second');
+    expect(attributes).toContain(' data-safe="&lt;课堂&gt;&amp;&quot;"');
+  });
+  it('真实Vue组件的SSR正文和正常属性保持，不能从不可信键产生第二个属性', async () => {
+    const html = await serverRenderer.renderToString(
+      vue.createSSRApp({
+        render: () => vue.h('section', { 'data-first\rdata-second': 'marker', 'data-name': '课堂' }, '原答<保持>')
+      })
+    );
+    expect(html).not.toContain('data-second');
+    expect(html).toContain('data-name="课堂"');
+    expect(html).toContain('原答&lt;保持&gt;');
+  });
+  it.each([
+    '.a:hover > .b[data-name="中文"]',
+    'page .root::before',
+    '.foo ::v-deep(.bar)',
+    ':is(.a,.b) .c',
+    ':global(.root) .local',
+    '.a\\:b#c',
+    '[xlink|href="x"]',
+    '#{$name} .item',
+    'view + text',
+    'button[disabled]',
+    '.card:has(> .title)',
+    '[data-test="a,b"]'
+  ])('修补选择器仍保持有效CSS：%s', (input) => {
+    expect(selector().processSync(input)).toBe(input);
+  });
+  it.each([
+    ['.card :deep(.title){color:purple}', '.card .title{color:purple}'],
+    [':global(.theme) .card{color:blue}', '.theme{color:blue}'],
+    [':slotted(.answer){display:block}', '.answer{display:block}']
+  ])('uni-app实际深层/全局/插槽处理保持：%s', (css, expected) => {
+    expect(postcss([scopedStyle()]).process(css, { from: undefined }).css).toBe(expected);
+  });
+  it('十万个平面class选择器在原受限子进程完成，遍历和构造接口保持', () => {
+    const probe = spawnSync(
+      process.execPath,
+      [
+        '--max-old-space-size=192',
+        '-e',
+        `const parser = require('postcss-selector-parser'); const input = '.a'.repeat(100000); if (parser().processSync(input) !== input) process.exit(2); process.stdout.write('preserved');`
+      ],
+      { timeout: 2000, maxBuffer: 2048, encoding: 'utf8', env: { PATH: process.env.PATH } }
+    );
+    expect(probe.error).toBeUndefined();
+    expect(probe.status).toBe(0);
+    expect(probe.stdout).toBe('preserved');
+    expect(
+      selector((root) =>
+        root.walkClasses((node) => {
+          node.value = 'review-' + node.value;
+        })
+      ).processSync('.card > .answer')
+    ).toBe('.review-card > .review-answer');
+  });
+  it('正常源码映射位置与源码正文完整往返，不改变构建内容', () => {
+    const generator = new sourceMap.SourceMapGenerator({ file: 'built.js' });
+    generator.addMapping({
+      generated: { line: 1, column: 0 },
+      original: { line: 3, column: 2 },
+      source: 'original.js'
+    });
+    generator.setSourceContent('original.js', 'const answer = 3;');
+    const consumer = new sourceMap.SourceMapConsumer(generator.toJSON());
+    expect(consumer.originalPositionFor({ line: 1, column: 0 })).toMatchObject({
+      source: 'original.js',
+      line: 3,
+      column: 2
+    });
+    const node = sourceMap.SourceNode.fromStringWithSourceMap('answer();\n', consumer);
+    expect(node.toStringWithSourceMap({ file: 'built.js' }).code).toBe('answer();\n');
+    expect(node.toStringWithSourceMap({ file: 'built.js' }).map.toJSON().sourcesContent).toEqual(['const answer = 3;']);
+  });
+  it.each([-1, 1.5, Infinity, '1', null, 1000000000])('无效/过大索引行%s在构造时拒绝', (line) => {
+    expect(
+      () =>
+        new sourceMap.SourceMapConsumer({
+          version: 3,
+          sections: [
+            { offset: { line, column: 0 }, map: { version: 3, sources: ['original.js'], names: [], mappings: 'AAAA' } }
+          ]
+        })
+    ).toThrow(/offset.*(?:integers|exceed)/i);
+  });
+  it('嵌套索引偏移不能突破总上限；允许范围内但超出正文的行在子进程有界退出', () => {
+    const map = { version: 3, sources: ['original.js'], names: [], mappings: 'AAAA' };
+    expect(
+      () =>
+        new sourceMap.SourceMapConsumer({
+          version: 3,
+          sections: [
+            {
+              offset: { line: 9999999, column: 0 },
+              map: { version: 3, sections: [{ offset: { line: 100, column: 0 }, map }] }
+            }
+          ]
+        })
+    ).toThrow(/offset.*exceed/i);
+    const probe = spawnSync(
+      process.execPath,
+      [
+        '--max-old-space-size=64',
+        '-e',
+        `const s=require('source-map-js'); const m={version:3,sections:[{offset:{line:1000000,column:0},map:{version:3,sources:['original.js'],sourcesContent:['original();'],names:[],mappings:'AAAA'}}]}; const node=s.SourceNode.fromStringWithSourceMap(${JSON.stringify('answer();\n')},new s.SourceMapConsumer(m));process.stdout.write(node.toString());`
+      ],
+      { timeout: 2000, maxBuffer: 2048, encoding: 'utf8', env: { PATH: process.env.PATH } }
+    );
+    expect(probe.error).toBeUndefined();
+    expect(probe.status).toBe(0);
+    expect(probe.stdout).toBe('answer();\n');
+  });
   it('真实CJS调用已修复ESM解析器：零长度ASF和大ZIP探测在受限子进程终止', () => {
     const asf = Buffer.alloc(54);
     Buffer.from('3026b2758e66cf11a6d900aa0062ce6c', 'hex').copy(asf);

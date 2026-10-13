@@ -183,6 +183,53 @@ describe('学习路线的明确操作与阅读', () => {
     expect(wrapper.findAll('[data-test="training-submit"]')).toHaveLength(0);
   });
 
+  it('英文整数与分数入口只改草稿，统一交卷按精确数值保存，原题不翻译', async () => {
+    const s = useConversationLearningStore();
+    s.start('Arithmetic goal');
+    setLanguage('en');
+    wrapper = mount(LearningJourney, { global: { stubs } });
+    const before = s.exportData();
+    await wrapper.find('button').trigger('tap');
+    const chips = wrapper.findAll('.journey-module-options button');
+    for (const label of [
+      'Integer addition',
+      'Integer subtraction',
+      'Integer division',
+      'Fraction addition and subtraction',
+      'Fraction multiplication and division'
+    ])
+      await chips.find((b) => b.text().includes(label)).trigger('tap');
+    expect(s.exportData()).toBe(before);
+    await wrapper.find('[data-test="journey-save"]').trigger('tap');
+    await flushPromises();
+    expect(s.active.journey.moduleIds).toEqual([
+      'arithmetic-subtract',
+      'arithmetic-divide',
+      'fraction-add-subtract',
+      'fraction-multiply-divide'
+    ]);
+    await wrapper
+      .findAll('[aria-label="Batch size"] button')
+      .find((b) => b.text() === '1 questions')
+      .trigger('tap');
+    for (const [moduleId, question, answer] of [
+      ['arithmetic-subtract', '计算 7 − 5。', '2'],
+      ['arithmetic-divide', '计算 7 ÷ 5。', '1.4'],
+      ['fraction-add-subtract', '计算 2/3 + 1/4。', '22/24'],
+      ['fraction-multiply-divide', '计算 2/3 × 1/4。', '1/6']
+    ]) {
+      await wrapper.find(`[data-test="journey-module-${moduleId}"]`).trigger('tap');
+      await flushPromises();
+      expect(wrapper.text()).toContain(question);
+      const draft = s.exportData();
+      await wrapper.find('[aria-label="Training question 1 answer"]').setValue(answer);
+      expect(s.exportData()).toBe(draft);
+      await wrapper.find('[data-test="training-submit"]').trigger('tap');
+      await flushPromises();
+      expect(s.state.attempts.at(-1)).toMatchObject({ answer, grade: { outcome: 'correct', status: 'reliable' } });
+    }
+  });
+
   it('英文物理路线入口只改草稿，保存后可打开速度图题组且题面不被翻译', async () => {
     const s = useConversationLearningStore();
     s.start('Original physics goal');
@@ -191,7 +238,7 @@ describe('学习路线的明确操作与阅读', () => {
     const before = s.exportData();
     await wrapper.find('button').trigger('tap');
     const chips = wrapper.findAll('.journey-module-options button');
-    expect(chips).toHaveLength(19);
+    expect(chips).toHaveLength(23);
     for (const label of [
       'Constant net force',
       'Initial velocity and motion in stages',

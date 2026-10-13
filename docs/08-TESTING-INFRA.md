@@ -1,5 +1,11 @@
 # 测试与证据
 
+## 当前功能与复习上游验证（2026-10-12）
+
+相关69项与最终全量4601项/269文件全部通过，固定本机隔离Mongo6项实际执行、零跳过。首轮一项SymPy原2秒子进程超时保留，未修改期限，单独43项与最终全量通过；不据重跑成功推定原故障根因。减法/除法核验原题、精确答案、攻击、原子整批、变式、停止与恢复；FSRS验证真实5.4.2两端、原样CJS、旧参数迁移范围、非法参数设置保全、留存率变更及原安排日期保持。
+
+实际网页5份原答/37事件、首答错误2/4和可靠正确3/5分别成立，PWA正式关闭自有旧页再打开最终候选，公开导出逐字一致，错误0。真实HTTP6项重放/重复/隔离/鉴权/伪造/停止通过；该隔离JWT验收不证明真实登录。四端前端与后端编译通过，微信主包1,853,297字节、媒体181,028字节，App/微信产物通过。日常原生程序未更新，设备与完整视觉继续分列；npm生产依赖19项发现继续阻塞安全发布结论。回执复用`tmp/stage1-mobile-20261011/verification.json`的`arithmeticClosure`和`arithmetic-http-result.json`，画面与五份自产原答分别见`arithmetic-ui.jpg`、`arithmetic-ui-stopped.json`。
+
 本文说明怎样验证、各测试负责什么、证据如何分级，以及当前仍未关闭的验证问题。各阶段的逐次测试数量、浏览器快照与资源回收明细属于历史记录，见 [12](12-CHANGELOG.md) 与 git 历史（2026-10-10 精简前完整版本见提交 `77093a22`）。
 
 ## 最近一次阶段验证（2026-10-12，工具退出与输入前置校验）
@@ -148,6 +154,8 @@ npm run build:backend
 上游依赖补丁专项对真实Babel执行包内map往返与绝对/父目录越界输入，对CSS选择器执行正常序列化与深层AST序列化/遍历/复制有界拒绝。生产依赖审计与全依赖审计分别记录；全依赖报告仍有开发工具链风险，不用生产零漏洞替代全部通过。保留首次安全门禁失败和补丁后复验。
 
 ## 恢复资源与依赖增量验证
+
+2026-10-12上游安全接续扩展原`toolchain-compatibility.spec.js`至38项：真实SSR属性回车拆分拒绝、中文转义保持，十万平面选择器在原2秒/192MiB子进程内完整输出，三种真实uni scoped样式，以及正常源码映射、无效/巨大/嵌套偏移和有界源码生成。旧选择器/映射8项反例及旧Vue2项反例失败留档；最终与算术/FSRS/路线/教学共107项、全量4631项含6项隔离Mongo零跳过通过。四端及实际PWA版本/公开原答导出分别成立，当前14高依赖审计源于未修补braces，不能据回归通过放行发布。证据沿`tmp/stage1-mobile-20261011/verification.json.upstreamSecurity`，无新服务或第二套测试框架。
 
 专项入口：`npm test -- --maxWorkers=2 tests/unit/learning-model-resources.spec.ts tests/unit/learning-endpoints.spec.ts tests/unit/toolchain-compatibility.spec.js tests/unit/build-dependency-security.spec.js`。覆盖UTF8容量、缓存过期/淘汰/同ID恢复、旧数据维护、并发账单、异常大usage/未知计费、无效配置调用前拒绝；实际依赖验证查询字符串、符号链接复制、序列化注入、两代本机WebSocket、PNG/JPEG/HTTP与微信QR、受限解析攻击。
 

@@ -42,6 +42,7 @@ export interface FSRSScheduler {
 }
 
 export interface FSRSBundleExports {
+  checkParameters(parameters: number[]): number[];
   createEmptyCard(now?: Date): Card;
   generatorParameters(params?: Partial<FSRSParameters>): FSRSParameters;
   fsrs(params?: FSRSParameters): FSRSScheduler;

@@ -8,7 +8,7 @@
  * 修改时请同步更新对应副本。
  */
 
-import { fsrs, generatorParameters, createEmptyCard, Rating, State } from 'ts-fsrs';
+import { fsrs, generatorParameters, createEmptyCard, Rating, State, checkParameters } from 'ts-fsrs';
 
 /**
  * 默认FSRS参数（与后端保持一致）
@@ -32,6 +32,7 @@ let currentParamsKey = '';
  * @returns {boolean} 是否成功加载了个性化参数
  */
 export function loadUserFSRSParams(userParams) {
+  if (userParams?.w != null && !Array.isArray(userParams.w)) return false;
   if (!userParams?.w || !Array.isArray(userParams.w) || userParams.w.length === 0) {
     // 无个性化参数，使用默认
     if (currentParamsKey !== '') {
@@ -41,6 +42,16 @@ export function loadUserFSRSParams(userParams) {
     return false;
   }
 
+  const retention = userParams.request_retention ?? DEFAULT_PARAMS.request_retention;
+  if (
+    ![17, 19, 21].includes(userParams.w.length) ||
+    !Array.from(userParams.w).every(Number.isFinite) ||
+    !Number.isFinite(retention) ||
+    retention <= 0 ||
+    retention >= 1
+  )
+    return false;
+  checkParameters(userParams.w);
   const newKey = JSON.stringify(userParams.w) + ':' + (userParams.request_retention ?? 0.9);
   if (newKey === currentParamsKey) return true; // 参数未变，无需重建
 
