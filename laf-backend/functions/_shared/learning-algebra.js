@@ -301,6 +301,82 @@ export function parseExactNumberAnswer(raw, unit = '') {
     return null;
   }
 }
+// 模型计算验收显式使用；不用于学生作答分类、判分或历史事件重放。
+// 规范带分数的符号作用于整体，仍受原精确有理数/字符上限约束。
+export function parseExactModelNumberCheck(raw, unit = '') {
+  if (
+    typeof raw !== 'string' ||
+    raw.length > ALGEBRA_LIMITS.characters ||
+    /[\r\n\u2028\u2029]/u.test(raw) ||
+    !['', '%'].includes(unit)
+  )
+    return null;
+  const plain = parseExactNumberAnswer(raw, unit);
+  if (plain) return plain;
+  let value = raw.trim();
+  if (unit) {
+    if (!value.endsWith(unit)) return null;
+    value = value.slice(0, -unit.length).trim();
+  }
+  const space = '[ \\t\\u00a0\\u202f]';
+  // 先识别单个排版分数字符；整体NFKC会把“33⅓”拼成“331⁄3”，不能用来确定数值。
+  const glyph = new RegExp('^([+-]?)(?:(\\d+)' + space + '*)?([½⅓⅔¼¾⅕⅖⅗⅘⅙⅚⅛⅜⅝⅞⅐⅑⅒])$', 'u').exec(value);
+  if (glyph) {
+    const fractions = {
+      '½': [1, 2],
+      '⅓': [1, 3],
+      '⅔': [2, 3],
+      '¼': [1, 4],
+      '¾': [3, 4],
+      '⅕': [1, 5],
+      '⅖': [2, 5],
+      '⅗': [3, 5],
+      '⅘': [4, 5],
+      '⅙': [1, 6],
+      '⅚': [5, 6],
+      '⅛': [1, 8],
+      '⅜': [3, 8],
+      '⅝': [5, 8],
+      '⅞': [7, 8],
+      '⅐': [1, 7],
+      '⅑': [1, 9],
+      '⅒': [1, 10]
+    };
+    try {
+      const result = add(exactConstant(glyph[2] || '0'), rational(...fractions[glyph[3]]));
+      return glyph[1] === '-' ? neg(result) : result;
+    } catch {
+      return null;
+    }
+  }
+  const mixed = new RegExp(`^([+-]?)(\\d+)${space}+(\\d+)${space}*/${space}*(\\d+)$`, 'u').exec(value);
+  if (!mixed) return null;
+  try {
+    const whole = exactConstant(mixed[2]),
+      numerator = exactConstant(mixed[3]),
+      denominator = exactConstant(mixed[4]);
+    if (numerator[0] <= 0 || numerator[0] >= denominator[0]) return null;
+    const result = add(whole, div(numerator, denominator));
+    return mixed[1] === '-' ? neg(result) : result;
+  } catch {
+    return null;
+  }
+}
+// 单独的最后核对行；标签和值不能跨行，也不能由正文片段或多个核对值推断。
+export function extractExactModelNumberCheck(message, unit = '%') {
+  if (typeof message !== 'string' || message.length > 8000 || /[\u2028\u2029]/u.test(message)) return null;
+  const normalized = message.replace(/\r\n/g, '\n');
+  if (normalized.includes('\r')) return null;
+  const lines = normalized.split('\n');
+  while (lines.length && /^[ \t\u00a0\u202f]*$/u.test(lines.at(-1))) lines.pop();
+  const label = /^[ \t\u00a0\u202f]*计算核对[：:]/u;
+  if (lines.filter((line) => label.test(line)).length !== 1) return null;
+  const match = /^[ \t\u00a0\u202f]*计算核对[：:][ \t\u00a0\u202f]*(.*)$/u.exec(lines.at(-1) || '');
+  if (!match) return null;
+  const raw = match[1].trim(),
+    exact = parseExactModelNumberCheck(raw, unit);
+  return exact ? { raw, exact } : null;
+}
 export function exactMaterialNumber(kind, from, to) {
   if (!['difference', 'growth_percent', 'share_percent'].includes(kind)) fail();
   if (![from, to].every((value) => typeof value === 'string' && /^[+-]?\d{1,9}(?:\.\d{1,6})?$/.test(value)))

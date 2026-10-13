@@ -23,7 +23,10 @@ import {
   normalizePrivateSyncOperation
 } from '../../src/services/learning/learning-domain.js';
 import { parsePastedMaterial, questionFromMaterial } from '../../src/services/learning/material-intake.js';
-import { parseExactNumberAnswer } from '../../laf-backend/functions/_shared/learning-algebra.js';
+import {
+  parseExactNumberAnswer,
+  extractExactModelNumberCheck
+} from '../../laf-backend/functions/_shared/learning-algebra.js';
 import { createNoticeQuestion, createWritingQuestion } from '../../laf-backend/functions/_shared/learning-writing.js';
 import { WRITING_FEEDBACK_OUTPUT_CONTRACT } from '../../laf-backend/functions/_shared/learning-rubric.js';
 import {
@@ -597,7 +600,7 @@ async function verifyTaskSuite(selected = ['postgraduate', 'civil', 'ielts', 'to
             role: 'user',
             content:
               (scenario.name
-                ? '本次需要独立核对合成材料的精确计算。JSON的message字符串最后必须单独一行，格式为“计算核对：<本题精确百分数>”；替换占位符，带%，不加Markdown或后续文字。循环小数须写为单一a/b%，不用带分数、括号或近似小数，不四舍五入。此行只核对计算，不改变原答或判分。'
+                ? '本次需要独立核对合成材料的精确计算。JSON的message字符串最后必须单独一行，格式为“计算核对：<本题精确百分数>”；替换占位符，带%，不加Markdown或后续文字。可用整数、精确小数、单一分数或规范带分数；循环小数必须用精确分数，不近似、不四舍五入。此行只核对计算，不改变原答或判分。'
                 : '') +
               '请针对我的原答讲解。严格返回规定JSON，以hint工具记一级提示，以plan工具安排当前已知题目的独立复测。不要新建题，不要替我提交作答，不宣称工具已执行或官方分数。'
           }
@@ -618,9 +621,10 @@ async function verifyTaskSuite(selected = ['postgraduate', 'civil', 'ielts', 'to
       assert.ok(response.data.tools.some((t) => t.name === 'plan'));
       let checkedModelAnswer = null;
       if (scenario.name) {
-        checkedModelAnswer = response.data.message.match(/(?:^|\n)计算核对[：:]\s*([^\n]+)\s*$/)?.[1]?.trim();
-        assert.ok(checkedModelAnswer, 'Actual model must supply the requested exact numeric check');
-        const checkedValue = parseExactNumberAnswer(checkedModelAnswer, '%');
+        const modelCheck = extractExactModelNumberCheck(response.data.message, '%');
+        assert.ok(modelCheck, 'Actual model must supply one final standalone exact numeric check');
+        checkedModelAnswer = modelCheck.raw;
+        const checkedValue = modelCheck.exact;
         assert.ok(checkedValue, 'Actual model numeric check must be an exact number with the required unit');
         assert.deepEqual(
           checkedValue,

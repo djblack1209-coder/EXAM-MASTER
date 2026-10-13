@@ -4,6 +4,8 @@
 
 ## 当前候选与本机资源
 
+模型数值核对沿 `verification.json.numericModelCheckFix`。既有 `verify-learning-live.mjs` 的数值任务仍要求唯一的最后单行“计算核对：值”，单位明确并与所给字段重建的精确值相等；显式验收入口支持规范带分数与固定排版分数字符，缺行、跨行、额外文字、多值、舍入或超限仍拒绝。学生作答解析与旧判分不调用此入口。旧 `33 1/3%` 和本次唯一真实回复 `33⅓%` 分别接续，原CLI拒绝和原响应保留；无需再次请求模型，两个接续状态经12项真实HTTP重放/重复/停止/鉴权核对。此流程复用已验 `backend-writing-strict`；其作答规则与本轮根源码保持原定义，不为脚本格式变化重建/安装日常App。
+
 当前写作输出实现沿同一 `verification.json.writingOutputFix`，隔离后端为 `backend-writing-strict`，五次单请求及最终9项API验收保留在原 `free-catalog-zhipu-20261012/groq-writing-strict*`。临时仪表仅保存预定义安全词汇/摘要，已逐字恢复编译产物并回收临时副本；密钥仍只由既有AST适配在内存取用。新版 `--tasks writing` 显式发送输出合同与原答绑定，普通任务/旧请求保持原路径；每次上限1，无自动回退。真实网页候选已按58704接口重建，仍等待当次协议确认，不启动无人使用的服务或推断已经登录。原生归档和日常程序仍为原串已验版本。
 
 免费模型诊断本次沿 `verification.json.freeCatalogContinuation.writingDiagnostic`，五组原答/账与脱敏诊断保留在既有 `free-catalog-zhipu-20261012/groq-writing-{diagnostic,low,low-2000,unique-quote,array-quote}`，各一请求、无自动回退。临时后端已回收，镜像 `verify-learning-live.mjs` 已逐字还原；2000/low或提示澄清只属试验，当前 `backend-original-answer` 与日常版本未采用。三份拒绝记录的14项零模型HTTP重放/重复/停止另有回执，不能称模型评分通过。复用新的预算/推理策略或JSON schema前，需实现实际预留/配置与请求归属及未改变其他模式的校验。
