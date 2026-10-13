@@ -582,6 +582,46 @@ describe('通知版本、归属和复测计划', () => {
   });
 });
 describe('仅评阅原答的辅助模型请求', () => {
+  it('旧事件无输出版本时重试保持原请求正文、关联和原答，不补入新标记', async () => {
+    const store = setup();
+    store.submit(answer, true, 'a');
+    cloud(store);
+    store.commit('strategy.set', {
+      conversationId: store.active.id,
+      method: 'explain',
+      source: 'self_report',
+      reason: '用户选择'
+    });
+    const id = 'legacy-feedback-fixture',
+      raw = '请评阅已保存原答。';
+    store.commit('message.add', { conversationId: store.active.id, role: 'user', content: raw }, id + ':message');
+    store.commit(
+      'model.request',
+      {
+        conversationId: store.active.id,
+        messageId: id + ':message',
+        questionKey: store.active.activeQuestionKey,
+        requestId: id,
+        modelId: 'notice-fixture',
+        model: 'synthetic-not-a-real-model',
+        binding: 'legacy_binding_fixture',
+        lockedMethod: store.activeStrategy.method,
+        feedbackAttemptId: 'a'
+      },
+      id + ':request'
+    );
+    const saved = clone(store.state.events.find((e) => e.id === id + ':request'));
+    api.generate.mockResolvedValue({ success: false, message: '合成断线' });
+    await store.send(raw, { id, feedbackAttemptId: 'a' });
+    expect(store.error).toBe('合成断线');
+    expect(api.generate).toHaveBeenCalledOnce();
+    const body = api.generate.mock.calls[0][0];
+    expect(body).not.toHaveProperty('feedbackAttemptId');
+    expect(body).not.toHaveProperty('feedbackOutputContract');
+    expect(body.requestBinding).toBe('legacy_binding_fixture');
+    expect(store.state.events.find((e) => e.id === id + ':request')).toEqual(saved);
+    expect(store.state.attempts).toHaveLength(1);
+  });
   it('请求不新增作答；v2完整位置反馈、锁定教法、帮助和待核对口径保持', async () => {
     const store = setup();
     store.submit(answer, true, 'a');
@@ -596,6 +636,13 @@ describe('仅评阅原答的辅助模型请求', () => {
     await store.requestWritingFeedback();
     expect(store.error).toBe('');
     expect(api.generate).toHaveBeenCalledTimes(1);
+    expect(api.generate.mock.calls[0][0]).toMatchObject({
+      feedbackAttemptId: 'a',
+      feedbackOutputContract: 'writing-feedback-output-v1'
+    });
+    expect(store.state.events.find((e) => e.type === 'model.request').data.feedbackOutputContract).toBe(
+      'writing-feedback-output-v1'
+    );
     expect(store.state.attempts).toHaveLength(1);
     const assistance = store.state.attempts[0].assistance[0];
     expect(assistance).toMatchObject({
@@ -653,6 +700,7 @@ describe('仅评阅原答的辅助模型请求', () => {
     });
     await store.requestWritingFeedback();
     expect(store.recoverableRequest.feedbackAttemptId).toBe('a');
+    expect(store.recoverableRequest.feedbackOutputContract).toBe('writing-feedback-output-v1');
     store.refresh();
     api.result.mockResolvedValue(response(body));
     await store.recoverModelResult();

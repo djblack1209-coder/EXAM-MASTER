@@ -1,6 +1,13 @@
 import https from 'node:https';
 import { lookup } from 'node:dns/promises';
 import { isIP } from 'node:net';
+import crypto from 'node:crypto';
+import {
+  normalizeRubric,
+  assessWithRubric,
+  RUBRIC_EVIDENCE_CONTRACT,
+  WRITING_FEEDBACK_OUTPUT_CONTRACT
+} from '../learning-rubric.js';
 import { validateVisualReading, visualReadingText } from '../learning-vision.js';
 import { visualRecipe } from '../learning-visual.js';
 import {
@@ -104,11 +111,177 @@ export type ModelConfig = {
   outputPerMillion?: number;
   priceVersion?: string;
   maxOutput: number;
+  writingOutput?: {
+    contract: string;
+    inferencePolicy: 'groq-writing-strict-v1';
+    reasoningEffort: 'low';
+    schemaDigest: string;
+    schema: any;
+  };
 };
 export type LearningMessage = {
   role: string;
   content: string | ({ type: 'text'; text: string } | { type: 'image_url'; image_url: { url: string } })[];
 };
+export function writingFeedbackContext(body: any) {
+  if (body.feedbackAttemptId === undefined && body.feedbackOutputContract === undefined) return null;
+  const question = body.learningContext?.question,
+    attempt = body.learningContext?.attempt;
+  if (
+    body.feedbackOutputContract !== WRITING_FEEDBACK_OUTPUT_CONTRACT ||
+    typeof body.feedbackAttemptId !== 'string' ||
+    !body.feedbackAttemptId.trim() ||
+    body.feedbackAttemptId.length > 150 ||
+    attempt?.id !== body.feedbackAttemptId ||
+    typeof attempt?.answer !== 'string' ||
+    !attempt.answer.trim() ||
+    attempt.answer.length > 10000 ||
+    typeof question?.questionKey !== 'string' ||
+    question.questionKey.length > 500 ||
+    !/^.+@[1-9][0-9]*$/.test(question.questionKey) ||
+    body.images !== undefined
+  )
+    throw new ProviderError('WRITING_CONTEXT_INVALID', '写作反馈需绑定当前已保存原答、题目和输出版本');
+  try {
+    const rubric = normalizeRubric(question.rubric);
+    const split = question.questionKey.lastIndexOf('@');
+    const version = Number(question.questionKey.slice(split + 1));
+    if (!Number.isSafeInteger(version)) throw new Error('题目版本不合法');
+    return {
+      question: { ...question, id: question.questionKey.slice(0, split), version, rubric },
+      attempt,
+      contract: WRITING_FEEDBACK_OUTPUT_CONTRACT
+    };
+  } catch {
+    throw new ProviderError('WRITING_CONTEXT_INVALID', '写作反馈需要有效的当前评分维度和题目版本');
+  }
+}
+function writingFeedbackSchema(feedback: NonNullable<ReturnType<typeof writingFeedbackContext>>) {
+  const closed = (properties: Record<string, any>) => ({
+    type: 'object',
+    properties,
+    required: Object.keys(properties),
+    additionalProperties: false
+  });
+  const evidence = {
+    type: 'array',
+    description: '最多3段原答；优先唯一原文字符串，重复原文可用完整UTF-16范围。给分必须引用。',
+    items: {
+      anyOf: [
+        { type: 'string' },
+        closed({ quote: { type: 'string' }, start: { type: 'integer' }, end: { type: 'integer' } })
+      ]
+    }
+  };
+  const dimensions = {
+    type: 'array',
+    description: '逐一覆盖所有评分维度，不重复。任何疑义未解决时全部score为null。',
+    items: {
+      anyOf: feedback.question.rubric.criteria.map((criterion: any) =>
+        closed({
+          criterionId: { type: 'string', enum: [criterion.id] },
+          score: {
+            // 数值枚举有供应商额外限制；这里只限定类型，半分和上限仍由原宿主规则拒绝校验。
+            type: ['number', 'null'],
+            description: `按0.5分递增，0至${criterion.maxScore}分；无法判断或有疑义时为null。`
+          },
+          feedback: { type: 'string' },
+          evidence
+        })
+      )
+    }
+  };
+  return closed({
+    message: { type: 'string' },
+    tools: {
+      type: 'array',
+      description: '仅一项assess，其他工具由宿主拒绝。',
+      items: closed({
+        name: { type: 'string', enum: ['assess'] },
+        arguments: closed({
+          attemptId: { type: 'string', enum: [feedback.attempt.id] },
+          rubricId: { type: 'string', enum: [feedback.question.rubric.id] },
+          outcome: {
+            type: 'string',
+            enum: ['correct', 'wrong', 'partial', 'uncertain'],
+            description: '任一维度null为uncertain；满分correct、零分wrong、其余partial。'
+          },
+          feedback: { type: 'string' },
+          dimensions
+        })
+      })
+    }
+  });
+}
+export function prepareWritingFeedbackModel(
+  config: ModelConfig,
+  feedback: ReturnType<typeof writingFeedbackContext>,
+  stream = false
+): ModelConfig {
+  if (!feedback) return config;
+  if (
+    config.source !== 'byok' ||
+    config.endpoint !== 'https://api.groq.com/openai/v1/chat/completions' ||
+    config.model !== 'openai/gpt-oss-20b'
+  )
+    return config;
+  if (!config.capabilities.structured)
+    throw new ProviderError('WRITING_FORMAT_UNSUPPORTED', '此写作路径需要模型已声明结构化能力');
+  if (stream) throw new ProviderError('WRITING_STREAM_UNSUPPORTED', '此写作格式不支持流式，请主动选择非流式');
+  const schema = writingFeedbackSchema(feedback);
+  return {
+    ...config,
+    maxOutput: 2000,
+    writingOutput: {
+      contract: feedback.contract,
+      inferencePolicy: 'groq-writing-strict-v1',
+      reasoningEffort: 'low',
+      schemaDigest: crypto.createHash('sha256').update(JSON.stringify(schema)).digest('hex'),
+      schema
+    }
+  };
+}
+export function validateWritingFeedbackOutput(
+  raw: string,
+  feedback: NonNullable<ReturnType<typeof writingFeedbackContext>>
+) {
+  try {
+    const value = JSON.parse(raw.trim().match(/^\x60\x60\x60(?:json)?\s*\n?([\s\S]*?)\n?\x60\x60\x60$/i)?.[1] || raw);
+    const keys = (item: any, allowed: string[]) =>
+      item &&
+      typeof item === 'object' &&
+      !Array.isArray(item) &&
+      Object.keys(item).every((key) => allowed.includes(key));
+    const call = value?.tools?.[0],
+      args = call?.arguments;
+    if (
+      !keys(value, ['message', 'tools']) ||
+      typeof value.message !== 'string' ||
+      !value.message.trim() ||
+      value.message.length > 8000 ||
+      !Array.isArray(value.tools) ||
+      value.tools.length !== 1 ||
+      !keys(call, ['name', 'arguments']) ||
+      call.name !== 'assess' ||
+      !keys(args, ['attemptId', 'rubricId', 'outcome', 'feedback', 'dimensions']) ||
+      args.attemptId !== feedback.attempt.id ||
+      args.rubricId !== feedback.question.rubric.id ||
+      typeof args.feedback !== 'string' ||
+      !args.feedback.trim() ||
+      args.feedback.length > 2000
+    )
+      throw new Error('写作反馈只评阅当前原答，必须完整绑定评分维度');
+    assessWithRubric(feedback.question, feedback.attempt, { ...args, rubricContract: RUBRIC_EVIDENCE_CONTRACT });
+  } catch (error: any) {
+    // 不补编号、不包裹错误数组、不修复范围；真正保存仍由客户端核对当前事实与停止状态。
+    throw new ProviderError(
+      'WRITING_OUTPUT_INVALID',
+      error.message === '写作反馈只评阅当前原答，必须完整绑定评分维度'
+        ? error.message
+        : '写作反馈与当前评分维度或原答引用不符，未执行工具'
+    );
+  }
+}
 export function buildLearningRequest(config: ModelConfig, messages: LearningMessage[], stream = false) {
   const endpoint = new URL(config.endpoint);
   // 适配只用于核对过的供应商和明确型号；不把任意文本模型当作具有同样能力。
@@ -125,7 +298,21 @@ export function buildLearningRequest(config: ModelConfig, messages: LearningMess
     stream,
     ...(stream ? { stream_options: { include_usage: true } } : {}),
     ...thinking,
-    ...(config.capabilities.structured ? { response_format: { type: 'json_object' } } : {})
+    ...(config.writingOutput
+      ? {
+          reasoning_effort: config.writingOutput.reasoningEffort,
+          response_format: {
+            type: 'json_schema',
+            json_schema: {
+              name: 'writing_feedback_v1',
+              strict: true,
+              schema: config.writingOutput.schema
+            }
+          }
+        }
+      : config.capabilities.structured
+        ? { response_format: { type: 'json_object' } }
+        : {})
   };
 }
 export function createLearningProviderStream(config: ModelConfig, onPreview?: (raw: string) => void) {

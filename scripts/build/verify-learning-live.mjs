@@ -25,6 +25,7 @@ import {
 import { parsePastedMaterial, questionFromMaterial } from '../../src/services/learning/material-intake.js';
 import { parseExactNumberAnswer } from '../../laf-backend/functions/_shared/learning-algebra.js';
 import { createNoticeQuestion, createWritingQuestion } from '../../laf-backend/functions/_shared/learning-writing.js';
+import { WRITING_FEEDBACK_OUTPUT_CONTRACT } from '../../laf-backend/functions/_shared/learning-rubric.js';
 import {
   createVocabularyReviewQuestion,
   vocabularyUseFeedbackBasis
@@ -305,7 +306,8 @@ async function verifyWritingFeedback(kind = 'writing') {
       modelId: profile.id,
       model: profile.model,
       lockedMethod: 'explain',
-      feedbackAttemptId: attempt.id
+      feedbackAttemptId: attempt.id,
+      feedbackOutputContract: WRITING_FEEDBACK_OUTPUT_CONTRACT
     },
     `${requestId}:request`
   );
@@ -326,6 +328,8 @@ async function verifyWritingFeedback(kind = 'writing') {
     requestBinding,
     modelId: profile.id,
     shareConsent: true,
+    feedbackAttemptId: attempt.id,
+    feedbackOutputContract: WRITING_FEEDBACK_OUTPUT_CONTRACT,
     messages: [{ role: 'user', content: message }],
     learningContext: {
       owner,

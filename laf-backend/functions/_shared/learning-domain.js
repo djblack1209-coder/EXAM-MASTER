@@ -1,4 +1,9 @@
-import { normalizeRubric, assessWithRubric, RUBRIC_EVIDENCE_CONTRACT } from './learning-rubric.js';
+import {
+  normalizeRubric,
+  assessWithRubric,
+  RUBRIC_EVIDENCE_CONTRACT,
+  WRITING_FEEDBACK_OUTPUT_CONTRACT
+} from './learning-rubric.js';
 import { hasMaterialLayout, validMaterialLayout } from './learning-material-layout.js';
 export {
   MATERIAL_LAYOUT_CONTRACT,
@@ -1208,6 +1213,7 @@ function reduceLearningOperation(original, operation, owned = false, budget = nu
             'historyOnly',
             'lockedMethod',
             'feedbackAttemptId',
+            'feedbackOutputContract',
             'visualSource'
           ].includes(k)
         ),
@@ -1231,6 +1237,12 @@ function reduceLearningOperation(original, operation, owned = false, budget = nu
           '反馈请求需绑定当前已保存原答'
         );
       }
+      assert(
+        data.feedbackOutputContract === undefined ||
+          (data.feedbackOutputContract === WRITING_FEEDBACK_OUTPUT_CONTRACT && data.feedbackAttemptId),
+        'INVALID_INPUT',
+        '写作反馈输出版本需绑定当前已保存原答'
+      );
       if (data.visualSource) {
         const q = state.questions.find((q) => questionKey(q) === data.questionKey);
         assert(

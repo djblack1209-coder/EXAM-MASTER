@@ -51,20 +51,24 @@ export function freeModelPricing(model: { model: string; endpoint: string }, now
 }
 
 export function modelConfigurationVersion(model: any): string {
-  return crypto
-    .createHash('sha256')
-    .update(
-      JSON.stringify([
-        model.id,
-        model.model,
-        model.provider,
-        model.endpoint,
-        model.keyRef || model.apiKey || '',
-        model.maxOutput,
-        model.capabilities
-      ])
-    )
-    .digest('hex');
+  const fields = [
+    model.id,
+    model.model,
+    model.provider,
+    model.endpoint,
+    model.keyRef || model.apiKey || '',
+    model.maxOutput,
+    model.capabilities
+  ];
+  // 无新策略时哈希逐字保持旧定义，旧连接测试与缓存不因升级失效。
+  if (model.writingOutput)
+    fields.push(
+      model.writingOutput.contract,
+      model.writingOutput.inferencePolicy,
+      model.writingOutput.reasoningEffort,
+      model.writingOutput.schemaDigest
+    );
+  return crypto.createHash('sha256').update(JSON.stringify(fields)).digest('hex');
 }
 export function modelConnectionState(model: any, calls: any[], now = Date.now()) {
   const configurationVersion = modelConfigurationVersion(model);
