@@ -4,6 +4,8 @@
 
 ## 当前候选与本机资源
 
+免费模型诊断本次沿 `verification.json.freeCatalogContinuation.writingDiagnostic`，五组原答/账与脱敏诊断保留在既有 `free-catalog-zhipu-20261012/groq-writing-{diagnostic,low,low-2000,unique-quote,array-quote}`，各一请求、无自动回退。临时后端已回收，镜像 `verify-learning-live.mjs` 已逐字还原；2000/low或提示澄清只属试验，当前 `backend-original-answer` 与日常版本未采用。三份拒绝记录的14项零模型HTTP重放/重复/停止另有回执，不能称模型评分通过。复用新的预算/推理策略或JSON schema前，需实现实际预留/配置与请求归属及未改变其他模式的校验。
+
 当前原答保护阶段沿 `verification.json.writingOriginalFix`：后端为 `backend-original-answer/`，旧 `backend/` 仅保留历史模型回执及旧重放拒绝证据，不用于新原答事件验收。四端输出、既有源码镜像及Rust缓存复用；最新日常归档仍为 `desktop-candidate.zip`，独立身份为 `native-field-qa.zip`，各自完整读回、试还原与实际重开通过。ZIP恢复高精度时间戳须应用对应回执的逐文件十进制纳秒清单；程序与资料配对，不能只验签名。日常最近成功回滚程序为原配对目录 `Yozi AI.original-answer.app.zip`，原学习资料导出仍沿同目录不可变基线。
 
 2026-10-12 地区控件修复复用同一构建目录与原生缓存，四端前端与两种原生身份实际核验通过；本机语法实际HTTP和网页回执沿 `verification.json` 的 `grammarHttpBoundaries`，控件修复、首次错误构建目录后的回滚和当前候选沿 `regionControlFix`。日常程序须从带原资料UUID适配的既有隔离镜像构建；仓库根构建即使签名通过，也不会因此接回原资料。当前归档在实际更新、公开完整导出及普通重开通过后才提升。
