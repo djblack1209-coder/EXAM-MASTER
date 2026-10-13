@@ -430,6 +430,66 @@ describe('对话学习的事实、统计与纠错', () => {
     expect(gradeAnswer(question, response)).toMatchObject({ status: 'reliable', outcome });
     expect(classifyResponse(response, question)).toBe('answer');
   });
+  it.each(['material-objective-v2', 'material-objective-v3'])(
+    '模型核对格式不改变%s的作答、固定判分与旧事件重放',
+    (contract) => {
+      start();
+      apply('material.add', { material: parsePastedMaterial('甲: 3\n乙: 4', 'fixed-grade') });
+      focus(
+        createMaterialObjectiveQuestion('legacy-exact-check', state.materials[0], {
+          contract,
+          segmentId: 'fixed-grade_1',
+          kind: 'growth_percent',
+          from: '甲',
+          to: '乙'
+        })
+      );
+      const question = state.questions[0];
+      const expectedPending = { status: 'pending', outcome: null, basis: 'unsupported_expression_or_unit' };
+      expect(gradeAnswer(question, '33 1/3%')).toEqual(expectedPending);
+      expect(classifyResponse('33 1/3%', question)).toBe('clarify');
+      expect(gradeAnswer(question, '100/3%')).toEqual({
+        status: 'reliable',
+        outcome: 'correct',
+        basis: contract,
+        evaluator: 'deterministic-exact-v1',
+        authority: 'executable'
+      });
+      expect(gradeAnswer(question, '33.333333%')).toEqual({
+        status: 'reliable',
+        outcome: 'wrong',
+        basis: contract,
+        evaluator: 'deterministic-exact-v1',
+        authority: 'executable'
+      });
+      answer('33 1/3%', 'legacy-mixed-answer', { explicit: true });
+      expect(state.attempts[0].answer).toBe('33 1/3%');
+      expect(state.attempts[0].grade).toEqual(expectedPending);
+      expect(summarizeLearning(state).first).toMatchObject({ numerator: 0, denominator: 0 });
+      let replay = emptyLearningState('u1', 'Asia/Shanghai');
+      for (const event of state.events)
+        replay = applyLearningOperation(replay, normalizePrivateSyncOperation(event)).state;
+      expect(replay.attempts[0].grade).toEqual(expectedPending);
+      expect(replay.attempts).toEqual(state.attempts);
+      expect(summarizeLearning(replay).first).toMatchObject({ numerator: 0, denominator: 0 });
+      expect(replay.reviews).toEqual([]);
+    }
+  );
+  it('历史v1保持原数值容差规则，不因模型专用精确核对入口改变', () => {
+    const question = createMaterialObjectiveQuestion(
+      'legacy-tolerance',
+      parsePastedMaterial('甲: 1\n乙: 3', 'legacy-tolerance'),
+      {
+        contract: 'material-objective-v1',
+        segmentId: 'legacy-tolerance_1',
+        kind: 'growth_percent',
+        from: '甲',
+        to: '乙'
+      }
+    );
+    expect(gradeAnswer(question, '200.00000001%')).toMatchObject({ status: 'reliable', outcome: 'correct' });
+    expect(gradeAnswer(question, '200.001%')).toMatchObject({ status: 'reliable', outcome: 'wrong' });
+  });
   it.each(['25', '25％', '25%或20%', '25/0%', '25+0%', '1e2%', 'require("fs")%', '9'.repeat(300) + '%'])(
     '占比不猜百分号或执行表达式：%s',
     (response) => {

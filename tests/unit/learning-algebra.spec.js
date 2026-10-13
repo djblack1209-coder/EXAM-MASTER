@@ -2,6 +2,7 @@ import { beforeEach, describe, it, expect, vi } from 'vitest';
 import { createPinia, setActivePinia } from 'pinia';
 import { mount } from '@vue/test-utils';
 import fixture from '../fixtures/learning/algebra-v1.json';
+import * as algebra from '../../laf-backend/functions/_shared/learning-algebra.js';
 import {
   parseAlgebraExpression,
   createAlgebraQuestion,
@@ -29,6 +30,98 @@ const clone = (v) => JSON.parse(JSON.stringify(v));
 beforeEach(() => {
   uni.clearStorageSync();
   setActivePinia(createPinia());
+});
+describe('模型计算核对的精确格式与作答规则隔离', () => {
+  const check = (raw, unit = '') => (algebra.parseExactModelNumberCheck || algebra.parseExactNumberAnswer)(raw, unit);
+  it('真实归档模型的带分数百分数与100/3%精确相等，不要求再次生成同一数学值', () => {
+    const modelLine = '计算核对：33 1/3%';
+    const raw = modelLine.match(/(?:^|\n)计算核对[：:]\s*([^\n]+)\s*$/)[1];
+    expect(check(raw, '%')).toEqual([100, 3]);
+    expect(check(raw, '%')).toEqual(algebra.parseExactNumberAnswer('100/3%', '%'));
+    expect(algebra.parseExactNumberAnswer(raw, '%')).toBeNull();
+  });
+  it.each([
+    ['-1 1/2', [-3, 2]],
+    ['+1 1/2', [3, 2]],
+    ['0 1/2', [1, 2]],
+    ['-0 1/2', [-1, 2]],
+    ['33\u00a01/3', [100, 3]],
+    ['33\u202f1/3', [100, 3]],
+    ['2\t1 / 4', [9, 4]],
+    ['0002 01/04', [9, 4]]
+  ])('有界单值%s只在模型核对入口支持', (input, expected) => {
+    expect(check(input)).toEqual(expected);
+    expect(algebra.parseExactNumberAnswer(input)).toBeNull();
+  });
+  it.each([
+    '1 0/2',
+    '1 2/2',
+    '1 3/2',
+    '1 1/0',
+    '1 -1/2',
+    '1 1/-2',
+    '1.5 1/2',
+    '1 1.5/2',
+    '1\n1/2',
+    '1 1/2+1',
+    '1e3 1/2',
+    '33 1/3≈33.3',
+    '33 1/3%',
+    '999999999 1/999999999',
+    '9'.repeat(257)
+  ])('无单位模式拒绝歧义或超限%s', (raw) => expect(check(raw)).toBeNull());
+  it('单位必须明确，缺单位、双单位、错误百分数或缺模型核对行不补齐', () => {
+    expect(check('33 1/3', '%')).toBeNull();
+    expect(check('33 1/3%%', '%')).toBeNull();
+    expect(check('33 1/3％', '%')).toBeNull();
+    expect(check('33 1/3%', 'kg')).toBeNull();
+    expect(check('33.3%', '%')).toEqual([333, 10]);
+    expect(check('33.3%', '%')).not.toEqual([100, 3]);
+    expect('没有核对行'.match(/(?:^|\n)计算核对[：:]\s*([^\n]+)\s*$/)).toBeNull();
+  });
+  it('真正的最后单行核对入口接纳带分数，标签和值跨行、缺行或多个核对值均拒绝', () => {
+    expect(algebra.extractExactModelNumberCheck('解释。\n计算核对：33 1/3%\n')).toEqual({
+      raw: '33 1/3%',
+      exact: [100, 3]
+    });
+    expect(algebra.extractExactModelNumberCheck('解释。\r\n计算核对:100/3%\r\n')).toEqual({
+      raw: '100/3%',
+      exact: [100, 3]
+    });
+    for (const message of [
+      '计算核对：\n100/3%',
+      '计算核对：\r\n100/3%',
+      '正文计算核对：100/3%',
+      '计算核对：100/3%\n还有文字',
+      '没有核对行',
+      '计算核对：100/3%\n计算核对：100/3%',
+      '计算核对：33.3%（约）',
+      '计算核对：100/3',
+      '计算核对：\u2028100/3%',
+      '计算核对：100/3%\r后续',
+      'x'.repeat(8001)
+    ])
+      expect(algebra.extractExactModelNumberCheck(message)).toBeNull();
+  });
+  it('真实新响应33⅓%按完整字符解析，不把NFKC展开结果331⁄3当作数值', () => {
+    expect(algebra.extractExactModelNumberCheck('计算核对：33⅓%')).toEqual({
+      raw: '33⅓%',
+      exact: [100, 3]
+    });
+    expect(check('33⅓%', '%')).not.toEqual([331, 3]);
+    expect(algebra.parseExactNumberAnswer('33⅓%', '%')).toBeNull();
+    for (const [input, expected] of [
+      ['½', [1, 2]],
+      ['-½', [-1, 2]],
+      ['-33⅓', [-100, 3]],
+      ['33 ⅓', [100, 3]],
+      ['+2¾', [11, 4]],
+      ['0⅔', [2, 3]],
+      ['1⅐', [8, 7]]
+    ])
+      expect(check(input)).toEqual(expected);
+    for (const input of ['33⅓⅓', '⅓33', '33⅓/2', '⅟3', '+ ⅓', '33⁄3', '999999999⅐']) expect(check(input)).toBeNull();
+  });
 });
 describe('精确代数的独立固定验题集', () => {
   it.each(fixture.cases)('$id', (item) => {
