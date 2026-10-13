@@ -13,8 +13,66 @@ import { readFreeApiCredential } from '../../scripts/build/free-api-catalog.mjs'
 import { mkdtempSync, writeFileSync, rmSync, chmodSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import crypto from 'node:crypto';
 
 describe('免费型号是可核验接入事实，不是任意零价格声明', () => {
+  it('普通和历史配置哈希保持旧定义，新输出策略只改变对应配置的出处', () => {
+    const model = {
+      id: 'fixture',
+      model: 'openai/gpt-oss-20b',
+      provider: 'Groq',
+      endpoint: 'https://api.groq.com/openai/v1/chat/completions',
+      keyRef: 'synthetic-key-reference',
+      maxOutput: 1000,
+      capabilities: { structured: true, tools: false, vision: false, stream: true }
+    };
+    const legacy = crypto
+      .createHash('sha256')
+      .update(
+        JSON.stringify([
+          model.id,
+          model.model,
+          model.provider,
+          model.endpoint,
+          model.keyRef,
+          model.maxOutput,
+          model.capabilities
+        ])
+      )
+      .digest('hex');
+    expect(modelConfigurationVersion(model)).toBe(legacy);
+    const prepared = {
+      ...model,
+      maxOutput: 2000,
+      writingOutput: {
+        contract: 'writing-feedback-output-v1',
+        inferencePolicy: 'groq-writing-strict-v1',
+        reasoningEffort: 'low',
+        schemaDigest: 'a'.repeat(64)
+      }
+    };
+    expect(modelConfigurationVersion(prepared)).not.toBe(legacy);
+    expect(
+      modelConfigurationVersion({
+        ...prepared,
+        writingOutput: {
+          ...prepared.writingOutput,
+          schemaDigest: 'b'.repeat(64)
+        }
+      })
+    ).not.toBe(modelConfigurationVersion(prepared));
+    expect(
+      modelConnectionState(model, [
+        {
+          modelId: model.id,
+          model: model.model,
+          status: 'completed',
+          at: Date.now(),
+          configurationVersion: modelConfigurationVersion(prepared)
+        }
+      ]).connectionStatus
+    ).toBe('untested');
+  });
   it('只有精确端点/型号且复核未过期时确认零价格，Gemini账户层和FlashX不冒充免费', () => {
     const p = FREE_MODEL_PRESETS[0];
     expect(freeModelPricing(p, Date.parse('2026-09-30'))).toMatchObject({ inputPerMillion: 0 });

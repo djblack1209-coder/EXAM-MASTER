@@ -1,6 +1,7 @@
 // 主观评分合同只约束维度、分数和原答引用，不证明模型语义判断正确。
 export const RUBRIC_CONTRACT = 'subjective-rubric-v1';
 export const RUBRIC_EVIDENCE_CONTRACT = 'subjective-rubric-v2';
+export const WRITING_FEEDBACK_OUTPUT_CONTRACT = 'writing-feedback-output-v1';
 function requireValue(condition, message, code = 'INVALID_INPUT') {
   if (!condition) throw Object.assign(new Error(message), { code });
 }

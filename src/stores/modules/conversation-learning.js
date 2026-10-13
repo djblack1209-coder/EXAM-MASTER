@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia';
+import { WRITING_FEEDBACK_OUTPUT_CONTRACT } from '../../../laf-backend/functions/_shared/learning-rubric.js';
 import { createOatutorQuestion } from '../../../laf-backend/functions/_shared/learning-oatutor.js';
 import {
   createSentenceQuestion,
@@ -1859,7 +1860,15 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     const requestedQuestionKey = activeQuestion.value ? questionKey(activeQuestion.value) : null;
     const owner = state.value.owner;
     pendingCloudCall = mode === 'cloud' ? { id, owner } : null;
-    const binding = state.value.events.find((e) => e.id === `${id}:request`)?.data.binding || learningId('binding');
+    const previousRequest = state.value.events.find((e) => e.id === `${id}:request`)?.data;
+    const binding = previousRequest?.binding || learningId('binding');
+    // 历史请求无输出标记时仍发旧请求，避免重试时改变已缓存请求的指纹。
+    const feedbackOutputContract =
+      mode === 'cloud' && options.feedbackAttemptId
+        ? previousRequest
+          ? previousRequest.feedbackOutputContract
+          : WRITING_FEEDBACK_OUTPUT_CONTRACT
+        : undefined;
     const request = {
       id,
       owner,
@@ -1870,6 +1879,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
       binding,
       lifecycle,
       ...(options.feedbackAttemptId ? { feedbackAttemptId: options.feedbackAttemptId } : {}),
+      ...(feedbackOutputContract ? { feedbackOutputContract } : {}),
       lockedMethod:
         directive?.type === 'strategy.set'
           ? directive.data.method
@@ -1903,6 +1913,12 @@ export const useConversationLearningStore = defineStore('conversation-learning',
       requestBinding: binding,
       modelId: modelId.value,
       shareConsent: sharingAllowed.value,
+      ...(request.feedbackOutputContract
+        ? {
+            feedbackAttemptId: request.feedbackAttemptId,
+            feedbackOutputContract: request.feedbackOutputContract
+          }
+        : {}),
       ...(options.visual ? { images: [options.image], imageShareConsent: true } : {}),
       messages: dailyContext.messages,
       learningContext: {
@@ -2007,6 +2023,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
             binding,
             lockedMethod: request.lockedMethod,
             ...(request.feedbackAttemptId ? { feedbackAttemptId: request.feedbackAttemptId } : {}),
+            ...(request.feedbackOutputContract ? { feedbackOutputContract: request.feedbackOutputContract } : {}),
             ...(request.visualSource ? { visualSource: request.visualSource } : {})
           },
           `${id}:request`

@@ -4,6 +4,8 @@
 
 ## 当前候选与本机资源
 
+当前写作输出实现沿同一 `verification.json.writingOutputFix`，隔离后端为 `backend-writing-strict`，五次单请求及最终9项API验收保留在原 `free-catalog-zhipu-20261012/groq-writing-strict*`。临时仪表仅保存预定义安全词汇/摘要，已逐字恢复编译产物并回收临时副本；密钥仍只由既有AST适配在内存取用。新版 `--tasks writing` 显式发送输出合同与原答绑定，普通任务/旧请求保持原路径；每次上限1，无自动回退。真实网页候选已按58704接口重建，仍等待当次协议确认，不启动无人使用的服务或推断已经登录。原生归档和日常程序仍为原串已验版本。
+
 免费模型诊断本次沿 `verification.json.freeCatalogContinuation.writingDiagnostic`，五组原答/账与脱敏诊断保留在既有 `free-catalog-zhipu-20261012/groq-writing-{diagnostic,low,low-2000,unique-quote,array-quote}`，各一请求、无自动回退。临时后端已回收，镜像 `verify-learning-live.mjs` 已逐字还原；2000/low或提示澄清只属试验，当前 `backend-original-answer` 与日常版本未采用。三份拒绝记录的14项零模型HTTP重放/重复/停止另有回执，不能称模型评分通过。复用新的预算/推理策略或JSON schema前，需实现实际预留/配置与请求归属及未改变其他模式的校验。
 
 当前原答保护阶段沿 `verification.json.writingOriginalFix`：后端为 `backend-original-answer/`，旧 `backend/` 仅保留历史模型回执及旧重放拒绝证据，不用于新原答事件验收。四端输出、既有源码镜像及Rust缓存复用；最新日常归档仍为 `desktop-candidate.zip`，独立身份为 `native-field-qa.zip`，各自完整读回、试还原与实际重开通过。ZIP恢复高精度时间戳须应用对应回执的逐文件十进制纳秒清单；程序与资料配对，不能只验签名。日常最近成功回滚程序为原配对目录 `Yozi AI.original-answer.app.zip`，原学习资料导出仍沿同目录不可变基线。
