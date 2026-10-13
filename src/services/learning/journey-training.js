@@ -21,7 +21,23 @@ export function createJourneyQuestions(state, conversationId, moduleId, count, g
     if (moduleId.startsWith('arithmetic-')) {
       const a = 7 + n,
         b = 5 + (n % 7) * 3;
-      question = createArithmeticQuestion(id, `${a} ${moduleId === 'arithmetic-add' ? '+' : '×'} ${b}`);
+      const operator = {
+        'arithmetic-add': '+',
+        'arithmetic-subtract': '−',
+        'arithmetic-multiply': '×',
+        'arithmetic-divide': '÷'
+      }[moduleId];
+      question = createArithmeticQuestion(
+        id,
+        `${moduleId === 'arithmetic-subtract' && n % 2 ? -a : a} ${operator} ${n % 4 === 3 && ['arithmetic-subtract', 'arithmetic-divide'].includes(moduleId) ? -b : b}`
+      );
+    } else if (moduleId.startsWith('fraction-')) {
+      const a = 2 + n,
+        b = 3 + (n % 7),
+        c = 1 + (n % 5),
+        d = 4 + (n % 5);
+      const operator = moduleId === 'fraction-add-subtract' ? (n % 2 ? '−' : '+') : n % 2 ? '÷' : '×';
+      question = createArithmeticQuestion(id, `${n % 4 === 3 ? -a : a}/${b} ${operator} ${c}/${d}`);
     } else if (moduleId === 'algebra-equation') {
       const coefficient = 2 + (n % 3),
         solution = 2 + (n % 7);

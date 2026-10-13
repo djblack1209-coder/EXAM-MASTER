@@ -7,7 +7,11 @@ export const TRAINING_MODES = Object.freeze([
 ]);
 export const JOURNEY_MODULES = Object.freeze([
   { id: 'arithmetic-add', subject: '数学', label: '整数加法', goal: '独立完成整数加法', minutes: 10 },
+  { id: 'arithmetic-subtract', subject: '数学', label: '整数减法', goal: '独立检验减法与符号', minutes: 10 },
   { id: 'arithmetic-multiply', subject: '数学', label: '整数乘法', goal: '独立完成整数乘法', minutes: 10 },
+  { id: 'arithmetic-divide', subject: '数学', label: '整数除法', goal: '给出精确商并检查除数', minutes: 15 },
+  { id: 'fraction-add-subtract', subject: '数学', label: '分数加减', goal: '通分后精确计算并保留符号', minutes: 15 },
+  { id: 'fraction-multiply-divide', subject: '数学', label: '分数乘除', goal: '检查除数并约分得到精确值', minutes: 15 },
   { id: 'algebra-equation', subject: '数学', label: '方程与定义域', goal: '给出原定义域内全部解', minutes: 15 },
   { id: 'algebra-inequality', subject: '数学', label: '不等式与区间', goal: '区分方向、边界与完整解集', minutes: 15 },
   { id: 'condition-relation', subject: '逻辑', label: '充分与必要条件', goal: '分别检查两个蕴含方向', minutes: 15 },

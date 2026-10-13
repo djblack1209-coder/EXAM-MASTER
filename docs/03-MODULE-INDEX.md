@@ -77,3 +77,7 @@ App连接器：[宿主桥](../src/services/learning/app-connector.js)、[Java内
 页图辅助解读：[共享角色/来源/图片资源合同](../laf-backend/functions/_shared/learning-vision.js)；沿用provider、proxy-ai、Store与对话页，不新增独立服务。验证：[图片边界与输出](../tests/unit/learning-vision.spec.js)、[对话/恢复/删除](../tests/unit/learning-vision-store.spec.js)、[端点](../tests/unit/learning-endpoints.spec.ts)。
 
 一次不等式复用[learning-algebra](../laf-backend/functions/_shared/learning-algebra.js)与已有[数轴组件](../src/components/business/learning/number-line.vue)，没有新增运行依赖。[独立区间/方向固定集](../tests/fixtures/learning/inequality-v1.json)、[对话/图形/恢复专项](../tests/unit/learning-inequality.spec.js)和[evaluate-learning](../scripts/build/evaluate-learning.mjs)核对新合同；角色/来源、公共发布和模型预算门禁保持。
+
+减法与精确除法：[共享有界规则](../laf-backend/functions/_shared/learning-arithmetic.js)、[原答/整批/恢复专项](../tests/unit/learning-arithmetic.spec.js)。复习上游：[版本/参数/旧安排兼容](../tests/unit/fsrs-upstream-compatibility.spec.js)验证官方5.4.2及两端适配；沿原FSRS服务与分包副本，不新增调度事实。
+
+分数四则：[题面重建/精确判分/教学/变式](../laf-backend/functions/_shared/learning-fraction.js)、[原答/停止/篡改/整批/恢复专项](../tests/unit/learning-fraction.spec.js)，接入原学习路线与共享reducer，不创建另一套作答或评分服务。

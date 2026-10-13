@@ -4,7 +4,8 @@
  */
 import type { Card, FSRSBundleExports, FSRSParameters, Grade, RecordLogItem } from './ts-fsrs-bundle-types.js';
 
-const { createEmptyCard, generatorParameters, fsrs, Rating, State } = require('./ts-fsrs-bundle') as FSRSBundleExports;
+const { createEmptyCard, generatorParameters, fsrs, Rating, State, checkParameters } =
+  require('./ts-fsrs-bundle') as FSRSBundleExports;
 
 // ============ Types ============
 
@@ -91,9 +92,21 @@ export interface UserFSRSParams {
  * 获取调度器实例：优先使用用户个性化参数，回退到全局默认
  */
 export function getScheduler(userParams?: UserFSRSParams | null): ReturnType<typeof fsrs> {
+  if (userParams?.w != null && !Array.isArray(userParams.w)) throw new Error('Invalid FSRS personal parameters');
   if (!userParams?.w || userParams.w.length === 0) {
     return defaultScheduler;
   }
+  const retention = userParams.request_retention ?? DEFAULT_FSRS_PARAMS.request_retention;
+  if (
+    !Array.isArray(userParams.w) ||
+    ![17, 19, 21].includes(userParams.w.length) ||
+    !Array.from(userParams.w).every(Number.isFinite) ||
+    !Number.isFinite(retention) ||
+    retention <= 0 ||
+    retention >= 1
+  )
+    throw new Error('Invalid FSRS personal parameters');
+  checkParameters(userParams.w);
   // 用 JSON 序列化做缓存 key（参数不常变）
   const cacheKey = JSON.stringify(userParams.w) + ':' + (userParams.request_retention ?? 0.9);
   const cached = userSchedulerCache.get(cacheKey);

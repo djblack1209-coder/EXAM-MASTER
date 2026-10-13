@@ -301,6 +301,17 @@ export function parseExactNumberAnswer(raw, unit = '') {
     return null;
   }
 }
+// 分数训练复用现有精确有理运算；只接收两个数值，不执行作答中的算式。
+export function exactNumberOperation(left, operator, right) {
+  const a = parseExactNumberAnswer(left),
+    b = parseExactNumberAnswer(right);
+  if (!a || !b || !['+', '-', '*', '/'].includes(operator)) return null;
+  try {
+    return { '+': add, '-': (x, y) => add(x, neg(y)), '*': mul, '/': div }[operator](a, b);
+  } catch {
+    return null;
+  }
+}
 // 模型计算验收显式使用；不用于学生作答分类、判分或历史事件重放。
 // 规范带分数的符号作用于整体，仍受原精确有理数/字符上限约束。
 export function parseExactModelNumberCheck(raw, unit = '') {

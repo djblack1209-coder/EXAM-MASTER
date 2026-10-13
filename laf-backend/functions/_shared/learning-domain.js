@@ -13,7 +13,13 @@ export {
 import { normalizeComputeReference, computeReferenceText } from './learning-compute-contract.js';
 import { normalizeGrammarReference, grammarReferenceText } from './learning-grammar-contract.js';
 import { applyJourneyOperation } from './learning-journey.js';
+import {
+  EXACT_ARITHMETIC_CONTRACT,
+  normalizeExactArithmeticQuestion,
+  gradeExactArithmeticAnswer
+} from './learning-arithmetic.js';
 import { applyReminderOperation } from './learning-reminders.js';
+import { FRACTION_CONTRACT, normalizeFractionQuestion, gradeFractionAnswer } from './learning-fraction.js';
 import { validateQuizOriginalQuestion } from './learning-quiz-original.js';
 import { normalizeOatutorQuestion, applyOatutorOperation, oatutorHelpForQuestion } from './learning-oatutor.js';
 import { HISTORY_LIMITS } from './learning-history.js';
@@ -340,6 +346,8 @@ export function normalizePrivateSyncOperation(raw) {
       normalizeConditionQuestion(q);
       normalizeConditionProbe(q);
       normalizeFieldProbe(q);
+      normalizeExactArithmeticQuestion(q);
+      normalizeFractionQuestion(q);
     }
   }
   if (op.type === 'assessment.review') op.type = 'assessment.correct';
@@ -872,6 +880,13 @@ export function gradeAnswer(question, answer, state = null) {
   if (question.uncertainties?.some((item) => !item.resolved)) {
     return { status: 'pending', outcome: null, basis: 'critical_input_uncertain' };
   }
+  if (
+    question.source?.evidenceId === EXACT_ARITHMETIC_CONTRACT ||
+    question.validation?.evidenceId === EXACT_ARITHMETIC_CONTRACT
+  )
+    return gradeExactArithmeticAnswer(question, answer);
+  if (question.source?.evidenceId === FRACTION_CONTRACT || question.validation?.evidenceId === FRACTION_CONTRACT)
+    return gradeFractionAnswer(question, answer);
   if (deriveFieldProbe(question.prompt) && !question.rubric && !question.options?.length)
     return gradeFieldProbe(question, answer);
   if (deriveConditionProbe(question.prompt) && !question.rubric && !question.options?.length)
@@ -997,7 +1012,8 @@ export function classifyResponse(raw, question) {
       ? 'answer'
       : 'clarify';
   if ((question.validation?.type || question.answerType) === 'number')
-    return (['material-objective-v2', 'material-objective-v3'].includes(question.materialExercise?.contract)
+    return ([EXACT_ARITHMETIC_CONTRACT, FRACTION_CONTRACT].includes(question.source?.evidenceId) ||
+    ['material-objective-v2', 'material-objective-v3'].includes(question.materialExercise?.contract)
       ? parseExactNumberAnswer(value, question.validation?.unit || '')
       : parseNumberAnswer(value, question.validation?.unit || '')) !== null
       ? 'answer'
@@ -1280,6 +1296,8 @@ function reduceLearningOperation(original, operation, owned = false, budget = nu
         normalizeConditionQuestion(q);
         normalizeConditionProbe(q);
         normalizeFieldProbe(q);
+        normalizeExactArithmeticQuestion(q);
+        normalizeFractionQuestion(q);
       } else q.validation = null;
       if (q.materialExercise) normalizeMaterialObjective(q, state);
       assert(

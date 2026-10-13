@@ -18,7 +18,7 @@
  * @see https://github.com/open-spaced-repetition/fsrs4anki/wiki/The-Algorithm
  */
 
-import { FSRS, Rating, State, createEmptyCard, generatorParameters } from 'ts-fsrs';
+import { FSRS, Rating, State, createEmptyCard, generatorParameters, checkParameters } from 'ts-fsrs';
 import { storageService } from '@/services/storageService.js';
 import { logger } from '@/utils/logger.js';
 
@@ -96,9 +96,27 @@ function _buildScheduler(userParams) {
  * @returns {boolean} 是否成功加载了个性化参数（false 表示回退到默认）
  */
 export function loadUserParams(userParams) {
-  const fingerprint = userParams?.w?.length
-    ? JSON.stringify(userParams.w) + ':' + (userParams.requestRetention ?? DEFAULT_REQUEST_RETENTION)
-    : '';
+  const retention = userParams?.requestRetention ?? userParams?.request_retention ?? DEFAULT_REQUEST_RETENTION;
+  if (
+    (userParams?.w != null && !Array.isArray(userParams.w)) ||
+    !Number.isFinite(retention) ||
+    retention <= 0 ||
+    retention >= 1
+  )
+    return false;
+  if (userParams?.w?.length) {
+    if (
+      !Array.isArray(userParams.w) ||
+      ![17, 19, 21].includes(userParams.w.length) ||
+      !Array.from(userParams.w).every(Number.isFinite) ||
+      !Number.isFinite(retention) ||
+      retention <= 0 ||
+      retention >= 1
+    )
+      return false;
+    checkParameters(userParams.w);
+  }
+  const fingerprint = userParams?.w?.length ? JSON.stringify(userParams.w) + ':' + retention : '';
 
   if (fingerprint === _paramsFingerprint) {
     return fingerprint !== '';
