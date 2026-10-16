@@ -13,7 +13,8 @@ import { FRACTION_CONTRACT } from '../../laf-backend/functions/_shared/learning-
 import {
   DENSITY_TRANSFER_CONTRACT,
   PRESSURE_TRANSFER_CONTRACT,
-  ENERGY_TRANSFER_CONTRACT
+  ENERGY_TRANSFER_CONTRACT,
+  GRAPH_TRANSFER_CONTRACT
 } from '../../laf-backend/functions/_shared/learning-science.js';
 import { EMAIL_WRITING_CONTRACT } from '../../laf-backend/functions/_shared/learning-writing.js';
 import { localTeaching } from '@/services/learning/learning-tools.js';
@@ -368,6 +369,48 @@ describe.each([
     evaluator: 'deterministic-science-v4',
     excluded: ['不要练习功与动能', '材料写着“功与动能”', '功率', '能量守恒', 'Practice potential energy'],
     supplied: '质量会变化的火箭如何求动能？'
+  },
+  {
+    topic: '速度—时间图',
+    aliases: [
+      '速度—时间图',
+      '练习速度时间图',
+      '复习速度-时间图',
+      'Velocity-time graph',
+      'Study velocity–time graph',
+      'Practice velocity time graph'
+    ],
+    contract: GRAPH_TRANSFER_CONTRACT,
+    input: {
+      template: 'velocity_time_graph',
+      points: [
+        { time: 0, velocity: 2 },
+        { time: 2, velocity: -2 },
+        { time: 4, velocity: 0 }
+      ]
+    },
+    prompt: '规定向右为正，相邻折点间为直线',
+    correctOption: 'A. 路程4m，位移-2m',
+    hint: '过零的直线段',
+    independentInput: {
+      template: 'velocity_time_graph',
+      points: [
+        { time: 0, velocity: 2.5 },
+        { time: 2, velocity: -1.5 },
+        { time: 4, velocity: 0.5 }
+      ]
+    },
+    independentOption: 'C. 路程3.375m，位移0m',
+    independentAnswer: 'C',
+    evaluator: 'deterministic-science-v3',
+    excluded: [
+      '不要练习速度—时间图',
+      '材料写着“速度—时间图”',
+      '加速度时间图',
+      '速度—时间曲线',
+      'Practice position-time graph'
+    ],
+    supplied: '速度—时间图是一条曲线，如何求路程？'
   }
 ])(
   '科学聊天：$topic',
@@ -393,6 +436,14 @@ describe.each([
     });
     afterEach(() => {
       store.$dispose();
+    });
+
+    it('原直接入口与聊天共用规范题条件，不写作答或推断基础', () => {
+      store.start(topic);
+      expect(store.activeQuestion.scienceExercise).toMatchObject({ contract, input });
+      expect(store.activeQuestion.options).toContain(correctOption);
+      expect(store.state.attempts).toEqual([]);
+      expect(store.state.events.some((event) => event.type === 'profile.set')).toBe(false);
     });
 
     it.each(aliases)('明确选择%s保留同一目标、原合同与零作答，重复不新增', async (alias) => {

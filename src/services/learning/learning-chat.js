@@ -9,7 +9,7 @@ import { createFractionQuestion, FRACTION_CONTRACT } from '../../../laf-backend/
 import { createScienceQuestion } from '../../../laf-backend/functions/_shared/learning-science.js';
 import { DENSITY_TEMPLATE } from '../../../laf-backend/functions/_shared/learning-density.js';
 import { PRESSURE_TEMPLATE } from '../../../laf-backend/functions/_shared/learning-pressure.js';
-import { ENERGY_TEMPLATE } from '../../../laf-backend/functions/_shared/learning-visual.js';
+import { ENERGY_TEMPLATE, VELOCITY_GRAPH_TEMPLATE } from '../../../laf-backend/functions/_shared/learning-visual.js';
 import {
   createWritingQuestion,
   EMAIL_WRITING_CONTRACT
@@ -38,6 +38,8 @@ export function localChatOpening(raw) {
     raw.trim()
   );
   if (emailTopic) return { goal: '英文邮件写作', replaceActive: Boolean(emailTopic[1]) };
+  const graphTopic = /^(?:(review|practice|study)\s+)?velocity[-–— ]time graph[.!]?$/iu.exec(raw.trim());
+  if (graphTopic) return { goal: '速度—时间图', replaceActive: Boolean(graphTopic[1]) };
   const englishTopic =
     /^(?:(review|practice|study)\s+)?(equations|linear inequalities|fractions|density|(?:contact )?pressure|work and kinetic energy)[.!]?$/iu.exec(
       raw.trim()
@@ -70,9 +72,9 @@ export function localChatOpening(raw) {
       goal: '英文邮件写作',
       replaceActive: /^(?:(?:我想(?:要)?|想|请(?:帮我)?|帮我)\s*)?(?:复习|练习|学习)\s*/u.test(raw.trim())
     };
-  if (/^功[与和]动能$/u.test(request))
+  if (/^(?:功[与和]动能|速度[—–－-]?时间图)$/u.test(request))
     return {
-      goal: '功与动能',
+      goal: request.startsWith('速度') ? '速度—时间图' : '功与动能',
       replaceActive: /^(?:(?:我想(?:要)?|想|请(?:帮我)?|帮我)\s*)?(?:复习|练习|学习)\s*/u.test(raw.trim())
     };
   const topic =
@@ -168,6 +170,18 @@ export function localEnergyQuestion(id, conversationId, goal) {
   });
 }
 
+export function localVelocityGraphQuestion(id, conversationId, goal) {
+  if (!/^速度—时间图[。.!]?$/u.test(goal.trim()) || !conversationId) return null;
+  return createScienceQuestion(id, conversationId, {
+    template: VELOCITY_GRAPH_TEMPLATE,
+    points: [
+      { time: 0, velocity: 2 },
+      { time: 2, velocity: -2 },
+      { time: 4, velocity: 0 }
+    ]
+  });
+}
+
 export function localChatQuestion(id, opening, conversationId) {
   if (opening.goal)
     return (
@@ -176,6 +190,7 @@ export function localChatQuestion(id, opening, conversationId) {
       localDensityQuestion(id, conversationId, opening.goal) ||
       localPressureQuestion(id, conversationId, opening.goal) ||
       localEnergyQuestion(id, conversationId, opening.goal) ||
+      localVelocityGraphQuestion(id, conversationId, opening.goal) ||
       (opening.goal === '英文句子组织' && conversationId ? createSentenceQuestion(id, conversationId) : null) ||
       (opening.goal === '英文邮件写作' && conversationId ? createWritingQuestion(id, conversationId, 'email') : null)
     );
