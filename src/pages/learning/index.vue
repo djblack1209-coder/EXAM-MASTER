@@ -544,82 +544,82 @@
             /><BaseTag :tone="answerMascot.tone">{{ t(answerMascot.label) }}</BaseTag></view
           ><view class="question-actions"
             ><view class="question-secondary" role="group" :aria-label="t('learning.questionActions')"
-              ><BaseButton
-                small
-                variant="quiet"
+              ><BaseChip
+                action
+                surface="glass"
                 :disabled="learning.busy || learning.active?.stopped"
                 :aria-disabled="learning.busy || learning.active?.stopped"
                 @tap="sendDirective(learning.canReadChatWritingReference ? '读参考信件' : '提示')"
                 >{{
                   learning.canReadChatWritingReference ? t('learning.readSampleEmail') : t('learning.hint')
-                }}</BaseButton
-              ><BaseButton
+                }}</BaseChip
+              ><BaseChip
                 v-if="showConnections || !learning.activeQuestion.validation"
-                small
-                variant="quiet"
+                action
+                surface="glass"
                 :disabled="learning.busy || learning.active?.stopped"
                 :aria-disabled="learning.busy || learning.active?.stopped"
                 @tap="recordHint"
-                >{{ t('learning.k8') }}</BaseButton
-              ><BaseButton
-                small
-                variant="quiet"
+                >{{ t('learning.k8') }}</BaseChip
+              ><BaseChip
+                action
+                surface="glass"
                 :disabled="learning.busy || conversationStopped"
                 @tap="sendDirective('直接讲解')"
-                >{{ t('learning.chatExplain') }}</BaseButton
+                >{{ t('learning.chatExplain') }}</BaseChip
               ><template v-if="learning.activeQuestion.prerequisite"
-                ><BaseButton
-                  small
+                ><BaseChip
                   :disabled="learning.busy"
                   :aria-disabled="learning.busy"
-                  variant="quiet"
+                  action
+                  surface="glass"
                   @tap="learning.focus(learning.activeQuestion.prerequisite.originalQuestionKey)"
-                  >{{ t('learning.kpe') }}</BaseButton
-                ><BaseButton
-                  small
+                  >{{ t('learning.kpe') }}</BaseChip
+                ><BaseChip
                   :disabled="learning.busy || conversationStopped"
                   :aria-disabled="learning.busy || conversationStopped"
-                  variant="quiet"
+                  action
+                  surface="glass"
                   @tap="sendDirective('独立检验原题')"
-                  >{{ t('learning.k3z') }}</BaseButton
+                  >{{ t('learning.k3z') }}</BaseChip
                 ></template
               >
-              <BaseButton
+              <BaseChip
                 v-if="!learning.activeQuestion.prerequisite && learning.canDiagnose"
-                small
                 :disabled="learning.busy || conversationStopped"
                 :aria-disabled="learning.busy || conversationStopped"
-                variant="quiet"
+                action
+                surface="glass"
                 @tap="sendDirective('开始先修诊断')"
-                >{{ t('learning.kmm') }}</BaseButton
+                >{{ t('learning.kmm') }}</BaseChip
               ><template v-if="learning.questionImage"
-                ><BaseButton
-                  small
+                ><BaseChip
                   :disabled="learning.busy || conversationStopped"
                   :aria-disabled="learning.busy || conversationStopped"
-                  variant="quiet"
+                  action
+                  surface="glass"
                   @tap="interpretImage"
-                  >{{ t('learning.k3r') }}</BaseButton
+                  >{{ t('learning.k3r') }}</BaseChip
                 ></template
               >
               <template v-if="learning.canComputeReference"
-                ><BaseButton
-                  small
+                ><BaseChip
                   :disabled="learning.busy || conversationStopped"
                   :aria-disabled="learning.busy || conversationStopped"
-                  variant="quiet"
+                  action
+                  surface="glass"
                   @tap="computeReference"
-                  >{{ t('learning.ktu') }}</BaseButton
+                  >{{ t('learning.ktu') }}</BaseChip
                 ></template
               >
               <template v-if="learning.canCheckGrammar"
-                ><BaseButton
-                  small
+                ><BaseChip
                   :disabled="learning.busy || conversationStopped"
                   :aria-disabled="learning.busy || conversationStopped"
-                  variant="quiet"
+                  action
+                  surface="glass"
                   @tap="checkGrammar"
-                  >{{ t('learning.kfw') }}</BaseButton
+                  >{{ t('learning.kfw') }}</BaseChip
                 ></template
               >
               <view
@@ -627,25 +627,25 @@
                 class="question-action-group"
                 role="group"
                 :aria-label="t('learning.kki')"
-                ><BaseButton
-                  small
+                ><BaseChip
                   :disabled="learning.busy || conversationStopped"
                   :aria-disabled="learning.busy || conversationStopped"
-                  variant="quiet"
+                  action
+                  surface="glass"
                   @tap="run(() => learning.requestWritingFeedback())"
-                  >{{ t('learning.k72') }}</BaseButton
-                ><BaseButton
-                  small
+                  >{{ t('learning.k72') }}</BaseChip
+                ><BaseChip
                   :disabled="learning.busy || conversationStopped"
                   :aria-disabled="learning.busy || conversationStopped"
-                  variant="quiet"
+                  action
+                  surface="glass"
                   @tap="variant"
-                  >{{ t('learning.khe') }}</BaseButton
-                ><BaseButton
-                  small
+                  >{{ t('learning.khe') }}</BaseChip
+                ><BaseChip
                   :disabled="learning.busy || conversationStopped || !!learning.writingRetest"
                   :aria-disabled="learning.busy || conversationStopped || !!learning.writingRetest"
-                  variant="quiet"
+                  action
+                  surface="glass"
                   @tap="planWritingRetest"
                 >
                   {{
@@ -653,20 +653,20 @@
                       ? t('learning.kf0', { v0: learning.writingRetest.day.slice(5).replace('-', '/') })
                       : t('learning.k2m')
                   }}
-                </BaseButton></view
+                </BaseChip></view
               >
               <view
                 v-if="learning.activeQuestion.vocabularyReview?.phase === 'usage' && rubricAttempt"
                 class="question-action-group"
                 role="group"
                 :aria-label="t('learning.kcl')"
-                ><BaseButton
-                  small
+                ><BaseChip
                   :disabled="learning.busy || conversationStopped"
                   :aria-disabled="learning.busy || conversationStopped"
-                  variant="quiet"
+                  action
+                  surface="glass"
                   @tap="run(() => learning.requestVocabularyFeedback())"
-                  >{{ t('learning.k72') }}</BaseButton
+                  >{{ t('learning.k72') }}</BaseChip
                 ></view
               >
               <view
@@ -674,11 +674,11 @@
                 class="question-action-group"
                 role="group"
                 :aria-label="t('learning.k4y')"
-                ><BaseButton
-                  small
+                ><BaseChip
                   :disabled="learning.busy || conversationStopped || !!learning.scienceRetest"
                   :aria-disabled="learning.busy || conversationStopped || !!learning.scienceRetest"
-                  variant="quiet"
+                  action
+                  surface="glass"
                   @tap="run(() => learning.scheduleScienceRetest())"
                 >
                   {{
@@ -686,41 +686,41 @@
                       ? t('learning.kf0', { v0: learning.scienceRetest.day.slice(5).replace('-', '/') })
                       : t('learning.k2m')
                   }}
-                </BaseButton></view
+                </BaseChip></view
               >
-              <BaseButton
+              <BaseChip
                 v-if="
                   !learning.activeQuestion.writingExercise &&
                   !learning.activeQuestion.vocabularyReview &&
                   !learning.activeQuestion.sentenceExercise
                 "
-                small
-                variant="quiet"
+                action
+                surface="glass"
                 @tap="variant"
-                >{{ t('learning.k35') }}</BaseButton
-              ><BaseButton
+                >{{ t('learning.k35') }}</BaseChip
+              ><BaseChip
                 v-if="
                   (showConnections || !learning.activeQuestion.validation) &&
                   !learning.activeQuestion.scienceExercise &&
                   !learning.activeQuestion.vocabularyReview &&
                   !learning.activeQuestion.sentenceExercise
                 "
-                small
-                variant="quiet"
+                action
+                surface="glass"
                 @tap="editQuestion"
-                >{{ t('learning.k0') }}</BaseButton
-              ><BaseButton
+                >{{ t('learning.k0') }}</BaseChip
+              ><BaseChip
                 v-if="
                   learning.activeQuestion.answerType === 'subjective' &&
                   !learning.activeQuestion.validation &&
                   !learning.activeQuestion.vocabularyReview
                 "
-                small
                 :disabled="learning.busy || learning.materialBusy || learning.syncBusy"
                 :aria-disabled="learning.busy || learning.materialBusy || learning.syncBusy"
-                variant="quiet"
+                action
+                surface="glass"
                 @tap="editRubric"
-                >{{ t('learning.kbm') }}</BaseButton
+                >{{ t('learning.kbm') }}</BaseChip
               ></view
             ><BaseButton
               v-if="
@@ -911,9 +911,9 @@
         </view>
       </view>
       <view v-if="!learning.active" class="starter-row chat-starters" :aria-label="t('learning.chatExamples')">
-        <BaseButton v-for="starter in chatStarters" :key="starter" variant="secondary" @tap="draft = t(starter)">{{
+        <BaseChip v-for="starter in chatStarters" :key="starter" action surface="glass" @tap="draft = t(starter)">{{
           t(starter)
-        }}</BaseButton>
+        }}</BaseChip>
       </view>
       <LearningLab
         v-if="

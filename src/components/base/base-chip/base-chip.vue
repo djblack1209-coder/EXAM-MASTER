@@ -2,8 +2,9 @@
   <button
     ref="root"
     class="base-chip"
+    :class="{ 'base-chip--glass': surface === 'glass' }"
     role="button"
-    :aria-pressed="modelValue"
+    :aria-pressed="action ? undefined : modelValue"
     :disabled="disabled"
     :aria-disabled="disabled"
     :tabindex="disabled ? -1 : 0"
@@ -20,11 +21,13 @@ import BaseIcon from '../base-icon/base-icon.vue';
 import { formatNumber } from '@/i18n/format.js';
 const props = defineProps({
   modelValue: Boolean,
+  action: Boolean,
+  surface: { type: String, default: 'paper', validator: (value) => ['paper', 'glass'].includes(value) },
   disabled: Boolean,
   icon: { type: String, default: '' },
   count: { type: Number, default: null }
 });
-const emit = defineEmits(['update:modelValue']);
+const emit = defineEmits(['update:modelValue', 'tap', 'click']);
 const root = ref(null);
 let keyboardElement;
 onMounted(() => {
@@ -35,8 +38,15 @@ onMounted(() => {
 });
 onBeforeUnmount(() => keyboardElement?.removeEventListener?.('keydown', keydown));
 
-function toggle() {
-  if (!props.disabled) emit('update:modelValue', !props.modelValue);
+function toggle(event) {
+  if (props.disabled) return;
+  if (!props.action) emit('update:modelValue', !props.modelValue);
+  else {
+    emit('tap', event);
+    // #ifdef H5
+    emit('click', event);
+    // #endif
+  }
 }
 function keydown(event) {
   // #ifdef H5
@@ -46,7 +56,7 @@ function keydown(event) {
   if (!['Enter', ' '].includes(event.key)) return;
   event.preventDefault();
   event.stopPropagation();
-  if (!event.repeat) toggle();
+  if (!event.repeat) toggle(event);
 }
 </script>
 <style scoped>
@@ -66,9 +76,25 @@ function keydown(event) {
   color: var(--ink-2);
   font: var(--weight-medium) var(--size-small)/var(--leading-small) var(--font-ui);
   overflow-wrap: anywhere;
+  cursor: pointer;
   transition:
     background-color var(--t-state) var(--ease),
     border-color var(--t-state) var(--ease);
+}
+.base-chip--glass {
+  background: var(--glass);
+  border-color: var(--glass-line);
+  color: var(--violet-ink);
+  box-shadow: var(--lift-1);
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+}
+.base-chip:not([disabled]):hover {
+  background: var(--violet-soft);
+  border-color: var(--violet);
+}
+.base-chip:not([disabled]):active {
+  background: var(--violet-soft);
 }
 .base-chip::after {
   border: 0;
@@ -82,6 +108,8 @@ function keydown(event) {
 .base-chip[disabled] {
   opacity: 1;
   color: var(--ink-disabled);
+  cursor: default;
+  box-shadow: none;
 }
 .base-chip__count {
   font-size: var(--size-caption);
@@ -91,4 +119,28 @@ function keydown(event) {
   outline: var(--border-selected) solid var(--focus);
   outline-offset: var(--focus-offset);
 }
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+  .base-chip--glass {
+    background: var(--paper);
+    border-color: var(--line-strong);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+@supports not (backdrop-filter: blur(1px)) {
+  .base-chip--glass {
+    background: var(--paper);
+  }
+}
+</style>
+
+<style scoped>
+/* #ifdef MP-WEIXIN */
+.base-chip--glass {
+  background: var(--paper);
+  border-color: var(--line-strong);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+/* #endif */
 </style>

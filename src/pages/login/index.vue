@@ -30,11 +30,11 @@
             v-for="(method, index) in methods"
             :key="method"
             :class="`${method}-btn`"
-            :variant="['apple', 'google', 'wechat'].includes(method) ? method : index === 0 ? 'primary' : 'secondary'"
+            :variant="index === 0 && isMethodAvailable(method) ? 'primary' : 'secondary'"
             :icon="method === 'phone' ? 'phone' : method === 'email' ? 'mail' : method"
             block
             :loading="busy"
-            :disabled="busy"
+            :disabled="busy || !isMethodAvailable(method)"
             @tap="selectMethod(method)"
             >{{
               method === 'phone' && !capabilities.sms ? t('login.phoneClosed', { prefix }) : t(`login.${method}`)
@@ -233,6 +233,7 @@ const regions = computed(() => [
   { value: 'US', label: t('login.us') },
   { value: 'CN', label: t('login.cn') }
 ]);
+const isMethodAvailable = (method) => method !== 'phone' || !!capabilities.value.sms;
 const methods = computed(() =>
   availableLoginMethods(region.value, {
     platform,
@@ -240,7 +241,7 @@ const methods = computed(() =>
     providers: providers.value,
     capabilities: capabilities.value,
     desktop
-  })
+  }).sort((a, b) => Number(!isMethodAvailable(a)) - Number(!isMethodAvailable(b)))
 );
 const current = () => {
   const captured = { version, userId: getUserId(), token: getToken() };

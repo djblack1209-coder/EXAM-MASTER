@@ -1,9 +1,9 @@
 <template>
   <LearningShell v-if="!showLegacy" class="yozi-page" active="plan" :title="$t('pages.plan')">
-    <LearningOverview :initial-expanded="true" :show-navigation="false" view="plan" />
-    <view class="legacy-entry">
+    <template #controls>
       <BaseButton class="quiet-button" variant="secondary" @tap="toggleLegacy">{{ t('plan.copy0') }}</BaseButton>
-    </view>
+    </template>
+    <LearningOverview :initial-expanded="true" :show-navigation="false" view="plan" />
   </LearningShell>
   <view v-else class="yozi-page" :class="['container', { 'dark-mode': isDark, 'theme-light': !isDark }]">
     <view class="aurora-bg" />

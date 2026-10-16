@@ -131,6 +131,31 @@ describe('age privacy and local session latch', () => {
   });
 });
 describe('login page explicit actions', () => {
+  it.each(
+    ['US', 'CN'].flatMap((region) =>
+      ['zh-CN', 'en'].flatMap((language) => [false, true].map((sms) => [region, language, sms]))
+    )
+  )('%s / %s / SMS %s gives only the first available method primary emphasis', async (region, language, sms) => {
+    uni.setStorageSync('yozi_login_region', region);
+    setLanguage(language);
+    mocks.api.mockResolvedValue({
+      code: 0,
+      data: { apple: { clientId: 'fixture' }, google: { clientId: 'fixture' }, wechat: true, sms }
+    });
+    const wrapper = open();
+    await flushPromises();
+    const buttons = wrapper.get('.login-stack').findAllComponents(BaseButton);
+    const names = buttons.map((button) => button.text());
+    expect(names[0]).toBe(t(`login.${region === 'US' ? 'apple' : sms ? 'phone' : 'wechat'}`));
+    expect(buttons.filter((button) => button.props('variant') === 'primary')).toHaveLength(1);
+    expect(buttons[0].props('variant')).toBe('primary');
+    expect(buttons[0].props('disabled')).toBe(false);
+    if (!sms) {
+      expect(buttons.at(-1).text()).toBe(t('login.phoneClosed', { prefix: region === 'US' ? '+1' : '+86' }));
+      expect(buttons.at(-1).props()).toMatchObject({ variant: 'secondary', disabled: true });
+    }
+    expect(mocks.api.mock.calls.every(([body]) => body.type === 'capabilities')).toBe(true);
+  });
   it('a rejected age ticket clears the proof and returns to neutral confirmation', async () => {
     uni.setStorageSync('yozi_login_region', 'US');
     const wrapper = open();
@@ -188,6 +213,7 @@ describe('login page explicit actions', () => {
     const wrapper = open();
     await flushPromises();
     await agree(wrapper);
+    expect(action(wrapper, t('login.phoneClosed', { prefix: '+86' })).props('disabled')).toBe(true);
     await action(wrapper, t('login.phoneClosed', { prefix: '+86' })).vm.$emit('tap');
     await flushPromises();
     expect(wrapper.find('[role="alert"]').text()).toBe(t('login.smsClosed'));

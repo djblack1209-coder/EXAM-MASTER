@@ -25,6 +25,7 @@ import HomePage from '@/pages/index/index.vue';
 import SplashPage from '@/pages/splash/index.vue';
 import LearningPage from '@/pages/learning/index.vue';
 import ProfilePage from '@/pages/profile/index.vue';
+import StudyDetailPage from '@/pages/study-detail/index.vue';
 import OnboardingPage from '@/pages/login/onboarding.vue';
 import LoginPage from '@/pages/login/index.vue';
 import { useAuthStore } from '@/stores/modules/auth.js';
@@ -43,12 +44,13 @@ const loadHooks = vi.hoisted(() => ({ callbacks: [], showCallbacks: [], backCall
 vi.mock('@dcloudio/uni-app', () => ({
   onLoad: (callback) => loadHooks.callbacks.push(callback),
   onShow: (callback) => loadHooks.showCallbacks.push(callback),
+  onUnload: () => {},
   onHide: (callback) => loadHooks.hideCallbacks.push(callback),
   onBackPress: (callback) => loadHooks.backCallbacks.push(callback)
 }));
 import { useConversationLearningStore } from '@/stores/modules/conversation-learning.js';
 import { learningRepository } from '@/services/learning/learning-repository.js';
-import { setLanguage } from '@/i18n/index.js';
+import { setLanguage, t } from '@/i18n/index.js';
 import { learningText } from '@/i18n/learning.js';
 import {
   emptyLearningState,
@@ -2197,12 +2199,12 @@ describe('学习空间的实际入口与目录', () => {
     const wrapper = mount(ProfilePage, {
       global: { components: { CustomTabbar }, stubs: { ...stubs, CustomTabbar: false, image: true } }
     });
-    expect(wrapper.find('.page').classes()).toContain('dark-mode');
-    expect(wrapper.find('.tabbar-capsule').classes()).toContain('dark-mode');
+    expect(wrapper.get('.learning-space').classes()).toContain('space-dark');
+    expect(wrapper.get('.mobile-dock').element.closest('.space-dark')).toBe(wrapper.get('.learning-space').element);
     theme.setDarkMode(false);
     await flushPromises();
-    expect(wrapper.find('.page').classes()).not.toContain('dark-mode');
-    expect(wrapper.find('.tabbar-capsule').classes()).not.toContain('dark-mode');
+    expect(wrapper.get('.learning-space').classes()).toContain('space-light');
+    expect(wrapper.get('.mobile-dock').element.closest('.space-dark')).toBeNull();
     wrapper.unmount();
   });
   it('浮动导航说明当前页面，Enter 只发起一次跳转', async () => {
@@ -2267,7 +2269,7 @@ describe('学习空间的实际入口与目录', () => {
       vi.useRealTimers();
     }
   });
-  it('账户沿共享作答更新概览，旧题库数据保留独立口径', async () => {
+  it('账户导航到共享统计后沿原答更新概览，旧题库数据保留独立口径', async () => {
     const store = useConversationLearningStore();
     store.start('12 + 8');
     store.submit('19', true, 'profile-first');
@@ -2276,15 +2278,25 @@ describe('学习空间的实际入口与目录', () => {
     const wrapper = mount(ProfilePage, {
       global: { stubs: { ...stubs, LearningOverview: false, CustomTabbar: true, image: true } }
     });
-    expect(wrapper.find('.learning-overview').text()).toContain('1 次');
+    expect(wrapper.find('.learning-overview').exists()).toBe(false);
     expect(wrapper.text()).toContain('历史题库记录');
     expect(wrapper.find('.stats-card').text()).toContain('7');
+    await wrapper
+      .findAll('button')
+      .find((button) => button.text().trim() === '统计')
+      .trigger('tap');
+    expect(uni.navigateTo).toHaveBeenCalledWith(expect.objectContaining({ url: '/pages/study-detail/index' }));
+    const statistics = mount(StudyDetailPage, {
+      global: { stubs: { ...stubs, LearningOverview: false, image: true } }
+    });
+    expect(statistics.get('.learning-overview').text()).toContain('1 次');
     store.submit('20', true, 'profile-second');
     await flushPromises();
-    expect(wrapper.find('.learning-overview').text()).toContain('2 次');
+    expect(statistics.get('.learning-overview').text()).toContain('2 次');
     expect(store.summary.first).toMatchObject({ numerator: 1, denominator: 1 });
     expect(legacy.studyProgress.completedQuestions).toBe(7);
     expect(store.state.attempts).toHaveLength(2);
+    statistics.unmount();
     wrapper.unmount();
   });
   it.each([
@@ -2314,11 +2326,12 @@ describe('学习空间的实际入口与目录', () => {
       api.mockClear();
       expect(wrapper.find('.qq-btn').exists()).toBe(false);
       const email = wrapper.find('.email-btn');
-      expect(email.attributes('aria-disabled')).toBe('true');
+      expect(email.attributes('aria-disabled')).toBe('false');
       await email.trigger('keydown', { key: 'Enter' });
       await email.trigger('keydown', { key: ' ' });
       expect(api).not.toHaveBeenCalled();
       expect(wrapper.find('.email-form').exists()).toBe(false);
+      expect(wrapper.get('.login-error').text()).toBe(t('login.consent'));
       await wrapper.find('#e2e-login-agreement').trigger('keydown', { key: ' ' });
       await email.trigger('keydown', { key: 'Enter' });
       await flushPromises();
@@ -2663,7 +2676,7 @@ describe('学习空间的实际入口与目录', () => {
     try {
       await vi.advanceTimersByTimeAsync(1800);
       const fallback = wrapper.get('button.manual-entry');
-      expect(fallback.text()).toBe('进入首页');
+      expect(fallback.text()).toBe('首页');
       expect(fallback.attributes('role')).toBe('button');
       expect(wrapper.text()).not.toContain('从提问，走向理解');
       expect(wrapper.text()).not.toContain('Yozi AI Team');
