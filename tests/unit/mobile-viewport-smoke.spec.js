@@ -94,6 +94,7 @@ describe('mobile viewport smoke config', () => {
 
 describe('mobile entry initialization checks with synthetic pages', () => {
   let browser;
+  let context;
   let root;
   let server;
   let baseUrl;
@@ -106,14 +107,25 @@ describe('mobile entry initialization checks with synthetic pages', () => {
     server = served.server;
     baseUrl = `http://127.0.0.1:${served.port}`;
     browser = await chromium.launch({
+      // Synthetic DOM/resource checks need no GPU work. Actual product visuals
+      // are verified separately with the browser's normal graphics path.
+      args: ['--disable-gpu'],
       channel:
         process.env.YOZI_MOBILE_SMOKE_BROWSER_CHANNEL || (existsSync(chromium.executablePath()) ? undefined : 'chrome')
     });
+    // These synthetic documents share no cookies or storage. Keep one dedicated
+    // context instead of browser.newPage() creating/retiring a cold profile per check.
+    // Each check still owns a fresh page, handlers, bindings and document globals.
+    context = await browser.newContext({ viewport: MOBILE_VIEWPORTS[0] });
   });
 
   afterAll(async () => {
     try {
-      await browser?.close();
+      try {
+        await context?.close();
+      } finally {
+        await browser?.close();
+      }
     } finally {
       server?.closeAllConnections();
       if (server) await new Promise((resolve) => server.close(resolve));
@@ -126,7 +138,7 @@ describe('mobile entry initialization checks with synthetic pages', () => {
       path.join(root, 'index.html'),
       `<!doctype html><html><head><link rel="icon" href="data:,"></head><body>${html}</body></html>`
     );
-    const page = await browser.newPage({ viewport: MOBILE_VIEWPORTS[0] });
+    const page = await context.newPage();
     try {
       await configure(page);
       return await verifyMobileRoute(page, { baseUrl, route, readyTimeoutMs: 250, observationMs: 120, ...options });

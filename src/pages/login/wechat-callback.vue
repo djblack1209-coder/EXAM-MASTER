@@ -1,15 +1,22 @@
 <template>
   <view class="callback-container" :class="{ 'dark-mode': isDark, 'theme-light': !isDark }">
     <BaseCard class="callback-card">
-      <BaseEmpty v-if="isLoading" state="loading" :title="t('login.verifying')" :desc="t('login.verifyingHelp')" />
+      <BaseEmpty
+        v-if="isLoading"
+        state="loading"
+        mascot-size="large"
+        :title="t('login.verifying')"
+        :desc="t('login.verifyingHelp')"
+      />
       <view v-else-if="loginSuccess" class="callback-success" role="status" aria-live="polite">
-        <YoziMascot pose="celebrate" play="once" size="state" />
+        <YoziMascot pose="celebrate" play="once" size="large" />
         <text class="callback-title">{{ t(desktopCompleted ? 'login.authorized' : 'login.signedIn') }}</text>
         <text class="callback-hint">{{ t(desktopCompleted ? 'login.returnDesktop' : 'login.redirecting') }}</text>
       </view>
       <BaseEmpty
         v-else-if="loginError"
         state="error"
+        mascot-size="large"
         :title="t('login.failed')"
         :desc="errorMessage === '安全验证失败或授权已过期，请重新登录' ? t('login.authorizationExpired') : errorMessage"
         show-button
@@ -170,22 +177,53 @@ onUnmounted(() => {
 }
 .callback-card {
   width: 100%;
-  max-width: var(--dialog-width);
+  max-width: calc(var(--dialog-width) + var(--s-14) * 3);
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+.callback-card :deep(.base-state) {
+  gap: var(--s-6);
+  padding: var(--s-8) 0;
+}
+.callback-card :deep(.base-state__halo) {
+  width: auto;
+  height: auto;
+}
+.callback-card :deep(.base-state__title) {
+  font-size: var(--size-title-1);
+  line-height: var(--leading-title-1);
+  text-wrap: balance;
+}
+.callback-card :deep(.base-state__description) {
+  font-size: var(--size-body);
+  line-height: var(--leading-body);
+}
+.callback-card :deep(.base-button) {
+  min-width: 220px;
+  min-height: var(--control-height);
+  font-size: var(--size-body);
 }
 .callback-success {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--s-2);
+  gap: var(--s-6);
   text-align: center;
   padding: var(--s-3);
 }
 .callback-title {
-  font: var(--weight-ui-emphasis) var(--size-title-3)/var(--leading-title-3) var(--font-ui);
+  font: var(--weight-ui-emphasis) var(--size-title-1)/var(--leading-title-1) var(--font-ui);
 }
 .callback-hint {
   color: var(--ink-3);
   font-size: var(--size-small);
   line-height: var(--leading-small);
+}
+@media (max-width: 767px) {
+  .callback-card :deep(.yozi-mascot) {
+    width: 200px;
+    height: 200px;
+  }
 }
 </style>

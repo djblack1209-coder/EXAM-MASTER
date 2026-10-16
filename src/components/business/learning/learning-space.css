@@ -607,9 +607,6 @@
 .learning-space .space-sidebar .space-nav-item:not(.selected) {
   color: var(--ink-2);
 }
-.learning-space .legacy-entry {
-  margin-top: var(--s-6);
-}
 .learning-space.yozi-page :where(.section-head, .section-header) {
   padding-inline: 0;
 }

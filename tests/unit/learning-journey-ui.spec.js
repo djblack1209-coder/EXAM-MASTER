@@ -303,7 +303,11 @@ describe('学习路线的明确操作与阅读', () => {
       global: { stubs }
     });
     expect(wrapper.findAll('.summary-count').map((e) => e.text())).toEqual(['1', '0', '1']);
-    expect(wrapper.text()).toContain('可靠正确 0 / 0');
+    expect(wrapper.findAll('.base-stat').map((stat) => stat.text())).toEqual([
+      '已完成任务1/ 1',
+      '可靠作答0 次',
+      '待核对1 次'
+    ]);
     expect(wrapper.text()).not.toContain('%');
     expect(wrapper.find('[aria-label="学习统计范围"]').exists()).toBe(false);
     expect(wrapper.find('.answer-distribution').attributes('aria-label')).toContain('待核对1次');

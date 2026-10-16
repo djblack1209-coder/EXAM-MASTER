@@ -8,6 +8,7 @@ import LearningOverview from '@/components/business/learning/learning-overview.v
 import LearningJourney from '@/components/business/learning/learning-journey.vue';
 import YoziMascot from '@/components/base/yozi-mascot/yozi-mascot.vue';
 import BaseButton from '@/components/base/base-button/base-button.vue';
+import BaseChip from '@/components/base/base-chip/base-chip.vue';
 import BaseOptions from '@/components/base/base-options/base-options.vue';
 import BaseInput from '@/components/base/base-input/base-input.vue';
 import { useConversationLearningStore } from '@/stores/modules/conversation-learning.js';
@@ -495,7 +496,7 @@ describe('learning i18n', () => {
     await flushPromises();
     expect(wrapper.text()).toContain('Completed independently this time');
     expect(wrapper.text()).toContain('本次独立完成');
-    const hint = wrapper.findAllComponents(BaseButton).find((button) => button.text() === 'Record a hint used');
+    const hint = wrapper.findAllComponents(BaseChip).find((button) => button.text() === 'Record a hint used');
     await hint.trigger('tap');
     await flushPromises();
     const modal = wrapper.findAllComponents(CustomModal).find((component) => component.props('visible'));
@@ -532,9 +533,9 @@ describe('learning i18n', () => {
     const actions = wrapper.get('.question-actions');
     const buttons = actions.findAllComponents(BaseButton);
     expect(buttons.filter((button) => button.props('variant') === 'primary')).toHaveLength(1);
-    expect(
-      buttons.filter((button) => button.props('variant') === 'quiet').every((button) => button.props('small'))
-    ).toBe(true);
+    const chips = actions.findAllComponents(BaseChip);
+    expect(chips.length).toBeGreaterThan(0);
+    expect(chips.every((chip) => chip.props('action') && chip.props('surface') === 'glass')).toBe(true);
     expect(actions.text()).toContain('要个提示');
     expect(actions.text()).toContain('变式练习');
     expect(actions.text()).toContain('校对题目');

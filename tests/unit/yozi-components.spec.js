@@ -127,6 +127,22 @@ describe('canonical controls and drafts', () => {
     await w.trigger('tap');
     expect(w.emitted('update:modelValue')).toHaveLength(1);
   });
+  it('action chip is keyboard reachable, fires once, and never changes a selection draft', async () => {
+    const w = render(BaseChip, { action: true, surface: 'glass' }, { default: 'Give me a hint' });
+    expect(w.attributes('aria-pressed')).toBeUndefined();
+    expect(w.attributes('tabindex')).toBe('0');
+    await w.trigger('keydown', { key: 'Enter' });
+    expect(w.emitted('tap')).toHaveLength(1);
+    expect(w.emitted('click')).toHaveLength(1);
+    expect(w.emitted('update:modelValue')).toBeUndefined();
+    await w.trigger('keydown', { key: ' ', repeat: true });
+    expect(w.emitted('tap')).toHaveLength(1);
+    await w.setProps({ disabled: true });
+    await w.trigger('tap');
+    await w.trigger('keydown', { key: ' ' });
+    expect(w.emitted('tap')).toHaveLength(1);
+    expect(w.attributes('tabindex')).toBe('-1');
+  });
   it('segmented has one selected tab, roving focus, wrap, Home/End and skips disabled tabs', async () => {
     const options = [
       { value: 'today', label: 'Today' },
