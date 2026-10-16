@@ -125,6 +125,7 @@ onBeforeUnmount(() => {
 .base-icon__svg :deep(svg) {
   width: 100%;
   height: 100%;
+  fill: none;
 }
 /* The official Apple silhouette takes the foreground of its official button. */
 .base-icon__apple {
