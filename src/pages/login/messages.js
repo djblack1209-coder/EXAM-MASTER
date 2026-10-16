@@ -1,4 +1,4 @@
-import { registerMessages } from '@/i18n/index.js';
+import { registerMessages, t } from '@/i18n/index.js';
 const zh = {
   title: '登录 Yozi AI',
   subtitle: '在手机和电脑之间接着学',
@@ -67,6 +67,8 @@ const zh = {
   networkCode: '请求状态不确定，请先检查邮箱。',
   browser: '请在系统浏览器完成授权后返回。',
   learner: '学习者',
+  welcome: '欢迎，每天学明白一点',
+  phoneClosed: '手机号登录 {prefix} · 暂未开放',
   onboard: '开始学习',
   direction: '备考方向',
   subjects: '选择科目',
@@ -155,6 +157,8 @@ const en = {
   networkCode: 'The request status is uncertain. Please check your inbox first.',
   browser: 'Complete sign-in in your browser, then return here.',
   learner: 'Learner',
+  welcome: 'Welcome. A little clearer, every day.',
+  phoneClosed: 'Phone sign-in {prefix} · coming soon',
   onboard: 'Start learning',
   direction: 'Exam goal',
   subjects: 'Choose subjects',
@@ -177,5 +181,11 @@ const en = {
 };
 registerMessages('login', { 'zh-CN': zh, en });
 
-// Fixed English presentation; form, consent and errors retain the user's language.
-export const loginPresentation = Object.freeze({ title: en.title, subtitle: en.subtitle });
+export const loginPresentation = Object.freeze({
+  get title() {
+    return t('login.title');
+  },
+  get subtitle() {
+    return t('login.subtitle');
+  }
+});

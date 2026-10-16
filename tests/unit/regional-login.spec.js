@@ -161,11 +161,13 @@ describe('login page explicit actions', () => {
     await regions.vm.$emit('update:modelValue', 'US');
     await flushPromises();
     expect(uni.getStorageSync('yozi_login_region')).toBe('US');
-    expect(wrapper.text()).toContain('Sign in to Yozi AI');
-    expect(action(wrapper, '使用邮箱登录').props('disabled')).toBe(true);
+    expect(wrapper.text()).toContain('登录 Yozi AI');
+    expect(action(wrapper, '使用邮箱登录').props('disabled')).toBe(false);
     await action(wrapper, '使用邮箱登录').vm.$emit('tap');
     await flushPromises();
     expect(wrapper.find('.age-form').exists()).toBe(false);
+    expect(wrapper.find('[role=alert]').text()).toBe(t('login.consent'));
+    expect(mocks.api.mock.calls.every(([body]) => body.type === 'capabilities')).toBe(true);
     await agree(wrapper);
     await action(wrapper, '使用邮箱登录').vm.$emit('tap');
     await flushPromises();
@@ -180,21 +182,17 @@ describe('login page explicit actions', () => {
     expect(mocks.api).toHaveBeenCalledWith({ type: 'age_confirm', region: 'US', year: 2000, month: 1 });
     expect(uni.getStorageSync('yozi_birth')).toBeFalsy();
   });
-  it('phone closed response is visible and directs to other methods in English', async () => {
+  it('closed phone sign-in is labelled and cannot send a request in English', async () => {
     uni.setStorageSync('yozi_login_region', 'CN');
     setLanguage('en');
     const wrapper = open();
     await flushPromises();
     await agree(wrapper);
-    await action(wrapper, 'Continue with phone').vm.$emit('tap');
-    await flushPromises();
-    const phone = wrapper.findAllComponents(BaseInput)[0];
-    await phone.vm.$emit('update:modelValue', '13800000000');
-    await wrapper.findAllComponents(BaseInput)[1].vm.$emit('resend');
+    await action(wrapper, t('login.phoneClosed', { prefix: '+86' })).vm.$emit('tap');
     await flushPromises();
     expect(wrapper.find('[role="alert"]').text()).toBe(t('login.smsClosed'));
-    expect(action(wrapper, 'Use another option')).toBeTruthy();
-    expect(mocks.api.mock.calls.at(-1)[0]).toMatchObject({ type: 'phone', prefix: '+86', region: 'CN' });
+    expect(action(wrapper, 'Continue with email')).toBeTruthy();
+    expect(mocks.api.mock.calls.every(([body]) => body.type === 'capabilities')).toBe(true);
   });
   it('underage erases all draft values, does not call backend, and back cannot reopen age', async () => {
     uni.setStorageSync('yozi_login_region', 'US');

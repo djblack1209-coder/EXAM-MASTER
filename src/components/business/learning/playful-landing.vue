@@ -1,5 +1,10 @@
 <template>
-  <view class="playful-footer theme-light" :aria-label="landingPresentation.space" :style="$yoziInsets">
+  <view
+    class="playful-footer"
+    :class="theme.isDark ? 'theme-dark' : 'theme-light'"
+    :aria-label="landingPresentation.space"
+    :style="$yoziInsets"
+  >
     <view class="playful-background" aria-hidden="true">
       <YoziMascot pose="wave" size="large" play="auto" />
     </view>
@@ -15,8 +20,9 @@
           variant="quiet"
           align="start"
           @tap="$emit('open', item.id)"
-          >{{ landingPresentation[item.key] }}</BaseButton
-        >
+          ><text>{{ landingPresentation[item.key] }}</text
+          ><BaseIcon name="arrow-right"
+        /></BaseButton>
       </view>
     </view>
     <view class="playful-logo" role="img" :aria-label="BRAND.name">
@@ -24,7 +30,6 @@
       <text>{{ BRAND.english }}</text>
     </view>
     <view class="playful-contact">
-      <BaseButton variant="secondary" @tap="$emit('open', 'desktop')">{{ landingPresentation.desktop }}</BaseButton>
       <view class="playful-contact-links">
         <BaseButton
           variant="primary"
@@ -39,16 +44,20 @@
           v-for="item in actions"
           :key="item.id"
           variant="quiet"
-          icon-only
           :icon="item.icon"
           :label="landingPresentation[item.key]"
+          :aria-label="landingPresentation[item.key]"
           @tap="$emit('open', item.id)"
-        />
+          >{{ landingPresentation[item.key] }}</BaseButton
+        >
       </view>
     </view>
   </view>
 </template>
 <script setup>
+import { useThemeStore } from '@/stores/modules/theme.js';
+import BaseIcon from '@/components/base/base-icon/base-icon.vue';
+const theme = useThemeStore();
 import { BRAND } from '@/config/brand.js';
 import { landingPresentation } from '@/i18n/messages/landing.js';
 import BaseButton from '@/components/base/base-button/base-button.vue';
@@ -115,6 +124,7 @@ const actions = [
 .playful-nav :deep(.base-button) {
   padding-inline: 0;
   color: var(--playful-ink);
+  min-height: var(--touch-min);
   font-size: var(--playful-nav-size);
   line-height: var(--playful-nav-leading);
 }
@@ -142,7 +152,7 @@ const actions = [
   max-width: calc(25.7vw - var(--s-6));
 }
 .playful-contact-links {
-  margin-top: var(--s-6);
+  margin-top: 0;
 }
 .playful-socials {
   display: flex;
@@ -159,6 +169,23 @@ const actions = [
   align-items: center;
   justify-content: center;
   pointer-events: none;
+}
+.playful-nav :deep(.base-button:hover) text {
+  text-decoration: underline;
+  text-underline-offset: 6px;
+}
+.playful-nav :deep(.base-icon) {
+  width: 16px;
+  height: 16px;
+}
+.playful-socials :deep(.base-button) {
+  padding-inline: var(--s-2);
+  font-size: var(--size-caption);
+  color: var(--playful-ink);
+}
+.playful-background :deep(.yozi-mascot) {
+  width: clamp(256px, 32vw, 460px);
+  height: clamp(256px, 32vw, 460px);
 }
 @media (max-width: 900px) {
   .playful-logo text {

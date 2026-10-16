@@ -30,21 +30,15 @@
             v-for="(method, index) in methods"
             :key="method"
             :class="`${method}-btn`"
-            :variant="
-              ['apple', 'google', 'wechat'].includes(method)
-                ? method
-                : index === 0
-                  ? 'primary'
-                  : method === 'email'
-                    ? 'secondary'
-                    : 'quiet'
-            "
+            :variant="['apple', 'google', 'wechat'].includes(method) ? method : index === 0 ? 'primary' : 'secondary'"
             :icon="method === 'phone' ? 'phone' : method === 'email' ? 'mail' : method"
             block
             :loading="busy"
-            :disabled="busy || !agreedToTerms"
+            :disabled="busy"
             @tap="selectMethod(method)"
-            >{{ t(`login.${method}`) }}</BaseButton
+            >{{
+              method === 'phone' && !capabilities.sms ? t('login.phoneClosed', { prefix }) : t(`login.${method}`)
+            }}</BaseButton
           >
           <text v-if="!methods.length" role="status">{{ t('login.providerClosed') }}</text>
         </view>
@@ -151,14 +145,14 @@
       </BaseCard>
       <view v-if="step === 'methods'" class="login-offline"
         ><text>{{ t('login.offline') }}</text
-        ><BaseButton variant="quiet" @tap="openHomeTab()">{{ t('login.start') }}</BaseButton></view
+        ><BaseButton variant="secondary" block @tap="openHomeTab()">{{ t('login.start') }}</BaseButton></view
       >
     </view>
   </view>
 </template>
 <script setup>
 import { loginPresentation } from './messages.js';
-import { ref, computed, onMounted, onUnmounted } from 'vue';
+import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue';
 import { onShow, onHide } from '@dcloudio/uni-app';
 import { t, currentLanguage, setLanguage } from '@/i18n/index.js';
 import BaseButton from '@/components/base/base-button/base-button.vue';
@@ -275,6 +269,13 @@ const registration = () => ({ region: region.value, ...(region.value === 'US' &&
 function consent() {
   if (!agreedToTerms.value) {
     error.value = t('login.consent');
+    // #ifdef H5
+    nextTick(() =>
+      document
+        .querySelector('#e2e-login-agreement [role=checkbox], #e2e-login-agreement input, #e2e-login-agreement')
+        ?.focus?.()
+    );
+    // #endif
     return false;
   }
   return true;
@@ -310,6 +311,10 @@ function needsAge() {
   return region.value === 'US' && !getToken() && (!ageTicket || ageExpiresAt <= Date.now());
 }
 async function selectMethod(method) {
+  if (method === 'phone' && !capabilities.value.sms) {
+    if (consent()) error.value = t('login.smsClosed');
+    return;
+  }
   if (!consent() || busy.value || !methods.value.includes(method)) return;
   error.value = '';
   if (region.value === 'US' && age.isBlocked()) {
@@ -609,7 +614,9 @@ onMounted(async () => {
   min-height: 100vh;
   box-sizing: border-box;
   padding: var(--s-4) var(--s-5) var(--s-8);
-  background: var(--canvas);
+  background:
+    radial-gradient(ellipse at 22% 18%, var(--glow-1), transparent 52%),
+    radial-gradient(ellipse at 85% 75%, var(--glow-2), transparent 50%), var(--canvas);
   color: var(--ink);
   font-family: var(--font-ui);
 }
@@ -684,6 +691,32 @@ onMounted(async () => {
   }
   .login-content {
     margin-top: var(--s-6);
+  }
+}
+</style>
+
+<style scoped>
+.login-panel {
+  border: var(--border-thin) solid var(--glass-line);
+  box-shadow: var(--lift-3);
+}
+.login-content {
+  margin-top: var(--s-5);
+}
+.login-hero .yozi-mascot {
+  width: 144px;
+  height: 144px;
+}
+.login-title {
+  text-wrap: balance;
+}
+.login-offline {
+  justify-items: stretch;
+}
+@media (max-width: 767px) {
+  .login-hero .yozi-mascot {
+    width: 112px;
+    height: 112px;
   }
 }
 </style>

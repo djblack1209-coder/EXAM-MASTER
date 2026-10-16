@@ -1,10 +1,10 @@
 <template>
   <view class="onboarding-page" :class="themeStore.isDark ? 'theme-dark' : 'theme-light'" :style="$yoziInsets">
-    <BaseCard surface="glass">
+    <BaseCard surface="glass" :class="{ 'onboarding-welcome': !legacyMode }">
       <view class="onboarding-stack">
-        <YoziMascot pose="wave" play="once" size="medium" />
+        <YoziMascot pose="wave" play="once" size="large" />
         <text class="onboarding-title">{{
-          !legacyMode ? BRAND.name : t(`login.${['direction', 'subjects', 'daily', 'summary'][step]}`)
+          !legacyMode ? t('login.welcome') : t(`login.${['direction', 'subjects', 'daily', 'summary'][step]}`)
         }}</text>
         <BaseTag v-if="legacyMode">{{ step + 1 }} / 4</BaseTag>
         <BaseTag v-if="legacyMode && step === 0">{{ t('login.exam') }}</BaseTag>
@@ -49,7 +49,6 @@
 </template>
 <script setup>
 import { useThemeStore } from '@/stores/modules/theme.js';
-import { BRAND } from '@/config/brand.js';
 const themeStore = useThemeStore();
 import './messages.js';
 import { t } from '@/i18n/index.js';
@@ -197,6 +196,8 @@ function skipOnboarding() {
   min-height: 100vh;
   padding: var(--s-8) var(--s-5);
   margin: 0 auto;
+  display: grid;
+  align-items: center;
   color: var(--ink);
   background: var(--canvas);
   font-family: var(--font-ui);
@@ -227,4 +228,35 @@ function skipOnboarding() {
   padding-top: calc(var(--yozi-nav-top, 0px) + var(--s-8));
 }
 /* #endif */
+</style>
+
+<style scoped>
+.onboarding-welcome {
+  width: 100%;
+  background: transparent;
+  box-shadow: none;
+  border: 0;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+.onboarding-welcome .onboarding-stack {
+  justify-items: center;
+  text-align: center;
+  gap: var(--s-8);
+}
+.onboarding-welcome .onboarding-title {
+  font-size: var(--size-title-1);
+  line-height: var(--leading-title-1);
+  text-wrap: balance;
+}
+.onboarding-welcome :deep(.base-button) {
+  width: auto;
+  min-width: 220px;
+}
+@media (max-width: 767px) {
+  .onboarding-welcome :deep(.yozi-mascot) {
+    width: 200px;
+    height: 200px;
+  }
+}
 </style>

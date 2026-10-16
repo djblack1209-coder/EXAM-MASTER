@@ -77,7 +77,7 @@
   </view>
 </template>
 <script setup>
-import { nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
+import { nextTick, onMounted, onUnmounted, ref, watch, computed } from 'vue';
 import { BRAND } from '@/config/brand.js';
 import { FUTURE_ASSETS, bindFutureSky, runFutureEntrance } from '@/design/future-motion.js';
 import { landingPresentation } from '@/i18n/messages/landing.js';
@@ -95,7 +95,7 @@ let useEntrance = false;
 useEntrance = true;
 // #endif
 const entrancePending = ref(useEntrance);
-const ticker = landingPresentation.ticker.repeat(5);
+const ticker = computed(() => landingPresentation.ticker.repeat(5));
 let skyControl;
 let stopEntrance = () => undefined;
 let disposed = false;

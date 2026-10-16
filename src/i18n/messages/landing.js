@@ -1,4 +1,4 @@
-import { registerMessages } from '@/i18n/index.js';
+import { registerMessages, t } from '@/i18n/index.js';
 
 // Only landing consumers register this dictionary; core i18n never imports it.
 export const landingMessages = {
@@ -16,7 +16,8 @@ export const landingMessages = {
     'topic.discussion': '英文学术讨论',
     'topic.narrative': '中文叙事写作',
     'topic.material': '中文材料论证',
-    headline: 'imagination\nmeets craft',
+    badge: '每个问题，都是起点',
+    headline: '从一个问题\n学到真正明白',
     space: 'Yozi AI 学习空间',
     navigation: '学习导航',
     learn: '学习',
@@ -25,12 +26,12 @@ export const landingMessages = {
     history: '学习足迹',
     desktop: '桌面体验',
     start: '开始学习',
-    materials: '私人资料',
-    connections: '模型连接',
-    account: '我的账户',
+    materials: '资料',
+    connections: '连接',
+    account: '我的',
     home: '首页',
     motion: '动效',
-    ticker: 'BRANDING·PRODUCT·UI/UX·'
+    ticker: '提问·理解·练习·复习·'
   },
   en: {
     'topic.function': 'Function practice',
@@ -46,7 +47,8 @@ export const landingMessages = {
     'topic.discussion': 'English academic discussion',
     'topic.narrative': 'Chinese narrative writing',
     'topic.material': 'Chinese source-based argument',
-    headline: 'imagination\nmeets craft',
+    badge: 'Every question is a start',
+    headline: 'one question\na clearer mind',
     space: 'Yozi AI learning space',
     navigation: 'Learning navigation',
     learn: 'Learn',
@@ -60,10 +62,17 @@ export const landingMessages = {
     account: 'My account',
     home: 'Home',
     motion: 'Motion',
-    ticker: 'BRANDING·PRODUCT·UI/UX·'
+    ticker: 'ASK·LEARN·PRACTISE·REVIEW·'
   }
 };
 registerMessages('landing', landingMessages);
 
-// Original template presentation stays English; learning content follows the selected locale.
-export const landingPresentation = Object.freeze({ ...landingMessages.en, badge: 'have a fresh idea?' });
+// Layout follows the template; all product labels follow the selected language.
+export const landingPresentation = Object.freeze(
+  Object.defineProperties(
+    {},
+    Object.fromEntries(
+      Object.keys(landingMessages.en).map((key) => [key, { enumerable: true, get: () => t(`landing.${key}`) }])
+    )
+  )
+);
