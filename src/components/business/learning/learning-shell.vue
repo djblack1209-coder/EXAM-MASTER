@@ -112,6 +112,20 @@
             :label="t('learning.ki6')"
           />
         </view>
+        <view
+          v-if="learning.state.attempts.length"
+          class="button-row record-filters"
+          role="group"
+          :aria-label="t('learning.records.filter')"
+        >
+          <BaseChip
+            v-for="filter in learning.recordFilters"
+            :key="filter"
+            :model-value="recordFilter === filter"
+            @update:model-value="recordFilter = recordFilter === filter ? 'all' : filter"
+            >{{ t(`learning.records.${filter}`) }}</BaseChip
+          >
+        </view>
         <view v-if="recordSearch" class="recent-list" :aria-label="t('learning.records.results')">
           <text class="sidebar-caption" role="status">{{
             t('learning.records.count', { count: recordSearch.total })
@@ -130,14 +144,23 @@
             <view class="material-copy">
               <text class="sidebar-label">{{ record.label }}</text>
               <text class="sidebar-caption">{{ record.day }} · {{ record.excerpt }}</text>
+              <view v-if="record.kind === 'answer'" class="button-row">
+                <BaseTag tone="neutral">{{
+                  t(`learning.records.${record.gradeStatus === 'reliable' ? record.outcome : 'pending'}`)
+                }}</BaseTag>
+                <BaseTag v-if="record.helped" tone="neutral">{{ t('learning.records.helped') }}</BaseTag>
+              </view>
             </view>
           </BaseButton>
           <BaseEmpty
             v-if="!recordSearch.total"
             :title="t('learning.records.empty')"
             show-button
-            :button-text="t('learning.records.clear')"
-            @action="query = ''"
+            :button-text="t(recordFilter === 'all' ? 'learning.records.clear' : 'learning.records.reset')"
+            @action="
+              query = '';
+              recordFilter = 'all';
+            "
           />
           <BaseButton v-if="recordPage" variant="quiet" @tap="recordPage--">{{
             t('learning.records.previous')
@@ -278,6 +301,7 @@ import BaseEmpty from '@/components/base/base-empty/base-empty.vue';
 import { learningText } from '@/i18n/learning.js';
 import BaseButton from '@/components/base/base-button/base-button.vue';
 import BaseInput from '@/components/base/base-input/base-input.vue';
+import BaseChip from '@/components/base/base-chip/base-chip.vue';
 
 import { computed, ref, onMounted, onUnmounted, nextTick, watch } from 'vue';
 import { useConversationLearningStore } from '@/stores/modules/conversation-learning.js';
@@ -304,12 +328,15 @@ const menuOpen = ref(false);
 const menuLeaving = ref(false);
 const reducedMotion = ref(true);
 const query = ref('');
+const recordFilter = ref('all');
 const recordPage = ref(0);
 const recordSearch = computed(() =>
-  query.value.trim() ? learning.searchRecords(query.value, { offset: recordPage.value * 8, limit: 8 }) : null
+  query.value.trim() || recordFilter.value !== 'all'
+    ? learning.searchRecords(query.value, { offset: recordPage.value * 8, limit: 8, filter: recordFilter.value })
+    : null
 );
 watch(
-  query,
+  [query, recordFilter],
   () => {
     recordPage.value = 0;
   },
@@ -319,6 +346,7 @@ watch(
   () => JSON.stringify([learning.state.owner, learning.recordContext()]),
   () => {
     query.value = '';
+    recordFilter.value = 'all';
   },
   { flush: 'sync' }
 );

@@ -13,6 +13,7 @@ import LearningPage from '@/pages/learning/index.vue';
 import LearningShell from '@/components/business/learning/learning-shell.vue';
 import BaseInput from '@/components/base/base-input/base-input.vue';
 import BaseButton from '@/components/base/base-button/base-button.vue';
+import BaseChip from '@/components/base/base-chip/base-chip.vue';
 import '@/pages/learning/messages.js';
 vi.mock('@dcloudio/uni-app', () => ({ onLoad: () => {}, onShow: () => {}, onHide: () => {}, onBackPress: () => {} }));
 const clone = (value) => JSON.parse(JSON.stringify(value));
@@ -214,5 +215,118 @@ describe('record location uses canonical facts', () => {
     expect(wrapper.get('#learning-record-original').text()).toContain('Pending review');
     expect(wrapper.get('[data-test="located-original-answer"]').element.textContent).toBe(first.answer);
     expect(store.exportData()).toBe(afterOpen);
+  });
+});
+
+describe('cross-subject review filters use saved evidence', () => {
+  it('separates reliable wrong, partial, pending and helped answers without counting unsubmitted questions', () => {
+    const state = fixture(),
+      before = clone(state);
+    expect(searchLearningRecords(state, '', { filter: 'wrong' }).items.map((row) => row.attemptId)).toEqual(['wrong']);
+    expect(searchLearningRecords(state, '', { filter: 'partial' }).total).toBe(0);
+    expect(searchLearningRecords(state, '', { filter: 'pending' }).items.map((row) => row.attemptId)).toEqual([
+      'essay-answer'
+    ]);
+    expect(searchLearningRecords(state, '', { filter: 'helped' }).items[0]).toMatchObject({
+      attemptId: 'essay-answer',
+      gradeStatus: 'pending',
+      outcome: null,
+      helped: true
+    });
+    expect(state).toEqual(before);
+    state.attempts = [];
+    expect(searchLearningRecords(state, '', { filter: 'pending' }).total).toBe(0);
+  });
+  it('uses the latest effective correction, keeps partial separate, and never upgrades AI assistance to reliable grading', () => {
+    const state = fixture();
+    state.attempts[1].corrections = [{ grade: { status: 'pending', outcome: null } }];
+    state.attempts[1].assistance = [{ score: 100, outcome: 'correct' }];
+    state.attempts[0].grade = { status: 'reliable', outcome: 'partial' };
+    expect(searchLearningRecords(state, '', { filter: 'wrong' }).items).toEqual([]);
+    expect(searchLearningRecords(state, '', { filter: 'partial' }).items.map((row) => row.attemptId)).toEqual(['old']);
+    expect(searchLearningRecords(state, '', { filter: 'pending' }).items.map((row) => row.attemptId)).toEqual([
+      'essay-answer',
+      'wrong'
+    ]);
+    state.attempts[1].corrections.push({ grade: { status: 'reliable', outcome: 'correct' } });
+    expect(searchLearningRecords(state, '', { filter: 'pending' }).items.map((row) => row.attemptId)).toEqual([
+      'essay-answer'
+    ]);
+  });
+  it('intersects literal search with a filter and retains an old wrong answer after a later correct attempt', () => {
+    const state = fixture();
+    state.attempts.push({
+      ...state.attempts[1],
+      id: 'fixed',
+      answer: 'x=3',
+      at: 6000,
+      grade: { status: 'reliable', outcome: 'correct' }
+    });
+    expect(searchLearningRecords(state, 'x=2', { filter: 'wrong' }).items.map((row) => row.attemptId)).toEqual([
+      'wrong'
+    ]);
+    expect(searchLearningRecords(state, 'English', { filter: 'wrong' }).total).toBe(0);
+    expect(learningRecordTarget(state, searchLearningRecords(state, '', { filter: 'wrong' }).items[0].id).answer).toBe(
+      'x=2'
+    );
+  });
+  it('paginates the filtered result rather than filtering an already truncated page', () => {
+    const state = fixture(),
+      base = state.attempts[1];
+    state.attempts = Array.from({ length: 23 }, (_, i) => ({ ...base, id: `wrong-${i}`, at: 10000 + i }));
+    const pages = [0, 8, 16].map((offset) => searchLearningRecords(state, '', { offset, limit: 8, filter: 'wrong' }));
+    expect(pages.map((page) => page.items.length)).toEqual([8, 8, 7]);
+    expect(new Set(pages.flatMap((page) => page.items.map((row) => row.id))).size).toBe(23);
+    expect(pages.map((page) => page.total)).toEqual([23, 23, 23]);
+    expect(pages.at(-1).hasMore).toBe(false);
+  });
+  it.each(['mastered', '__proto__', null])('rejects unsupported filters %s', (filter) => {
+    expect(() => searchLearningRecords(fixture(), '', { filter })).toThrow();
+  });
+  it('filters and resets in the existing shell without writing facts or requesting a model, including in English', async () => {
+    const { store } = await storeRecords();
+    const wrapper = mount(LearningShell, {
+      attachTo: document.body,
+      global: {
+        stubs: {
+          view: { template: '<div><slot /></div>' },
+          text: { template: '<span><slot /></span>' },
+          BaseIcon: true
+        }
+      }
+    });
+    wrappers.push(wrapper);
+    const before = store.exportData(),
+      request = vi.spyOn(uni, 'request');
+    const chips = () => wrapper.findAllComponents(BaseChip);
+    chips()
+      .find((row) => row.text() === '待核对')
+      .vm.$emit('update:modelValue', true);
+    await flushPromises();
+    expect(wrapper.get('[aria-label="学习记录搜索结果"]').text()).toContain('2条记录');
+    expect(wrapper.get('[aria-label="学习记录搜索结果"]').text()).not.toContain('计算 12 + 8');
+    expect(store.exportData()).toBe(before);
+    chips()
+      .find((row) => row.text() === '用过帮助')
+      .vm.$emit('update:modelValue', true);
+    await flushPromises();
+    expect(wrapper.text()).toContain('没有匹配的学习记录');
+    expect(wrapper.findAllComponents(BaseButton).some((row) => row.text() === '清除筛选')).toBe(true);
+    setLanguage('en');
+    await flushPromises();
+    expect(wrapper.text()).toContain('No matching learning records');
+    wrapper
+      .findAllComponents(BaseButton)
+      .find((row) => row.text() === 'Clear filters')
+      .vm.$emit('tap');
+    await flushPromises();
+    expect(wrapper.find('[aria-label="Learning record search results"]').exists()).toBe(false);
+    expect(
+      chips()
+        .find((row) => row.text() === 'All')
+        .props('modelValue')
+    ).toBe(true);
+    expect(store.exportData()).toBe(before);
+    expect(request).not.toHaveBeenCalled();
   });
 });
