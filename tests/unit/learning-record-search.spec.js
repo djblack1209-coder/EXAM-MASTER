@@ -4,6 +4,7 @@ import { flushPromises, mount } from '@vue/test-utils';
 import { emptyLearningState } from '@/services/learning/learning-domain.js';
 import {
   searchLearningRecords,
+  createLearningRecordSearch,
   learningRecordTarget
 } from '../../laf-backend/functions/_shared/learning-record-search.js';
 import { useConversationLearningStore } from '@/stores/modules/conversation-learning.js';
@@ -80,6 +81,35 @@ function fixture() {
   return state;
 }
 describe('owner-local learning record search', () => {
+  it('reuses readonly projections across queries, pages and equivalent reads, and rebuilds for revision or lifecycle changes', () => {
+    const state = fixture(),
+      search = createLearningRecordSearch();
+    const build = vi.spyOn(state.questions, 'map');
+    const DateTimeFormat = Intl.DateTimeFormat;
+    const dates = vi.spyOn(Intl, 'DateTimeFormat').mockImplementation(function (...args) {
+      return new DateTimeFormat(...args);
+    });
+    expect(search.search(state, 'absent-from-records', {}, 'context-a').total).toBe(0);
+    expect(dates).not.toHaveBeenCalled();
+    const result = search.search(state, '', { limit: 1 }, 'context-a');
+    expect(dates).toHaveBeenCalledTimes(1);
+    const target = search.target(state, result.items[0].id, 'context-a');
+    expect(Object.isFrozen(target.grade)).toBe(true);
+    expect(build).toHaveBeenCalledTimes(1);
+    const equivalent = clone(state),
+      equivalentBuild = vi.spyOn(equivalent.questions, 'map');
+    search.search(equivalent, '', { offset: 1, limit: 1 }, 'context-a');
+    expect(equivalentBuild).not.toHaveBeenCalled();
+    equivalent.attempts[0].answer = 'new-revision-evidence';
+    equivalent.revision++;
+    expect(search.search(equivalent, 'new-revision-evidence', {}, 'context-a').total).toBe(1);
+    expect(equivalentBuild).toHaveBeenCalledTimes(1);
+    const restored = clone(equivalent);
+    restored.attempts[0].answer = 'restored-same-revision';
+    expect(search.search(restored, 'restored-same-revision', {}, 'context-b').total).toBe(1);
+    search.clear();
+    expect(search.search(emptyLearningState('other-owner'), '', {}, 'context-c').total).toBe(0);
+  });
   it('finds goals, exact question versions, subjects and full original answers across disciplines without mutation', () => {
     const state = fixture(),
       before = clone(state);
@@ -211,6 +241,7 @@ describe('record location uses canonical facts', () => {
       .findAllComponents(BaseInput)
       .find((row) => Number(row.props('maxlength')) === 120)
       .vm.$emit('update:modelValue', '第一稿');
+    await new Promise((resolve) => setTimeout(resolve, 200));
     await flushPromises();
     expect(shell.get('[aria-label="学习记录搜索结果"]').text()).toContain('第一稿');
     expect(wrapper.get('[data-test="located-original-answer"]').text()).toContain('第一稿');
@@ -299,6 +330,7 @@ describe('record location uses canonical facts', () => {
       input = shell.findAllComponents(BaseInput).find((row) => Number(row.props('maxlength')) === 120);
     const before = store.exportData();
     input.vm.$emit('update:modelValue', '第一稿');
+    await new Promise((resolve) => setTimeout(resolve, 200));
     await flushPromises();
     expect(store.exportData()).toBe(before);
     const row = shell.findAllComponents(BaseButton).find((button) => button.text().includes('第一稿'));
@@ -316,6 +348,36 @@ describe('record location uses canonical facts', () => {
 });
 
 describe('cross-subject review filters use saved evidence', () => {
+  it('debounces draft input, clears immediately, and cancels pending work on unmount without submitting facts', async () => {
+    const { store } = await storeRecords();
+    const before = store.exportData();
+    const wrapper = mount(LearningShell, { global: { stubs: { BaseIcon: true } } });
+    const input = wrapper.findAllComponents(BaseInput).find((row) => Number(row.props('maxlength')) === 120);
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
+    try {
+      const search = vi.spyOn(store, 'searchRecords');
+      for (const value of ['第', '第一', '第一稿']) input.vm.$emit('update:modelValue', value);
+      await vi.advanceTimersByTimeAsync(179);
+      await flushPromises();
+      expect(search).not.toHaveBeenCalled();
+      expect(wrapper.text()).toContain('正在读取学习记录');
+      await vi.advanceTimersByTimeAsync(1);
+      await flushPromises();
+      expect(search).toHaveBeenCalledTimes(1);
+      expect(wrapper.get('[aria-label="学习记录搜索结果"]').text()).toContain('第一稿');
+      input.vm.$emit('update:modelValue', '');
+      await flushPromises();
+      expect(wrapper.find('[aria-label="学习记录搜索结果"]').exists()).toBe(false);
+      input.vm.$emit('update:modelValue', '取消中的搜索');
+      wrapper.unmount();
+      await vi.advanceTimersByTimeAsync(1000);
+      expect(search).toHaveBeenCalledTimes(1);
+      expect(store.exportData()).toBe(before);
+    } finally {
+      wrapper.unmount();
+      vi.useRealTimers();
+    }
+  });
   it('separates reliable wrong, partial, pending and helped answers without counting unsubmitted questions', () => {
     const state = fixture(),
       before = clone(state);
@@ -332,6 +394,7 @@ describe('cross-subject review filters use saved evidence', () => {
     });
     expect(state).toEqual(before);
     state.attempts = [];
+    state.revision++;
     expect(searchLearningRecords(state, '', { filter: 'pending' }).total).toBe(0);
   });
   it('uses the latest effective correction, keeps partial separate, and never upgrades AI assistance to reliable grading', () => {
@@ -346,6 +409,7 @@ describe('cross-subject review filters use saved evidence', () => {
       'wrong'
     ]);
     state.attempts[1].corrections.push({ grade: { status: 'reliable', outcome: 'correct' } });
+    state.revision++;
     expect(searchLearningRecords(state, '', { filter: 'pending' }).items.map((row) => row.attemptId)).toEqual([
       'essay-answer'
     ]);
