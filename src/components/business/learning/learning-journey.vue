@@ -163,7 +163,7 @@
 <script setup>
 import BaseEmpty from '@/components/base/base-empty/base-empty.vue';
 import { learningText } from '@/i18n/learning.js';
-import { t } from '@/i18n/index.js';
+import { publicError, t } from '@/i18n/index.js';
 import BaseStat from '@/components/base/base-stat/base-stat.vue';
 import BaseCard from '@/components/base/base-card/base-card.vue';
 import BaseButton from '@/components/base/base-button/base-button.vue';
@@ -255,7 +255,7 @@ async function save() {
     await nextTick();
     if (learning.selectedConversationId === conversationId) reveal();
   } catch (error) {
-    message.value = error.message;
+    message.value = publicError(error);
     failed.value = true;
     await revealFailure();
   }
@@ -290,7 +290,7 @@ async function startModule(module) {
     await nextTick();
     training.value?.reveal();
   } catch (error) {
-    message.value = error.message;
+    message.value = publicError(error);
     failed.value = true;
     await revealFailure();
   }

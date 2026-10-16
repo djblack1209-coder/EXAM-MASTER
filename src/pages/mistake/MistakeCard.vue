@@ -38,7 +38,7 @@
 
 <script setup>
 import '@/pages/mistake/messages.js';
-import { t } from '@/i18n/index.js';
+import { publicError, t } from '@/i18n/index.js';
 import BaseOptions from '@/components/base/base-options/base-options.vue';
 import BaseButton from '@/components/base/base-button/base-button.vue';
 import '@/styles/yozi-pages.scss';
@@ -100,7 +100,7 @@ function startPractice() {
     expectedQuestions: [props.item],
     referenceViewedIds: referenceViewed.value ? [id] : []
   });
-  if (!result.success) return toast.info(result.message || t('mistake.copy62'));
+  if (!result.success) return toast.info(publicError(result) || t('mistake.copy62'));
   safeNavigateTo(result.url);
 }
 </script>

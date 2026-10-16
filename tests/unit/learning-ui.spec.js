@@ -732,7 +732,7 @@ describe('选择项与明确保存', () => {
       expect(p.store.state.attempts[0]).toEqual(first);
       expect(p.store.active.pendingHints).toHaveLength(1);
       expect(p.store.active.pendingHints[0].reference.id).toBe('mcmurrey-inquiry-letter-body-en-v1');
-      expect(p.wrapper.text()).toContain('公开示例，仅供参考。');
+      expect(p.wrapper.text()).toContain('公开参考内容，不计入学习记录。');
       expect(p.wrapper.text()).toContain('Dear Technical Support Department:');
       expect(p.wrapper.text()).toContain('https://mcmassociates.io/textbook/examples/inquirex2c.html');
       expect(p.store.state.events.some((event) => ['strategy.set', 'model.request'].includes(event.type))).toBe(false);
@@ -748,11 +748,13 @@ describe('选择项与明确保存', () => {
       await p.store.send('英文邮件写作', { chatEntry: true });
       setLanguage('en');
       await flushPromises();
-      expect(p.button('Read sample email')).toBeTruthy();
-      expect(learningText('公开示例，仅供参考。')).toBe('Public sample for reference.');
+      expect(p.button('Read reference email')).toBeTruthy();
+      expect(learningText('公开参考内容，不计入学习记录。')).toBe(
+        'Public reference material. This is not a learning record.'
+      );
       await p.store.send('停止');
       await flushPromises();
-      expect(p.button('Read sample email').attributes('disabled')).toBeDefined();
+      expect(p.button('Read reference email').attributes('disabled')).toBeDefined();
       expect(p.store.active.pendingHints).toEqual([]);
     } finally {
       p.wrapper.unmount();
@@ -1251,7 +1253,8 @@ describe('同步等待与冲突确认', () => {
       p.dialogs.at(-1).success({ confirm: true });
       await flushPromises();
       expect(p.wrapper.get('[data-test="record-sync-status"]').attributes('role')).toBe('alert');
-      expect(p.wrapper.get('[data-test="record-sync-status"]').text()).toContain('同步连接暂不可用');
+      expect(p.wrapper.get('[data-test="record-sync-status"]').text()).toContain(t('ui.operationFailed'));
+      expect(p.wrapper.get('[data-test="record-sync-status"]').text()).not.toContain('同步连接暂不可用');
       expect(transport).toHaveBeenCalledTimes(1);
       transport.mockImplementation((options) => {
         options.success({ data: { success: true, data: { deleted: true } } });
@@ -1260,7 +1263,7 @@ describe('同步等待与冲突确认', () => {
       await p.button('删除云端学习副本').trigger('tap');
       p.dialogs.at(-1).success({ confirm: true });
       await flushPromises();
-      expect(p.wrapper.get('[data-test="record-sync-status"]').text()).toContain('未确认教学结果缓存清除');
+      expect(p.wrapper.get('[data-test="record-sync-status"]').text()).toContain(t('ui.contentDeleteUnconfirmed'));
       expect(p.wrapper.text()).not.toContain('服务端已确认清除学习副本和教学结果缓存');
       expect(p.store.state.attempts[0].answer).toBe('19');
     } finally {
@@ -2015,7 +2018,7 @@ describe('学习空间的实际入口与目录', () => {
       wrapper.vm.showMaterial = true;
       await flushPromises();
       await button('解析设置').trigger('tap');
-      await wrapper.get('input[aria-label="资料解析器令牌"]').setValue('TEST_ONLY_MATERIAL_UI_TOKEN_32_CHARS');
+      await wrapper.get('input[aria-label="资料识别服务令牌"]').setValue('TEST_ONLY_MATERIAL_UI_TOKEN_32_CHARS');
       await button('授权并连接').trigger('tap');
       await flushPromises();
       expect(wrapper.find('[data-test="material-connection-pending"]').exists()).toBe(true);
@@ -2025,7 +2028,7 @@ describe('学习空间的实际入口与目录', () => {
       await flushPromises();
       expect(store.materialConnectionBusy).toBe(false);
       expect(wrapper.get('[data-test="material-feedback"]').text()).toContain('取消');
-      expect(wrapper.get('input[aria-label="资料解析器令牌"]').element.value).toBe('');
+      expect(wrapper.get('input[aria-label="资料识别服务令牌"]').element.value).toBe('');
       await button('授权并连接').trigger('tap');
       resolve({
         ok: true,

@@ -116,7 +116,7 @@ pub async fn learning_notification_permission(request: bool, consent: bool) -> R
 #[tauri::command]
 pub async fn replace_learning_notifications(
     state: State<'_, LearningNotifications>, token: String, sequence: u64,
-    jobs: Vec<NotificationJob>, consent: bool,
+    jobs: Vec<NotificationJob>, consent: bool, language: Option<String>,
 ) -> Result<Value, String> {
     if !jobs.is_empty() && !consent { return Err("请先明确允许系统提醒".into()); }
     let now = SystemTime::now().duration_since(UNIX_EPOCH).map_err(|_| "系统时间不合法")?.as_millis() as u64;
@@ -125,7 +125,7 @@ pub async fn replace_learning_notifications(
     let mut current = state.session.lock().map_err(|_| "通知状态不可用")?;
     if token != current.0 || sequence <= current.1 { return Err("通知请求已失效".into()); }
     current.1 = sequence;
-    native_call(json!({ "action": "replace", "jobs": jobs }))
+    native_call(json!({ "action": "replace", "jobs": jobs, "language": if language.as_deref() == Some("en") { "en" } else { "zh-CN" } }))
 }
 #[tauri::command]
 pub fn take_learning_notification_actions(_state: State<'_, LearningNotifications>) -> Vec<Value> {

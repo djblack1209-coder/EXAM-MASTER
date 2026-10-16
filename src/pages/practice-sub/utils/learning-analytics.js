@@ -650,37 +650,17 @@ class LearningAnalytics {
     // 获取当前用户数据
     const userReport = this.getComprehensiveReport();
 
-    // 生成估算的同水平用户数据分布（详见 _generatePeerData 方法注释）
-    const peerData = this._generatePeerData(userReport.overview);
-
     return {
-      _isEstimated: true, // 标记：当前为本地估算，非真实同伴数据
+      available: false,
       user: {
         score: userReport.overview.learningScore,
         accuracy: parseFloat(userReport.overview.overallAccuracy),
         streak: userReport.streak.currentStreak,
         questions: userReport.overview.totalQuestions
       },
-      peers: peerData,
-      comparison: {
-        scorePercentile: this._calculatePercentile(
-          userReport.overview.learningScore,
-          peerData.map((p) => p.score)
-        ),
-        accuracyPercentile: this._calculatePercentile(
-          parseFloat(userReport.overview.overallAccuracy),
-          peerData.map((p) => p.accuracy)
-        ),
-        streakPercentile: this._calculatePercentile(
-          userReport.streak.currentStreak,
-          peerData.map((p) => p.streak)
-        ),
-        questionsPercentile: this._calculatePercentile(
-          userReport.overview.totalQuestions,
-          peerData.map((p) => p.questions)
-        )
-      },
-      insights: this._generatePeerInsights(userReport.overview, peerData)
+      peers: [],
+      comparison: null,
+      insights: []
     };
   }
 
@@ -691,33 +671,7 @@ class LearningAnalytics {
   predictScore() {
     this.init();
 
-    const report = this.getComprehensiveReport();
-    const trend = this.getProgressTrend(30);
-    const efficiency = this.getLearningEfficiency();
-
-    // 基于多种因素估算分数趋势
-    // ⚠️ 仅为参考性估算，非专业预测模型
-    // TODO: 后续应接入后端机器学习模型进行更准确的预测
-    const baseScore = parseFloat(report.overview.overallAccuracy) || 0;
-    const trendFactor = trend.improvementRate > 0 ? 1 + trend.improvementRate / 100 : 0.95;
-    const efficiencyFactor = parseFloat(efficiency.overall.averageEfficiency) > 2 ? 1.05 : 0.98;
-    const streakFactor = report.streak.currentStreak > 7 ? 1.03 : 0.99;
-
-    let predictedScore = baseScore * trendFactor * efficiencyFactor * streakFactor;
-    predictedScore = Math.min(100, Math.max(0, predictedScore));
-
-    return {
-      _isEstimated: true, // 标记：仅为参考性估算
-      predictedScore: predictedScore.toFixed(1),
-      confidence: Math.min(95, Math.max(50, 70 + report.overview.totalQuestions / 100)),
-      factors: {
-        baseScore: baseScore.toFixed(1),
-        trendFactor: trendFactor.toFixed(2),
-        efficiencyFactor: efficiencyFactor.toFixed(2),
-        streakFactor: streakFactor.toFixed(2)
-      },
-      recommendations: this._generateScoreRecommendations(predictedScore, report)
-    };
+    return { available: false, predictedScore: null, confidence: null, factors: null, recommendations: [] };
   }
 
   // ==================== 私有辅助方法 ====================
@@ -849,131 +803,6 @@ class LearningAnalytics {
       bestDay,
       worstDay
     };
-  }
-
-  /**
-   * 生成模拟的同水平用户数据
-   * ⚠️ 注意：当前为本地估算，非真实同伴数据
-   * TODO: 后续应从服务器获取真实的匿名同水平用户统计数据
-   * @param {Object} userData - 用户数据
-   * @returns {Array} 估算的同水平用户数据
-   */
-  _generatePeerData(userData) {
-    const peers = [];
-    const baseScore = userData.learningScore;
-    const baseAccuracy = parseFloat(userData.overallAccuracy) || 0;
-    const baseStreak = userData.currentStreak;
-    const baseQuestions = userData.totalQuestions;
-
-    // 基于用户数据生成估算的同水平分布（非真实用户）
-    for (let i = 0; i < 10; i++) {
-      peers.push({
-        id: `estimated_${i}`,
-        score: Math.round(baseScore + (Math.random() * 20 - 10)),
-        accuracy: parseFloat((baseAccuracy + (Math.random() * 15 - 7.5)).toFixed(1)),
-        streak: Math.max(0, Math.round(baseStreak + (Math.random() * 10 - 5))),
-        questions: Math.max(0, Math.round(baseQuestions + (Math.random() * 100 - 50))),
-        _isEstimated: true // 标记为估算数据，非真实用户
-      });
-    }
-
-    return peers;
-  }
-
-  /**
-   * 计算百分位数
-   * @param {number} value - 用户值
-   * @param {Array} peerValues - 同水平用户值
-   * @returns {number} 百分位数
-   */
-  _calculatePercentile(value, peerValues) {
-    const allValues = [...peerValues, value].sort((a, b) => a - b);
-    const index = allValues.indexOf(value);
-    return Math.round((index / (allValues.length - 1)) * 100);
-  }
-
-  /**
-   * 生成同水平对比洞察
-   * @param {Object} userData - 用户数据
-   * @param {Array} peerData - 同水平用户数据
-   * @returns {Array} 洞察
-   */
-  _generatePeerInsights(userData, peerData) {
-    const insights = [];
-
-    // [AUDIT R297] 防止空数组除零产生 NaN
-    if (!peerData || peerData.length === 0) return insights;
-
-    const avgPeerScore = peerData.reduce((sum, p) => sum + p.score, 0) / peerData.length;
-    const avgPeerAccuracy = peerData.reduce((sum, p) => sum + p.accuracy, 0) / peerData.length;
-    const avgPeerStreak = peerData.reduce((sum, p) => sum + p.streak, 0) / peerData.length;
-
-    if (userData.learningScore > avgPeerScore) {
-      insights.push('你的学习得分高于同水平用户平均水平，继续保持！');
-    } else {
-      insights.push('你的学习得分低于同水平用户平均水平，建议增加练习时间。');
-    }
-
-    if (parseFloat(userData.overallAccuracy) > avgPeerAccuracy) {
-      insights.push('你的正确率高于同水平用户，解题能力较强。');
-    } else {
-      insights.push('你的正确率低于同水平用户，建议加强基础知识学习。');
-    }
-
-    if (userData.currentStreak > avgPeerStreak) {
-      insights.push('你的连续学习天数高于同水平用户，学习习惯良好。');
-    } else {
-      insights.push('你的连续学习天数低于同水平用户，建议保持学习连续性。');
-    }
-
-    return insights;
-  }
-
-  /**
-   * 生成分数提升建议
-   * @param {number} predictedScore - 预测分数
-   * @param {Object} report - 综合报告
-   * @returns {Array} 建议列表
-   */
-  _generateScoreRecommendations(predictedScore, report) {
-    const recommendations = [];
-
-    if (predictedScore < 60) {
-      recommendations.push({
-        type: 'score',
-        priority: 'high',
-        title: '夯实基础',
-        content: '建议从基础知识点开始系统复习，每日保持稳定练习量'
-      });
-    } else if (predictedScore < 80) {
-      recommendations.push({
-        type: 'score',
-        priority: 'medium',
-        title: '突破瓶颈',
-        content: '建议针对薄弱知识点进行专项训练，提升正确率'
-      });
-    }
-
-    if (report.streak && !report.streak.isStudiedToday) {
-      recommendations.push({
-        type: 'consistency',
-        priority: 'medium',
-        title: '保持连续性',
-        content: '今天还没学习，坚持每日练习有助于提升预测分数'
-      });
-    }
-
-    if (report.knowledge && report.knowledge.weakPoints && report.knowledge.weakPoints.length > 0) {
-      const weakName = report.knowledge.weakPoints[0].category;
-      recommendations.push({
-        type: 'weak_point',
-        priority: 'high',
-        title: '攻克薄弱项',
-        content: `「${weakName}」是当前最薄弱的知识点，重点突破可有效提分`
-      });
-    }
-
-    return recommendations;
   }
 }
 

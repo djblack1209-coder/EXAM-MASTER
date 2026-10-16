@@ -550,7 +550,7 @@
 <script setup>
 import BaseEmpty from '@/components/base/base-empty/base-empty.vue';
 import { learningText } from '@/i18n/learning.js';
-import { t } from '@/i18n/index.js';
+import { publicError, t } from '@/i18n/index.js';
 import BaseButton from '@/components/base/base-button/base-button.vue';
 import BaseChip from '@/components/base/base-chip/base-chip.vue';
 import BaseInput from '@/components/base/base-input/base-input.vue';
@@ -763,13 +763,13 @@ function confirm() {
   };
   try {
     const recipe = confirmedDiagramRecipe(input, source.value);
-    if (!props.recordHelp || props.recordHelp(props.context, input) !== true) throw Error('演示帮助未保存，请重试');
+    if (!props.recordHelp || props.recordHelp(props.context, input) !== true) throw Error('观察帮助未保存，请重试');
     confirmed.value = true;
     opened.value = false;
     error.value = '';
     emit('confirm', recipe);
   } catch (e) {
-    error.value = e.message;
+    error.value = publicError(e);
   }
 }
 watch([() => props.context, () => source.value?.stamp, () => source.value?.image, () => props.resetKey], release, {

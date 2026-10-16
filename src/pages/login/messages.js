@@ -76,7 +76,7 @@ const zh = {
   save: '保存设置',
   previous: '上一步',
   skip: '跳过',
-  exam: '2027 考研公共课',
+  exam: '{year} 考研公共课',
   politics: '政治',
   english1: '英语一',
   english2: '英语二',
@@ -84,10 +84,7 @@ const zh = {
   math2: '数学二',
   math3: '数学三',
   summary: '确认设置',
-  perDay: '{count} 题/天',
-  sourcePending: '核对来源',
-  passagePending: '补篇章',
-  improving: '完善中'
+  perDay: '{count} 题/天'
 };
 const en = {
   title: 'Sign in to Yozi AI',
@@ -158,7 +155,7 @@ const en = {
   browser: 'Complete sign-in in your browser, then return here.',
   learner: 'Learner',
   welcome: 'Welcome. A little clearer, every day.',
-  phoneClosed: 'Phone sign-in {prefix} · coming soon',
+  phoneClosed: 'Phone sign-in {prefix} · unavailable',
   onboard: 'Start learning',
   direction: 'Exam goal',
   subjects: 'Choose subjects',
@@ -166,7 +163,7 @@ const en = {
   save: 'Save settings',
   previous: 'Previous',
   skip: 'Skip',
-  exam: '2027 postgraduate entrance exam',
+  exam: '{year} postgraduate entrance exam',
   politics: 'Politics',
   english1: 'English I',
   english2: 'English II',
@@ -174,10 +171,7 @@ const en = {
   math2: 'Mathematics II',
   math3: 'Mathematics III',
   summary: 'Confirm settings',
-  perDay: '{count} questions/day',
-  sourcePending: 'Source pending',
-  passagePending: 'Passage pending',
-  improving: 'In progress'
+  perDay: '{count} questions/day'
 };
 registerMessages('login', { 'zh-CN': zh, en });
 

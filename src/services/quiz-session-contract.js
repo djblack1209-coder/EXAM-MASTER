@@ -7,6 +7,13 @@ import {
 } from '../../laf-backend/functions/_shared/learning-quiz-original.js';
 const FALLBACK_CHOICE_OPTIONS = ['选项A', '选项B', '选项C', '选项D'];
 
+// Preserve old local fixtures, but never adopt them as real practice records.
+export function isSeededPracticeRecord(record) {
+  return [record, record?.quizOriginal?.fields].some(
+    (item) => item && (item.source === 'guest_demo' || item.sourceType === 'guest_demo')
+  );
+}
+
 export function isValidQuizSessionId(value) {
   return typeof value === 'string' && /^[a-zA-Z0-9_-]{1,64}$/.test(value);
 }
@@ -53,6 +60,7 @@ export const LEGACY_REVIEW_HANDOFF_KEY = 'legacy_review_handoff_v1';
 // 旧条目只能重用完整原题；缺失资料不以样例选项或默认答案补齐。
 export function normalizeLegacyReviewQuestion(record) {
   if (!record || typeof record !== 'object' || Array.isArray(record)) return null;
+  if (isSeededPracticeRecord(record)) return null;
   const id = record.id ?? record._id;
   const question =
     record.question ?? record.question_content ?? record.questionContent ?? record.content ?? record.title;
@@ -125,6 +133,7 @@ export function legacyReviewQuestionIdentity(record) {
 export function prepareQuizQuestion(record, index = 0) {
   try {
     if (!record || typeof record !== 'object' || Array.isArray(record)) return null;
+    if (isSeededPracticeRecord(record)) return null;
     const original = captureQuizOriginal(record);
     validateCapturedQuizOriginal(original);
     const parsed = normalizeLegacyReviewQuestion({ ...original.fields, id: original.id, quizOriginal: original });

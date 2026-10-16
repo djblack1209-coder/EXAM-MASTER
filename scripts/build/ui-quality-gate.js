@@ -15,6 +15,89 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { gunzipSync, brotliDecompressSync } from 'node:zlib';
+
+// Match product copy, development routes and known synthetic-data markers.
+// Framework properties (placeholder/debug) and educational tests are not UI copy.
+export const PUBLIC_BUILD_RULES = [
+  [
+    'development-route',
+    /platforms\/h5\/components|component-preview|(?:pages|platforms)\/(?:[^"'\s/]+\/)*(?:visual-qa|future-reference|dev-preview)/i
+  ],
+  [
+    'development-copy',
+    /本地演示|示例题(?:库)?|开发中|未接入|内测|连接模型|测试连接|模型测试成功|模型未测试|Start local demo|Demo · 3 questions|Model connections|Connect (?:a |your )?(?:AI )?model|Connected; model not tested|Model test succeeded|\bTODO\b|lorem ipsum/i
+  ],
+  [
+    'synthetic-data',
+    /guest_demo|demo-00[123]|demo_[123]\b|_isEstimated|estimated_\$?\{|(?:mockData|fakeData|seedDemo|generateMockData)/
+  ],
+  ['debug-ui', /__BUILD_TIME__|__BUILD_MODE__|__APP_VERSION__|debug-panel|DebugPanel/]
+];
+
+export function scanPublicBuild(directory) {
+  const root = path.resolve(directory);
+  const result = { directory: root, ok: false, scannedFiles: 0, scannedBytes: 0, findings: [] };
+  if (!fs.existsSync(root) || !fs.statSync(root).isDirectory()) {
+    result.findings.push({ category: 'missing-build', file: '.' });
+    return result;
+  }
+  if (!['index.html', 'app.json', 'app-config-service.js'].some((file) => fs.existsSync(path.join(root, file)))) {
+    result.findings.push({ category: 'missing-entry', file: '.' });
+  }
+  const visit = (dir) => {
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+      const file = path.join(dir, entry.name);
+      const relative = path.relative(root, file).replace(/\\/g, '/');
+      if (entry.isSymbolicLink()) {
+        result.findings.push({ category: 'unscanned-symlink', file: relative });
+        continue;
+      }
+      if (entry.isDirectory()) {
+        visit(file);
+        continue;
+      }
+      if (!/\.(?:js|mjs|html|css|json|wxml|wxss|wxs|map)(?:\.(?:gz|br))?$/.test(entry.name)) continue;
+      let bytes = fs.readFileSync(file);
+      try {
+        if (file.endsWith('.gz')) bytes = gunzipSync(bytes);
+        if (file.endsWith('.br')) bytes = brotliDecompressSync(bytes);
+      } catch {
+        result.findings.push({ category: 'unreadable-artifact', file: relative });
+        continue;
+      }
+      result.scannedFiles++;
+      result.scannedBytes += bytes.length;
+      let text = bytes
+        .toString('utf8')
+        .replace(/\\+u([0-9a-f]{4})/gi, (_, hex) => String.fromCharCode(parseInt(hex, 16)));
+      // DCloud bundles Highlight.js for its native editor. This exact list is a
+      // grammar for code comments, not a product label. Other TODO text still fails.
+      if (relative === '__uniappquillhighlight.js')
+        text = text.replaceAll('TODO|FIXME|NOTE|BUG|OPTIMIZE|HACK|XXX', 'code-comment-tags');
+      // Comparisons reject legacy fixtures; writes and standalone seed markers still fail.
+      text = text
+        .replace(/\b[A-Za-z_$][\w$]*\.source(?:Type)?\s*===\s*(["'])guest_demo\1/g, 'legacy-source-check')
+        .replace(/(["'])guest_demo\1\s*===\s*[A-Za-z_$][\w$]*\.source(?:Type)?\b/g, 'legacy-source-check');
+      for (const [category, rule] of PUBLIC_BUILD_RULES) {
+        // Paths matter even when a route is not registered; do not accept dead chunks.
+        const match = rule.exec(relative) || rule.exec(text);
+        if (match) result.findings.push({ category, file: relative, marker: match[0] });
+      }
+    }
+  };
+  visit(root);
+  result.ok = result.scannedFiles > 0 && result.findings.length === 0;
+  return result;
+}
+
+function publicBuildMain(args) {
+  const directories = args.length ? args : ['dist/build/h5', 'dist/build/mp-weixin'];
+  const reports = directories.map(scanPublicBuild);
+  console.log(JSON.stringify({ ok: reports.every((report) => report.ok), reports }, null, 2));
+  process.exitCode = reports.every((report) => report.ok) ? 0 : 1;
+}
 
 // 配置
 const CONFIG = {
@@ -671,4 +754,7 @@ function main() {
 }
 
 // 运行
-main();
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  if (process.argv[2] === '--public-build') publicBuildMain(process.argv.slice(3));
+  else main();
+}

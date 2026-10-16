@@ -1,3 +1,4 @@
+import { publicError } from '@/i18n/index.js';
 /**
  * 学习数据统计 Mixin（分包动态加载）
  * 从 practice/index.vue 抽离，减小主包体积
@@ -138,7 +139,7 @@ export const learningStatsMixin = {
           });
         } catch (error) {
           logger.warn('[practice] 启动练习模式失败:', error);
-          toast.info(error.message || '启动失败，请重试');
+          toast.info(publicError(error) || '启动失败，请重试');
         }
       }, loginOptions);
     }

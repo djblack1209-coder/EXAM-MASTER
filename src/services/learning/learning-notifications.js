@@ -1,3 +1,4 @@
+import { t, currentLanguage } from '@/i18n/index.js';
 import { invoke } from '@tauri-apps/api/core';
 import { isDesktopRuntime } from '@/services/desktop/runtime.js';
 import { storageService } from '@/services/storageService.js';
@@ -133,6 +134,7 @@ export function createLearningNotifications(learning, onOpen, native = invoke, c
           token,
           sequence: ++sequence,
           consent: consent(),
+          language: currentLanguage.value,
           jobs: jobs.map(({ accepted: _accepted, ...job }) => job)
         });
         if (disposed || context() !== expected) return null;
@@ -169,10 +171,10 @@ export function createLearningNotifications(learning, onOpen, native = invoke, c
             notification = new window.Notification('Yozi AI', {
               body:
                 job.kind === 'review'
-                  ? '有学习任务到期，打开后独立复测。'
+                  ? t('ui.notificationReview')
                   : job.kind === 'recap'
-                    ? '回顾今天的学习，确认下一步安排。'
-                    : '到了你安排的学习时间。',
+                    ? t('ui.notificationRecap')
+                    : t('ui.notificationStudy'),
               tag: job.id
             });
             notices.add(notification);

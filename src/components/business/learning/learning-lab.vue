@@ -797,7 +797,7 @@
 import BaseEmpty from '@/components/base/base-empty/base-empty.vue';
 import BaseSegmented from '@/components/base/base-segmented/base-segmented.vue';
 import { learningText } from '@/i18n/learning.js';
-import { t } from '@/i18n/index.js';
+import { publicError, t } from '@/i18n/index.js';
 import BaseCard from '@/components/base/base-card/base-card.vue';
 import BaseButton from '@/components/base/base-button/base-button.vue';
 import BaseChip from '@/components/base/base-chip/base-chip.vue';
@@ -874,7 +874,7 @@ const props = defineProps({
 });
 const emit = defineEmits(['question', 'writing', 'science']);
 const tabs = [
-  { id: 'visual', label: '动态演示' },
+  { id: 'visual', label: '互动观察' },
   { id: 'writing', label: '逐句带练' },
   { id: 'map', label: '学习关系图' }
 ];
@@ -1119,7 +1119,7 @@ function resetContextRecipe() {
     exampleRecipe.value = visualRecipe(input);
     recipeSource.value = 'question';
   } catch {
-    contextRecipeError.value = '当前题目演示未就绪，请选择示例。';
+    contextRecipeError.value = '这道题的动画暂不可用，请选择其他观察内容。';
   }
 }
 const requestedVisual = computed(() => {
@@ -1333,7 +1333,7 @@ function showScaffold() {
 function checkSentence() {
   if (props.stopped || props.busy) return;
   const result = guidedSentenceFeedback(writingGenreId.value, writingStep.value.id, sentence.value, props.question);
-  if (saveWritingHelp(result.message)) feedback.value = result;
+  if (saveWritingHelp(publicError(result))) feedback.value = result;
 }
 function nextSentence() {
   if (props.stopped || props.busy || !(feedback.value?.ready || feedback.value?.kind === 'content')) return;

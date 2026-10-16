@@ -204,14 +204,24 @@ export function normalizeSavedVisualReading(value, source) {
     source
   );
 }
-export function visualReadingText(reading) {
-  const labels = {
-    question: '题干候选',
-    options: '选项候选',
-    user_answer: '纸面用户作答候选',
-    teacher_annotation: '教师批注候选',
-    reference_candidate: '参考答案候选',
-    unknown: '角色待确认'
-  };
-  return `图片辅助解读 · 待校对（不是判分或答案依据）\n${reading.summary}\n${reading.regions.map((r) => `${labels[r.role]}：${r.text}`).join('\n')}\n${reading.uncertainties.length ? `需局部确认：${reading.uncertainties.join('；')}` : '模型未报告疑义，仍需核对符号、条件和内容角色。'}\n区域定位和角色均是模型候选；可靠部分可沿用，含糊部分先在资料校对中确认。`;
+export function visualReadingText(reading, language = 'zh-CN') {
+  const en = language === 'en';
+  const labels = en
+    ? {
+        question: 'Question pending review',
+        options: 'Options pending review',
+        user_answer: 'Written answer pending review',
+        teacher_annotation: 'Teacher notes pending review',
+        reference_candidate: 'Reference answer pending review',
+        unknown: 'Role unconfirmed'
+      }
+    : {
+        question: '待校对题干',
+        options: '待校对选项',
+        user_answer: '待校对纸面作答',
+        teacher_annotation: '待校对教师批注',
+        reference_candidate: '待校对参考答案',
+        unknown: '角色待确认'
+      };
+  return `${en ? 'Image reading · Pending review (not grading or answer evidence)' : '图片辅助解读 · 待校对（不是判分或答案依据）'}\n${reading.summary}\n${reading.regions.map((r) => `${labels[r.role]}：${r.text}`).join('\n')}\n${reading.uncertainties.length ? `${en ? 'Check locally: ' : '需局部确认：'}${reading.uncertainties.join('；')}` : en ? 'No ambiguity reported. Still check symbols, conditions and content roles.' : '模型未报告疑义，仍需核对符号、条件和内容角色。'}\n${en ? 'Regions and roles need review. Keep reliable parts and confirm unclear parts in document review.' : '区域定位和角色均为自动识别结果，待校对；可靠部分可沿用，含糊部分先在资料校对中确认。'}`;
 }

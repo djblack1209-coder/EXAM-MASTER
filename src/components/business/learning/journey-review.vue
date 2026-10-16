@@ -223,7 +223,7 @@ import BaseEmpty from '@/components/base/base-empty/base-empty.vue';
 import BaseSegmented from '@/components/base/base-segmented/base-segmented.vue';
 import YoziMascot from '@/components/base/yozi-mascot/yozi-mascot.vue';
 import { learningText } from '@/i18n/learning.js';
-import { t } from '@/i18n/index.js';
+import { publicError, t } from '@/i18n/index.js';
 import BaseButton from '@/components/base/base-button/base-button.vue';
 import BaseInput from '@/components/base/base-input/base-input.vue';
 import BaseCard from '@/components/base/base-card/base-card.vue';
@@ -306,7 +306,7 @@ async function action(callback, target = null) {
     await nextTick();
     if (target && learning.selectedConversationId === conversationId) reveal(target);
   } catch (error) {
-    message.value = error.message;
+    message.value = publicError(error);
     failed.value = true;
     await nextTick();
     if (learning.selectedConversationId === conversationId) reveal('learning-review-feedback');

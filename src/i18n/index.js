@@ -28,6 +28,7 @@ function labelIndex(entries) {
   return { labels, patterns };
 }
 const shellLabels = labelIndex(learningShell['zh-CN']);
+const publicMessageLabels = [labelIndex(messages['zh-CN']), labelIndex(messages.en)];
 
 // Feature dictionaries are imported and registered by their subpackage entry.
 // Equal registrations leave the reactive registry untouched.
@@ -53,7 +54,7 @@ export function registerMessages(namespace, locales) {
     )
   )
     return true;
-  registered.set(namespace, { messages: next, ...labelIndex(next['zh-CN']) });
+  registered.set(namespace, { messages: next, ...labelIndex(next['zh-CN']), english: labelIndex(next.en) });
   return true;
 }
 
@@ -71,6 +72,56 @@ export function translateRegisteredText(namespace, value) {
   }
   return value;
 }
+// Errors may contain provider responses, field names or stack traces. Only
+// registered product messages may cross this UI boundary.
+export function publicError(error, fallback = t('ui.operationFailed')) {
+  const codeKey = Object.assign(Object.create(null), {
+    CANCELLED: 'ui.cancelled',
+    STORAGE_FAILED: 'ui.storageBusy',
+    DIALOG_BUSY: 'ui.dialogBusy',
+    DELETE_FAILED: 'ui.deleteUnconfirmed',
+    DELETE_INCOMPLETE: 'ui.contentDeleteUnconfirmed',
+    AUTH_REQUIRED: 'ui.signInRequired',
+    UNAUTHORIZED: 'ui.signInRequired',
+    401: 'ui.signInRequired',
+    429: 'ui.rateLimited'
+  })[error?.code];
+  if (codeKey) return t(codeKey);
+  const value = typeof error === 'string' ? error : error?.message;
+  if (typeof value !== 'string' || !value.trim()) return fallback;
+  if (
+    /(?:https?|file):\/\/|\b(?:[A-Z][A-Z0-9]*_)+[A-Z0-9]+\b|(?:Type|Reference|Syntax|Range)Error|\b(?:stack|traceback|requestId|errorCode)\b|\n\s*at\s/i.test(
+      value
+    )
+  )
+    return fallback;
+  const knownKey = Object.assign(Object.create(null), {
+    '请先完成当前弹窗，稍后重试。': 'ui.dialogBusy',
+    '本机暂不可写，请稍后重试': 'ui.storageBusy',
+    '本机暂不可写，请保留原文后重试': 'ui.originalStorageBusy',
+    '复习安排更新未确认，请核对当前记录': 'ui.reviewUnconfirmed',
+    '服务连接不可用，学习记录已保存': 'ui.serviceUnavailable',
+    '登录后可连接云模型；本地学习无需登录': 'ui.signInRequired',
+    '学习天数必须在 1 到 365 之间': 'ui.invalidDuration',
+    计划周期须为1至365天: 'ui.invalidPlanDuration',
+    '请求已取消，费用状态请查看模型用量': 'ui.modelCancelled'
+  })[value.trim()];
+  if (knownKey) return t(knownKey);
+  for (const index of [
+    ...publicMessageLabels,
+    ...[...registered.values()].flatMap((entry) => [entry, entry.english])
+  ]) {
+    const key = index.labels.get(value.trim());
+    if (key) return t(key);
+    for (const pattern of index.patterns) {
+      const match = pattern.regex.exec(value);
+      if (match && match.slice(1).every((part) => /^[-+\d\s.,%/]+$/.test(part)))
+        return t(pattern.key, Object.fromEntries(pattern.names.map((name, i) => [name, match[i + 1]])));
+    }
+  }
+  return fallback;
+}
+
 let listening = false;
 
 export function normalizeLanguage(value) {

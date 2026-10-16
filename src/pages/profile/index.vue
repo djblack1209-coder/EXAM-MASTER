@@ -239,6 +239,7 @@ export default {
   onShow() {
     const panel = consumeProfilePanel();
     if (panel) this.setProfilePanel(panel);
+    this.syncPanelTitle();
     this.syncTheme();
     // 每次进入刷新数据
     try {
@@ -257,6 +258,16 @@ export default {
   methods: {
     setProfilePanel(panel) {
       this.settingsMode = (panel || consumeProfilePanel()) === 'settings';
+      this.syncPanelTitle();
+    },
+    syncPanelTitle() {
+      try {
+        uni
+          .setNavigationBarTitle?.({ title: t(this.settingsMode ? 'nav.settings' : 'pages.profile') })
+          ?.catch?.(() => undefined);
+      } catch {
+        /* A page that is still loading will retry in onShow. */
+      }
     },
     t,
     uiText(value) {
@@ -268,6 +279,7 @@ export default {
     },
     saveLanguage() {
       if (!setLanguage(this.languageDraft)) uni.showToast({ title: t('settings.languageError'), icon: 'none' });
+      this.syncPanelTitle();
     },
     syncTheme(mode) {
       if (['dark', 'light'].includes(mode) && this.themeStore.isDark !== (mode === 'dark')) {

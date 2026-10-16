@@ -97,10 +97,10 @@ export function executeLearningTool(repository, call, context) {
   if (call.name === 'method' && lockedMethod)
     assert(call.arguments.method === lockedMethod, 'USER_PREFERENCE', '本轮应遵循用户明确指定的方法');
   if (call.name === 'visualize' && lockedMethod)
-    assert(lockedMethod === 'diagram', 'USER_PREFERENCE', '用户指定其他教法时不自动切换为动态演示');
+    assert(lockedMethod === 'diagram', 'USER_PREFERENCE', '用户指定其他教法时不自动切换为互动观察');
   if (call.name === 'visualize') {
     const session = repository.read().conversations.find((c) => c.id === context.conversationId);
-    assert(session && !session.stopped, 'STOPPED', '没有当前学习任务或任务已停止，未生成新演示');
+    assert(session && !session.stopped, 'STOPPED', '没有当前学习任务或任务已停止，未生成新动画');
   }
   const started = Date.now();
   let result;

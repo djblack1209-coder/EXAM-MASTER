@@ -5,6 +5,7 @@
  * @module stores/auth
  */
 
+import { publicError } from '@/i18n/index.js';
 import { readLoginRegion } from '@/services/auth-region.js';
 import { defineStore, getActivePinia } from 'pinia';
 import { ref } from 'vue';
@@ -127,7 +128,7 @@ export const useAuthStore = defineStore('auth', () => {
         const error = new Error(lafError.message || '登录服务不可用');
 
         if (!silent) {
-          toast.info(error.message, 3000);
+          toast.info(publicError(error), 3000);
         }
 
         return { success: false, error };
@@ -136,7 +137,7 @@ export const useAuthStore = defineStore('auth', () => {
       logger.error('[AuthStore] 登录异常：', error);
 
       if (!silent) {
-        toast.info(error.message || '登录失败', 3000);
+        toast.info(publicError(error), 3000);
       }
 
       return { success: false, error };

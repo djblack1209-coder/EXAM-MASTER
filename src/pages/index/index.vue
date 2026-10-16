@@ -314,7 +314,7 @@ export default {
   },
 
   onShow() {
-    uni.setNavigationBarTitle({ title: BRAND.title });
+    uni.setNavigationBarTitle({ title: t('landing.space') });
     this.syncTheme();
     this.sharedLearning.refresh();
     // 每次切回首页刷新统计
@@ -331,7 +331,7 @@ export default {
   // 微信分享
   onShareAppMessage() {
     return {
-      title: BRAND.title,
+      title: t('landing.space'),
       path: '/pages/index/index'
     };
   },

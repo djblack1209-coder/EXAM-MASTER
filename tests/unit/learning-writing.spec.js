@@ -1,3 +1,4 @@
+import { t } from '@/i18n/index.js';
 import { beforeEach, afterEach, describe, it, expect, vi } from 'vitest';
 import { createPinia, setActivePinia } from 'pinia';
 import { mount } from '@vue/test-utils';
@@ -613,7 +614,8 @@ describe('仅评阅原答的辅助模型请求', () => {
     const saved = clone(store.state.events.find((e) => e.id === id + ':request'));
     api.generate.mockResolvedValue({ success: false, message: '合成断线' });
     await store.send(raw, { id, feedbackAttemptId: 'a' });
-    expect(store.error).toBe('合成断线');
+    expect(store.error).toBe(t('ui.operationFailed'));
+    expect(store.error).not.toContain('合成断线');
     expect(api.generate).toHaveBeenCalledOnce();
     const body = api.generate.mock.calls[0][0];
     expect(body).not.toHaveProperty('feedbackAttemptId');
@@ -661,7 +663,7 @@ describe('仅评阅原答的辅助模型请求', () => {
     const store = setup();
     await expect(store.requestWritingFeedback()).rejects.toThrow('提交');
     store.submit(answer, true);
-    await expect(store.requestWritingFeedback()).rejects.toThrow('连接');
+    await expect(store.requestWritingFeedback()).rejects.toThrow('选择 AI 助手');
     cloud(store);
     store.sharingAllowed = false;
     await expect(store.requestWritingFeedback()).rejects.toThrow('流向');

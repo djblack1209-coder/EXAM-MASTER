@@ -451,8 +451,8 @@ export const PUBLIC_WRITING_REFERENCES = Object.freeze([
     excerpt:
       "Dear Technical Support Department:\n\nI am writing this letter to ask you some technical questions about hardware support in version 5.1 of Red Hat Linux. I saw Red Hat Software's advertisement for version 5.1 of Linux in the August, 1998, issue of Linux Journal. I was quite impressed with the capabilities as listed in the advertisement, and I would like to learn some more about the product. Before I make the decision to purchase the software, I need to be certain that it will work properly on my computer.\n\nI have three hardware support questions that I would like you to answer. I have reviewed the technical support information at Red Hat Software's home page (www.redhat.com), but I have not been able to find answers to my questions. The three hardware-related questions that I have are as follows:\n\n1. Does the latest release of Red Hat Linux support the Diamond Viper 330 PCI video card? This card uses the Riva chipset released by NVIDIA Corporation.\n\n2. If Red Hat Linux does not currently have a driver for this card, is there a timetable for when the card will be supported?\n\n3. Is there an online site for the latest list of supported hardware. This would be a great aid to me in the future, as I often upgrade my machine.\n\nI am aware that some of the early versions of Red Hat Linux were not able to support some of Diamond Multimedia's products, and I hope that new drivers have been created in this latest software release. If the latest release of Red Hat Linux can support my video hardware, I will definitely purchase the product. I feel that the price on the product is exceptional, and the range of features is outstanding.\n\nFor your convenience, you can respond to me by e-mail. My e-mail address is [contact email]. If you prefer to respond by telephone, you can reach me at [contact number]. I appreciate any assistance that you are able to provide me.\n\nSincerely,\nW. Gary NNNNN",
     excerptSha256: '5ba95b8e183c4403b8ebbc0f2dc6bdc1519e3733bc8a9cdd4f6592b4f0e8f7e6',
-    changes: '地址栏省略，联系方式改为占位符，排版规范为段落；Yozi AI 添加批注。',
-    versionNote: '1998年课堂示例；仅学书信写法。',
+    changes: '隐去地址和联系方式，按段落排版；Yozi AI 添加学习批注。',
+    versionNote: '1998年课堂参考；仅用于学习书信写法。',
     noteAuthor: 'Yozi AI',
     notes: Object.freeze(
       [
@@ -469,7 +469,7 @@ export const PUBLIC_WRITING_REFERENCES = Object.freeze([
         {
           paragraph: 8,
           label: '回复与感谢',
-          text: '给出回复方式并感谢对方；联系信息在此用占位符。'
+          text: '给出回复方式并感谢对方；此处已隐去联系方式。'
         }
       ].map((note) => Object.freeze(note))
     ),

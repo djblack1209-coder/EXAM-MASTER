@@ -115,7 +115,7 @@
 <script setup>
 import BaseEmpty from '@/components/base/base-empty/base-empty.vue';
 import { learningText } from '@/i18n/learning.js';
-import { t } from '@/i18n/index.js';
+import { publicError, t } from '@/i18n/index.js';
 import BaseChip from '@/components/base/base-chip/base-chip.vue';
 import BaseButton from '@/components/base/base-button/base-button.vue';
 
@@ -198,7 +198,7 @@ function run(action) {
   try {
     return action();
   } catch (failure) {
-    error.value = failure.message || '未保存，请重试。';
+    error.value = publicError(failure) || '未保存，请重试。';
   }
 }
 function save() {

@@ -20,7 +20,7 @@ registerMessages('policy', {
     privacy15:
       '本地模式使用当前设备的普通本地存储，包含恢复副本，不承诺系统级加密。 只有明确选择云同步或模型并同意共享，相关记录或当前任务必要上下文才发送至所选服务； 本机解析的原件、页图与识别留在本机。不会因本地能力不足静默上传整份资料。',
     privacy16:
-      '自带 API 的密钥由项目后端单独加密保存，服务端运维具备解密能力，不是端到端加密。普通学习导出不含密钥。本地连接令牌仅本次页面持有，离开页面后需重新连接。上游模型处理规则需按所选供应商核对。',
+      '自带 API 的密钥由Yozi AI 服务单独加密保存，服务端运维具备解密能力，不是端到端加密。普通学习导出不含密钥。本地连接令牌仅本次页面持有，离开页面后需重新连接。上游模型处理规则需按所选供应商核对。',
     privacy17: '五、您的权利',
     privacy18:
       '您可以查看、纠正和导出学习记录，删除本地新学习记录会覆盖相应恢复副本， 但不会同时删除旧记录、云副本或本机解析原件；这些范围需分别处理。 账号注销流程保留7天冷静期，期间可撤销申请。 生产备份保留周期、清除范围和必要留存尚需部署验收，不宣称即时删除全部副本。',
@@ -42,7 +42,7 @@ registerMessages('policy', {
     terms4:
       '核心学习工具免费，错题、基础统计和学习计划不以平台模型会员为条件。 可选订阅购买模型服务，价格、周期、周额度及结转尚未确定，当前付费服务暂未开放，不产生实际收费。使用自带 API 不扣平台额度，上游费用由用户承担；本地资源有公开的大小和任务预算限制。',
     terms5: '二、账号注册与使用',
-    terms6: '1. 本地学习无需账号；云同步及受保护接口需有效登录，模型调用需明确连接与数据共享授权。',
+    terms6: '1. 本地学习无需账号；云同步及账户功能需有效登录，使用 AI 助手前需明确选择服务并授权分享内容。',
     terms7: '2. 您应妥善保管自己的账号信息，因账号保管不善导致的损失由您自行承担。',
     terms8: '3. 您不得将账号转让、出借给他人使用。',
     terms9: '三、用户行为规范',
@@ -93,7 +93,7 @@ registerMessages('policy', {
     privacy15:
       'Local mode uses ordinary storage on your device, including recovery copies. It does not promise system-level encryption. Records or context needed for the current task are sent to your chosen service only when you explicitly select cloud sync or a model and agree to share them. Originals, page images and recognition processed locally stay on the device. The app does not silently upload an entire document when local processing is insufficient.',
     privacy16:
-      'Keys for your own API are encrypted separately on the project backend. Server operators can decrypt them; this is not end-to-end encryption. Ordinary learning exports do not include keys. Local connection tokens are held only by the current page; reconnect after leaving it. Check the data-handling rules of your chosen model provider.',
+      'Keys for your own API are encrypted separately on Yozi AI servers. Server operators can decrypt them; this is not end-to-end encryption. Ordinary learning exports do not include keys. Local connection tokens are held only by the current page; reconnect after leaving it. Check the data-handling rules of your chosen model provider.',
     privacy17: '5. Your rights',
     privacy18:
       'You can view, correct and export learning records. Deleting new local learning records overwrites their recovery copies, but does not also delete older records, cloud copies or locally processed originals. Handle those separately. Account deletion has a seven-day cooling-off period during which you can cancel your request. Production backup retention, deletion scope and required retention still need deployment verification. The app does not promise immediate removal of every copy.',
@@ -121,7 +121,7 @@ registerMessages('policy', {
       'Core learning tools are free. Mistakes, basic statistics and learning plans do not require a platform model subscription. Optional subscriptions would purchase model services; prices, periods, weekly allowances and rollover are not yet determined. Payments are currently unavailable and no actual charges are made. Using your own API does not consume platform allowances; you pay any upstream costs. Local resources have published size and task-budget limits.',
     terms5: '2. Accounts and use',
     terms6:
-      '1. Local learning does not require an account. Cloud sync and protected interfaces require valid sign-in. Model calls require an explicit connection and data-sharing consent.',
+      '1. Local learning does not require an account. Cloud sync and account features require valid sign-in. Choose an AI service and allow content sharing before use.',
     terms7: '2. Keep your account details secure. You are responsible for losses caused by failing to safeguard them.',
     terms8: '3. Do not transfer or lend your account to others.',
     terms9: '3. User conduct',

@@ -7,7 +7,7 @@
           !legacyMode ? t('login.welcome') : t(`login.${['direction', 'subjects', 'daily', 'summary'][step]}`)
         }}</text>
         <BaseTag v-if="legacyMode">{{ step + 1 }} / 4</BaseTag>
-        <BaseTag v-if="legacyMode && step === 0">{{ t('login.exam') }}</BaseTag>
+        <BaseTag v-if="legacyMode && step === 0">{{ t('login.exam', { year: targetYear }) }}</BaseTag>
         <view v-if="legacyMode && step === 1" class="onboarding-stack">
           <view v-for="group in trackGroups" :key="group.subject" class="onboarding-stack"
             ><text>{{ group.label }}</text
@@ -30,11 +30,7 @@
         />
         <view v-if="legacyMode && step === 3" class="onboarding-stack"
           ><text>{{ selectedTrackLabels.join(' / ') }}</text
-          ><text>{{ t('login.perDay', { count: dailyGoal }) }}</text
-          ><view v-for="paper in previewPapers" :key="paper.label" class="onboarding-row"
-            ><text>{{ paper.label }}</text
-            ><BaseTag tone="apricot">{{ paper.stateText }}</BaseTag></view
-          ></view
+          ><text>{{ t('login.perDay', { count: dailyGoal }) }}</text></view
         >
         <BaseButton variant="primary" block @tap="nextOrComplete">{{
           !legacyMode ? t('login.onboard') : step === 3 ? t('login.save') : t('login.continue')
@@ -92,6 +88,7 @@ onLoad((options) => {
   legacyMode.value = options?.source === 'home';
 });
 const dailyGoal = ref(25);
+const targetYear = new Date().getFullYear() + 1;
 const selectedTracks = ref(['politics', 'english1', 'math1']);
 
 const trackGroups = computed(() => [
@@ -120,13 +117,6 @@ const trackGroups = computed(() => [
 ]);
 
 const goalOptions = computed(() => [15, 25, 40, 60].map((count) => ({ value: count, label: String(count) })));
-
-const previewPapers = computed(() => [
-  { label: t('login.politics') + ' 2025', state: 'pending', stateText: t('login.sourcePending') },
-  { label: t('login.politics') + ' 2024', state: 'pending', stateText: t('login.sourcePending') },
-  { label: t('login.english1') + ' 2025', state: 'pending', stateText: t('login.passagePending') },
-  { label: t('login.math1') + ' 2025', state: 'pending', stateText: t('login.improving') }
-]);
 
 const selectedTrackLabels = computed(() => {
   const labels = [];
@@ -171,7 +161,7 @@ function saveOnboardingData(completed = true) {
   if (!legacyMode.value) return;
   const profile = {
     exam: 'kaoyan',
-    targetYear: 2027,
+    targetYear,
     tracks: selectedTracks.value
   };
   storageService.save('exam_type', 'kaoyan');

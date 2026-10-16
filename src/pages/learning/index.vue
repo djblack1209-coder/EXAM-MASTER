@@ -85,7 +85,7 @@
           <BaseEmpty
             v-if="learning.modelListState.phase === 'error'"
             state="error"
-            :title="learningText(learning.modelListState.message)"
+            :title="publicError(learning.modelListState.message)"
             mascot-size="small"
           /><text v-else>{{ learningText(learning.modelListState.message) }}</text>
         </view>
@@ -236,7 +236,7 @@
           <BaseEmpty
             v-if="learning.modelUsageState.phase === 'error'"
             state="error"
-            :title="learningText(learning.modelUsageState.message)"
+            :title="publicError(learning.modelUsageState.message)"
             mascot-size="small"
           /><text v-else>{{ learningText(learning.modelUsageState.message) }}</text>
         </view>
@@ -808,7 +808,7 @@
           }}</BaseButton>
         </view>
         <view v-if="learning.error" id="learning-request-error" tabindex="-1">
-          <BaseEmpty state="error" :title="learningText(learning.error)" mascot-size="small" />
+          <BaseEmpty state="error" :title="publicError(learning.error)" mascot-size="small" />
         </view>
         <OatutorPractice
           v-if="learning.activeQuestion?.oatutorExercise?.role === 'main'"
@@ -1052,7 +1052,7 @@
             <BaseEmpty
               v-if="learning.syncState.phase === 'error'"
               state="error"
-              :title="learningText(learning.syncState.message)"
+              :title="publicError(learning.syncState.message)"
               mascot-size="small"
             /><text v-else>{{ learningText(learning.syncState.message) }}</text>
           </view>
@@ -1844,7 +1844,7 @@
         </BaseCard>
       </view>
       <view v-if="learning.error && !learning.active" id="learning-request-error" tabindex="-1">
-        <BaseEmpty state="error" :title="learningText(learning.error)" mascot-size="small" />
+        <BaseEmpty state="error" :title="publicError(learning.error)" mascot-size="small" />
       </view>
       <text v-if="!learning.error && feedback" class="feedback" role="status">{{ learningText(feedback) }}</text>
     </view>
@@ -1874,7 +1874,7 @@ import YoziMascot from '@/components/base/yozi-mascot/yozi-mascot.vue';
 import { answerFeedback, answerOptionState } from '@/components/business/learning/learning-feedback.js';
 import './messages.js';
 import { learningText } from '@/i18n/learning.js';
-import { t } from '@/i18n/index.js';
+import { publicError, t } from '@/i18n/index.js';
 import BaseButton from '@/components/base/base-button/base-button.vue';
 import BaseCard from '@/components/base/base-card/base-card.vue';
 import BaseEmpty from '@/components/base/base-empty/base-empty.vue';
@@ -2007,7 +2007,7 @@ function recordWritingPracticeHelp(context, content, genreId) {
   try {
     return learning.recordWritingHelp(context, content, genreId) !== false;
   } catch (e) {
-    feedback.value = e.message;
+    feedback.value = publicError(e);
     return false;
   }
 }
@@ -2015,7 +2015,7 @@ function readWritingPracticeReference(context, id, version) {
   try {
     return learning.readWritingReference(context, id, version);
   } catch (e) {
-    feedback.value = e.message;
+    feedback.value = publicError(e);
     return null;
   }
 }
@@ -2023,7 +2023,7 @@ function openWritingVocabulary(context, word) {
   try {
     return learning.openVocabulary(context, word);
   } catch (e) {
-    feedback.value = e.message;
+    feedback.value = publicError(e);
     return null;
   }
 }
@@ -2031,7 +2031,7 @@ function submitWritingVocabulary(context, key, answer) {
   try {
     return learning.submitVocabulary(context, key, answer);
   } catch (e) {
-    feedback.value = e.message;
+    feedback.value = publicError(e);
     return null;
   }
 }
@@ -2044,7 +2044,7 @@ function startWritingVocabularyTask(context, key, phase, delayDays = 1) {
     }
     return result;
   } catch (e) {
-    feedback.value = e.message;
+    feedback.value = publicError(e);
     return null;
   }
 }
@@ -2053,7 +2053,7 @@ function recordDiagramPracticeHelp(context, input) {
     learning.recordDiagramHelp(context, input);
     return true;
   } catch (e) {
-    feedback.value = e.message;
+    feedback.value = publicError(e);
     return false;
   }
 }
@@ -2061,7 +2061,7 @@ function recordSciencePracticeHelp(context, input) {
   try {
     return learning.recordScienceHelp(context, input);
   } catch (e) {
-    feedback.value = e.message;
+    feedback.value = publicError(e);
     return false;
   }
 }
@@ -2315,9 +2315,9 @@ const objectiveKinds = {
   share_percent: '占比计算'
 };
 const objectiveFromLabel = computed(() =>
-  objectiveKind.value === 'literal' ? '要查的字段' : objectiveKind.value === 'share_percent' ? '部分字段' : '基期字段'
+  objectiveKind.value === 'literal' ? '要查的数据' : objectiveKind.value === 'share_percent' ? '部分数据' : '基期数据'
 );
-const objectiveToLabel = computed(() => (objectiveKind.value === 'share_percent' ? '整体字段' : '现期字段'));
+const objectiveToLabel = computed(() => (objectiveKind.value === 'share_percent' ? '整体数据' : '现期数据'));
 const draft = ref('');
 const composer = ref(null);
 const composerHeight = ref(0);
@@ -2403,7 +2403,7 @@ const dialogs = createLearningDialog({
     dialogState.value = state;
   },
   onError: (error) => {
-    feedback.value = error.message;
+    feedback.value = publicError(error);
   }
 });
 const showLearningDialog = dialogs.show;
@@ -2412,7 +2412,7 @@ function checkGrammar() {
   const context = learning.computeReferenceContext();
   showLearningDialog({
     title: '检查已提交的英文原答',
-    content: '在项目后端用本机基础规则检查。建议可能误报，记为本题帮助，不自动修改或打分。',
+    content: '在Yozi AI 服务用基础规则检查。建议可能误报，记为本题帮助，不自动修改或打分。',
     confirmText: '检查',
     success: (result) => {
       if (learning.computeReferenceContext() !== context) return;
@@ -2425,7 +2425,7 @@ function computeReference() {
   const context = learning.computeReferenceContext();
   showLearningDialog({
     title: '计算本题参考',
-    content: '使用已同步的题目和原答，在项目后端计算。结果记为本题帮助，不改判分。',
+    content: '使用已同步的题目和原答，在Yozi AI 服务计算。结果记为本题帮助，不改判分。',
     confirmText: '计算并阅读',
     isCurrent: () => !learning.busy && learning.computeReferenceContext() === context,
     success: (result) => {
@@ -2566,7 +2566,7 @@ async function prepareRecordPreview(kind) {
     if (current())
       recordPreviewStatus.value = {
         phase: failure.code === 'CANCELLED' ? 'cancelled' : 'error',
-        message: `${failure.message || '校验未完成'}；请检查备份或记录后重新校验，当前记录保留。`
+        message: `${publicError(failure, t('ui.invalidBackup'))} 当前记录保留。`
       };
   } finally {
     if (activeRecordPreview === request) {
@@ -2670,7 +2670,7 @@ const appleReadinessMessage = computed(() => {
 function recognitionLabel(engine, allowRecognition = true) {
   if (engine === 'docling') return allowRecognition ? '整理PDF版面并识别图片文字' : '整理PDF版面，仅提取原有文字';
   if (!allowRecognition) return '仅提取PDF文本';
-  return engine === 'apple-vision' ? '由解析器 Mac 上的 Apple Vision 识别' : '由解析器上的 Tesseract 识别';
+  return engine === 'apple-vision' ? '由识别服务所在的 Mac 上的 Apple Vision 识别' : '由识别服务使用的 Tesseract 识别';
 }
 const materialText = ref('');
 const materialFeedback = ref(null);
@@ -2764,7 +2764,7 @@ const objectiveFields = computed(() => {
   try {
     return { fields: materialObjectiveFields(selectedSegment.value), error: '' };
   } catch (error) {
-    return { fields: [], error: error.message };
+    return { fields: [], error: publicError(error) };
   }
 });
 function objectiveInput() {
@@ -2779,14 +2779,14 @@ const objectiveUnavailable = computed(() => {
   if (learning.busy) return '请先结束当前操作。';
   if (learning.active?.stopped) return '请先明确继续学习任务，再开始资料练习。';
   if (objectiveFields.value.error) return objectiveFields.value.error;
-  if (!objectiveFrom.value.trim()) return '请选择资料中的一个字段。';
+  if (!objectiveFrom.value.trim()) return '请选择资料中的一项数据。';
   if (objectiveKind.value !== 'literal' && !objectiveTo.value.trim())
     return '请选择资料中不同的' + objectiveToLabel.value + '。';
   try {
     createMaterialObjectiveQuestion('material-preview', currentEditorMaterial.value, objectiveInput());
     return '';
   } catch (error) {
-    return error.message;
+    return publicError(error);
   }
 });
 function clearMaterialEditor() {
@@ -2890,7 +2890,7 @@ async function run(action) {
   try {
     return await action();
   } catch (e) {
-    feedback.value = e.message;
+    feedback.value = publicError(e);
   }
 }
 async function runMaterial(action, { connectionCheck = false } = {}) {
@@ -2906,14 +2906,14 @@ async function runMaterial(action, { connectionCheck = false } = {}) {
   } catch (failure) {
     const message =
       failure instanceof TypeError
-        ? '暂时无法连接资料解析器。请检查地址、访问令牌和服务是否运行，再重新检查连接；也可先粘贴文字。'
+        ? '暂时无法连接资料识别服务。请检查地址、访问令牌和服务是否运行，再重新检查连接；也可先粘贴文字。'
         : failure.code === 'CONNECTION_FAILED'
           ? connectionCheck
-            ? '资料解析器连接检查未通过，尚未发送资料。请核对地址、访问令牌和服务是否运行，再重新检查连接；也可先粘贴文字。'
+            ? '资料识别服务连接检查未通过，尚未发送资料。请核对地址、访问令牌和服务是否运行，再重新检查连接；也可先粘贴文字。'
             : '资料连接请求未完成。请核对地址、访问令牌和服务是否运行。导入结果未确认，请保留原件；若有导入待办，先核对，避免重复上传。'
           : failure.code === 'TIMEOUT'
             ? '资料连接请求超时，尚未确认完成。可重新检查连接；先核对已保存内容或导入待办，避免重复上传。'
-            : failure.message || '资料操作未完成，请保留原件后重试。';
+            : publicError(failure) || '资料操作未完成，请保留原件后重试。';
     notify(message, failure.code === 'CANCELLED' ? 'info' : 'error');
   }
 }
@@ -3043,7 +3043,7 @@ function interpretImage() {
   }
   showLearningDialog({
     title: '确认本次页图发送',
-    content: `将当前题目原页图（整页，可能包含旁边的作答与批注）及当前上下文经本项目后端发送至 ${model.provider} / ${model.model}。上游费用由你的API账户承担，图像成本待对账，不扣平台额度。解读是待校对候选，不能直接记错题。`,
+    content: `将当前题目原页图（整页，可能包含旁边的作答与批注）及当前上下文经本Yozi AI 服务发送至 ${model.provider} / ${model.model}。上游费用由你的API账户承担，图像成本待对账，不扣平台额度。识别内容待校对，不能直接记错题。`,
     confirmText: '发送这一页',
     success: (result) => {
       if (!result.confirm) return;
@@ -3079,12 +3079,12 @@ async function readModelResource(action) {
       failure.code !== 'CANCELLED' &&
       failure.code !== 'CONTEXT_CHANGED'
     )
-      feedback.value = failure.message;
+      feedback.value = publicError(failure);
   }
 }
 function connectionStatusLabel(status) {
   return (
-    { untested: '尚未测试', connected: '最近调用成功', failed: '最近调用失败', stale: '连接需重新验证' }[status] ||
+    { untested: '尚未确认可用', connected: '最近调用成功', failed: '最近调用失败', stale: '连接需重新验证' }[status] ||
     '连接未知'
   );
 }
@@ -3102,7 +3102,7 @@ function usePreset(preset) {
 }
 async function testModel(id) {
   const result = await run(() => learning.testModel(id));
-  if (result) feedback.value = result.success ? '模型测试成功，用量已记录。' : result.message;
+  if (result) feedback.value = result.success ? '助手可用，用量已记录。' : publicError(result);
 }
 async function loadUsage() {
   await readModelResource(() => learning.loadUsage());
@@ -3110,11 +3110,11 @@ async function loadUsage() {
 async function saveModel() {
   const result = await run(() => learning.saveModel({ ...profile.value }, vaultConsent.value));
   profile.value.apiKey = '';
-  if (result) feedback.value = result.success ? '连接已保存。' : result.message;
+  if (result) feedback.value = result.success ? '连接已保存。' : publicError(result);
 }
 async function removeModel(id) {
   const result = await run(() => learning.removeModel(id));
-  if (result) feedback.value = result.success ? '密钥已删除。' : result.message;
+  if (result) feedback.value = result.success ? '密钥已删除。' : publicError(result);
 }
 function connectLocal() {
   return run(async () => {
@@ -3216,7 +3216,7 @@ function compactUploadReceipts() {
   showLearningDialog({
     title: '整理已关闭导入登记',
     type: 'warning',
-    content: `本次核实整理 ${preview.pending ? preview.plannedCount : preview.closedCount} 项已关闭登记，未确认登记和原件全部保留。先封存旧批次，旧编号不能再次上传；其他客户端需重新检查解析器。`,
+    content: `本次核实整理 ${preview.pending ? preview.plannedCount : preview.closedCount} 项已关闭登记，未确认登记和原件全部保留。先封存旧批次，旧编号不能再次上传；其他客户端需重新检查识别服务。`,
     success: (res) => {
       if (res.confirm)
         run(async () => {
@@ -3270,7 +3270,7 @@ function downloadPendingLocator() {
     // #endif
     // #ifndef H5
     uni.setClipboardData({ data: content });
-    feedback.value = '定位登记已交给系统复制接口，请确认另行保存；远端原件未核验。';
+    feedback.value = '定位登记已交给剪贴板，请确认另行保存；远端原件未核验。';
     // #endif
   });
 }
@@ -3280,7 +3280,7 @@ function forgetPendingUpload() {
   showLearningDialog({
     title: '仅移除本机定位待办',
     type: 'warning',
-    content: `仅移除 ${preview.entry.id} 的本机定位登记。不关闭原导入、不删除或核验解析器原件；迟到正文及原件可能仍由原解析器保留。请凭已保存定位信息另行处理。`,
+    content: `仅移除 ${preview.entry.id} 的本机定位登记。不关闭原导入、不删除或核验识别服务中的原件；迟到正文及原件可能仍由原识别服务保留。请凭已保存定位信息另行处理。`,
     success: (res) => {
       if (res.confirm)
         run(() => {
@@ -3297,7 +3297,7 @@ function restorePendingLocator() {
     context = learning.recordContext();
   showLearningDialog({
     title: '恢复本机定位待办',
-    content: '仅恢复当前账户的无正文定位登记，不读取或发送原件。后续核对/恢复须重新授权原解析器。',
+    content: '仅恢复当前账户的无正文定位登记，不读取或发送原件。后续核对/恢复须重新授权原识别服务。',
     success: (res) => {
       if (res.confirm)
         run(() => {
@@ -3317,11 +3317,11 @@ function pendingUploadAction(entry, action) {
   const owner = learning.recordContext(),
     context = learning.materialContext();
   showLearningDialog({
-    title: action === 'recover' ? '恢复解析器已收原件' : action === 'close' ? '取消未确认导入' : '核对未确认原件',
+    title: action === 'recover' ? '恢复识别服务已收原件' : action === 'close' ? '取消未确认导入' : '核对未确认原件',
     type: action === 'close' ? 'warning' : 'info',
     content:
       action === 'recover'
-        ? '只从原授权存储继续解析，不重新上传。沿本次登记的识别许可；候选仍需校对。'
+        ? '只从原授权存储继续解析，不重新上传。沿本次登记的识别许可；识别内容仍需校对。'
         : action === 'close'
           ? '关闭这次导入，拒绝迟到正文；仅清理本次新建且未被其他登记引用的原件。已有或共享原件保留。'
           : '仅向原授权存储核对这次导入，不读取或重新发送原件正文。',
@@ -3345,7 +3345,7 @@ function pendingUploadAction(entry, action) {
             : result.state === 'linked'
               ? '原件已关联现有资料；已清理重复待办，请继续使用已保存资料。'
               : action === 'recover'
-                ? '已从解析器原件恢复私人资料，未重新上传；候选仍需校对。'
+                ? '已从识别服务中的原件恢复私人资料，未重新上传；识别内容仍需校对。'
                 : result.state === 'closed'
                   ? result.sharedOriginalRetained
                     ? '登记已关闭；已有或其他登记使用的原件保留。'
@@ -3417,7 +3417,7 @@ function deleteMaterial(material) {
     showLearningDialog({
       title: '确认资料删除范围',
       type: 'warning',
-      content: `清除「${preview.name}」、${preview.questions} 个关联题目版本、${preview.conversations} 个关联对话的全部正文（${preview.messages} 条）和作答（${preview.attempts} 次），同时清理本机恢复、迁移及冲突副本。计划保留任务分母，${preview.tasks} 项任务标为资料已删除。${preview.original ? '将请求原解析器删除原件与页图；失败会保留待办。' : ''}云端副本需主动同步删除墓碑；其他设备、已导出文件及运维备份另行处理。`,
+      content: `清除「${preview.name}」、${preview.questions} 个关联题目版本、${preview.conversations} 个关联对话的全部正文（${preview.messages} 条）和作答（${preview.attempts} 次），同时清理本机恢复、迁移及冲突副本。计划保留任务分母，${preview.tasks} 项任务标为资料已删除。${preview.original ? '将请求原识别服务删除原件与页图；失败会保留待办。' : ''}云端副本需主动同步删除墓碑；其他设备、已导出文件及运维备份另行处理。`,
       success: (res) => {
         if (res.confirm)
           run(async () => {
@@ -3427,7 +3427,7 @@ function deleteMaterial(material) {
             restorePreview.value = null;
             feedback.value =
               result.original.status === 'pending'
-                ? `本机关联记录已清理；解析器原件删除待确认：${result.original.message}`
+                ? `本机关联记录已清理；识别服务中的原件删除待确认：${result.original.message}`
                 : '本机关联记录已清理，原件删除状态已确认。云端删除需主动同步；计划分母保留。';
           });
       }
@@ -3436,7 +3436,7 @@ function deleteMaterial(material) {
 }
 function retryOriginalDeletion(deletion) {
   showLearningDialog({
-    title: '重试解析器原件删除',
+    title: '重试识别服务中的原件删除',
     type: 'warning',
     content: '仅向导入原件的已授权解析器请求删除该原件与页图；其他学习数据不变。',
     success: (res) => {
@@ -3444,7 +3444,7 @@ function retryOriginalDeletion(deletion) {
         run(async () => {
           const result = await learning.retryOriginalDeletion(deletion.deletionId, true);
           feedback.value =
-            result.status === 'deleted' ? '解析器已确认原件与页图删除。' : `原件删除待确认：${result.message}`;
+            result.status === 'deleted' ? '识别服务已确认原件与页图删除。' : `原件删除待确认：${publicError(result)}`;
         });
     }
   });
@@ -3470,7 +3470,7 @@ function chooseMaterialFile() {
         });
         selectedAppFile.value = file;
         selectedAppFileOwner.value = owner;
-        notify('已选择文件元信息。请确认当前资料解析器后解析；尚未读取或发送文件正文。');
+        notify('已选择文件元信息。请确认当前资料识别服务后解析；尚未读取或发送文件正文。');
       } finally {
         if (appFileController === controller) {
           appFileController = null;
@@ -3495,7 +3495,7 @@ function chooseMaterialFile() {
         clientFilePhase.value = 'confirm';
         const consent = await new Promise((resolve, reject) =>
           showLearningDialog({
-            title: '发送至已授权的资料解析器',
+            title: '发送至已授权的资料识别服务',
             content: `将「${file.name}」原文件交给已授权目标。${recognitionLabel(recognitionEngine, allowRecognition)}；资料、原件与页图保持私人，关键条件仍需校对。`,
             confirmText: '解析资料',
             cancelText: '取消',
@@ -3534,7 +3534,7 @@ function chooseMaterialFile() {
         clientFilePhase.value = 'confirm';
         const consent = await new Promise((resolve, reject) =>
           showLearningDialog({
-            title: '发送至已授权的本地解析器',
+            title: '发送至已授权的本地识别服务',
             content: `原文件只交给已授权资料连接器。当前${recognitionLabel(recognitionEngine, allowRecognition)}；关键条件仍需校对。`,
             confirmText: '解析资料',
             cancelText: '取消',
@@ -3602,7 +3602,7 @@ function chooseMaterialFile() {
     let confirmed = false;
     clientFilePhase.value = 'confirm';
     showLearningDialog({
-      title: '发送至已授权的本地解析器',
+      title: '发送至已授权的本地识别服务',
       content: `原文件只交给已授权资料连接器。当前${recognitionLabel(recognitionEngine, allowRecognition)}；关键条件仍需校对。`,
       confirmText: '解析资料',
       cancelText: '取消',
@@ -3668,7 +3668,7 @@ function parseSelectedAppFile() {
       discardAppFile();
       throw new Error('所选文件不属于当前账户，请重新选择');
     }
-    if (!learning.materialConnection) throw new Error('请先重新授权当前资料解析器；所选文件尚未读取或发送');
+    if (!learning.materialConnection) throw new Error('请先重新授权当前资料识别服务；所选文件尚未读取或发送');
     const file = selectedAppFile.value,
       owner = learning.recordContext(),
       context = learning.prepareMaterialAction(),
@@ -3695,7 +3695,7 @@ function parseSelectedAppFile() {
     try {
       const consent = await new Promise((resolve, reject) =>
         showLearningDialog({
-          title: '发送所选文件至当前资料解析器',
+          title: '发送所选文件至当前资料识别服务',
           content: `将「${file.name}」（${file.size}字节）交给${target}。${recognitionLabel(recognitionEngine, allowRecognition)}；原件与页图保持私人，关键条件仍需校对。`,
           confirmText: '确认解析',
           cancelText: '取消',
@@ -3867,7 +3867,7 @@ function chooseBackupFile() {
       if (current())
         recordFileStatus.value = {
           phase: 'error',
-          message: error.message || '备份读取失败，请重新选择；原输入和记录保留。'
+          message: publicError(error) || '备份读取失败，请重新选择；原输入和记录保留。'
         };
     } finally {
       if (activeRecordFile === request) {
@@ -3883,7 +3883,7 @@ function deleteRecords() {
     title: '删除本地对话学习数据',
     type: 'warning',
     content:
-      '删除当前用户的新学习记录、材料与恢复副本。旧题库和旧版学习数据保留；未确认原件的无正文定位待办保留，以便核对/取消，解析器原件与云端密钥需另行确认删除。',
+      '删除当前用户的新学习记录、材料与恢复副本。旧题库和旧版学习数据保留；未确认原件的无正文定位待办保留，以便核对/取消，识别服务中的原件与云端密钥需另行确认删除。',
     success: (res) => {
       if (res.confirm) run(() => learning.deleteData());
     }
@@ -3908,7 +3908,7 @@ async function runRecordSync(action) {
       learning.recordContext() === context &&
       learning.syncState === previous
     )
-      learning.syncState = { phase: 'error', kind: null, context, message: failure.message };
+      learning.syncState = { phase: 'error', kind: null, context, message: publicError(failure) };
   }
 }
 function deleteCloudRecords() {
@@ -3917,7 +3917,7 @@ function deleteCloudRecords() {
     title: '删除云端学习副本',
     type: 'warning',
     content:
-      '请先停止其他设备同步。删除后端学习副本和已存教学结果缓存，并取消已预留的模型任务；费用事实、模型密钥、本机与备份分别保留。以后主动同步或调用模型会产生新副本。',
+      '请先停止其他设备同步。删除云端学习副本和已存教学结果缓存，并取消已预留的模型任务；费用事实、模型密钥、本机与备份分别保留。以后主动同步或调用模型会产生新副本。',
     isCurrent: () => !recordActionsBusy.value,
     success: (result) => {
       if (result.confirm) runRecordSync(() => learning.deleteCloudRecords(true));
@@ -3978,7 +3978,7 @@ function syncRecords() {
   showLearningDialog({
     title: '同步当前用户的学习记录',
     content:
-      '会把对话、私人资料片段、页图与学习记录发送至本项目后端，以便多设备使用。没有登录或服务不可用时，本地记录保留。',
+      '会把对话、私人资料片段、页图与学习记录发送至本Yozi AI 服务，以便多设备使用。没有登录或服务不可用时，本地记录保留。',
     isCurrent: () => !recordActionsBusy.value,
     success: (res) => {
       if (res.confirm) runRecordSync(() => learning.syncRecords(true));

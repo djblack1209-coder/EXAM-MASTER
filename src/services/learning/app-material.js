@@ -171,7 +171,7 @@ export async function chooseAppMaterialFile({ signal, assertCurrent } = {}) {
   return operation('chooseMaterialFile', {}, { signal, assertCurrent, timeout: 120000 });
 }
 export async function readAppMaterialFile(file, { consent, signal, assertCurrent } = {}) {
-  assert(consent === true, 'CONSENT_REQUIRED', '请先明确允许把本次文件交给当前解析器；未读取文件');
+  assert(consent === true, 'CONSENT_REQUIRED', '请先明确允许把本次文件交给当前识别服务；未读取文件');
   const selected = metadata(file);
   try {
     return await operation(

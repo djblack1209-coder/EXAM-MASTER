@@ -69,7 +69,7 @@
 <script setup>
 const uiText = (value) => translateRegisteredText('study', value);
 import '@/pages/study-detail/messages.js';
-import { t, translateRegisteredText } from '@/i18n/index.js';
+import { publicError, t, translateRegisteredText } from '@/i18n/index.js';
 import BaseEmpty from '@/components/base/base-empty/base-empty.vue';
 import BaseButton from '@/components/base/base-button/base-button.vue';
 import '@/styles/yozi-pages.scss';
@@ -172,7 +172,7 @@ async function handleOptimize() {
         }
       }
     } else {
-      toast.info(res?.message || t('study.copy35'));
+      toast.info(publicError(res, t('study.copy35')));
     }
   } catch (_e) {
     logger.error('[FSRSOptimizer] FSRS优化执行失败', _e);

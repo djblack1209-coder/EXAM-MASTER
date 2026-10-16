@@ -222,7 +222,7 @@
 import CustomModal from '@/components/common/CustomModal.vue';
 const uiText = (value) => translateRegisteredText('mistake', value);
 import '@/pages/mistake/messages.js';
-import { t, translateRegisteredText } from '@/i18n/index.js';
+import { publicError, t, translateRegisteredText } from '@/i18n/index.js';
 import { useThemeStore } from '@/stores/modules/theme.js';
 import BaseSegmented from '@/components/base/base-segmented/base-segmented.vue';
 import BaseEmpty from '@/components/base/base-empty/base-empty.vue';
@@ -565,7 +565,7 @@ function startSequentialReview() {
 
 function openLegacyReview(result) {
   if (!result.success) {
-    toast.info(result.message || t('mistake.copy28'));
+    toast.info(publicError(result) || t('mistake.copy28'));
     return;
   }
   if (result.skipped || result.deferred) toast.info(t('mistake.copy29', { v0: result.count }));

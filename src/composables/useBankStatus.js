@@ -6,6 +6,7 @@ import { ref } from 'vue';
 import { storageService } from '@/services/storageService.js';
 import { logger } from '@/utils/logger.js';
 import { getUserId } from '@/services/auth-storage.js';
+import { isSeededPracticeRecord } from '@/services/quiz-session-contract.js';
 
 export function useBankStatus() {
   const owner = getUserId() || '';
@@ -42,7 +43,8 @@ export function useBankStatus() {
     logger.log('[刷题中心] 开始刷新题库状态');
 
     try {
-      const bank = (getUserId() || '') === owner && Array.isArray(bankFromService) ? bankFromService : [];
+      const ownedBank = (getUserId() || '') === owner && Array.isArray(bankFromService) ? bankFromService : [];
+      const bank = ownedBank.filter((record) => !isSeededPracticeRecord(record));
 
       hasBank.value = bank.length > 0;
       totalQuestions.value = bank.length;
@@ -53,7 +55,10 @@ export function useBankStatus() {
       });
 
       // 计算学习进度
-      const doneCount = Object.keys(userAnswers || {}).length;
+      const realIds = new Set(bank.map((question) => String(question?.id ?? question?._id)));
+      const doneCount = Object.keys(userAnswers || {}).filter(
+        (id) => bank.length === ownedBank.length || realIds.has(id)
+      ).length;
       progressPercent.value = bank.length > 0 ? Math.round((doneCount / bank.length) * 100) : 0;
     } catch (err) {
       logger.error('[刷题中心] 刷新题库状态异常:', err);

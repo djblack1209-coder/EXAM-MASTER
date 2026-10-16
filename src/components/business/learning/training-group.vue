@@ -167,7 +167,7 @@ import BaseOptions from '@/components/base/base-options/base-options.vue';
 import BaseStat from '@/components/base/base-stat/base-stat.vue';
 import BaseTag from '@/components/base/base-tag/base-tag.vue';
 import { learningText } from '@/i18n/learning.js';
-import { t } from '@/i18n/index.js';
+import { publicError, t } from '@/i18n/index.js';
 import BaseCard from '@/components/base/base-card/base-card.vue';
 import BaseButton from '@/components/base/base-button/base-button.vue';
 import BaseInput from '@/components/base/base-input/base-input.vue';
@@ -254,7 +254,7 @@ function submit() {
     message.value = '整批原答已保存';
     failed.value = false;
   } catch (error) {
-    message.value = error.message;
+    message.value = publicError(error);
     failed.value = true;
   }
 }
@@ -263,7 +263,7 @@ function explain(key) {
   try {
     explanations.value[key] = learning.openTrainingFeedback(learning.journeyContext(), report.value.id, key);
   } catch (error) {
-    message.value = error.message;
+    message.value = publicError(error);
     failed.value = true;
   }
 }

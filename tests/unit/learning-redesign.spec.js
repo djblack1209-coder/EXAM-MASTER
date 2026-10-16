@@ -61,8 +61,8 @@ afterEach(() => {
 });
 describe('learning interface states preserve learning facts', () => {
   it.each([
-    ['offline', null, 'idle', '连接模型', 'neutral'],
-    ['offline', null, 'error', '连接模型', 'neutral'],
+    ['offline', null, 'idle', '选择 AI 助手', 'neutral'],
+    ['offline', null, 'error', '选择 AI 助手', 'neutral'],
     ['local', 'connector_verified', 'error', '本地连接就绪', 'apricot'],
     ['local', 'model_verified', 'idle', '本机模型已连接', 'mint'],
     ['cloud', 'connected', 'ready', '最近调用成功', 'mint'],

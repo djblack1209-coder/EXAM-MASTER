@@ -252,7 +252,7 @@ import { safeNavigateTo, requestProfilePanel } from '@/utils/safe-navigate';
 import { bindLearningKeyboard } from '@/services/learning/keyboard-controls.js';
 import { bindBusinessMotion } from '@/design/business-motion.js';
 import { BRAND } from '@/config/brand.js';
-import { t } from '@/i18n/index.js';
+import { publicError, t } from '@/i18n/index.js';
 import { formatDate } from '@/i18n/format.js';
 import BaseTag from '@/components/base/base-tag/base-tag.vue';
 const props = defineProps({
@@ -415,7 +415,7 @@ onMounted(() => {
   try {
     learning.refresh();
   } catch (e) {
-    error.value = e.message;
+    error.value = publicError(e);
   }
 });
 onUnmounted(() => {

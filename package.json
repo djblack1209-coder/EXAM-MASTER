@@ -69,8 +69,8 @@
     "baidu:group-file:index:self-test": "python3 scripts/baidu/group_file_index.py --self-test",
     "baidu:group-file:index:dry": "python3 scripts/baidu/group_file_index.py --dry-run",
     "baidu:group-file:index": "python3 scripts/baidu/group_file_index.py",
-    "release:gate:report": "npm run build:h5 && npm run build:mp-weixin && npm run deps:audit:prod && npm run audit:question-bank:report && npm run baidu:flashcards:quality && npm run audit:release:external:report && npm run audit:release:backlog && npm run audit:wechat:artifacts",
-    "release:gate": "npm run build:h5 && npm run build:mp-weixin && npm run deps:audit:prod && npm run audit:question-bank:release && npm run baidu:flashcards:quality:release && npm run audit:release:external && npm run audit:release:backlog:release && npm run audit:wechat:artifacts && npm run test:cloud:smoke:release",
+    "release:gate:report": "npm run build:h5 && npm run build:mp-weixin && npm run audit:public-build && npm run deps:audit:prod && npm run audit:question-bank:report && npm run baidu:flashcards:quality && npm run audit:release:external:report && npm run audit:release:backlog && npm run audit:wechat:artifacts",
+    "release:gate": "npm run build:h5 && npm run build:mp-weixin && npm run audit:public-build && npm run deps:audit:prod && npm run audit:question-bank:release && npm run baidu:flashcards:quality:release && npm run audit:release:external && npm run audit:release:backlog:release && npm run audit:wechat:artifacts && npm run test:cloud:smoke:release",
     "deps:check": "npm outdated",
     "deps:audit": "npm audit --registry=https://registry.npmjs.org",
     "deps:audit:prod": "npm audit --omit=dev --registry=https://registry.npmjs.org",
@@ -94,7 +94,8 @@
     "dev:desktop": "node scripts/build/desktop.mjs dev",
     "build:desktop": "node scripts/build/desktop.mjs build",
     "build:desktop:web": "node scripts/build/desktop.mjs web",
-    "test:desktop:native": "cargo test --manifest-path src-tauri/Cargo.toml"
+    "test:desktop:native": "cargo test --manifest-path src-tauri/Cargo.toml",
+    "audit:public-build": "node scripts/build/ui-quality-gate.js --public-build"
   },
   "dependencies": {
     "@dcloudio/uni-app-plus": "3.0.0-alpha-5030120260930001",

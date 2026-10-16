@@ -28,10 +28,12 @@ describe('profile panel navigation across page registration', () => {
       studyStore: { restoreProgress: vi.fn() },
       userStore: { restoreUserInfo: vi.fn() }
     };
+    context.syncPanelTitle = ProfilePage.methods.syncPanelTitle.bind(context);
     context.setProfilePanel = ProfilePage.methods.setProfilePanel.bind(context);
     return context;
   }
   it('first tab navigation retains settings until onLoad, even when success precedes registration', () => {
+    uni.setNavigationBarTitle = vi.fn();
     vi.spyOn(uni, 'switchTab').mockImplementation(({ success }) => success?.({}));
     requestProfilePanel('settings');
     safeNavigateTo('/pages/profile/index');
@@ -39,6 +41,7 @@ describe('profile panel navigation across page registration', () => {
     ProfilePage.onLoad.call(context, {});
     ProfilePage.onShow.call(context);
     expect(context.settingsMode).toBe(true);
+    expect(uni.setNavigationBarTitle).toHaveBeenLastCalledWith({ title: '设置' });
     expect(consumeProfilePanel()).toBeNull();
   });
   it('a reused tab consumes each latest target once in onShow', () => {

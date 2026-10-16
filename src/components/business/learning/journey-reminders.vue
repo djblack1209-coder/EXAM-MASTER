@@ -103,7 +103,7 @@
 <script setup>
 import BaseEmpty from '@/components/base/base-empty/base-empty.vue';
 import { learningText } from '@/i18n/learning.js';
-import { t } from '@/i18n/index.js';
+import { publicError, t } from '@/i18n/index.js';
 import BaseButton from '@/components/base/base-button/base-button.vue';
 import BaseChip from '@/components/base/base-chip/base-chip.vue';
 import BaseInput from '@/components/base/base-input/base-input.vue';
@@ -189,7 +189,7 @@ async function operation(callback) {
           ? `本机系统已确认 ${result.count} 项定时安排`
           : '提醒设置已保存';
   } catch (error) {
-    message.value = typeof error === 'string' ? error : error.message || '提醒暂不可用，请重试';
+    message.value = publicError(error) || '提醒暂不可用，请重试';
     failed.value = true;
   } finally {
     handling.value = false;
@@ -229,7 +229,7 @@ watch(
     refreshTimer = setTimeout(() => {
       refreshTimer = null;
       controller.refresh().catch((error) => {
-        message.value = typeof error === 'string' ? error : error.message;
+        message.value = publicError(error);
         failed.value = true;
       });
     }, 250);
@@ -238,7 +238,7 @@ watch(
 onMounted(() => {
   unbind = bindLearningKeyboard(root.value);
   controller.initialize().catch((error) => {
-    message.value = typeof error === 'string' ? error : error.message;
+    message.value = publicError(error);
     failed.value = true;
   });
 });
