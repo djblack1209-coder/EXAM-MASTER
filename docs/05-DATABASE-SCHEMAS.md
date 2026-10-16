@@ -14,7 +14,7 @@
 
 ## 桌面授权短期记录
 
-`desktop_oauth_sessions` 使用随机 64 位十六进制 `_id` 与 `contract=wenli-desktop-oauth-v1`。字段为 provider、appId、redirectUri、nativeOrigin、challenge、phase、deadline、Mongo Date 类型的 expires_at、pollAfter；可有固定 reason 和认证加密 result。phase 为 pending/exchanging/ready/failed/cancelled/consumed。result 仅加密账户引用和首次登录标志，不存问理 JWT、供应商 token、授权码、明文用户 ID 或 verifier；认证附加数据绑定会话/challenge/deadline，领取或取消清空 result。它不属于学习记录导出/同步。
+`desktop_oauth_sessions` 使用随机 64 位十六进制 `_id` 与 `contract=wenli-desktop-oauth-v1`。字段为 provider、appId、redirectUri、nativeOrigin、challenge、phase、deadline、Mongo Date 类型的 expires_at、pollAfter；可有固定 reason 和认证加密 result。phase 为 pending/exchanging/ready/failed/cancelled/consumed。result 仅加密账户引用和首次登录标志，不存Yozi AI JWT、供应商 token、授权码、明文用户 ID 或 verifier；认证附加数据绑定会话/challenge/deadline，领取或取消清空 result。它不属于学习记录导出/同步。
 
 现有管理员迁移新增独立 `scope=desktop-oauth`，只创建 `{expires_at:1}`、`expireAfterSeconds:0`、名称 `idx_desktop_oauth_expiry`；管理员鉴权先于范围处理，不顺带执行用户或完整迁移。开启前核对实际索引，缺失或无法读取时 begin 拒绝创建记录。TTL 后台清理不保证准点，因此每次动作另检查严格 deadline；备份恢复或延迟删除不能延长授权有效期。真实本机认证 Mongo 的索引幂等、权限拒绝、并发单次领取、取消/过期/当前账户重查及实际过期清理已验证；腾讯私有主库的限定应用、实际撤销新空集合和独立后检已接受，实际只有两项索引与零记录。桌面分支保持默认关闭，真实授权与原生成功领取另验，客户无需手工修库。
 
