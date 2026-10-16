@@ -121,8 +121,8 @@ class IntelligentPlanManager {
   }
 
   // 创建多维度学习计划
-  createMultiDimensionPlan(options) {
-    if (!this._begin()) return null;
+  createMultiDimensionPlan(options, session = captureSession()) {
+    if (!this._begin(session)) return null;
     const {
       name,
       goal,
@@ -171,7 +171,7 @@ class IntelligentPlanManager {
 
     // 设置提醒
     if (reminderTime) {
-      this.setReminder(plan);
+      this.setReminder(plan, session);
     }
 
     return plan;
@@ -397,8 +397,8 @@ class IntelligentPlanManager {
   }
 
   // 设置提醒
-  setReminder(plan) {
-    if (!this._begin()) return null;
+  setReminder(plan, session = captureSession()) {
+    if (!this._begin(session)) return null;
     const reminder = {
       id: `reminder_${Date.now()}`,
       planId: plan.id,

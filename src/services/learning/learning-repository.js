@@ -558,15 +558,18 @@ export function createLearningRepository(
   // to its initiating login. Check again immediately before every underlying storage write.
   for (const [name, action] of Object.entries(repository)) {
     repository[name] = function (...args) {
+      if (name === 'cancelPreview') return action.apply(repository, args);
       const session = args.at(-1)?.session || captureSession(),
         identity = owner();
-      if (usesSessionStorage && name !== 'cancelPreview') assertSession(session);
-      const check = () =>
+      if (usesSessionStorage) assertSession(session);
+      const check = () => {
+        if (usesSessionStorage) assertSession(session);
         assert(
           (!usesSessionStorage || storageService.checkSession(session) === 'current') && owner() === identity,
           'CONTEXT_CHANGED',
           '登录会话已变化，旧记录未写入'
         );
+      };
       writeChecks.push(check);
       sessionBindings.push(session);
       try {
