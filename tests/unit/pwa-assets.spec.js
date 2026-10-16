@@ -42,7 +42,7 @@ describe('pwa assets', () => {
   });
 
   it('copies manifest icon assets into the H5 static output directory', () => {
-    const root = mkdtempSync(join(tmpdir(), 'exam-master-pwa-assets-'));
+    const root = mkdtempSync(join(tmpdir(), 'yozi-ai-pwa-assets-'));
     try {
       const sourceDir = join(root, 'public/static/pwa-icons');
       const outDir = join(root, 'dist/build/h5');

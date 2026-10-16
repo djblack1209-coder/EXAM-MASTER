@@ -14,7 +14,7 @@
  * - LOG_LEVEL: 'debug' | 'info' | 'warn' | 'error'
  *
  * @version 1.0.0
- * @author EXAM-MASTER Backend Team
+ * @author Yozi AI Backend Team
  */
 
 // ==================== 环境配置 ====================

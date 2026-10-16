@@ -18,7 +18,7 @@ if (process.platform !== 'darwin') {
     const base = path.join(root, 'tmp/apple-vision-builds');
     await mkdir(base, { recursive: true });
     const work = await mkdtemp(path.join(base, 'build-'));
-    const binary = path.join(work, 'wenli-apple-vision');
+    const binary = path.join(work, 'yozi-apple-vision');
     try {
       const args = [
         'clang',

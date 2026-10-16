@@ -1791,7 +1791,7 @@ export function renderBacklogMarkdown(backlog) {
   const flashcards = backlog.items.filter((item) => item.workstream === 'cleaned_flashcard_quality');
 
   return [
-    '# Exam-Master 发布遗留阻塞 Backlog',
+    '# Yozi AI 发布遗留阻塞 Backlog',
     '',
     `生成时间: ${backlog.generatedAt}`,
     '',

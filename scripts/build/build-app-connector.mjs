@@ -11,10 +11,19 @@ if (!args.includes('--build-only') || args.some((v) => !['--build-only', '--andr
   throw new Error('必须明确--build-only；仅支持可选--android/--ios');
 const android = !args.includes('--ios') || args.includes('--android');
 const ios = !args.includes('--android') || args.includes('--ios');
-const javaHome = process.env.WENLI_ANDROID_JAVA_HOME || '/opt/homebrew/opt/openjdk/libexec/openjdk.jdk/Contents/Home';
-const classpath = (process.env.WENLI_ANDROID_SDK_CLASSPATH || '').split(path.delimiter).filter(Boolean);
-const includes = (process.env.WENLI_IOS_SDK_INCLUDE_PATHS || '').split(path.delimiter).filter(Boolean);
-const frameworks = (process.env.WENLI_IOS_SDK_FRAMEWORK_PATHS || '').split(path.delimiter).filter(Boolean);
+const javaHome =
+  process.env.YOZI_ANDROID_JAVA_HOME ||
+  process.env.WENLI_ANDROID_JAVA_HOME ||
+  '/opt/homebrew/opt/openjdk/libexec/openjdk.jdk/Contents/Home';
+const classpath = (process.env.YOZI_ANDROID_SDK_CLASSPATH || process.env.WENLI_ANDROID_SDK_CLASSPATH || '')
+  .split(path.delimiter)
+  .filter(Boolean);
+const includes = (process.env.YOZI_IOS_SDK_INCLUDE_PATHS || process.env.WENLI_IOS_SDK_INCLUDE_PATHS || '')
+  .split(path.delimiter)
+  .filter(Boolean);
+const frameworks = (process.env.YOZI_IOS_SDK_FRAMEWORK_PATHS || process.env.WENLI_IOS_SDK_FRAMEWORK_PATHS || '')
+  .split(path.delimiter)
+  .filter(Boolean);
 const missing = [];
 const exists = async (file) => {
   try {
@@ -50,8 +59,8 @@ if (missing.length) {
   const base = path.join(root, 'tmp/app-connector-packages');
   await mkdir(base, { recursive: true });
   const work = await mkdtemp(path.join(base, 'build-'));
-  const source = path.join(root, 'nativeplugins/Wenli-Connector'),
-    plugin = path.join(work, 'Wenli-Connector');
+  const source = path.join(root, 'nativeplugins/Yozi-Connector'),
+    plugin = path.join(work, 'Yozi-Connector');
   await mkdir(plugin);
   const sdkHashes = {};
   const run = (exe, argv) => {
@@ -83,12 +92,12 @@ if (missing.length) {
         classpath.join(path.delimiter),
         '-d',
         classes,
-        path.join(source, 'android/src/cn/wenli/connector/ConnectorTransport.java'),
-        path.join(source, 'android/src/cn/wenli/connector/MaterialFiles.java'),
-        path.join(source, 'android/src/cn/wenli/connector/AndroidMaterialSource.java'),
-        path.join(source, 'android/src/cn/wenli/connector/WenliConnectorModule.java')
+        path.join(source, 'android/src/cn/yozi/connector/ConnectorTransport.java'),
+        path.join(source, 'android/src/cn/yozi/connector/MaterialFiles.java'),
+        path.join(source, 'android/src/cn/yozi/connector/AndroidMaterialSource.java'),
+        path.join(source, 'android/src/cn/yozi/connector/YoziConnectorModule.java')
       ]);
-      run(path.join(javaHome, 'bin/jar'), ['cf', path.join(plugin, 'android/WenliConnector.jar'), '-C', classes, '.']);
+      run(path.join(javaHome, 'bin/jar'), ['cf', path.join(plugin, 'android/YoziConnector.jar'), '-C', classes, '.']);
       await copyFile(path.join(source, 'android/proguard-rules.pro'), path.join(plugin, 'android/proguard-rules.pro'));
       for (const p of classpath)
         sdkHashes[p] = createHash('sha256')
@@ -98,7 +107,7 @@ if (missing.length) {
     if (ios) {
       const objects = [];
       await mkdir(path.join(plugin, 'ios'));
-      for (const name of ['WenliConnectorTransport', 'WenliMaterialFiles', 'WenliConnectorModule']) {
+      for (const name of ['YoziConnectorTransport', 'YoziMaterialFiles', 'YoziConnectorModule']) {
         const object = path.join(work, `${name}.o`);
         objects.push(object);
         run('xcrun', [
@@ -130,7 +139,7 @@ if (missing.length) {
         'libtool',
         '-static',
         '-o',
-        path.join(plugin, 'ios/WenliConnector.a'),
+        path.join(plugin, 'ios/YoziConnector.a'),
         ...objects
       ]);
       for (const p of includes)

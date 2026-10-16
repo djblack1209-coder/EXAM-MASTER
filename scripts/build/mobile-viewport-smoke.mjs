@@ -5,9 +5,15 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const PROJECT_ROOT = path.resolve(fileURLToPath(import.meta.url), '../../..');
-const H5_ROOT = path.resolve(process.env.WENLI_MOBILE_SMOKE_H5_DIR || path.join(PROJECT_ROOT, 'dist/build/h5'));
+const H5_ROOT = path.resolve(
+  process.env.YOZI_MOBILE_SMOKE_H5_DIR ||
+    process.env.WENLI_MOBILE_SMOKE_H5_DIR ||
+    path.join(PROJECT_ROOT, 'dist/build/h5')
+);
 const OUTPUT_ROOT = path.resolve(
-  process.env.WENLI_MOBILE_SMOKE_OUTPUT_DIR || path.join(PROJECT_ROOT, 'output/mobile-viewport-smoke')
+  process.env.YOZI_MOBILE_SMOKE_OUTPUT_DIR ||
+    process.env.WENLI_MOBILE_SMOKE_OUTPUT_DIR ||
+    path.join(PROJECT_ROOT, 'output/mobile-viewport-smoke')
 );
 
 export const MOBILE_SMOKE_ROUTES = [
@@ -328,7 +334,10 @@ async function runSmoke() {
   let cancelledUnusedImageCount = 0;
 
   try {
-    browser = await chromium.launch({ channel: process.env.WENLI_MOBILE_SMOKE_BROWSER_CHANNEL || undefined });
+    browser = await chromium.launch({
+      channel:
+        process.env.YOZI_MOBILE_SMOKE_BROWSER_CHANNEL || process.env.WENLI_MOBILE_SMOKE_BROWSER_CHANNEL || undefined
+    });
     for (const viewport of MOBILE_VIEWPORTS) {
       for (const route of MOBILE_SMOKE_ROUTES) {
         const page = await browser.newPage({ viewport });

@@ -70,9 +70,9 @@ function releaseEnv(overrides = {}) {
     PASSWORD_SALT: 'y'.repeat(32),
     REQUEST_SIGN_SALT: 'z'.repeat(32),
     ADMIN_SECRET: 'admin-secret',
-    SMTP_HOST: 'smtp.exammaster.app',
+    SMTP_HOST: 'smtp.yozi.example',
     SMTP_PORT: '465',
-    SMTP_USER: 'noreply@exammaster.app',
+    SMTP_USER: 'noreply@yozi.example',
     SMTP_PASS: 'smtp-pass',
     SMOKE_BASE_URL: 'https://api.exam-master.app',
     SMOKE_TOKEN: 'token',
@@ -186,7 +186,7 @@ describe('release external gate', () => {
         '--fail-on-blockers'
       ],
       releaseEnv({
-        SMOKE_EMAIL: 'release@exammaster.app',
+        SMOKE_EMAIL: 'release@yozi.example',
         SMOKE_PASSWORD: 'password',
         SMOKE_TOKEN: ''
       })
@@ -361,9 +361,9 @@ describe('release external gate', () => {
         `PASSWORD_SALT=${'y'.repeat(32)}`,
         `REQUEST_SIGN_SALT=${'z'.repeat(32)}`,
         'ADMIN_SECRET=admin-secret',
-        'SMTP_HOST=smtp.exammaster.app',
+        'SMTP_HOST=smtp.yozi.example',
         'SMTP_PORT=465',
-        'SMTP_USER=noreply@exammaster.app',
+        'SMTP_USER=noreply@yozi.example',
         'SMTP_PASS=secret-smtp-pass',
         'SMOKE_BASE_URL=https://api.exam-master.app',
         'SMOKE_TOKEN=secret-smoke-token',
@@ -450,7 +450,7 @@ describe('release external gate', () => {
         '--fail-on-blockers'
       ],
       releaseEnv({
-        SMOKE_EMAIL: 'release@exammaster.app',
+        SMOKE_EMAIL: 'release@yozi.example',
         SMOKE_PASSWORD: 'password',
         SMOKE_TOKEN: ''
       })

@@ -1,6 +1,6 @@
 /**
  * ESLint Flat Config (v9+)
- * EXAM-MASTER 项目代码规范
+ * Yozi AI 项目代码规范
  *
  * 从 .eslintrc.js 迁移到 eslint.config.js (flat config)
  * @see https://eslint.org/docs/latest/use/configure/configuration-files-new

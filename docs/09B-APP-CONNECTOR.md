@@ -43,12 +43,12 @@ Android 适配器用 `invokeAndKeepAlive` 保留中间回调、终止用 `invoke
 
 历史官方入口的浏览器安全拒绝继续保留，不换工具绕过。客户随后明确暂不处理iPhone端，优先网页/官网和macOS；SDK问题不再等待本轮回复，iPhone装配/设备留作后续待办，不继续下载、编译或安装。此项尚未闭环，不称App开发或设备验收完成。
 
-源码/元数据在 `nativeplugins/Wenli-Connector/`，对应 [DCloud Android](https://nativesupport.dcloud.net.cn/NativePlugin/course/android.html)、[iOS 模块](https://nativesupport.dcloud.net.cn/NativePlugin/course/ios.html)和[打包规范](https://nativesupport.dcloud.net.cn/NativePlugin/course/package.html)。不以模拟 SDK 声明或空二进制替代编译。
+源码/元数据在 `nativeplugins/Yozi-Connector/`，对应 [DCloud Android](https://nativesupport.dcloud.net.cn/NativePlugin/course/android.html)、[iOS 模块](https://nativesupport.dcloud.net.cn/NativePlugin/course/ios.html)和[打包规范](https://nativesupport.dcloud.net.cn/NativePlugin/course/package.html)。不以模拟 SDK 声明或空二进制替代编译。
 
-`npm run build:app:connector` 默认要求两平台实际 SDK；单平台追加 `-- --android` 或 `-- --ios`。只本地编译，不下载、云打包、安装、部署或修改 App 配置。缺 SDK 退出 2，无二进制；失败清理本次目录，成功保留唯一 `tmp/app-connector-packages/build-*/Wenli-Connector/` 和 SDK 哈希报告，不覆盖旧包。
+`npm run build:app:connector` 默认要求两平台实际 SDK；单平台追加 `-- --android` 或 `-- --ios`。只本地编译，不下载、云打包、安装、部署或修改 App 配置。缺 SDK 退出 2，无二进制；失败清理本次目录，成功保留唯一 `tmp/app-connector-packages/build-*/Yozi-Connector/` 和 SDK 哈希报告，不覆盖旧包。
 
-- Android：`WENLI_ANDROID_JAVA_HOME` 指向实际 JDK，`WENLI_ANDROID_SDK_CLASSPATH` 用系统路径分隔符列出 android.jar、官方 DCloud 模块 SDK 和 FastJSON 等实际依赖。完整适配器按 Java 8 字节码编译为 jar。
-- iOS：`WENLI_IOS_SDK_INCLUDE_PATHS` 列出官方 `DCUniModule.h` 与依赖头目录，`WENLI_IOS_SDK_FRAMEWORK_PATHS` 可列实际 framework 目录。要求 `xcrun --sdk iphoneos` 成功，完整模块/内核编译为 arm64/iOS 11 静态库。
+- Android：`YOZI_ANDROID_JAVA_HOME` 指向实际 JDK，`YOZI_ANDROID_SDK_CLASSPATH` 用系统路径分隔符列出 android.jar、官方 DCloud 模块 SDK 和 FastJSON 等实际依赖。完整适配器按 Java 8 字节码编译为 jar。
+- iOS：`YOZI_IOS_SDK_INCLUDE_PATHS` 列出官方 `DCUniModule.h` 与依赖头目录，`YOZI_IOS_SDK_FRAMEWORK_PATHS` 可列实际 framework 目录。要求 `xcrun --sdk iphoneos` 成功，完整模块/内核编译为 arm64/iOS 11 静态库。
 
 可对当前构建进程设置标准 `DEVELOPER_DIR` 指向已安装 Xcode，SDK 检测及后续编译均保留该选择；不修改全局 xcode-select。本机显式选择 `/Applications/Xcode.app/Contents/Developer` 已确认 iPhoneOS SDK 存在，当前完整 build-only 仍因实际 DCloud Android classpath/iOS 头未配置退出 2，没有生成插件或修改 manifest。
 
@@ -62,7 +62,7 @@ Android 适配器用 `invokeAndKeepAlive` 保留中间回调、终止用 `invoke
 
 `npm run test:app:connector` 在 macOS 用实际 JDK/Foundation 编译内核和 CLI，启动随机回环 HTTP/HTTPS。合成令牌仅内存，自签密钥仅忽略临时目录；结束关闭服务/子进程、移除密钥/二进制。报告及源码哈希在 `tmp/app-connector-validation/latest.json`。
 
-默认使用本机Homebrew JDK；其他实际JDK可通过`WENLI_TEST_JAVA_HOME`指定。移动SDK编译变量与本机内核验证变量分别设置，不以本机头/字节码代替移动SDK。
+默认使用本机Homebrew JDK；其他实际JDK可通过`YOZI_TEST_JAVA_HOME`指定。移动SDK编译变量与本机内核验证变量分别设置，不以本机头/字节码代替移动SDK。
 
 覆盖鉴权、四路径、中文/emoji 字节、3xx/Location、声明/分块容量、非法 UTF-8、非成功状态、非法目标/授权/容量/时限、超时/迟到、取消、重复 ID、四任务上限、关闭及系统 TLS 拒绝自签；重定向目标、自签服务零 HTTP 到达。不调用模型、OCR、支付或真实后端。
 

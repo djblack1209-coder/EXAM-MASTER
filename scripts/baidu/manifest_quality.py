@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Quality gate for EXAM-MASTER Source Manifest.
+Quality gate for Yozi AI Source Manifest.
 
 It answers three release-critical questions:
 1. Which public-course tracks and years are covered by verified source files?

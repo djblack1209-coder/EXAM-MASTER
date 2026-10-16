@@ -39,7 +39,7 @@ beforeEach(() => {
   uni.setStorageSync('yozi_login_region', 'CN');
   localStorage.clear();
   vi.stubGlobal('uni', { ...uni, getProvider: vi.fn(({ success }) => success?.({ provider: [] })) });
-  vi.stubGlobal('__WENLI_DESKTOP__', true);
+  vi.stubGlobal('__YOZI_DESKTOP__', true);
   window.__TAURI_INTERNALS__ = { invoke: vi.fn() };
 });
 afterEach(() => {

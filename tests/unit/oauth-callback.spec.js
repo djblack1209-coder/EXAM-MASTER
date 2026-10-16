@@ -308,11 +308,11 @@ describe('授权发起边界', () => {
     expect(routes).toContain('pages/login/wechat-callback');
   });
   it('普通网页不会仅凭编译标志取得桌面能力', () => {
-    vi.stubGlobal('__WENLI_DESKTOP__', true);
+    vi.stubGlobal('__YOZI_DESKTOP__', true);
     expect(new URL(beginWebOAuth('wechat', 'isolated-app')).origin).toBe('https://open.weixin.qq.com');
   });
   it('真实桌面拒绝嵌入网页授权，且不保存待回调状态', () => {
-    vi.stubGlobal('__WENLI_DESKTOP__', true);
+    vi.stubGlobal('__YOZI_DESKTOP__', true);
     window.__TAURI_INTERNALS__ = { invoke: vi.fn() };
     expect(() => beginWebOAuth('wechat', 'isolated-app')).toThrow('请使用邮箱登录');
     expect(storageService.get('wx_oauth_state')).toBeFalsy();
@@ -482,7 +482,7 @@ describe('移动微信仅取授权码且不接受迟到身份', () => {
     await expect(pending).rejects.not.toThrow('private-code');
   });
   it('Tauri 不调用移动 SDK；缺 SDK 或同步异常同样安全结束', async () => {
-    vi.stubGlobal('__WENLI_DESKTOP__', true);
+    vi.stubGlobal('__YOZI_DESKTOP__', true);
     window.__TAURI_INTERNALS__ = { invoke: vi.fn() };
     const native = sdk();
     await expect(requestNativeWechatCode(native.runtime)).rejects.toThrow('不支持微信');

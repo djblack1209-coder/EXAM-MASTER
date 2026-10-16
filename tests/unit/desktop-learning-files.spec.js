@@ -13,7 +13,7 @@ import {
 
 beforeEach(() => {
   invoke.mockReset();
-  vi.stubGlobal('__WENLI_DESKTOP__', true);
+  vi.stubGlobal('__YOZI_DESKTOP__', true);
   vi.stubGlobal('window', { __TAURI_INTERNALS__: { invoke: () => undefined } });
 });
 

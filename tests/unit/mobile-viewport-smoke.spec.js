@@ -107,7 +107,7 @@ describe('mobile entry initialization checks with synthetic pages', () => {
     baseUrl = `http://127.0.0.1:${served.port}`;
     browser = await chromium.launch({
       channel:
-        process.env.WENLI_MOBILE_SMOKE_BROWSER_CHANNEL || (existsSync(chromium.executablePath()) ? undefined : 'chrome')
+        process.env.YOZI_MOBILE_SMOKE_BROWSER_CHANNEL || (existsSync(chromium.executablePath()) ? undefined : 'chrome')
     });
   });
 

@@ -1,5 +1,5 @@
 #import <Foundation/Foundation.h>
-#import "WenliConnectorTransport.h"
+#import "YoziConnectorTransport.h"
 #include <stdio.h>
 
 static NSString *decode(NSString *v) {return [[NSString alloc] initWithData:[[NSData alloc] initWithBase64EncodedString:v options:0] encoding:NSUTF8StringEncoding];}
@@ -7,13 +7,13 @@ static NSString *encode(id v) {return [[[v description] dataUsingEncoding:NSUTF8
 static id scalar(NSString *v) {return [NSJSONSerialization JSONObjectWithData:[v dataUsingEncoding:NSUTF8StringEncoding] options:NSJSONReadingFragmentsAllowed error:nil];}
 static void emit(NSDictionary *v) {
     NSString *line=[NSString stringWithFormat:@"result\t%@\t%@\t%@\t%@\t%@\t%@\t%@\t%@\t%@\n",encode(v[@"id"]),v[@"code"]?:@"-",v[@"status"]?:@0,v[@"receivedBytes"]?:@0,encode(v[@"body"]?:@""),v[@"kind"]?:@"-",v[@"sequence"]?:@0,encode(v[@"contentType"]?:@""),[v[@"chunk"] base64EncodedStringWithOptions:0]?:@""];
-    @synchronized(WenliConnectorTransport.class) {fputs(line.UTF8String,stdout);fflush(stdout);}
+    @synchronized(YoziConnectorTransport.class) {fputs(line.UTF8String,stdout);fflush(stdout);}
 }
 int main(void) {
     @autoreleasepool {
-        NSDictionary *material=[WenliConnectorTransport capabilities][@"materialParse"];
+        NSDictionary *material=[YoziConnectorTransport capabilities][@"materialParse"];
         if(![material[@"contract"] isEqual:@"yozi-material-parse-v1"] || ![material[@"timeoutMs"] isEqual:@100000])return 2;
-        WenliConnectorTransport *transport=[WenliConnectorTransport new];char *line=NULL;size_t size=0;
+        YoziConnectorTransport *transport=[YoziConnectorTransport new];char *line=NULL;size_t size=0;
         fputs("ready\n",stdout);fflush(stdout);
         while(getline(&line,&size,stdin)>0) {
             @autoreleasepool {

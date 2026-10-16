@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Source Manifest builder for EXAM-MASTER question-bank ingestion.
+Source Manifest builder for Yozi AI question-bank ingestion.
 
 The manifest is the stable handoff between Baidu Pan / group collectors and
 the PDF-to-question cleaning pipeline. It deliberately stores metadata and
@@ -747,7 +747,7 @@ def run_self_test() -> None:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Build or merge EXAM-MASTER source manifest.")
+    parser = argparse.ArgumentParser(description="Build or merge Yozi AI source manifest.")
     parser.add_argument("--input", type=Path, help="JSON export from Baidu Pan/group collector.")
     parser.add_argument("--existing", type=Path, default=DEFAULT_MANIFEST)
     parser.add_argument("--output", type=Path, default=DEFAULT_MANIFEST)

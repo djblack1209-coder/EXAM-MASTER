@@ -1,6 +1,6 @@
 #!/bin/bash
 # ============================================
-# Exam-Master MongoDB 备份脚本
+# Yozi AI MongoDB 备份脚本
 # 支持全量备份和增量备份
 # ============================================
 
@@ -205,7 +205,7 @@ send_notification() {
     if [[ -n "${WECHAT_WEBHOOK:-}" ]]; then
         curl -s -X POST "${WECHAT_WEBHOOK}" \
             -H 'Content-Type: application/json' \
-            -d "{\"msgtype\":\"text\",\"text\":{\"content\":\"[Exam-Master 备份] ${status}: ${message}\"}}" \
+            -d "{\"msgtype\":\"text\",\"text\":{\"content\":\"[Yozi AI 备份] ${status}: ${message}\"}}" \
             >/dev/null 2>&1 || true
     fi
 }
@@ -214,7 +214,7 @@ send_notification() {
 
 main() {
     log "=========================================="
-    log "Exam-Master MongoDB 备份开始"
+    log "Yozi AI MongoDB 备份开始"
     log "备份类型: ${BACKUP_TYPE}"
     log "=========================================="
     

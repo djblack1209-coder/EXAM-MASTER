@@ -16,7 +16,7 @@ const ready = { code: 0, data: { userId: 'isolated-desktop-user', token: 'isolat
 beforeEach(() => {
   vi.resetAllMocks();
   vi.useFakeTimers();
-  vi.stubGlobal('__WENLI_DESKTOP__', true);
+  vi.stubGlobal('__YOZI_DESKTOP__', true);
   window.__TAURI_INTERNALS__ = { invoke: vi.fn() };
   mocks.invoke.mockImplementation(async (command) =>
     command === 'create_desktop_oauth_proof' ? { verifier, challenge } : undefined

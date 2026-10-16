@@ -162,7 +162,7 @@ describe('桌面原生资料选择不绕过确认或生命周期', () => {
 });
 async function page(platform = 'h5') {
   if (platform === 'desktop') {
-    vi.stubGlobal('__WENLI_DESKTOP__', true);
+    vi.stubGlobal('__YOZI_DESKTOP__', true);
     window.__TAURI_INTERNALS__ = { invoke: nativeInvoke };
   }
   if (platform === 'app') {

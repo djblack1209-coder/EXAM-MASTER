@@ -1,7 +1,7 @@
 {
-  "name": "exam-master-backend",
+  "name": "yozi-ai-backend",
   "version": "1.0.0",
-  "description": "Exam-Master 后端云函数服务 (Laf Cloud)",
+  "description": "Yozi AI 后端云函数服务 (Laf Cloud)",
   "private": true,
   "type": "module",
   "scripts": {

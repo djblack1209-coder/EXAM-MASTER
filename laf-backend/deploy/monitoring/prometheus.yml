@@ -26,7 +26,7 @@ scrape_configs:
     static_configs:
       - targets: ['localhost:9090']
 
-  # Exam-Master 后端服务
+  # Yozi AI 后端服务
   - job_name: 'exam-master-backend'
     kubernetes_sd_configs:
       - role: pod
@@ -57,7 +57,7 @@ scrape_configs:
       - source_labels: [__meta_kubernetes_pod_name]
         target_label: pod
 
-  # Exam-Master 前端服务（Nginx）
+  # Yozi AI 前端服务（Nginx）
   - job_name: 'exam-master-frontend'
     kubernetes_sd_configs:
       - role: pod

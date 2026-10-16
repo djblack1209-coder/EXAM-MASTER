@@ -14,7 +14,7 @@ groups:
           priority: P0
         annotations:
           summary: "服务不可用: {{ $labels.instance }}"
-          description: "Exam-Master 后端服务 {{ $labels.instance }} 已停止响应超过 1 分钟"
+          description: "Yozi AI 后端服务 {{ $labels.instance }} 已停止响应超过 1 分钟"
           runbook_url: "https://wiki.example.com/runbook/service-down"
 
       # P0: 所有 Pod 都不健康
@@ -108,7 +108,7 @@ groups:
           priority: P1
         annotations:
           summary: "接口错误率过高"
-          description: "Exam-Master API 5xx 错误率超过 1%，当前值: {{ $value | printf \"%.2f\" }}%"
+          description: "Yozi AI API 5xx 错误率超过 1%，当前值: {{ $value | printf \"%.2f\" }}%"
 
       # P0: 接口错误率严重
       - alert: CriticalErrorRate
@@ -121,7 +121,7 @@ groups:
           priority: P0
         annotations:
           summary: "接口错误率严重"
-          description: "Exam-Master API 5xx 错误率超过 5%，当前值: {{ $value | printf \"%.2f\" }}%"
+          description: "Yozi AI API 5xx 错误率超过 5%，当前值: {{ $value | printf \"%.2f\" }}%"
 
       # P1: 接口延迟过高
       - alert: HighLatency
@@ -133,7 +133,7 @@ groups:
           priority: P1
         annotations:
           summary: "接口延迟过高"
-          description: "Exam-Master API P95 延迟超过 2 秒，当前值: {{ $value | printf \"%.2f\" }}s"
+          description: "Yozi AI API P95 延迟超过 2 秒，当前值: {{ $value | printf \"%.2f\" }}s"
 
       # P2: QPS 异常下降
       - alert: QPSDropped
@@ -146,7 +146,7 @@ groups:
           priority: P2
         annotations:
           summary: "QPS 异常下降"
-          description: "Exam-Master API QPS 相比 1 小时前下降超过 50%"
+          description: "Yozi AI API QPS 相比 1 小时前下降超过 50%"
 
   # ==================== 数据库告警 ====================
   - name: database

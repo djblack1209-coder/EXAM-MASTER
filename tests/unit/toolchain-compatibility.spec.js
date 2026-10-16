@@ -34,6 +34,40 @@ afterEach(() => {
   fixture = undefined;
 });
 describe('开发工具链升级的真实依赖兼容', () => {
+  it.each([
+    { YOZI_ISOLATED_BUILD: '1', YOZI_DESKTOP: '1' },
+    { WENLI_ISOLATED_BUILD: '1', WENLI_DESKTOP: '1' },
+    { YOZI_ISOLATED_BUILD: '0', WENLI_ISOLATED_BUILD: '1', WENLI_DESKTOP: '1' }
+  ])('新旧构建开关均保持隔离与桌面入口：%j', (flags) => {
+    const probe = spawnSync(
+      process.execPath,
+      [
+        '--input-type=module',
+        '-e',
+        `
+import assert from 'node:assert/strict';
+import { loadConfigFromFile } from 'vite';
+const context = { command: 'build', mode: 'test' };
+const { config } = await loadConfigFromFile(context, './vite.config.js');
+const { config: vitest } = await loadConfigFromFile(context, './vitest.config.js');
+assert.equal(vitest.envDir, false);
+assert.equal(vitest.test.env.VITE_APP_NAME, 'Yozi-AI-Test');
+assert.equal(JSON.parse(config.define.__YOZI_DESKTOP__), true);
+assert.equal(config.server.proxy['/api'].target, 'http://127.0.0.1:1');
+process.stdout.write('isolated-desktop-ok');`
+      ],
+      {
+        timeout: 10000,
+        encoding: 'utf8',
+        maxBuffer: 16384,
+        env: { PATH: process.env.PATH, NODE_ENV: 'test', VITE_API_BASE_URL: 'http://127.0.0.1:1', ...flags }
+      }
+    );
+    expect(probe.error).toBeUndefined();
+    expect(probe.status, probe.stderr).toBe(0);
+    expect(probe.stdout).toContain('isolated-desktop-ok');
+  });
+
   it('真实Rollup模块图拒绝内部/外部braces，普通模块仍可产出', () => {
     const probe = spawnSync(
       process.execPath,
@@ -90,7 +124,7 @@ process.stdout.write(JSON.stringify({ rejected: paths.length + 1, safe: true }))
         timeout: 10000,
         maxBuffer: 4096,
         encoding: 'utf8',
-        env: { PATH: process.env.PATH, NODE_ENV: 'test', WENLI_ISOLATED_BUILD: '1' }
+        env: { PATH: process.env.PATH, NODE_ENV: 'test', YOZI_ISOLATED_BUILD: '1' }
       }
     );
     expect(probe.error).toBeUndefined();
@@ -331,8 +365,8 @@ process.stdout.write(JSON.stringify(results));`
     expect(readlinkSync(join(output, 'outside'))).toBe(privateDir);
   });
   it('序列化配置仍支持日期/正则/中文，并拒绝伪造日期和正则注入', () => {
-    const value = serialize({ title: '问理', pattern: /question/giu, at: new Date('2026-09-30T00:00:00Z') });
-    expect(value).toContain('问理');
+    const value = serialize({ title: 'Yozi AI', pattern: /question/giu, at: new Date('2026-09-30T00:00:00Z') });
+    expect(value).toContain('Yozi AI');
     expect(value).toContain('new Date(');
     expect(value).toContain('new RegExp(');
     expect(serialize({ content: '</script><script>sentinel</script>' })).not.toContain('</script>');
@@ -366,7 +400,7 @@ process.stdout.write(JSON.stringify(results));`
   it('微信自动化QR解码真实读取合成PNG，升级Jimp不破坏已有工具', async () => {
     const QRCode = require('qrcode-terminal/vendor/QRCode');
     const qr = new QRCode(-1, 1);
-    const message = 'wenli-isolated-fixture';
+    const message = 'yozi-isolated-fixture';
     qr.addData(message);
     qr.make();
     const scale = 8,

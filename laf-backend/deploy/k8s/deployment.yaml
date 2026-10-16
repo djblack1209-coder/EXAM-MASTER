@@ -1,5 +1,5 @@
 # ============================================
-# Exam-Master 后端 Deployment (独立仓库版)
+# Yozi AI 后端 Deployment (独立仓库版)
 # ============================================
 apiVersion: apps/v1
 kind: Deployment

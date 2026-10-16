@@ -10,12 +10,15 @@ const root = fileURLToPath(new URL('../../', import.meta.url));
 const output = path.join(root, 'tmp/app-material-validation');
 await mkdir(output, { recursive: true });
 const work = await mkdtemp(path.join(output, 'run-'));
-const javaHome = process.env.WENLI_TEST_JAVA_HOME || '/opt/homebrew/opt/openjdk/libexec/openjdk.jdk/Contents/Home';
+const javaHome =
+  process.env.YOZI_TEST_JAVA_HOME ||
+  process.env.WENLI_TEST_JAVA_HOME ||
+  '/opt/homebrew/opt/openjdk/libexec/openjdk.jdk/Contents/Home';
 const sources = [
-  'nativeplugins/Wenli-Connector/android/src/cn/wenli/connector/MaterialFiles.java',
-  'nativeplugins/Wenli-Connector/android/src/cn/wenli/connector/ConnectorTransport.java',
-  'nativeplugins/Wenli-Connector/ios/src/WenliMaterialFiles.h',
-  'nativeplugins/Wenli-Connector/ios/src/WenliMaterialFiles.m',
+  'nativeplugins/Yozi-Connector/android/src/cn/yozi/connector/MaterialFiles.java',
+  'nativeplugins/Yozi-Connector/android/src/cn/yozi/connector/ConnectorTransport.java',
+  'nativeplugins/Yozi-Connector/ios/src/YoziMaterialFiles.h',
+  'nativeplugins/Yozi-Connector/ios/src/YoziMaterialFiles.m',
   'tests/native/app-material/MaterialHarness.java',
   'tests/native/app-material/material-harness.m'
 ];
@@ -71,7 +74,7 @@ try {
     '-framework',
     'Foundation',
     '-I',
-    'nativeplugins/Wenli-Connector/ios/src',
+    'nativeplugins/Yozi-Connector/ios/src',
     sources[3],
     sources[5],
     '-o',

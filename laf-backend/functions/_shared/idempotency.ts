@@ -11,7 +11,7 @@
  * 4. 如果未处理，执行业务逻辑并记录结果
  *
  * @version 1.0.0
- * @author EXAM-MASTER Backend Team
+ * @author Yozi AI Backend Team
  */
 
 import cloud from '@lafjs/cloud';
