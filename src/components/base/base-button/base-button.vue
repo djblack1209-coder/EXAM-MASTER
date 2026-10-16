@@ -109,16 +109,17 @@ function keydown(event) {
   justify-content: center;
   gap: var(--s-2);
   box-sizing: border-box;
-  height: var(--control-height);
-  min-height: var(--touch-min);
+  min-height: var(--control-height);
   min-width: var(--touch-min);
-  padding: 0 var(--button-pad);
+  max-width: 100%;
+  padding: var(--s-3) var(--button-pad);
   margin: 0;
   border: 0;
   border-radius: var(--r-md);
-  font: var(--weight-ui-emphasis) var(--size-body)/1 var(--font-ui);
+  font: var(--weight-ui-emphasis) var(--size-body)/var(--leading-small) var(--font-ui);
   cursor: pointer;
-  white-space: nowrap;
+  white-space: normal;
+  overflow-wrap: anywhere;
   transition:
     transform var(--t-press) var(--ease),
     box-shadow var(--t-press) var(--ease),
@@ -130,6 +131,7 @@ function keydown(event) {
   justify-content: inherit;
   gap: var(--s-2);
   min-width: 0;
+  max-width: 100%;
 }
 .base-button.is-start,
 .base-button.is-start .base-button__content {
@@ -161,7 +163,7 @@ function keydown(event) {
 .base-button--secondary {
   background: var(--paper);
   color: var(--ink);
-  box-shadow: inset 0 0 0 var(--border-control) var(--line-strong);
+  box-shadow: inset 0 0 0 var(--border-control) var(--control-line);
 }
 .base-button--secondary:hover {
   background: var(--paper-sunk);
@@ -175,7 +177,7 @@ function keydown(event) {
   background: var(--violet-soft);
 }
 .base-button--danger {
-  background: var(--danger-face);
+  background: var(--danger-action-face);
   color: var(--on-danger);
 }
 .base-button--danger.is-danger-secondary {
@@ -216,14 +218,16 @@ function keydown(event) {
   }
 }
 .base-button.is-small {
-  height: var(--touch-min);
-  padding: 0 var(--s-4);
+  min-height: var(--touch-min);
+  padding: var(--s-2) var(--s-4);
   font-size: var(--size-small);
   border-radius: var(--r-sm);
 }
 .base-button.is-icon {
   width: var(--touch-min);
   height: var(--touch-min);
+  min-height: var(--touch-min);
+  flex: none;
   padding: 0;
   border-radius: var(--r-pill);
 }

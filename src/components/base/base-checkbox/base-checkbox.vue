@@ -62,7 +62,7 @@ function keydown(event) {
   height: var(--control-icon);
   border-radius: var(--checkbox-radius);
   background: var(--paper);
-  box-shadow: inset 0 0 0 var(--border-control) var(--line-strong);
+  box-shadow: inset 0 0 0 var(--border-control) var(--control-line);
 }
 .base-checkbox[aria-checked='true'] .base-checkbox__box {
   background: var(--violet);

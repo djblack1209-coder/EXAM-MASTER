@@ -79,6 +79,8 @@ function keydown(event) {
 <style scoped>
 .base-segmented {
   display: inline-flex;
+  box-sizing: border-box;
+  flex-wrap: wrap;
   max-width: 100%;
   padding: var(--s-1);
   gap: calc(var(--s-1) / 2);
@@ -94,15 +96,16 @@ function keydown(event) {
   align-items: center;
   justify-content: center;
   flex: 1;
+  min-width: 0;
   min-height: var(--touch-min);
   margin: 0;
-  padding: 0 var(--s-4);
+  padding: var(--s-2) var(--s-4);
   border: 0;
   border-radius: var(--r-pill);
   background: transparent;
   color: var(--ink-3);
-  font: var(--weight-ui-emphasis) var(--size-small)/1 var(--font-ui);
-  white-space: nowrap;
+  font: var(--weight-ui-emphasis) var(--size-small)/var(--leading-small) var(--font-ui);
+  overflow-wrap: anywhere;
 }
 .base-segmented button::after {
   border: 0;

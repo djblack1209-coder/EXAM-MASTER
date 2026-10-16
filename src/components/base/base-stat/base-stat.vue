@@ -20,14 +20,17 @@ defineProps({
 <style scoped>
 .base-stat {
   display: grid;
+  min-width: 0;
   gap: var(--s-2);
 }
 .base-stat__label {
   color: var(--ink-3);
+  overflow-wrap: anywhere;
   font: var(--weight-medium) var(--size-caption)/var(--leading-caption) var(--font-ui);
 }
 .base-stat__number {
   display: flex;
+  flex-wrap: wrap;
   align-items: baseline;
   gap: var(--s-1);
   color: var(--ink);

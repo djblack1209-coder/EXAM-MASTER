@@ -38,10 +38,12 @@ function keydown(event) {
 <style scoped>
 .base-list-row {
   display: flex;
+  box-sizing: border-box;
+  flex-wrap: wrap;
   align-items: center;
   gap: var(--s-3);
   min-height: var(--s-14);
-  padding: 0 var(--s-4);
+  padding: var(--s-2) var(--s-4);
   border-bottom: var(--border-thin) solid var(--line);
   color: var(--ink);
   font: var(--weight-regular) var(--size-body)/var(--leading-body) var(--font-ui);
@@ -51,11 +53,16 @@ function keydown(event) {
 }
 .base-list-row__label {
   flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 .base-list-row__value {
   display: flex;
   align-items: center;
   gap: var(--s-1);
+  min-width: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
   color: var(--ink-3);
   font-size: var(--size-small);
 }

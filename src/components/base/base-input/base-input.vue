@@ -23,6 +23,8 @@
         :value="modelValue"
         :disabled="disabled"
         :aria-label="label"
+        :aria-describedby="descriptionId"
+        :aria-invalid="Boolean(error)"
         @change="input"
         @focus="focus"
         @blur="blur"
@@ -33,6 +35,8 @@
       <!-- #ifndef H5 -->
       <picker
         v-if="options.length && nativePlatform"
+        :id="id"
+        :aria-label="label"
         mode="selector"
         :range="options"
         range-key="label"
@@ -319,7 +323,7 @@ onBeforeUnmount(() => {
   align-items: center;
   box-sizing: border-box;
   min-height: var(--control-height);
-  border: var(--border-control) solid var(--line-strong);
+  border: var(--border-control) solid var(--control-line);
   border-radius: var(--r-md);
   background: var(--paper);
   overflow: hidden;
@@ -352,7 +356,12 @@ onBeforeUnmount(() => {
   font: var(--weight-regular) var(--size-body)/var(--leading-body) var(--font-ui);
 }
 .base-field__input::placeholder {
-  color: var(--ink-4);
+  color: var(--ink-placeholder);
+  opacity: 1;
+}
+.base-field__input :deep(.uni-input-placeholder),
+.base-field__input :deep(.uni-textarea-placeholder) {
+  color: var(--ink-placeholder);
 }
 .base-field__input:focus {
   outline: none;
