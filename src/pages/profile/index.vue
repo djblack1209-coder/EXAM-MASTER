@@ -115,7 +115,7 @@ import { useUserStore } from '@/stores/modules/user';
 import { useStudyStore } from '@/stores/modules/study';
 import { useThemeStore } from '@/stores/modules/theme.js';
 import { storageService } from '@/services/storageService.js';
-import { safeNavigateTo } from '@/utils/safe-navigate';
+import { safeNavigateTo, consumeProfilePanel } from '@/utils/safe-navigate';
 import { logger } from '@/utils/logger.js';
 import CustomModal from '@/components/common/CustomModal.vue';
 import { DEFAULT_AVATAR } from '@/config/brand.js';
@@ -208,7 +208,7 @@ export default {
   },
 
   onLoad(options) {
-    this.settingsMode = options?.panel === 'settings';
+    this.setProfilePanel(consumeProfilePanel() || options?.panel || 'profile');
     uni.$on('profilePanel', this.setProfilePanel);
     this.syncTheme();
     this.initLayout();
@@ -237,6 +237,8 @@ export default {
   },
 
   onShow() {
+    const panel = consumeProfilePanel();
+    if (panel) this.setProfilePanel(panel);
     this.syncTheme();
     // 每次进入刷新数据
     try {
@@ -254,7 +256,7 @@ export default {
 
   methods: {
     setProfilePanel(panel) {
-      this.settingsMode = panel === 'settings';
+      this.settingsMode = (panel || consumeProfilePanel()) === 'settings';
     },
     t,
     uiText(value) {

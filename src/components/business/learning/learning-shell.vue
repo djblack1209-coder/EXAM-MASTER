@@ -248,7 +248,7 @@ import BaseInput from '@/components/base/base-input/base-input.vue';
 import { computed, ref, onMounted, onUnmounted, nextTick, watch } from 'vue';
 import { useConversationLearningStore } from '@/stores/modules/conversation-learning.js';
 import { useThemeStore } from '@/stores/modules/theme.js';
-import { safeNavigateTo } from '@/utils/safe-navigate';
+import { safeNavigateTo, requestProfilePanel } from '@/utils/safe-navigate';
 import { bindLearningKeyboard } from '@/services/learning/keyboard-controls.js';
 import { bindBusinessMotion } from '@/design/business-motion.js';
 import { BRAND } from '@/config/brand.js';
@@ -365,8 +365,9 @@ function openView(view) {
   menuOpen.value = false;
   const route = getCurrentPages().at(-1)?.route;
   if (['settings', 'profile'].includes(view)) {
-    if (route === 'pages/profile/index') uni.$emit('profilePanel', view);
-    else safeNavigateTo('/pages/profile/index', { success: () => uni.$emit('profilePanel', view) });
+    requestProfilePanel(view);
+    if (route === 'pages/profile/index') uni.$emit('profilePanel');
+    else safeNavigateTo('/pages/profile/index');
     return;
   }
   const target =

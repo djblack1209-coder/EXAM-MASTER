@@ -21,6 +21,18 @@ import { getCurrentRoute, isHomeRoute, openHomeTab } from '@/utils/home-navigati
 // tabBar 页面路径列表（与 pages.json 中 tabBar.list 保持一致）
 const TAB_BAR_PAGES = ['/pages/index/index', '/pages/practice/index', '/pages/profile/index'];
 
+// switchTab drops query parameters, and its success callback can precede onLoad.
+// Keep the requested panel until the receiving page consumes it.
+let pendingProfilePanel = null;
+export function requestProfilePanel(panel) {
+  pendingProfilePanel = panel === 'settings' ? 'settings' : 'profile';
+}
+export function consumeProfilePanel() {
+  const panel = pendingProfilePanel;
+  pendingProfilePanel = null;
+  return panel;
+}
+
 // 默认转场动画配置
 const ANIMATION = {
   navigateTo: { animationType: 'slide-in-right', animationDuration: 300 },
