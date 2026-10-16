@@ -8,7 +8,7 @@ export function availableLoginMethods(
   const apple =
     !desktop &&
     capabilities.apple &&
-    (region === 'US' || ['ios', 'macos'].includes(os)) &&
+    (region === 'US' || (app && os === 'ios')) &&
     (!app || providers.includes('apple'));
   const google = !desktop && region === 'US' && capabilities.google && (!app || providers.includes('google'));
   const wechat = region === 'CN' && capabilities.wechat && (!app || providers.includes('weixin'));

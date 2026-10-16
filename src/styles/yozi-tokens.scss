@@ -80,15 +80,15 @@
   --playful-ink: #080909;
   --playful-badge: #f7f8fa;
   /* Original Playful typography and rhythm; product controls retain 44px hit areas. */
-  --playful-headline-size: 1.66vw;
+  --playful-headline-size: max(22px, 1.66vw);
   --playful-headline-leading: 1.2;
-  --playful-badge-size: 0.88vw;
-  --playful-badge-height: 1.9vw;
+  --playful-badge-size: max(14px, 0.88vw);
+  --playful-badge-height: max(28px, 1.9vw);
   --playful-badge-pad-y: 0.39vw;
   --playful-badge-pad-x: 0.61vw;
   --playful-nav-gap: 0.93vw;
   --playful-nav-offset: 1.3vw;
-  --playful-nav-size: 1.075vw;
+  --playful-nav-size: max(16px, 1.075vw);
   --playful-nav-leading: 1.35;
   --playful-mobile-gap: calc(var(--s-8) + var(--s-1));
   --playful-mobile-title: clamp(var(--size-title-2), 6.3vw, var(--size-title-1));

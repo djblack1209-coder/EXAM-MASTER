@@ -80,7 +80,12 @@ describe('regions and platform capability filtering', () => {
   it('region, mini-program, provider and configuration filters hide unavailable options', () => {
     const capabilities = { apple: {}, google: {}, wechat: true };
     expect(availableLoginMethods('US', { capabilities })).toEqual(['apple', 'google', 'email', 'phone']);
-    expect(availableLoginMethods('CN', { capabilities, os: 'ios' })).toEqual(['phone', 'wechat', 'email', 'apple']);
+    expect(availableLoginMethods('CN', { capabilities, platform: 'app', providers: ['apple', 'weixin'], os: 'ios' })).toEqual([
+      'phone',
+      'wechat',
+      'email',
+      'apple'
+    ]);
     expect(availableLoginMethods('CN', { capabilities, os: 'android' })).toEqual(['phone', 'wechat', 'email']);
     expect(availableLoginMethods('US', { capabilities, platform: 'mp-weixin' })).toEqual(['wechat', 'phone', 'email']);
     expect(availableLoginMethods('US', { capabilities, platform: 'app', providers: ['apple'] })).toEqual([
@@ -90,6 +95,23 @@ describe('regions and platform capability filtering', () => {
     ]);
     expect(availableLoginMethods('US', {})).toEqual(['email', 'phone']);
     expect(availableLoginMethods('US', { capabilities, desktop: true })).toEqual(['email', 'phone']);
+  });
+  it.each(['ios', 'macos', 'android'])('China excludes Apple on the %s web even with capability', (os) => {
+    expect(availableLoginMethods('CN', { platform: 'h5', os, capabilities: { apple: {} } })).toEqual([
+      'phone',
+      'email'
+    ]);
+  });
+  it.each(['macos', 'android'])('China excludes Apple on native %s', (os) => {
+    expect(
+      availableLoginMethods('CN', { platform: 'app', os, providers: ['apple'], capabilities: { apple: {} } })
+    ).toEqual(['phone', 'email']);
+  });
+  it('China requires the native iOS Apple provider', () => {
+    expect(availableLoginMethods('CN', { platform: 'app', os: 'ios', capabilities: { apple: {} } })).toEqual([
+      'phone',
+      'email'
+    ]);
   });
 });
 describe('age privacy and local session latch', () => {

@@ -197,7 +197,7 @@ const actions = [
     max-width: calc(31vw - var(--s-4));
   }
 }
-@media (max-width: 700px) {
+@media (max-width: 1023px) {
   .playful-footer {
     background: var(--playful-mobile-canvas);
     display: flex;
