@@ -1213,14 +1213,21 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     assert(expectedContext === writingContext(), 'CONTEXT_CHANGED', '学习已切换，请重新打开动画');
     assert(!active.value?.stopped, 'STOPPED', '当前任务已停止');
     const observed = scienceInput(input);
-    let next = nextScienceInput(observed);
+    const next = nextScienceInput(observed);
     if (!active.value) start('物理独立检验');
     const original = activeQuestion.value;
     const sameExercise =
       original?.scienceExercise &&
       JSON.stringify(scienceInput(original.scienceExercise.input)) === JSON.stringify(observed);
-    let parent =
+    const parent =
       sameExercise || sourceDiagram(state.value, original, selectedConversationId.value) ? questionKey(original) : null;
+    const question = availableScienceQuestion(learningId('science_q'), next, parent);
+    if (state.value.questions.some((q) => questionKey(q) === questionKey(question)))
+      return focus(questionKey(question));
+    return addQuestion(question, 'independent_correct');
+  }
+  function availableScienceQuestion(id, input, parent = null) {
+    let next = input;
     const findExisting = () =>
       state.value.questions.find(
         (q) =>
@@ -1247,11 +1254,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
       next = nextScienceInput(existing.scienceExercise.input);
       existing = findExisting();
     }
-    if (existing) return focus(questionKey(existing));
-    return addQuestion(
-      createScienceQuestion(learningId('science_q'), selectedConversationId.value, next, parent),
-      'independent_correct'
-    );
+    return existing || createScienceQuestion(id, selectedConversationId.value, next, parent);
   }
   function requireSentenceContext(expectedContext) {
     idleRecords();
@@ -2072,22 +2075,25 @@ export const useConversationLearningStore = defineStore('conversation-learning',
           return { chatOpening: 'question', questionKey: questionKey(activeQuestion.value) };
         };
         if ((startedFromMessage || unfinishedChatOpening) && activeQuestion.value) return finishOpening();
-        const question = localChatQuestion(`${id}_chat`, opening, selectedConversationId.value);
+        let question = localChatQuestion(`${id}_chat`, opening, selectedConversationId.value);
+        if (question?.scienceExercise) question = availableScienceQuestion(question.id, question.scienceExercise.input);
         if (question) {
-          const added = commit('question.add', { question }, `${id}:chat-question`);
+          const key = questionKey(question);
+          if (!state.value.questions.some((q) => questionKey(q) === key))
+            commit('question.add', { question }, `${id}:chat-question`);
           commit(
             'question.focus',
-            { conversationId: selectedConversationId.value, questionKey: added.questionKey },
+            { conversationId: selectedConversationId.value, questionKey: key },
             `${id}:chat-focus`
           );
           const tasks = currentPlan.value?.tasks || [];
-          if (!tasks.some((task) => task.questionKey === added.questionKey))
+          if (!tasks.some((task) => task.questionKey === key))
             commit(
               'plan.set',
               {
                 tasks: [
                   ...tasks.map((task) => ({ ...task })),
-                  { title: question.prompt, questionKey: added.questionKey, condition: 'submitted' }
+                  { title: question.prompt, questionKey: key, condition: 'submitted' }
                 ],
                 reason: '按聊天中明确选择的知识点开始练习'
               },
