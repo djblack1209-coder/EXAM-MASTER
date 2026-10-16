@@ -2,10 +2,7 @@
   <view ref="splashRoot" class="splash-container" :class="{ 'dark-mode': isDark, 'theme-light': !isDark }">
     <!-- 主内容：垂直水平居中 -->
     <view class="splash-main">
-      <!-- Logo：圆角方形裁切容器 -->
-      <view class="logo-clip">
-        <image class="logo-img" src="/static/images/logo.png" :alt="BRAND.name" mode="aspectFit" />
-      </view>
+      <YoziMascot pose="idle" play="loop" size="medium" />
 
       <!-- 品牌名：双色增强品牌辨识度 -->
       <text class="brand-name">
@@ -25,6 +22,7 @@
 </template>
 
 <script setup>
+import YoziMascot from '@/components/base/yozi-mascot/yozi-mascot.vue';
 import BaseButton from '@/components/base/base-button/base-button.vue';
 import { BRAND } from '@/config/brand.js';
 import { onMounted, onBeforeUnmount, ref } from 'vue';
