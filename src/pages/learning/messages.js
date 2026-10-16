@@ -24,6 +24,8 @@ const messages = {
     'learning.chat.densityCheck': '请按本题条件独立选择准确值，原有帮助经历保留。',
     'learning.chat.energyHint':
       '先用合力除以质量求加速度，再由初速度和时间求末速度、有符号位移。合力总功为合力乘以有符号位移；末动能为质量乘以末速度平方的一半。核对总功等于动能变化，不能把路程代替位移，也不能把负速度算成负动能。',
+    'learning.chat.velocityGraphHint':
+      '先按折点分段，过零的直线段再在速度为零处拆开。每段用三角形或梯形面积计算：正负面积的大小相加得到路程，带符号面积相加得到位移。不要把负速度当作负路程，也不要把位移直接当成路程。',
     'learning.chat.question': '你想先解决哪道题或哪个知识点？可以直接贴题。',
     'learning.chat.ready': '先从这道题开始。请发来你的完整答案，也可以说“带我一步步理解”。',
     'learning.chat.unsupported': '这道题暂不能自动核验。可以保留原题和作答，或先练一道可核验的题。',
@@ -1352,6 +1354,8 @@ const messages = {
       'Choose the exact value for this question independently. Earlier help remains recorded.',
     'learning.chat.energyHint':
       'Divide net force by mass to find acceleration, then use initial velocity and time to find final velocity and signed displacement. Total work is net force times signed displacement; final kinetic energy is half the mass times final velocity squared. Check that total work equals the change in kinetic energy. Do not substitute distance for displacement or treat negative velocity as negative kinetic energy.',
+    'learning.chat.velocityGraphHint':
+      'Split at each plotted point and split any straight segment that crosses zero velocity at the crossing. Use triangle or trapezoid areas: add their magnitudes for distance and their signed values for displacement. Negative velocity does not mean negative distance, and displacement is not generally the same as distance.',
     'learning.chat.question': 'Which question or topic would you like to work on first? You can paste the question.',
     'learning.chat.ready':
       'Start with this question. Send your complete answer, or ask me to work through it step by step.',

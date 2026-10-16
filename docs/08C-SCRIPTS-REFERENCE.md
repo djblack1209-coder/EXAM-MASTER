@@ -26,6 +26,8 @@
 
 ## 当前候选与本机资源
 
+2026-10-16阶段4/C科学聊天候选保留在`tmp/stage4-20261016/{h5,mp-weixin,app}`，为同一最终源码的隔离构建；共享参数`YOZI_ISOLATED_BUILD=1`、显式`UNI_OUTPUT_DIR`，没有加载日常私有环境或重写题库压缩表。资源/命令/退出码在同目录`inventory.json`，宽屏功动能与390px速度图实际路径分别在`energy-ui.json`/`graph-ui.json`及截图。自有临时Chrome资料域与回环服务用完关闭；4212、日常App和原生恢复链未更新，本批不构成原生/设备或公开发布验收。
+
 2026-10-16阶段3清理使用 `tmp/prune-20261016/inventory.json` 记录候选消费者、删除清单、字节数、分支前态与自有进程。游客演示注入模块及专用开关已随退役入口移除；旧演示缓存继续保留并由真实练习/续答合同拒绝采用。仅删除不执行产品模块的旧自测、退役演示测试与无消费者辅助脚本；授权、隐私、判分、题库、发布、幂等及正式产物守卫继续保留。`test:baidu:pipeline` 移除一次重复的同模块调用。UI验收的before/after2/review图和原生归档保留，中间构建与旧日志按明确清单回收；历史正式候选、程序/资料回滚链及大编译缓存不在本轮删除范围。
 
 Mac聊天QA有限运行已通过并正常收尾，程序候选仅保留`native-field-qa.chat-first.zip`及原9项清单/恢复链；`chat-first-qa.noindex/Yozi AI 核验.app`已精确注销并回收，不是日常安装。QA当前真实25原答（旧18、启动时额外1、本机3、web合并3），只读分页核对原279操作与旧原答/资料保持；`chat-first-native-after-reopen.json`为0600的新完整快照并已隔离重放。额外记录的更早创建来源不由日期推断。当前真实回执在`verification.json.chatFirstPoetry.defaultChatEntry.macRuntime`；用户4212和唯一日常App未替换，无UI/服务仍由本批占用。

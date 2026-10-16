@@ -745,6 +745,8 @@ Python worker及RSS监测命令均只传固定PATH/LANG环境，不继承宿主�
 
 ### 速度—时间图与独立检验
 
+2026-10-16聊天接续：仅明确的“速度—时间图”（兼容短横线或无横线）与“velocity-time graph/velocity time graph”主题进入已有`science-transfer-v3`；复习/练习/学习及review/practice/study可明确换题。工厂同时供直接入口与聊天使用，固定向右为正、相邻折点为直线，保留有符号速度与全部折点。提示先校验规范题，过零处拆分面积，路程累加面积大小、位移累加带符号面积；仅实际请求帮助才保存帮助，不记作答。曲线、加速度图、位置图、否定/引用和具体私人题不套用该模板；具体贴题保留条件并待核对。无提示变式与原时区未来复测沿原条件改变/提前拒绝/停止/重复及恢复合同，不增加模型或可视化版本。
+
 新增 `learning-visual-v4` 的 `velocity_time_graph`：输入仅 `template` 与 `points`，2–4个折点，每点仅 `time` 与带符号 `velocity`。时间从0开始严格递增，范围0–10秒；速度−20–20米/秒，两项最多两位小数；相邻折点明确为直线、向右为正。固定24步/6秒播放。v4客户端兼容旧版本，旧客户端拒绝新模板；`visualize`沿原权限/教法/停止/预算限制，只补坐标白名单，任意代码、URL、媒体与未知字段仍拒绝。
 
 宿主用约分有理数计算每段带符号梯形面积，过零处切开；正、负面积大小相加为路程，相减为位移，绘图近似不参与判分。直线段的平均速度及位移公式核对[OpenStax恒加速度](https://openstax.org/books/university-physics-volume-1/pages/3-4-motion-with-constant-acceleration)，斜率定义核对[加速度](https://openstax.org/books/university-physics-volume-1/pages/3-3-average-and-instantaneous-acceleration)；实现、题面与合成图原创，没有导入该站正文、题目或图片。

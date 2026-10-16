@@ -6,6 +6,7 @@ import {
   localDensityQuestion,
   localPressureQuestion,
   localEnergyQuestion,
+  localVelocityGraphQuestion,
   chatQuestionMessage,
   poetryEncouragement,
   validatedPoetryReference
@@ -879,6 +880,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
       localPressureQuestion(id, conversation.id, goal) ||
       localDensityQuestion(id, conversation.id, goal) ||
       localEnergyQuestion(id, conversation.id, goal) ||
+      localVelocityGraphQuestion(id, conversation.id, goal) ||
       (/^(?:英文|英语)句子组织[。.!]?$/u.test(goal.trim()) ? createSentenceQuestion(id, conversation.id) : null) ||
       (genre ? createWritingQuestion(id, conversation.id, genre) : null) ||
       (/^(?:英文|英语)通知(?:写作)?[。.!]?$/u.test(goal.trim()) ? createNoticeQuestion(id, conversation.id) : null) ||

@@ -23,6 +23,7 @@ import { pressureHelpContent } from '../../../laf-backend/functions/_shared/lear
 import {
   gradeScienceAnswer,
   ENERGY_TRANSFER_CONTRACT,
+  GRAPH_TRANSFER_CONTRACT,
   DENSITY_TRANSFER_CONTRACT,
   PRESSURE_TRANSFER_CONTRACT
 } from '../../../laf-backend/functions/_shared/learning-science.js';
@@ -377,7 +378,7 @@ export function nextStrategy(state, attempt) {
 }
 
 export function localTeaching(question, method, level = 1) {
-  if (question?.scienceExercise?.contract === ENERGY_TRANSFER_CONTRACT) {
+  if ([ENERGY_TRANSFER_CONTRACT, GRAPH_TRANSFER_CONTRACT].includes(question?.scienceExercise?.contract)) {
     if (gradeScienceAnswer(question, question.validation?.answer).status !== 'reliable') return null;
     if (['check', 'review'].includes(method))
       return { method, helped: false, content: '请按本题条件独立选择准确值，原有帮助经历保留。' };
@@ -387,7 +388,9 @@ export function localTeaching(question, method, level = 1) {
       helped: true,
       level: 1,
       content:
-        '先用合力除以质量求加速度，再由初速度和时间求末速度、有符号位移。合力总功为合力乘以有符号位移；末动能为质量乘以末速度平方的一半。核对总功等于动能变化，不能把路程代替位移，也不能把负速度算成负动能。'
+        question.scienceExercise.contract === GRAPH_TRANSFER_CONTRACT
+          ? '先按折点分段，过零的直线段再在速度为零处拆开。每段用三角形或梯形面积计算：正负面积的大小相加得到路程，带符号面积相加得到位移。不要把负速度当作负路程，也不要把位移直接当成路程。'
+          : '先用合力除以质量求加速度，再由初速度和时间求末速度、有符号位移。合力总功为合力乘以有符号位移；末动能为质量乘以末速度平方的一半。核对总功等于动能变化，不能把路程代替位移，也不能把负速度算成负动能。'
     };
   }
   if ([DENSITY_TRANSFER_CONTRACT, PRESSURE_TRANSFER_CONTRACT].includes(question?.scienceExercise?.contract)) {
