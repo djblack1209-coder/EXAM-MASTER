@@ -142,7 +142,7 @@ H5构建将 `UNI_INPUT_DIR` 统一为绝对路径，避免入口漏挂载/组件
 
 ## 隔离构建约定
 
-常规 uni 前端构建（H5、微信/QQ 小程序、App及桌面前端）默认写 `dist/build/<平台>/`。Apple Vision 构建写 `tmp/apple-vision-builds/build-*/`，App 插件构建写 `tmp/app-connector-packages/build-*/Yozi-Connector/`，后端默认编译/打包写 `laf-backend/standalone/dist/`；隔离后端输出见下文。微信构建前的 `scripts/build/generate-compressed-bank-modules.mjs` 会删除源码下旧生成目录 `src/pages/practice-sub/flashcard-banks/`，并重写 `src/pages/practice-sub/bank-data-table.js`；仅设置输出目录不能隔离这些源码副作用，核验须使用隔离源码工作目录。阶段核验使用底层 uni 构建并显式设置 `UNI_INPUT_DIR=src` 与 `UNI_OUTPUT_DIR=<tmp 内证据目录>`，桌面前端再加 `YOZI_DESKTOP=1`；之后依次运行既有 CDN 复制、`inject-mp-weixin-privacy.mjs`（同样传隔离的 `UNI_OUTPUT_DIR`）、微信主包全文件/媒体预算审计和 App 产物审计。`verify-app-artifacts.mjs` 的命令行会忽略 `--app-dir`，检查候选目录时须导入 `verifyAppArtifacts` 并传入实际路径。
+常规 uni 前端构建（H5、微信/QQ 小程序、App及桌面前端）默认写 `dist/build/<平台>/`。Apple Vision 构建写 `tmp/apple-vision-builds/build-*/`，App 插件构建写 `tmp/app-connector-packages/build-*/Wenli-Connector/`，后端默认编译/打包写 `laf-backend/standalone/dist/`；隔离后端输出见下文。微信构建前的 `scripts/build/generate-compressed-bank-modules.mjs` 会删除源码下旧生成目录 `src/pages/practice-sub/flashcard-banks/`，并重写 `src/pages/practice-sub/bank-data-table.js`；仅设置输出目录不能隔离这些源码副作用，核验须使用隔离源码工作目录。阶段核验使用底层 uni 构建并显式设置 `UNI_INPUT_DIR=src` 与 `UNI_OUTPUT_DIR=<tmp 内证据目录>`，桌面前端再加 `YOZI_DESKTOP=1`；之后依次运行既有 CDN 复制、`inject-mp-weixin-privacy.mjs`（同样传隔离的 `UNI_OUTPUT_DIR`）、微信主包全文件/媒体预算审计和 App 产物审计。`verify-app-artifacts.mjs` 的命令行会忽略 `--app-dir`，检查候选目录时须导入 `verifyAppArtifacts` 并传入实际路径。
 
 仅本机连接的核验构建再显式设置 `YOZI_ISOLATED_BUILD=1`，Vite跳过私有环境文件；`VITE_API_BASE_URL` 等客户端白名单配置须由命令明确传入，备用地址可为空。默认构建仍沿原配置。当前授权UI同步复用 `journey-candidate/verify-h5.mjs --ui-sync`，连接回环4382/固定隔离27189；`dist/build/h5-ui-sync` 为临时本机绑定产物，不能部署。核验浏览器/Node进程的测试时钟与系统时钟分别记录，不放宽未来记录校验。
 

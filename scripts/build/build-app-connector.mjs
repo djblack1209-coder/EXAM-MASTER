@@ -56,11 +56,12 @@ if (missing.length) {
   );
   process.exitCode = 2;
 } else {
+  const source = path.join(root, 'nativeplugins/Yozi-Connector');
+  const metadata = JSON.parse(await readFile(path.join(source, 'package.json'), 'utf8'));
   const base = path.join(root, 'tmp/app-connector-packages');
   await mkdir(base, { recursive: true });
   const work = await mkdtemp(path.join(base, 'build-'));
-  const source = path.join(root, 'nativeplugins/Yozi-Connector'),
-    plugin = path.join(work, 'Yozi-Connector');
+  const plugin = path.join(work, metadata.id);
   await mkdir(plugin);
   const sdkHashes = {};
   const run = (exe, argv) => {
@@ -78,7 +79,6 @@ if (missing.length) {
       throw new Error(`${path.basename(exe)}编译未通过: ${result.stderr?.slice(0, 3000) || result.error?.message}`);
   };
   try {
-    const metadata = JSON.parse(await readFile(path.join(source, 'package.json'), 'utf8'));
     if (!android) delete metadata._dp_nativeplugin.android;
     if (!ios) delete metadata._dp_nativeplugin.ios;
     if (android) {
