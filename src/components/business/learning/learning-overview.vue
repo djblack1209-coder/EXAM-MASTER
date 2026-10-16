@@ -536,6 +536,8 @@ onUnmounted(() => {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
+  gap: var(--s-2);
   margin-bottom: var(--s-4);
 }
 .overview-title {
@@ -554,7 +556,7 @@ onUnmounted(() => {
 }
 .overview-metrics {
   display: grid;
-  grid-template-columns: 1.2fr 1fr 1fr;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: var(--s-5);
 }
 .overview-metric {

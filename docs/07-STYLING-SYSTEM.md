@@ -68,6 +68,8 @@ Yozi AI 面向全球，先面向在美华人学生与家庭试点，界面中文
 - 层级：`--lift-1/2/3`；遮罩 `--scrim`、键盘焦点 `--focus`。深色阴影包含设计板描边。
 - 字体：标题 `--font-display`（Epilogue）、界面 `--font-ui`（DM Sans），中文后备 PingFang SC / Noto Sans SC / system-ui。
 
+2026-10-16校准：可编辑输入的边界使用 `--control-line`（两主题至少3:1），占位文字使用 `--ink-placeholder`（映射 ink-3，纸面至少4.5:1），禁用态继续用 ink-4。危险按钮使用独立 `--danger-action-face` 保证正文对比度，原设计板 danger-face 原值保留；判分选项字母使用 mint/coral 实色与 paper 反色，不再把浅色填充配白字。Wot输入、文本域和复选框沿同一别名，无第二份调色板。
+
 | 文字角色 | 字号 / 行高 |
 | -------- | ----------- |
 | display  | 44 / 48px   |
@@ -125,6 +127,8 @@ BaseSegmented 的 `disabled` 是组件自身的 Boolean 属性，默认可用。
 
 现行组件位于 [src/components/base](../src/components/base/)，复用既有 BaseIcon、BaseCard、BaseEmpty；浮层继续使用 [CustomModal.vue](../src/components/common/CustomModal.vue)。各类只有一个渲染实现，Wot 通过现行主题变量与按钮/加载薄包装接入，不修改依赖源码。页面自己的旧按钮、选项、统计、输入和弹窗在第3/4批逐页迁移；各页按下方现行章节接入。
 
+按钮、筛选与分段控件使用最小高度，长英文正常换行；纯图标按钮固定44px且不被压缩。选项正文、状态标记、统计数字和设置行允许长文/数字折行，标签、错误描述和焦点合同保持。侧栏按border-box计入自身宽度，未选导航用ink-2，当前项保留紫色；聊天输入区按统一tabbar-reserve避开底栏与安全区。页面不要再另算一套底部高度。确认弹层的dvh升级放在@supports中，保留键盘圈定、Esc和焦点返回。
+
 | 组件                                  | 现行用法                                                                                                                                                                                                                                                                                                                           |
 | ------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | BaseButton                            | variant 为 primary、secondary、quiet、danger、apple、google、wechat；small/block/iconOnly/icon/label/loading/disabled 与 `@tap`，dangerSecondary 为危险次要操作。每个区域最多一个 primary，图标按钮必须有 label；loading 显示随文字颜色的小转圈（减少动态时静止），loading/disabled 阻止触摸与键盘动作。                           |
@@ -172,6 +176,8 @@ BaseSegmented 的 `disabled` 是组件自身的 Boolean 属性，默认可用。
 
 ## 登录与地区
 
+登录表单跟随已保存的浅/深阅读主题，使用canvas背景、玻璃卡和公共控件；首页Playful/Future展示场景仍固定原浅色。新手页标题只显示品牌，开始动作只出现一份；授权失效恢复用中英文短句。地区、13岁边界、实际已配置供应商、逐次许可与短信关闭合同不变，配置缺失不伪造可用登录。界面语言可以切英文，协议正文仍保留待审校的中文原文。
+
 登录分包沿设计板 `#global` 与 `#pages`，使用公共 BaseButton 官方 apple/google/wechat 变体、BaseInput 区号/验证码、BaseCheckbox 政策同意、BaseSegmented 地区切换、纸面/玻璃 BaseCard 与 YoziMascot。顶部地区美国/中国，右侧独立语言切换；默认地区仅从设备地区/时区推断，失败中国，只在明确选择后本机保存。语言仍默认中文，地区不改语言。
 
 美国显示已配置且平台可用的 Apple/Google、邮箱和 +1 手机号；中国显示 +86 手机号、已配置微信、邮箱，iOS/macOS 可加可用 Apple。微信小程序只显示微信/手机号/邮箱。未配置或无 provider 的方法隐藏，无灰色占位。QQ 不提供。首次美国创建先中性用两个选择器询问出生年份和月份；年份从当年倒序至120年前，只有明确“继续”才确认；不提示门槛以影响填写，不存出生年月。未通过后清空草稿并锁定本次会话，返回不能改年龄重试，拒绝说明才显示年龄范围。
@@ -195,7 +201,9 @@ BaseSegmented 的 `disabled` 是组件自身的 Boolean 属性，默认可用。
 
 ## 落地页与微信
 
-Playful Idea 保留左侧导航上方的主体大标题、中央品牌、右侧入口及下方角色的分区顺序，窄屏沿原顺序折行。主体大标题“从一个问题\n到真正理解”是原布局核心排版，不归入说明性口号；恢复playful-job-title节点、原位置、黑体展示层级和两行断行。English为“From one question\nto real understanding”；标题取展示字号/行高令牌；英文长标题和窄屏按令牌比例缩放，仍保持两行，并避开中央品牌。Future 3D Portfolio 保留品牌、背景跑马、投影场景与左侧纵向导航的构图及进场先后。只迁移零件：入口用 BaseButton，动效开关用平面 BaseChip，Future 导航用玻璃 BaseCard，图标用 BaseIcon；同屏只保留一个主要学习入口。装饰场景原比例与位置可保留，颜色、界面文字、圆角、阴影和按钮尺寸取唯一令牌。Future 的Yozi AI主体标题、滚动大字（中文学习/练习/复习，英文LEARNING/PRACTICE/REVIEW）与投影图片保留，不按说明文案删减；旧 Playful 视频角色由 YoziMascot 替换，不再加载该视频。
+Playful Idea 保留左侧导航上方的主体标题、中央品牌、右侧入口及下方角色的分区顺序。沿2026-10-14客户认可的英文展示文案，徽章为“have a fresh idea?”，标题为“imagination\nmeets craft”；字重900、桌面字号1.66vw/行高1.2、导航1.075vw、间隔0.93vw、上方1.3vw，全部由playful语义令牌提供。700px断点沿品牌→左文→右入口→角色堆叠；标题clamp(22px,6.3vw,30px)、组间36px、导航两列且触区至少44px。业务入口复用公共按钮，中央品牌和原视频角色按已批准决定替换为Yozi AI与紫蓝吉祥物，不恢复工作室联系信息或视频。
+
+Future 3D Portfolio 保留品牌、背景跑马、投影场景与左侧纵向导航的构图及进场先后；原字体、比例、断点与82秒循环保持。字标使用原“BRANDING·PRODUCT·UI/UX·”单元，每段5次、两段相同；标题为Yozi AI。入口用BaseButton，动效开关用平面BaseChip，导航用玻璃BaseCard，图标用BaseIcon；同屏一个主要学习入口。原天空与展示场景保持浅色，业务阅读主题独立。
 
 两页的独立 YoziMascot 首次可见挥手一次后待机；投影图片内的角色为原素材静态装饰。沿公共调度保持同屏最多一个吉祥物动作，可视区域外、页面隐藏与减少动态停止。Future 动效芯片也暂停视频、跑马与吉祥物；系统减少动态优先。固定文字与预设学习主题显示通过 [landing 词典](../src/i18n/messages/landing.js) 注册，只由落地页消费者引入，不由通用 i18n 反向导入；用户草稿与学习事实不翻译。
 

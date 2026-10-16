@@ -14,13 +14,13 @@
     </view>
 
     <!-- 加载进度暗示：三个脉动圆点 -->
-    <view class="loading-dots" role="status" aria-label="加载中">
+    <view class="loading-dots" role="status" :aria-label="$t('ui.loading')">
       <view class="dot dot-1" />
       <view class="dot dot-2" />
       <view class="dot dot-3" />
     </view>
 
-    <BaseButton v-if="showManualEntry" class="manual-entry" @tap="openHomeTab">进入首页</BaseButton>
+    <BaseButton v-if="showManualEntry" class="manual-entry" @tap="openHomeTab">{{ $t('nav.home') }}</BaseButton>
   </view>
 </template>
 
@@ -159,14 +159,14 @@ onBeforeUnmount(() => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: -48px;
+  margin-top: calc(-1 * var(--control-height));
 }
 .logo-clip {
-  width: 120px;
-  height: 120px;
-  border-radius: 28px;
+  width: var(--mascot-halo);
+  height: var(--mascot-halo);
+  border-radius: var(--r-lg);
   overflow: hidden;
-  margin-bottom: 24px;
+  margin-bottom: var(--s-6);
   background: var(--glass);
   box-shadow: var(--yozi-shadow);
 }
@@ -180,18 +180,18 @@ onBeforeUnmount(() => {
 }
 .loading-dots {
   position: absolute;
-  bottom: max(72px, env(safe-area-inset-bottom));
+  bottom: max(calc(var(--s-14) + var(--s-4)), env(safe-area-inset-bottom));
   display: flex;
 }
 .dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
+  width: var(--bubble-tail);
+  height: var(--bubble-tail);
+  border-radius: var(--r-pill);
   background: var(--ink-3);
   animation: dotPulse 1.4s ease-in-out infinite;
 }
 .dot + .dot {
-  margin-left: 8px;
+  margin-left: var(--s-2);
 }
 .dot-2 {
   animation-delay: 0.2s;

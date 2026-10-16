@@ -47,7 +47,7 @@
       <view class="folder-section">
         <view class="section-header">
           <text class="section-title">{{ t('favorite.copy5') }}</text>
-          <BaseButton class="nav-action" variant="secondary" @tap="openFolderModal()">{{
+          <BaseButton class="nav-action" icon="plus" variant="secondary" @tap="openFolderModal()">{{
             t('favorite.copy6')
           }}</BaseButton>
         </view>
@@ -164,7 +164,7 @@
               {{ item.note }}
             </text>
           </view>
-          <BaseButton v-else class="add-note" variant="secondary" @tap="openNoteModal(item)"
+          <BaseButton v-else class="add-note" icon="plus" variant="secondary" @tap="openNoteModal(item)"
             ><text class="add-note-text">{{ t('favorite.copy20') }}</text></BaseButton
           >
         </view>

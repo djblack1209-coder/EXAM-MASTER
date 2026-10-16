@@ -89,13 +89,15 @@ const actions = [
   display: inline-flex;
   border-radius: var(--r-pill);
   background: var(--playful-badge);
-  padding: var(--s-1) var(--s-2);
-  font-size: var(--size-small);
-  line-height: var(--leading-small);
+  height: var(--playful-badge-height);
+  padding: var(--playful-badge-pad-y) var(--playful-badge-pad-x);
+  align-items: center;
+  font-size: var(--playful-badge-size);
+  line-height: var(--playful-headline-leading);
 }
 .playful-headline {
   display: block;
-  font: var(--weight-display) var(--size-display)/var(--leading-display) var(--font-display);
+  font: var(--weight-display) var(--playful-headline-size)/var(--playful-headline-leading) var(--font-display);
 }
 .playful-job-title {
   width: max-content;
@@ -103,16 +105,18 @@ const actions = [
   margin-top: 1.45vw;
   white-space: pre;
 }
-.playful-job-title--english {
-  font-size: calc(var(--size-display) * 0.75);
-  line-height: calc(var(--leading-display) * 0.75);
-}
 .playful-nav {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: var(--s-2);
-  margin-top: var(--s-5);
+  gap: var(--playful-nav-gap);
+  margin-top: var(--playful-nav-offset);
+}
+.playful-nav :deep(.base-button) {
+  padding-inline: 0;
+  color: var(--playful-ink);
+  font-size: var(--playful-nav-size);
+  line-height: var(--playful-nav-leading);
 }
 .playful-logo {
   position: absolute;
@@ -157,14 +161,6 @@ const actions = [
   pointer-events: none;
 }
 @media (max-width: 900px) {
-  .playful-job-title {
-    font-size: var(--size-title-2);
-    line-height: var(--leading-title-2);
-  }
-  .playful-job-title--english {
-    font-size: var(--size-title-3);
-    line-height: var(--leading-title-3);
-  }
   .playful-logo text {
     font-size: var(--size-title-1);
     line-height: var(--leading-title-1);
@@ -179,7 +175,7 @@ const actions = [
     background: var(--playful-mobile-canvas);
     display: flex;
     flex-direction: column;
-    gap: var(--s-8);
+    gap: var(--playful-mobile-gap);
     min-height: 100svh;
     padding: var(--s-10) var(--s-6) var(--tabbar-reserve);
   }
@@ -196,17 +192,23 @@ const actions = [
   }
   .playful-job-title {
     margin-top: var(--s-5);
-    font-size: calc(var(--size-display) * 0.75);
-    line-height: calc(var(--leading-display) * 0.75);
+    font-size: var(--playful-mobile-title);
+    line-height: var(--playful-mobile-title-leading);
   }
-  .playful-job-title--english {
-    font-size: calc(var(--size-display) * 0.625);
-    line-height: calc(var(--leading-display) * 0.625);
+  .playful-badge {
+    height: var(--size-title-1);
+    padding: var(--playful-mobile-badge-pad-y) var(--playful-mobile-badge-pad-x);
+    font-size: var(--size-small);
   }
   .playful-nav {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: var(--s-2) var(--s-6);
+    gap: 0 var(--s-6);
+    margin-top: var(--s-5);
+  }
+  .playful-nav :deep(.base-button) {
+    font-size: var(--playful-mobile-nav-size);
+    line-height: var(--playful-mobile-nav-leading);
   }
   .playful-contact {
     position: static;

@@ -1,5 +1,5 @@
 <template>
-  <view class="login-page theme-light" :style="$yoziInsets">
+  <view class="login-page" :class="themeStore.isDark ? 'theme-dark' : 'theme-light'" :style="$yoziInsets">
     <PrivacyPopup />
     <view class="login-top">
       <BaseButton variant="quiet" icon="arrow-left" icon-only :label="t('login.back')" @tap="back" />
@@ -170,12 +170,14 @@ import YoziMascot from '@/components/base/yozi-mascot/yozi-mascot.vue';
 import PrivacyPopup from '@/components/common/privacy-popup.vue';
 import { useAuthStore } from '@/stores/modules/auth';
 import { useUserStore } from '@/stores/modules/user';
+import { useThemeStore } from '@/stores/modules/theme.js';
 import { storageService } from '@/services/storageService.js';
 import { getUserId, getToken } from '@/services/auth-storage.js';
 import { readLoginRegion, chooseLoginRegion } from '@/services/auth-region.js';
 import { availableLoginMethods, isAgeEligible, getAgeSession, loginErrorText } from './regional-utils.js';
 import { normalizeEmailAddress } from './email-auth-utils.js';
 import { beginWebOAuth, loginNativeWechat } from './oauth-utils.js';
+const themeStore = useThemeStore();
 import { requestProviderToken } from './provider-utils.js';
 import { isDesktopRuntime } from '@/services/desktop/runtime.js';
 import { loginDesktopOAuth } from '@/services/desktop/oauth.js';
@@ -607,7 +609,7 @@ onMounted(async () => {
   min-height: 100vh;
   box-sizing: border-box;
   padding: var(--s-4) var(--s-5) var(--s-8);
-  background: var(--paper);
+  background: var(--canvas);
   color: var(--ink);
   font-family: var(--font-ui);
 }
@@ -616,13 +618,13 @@ onMounted(async () => {
   gap: var(--s-2);
   align-items: center;
   justify-content: space-between;
-  max-width: 960px;
+  max-width: var(--account-header-width);
   margin: 0 auto;
   padding-top: max(var(--yozi-nav-top, 0px), env(safe-area-inset-top));
   flex-wrap: wrap;
 }
 .login-content {
-  max-width: 420px;
+  max-width: var(--account-width);
   margin: var(--s-8) auto 0;
 }
 .login-hero {

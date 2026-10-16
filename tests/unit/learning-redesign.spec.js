@@ -125,22 +125,22 @@ describe('learning interface states preserve learning facts', () => {
       Element.prototype.scrollIntoView = originalScroll;
     }
   });
-  it('a new goal locates its first-practice action without creating a route or answers', async () => {
+  it('a chat goal locates its clarification without creating a route or answers', async () => {
     const store = useConversationLearningStore(),
       wrapper = render();
     const scroll = vi.fn(),
       originalScroll = Element.prototype.scrollIntoView;
     Element.prototype.scrollIntoView = scroll;
     try {
-      const goalInput = wrapper.findAllComponents(BaseInput).find((input) => input.props('label') === '学习目标');
+      const goalInput = wrapper.get('#learning-composer').findComponent(BaseInput);
       await goalInput.get('textarea').setValue('分数加减与乘除');
-      const start = wrapper.findAllComponents(BaseButton).find((button) => button.text().trim() === '开始学习');
+      const start = wrapper.get('#learning-composer [aria-label="发送"]');
       await start.trigger('keydown', { key: 'Enter' });
       await flushPromises();
-      const entry = wrapper.get('#learning-journey-panel');
+      const entry = wrapper.get('#learning-chat-latest');
       expect(document.activeElement).toBe(entry.element);
       expect(scroll).toHaveBeenCalledWith({ block: 'start', behavior: 'auto' });
-      expect(entry.text()).toContain(t('learning.firstGroup'));
+      expect(wrapper.get('.conversation-area').text()).toContain(t('learning.chat.question'));
       expect(store.state.conversations).toHaveLength(1);
       expect(store.state.attempts).toHaveLength(0);
       expect(store.state.questions).toHaveLength(0);
@@ -193,7 +193,7 @@ describe('learning interface states preserve learning facts', () => {
       originalScroll = Element.prototype.scrollIntoView;
     Element.prototype.scrollIntoView = scroll;
     try {
-      const stop = wrapper.findAllComponents(BaseButton).find((button) => button.text().trim() === '停止当前任务');
+      const stop = wrapper.get('#learning-composer [aria-label="停止当前任务"]');
       await stop.trigger('keydown', { key: 'Enter' });
       await flushPromises();
       const state = wrapper.get('#learning-stop-state');
@@ -463,6 +463,8 @@ describe('learning i18n', () => {
     await flushPromises();
     expect(wrapper.get('.message.notice').text()).toBe('Correct.');
     expect(wrapper.findAll('.message.assistant').at(-1).text()).toBe('答对了。');
+    await wrapper.get('.connection-pill').trigger('tap');
+    await flushPromises();
     const profile = wrapper.findAllComponents(BaseButton).find((button) => button.text() === 'Goals and plans');
     expect(profile).toBeTruthy();
     await profile.trigger('tap');
@@ -488,6 +490,8 @@ describe('learning i18n', () => {
     const wrapper = render();
     setLanguage('en');
     await flushPromises();
+    await wrapper.get('.connection-pill').trigger('tap');
+    await flushPromises();
     const styles = wrapper.get('.rhythm-options').text();
     expect(styles).toContain('Stay focused');
     expect(styles).toContain('Take it step by step');
@@ -499,6 +503,8 @@ describe('learning i18n', () => {
     const store = useConversationLearningStore();
     store.start('12 + 8');
     const wrapper = render();
+    await wrapper.get('.connection-pill').trigger('tap');
+    await flushPromises();
     const actions = wrapper.get('.question-actions');
     const buttons = actions.findAllComponents(BaseButton);
     expect(buttons.filter((button) => button.props('variant') === 'primary')).toHaveLength(1);
@@ -543,6 +549,8 @@ describe('learning i18n', () => {
     store.start('12 + 8');
     const wrapper = render();
     await store.send('停止当前任务');
+    await flushPromises();
+    await wrapper.get('.connection-pill').trigger('tap');
     await flushPromises();
     const hint = wrapper.findAll('button').find((button) => button.text().trim() === '要个提示');
     expect(hint.attributes('disabled')).toBeDefined();

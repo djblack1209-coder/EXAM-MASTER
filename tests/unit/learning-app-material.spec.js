@@ -215,10 +215,7 @@ describe('App页面选择/重新授权/逐次许可', () => {
   const page = async () => {
     const store = useConversationLearningStore();
     wrapper = mount(LearningPage);
-    await wrapper
-      .findAll('button')
-      .find((b) => b.text().includes('资料'))
-      .trigger('tap');
+    await wrapper.get('#learning-composer [aria-label="导入资料"]').trigger('tap');
     await flushPromises();
     return store;
   };
